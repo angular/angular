@@ -10,8 +10,8 @@ that call attention where it's needed. Well-designed animations can make a UI no
 more fun but also easier to use.
 -->
 요즘은 웹 애플리케이션 디자인에 애니메이션을 활용하는 것도 중요합니다.
-사용자가 어떤 행동을 했을 때 적절한 애니메이션이 보여진다면 사용자가 어떤 곳에 주목해야 하는지 좀 더 풍부한 정보를 제공할 수 있습니다.
-결국 애니메이션은 UI를 재미있게 할 뿐만 아니라 애플리케이션 사용을 돕는 측면에서도 중요합니다.
+사용자가 어떤 행동을 했을 때 적절한 애니메이션이 보여진다면 사용자가 어떤 곳에 주목해야 하는지 좀 더 풍부한 정보를 제공할 수 있기 때문입니다.
+그렇다면 애니메이션은 UI를 재미있게 할 뿐만 아니라 애플리케이션 사용을 돕는 측면에서도 중요합니다.
 
 <!--
 ## Overview
@@ -32,7 +32,7 @@ Angular에서 제공하는 애니메이션 성능은 순수한 CSS를 활용한 
 Angular animations are built on top of the standard [Web Animations API](https://w3c.github.io/web-animations/)
 and run natively on [browsers that support it](http://caniuse.com/#feat=web-animation).
 -->
-Angular 애니메이션은 [웹 애니메이션 API](https://w3c.github.io/web-animations/) 표준을 바탕으로 구현되었으며, [브라우저가 지원하면](http://caniuse.com/#feat=web-animation) 네이티브 성능으로 동작합니다.
+Angular 애니메이션은 [웹 애니메이션 API](https://w3c.github.io/web-animations/) 표준을 바탕으로 구현되었으며, [이 표준을 지원하는 브라우저](http://caniuse.com/#feat=web-animation)에서는 네이티브 성능으로 동작합니다.
 
 <!--
 As of Angular 6, If the Web Animations API is not supported natively by the browser, then Angular will use CSS
@@ -64,7 +64,7 @@ The examples in this page are available as a <live-example></live-example>.
 Before you can add animations to your application, you need
 to import a few animation-specific modules and functions to the root application module.
 -->
-애플리케이션에 애니메이션을 적용하기 전에, 애플리케이션 루트 모듈에 애니메이션 관련 모듈을 추가해야 합니다.
+애플리케이션에 애니메이션을 적용하려면 애플리케이션 루트 모듈에 애니메이션 관련 모듈을 추가해야 합니다.
 
 <code-example path="animations/src/app/app.module.ts" region="animations-module" title="app.module.ts (animation module import excerpt)" linenums="false"></code-example>
 
@@ -132,7 +132,7 @@ hero is active, the element appears in a slightly larger size and lighter color.
 In this example, you are defining animation styles (color and transform) inline in the
 animation metadata.
 -->
-이 예제는 애니메이션 스타일(색상, 크기)를 애니메이션 메타데이터에 인라인으로 지정했습니다.
+이 예제는 애니메이션 메타데이터에 애니메이션 스타일(색상, 크기)을 인라인으로 지정했습니다.
 
 </div>
 
@@ -180,7 +180,7 @@ You can define *styles* for each animation state:
 -->
 Angular 애니메이션은 논리적으로 전환되는 **상태(state)**와 이 상태간 전환을 뜻하는 **트랜지션(transition)** 으로 정의합니다.
 
-애니메이션 상태는 문자열로 정의하며, 애플리케이션 코드에서 지정합니다. 위 예제에서는 `'active'` 상태와 `'inactive'` 상태를 정의하고 히어로 객체에 정의했습니다. 상태값을 표현하는 문자열은 이 예제처럼 객체 안에 있는 프로퍼티 일수도 있고, 메소드의 실행결과로 반환되는 값일 수도 있습니다. 이 값은 컴포넌트의 템플릿에서 접근할수만 있으면 어떤 것이든 상관없습니다.
+애니메이션 상태는 문자열로 정의하며, 애플리케이션 코드에서 지정합니다. 그래서 위 예제에서는 `'active'` 상태와 `'inactive'` 상태를 히어로 객체 안에서 지정했습니다. 상태값을 표현하는 문자열은 이 예제처럼 객체 안에 있는 프로퍼티 일수도 있고, 메소드의 실행결과로 반환되는 값일 수도 있습니다. 이 값은 컴포넌트의 템플릿에서 접근할수만 있으면 어떤 것이든 상관없습니다.
 
 각 애니메이션 상태는 *스타일 객체*로 정의할 수도 있습니다:
 
@@ -244,7 +244,7 @@ defined in a `state`.
 The `*` ("wildcard") state matches *any* animation state. This is useful for defining styles and
 transitions that apply regardless of which state the animation is in. For example:
 -->
-모든 상태(wiltecard state)라고 하는 `*` 상태는 *모든* 애니메이션 상태와 매칭됩니다. 이 상태는 모든 애니메이션에 같은 스타일과 같은 트랜지션 효과를 정의할 때 사용합니다. 예를 들면:
+모든 상태(wildcard state)라고 하는 `*` 상태는 *모든* 애니메이션 상태와 매칭됩니다. 이 상태는 모든 애니메이션에 같은 스타일과 같은 트랜지션 효과를 정의할 때 사용합니다. 예를 들면:
 
 <!--
 * The `active => *` transition applies when the element's state changes from `active` to anything else.
@@ -288,7 +288,7 @@ The wildcard state `*` also matches `void`.
 <!--
 ## Example: Entering and leaving
 -->
-## 예제 : 나타날 때/사라질 때
+## 예제 : 나타날 때, 사라질 때
 
 <img src="generated/images/guide/animations/animation_enter_leave.gif" alt="Enter and leave animations" class="right" width="250">
 
@@ -370,29 +370,50 @@ This gives you fine-grained control over each transition:
 
 <code-example path="animations/src/app/hero-list-enter-leave-states.component.ts" region="animationdef" title="hero-list-enter-leave.component.ts (excerpt)" linenums="false"></code-example>
 
+<!--
 ## Animatable properties and units
+-->
+## 애니메이션 프로퍼티, 단위
 
+<!--
 Since Angular's animation support builds on top of Web Animations, you can animate any property
 that the browser considers *animatable*. This includes positions, sizes, transforms, colors,
 borders, and many others. The W3C maintains
 [a list of animatable properties](https://www.w3.org/TR/css3-transitions/#animatable-properties)
 on its [CSS Transitions page](https://www.w3.org/TR/css3-transitions).
+-->
+Angular로 구현하는 애니메이션은 웹 애니메이션 표준을 바탕으로 하기 때문에 브라우저가 *애니메이션을 적용할 수 있는* 프로퍼티에는 모두 애니메이션을 적용할 수 있습니다.
+여기에는 위치, 크기, transform 속성, 색상, 외곽선 등이 해당됩니다.
+[CSS 트랜지션 문서](https://www.w3.org/TR/css3-transitions)에 있는 [애니메이션을 적용할 수 있는 프로퍼티 목록](https://www.w3.org/TR/css3-transitions/#animatable-properties)을 참고하세요.
 
+<!--
 For positional properties that have a numeric value, you can define a unit by providing
 the value as a string with the appropriate suffix:
+-->
+이 중에서 위치 프로퍼티는 숫자값에 적당한 단위를 붙여서 다음과 같이 지정할 수 있습니다:
 
 * `'50px'`
 * `'3em'`
 * `'100%'`
 
+<!--
 If you don't provide a unit when specifying dimension, Angular assumes the default of `px`:
+-->
+단위를 생략하고 숫자값을 지정했을 때 Angular가 기본으로 적용하는 단위는 `px`입니다:
 
+<!--
 * `50` is the same as saying `'50px'`
+-->
+* `50`은 `'50px'`과 같습니다.
 
+<!--
 ## Automatic property calculation
+-->
+## 프로퍼티 자동 계산
 
 <img src="generated/images/guide/animations/animation_auto.gif" alt="Animation with automated height calculation" class="right" width="220">
 
+<!--
 Sometimes you don't know the value of a dimensional style property until runtime.
 For example, elements often have widths and heights that
 depend on their content and the screen size. These properties are often tricky
@@ -403,34 +424,70 @@ property is computed at runtime and then plugged into the animation.
 
 In this example, the leave animation takes whatever height the element has before it
 leaves and animates from that height to zero:
+-->
+어떤 경우에는 앱을 실행된 후에야 스타일의 특정값을 지정할 수 있는 경우가 있습니다.
+예를 들면, 내용이나 스크린 사이즈에 따라 너비와 높이가 변하는 엘리먼트가 그렇습니다.
+그래서 엘리먼트의 너비나 높이에 애니메이션을 적용할 때는 CSS를 활용하기도 합니다.
+
+이런 경우에는 Angular에서 제공하는 `*` 프로퍼티를 사용할 수 있습니다. 이 프로퍼티의 값은 실행된 이후에 Angular에 의해 할당되며, 애니메이션에도 자동으로 반영됩니다.
+
+그래서 화면에서 사라지는 애니메이션을 엘리먼트에 적용하는데, 이 엘리먼트의 이전 높이에 관계없이 그 높이부터 0으로 변하는 애니메이션을 구현하려면 다음과 같이 작성할 수 있습니다:
 
 <code-example path="animations/src/app/hero-list-auto.component.ts" region="animationdef" title="src/app/hero-list-auto.component.ts" linenums="false"></code-example>
 
+<!--
 ## Animation timing
+-->
+## 애니메이션 타이밍
 
+<!--
 There are three timing properties you can tune for every animated transition:
 the duration, the delay, and the easing function. They are all combined into
 a single transition *timing string*.
+-->
+애니메이션 트랜지션에 적용할 수 있는 타이밍 프로퍼티는 재생 시간, 딜레이, 가속도 함수가 있습니다. 이 프로퍼티는 트랜지션을 정의할 때 *타이밍 문자열*로 한 번에 지정합니다.
 
+<!--
 ### Duration
+-->
+### 재생 시간(Duration)
 
+<!--
 The duration controls how long the animation takes to run from start to finish.
 You can define a duration in three ways:
 
 * As a plain number, in milliseconds: `100`
 * In a string, as milliseconds: `'100ms'`
 * In a string, as seconds: `'0.1s'`
+-->
+재생 시간은 애니메이션이 시작될 때부터 종료될 때까지를 뜻하며, 다음과 같이 지정할 수 있습니다:
 
+* ms단위 숫자로 : `100`
+* ms단위 문자열로 : `'100ms'`
+* s단위 문자열 : `'0.1s'`
+
+<!--
 ### Delay
+-->
+### 딜레이(delay)
 
+<!--
 The delay controls the length of time between the animation trigger and the beginning
 of the transition. You can define one by adding it to the same string
 following the duration. It also has the same format options as the duration:
 
 * Wait for 100ms and then run for 200ms: `'0.2s 100ms'`
+-->
+딜레이는 트랜지션이 시작된 후부터 애니메이션이 시작될 때까지 지연되는 시간을 뜻합니다. 이 값은 재생 시간과 마찬가지로 문자열로 설정하며, 사용하는 형식도 같습니다:
 
+* 100ms 지연된 후에 200ms 동안 실행하려면 : `'0.2s 100ms'`
+
+<!--
 ### Easing
+-->
+### 가속도 함수(easing function)
 
+<!--
 The [easing function](http://easings.net/) controls how the animation accelerates
 and decelerates during its runtime. For example, an `ease-in` function causes
 the animation to begin relatively slowly but pick up speed as it progresses. You
@@ -439,21 +496,38 @@ and the delay (or as the *second* value when there is no delay):
 
 * Wait for 100ms and then run for 200ms, with easing: `'0.2s 100ms ease-out'`
 * Run for 200ms, with easing: `'0.2s ease-in-out'`
+-->
+[가속도 함수](http://easings.net/)는 애니메이션이 실행될 때 어떻게 가속되고 감속되는지 결정합니다.
+하나를 예로 들면, `ease-in` 함수는 애니메이션이 시작될 때는 느리게 재생되고 애니메이션이 진행되면서 점점 빨라지도록 설정합니다.
+가속도 함수는 애니메이션 재생 시간과 딜레이 이후에 *세 번째* 값으로 지정합니다. 만약 딜레이가 없다면 *두 번째* 값으로 지정합니다.
+
+* 100ms 지연된 후에 200ms 동안 `ease-out`으로 실행하려면 : `'0.2s 100ms ease-out'`
+* 200ms 동안 `ease-in-out`으로 실행하려면 : `'0.2s ease-in-out'`
 
 <img src="generated/images/guide/animations/animation_timings.gif" alt="Animations with specific timings" class="right" width="220">
 
+<!--
 ### Example
+-->
+### 예제
 
+<!--
 Here are a couple of custom timings in action. Both enter and leave last for
 200 milliseconds, that is `0.2s`, but they have different easings. The leave begins after a
 slight delay of 10 milliseconds as specified in `'0.2s 10 ease-out'`:
+-->
+커스텀 타이밍을 적용해 봅시다. 엘리먼트가 나타날 때와 사라질 때는 200ms동안 애니메이션을 실행하기 위해 `0.2s`로 동일하게 지정하지만, 가속도 함수는 다르게 적용합니다. 사라지는 애니메이션은 10ms 지연한 후에 실행하기 위해 `'0.2s 10 ease-out'`로 지정했습니다:
 
 <code-example path="animations/src/app/hero-list-timings.component.ts" region="animationdef" title="hero-list-timings.component.ts (excerpt)" linenums="false"></code-example>
 
+<!--
 ## Multi-step animations with keyframes
+-->
+## 키프레임을 활용하는 다단계 애니메이션
 
 <img src="generated/images/guide/animations/animation_multistep.gif" alt="Animations with some bounce implemented with keyframes" class="right" width="220">
 
+<!--
 Animation *keyframes* go beyond a simple transition to a more intricate animation
 that goes through one or more intermediate styles when transitioning between two sets of styles.
 
@@ -463,9 +537,17 @@ which marks the beginning of the animation, and one, which marks the end.
 
 This example adds some "bounce" to the enter and leave animations with
 keyframes:
+-->
+애니메이션 *키프레임*을 활용하면 좀 더 복잡한 애니메이션을 실행할 수 있으며, 각 단계에 적용될 스타일과 트랜지션 효과도 따로 지정할 수 있습니다.
+
+각각의 프레임은 애니메이션이 시작된 후부터 얼마나 떨어져 있는지 *오프셋(offset)*을 정의하는 방식으로 지정합니다.
+이 오프셋은 애니메이션이 시작되는 시점은 0으로 지정하고, 애니메이션이 끝나는 시점은 1로 지정합니다.
+
+그래서 엘리먼트가 화면에 나타나고 사라지는 중간에 *약간 튕기는* 효과를 주려면 다음과 같이 지정합니다:
 
 <code-example path="animations/src/app/hero-list-multistep.component.ts" region="animationdef" title="hero-list-multistep.component.ts (excerpt)" linenums="false"></code-example>
 
+<!--
 Note that the offsets are *not* defined in terms of absolute time. They are relative
 measures from zero to one. The final timeline of the animation is based on the combination
 of keyframe offsets, duration, delay, and easing.
@@ -473,11 +555,20 @@ of keyframe offsets, duration, delay, and easing.
 Defining offsets for keyframes is optional. If you omit them, offsets with even
 spacing are automatically assigned. For example, three keyframes without predefined
 offsets receive offsets `0`, `0.5`, and `1`.
+-->
+오프셋은 시간 단위로 지정하지 않고 0부터 1 사이의 상대적인 숫자값으로 지정합니다.
+그러면 이렇게 지정된 키프레임 오프셋, 재생 시간, 딜레이, 가속도 함수로 전체 애니메이션 세트가 구성됩니다.
 
+키프레임 오프셋을 지정하는 것은 생략할 수 있으며, 오프셋이 생략되면 각각의 오프셋은 균등하게 나누어 집니다. 예를 들어 오프셋 지정 없이 키프레임을 3개 지정하면, 이 키프레임의 오프셋은 각각 `0`, `0.5`, `1`로 지정됩니다.
+
+<!--
 ## Parallel animation groups
+-->
+## 애니메이션 그룹 병렬 실행
 
 <img src="generated/images/guide/animations/animation_groups.gif" alt="Parallel animations with different timings, implemented with groups" class="right" width="220px">
 
+<!--
 You've seen how to animate multiple style properties at the same time:
 just put all of them into the same `style()` definition.
 
@@ -488,21 +579,44 @@ different easing function for each one.
 For this you can use animation *groups*. In this example, using groups both on
 enter and leave allows for two different timing configurations. Both
 are applied to the same element in parallel, but run independently of each other:
+-->
+이전 예제에서 알아본 것처럼, 애니메이션 스타일은 `style()` 함수를 사용해서 동시에 여러 개를 지정할 수 있습니다.
+
+하지만 어떤 경우에는 동시에 다른 *타이밍*으로 실행되는 애니메이션을 적용해야 할 때가 있습니다.
+예를 들면 CSS 프로퍼티 2개를 애니메이션으로 조작하면서 또 다른 프로퍼티에 다른 가속도 함수를 적용하는 경우를 생각해 봅시다.
+
+이럴 때 애니메이션 *그룹*을 활용할 수 있습니다. 아래 예제는 엘리먼트가 나타날 때와 사라질 때 서로 다른 타이밍 효과를 사용합니다. 각각의 애니메이션은 동시에 실행되지만 서로 독립적입니다:
 
 <code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" title="hero-list-groups.component.ts (excerpt)" linenums="false"></code-example>
 
+<!--
 One group animates the element transform and width; the other group animates the opacity.
+-->
+위 예제에서 애니메이션 그룹 하나는 너비에 애니메이션을 적용하고, 다른 그룹은 투명도에 애니메이션을 적용합니다.
 
+<!--
 ## Animation callbacks
+-->
+## 애니메이션 콜백
 
+<!--
 A callback is fired when an animation is started and also when it is done.
 
 In the keyframes example, you have a `trigger` called `@flyInOut`. You can hook
 those callbacks like this:
+-->
+애니메이션이 시작된 후와 종료된 후에는 콜백 함수를 실행할 수 있습니다.
+
+`@flyInOut` 트리거에 연결된 애니메이션이 실행되거나 종료된 시점을 활용하려면 다음과 같이 작성합니다:
 
 <code-example path="animations/src/app/hero-list-multistep.component.ts" region="template" title="hero-list-multistep.component.ts (excerpt)" linenums="false"></code-example>
 
+<!--
 The callbacks receive an `AnimationEvent` that contains useful properties such as
 `fromState`, `toState` and `totalTime`.
 
 Those callbacks will fire whether or not an animation is picked up.
+-->
+애니메이션 콜백 이벤트는 `AnimationEvent` 타입의 객체이며, 이 객체에는 `fromState`, `toState`, `totalTime`과 같이 애플리케이션 로직에 활용할 수 있는 프로퍼티가 함께 전달됩니다.
+
+이 콜백 함수는 애니메이션이 도중에 중단되어도 실행됩니다.
