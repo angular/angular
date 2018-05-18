@@ -18,7 +18,7 @@ import {Type} from '../type';
  * @description
  * Configures the `Injector` to return a value for a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -42,7 +42,7 @@ export interface ValueSansProvider {
  * @description
  * Configures the `Injector` to return a value for a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -77,7 +77,7 @@ export interface ValueProvider extends ValueSansProvider {
  * @description
  * Configures the `Injector` to return an instance of `useClass` for a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -111,7 +111,7 @@ export interface StaticClassSansProvider {
  * @description
  * Configures the `Injector` to return an instance of `useClass` for a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -149,7 +149,7 @@ export interface StaticClassProvider extends StaticClassSansProvider {
  * @description
  * Configures the `Injector` to return an instance of a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * @experimental
  */
@@ -173,7 +173,7 @@ export interface ConstructorSansProvider {
  * @description
  * Configures the `Injector` to return an instance of a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -208,7 +208,7 @@ export interface ConstructorProvider extends ConstructorSansProvider {
  * @description
  * Configures the `Injector` to return a value of another `useExisting` token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -232,7 +232,7 @@ export interface ExistingSansProvider {
  * @description
  * Configures the `Injector` to return a value of another `useExisting` token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -269,7 +269,7 @@ export interface ExistingProvider extends ExistingSansProvider {
  * @description
  * Configures the `Injector` to return a value by invoking a `useFactory` function.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -302,7 +302,7 @@ export interface FactorySansProvider {
  * @description
  * Configures the `Injector` to return a value by invoking a `useFactory` function.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -337,7 +337,7 @@ export interface FactoryProvider extends FactorySansProvider {
  * @description
  * Describes how the `Injector` should be configured in a static way (Without reflection).
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  *
  */
@@ -360,7 +360,7 @@ export type StaticProvider = ValueProvider | ExistingProvider | StaticClassProvi
  * Create an instance by invoking the `new` operator and supplying additional arguments.
  * This form is a short form of `TypeProvider`;
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -383,7 +383,7 @@ export interface TypeProvider extends Type<any> {}
  * @description
  * Configures the `Injector` to return a value by invoking a `useClass` function.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -410,7 +410,7 @@ export interface ClassSansProvider {
  * @description
  * Configures the `Injector` to return an instance of `useClass` for a token.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  * ### Example
  *
@@ -445,7 +445,7 @@ export interface ClassProvider extends ClassSansProvider {
  * @description
  * Describes how the `Injector` should be configured.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
  *
  */

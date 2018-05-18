@@ -31,7 +31,7 @@ export interface InjectDecorator {
    * @description
    * A parameter decorator that specifies a dependency.
    *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
    *
    * ### Example
    *
@@ -85,7 +85,7 @@ export interface OptionalDecorator {
    * A parameter metadata that marks a dependency as optional.
    * {@link Injector} provides `null` if the dependency is not found.
    *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
    *
    * ### Example
    *
@@ -130,7 +130,7 @@ export interface SelfDecorator {
    * @description
    * Specifies that an {@link Injector} should retrieve a dependency only from itself.
    *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
    *
    * ### Example
    *
@@ -176,7 +176,7 @@ export interface SkipSelfDecorator {
    * @description
    * Specifies that the dependency resolution should start from the parent injector.
    *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
    *
    * ### Example
    *
@@ -222,7 +222,7 @@ export interface HostDecorator {
    * Specifies that an injector should retrieve a dependency from any injector until
    * reaching the host element of the current component.
    *
-   * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
    *
    * ### Example
    *
