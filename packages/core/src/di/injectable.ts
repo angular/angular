@@ -30,31 +30,22 @@ export type InjectableProvider = ValueSansProvider | ExistingSansProvider |
 
 /**
  * Type of the Injectable decorator / constructor function.
- *
- *
  */
 export interface InjectableDecorator {
   /**
+   * A marker metadata that marks a class as available to `Injector` for creation.
+   *
+   * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
+   *
    * @usageNotes
-   * ```
-   * @Injectable()
-   * class Car {}
-   * ```
-   *
-   * @description
-   * A marker metadata that marks a class as available to {@link Injector} for creation.
-   *
-   * For more details, see the ["Dependency Injection Guide"(guide/dependency-injection).
-   *
    * ### Example
    *
    * {@example core/di/ts/metadata_spec.ts region='Injectable'}
    *
-   * {@link Injector} will throw an error when trying to instantiate a class that
+   * `Injector` will throw an error when trying to instantiate a class that
    * does not have `@Injectable` marker, as shown in the example below.
    *
    * {@example core/di/ts/metadata_spec.ts region='InjectableThrows'}
-   *
    *
    */
   (): any;
@@ -124,7 +115,6 @@ function preR3InjectableCompile(
 
 /**
 * Injectable decorator and metadata.
-*
 *
 * @Annotation
 */
