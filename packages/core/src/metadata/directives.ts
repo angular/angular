@@ -16,25 +16,9 @@ import {ViewEncapsulation} from './view';
 
 /**
  * Type of the Directive decorator / constructor function.
- *
- *
  */
 export interface DirectiveDecorator {
   /**
-   * @usageNotes
-   *
-   * ```
-   * import {Directive} from '@angular/core';
-   *
-   * @Directive({
-   *   selector: 'my-directive',
-   * })
-   * export class MyDirective {
-   * }
-   * ```
-   *
-   * @description
-   *
    * Marks a class as an Angular directive and collects directive configuration
    * metadata.
    *
@@ -65,13 +49,24 @@ export interface DirectiveDecorator {
    * * **queries** -  configure queries that can be injected into the component
    * * **selector** - css selector that identifies this component in a template
    *
+   * @usageNotes
+   *
+   * ```
+   * import {Directive} from '@angular/core';
+   *
+   * @Directive({
+   *   selector: 'my-directive',
+   * })
+   * export class MyDirective {
+   * }
+   * ```
    *
    * @Annotation
    */
   (obj: Directive): TypeDecorator;
 
   /**
-   * See the {@link Directive} decorator.
+   * See the `Directive` decorator.
    */
   new (obj: Directive): Directive;
 }
@@ -92,7 +87,7 @@ export interface Directive {
    * - `:not(sub_selector)`: select only if the element does not match the `sub_selector`.
    * - `selector1, selector2`: select if either `selector1` or `selector2` matches.
    *
-   *
+   * @usageNotes
    * ### Example
    *
    * Suppose we have a directive with an `input[type=text]` selector.
@@ -124,6 +119,7 @@ export interface Directive {
    *
    * When `bindingProperty` is not provided, it is assumed to be equal to `directiveProperty`.
    *
+   * @usageNotes
    * ### Example
    *
    * The following example creates a component with two data-bound properties.
@@ -153,7 +149,6 @@ export interface Directive {
    * })
    * class App {}
    * ```
-   *
    */
   inputs?: string[];
 
@@ -169,6 +164,7 @@ export interface Directive {
    * - `directiveProperty` specifies the component property that emits events.
    * - `bindingProperty` specifies the DOM property the event handler is attached to.
    *
+   * @usageNotes
    * ### Example
    *
    * ```typescript
@@ -198,14 +194,17 @@ export interface Directive {
    *   everyFiveSeconds() { console.log('five seconds'); }
    * }
    * ```
-   *
    */
   outputs?: string[];
 
   /**
    * Specify the events, actions, properties and attributes related to the host element.
    *
-   * ## Host Listeners
+   * @usageNotes
+   * The key corresponds to the name of the event, property or attribute on the host to
+   * bind. The value is formatted differently depending upon the type of the binding.
+   *
+   * ### Host Listeners
    *
    * Specifies which DOM events a directive listens to via a set of `(event)` to `method`
    * key-value pairs:
@@ -219,8 +218,6 @@ export interface Directive {
    * The target can be `window`, `document` or `body`.
    *
    * When writing a directive event binding, you can also refer to the $event local variable.
-   *
-   * ### Example
    *
    * The following example declares a directive that attaches a click listener to the button and
    * counts clicks.
@@ -247,14 +244,12 @@ export interface Directive {
    * class App {}
    * ```
    *
-   * ## Host Property Bindings
+   * ### Host Property Bindings
    *
    * Specifies which DOM properties a directive updates.
    *
    * Angular automatically checks host property bindings during change detection.
    * If a binding changes, it will update the host element of the directive.
-   *
-   * ### Example
    *
    * The following example creates a directive that sets the `valid` and `invalid` classes
    * on the DOM element that has ngModel directive on it.
@@ -282,11 +277,9 @@ export interface Directive {
    * }
    * ```
    *
-   * ## Attributes
+   * ### Attributes
    *
    * Specifies static attributes that should be propagated to a host element.
-   *
-   * ### Example
    *
    * In this example using `my-button` directive (ex.: `<div my-button></div>`) on a host element
    * (here: `<div>` ) will ensure that this element will get the "button" role.
@@ -308,7 +301,8 @@ export interface Directive {
    * Defines the set of injectable objects that are visible to a Directive and its light DOM
    * children.
    *
-   * ## Simple Example
+   * @usageNotes
+   * ### Simple Example
    *
    * Here is an example of a class that can be injected:
    *
@@ -339,7 +333,8 @@ export interface Directive {
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
    *
-   * ## Simple Example
+   * @usageNotes
+   * ### Simple Example
    *
    * ```
    * @Directive({
@@ -366,6 +361,7 @@ export interface Directive {
    * Content queries are set before the `ngAfterContentInit` callback is called.
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
+   * @usageNotes
    * ### Example
    *
    * ```
@@ -397,7 +393,6 @@ export interface Directive {
 /**
  * Directive decorator and metadata.
  *
- *
  * @Annotation
  */
 export const Directive: DirectiveDecorator = makeDecorator(
@@ -406,16 +401,9 @@ export const Directive: DirectiveDecorator = makeDecorator(
 
 /**
  * Type of the Component decorator / constructor function.
- *
- *
  */
 export interface ComponentDecorator {
   /**
-   * @usageNotes
-   *
-   * {@example core/ts/metadata/metadata.ts region='component'}
-   *
-   * @description
    * Marks a class as an Angular component and collects component configuration
    * metadata.
    *
@@ -459,24 +447,22 @@ export interface ComponentDecorator {
    * * **templateUrl** - url to an external file containing a template for the view
    * * **viewProviders** - list of providers available to this component and its view children
    *
+   * @usageNotes
    * ### Example
    *
    * {@example core/ts/metadata/metadata.ts region='component'}
-   *
    *
    * @Annotation
    */
   (obj: Component): TypeDecorator;
   /**
-   * See the {@link Component} decorator.
+   * See the `Component` decorator.
    */
   new (obj: Component): Component;
 }
 
 /**
  * Type of the Component metadata.
- *
- *
  */
 export interface Component extends Directive {
   /**
@@ -493,7 +479,8 @@ export interface Component extends Directive {
   /**
    * Defines the set of injectable objects that are visible to its view DOM children.
    *
-   * ## Simple Example
+   * @usageNotes
+   * ### Simple Example
    *
    * Here is an example of a class that can be injected:
    *
@@ -535,8 +522,8 @@ export interface Component extends Directive {
    * In CommonJS, this can always be set to `module.id`, similarly SystemJS exposes `__moduleName`
    * variable within each module.
    *
-   *
-   * ## Simple Example
+   * @usageNotes
+   * ### Simple Example
    *
    * ```
    * @Directive({
@@ -553,7 +540,7 @@ export interface Component extends Directive {
   /**
    * Specifies a template URL for an Angular component.
    *
-   *Only one of `templateUrl` or `template` can be defined per View.
+   * Only one of `templateUrl` or `template` can be defined per View.
    */
   templateUrl?: string;
 
@@ -586,8 +573,11 @@ export interface Component extends Directive {
    *
    * For animations to be available for use, animation state changes are placed within
    * {@link trigger animation triggers} which are housed inside of the `animations` annotation
-   * metadata. Within a trigger both {@link state state} and {@link transition transition} entries
+   * metadata. Within a trigger both `state` and `transition` entries
    * can be placed.
+   *
+   * @usageNotes
+   * ### Example
    *
    * ```typescript
    * @Component({
@@ -636,28 +626,26 @@ export interface Component extends Directive {
    * Please visit each of the animation DSL functions listed below to gain a better understanding
    * of how and why they are used for crafting animations in Angular:
    *
-   * - {@link trigger trigger()}
-   * - {@link state state()}
-   * - {@link transition transition()}
-   * - {@link group group()}
-   * - {@link sequence sequence()}
-   * - {@link style style()}
-   * - {@link animate animate()}
-   * - {@link keyframes keyframes()}
+   * - `trigger()`
+   * - `state()`
+   * - `transition()`
+   * - `group()`
+   * - `sequence()`
+   * - `style()`
+   * - `animate()`
+   * - `keyframes()`
    */
   animations?: any[];
 
   /**
    * Specifies how the template and the styles should be encapsulated:
-   * - {@link ViewEncapsulation#Native `ViewEncapsulation.Native`} to use shadow roots - only works
-   *   if natively available on the platform,
-   * - {@link ViewEncapsulation#Emulated `ViewEncapsulation.Emulated`} to use shimmed CSS that
-   *   emulates the native behavior,
-   * - {@link ViewEncapsulation#None `ViewEncapsulation.None`} to use global CSS without any
-   *   encapsulation.
+   * - `ViewEncapsulation.Native` to use shadow roots - only works if natively available on the
+   *   platform,
+   * - `ViewEncapsulation.Emulated` to use shimmed CSS that emulates the native behavior,
+   * - `ViewEncapsulation.None` to use global CSS without any encapsulation.
    *
    * When no `encapsulation` is defined for the component, the default value from the
-   * {@link CompilerOptions} is used. The default is `ViewEncapsulation.Emulated`}. Provide a new
+   * `CompilerOptions` is used. The default is `ViewEncapsulation.Emulated`. Provide a new
    * `CompilerOptions` to override this value.
    *
    * If the encapsulation is set to `ViewEncapsulation.Emulated` and the component has no `styles`
@@ -673,13 +661,13 @@ export interface Component extends Directive {
   /**
    * Defines the components that should be compiled as well when
    * this component is defined. For each components listed here,
-   * Angular will create a {@link ComponentFactory} and store it in the
-   * {@link ComponentFactoryResolver}.
+   * Angular will create a `ComponentFactory` and store it in the
+   * `ComponentFactoryResolver`.
    */
   entryComponents?: Array<Type<any>|any[]>;
 
   /**
-   * If {@link Component#preserveWhitespaces Component.preserveWhitespaces} is set to `false`
+   * If `Component.preserveWhitespaces` is set to `false`
    * potentially superfluous whitespace characters (ones matching the `\s` character class in
    * JavaScript regular expressions) will be removed from a compiled template. This can greatly
    * reduce AOT-generated code size as well as speed up view creation.
@@ -750,7 +738,6 @@ export interface Component extends Directive {
 /**
  * Component decorator and metadata.
  *
- *
  * @Annotation
  */
 export const Component: ComponentDecorator = makeDecorator(
@@ -760,8 +747,6 @@ export const Component: ComponentDecorator = makeDecorator(
 
 /**
  * Type of the Pipe decorator / constructor function.
- *
- *
  */
 export interface PipeDecorator {
   /**
@@ -774,15 +759,13 @@ export interface PipeDecorator {
   (obj: Pipe): TypeDecorator;
 
   /**
-   * See the {@link Pipe} decorator.
+   * See the `Pipe` decorator.
    */
   new (obj: Pipe): Pipe;
 }
 
 /**
  * Type of the Pipe metadata.
- *
- *
  */
 export interface Pipe {
   /**
@@ -810,11 +793,10 @@ export interface Pipe {
  * Pipe decorator and metadata.
  *
  * Use the `@Pipe` annotation to declare that a given class is a pipe. A pipe
- * class must also implement {@link PipeTransform} interface.
+ * class must also implement `PipeTransform` interface.
  *
  * To use the pipe include a reference to the pipe class in
- * {@link NgModule#declarations}.
- *
+ * `NgModule.declarations`.
  *
  * @Annotation
  */
@@ -865,7 +847,6 @@ export interface InputDecorator {
    *
    * class App {}
    * ```
-   *
    */
   (bindingPropertyName?: string): any;
   new (bindingPropertyName?: string): any;
@@ -873,8 +854,6 @@ export interface InputDecorator {
 
 /**
  * Type of the Input metadata.
- *
- *
  */
 export interface Input {
   /**
@@ -886,7 +865,6 @@ export interface Input {
 /**
  * Input decorator and metadata.
  *
- *
  * @Annotation
  */
 export const Input: InputDecorator =
@@ -894,8 +872,6 @@ export const Input: InputDecorator =
 
 /**
  * Type of the Output decorator / constructor function.
- *
- *
  */
 export interface OutputDecorator {
   /**
@@ -908,6 +884,7 @@ export interface OutputDecorator {
    * used when instantiating a component in the template. When not provided,
    * the name of the decorated property is used.
    *
+   * @usageNotes
    * ### Example
    *
    * ```typescript
@@ -944,14 +921,11 @@ export interface OutputDecorator {
 
 /**
  * Type of the Output metadata.
- *
- *
  */
 export interface Output { bindingPropertyName?: string; }
 
 /**
  * Output decorator and metadata.
- *
  *
  * @Annotation
  */
@@ -961,8 +935,6 @@ export const Output: OutputDecorator =
 
 /**
  * Type of the HostBinding decorator / constructor function.
- *
- *
  */
 export interface HostBindingDecorator {
   /**
@@ -975,6 +947,7 @@ export interface HostBindingDecorator {
    * name of the host element that will be updated. When not provided,
    * the class property name is used.
    *
+   * @usageNotes
    * ### Example
    *
    * The following example creates a directive that sets the `valid` and `invalid` classes
@@ -996,7 +969,6 @@ export interface HostBindingDecorator {
    *   prop;
    * }
    * ```
-   *
    */
   (hostPropertyName?: string): any;
   new (hostPropertyName?: string): any;
@@ -1004,14 +976,11 @@ export interface HostBindingDecorator {
 
 /**
  * Type of the HostBinding metadata.
- *
- *
  */
 export interface HostBinding { hostPropertyName?: string; }
 
 /**
  * HostBinding decorator and metadata.
- *
  *
  * @Annotation
  */
@@ -1021,8 +990,6 @@ export const HostBinding: HostBindingDecorator =
 
 /**
  * Type of the HostListener decorator / constructor function.
- *
- *
  */
 export interface HostListenerDecorator {
   /**
@@ -1032,6 +999,7 @@ export interface HostListenerDecorator {
    *
    * If the decorated method returns `false`, then `preventDefault` is applied on the DOM event.
    *
+   * @usageNotes
    * ### Example
    *
    * The following example declares a directive that attaches a click listener to the button and
@@ -1063,8 +1031,6 @@ export interface HostListenerDecorator {
 
 /**
  * Type of the HostListener metadata.
- *
- *
  */
 export interface HostListener {
   eventName?: string;
@@ -1073,7 +1039,6 @@ export interface HostListener {
 
 /**
  * HostListener decorator and metadata.
- *
  *
  * @Annotation
  */

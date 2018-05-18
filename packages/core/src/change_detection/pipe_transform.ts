@@ -12,10 +12,7 @@
  * Angular invokes the `transform` method with the value of a binding
  * as the first argument, and any parameters as the second argument in list form.
  *
- * ## Syntax
- *
- * `value | pipeName[:arg0[:arg1...]]`
- *
+ * @usageNotes
  * ### Example
  *
  * The `RepeatPipe` below repeats the value as many times as indicated by the first argument:

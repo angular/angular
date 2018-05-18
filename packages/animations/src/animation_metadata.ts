@@ -42,8 +42,8 @@ export declare type AnimateTimings = {
  * @description Options that control animation styling and timing.
  * The following animation functions accept `AnimationOptions` data:
  *
- * - `transition`
- * - `sequence`
+ * - `transition()`
+ * - `sequence()`
  * - `group()`
  * - `query()`
  * - `animation()`
