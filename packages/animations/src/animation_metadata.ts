@@ -20,22 +20,19 @@ export declare type AnimateTimings = {
 };
 
 /**
- * `AnimationOptions` represents options that can be passed into most animation DSL methods.
- * When options are provided, the delay value of an animation can be changed and animation input
- * parameters can be passed in to change styling and timing data when an animation is started.
+ * @description Options that control animation styling and timing.
+ * The following animation functions accept `AnimationOptions` data:
  *
- * The following animation DSL functions are able to accept animation option data:
+ * - `transition()`
+ * - `sequence()`
+ * - `group()`
+ * - `query()`
+ * - `animation()`
+ * - `useAnimation()`
+ * - `animateChild()`
  *
- * - {@link transition transition()}
- * - {@link sequence sequence()}
- * - {@link group group()}
- * - {@link query query()}
- * - {@link animation animation()}
- * - {@link useAnimation useAnimation()}
- * - {@link animateChild animateChild()}
- *
- * Programmatic animations built using {@link AnimationBuilder the AnimationBuilder service} also
- * make use of AnimationOptions.
+ * Programmatic animations built using the `AnimationBuilder` service also
+ * make use of `AnimationOptions`.
  *
  * @experimental Animation support is experimental.
  */

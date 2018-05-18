@@ -15,6 +15,7 @@ import {InjectionToken} from '../di/injection_token';
  *
  * See the [i18n guide](guide/i18n#setting-up-locale) for more information.
  *
+ * @usageNotes
  * ### Example
  *
  * ```typescript
@@ -37,6 +38,7 @@ export const LOCALE_ID = new InjectionToken<string>('LocaleId');
  *
  * See the [i18n guide](guide/i18n#merge) for more information.
  *
+ * @usageNotes
  * ### Example
  *
  * ```typescript
@@ -62,6 +64,7 @@ export const TRANSLATIONS = new InjectionToken<string>('Translations');
  *
  * See the [i18n guide](guide/i18n#merge) for more information.
  *
+ * @usageNotes
  * ### Example
  *
  * ```typescript
@@ -87,6 +90,7 @@ export const TRANSLATIONS_FORMAT = new InjectionToken<string>('TranslationsForma
  *
  * See the [i18n guide](guide/i18n#missing-translation) for more information.
  *
+ * @usageNotes
  * ### Example
  * ```typescript
  * import { MissingTranslationStrategy } from '@angular/core';
