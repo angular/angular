@@ -119,8 +119,8 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
         parseTagsProcessor.tagDefinitions.concat(getInjectables(requireFolder(__dirname, './tag-defs')));
   })
 
-  .config(function(computeStability, splitDescription, addNotYetDocumentedProperty, EXPORT_DOC_TYPES, API_DOC_TYPES) {
-    computeStability.docTypes = EXPORT_DOC_TYPES;
+  .config(function(computeStability, splitDescription, addNotYetDocumentedProperty, API_DOC_TYPES_TO_RENDER, API_DOC_TYPES) {
+    computeStability.docTypes = API_DOC_TYPES_TO_RENDER;
     // Only split the description on the API docs
     splitDescription.docTypes = API_DOC_TYPES;
     addNotYetDocumentedProperty.docTypes = API_DOC_TYPES;
@@ -166,9 +166,9 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     filterContainedDocs.docTypes = API_CONTAINED_DOC_TYPES;
   })
 
-  .config(function(checkContentRules, EXPORT_DOC_TYPES, API_CONTAINED_DOC_TYPES) {
+  .config(function(checkContentRules, API_DOC_TYPES, API_CONTAINED_DOC_TYPES) {
     addMinLengthRules(checkContentRules);
-    addHeadingRules(checkContentRules, EXPORT_DOC_TYPES);
+    addHeadingRules(checkContentRules, API_DOC_TYPES);
     addAllowedPropertiesRules(checkContentRules, API_CONTAINED_DOC_TYPES);
   })
 
@@ -214,37 +214,33 @@ function addMinLengthRules(checkContentRules) {
   paramRules.push(createMinLengthRule());
 }
 
-function addHeadingRules(checkContentRules, EXPORT_DOC_TYPES) {
+function addHeadingRules(checkContentRules, API_DOC_TYPES) {
   const createNoMarkdownHeadingsRule = require('./content-rules/noMarkdownHeadings');
   const noMarkdownHeadings = createNoMarkdownHeadingsRule();
   const allowOnlyLevel3Headings = createNoMarkdownHeadingsRule(1, 2, '4,');
-  const DOC_TYPES_TO_CHECK = EXPORT_DOC_TYPES.concat(['member', 'overload-info']);
-  const PROPS_TO_CHECK = ['description', 'shortDescription'];
 
-  DOC_TYPES_TO_CHECK.forEach(docType => {
+  API_DOC_TYPES.forEach(docType => {
+    let rules;
     const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
-    PROPS_TO_CHECK.forEach(prop => {
-      const rules = ruleSet[prop] = ruleSet[prop] || [];
-      rules.push(noMarkdownHeadings);
-    });
-    const rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
+
+    rules = ruleSet['description'] = ruleSet['description'] || [];
+    rules.push(noMarkdownHeadings);
+
+    rules = ruleSet['shortDescription'] = ruleSet['shortDescription'] || [];
+    rules.push(noMarkdownHeadings);
+
+    rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
     rules.push(allowOnlyLevel3Headings);
   });
 }
 
 function addAllowedPropertiesRules(checkContentRules, API_CONTAINED_DOC_TYPES) {
-  const PROPS_TO_DISALLOW = ['usageNotes'];
-
   API_CONTAINED_DOC_TYPES.forEach(docType => {
     const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
-    PROPS_TO_DISALLOW.forEach(prop => {
-      const rules = ruleSet[prop] = ruleSet[prop] || [];
-      rules.push((doc, prop, value) => {
-        return value &&
-               !isMethod(doc) &&
-               `Invalid property: "${prop}" is not allowed on "${doc.docType}" docs.`;
-      });
-    });
+
+    const rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
+    rules.push((doc, prop, value) => value && !isMethod(doc) &&
+      `Invalid property: "${prop}" is not allowed on "${doc.docType}" docs.`);
   });
 }
 
