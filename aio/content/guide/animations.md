@@ -88,9 +88,6 @@ export class AppModule {
 }
 </code-example>
 
-<!--
-+<code-example path="animations-guide/src/app/app.module.fake.ts" title="src/app/app.module.ts">
- </code-example> -->
 
 <div class="l-sub-section">
 
