@@ -989,7 +989,7 @@ animation `group()` function.
 
 In the following example, using groups both on `enter:` and `leave:` allows for two different timing configurations. Both are applied to the same element in parallel, but run independently of each other:
 
-<code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" title="hero-list-groups.component.ts (excerpt)" linenums="false"></code-example>
+<!--<code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" title="hero-list-groups.component.ts (excerpt)" linenums="false"></code-example> -->
 
 <div class="l-sub-section">
 
