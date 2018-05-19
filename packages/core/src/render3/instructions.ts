@@ -337,9 +337,9 @@ export function createLView<T>(
  * (same properties assigned in the same order).
  */
 export function createLNodeObject(
-  type: TNodeType, currentView: LView, parent: LNode, native: RText | RElement | null | undefined,
-  state: any,
-  queries: LQueries | null): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
+    type: TNodeType, currentView: LView, parent: LNode, native: RText | RElement | null | undefined,
+    state: any,
+    queries: LQueries | null): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
   return {
     native: native as any,
     view: currentView,
@@ -367,20 +367,20 @@ export function createLNodeObject(
  * @param data Any data that should be saved on the LNode
  */
 export function createLNode(
-  index: number | null, type: TNodeType.Element, native: RElement | RText | null,
-  name: string | null, attrs: string[] | null, lView?: LView | null): LElementNode;
+    index: number | null, type: TNodeType.Element, native: RElement | RText | null,
+    name: string | null, attrs: string[] | null, lView?: LView | null): LElementNode;
 export function createLNode(
-  index: number | null, type: TNodeType.View, native: null, name: null, attrs: null,
-  lView: LView): LViewNode;
+    index: number | null, type: TNodeType.View, native: null, name: null, attrs: null,
+    lView: LView): LViewNode;
 export function createLNode(
-  index: number, type: TNodeType.Container, native: undefined, name: string | null,
-  attrs: string[] | null, lContainer: LContainer): LContainerNode;
+    index: number, type: TNodeType.Container, native: undefined, name: string | null,
+    attrs: string[] | null, lContainer: LContainer): LContainerNode;
 export function createLNode(
-  index: number, type: TNodeType.Projection, native: null, name: null, attrs: string[] | null,
-  lProjection: LProjection): LProjectionNode;
+    index: number, type: TNodeType.Projection, native: null, name: null, attrs: string[] | null,
+    lProjection: LProjection): LProjectionNode;
 export function createLNode(
-  index: number | null, type: TNodeType, native: RText | RElement | null | undefined,
-  name: string | null, attrs: string[] | null, state?: null | LView | LContainer |
+    index: number | null, type: TNodeType, native: RText | RElement | null | undefined,
+    name: string | null, attrs: string[] | null, state?: null | LView | LContainer |
         LProjection): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
   const parent = isParent ? previousOrParentNode :
                             previousOrParentNode && previousOrParentNode.parent as LNode;
@@ -1048,8 +1048,8 @@ export function elementProperty<T>(
  * @returns the TNode object
  */
 export function createTNode(
-  type: TNodeType, index: number | null, tagName: string | null, attrs: string[] | null,
-  tViews: TView[] | null): TNode {
+    type: TNodeType, index: number | null, tagName: string | null, attrs: string[] | null,
+    tViews: TView[] | null): TNode {
   ngDevMode && ngDevMode.tNode++;
   return {
     type: type,
