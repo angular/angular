@@ -3,14 +3,13 @@ code-example, code-tabs {
     display: block;
 }
 
-code-example,
-code-tabs mat-tab-body {
+code-example {
+  border: .5px solid $lightgray;
+  border-radius: 5px;
+
   &:not(.no-box) {
     background-color: rgba($backgroundgray, 0.2);
-    border: 0.5px solid $lightgray;
-    border-radius: 5px;
     color: $darkgray;
-    margin: 16px auto;
   }
 
   &.no-box {
@@ -22,6 +21,15 @@ code-tabs mat-tab-body {
     }
   }
 
+  code {
+    overflow: auto;
+  }
+}
+
+code-example, code-tabs {
+  .mat-card {
+    padding: 0;
+  }
   code {
     overflow: auto;
   }
