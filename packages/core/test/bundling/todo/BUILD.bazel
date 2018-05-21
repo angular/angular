@@ -27,6 +27,7 @@ ng_rollup_bundle(
     entry_point = "packages/core/test/bundling/todo/index.js",
     deps = [
         ":todo",
+        "//packages/common",
         "//packages/core",
     ],
 )
@@ -50,6 +51,7 @@ jasmine_node_test(
         ":bundle.min.js",
         ":bundle.min_debug.js",
     ],
+    tags = ["ivy-jit"],
     deps = [":test_lib"],
 )
 

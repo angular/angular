@@ -81,9 +81,9 @@ export {getParseErrors, isSyntaxError, syntaxError, Version} from './util';
 export {SourceMap} from './output/source_map';
 export * from './injectable_compiler_2';
 export * from './render3/view/api';
-export {jitPatchDefinition} from './render3/r3_jit';
+export {jitExpression} from './render3/r3_jit';
 export {R3DependencyMetadata, R3FactoryMetadata, R3ResolvedDependencyType} from './render3/r3_factory';
 export {compileNgModule, R3NgModuleMetadata} from './render3/r3_module_compiler';
 export {makeBindingParser, parseTemplate} from './render3/view/template';
-export {compileComponent, compileDirective} from './render3/view/compiler';
+export {compileComponentFromMetadata, compileDirectiveFromMetadata} from './render3/view/compiler';
 // This file only reexports content of the `src` folder. Keep it that way.
