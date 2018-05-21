@@ -1446,11 +1446,9 @@ function generateInitialInputs(
   return initialInputData;
 }
 
-
 //////////////////////////
 //// ViewContainer & View
 //////////////////////////
-
 
 export function createLContainer(
     parentLNode: LNode, currentView: LView, template?: ComponentTemplate<any>): LContainer {
@@ -2147,6 +2145,57 @@ export function bind<T>(value: T | NO_CHANGE): T|NO_CHANGE {
 }
 
 /**
+ * Reserves slots for pure functions (`pureFunctionX` instructions)
+ *
+ * Binding for pure functions are store after the LNodes in the data array but before the binding.
+ *
+ *  ----------------------------------------------------------------------------
+ *  |  LNodes ... | pure function bindings | regular bindings / interpolations |
+ *  ----------------------------------------------------------------------------
+ *                                         ^
+ *                                         LView.bindingStartIndex
+ *
+ * Pure function instructions are given an offset from LView.bindingStartIndex.
+ * Subtracting the offset from LView.bindingStartIndex gives the first index where the bindings
+ * are stored.
+ *
+ * NOTE: reserveSlots instructions are only ever allowed at the very end of the creation block
+ */
+export function reserveSlots(numSlots: number) {
+  // Init the slots with a unique `NO_CHANGE` value so that the first change is always detected
+  // whether is happens or not during the first change detection pass - pure functions checks
+  // might be skipped when short-circuited.
+  data.length += numSlots;
+  data.fill(NO_CHANGE, -numSlots);
+  // We need to initialize the binding in case a `pureFunctionX` kind of binding instruction is
+  // called first in the update section.
+  initBindings();
+}
+
+/**
+ * Sets up the binding index before execute any `pureFunctionX` instructions.
+ *
+ * The index must be restored after the pure function is executed
+ *
+ * {@link reserveSlots}
+ */
+export function moveBindingIndexToReservedSlot(offset: number): number {
+  const currentSlot = currentView.bindingIndex;
+  currentView.bindingIndex = currentView.bindingStartIndex - offset;
+  return currentSlot;
+}
+
+/**
+ * Restores the binding index to the given value.
+ *
+ * This function is typically used to restore the index after a `pureFunctionX` has
+ * been executed.
+ */
+export function restoreBindingIndex(index: number): void {
+  currentView.bindingIndex = index;
+}
+
+/**
  * Create interpolation bindings with a variable number of expressions.
  *
  * If there are 1 to 8 expressions `interpolation1()` to `interpolation8()` should be used instead.
@@ -2376,6 +2425,22 @@ function assertDataNext(index: number, arr?: any[]) {
   if (arr == null) arr = data;
   assertEqual(
       arr.length, index, `index ${index} expected to be at the end of arr (length ${arr.length})`);
+}
+
+/**
+ * On the first template pass the reserved slots should be set `NO_CHANGE`.
+ *
+ * If not they might not have been actually reserved.
+ */
+export function assertReservedSlotInitialized(slotOffset: number, numSlots: number) {
+  if (firstTemplatePass) {
+    const startIndex = currentView.bindingStartIndex - slotOffset;
+    for (let i = 0; i < numSlots; i++) {
+      assertEqual(
+          data[startIndex + i], NO_CHANGE,
+          'The reserved slots should be set to `NO_CHANGE` on first template pass');
+    }
+  }
 }
 
 export function _getComponentHostLElementNode<T>(component: T): LElementNode {
