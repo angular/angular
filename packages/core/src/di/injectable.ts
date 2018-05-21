@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {R3_COMPILE_INJECTABLE} from '../ivy_switch';
 import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
 import {Type} from '../type';
 import {makeDecorator, makeParamDecorator} from '../util/decorators';
@@ -67,10 +68,7 @@ export interface InjectableDecorator {
  *
  * @experimental
  */
-export interface Injectable {
-  providedIn?: Type<any>|'root'|null;
-  factory: () => any;
-}
+export interface Injectable { providedIn?: Type<any>|'root'|null; }
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -111,6 +109,20 @@ export function convertInjectableProviderToFactory(
 }
 
 /**
+ * Supports @Injectable() in JIT mode for Render2.
+ */
+function preR3InjectableCompile(
+    injectableType: InjectableType<any>,
+    options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
+  if (options && options.providedIn !== undefined && injectableType.ngInjectableDef === undefined) {
+    injectableType.ngInjectableDef = defineInjectable({
+      providedIn: options.providedIn,
+      factory: convertInjectableProviderToFactory(injectableType, options),
+    });
+  }
+}
+
+/**
 * Injectable decorator and metadata.
 *
 *
@@ -118,16 +130,8 @@ export function convertInjectableProviderToFactory(
 */
 export const Injectable: InjectableDecorator = makeDecorator(
     'Injectable', undefined, undefined, undefined,
-    (injectableType: InjectableType<any>,
-     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider) => {
-      if (options && options.providedIn !== undefined &&
-          injectableType.ngInjectableDef === undefined) {
-        injectableType.ngInjectableDef = defineInjectable({
-          providedIn: options.providedIn,
-          factory: convertInjectableProviderToFactory(injectableType, options)
-        });
-      }
-    });
+    (type: Type<any>, meta: Injectable) =>
+        (R3_COMPILE_INJECTABLE || preR3InjectableCompile)(type, meta));
 
 /**
  * Type representing injectable service.
