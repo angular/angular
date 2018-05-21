@@ -18,6 +18,7 @@ ng_module(
         "//packages:types",
         "//packages/compiler",
         "@rxjs",
+        "@rxjs//operators",
     ],
 )
 
@@ -38,16 +39,18 @@ ng_package(
 ## Controls if Ivy is enabled. (Temporary target until we permanently switch over to Ivy)
 ##
 ## This file generates `src/ivy_switch.ts` file which reexports symbols for `ViewEngine` or `Ivy.`
-## - append `--define=ivy=false` (default) to `bazel` command to reexport `./ivy_switch_false`
-##   and use `ViewEngine`;
-## - append `--define=ivy=true` to `bazel` command to rexport `./ivy_switch_true` and use `Ivy`;
+## - append `--define=compile=legacy` (default) to `bazel` command to reexport `./ivy_switch_legacy`
+##   and use `ViewEngine`
+## - append `--define=compile=jit` to `bazel` command to rexport `./ivy_switch_jit` and use `Ivy`
+## - append `--define=compile=local` to `bazel` command to rexport `./ivy_switch_jit` and use `Ivy`
+##   in the local analysis mode. (run as part of `ngtsc`)
 ##
-## NOTE: `--define=ivy=true` works with any `bazel` command or target across the repo.
+## NOTE: `--define=compile=jit` works with any `bazel` command or target across the repo.
 ##
 ## See: `//tools/bazel.rc` where `--define=ivy=false` is defined as default.
 ## See: `./src/ivy_switch.ts` for more details.
 genrule(
     name = "ivy_switch",
     outs = ["src/ivy_switch.ts"],
-    cmd = "echo export '*' from \"'./ivy_switch_$(ivy)';\" > $@",
+    cmd = "echo export '*' from \"'./ivy_switch_$(compile)';\" > $@",
 )
