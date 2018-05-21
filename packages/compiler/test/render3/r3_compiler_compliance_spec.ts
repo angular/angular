@@ -1078,8 +1078,8 @@ describe('compiler compliance', () => {
             selectors: [['lifecycle-comp']],
             factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
             inputs: {nameMin: 'name'},
-            template: function LifecycleComp_Template(rf: IDENT, ctx: IDENT) {},
-            features: [$r3$.ɵNgOnChangesFeature(LifecycleComp)]
+            features: [$r3$.ɵNgOnChangesFeature(LifecycleComp)],
+            template: function LifecycleComp_Template(rf: IDENT, ctx: IDENT) {}
           });`;
 
         const SimpleLayoutDefinition = `

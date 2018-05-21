@@ -20,7 +20,10 @@ const __window = typeof window !== 'undefined' && window;
 const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
     self instanceof WorkerGlobalScope && self;
 const __global = typeof global !== 'undefined' && global;
-const _global: {[name: string]: any} = __window || __global || __self;
+
+// Check __global first, because in Node tests both __global and __window may be defined and _global
+// should be __global in that case.
+const _global: {[name: string]: any} = __global || __window || __self;
 
 const promise: Promise<any> = Promise.resolve(0);
 /**
