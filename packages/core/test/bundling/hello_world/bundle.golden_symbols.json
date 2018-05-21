@@ -102,6 +102,9 @@
     "name": "firstTemplatePass"
   },
   {
+    "name": "getCurrentSanitizer"
+  },
+  {
     "name": "getDirectiveInstance"
   },
   {

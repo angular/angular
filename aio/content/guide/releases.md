@@ -129,6 +129,6 @@ Any changes to the public API surface will be done using the versioning, support
 
 Angular Labs is an initiative to cultivate new features and iterate on them quickly. Angular Labs provides a safe place for exploration and experimentation by the Angular team. 
 
-Angular Labs projects are are not ready for production use, and no commitment is made to bring them to production. The policies and practices that are described in this document do not apply to Angular Labs projects. 
+Angular Labs projects are not ready for production use, and no commitment is made to bring them to production. The policies and practices that are described in this document do not apply to Angular Labs projects. 
 
 Angular Labs projects typically are in separate branches in the Angular repo, clearly separated from the main Angular codebase. 

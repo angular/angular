@@ -98,6 +98,7 @@ class ExampleZipper {
       'src/favicon.ico',
       'src/karma.conf.js',
       'src/polyfills.ts',
+      'src/test.ts',
       'src/typings.d.ts',
       'src/environments/**/*',
       'src/tsconfig.*',

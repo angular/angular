@@ -90,8 +90,7 @@ module.exports = function mergeDecoratorDocs(log) {
               callMember.description.substring(0, 50));
           // Merge the documentation found in this call signature into the original decorator
           decoratorDoc.description = callMember.description;
-          decoratorDoc.howToUse = callMember.howToUse;
-          decoratorDoc.whatItDoes = callMember.whatItDoes;
+          decoratorDoc.usageNotes = callMember.usageNotes;
 
           // remove doc from its module doc's exports
           doc.moduleDoc.exports =

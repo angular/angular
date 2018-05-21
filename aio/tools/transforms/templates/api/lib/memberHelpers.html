@@ -135,20 +135,25 @@
 {%- endmacro -%}
 
 
-{%- macro renderProperties(properties, containerClass, propertyClass, headingText) -%}
+{%- macro renderProperties(properties, containerClass, propertyClass, headingText, headings) -%}
 {% set nonInternalProperties = properties | filterByPropertyValue('internal', undefined) %}
+{% set hasTypes = properties | hasValues('type') %}
 {% if nonInternalProperties.length -%}
 <section class="{$ containerClass $}">
   <h2>{$ headingText $}</h2>
   <table class="is-full-width list-table properties-table">
     <thead>
-      <tr><th>Property</th><th>Type</th><th>Description</th></tr>
+      <tr>
+        <th>{$ headings[0] or 'Property' $}</th>
+        {% if hasTypes %}<th>{$ headings[1] or 'Type' $}</th>{% endif %}
+        <th>{$ headings[2] or 'Description' $}</th>
+      </tr>
     </thead>
     <tbody>
     {% for property in nonInternalProperties %}
       <tr class="{$ propertyClass $}">
         <td><a id="{$ property.anchor $}"></a>{$ property.name $}</td>
-        <td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>
+        {% if hasTypes %}<td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>{% endif %}
         <td>
           {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-only.</span>{% endif %}
           {% if property.shortDescription %}{$ property.shortDescription | marked $}{% endif %}
