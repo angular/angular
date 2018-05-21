@@ -2,7 +2,7 @@
 load("@build_bazel_rules_nodejs//:defs.bzl", _npm_package = "npm_package")
 load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library", _ts_web_test_suite = "ts_web_test_suite")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
-load("//packages/bazel/src:ng_module.bzl", _ivy_ng_module = "internal_ivy_ng_module")
+load("//packages/bazel/src:ng_module.bzl", _internal_global_ng_module = "internal_global_ng_module")
 
 DEFAULT_TSCONFIG = "//packages:tsconfig-build.json"
 
@@ -49,6 +49,16 @@ def ng_module(name, tsconfig = None, entry_point = None, **kwargs):
     entry_point = "public_api.ts"
   _ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, **kwargs)
 
+# ivy_ng_module behaves like ng_module, and under --define=compile=legacy it runs ngc with global
+# analysis but produces Ivy outputs. Under other compile modes, it behaves as ng_module.
+# TODO(alxhub): remove when ngtsc supports the same use cases.
+def ivy_ng_module(name, tsconfig = None, entry_point = None, **kwargs):
+  if not tsconfig:
+    tsconfig = DEFAULT_TSCONFIG
+  if not entry_point:
+    entry_point = "public_api.ts"
+  _internal_global_ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, **kwargs)
+
 def ng_package(name, readme_md = None, license_banner = None, **kwargs):
   if not readme_md:
     readme_md = "//packages:README.md"
@@ -91,8 +101,3 @@ def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
           # TODO(alexeagle): add remote browsers on SauceLabs
       ],
       **kwargs)
-
-def ivy_ng_module(name, tsconfig = None, **kwargs):
-  if not tsconfig:
-    tsconfig = DEFAULT_TSCONFIG
-  _ivy_ng_module(name = name, tsconfig = tsconfig, **kwargs)
