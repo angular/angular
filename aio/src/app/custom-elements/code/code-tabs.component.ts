@@ -26,20 +26,20 @@ export interface TabInfo {
     <div #content style="display: none"><ng-content></ng-content></div>
 
     <mat-card>
-    <mat-tab-group class="code-tab-group" disableRipple>
-      <mat-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
-        <ng-template mat-tab-label>
-          <span class="{{ tab.class }}">{{ tab.title }}</span>
-        </ng-template>
-        <aio-code class="{{ tab.class }}"
-                  [language]="tab.language"
-                  [linenums]="tab.linenums"
-                  [path]="tab.path"
-                  [region]="tab.region"
-                  [title]="tab.title">
-        </aio-code>
-      </mat-tab>
-    </mat-tab-group>
+      <mat-tab-group class="code-tab-group" disableRipple>
+        <mat-tab style="overflow-y: hidden;" *ngFor="let tab of tabs">
+          <ng-template mat-tab-label>
+            <span class="{{ tab.class }}">{{ tab.title }}</span>
+          </ng-template>
+          <aio-code class="{{ tab.class }}"
+                    [language]="tab.language"
+                    [linenums]="tab.linenums"
+                    [path]="tab.path"
+                    [region]="tab.region"
+                    [title]="tab.title">
+          </aio-code>
+        </mat-tab>
+      </mat-tab-group>
     </mat-card>
   `,
 })
