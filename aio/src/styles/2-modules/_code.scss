@@ -8,9 +8,9 @@ code-example {
   margin: 16px 0;
 
   &:not(.no-box) {
+    background-color: rgba($backgroundgray, 0.2);
     border: .5px solid $lightgray;
     border-radius: 5px;
-    background-color: rgba($backgroundgray, 0.2);
     color: $darkgray;
   }
 
