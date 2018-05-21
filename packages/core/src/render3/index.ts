@@ -64,6 +64,8 @@ export {
   text as T,
   textBinding as t,
 
+  reserveSlots as rS,
+
   embeddedViewStart as V,
   embeddedViewEnd as v,
   detectChanges,

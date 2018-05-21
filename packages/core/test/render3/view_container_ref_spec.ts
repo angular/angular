@@ -9,7 +9,7 @@
 import {Component, Directive, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '../../src/core';
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, projection, projectionDef, reserveSlots, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
 
@@ -383,22 +383,25 @@ describe('ViewContainerRef', () => {
                     elementStart(0, 'child');
                     elementEnd();
                     pipe(1, 'starPipe');
+                    reserveSlots(2);
                   }
-                  if (rf & RenderFlags.Create) {
-                    elementProperty(0, 'name', bind(pipeBind1(1, 'C')));
+                  if (rf & RenderFlags.Update) {
+                    elementProperty(0, 'name', bind(pipeBind1(1, 2, 'C')));
                   }
                 });
                 pipe(1, 'starPipe');
                 elementStart(2, 'child', ['vcref', '']);
                 elementEnd();
-                elementStart(3, 'child');
+                pipe(3, 'starPipe');
+                elementStart(4, 'child');
                 elementEnd();
+                reserveSlots(4);
               }
               if (rf & RenderFlags.Update) {
                 const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
                 elementProperty(2, 'tplRef', bind(tplRef));
-                elementProperty(2, 'name', bind(pipeBind1(1, 'A')));
-                elementProperty(3, 'name', bind(pipeBind1(1, 'B')));
+                elementProperty(2, 'name', bind(pipeBind1(1, 2, 'A')));
+                elementProperty(4, 'name', bind(pipeBind1(1, 4, 'B')));
               }
             },
             directives: [Child, DirectiveWithVCRef],
