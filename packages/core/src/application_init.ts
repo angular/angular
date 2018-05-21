@@ -13,14 +13,11 @@ import {Inject, Injectable, InjectionToken, Optional} from './di';
 
 /**
  * A function that will be executed when an application is initialized.
- * @experimental
  */
 export const APP_INITIALIZER = new InjectionToken<Array<() => void>>('Application Initializer');
 
 /**
  * A class that reflects the state of running {@link APP_INITIALIZER}s.
- *
- * @experimental
  */
 @Injectable()
 export class ApplicationInitStatus {
