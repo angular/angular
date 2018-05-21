@@ -26,6 +26,7 @@ import {getAngularEmitterTransformFactory} from './node_emitter_transform';
 import {PartialModuleMetadataTransformer} from './r3_metadata_transform';
 import {StripDecoratorsMetadataTransformer, getDecoratorStripTransformerFactory} from './r3_strip_decorators';
 import {getAngularClassTransformerFactory} from './r3_transform';
+import {TscPassThroughProgram} from './tsc_pass_through';
 import {DTS, GENERATED_FILES, StructureIsReused, TS, createMessageDiagnostic, isInRootDir, ngToTsDiagnostic, tsStructureIsReused, userError} from './util';
 
 
@@ -287,7 +288,7 @@ class AngularCompilerProgram implements Program {
     emitCallback?: TsEmitCallback,
     mergeEmitResultsCallback?: TsMergeEmitResultsCallback,
   } = {}): ts.EmitResult {
-    if (this.options.enableIvy === 'ngtsc') {
+    if (this.options.enableIvy === 'ngtsc' || this.options.enableIvy === 'tsc') {
       throw new Error('Cannot run legacy compiler in ngtsc mode');
     }
     return this.options.enableIvy === true ? this._emitRender3(parameters) :
@@ -337,14 +338,34 @@ class AngularCompilerProgram implements Program {
         /* genFiles */ undefined, /* partialModules */ modules,
         /* stripDecorators */ this.reifiedDecorators, customTransformers);
 
-    const emitResult = emitCallback({
-      program: this.tsProgram,
-      host: this.host,
-      options: this.options,
-      writeFile: writeTsFile, emitOnlyDtsFiles,
-      customTransformers: tsCustomTransformers
-    });
-    return emitResult;
+
+    // Restore the original references before we emit so TypeScript doesn't emit
+    // a reference to the .d.ts file.
+    const augmentedReferences = new Map<ts.SourceFile, ReadonlyArray<ts.FileReference>>();
+    for (const sourceFile of this.tsProgram.getSourceFiles()) {
+      const originalReferences = getOriginalReferences(sourceFile);
+      if (originalReferences) {
+        augmentedReferences.set(sourceFile, sourceFile.referencedFiles);
+        sourceFile.referencedFiles = originalReferences;
+      }
+    }
+
+    try {
+      return emitCallback({
+        program: this.tsProgram,
+        host: this.host,
+        options: this.options,
+        writeFile: writeTsFile, emitOnlyDtsFiles,
+        customTransformers: tsCustomTransformers
+      });
+    } finally {
+      // Restore the references back to the augmented value to ensure that the
+      // checks that TypeScript makes for project structure reuse will succeed.
+      for (const [sourceFile, references] of Array.from(augmentedReferences)) {
+        // TODO(chuckj): Remove any cast after updating build to 2.6
+        (sourceFile as any).referencedFiles = references;
+      }
+    }
   }
 
   private _emitRender2(
@@ -909,6 +930,8 @@ export function createProgram({rootNames, options, host, oldProgram}: {
 }): Program {
   if (options.enableIvy === 'ngtsc') {
     return new NgtscProgram(rootNames, options, host, oldProgram);
+  } else if (options.enableIvy === 'tsc') {
+    return new TscPassThroughProgram(rootNames, options, host, oldProgram);
   }
   return new AngularCompilerProgram(rootNames, options, host, oldProgram);
 }
