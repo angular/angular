@@ -225,7 +225,12 @@ The next section shows how to use template reference variables to address this p
 
 이번에는 템플릿 참조 변수를 활용해서 이 문제를 어떻게 해결할 수 있는지 알아봅시다.
 
+<!--
 ## Get user input from a template reference variable
+-->
+## 템플릿 참조 변수로 사용자 입력 확인하기
+
+<!--
 There's another way to get the user data: use Angular
 [**template reference variables**](guide/template-syntax#ref-vars).
 These variables provide direct access to an element from within the template.
@@ -233,13 +238,19 @@ To declare a template reference variable, precede an identifier with a hash (or 
 
 The following example uses a template reference variable
 to implement a keystroke loopback in a simple template.
+-->
+Angular에서 제공하는 [**템플릿 참조 변수**](guide/template-syntax#ref-vars)를 사용해서 사용자가 입력한 데이터를 확인해 봅시다.
+이 방법을 사용하면 템플릿 안에서 엘리먼트에 직접 접근할 수 있습니다.
+먼저, 템플릿 참조 변수를 선언하기 위해 엘리먼트에 해시 기호(`#`)를 붙여 변수를 선언합니다.
+
+다음 예제는 템플릿 참조 변수를 활용하는 방법으로 템플릿에서 키 입력을 확인하는 예제입니다.
 
 <code-example path="user-input/src/app/loop-back.component.ts" region="loop-back-component" title="src/app/loop-back.component.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The template reference variable named `box`, declared on the `<input>` element,
 refers to the `<input>` element itself.
 The code uses the `box` variable to get the input element's `value` and display it
@@ -249,7 +260,13 @@ The template is completely self contained. It doesn't bind to the component,
 and the component does nothing.
 
 Type something in the input box, and watch the display update with each keystroke.
+-->
+이 예제에서 `<input>` 엘리먼트에 선언된 템플릿 참조 변수 `box`는 `<input>` 엘리먼트를 자체를 가리킵니다.
+그리고 템플릿 안에서 `box` 변수의 `value` 프로퍼티를 참조하면 템플릿 안에서 입력 필드의 현재값을 참조할 수 있으며, 이 코드에서는 입력 필드의 현재값을 `<p>` 태그 안에 표시합니다.
 
+이 예제에서 템플릿은 그 자체로 동작합니다. 템플릿에는 컴포넌트와 바인딩 된 프로퍼티는 아무것도 없으며, 컴포넌트가 하는 동작도 없습니다.
+
+이제 입력 필드에 글자를 입력하면 키 입력이 있을 때마다 화면에 표시되는 값이 갱신됩니다.
 
 <figure>
   <img src='generated/images/guide/user-input/keyup-loop-back-anim.gif' alt="loop back">
@@ -260,7 +277,7 @@ Type something in the input box, and watch the display update with each keystrok
 <div class="l-sub-section">
 
 
-
+<!--
 **This won't work at all unless you bind to an event**.
 
 Angular updates the bindings (and therefore the screen)
@@ -269,27 +286,43 @@ This example code binds the `keyup` event
 to the number 0, the shortest template statement possible.
 While the statement does nothing useful,
 it satisfies Angular's requirement so that Angular will update the screen.
+-->
+**이 예제는 이벤트 바인딩을 해야 동작합니다**.
+
+Angular는 키입력과 같은 비동기 이벤트가 발생할 때만 바인딩을 갱신하고 화면도 갱신합니다.
+그래서 이 예제에서는 `keyup` 이벤트에 0을 바인딩하고 있는데, 이것은 템플릿 실행문을 가장 간단한 방법으로 바인딩하는 방법입니다.
+이 템플릿 실행문은 그 자체로는 아무 의미가 없을 수 있지만, Angular가 화면을 갱신할 수 있도록 이벤트를 바인딩하는 입장에서는 꼭 필요한 구문입니다.
 
 </div>
 
 
-
+<!--
 It's easier to get to the input box with the template reference
 variable than to go through the `$event` object. Here's a rewrite of the previous
 `keyup` example that uses a template reference variable to get the user's input.
+-->
+템플릿 참조 변수는 `$event` 객체를 직접 활용하는 방법이 더 간단합니다. 위에서 살펴본 `keyup` 예제를 더 나은 방식으로 개선하면 다음과 같이 활용할 수 있습니다.
 
 <code-example path="user-input/src/app/keyup.components.ts" region="key-up-component-2" title="src/app/keyup.components.ts (v2)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 A nice aspect of this approach is that the component gets clean data values from the view.
 It no longer requires knowledge of the `$event` and its structure.
+-->
+이 방식은 컴포넌트에서도 다른 것은 신경쓰지 않고 입력 필드의 데이터만 받을 수 있기 때문에 좋습니다.
+이 방식을 사용하면 컴포넌트가 템플릿의 구조나 `$event` 객체의 타입을 신경쓸 필요가 없습니다.
+
+
 {@a key-event}
 
-
+<!--
 ## Key event filtering (with `key.enter`)
+-->
+## 키 입력 필터링 (`key.enter`)
+
 The `(keyup)` event handler hears *every keystroke*.
 Sometimes only the _Enter_ key matters, because it signals that the user has finished typing.
 One way to reduce the noise would be to examine every `$event.keyCode` and take action only when the key is _Enter_.
