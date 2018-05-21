@@ -73,19 +73,7 @@ The code sample assumes that you are using the Angular CLI.
 Import `BrowserAnimationsModule` that introduces all the animation capabilities 
 into your Angular root application module.
 
-<code-example hideCopy language="typescript">
-
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-
-@NgModule({
-  imports: [BrowserAnimationsModule ],
-  …
-
-})
-
-export class AppModule { 
-
-}
+<code-example path="animations-guide/src/app/app.module.fake.ts" title="src/app/app.module.ts">
 </code-example>
 
 
@@ -96,25 +84,11 @@ The root application module is typically located in `src/app` and is named `app.
 
 ### Step 3: Import animation functions into component files 
 
-In any component file that you plan to use animations, import specific animation functions from '@angular/animations'.
+In component files that you plan to use animations, import specific animation functions from '
+`@angular/animations`.
 
-<code-example hideCopy language="typescript">
-
-import { Component } from '@angular/core'; 
-import { 
-  trigger, 
-  state, 
-  style, 
-  animate, 
-  transition 
-  … 
-} from '@angular/animations'; 
-
-</code-example>	
-
-<!--
 <code-example path="animations-guide/src/app/app.component.ts" title="src/app/app.component.ts" region="imports">
- </code-example> -->
+ </code-example> 
 
 <div class="l-sub-section">
 
@@ -125,21 +99,10 @@ Find the list of Angular animation function available under the Animation DSL se
 
 In the component file, add a property called `animations:` to the `@Component` decorator.
 
-<code-example hideCopy language="typescript">
 
-@Component ( {
-   …
-   animations: [
-      // animation function calls go here
-   ]
-} )
-
-</code-example>
-
-<!-- 
 <code-example path="animations-guide/src/app/app.component.ts" title="src/app/app.component.ts" region="decorator">
 
- </code-example>-->
+ </code-example>
 
 
 ## Simple transition
@@ -161,36 +124,16 @@ The `style()` function allows you to define a set of styles to associate with a 
 Let us see how Angular's `state()` function works together with the `style⁣­(⁠)` function to set CSS style attributes.
 
 
-<code-example hideCopy language="typescript">
-
-state ('open', 
-   style ({
-     height: 200px, 
-     opacity: 1, 
-     background-color: 'yellow'})
-
-</code-example>
-
-
-<!-- <code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state1">
- </code-example>-->
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state1">
+ </code-example>
 
  In the above code snippet, you can see how states can allow multiple style attributes to be set all at the same time. When the button shows as `Open` it has several style attributes: a height of 200 pixels, an opacity of 1, and a color of yellow. The `style()` function describes what the style should be when the right conditions arise.
 
 In the `closed` state, the button has a height of 100 pixels, an opacity of 0.5, and a background color of green. This example shows how states can allow multiple style attributes to be set all at the same time. 
 
-<code-example hideCopy language="typescript">
 
-state ('closed', 
-   style ({
-     height: 100px, 
-     opacity: 0.5, 
-     background-color: 'green'})
-
-</code-example>
-
-<!--<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state2">
- </code-example> -->
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="state2">
+ </code-example> 
 
 ### Transitions and timing
 
@@ -198,43 +141,27 @@ In Angular, you can set multiple styles without any animation. However, without 
 
 To make the change less abrupt, we need an animation _transition_ to describe the changes that occur between one state and another over a defined period of time. The `transition()` function accepts two arguments: the first argument accepts an expression that defines the direction between two transition states, and the second argument accepts an `animate()` function.
 
-The `animate()` function allows you to define the length, delay, and easing of a transition. It also allows you to designate the style function for defining styles while the transitions are taking place, or the keyframes function for multi-step animations; both of which are placed in the second argument of the animate function.
+The `animate()` function allows you to define the length, delay, and easing of a transition. It also allows you to designate the style function for defining styles while the transitions are taking place, or as you will see later on, for defining the keyframes function for multi-step animations; both of which are placed in the second argument of the animate function.
 For our example, let us provide a transition from `open` to `closed` state with a durations of 1s between transitions.
 
-Note the arrow syntax used in the code snippet below. `=>` operator is used for unidirectional transitions, and `<=>` for bidirectional ones. Within the transition, `animate()` specifies how long the transition will take. In this case, the state change from open to closed takes one second, expressed here as '1s'.
+Note the arrow syntax used in the code snippet below: `=>` operator is used for unidirectional transitions, and `<=>` for bidirectional ones. Within the transition, `animate()` specifies how long the transition will take. In this case, the state change from open to closed takes one second, expressed here as '1s'.
 
-<code-example hideCopy language="typescript">
-
-transition ('open => closed', [
-   animate ('1s') 
-] )
-
-</code-example>
-
-<!--<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="transition1">
- </code-example> -->
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="transition1">
+ </code-example> 
 
  We will also add a transition from `closed` to `open` state with a 0.5s duration.
 
-<code-example hideCopy language="typescript">
 
-transition ('closed => open', [
-   animate ('0.5s') 
-] )
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="transition2">
+ </code-example>
 
-</code-example>
 
-<!--+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="transition2">
- </code-example>-->
-
- #### Notes on state-to-state transitions
+<div class="l-sub-section">
 
 * Styles defined using `state()` will persist after the animation has completed.
 
 * You can include multiple state pairs within the same `transition()` argument:  
-`transition( 'on => off, off => void' )
-
-<div class="l-sub-section">
+`transition( 'on => off, off => void' )`.
 
 You can also define styles nested directly within the `transition()` function, with the following distinction between them:
 
@@ -260,26 +187,8 @@ For our example, we'll name the trigger `openClose`, and attach it to the `butto
 
 Here's the trigger function that describes and names the new trigger: 
 
-<code-example hideCopy language="typescript">
-
-trigger ('openClose', [
-   state ('open', style ({
-      height: 200px,
-      opacity: 1,
-      background-color: 'yellow'}) ),
-   state ('closed', style ({
-      Height: 100px,
-      Opacity: 0.5,
-      background-color: 'green'}) ),
-   transition ('open => closed', [
-      animate ('1s')] ),
-   transition ('closed => open', [
-      animate ('500ms')] ),
-
-</code-example>
-
-<!-- <code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="trigger">
- </code-example>-->
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="trigger">
+ </code-example>
 
 <div class="l-sub-section">
 
@@ -290,20 +199,9 @@ Within each trigger() function call, an element can only be in one state at any 
 
 Animations are  defined in the metadata of the component that controls the HTML element to be animated. Put the code that defines your animations under the `animations:` property within the `@Component` decorator:
 
-<code-example hideCopy language="typescript">
-@Component({
- selector: 'open-close-component',
- animations: [
-   trigger('openClose', [
-     state('open', style({
-       height: '200px',
-       opacity: 1,
-       backgroundColor: 'yellow'
-     })),
-</code-example>
 
-<!-- <code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="component">
-+</code-example>-->
+<code-example path="animations-guide/src/app/open-close.component.ts" title="src/app/open-close.component.ts" region="component">
++</code-example>
 
 When you have defined an animation trigger for a component, you can attach it to an element in that component's template by wrapping the trigger name in brackets and preceeding it with an @ symbol. Then, you can bind it to a template expression using standard Angular property binding syntax as shown below:
 
@@ -316,19 +214,17 @@ The animation is executed or triggered when the expression value changes to a ne
 
 <div class="l-sub-section">
 
-The trigger is bound to the component in the component metadata, under the `@Component `decorator using the `animations:` property. In the HTML template, that same trigger appears under the HTML element to be animated. 
+The trigger is bound to the component in the component metadata, under the `@Component` decorator using the `animations:` property. In the HTML template, that same trigger appears under the HTML element to be animated. 
 
 </div>
 
 #### HTML template file
->**<button [ @openClose ] = 'expression' … />**
 
-<!-- <code-example path="animations-guide/src/app/open-close.component.html" title="src/app/open-close.component.html" region="trigger">
-+</code-example>-->
 
+<code-example path="animations-guide/src/app/open-close.component.html" title="src/app/open-close.component.html" region="compare">
+</code-example>
 
 In the above code snippet, when the `isOpen` expression evaluates to a defined state: `open` or `closed`, it will notify the trigger `openClose` of a state change. It is then up to `openClose` code to handle the state change and kick off a state change animation.
-
 
 For elements entering or leaving a page (inserted or removed  from the DOM), you can make the animation conditional – for example, use `*ngIf` with the animation trigger in the HTML template.
 
@@ -490,11 +386,12 @@ transition ('* => open', [
 
 ### Boolean values in transitions
 
-If a trigger contains a Boolean value as a binding value, then this value can be matched using a `transition()` expression that compares `true` and `false`, or `1` and `0`.
+If a trigger contains a boolean value as a binding value, then this value can be matched using a `transition()` expression that compares `true` and `false`, or `1` and `0`.
 
-In this example, the HTML template binds a `<div>` element to a trigger named `openClose`, with a status expression of `open`, with possible values of `true` and `false`. This is an alternative to the practice of simply creating two named states of open and close.
 
 >**<div [ @openClose ]= 'open ? true : false' > … </div>**
+
+In the code snippet above, the HTML template binds a `<div>` element to a trigger named `openClose`, with a status expression of `open`, with possible values of `true` and `false`. This is an alternative to the practice of simply creating two named states of open and close.
 
 In the component code, under the `@Component` metadata under the `animations:` property, when the state evaluates to `true`, meaning "open" in this case, the associated HTML element's height is a wildcard style or default, basically saying to use whatever height the element already had before the animation started. When the element is "closed", the element animates to a height of 0, which basically makes it invisible.
 
@@ -509,17 +406,16 @@ In the component code, under the `@Component` metadata under the `animations:` p
    ])
 </code-example>	
 
-### Void state
+### Animate entering and leaving a view
 
-A special state called `void` can apply when the HTML element is not attached to a view. For example, suppose we have a page where elements appear to fly in and out. You can use the void state in a transition to configure different transitions for entering and leaving based on each state.
+
+Up until this point, we haven’t had our single button enter or leave the page. We’ve assumed that the button starts out already on the page, and has three possible styles: open, closed, and inProgress.
 
 <div class="l-sub-section">
 
 For our purposes here, saying that an element is entering or leaving a view is equivalent to saying “inserted or removed from the DOM.” 
 
 </div>
-
-Up until this point, we haven’t had our single button enter or leave the page. We’ve assumed that the button starts out already on the page, and has three possible styles: open, closed, and inProgress.
 
 Now we will add a new behavior: on initial page load, the button appears to fly onto the page from the left, entering in the `open` state. 
 
@@ -558,6 +454,9 @@ Now we will add a new behavior: on initial page load, the button appears to fly 
       ])
 </code-example>	
 
+### Void state
+
+A special state called `void` can apply when the HTML element is not attached to a view. For example, suppose we have a page where elements appear to fly in and out. You can use the void state in a transition to configure different transitions for entering and leaving based on each state.
 
 ### Combining wildcard and void states
 
@@ -799,19 +698,8 @@ Angular’s `keyframe()` function is similar to keyframes in CSS. Keyframes allo
 
 The code for the above might look like this:
 
-<code-example hideCopy language="typescript">
-
-animate ("2s", 
-         keyframes([
-            style ({ background-color: "blue"})
-            style ({ background-color: "red"})
-            style ({ background-color: "orange"})
-         ])
-
-</code-example>
-
-<!-- <code-example path="animations-guide/src/app/status-slider.component.ts" title="src/app/status-slider.component.ts" region="keyframes">
- </code-example>-->
+<code-example path="animations-guide/src/app/status-slider.component.ts" title="src/app/status-slider.component.ts" region="keyframes">
+ </code-example>
 
 ### Offset
 
@@ -825,19 +713,9 @@ Defining offsets for keyframes is optional. If you omit them, evenly spaced offs
 
 The code with offsets specified would be as follows:
 
-<code-example hideCopy language="typescript">
 
-animate ("2s", 
-         keyframes([
-            style ({ background-color: "blue", offset: 0})
-            style ({ background-color: "red", offset: 0.8})
-            style ({ background-color: "orange", offset: 1.0})
-         ])
-
-</code-example>
-
-<!-- <code-example path="animations-guide/src/app/status-slider.component.ts" title="src/app/status-slider.component.ts" region="keyframesWithOffsets">
- </code-example>-->
+<code-example path="animations-guide/src/app/status-slider.component.ts" title="src/app/status-slider.component.ts" region="keyframesWithOffsets">
+ </code-example>
 
 You can combine keyframes together with duration, delay, and easing within a single animation.
 
@@ -873,8 +751,8 @@ The code snippet for this animation might look like this:
 })
 
 </code-example>	
-<!--<code-example path="animations-guide/src/app/open-close.component.fake.ts" title="src/app/open-close.component.ts" region="trigger">
-+</code-example> -->
+<code-example path="animations-guide/src/app/open-close.component.fake.ts" title="src/app/open-close.component.ts" region="trigger">
++</code-example>
 
 <div class="l-sub-section">
 
@@ -986,7 +864,7 @@ animation `group()` function.
 
 In the following example, using groups both on `enter:` and `leave:` allows for two different timing configurations. Both are applied to the same element in parallel, but run independently of each other:
 
-<!--<code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" title="hero-list-groups.component.ts (excerpt)" linenums="false"></code-example> -->
+<code-example path="animations/src/app/hero-list-groups.component.ts" region="animationdef" title="hero-list-groups.component.ts (excerpt)" linenums="false"></code-example>
 
 <div class="l-sub-section">
 
