@@ -67,6 +67,17 @@ export interface R3DirectiveMetadata {
   };
 
   /**
+   * Information about usage of specific lifecycle events which require special treatment in the
+   * code generator.
+   */
+  lifecycle: {
+    /**
+     * Whether the directive uses NgOnChanges.
+     */
+    usesOnChanges: boolean;
+  };
+
+  /**
    * A mapping of input field names to the property names.
    */
   inputs: {[field: string]: string};
@@ -99,17 +110,6 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
      * Selectors found in the <ng-content> tags in the template.
      */
     ngContentSelectors: string[];
-  };
-
-  /**
-   * Information about usage of specific lifecycle events which require special treatment in the
-   * code generator.
-   */
-  lifecycle: {
-    /**
-     * Whether the component uses NgOnChanges.
-     */
-    usesOnChanges: boolean;
   };
 
   /**

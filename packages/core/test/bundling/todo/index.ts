@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import 'reflect-metadata';
+
 import {CommonModule, NgForOf, NgIf} from '@angular/common';
 import {Component, Injectable, IterableDiffers, NgModule, defineInjector, ɵNgOnChangesFeature as NgOnChangesFeature, ɵdefineDirective as defineDirective, ɵdirectiveInject as directiveInject, ɵinjectTemplateRef as injectTemplateRef, ɵinjectViewContainerRef as injectViewContainerRef, ɵrenderComponent as renderComponent} from '@angular/core';
 
@@ -145,35 +147,39 @@ export class ToDoAppComponent {
   }
 }
 
-// TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
-(CommonModule as any).ngInjectorDef = defineInjector({factory: () => new CommonModule});
+// In JIT mode the @Directive decorators in //packages/common will compile the Ivy fields. When
+// running under --define=compile=legacy, //packages/common is not compiled with Ivy fields, so they
+// must be monkey-patched on.
+if (!(NgIf as any).ngDirectiveDef) {
+  // TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
+  (CommonModule as any).ngInjectorDef = defineInjector({factory: () => new CommonModule});
 
-// TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
-(NgForOf as any).ngDirectiveDef = defineDirective({
-  type: NgForOf,
-  selectors: [['', 'ngFor', '', 'ngForOf', '']],
-  factory: () => new NgForOf(
-               injectViewContainerRef(), injectTemplateRef(), directiveInject(IterableDiffers)),
-  features: [NgOnChangesFeature({
-    ngForOf: 'ngForOf',
-    ngForTrackBy: 'ngForTrackBy',
-    ngForTemplate: 'ngForTemplate',
-  })],
-  inputs: {
-    ngForOf: 'ngForOf',
-    ngForTrackBy: 'ngForTrackBy',
-    ngForTemplate: 'ngForTemplate',
-  }
-});
+  // TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
+  (NgForOf as any).ngDirectiveDef = defineDirective({
+    type: NgForOf,
+    selectors: [['', 'ngFor', '', 'ngForOf', '']],
+    factory: () => new NgForOf(
+                 injectViewContainerRef(), injectTemplateRef(), directiveInject(IterableDiffers)),
+    features: [NgOnChangesFeature({
+      ngForOf: 'ngForOf',
+      ngForTrackBy: 'ngForTrackBy',
+      ngForTemplate: 'ngForTemplate',
+    })],
+    inputs: {
+      ngForOf: 'ngForOf',
+      ngForTrackBy: 'ngForTrackBy',
+      ngForTemplate: 'ngForTemplate',
+    }
+  });
 
-// TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
-(NgIf as any).ngDirectiveDef = defineDirective({
-  type: NgIf,
-  selectors: [['', 'ngIf', '']],
-  factory: () => new NgIf(injectViewContainerRef(), injectTemplateRef()),
-  inputs: {ngIf: 'ngIf', ngIfThen: 'ngIfThen', ngIfElse: 'ngIfElse'}
-});
-
+  // TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
+  (NgIf as any).ngDirectiveDef = defineDirective({
+    type: NgIf,
+    selectors: [['', 'ngIf', '']],
+    factory: () => new NgIf(injectViewContainerRef(), injectTemplateRef()),
+    inputs: {ngIf: 'ngIf', ngIfThen: 'ngIfThen', ngIfElse: 'ngIfElse'}
+  });
+}
 
 @NgModule({declarations: [ToDoAppComponent, ToDoAppComponent], imports: [CommonModule]})
 export class ToDoAppModule {
