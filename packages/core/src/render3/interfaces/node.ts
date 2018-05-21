@@ -80,12 +80,6 @@ export interface LNode {
   child: LNode|null;
 
   /**
-   * The next sibling node. Necessary so we can propagate through the root nodes of a view
-   * to insert them or remove them from the DOM.
-   */
-  next: LNode|null;
-
-  /**
    * If regular LElementNode, then `data` will be null.
    * If LElementNode with component, then `data` contains LView.
    * If LViewNode, then `data` contains the LView.
@@ -139,7 +133,6 @@ export interface LElementNode extends LNode {
   readonly native: RElement;
 
   child: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
-  next: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
 
   /** If Component then data has LView (light DOM) */
   readonly data: LView|null;
@@ -153,7 +146,6 @@ export interface LTextNode extends LNode {
   /** The text node associated with this node. */
   native: RText;
   child: null;
-  next: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
 
   /** LTextNodes can be inside LElementNodes or inside LViewNodes. */
   readonly parent: LElementNode|LViewNode;
@@ -165,7 +157,6 @@ export interface LTextNode extends LNode {
 export interface LViewNode extends LNode {
   readonly native: null;
   child: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
-  next: LViewNode|null;
 
   /**  LViewNodes can only be added to LContainerNodes. */
   readonly parent: LContainerNode|null;
@@ -185,7 +176,6 @@ export interface LContainerNode extends LNode {
   native: RElement|RText|null|undefined;
   readonly data: LContainer;
   child: null;
-  next: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
 
   /** Containers can be added to elements or views. */
   readonly parent: LElementNode|LViewNode|null;
@@ -195,7 +185,6 @@ export interface LContainerNode extends LNode {
 export interface LProjectionNode extends LNode {
   readonly native: null;
   child: null;
-  next: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
 
   readonly data: LProjection;
 
@@ -216,6 +205,14 @@ export interface LProjectionNode extends LNode {
  * see: https://en.wikipedia.org/wiki/Flyweight_pattern for more on the Flyweight pattern
  */
 export interface TNode {
+  /**
+   * Index of the TNode in TView.data and corresponding LNode in LView.data.
+   *
+   * This is necessary to get from any TNode to its corresponding LNode when
+   * traversing the node tree.
+   */
+  index: number;
+
   /**
    * This number stores two values using its bits:
    *
@@ -303,6 +300,12 @@ export interface TNode {
    * If this TNode corresponds to an LElementNode, tViews will be null .
    */
   tViews: TView|TView[]|null;
+
+  /**
+   * The next sibling node. Necessary so we can propagate through the root nodes of a view
+   * to insert them or remove them from the DOM.
+   */
+  next: TNode|null;
 }
 
 /** Static data for an LElementNode  */
