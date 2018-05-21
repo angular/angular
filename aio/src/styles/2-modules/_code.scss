@@ -4,10 +4,12 @@ code-example, code-tabs {
 }
 
 code-example {
-  border: .5px solid $lightgray;
-  border-radius: 5px;
+
+  margin: 16px 0;
 
   &:not(.no-box) {
+    border: .5px solid $lightgray;
+    border-radius: 5px;
     background-color: rgba($backgroundgray, 0.2);
     color: $darkgray;
   }
@@ -29,6 +31,7 @@ code-example {
 code-example, code-tabs {
   .mat-card {
     padding: 0;
+    border-radius: 5px;
   }
   code {
     overflow: auto;
