@@ -106,6 +106,9 @@ aio-code pre {
 }
 
 .code-tab-group .mat-tab-label {
+  &:hover {
+    background: rgba(black, 0.04);
+  }
   white-space: nowrap;
 }
 
