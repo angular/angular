@@ -37,6 +37,7 @@ import {throwMatMenuInvalidPositionX, throwMatMenuInvalidPositionY} from './menu
 import {MatMenuItem} from './menu-item';
 import {MAT_MENU_PANEL, MatMenuPanel} from './menu-panel';
 import {MenuPositionX, MenuPositionY} from './menu-positions';
+import {AnimationEvent} from '@angular/animations';
 
 
 /** Default `mat-menu` options that can be overridden. */

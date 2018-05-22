@@ -418,6 +418,31 @@ describe('MatMenu', () => {
       expect(fixture.componentInstance.items.length).toBe(0);
     }));
 
+    it('should wait for the close animation to finish before considering the panel as closed',
+      fakeAsync(() => {
+        const fixture = createComponent(SimpleLazyMenu);
+        fixture.detectChanges();
+        const trigger = fixture.componentInstance.trigger;
+
+        expect(trigger.menuOpen).toBe(false, 'Expected menu to start off closed');
+
+        trigger.openMenu();
+        fixture.detectChanges();
+        tick(500);
+
+        expect(trigger.menuOpen).toBe(true, 'Expected menu to be open');
+
+        trigger.closeMenu();
+        fixture.detectChanges();
+
+        expect(trigger.menuOpen)
+            .toBe(true, 'Expected menu to be considered open while the close animation is running');
+        tick(500);
+        fixture.detectChanges();
+
+        expect(trigger.menuOpen).toBe(false, 'Expected menu to be closed');
+      }));
+
     it('should focus the first menu item when opening a lazy menu via keyboard', fakeAsync(() => {
       let zone: MockNgZone;
       let fixture = createComponent(SimpleLazyMenu, [{
