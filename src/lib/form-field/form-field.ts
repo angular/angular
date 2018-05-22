@@ -56,23 +56,35 @@ const floatingLabelScale = 0.75;
 const outlineGapPadding = 5;
 
 
-// Boilerplate for applying mixins to MatFormField.
-/** @docs-private */
+/**
+ * Boilerplate for applying mixins to MatFormField.
+ * @docs-private
+ */
 export class MatFormFieldBase {
   constructor(public _elementRef: ElementRef) { }
 }
 
-
+/**
+ * Base class to which we're applying the form field mixins.
+ * @docs-private
+ */
 export const _MatFormFieldMixinBase = mixinColor(MatFormFieldBase, 'primary');
 
-
+/** Possible appearance styles for the form field. */
 export type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';
 
-
+/**
+ * Represents the default options form the form field that can be configured
+ * using the `MAT_FORM_FIELD_DEFAULT_OPTIONS` injection token.
+ */
 export interface MatFormFieldDefaultOptions {
   appearance?: MatFormFieldAppearance;
 }
 
+/**
+ * Injection token that can be used to configure the
+ * default options for all form field within an app.
+ */
 export const MAT_FORM_FIELD_DEFAULT_OPTIONS =
     new InjectionToken<MatFormFieldDefaultOptions>('MAT_FORM_FIELD_DEFAULT_OPTIONS');
 
