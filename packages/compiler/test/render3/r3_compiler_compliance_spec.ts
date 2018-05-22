@@ -88,7 +88,6 @@ describe('compiler compliance', () => {
 
       const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
       const template = `
-        …
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
             $r3$.ɵE(0, 'div');
@@ -134,7 +133,6 @@ describe('compiler compliance', () => {
 
       const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
       const template = `
-        …
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
             $r3$.ɵE(0, 'div');
@@ -181,7 +179,6 @@ describe('compiler compliance', () => {
 
       const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
       const template = `
-        …
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
             $r3$.ɵE(0, 'div');
