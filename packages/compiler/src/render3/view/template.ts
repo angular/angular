@@ -524,16 +524,16 @@ class ValueConverter extends AstMemoryEfficientTransformer {
     // Allocate one slot for the result plus one slot per pipe argument
     const pureFunctionSlot = this.allocatePureFunctionSlots(2 + pipe.args.length);
     const target = new PropertyRead(pipe.span, new ImplicitReceiver(pipe.span), slotPseudoLocal);
-    const bindingId = pipeBinding(pipe.args);
-    this.definePipe(pipe.name, slotPseudoLocal, slot, o.importExpr(bindingId));
-    const value = pipe.exp.visit(this);
-    const args = this.visitAll(pipe.args);
+    const {identifier, isVarLength} = pipeBindingCallInfo(pipe.args);
+    this.definePipe(pipe.name, slotPseudoLocal, slot, o.importExpr(identifier));
+    const args: AST[] = [pipe.exp, ...pipe.args];
+    const convertedArgs: AST[] =
+        isVarLength ? this.visitAll([new LiteralArray(pipe.span, args)]) : this.visitAll(args);
 
     return new FunctionCall(pipe.span, target, [
       new LiteralPrimitive(pipe.span, slot),
       new LiteralPrimitive(pipe.span, pureFunctionSlot),
-      value,
-      ...args,
+      ...convertedArgs,
     ]);
   }
 
@@ -566,8 +566,12 @@ class ValueConverter extends AstMemoryEfficientTransformer {
 // Pipes always have at least one parameter, the value they operate on
 const pipeBindingIdentifiers = [R3.pipeBind1, R3.pipeBind2, R3.pipeBind3, R3.pipeBind4];
 
-function pipeBinding(args: o.Expression[]): o.ExternalReference {
-  return pipeBindingIdentifiers[args.length] || R3.pipeBindV;
+function pipeBindingCallInfo(args: o.Expression[]) {
+  const identifier = pipeBindingIdentifiers[args.length];
+  return {
+    identifier: identifier || R3.pipeBindV,
+    isVarLength: !identifier,
+  };
 }
 
 const pureFunctionIdentifiers = [
