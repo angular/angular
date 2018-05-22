@@ -3,8 +3,8 @@
     #drawer
     class="sidenav"
     fixedInViewport="true"
-    [attr.role]="isHandset$ | async ? 'dialog' : 'navigation'"
-    [mode]="isHandset$ | async ? 'over' : 'side'"
+    [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+    [mode]="(isHandset$ | async) ? 'over' : 'side'"
     [opened]="!(isHandset$ | async)">
     <mat-toolbar color="primary">Menu</mat-toolbar>
     <mat-nav-list>

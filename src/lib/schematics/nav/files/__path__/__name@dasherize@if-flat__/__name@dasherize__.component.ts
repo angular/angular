@@ -11,8 +11,8 @@ import { map } from 'rxjs/operators';
         #drawer
         class="sidenav"
         fixedInViewport="true"
-        [attr.role]="isHandset$ | async ? 'dialog' : 'navigation'"
-        [mode]="isHandset$ | async ? 'over' : 'side'"
+        [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+        [mode]="(isHandset$ | async) ? 'over' : 'side'"
         [opened]="!(isHandset$ | async)">
         <mat-toolbar color="primary">Menu</mat-toolbar>
         <mat-nav-list>
@@ -55,7 +55,7 @@ import { map } from 'rxjs/operators';
 })
 export class <%= classify(name) %>Component {
 
-  isHandset$: Observable<BreakpointState> = this.breakpointObserver.observe(Breakpoints.Handset)
+  isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset)
     .pipe(
       map(result => result.matches)
     );
