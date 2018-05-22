@@ -9,6 +9,7 @@ $mat-radio-ripple-radius: 25px;
 // Top-level host container.
 .mat-radio-button {
   display: inline-block;
+  -webkit-tap-highlight-color: transparent;
 }
 
 // Inner label container, wrapping entire element.

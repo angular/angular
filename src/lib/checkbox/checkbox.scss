@@ -187,6 +187,7 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
               mat-elevation-transition-property-value();
 
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .mat-checkbox-layout {
