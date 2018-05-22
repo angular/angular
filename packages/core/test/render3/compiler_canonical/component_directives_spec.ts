@@ -887,12 +887,10 @@ describe('components & directives', () => {
               $r3$.ɵrS(7);
             }
             if (rf & 2) {
-              // TODO(vicb): Shouldn't bind be the outer call ?
               $r3$.ɵp(
-                  0, 'config',
-                  $r3$.ɵf2(
-                      7, $e0_ff_2$, ctx.name,
-                      $r3$.ɵb($r3$.ɵf1(4, $e0_ff_1$, $r3$.ɵf1(2, $e0_ff$, ctx.duration)))));
+                  0, 'config', $r3$.ɵb($r3$.ɵf2(
+                                   7, $e0_ff_2$, ctx.name,
+                                   $r3$.ɵf1(4, $e0_ff_1$, $r3$.ɵf1(2, $e0_ff$, ctx.duration)))));
             }
           }
         });

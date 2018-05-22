@@ -138,15 +138,15 @@ describe('compiler compliance', () => {
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
             $r3$.ɵE(0, 'div');
-            i0.ɵPp(1,'pipe');
+            $r3$.ɵPp(1,'pipe');
             $r3$.ɵe();
             $r3$.ɵrS(10);
           }
           if (rf & 2) {
-            i0.ɵp(0, 'ternary', i0.ɵb((ctx.cond? i0.ɵf1(2, _c0, ctx.a): _c1)));
-            i0.ɵp(0, 'pipe', i0.ɵb(i0.ɵpb3(6, 1, ctx.value, 1, 2)));
-            i0.ɵp(0, 'and', i0.ɵb((ctx.cond && i0.ɵf1(4, _c0, ctx.b))));
-            i0.ɵp(0, 'or', i0.ɵb((ctx.cond || i0.ɵf1(6, _c0, ctx.c))));
+            $r3$.ɵp(0, 'ternary', $r3$.ɵb((ctx.cond ? $r3$.ɵf1(2, _c0, ctx.a): _c1)));
+            $r3$.ɵp(0, 'pipe', $r3$.ɵb($r3$.ɵpb3(6, 1, ctx.value, 1, 2)));
+            $r3$.ɵp(0, 'and', $r3$.ɵb((ctx.cond && $r3$.ɵf1(4, _c0, ctx.b))));
+            $r3$.ɵp(0, 'or', $r3$.ɵb((ctx.cond || $r3$.ɵf1(6, _c0, ctx.c))));
           }
         }
       `;
