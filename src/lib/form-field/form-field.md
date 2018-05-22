@@ -34,7 +34,7 @@ The second important difference is that the `standard`, `fill`, and `outline` ap
 promote placeholders to labels. For the `legacy` appearance specifying
 `<input placeholder="placeholder">` will result in a floating label being added to the
 `mat-form-field`. For the newer variants it will just add a normal placeholder to the input. If you
-want a floating label, add a `<mat-label>` to the `mat-form-filed`.
+want a floating label, add a `<mat-label>` to the `mat-form-field`.
 
 <!-- example(form-field-appearance) -->
 
@@ -44,7 +44,7 @@ The floating label is a text label displayed on top of the form field control wh
 the control does not contain any text. By default, when text is present the floating label
 floats above the form field control. The label for a form field can be specified by adding a
 `mat-label` element.
- 
+
 In the legacy version of the `<mat-form-field>` (one that has no `appearance` attribute or has
 `appearance="legacy"`) if a label is not specified, the `placeholder` attribute on the form control
 is promoted to a label. If a label is specified, the `placeholder` will be displayed as a normal
