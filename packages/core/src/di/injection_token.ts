@@ -38,6 +38,12 @@ import {defineInjectable} from './defs';
  *
  * @usageNotes
  * ### Basic Example
+
+ * #### Tree-shakable InjectionToken
+ *
+ * {@example core/di/ts/injector_spec.ts region='ShakeableInjectionToken'}
+ *
+ * #### Plain InjectionToken
  *
  * {@example core/di/ts/injector_spec.ts region='InjectionToken'}
  *
