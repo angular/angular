@@ -6,12 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input} from '@angular/core';
+import {Directive, Input, SimpleChanges} from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {CdkAccordion} from '@angular/cdk/accordion';
+import {Subject} from 'rxjs';
 
 /** MatAccordion's display modes. */
 export type MatAccordionDisplayMode = 'default' | 'flat';
+
+
+ /** MatAccordion's toggle positions. */
+ export type MatAccordionTogglePosition = 'before' | 'after';
 
 /**
  * Directive for a Material Design Accordion.
@@ -24,6 +29,9 @@ export type MatAccordionDisplayMode = 'default' | 'flat';
   }
 })
 export class MatAccordion extends CdkAccordion {
+  /** Stream that emits for changes in `@Input` properties. */
+  _inputChanges = new Subject<SimpleChanges>();
+
   /** Whether the expansion indicator should be hidden. */
   @Input()
   get hideToggle(): boolean { return this._hideToggle; }
@@ -39,4 +47,15 @@ export class MatAccordion extends CdkAccordion {
    *     elevation.
    */
   @Input() displayMode: MatAccordionDisplayMode = 'default';
+
+  /** The positioning of the expansion indicator. */
+  @Input() togglePosition: MatAccordionTogglePosition = 'after';
+
+  ngOnChanges(changes: SimpleChanges) {
+    this._inputChanges.next(changes);
+  }
+
+  ngOnDestroy() {
+    this._inputChanges.complete();
+  }
 }

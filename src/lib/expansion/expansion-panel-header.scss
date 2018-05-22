@@ -1,9 +1,8 @@
-
 .mat-expansion-panel-header {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 16px;
 
   &:focus,
   &:hover {
@@ -25,12 +24,13 @@
   flex: 1;
   flex-direction: row;
   overflow: hidden;
+  padding-left: 8px;
 }
 
 .mat-expansion-panel-header-title,
 .mat-expansion-panel-header-description {
   display: flex;
-  flex-grow: 1;
+  flex: 1;
   margin-right: 16px;
 
   [dir='rtl'] & {
@@ -40,19 +40,37 @@
 }
 
 .mat-expansion-panel-header-description {
-  flex-grow: 2;
+  flex: 2;
 }
 
-/**
- * Creates the expansion indicator arrow. Done using ::after rather than having
- * additional nodes in the template.
- */
-.mat-expansion-indicator::after {
+.mat-expansion-indicator-container {
+  // A margin is required to offset the entire expansion indicator against the space the arrow
+  // takes up.  It is calculated as sqrt(2 * border-width ^ 2) / 2.
+  margin-bottom: 1.41px;
+  padding: 0 8px 0 0;
+  width: 8px;
+  order: 1;
+
+  &.mat-expansion-indicator-container-before {
+    order: -1;
+    padding: 0 8px;
+  }
+}
+
+.mat-expansion-indicator {
   border-style: solid;
   border-width: 0 2px 2px 0;
-  content: '';
-  display: inline-block;
-  padding: 3px;
+  display: block;
+  height: 6px;
   transform: rotate(45deg);
-  vertical-align: middle;
+  // The transform origin is set by determining the center pointer of the arrow created. It is
+  // calculated as by calculating the length of the line between the top left corner of the div,
+  // and the centroid of the triangle created in the bottom right half of the div.  This centroid
+  // is calculated for both X and Y (as the indicator is a square) as 
+  // (indicator-width + indicator-height + 0) / 3
+  // The length between the resulting coordinates and the top left (0, 0) of the div are 
+  // calculated sqrt((centroids-x-coord ^ 2) + (centroids-y-coord ^ 2))
+  // This value is used to transform the origin on both the X and Y axes.
+  transform-origin: 5.65px 5.65px;
+  width: 6px;
 }

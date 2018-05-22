@@ -43,6 +43,11 @@
     <mat-radio-button value="default">Default</mat-radio-button>
     <mat-radio-button value="flat">Flat</mat-radio-button>
   </mat-radio-group>
+  <p>Toggle Position</p>
+  <mat-radio-group [(ngModel)]="togglePosition">
+    <mat-radio-button value="before">Before</mat-radio-button>
+    <mat-radio-button value="after">After</mat-radio-button>
+  </mat-radio-group>
   <p>Accordion Actions <sup>('Multi Expansion' mode only)</sup></p>
   <div>
     <button mat-button (click)="accordion.openAll()" [disabled]="!multi">Expand All</button>
@@ -55,8 +60,8 @@
   </div>
 </div>
 <br>
-<mat-accordion [displayMode]="displayMode" [multi]="multi"
-              class="demo-expansion-width">
+<mat-accordion [displayMode]="displayMode" [multi]="multi" [togglePosition]="togglePosition"
+               class="demo-expansion-width">
   <mat-expansion-panel #panel1  [hideToggle]="hideToggle">
     <mat-expansion-panel-header>Section 1</mat-expansion-panel-header>
     <p>This is the content text that makes sense here.</p>
@@ -75,7 +80,7 @@
   </mat-expansion-panel>
 </mat-accordion>
 
-<h1>cdkAccordion</h1>
+<h1>CdkAccordion</h1>
 <div>
   <p>Accordion Options</p>
   <div>
@@ -108,4 +113,3 @@
     <p *ngIf="item3.expanded">I only show if item 3 is expanded</p>
   </cdk-accordion-item>
 </cdk-accordion>
-

@@ -16,6 +16,7 @@ import {
   ElementRef,
   Host,
   Input,
+  Optional,
   OnDestroy,
   ViewEncapsulation,
 } from '@angular/core';
@@ -23,6 +24,7 @@ import {merge, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {matExpansionAnimations} from './expansion-animations';
 import {MatExpansionPanel} from './expansion-panel';
+import {MatAccordion} from './accordion';
 
 
 /**
@@ -65,17 +67,24 @@ export class MatExpansionPanelHeader implements OnDestroy {
   private _parentChangeSubscription = Subscription.EMPTY;
 
   constructor(
+    @Optional() accordion: MatAccordion,
     @Host() public panel: MatExpansionPanel,
     private _element: ElementRef,
     private _focusMonitor: FocusMonitor,
     private _changeDetectorRef: ChangeDetectorRef) {
 
+    let changeStreams = [panel._inputChanges];
+    if (accordion) {
+      changeStreams.push(accordion._inputChanges);
+    }
+
     // Since the toggle state depends on an @Input on the panel, we
-    // need to  subscribe and trigger change detection manually.
+    // need to subscribe and trigger change detection manually.
     this._parentChangeSubscription = merge(
       panel.opened,
       panel.closed,
-      panel._inputChanges.pipe(filter(changes => !!(changes.hideToggle || changes.disabled)))
+      merge(...changeStreams).pipe(
+        filter(changes => !!(changes.hideToggle || changes.disabled || changes.togglePosition)))
     )
     .subscribe(() => this._changeDetectorRef.markForCheck());
 
@@ -109,8 +118,13 @@ export class MatExpansionPanelHeader implements OnDestroy {
   }
 
   /** Gets whether the expand indicator should be shown. */
-  _showToggle(): boolean {
+  _isToggleVisible(): boolean {
     return !this.panel.hideToggle && !this.panel.disabled;
+  }
+
+  /** Whether the expand indicator should be shown before the header content */
+  _placeToggleBefore(): boolean {
+    return this.panel.togglePosition === 'before';
   }
 
   /** Handle keydown event calling to toggle() if appropriate. */

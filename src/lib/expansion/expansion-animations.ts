@@ -28,8 +28,8 @@ export const matExpansionAnimations: {
 } = {
   /** Animation that rotates the indicator arrow. */
   indicatorRotate: trigger('indicatorRotate', [
-    state('collapsed', style({transform: 'rotate(0deg)'})),
-    state('expanded', style({transform: 'rotate(180deg)'})),
+    state('collapsed', style({transform: 'rotate(45deg)'})),
+    state('expanded', style({transform: 'rotate(225deg)'})),
     transition('expanded <=> collapsed', animate(EXPANSION_PANEL_ANIMATION_TIMING)),
   ]),
 

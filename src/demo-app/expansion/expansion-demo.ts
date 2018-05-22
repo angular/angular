@@ -20,6 +20,7 @@ export class ExpansionDemo {
   @ViewChild(MatAccordion) accordion: MatAccordion;
 
   displayMode = 'default';
+  togglePosition = 'after';
   multi = false;
   hideToggle = false;
   disabled = false;

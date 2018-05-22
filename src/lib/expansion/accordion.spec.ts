@@ -5,7 +5,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatExpansionModule, MatAccordion} from './index';
 
 
-describe('CdkAccordion', () => {
+describe('MatAccordion', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -83,12 +83,39 @@ describe('CdkAccordion', () => {
     fixture.detectChanges();
     expect(panels[0].classes['mat-expanded']).toBeFalsy();
     expect(panels[1].classes['mat-expanded']).toBeFalsy();
+
+  });
+
+  it('should correctly apply the displayMode provided', () => {
+    const fixture = TestBed.createComponent(SetOfItems);
+    const firstPanel = fixture.debugElement.queryAll(By.css('.mat-expansion-panel'))[0];
+
+    fixture.componentInstance.firstPanelExpanded = true;
+    fixture.detectChanges();
+    expect(firstPanel.classes['mat-expansion-panel-spacing']).toBeTruthy();
+
+    fixture.componentInstance.displayMode = 'flat';
+    fixture.detectChanges();
+    expect(firstPanel.classes['mat-expansion-panel-spacing']).toBeFalsy();
+  });
+
+  it('should correctly apply the togglePosition provided', () => {
+    const fixture = TestBed.createComponent(SetOfItems);
+    fixture.detectChanges();
+    const firstPanelHeader =
+        fixture.debugElement.queryAll(By.css('.mat-expansion-indicator-container'))[0];
+
+    expect(firstPanelHeader.classes['mat-expansion-indicator-container-before']).toBeFalsy();
+
+    fixture.componentInstance.togglePosition = 'before';
+    fixture.detectChanges();
+    expect(firstPanelHeader.classes['mat-expansion-indicator-container-before']).toBeTruthy();
   });
 });
 
 
 @Component({template: `
-  <mat-accordion [multi]="multi">
+  <mat-accordion [multi]="multi" [displayMode]="displayMode" [togglePosition]="togglePosition">
     <mat-expansion-panel [expanded]="firstPanelExpanded">
       <mat-expansion-panel-header>Summary</mat-expansion-panel-header>
       <p>Content</p>
@@ -102,6 +129,8 @@ class SetOfItems {
   @ViewChild(MatAccordion) accordion: MatAccordion;
 
   multi: boolean = false;
+  displayMode = 'default';
+  togglePosition = 'after';
   firstPanelExpanded: boolean = false;
   secondPanelExpanded: boolean = false;
   secondPanelDisabled: boolean = false;
