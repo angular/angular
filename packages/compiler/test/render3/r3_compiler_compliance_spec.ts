@@ -548,7 +548,7 @@ describe('compiler compliance', () => {
               if (rf & 2) {
                 $r3$.ɵp(
                     0, 'names',
-                    $r3$.ɵb($r3$.ɵfV(10, $e0_ff$, ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8)));
+                    $r3$.ɵb($r3$.ɵfV(10, $e0_ff$, [ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8])));
               }
             },
             directives: [MyComp]
