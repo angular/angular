@@ -228,10 +228,10 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 ### View Encapsulation
 | Feature                             | Runtime | Spec     | Compiler |
 | ----------------------------------- | ------- | -------- | -------- |
-| Render3.None                        |  ✅     |  ✅       |  ✅      |
-| Render2.None                        |  ✅     |  ✅       |  ✅      |
-| Render2.Emulated                    |  ❌     |  ❌       |  ❌      |
-| Render2.Native                      |  ❌     |  ❌       |  ❌      |
+| Renderer3.None                        |  ✅     |  ✅       |  ✅      |
+| Renderer2.None                        |  ✅     |  ✅       |  ✅      |
+| Renderer2.Emulated                    |  ❌     |  ❌       |  ❌      |
+| Renderer2.Native                      |  ❌     |  ❌       |  ❌      |
 
 
 
@@ -254,3 +254,28 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `checkNoChanges()`     | n/a                | n/a          |  ❌              | n/a      | n/a         | ✅                   |
 | `reattach()`           | n/a                | n/a          |  ❌              | n/a      | n/a         | ✅                   |
 | `nativeElement()`      | n/a                | n/a          | n/a              | n/a      |  ✅         | n/a                  |
+
+### Renderer2
+| Method                              | Runtime |
+| ----------------------------------- | ------- |
+| `data()`                            |  n/a    |
+| `destroy()`                         |  ✅     |
+| `createElement()`                   |  ✅     |
+| `createComment()`                   |  n/a    |
+| `createText()`                      |  ✅     |
+| `destroyNode()`                     |  ✅     |
+| `appendChild()`                     |  ✅     |
+| `insertBefore()`                    |  ✅     |
+| `removeChild()`                     |  ✅     |
+| `selectRootElement()`               |  ✅     |
+| `parentNode()`                      |  ❌     |
+| `nextSibling()`                     |  ❌     |
+| `setAttribute()`                    |  ✅     |
+| `removeAttribute()`                 |  ✅     |
+| `addClass()`                        |  ✅     |
+| `removeClass()`                     |  ✅     |
+| `setStyle()`                        |  ✅     |
+| `removeStyle()`                     |  ✅     |
+| `setProperty()`                     |  ✅     |
+| `setValue()`                        |  ✅     |
+| `listen()`                          |  ✅     |
