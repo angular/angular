@@ -300,7 +300,7 @@ describe('DocViewerComponent', () => {
 
     beforeEach(() => {
       const elementsLoader = TestBed.get(ElementsLoader) as MockElementsLoader;
-      loadElementsSpy = elementsLoader.loadContainingCustomElements.and.returnValue(of(undefined));
+      loadElementsSpy = elementsLoader.loadContainedCustomElements.and.returnValue(of(undefined));
       prepareTitleAndTocSpy = spyOn(docViewer, 'prepareTitleAndToc');
       swapViewsSpy = spyOn(docViewer, 'swapViews').and.returnValue(of(undefined));
     });

@@ -1306,7 +1306,7 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
 }
 
 class TestElementsLoader {
-  loadContainingCustomElements = jasmine.createSpy('loadContainingCustomElements')
+  loadContainedCustomElements = jasmine.createSpy('loadContainedCustomElements')
       .and.returnValue(of(undefined));
 
   loadCustomElement = jasmine.createSpy('loadCustomElement')
