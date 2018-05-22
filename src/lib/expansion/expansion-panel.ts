@@ -28,9 +28,9 @@ import {
 } from '@angular/core';
 import {Subject} from 'rxjs';
 import {filter, startWith, take} from 'rxjs/operators';
-import {MatAccordion, MatAccordionTogglePosition} from './accordion';
-import {MatExpansionPanelContent} from './expansion-panel-content';
+import {MatAccordion} from './accordion';
 import {matExpansionAnimations} from './expansion-animations';
+import {MatExpansionPanelContent} from './expansion-panel-content';
 
 
 /** MatExpansionPanel's states. */
@@ -71,16 +71,6 @@ export class MatExpansionPanel extends CdkAccordionItem
     this._hideToggle = coerceBooleanProperty(value);
   }
   private _hideToggle = false;
-
-  /** The positioning of the expansion indicator. */
-  @Input()
-  get togglePosition(): MatAccordionTogglePosition {
-    return this.accordion ? this.accordion.togglePosition : this._togglePosition;
-  }
-  set togglePosition(position: MatAccordionTogglePosition) {
-    this._togglePosition = position;
-  }
-  private _togglePosition: MatAccordionTogglePosition = 'after';
 
   /** Stream that emits for changes in `@Input` properties. */
   readonly _inputChanges = new Subject<SimpleChanges>();

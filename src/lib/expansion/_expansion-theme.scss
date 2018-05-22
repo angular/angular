@@ -30,7 +30,7 @@
   }
 
   .mat-expansion-panel-header-description,
-  .mat-expansion-indicator {
+  .mat-expansion-indicator::after {
     color: mat-color($foreground, secondary-text);
   }
 

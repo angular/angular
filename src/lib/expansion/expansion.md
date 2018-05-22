@@ -15,8 +15,7 @@ header to align with Material Design specifications.
 
 By default, the expansion-panel header includes a toggle icon at the end of the
 header to indicate the expansion state. This icon can be hidden via the
-`hideToggle` property.  The icon's position can also be configured with the `togglePosition`
-property.
+`hideToggle` property.
 
 ```html
 <mat-expansion-panel>

@@ -211,30 +211,13 @@ describe('MatExpansionPanel', () => {
 
       const arrow = fixture.debugElement.query(By.css('.mat-expansion-indicator')).nativeElement;
 
-      expect(arrow.style.transform).toBe('rotate(45deg)', 'Expected 45 degree rotation.');
+      expect(arrow.style.transform).toBe('rotate(0deg)', 'Expected no rotation.');
 
       fixture.componentInstance.expanded = true;
       fixture.detectChanges();
       tick(250);
 
-      expect(arrow.style.transform).toBe('rotate(225deg)', 'Expected 225 degree rotation.');
-    }));
-
-  it('should update the indicator position when the position is set programmatically',
-    fakeAsync(() => {
-      const fixture = TestBed.createComponent(PanelWithContent);
-
-      fixture.detectChanges();
-
-      const arrowContainer = fixture.debugElement.query(
-        By.css('.mat-expansion-indicator-container')).nativeElement;
-
-      expect(arrowContainer.classList).not.toContain('mat-expansion-indicator-container-before');
-
-      fixture.componentInstance.togglePosition = 'before';
-      fixture.detectChanges();
-
-      expect(arrowContainer.classList).toContain('mat-expansion-indicator-container-before');
+      expect(arrow.style.transform).toBe('rotate(180deg)', 'Expected 180 degree rotation.');
     }));
 
   it('should make sure accordion item runs ngOnDestroy when expansion panel is destroyed', () => {
@@ -346,11 +329,10 @@ describe('MatExpansionPanel', () => {
 @Component({
   template: `
   <mat-expansion-panel [expanded]="expanded"
-                       [hideToggle]="hideToggle"
-                       [togglePosition]="togglePosition"
-                       [disabled]="disabled"
-                       (opened)="openCallback()"
-                       (closed)="closeCallback()">
+                      [hideToggle]="hideToggle"
+                      [disabled]="disabled"
+                      (opened)="openCallback()"
+                      (closed)="closeCallback()">
     <mat-expansion-panel-header>Panel Title</mat-expansion-panel-header>
     <p>Some content</p>
     <button>I am a button</button>
@@ -359,7 +341,6 @@ describe('MatExpansionPanel', () => {
 class PanelWithContent {
   expanded = false;
   hideToggle = false;
-  togglePosition = 'after';
   disabled = false;
   openCallback = jasmine.createSpy('openCallback');
   closeCallback = jasmine.createSpy('closeCallback');
