@@ -33,7 +33,7 @@ describe('ElementsLoader', () => {
     elementsLoader = injector.get(ElementsLoader);
   });
 
-  describe('loadContainingCustomElements()', () => {
+  describe('loadContainedCustomElements()', () => {
     let loadCustomElementSpy: jasmine.Spy;
 
     beforeEach(() => loadCustomElementSpy = spyOn(elementsLoader, 'loadCustomElement'));
@@ -47,7 +47,7 @@ describe('ElementsLoader', () => {
         <element-b-selector></element-b-selector>
       `;
 
-      elementsLoader.loadContainingCustomElements(hostEl);
+      elementsLoader.loadContainedCustomElements(hostEl);
       flushMicrotasks();
 
       expect(loadCustomElementSpy).toHaveBeenCalledTimes(2);
@@ -63,7 +63,7 @@ describe('ElementsLoader', () => {
         <element-b-selector></element-b-selector>
       `;
 
-      elementsLoader.loadContainingCustomElements(hostEl);
+      elementsLoader.loadContainedCustomElements(hostEl);
       flushMicrotasks();
 
       expect(loadCustomElementSpy).toHaveBeenCalledTimes(1);
@@ -80,7 +80,7 @@ describe('ElementsLoader', () => {
       `;
 
       const log: any[] = [];
-      elementsLoader.loadContainingCustomElements(hostEl).subscribe(
+      elementsLoader.loadContainedCustomElements(hostEl).subscribe(
         v => log.push(`emitted: ${v}`),
         e => log.push(`errored: ${e}`),
         () => log.push('completed'),
@@ -108,7 +108,7 @@ describe('ElementsLoader', () => {
       `;
 
       const log: any[] = [];
-      elementsLoader.loadContainingCustomElements(hostEl).subscribe(
+      elementsLoader.loadContainedCustomElements(hostEl).subscribe(
         v => log.push(`emitted: ${v}`),
         e => log.push(`errored: ${e}`),
         () => log.push('completed'),
