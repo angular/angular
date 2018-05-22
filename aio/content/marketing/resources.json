@@ -377,6 +377,13 @@
             "url": "http://www.amexio.tech/",
             "logo": "http://www.amexio.org/amexio-logo.png"
           },
+          "bm": {
+            "desc": "A lightweight Material Design library for Angular, based upon Google's Material Components for the Web",
+            "logo": "https://blox.src.zone/assets/bloxmaterial.03ecfe4fa0147a781487749dc1cc4580.svg",
+            "rev": true,
+            "title": "Blox Material",
+            "url": "https://github.com/src-zone/material"
+          },
           "essentialjs2": {
             "desc": "Essential JS 2 for Angular is a collection modern TypeScript based true Angular Components. It has support for Ahead Of Time (AOT) compilation and Tree-Shaking. All the components are developed from the ground up to be lightweight, responsive, modular and touch friendly.",
             "rev": true,
