@@ -85,7 +85,7 @@ jobs:
       # This avoids waiting for the slowest build target to finish before running the first test
       # See https://github.com/bazelbuild/bazel/issues/4257
       # NOTE: Angular developers should typically just bazel build //packages/... or bazel test //packages/...
-      - run: bazel query --output=label //... | xargs bazel test
+      - run: bazel query --output=label //... | xargs bazel test --define=compile=legacy
 
       # CircleCI will allow us to go back and view/download these artifacts from past builds.
       # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
@@ -111,6 +111,78 @@ jobs:
           paths:
             - "node_modules"
             - "~/bazel_repository_cache"
+
+  # Temporary job to test what will happen when we flip the Ivy flag to true
+  test_ivy_jit:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      # See remote cache documentation in /docs/BAZEL.md
+      - run: .circleci/setup_cache.sh
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup-bazel-remote-cache
+
+      - restore_cache:
+          key: *cache_key
+
+      - run: bazel run @yarn//:yarn
+      - run: bazel query --output=label //... | xargs bazel test --define=compile=jit
+
+  test_ivy_local:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      # See remote cache documentation in /docs/BAZEL.md
+      - run: .circleci/setup_cache.sh
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup-bazel-remote-cache
+
+      - restore_cache:
+          key: *cache_key
+
+      - run: bazel run @yarn//:yarn
+      - run: bazel query --output=label //... | xargs bazel test --define=compile=local
+
+  test_ivy_global:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      # See remote cache documentation in /docs/BAZEL.md
+      - run: .circleci/setup_cache.sh
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup-bazel-remote-cache
+
+      - restore_cache:
+          key: *cache_key
+
+      - run: bazel run @yarn//:yarn
+      - run: bazel query --output=label //... | xargs bazel test --define=compile=global
+      # CircleCI has a config setting to force SSH for all github connections
+      # This is not compatible with our mechanism of using a Personal Access Token
+      # Clear the global setting
+      - run: git config --global --unset "url.ssh://git@github.com.insteadof"
+      - run:
+          name: Halt this job for Pull Requests and Fork builds
+          # Note, `|| true` on the end makes this step always exit 0
+          command: '[[
+              -v CIRCLE_PR_NUMBER
+              || "$CIRCLE_PROJECT_USERNAME" != "angular"
+              || "$CIRCLE_PROJECT_REPONAME" != "angular"
+          ]] && circleci step halt || true'
+      - run:
+          name: Decrypt github credentials
+          command: 'openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out ~/.git_credentials'
+      # Publish artifacts for the ivy branch.
+      - run: ./scripts/ci/publish-build-artifacts.sh --ivy
 
   # This job exists only for backwards-compatibility with old scripts and tests
   # that rely on the pre-Bazel dist/packages-dist layout.
@@ -200,6 +272,9 @@ workflows:
     jobs:
       - lint
       - test
+      - test_ivy_jit
+      - test_ivy_global
+      - test_ivy_local
       - build-packages-dist
       - integration_test:
           requires:
@@ -212,6 +287,9 @@ workflows:
           requires:
             # Only publish if tests and integration tests pass
             - test
+            - test_ivy_jit
+            - test_ivy_global
+            - test_ivy_local
             - integration_test
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.
