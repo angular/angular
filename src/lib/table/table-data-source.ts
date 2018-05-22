@@ -43,7 +43,7 @@ export class MatTableDataSource<T> extends DataSource<T> {
    * Subscription to the changes that should trigger an update to the table's rendered rows, such
    * as filtering, sorting, pagination, or base data changes.
    */
-  _renderChangesSubscription: Subscription;
+  _renderChangesSubscription = Subscription.EMPTY;
 
   /**
    * The filtered set of data that has been matched by the filter string, or all the data if there
@@ -193,10 +193,6 @@ export class MatTableDataSource<T> extends DataSource<T> {
         merge<PageEvent>(this._paginator.page, this._paginator.initialized) :
         observableOf(null);
 
-    if (this._renderChangesSubscription) {
-      this._renderChangesSubscription.unsubscribe();
-    }
-
     const dataStream = this._data;
     // Watch for base data or filter changes to provide a filtered set of data.
     const filteredData = combineLatest(dataStream, this._filter)
@@ -208,7 +204,8 @@ export class MatTableDataSource<T> extends DataSource<T> {
     const paginatedData = combineLatest(orderedData, pageChange)
       .pipe(map(([data]) => this._pageData(data)));
     // Watched for paged data changes and send the result to the table to render.
-    paginatedData.subscribe(data => this._renderData.next(data));
+    this._renderChangesSubscription.unsubscribe();
+    this._renderChangesSubscription = paginatedData.subscribe(data => this._renderData.next(data));
   }
 
   /**
