@@ -170,6 +170,7 @@ describe('Dialog', () => {
     let dialogRef = dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
     let afterCloseCallback = jasmine.createSpy('afterClose callback');
 
+    viewContainerFixture.detectChanges();
     dialogRef.afterClosed().subscribe(afterCloseCallback);
     dialogRef.close('Charmander');
     viewContainerFixture.detectChanges();
@@ -179,8 +180,22 @@ describe('Dialog', () => {
     expect(overlayContainerElement.querySelector('cdk-dialog-container')).toBeNull();
   }));
 
+  it('should only emit the afterCloseEvent once when closed', fakeAsync(() => {
+    let dialogRef = dialog.openFromComponent(PizzaMsg, { viewContainerRef: testViewContainerRef });
+    let afterCloseCallback = jasmine.createSpy('afterClose callback');
+
+    viewContainerFixture.detectChanges();
+    dialogRef.afterClosed().subscribe(afterCloseCallback);
+    dialogRef.close();
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(afterCloseCallback).toHaveBeenCalledTimes(1);
+  }));
+
   it('should close a dialog and get back a result before it is closed', fakeAsync(() => {
     const dialogRef = dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
+    viewContainerFixture.detectChanges();
 
     // beforeClose should emit before dialog container is destroyed
     const beforeCloseHandler = jasmine.createSpy('beforeClose callback').and.callFake(() => {
@@ -189,19 +204,18 @@ describe('Dialog', () => {
     });
 
     dialogRef.beforeClose().subscribe(beforeCloseHandler);
-    dialogRef.close('Bulbasaurus');
+    dialogRef.close('Bulbasaur');
     viewContainerFixture.detectChanges();
     flush();
 
-    expect(beforeCloseHandler).toHaveBeenCalledWith('Bulbasaurus');
+    expect(beforeCloseHandler).toHaveBeenCalledWith('Bulbasaur');
     expect(overlayContainerElement.querySelector('cdk-dialog-container')).toBeNull();
   }));
 
   it('should close a dialog via the escape key', fakeAsync(() => {
-    dialog.openFromComponent(PizzaMsg, {
-      viewContainerRef: testViewContainerRef
-    });
+    dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
 
+    viewContainerFixture.detectChanges();
     dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
     viewContainerFixture.detectChanges();
     flush();
@@ -235,13 +249,10 @@ describe('Dialog', () => {
   }));
 
   it('should close when clicking on the overlay backdrop', fakeAsync(() => {
-    dialog.openFromComponent(PizzaMsg, {
-      viewContainerRef: testViewContainerRef
-    });
-
+    dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
     viewContainerFixture.detectChanges();
 
-    let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+    const backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
 
     backdrop.click();
     viewContainerFixture.detectChanges();
@@ -251,16 +262,12 @@ describe('Dialog', () => {
   }));
 
   it('should emit the backdropClick stream when clicking on the overlay backdrop', fakeAsync(() => {
-    const dialogRef = dialog.openFromComponent(PizzaMsg, {
-      viewContainerRef: testViewContainerRef
-    });
-
+    const dialogRef = dialog.openFromComponent(PizzaMsg, {viewContainerRef: testViewContainerRef});
     const spy = jasmine.createSpy('backdropClick spy');
     dialogRef.backdropClick().subscribe(spy);
-
     viewContainerFixture.detectChanges();
 
-    let backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
+    const backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop') as HTMLElement;
 
     backdrop.click();
     expect(spy).toHaveBeenCalledTimes(1);
@@ -304,7 +311,7 @@ describe('Dialog', () => {
       ContentElementDialog, { viewContainerRef: testViewContainerRef });
     const spy = jasmine.createSpy('afterAllClosed spy');
 
-
+    viewContainerFixture.detectChanges();
     dialog.afterAllClosed.subscribe(spy);
 
     ref1.close();
@@ -532,8 +539,11 @@ describe('Dialog', () => {
 
   it('should close all of the dialogs', fakeAsync(() => {
     dialog.openFromComponent(PizzaMsg);
+    viewContainerFixture.detectChanges();
     dialog.openFromComponent(PizzaMsg);
+    viewContainerFixture.detectChanges();
     dialog.openFromComponent(PizzaMsg);
+    viewContainerFixture.detectChanges();
 
     expect(overlayContainerElement.querySelectorAll('cdk-dialog-container').length).toBe(3);
 
@@ -558,7 +568,9 @@ describe('Dialog', () => {
 
   it('should close all dialogs when the user goes forwards/backwards in history', fakeAsync(() => {
     dialog.openFromComponent(PizzaMsg);
+    viewContainerFixture.detectChanges();
     dialog.openFromComponent(PizzaMsg);
+    viewContainerFixture.detectChanges();
 
     expect(overlayContainerElement.querySelectorAll('cdk-dialog-container').length).toBe(2);
 
@@ -571,7 +583,9 @@ describe('Dialog', () => {
 
   it('should close all open dialogs when the location hash changes', fakeAsync(() => {
     dialog.openFromComponent(PizzaMsg);
+    viewContainerFixture.detectChanges();
     dialog.openFromComponent(PizzaMsg);
+    viewContainerFixture.detectChanges();
 
     expect(overlayContainerElement.querySelectorAll('cdk-dialog-container').length).toBe(2);
 
@@ -622,6 +636,7 @@ describe('Dialog', () => {
     it('should default to null if no data is passed', () => {
       expect(() => {
         let dialogRef = dialog.openFromComponent(DialogWithInjectedData);
+        viewContainerFixture.detectChanges();
         expect(dialogRef.componentInstance.data).toBeNull();
       }).not.toThrow();
     });
@@ -629,6 +644,7 @@ describe('Dialog', () => {
 
   it('should not keep a reference to the component after the dialog is closed', fakeAsync(() => {
     let dialogRef = dialog.openFromComponent(PizzaMsg);
+    viewContainerFixture.detectChanges();
 
     expect(dialogRef.componentInstance).toBeTruthy();
 
@@ -977,6 +993,7 @@ describe('Dialog with a parent Dialog', () => {
 
   it('should close the top dialog via the escape key', fakeAsync(() => {
     childDialog.openFromComponent(PizzaMsg);
+    fixture.detectChanges();
 
     dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
     fixture.detectChanges();
