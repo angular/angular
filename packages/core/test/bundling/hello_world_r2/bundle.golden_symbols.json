@@ -3603,7 +3603,7 @@
     "name": "parseIntAutoRadix"
   },
   {
-    "name": "pipeBinding"
+    "name": "pipeBindingCallInfo"
   },
   {
     "name": "pipeBindingIdentifiers"
