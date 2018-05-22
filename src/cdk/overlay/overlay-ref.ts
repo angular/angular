@@ -249,7 +249,7 @@ export class OverlayRef implements PortalOutlet {
 
   /** Updates the text direction of the overlay panel. */
   private _updateElementDirection() {
-    this._pane.setAttribute('dir', this._config.direction!);
+    this._host.setAttribute('dir', this._config.direction!);
   }
 
   /** Updates the size of the overlay element based on the overlay config. */

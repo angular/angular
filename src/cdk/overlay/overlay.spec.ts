@@ -155,7 +155,7 @@ describe('Overlay', () => {
     const overlayRef = overlay.create();
 
     overlayRef.attach(componentPortal);
-    expect(overlayRef.overlayElement.getAttribute('dir')).toBe('rtl');
+    expect(overlayRef.hostElement.getAttribute('dir')).toBe('rtl');
   });
 
   it('should set the direction', () => {
@@ -164,7 +164,7 @@ describe('Overlay', () => {
 
     overlayRef.attach(componentPortal);
 
-    expect(overlayRef.overlayElement.getAttribute('dir')).toEqual('rtl');
+    expect(overlayRef.hostElement.getAttribute('dir')).toEqual('rtl');
   });
 
   it('should emit when an overlay is attached', () => {

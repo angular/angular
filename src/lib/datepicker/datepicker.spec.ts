@@ -1312,7 +1312,7 @@ describe('MatDatepicker', () => {
         fixture.componentInstance.datepicker.open();
         fixture.detectChanges();
 
-        const overlay = document.querySelector('.cdk-overlay-pane')!;
+        const overlay = document.querySelector('.cdk-overlay-connected-position-bounding-box')!;
 
         expect(overlay.getAttribute('dir')).toBe('rtl');
       });
@@ -1328,7 +1328,7 @@ describe('MatDatepicker', () => {
         fixture.componentInstance.datepicker.open();
         fixture.detectChanges();
 
-        let overlay = document.querySelector('.cdk-overlay-pane')!;
+        let overlay = document.querySelector('.cdk-overlay-connected-position-bounding-box')!;
 
         expect(overlay.getAttribute('dir')).toBe('ltr');
 
@@ -1340,7 +1340,7 @@ describe('MatDatepicker', () => {
         fixture.componentInstance.datepicker.open();
         fixture.detectChanges();
 
-        overlay = document.querySelector('.cdk-overlay-pane')!;
+        overlay = document.querySelector('.cdk-overlay-connected-position-bounding-box')!;
 
         expect(overlay.getAttribute('dir')).toBe('rtl');
       }));
@@ -1356,7 +1356,7 @@ describe('MatDatepicker', () => {
         fixture.componentInstance.datepicker.open();
         fixture.detectChanges();
 
-        const overlay = document.querySelector('.cdk-overlay-pane')!;
+        const overlay = document.querySelector('.cdk-global-overlay-wrapper')!;
 
         expect(overlay.getAttribute('dir')).toBe('rtl');
       });

@@ -91,7 +91,10 @@ describe('Overlay directives', () => {
     fixture.componentInstance.isOpen = true;
     fixture.detectChanges();
 
-    expect(getPaneElement().getAttribute('dir')).toBe('rtl');
+    let boundingBox =
+        overlayContainerElement.querySelector('.cdk-overlay-connected-position-bounding-box')!;
+
+    expect(boundingBox.getAttribute('dir')).toBe('rtl');
 
     fixture.componentInstance.isOpen = false;
     fixture.detectChanges();
@@ -100,7 +103,10 @@ describe('Overlay directives', () => {
     fixture.componentInstance.isOpen = true;
     fixture.detectChanges();
 
-    expect(getPaneElement().getAttribute('dir')).toBe('ltr');
+    boundingBox =
+        overlayContainerElement.querySelector('.cdk-overlay-connected-position-bounding-box')!;
+
+    expect(boundingBox.getAttribute('dir')).toBe('ltr');
   });
 
   it('should close when pressing escape', () => {

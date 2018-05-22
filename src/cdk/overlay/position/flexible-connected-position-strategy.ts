@@ -720,8 +720,6 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       // Push the pane content towards the proper direction.
       if (position.overlayX === 'center') {
         styles.alignItems = 'center';
-      } else if (this._isRtl()) {
-        styles.alignItems = position.overlayX === 'end' ? 'flex-start' : 'flex-end';
       } else {
         styles.alignItems = position.overlayX === 'end' ? 'flex-end' : 'flex-start';
       }
