@@ -6,15 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ContentObserver} from '@angular/cdk/observers';
 import {DOCUMENT} from '@angular/common';
 import {
+  Directive,
+  ElementRef,
   Inject,
   Injectable,
+  Input,
+  NgZone,
   OnDestroy,
   Optional,
   Provider,
   SkipSelf,
 } from '@angular/core';
+import {Subscription} from 'rxjs';
 import {LIVE_ANNOUNCER_ELEMENT_TOKEN} from './live-announcer-token';
 
 
@@ -81,11 +87,55 @@ export class LiveAnnouncer implements OnDestroy {
 }
 
 
+/**
+ * A directive that works similarly to aria-live, but uses the LiveAnnouncer to ensure compatibility
+ * with a wider range of browsers and screen readers.
+ */
+@Directive({
+  selector: '[cdkAriaLive]',
+  exportAs: 'cdkAriaLive',
+})
+export class CdkAriaLive implements OnDestroy {
+  /** The aria-live politeness level to use when announcing messages. */
+  @Input('cdkAriaLive')
+  get politeness(): AriaLivePoliteness { return this._politeness; }
+  set politeness(value: AriaLivePoliteness) {
+    this._politeness = value === 'polite' || value === 'assertive' ? value : 'off';
+    if (this._politeness === 'off') {
+      if (this._subscription) {
+        this._subscription.unsubscribe();
+        this._subscription = null;
+      }
+    } else {
+      if (!this._subscription) {
+        this._subscription = this._ngZone.runOutsideAngular(
+            () => this._contentObserver.observe(this._elementRef.nativeElement).subscribe(
+                () => this._liveAnnouncer.announce(
+                    this._elementRef.nativeElement.innerText, this._politeness)));
+      }
+    }
+  }
+  private _politeness: AriaLivePoliteness = 'off';
+
+  private _subscription: Subscription | null;
+
+  constructor(private _elementRef: ElementRef, private _liveAnnouncer: LiveAnnouncer,
+              private _contentObserver: ContentObserver, private _ngZone: NgZone) {}
+
+  ngOnDestroy() {
+    if (this._subscription) {
+      this._subscription.unsubscribe();
+    }
+  }
+}
+
+
 /** @docs-private @deprecated @deletion-target 7.0.0 */
 export function LIVE_ANNOUNCER_PROVIDER_FACTORY(
     parentDispatcher: LiveAnnouncer, liveElement: any, _document: any) {
   return parentDispatcher || new LiveAnnouncer(liveElement, _document);
 }
+
 
 /** @docs-private @deprecated @deletion-target 7.0.0 */
 export const LIVE_ANNOUNCER_PROVIDER: Provider = {
