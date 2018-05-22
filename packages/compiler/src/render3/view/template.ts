@@ -574,6 +574,15 @@ const pureFunctionIdentifiers = [
   R3.pureFunction0, R3.pureFunction1, R3.pureFunction2, R3.pureFunction3, R3.pureFunction4,
   R3.pureFunction5, R3.pureFunction6, R3.pureFunction7, R3.pureFunction8
 ];
+
+function pureFunctionCallInfo(args: o.Expression[]) {
+  const identifier = pureFunctionIdentifiers[args.length];
+  return {
+    identifier: identifier || R3.pureFunctionV,
+    isVarLength: !identifier,
+  };
+}
+
 function getLiteralFactory(
     constantPool: ConstantPool, literal: o.LiteralArrayExpr | o.LiteralMapExpr,
     allocateSlots: (numSlots: number) => number): o.Expression {
@@ -581,14 +590,22 @@ function getLiteralFactory(
   // Allocate 1 slot for the result plus 1 per argument
   const startSlot = allocateSlots(1 + literalFactoryArguments.length);
   literalFactoryArguments.length > 0 || error(`Expected arguments to a literal factory function`);
-  let pureFunctionIdent =
-      pureFunctionIdentifiers[literalFactoryArguments.length] || R3.pureFunctionV;
+  const {identifier, isVarLength} = pureFunctionCallInfo(literalFactoryArguments);
 
   // Literal factories are pure functions that only need to be re-invoked when the parameters
   // change.
-  return o.importExpr(pureFunctionIdent).callFn([
-    o.literal(startSlot), literalFactory, ...literalFactoryArguments
-  ]);
+  const args = [
+    o.literal(startSlot),
+    literalFactory,
+  ];
+
+  if (isVarLength) {
+    args.push(o.literalArr(literalFactoryArguments));
+  } else {
+    args.push(...literalFactoryArguments);
+  }
+
+  return o.importExpr(identifier).callFn(args);
 }
 
 /**
