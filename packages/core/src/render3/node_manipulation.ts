@@ -9,7 +9,7 @@
 import {assertNotNull} from './assert';
 import {callHooks} from './hooks';
 import {LContainer, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
-import {LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {HookData, LView, LViewOrLContainer, TView, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
@@ -215,8 +215,15 @@ export function addRemoveViewFromContainer(
               renderer.insertBefore(parent, node.native !, beforeNode as RNode | null) :
               parent.insertBefore(node.native !, beforeNode as RNode | null, true);
         } else {
-          isProceduralRenderer(renderer) ? renderer.removeChild(parent as RElement, node.native !) :
-                                           parent.removeChild(node.native !);
+          if (isProceduralRenderer(renderer)) {
+            renderer.removeChild(parent as RElement, node.native !);
+            if (renderer.destroyNode) {
+              ngDevMode && ngDevMode.rendererDestroyNode++;
+              renderer.destroyNode(node.native !);
+            }
+          } else {
+            parent.removeChild(node.native !);
+          }
         }
         nextNode = getNextLNode(node);
       } else if (node.tNode.type === TNodeType.Container) {
@@ -398,6 +405,11 @@ function cleanUpView(view: LView): void {
   removeListeners(view);
   executeOnDestroys(view);
   executePipeOnDestroys(view);
+  // For component views only, the local renderer is destroyed as clean up time.
+  if (view.id === -1 && isProceduralRenderer(view.renderer)) {
+    ngDevMode && ngDevMode.rendererDestroy++;
+    view.renderer.destroy();
+  }
 }
 
 /** Removes listeners and unsubscribes from output subscriptions */
