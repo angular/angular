@@ -598,15 +598,18 @@ function getLiteralFactory(
 
   // Literal factories are pure functions that only need to be re-invoked when the parameters
   // change.
+  const args = [
+    o.literal(startSlot),
+    literalFactory,
+  ];
+
   if (isVarLength) {
-    return o.importExpr(identifier).callFn([
-      o.literal(startSlot), literalFactory, o.literalArr(literalFactoryArguments)
-    ]);
+    args.push(o.literalArr(literalFactoryArguments));
+  } else {
+    args.push(...literalFactoryArguments);
   }
 
-  return o.importExpr(identifier).callFn([
-    o.literal(startSlot), literalFactory, ...literalFactoryArguments
-  ]);
+  return o.importExpr(identifier).callFn(args);
 }
 
 /**
