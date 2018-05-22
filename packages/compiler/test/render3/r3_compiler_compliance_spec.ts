@@ -921,7 +921,7 @@ describe('compiler compliance', () => {
 
               @Component({
                 selector: 'my-app',
-                template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPurePipe:size }}</p>'
+                template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }}</p>'
               })
               export class MyApp {
                 name = 'World';
@@ -949,7 +949,10 @@ describe('compiler compliance', () => {
             });`;
 
         const MyAppDefinition = `
-            …
+            const $c0$ = ($a0$: any) => {
+              return [$a0$, 1, 2, 3, 4, 5];
+            };
+            // ...
             static ngComponentDef = $r3$.ɵdefineComponent({
               type: MyApp,
               selectors: [['my-app']],
@@ -961,13 +964,13 @@ describe('compiler compliance', () => {
                   $r3$.ɵPp(2, 'myPipe');
                   $r3$.ɵE(3, 'p');
                   $r3$.ɵT(4);
-                  $r3$.ɵPp(5, 'myPurePipe');
+                  $r3$.ɵPp(5, 'myPipe');
                   $r3$.ɵe();
-                  $r3$.ɵrS(9);
+                  $r3$.ɵrS(15);
                 }
                 if (rf & 2) {
                   $r3$.ɵt(0, $r3$.ɵi1('', $r3$.ɵpb2(1, 3, $r3$.ɵpb2(2, 6, ctx.name, ctx.size), ctx.size), ''));
-                  $r3$.ɵt(4, $r3$.ɵi1('', $r3$.ɵpb2(5, 9, ctx.name, ctx.size), ''));
+                  $r3$.ɵt(4, $r3$.ɵi1('', $r3$.ɵpbV(5, 13 , $r3$.ɵf1(15, $c0$, ctx.name)), ''));
                 }
               },
               pipes: [MyPurePipe, MyPipe]
