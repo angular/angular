@@ -410,7 +410,7 @@ Here you see the new and the old implementation side-by-side:
 
 Tree shaking is the ability to remove code that is not referenced in an application from the final bundle. Tree-shakable providers give Angular the ability to remove services that are not used in your application from the final output. This significantly reduces the size of your bundles.
 
-Ideally, if an application is not injecting a service, it should not be included in the final output. However, it turns out that the Angular compiler cannot identify at build time if the service will be required or not. Because it's always possible to inject a service directly using `injector.get(Service)`, Angular cannot identify all of the places in your code where this injection could happen, so it has no choice but to include the service in the injector regardless. Thus, services provided in modules are not tree-shakeable.
+Ideally, if an application is not injecting a service, it should not be included in the final output. However, it turns out that the Angular compiler cannot identify at build time if the service will be required or not. Because it's always possible to inject a service directly using `injector.get(Service)`, Angular cannot identify all of the places in your code where this injection could happen, so it has no choice but to include the service in the injector regardless. Thus, services provided in modules are not tree-shakable.
 
 Let us consider an example of non-tree-shakable providers in Angular.
 
@@ -424,13 +424,13 @@ This module can then be imported into your application module, to make the servi
 
 When `ngc` runs, it compiles AppModule into a module factory, which contains definitions for all the providers declared in all the modules it includes. At runtime, this factory becomes an injector that instantiates these services.
 
-Tree-shaking doesn't work in the method above because Angular cannot decide to exclude one chunk of code (the provider definition for the service within the module factory) based on whether another chunk of code (the service class) is used. To make services tree-shakeable, the information about how to construct an instance of the service (the provider definition) needs to be a part of the service class itself.
+Tree-shaking doesn't work in the method above because Angular cannot decide to exclude one chunk of code (the provider definition for the service within the module factory) based on whether another chunk of code (the service class) is used. To make services tree-shakable, the information about how to construct an instance of the service (the provider definition) needs to be a part of the service class itself.
 
 #### Creating tree-shakable providers
 
 To create providers that are tree-shakable, the information that used to be specified in the module should be specified in the `@Injectable` decorator on the service itself.
 
-The following example shows the tree-shakeable equivalent to the `ServiceModule` example above:
+The following example shows the tree-shakable equivalent to the `ServiceModule` example above:
 
 <code-example path="dependency-injection/src/app/tree-shaking/service.ts"  title="src/app/tree-shaking/service.ts" linenums="false"> </code-example>
 
@@ -690,7 +690,7 @@ If the factory function needs access to other DI tokens, it can use the inject f
 
 <code-example>
 const TOKEN = 
-  new InjectionToken('tree-shakeable token', 
+  new InjectionToken('tree-shakable token', 
     { providedIn: 'root', factory: () => 
         new AppConfig(inject(Parameter1), inject(Parameter2)), });
 </code-example>
