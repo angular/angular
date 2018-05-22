@@ -1,16 +1,30 @@
+<!--
 # Forms
+-->
+# 폼(forms)
 
+<!--
 Forms are the mainstay of business applications.
 You use forms to log in, submit a help request, place an order, book a flight,
 schedule a meeting, and perform countless other data-entry tasks.
+-->
+폼은 비즈니스 애플리케이션에서 가장 많이 사용하는 기능 중 하나입니다.
+로그인을 할 때도 폼을 사용하고, 관리자에게 도움을 요청할 때도 폼을 사용하며, 물건을 주문하거나 비행기를 예약할 때도, 미팅 스케쥴을 잡을 때 등 셀 수 없이 많은 경우에 폼을 사용합니다.
 
+<!--
 In developing a form, it's important to create a data-entry experience that guides the
 user efficiently and effectively through the workflow.
+-->
+그리고 폼을 구성할 때는 사용자가 전체 흐름에 맞도록 폼 전체를 자연스럽게 입력할 수 있도록, 순서를 고민해보는 것이 좋습니다.
 
+<!--
 Developing forms requires design skills (which are out of scope for this page), as well as framework support for
 *two-way data binding, change tracking, validation, and error handling*,
 which you'll learn about on this page.
+-->
+폼을 개발할 때는 어느정도의 디자인 능력이 필요하지만 이 문서에서 다루는 범위를 넘어서기 때문에 따로 설명하지는 않습니다. 그리고 이와 함께 *양방향 데이터 바인딩, 변화 감지, 에러 처리* 등의 기능을 제공하는 프레임워크를 사용하는 것도 좋으며, 이 문서는 이 내용에 대해 다룹니다.
 
+<!--
 This page shows you how to build a simple form from scratch. Along the way you'll learn how to:
 
 * Build an Angular form with a component and template.
@@ -21,21 +35,44 @@ This page shows you how to build a simple form from scratch. Along the way you'l
 * Share information across HTML elements using template reference variables.
 
 You can run the <live-example></live-example> in Stackblitz and download the code from there.
+-->
+
+이 문서는 간단한 폼을 만드는 방법부터 시작해서 다음과 같은 내용을 다룹니다:
+
+* 컴포넌트와 템플릿을 조합해서 Angular 폼을 구성합니다.
+* 사용자가 입력한 값을 읽고 다시 반영하기 위해 `ngModel`을 사용해서 양방향 데이터 바인딩을 연결합니다.
+* 폼의 상태가 바뀌는 것을 감지하고, 폼 컨트롤의 유효성을 검사하는 방법을 알아봅니다.
+* 사용자에게 피드백을 줄 수 있도록 폼 상태에 어울리는 CSS 클래스를 적용해 봅니다.
+* 폼 컨트롤의 유효성 검증 결과를 화면에 표시합니다.
+* 템플릿 참조 변수를 사용해서 HTML 엘리먼트의 정보를 활용합니다.
+
+이 문서에서 다루는 예제는 <live-example></live-example>에서 바로 확인하거나 다운받아 확인할 수 있습니다.
 
 {@a template-driven}
 
+<!--
 ## Template-driven forms
+-->
+## 템플릿 기반 폼(template-driven forms)
 
+<!--
 You can build forms by writing templates in the Angular [template syntax](guide/template-syntax) with
 the form-specific directives and techniques described in this page.
+-->
+간단한 폼은 Angular [템플릿 문법](guide/template-syntax)을 활용해서 템플릿만으로도 작성할 수 있습니다. 템플릿 기반 폼에 활용되는 디렉티브와 테크닉을 알아봅시다.
 
 <div class="l-sub-section">
 
+  <!--
   You can also use a reactive (or model-driven) approach to build forms.
   However, this page focuses on template-driven forms.
+  -->
+  폼은 반응형(reactive)나 모델 기반(model-driven)으로도 구성할 수 있습니다.
+  하지만 이 문서는 템플릿 기반 폼에 대해서만 다룹니다.
 
 </div>
 
+<!--
 You can build almost any form with an Angular template&mdash;login forms, contact forms, and pretty much any business form.
 You can lay out the controls creatively, bind them to data, specify validation rules and display validation errors,
 conditionally enable or disable specific controls, trigger built-in visual feedback, and much more.
@@ -44,30 +81,52 @@ Angular makes the process easy by handling many of the repetitive, boilerplate t
 otherwise wrestle with yourself.
 
 You'll learn to build a template-driven form that looks like this:
+-->
+로그인 폼, 관리자 연락 폼 등 업무에 사용되는 폼은 Angular 템플릿으로도 충분히 만들 수 있습니다.
+화면에 폼 컨트롤을 배치하고, 폼 컨트롤에 데이터를 바인딩하며, 이 데이터에 적용되는 유효성 규칙을 연결하고, 유효성 검사를 통과하지 않으면 에러를 표시하며, 조건에 따라 컨트롤을 비활성화하는 등 폼 동작에 필요한 모든 기능은 템플릿 안에 정의할 수 있습니다.
+
+이 기능을 번거롭게 하나씩 구현하지 않도록, Angular는 폼을 더 쉽게 구성할 수 있는 방법을 제공합니다.
+
+이 문서를 보면서 다음과 같은 템플릿 기반 폼을 만들어 봅시다:
 
 <figure>
   <img src="generated/images/guide/forms/hero-form-1.png" alt="Clean Form">
 </figure>
 
+<!--
 The *Hero Employment Agency* uses this form to maintain personal information about heroes.
 Every hero needs a job. It's the company mission to match the right hero with the right crisis.
 
 Two of the three fields on this form are required. Required fields have a green bar on the left to make them easy to spot.
 
 If you delete the hero name, the form displays a validation error in an attention-grabbing style:
+-->
+*히어로 인력 사무소* 에서는 히어로들의 신상정보를 관리하기 위해 이 폼을 사용합니다.
+히어로는 모두 일자리가 필요합니다. 이 회사의 목표는 위험수준에 어울리는 히어로를 적절하게 매칭하는 것입니다.
+
+이 폼에 있는 3개의 필드 중 2개는 필수 항목입니다. 필수 항목은 입력 필드 왼쪽에 녹색 막대를 표시해서 알아보기 쉽게 만들었습니다.
+
+이제 사용자가 히어로의 이름을 지우면 유효성 검사에 통과하지 못하면서 다음과 같은 에러 메시지가 표시됩니다:
 
 <figure>
   <img src="generated/images/guide/forms/hero-form-2.png" alt="Invalid, Name Required">
 </figure>
 
+<!--
 Note that the *Submit* button is disabled, and the "required" bar to the left of the input control changes from green to red.
+-->
+*Submit* 버튼이 비활성화 된 것도 확인해 보세요. 그리고 필수 입력 필드 왼쪽에 있던 녹색 막대는 빨간색으로 변경됩니다.
 
 <div class="l-sub-section">
 
+  <!--
   You can customize the colors and location of the "required" bar with standard CSS.
+  -->
+  필수 입력 필드의 녹색 막대는 표준 CSS를 사용해서 다른 색으로 변경할 수도 있습니다.
 
 </div>
 
+<!--
 You'll build this form in small steps:
 
 1. Create the `Hero` model class.
@@ -79,10 +138,28 @@ You'll build this form in small steps:
 1. Show and hide validation-error messages.
 1. Handle form submission with *ngSubmit*.
 1. Disable the form’s *Submit* button until the form is valid.
+-->
+이 폼은 다음과 같은 순서로 구성합니다:
 
+1. `Hero` 모델 클래스를 생성합니다.
+1. 폼을 조작하는 컴포넌트를 생성합니다.
+1. 폼 레이아웃에 맞게 템플릿을 생성합니다.
+1. 각각의 폼 컨트롤에 데이터 프로퍼티를 바인딩하며, 이 때 `ngModel`을 사용해서 양방향으로 바인딩합니다.
+1. 각 폼 입력 필드에 `name` 어트리뷰트를 추가합니다.
+1. 화면에서 피드백을 표시하기 위해 CSS 설정을 추가합니다.
+1. 유효성 검사 결과에 따라 에러 메시지를 표시하거나 감춥니다.
+1. 폼이 제출되면 *ngSubmit* 이벤트를 처리합니다.
+1. 폼이 다시 유효한 상태가 될 때까지 *Submit* 버튼을 비활성화 합니다.
+
+<!--
 ## Setup
+-->
+## 환경설정
 
+<!--
 Create a new project named <code>angular-forms</code>:
+-->
+다음 명령을 실행해서 <code>angular-forms</code> 프로젝트를 생성합니다:
 
 <code-example language="sh" class="code-shell">
 
@@ -90,8 +167,12 @@ Create a new project named <code>angular-forms</code>:
 
 </code-example>
 
+<!--
 ## Create the Hero model class
+-->
+## 히어로 모델 클래스 생성하기
 
+<!--
 As users enter form data, you'll capture their changes and update an instance of a model.
 You can't lay out the form until you know what the model looks like.
 
@@ -100,6 +181,14 @@ That describes well the `Hero` class with its three required fields (`id`, `name
 and one optional field (`alterEgo`).
 
 Using the Angular CLI, generate a new class named `Hero`:
+-->
+사용자가 폼에 데이터를 입력하면 이 데이터가 변경되는 것을 감지해서 모델 인스턴스를 갱신해야 하는데,
+그 전에 데이터 모델을 먼저 정의해야 합니다.
+
+모델은 애플리케이션에 사용되는 정보를 담아두는 "프로퍼티 모음"이라고 생각할 수 있습니다.
+이 객체는 `Hero` 클래스를 표현하는 정보를 담도록 정의하며, 3개의 필수 항목(`id`, `name`, `power`)과 한 개의 옵션 항목(`alterEgo`)으로 구성됩니다.
+
+Angular CLI로 다음 명령을 실행해서 `Hero` 클래스를 생성합니다:
 
 <code-example language="sh" class="code-shell">
 
@@ -107,12 +196,16 @@ Using the Angular CLI, generate a new class named `Hero`:
 
 </code-example>
 
+<!--
 With this content:
+-->
+그러면 다음과 같은 클래스가 생성됩니다:
 
 <code-example path="forms/src/app/hero.ts" title="src/app/hero.ts">
 
 </code-example>
 
+<!--
 It's an anemic model with few requirements and no behavior. Perfect for the demo.
 
 The TypeScript compiler generates a public field for each `public` constructor parameter and
@@ -121,18 +214,34 @@ automatically assigns the parameter’s value to that field when you create hero
 The `alterEgo` is optional, so the constructor lets you omit it; note the question mark (?) in `alterEgo?`.
 
 You can create a new hero like this:
+-->
+아직까지는 뭔가 부족한 것 같고 히어로의 행동을 정의하는 함수도 없지만, 예제로 다루기에는 충분합니다.
+
+이제 인자를 전달하면서 히어로 클래스를 생성하면, TypeScript 컴파일러가 생성자로 전달된 인자를 `public` 필드로 선언하고, 인자의 값을 해당 필드에 할당합니다.
+
+이 때 `alterEgo` 필드는 옵션 항목입니다. 인스턴스를 생성할 때 이 항목은 생략해도 되기 때문에 물음표(?)를 붙여서 `alterEgo?`로 선언했습니다.
+
+그러면 히어로는 다음과 같이 생성할 수 있습니다:
 
 <code-example path="forms/src/app/hero-form/hero-form.component.ts" linenums="false" region="SkyDog">
 
 </code-example>
 
+<!--
 ## Create a form component
+-->
+## 폼 컴포넌트 생성하기
 
+<!--
 An Angular form has two parts: an HTML-based _template_ and a component _class_
 to handle data and user interactions programmatically.
 Begin with the class because it states, in brief, what the hero editor can do.
 
 Using the Angular CLI, generate a new component named `HeroForm`:
+-->
+Angular 폼은 HTML 기반의 _템플릿_ 과 컴포넌트 _클래스_ 로 구성됩니다. 이 중 컴포넌트 클래스는 데이터를 처리하거나 사용자의 동작에 반응하는 로직을 작성합니다.
+
+Angular CLI로 다음 명령을 실행해서 `HeroForm` 컴포넌트를 생성합니다:
 
 <code-example language="sh" class="code-shell">
 
@@ -140,12 +249,16 @@ Using the Angular CLI, generate a new component named `HeroForm`:
 
 </code-example>
 
+<!--
 With this content:
+-->
+그리고 컴포넌트 클래스를 다음과 같이 작성합니다:
 
 <code-example path="forms/src/app/hero-form/hero-form.component.ts" linenums="false" title="src/app/hero-form/hero-form.component.ts (v1)" region="v1">
 
 </code-example>
 
+<!--
 There’s nothing special about this component, nothing form-specific,
 nothing to distinguish it from any component you've written before.
 
@@ -164,9 +277,27 @@ parent component. This is not a concern now and these future changes won't affec
 
 * You added a `diagnostic` property to return a JSON representation of the model.
 It'll help you see what you're doing during development; you've left yourself a cleanup note to discard it later.
+-->
+이 컴포넌트 클래스는 아직 폼과 관련된 내용이 없어서 지금까지 작성한 컴포넌트와 비슷합니다.
+지금까지 살펴본 Angular에 대한 내용만으로도 이 컴포넌트의 내용은 쉽게 이해할 수 있습니다.
 
+* 이 컴포넌트는 Angular 코어 라이브리와 `Hero` 모델을 불러옵니다.
+* `@Component` 데코레이터에 지정된 "hero-form" 셀렉터는 이 컴포넌트가 들어갈 위치를 지정하며, 부모 템플릿의 `<hero-form>` 태그에 매칭됩니다.
+* 템플릿은 외부 파일로 지정하며, `templateUrl` 프로퍼티로 이 파일의 위치를 지정합니다.
+* 예제로 활용할 더미 데이터를 `model`과 `powers`로 정의합니다.
+
+예제를 더 진행하면, 데이터를 가져오거나 저장하는 로직은 서비스에 정의하고 컴포넌트에 주입하는 방법을 사용할 수도 있고, [템플릿 문법](guide/template-syntax) 가이드에서 설명한 [입출력 프로퍼티](guide/template-syntax#inputs-outputs)를 사용해서 부모 컴포넌트로 받아올 수도 있습니다.
+이 문서에서는 이 내용에 대해 자세히 다루지 않으며, 나중에 이 내용을 적용하더라도 폼에 영향을 주지는 않습니다.
+
+* 모델 인스턴스의 내용을 템플릿에서 확인하기 위해 `diagnostic` 프로퍼티를 추가했습니다.
+이 프로퍼티는 폼을 개발하면서 데이터를 쉽게 확인하기 위해 사용하며, 나중에 필요하지 않으면 제거해도 됩니다.
+
+<!--
 ## Revise *app.module.ts*
+-->
+## *app.module.ts* 수정하기
 
+<!--
 `app.module.ts` defines the application's root module. In it you identify the external modules you'll use in the application
 and declare the components that belong to this module, such as the `HeroFormComponent`.
 
@@ -174,6 +305,12 @@ Because template-driven forms are in their own module, you need to add the `Form
 `imports` for the application module before you can use forms.
 
 Update it with the following:
+-->
+`app.module.ts`는 애플리케이션의 최상위 모듈을 정의합니다. 이 모듈에서는 애플리케이션에 사용하는 외부 모듈을 불러오며, `HeroFormComponent`와 같이 모듈에서 사용하는 컴포넌트도 등록합니다.
+
+템플릿 기반 폼은 별개의 모듈로 제공되기 때문에 애플리케이션 모듈의 `imports` 배열에 `FormsModule`을 등록해야 폼을 사용할 수 있습니다.
+
+앱 모듈을 다음과 같이 수정합니다:
 
 <code-example path="forms/src/app/app.module.ts" title="src/app/app.module.ts">
 
@@ -181,27 +318,44 @@ Update it with the following:
 
 <div class="l-sub-section">
 
+  <!--
   There are two changes:
 
   1. You import `FormsModule`.
 
   1. You add the `FormsModule` to the list of `imports` defined in the `@NgModule` decorator. This gives the application
   access to all of the template-driven forms features, including `ngModel`.
+  -->
+  두 부분을 수정합니다:
+
+  1. `FormsModule`을 로드합니다.
+
+  1. `@NgModule` 데코레이터의 `imports` 목록에 `FormsModule`을 추가합니다. 그러면 애플리케이션 전체 범위에서 템플릿 기반 폼과 관련된 기능을 사용할 수 있습니다. `ngModel`도 이 기능 안에 포함됩니다.
 
 </div>
 
 <div class="alert is-important">
 
+  <!--
   If a component, directive, or pipe belongs to a module in the `imports` array, ​_don't_​ re-declare it in the `declarations` array.
   If you wrote it and it should belong to this module, ​_do_​ declare it in the `declarations` array.
+  -->
+  `imports` 배열에 추가한 컴포넌트나 디렉티브, 파이프는 `declarations` 배열에 다시 _추가하지 마세요_ .
+  `declarations` 배열에는 이 모듈에만 속하는 항목을 추가합니다.
 
 </div>
 
+<!--
 ## Revise *app.component.html*
+-->
+## *app.component.html* 수정하기
 
+<!--
 `AppComponent` is the application's root component. It will host the new `HeroFormComponent`.
 
 Replace the contents of its template with the following:
+-->
+`AppComponent`는 애플리케이션의 최상위 컴포넌트 입니다. 이 컴포넌트에 `HeroFormComponent`를 추가하기 위해 템플릿을 다음과 같이 추가합니다:
 
 <code-example path="forms/src/app/app.component.html" title="src/app/app.component.html">
 
@@ -209,21 +363,34 @@ Replace the contents of its template with the following:
 
 <div class="l-sub-section">
 
+  <!--
   There are only two changes.
   The `template` is simply the new element tag identified by the component's `selector` property.
   This displays the hero form when the application component is loaded.
   Don't forget to remove the `name` field from the class body as well.
+  -->
+  두 부분을 수정합니다.
+  `template`에는 컴포넌트의 `selector` 프로퍼티에 지정한 엘리먼트 태그를 추가합니다.
+  그러면 애플리케이션 컴포넌트가 로드된 이후에 히어로 폼이 화면에 표시될 것입니다.
+  Angular CLI를 사용했을 때 클래스에 기본으로 선언된 `name` 필드는 제거하세요.
 
 </div>
 
+<!--
 ## Create an initial HTML form template
+-->
+## HTML 폼 템플릿 초기 버전 작성하기
 
+<!--
 Update the template file with the following contents:
+-->
+이제 템플릿을 다음과 같이 수정합니다:
 
 <code-example path="forms/src/app/hero-form/hero-form.component.html" region="start" title="src/app/hero-form/hero-form.component.html">
 
 </code-example>
 
+<!--
 The language is simply HTML5. You're presenting two of the `Hero` fields, `name` and `alterEgo`, and
 opening them up for user input in input boxes.
 
@@ -233,37 +400,64 @@ the *Alter Ego* `<input>` control does not because `alterEgo` is optional.
 You added a *Submit* button at the bottom with some classes on it for styling.
 
 *You're not using Angular yet*. There are no bindings or extra directives, just layout.
+-->
+이 파일에 사용한 것은 단순한 HTML5 문법입니다. 이 문서에서는 `Hero` 객체의 필드인 `name`과 `alterEgo`를 입력받을 수 있으며, 각각은 입력 필드로 구성합니다.
+
+*이름*에 해당하는 `<input>` 컨트롤에는 HTML5 어트리뷰트인 `required`를 지정하고, *별명*에 해당하는 `<input>` 컨트롤 값은 생략할 수 있기 때문에 지정하지 않았습니다.
+
+그리고 *Submit* 버튼을 추가하고 스타일 클래스를 지정합니다.
+
+*아직까지 Angular와 관련된 내용은 없습니다*. 바인딩이나 디렉티브도 사용되지 않았고 레이아웃만 작성했습니다.
 
 <div class="l-sub-section">
 
+  <!--
   In template driven forms, if you've imported `FormsModule`, you don't have to do anything
   to the `<form>` tag in order to make use of `FormsModule`. Continue on to see how this works.
+  -->
+  템플릿 기반 폼을 사용하기 위해 `FormsModule`을 로드하면, `FormsModule`에서 제공하는 방식으로만 `<form>` 태그의 동작을 실행할 수 있습니다. 이 내용은 이어서 계속 설명합니다.
 
 </div>
 
+<!--
 The `container`, `form-group`, `form-control`, and `btn` classes
 come from [Twitter Bootstrap](http://getbootstrap.com/css/). These classes are purely cosmetic.
 Bootstrap gives the form a little style.
+-->
+이 코드에 사용된 `container`, `form-group`, `form-control`, `btn` 클래스들은 [Twitter Bootstrap](http://getbootstrap.com/css/)에 정의된 스타일 클래스입니다. 이 클래스들은 단순하게 엘리먼트의 모양만 지정하기 때문에 간단하게 사용할 수 있습니다.
 
 <div class="callout is-important">
 
   <header>
+    <!--
     Angular forms don't require a style library
+    -->
+    Angular 폼을 작성할 때 스타일 라이브러리가 필수인 것은 아닙니다.
   </header>
 
+  <!--
   Angular makes no use of the `container`, `form-group`, `form-control`, and `btn` classes or
   the styles of any external library. Angular apps can use any CSS library or none at all.
+  -->
+  이 코드에 사용한 `container`, `form-group`, `form-control`, `btn` 클래스는 외부 스타일 라이브러리이며, Angular와는 관계가 없습니다. 스타일 라이브러리는 자유롭게 사용할 수 있으며, 아예 사용하지 않을 수도 있습니다.
 
 </div>
 
+<!--
 To add the stylesheet, open `styles.css` and add the following import line at the top:
+-->
+스타일시트를 추가하려면 `styles.css` 파일을 열고 다음과 같은 내용을 추가하면 됩니다:
 
 <code-example path="forms/src/styles.1.css" linenums="false" title="src/styles.css">
 
 </code-example>
 
+<!--
 ## Add powers with _*ngFor_
+-->
+## powers 필드에 _*ngFor_ 적용하기
 
+<!--
 The hero must choose one superpower from a fixed list of agency-approved powers.
 You maintain that list internally (in `HeroFormComponent`).
 
@@ -272,14 +466,26 @@ form and bind the options to the `powers` list using `ngFor`,
 a technique seen previously in the [Displaying Data](guide/displaying-data) page.
 
 Add the following HTML *immediately below* the *Alter Ego* group:
+-->
+등록되는 히어로는 특수능력을 하나 선택해야 하며, 이 특수능력의 목록은 회사에서 미리 정의하고 있습니다.
+이 목록은 `HeroFormComponent`에 미리 정의해 두었습니다.
+
+폼에는 `select` 엘리먼트를 추가하며, 이 엘리먼트의 목록은 컴포넌트의 `powers` 배열을 `ngFor`로 구성합니다.
+목록을 구성하는 방법은 [데이터 표시하기](guide/displaying-data) 가이드를 참고하세요.
+
+이 내용은 *특수 능력*을 입력받는 필드 *바로 아래* 다음과 같이 추가합니다:
 
 <code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (powers)" region="powers">
 
 </code-example>
 
+<!--
 This code repeats the `<option>` tag for each power in the list of powers.
 The `pow` template input variable is a different power in each iteration;
 you display its name using the interpolation syntax.
+-->
+이 코드는 특수능력을 나타내는 배열마다 `<option>` 태그를 반복합니다.
+이 때 템플릿 입력 변수 `pow`는 각 `ngFor` 싸이클에 해당되는 특수 능력이 할당되며, 템플릿에는 문자열 삽입(interpolation) 문법으로 표시합니다.
 
 {@a ngModel}
 

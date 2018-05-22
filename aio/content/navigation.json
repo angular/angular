@@ -281,7 +281,7 @@
             {
               "url": "guide/user-input",
               "title!": "User Input",
-              "title": "사용자 입력",
+              "title": "사용자 동작",
               "tooltip!": "User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models.",
               "tooltip": "사용자가 입력을 하거나 마우스를 클릭하면 DOM 이벤트가 발생합니다. 이 이벤트를 바인딩해서 컴포넌트 변수나 모델에 적용할 수 있습니다."
             },
