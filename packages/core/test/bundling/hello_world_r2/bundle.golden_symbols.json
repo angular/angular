@@ -3663,6 +3663,9 @@
     "name": "pureArrayDef"
   },
   {
+    "name": "pureFunctionCallInfo"
+  },
+  {
     "name": "pureFunctionIdentifiers"
   },
   {
