@@ -11,7 +11,7 @@ describe('LazyCustomElementComponent', () => {
 
   beforeEach(() => {
     mockElementsLoader = jasmine.createSpyObj<ElementsLoader>('ElementsLoader', [
-      'loadContainingCustomElements',
+      'loadContainedCustomElements',
       'loadCustomElement',
     ]);
 

@@ -26,7 +26,7 @@ export class ElementsLoader {
    * the browser. Custom elements that are registered will be removed from the list of unregistered
    * elements so that they will not be queried in subsequent calls.
    */
-  loadContainingCustomElements(element: HTMLElement): Observable<void> {
+  loadContainedCustomElements(element: HTMLElement): Observable<void> {
     const unregisteredSelectors = Array.from(this.elementsToLoad.keys())
         .filter(s => element.querySelector(s));
 
