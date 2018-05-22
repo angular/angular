@@ -13,17 +13,19 @@
     "moduleResolution": "node",
     "outDir": "../../dist/packages/cdk-experimental",
     "rootDir": ".",
+    "rootDirs": [
+      ".",
+      "../../dist/packages/cdk-experimental"
+    ],
     "sourceMap": true,
     "inlineSources": true,
     "target": "es2015",
     "lib": ["es2015", "dom"],
     "skipLibCheck": true,
-    "types": [],
+    "types": ["jasmine", "tslib"],
     "paths": {
-      "@angular/material/*": ["../../dist/packages/material/*"],
-      "@angular/material": ["../../dist/packages/material/public-api"],
       "@angular/cdk/*": ["../../dist/packages/cdk/*"],
-      "@angular/cdk": ["../../dist/packages/cdk"]
+      "@angular/cdk-experimental/*": ["../../dist/packages/cdk-experimental/*"]
     }
   },
   "files": [
@@ -35,7 +37,8 @@
     "strictMetadataEmit": true,
     "flatModuleOutFile": "index.js",
     "flatModuleId": "@angular/cdk-experimental",
-    "skipTemplateCodegen": true
+    "skipTemplateCodegen": true,
+    "fullTemplateTypeCheck": true
   },
   "bazelOptions": {
     "suppressTsconfigOverrideWarnings": true

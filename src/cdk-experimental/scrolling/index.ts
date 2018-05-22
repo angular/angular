@@ -6,5 +6,4 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './version';
-export * from '@angular/cdk-experimental/scrolling';
+export * from './public-api';

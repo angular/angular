@@ -26,6 +26,10 @@
       "@angular/cdk/*": ["./cdk/*"],
       "@angular/material": ["./material"],
       "@angular/material/*": ["./material/*"],
+      "@angular/material-experimental/*": ["./material-experimental/*"],
+      "@angular/material-experimental": ["./material-experimental/"],
+      "@angular/cdk-experimental/*": ["./cdk-experimental/*"],
+      "@angular/cdk-experimental": ["./cdk-experimental/"],
       "@angular/material-moment-adapter": ["./material-moment-adapter"],
       "@angular/material-examples": ["./material-examples"]
     }

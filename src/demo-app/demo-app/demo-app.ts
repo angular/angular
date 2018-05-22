@@ -90,7 +90,8 @@ export class DemoApp {
     {name: 'Toolbar', route: '/toolbar'},
     {name: 'Tooltip', route: '/tooltip'},
     {name: 'Tree', route: '/tree'},
-    {name: 'Typography', route: '/typography'}
+    {name: 'Typography', route: '/typography'},
+    {name: 'Virtual Scrolling', route: '/virtual-scroll'},
   ];
 
   constructor(

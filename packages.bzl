@@ -21,6 +21,15 @@ CDK_PACKAGES = [
 
 CDK_TARGETS = ["//src/cdk"] + ["//src/cdk/%s" % p for p in CDK_PACKAGES]
 
+CDK_EXPERIMENTAL_PACKAGES = [
+  # "dialog",  # Disabled because BUILD.bazel doesn't exist yet
+  "scrolling",
+]
+
+CDK_EXPERIMENTAL_TARGETS = ["//src/cdk-experimental"] + [
+  "//src/cdk-experimental/%s" % p for p in CDK_EXPERIMENTAL_PACKAGES
+]
+
 MATERIAL_PACKAGES = [
   "autocomplete",
   "badge",
@@ -82,6 +91,12 @@ ROLLUP_GLOBALS = {
 # Rollup globals for cdk subpackages in the form of, e.g., {"@angular/cdk/table": "ng.cdk.table"}
 ROLLUP_GLOBALS.update({
   "@angular/cdk/%s" % p: "ng.cdk.%s" % p for p in CDK_PACKAGES
+})
+
+# Rollup globals for cdk subpackages in the form of, e.g.,
+# {"@angular/cdk-experimental/scrolling": "ng.cdkExperimental.scrolling"}
+ROLLUP_GLOBALS.update({
+  "@angular/cdk-experimental/%s" % p: "ng.cdkExperimental.%s" % p for p in CDK_EXPERIMENTAL_PACKAGES
 })
 
 # Rollup globals for material subpackages, e.g., {"@angular/material/list": "ng.material.list"}

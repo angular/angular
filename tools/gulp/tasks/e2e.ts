@@ -2,7 +2,7 @@ import {task} from 'gulp';
 import {join} from 'path';
 import {ngcBuildTask, copyTask, execNodeTask, serverTask} from '../util/task_helpers';
 import {copySync} from 'fs-extra';
-import {buildConfig, sequenceTask, watchFiles} from 'material2-build-tools';
+import {buildConfig, sequenceTask, triggerLivereload, watchFiles} from 'material2-build-tools';
 
 // There are no type definitions available for these imports.
 const gulpConnect = require('gulp-connect');
@@ -13,6 +13,7 @@ const {outputDir, packagesDir, projectDir} = buildConfig;
 const releasesDir = join(outputDir, 'releases');
 
 const appDir = join(packagesDir, 'e2e-app');
+const e2eTestDir = join(projectDir, 'e2e');
 const outDir = join(outputDir, 'packages', 'e2e-app');
 
 const PROTRACTOR_CONFIG_PATH = join(projectDir, 'test/protractor.conf.js');
@@ -21,15 +22,41 @@ const tsconfigPath = join(outDir, 'tsconfig-build.json');
 /** Glob that matches all files that need to be copied to the output folder. */
 const assetsGlob = join(appDir, '**/*.+(html|css|json|ts)');
 
-/**
- * Builds and serves the e2e-app and runs protractor once the e2e-app is ready.
- */
+/** Builds and serves the e2e-app and runs protractor once the e2e-app is ready. */
 task('e2e', sequenceTask(
   [':test:protractor:setup', 'serve:e2eapp'],
   ':test:protractor',
   ':serve:e2eapp:stop',
   'screenshots',
 ));
+
+/**
+ * Builds and serves the e2e-app and runs protractor when the app is ready. Re-runs protractor when
+ * the app or tests change.
+ */
+task('e2e:watch', sequenceTask(
+  [':test:protractor:setup', 'serve:e2eapp'],
+  [':test:protractor', 'material:watch', ':e2e:watch'],
+));
+
+/** Watches the e2e app and tests for changes and triggers a test rerun on change. */
+task(':e2e:watch', () => {
+  watchFiles([join(appDir, '**/*.+(html|ts|css)'), join(e2eTestDir, '**/*.+(html|ts)')],
+      [':e2e:rerun'], false);
+});
+
+/** Updates the e2e app and runs the protractor tests. */
+task(':e2e:rerun', sequenceTask(
+  'e2e-app:copy-assets',
+  'e2e-app:build-ts',
+  ':e2e:reload',
+  ':test:protractor'
+));
+
+/** Triggers a reload of the e2e app. */
+task(':e2e:reload', () => {
+  return triggerLivereload();
+});
 
 /** Task that builds the e2e-app in AOT mode. */
 task('e2e-app:build', sequenceTask(

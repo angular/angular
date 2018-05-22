@@ -52,6 +52,8 @@ System.config({
     '@angular/material-examples': 'dist/bundles/material-examples.umd.js',
     '@angular/cdk/text-field': 'dist/bundles/cdk-text-field.umd.js',
 
+    '@angular/cdk-experimental/scrolling': 'dist/bundles/cdk-experimental-scrolling.umd.js',
+
     '@angular/material/autocomplete': 'dist/bundles/material-autocomplete.umd.js',
     '@angular/material/bottom-sheet': 'dist/bundles/material-bottom-sheet.umd.js',
     '@angular/material/button': 'dist/bundles/material-button.umd.js',

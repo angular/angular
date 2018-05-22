@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ScrollingModule} from '@angular/cdk-experimental';
 import {A11yModule} from '@angular/cdk/a11y';
 import {CdkAccordionModule} from '@angular/cdk/accordion';
 import {BidiModule} from '@angular/cdk/bidi';
@@ -108,6 +109,7 @@ import {
     OverlayModule,
     PlatformModule,
     PortalModule,
+    ScrollingModule,
   ]
 })
 export class DemoMaterialModule {}

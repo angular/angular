@@ -1,14 +1,15 @@
 package(default_visibility=["//visibility:public"])
 load("@angular//:index.bzl", "ng_module", "ng_package")
-load("//:packages.bzl", "CDK_TARGETS", "ROLLUP_GLOBALS", "VERSION_PLACEHOLDER_REPLACEMENTS")
+load("//:packages.bzl", "CDK_EXPERIMENTAL_PACKAGES", "CDK_EXPERIMENTAL_TARGETS", "CDK_TARGETS", "ROLLUP_GLOBALS", "VERSION_PLACEHOLDER_REPLACEMENTS")
 
+# Export the CDK tsconfig so that subpackages can reference it directly.
+exports_files(["tsconfig-build.json"])
 
 ng_module(
   name = "cdk-experimental",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  srcs = glob(["*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/cdk-experimental",
-  deps = CDK_TARGETS,
-  assets = glob(["**/*.css", "**/*.html"]),
+  deps = ["//src/cdk-experimental/%s" % p for p in CDK_EXPERIMENTAL_PACKAGES],
   tsconfig = "//src/lib:tsconfig-build.json",
 )
 
@@ -18,6 +19,6 @@ ng_package(
   entry_point = "src/cdk-experimental/public_api.js",
   globals = ROLLUP_GLOBALS,
   replacements = VERSION_PLACEHOLDER_REPLACEMENTS,
-  deps = [":cdk-experimental"],
+  deps = CDK_EXPERIMENTAL_TARGETS,
   tags = ["publish"],
 )

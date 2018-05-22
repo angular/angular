@@ -1,0 +1,96 @@
+<h2>Autosize</h2>
+
+<h3>Uniform size</h3>
+<cdk-virtual-scroll-viewport class="demo-viewport" autosize>
+  <div *cdkVirtualFor="let size of fixedSizeData; let i = index" class="demo-item"
+       [style.height.px]="size">
+    Item #{{i}} - ({{size}}px)
+  </div>
+</cdk-virtual-scroll-viewport>
+
+<h3>Increasing size</h3>
+<cdk-virtual-scroll-viewport class="demo-viewport" autosize>
+  <div *cdkVirtualFor="let size of increasingSizeData; let i = index" class="demo-item"
+       [style.height.px]="size">
+    Item #{{i}} - ({{size}}px)
+  </div>
+</cdk-virtual-scroll-viewport>
+
+<h3>Decreasing size</h3>
+<cdk-virtual-scroll-viewport class="demo-viewport" autosize>
+  <div *cdkVirtualFor="let size of decreasingSizeData; let i = index" class="demo-item"
+       [style.height.px]="size">
+    Item #{{i}} - ({{size}}px)
+  </div>
+</cdk-virtual-scroll-viewport>
+
+<h3>Random size</h3>
+<cdk-virtual-scroll-viewport class="demo-viewport" autosize>
+  <div *cdkVirtualFor="let size of randomData; let i = index" class="demo-item"
+       [style.height.px]="size">
+    Item #{{i}} - ({{size}}px)
+  </div>
+</cdk-virtual-scroll-viewport>
+
+<h2>Fixed size</h2>
+
+<cdk-virtual-scroll-viewport class="demo-viewport" [itemSize]="50">
+  <div *cdkVirtualFor="let size of fixedSizeData; let i = index" class="demo-item"
+       [style.height.px]="size">
+    Item #{{i}} - ({{size}}px)
+  </div>
+</cdk-virtual-scroll-viewport>
+
+<cdk-virtual-scroll-viewport class="demo-viewport demo-horizontal" [itemSize]="50"
+                             orientation="horizontal">
+  <div *cdkVirtualFor="let size of fixedSizeData; let i = index" class="demo-item"
+       [style.width.px]="size">
+    Item #{{i}} - ({{size}}px)
+  </div>
+</cdk-virtual-scroll-viewport>
+
+<h2>Observable data</h2>
+
+<button (click)="emitData()">Add item</button>
+<cdk-virtual-scroll-viewport class="demo-viewport" [itemSize]="50">
+  <div *cdkVirtualFor="let size of observableData | async; let i = index" class="demo-item"
+       [style.height.px]="size">
+    Item #{{i}} - ({{size}}px)
+  </div>
+</cdk-virtual-scroll-viewport>
+
+<h2>No trackBy</h2>
+
+<button (click)="sortBy('name')">Sort by state name</button>
+<button (click)="sortBy('capital')">Sort by state capital</button>
+<cdk-virtual-scroll-viewport class="demo-viewport" [itemSize]="60">
+  <div *cdkVirtualFor="let state of statesObservable | async"
+       class="demo-state-item">
+    <div class="demo-state">{{state.name}}</div>
+    <div class="demo-capital">{{state.capital}}</div>
+  </div>
+</cdk-virtual-scroll-viewport>
+
+<h2>trackBy index</h2>
+
+<button (click)="sortBy('name')">Sort by state name</button>
+<button (click)="sortBy('capital')">Sort by state capital</button>
+<cdk-virtual-scroll-viewport class="demo-viewport" [itemSize]="60">
+  <div *cdkVirtualFor="let state of statesObservable | async; trackBy: indexTrackFn"
+       class="demo-state-item">
+    <div class="demo-state">{{state.name}}</div>
+    <div class="demo-capital">{{state.capital}}</div>
+  </div>
+</cdk-virtual-scroll-viewport>
+
+<h2>trackBy state name</h2>
+
+<button (click)="sortBy('name')">Sort by state name</button>
+<button (click)="sortBy('capital')">Sort by state capital</button>
+<cdk-virtual-scroll-viewport class="demo-viewport" [itemSize]="60">
+  <div *cdkVirtualFor="let state of statesObservable | async; trackBy: nameTrackFn"
+       class="demo-state-item">
+    <div class="demo-state">{{state.name}}</div>
+    <div class="demo-capital">{{state.capital}}</div>
+  </div>
+</cdk-virtual-scroll-viewport>

@@ -6,9 +6,7 @@
     "baseUrl": ".",
     "paths": {
       "@angular/cdk/*": ["../cdk/*"],
-      "@angular/cdk": ["../cdk"],
-      "@angular/material/*": ["../lib/*"],
-      "@angular/material": ["../lib/public-api.ts"]
+      "@angular/cdk-experimental/*": ["../cdk-experimental/*"]
     }
   },
   "include": ["./**/*.ts"]

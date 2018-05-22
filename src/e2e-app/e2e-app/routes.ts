@@ -1,4 +1,5 @@
 import {Routes} from '@angular/router';
+import {VirtualScrollE2E} from '../virtual-scroll/virtual-scroll-e2e';
 import {Home} from './e2e-app';
 import {ButtonE2E} from '../button/button-e2e';
 import {BasicTabs} from '../tabs/tabs-e2e';
@@ -47,4 +48,5 @@ export const E2E_APP_ROUTES: Routes = [
   {path: 'tabs', component: BasicTabs},
   {path: 'cards', component: CardFancyExample},
   {path: 'toolbar', component: ToolbarMultirowExample},
+  {path: 'virtual-scroll', component: VirtualScrollE2E},
 ];

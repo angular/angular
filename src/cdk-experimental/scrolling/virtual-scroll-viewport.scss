@@ -1,0 +1,30 @@
+// Scrolling container.
+cdk-virtual-scroll-viewport {
+  display: block;
+  position: relative;
+  overflow: auto;
+}
+
+// Wrapper element for the rendered content. This element will be transformed to push the rendered
+// content to its correct offset in the data set as a whole.
+.cdk-virtual-scroll-content-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: contents, transform;
+}
+
+.cdk-virtual-scroll-orientation-horizontal .cdk-virtual-scroll-content-wrapper {
+  bottom: 0;
+}
+
+.cdk-virtual-scroll-orientation-vertical .cdk-virtual-scroll-content-wrapper {
+  right: 0;
+}
+
+// Spacer element that whose width or height will be adjusted to match the size of the entire data
+// set if it were rendered all at once. This ensures that the scrollable content region is the
+// correct size.
+.cdk-virtual-scroll-spacer {
+  will-change: height, width;
+}

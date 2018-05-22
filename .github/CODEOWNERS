@@ -86,6 +86,7 @@
 # CDK experimental package
 /src/cdk-experimental/**                           @jelbourn
 /src/cdk-experimental/dialog/**                    @jelbourn @josephperrott @crisbeto
+/src/cdk-experimental/scrolling/**                 @mmalerba
 
 # Docs examples & guides
 /guides/**                                         @amcdnl @jelbourn
@@ -141,6 +142,7 @@
 /src/demo-app/tooltip/**                           @andrewseguin
 /src/demo-app/tree/**                              @tinayuangao
 /src/demo-app/typography/**                        @crisbeto
+/src/demo-app/virtual-scroll/**                    @mmalerba
 
 # E2E app
 /e2e/*                                             @jelbourn
@@ -165,6 +167,7 @@
 /e2e/components/stepper-e2e.spec.ts                @mmalerba
 /e2e/components/tabs-e2e.spec.ts                   @andrewseguin
 /e2e/components/toolbar-e2e.spec.ts                @devversion
+/e2e/components/virtual-scroll-e2e.spec.ts         @mmalerba
 /e2e/util/**                                       @jelbourn
 /src/e2e-app/*                                     @jelbourn
 /src/e2e-app/block-scroll-strategy/**              @andrewseguin @crisbeto
@@ -183,6 +186,7 @@
 /src/e2e-app/sidenav/**                            @mmalerba
 /src/e2e-app/slide-toggle/**                       @devversion
 /src/e2e-app/tabs/**                               @andrewseguin
+/src/e2e-app/virtual-scroll/**                     @mmalerba
 
 # Universal app
 /src/universal-app/**                              @jelbourn

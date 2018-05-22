@@ -1,0 +1,16 @@
+<!--
+  Wrap the rendered content in an element that will be used to offset it based on the scroll
+  position.
+-->
+<div #contentWrapper class="cdk-virtual-scroll-content-wrapper"
+     [style.transform]="_renderedContentTransform">
+  <ng-content></ng-content>
+</div>
+<!--
+  Spacer used to force the scrolling container to the correct size for the *total* number of items
+  so that the scrollbar captures the size of the entire data set.
+-->
+<div class="cdk-virtual-scroll-spacer"
+     [style.height.px]="orientation === 'horizontal' ? 1 : _totalContentSize"
+     [style.width.px]="orientation === 'horizontal' ? _totalContentSize : 1">
+</div>

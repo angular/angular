@@ -72,6 +72,8 @@ System.config({
     '@angular/cdk/text-field': 'dist/packages/cdk/text-field/index.js',
     '@angular/cdk/tree': 'dist/packages/cdk/tree/index.js',
 
+    '@angular/cdk-experimental/scrolling': 'dist/packages/cdk-experimental/scrolling/index.js',
+
     '@angular/material/autocomplete': 'dist/packages/material/autocomplete/index.js',
     '@angular/material/badge': 'dist/packages/material/badge/index.js',
     '@angular/material/bottom-sheet': 'dist/packages/material/bottom-sheet/index.js',
