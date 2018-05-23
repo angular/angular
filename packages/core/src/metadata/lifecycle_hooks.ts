@@ -14,7 +14,9 @@ import {SimpleChange} from '../change_detection/change_detection_util';
  * values are instances of {@link SimpleChange}. See {@link OnChanges}
  *
  */
-export interface SimpleChanges { [propName: string]: SimpleChange; }
+export type SimpleChanges<TComponent extends object = any> = {
+  [P in keyof TComponent]?: SimpleChange<TComponent[P]>;
+};
 
 /**
  * @usageNotes
@@ -31,7 +33,9 @@ export interface SimpleChanges { [propName: string]: SimpleChange; }
  *
  *
  */
-export interface OnChanges { ngOnChanges(changes: SimpleChanges): void; }
+export interface OnChanges<TComponent extends object = any> {
+  ngOnChanges(changes: SimpleChanges<TComponent>): void;
+}
 
 /**
  * @usageNotes

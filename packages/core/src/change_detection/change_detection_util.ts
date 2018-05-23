@@ -66,8 +66,9 @@ export class WrappedValue {
  * Represents a basic change from a previous to a new value.
  *
  */
-export class SimpleChange {
-  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
+export class SimpleChange<TValue = any> {
+  constructor(
+      public previousValue: TValue, public currentValue: TValue, public firstChange: boolean) {}
 
   /**
    * Check whether the new value is the first value assigned.
@@ -78,12 +79,12 @@ export class SimpleChange {
 export function isListLikeIterable(obj: any): boolean {
   if (!isJsObject(obj)) return false;
   return Array.isArray(obj) ||
-      (!(obj instanceof Map) &&      // JS Map are iterables but return entries as [k, v]
-       getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
+    (!(obj instanceof Map) &&      // JS Map are iterables but return entries as [k, v]
+      getSymbolIterator() in obj);  // JS Iterable have a Symbol.iterator prop
 }
 
 export function areIterablesEqual(
-    a: any, b: any, comparator: (a: any, b: any) => boolean): boolean {
+  a: any, b: any, comparator: (a: any, b: any) => boolean): boolean {
   const iterator1 = a[getSymbolIterator()]();
   const iterator2 = b[getSymbolIterator()]();
 

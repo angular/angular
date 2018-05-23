@@ -18,11 +18,11 @@ import { LoggerService }  from './logger.service';
   `,
   styles: ['.counter {background: LightYellow; padding: 8px; margin-top: 8px}']
 })
-export class MyCounterComponent implements OnChanges {
+export class MyCounterComponent implements OnChanges<MyCounterComponent> {
   @Input() counter: number;
   changeLog: string[] = [];
 
-  ngOnChanges(changes: SimpleChanges) {
+  ngOnChanges(changes: SimpleChanges<this>) {
 
     // Empty the changeLog whenever counter goes to zero
     // hint: this is a way to respond programmatically to external value changes.
@@ -31,7 +31,7 @@ export class MyCounterComponent implements OnChanges {
     }
 
     // A change to `counter` is the only change we care about
-    let chng = changes['counter'];
+    let chng = changes.counter;
     let cur = chng.currentValue;
     let prev = JSON.stringify(chng.previousValue); // first time is {}; after is integer
     this.changeLog.push(`counter: currentValue = ${cur}, previousValue = ${prev}`);
