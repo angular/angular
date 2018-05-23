@@ -291,7 +291,7 @@ describe('compiler compliance', () => {
           factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
           hostBindings: function HostBindingDir_HostBindings(
               dirIndex: $number$, elIndex: $number$) {
-            $r3$.ɵp(elIndex, 'id', $r3$.ɵb($r3$.ɵld(dirIndex).dirId));
+            $r3$.ɵp(elIndex, 'id', $r3$.ɵb($r3$.ɵd(dirIndex).dirId));
           }
         });
       `;
@@ -823,7 +823,7 @@ describe('compiler compliance', () => {
             hostBindings: function ContentQueryComponent_HostBindings(
                 dirIndex: $number$, elIndex: $number$) {
               var $tmp$: $any$;
-              ($r3$.ɵqR(($tmp$ = $r3$.ɵld(dirIndex)[1])) && ($r3$.ɵld(dirIndex)[0].someDir = $tmp$.first));
+              ($r3$.ɵqR(($tmp$ = $r3$.ɵd(dirIndex)[1])) && ($r3$.ɵd(dirIndex)[0].someDir = $tmp$.first));
             },
             template: function ContentQueryComponent_Template(
                 rf: $RenderFlags$, ctx: $ContentQueryComponent$) {
