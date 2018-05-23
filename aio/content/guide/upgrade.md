@@ -778,16 +778,25 @@ delete them once the upgrade is over.
 It's also recommended to export the `heroesServiceFactory` function so that Ahead-of-Time
 compilation can pick it up.
 
+<div class="alert is-helpful">
+
+**Note:** The 'heroes' string inside the factory refers to the AngularJS `HeroesService`.
+It is common in AngularJS apps to choose a service name for the token, for example "heroes",
+and append the "Service" suffix to create the class name.
+
+</div>
+
 <code-example path="upgrade-module/src/app/ajs-to-a-providers/ajs-upgraded-providers.ts" title="ajs-upgraded-providers.ts">
 </code-example>
+
+You can then provide the service to Angular by adding it to the `@NgModule`:
 
 <code-example path="upgrade-module/src/app/ajs-to-a-providers/app.module.ts" region="register" title="app.module.ts">
 </code-example>
 
-You can then inject it in Angular using its class as a type annotation:
+Then use the service inside your component by injecting it in the component constructor using its class as a type annotation:
 
 <code-example path="upgrade-module/src/app/ajs-to-a-providers/hero-detail.component.ts" title="hero-detail.component.ts">
-
 </code-example>
 
 <div class="alert is-helpful">
