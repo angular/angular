@@ -457,3 +457,18 @@ $mat-slider-focus-ring-size: 30px !default;
     }
   }
 }
+
+// Slider inside a component with disabled animations.
+.mat-slider._mat-animation-noopable {
+  .mat-slider-track-fill,
+  .mat-slider-track-background,
+  .mat-slider-ticks,
+  .mat-slider-thumb-container,
+  .mat-slider-focus-ring,
+  .mat-slider-thumb,
+  .mat-slider-thumb-label,
+  .mat-slider-thumb-label-text,
+  .mat-slider-has-ticks .mat-slider-wrapper::after {
+    transition: none;
+  }
+}

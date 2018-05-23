@@ -34,6 +34,7 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
+  Inject,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -46,6 +47,7 @@ import {
   mixinTabIndex,
 } from '@angular/material/core';
 import {Subscription} from 'rxjs';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 /**
  * Visually, a 30px separation between tick marks looks best. This is very subjective but it is
@@ -126,6 +128,7 @@ export const _MatSliderMixinBase =
     '[class.mat-slider-vertical]': 'vertical',
     '[class.mat-slider-min-value]': '_isMinValue',
     '[class.mat-slider-hide-last-tick]': 'disabled || _isMinValue && _thumbGap && _invertAxis',
+    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
   },
   templateUrl: 'slider.html',
   styleUrls: ['slider.css'],
@@ -431,7 +434,9 @@ export class MatSlider extends _MatSliderMixinBase
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Directionality,
-              @Attribute('tabindex') tabIndex: string) {
+              @Attribute('tabindex') tabIndex: string,
+              // @deletion-target 7.0.0 `_animationMode` parameter to be made required.
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(elementRef);
 
     this.tabIndex = parseInt(tabIndex) || 0;
