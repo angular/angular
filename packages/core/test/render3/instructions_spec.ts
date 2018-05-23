@@ -48,7 +48,7 @@ describe('instructions', () => {
       expect(t.html).toEqual('<div title="javascript:true"></div>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
-        tNode: 1,
+        tNode: 2,  // 1 for div, 1 for host element
         tView: 1,
         rendererCreateElement: 1,
         rendererSetAttribute: 2
@@ -69,7 +69,7 @@ describe('instructions', () => {
       expect(t.html).toEqual('<div title="javascript:false"></div>');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
-        tNode: 1,
+        tNode: 2,  // 1 for div, 1 for host element
         tView: 1,
         rendererCreateElement: 1,
       });
@@ -83,7 +83,7 @@ describe('instructions', () => {
       expect((t.hostNode.native as HTMLElement).querySelector('div') !.hidden).toEqual(false);
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
-        tNode: 1,
+        tNode: 2,  // 1 for div, 1 for host element
         tView: 1,
         rendererCreateElement: 1,
         rendererSetProperty: 1

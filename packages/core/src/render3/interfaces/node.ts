@@ -16,10 +16,10 @@ import {LView, TData, TView} from './view';
 
 
 /**
- * LNodeType corresponds to the LNode.type property. It contains information
+ * TNodeType corresponds to the TNode.type property. It contains information
  * on how to map a particular set of bits in LNode.flags to the node type.
  */
-export const enum LNodeType {
+export const enum TNodeType {
   Container = 0b00,
   Projection = 0b01,
   View = 0b10,
@@ -58,9 +58,6 @@ export const enum TNodeFlags {
  * instructions.
  */
 export interface LNode {
-  /** The type of the node (see LNodeFlags) */
-  type: LNodeType;
-
   /**
    * The associated DOM node. Storing this allows us to:
    *  - append children to their element parents in the DOM (e.g. `parent.native.appendChild(...)`)
@@ -118,11 +115,12 @@ export interface LNode {
    * Pointer to the corresponding TNode object, which stores static
    * data about this node.
    */
-  tNode: TNode|null;
+  tNode: TNode;
 
   /**
-   * A pointer to a LContainerNode created by directives requesting ViewContainerRef
+   * A pointer to an LContainerNode created by directives requesting ViewContainerRef
    */
+  // TODO(kara): Remove when removing LNodes
   dynamicLContainerNode: LContainerNode|null;
 }
 
@@ -205,13 +203,18 @@ export interface LProjectionNode extends LNode {
  * see: https://en.wikipedia.org/wiki/Flyweight_pattern for more on the Flyweight pattern
  */
 export interface TNode {
+  /** The type of the TNode. See TNodeType. */
+  type: TNodeType;
+
   /**
    * Index of the TNode in TView.data and corresponding LNode in LView.data.
    *
    * This is necessary to get from any TNode to its corresponding LNode when
    * traversing the node tree.
+   *
+   * If null, this is a view node created from a dynamically created view.
    */
-  index: number;
+  index: number|null;
 
   /**
    * This number stores two values using its bits:
@@ -306,6 +309,11 @@ export interface TNode {
    * to insert them or remove them from the DOM.
    */
   next: TNode|null;
+
+  /**
+   * A pointer to a TContainerNode created by directives requesting ViewContainerRef
+   */
+  dynamicContainerNode: TNode|null;
 }
 
 /** Static data for an LElementNode  */
