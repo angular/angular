@@ -63,7 +63,7 @@ export const HAMMER_GESTURE_CONFIG = new InjectionToken<HammerGestureConfig>('Ha
 
 
 /** Function that loads HammerJS, returning a promise that is resolved once HammerJs is loaded. */
-export type HammerLoader = (() => Promise<void>) | null;
+export type HammerLoader = () => Promise<void>;
 
 /** Injection token used to provide a {@link HammerLoader} to Angular. */
 export const HAMMER_LOADER = new InjectionToken<HammerLoader>('HammerLoader');
@@ -146,7 +146,7 @@ export class HammerGesturesPlugin extends EventManagerPlugin {
   constructor(
       @Inject(DOCUMENT) doc: any,
       @Inject(HAMMER_GESTURE_CONFIG) private _config: HammerGestureConfig, private console: Console,
-      @Optional() @Inject(HAMMER_LOADER) private loader?: HammerLoader) {
+      @Optional() @Inject(HAMMER_LOADER) private loader?: HammerLoader|null) {
     super(doc);
   }
 
