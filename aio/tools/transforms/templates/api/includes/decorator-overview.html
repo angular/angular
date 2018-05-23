@@ -20,7 +20,7 @@
 </table>
 
 {% for ancestor in doc.extendsClauses %}{% if ancestor.doc %}
-<h3>Inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.id $}</a></h3>
+<h3 class="no-toc">Inherited from <a class="code-anchor" href="{$ ancestor.doc.path $}">{$ ancestor.doc.name $}</a> decorator</h3>
 {$ renderOptionsTable(ancestor.doc) $}
 {% endif %}{% endfor %}
 {% endmacro %}
