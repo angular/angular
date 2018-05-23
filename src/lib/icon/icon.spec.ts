@@ -428,9 +428,9 @@ describe('MatIcon', () => {
     }));
 
     it('should throw an error when using untrusted HTML', () => {
-      // Stub out console.error so we don't pollute our logs with Angular's warnings.
+      // Stub out console.warn so we don't pollute our logs with Angular's warnings.
       // Jasmine will tear the spy down at the end of the test.
-      spyOn(console, 'error');
+      spyOn(console, 'warn');
 
       expect(() => {
         iconRegistry.addSvgIconLiteral('circle', '<svg><circle></svg>');
