@@ -109,8 +109,11 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   // make the drag feeling fast and not delayed.
   &.mat-dragging, &:active {
     @include cursor-grabbing;
-
     transition-duration: 0ms;
+  }
+
+  ._mat-animation-noopable & {
+    transition: none;
   }
 }
 
@@ -162,6 +165,10 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   transition: $swift-linear;
   transition-property: background-color;
   transition-delay: 50ms;
+
+  ._mat-animation-noopable & {
+    transition: none;
+  }
 }
 
 // Ripple positioning for the slide-toggle. Moves the ripple container into the center of the thumb.

@@ -24,6 +24,8 @@ import {
   ViewChild,
   ViewEncapsulation,
   NgZone,
+  Optional,
+  Inject,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -39,6 +41,7 @@ import {
   mixinTabIndex,
   RippleRef,
 } from '@angular/material/core';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextUniqueId = 0;
@@ -77,6 +80,7 @@ export const _MatSlideToggleMixinBase =
     '[class.mat-checked]': 'checked',
     '[class.mat-disabled]': 'disabled',
     '[class.mat-slide-toggle-label-before]': 'labelPosition == "before"',
+    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
   },
   templateUrl: 'slide-toggle.html',
   styleUrls: ['slide-toggle.css'],
@@ -167,7 +171,8 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
               private _focusMonitor: FocusMonitor,
               private _changeDetectorRef: ChangeDetectorRef,
               @Attribute('tabindex') tabIndex: string,
-              private _ngZone: NgZone) {
+              private _ngZone: NgZone,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
 
     super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
