@@ -31,6 +31,10 @@
   }
 
   .method-table, .option-table {
+    th {
+      padding: 8px 16px;
+    }
+
     h3 {
       margin: 6px 0;
       font-weight: bold;
@@ -86,10 +90,6 @@
       }
     }
 }
-
-  .api-section aio-code {
-    background-color: rgba(241, 241, 241, 0.2);
-  }
 
   .from-constructor, .read-only-property {
     font-style: italic;
