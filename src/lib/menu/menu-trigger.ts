@@ -195,7 +195,6 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     }
 
     const overlayRef = this._createOverlay();
-    overlayRef.setDirection(this.dir);
     overlayRef.attach(this._portal);
 
     if (this.menu.lazyContent) {
@@ -353,7 +352,8 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
       positionStrategy: this._getPosition(),
       hasBackdrop: this.menu.hasBackdrop == null ? !this.triggersSubmenu() : this.menu.hasBackdrop,
       backdropClass: this.menu.backdropClass || 'cdk-overlay-transparent-backdrop',
-      scrollStrategy: this._scrollStrategy()
+      scrollStrategy: this._scrollStrategy(),
+      direction: this._dir
     });
   }
 

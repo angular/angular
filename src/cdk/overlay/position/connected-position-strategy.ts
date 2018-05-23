@@ -45,7 +45,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
 
   /** Whether the we're dealing with an RTL context */
   get _isRtl() {
-    return this._overlayRef.getConfig().direction === 'rtl';
+    return this._overlayRef.getDirection() === 'rtl';
   }
 
   /** Ordered list of preferred positions, from most to least desirable. */

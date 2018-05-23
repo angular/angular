@@ -267,6 +267,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _buildConfig(): OverlayConfig {
     const positionStrategy = this._position = this._createPositionStrategy();
     const overlayConfig = new OverlayConfig({
+      direction: this._dir,
       positionStrategy,
       scrollStrategy: this.scrollStrategy,
       hasBackdrop: this.hasBackdrop
@@ -347,8 +348,6 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
         minHeight: this.minHeight,
       });
     }
-
-    this._overlayRef.setDirection(this.dir);
 
     if (!this._overlayRef.hasAttached()) {
       this._overlayRef.attach(this._templatePortal);

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Direction} from '@angular/cdk/bidi';
+import {Direction, Directionality} from '@angular/cdk/bidi';
 import {ComponentPortal, Portal, PortalOutlet, TemplatePortal} from '@angular/cdk/portal';
 import {ComponentRef, EmbeddedViewRef, NgZone} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
@@ -20,9 +20,6 @@ import {coerceCssPixelValue, coerceArray} from '@angular/cdk/coercion';
 export type ImmutableObject<T> = {
   readonly [P in keyof T]: T[P];
 };
-
-// TODO(crisbeto): add support for passing in a `Directionality`
-// to make syncing the direction easier.
 
 /**
  * Reference to an overlay that has been created with the Overlay service.
@@ -242,14 +239,27 @@ export class OverlayRef implements PortalOutlet {
   }
 
   /** Sets the LTR/RTL direction for the overlay. */
-  setDirection(dir: Direction) {
+  setDirection(dir: Direction | Directionality) {
     this._config = {...this._config, direction: dir};
     this._updateElementDirection();
   }
 
+  /**
+   * Returns the layout direction of the overlay panel.
+   */
+  getDirection(): Direction {
+    const direction = this._config.direction;
+
+    if (!direction) {
+      return 'ltr';
+    }
+
+    return typeof direction === 'string' ? direction : direction.value;
+  }
+
   /** Updates the text direction of the overlay panel. */
   private _updateElementDirection() {
-    this._host.setAttribute('dir', this._config.direction!);
+    this._host.setAttribute('dir', this.getDirection());
   }
 
   /** Updates the size of the overlay element based on the overlay config. */

@@ -7,7 +7,7 @@
  */
 
 import {PositionStrategy} from './position/position-strategy';
-import {Direction} from '@angular/cdk/bidi';
+import {Direction, Directionality} from '@angular/cdk/bidi';
 import {ScrollStrategy} from './scroll/scroll-strategy';
 import {NoopScrollStrategy} from './scroll/noop-scroll-strategy';
 
@@ -47,8 +47,11 @@ export class OverlayConfig {
   /** The max-height of the overlay panel. If a number is provided, pixel units are assumed. */
   maxHeight?: number | string;
 
-  /** The direction of the text in the overlay panel. */
-  direction?: Direction;
+  /**
+   * Direction of the text in the overlay panel. If a `Directionality` instance
+   * is passed in, the overlay will handle changes to its value automatically.
+   */
+  direction?: Direction | Directionality;
 
   constructor(config?: OverlayConfig) {
     if (config) {

@@ -942,7 +942,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
 
   /** Whether the we're dealing with an RTL context */
   private _isRtl() {
-    return this._overlayRef.getConfig().direction === 'rtl';
+    return this._overlayRef.getDirection() === 'rtl';
   }
 
   /** Determines whether the overlay uses exact or flexible positioning. */
