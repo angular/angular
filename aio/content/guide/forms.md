@@ -489,15 +489,21 @@ you display its name using the interpolation syntax.
 
 {@a ngModel}
 
+<!--
 ## Two-way data binding with _ngModel_
+-->
+## _ngModel_ 로 양방향 바인딩하기
 
+<!--
 Running the app right now would be disappointing.
+-->
+지금까지 작성한 앱을 실행해보면 부족한 기능이 눈에 띌 것입니다.
 
 <figure>
   <img src="generated/images/guide/forms/hero-form-3.png" alt="Early form with no binding">
 </figure>
 
-
+<!--
 You don't see hero data because you're not binding to the `Hero` yet.
 You know how to do that from earlier pages.
 [Displaying Data](guide/displaying-data) teaches property binding.
@@ -511,6 +517,17 @@ instead you'll use the new `[(ngModel)]` syntax, which
 makes binding the form to the model easy.
 
 Find the `<input>` tag for *Name* and update it like this:
+-->
+아직까지는 `Hero` 객체를 바인딩하지 않았기 때문에 히어로의 데이터를 볼 수 없습니다.
+이 내용은 [데이터 표시하기](guide/displaying-data) 가이드에서 이미 살펴본 프로퍼티 바인딩으로 개선할 수 있습니다.
+그리고 [사용자 동작](guide/user-input) 가이드에서 본 대로 DOM에서 발생하는 이벤트에 반응해서 컴포넌트 프로퍼티를 갱신할 수도 있습니다.
+
+하지만 지금은 프로퍼티의 값을 화면에 표시하면서, 동시에  화면에서 발생하는 이벤트를 감지해야 합니다.
+
+사실 이 내용은 이전에도 다룬 적이 있습니다.
+`[(ngModel)]` 문법을 사용하면 폼과 모델을 간단하게 바인딩 할 수 있습니다.
+
+*이름*에 해당하는 `<input>` 태그에 이 방법을 적용해 봅시다:
 
 <code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-1">
 
@@ -518,30 +535,46 @@ Find the `<input>` tag for *Name* and update it like this:
 
 <div class="l-sub-section">
 
+  <!--
   You added a diagnostic interpolation after the input tag
   so you can see what you're doing.
   You left yourself a note to throw it away when you're done.
+  -->
+  입력 필드 뒤에는 디버그용 문자열 바인딩을 추가했습니다.
+  필요한 기능을 모두 개발하고 나면 이 부분은 제거해도 됩니다.
 
 </div>
 
+<!--
 Focus on the binding syntax: `[(ngModel)]="..."`.
 
 You need one more addition to display the data. Declare
 a template variable for the form. Update the `<form>` tag with
 `#heroForm="ngForm"` as follows:
+-->
+바인딩 문법으로 사용된 `[(ngModel)]="..."`을 자세히 봅시다.
+
+입력 필드는 현재 값을 화면에 표시하면서 또 다른 기능을 동시에 수행해야 합니다. 폼에 다음과 같이 템플릿 변수를 선언합니다:
 
 <code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="template-variable">
 
 </code-example>
 
+<!--
 The variable `heroForm` is now a reference to the `NgForm` directive that governs the form as a whole.
+-->
+변수 `heroForm`는 이제 폼 전체를 표현하는 `NgForm`디렉티브를 가리킵니다.
 
 <div class="l-sub-section">
 
   {@a ngForm}
 
+  <!--
   ### The _NgForm_ directive
+  -->
+  ### _NgForm_ 디렉티브
 
+  <!--
   What `NgForm` directive?
   You didn't add an [NgForm](api/forms/NgForm) directive.
 
@@ -552,49 +585,82 @@ The variable `heroForm` is now a reference to the `NgForm` directive that govern
   and `name` attribute, and monitors their properties, including their validity.
   It also has its own `valid` property which is true only *if every contained
   control* is valid.
+  -->
+  `NgForm` 디렉티브가 무엇일까요?
+  지금까지 작성한 코드에서 [NgForm](api/forms/NgForm)를 추가하는 코드는 없었습니다.
+
+  이 디렉티브는 Angular가 자동으로 추가합니다. Angular는 템플릿에 `<form>` 태그가 사용된 것을 확인하면 자동으로 `NgForm` 디렉티브를 생성하고 이 엘리먼트에 연결합니다.
+
+  `NgForm` 디렉티브는 `<form>` 엘리먼트의 기능을 확장하는 디렉티브입니다. 이 디렉티브는 폼 엘리먼트 안에 정의된 폼 컨트롤들을 `ngModel` 디렉티브와 `name` 어트리뷰트로 연결하며, 컨트롤의 값이 변하는 것을 감지하고, 유효성을 검사하는 기능도 지원합니다.
+  그리고 `NgForm` 디렉티브에는 `valid` 프로퍼티가 존재하는데, 이 값은 *모든 컨트롤*의 유효성 검사를 통과했을 때 true로 할당됩니다.
 
 </div>
 
+<!--
 If you ran the app now and started typing in the *Name* input box,
 adding and deleting characters, you'd see them appear and disappear
 from the interpolated text.
 At some point it might look like this:
+-->
+이 앱을 실행하고 *이름* 입력 필드에 글자를 입력하면, 컴포넌트 프로퍼티 값이 어떤 값으로 설정되는지 화면에서 확인할 수 있습니다.
+다음과 같이 표시될 것입니다:
 
 <figure>
   <img src="generated/images/guide/forms/ng-model-in-action.png" alt="ngModel in action">
 </figure>
 
+<!--
 The diagnostic is evidence that values really are flowing from the input box to the model and
 back again.
+-->
+템플릿에 추가한 디버그용 구문을 활용하면 입력 필드의 값이 모델로 반영되고, 이 값이 다시 화면에 반영되는 것을 확인할 수 있습니다.
 
 <div class="l-sub-section">
 
+  <!--
   That's *two-way data binding*.
   For more information, see
   [Two-way binding with NgModel](guide/template-syntax#ngModel) on the
   the [Template Syntax](guide/template-syntax) page.
+  -->
+  *양방향 데이터 바인딩*을 간단하게 살펴봤습니다.
+  좀 더 자세한 내용을 확인하려면 [템플릿 문법](guide/template-syntax) 가이드에 있는 [NgModel - 양방향 바인딩 디렉티브](guide/template-syntax#ngModel) 부분을 참고하세요.
 
 </div>
 
+<!--
 Notice that you also added a `name` attribute to the `<input>` tag and set it to "name",
 which makes sense for the hero's name. Any unique value will do, but using a descriptive name is helpful.
 Defining a `name` attribute is a requirement when using `[(ngModel)]` in combination with a form.
+-->
+이 예제에서는 `<input>` 태그에 `name="name"` 이라는 어트리뷰트를 추가했는데, 이 어트리뷰트는 히어로의 이름과 연결됩니다. 어디에서도 마찬가지지만, 필드 이름은 그 자체로 의미를 설명할 수 있도록 지정하는 것이 좋습니다.
+이제 폼에 `[(ngModel)]`을 사용하기 때문에 `name` 어트리뷰트는 꼭 지정해야 합니다.
 
 <div class="l-sub-section">
 
+  <!--
   Internally, Angular creates `FormControl` instances and
   registers them with an `NgForm` directive that Angular attached to the `<form>` tag.
   Each `FormControl` is registered under the name you assigned to the `name` attribute.
   Read more in the previous section, [The NgForm directive](guide/forms#ngForm).
+  -->
+  Angular는 폼 안에 있는 각 `FormControl`의 인스턴스를 생성하고 이 인스턴스를 `<form>` 태그에 연결되는 `NgForm` 디렉티브에 등록하는데, 이 때 각각의 `FormControl`은 `name` 어트리뷰트로 구분됩니다. 위에서 설명한 [NgForm 디렉티브](guide/forms#ngForm)를 참고하세요.
 
 </div>
 
+<!--
 Add similar `[(ngModel)]` bindings and `name` attributes to *Alter Ego* and *Hero Power*.
 You'll ditch the input box binding message
 and add a new binding (at the top) to the component's `diagnostic` property.
 Then you can confirm that two-way data binding works *for the entire hero model*.
 
 After revision, the core of the form should look like this:
+-->
+*별명*과 *특수 능력*도 `name` 어트리뷰트와 `[(ngModel)]`을 사용해서 바인딩합니다.
+그리고 디버깅용으로 추가한 코드는 컴포넌트 최상단으로 옮기고 컴포넌트의 `diagnostic` 프로퍼티와 연결합니다.
+이제 *히어로 모델의 전체값*을 양방향 바인딩으로 확인할 수 있습니다.
+
+이렇게 수정하고 나면 폼 템플릿의 내용은 다음과 같습니다:
 
 <code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModel-2">
 
@@ -602,22 +668,34 @@ After revision, the core of the form should look like this:
 
 <div class="l-sub-section">
 
+  <!--
   * Each input element has an `id` property that is used by the `label` element's `for` attribute
   to match the label to its input control.
   * Each input element has a `name` property that is required by Angular forms to register the control with the form.
+  -->
+  * 각각의 입력 필드는 `id` 프로퍼티가 지정되어 있는데, 이 프로퍼티는 `<label>` 엘리먼트의 `for` 어트리뷰트로 연결됩니다.
+  * 입력 필드에 지정된 `name` 프로퍼티는 Angular 폼이 내부 폼 컨트롤을 관리하기 위해 필요합니다.
 
 </div>
 
+<!--
 If you run the app now and change every hero model property, the form might display like this:
+-->
+이제 앱을 실행하고 히어로 모델의 프로퍼티 값을 변경하면 다음과 같은 화면이 표시될 것입니다:
 
 <figure>
   <img src="generated/images/guide/forms/ng-model-in-action-2.png" alt="ngModel in action">
 </figure>
 
+<!--
 The diagnostic near the top of the form
 confirms that all of your changes are reflected in the model.
 
 *Delete* the `{{diagnostic}}` binding at the top as it has served its purpose.
+-->
+폼 위에 있는 디버깅 메시지를 확인하면 모델이 지금 어떤 값으로 지정되고 있는지 확인할 수 있습니다.
+
+필요한 기능을 모두 개발하고 나면 `{{diagnostic}}` 바인딩을 *제거하세요*.
 
 ## Track control state and validity with _ngModel_
 
