@@ -244,7 +244,7 @@ class FakeComponentFactory extends ComponentFactory<any> {
          projectableNodes?: any[][],
          rootSelectorOrNode?: string | any,
          ngModule?: NgModuleRef<any>): ComponentRef<any> {
-    return (jasmine.createSpy('ComponentRef') as any) as ComponentRef<any>;
+    return jasmine.createSpy('ComponentRef') as any;
   };
 }
 
