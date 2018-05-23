@@ -125,7 +125,6 @@
   {% if method.usageNotes -%}
     <tr>
       <td class="usage-notes">
-        <h3>Usage Notes</h3>
         {$ method.usageNotes | marked({ h3: 'h4' }) $}
       </td>
     </tr>
@@ -153,7 +152,7 @@
 {% if nonInternalProperties.length -%}
 <section class="{$ containerClass $}">
   <h2>{$ headingText $}</h2>
-  <table class="is-full-width list-table properties-table">
+  <table class="is-full-width list-table property-table">
     <thead>
       <tr>
         <th>{$ headings[0] or 'Property' $}</th>
