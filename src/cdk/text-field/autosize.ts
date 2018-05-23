@@ -233,7 +233,10 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
         // IE will throw an "Unspecified error" if we try to set the selection range after the
         // element has been removed from the DOM. Assert that the directive hasn't been destroyed
         // between the time we requested the animation frame and when it was executed.
-        if (!this._destroyed.isStopped) {
+        // Also note that we have to assert that the textarea is focused before we set the
+        // selection range. Setting the selection range on a non-focused textarea will cause
+        // it to receive focus on IE and Edge.
+        if (!this._destroyed.isStopped && document.activeElement === textarea) {
           textarea.setSelectionRange(selectionStart, selectionEnd);
         }
       }));
