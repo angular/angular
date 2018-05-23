@@ -2833,7 +2833,9 @@ describe('MatSelect', () => {
       const rawYOrigin = selectInstance._transformOrigin.split(' ')[1].trim();
       const origin = Math.floor(parseInt(rawYOrigin));
 
-      expect(origin).toBe(expectedOrigin,
+      // Because the origin depends on the Y axis offset, we also have to
+      // round down and check that the difference is within a pixel.
+      expect(Math.abs(expectedOrigin - origin) < 2).toBe(true,
           `Expected panel animation to originate in the center of option ${index}.`);
     }
 
