@@ -1,3 +1,4 @@
+{% import "lib/githubLinks.html" as github -%}
 {% import "lib/memberHelpers.html" as memberHelper -%}
 {% import "lib/paramList.html" as params -%}
 {% extends 'export-base.template.html' %}
@@ -11,7 +12,10 @@
   {% for option in doc.members %}
   <a id="{$ option.anchor $}"></a>
   <table class="is-full-width option-table">
-    <thead><tr><th><h3>{$ option.name $}</h3></th></tr></thead>
+    <thead><tr><th>
+      <h3>{$ option.name $}</h3>
+      {$ github.githubLinks(option, versionInfo) $}
+    </th></tr></thead>
     <tbody>
       <tr>
         <td>

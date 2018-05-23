@@ -1,3 +1,4 @@
+{% import "lib/githubLinks.html" as github -%}
 {% import "lib/paramList.html" as params -%}
 
 {%- macro renderHeritage(exportDoc) -%}
@@ -69,15 +70,18 @@
 {%- endif %}
 {%- endmacro -%}
 
-{%- macro renderMethodDetail(method, cssClass) -%}
+{%- macro renderMethodDetail(versionInfo, method, cssClass) -%}
 <a id="{$ method.anchor $}"></a>
 <table class="is-full-width method-table {$ cssClass $}">
-  {% if method.name !== 'constructor' %}<thead><tr><th><h3>
-    {% if method.isCallMember %}<i>call signature</i>
-    {% elseif method.isNewMember %}<i>construct signature</i>
-    {% else %}{$ method.name $}()
-    {% endif %}
-  </h3></th></tr></thead>{% endif %}
+  {% if method.name !== 'constructor' %}<thead><tr><th>
+    <h3>
+      {% if method.isCallMember %}<i>call signature</i>
+      {% elseif method.isNewMember %}<i>construct signature</i>
+      {% else %}{$ method.name $}()
+      {% endif %}
+    </h3>
+    {$ github.githubLinks(method, versionInfo) $}
+  </th></tr></thead>{% endif %}
   <tbody>
     {% if method.shortDescription %}<tr>
       <td class="short-description">
@@ -133,13 +137,13 @@
 </table>
 {% endmacro -%}
 
-{%- macro renderMethodDetails(methods, containerClass, itemClass, headingText) -%}
+{%- macro renderMethodDetails(versionInfo, methods, containerClass, itemClass, headingText) -%}
 {% set nonInternalMethods = methods | filterByPropertyValue('internal', undefined) %}
 {% if nonInternalMethods.length %}
 <section class="{$ containerClass $}">
   <h2>{$ headingText $}</h2>
   {% for member in nonInternalMethods %}
-    {$ renderMethodDetail(member, itemClass) $}
+    {$ renderMethodDetail(versionInfo, member, itemClass) $}
   {% endfor %}
 </section>
 {% endif %}

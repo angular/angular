@@ -1,4 +1,4 @@
-.page-actions {
+.github-links {
   float: right;
   .material-icons {
     border-radius: 4px;
@@ -32,12 +32,28 @@
 
   .method-table, .option-table {
     th {
-      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+
+      h3 {
+        flex: 1;
+      }
+
+      .github-links {
+        a {
+          color: $mediumgray;
+          .material-icons:hover {
+            background: none;
+            color: $blue;
+          }
+        }
+      }
     }
 
     h3 {
       margin: 6px 0;
       font-weight: bold;
+      clear: left;
     }
 
     h4 {
