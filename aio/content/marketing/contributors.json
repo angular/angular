@@ -618,5 +618,14 @@
     "website": "https://mhartington.io",
     "bio": "Mike is a Developer Advocate for the Ionic Framework and a GDE in Angular. He spends most of his time making fast PWAs and exploring emerging web standards. When not behind a keyboard, you'll probably find him with a guitar and beer.",
     "group": "GDE"
+  },
+
+  "mashhoodr": {
+    "name": "Mashhood Rastgar",
+    "picture": "mashhood.jpg",
+    "twitter": "mashhoodr",
+    "website": "http://imars.info/",
+    "bio": "Mashhood is the principal technical consultant at Recurship and a Google Developer Expert. He works with different startups in US and EU to help them crawl through the technical maze and quickly build amazing products focused around the problems they are trying to solve. He specializes in using the latest web technologies available to execute the best possible  solutions.",
+    "group": "GDE"
   }
 }
