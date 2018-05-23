@@ -73,7 +73,8 @@ export class NgTemplateOutlet implements OnChanges {
    */
   private _shouldRecreateView(changes: SimpleChanges): boolean {
     const ctxChange = changes['ngTemplateOutletContext'];
-    return !!changes['ngTemplateOutlet'] || (ctxChange && this._hasContextShapeChanged(ctxChange));
+    return !!changes['ngTemplateOutlet'] ||
+        (!!ctxChange && this._hasContextShapeChanged(ctxChange));
   }
 
   private _hasContextShapeChanged(ctxChange: SimpleChange): boolean {

@@ -23,8 +23,8 @@ describe('define', () => {
           ngDoCheck(): void { this.log.push('ngDoCheck'); }
           ngOnChanges(changes: SimpleChanges): void {
             this.log.push('ngOnChanges');
-            this.log.push('valA', changes['valA'].previousValue, changes['valA'].currentValue);
-            this.log.push('valB', changes['valB'].previousValue, changes['valB'].currentValue);
+            this.log.push('valA', changes['valA'] !.previousValue, changes['valA'] !.currentValue);
+            this.log.push('valB', changes['valB'] !.previousValue, changes['valB'] !.currentValue);
           }
 
           static ngDirectiveDef = defineDirective({

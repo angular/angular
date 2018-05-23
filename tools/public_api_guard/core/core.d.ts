@@ -794,17 +794,17 @@ export interface SelfDecorator {
 /** @experimental */
 export declare function setTestabilityGetter(getter: GetTestability): void;
 
-export declare class SimpleChange {
-    currentValue: any;
+export declare class SimpleChange<P = any, C = P> {
+    currentValue: C;
     firstChange: boolean;
-    previousValue: any;
-    constructor(previousValue: any, currentValue: any, firstChange: boolean);
+    previousValue: P;
+    constructor(previousValue: P, currentValue: C, firstChange: boolean);
     isFirstChange(): boolean;
 }
 
-export interface SimpleChanges {
-    [propName: string]: SimpleChange;
-}
+export declare type SimpleChanges<T = any> = {
+    [P in keyof T]?: SimpleChange<T[P]>;
+};
 
 export declare const SkipSelf: SkipSelfDecorator;
 

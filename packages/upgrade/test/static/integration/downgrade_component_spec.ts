@@ -73,7 +73,7 @@ withEachNg1Version(() => {
                if (!changes[prop]) {
                  throw new Error(`Changes record for '${prop}' not found.`);
                }
-               const actualValue = changes[prop].currentValue;
+               const actualValue = changes[prop] !.currentValue;
                if (actualValue != value) {
                  throw new Error(
                      `Expected changes record for'${prop}' to be '${value}' but was '${actualValue}'`);
@@ -209,11 +209,11 @@ withEachNg1Version(() => {
            ngOnChanges(changes: SimpleChanges) {
              switch (this.ngOnChangesCount++) {
                case 0:
-                 expect(changes.model.currentValue).toBe('world');
+                 expect(changes.model !.currentValue).toBe('world');
                  this.modelChange.emit('newC');
                  break;
                case 1:
-                 expect(changes.model.currentValue).toBe('newC');
+                 expect(changes.model !.currentValue).toBe('newC');
                  break;
                default:
                  throw new Error('Called too many times! ' + JSON.stringify(changes));
@@ -428,7 +428,7 @@ withEachNg1Version(() => {
                this.initialValue = this.foo;
              }
 
-             if (changes['foo'] && changes['foo'].isFirstChange()) {
+             if (changes['foo'] && changes['foo'] !.isFirstChange()) {
                this.firstChangesCount++;
              }
            }

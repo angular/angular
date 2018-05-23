@@ -258,9 +258,9 @@ function expectSimpleChanges(actual: SimpleChanges, expected: SimpleChanges) {
   Object.keys(expected).forEach(key => {
     expect(actual[key]).toBeTruthy(`Change should have included key ${key}`);
     if (actual[key]) {
-      expect(actual[key].previousValue).toBe(expected[key].previousValue);
-      expect(actual[key].currentValue).toBe(expected[key].currentValue);
-      expect(actual[key].firstChange).toBe(expected[key].firstChange);
+      expect(actual[key] !.previousValue).toBe(expected[key] !.previousValue);
+      expect(actual[key] !.currentValue).toBe(expected[key] !.currentValue);
+      expect(actual[key] !.firstChange).toBe(expected[key] !.firstChange);
     }
   });
 }

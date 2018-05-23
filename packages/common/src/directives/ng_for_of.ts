@@ -130,7 +130,7 @@ export class NgForOf<T> implements DoCheck, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if ('ngForOf' in changes) {
       // React on ngForOf changes only once all inputs have been initialized
-      const value = changes['ngForOf'].currentValue;
+      const value = changes['ngForOf'] !.currentValue;
       if (!this._differ && value) {
         try {
           this._differ = this._differs.find(value).create(this.ngForTrackBy);

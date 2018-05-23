@@ -289,7 +289,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
   private forwardChanges(changes: SimpleChanges) {
     // Forward input changes to `bindingDestination`
     Object.keys(changes).forEach(
-        propName => this.bindingDestination[propName] = changes[propName].currentValue);
+        propName => this.bindingDestination[propName] = changes[propName] !.currentValue);
 
     if (isFunction(this.bindingDestination.$onChanges)) {
       this.bindingDestination.$onChanges(changes);

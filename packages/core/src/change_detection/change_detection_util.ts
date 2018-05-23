@@ -66,8 +66,8 @@ export class WrappedValue {
  * Represents a basic change from a previous to a new value.
  *
  */
-export class SimpleChange {
-  constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}
+export class SimpleChange<P = any, C = P> {
+  constructor(public previousValue: P, public currentValue: C, public firstChange: boolean) {}
 
   /**
    * Check whether the new value is the first value assigned.

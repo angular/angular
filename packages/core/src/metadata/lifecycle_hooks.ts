@@ -14,7 +14,9 @@ import {SimpleChange} from '../change_detection/change_detection_util';
  * values are instances of {@link SimpleChange}. See {@link OnChanges}
  *
  */
-export interface SimpleChanges { [propName: string]: SimpleChange; }
+export type SimpleChanges<T = any> = {
+  [P in keyof T]?: SimpleChange<T[P]>;
+};
 
 /**
  * @usageNotes
