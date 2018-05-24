@@ -43,9 +43,7 @@ export async function loadRemoteSitemapUrls(host: string) {
         .on('error', reject));
   });
 
-  // Currently, all sitemaps use `angular.io` as host in URLs (which is fine since we only use the
-  // sitemap `angular.io`). See also `aio/src/extra-files/*/robots.txt`.
-  return extractSitemapUrls(xml, 'https://angular.io/');
+  return extractSitemapUrls(xml);
 }
 
 export function loadSWRoutes() {
@@ -69,8 +67,22 @@ export function loadSWRoutes() {
 }
 
 // Private functions
-function extractSitemapUrls(xml: string, host = '%%DEPLOYMENT_HOST%%') {
+function extractSitemapUrls(xml: string) {
+  // Currently, all sitemaps use `angular.io` as host in URLs (which is fine since we only use the
+  // sitemap in `angular.io`). See also `aio/src/extra-files/*/robots.txt`.
+  const host = 'https://angular.io';
   const urls: string[] = [];
+
   xml.replace(/<loc>([^<]+)<\/loc>/g, (_, loc) => urls.push(loc.replace(host, '')) as any);
+
+  // Ensure none of the URLs contains the scheme/host.
+  // (That would mean that the URL contains a different than expected host, which can in turn lead
+  // to tests passing while they shouldn't).
+  urls.forEach(url => {
+    if (url.includes('://')) {
+      throw new Error(`Sitemap URL (${url}) contains unexpected host. Expected: ${host}`);
+    }
+  });
+
   return urls;
 }
