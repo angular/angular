@@ -363,7 +363,7 @@ export abstract class AbstractControl {
    *
    * An event will be emitted by `statusChanges` by default.
    *
-   * Passing `false` for `emitEvent` will cause `statusChanges` to not event an event.
+   * Passing `false` for `emitEvent` will cause `statusChanges` to not emit an event.
    */
   markAsPending(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     (this as{status: string}).status = PENDING;
