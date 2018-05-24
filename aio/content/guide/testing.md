@@ -2367,9 +2367,9 @@ The [override metadata object](#metadata-override-object) is a generic defined a
 
 <code-example format="." language="javascript">
   type MetadataOverride<T> = {
-    add?: T;
-    remove?: T;
-    set?: T;
+    add?: Partial<T>;
+    remove?: Partial<T>;
+    set?: Partial<T>;
   };
 </code-example>
 
@@ -2725,9 +2725,9 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
 
 <code-example format="." language="javascript">
   type MetadataOverride<T> = {
-    add?: T;
-    remove?: T;
-    set?: T;
+    add?: Partial<T>;
+    remove?: Partial<T>;
+    set?: Partial<T>;
   };
 </code-example>
 

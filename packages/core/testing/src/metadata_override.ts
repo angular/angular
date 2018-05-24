@@ -12,7 +12,7 @@
  * @experimental
  */
 export type MetadataOverride<T> = {
-  add?: T,
-  remove?: T,
-  set?: T
+  add?: Partial<T>,
+  remove?: Partial<T>,
+  set?: Partial<T>
 };
