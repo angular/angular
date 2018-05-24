@@ -697,28 +697,46 @@ confirms that all of your changes are reflected in the model.
 
 필요한 기능을 모두 개발하고 나면 `{{diagnostic}}` 바인딩을 *제거하세요*.
 
+<!--
 ## Track control state and validity with _ngModel_
+-->
+## _ngModel_ 로 폼 컨트롤 상태와 유효성 추적하기
 
+<!--
 Using `ngModel` in a form gives you more than just two-way data binding. It also tells
 you if the user touched the control, if the value changed, or if the value became invalid.
 
 The *NgModel* directive doesn't just track state; it updates the control with special Angular CSS classes that reflect the state.
 You can leverage those class names to change the appearance of the control.
+-->
+폼에 `ngModel`을 사용하는 것이 양방향 바인딩만을 위한 것은 아닙니다. 폼에 이 디렉티브를 사용하면 사용자가 폼 컨트롤에 접근했는지, 값이 변경되었는지, 입력된 값이 유효한지 확인할 수 있습니다.
+
+*NgModel* 디렉티브는 폼 컨트롤의 상태를 추적하면서 그 상태에 해당하는 CSS 클래스를 해당 엘리먼트에 추가합니다.
+이렇게 지정되는 클래스는 폼 컨트롤의 모습을 상황에 따라 다르게 표현할 때 활용할 수 있습니다.
 
 <table>
 
   <tr>
 
     <th>
+      <!--
       State
+      -->
+      상태
     </th>
 
     <th>
+      <!--
       Class if true
+      -->
+      참일 때 클래스
     </th>
 
     <th>
+      <!--
       Class if false
+      -->
+      거짓일 때 클래스
     </th>
 
   </tr>
@@ -726,7 +744,10 @@ You can leverage those class names to change the appearance of the control.
   <tr>
 
     <td>
+      <!--
       The control has been visited.
+      -->
+      사용자가 접근한 적이 있음
     </td>
 
     <td>
@@ -742,7 +763,10 @@ You can leverage those class names to change the appearance of the control.
   <tr>
 
     <td>
+      <!--
       The control's value has changed.
+      -->
+      폼 컨트롤의 값이 변경되었음
     </td>
 
     <td>
@@ -758,7 +782,10 @@ You can leverage those class names to change the appearance of the control.
   <tr>
 
     <td>
+      <!--
       The control's value is valid.
+      -->
+      폼 컨트롤의 값이 유효함
     </td>
 
     <td>
@@ -773,13 +800,17 @@ You can leverage those class names to change the appearance of the control.
 
 </table>
 
+<!--
 Temporarily add a [template reference variable](guide/template-syntax#ref-vars) named `spy`
 to the _Name_ `<input>` tag and use it to display the input's CSS classes.
+-->
+클래스가 지정되는 것을 확인하기 위해 임시로 [템플릿 참조 변수](guide/template-syntax#ref-vars) `spy`를 _이름_ 에 해당하는 `<input>` 태그에 지정하고, 템플릿에 표시하도록 다음과 같이 작성해 봅시다.
 
 <code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="ngModelName-2">
 
 </code-example>
 
+<!--
 Now run the app and look at the _Name_ input box.
 Follow these steps *precisely*:
 
@@ -789,46 +820,80 @@ Follow these steps *precisely*:
 1. Erase the name.
 
 The actions and effects are as follows:
+-->
+이제 앱을 실행하고 _이름_ 입력 필드를 봅시다.
+그리고 다음 단계를 *천천히* 실행해 봅니다:
+
+1. 보기만 하고 아직 터치하지 마세요.
+1. 입력 필드 안쪽을 클릭해보고, 바깥쪽을 클릭해 보세요.
+1. 이름 뒤에 슬래시(`/`)를 입력해 보세요.
+1. 이름을 지워보세요.
+
+그러면 다음 그림처럼 표시될 것입니다:
 
 <figure>
   <img src="generated/images/guide/forms/control-state-transitions-anim.gif" alt="Control State Transition">
 </figure>
 
+<!--
 You should see the following transitions and class names:
+-->
+그리고 각각의 단계마다 다음과 같은 클래스가 적용됩니다:
 
 <figure>
   <img src="generated/images/guide/forms/ng-control-class-changes.png" alt="Control state transitions">
 </figure>
 
+<!--
 The `ng-valid`/`ng-invalid` pair is the most interesting, because you want to send a
 strong visual signal when the values are invalid. You also want to mark required fields.
 To create such visual feedback, add definitions for the `ng-*` CSS classes.
 
 *Delete* the `#spy` template reference variable and the `TODO` as they have served their purpose.
+-->
+이 중에서 `ng-valid`/`ng-invalid`는 입력값이 유효하지 않을 때 엘리먼트의 모습을 다르게 표현할 때 활용하기 좋습니다. 그리고 필수 입력 필드를 입력하지 않았을 때도 이 클래스를 활용할 수 있으며, 템플릿에 연결된 CSS에 이 클래스를 활용하는 스타일을 지정하면 간단하게 적용할 수 있습니다.
 
+필요한 기능을 모두 개발했으면 템플릿에 선언한 템플릿 참조 변수 `#spi`를 *제거하세요*.
+
+<!--
 ## Add custom CSS for visual feedback
+-->
+## 시각적 표현을 위해 커스텀 CSS 추가하기
 
+<!--
 You can mark required fields and invalid data at the same time with a colored bar
 on the left of the input box:
+-->
+필수 입력 필드가 입력되지 않았거나 유효하지 않은 데이터가 입력된 경우에는 입력 필드에 왼쪽에 이 상태를 표시하는 막대 표시를 추가할 수 있습니다.
 
 <figure>
   <img src="generated/images/guide/forms/validity-required-indicator.png" alt="Invalid Form">
 </figure>
 
+<!--
 You achieve this effect by adding these class definitions to a new `forms.css` file
 that you add to the project as a sibling to `index.html`:
+-->
+이 스타일은 `index.html` 파일이 위치하는 폴더에 `forms.css` 파일을 새로 만들어서 지정해 봅시다.
+이 파일의 내용은 다음과 같이 작성합니다:
 
 <code-example path="forms/src/assets/forms.css" title="src/assets/forms.css">
 
 </code-example>
 
+<!--
 Update the `<head>` of `index.html` to include this style sheet:
+-->
+그리고 `index.html` 파일의 `<head>`에서 이 스타일 시트를 불러오도록 수정합니다:
 
 <code-example path="forms/src/index.html" linenums="false" title="src/index.html (styles)" region="styles">
 
 </code-example>
 
+<!--
 ## Show and hide validation error messages
+-->
+## 에러 메시지 표시하기
 
 You can improve the form. The _Name_ input box is required and clearing it turns the bar red.
 That says something is wrong but the user doesn't know *what* is wrong or what to do about it.
