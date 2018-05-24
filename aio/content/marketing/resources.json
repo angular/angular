@@ -528,13 +528,6 @@
             "title": "Pluralsight",
             "url": "https://www.pluralsight.com/search?q=angular+2&categories=all"
           },
-          "ab": {
-            "desc": "Take this introduction to Angular course, to learn the fundamentals in just two days, free of charge.",
-            "logo": "",
-            "rev": true,
-            "title": "Rangle.io",
-            "url": "https://rangle.io/services/javascript-training/training-angular1-angular2-with-ngupgrade/"
-          },
           "ab3": {
             "desc": "Angular courses hosted by  Udemy",
             "logo": "",
