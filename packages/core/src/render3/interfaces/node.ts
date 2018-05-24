@@ -72,11 +72,6 @@ export interface LNode {
   readonly parent: LNode|null;
 
   /**
-   * First child of the current node.
-   */
-  child: LNode|null;
-
-  /**
    * If regular LElementNode, then `data` will be null.
    * If LElementNode with component, then `data` contains LView.
    * If LViewNode, then `data` contains the LView.
@@ -130,8 +125,6 @@ export interface LElementNode extends LNode {
   /** The DOM element associated with this node. */
   readonly native: RElement;
 
-  child: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
-
   /** If Component then data has LView (light DOM) */
   readonly data: LView|null;
 
@@ -143,7 +136,6 @@ export interface LElementNode extends LNode {
 export interface LTextNode extends LNode {
   /** The text node associated with this node. */
   native: RText;
-  child: null;
 
   /** LTextNodes can be inside LElementNodes or inside LViewNodes. */
   readonly parent: LElementNode|LViewNode;
@@ -154,7 +146,6 @@ export interface LTextNode extends LNode {
 /** Abstract node which contains root nodes of a view. */
 export interface LViewNode extends LNode {
   readonly native: null;
-  child: LContainerNode|LElementNode|LTextNode|LProjectionNode|null;
 
   /**  LViewNodes can only be added to LContainerNodes. */
   readonly parent: LContainerNode|null;
@@ -173,7 +164,6 @@ export interface LContainerNode extends LNode {
    */
   native: RElement|RText|null|undefined;
   readonly data: LContainer;
-  child: null;
 
   /** Containers can be added to elements or views. */
   readonly parent: LElementNode|LViewNode|null;
@@ -182,7 +172,6 @@ export interface LContainerNode extends LNode {
 
 export interface LProjectionNode extends LNode {
   readonly native: null;
-  child: null;
 
   readonly data: LProjection;
 
@@ -311,16 +300,48 @@ export interface TNode {
   next: TNode|null;
 
   /**
+   * First child of the current node.
+   *
+   * For component nodes, the child will always be a ContentChild (in same view).
+   * For embedded view nodes, the child will be in their child view.
+   */
+  child: TNode|null;
+
+  /**
    * A pointer to a TContainerNode created by directives requesting ViewContainerRef
    */
   dynamicContainerNode: TNode|null;
 }
 
 /** Static data for an LElementNode  */
-export interface TElementNode extends TNode { tViews: null; }
+export interface TElementNode extends TNode {
+  child: TContainerNode|TElementNode|TProjectionNode|null;
+  tViews: null;
+}
+
+/** Static data for an LTextNode  */
+export interface TTextNode extends TNode {
+  child: null;
+  tViews: null;
+}
 
 /** Static data for an LContainerNode */
-export interface TContainerNode extends TNode { tViews: TView|TView[]|null; }
+export interface TContainerNode extends TNode {
+  child: null;
+  tViews: TView|TView[]|null;
+}
+
+/** Static data for an LViewNode  */
+export interface TViewNode extends TNode {
+  child: TContainerNode|TElementNode|TProjectionNode|null;
+  tViews: null;
+}
+
+/** Static data for an LProjectionNode  */
+export interface TProjectionNode extends TNode {
+  child: null;
+  tViews: null;
+}
 
 /**
  * This mapping is necessary so we can set input properties and output listeners
