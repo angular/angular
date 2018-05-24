@@ -13,7 +13,6 @@ import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
 import {MatButtonModule} from '@angular/material/button';
 import {SimpleSnackBar} from './simple-snack-bar';
-import {MatSnackBar} from './snack-bar';
 import {MatSnackBarContainer} from './snack-bar-container';
 
 
@@ -28,6 +27,5 @@ import {MatSnackBarContainer} from './snack-bar-container';
   exports: [MatSnackBarContainer, MatCommonModule],
   declarations: [MatSnackBarContainer, SimpleSnackBar],
   entryComponents: [MatSnackBarContainer, SimpleSnackBar],
-  providers: [MatSnackBar]
 })
 export class MatSnackBarModule {}

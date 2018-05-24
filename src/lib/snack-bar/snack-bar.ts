@@ -25,6 +25,7 @@ import {take, takeUntil} from 'rxjs/operators';
 import {SimpleSnackBar} from './simple-snack-bar';
 import {MAT_SNACK_BAR_DATA, MatSnackBarConfig} from './snack-bar-config';
 import {MatSnackBarContainer} from './snack-bar-container';
+import {MatSnackBarModule} from './snack-bar-module';
 import {MatSnackBarRef} from './snack-bar-ref';
 
 
@@ -43,7 +44,7 @@ export function MAT_SNACK_BAR_DEFAULT_OPTIONS_FACTORY(): MatSnackBarConfig {
 /**
  * Service to dispatch Material Design snack bar messages.
  */
-@Injectable()
+@Injectable({providedIn: MatSnackBarModule})
 export class MatSnackBar {
   /**
    * Reference to the current snack bar in the view *at this level* (in the Angular injector tree).
