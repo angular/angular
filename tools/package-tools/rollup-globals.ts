@@ -69,6 +69,6 @@ export const rollupGlobals = {
   ...rollupMatEntryPoints,
   ...rollupCdkExperimentalEntryPoints,
 
-  'rxjs': 'Rx',
-  'rxjs/operators': 'Rx.operators',
+  'rxjs': 'rxjs',
+  'rxjs/operators': 'rxjs.operators',
 };
