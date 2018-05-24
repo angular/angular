@@ -8,9 +8,9 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
+import {R3_COMPILE_COMPONENT} from '../ivy_switch';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
-
 import {ViewEncapsulation} from './view';
 
 
@@ -754,7 +754,8 @@ export interface Component extends Directive {
  */
 export const Component: ComponentDecorator = makeDecorator(
     'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
-    Directive);
+    Directive, undefined,
+    (type: Type<any>, meta: Component) => (R3_COMPILE_COMPONENT || (() => {}))(type, meta));
 
 /**
  * Type of the Pipe decorator / constructor function.

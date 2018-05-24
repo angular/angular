@@ -29,7 +29,7 @@ following products on your development machine:
 * [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
   to execute the selenium standalone server for e2e testing.
 
-* (Optional for now) [Bazel](https://bazel.build/), please follow instructions in [Bazel.md]
+* (Optional for now) [Bazel](https://bazel.build/), please follow instructions in [BAZEL.md](https://github.com/angular/angular/blob/master/docs/BAZEL.md)
 
 ## Getting the Sources
 

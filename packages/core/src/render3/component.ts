@@ -11,6 +11,7 @@
 import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
+import {Sanitizer} from '../sanitization/security';
 
 import {assertComponentType, assertNotNull} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
@@ -28,6 +29,9 @@ import {createViewRef} from './view_ref';
 export interface CreateComponentOptions {
   /** Which renderer factory to use. */
   rendererFactory?: RendererFactory3;
+
+  /** A custom sanitizer instance */
+  sanitizer?: Sanitizer;
 
   /**
    * Host element on which the component will be bootstrapped. If not specified,
@@ -120,6 +124,7 @@ export function renderComponent<T>(
     opts: CreateComponentOptions = {}): T {
   ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
+  const sanitizer = opts.sanitizer || null;
   const componentDef = (componentType as ComponentType<T>).ngComponentDef as ComponentDef<T>;
   if (componentDef.type != componentType) componentDef.type = componentType;
   let component: T;
@@ -144,7 +149,7 @@ export function renderComponent<T>(
     if (rendererFactory.begin) rendererFactory.begin();
 
     // Create element node at index 0 in data array
-    elementNode = hostElement(componentTag, hostNode, componentDef);
+    elementNode = hostElement(componentTag, hostNode, componentDef, sanitizer);
 
     // Create directive instance with factory() and store at index 0 in directives array
     component = rootContext.component =

@@ -64,9 +64,6 @@ export abstract class ComponentRef<C> {
   abstract onDestroy(callback: Function): void;
 }
 
-/**
- *
- */
 export abstract class ComponentFactory<C> {
   abstract get selector(): string;
   abstract get componentType(): Type<any>;

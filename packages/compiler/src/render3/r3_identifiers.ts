@@ -33,7 +33,7 @@ export class Identifiers {
 
   static text: o.ExternalReference = {name: 'ɵT', moduleName: CORE};
 
-  static textCreateBound: o.ExternalReference = {name: 'ɵt', moduleName: CORE};
+  static textBinding: o.ExternalReference = {name: 'ɵt', moduleName: CORE};
 
   static bind: o.ExternalReference = {name: 'ɵb', moduleName: CORE};
 
@@ -90,8 +90,18 @@ export class Identifiers {
 
   static defineComponent: o.ExternalReference = {name: 'ɵdefineComponent', moduleName: CORE};
 
+  static ComponentDef: o.ExternalReference = {
+    name: 'ComponentDef',
+    moduleName: CORE,
+  };
+
   static defineDirective: o.ExternalReference = {
     name: 'ɵdefineDirective',
+    moduleName: CORE,
+  };
+
+  static DirectiveDef: o.ExternalReference = {
+    name: 'DirectiveDef',
     moduleName: CORE,
   };
 
@@ -99,6 +109,8 @@ export class Identifiers {
     name: 'defineInjector',
     moduleName: CORE,
   };
+
+  static defineNgModule: o.ExternalReference = {name: 'ɵdefineNgModule', moduleName: CORE};
 
   static definePipe: o.ExternalReference = {name: 'ɵdefinePipe', moduleName: CORE};
 

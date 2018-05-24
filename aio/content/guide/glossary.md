@@ -28,6 +28,11 @@ By compiling your application using the `ngc` command-line tool, you can bootstr
 
 Compare [just-in-time (JIT) compilation](guide/glossary#jit).
 
+## Angular element
+
+An Angular [component](guide/glossary#component) that has been packaged as a [custom element](guide/glossary#custom-element). 
+
+Learn more in the [_Angular Elements_](guide/elements) guide.
 
 ## Annotation
 
@@ -434,7 +439,7 @@ Observables can deliver single or multiple values of any type to subscribers, ei
 
 Angular uses a third-party library called [Reactive Extensions (RxJS)](http://reactivex.io/rxjs/). 
 
-To learn more, see the [Observables](guide/glossary#observable) guide.
+To learn more, see the [Observables](guide/observables) guide.
 
 
 {@a observer}

@@ -649,8 +649,11 @@ export class TransitionAnimationEngine {
 
   trigger(namespaceId: string, element: any, name: string, value: any): boolean {
     if (isElementNode(element)) {
-      this._fetchNamespace(namespaceId).trigger(element, name, value);
-      return true;
+      const ns = this._fetchNamespace(namespaceId);
+      if (ns) {
+        ns.trigger(element, name, value);
+        return true;
+      }
     }
     return false;
   }

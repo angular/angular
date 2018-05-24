@@ -38,8 +38,6 @@ export class MyCounterComponent implements OnChanges {
   }
 }
 
-/***************************************/
-
 @Component({
   selector: 'counter-parent',
   template: `
