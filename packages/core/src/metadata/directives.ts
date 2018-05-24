@@ -27,7 +27,7 @@ export interface DirectiveDecorator {
    * import {Directive} from '@angular/core';
    *
    * @Directive({
-   *   selector: 'my-directive',
+   *   selector: '[my-directive]',
    * })
    * export class MyDirective {
    * }
