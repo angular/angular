@@ -75,7 +75,7 @@ export class Generator {
         installMode: group.installMode || 'prefetch',
         updateMode: group.updateMode || group.installMode || 'prefetch',
         urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
-        patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref)),
+        patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref, true)),
       };
     }));
   }
@@ -84,7 +84,7 @@ export class Generator {
     return (config.dataGroups || []).map(group => {
       return {
         name: group.name,
-        patterns: group.urls.map(url => urlToRegex(url, this.baseHref)),
+        patterns: group.urls.map(url => urlToRegex(url, this.baseHref, true)),
         strategy: group.cacheConfig.strategy || 'performance',
         maxSize: group.cacheConfig.maxSize,
         maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -132,12 +132,12 @@ function matches(file: string, patterns: {positive: boolean, regex: RegExp}[]): 
   return res;
 }
 
-function urlToRegex(url: string, baseHref: string): string {
+function urlToRegex(url: string, baseHref: string, literalQuestionMark?: boolean): string {
   if (!url.startsWith('/') && url.indexOf('://') === -1) {
     url = joinUrls(baseHref, url);
   }
 
-  return globToRegex(url);
+  return globToRegex(url, literalQuestionMark);
 }
 
 function joinUrls(a: string, b: string): string {
