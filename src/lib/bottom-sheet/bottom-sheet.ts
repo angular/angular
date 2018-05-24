@@ -6,19 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
-import {ComponentPortal, TemplatePortal, ComponentType, PortalInjector} from '@angular/cdk/portal';
-import {ComponentRef, TemplateRef, Injectable, Injector, Optional, SkipSelf} from '@angular/core';
-import {MatBottomSheetConfig, MAT_BOTTOM_SHEET_DATA} from './bottom-sheet-config';
-import {MatBottomSheetRef} from './bottom-sheet-ref';
-import {MatBottomSheetContainer} from './bottom-sheet-container';
-import {of as observableOf} from 'rxjs';
 import {Directionality} from '@angular/cdk/bidi';
+import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
+import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
+import {ComponentRef, Injectable, Injector, Optional, SkipSelf, TemplateRef} from '@angular/core';
+import {of as observableOf} from 'rxjs';
+import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetConfig} from './bottom-sheet-config';
+import {MatBottomSheetContainer} from './bottom-sheet-container';
+import {MatBottomSheetModule} from './bottom-sheet-module';
+import {MatBottomSheetRef} from './bottom-sheet-ref';
+
 
 /**
  * Service to trigger Material Design bottom sheets.
  */
-@Injectable()
+@Injectable({providedIn: MatBottomSheetModule})
 export class MatBottomSheet {
   private _bottomSheetRefAtThisLevel: MatBottomSheetRef<any> | null = null;
 
