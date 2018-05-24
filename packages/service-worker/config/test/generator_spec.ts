@@ -14,6 +14,9 @@ import {MockFilesystem} from '../testing/mock';
     it('generates a correct config', done => {
       const fs = new MockFilesystem({
         '/index.html': 'This is a test',
+        '/main.css': 'This is a CSS file',
+        '/main.js': 'This is a JS file',
+        '/main.ts': 'This is a TS file',
         '/test.txt': 'Another test',
         '/foo/test.html': 'Another test',
         '/ignored/x.html': 'should be ignored',
@@ -28,8 +31,9 @@ import {MockFilesystem} from '../testing/mock';
           name: 'test',
           resources: {
             files: [
-              '/**/*.html', '!/ignored/**',
-              //                '/*.html',
+              '/**/*.html',
+              '/**/*.?s',
+              '!/ignored/**',
             ],
             versionedFiles: [
               '/**/*.txt',
@@ -46,6 +50,7 @@ import {MockFilesystem} from '../testing/mock';
           urls: [
             '/api/**',
             'relapi/**',
+            'https://example.com/**/*?with+escaped+chars',
           ],
           cacheConfig: {
             maxSize: 100,
@@ -56,8 +61,9 @@ import {MockFilesystem} from '../testing/mock';
         navigationUrls: [
           '/included/absolute/**',
           '!/excluded/absolute/**',
-          '/included/some/url?with+escaped+chars',
+          '/included/some/url/with+escaped+chars',
           '!excluded/relative/*.txt',
+          '!/api/?*',
           'http://example.com/included',
           '!http://example.com/excluded',
         ],
@@ -76,17 +82,23 @@ import {MockFilesystem} from '../testing/mock';
                urls: [
                  '/test/foo/test.html',
                  '/test/index.html',
+                 '/test/main.js',
+                 '/test/main.ts',
                  '/test/test.txt',
                ],
                patterns: [
                  '\\/absolute\\/.*',
                  '\\/some\\/url\\?with\\+escaped\\+chars',
-                 '\\/test\\/relative\\/[^\\/]*\\.txt',
+                 '\\/test\\/relative\\/[^/]*\\.txt',
                ]
              }],
              dataGroups: [{
                name: 'other',
-               patterns: ['\\/api\\/.*', '\\/test\\/relapi\\/.*'],
+               patterns: [
+                 '\\/api\\/.*',
+                 '\\/test\\/relapi\\/.*',
+                 'https:\\/\\/example\\.com\\/(?:.+\\/)?[^/]*\\?with\\+escaped\\+chars',
+               ],
                strategy: 'performance',
                maxSize: 100,
                maxAge: 259200000,
@@ -96,14 +108,17 @@ import {MockFilesystem} from '../testing/mock';
              navigationUrls: [
                {positive: true, regex: '^\\/included\\/absolute\\/.*$'},
                {positive: false, regex: '^\\/excluded\\/absolute\\/.*$'},
-               {positive: true, regex: '^\\/included\\/some\\/url\\?with\\+escaped\\+chars$'},
-               {positive: false, regex: '^\\/test\\/excluded\\/relative\\/[^\\/]*\\.txt$'},
+               {positive: true, regex: '^\\/included\\/some\\/url\\/with\\+escaped\\+chars$'},
+               {positive: false, regex: '^\\/test\\/excluded\\/relative\\/[^/]*\\.txt$'},
+               {positive: false, regex: '^\\/api\\/[^/][^/]*$'},
                {positive: true, regex: '^http:\\/\\/example\\.com\\/included$'},
                {positive: false, regex: '^http:\\/\\/example\\.com\\/excluded$'},
              ],
              hashTable: {
                '/test/foo/test.html': '18f6f8eb7b1c23d2bb61bff028b83d867a9e4643',
                '/test/index.html': 'a54d88e06612d820bc3be72877c74f257b561b19',
+               '/test/main.js': '41347a66676cdc0516934c76d9d13010df420f2c',
+               '/test/main.ts': '7d333e31f0bfc4f8152732bb211a93629484c035',
                '/test/test.txt': '18f6f8eb7b1c23d2bb61bff028b83d867a9e4643'
              }
            });
@@ -129,9 +144,9 @@ import {MockFilesystem} from '../testing/mock';
              dataGroups: [],
              navigationUrls: [
                {positive: true, regex: '^\\/.*$'},
-               {positive: false, regex: '^\\/(?:.+\\/)?[^\\/]*\\.[^\\/]*$'},
-               {positive: false, regex: '^\\/(?:.+\\/)?[^\\/]*__[^\\/]*$'},
-               {positive: false, regex: '^\\/(?:.+\\/)?[^\\/]*__[^\\/]*\\/.*$'},
+               {positive: false, regex: '^\\/(?:.+\\/)?[^/]*\\.[^/]*$'},
+               {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*$'},
+               {positive: false, regex: '^\\/(?:.+\\/)?[^/]*__[^/]*\\/.*$'},
              ],
              hashTable: {}
            });
