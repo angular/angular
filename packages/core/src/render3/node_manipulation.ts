@@ -75,6 +75,15 @@ export function getNextLNode(node: LNode): LNode|null {
   return node.tNode.next ? node.view.data[node.tNode.next !.index as number] : null;
 }
 
+/** Retrieves the first child of a given node */
+export function getChildLNode(node: LNode): LNode|null {
+  if (node.tNode.child) {
+    const view = node.tNode.type === TNodeType.View ? node.data as LView : node.view;
+    return view.data[node.tNode.child.index as number];
+  }
+  return null;
+}
+
 /**
  * Get the next node in the LNode tree, taking into account the place where a node is
  * projected (in the shadow DOM) rather than where it comes from (in the light DOM).
@@ -140,13 +149,14 @@ function findFirstRNode(rootNode: LNode): RElement|RText|null {
       const childContainerData: LContainer = lContainerNode.dynamicLContainerNode ?
           lContainerNode.dynamicLContainerNode.data :
           lContainerNode.data;
-      nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
+      nextNode =
+          childContainerData.views.length ? getChildLNode(childContainerData.views[0]) : null;
     } else if (node.tNode.type === TNodeType.Projection) {
       // For Projection look at the first projected node
       nextNode = (node as LProjectionNode).data.head;
     } else {
       // Otherwise look at the first child
-      nextNode = (node as LViewNode).child;
+      nextNode = getChildLNode(node as LViewNode);
     }
 
     node = nextNode === null ? getNextOrParentSiblingNode(node, rootNode) : nextNode;
@@ -183,7 +193,7 @@ export function addRemoveViewFromContainer(
   ngDevMode && assertNodeType(rootNode, TNodeType.View);
   const parentNode = container.data.renderParent;
   const parent = parentNode ? parentNode.native : null;
-  let node: LNode|null = rootNode.child;
+  let node: LNode|null = getChildLNode(rootNode);
   if (parent) {
     while (node) {
       let nextNode: LNode|null = null;
@@ -203,11 +213,12 @@ export function addRemoveViewFromContainer(
         // propagating down into child views / containers and not child elements
         const childContainerData: LContainer = (node as LContainerNode).data;
         childContainerData.renderParent = parentNode;
-        nextNode = childContainerData.views.length ? childContainerData.views[0].child : null;
+        nextNode =
+            childContainerData.views.length ? getChildLNode(childContainerData.views[0]) : null;
       } else if (node.tNode.type === TNodeType.Projection) {
         nextNode = (node as LProjectionNode).data.head;
       } else {
-        nextNode = (node as LViewNode).child;
+        nextNode = getChildLNode(node as LViewNode);
       }
       if (nextNode === null) {
         node = getNextOrParentSiblingNode(node, rootNode);
