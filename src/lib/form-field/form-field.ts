@@ -21,6 +21,7 @@ import {
   Inject,
   InjectionToken,
   Input,
+  NgZone,
   Optional,
   QueryList,
   ViewChild,
@@ -233,8 +234,9 @@ export class MatFormField extends _MatFormFieldMixinBase
       @Optional() private _dir: Directionality,
       @Optional() @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) private _defaultOptions:
           MatFormFieldDefaultOptions,
-      // @deletion-target 7.0.0 _platform to be made required.
-      private _platform?: Platform) {
+      // @deletion-target 7.0.0 _platform and _ngZone to be made required.
+      private _platform?: Platform,
+      private _ngZone?: NgZone) {
     super(_elementRef);
 
     this._labelOptions = labelOptions ? labelOptions : {};
@@ -283,8 +285,19 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   ngAfterContentChecked() {
     this._validateControlChild();
+
     if (!this._initialGapCalculated) {
-      Promise.resolve().then(() => this.updateOutlineGap());
+      // @deletion-target 7.0.0 Remove this check and else block once _ngZone is required.
+      if (this._ngZone) {
+        // It's important that we run this outside the `_ngZone`, because the `Promise.resolve`
+        // can kick us into an infinite change detection loop, if the `_initialGapCalculated`
+        // wasn't flipped on for some reason.
+        this._ngZone.runOutsideAngular(() => {
+          Promise.resolve().then(() => this.updateOutlineGap());
+        });
+      } else {
+        Promise.resolve().then(() => this.updateOutlineGap());
+      }
     }
   }
 
@@ -296,8 +309,8 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   /** Determines whether a class from the NgControl should be forwarded to the host element. */
   _shouldForward(prop: string): boolean {
-    let ngControl = this._control ? this._control.ngControl : null;
-    return ngControl && (ngControl as any)[prop];
+    const ngControl = this._control ? this._control.ngControl : null;
+    return ngControl && ngControl[prop];
   }
 
   _hasPlaceholder() {
