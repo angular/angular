@@ -12,7 +12,8 @@ describe('CdkAccordion', () => {
         CdkAccordionModule
       ],
       declarations: [
-        SetOfItems
+        SetOfItems,
+        NestedItems,
       ],
     });
     TestBed.compileComponents();
@@ -53,6 +54,14 @@ describe('CdkAccordion', () => {
     expect(firstPanel.expanded).toBeTruthy();
     expect(secondPanel.expanded).toBeTruthy();
   });
+
+  it('should not register nested items to the same accordion', () => {
+    const fixture = TestBed.createComponent(NestedItems);
+    const innerItem = fixture.componentInstance.innerItem;
+    const outerItem = fixture.componentInstance.outerItem;
+
+    expect(innerItem.accordion).not.toBe(outerItem.accordion);
+  });
 });
 
 @Component({template: `
@@ -64,4 +73,16 @@ class SetOfItems {
   @ViewChild('item1') item1;
   @ViewChild('item2') item2;
   multi: boolean = false;
+}
+
+
+@Component({template: `
+  <cdk-accordion>
+    <cdk-accordion-item #outerItem="cdkAccordionItem">
+      <cdk-accordion-item #innerItem="cdkAccordionItem"></cdk-accordion-item>
+    </cdk-accordion-item>
+  </cdk-accordion>`})
+class NestedItems {
+  @ViewChild('outerItem') outerItem: CdkAccordionItem;
+  @ViewChild('innerItem') innerItem: CdkAccordionItem;
 }

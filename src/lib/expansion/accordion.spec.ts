@@ -2,10 +2,10 @@ import {async, TestBed} from '@angular/core/testing';
 import {Component, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatExpansionModule, MatAccordion} from './index';
+import {MatExpansionModule, MatAccordion, MatExpansionPanel} from './index';
 
 
-describe('CdkAccordion', () => {
+describe('MatAccordion', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [
@@ -13,7 +13,8 @@ describe('CdkAccordion', () => {
         MatExpansionModule
       ],
       declarations: [
-        SetOfItems
+        NestedPanel,
+        SetOfItems,
       ],
     });
     TestBed.compileComponents();
@@ -84,6 +85,14 @@ describe('CdkAccordion', () => {
     expect(panels[0].classes['mat-expanded']).toBeFalsy();
     expect(panels[1].classes['mat-expanded']).toBeFalsy();
   });
+
+  it('should not register nested panels to the same accordion', () => {
+    const fixture = TestBed.createComponent(NestedPanel);
+    const innerPanel = fixture.componentInstance.innerPanel;
+    const outerPanel = fixture.componentInstance.outerPanel;
+
+    expect(innerPanel.accordion).not.toBe(outerPanel.accordion);
+  });
 });
 
 
@@ -105,4 +114,19 @@ class SetOfItems {
   firstPanelExpanded: boolean = false;
   secondPanelExpanded: boolean = false;
   secondPanelDisabled: boolean = false;
+}
+
+@Component({template: `
+  <mat-accordion>
+    <mat-expansion-panel #outerPanel="matExpansionPanel">
+      <mat-expansion-panel-header>Outer Panel</mat-expansion-panel-header>
+      <mat-expansion-panel #innerPanel="matExpansionPanel">
+        <mat-expansion-panel-header>Inner Panel</mat-expansion-panel-header>
+        <p>Content</p>
+      </mat-expansion-panel>
+    </mat-expansion-panel>
+  </mat-accordion>`})
+class NestedPanel {
+  @ViewChild('outerPanel') outerPanel: MatExpansionPanel;
+  @ViewChild('innerPanel') innerPanel: MatExpansionPanel;
 }

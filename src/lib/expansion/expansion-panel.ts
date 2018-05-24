@@ -23,6 +23,7 @@ import {
   OnDestroy,
   Optional,
   SimpleChanges,
+  SkipSelf,
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
@@ -56,6 +57,11 @@ let uniqueId = 0;
   inputs: ['disabled', 'expanded'],
   outputs: ['opened', 'closed', 'expandedChange'],
   animations: [matExpansionAnimations.bodyExpansion],
+  providers: [
+    // Provide MatAccordion as undefined to prevent nested expansion panels from registering
+    // to the same accordion.
+    {provide: MatAccordion, useValue: undefined},
+  ],
   host: {
     'class': 'mat-expansion-panel',
     '[class.mat-expanded]': 'expanded',
@@ -87,7 +93,7 @@ export class MatExpansionPanel extends CdkAccordionItem
   /** ID for the associated header element. Used for a11y labelling. */
   _headerId = `mat-expansion-panel-header-${uniqueId++}`;
 
-  constructor(@Optional() accordion: MatAccordion,
+  constructor(@Optional() @SkipSelf() accordion: MatAccordion,
               _changeDetectorRef: ChangeDetectorRef,
               _uniqueSelectionDispatcher: UniqueSelectionDispatcher,
               private _viewContainerRef: ViewContainerRef) {
