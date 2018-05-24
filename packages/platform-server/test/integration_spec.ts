@@ -10,7 +10,7 @@ import {AnimationBuilder, animate, style, transition, trigger} from '@angular/an
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
@@ -252,6 +252,20 @@ class MyInputComponent {
   imports: [ServerModule, BrowserModule.withServerTransition({appId: 'name-attributes'})]
 })
 class NameModule {
+}
+
+@Component({selector: 'app', template: '<div [innerHTML]="html"></div>'})
+class HTMLTypesApp {
+  html = '<b>foo</b> bar';
+  constructor(@Inject(DOCUMENT) doc: Document) {}
+}
+
+@NgModule({
+  declarations: [HTMLTypesApp],
+  imports: [BrowserModule.withServerTransition({appId: 'inner-html'}), ServerModule],
+  bootstrap: [HTMLTypesApp]
+})
+class HTMLTypesModule {
 }
 
 const TEST_KEY = makeStateKey<number>('test');
@@ -548,6 +562,19 @@ class EscapedTransferStoreModule {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
                  '<input name=""></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should work with sanitizer to handle "innerHTML"', async(() => {
+           // Clear out any global states. These should be set when platform-server
+           // is initialized.
+           (global as any).Node = undefined;
+           (global as any).Document = undefined;
+           renderModule(HTMLTypesModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<div innerhtml="<b>foo</b> bar"><b>foo</b> bar</div></app></body></html>');
              called = true;
            });
          }));
