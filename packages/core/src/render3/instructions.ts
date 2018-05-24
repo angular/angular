@@ -17,7 +17,7 @@ import {CurrentMatchesList, LView, LViewFlags, LifecycleStage, RootContext, TDat
 
 import {LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
-import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode} from './node_manipulation';
+import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
@@ -344,7 +344,6 @@ export function createLNodeObject(
     native: native as any,
     view: currentView,
     parent: parent as any,
-    child: null,
     nodeInjector: parent ? parent.nodeInjector : null,
     data: state,
     queries: queries,
@@ -414,15 +413,10 @@ export function createLNode(
     // Now link ourselves into the tree.
     if (isParent) {
       currentQueries = null;
-      if (previousOrParentNode.view === currentView ||
+      if (previousOrParentNode.tNode.child == null && previousOrParentNode.view === currentView ||
           previousOrParentNode.tNode.type === TNodeType.View) {
         // We are in the same view, which means we are adding content node to the parent View.
-        ngDevMode && assertNull(
-                         previousOrParentNode.child,
-                         `previousOrParentNode's child should not have been set.`);
-        previousOrParentNode.child = node;
-      } else {
-        // We are adding component view, so we don't link parent node child to this node.
+        previousOrParentNode.tNode.child = node.tNode;
       }
     }
   }
@@ -1063,6 +1057,7 @@ export function createTNode(
     outputs: undefined,
     tViews: tViews,
     next: null,
+    child: null,
     dynamicContainerNode: null
   };
 }
@@ -1699,7 +1694,7 @@ export function embeddedViewEnd(): void {
 function setRenderParentInProjectedNodes(
     renderParent: LElementNode | null, viewNode: LViewNode): void {
   if (renderParent != null) {
-    let node: LNode|null = viewNode.child;
+    let node: LNode|null = getChildLNode(viewNode);
     while (node) {
       if (node.tNode.type === TNodeType.Projection) {
         let nodeToProject: LNode|null = (node as LProjectionNode).data.head;
@@ -1776,7 +1771,7 @@ export function projectionDef(
   }
 
   const componentNode: LElementNode = findComponentHost(currentView);
-  let componentChild: LNode|null = componentNode.child;
+  let componentChild: LNode|null = getChildLNode(componentNode);
 
   while (componentChild !== null) {
     // execute selector matching logic if and only if:
