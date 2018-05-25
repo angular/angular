@@ -1820,7 +1820,7 @@ function declareTests({useJit}: {useJit: boolean}) {
               .toEqual('http://www.w3.org/2000/svg');
 
           const firstAttribute = getDOM().getProperty(<Element>use, 'attributes')[0];
-          expect(firstAttribute.name).toEqual('xlink:href');
+          expect(firstAttribute.name).toEqual('href');
           expect(firstAttribute.namespaceURI).toEqual('http://www.w3.org/1999/xlink');
         });
 
