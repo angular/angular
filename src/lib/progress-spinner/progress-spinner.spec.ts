@@ -1,7 +1,11 @@
 import {TestBed, async} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {MatProgressSpinnerModule, MatProgressSpinner} from './index';
+import {
+  MatProgressSpinnerModule,
+  MatProgressSpinner,
+  MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
+} from './index';
 
 
 describe('MatProgressSpinner', () => {
@@ -232,6 +236,47 @@ describe('MatProgressSpinner', () => {
     expect(spinner.nativeElement.style.width).toBe('32px');
     expect(spinner.nativeElement.style.height).toBe('32px');
   });
+
+  it('should be able to set a default diameter', () => {
+    TestBed
+      .resetTestingModule()
+      .configureTestingModule({
+        imports: [MatProgressSpinnerModule],
+        declarations: [BasicProgressSpinner],
+        providers: [{
+          provide: MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
+          useValue: {diameter: 23}
+        }]
+      })
+      .compileComponents();
+
+    const fixture = TestBed.createComponent(BasicProgressSpinner);
+    fixture.detectChanges();
+
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    expect(progressElement.componentInstance.diameter).toBe(23);
+  });
+
+  it('should be able to set a default stroke width', () => {
+    TestBed
+      .resetTestingModule()
+      .configureTestingModule({
+        imports: [MatProgressSpinnerModule],
+        declarations: [BasicProgressSpinner],
+        providers: [{
+          provide: MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS,
+          useValue: {strokeWidth: 7}
+        }]
+      })
+      .compileComponents();
+
+    const fixture = TestBed.createComponent(BasicProgressSpinner);
+    fixture.detectChanges();
+
+    const progressElement = fixture.debugElement.query(By.css('mat-progress-spinner'));
+    expect(progressElement.componentInstance.strokeWidth).toBe(7);
+  });
+
 });
 
 

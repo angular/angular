@@ -14,6 +14,7 @@ import {
   ElementRef,
   ViewEncapsulation,
   Optional,
+  InjectionToken,
 } from '@angular/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {CanColor, mixinColor} from '@angular/material/core';
@@ -42,6 +43,26 @@ export class MatProgressSpinnerBase {
   constructor(public _elementRef: ElementRef) {}
 }
 export const _MatProgressSpinnerMixinBase = mixinColor(MatProgressSpinnerBase, 'primary');
+
+/** Default `mat-progress-spinner` options that can be overridden. */
+export interface MatProgressSpinnerDefaultOptions {
+  /** Diameter of the spinner. */
+  diameter?: number;
+  /** Width of the spinner's stroke. */
+  strokeWidth?: number;
+}
+
+/** Injection token to be used to override the default options for `mat-progress-spinner`. */
+export const MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS =
+    new InjectionToken<MatProgressSpinnerDefaultOptions>('mat-progress-spinner-default-options', {
+      providedIn: 'root',
+      factory: MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY,
+    });
+
+/** @docs-private */
+export function MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS_FACTORY(): MatProgressSpinnerDefaultOptions {
+  return {diameter: BASE_SIZE};
+}
 
 // .0001 percentage difference is necessary in order to avoid unwanted animation frames
 // for example because the animation duration is 4 seconds, .1% accounts to 4ms
@@ -98,7 +119,7 @@ const INDETERMINATE_ANIMATION_TEMPLATE = `
 export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements CanColor {
 
   private _value = 0;
-  private _strokeWidth: number;
+  private _strokeWidth = this._defaults ? this._defaults.strokeWidth : undefined;
   private _fallbackAnimation = false;
 
   /** Tracks diameters of existing instances to de-dupe generated styles (default d = 100) */
@@ -120,7 +141,8 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
       this._attachStyleNode();
     }
   }
-  private _diameter = BASE_SIZE;
+  private _diameter = this._defaults && this._defaults.diameter ?
+      this._defaults.diameter : BASE_SIZE;
 
   /** Stroke width of the progress spinner. */
   @Input()
@@ -130,7 +152,6 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   set strokeWidth(value: number) {
     this._strokeWidth = coerceNumberProperty(value);
   }
-
 
   /** Mode of the progress circle */
   @Input() mode: ProgressSpinnerMode = 'determinate';
@@ -147,7 +168,10 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   constructor(public _elementRef: ElementRef,
               platform: Platform,
               @Optional() @Inject(DOCUMENT) private _document: any,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+              // @deletion-target 7.0.0 _animationMode and _defaults parameters to be made required.
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+              @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
+                  private _defaults?: MatProgressSpinnerDefaultOptions) {
 
     super(_elementRef);
     this._fallbackAnimation = platform.EDGE || platform.TRIDENT;
@@ -249,8 +273,11 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
 export class MatSpinner extends MatProgressSpinner {
   constructor(elementRef: ElementRef, platform: Platform,
               @Optional() @Inject(DOCUMENT) document: any,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) _animationMode?: string) {
-    super(elementRef, platform, document, _animationMode);
+              // @deletion-targets 7.0.0 animationMode and defaults parameters to be made required.
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
+              @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
+                  defaults?: MatProgressSpinnerDefaultOptions) {
+    super(elementRef, platform, document, animationMode, defaults);
     this.mode = 'indeterminate';
   }
 }
