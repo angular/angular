@@ -57,6 +57,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // Maps of placeholder to node indexes for each of the i18n section
   private _phToNodeIdxes: {[phName: string]: number[]}[] = [{}];
 
+  // Number of slots to reserve for pureFunctions
+  private _pureFunctionSlots = 0;
+
   constructor(
       private constantPool: ConstantPool, private contextParameter: string,
       parentBindingScope: BindingScope, private level = 0, private contextName: string|null,
@@ -70,6 +73,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         });
     this._valueConverter = new ValueConverter(
         constantPool, () => this.allocateDataSlot(),
+        (numSlots: number): number => this._pureFunctionSlots += numSlots,
         (name, localName, slot, value: o.ReadVarExpr) => {
           const pipeType = pipeTypeByName.get(name);
           if (pipeType) {
@@ -138,6 +142,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     t.visitAll(this, nodes);
+
+    if (this._pureFunctionSlots > 0) {
+      this.instruction(
+          this._creationCode, null, R3.reserveSlots, o.literal(this._pureFunctionSlots));
+    }
 
     const creationCode = this._creationCode.length > 0 ?
         [o.ifStmt(
@@ -501,6 +510,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 class ValueConverter extends AstMemoryEfficientTransformer {
   constructor(
       private constantPool: ConstantPool, private allocateSlot: () => number,
+      private allocatePureFunctionSlots: (numSlots: number) => number,
       private definePipe:
           (name: string, localName: string, slot: number, value: o.Expression) => void) {
     super();
@@ -511,14 +521,20 @@ class ValueConverter extends AstMemoryEfficientTransformer {
     // Allocate a slot to create the pipe
     const slot = this.allocateSlot();
     const slotPseudoLocal = `PIPE:${slot}`;
+    // Allocate one slot for the result plus one slot per pipe argument
+    const pureFunctionSlot = this.allocatePureFunctionSlots(2 + pipe.args.length);
     const target = new PropertyRead(pipe.span, new ImplicitReceiver(pipe.span), slotPseudoLocal);
-    const bindingId = pipeBinding(pipe.args);
-    this.definePipe(pipe.name, slotPseudoLocal, slot, o.importExpr(bindingId));
-    const value = pipe.exp.visit(this);
-    const args = this.visitAll(pipe.args);
+    const {identifier, isVarLength} = pipeBindingCallInfo(pipe.args);
+    this.definePipe(pipe.name, slotPseudoLocal, slot, o.importExpr(identifier));
+    const args: AST[] = [pipe.exp, ...pipe.args];
+    const convertedArgs: AST[] =
+        isVarLength ? this.visitAll([new LiteralArray(pipe.span, args)]) : this.visitAll(args);
 
-    return new FunctionCall(
-        pipe.span, target, [new LiteralPrimitive(pipe.span, slot), value, ...args]);
+    return new FunctionCall(pipe.span, target, [
+      new LiteralPrimitive(pipe.span, slot),
+      new LiteralPrimitive(pipe.span, pureFunctionSlot),
+      ...convertedArgs,
+    ]);
   }
 
   visitLiteralArray(array: LiteralArray, context: any): AST {
@@ -527,8 +543,9 @@ class ValueConverter extends AstMemoryEfficientTransformer {
       // calls to literal factories that compose the literal and will cache intermediate
       // values. Otherwise, just return an literal array that contains the values.
       const literal = o.literalArr(values);
-      return values.every(a => a.isConstant()) ? this.constantPool.getConstLiteral(literal, true) :
-                                                 getLiteralFactory(this.constantPool, literal);
+      return values.every(a => a.isConstant()) ?
+          this.constantPool.getConstLiteral(literal, true) :
+          getLiteralFactory(this.constantPool, literal, this.allocatePureFunctionSlots);
     });
   }
 
@@ -539,35 +556,60 @@ class ValueConverter extends AstMemoryEfficientTransformer {
       // values. Otherwise, just return an literal array that contains the values.
       const literal = o.literalMap(values.map(
           (value, index) => ({key: map.keys[index].key, value, quoted: map.keys[index].quoted})));
-      return values.every(a => a.isConstant()) ? this.constantPool.getConstLiteral(literal, true) :
-                                                 getLiteralFactory(this.constantPool, literal);
+      return values.every(a => a.isConstant()) ?
+          this.constantPool.getConstLiteral(literal, true) :
+          getLiteralFactory(this.constantPool, literal, this.allocatePureFunctionSlots);
     });
   }
 }
 
-
-
 // Pipes always have at least one parameter, the value they operate on
 const pipeBindingIdentifiers = [R3.pipeBind1, R3.pipeBind2, R3.pipeBind3, R3.pipeBind4];
 
-function pipeBinding(args: o.Expression[]): o.ExternalReference {
-  return pipeBindingIdentifiers[args.length] || R3.pipeBindV;
+function pipeBindingCallInfo(args: o.Expression[]) {
+  const identifier = pipeBindingIdentifiers[args.length];
+  return {
+    identifier: identifier || R3.pipeBindV,
+    isVarLength: !identifier,
+  };
 }
 
 const pureFunctionIdentifiers = [
   R3.pureFunction0, R3.pureFunction1, R3.pureFunction2, R3.pureFunction3, R3.pureFunction4,
   R3.pureFunction5, R3.pureFunction6, R3.pureFunction7, R3.pureFunction8
 ];
+
+function pureFunctionCallInfo(args: o.Expression[]) {
+  const identifier = pureFunctionIdentifiers[args.length];
+  return {
+    identifier: identifier || R3.pureFunctionV,
+    isVarLength: !identifier,
+  };
+}
+
 function getLiteralFactory(
-    constantPool: ConstantPool, literal: o.LiteralArrayExpr | o.LiteralMapExpr): o.Expression {
+    constantPool: ConstantPool, literal: o.LiteralArrayExpr | o.LiteralMapExpr,
+    allocateSlots: (numSlots: number) => number): o.Expression {
   const {literalFactory, literalFactoryArguments} = constantPool.getLiteralFactory(literal);
+  // Allocate 1 slot for the result plus 1 per argument
+  const startSlot = allocateSlots(1 + literalFactoryArguments.length);
   literalFactoryArguments.length > 0 || error(`Expected arguments to a literal factory function`);
-  let pureFunctionIdent =
-      pureFunctionIdentifiers[literalFactoryArguments.length] || R3.pureFunctionV;
+  const {identifier, isVarLength} = pureFunctionCallInfo(literalFactoryArguments);
 
   // Literal factories are pure functions that only need to be re-invoked when the parameters
   // change.
-  return o.importExpr(pureFunctionIdent).callFn([literalFactory, ...literalFactoryArguments]);
+  const args = [
+    o.literal(startSlot),
+    literalFactory,
+  ];
+
+  if (isVarLength) {
+    args.push(o.literalArr(literalFactoryArguments));
+  } else {
+    args.push(...literalFactoryArguments);
+  }
+
+  return o.importExpr(identifier).callFn(args);
 }
 
 /**

@@ -65,6 +65,7 @@ export {
   e as ɵe,
   p as ɵp,
   pD as ɵpD,
+  rS as ɵrS,
   a as ɵa,
   s as ɵs,
   sn as ɵsn,

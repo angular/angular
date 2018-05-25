@@ -88,7 +88,6 @@ describe('compiler compliance', () => {
 
       const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
       const template = `
-        …
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
             $r3$.ɵE(0, 'div');
@@ -96,6 +95,56 @@ describe('compiler compliance', () => {
           }
           if (rf & 2) {
             $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.id));
+          }
+        }
+      `;
+
+
+      const result = compile(files, angularFiles);
+
+      expectEmit(result.source, factory, 'Incorrect factory');
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should reserve slots for pure functions', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: \`<div
+                  [ternary]="cond ? [a] : [0]"
+                  [pipe]="value | pipe:1:2"
+                  [and]="cond && [b]"
+                  [or]="cond || [c]"
+                ></div>\`
+              })
+              export class MyComponent {
+                id = 'one';
+              }
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
+      const template = `
+        template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+          if (rf & 1) {
+            $r3$.ɵE(0, 'div');
+            $r3$.ɵPp(1,'pipe');
+            $r3$.ɵe();
+            $r3$.ɵrS(10);
+          }
+          if (rf & 2) {
+            $r3$.ɵp(0, 'ternary', $r3$.ɵb((ctx.cond ? $r3$.ɵf1(2, _c0, ctx.a): _c1)));
+            $r3$.ɵp(0, 'pipe', $r3$.ɵb($r3$.ɵpb3(6, 1, ctx.value, 1, 2)));
+            $r3$.ɵp(0, 'and', $r3$.ɵb((ctx.cond && $r3$.ɵf1(4, _c0, ctx.b))));
+            $r3$.ɵp(0, 'or', $r3$.ɵb((ctx.cond || $r3$.ɵf1(6, _c0, ctx.c))));
           }
         }
       `;
@@ -130,7 +179,6 @@ describe('compiler compliance', () => {
 
       const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
       const template = `
-        …
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
             $r3$.ɵE(0, 'div');
@@ -415,9 +463,10 @@ describe('compiler compliance', () => {
               if (rf & 1) {
                 $r3$.ɵE(0, 'my-comp');
                 $r3$.ɵe();
+                $r3$.ɵrS(2);
               }
               if (rf & 2) {
-                $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.customName)));
+                $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1(2, $e0_ff$, ctx.customName)));
               }
             },
            directives: [MyComp]
@@ -494,11 +543,12 @@ describe('compiler compliance', () => {
               if (rf & 1) {
                 $r3$.ɵE(0, 'my-comp');
                 $r3$.ɵe();
+                $r3$.ɵrS(10);
               }
               if (rf & 2) {
                 $r3$.ɵp(
                     0, 'names',
-                    $r3$.ɵb($r3$.ɵfV($e0_ff$, ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8)));
+                    $r3$.ɵb($r3$.ɵfV(10, $e0_ff$, [ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8])));
               }
             },
             directives: [MyComp]
@@ -555,9 +605,10 @@ describe('compiler compliance', () => {
               if (rf & 1) {
                 $r3$.ɵE(0, 'object-comp');
                 $r3$.ɵe();
+                $r3$.ɵrS(2);
               }
               if (rf & 2) {
-                $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.name)));
+                $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1(2, $e0_ff$, ctx.name)));
               }
             },
             directives: [ObjectComp]
@@ -620,12 +671,12 @@ describe('compiler compliance', () => {
               if (rf & 1) {
                 $r3$.ɵE(0, 'nested-comp');
                 $r3$.ɵe();
+                $r3$.ɵrS(7);
               }
               if (rf & 2) {
                 $r3$.ɵp(
                     0, 'config',
-                    $r3$.ɵb($r3$.ɵf2(
-                        $e0_ff_2$, ctx.name, $r3$.ɵf1($e0_ff_1$, $r3$.ɵf1($e0_ff$, ctx.duration)))));
+                    $r3$.ɵb($r3$.ɵf2(7, $e0_ff_2$, ctx.name, $r3$.ɵf1(4, $e0_ff_1$, $r3$.ɵf1(2, $e0_ff$, ctx.duration)))));
               }
             },
             directives: [NestedComp]
@@ -870,7 +921,7 @@ describe('compiler compliance', () => {
 
               @Component({
                 selector: 'my-app',
-                template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPurePipe:size }}</p>'
+                template: '{{name | myPipe:size | myPurePipe:size }}<p>{{ name | myPipe:1:2:3:4:5 }}</p>'
               })
               export class MyApp {
                 name = 'World';
@@ -898,7 +949,10 @@ describe('compiler compliance', () => {
             });`;
 
         const MyAppDefinition = `
-            …
+            const $c0$ = ($a0$: any) => {
+              return [$a0$, 1, 2, 3, 4, 5];
+            };
+            // ...
             static ngComponentDef = $r3$.ɵdefineComponent({
               type: MyApp,
               selectors: [['my-app']],
@@ -910,12 +964,13 @@ describe('compiler compliance', () => {
                   $r3$.ɵPp(2, 'myPipe');
                   $r3$.ɵE(3, 'p');
                   $r3$.ɵT(4);
-                  $r3$.ɵPp(5, 'myPurePipe');
+                  $r3$.ɵPp(5, 'myPipe');
                   $r3$.ɵe();
+                  $r3$.ɵrS(15);
                 }
                 if (rf & 2) {
-                  $r3$.ɵt(0, $r3$.ɵi1('', $r3$.ɵpb2(1, $r3$.ɵpb2(2,ctx.name, ctx.size), ctx.size), ''));
-                  $r3$.ɵt(4, $r3$.ɵi1('', $r3$.ɵpb2(5, ctx.name, ctx.size), ''));
+                  $r3$.ɵt(0, $r3$.ɵi1('', $r3$.ɵpb2(1, 3, $r3$.ɵpb2(2, 6, ctx.name, ctx.size), ctx.size), ''));
+                  $r3$.ɵt(4, $r3$.ɵi1('', $r3$.ɵpbV(5, 13 , $r3$.ɵf1(15, $c0$, ctx.name)), ''));
                 }
               },
               pipes: [MyPurePipe, MyPipe]
