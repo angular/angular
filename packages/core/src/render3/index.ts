@@ -50,8 +50,13 @@ export {
   elementEnd as e,
   elementProperty as p,
   elementStart as E,
+  element as Ee,
   elementStyle as s,
   elementStyleNamed as sn,
+
+  namespaceHTML as NH,
+  namespaceMathML as NM,
+  namespaceSVG as NS,
 
   listener as L,
   store as st,

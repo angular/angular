@@ -5,15 +5,12 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {LContainer} from './container';
 import {LInjector} from './injector';
 import {LProjection} from './projection';
 import {LQueries} from './query';
 import {RElement, RNode, RText} from './renderer';
 import {LView, TData, TView} from './view';
-
-
 
 /**
  * TNodeType corresponds to the TNode.type property. It contains information
@@ -163,7 +160,11 @@ export interface LProjectionNode extends LNode {
  * items are not regular attributes and the processing should be adapted accordingly.
  */
 export const enum AttributeMarker {
-  NS = 0,  // namespace. Has to be repeated.
+  /**
+   * Use the next value as the full namespaces URI, the values after that
+   * are then the name and the value, respectively.
+   */
+  NamespaceUri = 0,  // namespace. Has to be repeated.
 
   /**
    * This marker indicates that the following attribute names were extracted from bindings (ex.:
@@ -171,7 +172,7 @@ export const enum AttributeMarker {
    * Taking the above bindings and outputs as an example an attributes array could look as follows:
    * ['class', 'fade in', AttributeMarker.SELECT_ONLY, 'foo', 'bar']
    */
-  SELECT_ONLY = 1
+  SelectOnly = 1
 }
 
 /**
