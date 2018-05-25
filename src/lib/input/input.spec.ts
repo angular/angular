@@ -27,7 +27,7 @@ import {
   MatFormFieldModule,
 } from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatInputModule} from './index';
 import {MatInput} from './input';
 import {MatStepperModule} from '@angular/material/stepper';
@@ -1203,7 +1203,7 @@ function createComponent<T>(component: Type<T>,
       FormsModule,
       MatFormFieldModule,
       MatInputModule,
-      NoopAnimationsModule,
+      BrowserAnimationsModule,
       PlatformModule,
       ReactiveFormsModule,
       ...imports

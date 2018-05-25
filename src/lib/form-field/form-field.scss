@@ -207,3 +207,10 @@ $mat-form-field-default-infix-width: 180px !default;
 .mat-error {
   display: block;
 }
+
+.mat-form-field._mat-animation-noopable {
+  .mat-form-field-label,
+  .mat-form-field-ripple {
+    transition: none;
+  }
+}

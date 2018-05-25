@@ -130,4 +130,14 @@ $mat-form-field-outline-subscript-padding:
   .mat-form-field-subscript-wrapper {
     padding: 0 $mat-form-field-outline-subscript-padding;
   }
+
+  &._mat-animation-noopable {
+    &:not(.mat-form-field-disabled) .mat-form-field-flex:hover ~ .mat-form-field-outline,
+    .mat-form-field-outline,
+    .mat-form-field-outline-start,
+    .mat-form-field-outline-end,
+    .mat-form-field-outline-gap {
+      transition: none;
+    }
+  }
 }

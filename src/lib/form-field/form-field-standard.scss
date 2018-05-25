@@ -41,4 +41,10 @@ $mat-form-field-standard-padding-top: 0.75em !default;
       transition: opacity 600ms $swift-ease-out-timing-function;
     }
   }
+
+  &._mat-animation-noopable:not(.mat-form-field-disabled) .mat-form-field-flex:hover {
+    & ~ .mat-form-field-underline .mat-form-field-ripple {
+      transition: none;
+    }
+  }
 }
