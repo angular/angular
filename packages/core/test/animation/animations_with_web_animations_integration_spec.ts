@@ -18,7 +18,7 @@ import {TestBed} from '../../testing';
 (function() {
   // these tests are only mean't to be run within the DOM (for now)
   // Buggy in Chromium 39, see https://github.com/angular/angular/issues/15793
-  if (typeof Element == 'undefined' || !ɵsupportsWebAnimations()) return;
+  if (isNode || !ɵsupportsWebAnimations()) return;
 
   describe('animation integration tests using web animations', function() {
 

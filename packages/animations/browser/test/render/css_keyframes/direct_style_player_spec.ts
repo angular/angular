@@ -14,7 +14,7 @@ import {assertStyle, createElement} from './shared';
 const CSS_KEYFRAME_RULE_TYPE = 7;
 
 describe('DirectStylePlayer tests', () => {
-  if (typeof Element == 'undefined' || typeof document == 'undefined') return;
+  if (isNode) return;
 
   it('should apply the styling to the given element when the animation starts and remove when destroyed',
      () => {

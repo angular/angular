@@ -17,7 +17,7 @@ import {makeTrigger} from '../shared';
 {
   describe('AnimationTrigger', () => {
     // these tests are only mean't to be run within the DOM (for now)
-    if (typeof Element == 'undefined') return;
+    if (isNode) return;
 
     let element: any;
     beforeEach(() => {
