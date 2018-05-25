@@ -107,16 +107,14 @@ export class CdkVirtualScrollViewport implements DoCheck, OnInit, OnDestroy {
               @Inject(VIRTUAL_SCROLL_STRATEGY) private _scrollStrategy: VirtualScrollStrategy) {}
 
   ngOnInit() {
-    const viewportEl = this.elementRef.nativeElement;
     // It's still too early to measure the viewport at this point. Deferring with a promise allows
     // the Viewport to be rendered with the correct size before we measure.
     Promise.resolve().then(() => {
-      this._viewportSize = this.orientation === 'horizontal' ?
-          viewportEl.clientWidth : viewportEl.clientHeight;
+      this._measureViewportSize();
       this._scrollStrategy.attach(this);
 
       this._ngZone.runOutsideAngular(() => {
-        fromEvent(viewportEl, 'scroll')
+        fromEvent(this.elementRef.nativeElement, 'scroll')
             // Sample the scroll stream at every animation frame. This way if there are multiple
             // scroll events in the same frame we only need to recheck our layout once.
             .pipe(sampleTime(0, animationFrameScheduler), takeUntil(this._destroyed))
@@ -306,5 +304,19 @@ export class CdkVirtualScrollViewport implements DoCheck, OnInit, OnDestroy {
       return 0;
     }
     return this._forOf.measureRangeSize(range, this.orientation);
+  }
+
+  /** Update the viewport dimensions and re-render. */
+  checkViewportSize() {
+    // TODO: Cleanup later when add logic for handling content resize
+    this._measureViewportSize();
+    this._scrollStrategy.onDataLengthChanged();
+  }
+
+  /** Measure the viewport size. */
+  private _measureViewportSize() {
+    const viewportEl = this.elementRef.nativeElement;
+    this._viewportSize = this.orientation === 'horizontal' ?
+        viewportEl.clientWidth : viewportEl.clientHeight;
   }
 }
