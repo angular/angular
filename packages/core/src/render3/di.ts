@@ -260,8 +260,11 @@ export function injectAttribute(attrNameToInject: string): string|undefined {
   const attrs = tElement.attrs;
   if (attrs) {
     for (let i = 0; i < attrs.length; i = i + 2) {
-      const attrName = attrs[i];
+      let attrName = attrs[i];
       if (attrName === AttributeMarker.SELECT_ONLY) break;
+      if (attrName === 0) {  // NS.FULL
+        attrName = attrs[i += 2];
+      }
       if (attrName == attrNameToInject) {
         return attrs[i + 1] as string;
       }

@@ -5,7 +5,6 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
 import {LContainer} from './container';
 import {LInjector} from './injector';
 import {LProjection} from './projection';
@@ -14,6 +13,16 @@ import {RElement, RNode, RText} from './renderer';
 import {LView, TData, TView} from './view';
 
 
+/**
+ * Namespace attribute flags.
+ */
+export const enum NS {
+  /**
+   * Use the next value as the full namespaces URI, the values after that
+   * are then the name and the value, respectively.
+   */
+  FULL = 0,
+}
 
 /**
  * TNodeType corresponds to the TNode.type property. It contains information
@@ -179,7 +188,7 @@ export const enum AttributeMarker {
  * - attribute names and values
  * - special markers acting as flags to alter attributes processing.
  */
-export type TAttributes = (string | AttributeMarker)[];
+export type TAttributes = (string | AttributeMarker | NS)[];
 
 /**
  * LNode binding data (flyweight) for a particular node that is shared between all templates
