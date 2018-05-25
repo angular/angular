@@ -47,11 +47,9 @@ export abstract class ViewportScroller {
   abstract scrollToAnchor(anchor: string): void;
 
   /**
-   *
    * Disables automatic scroll restoration provided by the browser.
-   *
    * See also [window.history.scrollRestoration
-   * info](https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration)
+   * info](https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration).
    */
   abstract setHistoryScrollRestoration(scrollRestoration: 'auto'|'manual'): void;
 }

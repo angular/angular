@@ -22,11 +22,13 @@ import {Directive, DoCheck, ElementRef, Input, KeyValueChanges, KeyValueDiffer, 
  *
  * @description
  *
- * Update an HTML element styles.
+ * An attribute directive that updates styles for an HTML element.
  *
- * The styles are updated according to the value of the expression evaluation:
- * - keys are style names with an optional `.<unit>` suffix (ie 'top.px', 'font-style.em'),
- * - values are the values assigned to those properties (expressed in the given unit).
+ * Set to one or more key value pairs.
+ * - A key is a style name, with an optional `.<unit>` suffix (such as 'top.px', 'font-style.em').
+ * - A value is an expression to be evaluated.
+ *
+ * The resulting value, expressed in the given unit, is assigned to the given style property.
  *
  * @publicApi
  */

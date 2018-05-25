@@ -26,13 +26,38 @@ export class NgForOfContext<T> {
 }
 
 /**
- * The `NgForOf` directive instantiates a template once per item from an iterable. The context
- * for each instantiated template inherits from the outer context with the given loop variable
- * set to the current item from the iterable.
+ * A structural directive that instantiates a view from a given template
+ * once per item from an iterable.
+ * The context for each instantiated template inherits from the outer context,
+ * with the given loop variable set to the current item from the iterable.
+ *
+ * The `ngFor` and `ngForOf` selectors are interchangeable, and are generally used in the
+ * shorthand form `*ngFor`.
+ * The shorthand form has the following syntax.
+ *
+ * `<li *ngFor="let item of items; index as i; trackBy: trackByFn">...</li>`
+ *
+ * In this form, the template to be rendered for each iteration is the content
+ * of the anchor element containing the directive.
+ *
+ * The shorthand form expands into a long form that moves the template into
+ * an explicit `<ng-template>` element.
+ * In the long form, the anchor element for the template is the content of an
+ * `<ng-template>` element.
+ *
+ * ```
+ * <ng-template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
+ *   <li>...</li>
+ * </ng-template>
+ * ```
+ * Keep in mind that Angular automatically expands the shorthand syntax before rendering the view.
+ * This has implications for nesting of directives, such as iterables
+ * and conditionals (specified with `NgIf`).
+ * For futher discussion, see [Structural Directives](guide/structural-directives).
  *
  * @usageNotes
  *
- * ### Local Variables
+ * ### Local variables
  *
  * `NgForOf` provides several exported values that can be aliased to local variables:
  *
@@ -52,43 +77,31 @@ export class NgForOfContext<T> {
  * </li>
  * ```
  *
- * ### Change Propagation
+ * ### Change propagation
  *
  * When the contents of the iterator changes, `NgForOf` makes the corresponding changes to the DOM:
  *
  * * When an item is added, a new instance of the template is added to the DOM.
  * * When an item is removed, its template instance is removed from the DOM.
  * * When items are reordered, their respective templates are reordered in the DOM.
- * * Otherwise, the DOM element for that item will remain the same.
  *
  * Angular uses object identity to track insertions and deletions within the iterator and reproduce
  * those changes in the DOM. This has important implications for animations and any stateful
- * controls (such as `<input>` elements which accept user input) that are present. Inserted rows can
+ * controls that are present, such as `<input>` elements that accept user input. Inserted rows can
  * be animated in, deleted rows can be animated out, and unchanged rows retain any unsaved state
  * such as user input.
+ * For more on animations, see [Transitions and Triggers](guide/transition-and-triggers).
  *
- * It is possible for the identities of elements in the iterator to change while the data does not.
- * This can happen, for example, if the iterator produced from an RPC to the server, and that
- * RPC is re-run. Even if the data hasn't changed, the second response will produce objects with
- * different identities, and Angular will tear down the entire DOM and rebuild it (as if all old
+ * The identities of elements in the iterator can change while the data does not.
+ * This can happen, for example, if the iterator is produced from an RPC to the server, and that
+ * RPC is re-run. Even if the data hasn't changed, the second response produces objects with
+ * different identities, and Angular must tear down the entire DOM and rebuild it (as if all old
  * elements were deleted and all new elements inserted). This is an expensive operation and should
  * be avoided if possible.
  *
- * To customize the default tracking algorithm, `NgForOf` supports `trackBy` option.
+ * To customize the default tracking algorithm, `NgForOf` supports a `trackBy` option.
  * `trackBy` takes a function which has two arguments: `index` and `item`.
  * If `trackBy` is given, Angular tracks changes by the return value of the function.
- *
- * ### Syntax
- *
- * - `<li *ngFor="let item of items; index as i; trackBy: trackByFn">...</li>`
- *
- * With `<ng-template>` element:
- *
- * ```
- * <ng-template ngFor let-item [ngForOf]="items" let-i="index" [ngForTrackBy]="trackByFn">
- *   <li>...</li>
- * </ng-template>
- * ```
  *
  * ### Example
  *

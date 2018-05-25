@@ -18,7 +18,7 @@ import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from '../valid
 
 
 /**
- * Token to provide to turn off the ngModel warning on formControl and formControlName.
+ * Token to provide to turn off the `ngModel` warning on `formControl` and `formControlName`.
  */
 export const NG_MODEL_WITH_FORM_CONTROL_WARNING =
     new InjectionToken('NgModelWithFormControlWarning');
@@ -30,24 +30,45 @@ export const formControlBinding: any = {
 
 /**
  * @description
- * * Syncs a standalone `FormControl` instance to a form control element.
- * 
- * @see [Reactive Forms Guide](guide/reactive-forms)
- * @see `FormControl`
- * @see `AbstractControl`
+ *
+ * Synchronizes a standalone `FormControl` instance with a form control element in a
+ * reactive form.
+ *
+ * Values written to the `FormControl` programmatically are automatically updated
+ * in the associated DOM element (model-to-view), and values written to the
+ * DOM element through user input are automatically reflected in the
+ * `FormControl` instance (view-to-model).
  *
  * @usageNotes
+ * Use this directive if you'd like to create and manage a `FormControl` instance directly.
+ * Simply create a `FormControl`, save it to your component class, and pass it into the
+ * `FormControlDirective`.
+ *
+ * Use this directive to get, set, and listen for values changers in a standalone control.
+ * Unlike `FormControlName`, it does not require that your `FormControl` instance
+ * be part of any parent `FormGroup`, and it is not registered to any `FormGroupDirective`
+ * that exists above it.
+ *
+ * * **Get a value** : The `value` property is always synced and available on the
+ * `FormControl` instance. See a full list of available properties in `AbstractControl`.
+ *
+ * * **Set a value**: Pass in an initial value when instantiating the `FormControl`,
+ * or set a value programmatically later using the `setValue()` or `patchValue()` method.
+ *
+ * * **Listen for a value change**: Subscribe to the `valueChanges` event, or listen
+ * to `statusChanges` to be notified when the validation status is re-calculated.
  *
  * ### Registering a single form control
- * 
+ *
  * The following examples shows how to register a standalone control and set its value.
  *
  * {@example forms/ts/simpleFormControl/simple_form_control_example.ts region='Component'}
  *
- * ### Use with ngModel
+ * ### Use instead of `ngModel` with reactive forms
  *
  * Support for using the `ngModel` input property and `ngModelChange` event with reactive
- * form directives has been deprecated in Angular v6 and will be removed in Angular v7.
+ * form directives has been deprecated in Angular v6.
+ * See [Deprecation policy](guide/releases#deprecation-practices).
  *
  * Now deprecated:
  *
@@ -59,25 +80,27 @@ export const formControlBinding: any = {
  * this.value = 'some value';
  * ```
  *
- * This has been deprecated for a few reasons. First, developers have found this pattern
- * confusing. It seems like the actual `ngModel` directive is being used, but in fact it's
- * an input/output property named `ngModel` on the reactive form directive that simply
- * approximates (some of) its behavior. Specifically, it allows getting/setting the value
- * and intercepting value events. However, some of `ngModel`'s other features - like
- * delaying updates with`ngModelOptions` or exporting the directive - simply don't work,
- * which has understandably caused some confusion.
+ * This pattern has been deprecated because it mixes template-driven and reactive forms approaches,
+ * which limits the benefits of each approach and creates unnecessarily complex behaviors.
  *
- * In addition, this pattern mixes template-driven and reactive forms strategies, which
- * we generally don't recommend because it doesn't take advantage of the full benefits of
- * either strategy. Setting the value in the template violates the template-agnostic
- * principles behind reactive forms, whereas adding a `FormControl`/`FormGroup` layer in
- * the class removes the convenience of defining forms in the template.
+ * * Setting the value in the template violates the template-agnostic principles
+ * behind reactive forms.
  *
- * To update your code before v7, you'll want to decide whether to stick with reactive form
- * directives (and get/set values using reactive forms patterns) or switch over to
- * template-driven directives.
+ * * Adding a `FormControl/FormGroup` layer in the class removes the convenience of defining forms
+ * in the template.
  *
- * After (choice 1 - use reactive forms):
+ * * Although it seems like the actual `ngModel` directive is being used,
+ * an input/output property named `ngModel` on the reactive form directive is being used instead.
+ * That input/output property approximates (some of) the `ngModel` directive's behavior.
+ * Specifically, it allows getting/setting the value and intercepting value events
+ * However, some of the `ngModel` directive's other features (such as delaying updates with
+ * `ngModelOptions` or exporting the directive) don't work.
+ *
+ * To update your code to the current best practices, first decide whether to use
+ * reactive forms or template-driven forms.
+ * The two approaches are explained and compared in [Introduction to forms](guide/forms-overview).
+ *
+ * When using with reactive forms:
  *
  * ```html
  * <input [formControl]="control">
@@ -87,7 +110,7 @@ export const formControlBinding: any = {
  * this.control.setValue('some value');
  * ```
  *
- * After (choice 2 - use template-driven forms):
+ * When using template-driven forms:
  *
  * ```html
  * <input [(ngModel)]="value">
@@ -97,8 +120,8 @@ export const formControlBinding: any = {
  * this.value = 'some value';
  * ```
  *
- * By default, when you use this pattern, you will see a deprecation warning once in dev
- * mode. You can choose to silence this warning by providing a config for
+ * By default, when you use this pattern, you see a deprecation warning in development
+ * mode. You can choose to silence this warning by providing a configuration value for
  * `ReactiveFormsModule` at import time:
  *
  * ```ts
@@ -108,7 +131,7 @@ export const formControlBinding: any = {
  * ```
  *
  * Alternatively, you can choose to surface a separate warning for each instance of this
- * pattern with a config value of `"always"`. This may help to track down where in the code
+ * pattern with a configuration value of `"always"`. This can help you find where in the code
  * the pattern is being used as the code is being updated.
  *
  * @ngModule ReactiveFormsModule
