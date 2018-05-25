@@ -1032,6 +1032,15 @@ export function elementEnd() {
   queueLifecycleHooks(previousOrParentNode.tNode.flags, currentView);
 }
 
+/** Marks the beginning and end of an element in one call. */
+export function element(
+    index: number, name: string, attrs?: TAttributes | null | undefined,
+    localRefs?: string[] | null | undefined): RElement {
+  const relement = elementStart(index, name, attrs, localRefs);
+  elementEnd();
+  return relement;
+}
+
 /**
  * Updates the value of removes an attribute on an Element.
  *
