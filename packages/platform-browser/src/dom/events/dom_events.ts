@@ -110,7 +110,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
   }
 
   private patchEvent() {
-    if (!Event || !Event.prototype) {
+    if (typeof Event === 'undefined' || !Event || !Event.prototype) {
       return;
     }
     if ((Event.prototype as any)[stopMethodSymbol]) {
