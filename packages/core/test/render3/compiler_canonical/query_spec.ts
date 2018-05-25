@@ -58,8 +58,7 @@ describe('queries', () => {
           if (rf & 1) {
             $r3$.ɵQ(0, SomeDirective, false);
             $r3$.ɵQ(1, SomeDirective, false);
-            $r3$.ɵE(2, 'div', $e1_attrs$);
-            $r3$.ɵe();
+            $r3$.ɵEe(2, 'div', $e1_attrs$);
           }
           if (rf & 2) {
             $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(0)) && (ctx.someDir = $tmp$.first);

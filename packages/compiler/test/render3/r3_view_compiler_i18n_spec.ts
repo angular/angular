@@ -148,8 +148,7 @@ describe('i18n support in the view compiler', () => {
       …
       template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
         if (rf & 1) {
-          $r3$.ɵE(0, 'div', $c1$);
-          $r3$.ɵe();
+          $r3$.ɵEe(0, 'div', $c1$);
         }
       }
     `;
