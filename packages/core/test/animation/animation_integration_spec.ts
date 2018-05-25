@@ -20,7 +20,7 @@ const DEFAULT_COMPONENT_ID = '1';
 
 (function() {
   // these tests are only mean't to be run within the DOM (for now)
-  if (typeof Element == 'undefined') return;
+  if (isNode) return;
 
   describe('animation tests', function() {
     function getLog(): MockAnimationPlayer[] {
