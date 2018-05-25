@@ -198,8 +198,6 @@ export class AppVersion implements UpdateSource {
    * Check this version for a given resource with a particular hash.
    */
   async lookupResourceWithHash(url: string, hash: string): Promise<Response|null> {
-    const req = this.adapter.newRequest(url);
-
     // Verify that this version has the requested resource cached. If not,
     // there's no point in trying.
     if (!this.hashTable.has(url)) {
@@ -208,16 +206,12 @@ export class AppVersion implements UpdateSource {
 
     // Next, check whether the resource has the correct hash. If not, any cached
     // response isn't usable.
-    if (this.hashTable.get(url) ! !== hash) {
+    if (this.hashTable.get(url) !== hash) {
       return null;
     }
 
-    // TODO: no-op context and appropriate contract. Currently this is a violation
-    // of the typings and could cause issues if handleFetch() has side effects. A
-    // better strategy to deal with side effects is needed.
-    // TODO: this could result in network fetches if the response is lazy. Refactor
-    // to avoid them.
-    return this.handleFetch(req, null !);
+    const cacheState = await this.lookupResourceWithoutHash(url);
+    return cacheState && cacheState.response;
   }
 
   /**
