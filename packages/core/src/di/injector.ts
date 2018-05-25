@@ -16,7 +16,11 @@ import {Inject, Optional, Self, SkipSelf} from './metadata';
 import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './provider';
 
 export const SOURCE = '__source';
-const _THROW_IF_NOT_FOUND = new Object();
+export class ThrowIfNotFound {
+  private constructor() {}
+  static INSTANCE = new ThrowIfNotFound();
+}
+const _THROW_IF_NOT_FOUND = ThrowIfNotFound.INSTANCE;
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
 /**
@@ -66,12 +70,21 @@ export abstract class Injector {
 
   /**
    * Retrieves an instance from the injector based on the provided token.
+   * Throws an error if not found.
+   */
+  abstract get<T>(
+      token: Type<T>|InjectionToken<T>, notFoundValue?: ThrowIfNotFound|undefined,
+      flags?: InjectFlags): T;
+  /**
+   * Retrieves an instance from the injector based on the provided token.
    * If not found:
    * - Throws an error if no `notFoundValue` that is not equal to
-   * Injector.THROW_IF_NOT_FOUND is given
+   * Injector.THROW_IF_NOT_FOUND or undefined is given
    * - Returns the `notFoundValue` otherwise
    */
-  abstract get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  abstract get<T, U>(
+      token: Type<T>|InjectionToken<T>, notFoundValue: U|ThrowIfNotFound|undefined,
+      flags?: InjectFlags): T|U;
   /**
    * @deprecated from v4.0.0 use Type<T> or InjectionToken<T>
    * @suppress {duplicate}
@@ -151,7 +164,10 @@ export class StaticInjector implements Injector {
     recursivelyProcessProviders(records, providers);
   }
 
-  get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+  get<T>(token: Type<T>, notFoundValue?: ThrowIfNotFound|undefined, flags?: InjectFlags): T;
+  get<T, U>(
+      token: Type<T>|InjectionToken<T>, notFoundValue: U|ThrowIfNotFound|undefined,
+      flags?: InjectFlags): T|U;
   get(token: any, notFoundValue?: any): any;
   get(token: any, notFoundValue?: any, flags: InjectFlags = InjectFlags.Default): any {
     const record = this._records.get(token);
