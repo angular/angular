@@ -106,8 +106,12 @@ function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
   if (attrs === null) return -1;
   for (let i = 0; i < attrs.length; i += step) {
     const attrName = attrs[i];
-    if (attrName === name) return i;
-    if (attrName === AttributeMarker.SELECT_ONLY) {
+    if (attrName === 0) {
+      // NS.FULL
+      step = 2;
+    } else if (attrName === name) {
+      return i;
+    } else if (attrName === AttributeMarker.SELECT_ONLY) {
       step = 1;
     }
   }
