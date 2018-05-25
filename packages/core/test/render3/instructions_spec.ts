@@ -10,14 +10,14 @@ import {NgForOfContext} from '@angular/common';
 
 import {RenderFlags, directiveInject} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
-import {bind, container, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, setHtmlNS, setSvgNS, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, element, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, setHtmlNS, setSvgNS, text, textBinding} from '../../src/render3/instructions';
 import {LElementNode, LNode, NS} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {TrustedString, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
 import {NgForOf} from './common_with_def';
-import {ComponentFixture, TemplateFixture} from './render_util';
+import {ComponentFixture, TemplateFixture, toHtml} from './render_util';
 
 describe('instructions', () => {
   function createAnchor() {
@@ -94,13 +94,12 @@ describe('instructions', () => {
 
     it('should use sanitizer function even on elements with namespaced attributes', () => {
       const t = new TemplateFixture(() => {
-        elementStart(0, 'div', [
+        element(0, 'div', [
           NS.FULL,
           'http://www.example.com/2004/test',
           'whatever',
           'abc',
         ]);
-        elementEnd();
       });
 
       t.update(() => elementAttribute(0, 'title', 'javascript:true', sanitizeUrl));
@@ -451,8 +450,7 @@ describe('instructions', () => {
           'title',
           'abc',
         ]);
-        elementStart(2, 'circle', ['cx', '200', 'cy', '150', 'fill', '#0000ff']);
-        elementEnd();
+        element(2, 'circle', ['cx', '200', 'cy', '150', 'fill', '#0000ff']);
         elementEnd();
         setHtmlNS();
         elementEnd();
@@ -470,7 +468,7 @@ describe('instructions', () => {
 
     it('should set an attribute with a namespace', () => {
       const t = new TemplateFixture(() => {
-        elementStart(0, 'div', [
+        element(0, 'div', [
           'id',
           'container',
           // test:title="abc"
@@ -479,7 +477,6 @@ describe('instructions', () => {
           'title',
           'abc',
         ]);
-        elementEnd();
       });
 
       const standardHTML = '<div id="container" title="abc"></div>';
@@ -490,7 +487,7 @@ describe('instructions', () => {
 
     it('should set attributes including more than one namespaced attribute', () => {
       const t = new TemplateFixture(() => {
-        elementStart(0, 'div', [
+        element(0, 'div', [
           'id',
           'container',
 
@@ -516,7 +513,6 @@ describe('instructions', () => {
           'shazbot',
           'wocka wocka',
         ]);
-        elementEnd();
       });
 
       const standardHTML =
