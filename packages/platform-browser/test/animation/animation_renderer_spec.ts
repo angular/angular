@@ -117,7 +117,7 @@ import {el} from '../../testing/src/browser_util';
 
     describe('flushing animations', () => {
       // these tests are only mean't to be run within the DOM
-      if (typeof Element == 'undefined') return;
+      if (isNode) return;
 
       it('should flush and fire callbacks when the zone becomes stable', (async) => {
         @Component({
