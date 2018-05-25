@@ -359,8 +359,8 @@ function createHostBindingsFunction(
   for (let index = 0; index < meta.queries.length; index++) {
     const query = meta.queries[index];
 
-    // e.g. r3.qR(tmp = r3.ld(dirIndex)[1]) && (r3.ld(dirIndex)[0].someDir = tmp);
-    const getDirectiveMemory = o.importExpr(R3.load).callFn([o.variable('dirIndex')]);
+    // e.g. r3.qR(tmp = r3.d(dirIndex)[1]) && (r3.d(dirIndex)[0].someDir = tmp);
+    const getDirectiveMemory = o.importExpr(R3.loadDirective).callFn([o.variable('dirIndex')]);
     // The query list is at the query index + 1 because the directive itself is in slot 0.
     const getQueryList = getDirectiveMemory.key(o.literal(index + 1));
     const assignToTemporary = temporary().set(getQueryList);
@@ -376,7 +376,7 @@ function createHostBindingsFunction(
 
   // Calculate the host property bindings
   const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
-  const bindingContext = o.importExpr(R3.load).callFn([o.variable('dirIndex')]);
+  const bindingContext = o.importExpr(R3.loadDirective).callFn([o.variable('dirIndex')]);
   if (bindings) {
     for (const binding of bindings) {
       const bindingExpr = convertPropertyBinding(
