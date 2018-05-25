@@ -7,6 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
+
 import {Observable, of } from 'rxjs';
 import {concatMap, filter, map} from 'rxjs/operators';
 
@@ -643,6 +644,21 @@ export class HttpClient {
   }): Observable<T>;
 
   /**
+   * Construct a DELETE request in a manner where response type and requested `Observable` are not known
+   * statically.
+   *
+   * @return an `Observable` of whatever was requested, typed to `any`.
+   */
+  delete (url: string, options: {
+    headers?: HttpHeaders,
+    observe?: HttpObserve,
+    params?: HttpParams,
+    reportProgress?: boolean,
+    responseType?: 'arraybuffer'|'blob'|'json'|'text',
+    withCredentials?: boolean,
+  }): Observable<any>;
+
+  /**
    * Constructs an `Observable` which, when subscribed, will cause the configured
    * DELETE request to be executed on the server. See the individual overloads for
    * details of `delete()`'s return type based on the provided options.
@@ -861,6 +877,21 @@ export class HttpClient {
   }): Observable<T>;
 
   /**
+   * Construct a GET request in a manner where response type and requested `Observable` are not known
+   * statically.
+   *
+   * @return an `Observable` of whatever was requested, typed to `any`.
+   */
+  get(url: string, options: {
+    headers?: HttpHeaders,
+    observe?: HttpObserve,
+    params?: HttpParams,
+    reportProgress?: boolean,
+    responseType?: 'arraybuffer'|'blob'|'json'|'text',
+    withCredentials?: boolean,
+  }): Observable<any>;
+
+  /**
    * Constructs an `Observable` which, when subscribed, will cause the configured
    * GET request to be executed on the server. See the individual overloads for
    * details of `get()`'s return type based on the provided options.
@@ -1077,6 +1108,21 @@ export class HttpClient {
     responseType?: 'json',
     withCredentials?: boolean,
   }): Observable<T>;
+
+  /**
+   * Construct a HEAD request in a manner where response type and requested `Observable` are not known
+   * statically.
+   *
+   * @return an `Observable` of whatever was requested, typed to `any`.
+   */
+  head(url: string, options: {
+    headers?: HttpHeaders,
+    observe?: HttpObserve,
+    params?: HttpParams,
+    reportProgress?: boolean,
+    responseType?: 'arraybuffer'|'blob'|'json'|'text',
+    withCredentials?: boolean,
+  }): Observable<any>;
 
   /**
    * Constructs an `Observable` which, when subscribed, will cause the configured
@@ -1326,6 +1372,21 @@ export class HttpClient {
   }): Observable<T>;
 
   /**
+   * Construct a OPTIONS request in a manner where response type and requested `Observable` are not known
+   * statically.
+   *
+   * @return an `Observable` of whatever was requested, typed to `any`.
+   */
+  options(url: string, options: {
+    headers?: HttpHeaders,
+    observe?: HttpObserve,
+    params?: HttpParams,
+    reportProgress?: boolean,
+    responseType?: 'arraybuffer'|'blob'|'json'|'text',
+    withCredentials?: boolean,
+  }): Observable<any>;
+
+  /**
    * Constructs an `Observable` which, when subscribed, will cause the configured
    * OPTIONS request to be executed on the server. See the individual overloads for
    * details of `options()`'s return type based on the provided options.
@@ -1541,6 +1602,21 @@ export class HttpClient {
     responseType?: 'json',
     withCredentials?: boolean,
   }): Observable<T>;
+
+  /**
+   * Construct a PATCH request in a manner where response type and requested `Observable` are not known
+   * statically.
+   *
+   * @return an `Observable` of whatever was requested, typed to `any`.
+   */
+  patch(url: string, body: any|null, options: {
+    headers?: HttpHeaders,
+    observe?: HttpObserve,
+    params?: HttpParams,
+    reportProgress?: boolean,
+    responseType?: 'arraybuffer'|'blob'|'json'|'text',
+    withCredentials?: boolean,
+  }): Observable<any>;
 
   /**
    * Constructs an `Observable` which, when subscribed, will cause the configured
@@ -1760,6 +1836,21 @@ export class HttpClient {
   }): Observable<T>;
 
   /**
+   * Construct a POST request in a manner where response type and requested `Observable` are not known
+   * statically.
+   *
+   * @return an `Observable` of whatever was requested, typed to `any`.
+   */
+  post(url: string, body: any|null, options: {
+    headers?: HttpHeaders,
+    observe?: HttpObserve,
+    params?: HttpParams,
+    reportProgress?: boolean,
+    responseType?: 'arraybuffer'|'blob'|'json'|'text',
+    withCredentials?: boolean,
+  }): Observable<any>;
+
+  /**
    * Constructs an `Observable` which, when subscribed, will cause the configured
    * POST request to be executed on the server. See the individual overloads for
    * details of `post()`'s return type based on the provided options.
@@ -1971,6 +2062,21 @@ export class HttpClient {
     responseType?: 'json',
     withCredentials?: boolean,
   }): Observable<T>;
+
+  /**
+   * Construct a PUT request in a manner where response type and requested `Observable` are not known
+   * statically.
+   *
+   * @return an `Observable` of whatever was requested, typed to `any`.
+   */
+  put(url: string, body: any|null, options: {
+    headers?: HttpHeaders,
+    observe?: HttpObserve,
+    params?: HttpParams,
+    reportProgress?: boolean,
+    responseType?: 'arraybuffer'|'blob'|'json'|'text',
+    withCredentials?: boolean,
+  }): Observable<any>;
 
   /**
    * Constructs an `Observable` which, when subscribed, will cause the configured
