@@ -895,67 +895,116 @@ Update the `<head>` of `index.html` to include this style sheet:
 -->
 ## 에러 메시지 표시하기
 
+<!--
 You can improve the form. The _Name_ input box is required and clearing it turns the bar red.
 That says something is wrong but the user doesn't know *what* is wrong or what to do about it.
 Leverage the control's state to reveal a helpful message.
 
 When the user deletes the name, the form should look like this:
+-->
+폼을 좀 더 개선해 봅시다. 이 폼에서 _이름_ 입력 필드는 필수 항목이며, 입력 필드의 내용을 지우면 빨간 막대로 에러를 표시합니다.
+하지만 이 상태로는 사용자는 *어떤 이유로 잘못되었는지* 알 수 없으며, 무엇을 해야할 지도 알 수 없습니다.
+폼 컨트롤의 상태에 따라 사용자에게 도움이 되는 메시지를 표시해 봅시다.
+
+사용자가 입력 필드의 이름을 지우면 다음과 같이 표시하려고 합니다:
 
 <figure>
   <img src="generated/images/guide/forms/name-required-error.png" alt="Name required">
 </figure>
 
+<!--
 To achieve this effect, extend the `<input>` tag with the following:
 
 * A [template reference variable](guide/template-syntax#ref-vars).
 * The "*is required*" message in a nearby `<div>`, which you'll display only if the control is invalid.
 
 Here's an example of an error message added to the _name_ input box:
+-->
+이런 화면을 구현하기 위해 `<input>` 태그를 다음 내용을 추가합니다:
+
+* [템플릿 참조 변수](guide/template-syntax#ref-vars)
+* 폼 컨트롤 값이 유효하지 않을 때 에러 메시지를 표시할 `<div>`
 
 <code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (excerpt)" region="name-with-error-msg">
 
 </code-example>
 
+<!--
 You need a template reference variable to access the input box's Angular control from within the template.
 Here you created a variable called `name` and gave it the value "ngModel".
+-->
+템플릿 참조 변수는 입력 필드에 연결된 Angular 폼 컨트롤을 템플릿 안에서 접근하기 위해 필요합니다.
+위 코드에서는 이 변수를 `name`으로 선언했으며, "ngModel"을 그대로 연결했습니다.
 
 <div class="l-sub-section">
 
+  <!--
   Why "ngModel"?
   A directive's [exportAs](api/core/Directive) property
   tells Angular how to link the reference variable to the directive.
   You set `name` to `ngModel` because the `ngModel` directive's `exportAs` property happens to be "ngModel".
+  -->
+  왜 "ngModel"을 썼을까요?
+  디렉티브에 있는 [exportAs](api/core/Directive) 프로퍼티를 사용하면 템플릿 참조 변수에 디렉티브의 인스턴스를 연결할 수 있습니다.
+  이 코드에서는 `#name`에 `ngModel`을 할당했는데, 결국 템플릿 참조 변수 `#name`에 할당되는 것은 "ngModel" 디렉티브의 인스턴스입니다.
 
 </div>
 
+<!--
 You control visibility of the name error message by binding properties of the `name`
 control to the message `<div>` element's `hidden` property.
+-->
+그리고 이 에러 메시지가 표시되는 것을 제어하기 위해, `name`으로 참조하는 폼 컨트롤을 활용해서 새로 추가한 `<div>` 엘리먼트의 `hidden` 프로퍼티를 지정합니다.
 
 <code-example path="forms/src/app/hero-form/hero-form.component.html" linenums="false" title="src/app/hero-form/hero-form.component.html (hidden-error-msg)" region="hidden-error-msg">
 
 </code-example>
 
+<!--
 In this example, you hide the message when the control is valid or pristine;
 "pristine" means the user hasn't changed the value since it was displayed in this form.
+-->
+이 예제에서, 사용자가 폼 컨트롤에 접근한 적이 없거나(pristine) 폼 컨트롤 값이 유효하면 에러 메시지가 표시되지 않습니다.
 
+<!--
 This user experience is the developer's choice. Some developers want the message to display at all times.
 If you ignore the `pristine` state, you would hide the message only when the value is valid.
 If you arrive in this component with a new (blank) hero or an invalid hero,
 you'll see the error message immediately, before you've done anything.
+-->
+UX는 개발자의 선택에 따라 달라질 수 있습니다. 어떤 개발자는 이 메시지를 항상 표시하고 싶을 수도 있습니다.
+그리고 `pristine` 상태에서 에러 메시지가 표시되는 것을 생략하려면, 유효성 검사 결과로만 메시지를 표시하게 할 수도 있습니다.
+이렇게 하면 사용자가 아직 컴포넌트에 값을 입력하기 전에 에러메시지가 미리 표시되는 것을 방지할 수 있습니다.
 
+<!--
 Some developers want the message to display only when the user makes an invalid change.
 Hiding the message while the control is "pristine" achieves that goal.
 You'll see the significance of this choice when you add a new hero to the form.
+-->
+어떤 개발자는 사용자가 입력한 값이 변경된 이후에, 이렇게 입력된 새로운 값이 유효하지 않을 때만 에러 메시지를 표시하고 싶을 수도 있습니다.
+이 경우에는 "pristine" 상태에서 메시지를 숨기는 것이 좋습니다.
+그리고 폼에 새로운 히어로를 등록하려고 할 때 유효성을 검사하고, 유효성 검사가 실패했을 때 에러 메시지를 표시하는 방법을 선택할 수 있습니다.
 
+<!--
 The hero *Alter Ego* is optional so you can leave that be.
+-->
+이런 메시지를 *별명*에도 적용할 지는 역시 개발자에게 달려있습니다.
 
+<!--
 Hero *Power* selection is required.
 You can add the same kind of error handling to the `<select>` if you want,
 but it's not imperative because the selection box already constrains the
 power to valid values.
+-->
+히어로는 *특수 능력*도 반드시 선택해야 합니다.
+이 필드도 `<select>`에서 발생하는 에러를 활용해서 같은 방법으로 에러 메시지를 표시할 수 있지만, 특수 능력은 이미 유효한 값들을 셀렉트 박스로 제공하고 있으니 에러 메시지가 꼭 필요하지 않을 수도 있습니다.
 
+<!--
 Now you'll add a new hero in this form.
 Place a *New Hero* button at the bottom of the form and bind its click event to a `newHero` component method.
+-->
+이제 폼에 입력된 내용을 초기화하는 기능을 구현해 봅시다.
+폼 가장 아래에 *New Hero* 버튼을 만들고 이 버튼의 클릭 이벤트를 컴포넌트 메소드 `newHero`에 연결합니다.
 
 <code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-no-reset" title="src/app/hero-form/hero-form.component.html (New Hero button)">
 
@@ -965,28 +1014,52 @@ Place a *New Hero* button at the bottom of the form and bind its click event to 
 
 </code-example>
 
+<!--
 Run the application again, click the *New Hero* button, and the form clears.
 The *required* bars to the left of the input box are red, indicating invalid `name` and `power` properties.
 That's understandable as these are required fields.
 The error messages are hidden because the form is pristine; you haven't changed anything yet.
+-->
+이제 이 앱을 다시 실행하고 *New Hero* 버튼을 누르면 폼의 내용이 모두 지워집니다.
+하지만 `name`과 `power`에 해당하는 입력 필드 왼쪽에는 *필수* 항목인 것을 나타내는 빨간 막대가 여전히 남아 있습니다.
+이 항목들은 필수 입력 항목이기 때문에 이렇게 표시되는 것이라고 이해할 수 있습니다.
+그런데 사용자가 아직 폼에 접근하지 않은 상태(pristine)이기 때문에 에러 메시지는 표시되지 않습니다.
 
+<!--
 Enter a name and click *New Hero* again.
 The app displays a _Name is required_ error message.
 You don't want error messages when you create a new (empty) hero.
 Why are you getting one now?
+-->
+히어로의 이름을 입력하고 *New Hero* 버튼을 다시 클릭해 봅시다.
+그러면 _Name is required_ 에러 메시지가 표시됩니다.
+히어로가 새로 추가되는 시점에서는 에러메시지가 표시되지 않는 것이 좋을 것 같습니다.
+그런데 왜 이런 상황이 되는 걸까요?
 
+<!--
 Inspecting the element in the browser tools reveals that the *name* input box is _no longer pristine_.
 The form remembers that you entered a name before clicking *New Hero*.
 Replacing the hero object *did not restore the pristine state* of the form controls.
+-->
+브라우저의 개발자 도구로 엘리먼트를 확인해보면 *이름*에 해당하는 입력 필드는 _더이상 pristine 상태가 아닙니다_.
+왜냐하면 폼에는 *New Hero* 버튼을 누르기 전에 입력한 값이 아직 남아있기 때문입니다.
+홈 컨트롤에 연결된 히어로 객체의 인스턴스를 교체하는 것으로는 *pristine 상태가 초기화되지 않습니다*.
 
+<!--
 You have to clear all of the flags imperatively, which you can do
 by calling the form's `reset()` method after calling the `newHero()` method.
+-->
+그래서 `newHero()` 메소드를 실행한 후에는 폼 컨트롤의 상태를 초기화하는 동작을 수행해야 합니다.
+이 동작은 폼에서 제공하는 `reset()` 메소드를 활용할 수 있으며, *New Hero* 버튼에서 `newHero()` 메소드를 실행한 이후에 이 메소드를 실행하도록 다음과 같이 수정합니다.
 
 <code-example path="forms/src/app/hero-form/hero-form.component.html" region="new-hero-button-form-reset" title="src/app/hero-form/hero-form.component.html (Reset the form)">
 
 </code-example>
 
+<!--
 Now clicking "New Hero" resets both the form and its control flags.
+-->
+이제 "New Hereo" 버튼을 클릭하면 폼의 내용과 상태가 모두 초기화됩니다.
 
 ## Submit the form with _ngSubmit_
 
