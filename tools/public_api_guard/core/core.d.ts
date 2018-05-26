@@ -400,8 +400,7 @@ export declare abstract class Injector {
     }): Injector;
 }
 
-export declare class ThrowIfNotFound {
-    static INSTANCE: ThrowIfNotFound;
+export declare abstract class ThrowIfNotFound {
 }
 
 /** @experimental */

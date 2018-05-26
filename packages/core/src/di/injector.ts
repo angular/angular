@@ -16,11 +16,13 @@ import {Inject, Optional, Self, SkipSelf} from './metadata';
 import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './provider';
 
 export const SOURCE = '__source';
-export class ThrowIfNotFound {
-  private constructor() {}
-  static INSTANCE = new ThrowIfNotFound();
+export abstract class ThrowIfNotFound {
+  protected constructor() {}
 }
-const _THROW_IF_NOT_FOUND = ThrowIfNotFound.INSTANCE;
+class _ThrowIfNotFound extends ThrowIfNotFound {
+  constructor() { super(); }
+}
+const _THROW_IF_NOT_FOUND: ThrowIfNotFound = new _ThrowIfNotFound();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
 /**
