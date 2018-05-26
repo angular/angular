@@ -230,7 +230,7 @@ export class PlatformRef {
       const ngZoneInjector = Injector.create(
           {providers: providers, parent: this.injector, name: moduleFactory.moduleType.name});
       const moduleRef = <InternalNgModuleRef<M>>moduleFactory.create(ngZoneInjector);
-      const exceptionHandler: ErrorHandler = moduleRef.injector.get(ErrorHandler, null);
+      const exceptionHandler = moduleRef.injector.get(ErrorHandler, null);
       if (!exceptionHandler) {
         throw new Error('No ErrorHandler. Is platform module (BrowserModule) included?');
       }
