@@ -45,7 +45,7 @@ describe('define', () => {
         expect(myDir.valB).toEqual('works');
         myDir.log.length = 0;
         (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).doCheck !.call(myDir);
-        const changeA = new SimpleChange('initValue', 'first', false);
+        const changeA = new SimpleChange(undefined, 'first', true);
         const changeB = new SimpleChange(undefined, 'second', true);
         expect(myDir.log).toEqual(['ngOnChanges', 'valA', changeA, 'valB', changeB, 'ngDoCheck']);
       });
@@ -75,7 +75,7 @@ describe('define', () => {
         myDir.valA = 'first';
         myDir.valB = 'second';
         (MyDirective.ngDirectiveDef as DirectiveDef<MyDirective>).doCheck !.call(myDir);
-        const changeA1 = new SimpleChange('initValue', 'first', false);
+        const changeA1 = new SimpleChange(undefined, 'first', true);
         const changeB1 = new SimpleChange(undefined, 'second', true);
         expect(myDir.log).toEqual(['valA', changeA1, 'valB', changeB1]);
 
