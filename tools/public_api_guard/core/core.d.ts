@@ -386,10 +386,11 @@ export declare class InjectionToken<T> {
 }
 
 export declare abstract class Injector {
-    abstract get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
+    abstract get<T>(token: Type<T> | InjectionToken<T>, notFoundValue?: ThrowIfNotFound | undefined, flags?: InjectFlags): T;
+    abstract get<T, U>(token: Type<T> | InjectionToken<T>, notFoundValue: U | ThrowIfNotFound | undefined, flags?: InjectFlags): T | U;
     /** @deprecated */ abstract get(token: any, notFoundValue?: any): any;
     static NULL: Injector;
-    static THROW_IF_NOT_FOUND: Object;
+    static THROW_IF_NOT_FOUND: ThrowIfNotFound;
     static ngInjectableDef: never;
     /** @deprecated */ static create(providers: StaticProvider[], parent?: Injector): Injector;
     static create(options: {
@@ -853,6 +854,9 @@ export declare class TestabilityRegistry {
     registerApplication(token: any, testability: Testability): void;
     unregisterAllApplications(): void;
     unregisterApplication(token: any): void;
+}
+
+export declare abstract class ThrowIfNotFound {
 }
 
 export interface TrackByFunction<T> {

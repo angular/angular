@@ -16,7 +16,7 @@ export * from './di/metadata';
 export {InjectableType, InjectorType, defineInjectable, defineInjector} from './di/defs';
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './di/forward_ref';
 export {Injectable, InjectableDecorator, InjectableProvider} from './di/injectable';
-export {inject, InjectFlags, INJECTOR, Injector} from './di/injector';
+export {inject, InjectFlags, INJECTOR, Injector, ThrowIfNotFound} from './di/injector';
 export {ReflectiveInjector} from './di/reflective_injector';
 export {StaticProvider, ValueProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ClassProvider} from './di/provider';
 export {createInjector} from './di/r3_injector';

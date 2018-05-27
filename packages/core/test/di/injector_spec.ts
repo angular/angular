@@ -22,6 +22,11 @@ import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
           .toThrowError('NullInjectorError: No provider for someToken!');
     });
 
+    it('should throw if undefined is given', () => {
+      expect(() => Injector.NULL.get('someToken', undefined))
+          .toThrowError('NullInjectorError: No provider for someToken!');
+    });
+
     it('should return the default value',
        () => { expect(Injector.NULL.get('someToken', 'notFound')).toEqual('notFound'); });
   });
