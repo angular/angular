@@ -16,13 +16,16 @@ import {Inject, Optional, Self, SkipSelf} from './metadata';
 import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvider, StaticProvider, ValueProvider} from './provider';
 
 export const SOURCE = '__source';
-export abstract class ThrowIfNotFound {
-  protected constructor() {}
+/** Supporting type for Injector.get */
+export class ThrowIfNotFound {
+  /** @internal */
+  constructor() {
+    if (_THROW_IF_NOT_FOUND) {
+      throw new Error('Do not instantiate ThrowIfNotFound; use THROW_IF_NOT_FOUND instead.');
+    }
+  }
 }
-class _ThrowIfNotFound extends ThrowIfNotFound {
-  constructor() { super(); }
-}
-const _THROW_IF_NOT_FOUND: ThrowIfNotFound = new _ThrowIfNotFound();
+const _THROW_IF_NOT_FOUND = new ThrowIfNotFound();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
 /**
@@ -345,8 +348,7 @@ function resolveToken(
               // If we don't know how to resolve dependency and we should not check parent for it,
               // than pass in Null injector.
               !childRecord && !(options & OptionFlags.CheckParent) ? NULL_INJECTOR : parent,
-              options & OptionFlags.Optional ? null : Injector.THROW_IF_NOT_FOUND,
-              InjectFlags.Default));
+              options & OptionFlags.Optional ? null : _THROW_IF_NOT_FOUND, InjectFlags.Default));
         }
       }
       record.value = value = useNew ? new (fn as any)(...deps) : fn.apply(obj, deps);
