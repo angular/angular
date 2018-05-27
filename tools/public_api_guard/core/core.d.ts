@@ -856,7 +856,7 @@ export declare class TestabilityRegistry {
     unregisterApplication(token: any): void;
 }
 
-export declare abstract class ThrowIfNotFound {
+export declare class ThrowIfNotFound {
 }
 
 export interface TrackByFunction<T> {
