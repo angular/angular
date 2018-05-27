@@ -272,7 +272,13 @@ export function NgOnChangesFeature(inputPropertyNames?: {[key: string]: string})
                 this, PRIVATE_PREFIX, {value: simpleChanges = {}, writable: true});
           }
           const isFirstChange = !this.hasOwnProperty(privateMinKey);
-          simpleChanges[propertyName] = new SimpleChange(this[privateMinKey], value, isFirstChange);
+          const currentChange: SimpleChange|undefined = simpleChanges[propertyName];
+          if (currentChange) {
+            currentChange.currentValue = value;
+          } else {
+            simpleChanges[propertyName] =
+                new SimpleChange(this[privateMinKey], value, isFirstChange);
+          }
           if (isFirstChange) {
             // Create a place where the actual value will be stored and make it non-enumerable
             Object.defineProperty(this, privateMinKey, {value, writable: true});
