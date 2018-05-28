@@ -73,21 +73,22 @@ export class SwPush {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
-    const unsubscribe = this.subscription.pipe(switchMap((sub: PushSubscription | null) => {
-      if (sub !== null) {
-        return sub.unsubscribe().then(success => {
-          if (success) {
-            this.subscriptionChanges.next(null);
-            return undefined;
-          } else {
-            throw new Error('Unsubscribe failed!');
-          }
-        });
-      } else {
+
+    const doUnsubscribe = (sub: PushSubscription | null) => {
+      if (sub === null) {
         throw new Error('Not subscribed to push notifications.');
       }
-    }));
-    return unsubscribe.pipe(take(1)).toPromise();
+
+      return sub.unsubscribe().then(success => {
+        if (!success) {
+          throw new Error('Unsubscribe failed!');
+        }
+
+        this.subscriptionChanges.next(null);
+      });
+    };
+
+    return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
   }
 
   private decodeBase64(input: string): string { return atob(input); }
