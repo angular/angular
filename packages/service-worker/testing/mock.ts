@@ -8,6 +8,20 @@
 
 import {Subject} from 'rxjs';
 
+export const patchDecodeBase64 = (proto: {decodeBase64: typeof atob}) => {
+  let unpatch: () => void = () => undefined;
+
+  if ((typeof atob === 'undefined') && (typeof Buffer === 'function')) {
+    const oldDecodeBase64 = proto.decodeBase64;
+    const newDecodeBase64 = (input: string) => Buffer.from(input, 'base64').toString('binary');
+
+    proto.decodeBase64 = newDecodeBase64;
+    unpatch = () => { proto.decodeBase64 = oldDecodeBase64; };
+  }
+
+  return unpatch;
+};
+
 export class MockServiceWorkerContainer {
   private onControllerChange: Function[] = [];
   private onMessage: Function[] = [];
@@ -63,9 +77,7 @@ export class MockServiceWorkerRegistration {
 export class MockPushManager {
   private subscription: PushSubscription|null = null;
 
-  getSubscription(): Promise<PushSubscription|null> {
-    return Promise.resolve(this.subscription);
-  }
+  getSubscription(): Promise<PushSubscription|null> { return Promise.resolve(this.subscription); }
 
   subscribe(options?: PushSubscriptionOptionsInit): Promise<PushSubscription> {
     this.subscription = new MockPushSubscription() as any;
@@ -74,7 +86,5 @@ export class MockPushManager {
 }
 
 export class MockPushSubscription {
-  unsubscribe(): Promise<boolean> {
-    return Promise.resolve(true);
-  }
+  unsubscribe(): Promise<boolean> { return Promise.resolve(true); }
 }

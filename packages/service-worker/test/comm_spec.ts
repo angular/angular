@@ -13,7 +13,7 @@ import {NgswCommChannel} from '../src/low_level';
 import {RegistrationOptions, ngswCommChannelFactory} from '../src/module';
 import {SwPush} from '../src/push';
 import {SwUpdate} from '../src/update';
-import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../testing/mock';
+import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration, patchDecodeBase64} from '../testing/mock';
 import {async_fit, async_it} from './async';
 
 {
@@ -137,7 +137,12 @@ import {async_fit, async_it} from './async';
     });
 
     describe('SwPush', () => {
+      let unpatchDecodeBase64: () => void;
       let push: SwPush;
+
+      // Patch `SwPush.decodeBase64()` in Node.js (where `atob` is not available).
+      beforeAll(() => unpatchDecodeBase64 = patchDecodeBase64(SwPush.prototype as any));
+      afterAll(() => unpatchDecodeBase64());
 
       beforeEach(() => {
         push = new SwPush(comm);
@@ -164,9 +169,12 @@ import {async_fit, async_it} from './async';
         });
 
         async_it('calls `PushManager.subscribe()` (with appropriate options)', async() => {
+          const decode = (charCodeArr: Uint8Array) =>
+              Array.from(charCodeArr).map(c => String.fromCharCode(c)).join('');
+
           // atob('c3ViamVjdHM/') === 'subjects?'
           const serverPublicKey = 'c3ViamVjdHM_';
-          const appServerKeyStr  ='subjects?';
+          const appServerKeyStr = 'subjects?';
 
           const pmSubscribeSpy = spyOn(MockPushManager.prototype, 'subscribe').and.callThrough();
           await push.requestSubscription({serverPublicKey});
@@ -178,7 +186,7 @@ import {async_fit, async_it} from './async';
           });
 
           const actualAppServerKey = pmSubscribeSpy.calls.first().args[0].applicationServerKey;
-          const actualAppServerKeyStr = new TextDecoder('utf-8').decode(actualAppServerKey);
+          const actualAppServerKeyStr = decode(actualAppServerKey);
           expect(actualAppServerKeyStr).toBe(appServerKeyStr);
         });
 
@@ -279,7 +287,7 @@ import {async_fit, async_it} from './async';
       describe('messages', () => {
         it('receives push messages', () => {
           const sendMessage = (type: string, message: string) =>
-            mock.sendMessage({type, data: {message}});
+              mock.sendMessage({type, data: {message}});
 
           const receivedMessages: string[] = [];
           push.messages.subscribe((msg: {message: string}) => receivedMessages.push(msg.message));
@@ -331,24 +339,21 @@ import {async_fit, async_it} from './async';
           subscriptionSpy.calls.reset();
 
           // Subscribe.
-          push.requestSubscription({serverPublicKey: 'test'});
-          await nextSubEmitPromise;
+          await push.requestSubscription({serverPublicKey: 'test'});
           expect(subscriptionSpy).toHaveBeenCalledTimes(1);
           expect(subscriptionSpy).toHaveBeenCalledWith(jasmine.any(MockPushSubscription));
 
           subscriptionSpy.calls.reset();
 
           // Subscribe again.
-          push.requestSubscription({serverPublicKey: 'test'});
-          await nextSubEmitPromise;
+          await push.requestSubscription({serverPublicKey: 'test'});
           expect(subscriptionSpy).toHaveBeenCalledTimes(1);
           expect(subscriptionSpy).toHaveBeenCalledWith(jasmine.any(MockPushSubscription));
 
           subscriptionSpy.calls.reset();
 
           // Unsubscribe.
-          push.unsubscribe();
-          await nextSubEmitPromise;
+          await push.unsubscribe();
           expect(subscriptionSpy).toHaveBeenCalledTimes(1);
           expect(subscriptionSpy).toHaveBeenCalledWith(null);
         });
@@ -369,9 +374,8 @@ import {async_fit, async_it} from './async';
           push.requestSubscription({serverPublicKey: 'test'}).catch(err => { done(); });
         });
 
-        it('gives an error when unsubscribing', done => {
-          push.unsubscribe().catch(err => { done(); });
-        });
+        it('gives an error when unsubscribing',
+           done => { push.unsubscribe().catch(err => { done(); }); });
       });
     });
 
