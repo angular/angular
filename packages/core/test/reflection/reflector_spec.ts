@@ -7,7 +7,7 @@
  */
 
 import {Reflector} from '@angular/core/src/reflection/reflection';
-import {DELEGATE_CTOR, INHERITED_CLASS, INHERITED_CLASS_WITH_CTOR, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
+import {isDelegateCtor, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
 import {global} from '@angular/core/src/util';
 import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
 
@@ -166,7 +166,7 @@ class TestObj {
     });
 
     describe('ctor inheritance detection', () => {
-      it('should use the right regex', () => {
+      it('should handle function-style delegation', () => {
         class Parent {}
 
         class ChildNoCtor extends Parent {}
@@ -177,9 +177,9 @@ class TestObj {
           private x = 10;
         }
 
-        expect(DELEGATE_CTOR.exec(ChildNoCtor.toString())).toBeTruthy();
-        expect(DELEGATE_CTOR.exec(ChildNoCtorPrivateProps.toString())).toBeTruthy();
-        expect(DELEGATE_CTOR.exec(ChildWithCtor.toString())).toBeFalsy();
+        expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
       });
 
       it('should not throw when no prototype on type', () => {
@@ -195,22 +195,20 @@ class TestObj {
             `  constructor() { super(); }` +
             `}\n`;
         const ChildNoCtorPrivateProps = `class ChildNoCtorPrivateProps extends Parent {\n` +
-            `  private x = 10;\n` +
+            `  constructor() {\n` +
+            `    super(...arguments);\n` +
+            `    this.x = 10;\n` +
+            `  }\n` +
             `}\n`;
 
-        const checkNoOwnMetadata = (str: string) =>
-            INHERITED_CLASS.exec(str) && !INHERITED_CLASS_WITH_CTOR.exec(str);
-
-        expect(checkNoOwnMetadata(ChildNoCtor)).toBeTruthy();
-        expect(checkNoOwnMetadata(ChildNoCtorPrivateProps)).toBeTruthy();
-        expect(checkNoOwnMetadata(ChildWithCtor)).toBeFalsy();
+        expect(isDelegateCtor(ChildNoCtor)).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps)).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor)).toBe(false);
       });
 
       it('should properly handle all class forms', () => {
-        const ctor = (str: string) => expect(INHERITED_CLASS.exec(str)).toBeTruthy() &&
-            expect(INHERITED_CLASS_WITH_CTOR.exec(str)).toBeTruthy();
-        const noCtor = (str: string) => expect(INHERITED_CLASS.exec(str)).toBeTruthy() &&
-            expect(INHERITED_CLASS_WITH_CTOR.exec(str)).toBeFalsy();
+        const ctor = (str: string) => expect(isDelegateCtor(str)).toBe(false);
+        const noCtor = (str: string) => expect(isDelegateCtor(str)).toBe(true);
 
         ctor(`class Bar extends Foo {constructor(){}}`);
         ctor(`class Bar extends Foo { constructor ( ) {} }`);

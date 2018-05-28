@@ -17,10 +17,24 @@ import {GetterFn, MethodFn, SetterFn} from './types';
 /**
  * Attention: These regex has to hold even if the code is minified!
  */
-export const DELEGATE_CTOR = /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*arguments\)/;
-export const INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[A-Za-z\d$_]+\s*{/;
-export const INHERITED_CLASS_WITH_CTOR =
-    /^class\s+[A-Za-z\d$_]*\s*extends\s+[A-Za-z\d$_]+\s*{[\s\S]*constructor\s*\(/;
+const ES5_DELEGATE_CTOR = /^function\s+\S+\(\)\s*{[\s\S]+\.\s*apply\s*\(\s*this\s*,\s*arguments\s*\)/;
+const ES6_INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[A-Za-z\d$_]+\s*{/;
+const ES6_CTOR = /\bconstructor\s*\(/;
+const ES6_DELEGATE_CTOR = /\bconstructor\s*\(\)\s*{[\s\S]*super\s*\(\s*\.{3}\s*arguments\s*\)/;
+
+export function isDelegateCtor(typeStr: string) {
+  if (ES5_DELEGATE_CTOR.exec(typeStr)) {
+    return true;
+  }
+
+  if (ES6_INHERITED_CLASS.exec(typeStr)) {
+    if (!ES6_CTOR.exec(typeStr) || ES6_DELEGATE_CTOR.exec(typeStr)) {
+      return true;
+    }
+  }
+
+  return false;
+}
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
@@ -68,8 +82,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // This also helps to work around for https://github.com/Microsoft/TypeScript/issues/12439
     // that sets 'design:paramtypes' to []
     // if a class inherits from another class but has no ctor declared itself.
-    if (DELEGATE_CTOR.exec(typeStr) ||
-        (INHERITED_CLASS.exec(typeStr) && !INHERITED_CLASS_WITH_CTOR.exec(typeStr))) {
+    if (isDelegateCtor(typeStr)) {
       return null;
     }
 
