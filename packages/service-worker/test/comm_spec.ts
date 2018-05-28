@@ -13,16 +13,19 @@ import {NgswCommChannel} from '../src/low_level';
 import {RegistrationOptions, ngswCommChannelFactory} from '../src/module';
 import {SwPush} from '../src/push';
 import {SwUpdate} from '../src/update';
-import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../testing/mock';
+import {MockPushManager, MockPushSubscription, MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../testing/mock';
+import {async_fit, async_it} from './async';
 
 {
   describe('ServiceWorker library', () => {
     let mock: MockServiceWorkerContainer;
     let comm: NgswCommChannel;
+
     beforeEach(() => {
       mock = new MockServiceWorkerContainer();
       comm = new NgswCommChannel(mock as any);
     });
+
     describe('NgswCommsChannel', () => {
       it('can access the registration when it comes before subscription', (done: DoneFn) => {
         const mock = new MockServiceWorkerContainer();
@@ -43,6 +46,7 @@ import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../test
         mock.setupSw();
       });
     });
+
     describe('ngswCommChannelFactory', () => {
       it('gives disabled NgswCommChannel for platform-server', () => {
         TestBed.configureTestingModule({
@@ -131,26 +135,15 @@ import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../test
            }
          });
     });
+
     describe('SwPush', () => {
       let push: SwPush;
+
       beforeEach(() => {
         push = new SwPush(comm);
         mock.setupSw();
       });
-      it('receives push messages', (done: DoneFn) => {
-        push.messages.subscribe(msg => {
-          expect(msg).toEqual({
-            message: 'this was a push message',
-          });
-          done();
-        });
-        mock.sendMessage({
-          type: 'PUSH',
-          data: {
-            message: 'this was a push message',
-          },
-        });
-      });
+
       it('is injectable', () => {
         TestBed.configureTestingModule({
           providers: [
@@ -160,25 +153,228 @@ import {MockServiceWorkerContainer, MockServiceWorkerRegistration} from '../test
         });
         expect(() => TestBed.get(SwPush)).not.toThrow();
       });
+
+      describe('requestSubscription()', () => {
+        async_it('returns a promise that resolves to the subscription', async() => {
+          const promise = push.requestSubscription({serverPublicKey: 'test'});
+          expect(promise).toEqual(jasmine.any(Promise));
+
+          const sub = await promise;
+          expect(sub).toEqual(jasmine.any(MockPushSubscription));
+        });
+
+        async_it('calls `PushManager.subscribe()` (with appropriate options)', async() => {
+          // atob('c3ViamVjdHM/') === 'subjects?'
+          const serverPublicKey = 'c3ViamVjdHM_';
+          const appServerKeyStr  ='subjects?';
+
+          const pmSubscribeSpy = spyOn(MockPushManager.prototype, 'subscribe').and.callThrough();
+          await push.requestSubscription({serverPublicKey});
+
+          expect(pmSubscribeSpy).toHaveBeenCalledTimes(1);
+          expect(pmSubscribeSpy).toHaveBeenCalledWith({
+            applicationServerKey: jasmine.any(Uint8Array),
+            userVisibleOnly: true,
+          });
+
+          const actualAppServerKey = pmSubscribeSpy.calls.first().args[0].applicationServerKey;
+          const actualAppServerKeyStr = new TextDecoder('utf-8').decode(actualAppServerKey);
+          expect(actualAppServerKeyStr).toBe(appServerKeyStr);
+        });
+
+        async_it('emits the new `PushSubscription` on `SwPush.subscription`', async() => {
+          const subscriptionSpy = jasmine.createSpy('subscriptionSpy');
+          push.subscription.subscribe(subscriptionSpy);
+          const sub = await push.requestSubscription({serverPublicKey: 'test'});
+
+          expect(subscriptionSpy).toHaveBeenCalledWith(sub);
+        });
+      });
+
+      describe('unsubscribe()', () => {
+        let psUnsubscribeSpy: jasmine.Spy;
+
+        beforeEach(() => {
+          psUnsubscribeSpy = spyOn(MockPushSubscription.prototype, 'unsubscribe').and.callThrough();
+        });
+
+        async_it('rejects if currently not subscribed to push notifications', async() => {
+          try {
+            await push.unsubscribe();
+            throw new Error('`unsubscribe()` should fail');
+          } catch (err) {
+            expect(err.message).toBe('Not subscribed to push notifications.');
+          }
+        });
+
+        async_it('calls `PushSubscription.unsubscribe()`', async() => {
+          await push.requestSubscription({serverPublicKey: 'test'});
+          await push.unsubscribe();
+
+          expect(psUnsubscribeSpy).toHaveBeenCalledTimes(1);
+        });
+
+        async_it('rejects if `PushSubscription.unsubscribe()` fails', async() => {
+          psUnsubscribeSpy.and.callFake(() => { throw new Error('foo'); });
+
+          try {
+            await push.requestSubscription({serverPublicKey: 'test'});
+            await push.unsubscribe();
+            throw new Error('`unsubscribe()` should fail');
+          } catch (err) {
+            expect(err.message).toBe('foo');
+          }
+        });
+
+        async_it('rejects if `PushSubscription.unsubscribe()` returns false', async() => {
+          psUnsubscribeSpy.and.returnValue(Promise.resolve(false));
+
+          try {
+            await push.requestSubscription({serverPublicKey: 'test'});
+            await push.unsubscribe();
+            throw new Error('`unsubscribe()` should fail');
+          } catch (err) {
+            expect(err.message).toBe('Unsubscribe failed!');
+          }
+        });
+
+        async_it('emits `null` on `SwPush.subscription`', async() => {
+          const subscriptionSpy = jasmine.createSpy('subscriptionSpy');
+          push.subscription.subscribe(subscriptionSpy);
+
+          await push.requestSubscription({serverPublicKey: 'test'});
+          await push.unsubscribe();
+
+          expect(subscriptionSpy).toHaveBeenCalledWith(null);
+        });
+
+        async_it('does not emit on `SwPush.subscription` on failure', async() => {
+          const subscriptionSpy = jasmine.createSpy('subscriptionSpy');
+          const initialSubEmit = new Promise(resolve => subscriptionSpy.and.callFake(resolve));
+
+          push.subscription.subscribe(subscriptionSpy);
+          await initialSubEmit;
+          subscriptionSpy.calls.reset();
+
+          // Error due to no subscription.
+          await push.unsubscribe().catch(() => undefined);
+          expect(subscriptionSpy).not.toHaveBeenCalled();
+
+          // Subscribe.
+          await push.requestSubscription({serverPublicKey: 'test'});
+          subscriptionSpy.calls.reset();
+
+          // Error due to `PushSubscription.unsubscribe()` error.
+          psUnsubscribeSpy.and.callFake(() => { throw new Error('foo'); });
+          await push.unsubscribe().catch(() => undefined);
+          expect(subscriptionSpy).not.toHaveBeenCalled();
+
+          // Error due to `PushSubscription.unsubscribe()` failure.
+          psUnsubscribeSpy.and.returnValue(Promise.resolve(false));
+          await push.unsubscribe().catch(() => undefined);
+          expect(subscriptionSpy).not.toHaveBeenCalled();
+        });
+      });
+
+      describe('messages', () => {
+        it('receives push messages', () => {
+          const sendMessage = (type: string, message: string) =>
+            mock.sendMessage({type, data: {message}});
+
+          const receivedMessages: string[] = [];
+          push.messages.subscribe((msg: {message: string}) => receivedMessages.push(msg.message));
+
+          sendMessage('PUSH', 'this was a push message');
+          sendMessage('NOTPUSH', 'this was not a push message');
+          sendMessage('PUSH', 'this was a push message too');
+          sendMessage('HSUP', 'this was a HSUP message');
+
+          expect(receivedMessages).toEqual([
+            'this was a push message',
+            'this was a push message too',
+          ]);
+        });
+      });
+
+      describe('subscription', () => {
+        let nextSubEmitResolve: () => void;
+        let nextSubEmitPromise: Promise<void>;
+        let subscriptionSpy: jasmine.Spy;
+
+        beforeEach(() => {
+          nextSubEmitPromise = new Promise(resolve => nextSubEmitResolve = resolve);
+          subscriptionSpy = jasmine.createSpy('subscriptionSpy').and.callFake(() => {
+            nextSubEmitResolve();
+            nextSubEmitPromise = new Promise(resolve => nextSubEmitResolve = resolve);
+          });
+
+          push.subscription.subscribe(subscriptionSpy);
+        });
+
+        async_it('emits on worker-driven changes (i.e. when the controller changes)', async() => {
+          // Initial emit for the current `ServiceWorkerController`.
+          await nextSubEmitPromise;
+          expect(subscriptionSpy).toHaveBeenCalledTimes(1);
+          expect(subscriptionSpy).toHaveBeenCalledWith(null);
+
+          subscriptionSpy.calls.reset();
+
+          // Simulate a `ServiceWorkerController` change.
+          mock.setupSw();
+          await nextSubEmitPromise;
+          expect(subscriptionSpy).toHaveBeenCalledTimes(1);
+          expect(subscriptionSpy).toHaveBeenCalledWith(null);
+        });
+
+        async_it('emits on subscription changes (i.e. when subscribing/unsubscribing)', async() => {
+          await nextSubEmitPromise;
+          subscriptionSpy.calls.reset();
+
+          // Subscribe.
+          push.requestSubscription({serverPublicKey: 'test'});
+          await nextSubEmitPromise;
+          expect(subscriptionSpy).toHaveBeenCalledTimes(1);
+          expect(subscriptionSpy).toHaveBeenCalledWith(jasmine.any(MockPushSubscription));
+
+          subscriptionSpy.calls.reset();
+
+          // Subscribe again.
+          push.requestSubscription({serverPublicKey: 'test'});
+          await nextSubEmitPromise;
+          expect(subscriptionSpy).toHaveBeenCalledTimes(1);
+          expect(subscriptionSpy).toHaveBeenCalledWith(jasmine.any(MockPushSubscription));
+
+          subscriptionSpy.calls.reset();
+
+          // Unsubscribe.
+          push.unsubscribe();
+          await nextSubEmitPromise;
+          expect(subscriptionSpy).toHaveBeenCalledTimes(1);
+          expect(subscriptionSpy).toHaveBeenCalledWith(null);
+        });
+      });
+
       describe('with no SW', () => {
-        beforeEach(() => { comm = new NgswCommChannel(undefined); });
-        it('can be instantiated', () => { push = new SwPush(comm); });
-        it('does not crash on subscription to observables', () => {
+        beforeEach(() => {
+          comm = new NgswCommChannel(undefined);
           push = new SwPush(comm);
+        });
+
+        it('does not crash on subscription to observables', () => {
           push.messages.toPromise().catch(err => fail(err));
           push.subscription.toPromise().catch(err => fail(err));
         });
+
         it('gives an error when registering', done => {
-          push = new SwPush(comm);
           push.requestSubscription({serverPublicKey: 'test'}).catch(err => { done(); });
         });
-        it('gives an error when unsubscribing', done => {
 
-          push = new SwPush(comm);
+        it('gives an error when unsubscribing', done => {
           push.unsubscribe().catch(err => { done(); });
         });
       });
     });
+
     describe('SwUpdate', () => {
       let update: SwUpdate;
       beforeEach(() => {
