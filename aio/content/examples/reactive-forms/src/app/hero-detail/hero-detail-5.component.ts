@@ -18,9 +18,9 @@ export class HeroDetailComponent5 {
   }
 
   createForm() {
-    this.heroForm = this.fb.group({ // <-- the parent FormGroup
+    this.heroForm = this.fb.group({ // <-- 부모 FormGroup
       name: ['', Validators.required ],
-      address: this.fb.group({ // <-- the child FormGroup
+      address: this.fb.group({ // <-- 자식 FormGroup
         street: '',
         city: '',
         state: '',

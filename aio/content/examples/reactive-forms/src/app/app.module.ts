@@ -3,7 +3,7 @@
 // #docregion v1
 import { NgModule }            from '@angular/core';
 import { BrowserModule }       from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';  // <-- #1 import module
+import { ReactiveFormsModule } from '@angular/forms';  // <-- #1 반응형 폼 모듈을 로드합니다.
 
 import { AppComponent }        from './app.component';
 import { HeroDetailComponent } from './hero-detail/hero-detail.component';
@@ -25,7 +25,7 @@ import { HeroService }         from './hero.service';
  // #enddocregion hero-service-list
   imports: [
     BrowserModule,
-    ReactiveFormsModule // <-- #2 add to @NgModule imports
+    ReactiveFormsModule // <-- #2 @NgModule imports 목록에 추가합니다.
   ],
   // #enddocregion v1
   // export for the DemoModule
