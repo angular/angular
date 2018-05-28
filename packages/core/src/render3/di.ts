@@ -20,10 +20,10 @@ import {Type} from '../type';
 
 import {assertGreaterThan, assertLessThan, assertNotNull} from './assert';
 import {addToViewTree, assertPreviousIsParent, createLContainer, createLNodeObject, createTNode, createTView, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
-import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList} from './interfaces/definition';
+import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {AttributeMarker, LContainerNode, LElementNode, LNode, LViewNode, TNodeFlags, TNodeType} from './interfaces/node';
-import {QueryReadType} from './interfaces/query';
+import {LQueries, QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
 import {LView, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
@@ -576,6 +576,11 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
     const lContainerNode: LContainerNode = createLNodeObject(
         TNodeType.Container, vcRefHost.view, hostParent, undefined, lContainer, null);
 
+
+    if (vcRefHost.queries) {
+      lContainerNode.queries = vcRefHost.queries.container();
+    }
+
     const hostTNode = vcRefHost.tNode;
     if (!hostTNode.dynamicContainerNode) {
       hostTNode.dynamicContainerNode =
@@ -701,7 +706,7 @@ export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef
     ngDevMode && assertNotNull(hostTNode.tViews, 'TView must be allocated');
     di.templateRef = new TemplateRef<any>(
         getOrCreateElementRef(di), hostTNode.tViews as TView, hostNode.data.template !,
-        getRenderer(), hostTView.directiveRegistry, hostTView.pipeRegistry);
+        getRenderer(), hostNode.queries);
   }
   return di.templateRef;
 }
@@ -712,13 +717,13 @@ class TemplateRef<T> implements viewEngine_TemplateRef<T> {
   constructor(
       elementRef: viewEngine_ElementRef, private _tView: TView,
       private _template: ComponentTemplate<T>, private _renderer: Renderer3,
-      private _directives: DirectiveDefList|null, private _pipes: PipeDefList|null) {
+      private _queries: LQueries|null) {
     this.elementRef = elementRef;
   }
 
   createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> {
     const viewNode = renderEmbeddedTemplate(
-        null, this._tView, this._template, context, this._renderer, this._directives, this._pipes);
+        null, this._tView, this._template, context, this._renderer, this._queries);
     return addDestroyable(new EmbeddedViewRef(viewNode, this._template, context));
   }
 }

@@ -328,6 +328,12 @@ export function insertView(
     viewNode.data.next = null;
   }
 
+  // Notify query that a new view has been added
+  const lView = viewNode.data;
+  if (lView.queries) {
+    lView.queries.insertView(index);
+  }
+
   // If the container's renderParent is null, we know that it is a root node of its own parent view
   // and we should wait until that parent processes its nodes (otherwise, we will insert this view's
   // nodes twice - once now and once when its parent inserts its views).
@@ -367,8 +373,13 @@ export function removeView(container: LContainerNode, removeIndex: number): LVie
   views.splice(removeIndex, 1);
   destroyViewTree(viewNode.data);
   addRemoveViewFromContainer(container, viewNode, false);
+
   // Notify query that view has been removed
-  container.data.queries && container.data.queries.removeView(removeIndex);
+  const removedLview = viewNode.data;
+  if (removedLview.queries) {
+    removedLview.queries.removeView(removeIndex);
+  }
+
   return viewNode;
 }
 

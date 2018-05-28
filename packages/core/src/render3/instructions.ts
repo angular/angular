@@ -493,8 +493,7 @@ export function renderTemplate<T>(
  */
 export function renderEmbeddedTemplate<T>(
     viewNode: LViewNode | null, tView: TView, template: ComponentTemplate<T>, context: T,
-    renderer: Renderer3, directives?: DirectiveDefList | null,
-    pipes?: PipeDefList | null): LViewNode {
+    renderer: Renderer3, queries?: LQueries | null): LViewNode {
   const _isParent = isParent;
   const _previousOrParentNode = previousOrParentNode;
   let oldView: LView;
@@ -506,6 +505,10 @@ export function renderEmbeddedTemplate<T>(
     if (viewNode == null) {
       const lView = createLView(
           -1, renderer, tView, template, context, LViewFlags.CheckAlways, getCurrentSanitizer());
+
+      if (queries) {
+        lView.queries = queries.createView();
+      }
 
       viewNode = createLNode(null, TNodeType.View, null, null, null, lView);
       rf = RenderFlags.Create;
@@ -1643,8 +1646,9 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
     const newView = createLView(
         viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, null,
         LViewFlags.CheckAlways, getCurrentSanitizer());
+
     if (lContainer.queries) {
-      newView.queries = lContainer.queries.enterView(lContainer.nextIndex !);
+      newView.queries = lContainer.queries.createView();
     }
 
     enterView(

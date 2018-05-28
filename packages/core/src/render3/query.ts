@@ -76,6 +76,12 @@ export interface LQuery<T> {
    * This is what builds up the `QueryList._valuesTree`.
    */
   values: any[];
+
+  /**
+   * A pointer to an array that stores collected values from views. This is necessary so we know a
+   * container into which to insert nodes collected from views.
+   */
+  containerValues: any[]|null;
 }
 
 export class LQueries_ implements LQueries {
@@ -118,8 +124,13 @@ export class LQueries_ implements LQueries {
     while (query) {
       const containerValues: any[] = [];  // prepare room for views
       query.values.push(containerValues);
-      const clonedQuery: LQuery<any> =
-          {next: null, list: query.list, predicate: query.predicate, values: containerValues};
+      const clonedQuery: LQuery<any> = {
+        next: null,
+        list: query.list,
+        predicate: query.predicate,
+        values: containerValues,
+        containerValues: null
+      };
       clonedQuery.next = result;
       result = clonedQuery;
       query = query.next;
@@ -128,21 +139,35 @@ export class LQueries_ implements LQueries {
     return result ? new LQueries_(result) : null;
   }
 
-  enterView(index: number): LQueries|null {
+  createView(): LQueries|null {
     let result: LQuery<any>|null = null;
     let query = this.deep;
 
     while (query) {
-      const viewValues: any[] = [];  // prepare room for view nodes
-      query.values.splice(index, 0, viewValues);
-      const clonedQuery: LQuery<any> =
-          {next: null, list: query.list, predicate: query.predicate, values: viewValues};
+      const clonedQuery: LQuery<any> = {
+        next: null,
+        list: query.list,
+        predicate: query.predicate,
+        values: [],
+        containerValues: query.values
+      };
       clonedQuery.next = result;
       result = clonedQuery;
       query = query.next;
     }
 
     return result ? new LQueries_(result) : null;
+  }
+
+  insertView(index: number): void {
+    let query = this.deep;
+    while (query) {
+      ngDevMode &&
+          assertNotNull(
+              query.containerValues, 'View queries need to have a pointer to container values.');
+      query.containerValues !.splice(index, 0, query.values);
+      query = query.next;
+    }
   }
 
   addNode(node: LNode): void {
@@ -153,7 +178,10 @@ export class LQueries_ implements LQueries {
   removeView(index: number): void {
     let query = this.deep;
     while (query) {
-      const removed = query.values.splice(index, 1);
+      ngDevMode &&
+          assertNotNull(
+              query.containerValues, 'View queries need to have a pointer to container values.');
+      const removed = query.containerValues !.splice(index, 1);
 
       // mark a query as dirty only when removed view had matching modes
       ngDevMode && assertEqual(removed.length, 1, 'removed.length');
@@ -279,7 +307,8 @@ function createQuery<T>(
     next: previous,
     list: queryList,
     predicate: createPredicate(predicate, read),
-    values: (queryList as any as QueryList_<T>)._valuesTree
+    values: (queryList as any as QueryList_<T>)._valuesTree,
+    containerValues: null
   };
 }
 
