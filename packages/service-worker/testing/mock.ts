@@ -11,9 +11,8 @@ import {Subject} from 'rxjs';
 export class MockServiceWorkerContainer {
   private onControllerChange: Function[] = [];
   private onMessage: Function[] = [];
-  private registration: MockServiceWorkerRegistration|null = null;
+  mockRegistration: MockServiceWorkerRegistration|null = null;
   controller: MockServiceWorker|null = null;
-
   messages = new Subject();
 
   addEventListener(event: 'controllerchange'|'message', handler: Function) {
@@ -34,16 +33,14 @@ export class MockServiceWorkerContainer {
 
   async register(url: string): Promise<void> { return; }
 
-  async getRegistration(): Promise<ServiceWorkerRegistration> { return this.registration as any; }
-
-  setupSw(url: string = '/ngsw-worker.js'): void {
-    this.registration = new MockServiceWorkerRegistration();
-    this.controller = new MockServiceWorker(this, url);
-    this.onControllerChange.forEach(onChange => onChange(this.controller));
+  async getRegistration(): Promise<ServiceWorkerRegistration> {
+    return this.mockRegistration as any;
   }
 
-  get mockRegistration(): Promise<MockServiceWorkerRegistration> {
-    return Promise.resolve(this.registration !);
+  setupSw(url: string = '/ngsw-worker.js'): void {
+    this.mockRegistration = new MockServiceWorkerRegistration();
+    this.controller = new MockServiceWorker(this, url);
+    this.onControllerChange.forEach(onChange => onChange(this.controller));
   }
 
   sendMessage(value: Object): void {
