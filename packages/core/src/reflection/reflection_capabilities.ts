@@ -17,7 +17,8 @@ import {GetterFn, MethodFn, SetterFn} from './types';
 /**
  * Attention: These regex has to hold even if the code is minified!
  */
-const ES5_DELEGATE_CTOR = /^function\s+\S+\(\)\s*{[\s\S]+\.\s*apply\s*\(\s*this\s*,\s*arguments\s*\)/;
+const ES5_DELEGATE_CTOR =
+    /^function\s+\S+\(\)\s*{[\s\S]+\.\s*apply\s*\(\s*this\s*,\s*arguments\s*\)/;
 const ES6_INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[A-Za-z\d$_]+\s*{/;
 const ES6_CTOR = /\bconstructor\s*\(/;
 const ES6_DELEGATE_CTOR = /\bconstructor\s*\(\)\s*{[\s\S]*super\s*\(\s*\.{3}\s*arguments\s*\)/;

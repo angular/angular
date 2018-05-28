@@ -537,9 +537,6 @@
     "name": "DEFINITION_CACHE"
   },
   {
-    "name": "DELEGATE_CTOR"
-  },
-  {
     "name": "DOCUMENT"
   },
   {
@@ -649,6 +646,18 @@
   },
   {
     "name": "ERROR_SYNTAX_ERROR"
+  },
+  {
+    "name": "ES5_DELEGATE_CTOR"
+  },
+  {
+    "name": "ES6_CTOR"
+  },
+  {
+    "name": "ES6_DELEGATE_CTOR"
+  },
+  {
+    "name": "ES6_INHERITED_CLASS"
   },
   {
     "name": "EVENT_NAMES"
@@ -814,12 +823,6 @@
   },
   {
     "name": "INFERRED_TYPE"
-  },
-  {
-    "name": "INHERITED_CLASS"
-  },
-  {
-    "name": "INHERITED_CLASS_WITH_CTOR"
   },
   {
     "name": "INJECTOR"
@@ -3262,6 +3265,9 @@
   },
   {
     "name": "isDefined"
+  },
+  {
+    "name": "isDelegateCtor"
   },
   {
     "name": "isDevMode"
