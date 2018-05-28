@@ -18,14 +18,13 @@ import {ConstructorProvider, ExistingProvider, FactoryProvider, StaticClassProvi
 export const SOURCE = '__source';
 /** Supporting type for Injector.get */
 export class ThrowIfNotFound {
-  /** @internal */
-  constructor() {
+  private constructor() {
     if (_THROW_IF_NOT_FOUND) {
       throw new Error('Do not instantiate ThrowIfNotFound; use THROW_IF_NOT_FOUND instead.');
     }
   }
 }
-const _THROW_IF_NOT_FOUND = new ThrowIfNotFound();
+const _THROW_IF_NOT_FOUND = new (<any>ThrowIfNotFound)();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
 /**
