@@ -7,7 +7,7 @@
  */
 
 import {Reflector} from '@angular/core/src/reflection/reflection';
-import {DELEGATE_CTOR, INHERITED_CLASS, INHERITED_CLASS_WITH_CTOR, ReflectionCapabilities} from '@angular/core/src/reflection/reflection_capabilities';
+import {ReflectionCapabilities, isDelegateCtor} from '@angular/core/src/reflection/reflection_capabilities';
 import {makeDecorator, makeParamDecorator, makePropDecorator} from '@angular/core/src/util/decorators';
 import {global} from '@angular/core/src/util/global';
 
@@ -165,8 +165,10 @@ class TestObj {
       });
     });
 
-    describe('ctor inheritance detection', () => {
-      it('should use the right regex', () => {
+    describe('isDelegateCtor', () => {
+      it('should support ES5 compiled classes', () => {
+        // These classes will be compiled to ES5 code so their stringified form
+        // below will contain ES5 constructor functions rather than native classes.
         class Parent {}
 
         class ChildNoCtor extends Parent {}
@@ -177,9 +179,9 @@ class TestObj {
           private x = 10;
         }
 
-        expect(DELEGATE_CTOR.exec(ChildNoCtor.toString())).toBeTruthy();
-        expect(DELEGATE_CTOR.exec(ChildNoCtorPrivateProps.toString())).toBeTruthy();
-        expect(DELEGATE_CTOR.exec(ChildWithCtor.toString())).toBeFalsy();
+        expect(isDelegateCtor(ChildNoCtor.toString())).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps.toString())).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor.toString())).toBe(false);
       });
 
       it('should not throw when no prototype on type', () => {
@@ -190,6 +192,9 @@ class TestObj {
       });
 
       it('should support native class', () => {
+        // These classes are defined as strings unlike the tests above because otherwise
+        // the compiler (of these tests) will convert them to ES5 constructor function
+        // style classes.
         const ChildNoCtor = `class ChildNoCtor extends Parent {}\n`;
         const ChildWithCtor = `class ChildWithCtor extends Parent {\n` +
             `  constructor() { super(); }` +
@@ -199,24 +204,23 @@ class TestObj {
             `  constructor() { super(); }` +
             `}\n`;
         const ChildNoCtorPrivateProps = `class ChildNoCtorPrivateProps extends Parent {\n` +
-            `  private x = 10;\n` +
+            `  constructor() {\n` +
+            // Note that the instance property causes a pass-through constructor to be synthesized
+            `    super(...arguments);\n` +
+            `    this.x = 10;\n` +
+            `  }\n` +
             `}\n`;
 
-        const checkNoOwnMetadata = (str: string) =>
-            INHERITED_CLASS.exec(str) && !INHERITED_CLASS_WITH_CTOR.exec(str);
-
-        expect(checkNoOwnMetadata(ChildNoCtor)).toBeTruthy();
-        expect(checkNoOwnMetadata(ChildNoCtorPrivateProps)).toBeTruthy();
-        expect(checkNoOwnMetadata(ChildWithCtor)).toBeFalsy();
-        expect(checkNoOwnMetadata(ChildNoCtorComplexBase)).toBeTruthy();
-        expect(checkNoOwnMetadata(ChildWithCtorComplexBase)).toBeFalsy();
+        expect(isDelegateCtor(ChildNoCtor)).toBe(true);
+        expect(isDelegateCtor(ChildNoCtorPrivateProps)).toBe(true);
+        expect(isDelegateCtor(ChildWithCtor)).toBe(false);
+        expect(isDelegateCtor(ChildNoCtorComplexBase)).toBe(true);
+        expect(isDelegateCtor(ChildWithCtorComplexBase)).toBe(false);
       });
 
       it('should properly handle all class forms', () => {
-        const ctor = (str: string) => expect(INHERITED_CLASS.exec(str)).toBeTruthy() &&
-            expect(INHERITED_CLASS_WITH_CTOR.exec(str)).toBeTruthy();
-        const noCtor = (str: string) => expect(INHERITED_CLASS.exec(str)).toBeTruthy() &&
-            expect(INHERITED_CLASS_WITH_CTOR.exec(str)).toBeFalsy();
+        const ctor = (str: string) => expect(isDelegateCtor(str)).toBe(false);
+        const noCtor = (str: string) => expect(isDelegateCtor(str)).toBe(true);
 
         ctor(`class Bar extends Foo {constructor(){}}`);
         ctor(`class Bar extends Foo { constructor ( ) {} }`);
