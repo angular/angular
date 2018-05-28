@@ -56,4 +56,25 @@ export class MockServiceWorker {
   postMessage(value: Object) { this.mock.messages.next(value); }
 }
 
-export class MockServiceWorkerRegistration {}
+export class MockServiceWorkerRegistration {
+  pushManager: PushManager = new MockPushManager() as any;
+}
+
+export class MockPushManager {
+  private subscription: PushSubscription|null = null;
+
+  getSubscription(): Promise<PushSubscription|null> {
+    return Promise.resolve(this.subscription);
+  }
+
+  subscribe(options?: PushSubscriptionOptionsInit): Promise<PushSubscription> {
+    this.subscription = new MockPushSubscription() as any;
+    return Promise.resolve(this.subscription !);
+  }
+}
+
+export class MockPushSubscription {
+  unsubscribe(): Promise<boolean> {
+    return Promise.resolve(true);
+  }
+}
