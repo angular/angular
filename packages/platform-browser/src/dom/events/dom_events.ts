@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, NgZone} from '@angular/core';
+import {isPlatformServer} from '@angular/common';
+import {Inject, Injectable, NgZone, Optional, PLATFORM_ID} from '@angular/core';
+
+
 // Import zero symbols from zone.js. This causes the zone ambient type to be
 // added to the type-checker, without emitting any runtime module load statement
 import {} from 'zone.js';
@@ -103,10 +106,14 @@ const globalListener = function(event: Event) {
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
-  constructor(@Inject(DOCUMENT) doc: any, private ngZone: NgZone) {
+  constructor(
+      @Inject(DOCUMENT) doc: any, private ngZone: NgZone,
+      @Optional() @Inject(PLATFORM_ID) platformId: {}|null) {
     super(doc);
 
-    this.patchEvent();
+    if (!platformId || !isPlatformServer(platformId)) {
+      this.patchEvent();
+    }
   }
 
   private patchEvent() {

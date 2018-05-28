@@ -206,11 +206,13 @@ class EmulatedEncapsulationServerRenderer2 extends DefaultServerRenderer2 {
       eventManager: EventManager, document: any, ngZone: NgZone, sharedStylesHost: SharedStylesHost,
       schema: DomElementSchemaRegistry, private component: RendererType2) {
     super(eventManager, document, ngZone, schema);
-    const styles = flattenStyles(component.id, component.styles, []);
+    // Add a 's' prefix to style attributes to indicate server.
+    const componentId = 's' + component.id;
+    const styles = flattenStyles(componentId, component.styles, []);
     sharedStylesHost.addStyles(styles);
 
-    this.contentAttr = shimContentAttribute(component.id);
-    this.hostAttr = shimHostAttribute(component.id);
+    this.contentAttr = shimContentAttribute(componentId);
+    this.hostAttr = shimHostAttribute(componentId);
   }
 
   applyToHost(element: any) { super.setAttribute(element, this.hostAttr, ''); }
