@@ -23,6 +23,7 @@ branches:
   - 5.2.x
   - 6.0.x
   - 6.1.x
+  - 6.2.x
 
 jobs:
   include:
