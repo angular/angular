@@ -518,8 +518,8 @@ ng_module = rule(
 
 
 # TODO(alxhub): this rule causes legacy ngc to produce Ivy outputs from global analysis information.
-# It to facilitate testing of the Ivy runtime until ngtsc is mature enough to be used instead, and
-# should be removed once ngtsc is capable of fulfilling the same requirements.
+# It exists to facilitate testing of the Ivy runtime until ngtsc is mature enough to be used
+# instead, and should be removed once ngtsc is capable of fulfilling the same requirements.
 internal_global_ng_module = rule(
     implementation = _ng_module_impl,
     attrs = dict(NG_MODULE_RULE_ATTRS, **{

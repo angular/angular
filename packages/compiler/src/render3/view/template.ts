@@ -16,6 +16,7 @@ import {Lexer} from '../../expression_parser/lexer';
 import {Parser} from '../../expression_parser/parser';
 import * as html from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
+import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
@@ -777,16 +778,24 @@ function interpolate(args: o.Expression[]): o.Expression {
  * @param template text of the template to parse
  * @param templateUrl URL to use for source mapping of the parsed template
  */
-export function parseTemplate(template: string, templateUrl: string):
+export function parseTemplate(
+    template: string, templateUrl: string, options: {preserveWhitespace?: boolean} = {}):
     {errors?: ParseError[], nodes: t.Node[], hasNgContent: boolean, ngContentSelectors: string[]} {
   const bindingParser = makeBindingParser();
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl);
+
   if (parseResult.errors && parseResult.errors.length > 0) {
     return {errors: parseResult.errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
   }
+
+  let rootNodes: html.Node[] = parseResult.rootNodes;
+  if (!options.preserveWhitespace) {
+    rootNodes = html.visitAll(new WhitespaceVisitor(), rootNodes);
+  }
+
   const {nodes, hasNgContent, ngContentSelectors, errors} =
-      htmlAstToRender3Ast(parseResult.rootNodes, bindingParser);
+      htmlAstToRender3Ast(rootNodes, bindingParser);
   if (errors && errors.length > 0) {
     return {errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
   }

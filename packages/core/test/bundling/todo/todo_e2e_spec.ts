@@ -26,10 +26,10 @@ describe('functional test for todo', () => {
            const toDoAppComponent = (window as any).toDoAppComponent;
            expect(document.body.textContent).toContain('todos');
            expect(document.body.textContent).toContain('Demonstrate Components');
-           expect(document.body.textContent).toMatch(/4\s+items left/);
+           expect(document.body.textContent).toContain('4 items left');
            document.querySelector('button') !.click();
            await whenRendered(toDoAppComponent);
-           expect(document.body.textContent).toMatch(/3\s+items left/);
+           expect(document.body.textContent).toContain('3 items left');
          }));
     });
   });

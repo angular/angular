@@ -147,6 +147,9 @@ export class ToDoAppComponent {
   }
 }
 
+// In JIT mode the @Directive decorators in //packages/common will compile the Ivy fields. When
+// running under --define=compile=legacy, //packages/common is not compiled with Ivy fields, so they
+// must be monkey-patched on.
 if (!(NgIf as any).ngDirectiveDef) {
   // TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
   (CommonModule as any).ngInjectorDef = defineInjector({factory: () => new CommonModule});

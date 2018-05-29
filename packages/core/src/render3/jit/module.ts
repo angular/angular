@@ -82,7 +82,7 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
       }
       return def;
     },
-  })
+  });
 }
 
 export function patchComponentWithScope<C, M>(
