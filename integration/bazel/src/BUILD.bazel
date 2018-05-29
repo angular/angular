@@ -9,3 +9,52 @@ ng_module(
     tsconfig = ":tsconfig.json",
     deps = ["//src/hello-world"],
 )
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+
+ts_devserver(
+    name = "devserver",
+    additional_root_paths = [
+        "bazel_integration_test/node_modules/zone.js/dist",
+    ],
+    entry_module = "bazel_integration_test/src/main",
+    scripts = ["//:angular_bundles"],
+    serving_path = "/bundle.min.js",
+    static_files = [
+        "//:node_modules/zone.js/dist/zone.min.js",
+        "index.html",
+    ],
+    deps = ["//src"],
+)
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle", "nodejs_binary")
+
+rollup_bundle(
+    name = "bundle",
+    entry_point = "src/main",
+    deps = ["//src"],
+)
+
+# Needed because the prodserver only loads static files that appear under this
+# package.
+genrule(
+    name = "zone.js",
+    srcs = ["//:node_modules/zone.js/dist/zone.min.js"],
+    outs = ["zone.min.js"],
+    cmd = "cp $< $@",
+)
+
+nodejs_binary(
+    name = "prodserver",
+    args = [
+        "./src",
+        "-p",
+        "5432",
+    ],
+    data = [
+        "index.html",
+        ":bundle",
+        ":zone.js",
+    ],
+    entry_point = "http-server/bin/http-server",
+)
