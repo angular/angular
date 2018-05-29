@@ -8,14 +8,13 @@
 
 import {Directive, ElementRef, Inject, InjectionToken, NgZone} from '@angular/core';
 
-
 /**
  * Interface for a a MatInkBar positioner method, defining the positioning and width of the ink
  * bar in a set of tabs.
  */
 // tslint:disable-next-line class-name Using leading underscore to denote internal interface.
 export interface _MatInkBarPositioner {
-  (element: HTMLElement): { left: string, width: string };
+  (element: HTMLElement): {left: number, width: number};
 }
 
 /** Injection token for the MatInkBar's Positioner. */
@@ -31,8 +30,8 @@ export const _MAT_INK_BAR_POSITIONER =
  */
 export function _MAT_INK_BAR_POSITIONER_FACTORY(): _MatInkBarPositioner {
   const method = (element: HTMLElement) => ({
-    left: element ? (element.offsetLeft || 0) + 'px' : '0',
-    width: element ? (element.offsetWidth || 0) + 'px' : '0',
+    left: element ? (element.offsetLeft || 0) : 0,
+    width: element ? (element.offsetWidth || 0) : 0,
   });
 
   return method;
@@ -50,7 +49,7 @@ export function _MAT_INK_BAR_POSITIONER_FACTORY(): _MatInkBarPositioner {
 })
 export class MatInkBar {
   constructor(
-    private _elementRef: ElementRef,
+    private _elementRef: ElementRef<HTMLElement>,
     private _ngZone: NgZone,
     @Inject(_MAT_INK_BAR_POSITIONER) private _inkBarPositioner: _MatInkBarPositioner) { }
 
@@ -87,9 +86,14 @@ export class MatInkBar {
    */
   private _setStyles(element: HTMLElement) {
     const positions = this._inkBarPositioner(element);
-    const inkBar: HTMLElement = this._elementRef.nativeElement;
+    const inkBar = this._elementRef.nativeElement;
 
-    inkBar.style.left = positions.left;
-    inkBar.style.width = positions.width;
+    // We want to prevent the ink bar from animating on the initial load.
+    // Enable animations only if the ink bar has been translated before.
+    if (inkBar.style.transform) {
+      inkBar.classList.add('mat-ink-bar-animations-enabled');
+    }
+
+    inkBar.style.transform = `translateX(${positions.left}px) scaleX(${positions.width})`;
   }
 }

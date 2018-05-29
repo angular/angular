@@ -50,17 +50,23 @@ $mat-tab-animation-duration: 500ms !default;
   $height: 2px;
 
   position: absolute;
+  left: 0;
   bottom: 0;
   height: $height;
-  transition: $mat-tab-animation-duration $ease-in-out-curve-function;
+  width: 1px;
+  transform-origin: 0;
 
   .mat-tab-group-inverted-header & {
     bottom: auto;
     top: 0;
   }
 
+  &.mat-ink-bar-animations-enabled {
+    transition: transform $mat-tab-animation-duration $ease-in-out-curve-function;
+  }
+
   @include cdk-high-contrast {
-    outline: solid $height;
+    border-bottom: solid $height;
     height: 0;
   }
 }
