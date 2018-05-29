@@ -111,6 +111,9 @@
     "name": "getOrCreateTView"
   },
   {
+    "name": "getParentLNode"
+  },
+  {
     "name": "getRenderFlags"
   },
   {

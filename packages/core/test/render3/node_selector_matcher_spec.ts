@@ -23,6 +23,7 @@ function testLStaticData(tagName: string, attrs: string[] | null): TNode {
     tViews: null,
     next: null,
     child: null,
+    parent: null,
     dynamicContainerNode: null
   };
 }

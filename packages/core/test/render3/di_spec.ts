@@ -1372,7 +1372,7 @@ describe('di', () => {
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values
         // so that we have smaller HelloWorld.
-        (parent as{parent: any}).parent = undefined;
+        (parent.tNode as{parent: any}).parent = undefined;
 
         const injector = getOrCreateNodeInjector();
         expect(injector).not.toBe(null);

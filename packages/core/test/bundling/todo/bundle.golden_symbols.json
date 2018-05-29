@@ -423,6 +423,9 @@
     "name": "getOrCreateTemplateRef"
   },
   {
+    "name": "getParentLNode"
+  },
+  {
     "name": "getParentState"
   },
   {

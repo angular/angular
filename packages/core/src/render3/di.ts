@@ -27,7 +27,7 @@ import {QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
 import {LView, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {insertView, removeView} from './node_manipulation';
+import {getParentLNode, insertView, removeView} from './node_manipulation';
 import {notImplemented, stringify} from './util';
 import {EmbeddedViewRef, ViewRef, addDestroyable, createViewRef} from './view_ref';
 
@@ -102,7 +102,8 @@ export function getOrCreateNodeInjector(): LInjector {
  */
 export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNode): LInjector {
   const nodeInjector = node.nodeInjector;
-  const parentInjector = node.parent && node.parent.nodeInjector;
+  const parent = getParentLNode(node);
+  const parentInjector = parent && parent.nodeInjector;
   if (nodeInjector != parentInjector) {
     return nodeInjector !;
   }
@@ -568,14 +569,15 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
     const vcRefHost = di.node;
 
     ngDevMode && assertNodeOfPossibleTypes(vcRefHost, TNodeType.Container, TNodeType.Element);
-    const lContainer = createLContainer(vcRefHost.parent !, vcRefHost.view);
+    const hostParent = getParentLNode(vcRefHost) !;
+    const lContainer = createLContainer(hostParent, vcRefHost.view);
     const lContainerNode: LContainerNode = createLNodeObject(
-        TNodeType.Container, vcRefHost.view, vcRefHost.parent !, undefined, lContainer, null);
+        TNodeType.Container, vcRefHost.view, hostParent, undefined, lContainer, null);
 
     const hostTNode = vcRefHost.tNode;
     if (!hostTNode.dynamicContainerNode) {
       hostTNode.dynamicContainerNode =
-          createTNode(TNodeType.Container, hostTNode.index, null, null, null);
+          createTNode(TNodeType.Container, null, null, null, null, null);
     }
 
     lContainerNode.tNode = hostTNode.dynamicContainerNode;
@@ -640,8 +642,6 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
 
     this._viewRefs.splice(adjustedIdx, 0, viewRef);
 
-    (lViewNode as{parent: LNode}).parent = this._lContainerNode;
-
     // If the view is dynamic (has a template), it needs to be counted both at the container
     // level and at the node above the container.
     if (lViewNode.data.template !== null) {
@@ -649,10 +649,10 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
       this._lContainerNode.data.dynamicViewCount++;
 
       // Look for the parent node and increment its dynamic view count.
-      if (this._lContainerNode.parent !== null && this._lContainerNode.parent.data !== null) {
-        ngDevMode && assertNodeOfPossibleTypes(
-                         this._lContainerNode.parent, TNodeType.View, TNodeType.Element);
-        this._lContainerNode.parent.data.dynamicViewCount++;
+      const containerParent = getParentLNode(this._lContainerNode) as LElementNode;
+      if (containerParent !== null && containerParent.data !== null) {
+        ngDevMode && assertNodeOfPossibleTypes(containerParent, TNodeType.View, TNodeType.Element);
+        containerParent.data.dynamicViewCount++;
       }
     }
     return viewRef;
