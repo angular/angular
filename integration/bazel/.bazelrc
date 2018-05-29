@@ -1,3 +1,0 @@
-# Workaround https://github.com/bazelbuild/bazel/issues/3645
-# Limit Bazel to consuming 3072K of RAM
-build --local_resources=3072,2.0,1.0
