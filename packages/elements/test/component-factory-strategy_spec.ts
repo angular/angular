@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactory, ComponentRef, Injector, NgModuleRef, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {ComponentFactory, ComponentRef, Injector, NgModuleRef, NgZone, SimpleChange, SimpleChanges, Type} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 
@@ -20,12 +20,27 @@ describe('ComponentFactoryNgElementStrategy', () => {
   let injector: any;
   let componentRef: any;
   let applicationRef: any;
+  let factoryResolver: any;
+  let ngZone: any;
 
   beforeEach(() => {
     factory = new FakeComponentFactory();
     componentRef = factory.componentRef;
 
     applicationRef = jasmine.createSpyObj('applicationRef', ['attachView']);
+    ngZone = jasmine.createSpyObj('ngZone', ['run']);
+    ngZone.run.and.callFake((fn: any) => { return fn(); });
+    injector = jasmine.createSpyObj('injector', ['get']);
+    injector.get.and.callFake(function(identify: any) {
+      const name = identify && identify.name;
+      if (name === 'ApplicationRef') {
+        return applicationRef;
+      } else if (name === 'NgZone') {
+        return ngZone;
+      } else if (name === 'ComponentFactoryResolver') {
+        return factoryResolver;
+      }
+    });
 
     strategy = new ComponentNgElementStrategy(factory, injector);
   });
@@ -40,6 +55,34 @@ describe('ComponentFactoryNgElementStrategy', () => {
     expect(strategyFactory.create(injector)).toBeTruthy();
   });
 
+  describe('connected', () => {
+
+    it('should not run initializeComponentFn in ngZone if is already inAngularZone',
+       fakeAsync(() => {
+         const spy = spyOn(NgZone, 'isInAngularZone');
+         spy.and.callFake(function() { return true; });
+         ngZone.run.calls.reset();
+
+         strategy.connect(document.createElement('div'));
+
+         expect(ngZone.run).not.toHaveBeenCalled();
+         ngZone.run.and.callFake(() => {});
+         tick(16);  // scheduler waits 16ms if RAF is unavailable
+         expect(ngZone.run).not.toHaveBeenCalled();
+       }));
+
+    it('should run initializeComponentFn in ngZone if is not already inAngularZone',
+       fakeAsync(() => {
+         const spy = spyOn(NgZone, 'isInAngularZone');
+         spy.and.callFake(function() { return false; });
+         ngZone.run.calls.reset();
+
+         strategy.connect(document.createElement('div'));
+
+         expect(ngZone.run).toHaveBeenCalled();
+       }));
+
+  });
   describe('after connected', () => {
     beforeEach(() => {
       // Set up an initial value to make sure it is passed to the component

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {ApplicationRef, ComponentFactory, ComponentFactoryResolver, ComponentRef, EventEmitter, Injector, NgZone, OnChanges, SimpleChange, SimpleChanges, Type} from '@angular/core';
 import {Observable, merge} from 'rxjs';
 import {map} from 'rxjs/operators';
 
@@ -67,7 +67,13 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Set of inputs that were not initially set when the component was created. */
   private readonly uninitializedInputs = new Set<string>();
 
-  constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {}
+  private ngZone: NgZone;
+  private applicationRef: ApplicationRef;
+
+  constructor(private componentFactory: ComponentFactory<any>, private injector: Injector) {
+    this.ngZone = this.injector.get<NgZone>(NgZone);
+    this.applicationRef = this.injector.get<ApplicationRef>(ApplicationRef);
+  }
 
   /**
    * Initializes a new component if one has not yet been created and cancels any scheduled
@@ -82,7 +88,8 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
     }
 
     if (!this.componentRef) {
-      this.initializeComponent(element);
+      let initializeComponentFn = () => { this.initializeComponent(element); };
+      NgZone.isInAngularZone() ? initializeComponentFn() : this.ngZone.run(initializeComponentFn);
     }
   }
 
