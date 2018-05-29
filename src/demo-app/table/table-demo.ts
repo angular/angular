@@ -29,5 +29,6 @@ export class TableDemo {
     'table-row-context',
     'table-selection',
     'table-sorting',
+    'table-expandable-rows',
   ];
 }
