@@ -1005,18 +1005,28 @@ and the form model are talking to one another.
 
 {@a properties}
 
+<!--
 ## Inspect `FormControl` Properties
+-->
+## `FormControl` 프로퍼티 활용하기
 
+<!--
 You can inspect an individual `FormControl` within a form by extracting it with the `get()` method.
 You can do this within the component class or display it on the
 page by adding the following to the template,
 immediately after the `{{form.value | json}}` interpolation as follows:
+-->
+폼에 있는 개별 `FormControl` 인스턴스는 `get()` 메소드를 사용해서 가져올 수 있습니다.
+이 메소드는 컴포넌트 클래스는 물론이고 템플릿에서도 사용할 수 있으며, 템플릿에 `{{form.value | json}}`라고 작성하면 폼에 입력된 내용을 화면에 표시할 수도 있습니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-5.component.html" region="inspect-value" title="src/app/hero-detail/hero-detail.component.html" linenums="false">
 
 </code-example>
 
+<!--
 To get the state of a `FormControl` that’s inside a `FormGroup`, use dot notation to traverse to the control.
+-->
+그리고 `FormGroup` 안에 있는 `FormControl`을 참조하려면 객체를 참조할 때와 마찬가지로 `.` 으로 참조할 수 있습니다. 이 참조 방식은 `get()` 메소드 안에서도 유효합니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-5.component.html" region="inspect-child-control" title="src/app/hero-detail/hero-detail.component.html" linenums="false">
 
@@ -1024,12 +1034,18 @@ To get the state of a `FormControl` that’s inside a `FormGroup`, use dot notat
 
 <div class="alert is-helpful">
 
+<!--
 *Note*: If you're coding along, remember to remove this reference to `address.street` when you get to the section on `FormArray`. In that section, you change the name of address in the component class and it will throw an error if you leave it in the template.
+-->
+*주의* : 템플릿에 작성한 `address.street` 코드는 설명을 위한 추가한 것이며, 이후 코드에서는 제거해야 합니다. 이 코드를 남겨두면 컴포넌트 클래스에서 주소값을 바꿨을 때 에러가 발생합니다.
 
 </div>
 
+<!--
 You can use this technique to display any property of a `FormControl`
 such as one of the following:
+-->
+이 방식은 `FormControl`에 있는 프로퍼티를 참조할 때 자유롭게 사용할 수 있습니다.
 
 <style>
   td, th {vertical-align: top}
@@ -1050,11 +1066,17 @@ such as one of the following:
   <tr>
 
     <th>
+      <!--
       Property
+      -->
+      프로퍼티
     </th>
 
     <th>
+      <!--
       Description
+      -->
+      설명
     </th>
 
   </tr>
@@ -1068,7 +1090,10 @@ such as one of the following:
     <td>
 
 
+      <!--
       the value of a `FormControl`.
+      -->
+      `FormControl`의 현재값
     </td>
 
   </tr>
@@ -1082,8 +1107,11 @@ such as one of the following:
     <td>
 
 
+      <!--
       the validity of a `FormControl`. Possible values: `VALID`,
        `INVALID`, `PENDING`, or `DISABLED`.
+      -->
+      `FormControl`의 유효성 검사 결과 : `VALID`, `INVALID`, `PENDING`, `DISABLED`
     </td>
 
   </tr>
@@ -1097,8 +1125,12 @@ such as one of the following:
     <td>
 
 
+      <!--
       `true` if the user has _not_ changed the value in the UI.
       Its opposite is `myControl.dirty`.
+      -->
+      사용자가 값을 바꾸기 전이라면 `true` 값입니다.
+      반대 프로퍼티는 `myControl.dirty`입니다.
     </td>
 
   </tr>
@@ -1112,8 +1144,12 @@ such as one of the following:
     <td>
 
 
+      <!--
       `true` if the control user has not yet entered the HTML control
        and triggered its blur event. Its opposite is `myControl.touched`.
+      -->
+      사용자가 HTML 컨트롤에 접근하기 전이라면 `true` 값입니다.
+      반대 프로퍼티는 `myControl.touched` 입니다.
 
     </td>
 
@@ -1122,7 +1158,7 @@ such as one of the following:
 </table>
 
 
-
+<!--
 Read about other `FormControl` properties in the
 [_AbstractControl_](api/forms/AbstractControl) API reference.
 
@@ -1130,69 +1166,126 @@ One common reason for inspecting `FormControl` properties is to
 make sure the user entered valid values.
 Read more about validating Angular forms in the
 [Form Validation](guide/form-validation) guide.
+-->
+`FormControl`의 다른 프로퍼티에 대해서도 알아보려면 [_AbstractControl_](api/forms/AbstractControl) API 문서를 참고하세요.
+
+`FormControl` 인스턴스의 프로퍼티를 참조하는 것은 목적은 사용자가 입력한 값의 유효성을 확인하는 것입니다.
+폼 유효성 검사에 대해 더 알아보려면 [폼 유효성 검사](guide/form-validation) 문서를 참고하세요.
 
 {@a data-model-form-model}
 
+<!--
 ## The data model and the form model
+-->
+## 데이터 모델과 폼 모델
 
+<!--
 At the moment, the form is displaying empty values.
 The `HeroDetailComponent` should display values of a hero,
 possibly a hero retrieved from a remote server.
+-->
+지금은 폼 내용이 모두 비어있습니다.
+그런데 만약 히어로의 정보가 서버에 이미 저장되어 있고, 이 서버에서 가져온 데이터를 수정하려고 한다면 현재 히어로의 정보가 `HeroDetailComponent`에 표시되어야 합니다.
 
+<!--
 In this app, the `HeroDetailComponent` gets its hero from a parent `HeroListComponent`.
+-->
+이 예제에서는 부모 컴포넌트 `HeroListComponent`에서 히어로 정보를 가져옵니다.
 
+<!--
 The `hero` from the server is the **_data model_**.
 The `FormControl` structure is the **_form model_**.
+-->
+외부에서 가져온 `hero` 객체는 **_데이터 모델_**입니다.
+그리고 `FormControl` 구조는 **_폼 모델_**입니다.
 
+<!--
 The component must copy the hero values in the data model into the form model.
 There are two important implications:
+-->
+컴포넌트는 데이터 모델에 있는 값을 폼 모델로 복사해야 합니다.
+이 과정에서 두 가지가 중요합니다:
 
+<!--
 1. The developer must understand how the properties of the data model
 map to the properties of the form model.
 
 2. User changes flow from the DOM elements to the form model, not to the data model.
+-->
+1. 개발자는 데이터 모델의 어떤 프로퍼티가 어떤 폼 모델 프로퍼티에 연결되는지 알아야 합니다.
 
+1. 사용자가 화면에서 변경하는 값은 데이터 모델의 값이 아니라 폼 모델의 값입니다.
+
+<!--
 The form controls never update the _data model_.
 
 The form and data model structures don't need to match exactly.
 You often present a subset of the data model on a particular screen.
 But it makes things easier if the shape of the form model is close to the shape of the data model.
+-->
+폼 컨트롤은 절대로 _데이터 모델_ 을 수정하지 않습니다.
 
+폼 모델과 데이터 모델의 구조가 정확히 일치할 필요는 없습니다.
+화면에는 데이터 모델 중 일부만 사용할 수도 있습니다.
+하지만 폼 모델과 데이터 모델의 구조를 비슷하게 해야 불필요한 실수를 줄일 수 있습니다.
+
+<!--
 In this `HeroDetailComponent`, the two models are quite close.
 
 Here are the definitions of `Hero` and `Address` in `data-model.ts`:
+-->
+예제에서 다루는 `HeroDetailComponent`에서 폼 모델과 데이터 모델은 거의 비슷합니다.
+
+`data-model.ts` 파일에 정의된 `Hero`와 `Address` 클래스 코드는 다음과 같습니다:
 
 <code-example path="reactive-forms/src/app/data-model.ts" region="model-classes" title="src/app/data-model.ts (classes)" linenums="false">
 
 </code-example>
 
+<!--
 Here, again, is the component's `FormGroup` definition.
+-->
+그리고 다음 코드는 컴포넌트에서 `FormGroup`을 정의하는 코드입니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-6.component.ts" region="hero-form-model" title="src/app/hero-detail/hero-detail.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 There are two significant differences between these models:
+-->
+이 두 모델은 다른 점이 있습니다:
 
+<!--
 1. The `Hero` has an `id`. The form model does not because you generally don't show primary keys to users.
 
 1. The `Hero` has an array of addresses. This form model presents only one address,
 which is covered in the section on [`FormArray`](guide/reactive-forms#form-array "Form arrays") below.
+-->
+1. `Hero`에는 `id` 프로퍼티가 있지만 폼 모델에는 없습니다. 사용자에게 이 키를 보여줄 필요는 없습니다.
 
+1. `Hero` 객체의 `addresses` 필드는 배열이지만 폼 모델에는 `address` 프로퍼티 하나만 있습니다. 폼 모델에서는 이 프로퍼티를 [`FormArray`](guide/reactive-forms#form-array "Form arrays")로 처리합니다.
+
+<!--
 Keeping the two models close in shape facilitates copying the data model properties
 to the form model with the `patchValue()` and `setValue()` methods in the next section.
+-->
+두 모델의 다른 점을 염두에 두고, 데이터 모델을 폼 모델로 복사할 때 `patchValue()`나 `setValue()` 메소드를 활용할 수 있습니다. 이 메소드는 다음 섹션에서 알아봅니다.
 
-
+<!--
 First, refactor the `address` `FormGroup` definition as follows:
+-->
+먼저, 컴포넌트 클래스에 선언된 `address` 필드를 다음과 같이 수정합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-7.component.ts" region="address-form-group" title="src/app/hero-detail/hero-detail.component.ts" linenums="false">
 
 </code-example>
 
-
+<!--
 Also be sure to update the `import` from `data-model` so you can reference the `Hero` and `Address` classes:
+-->
+이렇게 정의한 모델을 컴포넌트 클래스에서 사용하기 위해 `import` 키워드로 불러옵니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-7.component.ts" region="import-address" title="src/app/hero-detail/hero-detail.component.ts" linenums="false">
 
@@ -1200,37 +1293,67 @@ Also be sure to update the `import` from `data-model` so you can reference the `
 
 {@a set-data}
 
+<!--
 ## Populate the form model with `setValue()` and `patchValue()`
+-->
+## 폼 모델 수정하기 : `setValue()`, `patchValue()`
 
 <div class="alert is-helpful">
 
+<!--
 *Note*: If you're coding along, this section is optional as the rest of the steps do not rely on it.
+-->
+*참고* : 이 부분의 설명은 이후 과정에 영향이 없으며, 생략해도 됩니다.
 
 </div>
 
+<!--
 Previously, you created a control and initialized its value at the same time.
 You can also initialize or reset the values later with the
 `setValue()` and `patchValue()` methods.
+-->
+지금까지는 폼 컨트롤 인스턴스를 생성하면서 초기값도 같이 지정했습니다.
+이렇게 사용해도 되지만, 폼 컨트롤의 값은 `setValue()`이나 `patchValue()` 메소드로 수정할 수도 있습니다.
 
 ### `setValue()`
+
+<!--
 With `setValue()`, you assign every form control value at once
 by passing in a data object whose properties exactly match the form model behind the `FormGroup`.
+-->
+`setValue()`를 사용하면 모든 폼 컨트롤 값을 한 번에 수정할 수 있습니다.
+이 때 인자로 폼 모델의 전체 구조를 전달해야 합니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-7.component.ts" region="set-value" title="src/app/hero-detail/hero-detail.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
+<!--
 The `setValue()` method checks the data object thoroughly before assigning any form control values.
+-->
+그러면 `setValue()` 메소드가 모든 폼 컨트롤을 순회하면서 해당하는 값을 폼 컨트롤에 반영합니다.
 
+<!--
 It will not accept a data object that doesn't match the `FormGroup` structure or is
 missing values for any control in the group. This way, it can return helpful
 error messages if you have a typo or if you've nested controls incorrectly.
 Conversely, `patchValue()` will fail silently.
+-->
+이 때 전달하는 인자가 `FormGroup`의 구조와 정확하게 일치하지 않거나, 일부 값을 빠뜨리면 이 함수는 동작하지 않습니다.
+대신 어떤 부분이 잘못되었는지 알려주는 에러 메시니가 표시될 것입니다.
+이 부분은 `patchValue()`의 동작과는 다릅니다.
 
+<!--
 Notice that you can almost use the entire `hero` as the argument to `setValue()`
 because its shape is similar to the component's `FormGroup` structure.
+-->
+`hero` 데이터 모델의 내용을 `setValue()` 메소드로 폼 모델에 반영하는 것은 어렵지 않습니다.
+데이터 모델과 폼 모델의 구조가 거의 비슷하기 때문입니다.
 
+<!--
 You can only show the hero's first address and you must account for the possibility that the `hero` has no addresses at all, as in the conditional setting of the `address` property in the data object argument:
+-->
+폼 모델에는 히어로의 주소를 반영하는데, 이 때 주소에 입력된 값이 없을 수 있습니다. `address` 프로퍼티의 값이 비어있는 경우를 대비해서 코드를 다음과 같이 작성합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-7.component.ts" region="set-value-address" title="src/app/hero-detail/hero-detail.component.ts" linenums="false">
 
