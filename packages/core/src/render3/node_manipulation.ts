@@ -52,7 +52,7 @@ function findNextRNodeSibling(node: LNode | null, stopNode: LNode | null): RElem
         }
         currentSibling = getNextLNode(currentSibling);
       }
-      const parentNode = currentNode.parent;
+      const parentNode = getParentLNode(currentNode);
       currentNode = null;
       if (parentNode) {
         const parentType = parentNode.tNode.type;
@@ -82,6 +82,17 @@ export function getChildLNode(node: LNode): LNode|null {
     return view.data[node.tNode.child.index as number];
   }
   return null;
+}
+
+/** Retrieves the parent LNode of a given node. */
+export function getParentLNode(node: LElementNode | LTextNode | LProjectionNode): LElementNode|
+    LViewNode;
+export function getParentLNode(node: LViewNode): LContainerNode|null;
+export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null;
+export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null {
+  if (node.tNode.index === null) return null;
+  const parent = node.tNode.parent;
+  return parent ? node.view.data[parent.index as number] : node.view.node;
 }
 
 /**
@@ -122,7 +133,7 @@ function getNextOrParentSiblingNode(initialNode: LNode, rootNode: LNode): LNode|
   while (node && !nextNode) {
     // if node.pNextOrParent is not null here, it is not the next node
     // (because, at this point, nextNode is null, so it is the parent)
-    node = node.pNextOrParent || node.parent;
+    node = node.pNextOrParent || getParentLNode(node);
     if (node === rootNode) {
       return null;
     }
@@ -371,7 +382,7 @@ export function getParentState(state: LViewOrLContainer, rootView: LView): LView
   if ((node = (state as LView) !.node) && node.tNode.type === TNodeType.View) {
     // if it's an embedded view, the state needs to go up to the container, in case the
     // container has a next
-    return node.parent !.data as any;
+    return getParentLNode(node) !.data as any;
   } else {
     // otherwise, use parent view for containers or component views
     return state.parent === rootView ? null : state.parent;
@@ -476,7 +487,7 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: LVi
  * @param currentView Current LView
  */
 export function insertChild(node: LNode, currentView: LView): void {
-  const parent = node.parent !;
+  const parent = getParentLNode(node) !;
   if (canInsertNativeNode(parent, currentView)) {
     let nativeSibling: RNode|null = findNextRNodeSibling(node, null);
     const renderer = currentView.renderer;
