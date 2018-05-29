@@ -217,9 +217,10 @@ function defaultRouterHook(snapshot: RouterStateSnapshot, runExtras: {
 /**
  * @description
  *
- * Provides the navigation and url manipulation capabilities.
+ * An NgModule that provides navigation and URL manipulation capabilities.
  *
- * See `Routes` for more details and examples.
+ * @see `Route`.
+ * @see [Routing and Navigation Guide](guide/router).
  *
  * @ngModule RouterModule
  *
@@ -239,13 +240,17 @@ export class Router {
   private console: Console;
   private isNgZoneEnabled: boolean = false;
 
+  /**
+   * An event stream for routing events in this NgModule.
+   */
   public readonly events: Observable<Event> = new Subject<Event>();
+  /**
+   * The current state of routing in this NgModule.
+   */
   public readonly routerState: RouterState;
 
   /**
-   * Error handler that is invoked when a navigation errors.
-   *
-   * See `ErrorHandler` for more information.
+   * A handler for navigation errors in this NgModule.
    */
   errorHandler: ErrorHandler = defaultErrorHandler;
 
@@ -259,14 +264,17 @@ export class Router {
        url: string) => UrlTree = defaultMalformedUriErrorHandler;
 
   /**
-   * Indicates if at least one navigation happened.
+   * True if at least one navigation event has occurred,
+   * false otherwise.
    */
   navigated: boolean = false;
   private lastSuccessfulId: number = -1;
 
   /**
-   * Used by RouterModule. This allows us to
-   * pause the navigation either before preactivation or after it.
+   * Hooks that enable you to pause navigation,
+   * either before or after the preactivation phase.
+   * Used by `RouterModule`.
+   *
    * @internal
    */
   hooks: {beforePreactivation: RouterHook, afterPreactivation: RouterHook} = {
@@ -279,23 +287,26 @@ export class Router {
    */
   urlHandlingStrategy: UrlHandlingStrategy = new DefaultUrlHandlingStrategy();
 
+  /**
+   * The strategy for re-using routes.
+   */
   routeReuseStrategy: RouteReuseStrategy = new DefaultRouteReuseStrategy();
 
   /**
-   * Define what the router should do if it receives a navigation request to the current URL.
-   * By default, the router will ignore this navigation. However, this prevents features such
-   * as a "refresh" button. Use this option to configure the behavior when navigating to the
-   * current URL. Default is 'ignore'.
+   * How to handle a navigation request to the current URL. One of:
+   * - `'ignore'` :  The router ignores the request.
+   * - `'reload'` : The router reloads the URL. Use to implement a "refresh" feature.
    */
   onSameUrlNavigation: 'reload'|'ignore' = 'ignore';
 
   /**
-   * Defines how the router merges params, data and resolved data from parent to child
-   * routes. Available options are:
+   * How to merge parameters, data, and resolved data from parent to child
+   * routes. One of:
    *
-   * - `'emptyOnly'`, the default, only inherits parent params for path-less or component-less
-   *   routes.
-   * - `'always'`, enables unconditional inheritance of parent params.
+   * - `'emptyOnly'` : Inherit parent parameters, data, and resolved data
+   * for path-less or component-less routes.
+   * - `'always'` : Inherit parent parameters, data, and resolved data
+   * for all child routes.
    */
   paramsInheritanceStrategy: 'emptyOnly'|'always' = 'emptyOnly';
 
@@ -689,7 +700,7 @@ export class Router {
     }
   }
 
-  /** The current url */
+  /** The current URL. */
   get url(): string { return this.serializeUrl(this.currentUrlTree); }
 
   /** @internal */
@@ -698,9 +709,9 @@ export class Router {
   /**
    * Resets the configuration used for navigation and generating links.
    *
-   * @usageNotes
+   * @param config The route array for the new configuration.
    *
-   * ### Example
+   * @usageNotes
    *
    * ```
    * router.resetConfig([
@@ -721,7 +732,7 @@ export class Router {
   /** @docsNotRequired */
   ngOnDestroy(): void { this.dispose(); }
 
-  /** Disposes of the router */
+  /** Disposes of the router. */
   dispose(): void {
     if (this.locationSubscription) {
       this.locationSubscription.unsubscribe();
@@ -730,14 +741,16 @@ export class Router {
   }
 
   /**
-   * Applies an array of commands to the current url tree and creates a new url tree.
+   * Applies an array of commands to the current URL tree and creates a new URL tree.
    *
    * When given an activate route, applies the given commands starting from the route.
    * When not given a route, applies the given command starting from the root.
    *
-   * @usageNotes
+   * @param commands
+   * @param navigationExtras
+   * @returns The new URL tree.
    *
-   * ### Example
+   * @usageNotes
    *
    * ```
    * // create /team/33/user/11

@@ -39,12 +39,17 @@ export type UrlMatchResult = {
 /**
  * @description
  *
- * A function matching URLs
+ * A function for matching URLs. Implement a custom URL matcher
+ * when a combination of `path` and `pathMatch` is not expressive enough.
  *
- * A custom URL matcher can be provided when a combination of `path` and `pathMatch` isn't
- * expressive enough.
+ * @param segments ???
+ * @param group ???
+ * @param route ???
+ * @returns The match-result,
  *
- * For instance, the following matcher matches html files.
+ * @usageNotes
+ *
+ * The following matcher matches HTML files.
  *
  * ```
  * export function htmlFiles(url: UrlSegment[]) {
@@ -62,9 +67,9 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
 /**
  * @description
  *
- * Represents the static data associated with a particular route.
+ * Represents static data associated with a particular route.
  *
- * See `Routes` for more details.
+ * @see `Route#data`
  *
  */
 export type Data = {
@@ -76,7 +81,7 @@ export type Data = {
  *
  * Represents the resolved data associated with a particular route.
  *
- * See `Routes` for more details.
+ * @see `Route#resolve`.
  *
  */
 export type ResolveData = {
@@ -86,9 +91,9 @@ export type ResolveData = {
 /**
  * @description
  *
- * The type of `loadChildren`.
+ * A function that returns a set of child components that a route can lazy-load.
  *
- * See `Routes` for more details.
+ * @see `Route#loadChildren`.
  *
  */
 export type LoadChildrenCallback = () =>
@@ -97,9 +102,10 @@ export type LoadChildrenCallback = () =>
 /**
  * @description
  *
- * The type of `loadChildren`.
+ * A set of child components that a route can lazy-load, or a function that returns
+ * such a set.
  *
- * See `Routes` for more details.
+ * @see `Route#loadChildren`.
  *
  */
 export type LoadChildren = string | LoadChildrenCallback;
@@ -107,9 +113,12 @@ export type LoadChildren = string | LoadChildrenCallback;
 /**
  * @description
  *
- * The type of `queryParamsHandling`.
+ * How to handle query parameters in a router link.
+ * One of:
+ * - '`merge`' : Merge new with current parameters.
+ * - '`preserve`' : Preserve current parameters.
  *
- * See `RouterLink` for more details.
+ * @see `RouterLink#queryParamsHandling`. 
  *
  */
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
@@ -117,9 +126,9 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
 /**
  * @description
  *
- * The type of `runGuardsAndResolvers`.
+ * A policy for when to run guards and resolvers on a route.
  *
- * See `Routes` for more details.
+ * @see `Route#runGuardsAndResolvers`.
  * @experimental
  */
 export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
