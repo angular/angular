@@ -119,10 +119,15 @@ function publishPackages {
 
 # See docs/DEVELOPER.md for help
 CUR_BRANCH=${CIRCLE_BRANCH:-$(git symbolic-ref --short HEAD)}
+ORG="angular"
+SCHEME="http"
 if [ $# -gt 0 ]; then
-  ORG=$1
-  publishPackages "ssh" dist/packages-dist $CUR_BRANCH
-else
-  ORG="angular"
-  publishPackages "http" dist/packages-dist $CUR_BRANCH
+  # If the argument is `--ivy` than we assume it is `angular` build but we suffix it with `_ivy`
+  if [ $1 == "--ivy" ]; then
+    CUR_BRANCH="${CUR_BRANCH}_ivy"
+  else
+    ORG=$1
+    SCHEME="ssh"
+  fi
 fi
+publishPackages $SCHEME dist/packages-dist $CUR_BRANCH
