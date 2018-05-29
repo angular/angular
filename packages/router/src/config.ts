@@ -256,7 +256,7 @@ export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange'
  * checks URL elements from the left to see if the URL matches a specified path.
  * For example, '/team/11/user' matches 'team/:id'.
  *
- *  * ```
+ * ```
  * [{
  *   path: '',
  *   pathMatch: 'prefix', //default
