@@ -89,7 +89,12 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
 
     if (!this.componentRef) {
       let initializeComponentFn = () => { this.initializeComponent(element); };
+<<<<<<< HEAD
       NgZone.isInAngularZone() ? initializeComponentFn() : this.ngZone.run(initializeComponentFn);
+=======
+      NgZone.isInAngularZone() ? initializeComponentFn() :
+                                      this.ngZone.run(initializeComponentFn);
+>>>>>>> 5b5dfdd4add9276950e9ce9b76760382ea57a57e
     }
   }
 
