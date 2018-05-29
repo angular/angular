@@ -376,7 +376,8 @@ class CompWithUrlTemplate {
             TestBed
                 .overrideComponent(
                     SomeComponent, {set: {selector: 'comp', template: `{{'hello' | somePipe}}`}})
-                .overridePipe(SomePipe, {set: {name: 'somePipe'}});
+                .overridePipe(SomePipe, {set: {name: 'somePipe'}})
+                .overridePipe(SomePipe, {add: {pure: false}});
           });
           it('should work', () => {
             const compFixture = TestBed.createComponent(SomeComponent);
