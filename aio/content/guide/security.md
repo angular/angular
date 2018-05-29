@@ -127,13 +127,19 @@ tag but keeps safe content such as the text content of the `<script>` tag and th
 </figure>
 
 
-
-### Avoid direct use of the DOM APIs
+### Direct use of the DOM APIs and explicit sanitization calls
 
 The built-in browser DOM APIs don't automatically protect you from security vulnerabilities.
 For example, `document`, the node available through `ElementRef`, and many third-party APIs
-contain unsafe methods. Avoid directly interacting with the DOM and instead use Angular
-templates where possible.
+contain unsafe methods. In the same way, if you interact with other libraries that manipulate
+the DOM, you likely won't have the same automatic sanitization as with Angular interpolations.
+Avoid directly interacting with the DOM and instead use Angular templates where possible.
+
+For cases where this is unavoidable, use the built-in Angular sanitization functions.
+Sanitize untrusted values with the [DomSanitizer.sanitize](api/platform-browser/DomSanitizer#sanitize)
+method and the appropriate `SecurityContext`. That function also accepts values that were
+marked as trusted using the `bypassSecurityTrust`... functions, and will not sanitize them,
+as [described below](#bypass-security-apis).
 
 ### Content security policy
 
