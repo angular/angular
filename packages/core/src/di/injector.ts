@@ -24,7 +24,7 @@ export class ThrowIfNotFound {
     }
   }
 }
-const _THROW_IF_NOT_FOUND = new (<any>ThrowIfNotFound)();
+const _THROW_IF_NOT_FOUND: ThrowIfNotFound = new (<any>ThrowIfNotFound)();
 export const THROW_IF_NOT_FOUND = _THROW_IF_NOT_FOUND;
 
 /**
