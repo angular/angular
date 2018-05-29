@@ -15,252 +15,12 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
 /**
  * @description
  *
- * Represents router configuration.
+ * Represents a route configuration, which acts as a view map for the Router service.
+ * An array of `Route` objects, used in `Router.config` and for nested route configurations
+ * in `Route.children`.
  *
- * `Routes` is an array of route configurations. Each one has the following properties:
- *
- * - `path` is a string that uses the route matcher DSL.
- * - `pathMatch` is a string that specifies the matching strategy.
- * - `matcher` defines a custom strategy for path matching and supersedes `path` and `pathMatch`.
- * - `component` is a component type.
- * - `redirectTo` is the url fragment which will replace the current matched segment.
- * - `outlet` is the name of the outlet the component should be placed into.
- * - `canActivate` is an array of DI tokens used to look up CanActivate handlers. See
- *   `CanActivate` for more info.
- * - `canActivateChild` is an array of DI tokens used to look up CanActivateChild handlers. See
- *   `CanActivateChild` for more info.
- * - `canDeactivate` is an array of DI tokens used to look up CanDeactivate handlers. See
- *   `CanDeactivate` for more info.
- * - `canLoad` is an array of DI tokens used to look up CanLoad handlers. See
- *   `CanLoad` for more info.
- * - `data` is additional data provided to the component via `ActivatedRoute`.
- * - `resolve` is a map of DI tokens used to look up data resolvers. See `Resolve` for more
- *   info.
- * - `runGuardsAndResolvers` defines when guards and resolvers will be run. By default they run only
- *    when the matrix parameters of the route change. Options include:
- *    - `paramsChange` (default) - Run guards and resolvers when path or matrix params change. This
- *      mode ignores query param changes.
- *    - `paramsOrQueryParamsChange` - Guards and resolvers will run when any parameters change. This
- *      includes path, matrix, and query params.
- *    - `pathParamsChange` Run guards and resolvers path or any path params change. This mode is
- *      useful if you want to ignore changes to all optional parameters such as query *and* matrix
- *      params.
- *    - `always` - Run guards and resolvers on every navigation.
- * - `children` is an array of child route definitions.
- * - `loadChildren` is a reference to lazy loaded child routes. See `LoadChildren` for more
- *   info.
- *
- * @usageNotes
- * ### Simple Configuration
- *
- * ```
- * [{
- *   path: 'team/:id',
-  *  component: Team,
- *   children: [{
- *     path: 'user/:name',
- *     component: User
- *   }]
- * }]
- * ```
- *
- * When navigating to `/team/11/user/bob`, the router will create the team component with the user
- * component in it.
- *
- * ### Multiple Outlets
- *
- * ```
- * [{
- *   path: 'team/:id',
- *   component: Team
- * }, {
- *   path: 'chat/:user',
- *   component: Chat
- *   outlet: 'aux'
- * }]
- * ```
- *
- * When navigating to `/team/11(aux:chat/jim)`, the router will create the team component next to
- * the chat component. The chat component will be placed into the aux outlet.
- *
- * ### Wild Cards
- *
- * ```
- * [{
- *   path: '**',
- *   component: Sink
- * }]
- * ```
- *
- * Regardless of where you navigate to, the router will instantiate the sink component.
- *
- * ### Redirects
- *
- * ```
- * [{
- *   path: 'team/:id',
- *   component: Team,
- *   children: [{
- *     path: 'legacy/user/:name',
- *     redirectTo: 'user/:name'
- *   }, {
- *     path: 'user/:name',
- *     component: User
- *   }]
- * }]
- * ```
- *
- * When navigating to '/team/11/legacy/user/jim', the router will change the url to
- * '/team/11/user/jim', and then will instantiate the team component with the user component
- * in it.
- *
- * If the `redirectTo` value starts with a '/', then it is an absolute redirect. E.g., if in the
- * example above we change the `redirectTo` to `/user/:name`, the result url will be '/user/jim'.
- *
- * ### Empty Path
- *
- * Empty-path route configurations can be used to instantiate components that do not 'consume'
- * any url segments. Let's look at the following configuration:
- *
- * ```
- * [{
- *   path: 'team/:id',
- *   component: Team,
- *   children: [{
- *     path: '',
- *     component: AllUsers
- *   }, {
- *     path: 'user/:name',
- *     component: User
- *   }]
- * }]
- * ```
- *
- * When navigating to `/team/11`, the router will instantiate the AllUsers component.
- *
- * Empty-path routes can have children.
- *
- * ```
- * [{
- *   path: 'team/:id',
- *   component: Team,
- *   children: [{
- *     path: '',
- *     component: WrapperCmp,
- *     children: [{
- *       path: 'user/:name',
- *       component: User
- *     }]
- *   }]
- * }]
- * ```
- *
- * When navigating to `/team/11/user/jim`, the router will instantiate the wrapper component with
- * the user component in it.
- *
- * An empty path route inherits its parent's params and data. This is because it cannot have its
- * own params, and, as a result, it often uses its parent's params and data as its own.
- *
- * ### Matching Strategy
- *
- * By default the router will look at what is left in the url, and check if it starts with
- * the specified path (e.g., `/team/11/user` starts with `team/:id`).
- *
- * We can change the matching strategy to make sure that the path covers the whole unconsumed url,
- * which is akin to `unconsumedUrl === path` or `$` regular expressions.
- *
- * This is particularly important when redirecting empty-path routes.
- *
- * ```
- * [{
- *   path: '',
- *   pathMatch: 'prefix', //default
- *   redirectTo: 'main'
- * }, {
- *   path: 'main',
- *   component: Main
- * }]
- * ```
- *
- * Since an empty path is a prefix of any url, even when navigating to '/main', the router will
- * still apply the redirect.
- *
- * If `pathMatch: full` is provided, the router will apply the redirect if and only if navigating to
- * '/'.
- *
- * ```
- * [{
- *   path: '',
- *   pathMatch: 'full',
- *   redirectTo: 'main'
- * }, {
- *   path: 'main',
- *   component: Main
- * }]
- * ```
- *
- * ### Componentless Routes
- *
- * It is useful at times to have the ability to share parameters between sibling components.
- *
- * Say we have two components--ChildCmp and AuxCmp--that we want to put next to each other and both
- * of them require some id parameter.
- *
- * One way to do that would be to have a bogus parent component, so both the siblings can get the id
- * parameter from it. This is not ideal. Instead, you can use a componentless route.
- *
- * ```
- * [{
- *    path: 'parent/:id',
- *    children: [
- *      { path: 'a', component: MainChild },
- *      { path: 'b', component: AuxChild, outlet: 'aux' }
- *    ]
- * }]
- * ```
- *
- * So when navigating to `parent/10/(a//aux:b)`, the route will instantiate the main child and aux
- * child components next to each other. In this example, the application component
- * has to have the primary and aux outlets defined.
- *
- * The router will also merge the `params`, `data`, and `resolve` of the componentless parent into
- * the `params`, `data`, and `resolve` of the children. This is done because there is no component
- * that can inject the activated route of the componentless parent.
- *
- * This is especially useful when child components are defined as follows:
- *
- * ```
- * [{
- *    path: 'parent/:id',
- *    children: [
- *      { path: '', component: MainChild },
- *      { path: '', component: AuxChild, outlet: 'aux' }
- *    ]
- * }]
- * ```
- *
- * With this configuration in place, navigating to '/parent/10' will create the main child and aux
- * components.
- *
- * ### Lazy Loading
- *
- * Lazy loading speeds up our application load time by splitting it into multiple bundles, and
- * loading them on demand. The router is designed to make lazy loading simple and easy. Instead of
- * providing the children property, you can provide the `loadChildren` property, as follows:
- *
- * ```
- * [{
- *   path: 'team/:id',
- *   component: Team,
- *   loadChildren: 'team'
- * }]
- * ```
- *
- * The router will use registered NgModuleFactoryLoader to fetch an NgModule associated with 'team'.
- * Then it will extract the set of routes defined in that NgModule, and will transparently add
- * those routes to the main configuration.
- *
- * @publicApi
+ * @see `Route`
+ * @see `Router`
  */
 export type Routes = Route[];
 
@@ -270,7 +30,7 @@ export type Routes = Route[];
  * * `consumed` is an array of the consumed URL segments.
  * * `posParams` is a map of positional parameters.
  *
- * @publicApi
+ * @experimental
  */
 export type UrlMatchResult = {
   consumed: UrlSegment[]; posParams?: {[name: string]: UrlSegment};
@@ -294,7 +54,7 @@ export type UrlMatchResult = {
  * export const routes = [{ matcher: htmlFiles, component: AnyComponent }];
  * ```
  *
- * @publicApi
+ * @experimental
  */
 export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) =>
     UrlMatchResult;
@@ -306,7 +66,6 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
  *
  * See `Routes` for more details.
  *
- * @publicApi
  */
 export type Data = {
   [name: string]: any
@@ -319,7 +78,6 @@ export type Data = {
  *
  * See `Routes` for more details.
  *
- * @publicApi
  */
 export type ResolveData = {
   [name: string]: any
@@ -332,7 +90,6 @@ export type ResolveData = {
  *
  * See `Routes` for more details.
  *
- * @publicApi
  */
 export type LoadChildrenCallback = () =>
     Type<any>| NgModuleFactory<any>| Promise<Type<any>>| Observable<Type<any>>;
@@ -344,7 +101,6 @@ export type LoadChildrenCallback = () =>
  *
  * See `Routes` for more details.
  *
- * @publicApi
  */
 export type LoadChildren = string | LoadChildrenCallback;
 
@@ -364,31 +120,317 @@ export type QueryParamsHandling = 'merge' | 'preserve' | '';
  * The type of `runGuardsAndResolvers`.
  *
  * See `Routes` for more details.
- * @publicApi
+ * @experimental
  */
-export type RunGuardsAndResolvers =
-    'pathParamsChange' | 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
+export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
 
 /**
- * See `Routes` for more details.
+ * Collects and stores the properties of a navigation route.
+ * A set of routes collected in a `Routes` object defines a router configuration.
  *
- * @publicApi
+ * Supports static, parameterized, redirect, and wildcard routes, as well as
+ * custom route data and resolve methods.
+ *
+ * @usageNotes
+ * ### Simple Configuration
+ *
+ * When navigating to `/team/11/user/bob`, the router will create the team component with the user
+ * component in it.
+ *
+ * ```
+ * [{
+ *   path: 'team/:id',
+  *  component: Team,
+ *   children: [{
+ *     path: 'user/:name',
+ *     component: User
+ *   }]
+ * }]
+ * ```
+ *
+ * ### Multiple Outlets
+ *
+ * When navigating to `/team/11(aux:chat/jim)`, the router will create the team component next to
+ * the chat component. The chat component will be placed into the aux outlet.
+ *
+ * ```
+ * [{
+ *   path: 'team/:id',
+ *   component: Team
+ * }, {
+ *   path: 'chat/:user',
+ *   component: Chat
+ *   outlet: 'aux'
+ * }]
+ * ```
+ *
+ *
+ * ### Wild Cards
+ *
+ * Regardless of where you navigate to, the router will instantiate the sink component.
+ *
+ * ```
+ * [{
+ *   path: '**',
+ *   component: Sink
+ * }]
+ * ```
+ *
+ * ### Redirects
+ *
+ * When navigating to '/team/11/legacy/user/jim', the router will change the URL to
+ * '/team/11/user/jim', and then instantiate the team component with the user component
+ * in it.
+ *
+ * ```
+ * [{
+ *   path: 'team/:id',
+ *   component: Team,
+ *   children: [{
+ *     path: 'legacy/user/:name',
+ *     redirectTo: 'user/:name'
+ *   }, {
+ *     path: 'user/:name',
+ *     component: User
+ *   }]
+ * }]
+ * ```
+ *
+ * Note that if the `redirectTo` value starts with a '/', then it is an absolute redirect.
+ * If we change the `redirectTo` in the example to `/user/:name`, the result URL
+ * is '/user/jim'.
+
+ * ### Empty Path
+ *
+ * Empty-path route configurations can be used to instantiate components that do not 'consume'
+ * any URL segments. In the following configuration, when navigating to
+ * `/team/11`, the router will instantiate the 'AllUsers' component.
+ *
+ * ```
+ * [{
+ *   path: 'team/:id',
+ *   component: Team,
+ *   children: [{
+ *     path: '',
+ *     component: AllUsers
+ *   }, {
+ *     path: 'user/:name',
+ *     component: User
+ *   }]
+ * }]
+ * ```
+ *
+ * Empty-path routes can have children. In the following example, when navigating
+ * to `/team/11/user/jim`, the router will instantiate the wrapper component with
+ * the user component in it.
+ *
+ * Note that an empty path route inherits its parent's parameters and data.
+ *
+ * ```
+ * [{
+ *   path: 'team/:id',
+ *   component: Team,
+ *   children: [{
+ *     path: '',
+ *     component: WrapperCmp,
+ *     children: [{
+ *       path: 'user/:name',
+ *       component: User
+ *     }]
+ *   }]
+ * }]
+ * ```
+ *
+ * ### Matching Strategy
+ *
+ * The default path-match strategy is 'prefix', which means that the router
+ * checks URL elements from the left to see if the URL matches a specified path.
+ * For example, '/team/11/user' matches 'team/:id'.
+ *
+ *  * ```
+ * [{
+ *   path: '',
+ *   pathMatch: 'prefix', //default
+ *   redirectTo: 'main'
+ * }, {
+ *   path: 'main',
+ *   component: Main
+ * }]
+ * ```
+ *
+ * You can specify the path-match strategy 'full' to make sure that the path
+ * covers the whole unconsumed URL. It is important to do this when redirecting
+ * empty-path routes. Otherwise, because an empty path is a prefix of any URL,
+ * the router would apply the redirect even when navigating to the redirect destination,
+ * creating an endless loop.
+ *
+ * In the following example, supplying the 'full' `patchMatch` strategy ensures
+ * that the router applies the redirect if and only if navigating to '/'.
+ *
+ * ```
+ * [{
+ *   path: '',
+ *   pathMatch: 'full',
+ *   redirectTo: 'main'
+ * }, {
+ *   path: 'main',
+ *   component: Main
+ * }]
+ * ```
+ *
+ * ### Componentless Routes
+ *
+ * You can share parameters between sibling components.
+ * For example, suppose that two sibling components should go next to each other,
+ * and both of them require an ID parameter. You can accomplish this using a route
+ * that does not specify a component at the top level.
+ *
+ * In the following example, 'ChildCmp' and 'AuxCmp' are siblings.
+ * When navigating to 'parent/10/(a//aux:b)', the route instantiates
+ * the main child and aux child components next to each other.
+ * For this to work, the application component must have the primary and aux outlets defined.
+ *
+ * ```
+ * [{
+ *    path: 'parent/:id',
+ *    children: [
+ *      { path: 'a', component: MainChild },
+ *      { path: 'b', component: AuxChild, outlet: 'aux' }
+ *    ]
+ * }]
+ * ```
+ *
+ * The router merges the parameters, data, and resolve of the componentless
+ * parent into the parameters, data, and resolve of the children.
+ *
+ * This is especially useful when child components are defined
+ * with an empty path string, as in the following example.
+ * With this configuration, navigating to '/parent/10' creates
+ * the main child and aux components.
+ *
+ * ```
+ * [{
+ *    path: 'parent/:id',
+ *    children: [
+ *      { path: '', component: MainChild },
+ *      { path: '', component: AuxChild, outlet: 'aux' }
+ *    ]
+ * }]
+ * ```
+ *
+ * ### Lazy Loading
+ *
+ * Lazy loading speeds up application load time by splitting the application
+ * into multiple bundles and loading them on demand.
+ * To use lazy loading, provide the `loadChildren` property  instead of the `children` property.
+ *
+ * Given the following example route, the router uses the registered
+ * `NgModuleFactoryLoader` to fetch an NgModule associated with 'team'.
+ * It then extracts the set of routes defined in that NgModule,
+ * and transparently adds those routes to the main configuration.
+ *
+ * ```
+ * [{
+ *   path: 'team/:id',
+ *   component: Team,
+ *   loadChildren: 'team'
+ * }]
+ * ```
+ *
  */
 export interface Route {
+  /**
+   * The path to match against, a URL string that uses router matching notation.
+   * Can include wild-card characters (*).   [where is that defined?]
+   * Default is "/" (the root path).
+   */
   path?: string;
+  /**
+   * The path-matching strategy, one of 'prefix' or 'full'.
+   * Default is 'prefix'.
+   *
+   * By default, the router checks URL elements from the left to see if the URL
+   * matches a given  path, and stops when there is a match. For example,
+   * '/team/11/user' matches 'team/:id'.
+   * The path-match strategy 'full' matches against the entire URL.
+   * It is important to do this when redirecting empty-path routes.
+   * Otherwise, because an empty path is a prefix of any URL,
+   * the router would apply the redirect even when navigating
+   * to the redirect destination, creating an endless loop.
+   *
+   */
   pathMatch?: string;
+  /**
+   * A URL-matching function to use as a custom strategy for path matching.
+   * If present, supersedes `path` and `pathMatch`.
+   */
   matcher?: UrlMatcher;
+  /**
+   * The component to instantiate when the path matches.
+   * Can be empty if child routes specify components.
+   */
   component?: Type<any>;
+  /**
+   * A URL to which to redirect when a the path matches.
+   * Absolute if the URL begins with a slash (/), otherwise relative to the path URL.
+   * When not present, router does not redirect.
+   */
   redirectTo?: string;
+  /**
+   * Name of a `RouterOutlet` object where the component can be placed
+   * when the path matches.
+   */
   outlet?: string;
+  /**
+   * An array of dependency-injection tokens used to look up `CanActivate()`
+   * handlers, in order to determine if the current user is allowed to
+   * activate the component. By default, any user can activate.
+   */
   canActivate?: any[];
+  /**
+   * An array of DI tokens used to look up `CanActivateChild()` handlers,
+   * in order to determine if the current user is allowed to activate
+   * a child of the component. By default, any user can activate a child.
+   */
   canActivateChild?: any[];
+  /**
+   * An array of DI tokens used to look up `CanDeactivate()`
+   * handlers, in order to determine if the current user is allowed to
+   * deactivate the component. By default, any user can deactivate.
+   *
+   */
   canDeactivate?: any[];
+  /**
+   * An array of DI tokens used to look up `CanLoad()`
+   * handlers, in order to determine if the current user is allowed to
+   * load the component. By default, any user can load.
+   */
   canLoad?: any[];
+  /**
+   * Additional developer-defined data provided to the component via
+   * `ActivatedRoute`. By default, no additional data is passed.
+   */
   data?: Data;
+  /**
+   * A map of DI tokens used to look up data resolvers. See `Resolve`.
+   */
   resolve?: ResolveData;
+  /**
+   * An array of child `Route` objects that specifies a nested route
+   * configuration.
+   */
   children?: Routes;
+  /**
+   * A `LoadChildren` object specifying lazy-loaded child routes.
+   */
   loadChildren?: LoadChildren;
+  /**
+   * Defines when guards and resolvers will be run. One of
+   * - `paramsOrQueryParamsChange` : Run when query parameters change.
+   * - `always` : Run on every execution.
+   * By default, guards and resolvers run only when the matrix
+   * parameters of the route change.
+   */
   runGuardsAndResolvers?: RunGuardsAndResolvers;
   /**
    * Filled for routes with `loadChildren` once the module has been loaded
