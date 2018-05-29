@@ -1,3 +1,45 @@
+<a name="6.2.0"></a>
+# [6.2.0 bamboo-shampoo](https://github.com/angular/material2/compare/6.1.0...6.2.0) (2018-05-29)
+
+
+### Highlights
+
+* An initial implementation of virtual scrolling is now available in @angular/cdk-experimental.
+  Please note that, since these components are still experimental, they may have bugs and the API
+  is subject to change.
+
+### Bug Fixes
+
+* **autosize:** textarea receiving focus on init ([#11460](https://github.com/angular/material2/issues/11460)) ([7d447c2](https://github.com/angular/material2/commit/7d447c2)), closes [#11451](https://github.com/angular/material2/issues/11451) [#11308](https://github.com/angular/material2/issues/11308)
+* **button:** disable all animations when using the NoopAnimationsModule ([#11477](https://github.com/angular/material2/issues/11477)) ([1a75152](https://github.com/angular/material2/commit/1a75152)), closes [#10590](https://github.com/angular/material2/issues/10590)
+* **checkbox, radio:** remove webkit tap highlights ([#11349](https://github.com/angular/material2/issues/11349)) ([4b2cc1a](https://github.com/angular/material2/commit/4b2cc1a))
+* **form-field:** disable all animations when using NoopAnimationsModule ([#11371](https://github.com/angular/material2/issues/11371)) ([9062640](https://github.com/angular/material2/commit/9062640)), closes [#10590](https://github.com/angular/material2/issues/10590)
+* **form-field:** infinite loop when using outline appearance and element isn't in the DOM ([#11406](https://github.com/angular/material2/issues/11406)) ([e592615](https://github.com/angular/material2/commit/e592615)), closes [#11329](https://github.com/angular/material2/issues/11329)
+* **menu:** lazy-rendered content being duplicated when toggling quickly ([#11348](https://github.com/angular/material2/issues/11348)) ([fb5cdb2](https://github.com/angular/material2/commit/fb5cdb2)), closes [#11331](https://github.com/angular/material2/issues/11331)
+* **nav-schematics:** update isHandset$ type and fix template expression ([#11448](https://github.com/angular/material2/issues/11448)) ([b9041e3](https://github.com/angular/material2/commit/b9041e3)), closes [#11445](https://github.com/angular/material2/issues/11445) [#11441](https://github.com/angular/material2/issues/11441)
+* **overlay:** incorrect position when using flexible positioning and rtl on the body ([#11393](https://github.com/angular/material2/issues/11393)) ([acc24c4](https://github.com/angular/material2/commit/acc24c4)), closes [#11387](https://github.com/angular/material2/issues/11387)
+* **accordion, expansion:** prevent nested expansion panels from registering to the same accordion ([#11342](https://github.com/angular/material2/issues/11342)) ([9bf720a](https://github.com/angular/material2/commit/9bf720a))
+* **select:** panel content blurry in some browsers ([#11434](https://github.com/angular/material2/issues/11434)) ([3dc3fcd](https://github.com/angular/material2/commit/3dc3fcd))
+* **slide-toggle:** disable animations when using NoopAnimationsModule ([#11414](https://github.com/angular/material2/issues/11414)) ([1d96d5a](https://github.com/angular/material2/commit/1d96d5a)), closes [#10590](https://github.com/angular/material2/issues/10590)
+* **slider:** disable animations when using NoopAnimationsModule ([#11422](https://github.com/angular/material2/issues/11422)) ([cf17ef7](https://github.com/angular/material2/commit/cf17ef7)), closes [#10590](https://github.com/angular/material2/issues/10590)
+* **table:** data source not unsubscribing from render changes subscription ([#11394](https://github.com/angular/material2/issues/11394)) ([9313f18](https://github.com/angular/material2/commit/9313f18)), closes [#11382](https://github.com/angular/material2/issues/11382)
+
+
+### Features
+
+* **a11y:** add cdkAriaLive directive ([#11352](https://github.com/angular/material2/issues/11352)) ([64a70ad](https://github.com/angular/material2/commit/64a70ad))
+* **expansion:** allow expansion indicator positioning ([#8199](https://github.com/angular/material2/issues/8199)) ([51d859f](https://github.com/angular/material2/commit/51d859f))
+* **overlay:** allow for Directionality instance to be passed in ([#11411](https://github.com/angular/material2/issues/11411)) ([be577b1](https://github.com/angular/material2/commit/be577b1))
+* **progress-spinner:** add injection token for configuring the diameter and stroke globally ([#11493](https://github.com/angular/material2/issues/11493)) ([c3899cf](https://github.com/angular/material2/commit/c3899cf)), closes [#11490](https://github.com/angular/material2/issues/11490)
+* **collections:** add ArrayDataSource, a DataSource wrapper for Array and Observable<Array> ([#11354](https://github.com/angular/material2/issues/11354)) ([f59658d](https://github.com/angular/material2/commit/f59658d))
+
+
+### Performance Improvements
+
+* **overlay:** only compute and emit position changes if there are subscribers ([#11431](https://github.com/angular/material2/issues/11431)) ([c68ccc9](https://github.com/angular/material2/commit/c68ccc9))
+
+
+
 <a name="6.1.0"></a>
 # [6.1.0 plaster-parliament](https://github.com/angular/material2/compare/6.0.0...6.1.0) (2018-05-21)
 
