@@ -1,6 +1,8 @@
 import {
   Component,
-  Input
+  Input,
+  Output,
+  EventEmitter
 } from '@angular/core';
 import {
   trigger,
@@ -10,38 +12,30 @@ import {
   transition
 } from '@angular/animations';
 
-import { Hero } from './hero.service';
+import { Hero } from './hero';
 
 @Component({
   selector: 'app-hero-list-auto',
-  // #docregion template
-  template: `
-    <ul>
-      <li *ngFor="let hero of heroes"
-          [@shrinkOut]="'in'">
-        {{hero.name}}
-      </li>
-    </ul>
-  `,
-  // #enddocregion template
-  styleUrls: ['./hero-list.component.css'],
-
-  /* When the element leaves (transition "in => void" occurs),
-   * get the element's current computed height and animate
-   * it down to 0.
-   */
-  // #docregion animationdef
+  templateUrl: 'hero-list-auto.component.html',
+  styleUrls: ['./hero-list-page.component.css'],
+  // #docregion auto-calc
   animations: [
     trigger('shrinkOut', [
-      state('in', style({height: '*'})),
+      state('in', style({ height: '*' })),
       transition('* => void', [
-        style({height: '*'}),
-        animate(250, style({height: 0}))
+        style({ height: '*' }),
+        animate(250, style({ height: 0 }))
       ])
     ])
   ]
-  // #enddocregion animationdef
+  // #enddocregion auto-calc
 })
 export class HeroListAutoComponent {
    @Input() heroes: Hero[];
+
+   @Output() remove = new EventEmitter<number>();
+
+   removeHero(id: number) {
+     this.remove.emit(id);
+   }
 }
