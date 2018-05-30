@@ -186,7 +186,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `@Query(read)`                  |  ✅     |  ✅      |  n/a      |
 | `@Query(selector)`              |  ✅     |  ✅      |  n/a      |
 | `@Query(Type)`                  |  ✅     |  ✅      |  n/a      |
-| `@ContentChildred`              |  ✅     |  ✅      |  ❌       |
+| `@ContentChildren`              |  ✅     |  ✅      |  ❌       |
 | `@ContentChild`                 |  ✅     |  ✅      |  ✅       |
 | `@ViewChildren`                 |  ✅     |  ✅      |  ❌       |
 | `@ViewChild`                    |  ✅     |  ✅      |  ✅       |
