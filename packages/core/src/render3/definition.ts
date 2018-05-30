@@ -431,7 +431,7 @@ export function definePipe<T>(pipeDef: {
 }): never {
   return (<PipeDef<T>>{
     name: pipeDef.name,
-    n: pipeDef.factory,
+    factory: pipeDef.factory,
     pure: pipeDef.pure !== false,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
   }) as never;
