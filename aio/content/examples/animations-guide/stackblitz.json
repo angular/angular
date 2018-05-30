@@ -2,6 +2,8 @@
   "description": "Angular Animations Guide",
   "files":[
     "!**/*.d.ts",
-    "!**/*.js"
-  ]
+    "!**/*.js",
+    "!**/*.[1,2,3].*"
+  ],
+  "tags": ["animations"]
 }
