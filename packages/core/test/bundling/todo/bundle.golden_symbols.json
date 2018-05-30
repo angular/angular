@@ -177,7 +177,7 @@
     "name": "_currentInjector"
   },
   {
-    "name": "_currentNS"
+    "name": "_currentNamespace"
   },
   {
     "name": "_devMode"
