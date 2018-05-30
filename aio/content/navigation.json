@@ -202,14 +202,10 @@
               "url": "guide/pipes",
               "title": "Pipes",
               "tooltip": "Pipes transform displayed values within a template."
-            },
-            {
-              "url": "guide/animations",
-              "title": "Animations",
-              "tooltip": "A guide to Angular's animation system."
             }
           ]
         },
+
         {
           "title": "Forms",
           "tooltip": "Angular Forms",
@@ -387,6 +383,38 @@
           "title": "Routing & Navigation",
           "tooltip": "Discover the basics of screen navigation with the Angular Router."
         },
+        {
+          "title": "Animations",
+          "tooltip": "A guide to Angular's animation system.",
+          "children": [
+            {
+              "url": "guide/animations",
+              "title": "Introduction",
+              "tooltip": "Basic techniques in Angular animations."
+            },
+            {
+              "url": "guide/transition-and-triggers",
+              "title": "Transition and Triggers",
+              "tooltip": "Advanced techniques in transition and triggers."
+            },
+            {
+              "url": "guide/complex-animation-sequences",
+              "title": "Complex Sequences",
+              "tooltip": "Complex Angular animation sequences."
+            },
+            {
+              "url": "guide/reusable-animations",
+              "title": "Reusable Animations",
+              "tooltip": "Creating reusable animations."
+            },
+            {
+              "url": "guide/route-animations",
+              "title": "Route Transition Animations",
+              "tooltip": "Animate route transitions."
+            }
+          ]
+        },
+
         {
           "url": "guide/testing",
           "title": "Testing",
