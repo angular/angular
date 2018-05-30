@@ -1340,7 +1340,7 @@ error messages if you have a typo or if you've nested controls incorrectly.
 Conversely, `patchValue()` will fail silently.
 -->
 이 때 전달하는 인자가 `FormGroup`의 구조와 정확하게 일치하지 않거나, 일부 값을 빠뜨리면 이 함수는 동작하지 않습니다.
-대신 어떤 부분이 잘못되었는지 알려주는 에러 메시니가 표시될 것입니다.
+대신 어떤 부분이 잘못되었는지 알려주는 에러 메시지가 표시될 것입니다.
 이 부분은 `patchValue()`의 동작과는 다릅니다.
 
 <!--
@@ -1353,7 +1353,7 @@ because its shape is similar to the component's `FormGroup` structure.
 <!--
 You can only show the hero's first address and you must account for the possibility that the `hero` has no addresses at all, as in the conditional setting of the `address` property in the data object argument:
 -->
-폼 모델에는 히어로의 주소를 반영하는데, 이 때 주소에 입력된 값이 없을 수 있습니다. `address` 프로퍼티의 값이 비어있는 경우를 대비해서 코드를 다음과 같이 작성합니다:
+폼 모델에는 히어로의 주소를 반영하는데, 이 때 주소에 입력된 값이 비어있을 수 있습니다. `address` 프로퍼티의 값이 비어있는 경우를 대비해서 코드를 다음과 같이 작성합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-7.component.ts" region="set-value-address" title="src/app/hero-detail/hero-detail.component.ts" linenums="false">
 
@@ -1362,37 +1362,57 @@ You can only show the hero's first address and you must account for the possibil
 
 
 ### `patchValue()`
+
+<!--
 With **`patchValue()`**, you can assign values to specific controls in a `FormGroup`
 by supplying an object of key/value pairs for them.
 
 This example sets only the form's `name` control.
+-->
+**`patchValue()`**를 사용하면 폼 그룹안에 있는 폼 컨트롤의 일부값을 수정할 수 있습니다.
+이 때 인자로 폼 모델의 일부를 전달합니다.
+
+다음 예제는 폼에 있는 항목 중 `name`에 해당하는 폼 컨트롤의 값을 수정하는 코드입니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-6.component.ts" region="patch-value" title="src/app/hero-detail/hero-detail.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 With `patchValue()` you have more flexibility to cope with divergent data and form models.
 But unlike `setValue()`,  `patchValue()` cannot check for missing control
 values and doesn't throw helpful errors.
-
+-->
+`patchValue()`를 사용하면 `setValue()`를 사용하는 것보다 조금 더 쉬운 방법으로 폼 모델을 수정할 수 있습니다.
+`patchValue()`를 사용할 때는 폼 모델 전체에 해당하는 객체 구조를 전달할 필요가 없으며, 수정하려고 하는 폼 컨트롤의 값만 전달하면 됩니다.
+다만, 실수로 빠뜨린 폼 컨트롤이 있더라도 이 부분을 경고하는 에러 메시지는 출력되지 않으니 주의해야 합니다.
 
 {@a hero-list}
 
+<!--
 ## Create the `HeroListComponent` and `HeroService`
+-->
+## `HeroListComponent`와 `HeroService` 생성하기
 
+<!--
 To demonstrate further reactive forms techniques, it is helpful to add more functionality to the example by adding a `HeroListComponent` and a `HeroService`.
 
 The `HeroDetailComponent` is a nested sub-component of the `HeroListComponent` in a _master/detail_ view. Together they look like this:
+-->
+반응형 폼에 대한 내용을 좀 더 알아보기 위해, 폼 컴포넌트의 동작에 필요한 `HeroListComponent`와 `HeroService`를 추가해 봅시다.
 
+이제 `HeroDetailComponent`는 `HeroListComponent` 안에 들어가서 부모/자식 관계로 존재할 것입니다.
+다음과 같은 화면으로 만들어 봅시다:
 
 <figure>
   <img src="generated/images/guide/reactive-forms/hero-list.png" alt="HeroListComponent">
 </figure>
 
-
+<!--
 First, add a `HeroListComponent` with the following command:
+-->
+제일 먼저, 다음 명령을 실행해서 `HeroListComponent`를 생성합니다:
 
 <code-example language="sh" class="code-shell">
 
@@ -1400,14 +1420,19 @@ First, add a `HeroListComponent` with the following command:
 
 </code-example>
 
+<!--
 Give the `HeroListComponent` the following contents:
+-->
+그리고 `HeroListComponent` 클래스의 내용을 다음과 같이 작성합니다:
 
 <code-example path="reactive-forms/src/app/hero-list/hero-list.component.ts" title="hero-list.component.ts" linenums="false">
 
 </code-example>
 
-
+<!--
 Next, add a `HeroService` using the following command:
+-->
+다음에는 다음 명령을 실행해서 `HeroService`를 생성합니다.
 
 <code-example language="sh" class="code-shell">
 
@@ -1415,80 +1440,136 @@ Next, add a `HeroService` using the following command:
 
 </code-example>
 
+<!--
 Then, give it the following contents:
+-->
+그리고 클래스의 내용을 다음과 같이 작성합니다:
 
 <code-example path="reactive-forms/src/app/hero.service.ts" title="hero.service.ts" linenums="false">
 
 </code-example>
 
+<!--
 The `HeroListComponent` uses an injected `HeroService` to retrieve heroes from the server
 and then presents those heroes to the user as a series of buttons.
 The `HeroService` emulates an HTTP service.
 It returns an `Observable` of heroes that resolves after a short delay,
 both to simulate network latency and to indicate visually
 the necessarily asynchronous nature of the application.
+-->
+`HeroListComponent`는 이제 `HeroService`를 의존성으로 주입받고 서버에서 히어로 데이터를 가져오며, 이렇게 가져온 데이터를 버튼 여러개로 화면에 표시합니다.
+이 때 `HeroService`는 HTTP 서버의 동작을 대신하는 용도로 사용합니다.
+`HeroService`는 서버 응답을 흉내내기 위해 약간의 딜레이를 기다린 후에 `Observable` 형태로 히어로 데이터를 반환합니다.
+사용자가 보는 화면에서는 실제 서버로 통신하는 것과 비슷하게 느껴질 것입니다.
 
+<!--
 When the user clicks on a hero,
 the component sets its `selectedHero` property which
 is bound to the `hero` `@Input()` property of the `HeroDetailComponent`.
 The `HeroDetailComponent` detects the changed hero and resets its form
 with that hero's data values.
+-->
+사용자가 화면에서 히어로를 클릭하면 해당 버튼에 연결된 히어로 데이터를 컴포넌트의 `selectedHero` 프로퍼티에 연결하며, 이 프로퍼티는 `@Input()` 으로 연결되어 `heroDetailComponent`로 전달됩니다.
+그러면 `HeroDetailComponent`는 히어로의 데이터를 폼에 표시하고 수정할 수 있는 준비를 할 것입니다.
 
+<!--
 A refresh button clears the hero list and the current selected hero before refetching the heroes.
+-->
+그리고 `HeroListComponent`에 있는 `Refresh` 버튼을 클릭하면 선택된 히어로가 없는 것으로 표시하며, 히어로 목록도 새로 받아옵니다.
 
+<!--
 Notice that `hero-list.component.ts` imports `Observable` and the `finalize` operator, while `hero.service.ts` imports `Observable`, `of`, and the `delay` operator from `rxjs`.
+-->
+`hero-list.component.ts`에서는 `Observable`과 `finalize` 연산자를 로드합니다.
+그리고 `hero.service.ts` 파일에서는 `Observable`과 `of`, `delay` 연산자를 로드합니다.
+이 심볼들은 모두 `rxjs`에서 가져옵니다.
 
+<!--
 The remaining `HeroListComponent` and `HeroService` implementation details are beyond the scope of this tutorial.
 However, the techniques involved are covered elsewhere in the documentation, including the _Tour of Heroes_
 [here](tutorial/toh-pt3 "ToH: Multiple Components") and [here](tutorial/toh-pt4 "ToH: Services").
+-->
+`HeroListComponent`와 `HeroService`의 코드는 이 가이드에서 자세하게 다루지 않겠습니다.
+이 파일을 직접 구현하려면 _히어로들의 여정_ 튜토리얼의 [이 부분](tutorial/toh-pt3 "ToH: Multiple Components")과 [이 부분](tutorial/toh-pt4 "ToH: Services")을 참고하세요.
 
+<!--
 To use the `HeroService`, import it into `AppModule` and add it to the `providers` array. To use the `HeroListComponent`, import it, declare it, and export it:
+-->
+`HeroService`를 사용하려면 `AppModule`의 `providers` 배열에 이 서비스를 등록해야 합니다.
+그리고 `HeroListComponent`도 마찬가지로 앱 모듈에 등록하고 `exports`에도 등록합니다.
 
 <code-example path="reactive-forms/src/app/app.module.ts" region="hero-service-list" title="app.module.ts (excerpts)" linenums="false">
 
 </code-example>
 
-
+<!--
 Next, update the `HeroListComponent` template with the following:
+-->
+이제 `HeroListComponent`의 템플릿을 다음과 같이 작성합니다:
 
 <code-example path="reactive-forms/src/app/hero-list/hero-list.component.html" title="hero-list.component.html" linenums="false">
 
 </code-example>
 
+<!--
 These changes need to be reflected in the `AppComponent` template. Replace the contents of `app.component.html` with updated markup to use the `HeroListComponent`, instead of the `HeroDetailComponent`:
+-->
+이제 이 수정 내용을 `AppComponent`에도 반영합니다.
+`app.component.html` 템플릿을 수정해서 `HeroDetailComponent` 대신 `HeroListComponent`를 사용하도록 합시다:
 
 <code-example path="reactive-forms/src/app/app.component.html" title="app.component.html" linenums="false">
 
 </code-example>
 
-
+<!--
 Finally, add an `@Input()` property to the `HeroDetailComponent`
 so `HeroDetailComponent` can receive the data from `HeroListComponent`. Remember to add the `Input` symbol to the `@angular/core `  `import` statement in the list of JavaScript imports too.
+-->
+마지막으로 `HeroDetailComponent`에 `@Input()` 프로퍼티를 추가해서 부모 컴포넌트인 `HeroListComponent`에서 데이터를 받을 수 있게 합니다. `@angular/core` 라이브러리에서 `Input` 심볼을 로드하는 것을 잊지 마세요.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-6.component.ts" region="hero" title="hero-detail.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
+<!--
 Now you should be able to click on a button for a hero and a form renders.
+-->
+이제 템플릿은 모두 준비되었습니다.
 
+<!--
 ## When to set form model values (`ngOnChanges`)
+-->
+## 폼 모델을 설정하는 타이밍 (`ngOnChanges`)
 
+<!--
 When to set form model values depends upon when the component gets the data model values.
 
 The `HeroListComponent` displays hero names to the user.
 When the user clicks on a hero, the `HeroListComponent` passes the selected hero into the `HeroDetailComponent`
 by binding to its `hero` `@Input()` property.
+-->
+폼 모델의 값은 컴포넌트가 데이터 모델을 받아온 시점에 설정되어야 합니다.
+
+`HeroListComponent`는 히어로의 이름을 사용자에게 표시합니다.
+그리고 이 버튼을 클릭하면 `@Input()` 프로퍼티를 통해 `HeroListComponent`에서 `HeroDetailComponent`에 히어로 데이터를 전달합니다.
 
 <code-example path="reactive-forms/src/app/hero-list/hero-list.component.1.html" title="hero-list.component.html (simplified)" linenums="false">
 
 </code-example>
 
+<!--
 In this approach, the value of `hero` in the `HeroDetailComponent` changes
 every time the user selects a new hero.
 You can call `setValue()` using the [ngOnChanges](guide/lifecycle-hooks#onchanges)
 lifecycle hook, which Angular calls whenever the `@Input()` `hero` property changes.
+-->
+이 방식을 사용하면 `HeroDetailComponent`의 `hero` 프로퍼티는 사용자가 새로운 히어로를 선택할 때마다 계속 변경됩니다.
+그러면 이 시점에 라이프싸이클 후킹 함수 중 [ngOnChanges](guide/lifecycle-hooks#onchanges)를 사용해서 `setValue()`를 설정하면 됩니다.
 
+<!--
 ### Reset the form
+-->
+### 폼 초기화
 
 First, import the `OnChanges` symbol in `hero-detail.component.ts`.
 

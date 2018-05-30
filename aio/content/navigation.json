@@ -141,9 +141,9 @@
 
     {
       "title!": "Fundamentals",
-      "title": "기초",
+      "title": "가이드",
       "tooltip!": "The fundamentals of Angular",
-      "tooltip": "Angular 기초",
+      "tooltip": "Angular 가이드",
       "children": [
         {
           "title!": "Architecture",
