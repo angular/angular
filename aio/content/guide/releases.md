@@ -142,7 +142,7 @@ To make these transitions as easy as possible, we make two commitments to you:
 
 To help ensure that you have sufficient time and a clear path to update, this is our deprecation policy:
 
-* When announce deprecated features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log").
+* We announce deprecated features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log").
 
 * When we announce a deprecation, we also announce a recommended update path.
 
