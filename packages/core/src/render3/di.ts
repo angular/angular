@@ -22,7 +22,7 @@ import {assertGreaterThan, assertLessThan, assertNotNull} from './assert';
 import {addToViewTree, assertPreviousIsParent, createLContainer, createLNodeObject, createTNode, createTView, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
 import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {LContainerNode, LElementNode, LNode, LViewNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {AttributeMarker, LContainerNode, LElementNode, LNode, LViewNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
 import {LView, TView} from './interfaces/view';
@@ -251,7 +251,7 @@ export function injectChangeDetectorRef(): viewEngine_ChangeDetectorRef {
  *
  * @experimental
  */
-export function injectAttribute(attrName: string): string|undefined {
+export function injectAttribute(attrNameToInject: string): string|undefined {
   ngDevMode && assertPreviousIsParent();
   const lElement = getPreviousOrParentNode() as LElementNode;
   ngDevMode && assertNodeType(lElement, TNodeType.Element);
@@ -260,8 +260,10 @@ export function injectAttribute(attrName: string): string|undefined {
   const attrs = tElement.attrs;
   if (attrs) {
     for (let i = 0; i < attrs.length; i = i + 2) {
-      if (attrs[i] == attrName) {
-        return attrs[i + 1];
+      const attrName = attrs[i];
+      if (attrName === AttributeMarker.SELECT_ONLY) break;
+      if (attrName == attrNameToInject) {
+        return attrs[i + 1] as string;
       }
     }
   }

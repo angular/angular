@@ -9,7 +9,7 @@
 import './ng_dev_mode';
 
 import {assertNotNull} from './assert';
-import {TNode, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
+import {AttributeMarker, TAttributes, TNode, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 
 const unusedValueToPlacateAjd = unused1 + unused2;
@@ -40,6 +40,7 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
 
   let mode: SelectorFlags = SelectorFlags.ELEMENT;
   const nodeAttrs = tNode.attrs !;
+  const selectOnlyMarkerIdx = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.SELECT_ONLY) : -1;
 
   // When processing ":not" selectors, we skip to the next ":not" if the
   // current one doesn't match
@@ -80,9 +81,11 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
 
       const selectorAttrValue = mode & SelectorFlags.CLASS ? current : selector[++i];
       if (selectorAttrValue !== '') {
-        const nodeAttrValue = nodeAttrs[attrIndexInNode + 1];
+        const nodeAttrValue = selectOnlyMarkerIdx > -1 && attrIndexInNode > selectOnlyMarkerIdx ?
+            '' :
+            nodeAttrs[attrIndexInNode + 1];
         if (mode & SelectorFlags.CLASS &&
-                !isCssClassMatching(nodeAttrValue, selectorAttrValue as string) ||
+                !isCssClassMatching(nodeAttrValue as string, selectorAttrValue as string) ||
             mode & SelectorFlags.ATTRIBUTE && selectorAttrValue !== nodeAttrValue) {
           if (isPositive(mode)) return false;
           skipToNextSelector = true;
@@ -98,10 +101,15 @@ function isPositive(mode: SelectorFlags): boolean {
   return (mode & SelectorFlags.NOT) === 0;
 }
 
-function findAttrIndexInNode(name: string, attrs: string[] | null): number {
+function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
+  let step = 2;
   if (attrs === null) return -1;
-  for (let i = 0; i < attrs.length; i += 2) {
-    if (attrs[i] === name) return i;
+  for (let i = 0; i < attrs.length; i += step) {
+    const attrName = attrs[i];
+    if (attrName === name) return i;
+    if (attrName === AttributeMarker.SELECT_ONLY) {
+      step = 1;
+    }
   }
   return -1;
 }
@@ -123,7 +131,7 @@ export function getProjectAsAttrValue(tNode: TNode): string|null {
     // only check for ngProjectAs in attribute names, don't accidentally match attribute's value
     // (attribute names are stored at even indexes)
     if ((ngProjectAsAttrIdx & 1) === 0) {
-      return nodeAttrs[ngProjectAsAttrIdx + 1];
+      return nodeAttrs[ngProjectAsAttrIdx + 1] as string;
     }
   }
   return null;
