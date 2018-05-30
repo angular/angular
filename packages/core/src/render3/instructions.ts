@@ -1272,14 +1272,15 @@ export function text(index: number, value?: any): void {
  * @param value Stringified value to write.
  */
 export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
-  ngDevMode && assertDataInRange(index);
-  let existingNode = data[index] as LTextNode;
-  ngDevMode && assertNotNull(existingNode, 'LNode should exist');
-  ngDevMode && assertNotNull(existingNode.native, 'native element should exist');
-  ngDevMode && ngDevMode.rendererSetText++;
-  value !== NO_CHANGE &&
-      (isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
-                                        existingNode.native.textContent = stringify(value));
+  if (value !== NO_CHANGE) {
+    ngDevMode && assertDataInRange(index);
+    const existingNode = data[index] as LTextNode;
+    ngDevMode && assertNotNull(existingNode, 'LNode should exist');
+    ngDevMode && assertNotNull(existingNode.native, 'native element should exist');
+    ngDevMode && ngDevMode.rendererSetText++;
+    isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
+                                     existingNode.native.textContent = stringify(value);
+  }
 }
 
 //////////////////////////

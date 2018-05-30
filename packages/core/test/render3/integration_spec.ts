@@ -68,6 +68,12 @@ describe('render3 integration test', () => {
 
       expect(renderToHtml(Template, 'benoit')).toEqual('benoit');
       expect(renderToHtml(Template, undefined)).toEqual('');
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 0,
+        tNode: 0,
+        tView: 1,
+        rendererSetText: 2,
+      });
     });
 
     it('should render "null" as "" when used with `bind()`', () => {
@@ -82,6 +88,12 @@ describe('render3 integration test', () => {
 
       expect(renderToHtml(Template, 'benoit')).toEqual('benoit');
       expect(renderToHtml(Template, null)).toEqual('');
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 0,
+        tNode: 0,
+        tView: 1,
+        rendererSetText: 2,
+      });
     });
 
     it('should support creation-time values in text nodes', () => {
@@ -95,6 +107,12 @@ describe('render3 integration test', () => {
       }
       expect(renderToHtml(Template, 'once')).toEqual('once');
       expect(renderToHtml(Template, 'twice')).toEqual('once');
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 0,
+        tNode: 0,
+        tView: 1,
+        rendererSetText: 1,
+      });
     });
 
   });
