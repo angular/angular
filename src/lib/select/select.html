@@ -35,7 +35,7 @@
     class="mat-select-panel {{ _getPanelTheme() }}"
     [ngClass]="panelClass"
     [@transformPanel]="multiple ? 'showing-multiple' : 'showing'"
-    (@transformPanel.done)="_onPanelDone()"
+    (@transformPanel.done)="_panelDoneAnimatingStream.next($event.toState)"
     [style.transformOrigin]="_transformOrigin"
     [class.mat-select-panel-done-animating]="_panelDoneAnimating"
     [style.font-size.px]="_triggerFontSize"

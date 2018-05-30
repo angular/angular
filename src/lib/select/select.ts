@@ -75,7 +75,15 @@ import {
 } from '@angular/material/core';
 import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
 import {defer, merge, Observable, Subject} from 'rxjs';
-import {filter, map, startWith, switchMap, take, takeUntil} from 'rxjs/operators';
+import {
+  filter,
+  map,
+  startWith,
+  switchMap,
+  take,
+  takeUntil,
+  distinctUntilChanged,
+} from 'rxjs/operators';
 import {matSelectAnimations} from './select-animations';
 import {
   getMatSelectDynamicMultipleError,
@@ -263,6 +271,9 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** Whether the panel's animation is done. */
   _panelDoneAnimating: boolean = false;
+
+  /** Emits when the panel element is finished transforming in. */
+  _panelDoneAnimatingStream = new Subject<string>();
 
   /** Strategy that will be used to handle scrolling while the select panel is open. */
   _scrollStrategy = this._scrollStrategyFactory();
@@ -470,6 +481,23 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   ngOnInit() {
     this._selectionModel = new SelectionModel<MatOption>(this.multiple, undefined, false);
     this.stateChanges.next();
+
+    // We need `distinctUntilChanged` here, because some browsers will
+    // fire the animation end event twice for the same animation. See:
+    // https://github.com/angular/angular/issues/24084
+    this._panelDoneAnimatingStream
+      .pipe(distinctUntilChanged(), takeUntil(this._destroy))
+      .subscribe(() => {
+        if (this.panelOpen) {
+          this._scrollTop = 0;
+          this.openedChange.emit(true);
+        } else {
+          this.openedChange.emit(false);
+          this._panelDoneAnimating = false;
+          this.overlayDir.offsetX = 0;
+          this._changeDetectorRef.markForCheck();
+        }
+      });
   }
 
   ngAfterContentInit() {
@@ -671,22 +699,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
           manager.activeItemIndex !== previouslyFocusedIndex) {
         manager.activeItem._selectViaInteraction();
       }
-    }
-  }
-
-  /**
-   * When the panel element is finished transforming in (though not fading in), it
-   * emits an event and focuses an option if the panel is open.
-   */
-  _onPanelDone(): void {
-    if (this.panelOpen) {
-      this._scrollTop = 0;
-      this.openedChange.emit(true);
-    } else {
-      this.openedChange.emit(false);
-      this._panelDoneAnimating = false;
-      this.overlayDir.offsetX = 0;
-      this._changeDetectorRef.markForCheck();
     }
   }
 
