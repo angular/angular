@@ -843,8 +843,7 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
   const isProc = isProceduralRenderer(renderer);
   for (let i = 0; i < attrs.length; i += 2) {
     let attrName = attrs[i];
-    if (attrName === 0) {  // NS.FULL
-      // Namespaced attribute
+    if (attrName === AttributeMarker.NAMESPACE_URI) {
       const attrNS = attrs[i + 1] as string;
       attrName = attrs[i + 2] as string;
       const attrVal = attrs[i + 3] as string;
@@ -1516,7 +1515,7 @@ function generateInitialInputs(
   const attrs = tNode.attrs !;
   for (let i = 0; i < attrs.length; i += 2) {
     const first = attrs[i];
-    const attrName = first === 0 ? attrs[i += 2] : first;  // 0 = NS.FULL
+    const attrName = first === AttributeMarker.NAMESPACE_URI ? attrs[i += 2] : first;
     const minifiedInputName = inputs[attrName];
     const attrValue = attrs[i + 1];
 

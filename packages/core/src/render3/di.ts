@@ -262,7 +262,7 @@ export function injectAttribute(attrNameToInject: string): string|undefined {
     for (let i = 0; i < attrs.length; i = i + 2) {
       let attrName = attrs[i];
       if (attrName === AttributeMarker.SELECT_ONLY) break;
-      if (attrName === 0) {  // NS.FULL
+      if (attrName === AttributeMarker.NAMESPACE_URI) {
         attrName = attrs[i += 2];
       }
       if (attrName == attrNameToInject) {
