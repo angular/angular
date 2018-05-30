@@ -274,6 +274,8 @@ function main(args: string[]): number {
       // So ignore package.json files when we are missing data.
       console.error('WARNING: no module metadata for package', packageName);
       console.error('   Not updating the package.json file to point to it');
+      console.error(
+          '   The ng_module for this package is possibly missing the module_name attribute ');
       return JSON.stringify(parsedPackage, null, 2);
     }
 
