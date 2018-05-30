@@ -315,12 +315,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this._creationCode.push(...i18nMessages);
     }
 
-    let isSelfClosingElement = element.outputs.length === 0 && element.children.length === 0;
+    const isEmptyElement = element.outputs.length === 0 && element.children.length === 0;
 
 
     const implicit = o.variable(CONTEXT_NAME);
 
-    if (isSelfClosingElement) {
+    if (isEmptyElement) {
       this.instruction(
           this._creationCode, element.sourceSpan, R3.element, ...trimTrailingNulls(parameters));
     } else {
@@ -377,7 +377,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       t.visitAll(this, element.children);
     }
 
-    if (!isSelfClosingElement) {
+    if (!isEmptyElement) {
       // Finish element construction mode.
       this.instruction(
           this._creationCode, element.endSourceSpan || element.sourceSpan, R3.elementEnd);
