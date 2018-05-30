@@ -346,7 +346,7 @@ It appears within the template of a parent component,
 which binds a _hero_ to the `@Input` property and
 listens for an event raised through the _selected_ `@Output` property.
 
-You can test that the class code works without creating the the `DashboardHeroComponent`
+You can test that the class code works without creating the `DashboardHeroComponent`
 or its parent component.
 
 <code-example 
