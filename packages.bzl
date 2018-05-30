@@ -22,7 +22,7 @@ CDK_PACKAGES = [
 CDK_TARGETS = ["//src/cdk"] + ["//src/cdk/%s" % p for p in CDK_PACKAGES]
 
 CDK_EXPERIMENTAL_PACKAGES = [
-  # "dialog",  # Disabled because BUILD.bazel doesn't exist yet
+  "dialog",
   "scrolling",
 ]
 

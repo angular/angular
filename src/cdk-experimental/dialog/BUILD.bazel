@@ -1,0 +1,39 @@
+package(default_visibility=["//visibility:public"])
+load("@angular//:index.bzl", "ng_module")
+load("@io_bazel_rules_sass//sass:sass.bzl", "sass_library", "sass_binary")
+
+
+ng_module(
+  name = "dialog",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  module_name = "@angular/cdk-experimental/dialog",
+  assets = [":dialog_container_css"] + glob(["**/*.html"]),
+  deps = [
+    "//src/cdk/a11y",
+    "//src/cdk/bidi",
+    "//src/cdk/keycodes",
+    "//src/cdk/overlay",
+    "//src/cdk/portal",
+  ],
+  tsconfig = "//src/lib:tsconfig-build.json",
+)
+
+# TODO(jelbourn): replace this w/ sass_library when it supports acting like a filegroup
+filegroup(
+  name = "dialog_container_scss_partials",
+  srcs = glob(["**/_*.scss"]),
+)
+
+sass_binary(
+  name = "dialog_container_scss",
+  src = "dialog-container.scss",
+)
+
+# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
+# Copy the output of the sass_binary such that the filename and path match what we expect.
+genrule(
+  name = "dialog_container_css",
+  srcs = [":dialog_container_scss.css"],
+  outs = ["dialog-container.css"],
+  cmd = "cp $< $@",
+)
