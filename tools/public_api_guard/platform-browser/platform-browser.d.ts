@@ -67,7 +67,7 @@ export declare class HammerGestureConfig {
     buildHammer(element: HTMLElement): HammerInstance;
 }
 
-export declare type HammerLoader = (() => Promise<void>) | null;
+export declare type HammerLoader = () => Promise<void>;
 
 /** @experimental */
 export declare function makeStateKey<T = void>(key: string): StateKey<T>;
