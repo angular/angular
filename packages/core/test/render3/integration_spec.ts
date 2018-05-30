@@ -70,7 +70,7 @@ describe('render3 integration test', () => {
       expect(renderToHtml(Template, undefined)).toEqual('');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 0,
-        tNode: 0,
+        tNode: 2,
         tView: 1,
         rendererSetText: 2,
       });
@@ -90,7 +90,7 @@ describe('render3 integration test', () => {
       expect(renderToHtml(Template, null)).toEqual('');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 0,
-        tNode: 0,
+        tNode: 2,
         tView: 1,
         rendererSetText: 2,
       });
@@ -109,7 +109,7 @@ describe('render3 integration test', () => {
       expect(renderToHtml(Template, 'twice')).toEqual('once');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 0,
-        tNode: 0,
+        tNode: 2,
         tView: 1,
         rendererSetText: 1,
       });
