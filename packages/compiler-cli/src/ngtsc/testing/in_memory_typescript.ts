@@ -9,7 +9,8 @@
 import * as path from 'path';
 import * as ts from 'typescript';
 
-export function makeProgram(files: {name: string, contents: string}[]): ts.Program {
+export function makeProgram(files: {name: string, contents: string}[]):
+    {program: ts.Program, host: ts.CompilerHost} {
   const host = new InMemoryHost();
   files.forEach(file => host.writeFile(file.name, file.contents));
 
@@ -17,10 +18,10 @@ export function makeProgram(files: {name: string, contents: string}[]): ts.Progr
   const program = ts.createProgram(rootNames, {noLib: true, experimentalDecorators: true}, host);
   const diags = [...program.getSyntacticDiagnostics(), ...program.getSemanticDiagnostics()];
   if (diags.length > 0) {
-    fail(diags.map(diag => diag.messageText).join(', '));
-    throw new Error(`Typescript diagnostics failed!`);
+    throw new Error(
+        `Typescript diagnostics failed! ${diags.map(diag => diag.messageText).join(', ')}`);
   }
-  return program;
+  return {program, host};
 }
 
 export class InMemoryHost implements ts.CompilerHost {
