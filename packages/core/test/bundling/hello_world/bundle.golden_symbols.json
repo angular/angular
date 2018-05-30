@@ -126,6 +126,9 @@
     "name": "invertObject"
   },
   {
+    "name": "isLContainer"
+  },
+  {
     "name": "isProceduralRenderer"
   },
   {
