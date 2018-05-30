@@ -172,6 +172,7 @@ export const _MatTabLinkMixinBase =
   inputs: ['disabled', 'disableRipple', 'tabIndex'],
   host: {
     'class': 'mat-tab-link',
+    'role': 'tab',
     '[attr.aria-disabled]': 'disabled.toString()',
     '[attr.tabIndex]': 'tabIndex',
     '[class.mat-tab-disabled]': 'disabled',
