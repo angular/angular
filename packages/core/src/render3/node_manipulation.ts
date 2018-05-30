@@ -261,19 +261,19 @@ export function addRemoveViewFromContainer(
  *  @param rootView The view to destroy
  */
 export function destroyViewTree(rootView: LView): void {
-  // A view to cleanup doesn't have children so we should not try to descend down the view tree.
-  if (!rootView.child) {
+  // If the view has no children, we can clean it up and return early.
+  if (rootView.tView.childIndex === -1) {
     return cleanUpView(rootView);
   }
-  let viewOrContainer: LViewOrLContainer|null = rootView.child;
+  let viewOrContainer: LViewOrLContainer|null = getLViewChild(rootView);
 
   while (viewOrContainer) {
     let next: LViewOrLContainer|null = null;
 
     if (viewOrContainer.views && viewOrContainer.views.length) {
       next = viewOrContainer.views[0].data;
-    } else if (viewOrContainer.child) {
-      next = viewOrContainer.child;
+    } else if (viewOrContainer.tView && viewOrContainer.tView.childIndex > -1) {
+      next = getLViewChild(viewOrContainer as LView);
     } else if (viewOrContainer.next) {
       // Only move to the side and clean if operating below rootView -
       // otherwise we would start cleaning up sibling views of the rootView.
@@ -381,6 +381,15 @@ export function removeView(container: LContainerNode, removeIndex: number): LVie
   }
 
   return viewNode;
+}
+
+/** Gets the child of the given LView */
+export function getLViewChild(view: LView): LView|LContainer|null {
+  if (view.tView.childIndex === -1) return null;
+
+  const hostNode: LElementNode|LContainerNode = view.data[view.tView.childIndex];
+
+  return hostNode.data ? hostNode.data : (hostNode.dynamicLContainerNode as LContainerNode).data;
 }
 
 /**
