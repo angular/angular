@@ -590,7 +590,7 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
     lContainerNode.tNode = hostTNode.dynamicContainerNode;
     vcRefHost.dynamicLContainerNode = lContainerNode;
 
-    addToViewTree(vcRefHost.view, lContainer);
+    addToViewTree(vcRefHost.view, hostTNode.index as number, lContainer);
 
     di.viewContainerRef = new ViewContainerRef(lContainerNode);
   }
