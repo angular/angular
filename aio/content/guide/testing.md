@@ -204,8 +204,7 @@ The test consumes that spy in the same way it did earlier.
 Most test suites in this guide call `beforeEach()` to set the preconditions for each `it()` test
 and rely on the `TestBed` to create classes and inject services.
 
-There's another school of testing that never calls `beforeEach()` and
-and prefers to create classes explicitly rather than use the `TestBed`.
+There's another school of testing that never calls `beforeEach()` and prefers to create classes explicitly rather than use the `TestBed`.
 
 Here's how you might rewrite one of the `MasterService` tests in that style.
 
