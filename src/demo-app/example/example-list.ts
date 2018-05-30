@@ -59,8 +59,8 @@ export class ExampleList {
   @Input() ids: string[];
 
   @Input()
-  set expandAll(v: boolean) { this._expandAll = coerceBooleanProperty(v); }
   get expandAll(): boolean { return this._expandAll; }
+  set expandAll(v: boolean) { this._expandAll = coerceBooleanProperty(v); }
   _expandAll: boolean;
 
   exampleComponents = EXAMPLE_COMPONENTS;

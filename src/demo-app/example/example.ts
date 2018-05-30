@@ -48,8 +48,8 @@ export class Example implements OnInit {
   @Input() id: string;
 
   @Input()
-  set showLabel(v: boolean) { this._showLabel = coerceBooleanProperty(v); }
   get showLabel(): boolean { return this._showLabel; }
+  set showLabel(v: boolean) { this._showLabel = coerceBooleanProperty(v); }
   _showLabel: boolean;
 
   title: string;

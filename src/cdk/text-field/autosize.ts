@@ -47,11 +47,11 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
 
   /** Minimum amount of rows in the textarea. */
   @Input('cdkAutosizeMinRows')
+  get minRows(): number { return this._minRows; }
   set minRows(value: number) {
     this._minRows = value;
     this._setMinHeight();
   }
-  get minRows(): number { return this._minRows; }
 
   /** Maximum amount of rows in the textarea. */
   @Input('cdkAutosizeMaxRows')

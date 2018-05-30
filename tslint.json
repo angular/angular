@@ -97,6 +97,7 @@
     // Custom Rules
     "ts-loader": true,
     "no-exposed-todo": true,
+    "setters-after-getters": true,
     "no-host-decorator-in-concrete": [
       true,
       "HostBinding",

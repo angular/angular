@@ -402,8 +402,8 @@ interface TestData {
 
 class FakeDataSource extends DataSource<TestData> {
   _dataChange = new BehaviorSubject<TestData[]>([]);
-  set data(data: TestData[]) { this._dataChange.next(data); }
   get data() { return this._dataChange.getValue(); }
+  set data(data: TestData[]) { this._dataChange.next(data); }
 
   constructor() {
     super();
