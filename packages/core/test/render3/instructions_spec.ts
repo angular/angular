@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 
 import {RenderFlags, directiveInject} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
-import {bind, container, element, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, setHtmlNS, setSvgNS, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, element, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, namespaceHTML, namespaceSVG, renderTemplate, text, textBinding} from '../../src/render3/instructions';
 import {AttributeMarker, LElementNode, LNode} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {TrustedString, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
@@ -433,7 +433,7 @@ describe('instructions', () => {
     it('should render SVG', () => {
       const t = new TemplateFixture(() => {
         elementStart(0, 'div', ['id', 'container']);
-        setSvgNS();
+        namespaceSVG();
         elementStart(1, 'svg', [
           // id="display"
           'id',
@@ -452,7 +452,7 @@ describe('instructions', () => {
         ]);
         element(2, 'circle', ['cx', '200', 'cy', '150', 'fill', '#0000ff']);
         elementEnd();
-        setHtmlNS();
+        namespaceHTML();
         elementEnd();
       });
 
