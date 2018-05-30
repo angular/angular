@@ -1,3 +1,5 @@
+# Creating a custom form field control
+
 It is possible to create custom form field controls that can be used inside `<mat-form-field>`. This
 can be useful if you need to create a component that shares a lot of common behavior with a form
 field, but adds some additional logic.
