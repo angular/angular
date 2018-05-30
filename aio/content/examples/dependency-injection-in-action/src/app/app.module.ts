@@ -1,7 +1,7 @@
 // #docregion
 import { BrowserModule }                from '@angular/platform-browser';
 import { FormsModule }                  from '@angular/forms';
-import { HttpClientModule }             from '@angular/common/http';
+import { HttpModule }                   from '@angular/http';
 
 // import { AppRoutingModule }             from './app-routing.module';
 import { LocationStrategy,
@@ -54,7 +54,7 @@ const c_components = [
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule,
+    HttpModule,
     InMemoryWebApiModule.forRoot(HeroData)
     // AppRoutingModule TODO: add routes
   ],
