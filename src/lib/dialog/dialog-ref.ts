@@ -68,13 +68,16 @@ export class MatDialogRef<T, R = any> {
     _containerInstance._animationStateChanged.pipe(
       filter(event => event.phaseName === 'done' && event.toState === 'exit'),
       take(1)
-    )
-    .subscribe(() => {
-      this._overlayRef.dispose();
+    ).subscribe(() => this._overlayRef.dispose());
+
+    _overlayRef.detachments().subscribe(() => {
+      this._beforeClose.next(this._result);
+      this._beforeClose.complete();
       this._locationChanges.unsubscribe();
       this._afterClosed.next(this._result);
       this._afterClosed.complete();
       this.componentInstance = null!;
+      this._overlayRef.dispose();
     });
 
     _overlayRef.keydownEvents()
