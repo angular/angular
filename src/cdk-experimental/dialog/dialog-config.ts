@@ -42,9 +42,6 @@ export class DialogConfig<D = any> {
   /** Custom class(es) for the overlay panel. */
   panelClass?: string | string[] = '';
 
-  /** Custom class(es) for the dialog container. */
-  containerClass?: string | string[] = '';
-
   /** Whether the dialog has a background. */
   hasBackdrop?: boolean = true;
 
