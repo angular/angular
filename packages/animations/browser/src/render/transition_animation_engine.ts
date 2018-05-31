@@ -740,10 +740,10 @@ export class TransitionAnimationEngine {
 
   private _buildInstruction(
       entry: QueueInstruction, subTimelines: ElementInstructionMap, enterClassName: string,
-      leaveClassName: string) {
+      leaveClassName: string, skipBuildAst?: boolean) {
     return entry.transition.build(
         this.driver, entry.element, entry.fromState.value, entry.toState.value, enterClassName,
-        leaveClassName, entry.fromState.options, entry.toState.options, subTimelines);
+        leaveClassName, entry.fromState.options, entry.toState.options, subTimelines, skipBuildAst);
   }
 
   destroyInnerAnimations(containerElement: any) {
@@ -962,17 +962,24 @@ export class TransitionAnimationEngine {
           }
         }
 
-        if (!bodyNode || !this.driver.containsElement(bodyNode, element)) {
-          player.destroy();
+        const nodeIsOrphaned = !bodyNode || !this.driver.containsElement(bodyNode, element);
+        const leaveClassName = leaveNodeMapIds.get(element) !;
+        const enterClassName = enterNodeMapIds.get(element) !;
+        const instruction = this._buildInstruction(
+            entry, subTimelines, enterClassName, leaveClassName, nodeIsOrphaned) !;
+        if (instruction.errors && instruction.errors.length) {
+          erroneousTransitions.push(instruction);
           return;
         }
 
-        const leaveClassName = leaveNodeMapIds.get(element) !;
-        const enterClassName = enterNodeMapIds.get(element) !;
-        const instruction =
-            this._buildInstruction(entry, subTimelines, enterClassName, leaveClassName) !;
-        if (instruction.errors && instruction.errors.length) {
-          erroneousTransitions.push(instruction);
+        // even though the element may not be apart of the DOM, it may
+        // still be added at a later point (due to the mechanics of content
+        // projection and/or dynamic component insertion) therefore it's
+        // important we still style the element.
+        if (nodeIsOrphaned) {
+          player.onStart(() => eraseStyles(element, instruction.fromStyles));
+          player.onDestroy(() => setStyles(element, instruction.toStyles));
+          skippedPlayers.push(player);
           return;
         }
 
