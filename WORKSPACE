@@ -6,9 +6,9 @@ workspace(name = "angular")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.8.0.zip",
-    strip_prefix = "rules_nodejs-0.8.0",
-    sha256 = "4e40dd49ae7668d245c3107645f2a138660fcfd975b9310b91eda13f0c973953",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.9.1.zip",
+    strip_prefix = "rules_nodejs-0.9.1",
+    sha256 = "6139762b62b37c1fd171d7f22aa39566cb7dc2916f0f801d505a9aaf118c117f",
 )
 
 http_archive(
@@ -20,9 +20,9 @@ http_archive(
 
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/3b86d6d46269fb52d4c6f1416868869e847feac2.zip",
-    strip_prefix = "rules_typescript-3b86d6d46269fb52d4c6f1416868869e847feac2",
-    sha256 = "f67e5fbe4a2b34b3ead9fe56f22b713540c23b501bd24d661d3fb047071dc2c1",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/0.15.0.zip",
+    strip_prefix = "rules_typescript-0.15.0",
+    sha256 = "1aa75917330b820cb239b3c10a936a10f0a46fe215063d4492dd76dc6e1616f4",
 )
 
 http_archive(
