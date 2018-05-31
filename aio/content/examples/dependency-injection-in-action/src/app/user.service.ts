@@ -1,7 +1,9 @@
 // #docregion
 import { Injectable } from '@angular/core';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class UserService {
 
   getUserById(userId: number): any {
