@@ -2379,6 +2379,65 @@ const DEFAULT_COMPONENT_ID = '1';
           });
         });
       });
+
+      it('should animate nodes properly when they have been re-ordered', () => {
+        @Component({
+          selector: 'if-cmp',
+          template: `
+                <div *ngFor="let item of items" [class]="'class-' + item.value">
+                  <div [@myAnimation]="item.count">
+                    {{ item.value }}
+                  </div>
+                </div>
+              `,
+          animations: [
+            trigger(
+                'myAnimation',
+                [
+                  state('0', style({opacity: 0})), state('1', style({opacity: 0.4})),
+                  state('2', style({opacity: 0.8})), transition('* => 1, * => 2', [animate(1000)])
+                ]),
+          ]
+        })
+        class Cmp {
+          items = [
+            {value: '1', count: 0},
+            {value: '2', count: 0},
+            {value: '3', count: 0},
+            {value: '4', count: 0},
+            {value: '5', count: 0},
+          ];
+
+          reOrder() {
+            this.items = [
+              this.items[4],
+              this.items[1],
+              this.items[3],
+              this.items[0],
+              this.items[2],
+            ];
+          }
+        }
+
+        TestBed.configureTestingModule({declarations: [Cmp]});
+        const fixture = TestBed.createComponent(Cmp);
+        const cmp = fixture.componentInstance;
+        const one = cmp.items[0];
+        const two = cmp.items[1];
+        one.count++;
+        fixture.detectChanges();
+
+        cmp.reOrder();
+        fixture.detectChanges();
+        resetLog();
+
+        one.count++;
+        two.count++;
+        fixture.detectChanges();
+
+        const players = getLog();
+        expect(players.length).toEqual(2);
+      });
     });
 
     describe('animation listeners', () => {
