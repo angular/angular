@@ -94,6 +94,10 @@ module.exports = function(config) {
       '**/*.js': ['sourcemap'],
     },
 
+    proxies: {
+      '/base/angular/': '/base/',
+    },
+
     reporters: ['internal-angular'],
     sauceLabs: {
       testName: 'Angular2',
