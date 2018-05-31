@@ -17,7 +17,7 @@ import {CurrentMatchesList, LView, LViewFlags, LifecycleStage, RootContext, TDat
 
 import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
-import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode} from './node_manipulation';
+import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode, getLViewChild} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
@@ -314,7 +314,6 @@ export function createLView<T>(
     tView: tView,
     cleanup: null,
     renderer: renderer,
-    child: null,
     tail: null,
     next: null,
     bindingStartIndex: -1,
@@ -802,6 +801,7 @@ export function createTView(
   return {
     node: null !,
     data: [],
+    childIndex: -1,  // Children set in addToViewTree(), if any
     directives: null,
     firstTemplatePass: true,
     initHooks: null,
@@ -1329,11 +1329,12 @@ function addComponentLogic<T>(index: number, instance: T, def: ComponentDef<T>):
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.
   const hostView = addToViewTree(
-      currentView, createLView(
-                       -1, rendererFactory.createRenderer(
-                               previousOrParentNode.native as RElement, def.rendererType),
-                       tView, null, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
-                       getCurrentSanitizer()));
+      currentView, previousOrParentNode.tNode.index as number,
+      createLView(
+          -1,
+          rendererFactory.createRenderer(previousOrParentNode.native as RElement, def.rendererType),
+          tView, null, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
+          getCurrentSanitizer()));
 
   // We need to set the host node/data here because when the component LNode was created,
   // we didn't yet know it was a component (just an element).
@@ -1512,7 +1513,7 @@ export function container(
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
-  addToViewTree(currentView, node.data);
+  addToViewTree(currentView, index, node.data);
   createDirectivesAndLocals(localRefs);
 
   isParent = false;
@@ -1574,7 +1575,7 @@ export function containerRefreshEnd(): void {
 }
 
 function refreshDynamicChildren() {
-  for (let current = currentView.child; current !== null; current = current.next) {
+  for (let current = getLViewChild(currentView); current !== null; current = current.next) {
     // Note: current can be a LView or a LContainer, but here we are only interested in LContainer.
     // The distinction is made because nextIndex and views do not exist on LView.
     if (isLContainer(current)) {
@@ -1921,11 +1922,18 @@ function findComponentHost(lView: LView): LElementNode {
  * and call onDestroy callbacks.
  *
  * @param currentView The view where LView or LContainer should be added
+ * @param hostIndex Index of the view's host node in data[]
  * @param state The LView or LContainer to add to the view tree
  * @returns The state passed in
  */
-export function addToViewTree<T extends LView|LContainer>(currentView: LView, state: T): T {
-  currentView.tail ? (currentView.tail.next = state) : (currentView.child = state);
+export function addToViewTree<T extends LView|LContainer>(
+    currentView: LView, hostIndex: number, state: T): T {
+  // TODO(kara): move next and tail properties off of LView
+  if (currentView.tail) {
+    currentView.tail.next = state;
+  } else if (firstTemplatePass) {
+    currentView.tView.childIndex = hostIndex;
+  }
   currentView.tail = state;
   return state;
 }
