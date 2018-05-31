@@ -5,7 +5,9 @@ import { Injectable }    from '@angular/core';
 import { LoggerService } from './logger.service';
 
 // #docregion date-logger-service
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 // #docregion date-logger-service-signature
 export class DateLoggerService extends LoggerService
 // #enddocregion date-logger-service-signature
