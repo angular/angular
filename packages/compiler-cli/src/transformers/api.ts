@@ -320,7 +320,7 @@ export interface Program {
    * and CSS.
    *
    * Note it is important to displaying TypeScript semantic diagnostics along with Angular
-   * structural diagnostics as an error in the program strucutre might cause errors detected in
+   * structural diagnostics as an error in the program structure might cause errors detected in
    * semantic analysis and a semantic error might cause errors in specifying the program structure.
    *
    * Angular structural information is required to produce these diagnostics.
