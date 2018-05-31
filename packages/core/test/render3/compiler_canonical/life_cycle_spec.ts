@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {ComponentDef} from '../../../src/render3/interfaces/definition';
+import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
 import {renderComponent, toHtml} from '../render_util';
 
 
@@ -83,7 +83,8 @@ describe('lifecycle hooks', () => {
   }
 
   // NON-NORMATIVE
-  (SimpleLayout.ngComponentDef as ComponentDef<any>).directiveDefs = [LifecycleComp.ngComponentDef];
+  (SimpleLayout.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
+      [LifecycleComp.ngComponentDef];
   // /NON-NORMATIVE
 
   it('should gen hooks with a few simple components', () => {

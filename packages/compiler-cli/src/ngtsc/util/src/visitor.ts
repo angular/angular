@@ -33,7 +33,7 @@ export abstract class Visitor {
   /**
    * Maps statements to an array of statements that should be inserted before them.
    */
-  private _before = new Map<ts.Statement, ts.Statement[]>();
+  private _before = new Map<ts.Node, ts.Statement[]>();
 
   /**
    * Visit a class declaration, returning at least the transformed declaration and optionally other
@@ -44,27 +44,21 @@ export abstract class Visitor {
     return {node};
   }
 
-  private _visitClassDeclaration(node: ts.ClassDeclaration, context: ts.TransformationContext):
-      ts.ClassDeclaration {
-    const result = this.visitClassDeclaration(node);
-    const visited = ts.visitEachChild(result.node, child => this._visit(child, context), context);
+  private _visitListEntryNode<T extends ts.Statement>(
+      node: T, visitor: (node: T) => VisitListEntryResult<ts.Statement, T>): T {
+    const result = visitor(node);
     if (result.before !== undefined) {
       // Record that some nodes should be inserted before the given declaration. The declaration's
       // parent's _visit call is responsible for performing this insertion.
-      this._before.set(visited, result.before);
+      this._before.set(result.node, result.before);
     }
-    return visited;
+    return result.node;
   }
 
   /**
    * Visit types of nodes which don't have their own explicit visitor.
    */
   visitOtherNode<T extends ts.Node>(node: T): T { return node; }
-
-  private _visitOtherNode<T extends ts.Node>(node: T, context: ts.TransformationContext): T {
-    return ts.visitEachChild(
-        this.visitOtherNode(node), child => this._visit(child, context), context);
-  }
 
   /**
    * @internal
@@ -73,10 +67,14 @@ export abstract class Visitor {
     // First, visit the node. visitedNode starts off as `null` but should be set after visiting
     // is completed.
     let visitedNode: T|null = null;
+
+    node = ts.visitEachChild(node, child => this._visit(child, context), context) as T;
+
     if (ts.isClassDeclaration(node)) {
-      visitedNode = this._visitClassDeclaration(node, context) as typeof node;
+      visitedNode = this._visitListEntryNode(
+          node, (node: ts.ClassDeclaration) => this.visitClassDeclaration(node)) as typeof node;
     } else {
-      visitedNode = this._visitOtherNode(node, context);
+      visitedNode = this.visitOtherNode(node);
     }
 
     // If the visited node has a `statements` array then process them, maybe replacing the visited

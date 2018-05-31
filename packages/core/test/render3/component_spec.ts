@@ -11,7 +11,7 @@ import {DoCheck, ViewEncapsulation, createInjector, defineInjectable, defineInje
 import {getRenderedText} from '../../src/render3/component';
 import {ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding, tick} from '../../src/render3/instructions';
-import {ComponentDef, DirectiveDef, RenderFlags} from '../../src/render3/interfaces/definition';
+import {ComponentDefInternal, DirectiveDefInternal, RenderFlags} from '../../src/render3/interfaces/definition';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -346,7 +346,7 @@ describe('recursive components', () => {
     });
   }
 
-  (TreeComponent.ngComponentDef as ComponentDef<TreeComponent>).directiveDefs =
+  (TreeComponent.ngComponentDef as ComponentDefInternal<TreeComponent>).directiveDefs =
       () => [TreeComponent.ngComponentDef];
 
   function _buildTree(currDepth: number): TreeNode {

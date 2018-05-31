@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {AddStaticFieldInstruction} from './api';
+import {CompileResult} from './api';
 import {ImportManager, translateType} from './translator';
 
 
@@ -17,15 +17,13 @@ import {ImportManager, translateType} from './translator';
  * Processes .d.ts file text and adds static field declarations, with types.
  */
 export class DtsFileTransformer {
-  private ivyFields = new Map<string, AddStaticFieldInstruction>();
+  private ivyFields = new Map<string, CompileResult>();
   private imports = new ImportManager();
 
   /**
    * Track that a static field was added to the code for a class.
    */
-  recordStaticField(name: string, decl: AddStaticFieldInstruction): void {
-    this.ivyFields.set(name, decl);
-  }
+  recordStaticField(name: string, decl: CompileResult): void { this.ivyFields.set(name, decl); }
 
   /**
    * Process the .d.ts text for a file and add any declarations which were recorded.

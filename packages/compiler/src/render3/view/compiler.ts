@@ -85,8 +85,9 @@ export function compileDirectiveFromMetadata(
     bindingParser: BindingParser): R3DirectiveDef {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
-  const type =
-      new o.ExpressionType(o.importExpr(R3.DirectiveDef, [new o.ExpressionType(meta.type)]));
+  const type = new o.ExpressionType(o.importExpr(
+      R3.DirectiveDef,
+      [new o.ExpressionType(meta.type), new o.ExpressionType(o.literal(meta.selector || ''))]));
   return {expression, type};
 }
 
@@ -154,8 +155,9 @@ export function compileComponentFromMetadata(
   }
 
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
-  const type =
-      new o.ExpressionType(o.importExpr(R3.ComponentDef, [new o.ExpressionType(meta.type)]));
+  const type = new o.ExpressionType(o.importExpr(
+      R3.ComponentDef,
+      [new o.ExpressionType(meta.type), new o.ExpressionType(o.literal(meta.selector || ''))]));
 
   return {expression, type};
 }
@@ -243,14 +245,14 @@ function directiveMetadataFromGlobalMetadata(
     selector: directive.selector,
     deps: dependenciesFromGlobalMetadata(directive.type, outputCtx, reflector),
     queries: queriesFromGlobalMetadata(directive.queries, outputCtx),
+    lifecycle: {
+      usesOnChanges:
+          directive.type.lifecycleHooks.some(lifecycle => lifecycle == LifecycleHooks.OnChanges),
+    },
     host: {
       attributes: directive.hostAttributes,
       listeners: summary.hostListeners,
       properties: summary.hostProperties,
-    },
-    lifecycle: {
-      usesOnChanges:
-          directive.type.lifecycleHooks.some(lifecycle => lifecycle == LifecycleHooks.OnChanges),
     },
     inputs: directive.inputs,
     outputs: directive.outputs,

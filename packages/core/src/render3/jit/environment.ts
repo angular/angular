@@ -8,7 +8,6 @@
 
 import {defineInjectable} from '../../di/defs';
 import {inject} from '../../di/injector';
-import {defineNgModule} from '../../metadata/ng_module';
 import * as r3 from '../index';
 
 
@@ -21,7 +20,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵdefineComponent': r3.defineComponent,
   'ɵdefineDirective': r3.defineDirective,
   'defineInjectable': defineInjectable,
-  'ɵdefineNgModule': defineNgModule,
+  'ɵdefineNgModule': r3.defineNgModule,
   'ɵdirectiveInject': r3.directiveInject,
   'inject': inject,
   'ɵinjectAttribute': r3.injectAttribute,
