@@ -1571,37 +1571,57 @@ lifecycle hook, which Angular calls whenever the `@Input()` `hero` property chan
 -->
 ### 폼 초기화
 
+<!--
 First, import the `OnChanges` symbol in `hero-detail.component.ts`.
+-->
+제일 먼저 `hero-detail.component.ts` 파일에 `OnChanges` 심볼을 로드합니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-6.component.ts" region="import-input" title="src/app/hero-detail/hero-detail.component.ts (core imports)" linenums="false">
 
 </code-example>
 
+<!--
 Next, let Angular know that the `HeroDetailComponent` implements `OnChanges`:
+-->
+그리고 `HeroDetailComponent`가 `OnChanges` 인터페이스를 구현하도록 지정합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail.component.ts" region="onchanges-implementation" title="src/app/hero-detail/hero-detail.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
-
+<!--
 Add the `ngOnChanges` method to the class as follows:
+-->
+클래스의 `ngOnChanges` 메소드는 다음과 같이 구현합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-7.component.ts" region="ngOnChanges" title="src/app/hero-detail/hero-detail.component.ts (ngOnchanges)" linenums="false">
 
 </code-example>
 
+<!--
 Notice that it calls `rebuildForm()`, which is a method where you
 can set the values. You can name `rebuildForm()` anything that makes sense to you. It isn't built into Angular, but is a method you create to effectively leverage the `ngOnChanges` lifecycle hook.
+-->
+이 메소드는 폼 값을 초기화하는 `rebuildForm()` 함수를 실행합니다.
+이 때 `rebuildForm()` 이라는 함수의 이름은 달라져도 상관없습니다. 이 함수는 `ngOnChanges` 라이프싸이클 후킹 함수를 좀 더 편하게 사용하기 위해 따로 뺀 것 뿐입니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-7.component.ts" region="rebuildForm" title="src/app/hero-detail/hero-detail.component.ts" linenums="false">
 
 </code-example>
 
+<!--
 The `rebuildForm()` method does two things; resets the hero's name and the address.
+-->
+`rebuildForm()` 함수는 히어로의 이름과 주소를 초기화합니다.
 
 {@a form-array}
 
+<!--
 ## Use _FormArray_ to present an array of `FormGroups`
+-->
+## `FormGroups` 안에 있는 _FormArray_ 활용하기
+
+<!--
 A `FormGroup` is a named object whose property values are `FormControls` and other `FormGroups`.
 
 Sometimes you need to present an arbitrary number of controls or groups.
@@ -1612,11 +1632,23 @@ An `address`  `FormGroup` can display one `Address`.
 An Angular `FormArray` can display an array of `address`  `FormGroups`.
 
 To get access to the `FormArray` class, import it into `hero-detail.component.ts`:
+-->
+`FormGroup` 안에는 `FormControl`과 또 다른 `FormGroup`이 있습니다.
+
+그런데 어떤 경우에는 폼 컨트롤의 개수가 변할 수 있는 경우가 있습니다.
+이 예제에서도 주소에 해당하는 값은 하나이거나 여러개, 아예 없을 수도 있습니다.
+
+`Hero.addresses` 프로퍼티는 `Address` 타입의 배열입니다.
+그리고 `address` `FormGroup`은 이 배열 전체를 하나의 값으로 표현합니다.
+그렇다면 `address` 프로퍼티는 `FormArray`로 사용할 수 있습니다.
+
+`hero-detail.component.ts` 파일에서 `FormArray` 클래스를 사용하기 위해 심볼을 로드합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.ts" region="imports" title="src/app/hero-detail/hero-detail.component.ts (excerpt)" linenums="false">
 
 </code-example>
 
+<!--
 To work with a `FormArray` do the following:
 
 1. Define the items in the array; that is, `FormControls` or `FormGroups`.
@@ -1630,22 +1662,46 @@ let the user add or modify addresses.
 
 You’ll need to redefine the form model in the `HeroDetailComponent` `createForm()` method,
 which currently only displays the first hero address in an `address` `FormGroup`:
+-->
+`FormArray`는 다음 순서로 사용합니다:
+
+1. `FormControl`이나 `FormGroups`를 배열로 선언합니다.
+
+1. 데이터 모델에 있는 값으로 이 배열을 초기화합니다.
+
+1. 필요한 경우 아이템을 더 추가하거나 제거합니다.
+
+`Hero.addresses`는 `FormArray` 타입으로 선언하고 사용자가 수정하는 주소값을 이 필드에 저장하겠습니다.
+
+그러면 `HeroDetailComponent`의 `createForm()` 메소드가 폼 모델의 구조에 맞게 수정해야 합니다.
+지금까지는 히어로의 주소 하나만 표시했지만, 이제 `FormGroup` 타입이 되도록 다음과 같이 수정합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-7.component.ts" region="address-form-group" title="src/app/hero-detail/hero-detail.component.ts" linenums="false">
 
 </code-example>
 
+<!--
 ### From `address` to `secretLairs`
+-->
+### `address`를 `secretLairs`로 변경하기
 
+<!--
 From the user's point of view, heroes don't have _addresses_.
 Addresses are for mere mortals. Heroes have _secret lairs_!
 Replace the address `FormGroup` definition with a `secretLairs`  `FormArray` definition:
+-->
+사용자가 보는 화면에는 히어로의 _주소_ 가 표시되지 않습니다.
+주소는 히어로가 사는 곳에 따라 변할 수 있지만, 대신 변하지 않는 _비밀 둥지_ 를 갖습니다!
+주소로 사용하던 `FormGroup` 필드를  `FormArray` 타입의 `secretLairs`로 수정합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.ts" region="secretLairs-form-array" title="src/app/hero-detail/hero-detail-8.component.ts" linenums="false">
 
 </code-example>
 
+<!--
 In `hero-detail.component.html` change `formGroupName="address"` to `formArrayName="secretLairs"`.
+-->
+그리고 `hero-detail.component.html` 파일의 `formGroupName="address"`를 `formArrayName="secretLairs"`로 수정합니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.html" region="form-array-name" title="src/app/hero-detail/hero-detail.component.ts" linenums="false">
 
@@ -1653,6 +1709,7 @@ In `hero-detail.component.html` change `formGroupName="address"` to `formArrayNa
 
 <div class="alert is-helpful">
 
+<!--
 Changing the form control name from `address` to `secretLairs` underscores an important point:
 the _form model_ doesn't have to match the _data model_.
 
@@ -1661,11 +1718,24 @@ But it can be anything that makes sense within the application domain.
 
 _Presentation_ requirements often differ from _data_ requirements.
 The reactive forms approach both emphasizes and facilitates this distinction.
+-->
+폼 컨트롤의 이름을 `address`에서 `secretLairs`로 바꾸는 것은 사실 중요하지 않습니다.
+_폼 모델_ 은 _데이터 모델_ 과 똑같은 구조일 필요는 없기 때문입니다.
+
+두 모델은 서로 관련된 상태를 유지하는 것이 좋기 때문에 되도록이면 비슷한 구조로 맞추는 것이 좋지만,
+애플리케이션의 상황에 따라 자유롭게 지정할 수 있습니다.
+
+_화면에 보여지는 것_ 이 _데이터_ 와는 다른 경우도 있습니다.
+반응형 폼은 이 요구사항에 충분히 대응할 수 있습니다.
 
 </div>
 
+<!--
 ### Initialize the `secretLairs` _FormArray_
+-->
+### `secretLairs` _FormArray_ 초기화하기
 
+<!--
 The default form displays a nameless hero with no addresses.
 
 You need a method to populate (or repopulate) the `secretLairs` with actual hero addresses whenever
@@ -1673,11 +1743,19 @@ the parent `HeroListComponent` sets the `HeroDetailComponent.hero`  `@Input()` p
 
 The following `setAddresses()` method replaces the `secretLairs`  `FormArray` with a new `FormArray`,
 initialized by an array of hero address `FormGroups`. Add this to the `HeroDetailComponent` class:
+-->
+이제 폼의 기본 화면에는 히어로의 주소가 표시되지 않습니다.
+
+이 정보는 `HeroListComponent`에서 `HeroDetailComponent`의 `@Input()` 프로퍼티인 `hero` 객체 안에 담겨 전달되며, 이 필드의 값을 폼 모델로 반영할 함수가 필요합니다.
+
+아래 코드에서 `setAdresses()` 메소드는 `FormArray` 타입의 `secretLairs`를 새로운 `FormArray` 인스턴스로 교체합니다.
+이 때 새로 만들어지는 인스턴스는 인자로 받은 객체를 `FormGroup`으로 변환한 뒤에 `FormArray`로 다시 한 번 변환된 인스턴스입니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.ts" region="set-addresses" title="src/app/hero-detail/hero-detail.component.ts" linenums="false">
 
 </code-example>
 
+<!--
 Notice that you replace the previous `FormArray` with the
 `FormGroup.setControl()` method, not with `setValue()`.
 You're replacing a _control_, not the _value_ of a control.
@@ -1685,6 +1763,13 @@ You're replacing a _control_, not the _value_ of a control.
 Notice also that the `secretLairs`  `FormArray` contains `FormGroups`, not `Addresses`.
 
 Next, call `setAddresses()` from within `rebuildForm()`:
+-->
+이 코드에서 `setValue()`를 사용하지 않고 `FormGroup.setControl()` 메소드를 사용한 것에 주의하세요.
+이 구문은 폼 컨트롤의 _값_ 을 지정한 것이 아니라 _폼 컨트롤_ 을 교체한 것입니다.
+
+`FormArray` 타입인 `secretLairs`는 `Addresses` 타입이 아니라 `FormGroup` 타입인 것에도 주의하세요.
+
+이제 `rebuildForm()` 함수에서 `setAddresses()`를 실행하도록 수정합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.ts" region="rebuildform" title="src/app/hero-detail/hero-detail.component.ts" linenums="false">
 
