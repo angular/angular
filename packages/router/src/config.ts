@@ -140,6 +140,8 @@ export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange'
  * Supports static, parameterized, redirect, and wildcard routes, as well as
  * custom route data and resolve methods.
  *
+ * For detailed usage information, see the [Routing Guide](../guide/routing).
+ *
  * @usageNotes
  * ### Simple Configuration
  *
