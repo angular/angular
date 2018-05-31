@@ -587,7 +587,7 @@ class EscapedTransferStoreModule {
            renderModule(HTMLTypesModule, {document: doc}).then(output => {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<div innerhtml="<b>foo</b> bar"><b>foo</b> bar</div></app></body></html>');
+                 '<div><b>foo</b> bar</div></app></body></html>');
              called = true;
            });
          }));
