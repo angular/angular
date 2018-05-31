@@ -80,7 +80,7 @@ jobs:
 
       - run: ls /home/circleci/bazel_repository_cache || true
       - run: bazel info release
-      - run: bazel run @yarn//:yarn
+      - run: bazel run @nodejs//:yarn
       # Use bazel query so that we explicitly ask for all buildable targets to be built as well
       # This avoids waiting for the slowest build target to finish before running the first test
       # See https://github.com/bazelbuild/bazel/issues/4257
@@ -131,7 +131,7 @@ jobs:
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
       - *setup-bazel-remote-cache
 
-      - run: bazel run @yarn//:yarn
+      - run: bazel run @nodejs//:yarn
       - run: scripts/build-packages-dist.sh
 
       # Save the npm packages from //packages/... for other workflow jobs to read
