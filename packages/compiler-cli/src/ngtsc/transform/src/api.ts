@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, Type} from '@angular/compiler';
+import {Expression, Statement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Decorator} from '../../metadata';
@@ -15,13 +15,13 @@ import {Decorator} from '../../metadata';
  * Provides the interface between a decorator compiler from @angular/compiler and the Typescript
  * compiler/transform.
  *
- * The decorator compilers in @angular/compiler do not depend on Typescript. The adapter is
+ * The decorator compilers in @angular/compiler do not depend on Typescript. The handler is
  * responsible for extracting the information required to perform compilation from the decorators
  * and Typescript source, invoking the decorator compiler, and returning the result.
  */
-export interface CompilerAdapter<A> {
+export interface DecoratorHandler<A> {
   /**
-   * Scan a set of reflected decorators and determine if this adapter is responsible for compilation
+   * Scan a set of reflected decorators and determine if this handler is responsible for compilation
    * of one of them.
    */
   detect(decorator: Decorator[]): Decorator|undefined;
@@ -37,7 +37,7 @@ export interface CompilerAdapter<A> {
    * Generate a description of the field which should be added to the class, including any
    * initialization code to be generated.
    */
-  compile(node: ts.ClassDeclaration, analysis: A): AddStaticFieldInstruction;
+  compile(node: ts.ClassDeclaration, analysis: A): CompileResult;
 }
 
 /**
@@ -54,8 +54,9 @@ export interface AnalysisOutput<A> {
  * A description of the static field to add to a class, including an initialization expression
  * and a type for the .d.ts file.
  */
-export interface AddStaticFieldInstruction {
+export interface CompileResult {
   field: string;
   initializer: Expression;
+  statements: Statement[];
   type: Type;
 }

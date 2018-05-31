@@ -27,11 +27,39 @@ export interface NgModuleTransitiveScopes {
   exported: {directives: Set<any>; pipes: Set<any>;};
 }
 
-export interface NgModuleDef<T> {
+/**
+ * A version of {@link NgModuleDef} that represents the runtime type shape only, and excludes
+ * metadata parameters.
+ */
+export type NgModuleDefInternal<T> = NgModuleDef<T, any, any, any>;
+
+/**
+ * Runtime link information for NgModules.
+ *
+ * This is the internal data structure used by the runtime to assemble components, directives,
+ * pipes, and injectors.
+ *
+ * NOTE: Always use `defineNgModule` function to create this object,
+ * never create the object directly since the shape of this object
+ * can change between versions.
+ */
+export interface NgModuleDef<T, Declarations, Imports, Exports> {
+  /** Token representing the module. Used by DI. */
   type: T;
+
+  /** List of components to bootstrap. */
   bootstrap: Type<any>[];
+
+  /** List of components, directives, and pipes declared by this module. */
   declarations: Type<any>[];
+
+  /** List of modules or `ModuleWithProviders` imported by this module. */
   imports: Type<any>[];
+
+  /**
+   * List of modules, `ModuleWithProviders`, components, directives, or pipes exported by this
+   * module.
+   */
   exports: Type<any>[];
 
   /**
@@ -40,18 +68,6 @@ export interface NgModuleDef<T> {
    * This should never be read directly, but accessed via `transitiveScopesFor`.
    */
   transitiveCompileScopes: NgModuleTransitiveScopes|null;
-}
-
-export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T>>): never {
-  const res: NgModuleDef<T> = {
-    type: def.type,
-    bootstrap: def.bootstrap || [],
-    declarations: def.declarations || [],
-    imports: def.imports || [],
-    exports: def.exports || [],
-    transitiveCompileScopes: null,
-  };
-  return res as never;
 }
 
 /**
@@ -226,6 +242,14 @@ export interface NgModule {
    * `getModuleFactory`.
    */
   id?: string;
+
+  /**
+   * If true, this module will be skipped by the AOT compiler and so will always be compiled
+   * using JIT.
+   *
+   * This exists to support future Ivy work and has no effect currently.
+   */
+  jit?: true;
 }
 
 function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule): void {

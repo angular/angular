@@ -388,6 +388,14 @@ export interface Directive {
    * ```
    */
   queries?: {[key: string]: any};
+
+  /**
+   * If true, this directive/component will be skipped by the AOT compiler and so will always be
+   * compiled using JIT.
+   *
+   * This exists to support future Ivy work and has no effect currently.
+   */
+  jit?: true;
 }
 
 /**

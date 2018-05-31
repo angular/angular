@@ -15,7 +15,10 @@ export function makeProgram(files: {name: string, contents: string}[]):
   files.forEach(file => host.writeFile(file.name, file.contents));
 
   const rootNames = files.map(file => host.getCanonicalFileName(file.name));
-  const program = ts.createProgram(rootNames, {noLib: true, experimentalDecorators: true}, host);
+  const program = ts.createProgram(
+      rootNames,
+      {noLib: true, experimentalDecorators: true, moduleResolution: ts.ModuleResolutionKind.NodeJs},
+      host);
   const diags = [...program.getSyntacticDiagnostics(), ...program.getSemanticDiagnostics()];
   if (diags.length > 0) {
     throw new Error(

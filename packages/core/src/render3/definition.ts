@@ -11,12 +11,13 @@ import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {PipeTransform} from '../change_detection/pipe_transform';
 import {Provider} from '../core';
 import {OnChanges, SimpleChanges} from '../metadata/lifecycle_hooks';
+import {NgModuleDef, NgModuleDefInternal} from '../metadata/ng_module';
 import {RendererType2} from '../render/api';
 import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFeature, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {ComponentDefFeature, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 
@@ -166,7 +167,7 @@ export function defineComponent<T>(componentDefinition: {
   const type = componentDefinition.type;
   const pipeTypes = componentDefinition.pipes !;
   const directiveTypes = componentDefinition.directives !;
-  const def = <ComponentDef<any>>{
+  const def: ComponentDefInternal<any> = {
     type: type,
     diPublic: null,
     factory: componentDefinition.factory,
@@ -176,7 +177,7 @@ export function defineComponent<T>(componentDefinition: {
     inputs: invertObject(componentDefinition.inputs),
     outputs: invertObject(componentDefinition.outputs),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
-    exportAs: componentDefinition.exportAs,
+    exportAs: componentDefinition.exportAs || null,
     onInit: type.prototype.ngOnInit || null,
     doCheck: type.prototype.ngDoCheck || null,
     afterContentInit: type.prototype.ngAfterContentInit || null,
@@ -200,7 +201,7 @@ export function defineComponent<T>(componentDefinition: {
 }
 
 export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>):
-    DirectiveDef<any>|ComponentDef<any> {
+    DirectiveDefInternal<any>|ComponentDefInternal<any> {
   const def = type.ngComponentDef || type.ngDirectiveDef;
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
@@ -216,7 +217,17 @@ export function extractPipeDef(type: PipeType<any>): PipeDef<any> {
   return def;
 }
 
-
+export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T, any, any, any>>): never {
+  const res: NgModuleDefInternal<T> = {
+    type: def.type,
+    bootstrap: def.bootstrap || [],
+    declarations: def.declarations || [],
+    imports: def.imports || [],
+    exports: def.exports || [],
+    transitiveCompileScopes: null,
+  };
+  return res as never;
+}
 
 const PRIVATE_PREFIX = '__ngOnChanges_';
 
@@ -250,7 +261,7 @@ type OnChangesExpando = OnChanges & {
  */
 export function NgOnChangesFeature(inputPropertyNames?: {[key: string]: string}):
     DirectiveDefFeature {
-  return function(definition: DirectiveDef<any>): void {
+  return function(definition: DirectiveDefInternal<any>): void {
     const inputs = definition.inputs;
     const proto = definition.type.prototype;
     for (let pubKey in inputs) {
@@ -313,7 +324,7 @@ export function NgOnChangesFeature(inputPropertyNames?: {[key: string]: string})
 }
 
 
-export function PublicFeature<T>(definition: DirectiveDef<T>) {
+export function PublicFeature<T>(definition: DirectiveDefInternal<T>) {
   definition.diPublic = diPublic;
 }
 
