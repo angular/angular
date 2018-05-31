@@ -15,7 +15,7 @@ import {Sanitizer} from '../sanitization/security';
 import {assertComponentType, assertDefined} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
 import {CLEAN_PROMISE, ROOT_DIRECTIVE_INDICES, _getComponentHostLElementNode, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings,} from './instructions';
-import {ComponentDef, ComponentType} from './interfaces/definition';
+import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LViewData, LViewFlags, RootContext, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
@@ -52,7 +52,7 @@ export interface CreateComponentOptions {
    * features list because there's no way of knowing when the component will be used as
    * a root component.
    */
-  hostFeatures?: (<T>(component: T, componentDef: ComponentDef<T>) => void)[];
+  hostFeatures?: (<T>(component: T, componentDef: ComponentDef<T, string>) => void)[];
 
   /**
    * A function which is used to schedule change detection work in the future.
@@ -96,7 +96,8 @@ export function renderComponent<T>(
   ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
-  const componentDef = (componentType as ComponentType<T>).ngComponentDef as ComponentDef<T>;
+  const componentDef =
+      (componentType as ComponentType<T>).ngComponentDef as ComponentDefInternal<T>;
   if (componentDef.type != componentType) componentDef.type = componentType;
   let component: T;
   // The first index of the first selector is the tag name.
@@ -157,7 +158,7 @@ export function createRootContext(scheduler: (workFn: () => void) => void): Root
  * renderComponent(AppComponent, {features: [RootLifecycleHooks]});
  * ```
  */
-export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
+export function LifecycleHooksFeature(component: any, def: ComponentDefInternal<any>): void {
   const elementNode = _getComponentHostLElementNode(component);
 
   // Root component is always created at dir index 0

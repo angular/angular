@@ -18,7 +18,7 @@ import {getSymbolIterator} from '../util';
 import {assertDefined, assertEqual} from './assert';
 import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
 import {assertPreviousIsParent, getCurrentQueries, store, storeCleanupWithContext} from './instructions';
-import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
+import {DirectiveDefInternal, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, TNode, TNodeFlags, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
@@ -232,7 +232,7 @@ function getIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
   const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
   const end = start + count;
   for (let i = start; i < end; i++) {
-    const def = defs[i] as DirectiveDef<any>;
+    const def = defs[i] as DirectiveDefInternal<any>;
     if (def.type === type && def.diPublic) {
       return i;
     }

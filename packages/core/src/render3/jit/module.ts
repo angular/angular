@@ -8,9 +8,9 @@
 
 import {Expression, R3NgModuleMetadata, WrappedNodeExpr, compileNgModule as compileR3NgModule, jitExpression} from '@angular/compiler';
 
-import {ModuleWithProviders, NgModule, NgModuleDef, NgModuleTransitiveScopes} from '../../metadata/ng_module';
+import {ModuleWithProviders, NgModule, NgModuleDefInternal, NgModuleTransitiveScopes} from '../../metadata/ng_module';
 import {Type} from '../../type';
-import {ComponentDef} from '../interfaces/definition';
+import {ComponentDefInternal} from '../interfaces/definition';
 
 import {angularCoreEnv} from './environment';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
@@ -48,7 +48,8 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
     if (declaration.hasOwnProperty(NG_COMPONENT_DEF)) {
       // An `ngComponentDef` field exists - go ahead and patch the component directly.
       patchComponentDefWithScope(
-          (declaration as Type<any>& {ngComponentDef: ComponentDef<any>}).ngComponentDef, type);
+          (declaration as Type<any>& {ngComponentDef: ComponentDefInternal<any>}).ngComponentDef,
+          type);
     } else if (
         !declaration.hasOwnProperty(NG_DIRECTIVE_DEF) && !declaration.hasOwnProperty(NG_PIPE_DEF)) {
       // Set `ngSelectorScope` for future reference when the component compilation finishes.
@@ -61,7 +62,8 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
  * Patch the definition of a component with directives and pipes from the compilation scope of
  * a given module.
  */
-export function patchComponentDefWithScope<C, M>(componentDef: ComponentDef<C>, module: Type<M>) {
+export function patchComponentDefWithScope<C, M>(
+    componentDef: ComponentDefInternal<C>, module: Type<M>) {
   componentDef.directiveDefs = () => Array.from(transitiveScopesFor(module).compilation.directives)
                                          .map(dir => dir.ngDirectiveDef || dir.ngComponentDef)
                                          .filter(def => !!def);
@@ -113,7 +115,7 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
   def.imports.forEach(<I>(imported: Type<I>) => {
     let importedTyped = imported as Type<I>& {
       // If imported is an @NgModule:
-      ngModuleDef?: NgModuleDef<I>;
+      ngModuleDef?: NgModuleDefInternal<I>;
     };
 
     if (!isNgModule<I>(importedTyped)) {
@@ -132,7 +134,7 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
       // Components, Directives, NgModules, and Pipes can all be exported.
       ngComponentDef?: any;
       ngDirectiveDef?: any;
-      ngModuleDef?: NgModuleDef<E>;
+      ngModuleDef?: NgModuleDefInternal<E>;
       ngPipeDef?: any;
     };
 
@@ -188,6 +190,6 @@ function isModuleWithProviders(value: any): value is ModuleWithProviders {
   return (value as{ngModule?: any}).ngModule !== undefined;
 }
 
-function isNgModule<T>(value: Type<T>): value is Type<T>&{ngModuleDef: NgModuleDef<T>} {
-  return (value as{ngModuleDef?: NgModuleDef<T>}).ngModuleDef !== undefined;
+function isNgModule<T>(value: Type<T>): value is Type<T>&{ngModuleDef: NgModuleDefInternal<T>} {
+  return (value as{ngModuleDef?: NgModuleDefInternal<T>}).ngModuleDef !== undefined;
 }

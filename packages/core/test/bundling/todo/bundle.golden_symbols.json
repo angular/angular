@@ -27,22 +27,10 @@
     "name": "DIRECTIVES"
   },
   {
-    "name": "DefaultIterableDiffer"
-  },
-  {
-    "name": "DefaultIterableDifferFactory"
-  },
-  {
     "name": "EMPTY$2"
   },
   {
     "name": "EMPTY_RENDERER_TYPE_ID"
-  },
-  {
-    "name": "ElementRef$1"
-  },
-  {
-    "name": "EmbeddedViewRef$1"
   },
   {
     "name": "FLAGS"
@@ -58,12 +46,6 @@
   },
   {
     "name": "INJECTOR$1"
-  },
-  {
-    "name": "IterableChangeRecord_"
-  },
-  {
-    "name": "IterableDiffers"
   },
   {
     "name": "NEXT"
@@ -93,12 +75,6 @@
     "name": "NgIfContext"
   },
   {
-    "name": "Optional"
-  },
-  {
-    "name": "PARAMETERS"
-  },
-  {
     "name": "PARENT"
   },
   {
@@ -106,9 +82,6 @@
   },
   {
     "name": "RENDERER"
-  },
-  {
-    "name": "RENDER_PARENT"
   },
   {
     "name": "ROOT_DIRECTIVE_INDICES"
@@ -120,16 +93,10 @@
     "name": "SANITIZER"
   },
   {
-    "name": "SkipSelf"
-  },
-  {
     "name": "TAIL"
   },
   {
     "name": "TVIEW"
-  },
-  {
-    "name": "TemplateRef$1"
   },
   {
     "name": "ToDoAppComponent"
@@ -150,34 +117,10 @@
     "name": "VIEWS"
   },
   {
-    "name": "ViewContainerRef$1"
-  },
-  {
     "name": "_CLEAN_PROMISE"
   },
   {
-    "name": "_DuplicateItemRecordList"
-  },
-  {
-    "name": "_DuplicateMap"
-  },
-  {
     "name": "_ROOT_DIRECTIVE_INDICES"
-  },
-  {
-    "name": "__extends"
-  },
-  {
-    "name": "__read"
-  },
-  {
-    "name": "__self"
-  },
-  {
-    "name": "__spread"
-  },
-  {
-    "name": "__window"
   },
   {
     "name": "_c0"
@@ -243,19 +186,10 @@
     "name": "_getComponentHostLElementNode"
   },
   {
-    "name": "_global"
-  },
-  {
     "name": "_renderCompCount"
   },
   {
-    "name": "_symbolIterator"
-  },
-  {
     "name": "addComponentLogic"
-  },
-  {
-    "name": "addRemoveViewFromContainer"
   },
   {
     "name": "addToViewTree"
@@ -294,13 +228,7 @@
     "name": "canInsertNativeNode"
   },
   {
-    "name": "checkNoChanges"
-  },
-  {
     "name": "checkNoChangesMode"
-  },
-  {
-    "name": "cleanUpView"
   },
   {
     "name": "componentRefresh"
@@ -342,25 +270,10 @@
     "name": "defineComponent"
   },
   {
-    "name": "defineDirective"
-  },
-  {
     "name": "defineInjectable"
   },
   {
     "name": "defineInjector"
-  },
-  {
-    "name": "destroyLView"
-  },
-  {
-    "name": "destroyViewTree"
-  },
-  {
-    "name": "detachView"
-  },
-  {
-    "name": "detectChanges"
   },
   {
     "name": "detectChangesInternal"
@@ -399,18 +312,6 @@
     "name": "executeInitHooks"
   },
   {
-    "name": "executeNodeAction"
-  },
-  {
-    "name": "executeOnDestroys"
-  },
-  {
-    "name": "executePipeOnDestroys"
-  },
-  {
-    "name": "extendStatics"
-  },
-  {
     "name": "extractDirectiveDef"
   },
   {
@@ -432,9 +333,6 @@
     "name": "generatePropertyAliases"
   },
   {
-    "name": "getChildLNode"
-  },
-  {
     "name": "getCleanup"
   },
   {
@@ -445,18 +343,6 @@
   },
   {
     "name": "getLViewChild"
-  },
-  {
-    "name": "getNextLNode"
-  },
-  {
-    "name": "getNextLNodeWithProjection"
-  },
-  {
-    "name": "getOrCreateContainerRef"
-  },
-  {
-    "name": "getOrCreateElementRef"
   },
   {
     "name": "getOrCreateInjectable"
@@ -471,16 +357,7 @@
     "name": "getOrCreateTView"
   },
   {
-    "name": "getOrCreateTemplateRef"
-  },
-  {
     "name": "getParentLNode"
-  },
-  {
-    "name": "getParentState"
-  },
-  {
-    "name": "getPreviousIndex"
   },
   {
     "name": "getPreviousOrParentNode"
@@ -489,19 +366,10 @@
     "name": "getRenderFlags"
   },
   {
-    "name": "getRenderer"
-  },
-  {
     "name": "getRootView"
   },
   {
-    "name": "getSymbolIterator"
-  },
-  {
     "name": "getTViewCleanup"
-  },
-  {
-    "name": "getTypeNameForDebugging"
   },
   {
     "name": "getTypeNameForDebugging$1"
@@ -517,15 +385,6 @@
   },
   {
     "name": "inject"
-  },
-  {
-    "name": "injectTemplateRef"
-  },
-  {
-    "name": "injectViewContainerRef"
-  },
-  {
-    "name": "insertView"
   },
   {
     "name": "instantiateDirectivesDirectly"
@@ -546,12 +405,6 @@
     "name": "isDifferent"
   },
   {
-    "name": "isJsObject"
-  },
-  {
-    "name": "isListLikeIterable"
-  },
-  {
     "name": "isNodeMatchingSelector"
   },
   {
@@ -562,9 +415,6 @@
   },
   {
     "name": "isProceduralRenderer"
-  },
-  {
-    "name": "iterateListLike"
   },
   {
     "name": "leaveView"
@@ -582,15 +432,6 @@
     "name": "locateHostElement"
   },
   {
-    "name": "looseIdentical"
-  },
-  {
-    "name": "makeMetadataCtor"
-  },
-  {
-    "name": "makeParamDecorator"
-  },
-  {
     "name": "markDirtyIfOnPush"
   },
   {
@@ -598,9 +439,6 @@
   },
   {
     "name": "namespaceHTML"
-  },
-  {
-    "name": "notImplemented"
   },
   {
     "name": "queueComponentIndexForCheck"
@@ -631,12 +469,6 @@
   },
   {
     "name": "refreshView"
-  },
-  {
-    "name": "removeListeners"
-  },
-  {
-    "name": "removeView"
   },
   {
     "name": "renderComponent"
@@ -717,13 +549,7 @@
     "name": "tickRootContext"
   },
   {
-    "name": "trackByIdentity"
-  },
-  {
     "name": "viewAttached"
-  },
-  {
-    "name": "walkLNodeTree"
   },
   {
     "name": "wrapListenerWithDirtyAndDefault"

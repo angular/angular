@@ -11,6 +11,7 @@ export {
   defineComponent as ɵdefineComponent,
   defineDirective as ɵdefineDirective,
   definePipe as ɵdefinePipe,
+  defineNgModule as ɵdefineNgModule,
   detectChanges as ɵdetectChanges,
   renderComponent as ɵrenderComponent,
   ComponentType as ɵComponentType,
@@ -82,8 +83,8 @@ export {
   st as ɵst,
   ld as ɵld,
   Pp as ɵPp,
-  ComponentDef as ɵComponentDef,
-  DirectiveDef as ɵDirectiveDef,
+  ComponentDefInternal as ɵComponentDef,
+  DirectiveDefInternal as ɵDirectiveDef,
   PipeDef as ɵPipeDef,
   whenRendered as ɵwhenRendered,
 } from './render3/index';

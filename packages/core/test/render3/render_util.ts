@@ -11,7 +11,7 @@ import {stringifyElement} from '@angular/platform-browser/testing/src/browser_ut
 import {Injector} from '../../src/di/injector';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
+import {ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDefInternal, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {LElementNode} from '../../src/render3/interfaces/node';
@@ -180,13 +180,13 @@ export function renderToHtml(
 
 function toDefs(
     types: DirectiveTypesOrFactory | undefined | null,
-    mapFn: (type: Type<any>) => DirectiveDef<any>): DirectiveDefList|null;
+    mapFn: (type: Type<any>) => DirectiveDefInternal<any>): DirectiveDefList|null;
 function toDefs(
     types: PipeTypesOrFactory | undefined | null,
     mapFn: (type: Type<any>) => PipeDef<any>): PipeDefList|null;
 function toDefs(
     types: PipeTypesOrFactory | DirectiveTypesOrFactory | undefined | null,
-    mapFn: (type: Type<any>) => PipeDef<any>| DirectiveDef<any>): any {
+    mapFn: (type: Type<any>) => PipeDef<any>| DirectiveDefInternal<any>): any {
   if (!types) return null;
   if (typeof types == 'function') {
     types = types();

@@ -16,6 +16,8 @@ function callableParamDecorator(): FnWithArg<(a: any, b: any, c: any) => void> {
   return null !;
 }
 
+export const Component = callableClassDecorator();
+export const Directive = callableClassDecorator();
 export const Injectable = callableClassDecorator();
 export const NgModule = callableClassDecorator();
 

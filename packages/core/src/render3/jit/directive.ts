@@ -47,7 +47,9 @@ export function compileComponent(type: Type<any>, metadata: Component): Promise<
         const constantPool = new ConstantPool();
 
         // Parse the template and check for errors.
-        const template = parseTemplate(templateStr, `ng://${type.name}/template.html`);
+        const template = parseTemplate(templateStr, `ng://${type.name}/template.html`, {
+          preserveWhitespaces: metadata.preserveWhitespaces || false,
+        });
         if (template.errors !== undefined) {
           const errors = template.errors.map(err => err.toString()).join(', ');
           throw new Error(`Errors during JIT compilation of template for ${type.name}: ${errors}`);

@@ -236,3 +236,103 @@ export function reflectImportedIdentifier(
 
   return {from, name};
 }
+
+export interface DecoratedNode<T extends ts.Node> {
+  element: T;
+  decorators: Decorator[];
+}
+
+export function getDecoratedClassElements(
+    clazz: ts.ClassDeclaration, checker: ts.TypeChecker): DecoratedNode<ts.ClassElement>[] {
+  const decoratedElements: DecoratedNode<ts.ClassElement>[] = [];
+  clazz.members.forEach(element => {
+    if (element.decorators !== undefined) {
+      const decorators = element.decorators.map(decorator => reflectDecorator(decorator, checker))
+                             .filter(decorator => decorator != null) as Decorator[];
+      if (decorators.length > 0) {
+        decoratedElements.push({element, decorators});
+      }
+    }
+  });
+  return decoratedElements;
+}
+
+export function reflectStaticField(
+    clazz: ts.ClassDeclaration, field: string): ts.PropertyDeclaration|null {
+  return clazz.members.find((member: ts.ClassElement): member is ts.PropertyDeclaration => {
+    // Check if the name matches.
+    if (member.name === undefined || !ts.isIdentifier(member.name) || member.name.text !== field) {
+      return false;
+    }
+    // Check if the property is static.
+    if (member.modifiers === undefined ||
+        !member.modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword)) {
+      return false;
+    }
+    // Found the field.
+    return true;
+  }) ||
+      null;
+}
+
+export function reflectNonStaticField(
+    clazz: ts.ClassDeclaration, field: string): ts.PropertyDeclaration|null {
+  return clazz.members.find((member: ts.ClassElement): member is ts.PropertyDeclaration => {
+    // Check if the name matches.
+    if (member.name === undefined || !ts.isIdentifier(member.name) || member.name.text !== field) {
+      return false;
+    }
+    // Check if the property is static.
+    if (member.modifiers !== undefined &&
+        member.modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword)) {
+      return false;
+    }
+    // Found the field.
+    return true;
+  }) ||
+      null;
+}
+
+export function reflectTypeEntityToDeclaration(
+    type: ts.EntityName, checker: ts.TypeChecker): {node: ts.Declaration, from: string | null} {
+  let realSymbol = checker.getSymbolAtLocation(type);
+  if (realSymbol === undefined) {
+    throw new Error(`Cannot resolve type entity to symbol`);
+  }
+  while (realSymbol.flags & ts.SymbolFlags.Alias) {
+    realSymbol = checker.getAliasedSymbol(realSymbol);
+  }
+
+  let node: ts.Declaration|null = null;
+  if (realSymbol.valueDeclaration !== undefined) {
+    node = realSymbol.valueDeclaration;
+  } else if (realSymbol.declarations !== undefined && realSymbol.declarations.length === 1) {
+    node = realSymbol.declarations[0];
+  } else {
+    throw new Error(`Cannot resolve type entity symbol to declaration`);
+  }
+
+  if (ts.isQualifiedName(type)) {
+    if (!ts.isIdentifier(type.left)) {
+      throw new Error(`Cannot handle qualified name with non-identifier lhs`);
+    }
+    const symbol = checker.getSymbolAtLocation(type.left);
+    if (symbol === undefined || symbol.declarations === undefined ||
+        symbol.declarations.length !== 1) {
+      throw new Error(`Cannot resolve qualified type entity lhs to symbol`);
+    }
+    const decl = symbol.declarations[0];
+    if (ts.isNamespaceImport(decl)) {
+      const clause = decl.parent !;
+      const importDecl = clause.parent !;
+      if (!ts.isStringLiteral(importDecl.moduleSpecifier)) {
+        throw new Error(`Module specifier is not a string`);
+      }
+      return {node, from: importDecl.moduleSpecifier.text};
+    } else {
+      throw new Error(`Unknown import type?`);
+    }
+  } else {
+    return {node, from: null};
+  }
+}
