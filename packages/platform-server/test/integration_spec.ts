@@ -8,15 +8,16 @@
 
 import {AnimationBuilder, animate, style, transition, trigger} from '@angular/animations';
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Injectable, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 import {BrowserModule, DOCUMENT, StateKey, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
+import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
 @Component({selector: 'app', template: `Works!`})
@@ -200,6 +201,26 @@ export class HttpAfterExampleModule {
   imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
 })
 export class HttpClientExampleModule {
+}
+
+@Injectable()
+export class MyHttpInterceptor implements HttpInterceptor {
+  constructor(private http: HttpClient) {}
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return next.handle(req);
+  }
+}
+
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, multi: true, useClass: MyHttpInterceptor},
+  ],
+})
+export class HttpInterceptorExampleModule {
 }
 
 @Component({selector: 'app', template: `<img [src]="'link'">`})
@@ -750,6 +771,21 @@ class EscapedTransferStoreModule {
              });
            });
          }));
+      it('can use HttpInterceptor that injects HttpClient', () => {
+        const platform =
+            platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+        platform.bootstrapModule(HttpInterceptorExampleModule).then(ref => {
+          const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+          const http = ref.injector.get(HttpClient);
+          ref.injector.get<NgZone>(NgZone).run(() => {
+            http.get('http://localhost/testing').subscribe(body => {
+              NgZone.assertInAngularZone();
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost/testing').flush('success!');
+          });
+        });
+      });
     });
 
     describe('ServerTransferStoreModule', () => {
