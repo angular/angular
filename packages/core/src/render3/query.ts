@@ -17,7 +17,7 @@ import {getSymbolIterator} from '../util';
 
 import {assertEqual, assertNotNull} from './assert';
 import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
-import {assertPreviousIsParent, getCurrentQueries, store} from './instructions';
+import {assertPreviousIsParent, getCleanup, getCurrentQueries, store} from './instructions';
 import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, TNode, TNodeFlags, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
@@ -416,7 +416,7 @@ export function query<T>(
   const queryList = new QueryList<T>();
   const queries = getCurrentQueries(LQueries_);
   queries.track(queryList, predicate, descend, read);
-
+  getCleanup().push(queryList.destroy, queryList);
   if (memoryIndex != null) {
     store(memoryIndex, queryList);
   }

@@ -6,13 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, Directive, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '../../src/core';
+import {Component, Directive, EmbeddedViewRef, Pipe, PipeTransform, TemplateRef, ViewContainerRef} from '../../src/core';
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, projection, projectionDef, reserveSlots, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
 
+import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, TemplateFixture} from './render_util';
 
 describe('ViewContainerRef', () => {
@@ -45,8 +46,9 @@ describe('ViewContainerRef', () => {
       }
     }
 
-    function createView(s: string, index?: number) {
-      directiveInstance !.vcref.createEmbeddedView(directiveInstance !.tplRef, {name: s}, index);
+    function createView(s: string, index?: number): EmbeddedViewRef<any> {
+      return directiveInstance !.vcref.createEmbeddedView(
+          directiveInstance !.tplRef, {name: s}, index);
     }
 
     /**
@@ -419,13 +421,16 @@ describe('ViewContainerRef', () => {
       });
     });
 
+    const rendererFactory = getRendererFactory2(document);
+
     describe('detach', () => {
       it('should detach the right embedded view when an index is specified', () => {
-        const fixture = new TemplateFixture(createTemplate, updateTemplate, [DirectiveWithVCRef]);
-        createView('A');
+        const fixture = new TemplateFixture(
+            createTemplate, updateTemplate, [DirectiveWithVCRef], null, null, rendererFactory);
+        const viewA = createView('A');
         createView('B');
         createView('C');
-        createView('D');
+        const viewD = createView('D');
         createView('E');
         fixture.update();
         expect(fixture.html).toEqual('<p vcref=""></p>ABCDE');
@@ -433,29 +438,97 @@ describe('ViewContainerRef', () => {
         directiveInstance !.vcref.detach(3);
         fixture.update();
         expect(fixture.html).toEqual('<p vcref=""></p>ABCE');
+        expect(viewD.destroyed).toBeFalsy();
 
         directiveInstance !.vcref.detach(0);
         fixture.update();
         expect(fixture.html).toEqual('<p vcref=""></p>BCE');
+        expect(viewA.destroyed).toBeFalsy();
 
         expect(() => { directiveInstance !.vcref.detach(-1); }).toThrow();
         expect(() => { directiveInstance !.vcref.detach(42); }).toThrow();
+        expect(ngDevMode).toHaveProperties({rendererDestroyNode: 0});
       });
 
 
       it('should detach the last embedded view when no index is specified', () => {
-        const fixture = new TemplateFixture(createTemplate, updateTemplate, [DirectiveWithVCRef]);
+        const fixture = new TemplateFixture(
+            createTemplate, updateTemplate, [DirectiveWithVCRef], null, null, rendererFactory);
         createView('A');
         createView('B');
         createView('C');
         createView('D');
-        createView('E');
+        const viewE = createView('E');
         fixture.update();
         expect(fixture.html).toEqual('<p vcref=""></p>ABCDE');
 
         directiveInstance !.vcref.detach();
         fixture.update();
         expect(fixture.html).toEqual('<p vcref=""></p>ABCD');
+        expect(viewE.destroyed).toBeFalsy();
+        expect(ngDevMode).toHaveProperties({rendererDestroyNode: 0});
+      });
+    });
+
+    describe('remove', () => {
+      it('should remove the right embedded view when an index is specified', () => {
+        const fixture = new TemplateFixture(
+            createTemplate, updateTemplate, [DirectiveWithVCRef], null, null, rendererFactory);
+        const viewA = createView('A');
+        createView('B');
+        createView('C');
+        const viewD = createView('D');
+        createView('E');
+        fixture.update();
+        expect(fixture.html).toEqual('<p vcref=""></p>ABCDE');
+
+        directiveInstance !.vcref.remove(3);
+        fixture.update();
+        expect(fixture.html).toEqual('<p vcref=""></p>ABCE');
+        expect(viewD.destroyed).toBeTruthy();
+
+        directiveInstance !.vcref.remove(0);
+        fixture.update();
+        expect(fixture.html).toEqual('<p vcref=""></p>BCE');
+        expect(viewA.destroyed).toBeTruthy();
+
+        expect(() => { directiveInstance !.vcref.remove(-1); }).toThrow();
+        expect(() => { directiveInstance !.vcref.remove(42); }).toThrow();
+        expect(ngDevMode).toHaveProperties({rendererDestroyNode: 2});
+      });
+
+      it('should remove the last embedded view when no index is specified', () => {
+        const fixture = new TemplateFixture(
+            createTemplate, updateTemplate, [DirectiveWithVCRef], null, null, rendererFactory);
+        createView('A');
+        createView('B');
+        createView('C');
+        createView('D');
+        const viewE = createView('E');
+        fixture.update();
+        expect(fixture.html).toEqual('<p vcref=""></p>ABCDE');
+
+        directiveInstance !.vcref.remove();
+        fixture.update();
+        expect(fixture.html).toEqual('<p vcref=""></p>ABCD');
+        expect(viewE.destroyed).toBeTruthy();
+        expect(ngDevMode).toHaveProperties({rendererDestroyNode: 1});
+      });
+
+      it('should throw when trying to insert a removed or destroyed view', () => {
+        const fixture = new TemplateFixture(
+            createTemplate, updateTemplate, [DirectiveWithVCRef], null, null, rendererFactory);
+        const viewA = createView('A');
+        const viewB = createView('B');
+        fixture.update();
+
+        directiveInstance !.vcref.remove();
+        fixture.update();
+        expect(() => directiveInstance !.vcref.insert(viewB)).toThrow();
+
+        viewA.destroy();
+        fixture.update();
+        expect(() => directiveInstance !.vcref.insert(viewA)).toThrow();
       });
     });
 
@@ -843,6 +916,8 @@ describe('ViewContainerRef', () => {
         ngAfterViewInit() { this.log('afterViewInit-' + this.name); }
         ngAfterViewChecked() { this.log('afterViewChecked-' + this.name); }
 
+        ngOnDestroy() { this.log('onDestroy-' + this.name); }
+
         static ngComponentDef = defineComponent({
           type: ComponentWithHooks,
           selectors: [['hooks']],
@@ -935,6 +1010,30 @@ describe('ViewContainerRef', () => {
       expect(log).toEqual([
         'doCheck-A', 'doCheck-B', 'doCheck-C', 'afterContentChecked-C', 'afterViewChecked-C',
         'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
+      ]);
+
+      log.length = 0;
+      const viewRef = directiveInstance !.vcref.detach(0);
+      fixture.update();
+      expect(log).toEqual([
+        'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
+        'afterViewChecked-A', 'afterViewChecked-B'
+      ]);
+
+      log.length = 0;
+      directiveInstance !.vcref.insert(viewRef !);
+      fixture.update();
+      expect(log).toEqual([
+        'doCheck-A', 'doCheck-B', 'doCheck-C', 'afterContentChecked-C', 'afterViewChecked-C',
+        'afterContentChecked-A', 'afterContentChecked-B', 'afterViewChecked-A', 'afterViewChecked-B'
+      ]);
+
+      log.length = 0;
+      directiveInstance !.vcref.remove(0);
+      fixture.update();
+      expect(log).toEqual([
+        'onDestroy-C', 'doCheck-A', 'doCheck-B', 'afterContentChecked-A', 'afterContentChecked-B',
+        'afterViewChecked-A', 'afterViewChecked-B'
       ]);
     });
   });
