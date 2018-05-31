@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, LiteralExpr, R3DependencyMetadata, WrappedNodeExpr, compileInjectable as compileIvyInjectable, jitExpression} from '@angular/compiler';
+import {Expression, LiteralExpr, R3DependencyMetadata, WrappedNodeExpr, compileInjectable as compileR3Injectable, jitExpression} from '@angular/compiler';
 
 import {Injectable} from '../../di/injectable';
 import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../../di/provider';
@@ -74,7 +74,7 @@ export function compileInjectable(type: Type<any>, meta?: Injectable): void {
           throw new Error(`Unreachable state.`);
         }
 
-        const {expression} = compileIvyInjectable({
+        const {expression} = compileR3Injectable({
           name: type.name,
           type: new WrappedNodeExpr(type),
           providedIn: computeProvidedIn(meta.providedIn),
