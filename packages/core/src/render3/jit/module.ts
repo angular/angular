@@ -26,7 +26,6 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
     exports: flatten(ngModule.exports || EMPTY_ARRAY).map(expandModuleWithProviders).map(wrap),
     emitInline: true,
   };
-  const res = compileIvyNgModule(meta);
 
   // Compute transitiveCompileScope
   const transitiveCompileScope = {
