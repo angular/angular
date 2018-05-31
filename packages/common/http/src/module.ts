@@ -43,23 +43,6 @@ export class HttpInterceptingHandler implements HttpHandler {
 }
 
 /**
- * Constructs an `HttpHandler` that applies a bunch of `HttpInterceptor`s
- * to a request before passing it to the given `HttpBackend`.
- *
- * Meant to be used as a factory function within `HttpClientModule`.
- *
- *
- */
-export function interceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null = []): HttpHandler {
-  if (!interceptors) {
-    return backend;
-  }
-  return interceptors.reduceRight(
-      (next, interceptor) => new HttpInterceptorHandler(next, interceptor), backend);
-}
-
-/**
  * Factory function that determines where to store JSONP callbacks.
  *
  * Ordinarily JSONP callbacks are stored on the `window` object, but this may not exist
