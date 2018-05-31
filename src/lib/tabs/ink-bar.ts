@@ -45,9 +45,13 @@ export function _MAT_INK_BAR_POSITIONER_FACTORY(): _MatInkBarPositioner {
   selector: 'mat-ink-bar',
   host: {
     'class': 'mat-ink-bar',
+    '[class.mat-ink-bar-animations-enabled]': 'shouldAnimate',
   },
 })
 export class MatInkBar {
+  /** Whether the ink bar should animate to its position. */
+  shouldAnimate = false;
+
   constructor(
     private _elementRef: ElementRef<HTMLElement>,
     private _ngZone: NgZone,
@@ -88,12 +92,7 @@ export class MatInkBar {
     const positions = this._inkBarPositioner(element);
     const inkBar = this._elementRef.nativeElement;
 
-    // We want to prevent the ink bar from animating on the initial load.
-    // Enable animations only if the ink bar has been translated before.
-    if (inkBar.style.transform) {
-      inkBar.classList.add('mat-ink-bar-animations-enabled');
-    }
-
     inkBar.style.transform = `translateX(${positions.left}px) scaleX(${positions.width})`;
+    this.shouldAnimate = true;
   }
 }

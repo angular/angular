@@ -54,6 +54,7 @@ $mat-tab-animation-duration: 500ms !default;
   bottom: 0;
   height: $height;
   width: 1px;
+  transform: translateX(0) scaleX(0);
   transform-origin: 0;
 
   .mat-tab-group-inverted-header & {
