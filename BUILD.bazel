@@ -48,10 +48,11 @@ filegroup(
 )
 
 filegroup(
-    name = "angularjs",
-    # do not sort
+    name = "angularjs_scripts",
     srcs = [
-        "//:node_modules/angular/angular.js",
+        "//:node_modules/angular-1.5/angular.js",
+        "//:node_modules/angular-mocks-1.5/angular-mocks.js",
         "//:node_modules/angular-mocks/angular-mocks.js",
+        "//:node_modules/angular/angular.js",
     ],
 )

@@ -94,6 +94,16 @@ module.exports = function(config) {
       '**/*.js': ['sourcemap'],
     },
 
+    // Bazel inter-op: Allow tests to request resources from either
+    //   /base/node_modules/path/to/thing
+    // or
+    //   /base/angular/node_modules/path/to/thing
+    // This can be removed when all karma tests are run under Bazel, then we
+    // don't need this entire config file.
+    proxies: {
+      '/base/angular/': '/base/',
+    },
+
     reporters: ['internal-angular'],
     sauceLabs: {
       testName: 'Angular2',
