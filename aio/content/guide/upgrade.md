@@ -768,7 +768,7 @@ code. For example, you might have a service called `HeroesService` in AngularJS:
 <code-example path="upgrade-module/src/app/ajs-to-a-providers/heroes.service.ts" title="heroes.service.ts">
 </code-example>
 
-You can upgrade the service using a Angular [factory provider](guide/dependency-injection#factory-providers)
+You can upgrade the service using a Angular [factory provider](guide/dependency-injection-providers#factory-providers)
 that requests the service from the AngularJS `$injector`.
 
 Many developers prefer to declare the factory provider in a separate `ajs-upgraded-providers.ts` file
