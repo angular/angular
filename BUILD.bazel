@@ -11,7 +11,7 @@ exports_files([
 # This ensures that package.json in subdirectories get installed as well.
 alias(
     name = "install",
-    actual = "@yarn//:yarn",
+    actual = "@nodejs//:yarn",
 )
 
 node_modules_filegroup(
