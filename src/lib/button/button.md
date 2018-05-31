@@ -8,13 +8,14 @@ and accessible experience for users. A `<button>` element should be used wheneve
 is performed. An `<a>` element should be used whenever the user will _navigate_ to another view.
 
 
-There are five button variants, each applied as an attribute:
+There are several button variants, each applied as an attribute:
 
 | Attribute            | Description                                                              |
 |----------------------|--------------------------------------------------------------------------|
-| `mat-button`         | Rectangular button w/ no elevation.                                      |
-| `mat-raised-button`  | Rectangular button w/ elevation                                          |
-| `mat-stroked-button` | Rectangular button w/ an outline border                                  |
+| `mat-button`         | Rectangular text button w/ no elevation                                  |
+| `mat-raised-button`  | Rectangular contained button w/ elevation                                |
+| `mat-flat-button`    | Rectangular contained button w/ no elevation                             |
+| `mat-stroked-button` | Rectangular outlined button w/ no elevation                              |
 | `mat-icon-button`    | Circular button with a transparent background, meant to contain an icon  |
 | `mat-fab`            | Circular button w/ elevation, defaults to theme's accent color           |
 | `mat-mini-fab`       | Same as `mat-fab` but smaller                                            |
@@ -22,9 +23,7 @@ There are five button variants, each applied as an attribute:
 
 ### Theming
 Buttons can be colored in terms of the current theme using the `color` property to set the
-background color to `primary`, `accent`, or `warn`. By default, only FABs (Floating Action Button) 
-are colored; the default background color for `mat-button` and `mat-raised-button` matches the theme's 
-background color.
+background color to `primary`, `accent`, or `warn`.
 
 ### Capitalization
 According to the Material design spec button text has to be capitalized, however we have opted not
