@@ -164,16 +164,16 @@ export const enum LViewFlags {
    * back into the parent view, `data` will be defined and `creationMode` will be
    * improperly reported as false.
    */
-  CreationMode = 0b00001,
+  CreationMode = 0b000001,
 
   /** Whether this view has default change detection strategy (checks always) or onPush */
-  CheckAlways = 0b00010,
+  CheckAlways = 0b000010,
 
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b00100,
+  Dirty = 0b000100,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b01000,
+  Attached = 0b001000,
 
   /**
    *  Whether or not the init hooks have run.
@@ -182,7 +182,10 @@ export const enum LViewFlags {
    * runs OR the first cR() instruction that runs (so inits are run for the top level view before
    * any embedded views).
    */
-  RunInit = 0b10000,
+  RunInit = 0b010000,
+
+  /** Whether or not this view is destroyed. */
+  Destroyed = 0b100000,
 }
 
 /** Interface necessary to work with view tree traversal */
