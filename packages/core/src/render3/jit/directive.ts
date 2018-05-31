@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, R3DirectiveMetadata, WrappedNodeExpr, compileComponentFromMetadata as compileIvyComponent, compileDirectiveFromMetadata as compileIvyDirective, jitExpression, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, R3DirectiveMetadata, WrappedNodeExpr, compileComponentFromMetadata as compileR3Component, compileDirectiveFromMetadata as compileR3Directive, jitExpression, makeBindingParser, parseTemplate} from '@angular/compiler';
 
 import {Component, Directive, HostBinding, Input, Output} from '../../metadata/directives';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
@@ -49,7 +49,7 @@ export function compileComponent(type: Type<any>, metadata: Component): Promise<
 
         // Compile the component metadata, including template, into an expression.
         // TODO(alxhub): implement inputs, outputs, queries, etc.
-        const res = compileIvyComponent(
+        const res = compileR3Component(
             {
               ...directiveMetadata(type, metadata),
               template,
@@ -83,7 +83,7 @@ export function compileDirective(type: Type<any>, directive: Directive): Promise
       if (def === null) {
         const constantPool = new ConstantPool();
         const sourceMapUrl = `ng://${type && type.name}/ngDirectiveDef.js`;
-        const res = compileIvyDirective(
+        const res = compileR3Directive(
             directiveMetadata(type, directive), constantPool, makeBindingParser());
         def = jitExpression(res.expression, angularCoreEnv, sourceMapUrl, constantPool);
       }
