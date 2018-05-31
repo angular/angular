@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, R3NgModuleMetadata, WrappedNodeExpr, compileNgModule as compileIvyNgModule, jitExpression} from '@angular/compiler';
+import {Expression, R3NgModuleMetadata, WrappedNodeExpr, compileNgModule as compileR3NgModule, jitExpression} from '@angular/compiler';
 
 import {ModuleWithProviders, NgModule, NgModuleDef} from '../../metadata/ng_module';
 import {Type} from '../../type';
@@ -76,7 +76,7 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
               flatten(ngModule.exports || EMPTY_ARRAY).map(expandModuleWithProviders).map(wrap),
           emitInline: true,
         };
-        const res = compileIvyNgModule(meta);
+        const res = compileR3NgModule(meta);
         def = jitExpression(res.expression, angularCoreEnv, `ng://${type.name}/ngModuleDef.js`);
         def.transitiveCompileScope = transitiveCompileScope;
       }
