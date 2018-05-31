@@ -11,7 +11,7 @@ Angular is a development platform for building mobile and desktop web applicatio
 
 ## Quickstart
 
-[Get started in 5 minutes][quickstart].
+[Get started in 5 minutes][quickstart]
 
 
 ## Changelog
