@@ -195,9 +195,6 @@
     "name": "addComponentLogic"
   },
   {
-    "name": "addDestroyable"
-  },
-  {
     "name": "addRemoveViewFromContainer"
   },
   {
@@ -294,7 +291,13 @@
     "name": "defineInjector"
   },
   {
+    "name": "destroyLView"
+  },
+  {
     "name": "destroyViewTree"
+  },
+  {
+    "name": "detachView"
   },
   {
     "name": "detectChanges"
@@ -373,6 +376,9 @@
   },
   {
     "name": "getChildLNode"
+  },
+  {
+    "name": "getCleanup"
   },
   {
     "name": "getCurrentSanitizer"
@@ -649,6 +655,9 @@
   },
   {
     "name": "viewAttached"
+  },
+  {
+    "name": "walkLNodeTree"
   },
   {
     "name": "wrapListenerWithDirtyAndDefault"

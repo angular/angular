@@ -173,6 +173,11 @@ let directives: any[]|null;
  */
 let cleanup: any[]|null;
 
+export function getCleanup(): any[] {
+  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  return cleanup || (cleanup = currentView.cleanup = []);
+}
+
 /**
  * In this mode, any changes in bindings will throw an ExpressionChangedAfterChecked error.
  *
@@ -913,7 +918,7 @@ export function listener(
 
   // In order to match current behavior, native DOM event listeners must be added for all
   // events (including outputs).
-  const cleanupFns = cleanup || (cleanup = currentView.cleanup = []);
+  const cleanupFns = getCleanup();
   ngDevMode && ngDevMode.rendererAddEventListener++;
   if (isProceduralRenderer(renderer)) {
     const wrappedListener = wrapListenerWithDirtyLogic(currentView, listenerFn);
@@ -947,7 +952,7 @@ function createOutput(outputs: PropertyAliasValue, listener: Function): void {
   for (let i = 0; i < outputs.length; i += 2) {
     ngDevMode && assertDataInRange(outputs[i] as number, directives !);
     const subscription = directives ![outputs[i] as number][outputs[i + 1]].subscribe(listener);
-    cleanup !.push(subscription.unsubscribe, subscription);
+    getCleanup().push(subscription.unsubscribe, subscription);
   }
 }
 

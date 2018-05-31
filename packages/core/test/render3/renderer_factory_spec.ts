@@ -209,12 +209,6 @@ describe('animation renderer factory', () => {
 
 describe('Renderer2 destruction hooks', () => {
   const rendererFactory = getRendererFactory2(document);
-  const origCreateRenderer = rendererFactory.createRenderer;
-  rendererFactory.createRenderer = function() {
-    const renderer = origCreateRenderer.apply(this, arguments);
-    renderer.destroyNode = () => {};
-    return renderer;
-  };
 
   it('should call renderer.destroyNode for each node destroyed', () => {
     let condition = true;
