@@ -706,7 +706,7 @@ export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef
     ngDevMode && assertNotNull(hostTNode.tViews, 'TView must be allocated');
     di.templateRef = new TemplateRef<any>(
         getOrCreateElementRef(di), hostTNode.tViews as TView, hostNode.data.template !,
-        getRenderer(), hostNode.queries);
+        getRenderer(), hostNode.data.queries);
   }
   return di.templateRef;
 }
