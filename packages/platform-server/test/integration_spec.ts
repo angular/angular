@@ -334,6 +334,20 @@ class TransferStoreModule {
 class EscapedTransferStoreModule {
 }
 
+@Component({selector: 'app', template: '<input [hidden]="true"><input [hidden]="false">'})
+class MyHiddenComponent {
+  @Input()
+  name = '';
+}
+
+@NgModule({
+  declarations: [MyHiddenComponent],
+  bootstrap: [MyHiddenComponent],
+  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'hidden-attributes'})]
+})
+class HiddenModule {
+}
+
 (function() {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
@@ -609,6 +623,15 @@ class EscapedTransferStoreModule {
              expect(output).toBe(
                  '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
                  '<div><b>foo</b> bar</div></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should handle element property "hidden"', async(() => {
+           renderModule(HiddenModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<input hidden=""><input></app></body></html>');
              called = true;
            });
          }));
