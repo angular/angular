@@ -136,7 +136,8 @@ export function compileComponentFromMetadata(
   const templateFunctionExpression =
       new TemplateDefinitionBuilder(
           constantPool, CONTEXT_NAME, BindingScope.ROOT_SCOPE, 0, templateTypeName, templateName,
-          meta.viewQueries, directiveMatcher, directivesUsed, meta.pipes, pipesUsed)
+          meta.viewQueries, directiveMatcher, directivesUsed, meta.pipes, pipesUsed,
+          R3.namespaceHTML)
           .buildTemplateFunction(
               template.nodes, [], template.hasNgContent, template.ngContentSelectors);
 

@@ -95,7 +95,7 @@ describe('instructions', () => {
     it('should use sanitizer function even on elements with namespaced attributes', () => {
       const t = new TemplateFixture(() => {
         element(0, 'div', [
-          AttributeMarker.NAMESPACE_URI,
+          AttributeMarker.NamespaceUri,
           'http://www.example.com/2004/test',
           'whatever',
           'abc',
@@ -445,7 +445,7 @@ describe('instructions', () => {
           'height',
           '300',
           // test:title="abc"
-          AttributeMarker.NAMESPACE_URI,
+          AttributeMarker.NamespaceUri,
           'http://www.example.com/2014/test',
           'title',
           'abc',
@@ -472,7 +472,7 @@ describe('instructions', () => {
           'id',
           'container',
           // test:title="abc"
-          AttributeMarker.NAMESPACE_URI,
+          AttributeMarker.NamespaceUri,
           'http://www.example.com/2014/test',
           'title',
           'abc',
@@ -492,19 +492,19 @@ describe('instructions', () => {
           'container',
 
           // NS1:title="abc"
-          AttributeMarker.NAMESPACE_URI,
+          AttributeMarker.NamespaceUri,
           'http://www.example.com/2014/test',
           'title',
           'abc',
 
           // NS1:whatever="wee"
-          AttributeMarker.NAMESPACE_URI,
+          AttributeMarker.NamespaceUri,
           'http://www.example.com/2014/test',
           'whatever',
           'wee',
 
           // NS2:shazbot="wocka wocka"
-          AttributeMarker.NAMESPACE_URI,
+          AttributeMarker.NamespaceUri,
           'http://www.whatever.com/2016/blah',
           'shazbot',
           'wocka wocka',

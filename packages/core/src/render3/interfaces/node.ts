@@ -164,7 +164,7 @@ export const enum AttributeMarker {
    * Use the next value as the full namespaces URI, the values after that
    * are then the name and the value, respectively.
    */
-  NAMESPACE_URI = 0,  // namespace. Has to be repeated.
+  NamespaceUri = 0,  // namespace. Has to be repeated.
 
   /**
    * This marker indicates that the following attribute names were extracted from bindings (ex.:
@@ -172,7 +172,7 @@ export const enum AttributeMarker {
    * Taking the above bindings and outputs as an example an attributes array could look as follows:
    * ['class', 'fade in', AttributeMarker.SELECT_ONLY, 'foo', 'bar']
    */
-  SELECT_ONLY = 1
+  SelectOnly = 1
 }
 
 /**
