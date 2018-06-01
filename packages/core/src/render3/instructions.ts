@@ -81,7 +81,7 @@ let renderer: Renderer3;
 let rendererFactory: RendererFactory3;
 
 export function getRenderer(): Renderer3 {
-  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return renderer;
 }
 
@@ -93,7 +93,7 @@ export function getCurrentSanitizer(): Sanitizer|null {
 let previousOrParentNode: LNode;
 
 export function getPreviousOrParentNode(): LNode {
-  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return previousOrParentNode;
 }
 
@@ -126,7 +126,7 @@ let currentView: LView = null !;
 let currentQueries: LQueries|null;
 
 export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
-  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return currentQueries || (currentQueries = new QueryType());
 }
 
@@ -136,7 +136,7 @@ export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
 let creationMode: boolean;
 
 export function getCreationMode(): boolean {
-  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return creationMode;
 }
 
@@ -174,7 +174,7 @@ let directives: any[]|null;
 let cleanup: any[]|null;
 
 export function getCleanup(): any[] {
-  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return cleanup || (cleanup = currentView.cleanup = []);
 }
 

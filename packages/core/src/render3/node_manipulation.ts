@@ -149,33 +149,54 @@ function getNextOrParentSiblingNode(initialNode: LNode, rootNode: LNode): LNode|
  * @returns RNode The first RNode of the given LNode or null if there is none.
  */
 function findFirstRNode(rootNode: LNode): RElement|RText|null {
-  return walkLNodeTree(rootNode, rootNode, (node: LElementNode) => node.native, true) || null;
+  return walkLNodeTree(rootNode, rootNode, 0) || null;
 }
 
 /**
- * Walks a tree of LNode, applying a transformation on the LElement nodes, either only on the first
+ * Walks a tree of LNodes, applying a transformation on the LElement nodes, either only on the first
  * one found, or on all of them.
+ * NOTE: for performance reasons, the possible actions are inlined within the function instead of
+ * being passed as an argument.
  *
  * @param startingNode the node from which the walk is started.
  * @param rootNode the root node considered.
- * @param transformer the function to be applied on the LElementNode found.
- * @param stopAtFirstLElementNode Optional whether or not the process should stop at the first
- * LElementNode found.
- * @param renderParentNode Optionnal the render parent node to be set in all LContainerNode found.
+ * @param actionMode Identifies the action to be performed on the LElement nodes:
+ *  - 0: returns the first available native node
+ *  - 1: node insert in the native environment
+ *  - 2: node detach from the native environment
+ *  - 3: node destruction using the renderer's API
+ * @param renderer Optional the current renderer, required for action modes 1, 2 and 3.
+ * @param renderParentNode Optionnal the render parent node to be set in all LContainerNodes found,
+ * required for action modes 1 and 2.
+ * @param beforeNode Optionnal the node before which elements should be added, required for action
+ * modes 1.
  */
 function walkLNodeTree(
-    startingNode: LNode | null, rootNode: LNode, transformer: (node: LElementNode) => any,
-    stopAtFirstLElementNode?: boolean, renderParentNode?: LElementNode | null) {
+    startingNode: LNode | null, rootNode: LNode, actionMode: 0 | 1 | 2 | 3, renderer?: Renderer3,
+    renderParentNode?: LElementNode | null, beforeNode?: RNode | null) {
   let node: LNode|null = startingNode;
   while (node) {
     let nextNode: LNode|null = null;
     if (node.tNode.type === TNodeType.Element) {
-      if (stopAtFirstLElementNode) {
-        return transformer(node as LElementNode);
-      } else {
-        transformer(node as LElementNode);
-        nextNode = getNextLNode(node);
+      // Execute the action
+      if (actionMode === 0) {
+        return node.native;
+      } else if (actionMode === 1) {
+        const parent = renderParentNode !.native;
+        isProceduralRenderer(renderer !) ?
+            (renderer as ProceduralRenderer3)
+                .insertBefore(parent !, node.native !, beforeNode as RNode | null) :
+            parent !.insertBefore(node.native !, beforeNode as RNode | null, true);
+      } else if (actionMode === 2) {
+        const parent = renderParentNode !.native;
+        isProceduralRenderer(renderer !) ?
+            (renderer as ProceduralRenderer3).removeChild(parent as RElement, node.native !) :
+            parent !.removeChild(node.native !);
+      } else if (actionMode === 3) {
+        ngDevMode && ngDevMode.rendererDestroyNode++;
+        (renderer as ProceduralRenderer3).destroyNode !(node.native !);
       }
+      nextNode = getNextLNode(node);
     } else if (node.tNode.type === TNodeType.Container) {
       const lContainerNode: LContainerNode = (node as LContainerNode);
       const childContainerData: LContainer = lContainerNode.dynamicLContainerNode ?
@@ -230,16 +251,7 @@ export function addRemoveViewFromContainer(
   if (parent) {
     let node: LNode|null = getChildLNode(rootNode);
     const renderer = container.view.renderer;
-    walkLNodeTree(node, rootNode, (node: LElementNode) => {
-      if (insertMode) {
-        isProceduralRenderer(renderer) ?
-            renderer.insertBefore(parent !, node.native !, beforeNode as RNode | null) :
-            parent !.insertBefore(node.native !, beforeNode as RNode | null, true);
-      } else {
-        isProceduralRenderer(renderer) ? renderer.removeChild(parent as RElement, node.native !) :
-                                         parent !.removeChild(node.native !);
-      }
-    }, false, parentNode);
+    walkLNodeTree(node, rootNode, insertMode ? 1 : 2, renderer, parentNode, beforeNode);
   }
 }
 
@@ -404,7 +416,7 @@ export function getLViewChild(view: LView): LView|LContainer|null {
 }
 
 /**
- * A standalone function which destroys a LView,
+ * A standalone function which destroys an LView,
  * conducting cleanup (e.g. removing listeners, calling onDestroys).
  *
  * @param view The view to be destroyed.
@@ -412,10 +424,7 @@ export function getLViewChild(view: LView): LView|LContainer|null {
 export function destroyLView(view: LView) {
   const renderer = view.renderer;
   if (isProceduralRenderer(renderer) && renderer.destroyNode) {
-    walkLNodeTree(view.node, view.node, (node: LElementNode) => {
-      ngDevMode && ngDevMode.rendererDestroyNode++;
-      renderer.destroyNode !(node.native !);
-    });
+    walkLNodeTree(view.node, view.node, 3, renderer);
   }
   destroyViewTree(view);
   // Sets the destroyed flag

@@ -29,7 +29,7 @@ import {LView, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {detachView, getParentLNode, insertView, removeView} from './node_manipulation';
 import {notImplemented, stringify} from './util';
-import {EmbeddedViewRef, ViewRef, createViewRef} from './view_ref';
+import {EmbeddedViewRef, ViewRef} from './view_ref';
 
 
 
@@ -282,7 +282,7 @@ export function getOrCreateChangeDetectorRef(
 
   const currentNode = di.node;
   if (isComponent(currentNode.tNode)) {
-    return di.changeDetectorRef = createViewRef(currentNode.data as LView, context);
+    return di.changeDetectorRef = new ViewRef(currentNode.data as LView, context);
   } else if (currentNode.tNode.type === TNodeType.Element) {
     return di.changeDetectorRef = getOrCreateHostChangeDetector(currentNode.view.node);
   }
@@ -298,7 +298,7 @@ function getOrCreateHostChangeDetector(currentNode: LViewNode | LElementNode):
 
   return existingRef ?
       existingRef :
-      createViewRef(
+      new ViewRef(
           hostNode.data as LView,
           hostNode.view
               .directives ![hostNode.tNode.flags >> TNodeFlags.DirectiveStartingIndexShift]);

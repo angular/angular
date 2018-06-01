@@ -238,14 +238,3 @@ export class EmbeddedViewRef<T> extends ViewRef<T> {
 
   attachToViewContainerRef(vcRef: viewEngine_ViewContainerRef) { this._viewContainerRef = vcRef; }
 }
-
-/**
- * Creates a ViewRef bundled with destroy functionality.
- *
- * @param context The context for this view
- * @returns The ViewRef
- */
-export function createViewRef<T>(view: LView | null, context: T): ViewRef<T> {
-  // TODO: add detectChanges back in when implementing ChangeDetectorRef.detectChanges
-  return new ViewRef(view !, context);
-}
