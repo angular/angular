@@ -19,6 +19,7 @@ import {HtmlParser} from '../../ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
 import * as o from '../../output/output_ast';
+import {ExternalReference} from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../../selector';
@@ -51,6 +52,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private _valueConverter: ValueConverter;
   private _unsupported = unsupported;
   private _bindingScope: BindingScope;
+  private _namespace = R3.namespaceHTML;
 
   // Whether we are inside a translatable element (`<p i18n>... somewhere here ... </p>)
   private _inI18nSection: boolean = false;
@@ -220,6 +222,26 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.instruction(this._creationCode, ngContent.sourceSpan, R3.projection, ...parameters);
   }
 
+  /**
+   * Gets the namespace instruction function based on the current element
+   * @param ivyElementName An system element name, can include colons like :svg:svg
+   */
+  getNamespaceInstruction(ivyElementName: string) {
+    switch (ivyElementName) {
+      case ':svg:svg':
+        return R3.namespaceSVG;
+      case ':math:math':
+        return R3.namespaceMathML;
+      default:
+        return this._namespace;
+    }
+  }
+
+  addNamespaceInstruction(nsInstruction: ExternalReference, element: t.Element) {
+    this._namespace = nsInstruction;
+    this.instruction(this._creationCode, element.sourceSpan, nsInstruction);
+  }
+
   visitElement(element: t.Element) {
     const elementIndex = this.allocateDataSlot();
     const referenceDataSlots = new Map<string, number>();
@@ -315,10 +337,19 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this._creationCode.push(...i18nMessages);
     }
 
-    const isEmptyElement = element.outputs.length === 0 && element.children.length === 0;
+    const isEmptyElement = element.children.length === 0 && element.outputs.length === 0;
 
 
     const implicit = o.variable(CONTEXT_NAME);
+
+    const wasInNamespace = this._namespace;
+    const currentNamespace = this.getNamespaceInstruction(element.name);
+    // If the namespace is changing now, include an instruction to change it
+    // during element creation.
+    if (currentNamespace !== wasInNamespace) {
+      this.addNamespaceInstruction(currentNamespace, element);
+    }
+
 
     if (isEmptyElement) {
       this.instruction(
@@ -327,6 +358,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.instruction(
           this._creationCode, element.sourceSpan, R3.elementStart,
           ...trimTrailingNulls(parameters));
+
+      // If the element happens to be an SVG <foreignObject>, we need to switch
+      // to the HTML namespace inside of it
+      if (element.name === ':svg:foreignObject') {
+        // NOTE(benlesh): this may cause extremem corner-case bugs if someone was to do something
+        //   like <math>...<foreignObject></foreignObject>...</math>.
+        this.addNamespaceInstruction(R3.namespaceHTML, element);
+      }
 
       // Generate Listeners (outputs)
       element.outputs.forEach((outputAst: t.BoundEvent) => {
@@ -384,6 +423,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
     // Restore the state before exiting this node
     this._inI18nSection = wasInI18nSection;
+    this._namespace = wasInNamespace;
   }
 
   visitTemplate(template: t.Template) {
