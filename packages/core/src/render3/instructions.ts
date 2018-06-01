@@ -1514,16 +1514,20 @@ export function container(
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
   addToViewTree(currentView, index, node.data);
+
+  const queries = node.queries;
+  if (queries) {
+    // prepare place for matching nodes from views inserted into a given container
+    lContainer.queries = queries.container();
+  }
+
   createDirectivesAndLocals(localRefs);
 
   isParent = false;
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.Container);
-  const queries = node.queries;
   if (queries) {
     // check if a given container node matches
     queries.addNode(node);
-    // prepare place for matching nodes from views inserted into a given container
-    lContainer.queries = queries.container();
   }
 }
 
