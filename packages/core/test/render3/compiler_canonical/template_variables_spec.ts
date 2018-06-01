@@ -165,6 +165,7 @@ describe('template variables', () => {
           }
           function MyComponent__svg_g_Template_1(rf: $RenderFlags$, ctx0: $MyComponent$) {
             if (rf & 1) {
+              $r3$.ɵNS();
               $r3$.ɵE(0, 'g');
               $r3$.ɵEe(1, 'circle');
               $r3$.ɵe();
@@ -180,7 +181,7 @@ describe('template variables', () => {
         [ForOfDirective.ngDirectiveDef];
     // /NON-NORMATIVE
 
-    // TODO(chuckj): update when the changes to enable ngForOf lands.
+    // TODO(benlesh): update when the changes to enable ngForOf lands.
     expect(toHtml(renderComponent(MyComponent))).toEqual('<svg></svg>');
   });
 

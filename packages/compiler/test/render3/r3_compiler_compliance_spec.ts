@@ -95,9 +95,57 @@ describe('compiler compliance', () => {
           if (rf & 1) {
             $r3$.ɵE(0, 'div', $e0_attrs$);
             $r3$.ɵNS();
-            $r3$.ɵE(1, ':svg:svg');
-            $r3$.ɵEe(2, ':svg:circle', $e2_attrs$);
+            $r3$.ɵE(1, 'svg');
+            $r3$.ɵEe(2, 'circle', $e2_attrs$);
             $r3$.ɵe();
+            $r3$.ɵe();
+          }
+        }
+      `;
+
+
+      const result = compile(files, angularFiles);
+
+      expectEmit(result.source, factory, 'Incorrect factory');
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should enter and leave the SVG namespace appropriately', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: \`<div class="my-app" title="Hello"><svg><circle cx="50" cy="100" r="25"/></svg><p>TEST 2</p></div>\`
+              })
+              export class MyComponent {}
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      // The factory should look like this:
+      const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
+
+      // The template should look like this (where IDENT is a wild card for an identifier):
+      const template = `
+        const $c1$ = ['class', 'my-app', 'title', 'Hello'];
+        …
+        template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+          if (rf & 1) {
+            $r3$.ɵE(0, 'div', $e0_attrs$);
+              $r3$.ɵNS();
+              $r3$.ɵE(1, 'svg');
+                $r3$.ɵEe(2, 'circle', $e2_attrs$);
+              $r3$.ɵe();
+              $r3$.ɵNH();
+              $r3$.ɵE(3, 'p');
+                $r3$.ɵT(4, 'TEST 2');
+              $r3$.ɵe();
             $r3$.ɵe();
           }
         }
@@ -1274,7 +1322,7 @@ describe('compiler compliance', () => {
         expectEmit(source, MyComponentDefinition, 'Invalid component definition');
       });
 
-      it('should support a let variable and reference for SVG', () => {
+      it('should support embedded views in the SVG namespace', () => {
         const files = {
           app: {
             ...shared,
@@ -1321,15 +1369,16 @@ describe('compiler compliance', () => {
             template: function MyComponent_Template(rf:IDENT,ctx:IDENT){
               if (rf & 1) {
                 $r3$.ɵNS();
-                $r3$.ɵE(0,':svg:svg');
+                $r3$.ɵE(0,'svg');
                 $r3$.ɵC(1,MyComponent__svg_g_Template_1,null,$_c0$);
                 $r3$.ɵe();
               }
               if (rf & 2) { $r3$.ɵp(1,'forOf',$r3$.ɵb(ctx.items)); }
               function MyComponent__svg_g_Template_1(rf:IDENT,ctx0:IDENT) {
                 if (rf & 1) {
-                  $r3$.ɵE(0,':svg:g');
-                  $r3$.ɵEe(1,':svg:circle');
+                  $r3$.ɵNS();
+                  $r3$.ɵE(0,'g');
+                  $r3$.ɵEe(1,'circle');
                   $r3$.ɵe();
                 }
               }

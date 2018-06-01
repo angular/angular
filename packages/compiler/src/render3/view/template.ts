@@ -18,8 +18,8 @@ import * as html from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
+import {splitNsName} from '../../ml_parser/tags';
 import * as o from '../../output/output_ast';
-import {ExternalReference} from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../../selector';
@@ -52,7 +52,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private _valueConverter: ValueConverter;
   private _unsupported = unsupported;
   private _bindingScope: BindingScope;
-  private _namespace = R3.namespaceHTML;
 
   // Whether we are inside a translatable element (`<p i18n>... somewhere here ... </p>)
   private _inI18nSection: boolean = false;
@@ -68,7 +67,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       parentBindingScope: BindingScope, private level = 0, private contextName: string|null,
       private templateName: string|null, private viewQueries: R3QueryMetadata[],
       private directiveMatcher: SelectorMatcher|null, private directives: Set<o.Expression>,
-      private pipeTypeByName: Map<string, o.Expression>, private pipes: Set<o.Expression>) {
+      private pipeTypeByName: Map<string, o.Expression>, private pipes: Set<o.Expression>,
+      private _namespace: o.ExternalReference) {
     this._bindingScope =
         parentBindingScope.nestedScope((lhsVar: o.ReadVarExpr, expression: o.Expression) => {
           this._bindingCode.push(
@@ -91,6 +91,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   buildTemplateFunction(
       nodes: t.Node[], variables: t.Variable[], hasNgContent: boolean = false,
       ngContentSelectors: string[] = []): o.FunctionExpr {
+    if (this._namespace !== R3.namespaceHTML) {
+      this.instruction(this._creationCode, null, this._namespace);
+    }
+
     // Create variable bindings
     for (const variable of variables) {
       const variableName = variable.name;
@@ -224,20 +228,20 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   /**
    * Gets the namespace instruction function based on the current element
-   * @param ivyElementName An system element name, can include colons like :svg:svg
+   * @param namespaceKey A system key for a namespace (e.g. 'svg' or 'math')
    */
-  getNamespaceInstruction(ivyElementName: string) {
-    switch (ivyElementName) {
-      case ':svg:svg':
+  getNamespaceInstruction(namespaceKey: string|null) {
+    switch (namespaceKey) {
+      case 'svg':
         return R3.namespaceSVG;
-      case ':math:math':
+      case 'math':
         return R3.namespaceMathML;
       default:
-        return this._namespace;
+        return R3.namespaceHTML;
     }
   }
 
-  addNamespaceInstruction(nsInstruction: ExternalReference, element: t.Element) {
+  addNamespaceInstruction(nsInstruction: o.ExternalReference, element: t.Element) {
     this._namespace = nsInstruction;
     this.instruction(this._creationCode, element.sourceSpan, nsInstruction);
   }
@@ -249,7 +253,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const outputAttrs: {[name: string]: string} = {};
     const attrI18nMetas: {[name: string]: string} = {};
-    let i18nMeta: string = '';
+    let i18nMeta = '';
+
+    const [namespaceKey, elementName] = splitNsName(element.name);
 
     // Elements inside i18n sections are replaced with placeholders
     // TODO(vicb): nested elements are a WIP in this phase
@@ -291,7 +297,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Element creation mode
     const parameters: o.Expression[] = [
       o.literal(elementIndex),
-      o.literal(element.name),
+      o.literal(elementName),
     ];
 
     // Add the attributes
@@ -343,7 +349,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const implicit = o.variable(CONTEXT_NAME);
 
     const wasInNamespace = this._namespace;
-    const currentNamespace = this.getNamespaceInstruction(element.name);
+    const currentNamespace = this.getNamespaceInstruction(namespaceKey);
+
     // If the namespace is changing now, include an instruction to change it
     // during element creation.
     if (currentNamespace !== wasInNamespace) {
@@ -358,14 +365,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.instruction(
           this._creationCode, element.sourceSpan, R3.elementStart,
           ...trimTrailingNulls(parameters));
-
-      // If the element happens to be an SVG <foreignObject>, we need to switch
-      // to the HTML namespace inside of it
-      if (element.name === ':svg:foreignObject') {
-        // NOTE(benlesh): this may cause extremem corner-case bugs if someone was to do something
-        //   like <math>...<foreignObject></foreignObject>...</math>.
-        this.addNamespaceInstruction(R3.namespaceHTML, element);
-      }
 
       // Generate Listeners (outputs)
       element.outputs.forEach((outputAst: t.BoundEvent) => {
@@ -423,7 +422,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
     // Restore the state before exiting this node
     this._inI18nSection = wasInI18nSection;
-    this._namespace = wasInNamespace;
   }
 
   visitTemplate(template: t.Template) {
@@ -484,7 +482,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Create the template function
     const templateVisitor = new TemplateDefinitionBuilder(
         this.constantPool, templateContext, this._bindingScope, this.level + 1, contextName,
-        templateName, [], this.directiveMatcher, this.directives, this.pipeTypeByName, this.pipes);
+        templateName, [], this.directiveMatcher, this.directives, this.pipeTypeByName, this.pipes,
+        this._namespace);
     const templateFunctionExpr =
         templateVisitor.buildTemplateFunction(template.children, template.variables);
     this._postfixCode.push(templateFunctionExpr.toDeclStmt(templateName, null));
