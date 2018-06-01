@@ -583,8 +583,7 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
 
     const hostTNode = vcRefHost.tNode;
     if (!hostTNode.dynamicContainerNode) {
-      hostTNode.dynamicContainerNode =
-          createTNode(TNodeType.Container, null, null, null, null, null);
+      hostTNode.dynamicContainerNode = createTNode(TNodeType.Container, -1, null, null, null, null);
     }
 
     lContainerNode.tNode = hostTNode.dynamicContainerNode;
