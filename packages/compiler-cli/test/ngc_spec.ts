@@ -672,7 +672,7 @@ describe('ngc transformer command-line', () => {
         expect(mymoduleSource).toContain('args: [{ declarations: [] },] }');
         expect(mymoduleSource).not.toContain(`__metadata`);
         expect(mymoduleSource).toContain(`import { AClass } from './aclass';`);
-        expect(mymoduleSource).toContain(`{ type: AClass, }`);
+        expect(mymoduleSource).toContain(`{ type: AClass }`);
       });
     });
 
