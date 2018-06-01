@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {Component} from '@angular/core';
+import {Compiler, Component, NgModule} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 
 import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
@@ -73,6 +73,22 @@ class BadTemplateUrl {
              tick();
              expect(value).toEqual('async value');
            })));
+      });
+    });
+
+    describe('Compiler', () => {
+      it('should return NgModule id when asked', () => {
+        @NgModule({
+          id: 'test-module',
+        })
+        class TestModule {
+        }
+
+        TestBed.configureTestingModule({
+          imports: [TestModule],
+        });
+        const compiler = TestBed.get(Compiler) as Compiler;
+        expect(compiler.getModuleId(TestModule)).toBe('test-module');
       });
     });
 
