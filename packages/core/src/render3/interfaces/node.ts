@@ -202,9 +202,9 @@ export interface TNode {
    * This is necessary to get from any TNode to its corresponding LNode when
    * traversing the node tree.
    *
-   * If null, this is a dynamically created container node or embedded view node.
+   * If index is -1, this is a dynamically created container node or embedded view node.
    */
-  index: number|null;
+  index: number;
 
   /**
    * This number stores two values using its bits:
@@ -363,12 +363,12 @@ export interface TTextNode extends TNode {
 /** Static data for an LContainerNode */
 export interface TContainerNode extends TNode {
   /**
-   * If number, index in the data[] array.
+   * Index in the data[] array.
    *
-   * If null, this is a dynamically created container node that isn't stored in
+   * If it's -1, this is a dynamically created container node that isn't stored in
    * data[] (e.g. when you inject ViewContainerRef) .
    */
-  index: number|null;
+  index: number;
   child: null;
 
   /**
@@ -383,8 +383,8 @@ export interface TContainerNode extends TNode {
 
 /** Static data for an LViewNode  */
 export interface TViewNode extends TNode {
-  /** If null, it's a dynamically created view*/
-  index: number|null;
+  /** If -1, it's a dynamically created view. Otherwise, it is the view block ID. */
+  index: number;
   child: TElementNode|TTextNode|TContainerNode|TProjectionNode|null;
   parent: TContainerNode|null;
   tViews: null;
