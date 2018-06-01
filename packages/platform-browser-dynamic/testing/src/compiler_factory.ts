@@ -99,4 +99,8 @@ export class TestingCompilerImpl implements TestingCompiler {
   clearCacheFor(type: Type<any>) { this._compiler.clearCacheFor(type); }
 
   getComponentFromError(error: Error) { return (error as any)[ERROR_COMPONENT_TYPE] || null; }
+
+  getModuleId(moduleType: Type<any>): string|undefined {
+    return this._moduleResolver.resolve(moduleType, true).id;
+  }
 }
