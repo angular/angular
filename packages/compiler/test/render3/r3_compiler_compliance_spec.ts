@@ -66,6 +66,50 @@ describe('compiler compliance', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
+    it('should translate DOM structure for SVG', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: \`<div class="my-app" title="Hello"><svg><circle cx="50" cy="100" r="25"/></svg></div>\`
+              })
+              export class MyComponent {}
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      // The factory should look like this:
+      const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
+
+      // The template should look like this (where IDENT is a wild card for an identifier):
+      const template = `
+        const $c1$ = ['class', 'my-app', 'title', 'Hello'];
+        …
+        template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+          if (rf & 1) {
+            $r3$.ɵE(0, 'div', $e0_attrs$);
+            $r3$.ɵNS();
+            $r3$.ɵE(1, ':svg:svg');
+            $r3$.ɵEe(2, ':svg:circle', $e2_attrs$);
+            $r3$.ɵe();
+            $r3$.ɵe();
+          }
+        }
+      `;
+
+
+      const result = compile(files, angularFiles);
+
+      expectEmit(result.source, factory, 'Incorrect factory');
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
     it('should bind to element properties', () => {
       const files = {
         app: {
@@ -1215,6 +1259,78 @@ describe('compiler compliance', () => {
                 if (rf & 2) {
                   const $item$ = ctx0.$implicit;
                   $r3$.ɵt(1, $r3$.ɵi1('', $item$.name, ''));
+                }
+              }
+            },
+            directives: [ForOfDirective]
+          });
+        `;
+
+        const result = compile(files, angularFiles);
+        const source = result.source;
+
+        // TODO(chuckj): Enforce this when the directives are specified
+        // expectEmit(source, ForDirectiveDefinition, 'Invalid directive definition');
+        expectEmit(source, MyComponentDefinition, 'Invalid component definition');
+      });
+
+      it('should support a let variable and reference for SVG', () => {
+        const files = {
+          app: {
+            ...shared,
+            'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+              import {ForOfDirective} from './shared/for_of';
+
+              @Component({
+                selector: 'my-component',
+                template: \`<svg><g *for="let item of items"><circle></circle></g></svg>\`
+              })
+              export class MyComponent {
+                items = [{ data: 42 }, { data: 42 }];
+              }
+
+              @NgModule({
+                declarations: [MyComponent, ForOfDirective]
+              })
+              export class MyModule {}
+            `
+          }
+        };
+
+        // TODO(chuckj): Enforce this when the directives are specified
+        const ForDirectiveDefinition = `
+          static ngDirectiveDef = $r3$.ɵdefineDirective({
+            type: ForOfDirective,
+            selectors: [['', 'forOf', '']],
+            factory: function ForOfDirective_Factory() {
+              return new ForOfDirective($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
+            },
+            features: [$r3$.ɵNgOnChangesFeature(NgForOf)],
+            inputs: {forOf: 'forOf'}
+          });
+        `;
+
+        const MyComponentDefinition = `
+          const $_c0$ = ['for','','forOf',''];
+          …
+          static ngComponentDef = $r3$.ɵdefineComponent({
+            type: MyComponent,
+            selectors: [['my-component']],
+            factory: function MyComponent_Factory() { return new MyComponent(); },
+            template: function MyComponent_Template(rf:IDENT,ctx:IDENT){
+              if (rf & 1) {
+                $r3$.ɵNS();
+                $r3$.ɵE(0,':svg:svg');
+                $r3$.ɵC(1,MyComponent__svg_g_Template_1,null,$_c0$);
+                $r3$.ɵe();
+              }
+              if (rf & 2) { $r3$.ɵp(1,'forOf',$r3$.ɵb(ctx.items)); }
+              function MyComponent__svg_g_Template_1(rf:IDENT,ctx0:IDENT) {
+                if (rf & 1) {
+                  $r3$.ɵE(0,':svg:g');
+                  $r3$.ɵEe(1,':svg:circle');
+                  $r3$.ɵe();
                 }
               }
             },
