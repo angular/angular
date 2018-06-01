@@ -1041,6 +1041,9 @@
     "name": "MethodCall"
   },
   {
+    "name": "MissingTranslationStrategy"
+  },
+  {
     "name": "MissingTranslationStrategy$1"
   },
   {
@@ -1468,6 +1471,9 @@
   },
   {
     "name": "SanitizingHtmlSerializer"
+  },
+  {
+    "name": "SecurityContext"
   },
   {
     "name": "SecurityContext$1"
