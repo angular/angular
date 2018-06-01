@@ -11,15 +11,15 @@ export class HeroService {
 
   delayMs = 500;
 
-  // Fake server get; assume nothing can go wrong
+  // get : 서버의 쿼리 과정을 흉내냄
   getHeroes(): Observable<Hero[]> {
-    return of(heroes).pipe(delay(this.delayMs)); // simulate latency with delay
+    return of(heroes).pipe(delay(this.delayMs)); // 약간 딜레이시키고 반환
   }
 
-  // Fake server update; assume nothing can go wrong
+  // update : 서버의 저장 과정을 흉내냄
   updateHero(hero: Hero): Observable<Hero>  {
     const oldHero = heroes.find(h => h.id === hero.id);
-    const newHero = Object.assign(oldHero, hero); // Demo: mutate cached hero
-    return of(newHero).pipe(delay(this.delayMs)); // simulate latency with delay
+    const newHero = Object.assign(oldHero, hero); // 캐시에 있는 히어로 데이터를 복사
+    return of(newHero).pipe(delay(this.delayMs)); // 약간 딜레이시키고 반환
   }
 }

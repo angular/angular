@@ -29,7 +29,7 @@ export class HeroDetailComponent7 implements OnChanges {
     // #docregion address-form-group
     this.heroForm = this.fb.group({
       name: ['', Validators.required ],
-      address: this.fb.group(new Address()), // <-- a FormGroup with a new address
+      address: this.fb.group(new Address()), // <-- 새로운 주소 필드에 대한 FormGroup
       power: '',
       sidekick: ''
     });

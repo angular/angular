@@ -7,8 +7,8 @@
 _Reactive forms_ is an Angular technique for creating forms in a _reactive_ style.
 This guide explains reactive forms as you follow the steps to build a "Hero Detail Editor" form.
 -->
-반응형 폼은 말 그대로 폼을 _반응형으로_ 구현하는 Angular 테크닉입니다.
-이 문서는 반응형 폼을 구현하는 것을 단계적으로 살펴보며 "히어로 정보 에이터" 폼을 구현해 봅니다.
+반응형 폼은 말 그대로 폼을 _반응형 스타일로_ 구현하는 Angular 테크닉입니다.
+이 문서는 반응형 폼을 구현하는 방법을 단계적으로 살펴보면서 "히어로 정보 에디터" 폼을 구현해 봅니다.
 
 {@a toc}
 
@@ -57,7 +57,7 @@ UI-oriented _form model_ that retains the states
 and values of the HTML controls on screen. Reactive forms offer the ease
 of using reactive patterns, testing, and validation.
 -->
-_반응형_ 폼은 UI 요소인 _폼 모델_ 과 HTML 컨트롤을 건드리지 않는 동시에, UI 요소가 아닌 _데이터 모델_ 가 변화하는 것에만 _반응하는 스타일_ 로 구현되었습니다.
+_반응형_ 폼은 UI 요소인 _폼 모델_ 과 HTML 컨트롤을 건드리지 않는 동시에, UI 요소가 아닌 _데이터 모델_ 가 변화하는 것에만 _반응하는 스타일_ 로 구현합니다.
 그래서 반응형 폼은 반응형 프로그래밍, 테스트, 유효성 검사에 좀 더 적합합니다.
 
 <!--
@@ -74,8 +74,8 @@ model and the form control structure, you can push data model values into
 the form controls and pull user-changed values back out. The component can
 observe changes in form control state and react to those changes.
 -->
-그러면 각각의 폼 컨트롤 객체는 컴포넌트 클래스에서 자유롭게 생성하고 조작할 수 있습니다.
-컴포넌트 클래스는 데이터 모델과 폼 컨트롤 인스턴스에 자유롭게 접근할 수 있으며, 사용자의 동작에 따라 폼 컨트롤을 추가로 생성하거나 제거할 수도 있습니다.
+그러면 컴포넌트 클래스에서 각각의 폼 컨트롤 객체를 자유롭게 생성하고 조작할 수 있습니다.
+컴포넌트 클래스에서 데이터 모델과 폼 컨트롤 인스턴스에 자유롭게 접근할 수 있으며, 사용자의 동작에 따라 폼 컨트롤을 추가로 생성하거나 제거할 수도 있습니다.
 그리고 폼 컨트롤의 값이 변하는 것도 컴포넌트 클래스에서 추적하고 반응할 수 있습니다.
 
 <!--
@@ -85,7 +85,7 @@ You won't encounter the timing issues that sometimes plague a template-driven fo
 and reactive forms can be easier to unit test.
 -->
 폼 컨트롤 객체에 직접 접근할 수 있다는 것은, 폼 컨트롤의 값을 확인하고 유효성을 검증하는 로직이 [모두 동기 방식으로 동작하고 이 과정을 직접 조작할 수 있다는](guide/reactive-forms#async-vs-sync "Async vs sync") 점에서 유리합니다.
-템플릿 기반 폼에서 가끔 발생하는 타이밍 이슈를 피할 수 있으며, 유닛 테스트도 더 간단해 집니다.
+템플릿 기반 폼에서 종종 발생하는 타이밍 이슈를 피할 수 있으며, 유닛 테스트도 더 간단해 집니다.
 
 <!--
 In keeping with the reactive paradigm, the component
@@ -103,7 +103,7 @@ and returns a new _data model_ to the component that reflects the updated model 
 Using reactive form directives does not require you to follow all reactive priniciples,
 but it does facilitate the reactive programming approach should you choose to use it.
 -->
-반응형 폼을 사용하면서 꼭 이 개념들을 지켜야 한다는 것은 아니지만, 이 디렉티브들도 반응형 프로그래밍의 철학을 바탕으로 만들어졌기 때문에 기본 개념을 알아야 적절하게 활용할 수 있을 것입니다.
+반응형 폼을 사용하면서 꼭 이 개념들을 지켜야 한다는 것은 아니지만, 반응형 폼에서 사용하는 디렉티브들이 반응형 프로그래밍의 철학을 바탕으로 만들어졌기 때문에 기본 개념을 알아야 적절하게 활용할 수 있을 것입니다.
 
 <!--
 ### Template-driven forms
@@ -173,7 +173,7 @@ these directives take more than one cycle to build the entire control tree.
 That means you must wait a tick before manipulating any of the controls
 from within the component class.
 -->
-하지반 템플릿 기반 폼은 디렉티브를 사용해서 폼 컨트롤을 생성합니다.
+하지반 템플릿 기반 폼은 템플릿에 디렉티브를 사용해서 폼 컨트롤을 생성합니다.
 이 디렉티브들은 "_값이 체크된 직후에 다시 변경되는_" 상황을 피하기 위해 최소한 한 실행 싸이클을 기다리며, 이 지연 과정은 폼 컨트롤 트리에 있는 모든 객체에 해당됩니다.
 이 말은 컴포넌트 클래스에서 폼 컨트롤의 값을 조작할 때에도 최소한 한 실행 싸이클을 기다려야 한다는 뜻입니다.
 
@@ -226,7 +226,7 @@ In the next section, you'll set up your project for the reactive form demo.
 Then you'll learn about the [Angular form classes](guide/reactive-forms#essentials) and how to use them in a reactive form.
 -->
 다음 섹션부터는 반응형 폼을 활용하는 예제 프로젝트를 만들어 봅니다.
-그리고 [Angular 폼 클래스](guide/reactive-forms#essentials)에 대해 설명보며, 이 클래스들을 반응형 폼에 어떻게 활용할 수 있을지 차근차근 알아봅니다.
+그리고 [Angular 폼 클래스](guide/reactive-forms#essentials)에 대해 설명하며, 이 클래스들을 반응형 폼에 어떻게 활용할 수 있을지 차근차근 알아봅니다.
 
 
 {@a setup}
@@ -263,7 +263,7 @@ You'll need a `hero` class and some hero data.
 Using the CLI, generate a new class named `data-model`:
 -->
 이 문서에서는 히어로의 정보를 수정하는 컴포넌트를 반응형 폼으로 만들어 봅니다.
-히어로의 정보를 표현하는 `hero` 클래스를 만들어 봅시다.
+히어로의 정보를 표현하는 `Hero` 클래스를 만들어 봅시다.
 
 Angular CLI로 다음 명령을 실행합니다:
 
@@ -338,7 +338,7 @@ A `FormControl` constructor accepts three, optional arguments:
 the initial data value, an array of validators, and an array of async validators.
 -->
 이 코드에서는 `FormControl`로 `name` 프로퍼티를 만들었습니다.
-이 객체는 템플릿의 HTML `<input>` 엘리먼트에 바인딩 되어 히어로의 이름을 입력하는 데에 사용될 것입니다.
+이 객체는 템플릿의 HTML `<input>` 엘리먼트에 바인딩 되어 히어로의 이름을 입력할 때 사용될 것입니다.
 
 `FormControl` 생성자는 옵션 인자를 3개 받습니다.
 인자는 순서대로 초기값, 유효성 검사기 배열, 비동기 유효성 검사기 배열입니다.
@@ -377,7 +377,7 @@ To let Angular know that this is the input that you want to
 associate to the `name` `FormControl` in the class,
 you need `[formControl]="name"` in the template on the `<input>`.
 -->
-입력 필드가 있다는 것을 Angular에 등록하기 위해 `<input>` 태그에 `[formControl]="name"`을 지정했습니다. 이 구문에서 `name`은 컴포넌트 클래스에 있는 `FormControl` 프로퍼티와 연결됩니다.
+입력 필드가 있다는 것을 Angular에 알리기 위해 `<input>` 태그에 `[formControl]="name"`을 지정했습니다. 이 구문에서 `name`이 지정된 폼 컨트롤은 컴포넌트 클래스에 있는 `FormControl` 프로퍼티와 연결됩니다.
 
 <div class="l-sub-section">
 
@@ -480,7 +480,7 @@ This guide uses four fundamental classes to build a reactive form:
 `FormControl`, `FormGroup`, and `FormArray`.
 It provides their common behaviors and properties.
       -->
-      [`AbstractControl`](api/forms/AbstractControl "API Reference: FormControl")는 다른 3가지 클래스(`FormControl`, `FormGroup`, `FormArray`)의 형태를 정의하는 추상 클래스입니다.
+      [`AbstractControl`](api/forms/AbstractControl "API Reference: FormControl")은 다른 3가지 클래스(`FormControl`, `FormGroup`, `FormArray`)의 형태를 정의하는 추상 클래스입니다.
       클래스 구현체의 기본 동작과 공통 프로퍼티가 선언되어 있습니다.
 
     </td>
@@ -501,8 +501,7 @@ tracks the value and validity status of an individual form control.
 It corresponds to an HTML form control such as an `<input>` or `<select>`.
       -->
       [`FormControl`](api/forms/FormControl "API Reference: FormControl")
-      은 개별 폼 컨트롤의 입력값과 유효성 검사 결과를 인스턴스에 저장합니다.
-      이 클래스는 `<input>` 엘리먼트나 `<select>`와 같은 HTML 폼 컨트롤과 연결됩니다.
+      은 개별 폼 컨트롤을 표현하는 클래스입니다. 폼 입력값과 유효성 검사 결과를 인스턴스에 저장하며,  `<input>` 엘리먼트나 `<select>`와 같은 HTML 폼 컨트롤과 연결됩니다.
 
     </td>
 
@@ -523,8 +522,8 @@ The group's properties include its child controls.
 The top-level form in your component is a `FormGroup`.
       -->
       [`FormGroup`](api/forms/FormGroup "API Reference: FormGroup")
-      은 `AbstractControl` 인스턴스를 그룹으로 묶고 전체 값과 전체 유효성 결과를 인스턴스에 저장합니다.
-      그룹의 프로퍼티는 각각의 자식 폼 컨트롤이며, 최상위 그룹은 컴포넌트의 폼 객체입니다.
+      은 `AbstractControl` 인스턴스를 그룹으로 활용할 때 사용하는 클래스입니다. 그룹 전체 값과 전체 유효성 결과를 인스턴스에 저장합니다.
+      그룹의 프로퍼티는 각각의 자식 폼 컨트롤이며, 컴포넌트의 폼 객체가 최상위 그룹입니다.
 
     </td>
 
@@ -543,7 +542,7 @@ The top-level form in your component is a `FormGroup`.
 tracks the value and validity state of a numerically indexed array of `AbstractControl` instances.
       -->
       [`FormArray`](api/forms/FormArray "API Reference: FormArray")
-      은 `AbstractControl` 인스턴스 배열의 전체 값과 전체 유효성 검사 결과를 인스턴스에 저장합니다.
+      은 `AbstractControl` 인스턴스를 배열로 다루는 클래스입니다. 배열의 전체 값과 전체 유효성 검사 결과를 인스턴스에 저장합니다.
 
     </td>
 
@@ -601,7 +600,7 @@ them within a parent `FormGroup`.
 To add a `FormGroup`, add it to the imports section
 of `hero-detail.component.ts`:
 -->
-보통의 경우라면 `FormControl`을 여러개 묶어서 함께 사용합니다.
+보통 `FormControl`은 여러개를 묶어서 함께 사용합니다.
 폼 컨트롤을 그룹으로 관리하기 위해 `FormGroup`을 추가해 봅시다.
 `hero-detail.component.ts` 파일에 다음 코드를 추가합니다:
 
@@ -656,7 +655,7 @@ in the class. This syntax tells Angular to look for the parent
 to look for a `FormControl` called `name`.
 -->
 `<input>`에 연결된 폼 컨트롤은 이제 `FormGroup` 안으로 옮겼기 때문에 템플릿에서 이 내용을 수정해야 합니다.
-`FormControl` 디렉티브는 이 디렉티브 하나만으로도 동작하기 때문에 이전 코드에서는 `[formControl]="name"`라고 사용했지만, 이제는 `FormGroup` 인스턴스 안에 잇는 자식 폼 컨트롤이기 때문에 `formControlName=name`라고 지정해야 폼 컨트롤을 연결할 수 있습니다.
+`FormControl` 디렉티브는 이 디렉티브 하나만으로도 동작하기 때문에 이전 코드에서는 `[formControl]="name"`라고 사용했지만, 이제는 `FormGroup` 인스턴스 안에 잇는 자식 폼 컨트롤이기 때문에 `formControlName=name`이라고 지정해야 폼 컨트롤을 연결할 수 있습니다.
 이제 이 템플릿은 `FormGroup` 타입인 `heroForm`을 연결하고, 이 그룹 _안에서_ `name`이라고 지정된 `FormControl`을 찾아서 `<input>` 엘리먼트에 연결합니다.
 
 {@a json}
@@ -673,7 +672,7 @@ To see the form model, add the following line after the
 closing `<form>` tag in the `hero-detail.component.html`:
 -->
 사용자가 `<input>` 엘리먼트에 데이터를 입력하면, 이 데이터는 **_폼 모델_**에 반영됩니다.
-이 폼 모델에 젖아된 값을 템플릿에서 확인하기 위해 `hero-detail.component.html` 파일의 `<form>` 엘리먼트 뒤에 다음 내용을 추가합니다:
+이 폼 모델에 저장된 값을 템플릿에서 확인하기 위해 `hero-detail.component.html` 파일의 `<form>` 엘리먼트 뒤에 다음 내용을 추가합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-2.component.html" region="form-value-json" title="src/app/hero-detail/hero-detail.component.html" linenums="false">
 
@@ -683,7 +682,7 @@ closing `<form>` tag in the `hero-detail.component.html`:
 The `heroForm.value` returns the _form model_.
 Piping it through the `JsonPipe` renders the model as JSON in the browser:
 -->
-`heroForm.value`은 _폼 모델_ 의 값을 저장하는 프로퍼티입니다.
+`heroForm.value`는 _폼 모델_ 의 값을 저장하는 프로퍼티입니다.
 그리고 이 프로퍼티에 `JsonPipe`를 적용해서 브라우저에 JSON 형식으로 표현합니다:
 
 <figure>
@@ -700,7 +699,7 @@ In real life apps, forms get big fast.
 `name` 프로퍼티의 초기값은 빈 문자열입니다.
 `<input>` 엘리먼트에 히어로 이름을 입력하면서 이 내용이 어떻게 표시되는지 확인해 보세요.
 
-실제 애플리케이션이라면 폼이 급격하게 커질 수 있습니다.
+실제 애플리케이션이라면 폼이 급격하게 복잡해질 수 있습니다.
 이 때 개발과 유지보수를 좀 더 편하게 하려면 `FormBuilder`를 사용하는 것이 더 좋습니다.
 
 {@a formbuilder}
@@ -735,7 +734,7 @@ by following this plan:
 
 The revised `HeroDetailComponent` looks like this:
 -->
-이제 `FormBuilder`를 사용해서 `HeroDetailComponent`를 리팩토링 해봅시다. `FormControl`을 직접 사용할 때보다 훨씬 간단해지고 가독성도 높아질 것이빈다.
+이제 `FormBuilder`를 사용해서 `HeroDetailComponent`를 리팩토링 해봅시다. `FormControl`을 직접 사용할 때보다 훨씬 간단해지고 가독성도 높아질 것입니다.
 다음 순서로 수정합니다:
 
 * `heroForm` 프로퍼티를 `FormGroup` 타입으로 선언만 합니다. 초기화는 나중에 합니다.
@@ -902,7 +901,7 @@ Angular `FormGroup` and `FormControl` properties in the component class.
 The revised template includes more text `<input>` elements, a `<select>` for the `state`, radio buttons for the `power`,
 and a `<checkbox>` for the `sidekick`.
 -->
-이렇게 수정된 템플릿에는 이제 `<input>`가 여러개, `state`를 위한 `<select>` 엘리먼트, `power`선택을 위한 라디오 버튼이 추가되었으며, `sidekick`에 해당하는 `<checkbox>`도 추가되었습니다.
+이렇게 수정된 템플릿에는 이제 `<input>`이 여러개, `state`를 위한 `<select>` 엘리먼트, `power`선택을 위한 라디오 버튼이 추가되었으며, `sidekick`에 해당하는 `<checkbox>`도 추가되었습니다.
 
 <!--
 You must bind the value property of the `<option>` with `[value]="state"`.
@@ -945,7 +944,7 @@ mirror the hierarchical structure of the data model
 and helps track validation and state for related sets of controls.
 -->
 폼을 더 효율적으로 관리하려면 서로 연관된 `FormControl`을 묶어서 중첩 `FormGroup`으로 활용하는 것이 더 좋습니다.
-예를 들면, 주소가 `street`, `city`, `state`, `zip`으로 구성된다면 이 폼 컨트롤들을 `FormGroup` 하나로 묶는 것이 좋습니다.
+예를 들어 주소가 `street`, `city`, `state`, `zip`으로 구성된다면 이 폼 컨트롤들을 `FormGroup` 하나로 묶는 것이 좋습니다.
 폼 그룹을 계층으로 구성하면 데이터 모델도 계층으로 구성되며, 연관된 폼 컨트롤에서 발생하는 에러와 폼 컨트롤의 상태도 한 번에 처리할 수 있습니다.
 
 <!--
@@ -1026,7 +1025,7 @@ immediately after the `{{form.value | json}}` interpolation as follows:
 <!--
 To get the state of a `FormControl` that’s inside a `FormGroup`, use dot notation to traverse to the control.
 -->
-그리고 `FormGroup` 안에 있는 `FormControl`을 참조하려면 객체를 참조할 때와 마찬가지로 `.` 으로 참조할 수 있습니다. 이 참조 방식은 `get()` 메소드 안에서도 유효합니다.
+그리고 `FormGroup` 안에 있는 `FormControl`은 객체를 참조할 때와 마찬가지로 `.` 으로 참조할 수 있습니다. 이 참조 방식은 `get()` 메소드 인자 안에서도 유효합니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-5.component.html" region="inspect-child-control" title="src/app/hero-detail/hero-detail.component.html" linenums="false">
 
@@ -1341,13 +1340,13 @@ Conversely, `patchValue()` will fail silently.
 -->
 이 때 전달하는 인자가 `FormGroup`의 구조와 정확하게 일치하지 않거나, 일부 값을 빠뜨리면 이 함수는 동작하지 않습니다.
 대신 어떤 부분이 잘못되었는지 알려주는 에러 메시지가 표시될 것입니다.
-이 부분은 `patchValue()`의 동작과는 다릅니다.
+이 부분은 `patchValue()`의 동작과 다릅니다.
 
 <!--
 Notice that you can almost use the entire `hero` as the argument to `setValue()`
 because its shape is similar to the component's `FormGroup` structure.
 -->
-`hero` 데이터 모델의 내용을 `setValue()` 메소드로 폼 모델에 반영하는 것은 어렵지 않습니다.
+`setValue()` 메소드로 `hero` 데이터 모델의 내용을 폼 모델에 반영하는 것은 어렵지 않습니다.
 데이터 모델과 폼 모델의 구조가 거의 비슷하기 때문입니다.
 
 <!--
@@ -1384,7 +1383,7 @@ With `patchValue()` you have more flexibility to cope with divergent data and fo
 But unlike `setValue()`,  `patchValue()` cannot check for missing control
 values and doesn't throw helpful errors.
 -->
-`patchValue()`를 사용하면 `setValue()`를 사용하는 것보다 조금 더 쉬운 방법으로 폼 모델을 수정할 수 있습니다.
+`patchValue()`를 사용하면 `setValue()`를 사용하는 것보다 조금 더 간단하게 폼 모델을 수정할 수 있습니다.
 `patchValue()`를 사용할 때는 폼 모델 전체에 해당하는 객체 구조를 전달할 필요가 없으며, 수정하려고 하는 폼 컨트롤의 값만 전달하면 됩니다.
 다만, 실수로 빠뜨린 폼 컨트롤이 있더라도 이 부분을 경고하는 에러 메시지는 출력되지 않으니 주의해야 합니다.
 
@@ -1432,7 +1431,7 @@ Give the `HeroListComponent` the following contents:
 <!--
 Next, add a `HeroService` using the following command:
 -->
-다음에는 다음 명령을 실행해서 `HeroService`를 생성합니다.
+다음에는 아래 명령을 실행해서 `HeroService`를 생성합니다.
 
 <code-example language="sh" class="code-shell">
 
@@ -1635,12 +1634,12 @@ To get access to the `FormArray` class, import it into `hero-detail.component.ts
 -->
 `FormGroup` 안에는 `FormControl`과 또 다른 `FormGroup`이 있습니다.
 
-그런데 어떤 경우에는 폼 컨트롤의 개수가 변할 수 있는 경우가 있습니다.
+그런데 어떤 경우에는 폼 컨트롤의 개수가 변하는 경우가 있습니다.
 이 예제에서도 주소에 해당하는 값은 하나이거나 여러개, 아예 없을 수도 있습니다.
 
 `Hero.addresses` 프로퍼티는 `Address` 타입의 배열입니다.
 그리고 `address` `FormGroup`은 이 배열 전체를 하나의 값으로 표현합니다.
-그렇다면 `address` 프로퍼티는 `FormArray`로 사용할 수 있습니다.
+그렇다면 `address` 프로퍼티를 `FormArray` 타입으로 사용할 수 있습니다.
 
 `hero-detail.component.ts` 파일에서 `FormArray` 클래스를 사용하기 위해 심볼을 로드합니다:
 
@@ -1692,7 +1691,7 @@ Replace the address `FormGroup` definition with a `secretLairs`  `FormArray` def
 -->
 사용자가 보는 화면에는 히어로의 _주소_ 가 표시되지 않습니다.
 주소는 히어로가 사는 곳에 따라 변할 수 있지만, 대신 변하지 않는 _비밀 둥지_ 를 갖습니다!
-주소로 사용하던 `FormGroup` 필드를  `FormArray` 타입의 `secretLairs`로 수정합니다:
+주소로 사용하던 `FormGroup` 필드를  `FormArray` 타입의 `secretLairs`로 변경합시다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.ts" region="secretLairs-form-array" title="src/app/hero-detail/hero-detail-8.component.ts" linenums="false">
 
@@ -1775,25 +1774,44 @@ Next, call `setAddresses()` from within `rebuildForm()`:
 
 </code-example>
 
-
+<!--
 ### Get the _FormArray_
+-->
+### _FormArray_ 참조하기
+
+<!--
 The `HeroDetailComponent` should be able to display, add, and remove items from the `secretLairs`  `FormArray`.
 
 Use the `FormGroup.get()` method to acquire a reference to that `FormArray`.
 Wrap the expression in a `secretLairs` convenience property for clarity and re-use. Add the following to `HeroDetailComponent`.
+-->
+이제 `HeroDetailComponent`에서는 `FormArray` 타입의 `secretLairs`를 표시하거나 추가/수정할 수 있습니다.
+
+`FormGroup.get()`을 사용하면 `FormArray`에 접근할 수 있습니다.
+템플릿 코드를 간단하게 하기 위해, `HeroDetailComponent`에 `secretLairs`에 대한 게터(getter)를 다음과 같이 작성합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.ts" region="get-secret-lairs" title="src/app/hero-detail/hero-detail.component.ts (secretLairs property)" linenums="false">
 
 </code-example>
 
+<!--
 ### Display the _FormArray_
+-->
+### _FormArray_ 표시하기
 
+<!--
 The current HTML template displays a single `address` `FormGroup`.
 Revise it to display zero, one, or more of the hero's `address`  `FormGroups`.
 
 This is mostly a matter of wrapping the previous template HTML for an address in a `<div>` and
 repeating that `<div>` with `*ngFor`.
+-->
+지금까지 작성한 템플릿은 `FormGroup` 타입의 `address` 필드를 화면에 표시합니다.
+이 내용을 수정해서 0개, 1개, 혹은 여러개의 `FormGroups` 타입을 `address` 필드로 만들어 봅시다.
 
+하지만 이전에 구현했던 주소 필드는 `<div>`로 랩핑되어 있고, 이 엘리먼트에 `*ngFor`가 적용되어 있기 때문에 문제가 조금 있습니다.
+
+<!--
 There are three key points when writing the `*ngFor`:
 
 1. Add another wrapping `<div>`, around the `<div>` with `*ngFor`, and
@@ -1805,30 +1823,54 @@ Each control is an `address`  `FormGroup`, exactly what the previous (now repeat
 
 1. Each repeated `FormGroup` needs a unique `formGroupName`, which must be the index of the `FormGroup` in the `FormArray`.
 You'll re-use that index to compose a unique label for each address.
+-->
+`*ngFor`를 사용할 때는 다음 내용이 중요합니다:
 
+1. `*ngFor`를 사용한 `<div>`를 둘러싸도록 `<div>`를 하나 더 추가하고, 이 엘리먼트에 `formArrayName` 디렉티브를 사용해서 `"secretLairs"`와 연결합니다.
+이 디렉티브를 사용하면 `FormArray` 타입의 `secretLairs` 필드가 HTML 템플릿이 반복되는 각 루프의 컨텍스트에 연결됩니다.
+
+1. 이 때 반복되는 항목은 `FormArray` 자체가 아니라 `FormArray.controls` 이며, 이전에 사용되던 템플릿은 `*ngFor`로 반복되는 `FormGroup` 타입의 개별 `address` 필드에 연결됩니다.
+
+1. 반복되는 `FormGroup`은 `FormArray`에서 어떤 컨트롤인지 구분하기 위해 `formGroupName`이 지정되어야 합니다.
+이 코드에서는 `*ngFor`에서 전달하는 인덱스를 활용합니다.
+
+<!--
 Here's the skeleton for the secret lairs section of the HTML template:
+-->
+이 부분의 HTML 템플릿은 다음과 같이 구성됩니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.html" region="form-array-skeleton" title="src/app/hero-detail/hero-detail.component.html (*ngFor)" linenums="false">
 
 </code-example>
 
+<!--
 Here's the complete template for the secret lairs section. Add this to `HeroDetailComponent` template, replacing the `forGroupName=address`  `<div>`:
+-->
+그리고 주소 부분의 전체 템플릿은 다음과 같습니다. `HeroDetailComponent`의 템플릿에서 `forGroupName=address`를 지정했던  `<div>`를 교체한 것입니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.html" region="form-array" title="src/app/hero-detail/hero-detail.component.html (excerpt)">
 
 </code-example>
 
 
-
+<!--
 ### Add a new lair to the _FormArray_
+-->
+### _FormArray_ 에 새로운 장소 추가하기
 
+<!--
 Add an `addLair()` method that gets the `secretLairs`  `FormArray` and appends a new `address`  `FormGroup` to it.
+-->
+비밀 둥지를 추가하는 `addLair()` 함수를 추가합니다. 이 함수는 `FormArray`타입의 `secretLairs`에 새로운 `FormGroup` 항목을 추가합니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.ts" region="add-lair" title="src/app/hero-detail/hero-detail.component.ts (addLair method)" linenums="false">
 
 </code-example>
 
+<!--
 Place a button on the form so the user can add a new _secret lair_ and wire it to the component's `addLair()` method. Put it just before the closing `</div>` of the `secretLairs`  `FormArray`.
+-->
+그리고 폼에 버튼을 추가하고 이 버튼에 `addLair()` 메소드를 연결합니다. 이 버튼은 `secretLairs`와 관련된 `<div>` 닫는 태그 전에 추가합니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.html" region="add-lair" title="src/app/hero-detail/hero-detail.component.html (addLair button)" linenums="false">
 
@@ -1836,36 +1878,63 @@ Place a button on the form so the user can add a new _secret lair_ and wire it t
 
 <div class="alert is-important">
 
+<!--
 Be sure to add the `type="button"` attribute 
 because without an explicit type, the button type defaults to "submit".
 When you later add a form submit action, every "submit" button triggers the submit action which
 might do something like save the current changes.
 You do not want to save changes when the user clicks the _Add a Secret Lair_ button.
+-->
+버튼에 `type="button"` 어트리뷰트를 지정하는 것을 잊지 마세요.
+버튼 타입을 명확하게 지정하지 않으면 Angular는 이 버튼을 "submit" 타입인 것으로 처리합니다.
+이후에 폼 제출 동작을 구현하고 나면 모든 "submit" 버튼이 폼 제출 로직을 실행하면서 잘못된 데이터를 서버로 보낼 수도 있습니다.
+이 과정에서 구현하고 싶은 것은 주소 필드를 추가하는 버튼이지, 데이터를 서버로 보내서 저장하는 버튼이 아닙니다.
 
 </div>
 
+<!--
 ### Try it!
+-->
+### 동작을 확인해 보세요!
 
+<!--
 Back in the browser, select the hero named "Magneta".
 "Magneta" doesn't have an address, as you can see in the diagnostic JSON at the bottom of the form.
+-->
+다시 브라우저로 돌아가서 "Magneta" 히어로를 선택합니다.
+그러면 폼 가장 아래 표시되는 JSON 디버그 메시지를 확인해서 이 히어로가 주소를 갖지 않는다는 것을 알 수 있습니다.
 
 <figure>
   <img src="generated/images/guide/reactive-forms/addresses-array.png" alt="JSON output of addresses array">
 </figure>
 
-
+<!--
 Click the "_Add a Secret Lair_" button.
 A new address section appears. Well done!
+-->
+이제 "_Add a Secret Lair_" 버튼을 클릭해 보세요.
+새로운 주소 필드가 추가된다면, 제대로 동작하는 것입니다!
 
+<!--
 ### Remove a lair
+-->
+### 둥지 제거하기
 
+<!--
 This example can _add_ addresses but it can't _remove_ them.
 For extra credit, write a `removeLair` method and wire it to a button on the repeating address HTML.
+-->
+지금까지 작성한 예제는 비밀 둥지를 _추가_ 할 수 있지만 _제거_ 할 수는 없습니다.
+이 기능을 구현하려면 `removeLair` 메소드를 추가하고 해당 로직을 구현하면 됩니다.
 
 {@a observe-control}
 
+<!--
 ## Observe control changes
+-->
+## 폼 컨트롤 변화 추적하기
 
+<!--
 Angular calls `ngOnChanges()` when the user picks a hero in the parent `HeroListComponent`.
 Picking a hero changes the `HeroDetailComponent.hero`  `@Input()` property.
 
@@ -1877,54 +1946,95 @@ These are properties, such as `valueChanges`, that return an RxJS `Observable`.
 You don't need to know much about RxJS `Observable` to monitor form control values.
 
 Add the following method to log changes to the value of the `name` `FormControl`.
+-->
+Angular는 부모 컴포넌트인 `HeroListComponent`에서 히어로가 선택될 때마다 `ngOnChanges()`를 실행하고,
+이렇게 선택된 히어로를 자식 컴포넌트 `HeroDetailComponent`에서 `@Input()`으로 지정된 `hero` 프로퍼티로 전달합니다.
+
+사용자가 `name`이나 `secretLairs` 필드를 수정할 때는 `ngOnChanges()` 함수가 실행되지 _않습니다_ .
+하지만 이 변화는 `FormControl` 프로퍼티 값이 변하는 이벤트를 구독(subscribe)하면 추적할 수 있습니다.
+
+`FormControl`의 프로퍼티 중 `valueChanges`와 같은 프로퍼티는 RxJS `Observable`을 반환합니다.
+이 값을 구독하면 폼 컨트롤의 값이 변하는 것을 추적할 수 있으며, RxJS `Observable`에 대해 간단하게만 알고 있어도 사용하기 쉽습니다.
+
+`name` `FormControl`이 변하는 것을 확인하려면 다음과 같이 작성합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail.component.ts" region="log-name-change" title="src/app/hero-detail/hero-detail.component.ts (logNameChange)" linenums="false">
 
 </code-example>
 
+<!--
 Call it in the constructor, after `createForm()`.
+-->
+그리고 생성자에서 `createForm()`을 실행하는 부분 뒤에 이 함수를 실행합니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail-8.component.ts" region="ctor" title="src/app/hero-detail/hero-detail.component.ts" linenums="false">
 
 </code-example>
 
+<!--
 The `logNameChange()` method pushes name-change values into a `nameChangeLog` array.
 Display that array at the bottom of the component template with this `*ngFor` binding:
+-->
+`logNameChange()` 메소드는 히어로의 이름이 변하는 과정마다 `nameChangeLog` 배열에 현재값을 추가합니다.
+그리고 이 배열은 컴포넌트 템플릿 아래 `*ngFor` 바인딩으로 화면에 표시합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail.component.html" region="name-change-log" title="src/app/hero-detail/hero-detail.component.html (Name change log)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 Return to the browser, select a hero; for example, Magneta, and start typing in the `name`  `<input>`.
 You should see a new name in the log after each keystroke.
+-->
+브라우저로 돌아와서 히어로를 선택해 봅시다. 그리고 "Magneta"를 선택한 후에 `name`에 해당하는 `<input>` 필드에 이름을 입력합니다.
+그러면 각각의 키 입력이 있을 떄마다 변하는 과정을 확인할 수 있습니다.
 
+<!--
 ### When to use it
+-->
+### 언제 사용해야 할까
 
+<!--
 An interpolation binding is the easier way to display a name change.
 Subscribing to an observable `FormControl` property is handy for triggering
 application logic within the component class.
+-->
+문자열 바인딩을 사용하면 이름이 변하는 것을 화면에서 간단하게 확인할 수 있습니다.
+`FormControl`에서 옵저버블로 제공하는 프로퍼티를 사용하면 컴포넌트 클래스에서 필요한 시점에 원하는 동작을 수행할 수 있습니다.
 
 {@a save}
 
+<!--
 ## Save form data
+-->
+## 데이터 저장하기
 
+<!--
 The `HeroDetailComponent` captures user input but it doesn't do anything with it.
 In a real app, you'd probably save those hero changes, revert unsaved changes, and resume editing.
 After you implement both features in this section, the form will look like this:
-
+-->
+`HeroDetailComponent`는 사용자의 입력을 받지만 아직 아무것도 하지 않습니다.
+하지만 실제 앱에서는 히어로의 값이 변경된 것을 서버에 저장하거나, 저장하지 않을 데이터는 다시 되돌리기도 해야 합니다.
+이번에는 이 내용을 구현해 봅시다:
 
 <figure>
   <img src="generated/images/guide/reactive-forms/save-revert-buttons.png" alt="Form with save & revert buttons">
 </figure>
 
 
-
+<!--
 ### Save
+-->
+### 저장하기
+
+<!--
 When the user submits the form,
 the `HeroDetailComponent` will pass an instance of the hero _data model_
 to a save method on the injected `HeroService`. Add the following to `HeroDetailComponent`.
+-->
+사용자가 폼을 제출하면 `HeroDetailComponent`가 히어로의 _데이터 모델_ 을 `HeroService`에 보내서 데이터를 저장해야 합니다. 이 부분을 다음과 같이 구현합니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail.component.ts" region="on-submit" title="src/app/hero-detail/hero-detail.component.ts (onSubmit)" linenums="false">
 
@@ -1932,16 +2042,23 @@ to a save method on the injected `HeroService`. Add the following to `HeroDetail
 
 <!-- TODO: Need to add `private heroService: HeroService` to constructor and import the HeroService. Remove novalidate-->
 
+<!--
 This original `hero` had the pre-save values. The user's changes are still in the _form model_.
 So you create a new `hero` from a combination of original hero values (the `hero.id`)
 and deep copies of the changed form model values, using the `prepareSaveHero()` helper.
-
+-->
+컴포넌트에 있는 `hero` 프로퍼티는 변경되기 전 값이 저장되어 있습니다. 사용자가 변경한 것은 데이터 모델이 아니라 _폼 모델_ 이기 때문입니다.
+그래서 `hero` 프로퍼티의 값을 이 폼 모델의 값과 같도록 수정해야 합니다.
+이 과정은 객체 내부까지 복사하는 깊은 복사(deep copy)여야 하며, `prepareSaveHero()` 함수에 이 내용을 구현합니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail.component.ts" region="prepare-save-hero" title="src/app/hero-detail/hero-detail.component.ts (prepareSaveHero)" linenums="false">
 
 </code-example>
 
+<!--
 Make sure to import `HeroService` and add it to the constructor:
+-->
+그리고 컴포넌트 클래스가 `HeroService`를 주입받을 수 있도록 생성자를 다음과 같이 수정합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail.component.ts" region="import-service" title="src/app/hero-detail/hero-detail.component.ts (prepareSaveHero)" linenums="false">
 
@@ -1953,40 +2070,61 @@ Make sure to import `HeroService` and add it to the constructor:
 
 <div class="l-sub-section">
 
+<!--
 **Address deep copy**
+-->
+**주소 필드를 딥 카피하는 이유**
 
+<!--
 Had you assigned the `formModel.secretLairs` to `saveHero.addresses` (see line commented out),
 the addresses in `saveHero.addresses` array would be the same objects
 as the lairs in the `formModel.secretLairs`.
 A user's subsequent changes to a lair street would mutate an address street in the `saveHero`.
 
 The `prepareSaveHero` method makes copies of the form model's `secretLairs` objects so that can't happen.
+-->
+`formModel.secretLairs`의 값을 `saveHero.addresses`로 지정하려면 `saveHero.addresses` 배열이 `formModel.secretLairs`의 구조와 같아야 합니다.
 
+그래서 `prepareSaveHero` 메소드는 폼 모델의 `secretLairs` 객체를 복사해서 활용합니다.
 
 </div>
 
 
-
+<!--
 ### Revert (cancel changes)
+-->
+### 변경내용 취소하기
+
+<!--
 The user cancels changes and reverts the form to the original state by pressing the Revert button.
 
 Reverting is easy. Simply re-execute the `rebuildForm()` method that built the form model from the original, unchanged `hero` data model.
+-->
+사용자가 Revert 버튼을 누르면 폼의 내용이 원래대로 원복되어야 합니다.
+
+내용을 되돌리는 것은 간단합니다. 이 코드에서는 `hero` 데이터 모델을 직접 수정할 필요 없이 `rebuildForm()` 메소드를 실행하기만 하면 됩니다.
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail.component.ts" region="revert" title="src/app/hero-detail/hero-detail.component.ts (revert)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 ### Buttons
+-->
+### 버튼 추가
+
+<!--
 Add the "Save" and "Revert" buttons near the top of the component's template:
+-->
+컴포넌트 템플릿에 "Save" 버튼과 "Revert" 버튼을 추가합니다:
 
 <code-example path="reactive-forms/src/app/hero-detail/hero-detail.component.html" region="buttons" title="src/app/hero-detail/hero-detail.component.html (Save and Revert buttons)" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The buttons are disabled until the user "dirties" the form by changing a value in any of its form controls (`heroForm.dirty`).
 
 Clicking a button of type `"submit"` triggers the `ngSubmit` event which calls the component's `onSubmit` method.
@@ -1994,12 +2132,20 @@ Clicking the revert button triggers a call to the component's `revert` method.
 Users now can save or revert changes.
 
 Try the <live-example stackblitz="final" title="Reactive Forms (final) in Stackblitz"></live-example>.
+-->
+사용자가 폼에 접근해서 폼 전체 상태가 "dirty" 상태가 되기 전까지는 버튼들이 비활성화된 상태로 표시됩니다.
+
+사용자가 폼을 수정한 후에 `"submit"` 버튼을 클릭하면 `ngSubmit` 이벤트가 발생되며 컴포넌트의 `onSubmit` 메소드가 실행됩니다.
+그리고 "Revert" 버튼을 클릭하면 컴포넌트의 `revert` 메소드가 실행되어 폼 모델의 내용을 수정 전으로 되돌립니다.
+
+이 문서에서 다룬 예제는 <live-example stackblitz="final" title="Reactive Forms (final) in Stackblitz"></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 {@a source-code}
 
-
+<!--
 The key files of the final version are as follows:
-
+-->
+다음 파일들이 중요합니다:
 
 <code-tabs>
 
@@ -2042,6 +2188,8 @@ The key files of the final version are as follows:
 </code-tabs>
 
 
-
+<!--
 You can download the complete source for all steps in this guide
 from the <live-example title="Reactive Forms Demo in Stackblitz">Reactive Forms Demo</live-example> live example.
+-->
+그리고 이 문서의 다룬 예제의 각 단계별 코드는 <live-example stackblitz="final" title="Reactive Forms (final) in Stackblitz"></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.

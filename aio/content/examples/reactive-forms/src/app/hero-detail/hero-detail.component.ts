@@ -72,7 +72,7 @@ export class HeroDetailComponent implements OnChanges {
   // #docregion on-submit
   onSubmit() {
     this.hero = this.prepareSaveHero();
-    this.heroService.updateHero(this.hero).subscribe(/* error handling */);
+    this.heroService.updateHero(this.hero).subscribe(/* 에러 처리 */);
     this.rebuildForm();
   }
   // #enddocregion on-submit
@@ -81,17 +81,16 @@ export class HeroDetailComponent implements OnChanges {
   prepareSaveHero(): Hero {
     const formModel = this.heroForm.value;
 
-    // deep copy of form model lairs
+    // 폼 모델 deep copy
     const secretLairsDeepCopy: Address[] = formModel.secretLairs.map(
       (address: Address) => Object.assign({}, address)
     );
 
-    // return new `Hero` object containing a combination of original hero value(s)
-    // and deep copies of changed form model values
+    // 히어로의 이전 데이터에 새로운 데이터를 반영해서 반환합니다.
     const saveHero: Hero = {
       id: this.hero.id,
       name: formModel.name as string,
-      // addresses: formModel.secretLairs // <-- bad!
+      // addresses: formModel.secretLairs // <-- 이러면 안됩니다!
       addresses: secretLairsDeepCopy
     };
     return saveHero;
