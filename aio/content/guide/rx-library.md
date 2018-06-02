@@ -45,7 +45,7 @@ The `pipe()` function is also a method on the RxJS `Observable`, so you use this
 
 ### Common operators
 
-RxJS provides many operators (over 150 of them), but only a handful are used frequently. Here is a list of common operators; for usage examples, see  [RxJS 5 Operators By Example](https://github.com/btroncone/learn-rxjs/blob/master/operators/complete.md) in RxJS documentation.
+RxJS provides many operators, but only a handful are used frequently. For a list of operators and usage samples, visit the [RxJS API Documentation](https://rxjs-dev.firebaseapp.com/api).
 
 <div class="l-sub-section">
   Note that, for Angular apps, we prefer combining operators with pipes, rather than chaining. Chaining is used in many RxJS examples.
