@@ -49,13 +49,6 @@ export interface LView {
   // TODO(kara): Remove when we have parent/child on TNodes
   readonly node: LViewNode|LElementNode;
 
-  /**
-   * ID to determine whether this view is the same as the previous view
-   * in this position. If it's not, we know this view needs to be inserted
-   * and the one that exists needs to be removed (e.g. if/else statements)
-   */
-  readonly id: number;
-
   /** Renderer to be used for this view. */
   readonly renderer: Renderer3;
 
@@ -207,6 +200,15 @@ export interface LViewOrLContainer {
  * Stored on the template function as ngPrivateData.
  */
 export interface TView {
+  /**
+   * ID for inline views to determine whether a view is the same as the previous view
+   * in a certain position. If it's not, we know the new view needs to be inserted
+   * and the one that exists needs to be removed (e.g. if/else statements)
+   *
+   * If this is -1, then this is a component view or a dynamically created view.
+   */
+  readonly id: number;
+
   /**
    * Pointer to the `TNode` that represents the root of the view.
    *

@@ -298,11 +298,10 @@ export function executeInitAndContentHooks(): void {
 }
 
 export function createLView<T>(
-    viewId: number, renderer: Renderer3, tView: TView, template: ComponentTemplate<T>| null,
-    context: T | null, flags: LViewFlags, sanitizer?: Sanitizer | null): LView {
+    renderer: Renderer3, tView: TView, template: ComponentTemplate<T>| null, context: T | null,
+    flags: LViewFlags, sanitizer?: Sanitizer | null): LView {
   const newView = {
     parent: currentView,
-    id: viewId,  // -1 for component views
     flags: flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit,
     node: null !,  // until we initialize it in createNode.
     data: [],
@@ -465,7 +464,7 @@ export function renderTemplate<T>(
     host = createLNode(
         -1, TNodeType.Element, hostNode, null, null,
         createLView(
-            -1, providedRendererFactory.createRenderer(null, null), tView, null, {},
+            providedRendererFactory.createRenderer(null, null), tView, null, {},
             LViewFlags.CheckAlways, sanitizer));
   }
   const hostView = host.data !;
@@ -497,7 +496,7 @@ export function renderEmbeddedTemplate<T>(
 
     if (viewNode == null) {
       const lView = createLView(
-          -1, renderer, tView, template, context, LViewFlags.CheckAlways, getCurrentSanitizer());
+          renderer, tView, template, context, LViewFlags.CheckAlways, getCurrentSanitizer());
 
       if (queries) {
         lView.queries = queries.createView();
@@ -784,14 +783,22 @@ function getOrCreateTView(
   // and not on embedded templates.
 
   return template.ngPrivateData ||
-      (template.ngPrivateData = createTView(directives, pipes) as never);
+      (template.ngPrivateData = createTView(-1, directives, pipes) as never);
 }
 
-/** Creates a TView instance */
+/**
+ * Creates a TView instance
+ *
+ * @param viewIndex The viewBlockId for inline views, or -1 if it's a component/dynamic
+ * @param directives Registry of directives for this view
+ * @param pipes Registry of pipes for this view
+ */
 export function createTView(
-    defs: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null): TView {
+    viewIndex: number, directives: DirectiveDefListOrFactory | null,
+    pipes: PipeDefListOrFactory | null): TView {
   ngDevMode && ngDevMode.tView++;
   return {
+    id: viewIndex,
     node: null !,
     data: [],
     childIndex: -1,         // Children set in addToViewTree(), if any
@@ -808,7 +815,7 @@ export function createTView(
     pipeDestroyHooks: null,
     hostBindings: null,
     components: null,
-    directiveRegistry: typeof defs === 'function' ? defs() : defs,
+    directiveRegistry: typeof directives === 'function' ? directives() : directives,
     pipeRegistry: typeof pipes === 'function' ? pipes() : pipes,
     currentMatches: null
   };
@@ -875,7 +882,7 @@ export function hostElement(
   const node = createLNode(
       0, TNodeType.Element, rNode, null, null,
       createLView(
-          -1, renderer, getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs), null, null,
+          renderer, getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs), null, null,
           def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer));
 
   if (firstTemplatePass) {
@@ -1324,7 +1331,6 @@ function addComponentLogic<T>(index: number, instance: T, def: ComponentDef<T>):
   const hostView = addToViewTree(
       currentView, previousOrParentNode.tNode.index as number,
       createLView(
-          -1,
           rendererFactory.createRenderer(previousOrParentNode.native as RElement, def.rendererType),
           tView, null, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
           getCurrentSanitizer()));
@@ -1605,7 +1611,7 @@ function scanForView(
     containerNode: LContainerNode, startIdx: number, viewBlockId: number): LViewNode|null {
   const views = containerNode.data.views;
   for (let i = startIdx; i < views.length; i++) {
-    const viewAtPositionId = views[i].data.id;
+    const viewAtPositionId = views[i].data.tView.id;
     if (viewAtPositionId === viewBlockId) {
       return views[i];
     } else if (viewAtPositionId < viewBlockId) {
@@ -1642,7 +1648,7 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
   } else {
     // When we create a new LView, we always reset the state of the instructions.
     const newView = createLView(
-        viewBlockId, renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, null,
+        renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, null,
         LViewFlags.CheckAlways, getCurrentSanitizer());
 
     if (lContainer.queries) {
@@ -1673,7 +1679,8 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
   ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     const tView = currentView.tView;
-    containerTViews[viewIndex] = createTView(tView.directiveRegistry, tView.pipeRegistry);
+    containerTViews[viewIndex] =
+        createTView(viewIndex, tView.directiveRegistry, tView.pipeRegistry);
   }
   return containerTViews[viewIndex];
 }
