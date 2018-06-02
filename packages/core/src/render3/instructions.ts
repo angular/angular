@@ -13,7 +13,7 @@ import {LContainer} from './interfaces/container';
 import {LInjector} from './interfaces/injector';
 import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {CurrentMatchesList, LView, LViewFlags, LifecycleStage, RootContext, TData, TView} from './interfaces/view';
+import {CurrentMatchesList, LView, LViewFlags, RootContext, TData, TView} from './interfaces/view';
 
 import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
@@ -240,7 +240,7 @@ export function leaveView(newView: LView, creationOnly?: boolean): void {
     // Views are clean and in update mode after being checked, so these bits are cleared
     currentView.flags &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   }
-  currentView.lifecycleStage = LifecycleStage.Init;
+  currentView.flags |= LViewFlags.RunInit;
   currentView.bindingIndex = -1;
   enterView(newView, null);
 }
@@ -303,7 +303,7 @@ export function createLView<T>(
   const newView = {
     parent: currentView,
     id: viewId,  // -1 for component views
-    flags: flags | LViewFlags.CreationMode | LViewFlags.Attached,
+    flags: flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit,
     node: null !,  // until we initialize it in createNode.
     data: [],
     directives: null,
@@ -315,7 +315,6 @@ export function createLView<T>(
     bindingIndex: -1,
     template: template,
     context: context,
-    lifecycleStage: LifecycleStage.Init,
     queries: null,
     injector: currentView && currentView.injector,
     sanitizer: sanitizer || null
