@@ -363,10 +363,10 @@ export function createLNodeObject(
  * @param data Any data that should be saved on the LNode
  */
 export function createLNode(
-    index: number | null, type: TNodeType.Element, native: RElement | RText | null,
-    name: string | null, attrs: TAttributes | null, lView?: LView | null): LElementNode;
+    index: number, type: TNodeType.Element, native: RElement | RText | null, name: string | null,
+    attrs: TAttributes | null, lView?: LView | null): LElementNode;
 export function createLNode(
-    index: number | null, type: TNodeType.View, native: null, name: null, attrs: null,
+    index: number, type: TNodeType.View, native: null, name: null, attrs: null,
     lView: LView): LViewNode;
 export function createLNode(
     index: number, type: TNodeType.Container, native: undefined, name: string | null,
@@ -375,7 +375,7 @@ export function createLNode(
     index: number, type: TNodeType.Projection, native: null, name: null, attrs: TAttributes | null,
     lProjection: LProjection): LProjectionNode;
 export function createLNode(
-    index: number | null, type: TNodeType, native: RText | RElement | null | undefined,
+    index: number, type: TNodeType, native: RText | RElement | null | undefined,
     name: string | null, attrs: TAttributes | null, state?: null | LView | LContainer |
         LProjection): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
   const parent = isParent ? previousOrParentNode :
@@ -391,7 +391,7 @@ export function createLNode(
   const node =
       createLNodeObject(type, currentView, parent, native, isState ? state as any : null, queries);
 
-  if (index === null || type === TNodeType.View) {
+  if (index === -1 || type === TNodeType.View) {
     // View nodes are not stored in data because they can be added / removed at runtime (which
     // would cause indices to change). Their TNodes are instead stored in TView.node.
     node.tNode = (state as LView).tView.node || createTNode(type, index, null, null, tParent, null);
@@ -469,7 +469,7 @@ export function renderTemplate<T>(
     rendererFactory = providedRendererFactory;
     const tView = getOrCreateTView(template, directives || null, pipes || null);
     host = createLNode(
-        null, TNodeType.Element, hostNode, null, null,
+        -1, TNodeType.Element, hostNode, null, null,
         createLView(
             -1, providedRendererFactory.createRenderer(null, null), tView, null, {},
             LViewFlags.CheckAlways, sanitizer));
@@ -509,7 +509,7 @@ export function renderEmbeddedTemplate<T>(
         lView.queries = queries.createView();
       }
 
-      viewNode = createLNode(null, TNodeType.View, null, null, null, lView);
+      viewNode = createLNode(-1, TNodeType.View, null, null, null, lView);
       rf = RenderFlags.Create;
     }
     oldView = enterView(viewNode.data, viewNode);
@@ -1045,7 +1045,7 @@ export function elementProperty<T>(
  * @returns the TNode object
  */
 export function createTNode(
-    type: TNodeType, index: number | null, tagName: string | null, attrs: TAttributes | null,
+    type: TNodeType, index: number, tagName: string | null, attrs: TAttributes | null,
     parent: TElementNode | TContainerNode | null, tViews: TView[] | null): TNode {
   ngDevMode && ngDevMode.tNode++;
   return {
@@ -1209,7 +1209,7 @@ export function elementStyleNamed<T>(
  * @param index The index of the element to update in the data array
  * @param value A value indicating if a given style should be added or removed.
  *   The expected shape of `value` is an object where keys are style names and the values
- *   are their corresponding values to set. If value is falsy than the style is remove. An absence
+ *   are their corresponding values to set. If value is falsy, then the style is removed. An absence
  *   of style does not cause that style to be removed. `NO_CHANGE` implies that no update should be
  *   performed.
  */
@@ -1620,7 +1620,7 @@ function scanForView(
       // found a view that should not be at this position - remove
       removeView(containerNode, i);
     } else {
-      // found a view with id grater than the one we are searching for
+      // found a view with id greater than the one we are searching for
       // which means that required view doesn't exist and can't be found at
       // later positions in the views array - stop the search here
       break;
@@ -2170,7 +2170,7 @@ export function bind<T>(value: T): T|NO_CHANGE {
 /**
  * Reserves slots for pure functions (`pureFunctionX` instructions)
  *
- * Binding for pure functions are store after the LNodes in the data array but before the binding.
+ * Bindings for pure functions are stored after the LNodes in the data array but before the binding.
  *
  *  ----------------------------------------------------------------------------
  *  |  LNodes ... | pure function bindings | regular bindings / interpolations |
@@ -2186,7 +2186,7 @@ export function bind<T>(value: T): T|NO_CHANGE {
  */
 export function reserveSlots(numSlots: number) {
   // Init the slots with a unique `NO_CHANGE` value so that the first change is always detected
-  // whether is happens or not during the first change detection pass - pure functions checks
+  // whether it happens or not during the first change detection pass - pure functions checks
   // might be skipped when short-circuited.
   data.length += numSlots;
   data.fill(NO_CHANGE, -numSlots);
@@ -2196,7 +2196,7 @@ export function reserveSlots(numSlots: number) {
 }
 
 /**
- * Sets up the binding index before execute any `pureFunctionX` instructions.
+ * Sets up the binding index before executing any `pureFunctionX` instructions.
  *
  * The index must be restored after the pure function is executed
  *
@@ -2451,9 +2451,9 @@ function assertDataNext(index: number, arr?: any[]) {
 }
 
 /**
- * On the first template pass the reserved slots should be set `NO_CHANGE`.
+ * On the first template pass, the reserved slots should be set `NO_CHANGE`.
  *
- * If not they might not have been actually reserved.
+ * If not, they might not have been actually reserved.
  */
 export function assertReservedSlotInitialized(slotOffset: number, numSlots: number) {
   if (firstTemplatePass) {

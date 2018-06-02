@@ -72,14 +72,14 @@ export function getNextLNode(node: LNode): LNode|null {
     const lView = node.data as LView;
     return lView.next ? (lView.next as LView).node : null;
   }
-  return node.tNode.next ? node.view.data[node.tNode.next !.index as number] : null;
+  return node.tNode.next ? node.view.data[node.tNode.next !.index] : null;
 }
 
 /** Retrieves the first child of a given node */
 export function getChildLNode(node: LNode): LNode|null {
   if (node.tNode.child) {
     const view = node.tNode.type === TNodeType.View ? node.data as LView : node.view;
-    return view.data[node.tNode.child.index as number];
+    return view.data[node.tNode.child.index];
   }
   return null;
 }
@@ -90,9 +90,9 @@ export function getParentLNode(node: LElementNode | LTextNode | LProjectionNode)
 export function getParentLNode(node: LViewNode): LContainerNode|null;
 export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null;
 export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null {
-  if (node.tNode.index === null) return null;
+  if (node.tNode.index === -1) return null;
   const parent = node.tNode.parent;
-  return parent ? node.view.data[parent.index as number] : node.view.node;
+  return parent ? node.view.data[parent.index] : node.view.node;
 }
 
 /**
@@ -508,25 +508,6 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: LVi
     return true;
   }
   return false;
-}
-
-/**
- * Inserts the provided node before the correct element in the DOM.
- *
- * The element insertion might be delayed {@link canInsertNativeNode}
- *
- * @param node Node to insert
- * @param currentView Current LView
- */
-export function insertChild(node: LNode, currentView: LView): void {
-  const parent = getParentLNode(node) !;
-  if (canInsertNativeNode(parent, currentView)) {
-    let nativeSibling: RNode|null = findNextRNodeSibling(node, null);
-    const renderer = currentView.renderer;
-    isProceduralRenderer(renderer) ?
-        renderer.insertBefore(parent.native !, node.native !, nativeSibling) :
-        parent.native !.insertBefore(node.native !, nativeSibling, false);
-  }
 }
 
 /**
