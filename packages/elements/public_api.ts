@@ -11,6 +11,7 @@
  * @description
  * Entry point for all public APIs of the `elements` package.
  */
+export {ComponentNgElementZoneStrategyFactory} from './src/component-factory-strategy-zone';
 export {NgElement, NgElementConfig, NgElementConstructor, WithProperties, createCustomElement} from './src/create-custom-element';
 export {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from './src/element-strategy';
 export {VERSION} from './src/version';
