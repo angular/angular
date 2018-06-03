@@ -88,23 +88,6 @@ export interface LView {
   cleanup: any[]|null;
 
   /**
-   * This number tracks the next lifecycle hook that needs to be run.
-   *
-   * If lifecycleStage === LifecycleStage.ON_INIT, the init hooks haven't yet been run
-   * and should be executed by the first r() instruction that runs OR the first
-   * cR() instruction that runs (so inits are run for the top level view before any
-   * embedded views).
-   *
-   * If lifecycleStage === LifecycleStage.CONTENT_INIT, the init hooks have been run, but
-   * the content hooks have not yet been run. They should be executed on the first
-   * r() instruction that runs.
-   *
-   * If lifecycleStage === LifecycleStage.VIEW_INIT, both the init hooks and content hooks
-   * have already been run.
-   */
-  lifecycleStage: LifecycleStage;
-
-  /**
    * The last LView or LContainer beneath this LView in the hierarchy.
    *
    * The tail allows us to quickly add a new state to the end of the view list
@@ -188,16 +171,25 @@ export const enum LViewFlags {
    * back into the parent view, `data` will be defined and `creationMode` will be
    * improperly reported as false.
    */
-  CreationMode = 0b0001,
+  CreationMode = 0b00001,
 
   /** Whether this view has default change detection strategy (checks always) or onPush */
-  CheckAlways = 0b0010,
+  CheckAlways = 0b00010,
 
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b0100,
+  Dirty = 0b00100,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b1000,
+  Attached = 0b01000,
+
+  /**
+   *  Whether or not the init hooks have run.
+   *
+   * If on, the init hooks haven't yet been run and should be executed by the first component that
+   * runs OR the first cR() instruction that runs (so inits are run for the top level view before
+   * any embedded views).
+   */
+  RunInit = 0b10000,
 }
 
 /** Interface necessary to work with view tree traversal */
@@ -420,17 +412,6 @@ export interface RootContext {
  * Odd indices: Hook function
  */
 export type HookData = (number | (() => void))[];
-
-/** Possible values of LView.lifecycleStage, used to determine which hooks to run.  */
-// TODO: Remove this enum when containerRefresh instructions are removed
-export const enum LifecycleStage {
-
-  /* Init hooks need to be run, if any. */
-  Init = 1,
-
-  /* Content hooks need to be run, if any. Init hooks have already run. */
-  AfterInit = 2,
-}
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.
