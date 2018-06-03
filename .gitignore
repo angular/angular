@@ -1,4 +1,5 @@
 .DS_STORE
+Thumbs.db
 
 /dist/
 bazel-*
@@ -18,6 +19,22 @@ modules/.settings
 .vscode
 modules/.vscode
 
+# IDEs and editors
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
 # Don't check in secret files
 *secret.js
 
@@ -30,3 +47,16 @@ yarn-error.log
 
 # rollup-test output
 /modules/rollup-test/dist/
+
+# misc
+/.sass-cache
+/connect.lock
+/coverage
+/libpeerconnection.log
+npm-debug.log
+testem.log
+/typings
+
+# e2e
+/e2e/*.js
+/e2e/*.map
