@@ -700,7 +700,7 @@ export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef
     const hostTNode = hostNode.tNode;
     const hostTView = hostNode.view.tView;
     if (!hostTNode.tViews) {
-      hostTNode.tViews = createTView(hostTView.directiveRegistry, hostTView.pipeRegistry);
+      hostTNode.tViews = createTView(-1, hostTView.directiveRegistry, hostTView.pipeRegistry);
     }
     ngDevMode && assertNotNull(hostTNode.tViews, 'TView must be allocated');
     di.templateRef = new TemplateRef<any>(

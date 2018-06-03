@@ -138,8 +138,8 @@ export function renderComponent<T>(
     clean: CLEAN_PROMISE,
   };
   const rootView: LView = createLView(
-      -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType),
-      createTView(null, null), null, rootContext,
+      rendererFactory.createRenderer(hostNode, componentDef.rendererType),
+      createTView(-1, null, null), null, rootContext,
       componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
   rootView.injector = opts.injector || null;
 
