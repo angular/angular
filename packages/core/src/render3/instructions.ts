@@ -211,10 +211,6 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   cleanup = newView && newView.cleanup;
   renderer = newView && newView.renderer;
 
-  if (newView && newView.bindingIndex < 0) {
-    newView.bindingIndex = newView.bindingStartIndex;
-  }
-
   if (host != null) {
     previousOrParentNode = host;
     isParent = true;
@@ -316,7 +312,6 @@ export function createLView<T>(
     renderer: renderer,
     tail: null,
     next: null,
-    bindingStartIndex: -1,
     bindingIndex: -1,
     template: template,
     context: context,
@@ -590,8 +585,7 @@ export function elementStart(
     index: number, name: string, attrs?: TAttributes | null,
     localRefs?: string[] | null): RElement {
   ngDevMode &&
-      assertEqual(
-          currentView.bindingStartIndex, -1, 'elements should be created before any bindings');
+      assertEqual(currentView.bindingIndex, -1, 'elements should be created before any bindings');
 
   ngDevMode && ngDevMode.rendererCreateElement++;
   const native: RElement = renderer.createElement(name);
@@ -801,7 +795,8 @@ export function createTView(
   return {
     node: null !,
     data: [],
-    childIndex: -1,  // Children set in addToViewTree(), if any
+    childIndex: -1,         // Children set in addToViewTree(), if any
+    bindingStartIndex: -1,  // Set in initBindings()
     directives: null,
     firstTemplatePass: true,
     initHooks: null,
@@ -1253,8 +1248,7 @@ export function elementStyle<T>(
  */
 export function text(index: number, value?: any): void {
   ngDevMode &&
-      assertEqual(
-          currentView.bindingStartIndex, -1, 'text nodes should be created before bindings');
+      assertEqual(currentView.bindingIndex, -1, 'text nodes should be created before bindings');
   ngDevMode && ngDevMode.rendererCreateTextNode++;
   const textNode = createTextNode(value, renderer);
   const node = createLNode(index, TNodeType.Element, textNode, null, null);
@@ -1356,8 +1350,7 @@ function addComponentLogic<T>(index: number, instance: T, def: ComponentDef<T>):
 export function baseDirectiveCreate<T>(
     index: number, directive: T, directiveDef: DirectiveDef<T>| ComponentDef<T>): T {
   ngDevMode &&
-      assertEqual(
-          currentView.bindingStartIndex, -1, 'directives should be created before any bindings');
+      assertEqual(currentView.bindingIndex, -1, 'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
 
   Object.defineProperty(
@@ -1499,9 +1492,9 @@ export function createLContainer(
 export function container(
     index: number, template?: ComponentTemplate<any>, tagName?: string | null, attrs?: TAttributes,
     localRefs?: string[] | null): void {
-  ngDevMode && assertEqual(
-                   currentView.bindingStartIndex, -1,
-                   'container nodes should be created before any bindings');
+  ngDevMode &&
+      assertEqual(
+          currentView.bindingIndex, -1, 'container nodes should be created before any bindings');
 
   const currentParent = isParent ? previousOrParentNode : getParentLNode(previousOrParentNode) !;
   const lContainer = createLContainer(currentParent, currentView, template);
@@ -2150,12 +2143,12 @@ export const NO_CHANGE = {} as NO_CHANGE;
  */
 function initBindings() {
   ngDevMode && assertEqual(
-                   currentView.bindingStartIndex, -1,
-                   'Binding start index should only be set once, when null');
-  ngDevMode && assertEqual(
                    currentView.bindingIndex, -1,
                    'Binding index should not yet be set ' + currentView.bindingIndex);
-  currentView.bindingIndex = currentView.bindingStartIndex = data.length;
+  if (currentView.tView.bindingStartIndex === -1) {
+    currentView.tView.bindingStartIndex = data.length;
+  }
+  currentView.bindingIndex = currentView.tView.bindingStartIndex;
 }
 
 /**
@@ -2176,10 +2169,10 @@ export function bind<T>(value: T): T|NO_CHANGE {
  *  |  LNodes ... | pure function bindings | regular bindings / interpolations |
  *  ----------------------------------------------------------------------------
  *                                         ^
- *                                         LView.bindingStartIndex
+ *                                         TView.bindingStartIndex
  *
- * Pure function instructions are given an offset from LView.bindingStartIndex.
- * Subtracting the offset from LView.bindingStartIndex gives the first index where the bindings
+ * Pure function instructions are given an offset from TView.bindingStartIndex.
+ * Subtracting the offset from TView.bindingStartIndex gives the first index where the bindings
  * are stored.
  *
  * NOTE: reserveSlots instructions are only ever allowed at the very end of the creation block
@@ -2204,7 +2197,7 @@ export function reserveSlots(numSlots: number) {
  */
 export function moveBindingIndexToReservedSlot(offset: number): number {
   const currentSlot = currentView.bindingIndex;
-  currentView.bindingIndex = currentView.bindingStartIndex - offset;
+  currentView.bindingIndex = currentView.tView.bindingStartIndex - offset;
   return currentSlot;
 }
 
@@ -2388,18 +2381,18 @@ export function consumeBinding(): any {
 /** Updates binding if changed, then returns whether it was updated. */
 export function bindingUpdated(value: any): boolean {
   ngDevMode && assertNotEqual(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
+  if (currentView.bindingIndex === -1) initBindings();
 
-  if (currentView.bindingStartIndex < 0) {
-    initBindings();
+  if (currentView.bindingIndex >= data.length) {
+    data[currentView.bindingIndex++] = value;
   } else if (isDifferent(data[currentView.bindingIndex], value)) {
     throwErrorIfNoChangesMode(
         creationMode, checkNoChangesMode, data[currentView.bindingIndex], value);
+    data[currentView.bindingIndex++] = value;
   } else {
     currentView.bindingIndex++;
     return false;
   }
-
-  data[currentView.bindingIndex++] = value;
   return true;
 }
 
@@ -2457,7 +2450,7 @@ function assertDataNext(index: number, arr?: any[]) {
  */
 export function assertReservedSlotInitialized(slotOffset: number, numSlots: number) {
   if (firstTemplatePass) {
-    const startIndex = currentView.bindingStartIndex - slotOffset;
+    const startIndex = currentView.tView.bindingStartIndex - slotOffset;
     for (let i = 0; i < numSlots; i++) {
       assertEqual(
           data[startIndex + i], NO_CHANGE,

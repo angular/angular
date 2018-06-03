@@ -60,14 +60,6 @@ export interface LView {
   readonly renderer: Renderer3;
 
   /**
-   * The binding start index is the index at which the nodes array
-   * starts to store bindings only. Saving this value ensures that we
-   * will begin reading bindings at the correct point in the array when
-   * we are in update mode.
-   */
-  bindingStartIndex: number;
-
-  /**
    * The binding index we should access next.
    *
    * This is stored so that bindings can continue where they left off
@@ -239,6 +231,14 @@ export interface TView {
 
   /** Static data equivalent of LView.data[]. Contains TNodes. */
   data: TData;
+
+  /**
+   * The binding start index is the index at which the data array
+   * starts to store bindings only. Saving this value ensures that we
+   * will begin reading bindings at the correct point in the array when
+   * we are in update mode.
+   */
+  bindingStartIndex: number;
 
   /**
    * Index of the host node of the first LView or LContainer beneath this LView in
