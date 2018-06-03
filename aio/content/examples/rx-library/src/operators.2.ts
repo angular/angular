@@ -10,7 +10,7 @@ const squareOdd = of(1, 2, 3, 4, 5)
     map(n => n * n)
   );
 
-// Subscribe to get values
+// 구독을 시작합니다.
 squareOdd.subscribe(x => console.log(x));
 
 // #enddocregion
