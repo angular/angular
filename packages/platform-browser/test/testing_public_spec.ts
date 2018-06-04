@@ -103,8 +103,10 @@ class CompUsingModuleDirectiveAndPipe {
 class SomeLibModule {
 }
 
-@Component(
-    {selector: 'comp', templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'})
+@Component({
+  selector: 'comp',
+  templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
+})
 class CompWithUrlTemplate {
 }
 
