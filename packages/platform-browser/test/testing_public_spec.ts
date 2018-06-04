@@ -104,7 +104,7 @@ class SomeLibModule {
 }
 
 @Component(
-    {selector: 'comp', templateUrl: '/base/packages/platform-browser/test/static_assets/test.html'})
+    {selector: 'comp', templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'})
 class CompWithUrlTemplate {
 }
 
