@@ -16,7 +16,6 @@ describe('MatTabNavBar', () => {
       imports: [MatTabsModule],
       declarations: [
         SimpleTabNavBarTestApp,
-        TabLink,
         TabLinkWithNgIf,
         TabLinkWithTabIndexBinding,
         TabLinkWithNativeTabindexAttr,
@@ -274,16 +273,6 @@ describe('MatTabNavBar', () => {
 
     expect(tabLink.tabIndex).toBe(3, 'Expected the tabIndex to be have been set to 3.');
   });
-
-  it('should set role on tablist and tab', () => {
-    const fixture = TestBed.createComponent(TabLink);
-    fixture.detectChanges();
-
-    const tabList = fixture.debugElement.query(By.css('.mat-tab-links'));
-    expect(tabList.nativeElement.getAttribute('role')).toEqual('tablist');
-    const tabLinkElement = tabList.query(By.directive(MatTabLink)).nativeElement;
-    expect(tabLinkElement.getAttribute('role')).toEqual('tab');
-  });
 });
 
 @Component({
@@ -311,15 +300,6 @@ class SimpleTabNavBarTestApp {
 
   activeIndex = 0;
 }
-
-@Component({
-  template: `
-    <nav mat-tab-nav-bar>
-      <a mat-tab-link role="willbeoverridden">Link</a>
-    </nav>
-  `
-})
-class TabLink {}
 
 @Component({
   template: `
