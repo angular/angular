@@ -1,4 +1,4 @@
-const { mapObject, parseAttributes, renderAttributes } = require('./utils');
+const { mergeProperties, mapObject, parseAttributes, renderAttributes } = require('./utils');
 
 describe('utils', () => {
   describe('mapObject', () => {
@@ -94,6 +94,36 @@ describe('utils', () => {
 
     it('should handle an empty object', () => {
       expect(renderAttributes({ })).toEqual('');
+    });
+  });
+
+  describe('mergeProperties', () => {
+    it('should write specified properties from the source to the target', () => {
+      const source = { a: 1, b: 2, c: 3 };
+      const target = { };
+      mergeProperties(target, source, ['a', 'b']);
+      expect(target).toEqual({ a: 1, b: 2 });
+    });
+
+    it('should not overwrite target properties that are not specified', () => {
+      const source = { a: 1, b: 2, c: 3 };
+      const target = { b: 10 };
+      mergeProperties(target, source, ['a']);
+      expect(target).toEqual({ a: 1, b: 10 });
+    });
+
+    it('should not overwrite target properties that are specified but do not exist in the source', () => {
+      const source = { a: 1 };
+      const target = { b: 10 };
+      mergeProperties(target, source, ['a', 'b']);
+      expect(target).toEqual({ a: 1, b: 10 });
+    });
+
+    it('should overwrite target properties even if they are `undefined` in the source', () => {
+      const source = { a: undefined };
+      const target = { a: 10 };
+      mergeProperties(target, source, ['a']);
+      expect(target).toEqual({ a: undefined });
     });
   });
 });
