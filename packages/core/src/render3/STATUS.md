@@ -271,8 +271,8 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `insertBefore()`                    |  ✅     |
 | `removeChild()`                     |  ✅     |
 | `selectRootElement()`               |  ✅     |
-| `parentNode()`                      |  ❌     |
-| `nextSibling()`                     |  ❌     |
+| `parentNode()`                      |  n/a    |
+| `nextSibling()`                     |  n/a    |
 | `setAttribute()`                    |  ✅     |
 | `removeAttribute()`                 |  ✅     |
 | `addClass()`                        |  ✅     |

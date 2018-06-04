@@ -21,7 +21,6 @@ import {ComponentFixture, TemplateFixture, createComponent, createDirective, ren
 
 
 
-
 /**
  * Helper function to check if a given candidate object resembles ElementRef
  * @param candidate

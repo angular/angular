@@ -183,7 +183,7 @@ export const enum LViewFlags {
    * any embedded views).
    */
   RunInit = 0b010000,
-  
+
   /** Whether or not this view is destroyed. */
   Destroyed = 0b100000,
 }
