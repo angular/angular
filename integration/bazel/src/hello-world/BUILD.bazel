@@ -15,7 +15,7 @@ ng_module(
         ["*.ts"],
         exclude = ["*.spec.ts"],
     ),
-    assets = [":hello-world-styles.css"],
+    assets = [":hello-world-styles"],
     tsconfig = "//src:tsconfig.json",
     # FIXME(alexeagle): the rxjs dep should come from Angular, but if we use the
     # npm distro of angular there is no ts_library rule to propagate the dep.
