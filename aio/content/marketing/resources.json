@@ -175,6 +175,12 @@
             "rev": true,
             "title": "Angular IDE by Webclipse",
             "url": "https://www.genuitec.com/products/angular-ide"
+          },
+          "amexio-canvas": {
+            "desc": "Build Angular APP based on AMEXIO Component using drag and drop web based IDE",
+            "rev": true,
+            "title": "Amexio Canvas - Drag and Drop web based IDE",
+            "url": "https://canvas.amexio.org/"
           }
         }
       },
