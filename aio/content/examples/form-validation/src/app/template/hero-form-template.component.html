@@ -2,28 +2,18 @@
 <div class="container">
 
   <h1>Template-Driven Form</h1>
-  <!-- #docregion cross-validation -->
   <!-- #docregion cross-validation-register-validator -->
   <form #heroForm="ngForm" appIdentityRevealed>
   <!-- #enddocregion cross-validation-register-validator -->
-  <!-- #enddocregion cross-validation -->
     <div [hidden]="heroForm.submitted">
-      <!-- #docregion cross-validation -->
-      <!-- #docregion cross-validation-error-class -->
       <div class="cross-validation" [class.cross-validation-error]="heroForm.errors?.identityRevealed && (heroForm.touched || heroForm.dirty)">
-      <!-- #enddocregion cross-validation-error-class -->
-      <!-- #enddocregion cross-validation -->
         <div class="form-group">
           <label for="name">Name</label>
           <!-- #docregion name-with-error-msg -->
           <!-- #docregion name-input -->
-          <!-- #docregion cross-validation -->
-          <!-- #docregion cross-validation-error-class -->
           <input id="name" name="name" class="form-control" 
                 required minlength="4" appForbiddenName="bob"
                 [(ngModel)]="hero.name" #name="ngModel" >
-          <!-- #enddocregion cross-validation-error-class-->
-          <!-- #enddocregion cross-validation-->
           <!-- #enddocregion name-input -->
 
           <div *ngIf="name.invalid && (name.dirty || name.touched)"
@@ -45,28 +35,16 @@
 
         <div class="form-group">
           <label for="alterEgo">Alter Ego</label>
-          <!-- #docregion cross-validation -->
-          <!-- #docregion cross-validation-error-class -->
           <input id="alterEgo" class="form-control"
                 name="alterEgo" [(ngModel)]="hero.alterEgo" >
-          <!-- #enddocregion cross-validation-error-class -->
-          <!-- #enddocregion cross-validation -->
         </div>
 
-        <!-- #docregion cross-validation -->
         <!-- #docregion cross-validation-error-message -->
         <div *ngIf="heroForm.errors?.identityRevealed && (heroForm.touched || heroForm.dirty)" class="cross-validation-error-message alert alert-danger">
             Name cannot match alter ego.
         </div>
         <!-- #enddocregion cross-validation-error-message -->
-        <!-- #enddocregion cross-validation -->
-
-      <!-- #docregion cross-validation-->
-      <!-- #docregion cross-validation-error-class -->
       </div>
-      <!-- #enddocregion cross-validation-error-class -->
-      <!-- #enddocregion cross-validation -->
-
 
       <div class="form-group">
         <label for="power">Hero Power</label>
@@ -90,9 +68,5 @@
       <p>You've submitted your hero, {{ heroForm.value.name }}!</p>
       <button (click)="heroForm.resetForm({})">Add new hero</button>
     </div>
-
-  <!-- #docregion cross-validation -->
   </form>
-  <!-- #enddocregion cross-validation -->
-
 </div>
