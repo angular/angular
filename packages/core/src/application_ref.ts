@@ -396,7 +396,7 @@ export class ApplicationRef {
     this._enforceNoNewChanges = isDevMode();
 
     this._zone.onMicrotaskEmpty.subscribe(
-        {next: () => { this._zone.run(() => { this.tick(); }); }});
+        {next: () => { this._zone.runGuarded(() => { this.tick(); }); }});
 
     const isCurrentlyStable = new Observable<boolean>((observer: Observer<boolean>) => {
       this._stable = this._zone.isStable && !this._zone.hasPendingMacrotasks &&
