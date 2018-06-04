@@ -704,12 +704,12 @@ export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef
     const hostTNode = hostNode.tNode;
     const hostTView = hostNode.view.tView;
     if (!hostTNode.tViews) {
-      hostTNode.tViews = createTView(-1, hostTView.directiveRegistry, hostTView.pipeRegistry);
+      hostTNode.tViews = createTView(
+          -1, hostNode.data.template !, hostTView.directiveRegistry, hostTView.pipeRegistry);
     }
     ngDevMode && assertNotNull(hostTNode.tViews, 'TView must be allocated');
     di.templateRef = new TemplateRef<any>(
-        getOrCreateElementRef(di), hostTNode.tViews as TView, hostNode.data.template !,
-        getRenderer(), hostNode.data.queries);
+        getOrCreateElementRef(di), hostTNode.tViews as TView, getRenderer(), hostNode.data.queries);
   }
   return di.templateRef;
 }
@@ -718,15 +718,14 @@ class TemplateRef<T> implements viewEngine_TemplateRef<T> {
   readonly elementRef: viewEngine_ElementRef;
 
   constructor(
-      elementRef: viewEngine_ElementRef, private _tView: TView,
-      private _template: ComponentTemplate<T>, private _renderer: Renderer3,
+      elementRef: viewEngine_ElementRef, private _tView: TView, private _renderer: Renderer3,
       private _queries: LQueries|null) {
     this.elementRef = elementRef;
   }
 
   createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> {
-    const viewNode = renderEmbeddedTemplate(
-        null, this._tView, this._template, context, this._renderer, this._queries);
-    return new EmbeddedViewRef(viewNode, this._template, context);
+    const viewNode =
+        renderEmbeddedTemplate(null, this._tView, context, this._renderer, this._queries);
+    return new EmbeddedViewRef(viewNode, this._tView.template !as ComponentTemplate<T>, context);
   }
 }

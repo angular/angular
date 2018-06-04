@@ -127,11 +127,6 @@ export interface LView {
   tView: TView;
 
   /**
-   * For dynamically inserted views, the template function to refresh the view.
-   */
-  template: ComponentTemplate<{}>|null;
-
-  /**
    * - For embedded views, the context with which to render the template.
    * - For root view of the root component the context contains change detection data.
    * - `null` otherwise.
@@ -211,6 +206,12 @@ export interface TView {
    * If this is -1, then this is a component view or a dynamically created view.
    */
   readonly id: number;
+
+  /**
+   * The template function used to refresh the view of dynamically created views
+   * and components. Will be null for inline views.
+   */
+  template: ComponentTemplate<{}>|null;
 
   /**
    * Pointer to the `TNode` that represents the root of the view.
