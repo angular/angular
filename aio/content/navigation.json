@@ -336,13 +336,13 @@
             {
               "url": "guide/observables-in-angular",
               "title!": "Observables in Angular",
-              "title": "Angular의 옵저버블 구현방식",
+              "title": "Angular에서 옵저버블 활용하기",
               "tooltip": ""
             },
             {
               "url": "guide/practical-observable-usage",
               "title!": "Practical Usage",
-              "title": "기본 예제",
+              "title": "실전 예제",
               "tooltip": ""
             },
             {
