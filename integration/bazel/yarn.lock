@@ -10,6 +10,7 @@
 "@angular/bazel@file:../../dist/packages-dist/bazel":
   version "6.0.0-rc.5"
   dependencies:
+    "@bazel/typescript" "^0.15.0"
     "@types/node" "6.0.84"
     "@types/shelljs" "0.7.7"
     protobufjs "5.0.0"
@@ -26,7 +27,7 @@
     chokidar "^1.4.2"
     minimist "^1.2.0"
     reflect-metadata "^0.1.2"
-    tsickle "^0.27.2"
+    tsickle "^0.29.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
   version "6.0.0-rc.5"
@@ -47,6 +48,10 @@
   version "6.0.0-rc.5"
   dependencies:
     tslib "^1.9.0"
+
+"@bazel/typescript@^0.15.0":
+  version "0.15.0"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.15.0.tgz#bd588b8b9fcc5763c3f14787fdb29ba4e127258d"
 
 "@types/events@*":
   version "1.2.0"
@@ -1515,9 +1520,9 @@ tree-kill@^1.1.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.0.tgz#5846786237b4239014f05db156b643212d4c6f36"
 
-tsickle@^0.27.2:
-  version "0.27.5"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.27.5.tgz#41e1a41a5acf971cbb2b0558a9590779234d591f"
+tsickle@^0.29.0:
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.29.0.tgz#812806554bb46c1aa16eb0fe2a051da95ca8f5a4"
   dependencies:
     minimist "^1.2.0"
     mkdirp "^0.5.1"
@@ -1539,7 +1544,7 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
 
 "typescript@file:../../node_modules/typescript":
-  version "2.8.3"
+  version "2.7.2"
 
 ultron@1.0.x:
   version "1.0.2"
