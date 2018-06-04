@@ -1,3 +1,5 @@
+const {mergeProperties} = require('../../helpers/utils');
+
 /**
  * Decorators in the Angular code base are made up from three code items:
  *
@@ -47,6 +49,7 @@ module.exports = function mergeDecoratorDocs(log) {
   return {
     $runAfter: ['processing-docs'],
     $runBefore: ['docs-processed'],
+    propertiesToMerge: [],
     makeDecoratorCalls: [
       {type: '', description: 'toplevel', functionName: 'makeDecorator'},
       {type: 'Prop', description: 'property', functionName: 'makePropDecorator'},
@@ -55,6 +58,7 @@ module.exports = function mergeDecoratorDocs(log) {
     $process: function(docs) {
 
       var makeDecoratorCalls = this.makeDecoratorCalls;
+      var propertiesToMerge = this.propertiesToMerge;
       var docsToMerge = Object.create(null);
 
       docs.forEach(function(doc) {
@@ -88,9 +92,9 @@ module.exports = function mergeDecoratorDocs(log) {
           log.debug(
               'mergeDecoratorDocs: merging', doc.name, 'into', decoratorDoc.name,
               callMember.description.substring(0, 50));
+
           // Merge the documentation found in this call signature into the original decorator
-          decoratorDoc.description = callMember.description;
-          decoratorDoc.usageNotes = callMember.usageNotes;
+          mergeProperties(decoratorDoc, callMember, propertiesToMerge);
 
           // remove doc from its module doc's exports
           doc.moduleDoc.exports =
