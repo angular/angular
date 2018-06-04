@@ -93,15 +93,21 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
 
 
 // HOME NAV-LINK
-.nav-link.home img {
-  position: relative;
-  margin-top: -21px;
-  top: 12px;
-  height: 40px;
+.nav-link.home {
+  cursor: pointer;
+  margin: 0 16px 0 0;
+  padding: 21px 0;
 
-  @media(max-width: 992px) {
-    &:hover {
-      transform: scale(1.1);
+  img {
+    position: relative;
+    margin-top: -21px;
+    top: 12px;
+    height: 40px;
+
+    @media(max-width: 992px) {
+      &:hover {
+        transform: scale(1.1);
+      }
     }
   }
 }
@@ -143,10 +149,6 @@ aio-top-menu {
     padding: 24px 16px;
     cursor: pointer;
 
-    &.home{
-      margin-right: 20px;
-    }
-    
     &:focus {
       background: rgba($white, 0.15);
       border-radius: 4px;
