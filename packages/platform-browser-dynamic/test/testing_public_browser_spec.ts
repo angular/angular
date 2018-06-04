@@ -26,7 +26,7 @@ class FancyService {
 
 @Component({
   selector: 'external-template-comp',
-  templateUrl: '/base/packages/platform-browser/test/static_assets/test.html'
+  templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
 })
 class ExternalTemplateComp {
 }
@@ -48,7 +48,7 @@ class BadTemplateUrl {
 
       it('should run async tests with ResourceLoaders', async(() => {
            const resourceLoader = new ResourceLoaderImpl();
-           resourceLoader.get('/base/packages/platform-browser/test/static_assets/test.html')
+           resourceLoader.get('/base/angular/packages/platform-browser/test/static_assets/test.html')
                .then(() => { actuallyDone = true; });
          }),
          10000);  // Long timeout here because this test makes an actual ResourceLoader.
