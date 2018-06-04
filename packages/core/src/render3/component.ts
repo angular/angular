@@ -139,7 +139,7 @@ export function renderComponent<T>(
   };
   const rootView: LView = createLView(
       rendererFactory.createRenderer(hostNode, componentDef.rendererType),
-      createTView(-1, null, null), null, rootContext,
+      createTView(-1, null, null, null), rootContext,
       componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
   rootView.injector = opts.injector || null;
 
@@ -160,7 +160,7 @@ export function renderComponent<T>(
 
     executeInitAndContentHooks();
     setHostBindings(ROOT_DIRECTIVE_INDICES);
-    detectChangesInternal(elementNode.data as LView, elementNode, componentDef, component);
+    detectChangesInternal(elementNode.data as LView, elementNode, component);
   } finally {
     leaveView(oldView);
     if (rendererFactory.end) rendererFactory.end();
