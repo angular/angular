@@ -1,0 +1,88 @@
+load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+# Test that should only be run in node
+NODE_ONLY = [
+    "**/*_node_only_spec.ts",
+    "aot/**/*.ts",
+]
+
+UTILS = [
+    "aot/test_util.ts",
+]
+
+ts_library(
+    name = "test_utils",
+    srcs = UTILS,
+    visibility = [
+        "//packages/compiler-cli/test:__subpackages__",
+        "//packages/compiler/test:__subpackages__",
+    ],
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = NODE_ONLY + UTILS,
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/compiler/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/testing",
+    ],
+)
+
+ts_library(
+    name = "test_node_only_lib",
+    testonly = 1,
+    srcs = glob(
+        NODE_ONLY,
+        exclude = UTILS,
+    ),
+    deps = [
+        ":test_lib",
+        ":test_utils",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/compiler/testing",
+        "//packages/core",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    data = [
+        "//packages/animations:npm_package",
+        "//packages/common:npm_package",
+        "//packages/core:npm_package",
+    ],
+    deps = [
+        ":test_lib",
+        ":test_node_only_lib",
+        "//packages/core",
+        "//tools/testing:node",
+    ],
+)
+
+ts_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib",
+    ],
+)

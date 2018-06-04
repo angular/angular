@@ -56,7 +56,7 @@ export class Meta {
 
   getTag(attrSelector: string): HTMLMetaElement|null {
     if (!attrSelector) return null;
-    return this._dom.querySelector(this._doc, `meta[${attrSelector}]`);
+    return this._dom.querySelector(this._doc, `meta[${attrSelector}]`) || null;
   }
 
   getTags(attrSelector: string): HTMLMetaElement[] {

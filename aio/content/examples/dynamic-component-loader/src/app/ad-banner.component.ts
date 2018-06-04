@@ -1,12 +1,12 @@
 // #docregion
-import { Component, Input, AfterViewInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ComponentFactoryResolver, OnDestroy } from '@angular/core';
 
 import { AdDirective } from './ad.directive';
 import { AdItem }      from './ad-item';
 import { AdComponent } from './ad.component';
 
 @Component({
-  selector: 'add-banner',
+  selector: 'app-ad-banner',
   // #docregion ad-host
   template: `
               <div class="ad-banner">
@@ -17,16 +17,15 @@ import { AdComponent } from './ad.component';
   // #enddocregion ad-host
 })
 // #docregion class
-export class AdBannerComponent implements AfterViewInit, OnDestroy {
+export class AdBannerComponent implements OnInit, OnDestroy {
   @Input() ads: AdItem[];
-  currentAddIndex: number = -1;
+  currentAdIndex = -1;
   @ViewChild(AdDirective) adHost: AdDirective;
-  subscription: any;
   interval: any;
 
   constructor(private componentFactoryResolver: ComponentFactoryResolver) { }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.loadComponent();
     this.getAds();
   }
@@ -36,8 +35,8 @@ export class AdBannerComponent implements AfterViewInit, OnDestroy {
   }
 
   loadComponent() {
-    this.currentAddIndex = (this.currentAddIndex + 1) % this.ads.length;
-    let adItem = this.ads[this.currentAddIndex];
+    this.currentAdIndex = (this.currentAdIndex + 1) % this.ads.length;
+    let adItem = this.ads[this.currentAdIndex];
 
     let componentFactory = this.componentFactoryResolver.resolveComponentFactory(adItem.component);
 

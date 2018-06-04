@@ -1,13 +1,9 @@
 {
+  "extends": "../tsconfig-build.json",
+
   "compilerOptions": {
     "baseUrl": ".",
-    "declaration": true,
-    "stripInternal": true,
-    "experimentalDecorators": true,
-    "strictNullChecks": true,
-    "module": "es2015",
-    "moduleResolution": "node",
-    "outDir": "../../dist/packages/upgrade",
+    "rootDir": ".",
     "paths": {
       "@angular/core": ["../../dist/packages/core"],
       "@angular/common": ["../../dist/packages/common"],
@@ -15,23 +11,19 @@
       "@angular/platform-browser": ["../../dist/packages/platform-browser"],
       "@angular/platform-browser-dynamic": ["../../dist/packages/platform-browser-dynamic"]
     },
-    "rootDir": ".",
-    "sourceMap": true,
-    "inlineSources": true,
-    "target": "es2015",
-    "skipLibCheck": true,
-    "lib": [ "es2015", "dom" ],
-    // don't auto-discover @types/node, it results in a ///<reference in the .d.ts output
-    "types": []
+    "outDir": "../../dist/packages/upgrade"
   },
+
   "files": [
     "public_api.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts"
   ],
+
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "upgrade.js",
     "flatModuleId": "@angular/upgrade"
   }
 }

@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵlooseIdentical as looseIdentical} from '@angular/core';
+import {isDevMode, ɵlooseIdentical as looseIdentical} from '@angular/core';
+
 import {FormArray, FormControl, FormGroup} from '../model';
 import {Validators} from '../validators';
 import {AbstractControlDirective} from './abstract_control_directive';
@@ -21,6 +22,7 @@ import {NumberValueAccessor} from './number_value_accessor';
 import {RadioControlValueAccessor} from './radio_control_value_accessor';
 import {RangeValueAccessor} from './range_value_accessor';
 import {FormArrayName} from './reactive_directives/form_group_name';
+import {ReactiveErrors} from './reactive_errors';
 import {SelectControlValueAccessor} from './select_control_value_accessor';
 import {SelectMultipleControlValueAccessor} from './select_multiple_control_value_accessor';
 import {AsyncValidator, AsyncValidatorFn, Validator, ValidatorFn} from './validators';
@@ -38,23 +40,10 @@ export function setUpControl(control: FormControl, dir: NgControl): void {
   control.asyncValidator = Validators.composeAsync([control.asyncValidator !, dir.asyncValidator]);
   dir.valueAccessor !.writeValue(control.value);
 
-  // view -> model
-  dir.valueAccessor !.registerOnChange((newValue: any) => {
-    dir.viewToModelUpdate(newValue);
-    control.markAsDirty();
-    control.setValue(newValue, {emitModelToViewChange: false});
-  });
+  setUpViewChangePipeline(control, dir);
+  setUpModelChangePipeline(control, dir);
 
-  // touched
-  dir.valueAccessor !.registerOnTouched(() => control.markAsTouched());
-
-  control.registerOnChange((newValue: any, emitModelEvent: boolean) => {
-    // control -> view
-    dir.valueAccessor !.writeValue(newValue);
-
-    // control -> ngModel
-    if (emitModelEvent) dir.viewToModelUpdate(newValue);
-  });
+  setUpBlurPipeline(control, dir);
 
   if (dir.valueAccessor !.setDisabledState) {
     control.registerOnDisabledChange(
@@ -90,6 +79,42 @@ export function cleanUpControl(control: FormControl, dir: NgControl) {
   });
 
   if (control) control._clearChangeFns();
+}
+
+function setUpViewChangePipeline(control: FormControl, dir: NgControl): void {
+  dir.valueAccessor !.registerOnChange((newValue: any) => {
+    control._pendingValue = newValue;
+    control._pendingChange = true;
+    control._pendingDirty = true;
+
+    if (control.updateOn === 'change') updateControl(control, dir);
+  });
+}
+
+function setUpBlurPipeline(control: FormControl, dir: NgControl): void {
+  dir.valueAccessor !.registerOnTouched(() => {
+    control._pendingTouched = true;
+
+    if (control.updateOn === 'blur' && control._pendingChange) updateControl(control, dir);
+    if (control.updateOn !== 'submit') control.markAsTouched();
+  });
+}
+
+function updateControl(control: FormControl, dir: NgControl): void {
+  if (control._pendingDirty) control.markAsDirty();
+  control.setValue(control._pendingValue, {emitModelToViewChange: false});
+  dir.viewToModelUpdate(control._pendingValue);
+  control._pendingChange = false;
+}
+
+function setUpModelChangePipeline(control: FormControl, dir: NgControl): void {
+  control.registerOnChange((newValue: any, emitModelEvent: boolean) => {
+    // control -> view
+    dir.valueAccessor !.writeValue(newValue);
+
+    // control -> ngModel
+    if (emitModelEvent) dir.viewToModelUpdate(newValue);
+  });
 }
 
 export function setUpFormContainer(
@@ -146,14 +171,29 @@ export function isBuiltInAccessor(valueAccessor: ControlValueAccessor): boolean 
   return BUILTIN_ACCESSORS.some(a => valueAccessor.constructor === a);
 }
 
+export function syncPendingControls(form: FormGroup, directives: NgControl[]): void {
+  form._syncPendingControls();
+  directives.forEach(dir => {
+    const control = dir.control as FormControl;
+    if (control.updateOn === 'submit' && control._pendingChange) {
+      dir.viewToModelUpdate(control._pendingValue);
+      control._pendingChange = false;
+    }
+  });
+}
+
 // TODO: vsavkin remove it once https://github.com/angular/angular/issues/3011 is implemented
 export function selectValueAccessor(
     dir: NgControl, valueAccessors: ControlValueAccessor[]): ControlValueAccessor|null {
   if (!valueAccessors) return null;
 
+  if (!Array.isArray(valueAccessors))
+    _throwError(dir, 'Value accessor was not provided as an array for form control with');
+
   let defaultAccessor: ControlValueAccessor|undefined = undefined;
   let builtinAccessor: ControlValueAccessor|undefined = undefined;
   let customAccessor: ControlValueAccessor|undefined = undefined;
+
   valueAccessors.forEach((v: ControlValueAccessor) => {
     if (v.constructor === DefaultValueAccessor) {
       defaultAccessor = v;
@@ -176,4 +216,23 @@ export function selectValueAccessor(
 
   _throwError(dir, 'No valid value accessor for form control with');
   return null;
+}
+
+export function removeDir<T>(list: T[], el: T): void {
+  const index = list.indexOf(el);
+  if (index > -1) list.splice(index, 1);
+}
+
+// TODO(kara): remove after deprecation period
+export function _ngModelWarning(
+    name: string, type: {_ngModelWarningSentOnce: boolean},
+    instance: {_ngModelWarningSent: boolean}, warningConfig: string | null) {
+  if (!isDevMode() || warningConfig === 'never') return;
+
+  if (((warningConfig === null || warningConfig === 'once') && !type._ngModelWarningSentOnce) ||
+      (warningConfig === 'always' && !instance._ngModelWarningSent)) {
+    ReactiveErrors.ngModelWarning(name);
+    type._ngModelWarningSentOnce = true;
+    instance._ngModelWarningSent = true;
+  }
 }

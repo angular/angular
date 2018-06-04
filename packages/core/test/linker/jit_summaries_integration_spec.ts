@@ -9,12 +9,14 @@
 import {ResourceLoader} from '@angular/compiler';
 import {CompileMetadataResolver} from '@angular/compiler/src/metadata_resolver';
 import {MockResourceLoader} from '@angular/compiler/testing/src/resource_loader_mock';
-import {Component, Directive, Injectable, NgModule, Pipe, Type} from '@angular/core';
+import {Component, Directive, Injectable, NgModule, OnDestroy, Pipe, Type} from '@angular/core';
 import {TestBed, async, getTestBed} from '@angular/core/testing';
+import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('Jit Summaries', () => {
     let instances: Map<any, Base>;
+    let summaries: () => any[];
 
     class SomeDep {}
 
@@ -47,6 +49,18 @@ export function main() {
 
     class SomeService extends Base {}
 
+    // Move back into the it which needs it after https://github.com/angular/tsickle/issues/547 is
+    // fixed.
+    @Component({template: '<div someDir>{{1 | somePipe}}</div>'})
+    class TestComp3 {
+      constructor(service: SomeService) {}
+    }
+
+    @Component({template: ''})
+    class TestCompErrorOnDestroy implements OnDestroy {
+      ngOnDestroy() {}
+    }
+
     function resetTestEnvironmentWithSummaries(summaries?: () => any[]) {
       const {platform, ngModule} = getTestBed();
       TestBed.resetTestEnvironment();
@@ -61,7 +75,7 @@ export function main() {
       TestBed.configureCompiler({providers: [{provide: ResourceLoader, useValue: resourceLoader}]});
       TestBed.configureTestingModule({imports: [SomeModule], providers: [SomeDep]});
 
-      TestBed.compileComponents().then(() => {
+      let summariesPromise = TestBed.compileComponents().then(() => {
         const metadataResolver = TestBed.get(CompileMetadataResolver) as CompileMetadataResolver;
         const summaries = [
           metadataResolver.getNgModuleSummary(SomeModule),
@@ -75,10 +89,12 @@ export function main() {
           metadataResolver.getInjectableSummary(SomeService)
         ];
         clearMetadata();
-        resetTestEnvironmentWithSummaries(() => summaries);
+        TestBed.resetTestingModule();
+        return () => summaries;
       });
 
       resourceLoader.flush();
+      return summariesPromise;
     }
 
     function setMetadata(resourceLoader: MockResourceLoader) {
@@ -115,12 +131,14 @@ export function main() {
 
     beforeEach(async(() => {
       instances = new Map<any, any>();
-      createSummaries();
+      createSummaries().then(s => summaries = s);
     }));
 
     afterEach(() => { resetTestEnvironmentWithSummaries(); });
 
     it('should use directive metadata from summaries', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
       @Component({template: '<div someDir></div>'})
       class TestComp {
       }
@@ -132,6 +150,8 @@ export function main() {
     });
 
     it('should use pipe metadata from summaries', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
       @Component({template: '{{1 | somePipe}}'})
       class TestComp {
       }
@@ -142,6 +162,8 @@ export function main() {
     });
 
     it('should use Service metadata from summaries', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
       TestBed.configureTestingModule({
         providers: [SomeService, SomeDep],
       });
@@ -150,15 +172,12 @@ export function main() {
     });
 
     it('should use NgModule metadata from summaries', () => {
-      @Component({template: '<div someDir>{{1 | somePipe}}</div>'})
-      class TestComp {
-        constructor(service: SomeService) {}
-      }
+      resetTestEnvironmentWithSummaries(summaries);
 
       TestBed
           .configureTestingModule(
-              {providers: [SomeDep], declarations: [TestComp], imports: [SomeModule]})
-          .createComponent(TestComp);
+              {providers: [SomeDep], declarations: [TestComp3], imports: [SomeModule]})
+          .createComponent(TestComp3);
 
       expectInstanceCreated(SomeModule);
       expectInstanceCreated(SomeDirective);
@@ -167,12 +186,16 @@ export function main() {
     });
 
     it('should allow to create private components from imported NgModule summaries', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
       TestBed.configureTestingModule({providers: [SomeDep], imports: [SomeModule]})
           .createComponent(SomePrivateComponent);
       expectInstanceCreated(SomePrivateComponent);
     });
 
     it('should throw when trying to mock a type with a summary', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
       TestBed.resetTestingModule();
       expect(() => TestBed.overrideComponent(SomePrivateComponent, {add: {}}).compileComponents())
           .toThrowError(
@@ -186,6 +209,73 @@ export function main() {
       TestBed.resetTestingModule();
       expect(() => TestBed.overrideModule(SomeModule, {add: {}}).compileComponents())
           .toThrowError('SomeModule was AOT compiled, so its metadata cannot be changed.');
+    });
+
+    it('should return stack trace and component data on resetTestingModule when error is thrown',
+       () => {
+         resetTestEnvironmentWithSummaries();
+
+         const fixture = TestBed.configureTestingModule({declarations: [TestCompErrorOnDestroy]})
+                             .createComponent<TestCompErrorOnDestroy>(TestCompErrorOnDestroy);
+
+         const expectedError = 'Error from ngOnDestroy';
+
+         const component: TestCompErrorOnDestroy = fixture.componentInstance;
+
+         spyOn(console, 'error');
+         spyOn(component, 'ngOnDestroy').and.throwError(expectedError);
+
+         const expectedObject = {
+           stacktrace: new Error(expectedError),
+           component,
+         };
+
+         TestBed.resetTestingModule();
+
+         expect(console.error)
+             .toHaveBeenCalledWith('Error during cleanup of component', expectedObject);
+       });
+
+    it('should allow to add summaries via configureTestingModule', () => {
+      resetTestEnvironmentWithSummaries();
+
+      @Component({template: '<div someDir></div>'})
+      class TestComp {
+      }
+
+      TestBed
+          .configureTestingModule({
+            providers: [SomeDep],
+            declarations: [TestComp, SomeDirective],
+            aotSummaries: summaries
+          })
+          .createComponent(TestComp);
+      expectInstanceCreated(SomeDirective);
+    });
+
+    it('should allow to override a provider', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
+      const overwrittenValue = {};
+
+      const fixture =
+          TestBed.overrideProvider(SomeDep, {useFactory: () => overwrittenValue, deps: []})
+              .configureTestingModule({providers: [SomeDep], imports: [SomeModule]})
+              .createComponent<SomePublicComponent>(SomePublicComponent);
+
+      expect(fixture.componentInstance.dep).toBe(overwrittenValue);
+    });
+
+    it('should allow to override a template', () => {
+      resetTestEnvironmentWithSummaries(summaries);
+
+      TestBed.overrideTemplateUsingTestingModule(SomePublicComponent, 'overwritten');
+
+      const fixture = TestBed.configureTestingModule({providers: [SomeDep], imports: [SomeModule]})
+                          .createComponent(SomePublicComponent);
+      expectInstanceCreated(SomePublicComponent);
+
+      expect(fixture.nativeElement).toHaveText('overwritten');
     });
   });
 }

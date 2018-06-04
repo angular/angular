@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {AnimationMetadata, AnimationOptions, ɵStyleData} from '@angular/animations';
+import {AnimationMetadata, AnimationMetadataType, AnimationOptions, ɵStyleData} from '@angular/animations';
 
 import {AnimationDriver} from '../render/animation_driver';
-import {normalizeStyles} from '../util';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME, normalizeStyles} from '../util';
 
 import {Ast} from './animation_ast';
 import {buildAnimationAst} from './animation_ast_builder';
@@ -17,10 +17,10 @@ import {AnimationTimelineInstruction} from './animation_timeline_instruction';
 import {ElementInstructionMap} from './element_instruction_map';
 
 export class Animation {
-  private _animationAst: Ast;
+  private _animationAst: Ast<AnimationMetadataType>;
   constructor(private _driver: AnimationDriver, input: AnimationMetadata|AnimationMetadata[]) {
     const errors: any[] = [];
-    const ast = buildAnimationAst(input, errors);
+    const ast = buildAnimationAst(_driver, input, errors);
     if (errors.length) {
       const errorMessage = `animation validation failed:\n${errors.join("\n")}`;
       throw new Error(errorMessage);
@@ -39,7 +39,8 @@ export class Animation {
     const errors: any = [];
     subInstructions = subInstructions || new ElementInstructionMap();
     const result = buildAnimationTimelines(
-        this._driver, element, this._animationAst, start, dest, options, subInstructions, errors);
+        this._driver, element, this._animationAst, ENTER_CLASSNAME, LEAVE_CLASSNAME, start, dest,
+        options, subInstructions, errors);
     if (errors.length) {
       const errorMessage = `animation building failed:\n${errors.join("\n")}`;
       throw new Error(errorMessage);

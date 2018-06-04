@@ -6,13 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, Sanitizer, SecurityContext} from '@angular/core';
+import {Inject, Injectable, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl} from '@angular/core';
 
 import {DOCUMENT} from '../dom/dom_tokens';
-
-import {sanitizeHtml} from './html_sanitizer';
-import {sanitizeStyle} from './style_sanitizer';
-import {sanitizeUrl} from './url_sanitizer';
 
 export {SecurityContext};
 
@@ -21,42 +17,42 @@ export {SecurityContext};
 /**
  * Marker interface for a value that's safe to use in a particular context.
  *
- * @stable
+ *
  */
 export interface SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as HTML.
  *
- * @stable
+ *
  */
 export interface SafeHtml extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as style (CSS).
  *
- * @stable
+ *
  */
 export interface SafeStyle extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as JavaScript.
  *
- * @stable
+ *
  */
 export interface SafeScript extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as a URL linking to a document.
  *
- * @stable
+ *
  */
 export interface SafeUrl extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as a URL to load executable code from.
  *
- * @stable
+ *
  */
 export interface SafeResourceUrl extends SafeValue {}
 
@@ -89,7 +85,7 @@ export interface SafeResourceUrl extends SafeValue {}
  * into this call. Make sure any user data is appropriately escaped for this security context.
  * For more detail, see the [Security Guide](http://g.co/ng/security).
  *
- * @stable
+ *
  */
 export abstract class DomSanitizer implements Sanitizer {
   /**
@@ -160,11 +156,11 @@ export class DomSanitizerImpl extends DomSanitizer {
       case SecurityContext.HTML:
         if (value instanceof SafeHtmlImpl) return value.changingThisBreaksApplicationSecurity;
         this.checkNotSafeValue(value, 'HTML');
-        return sanitizeHtml(this._doc, String(value));
+        return _sanitizeHtml(this._doc, String(value));
       case SecurityContext.STYLE:
         if (value instanceof SafeStyleImpl) return value.changingThisBreaksApplicationSecurity;
         this.checkNotSafeValue(value, 'Style');
-        return sanitizeStyle(value as string);
+        return _sanitizeStyle(value as string);
       case SecurityContext.SCRIPT:
         if (value instanceof SafeScriptImpl) return value.changingThisBreaksApplicationSecurity;
         this.checkNotSafeValue(value, 'Script');
@@ -175,7 +171,7 @@ export class DomSanitizerImpl extends DomSanitizer {
           return value.changingThisBreaksApplicationSecurity;
         }
         this.checkNotSafeValue(value, 'URL');
-        return sanitizeUrl(String(value));
+        return _sanitizeUrl(String(value));
       case SecurityContext.RESOURCE_URL:
         if (value instanceof SafeResourceUrlImpl) {
           return value.changingThisBreaksApplicationSecurity;

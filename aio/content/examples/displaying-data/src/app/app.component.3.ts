@@ -6,7 +6,7 @@ import { Hero } from './hero';
 // #enddocregion import
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   // #docregion template
   template: `
     <h1>{{title}}</h1>

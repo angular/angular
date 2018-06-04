@@ -5,10 +5,10 @@ import { AdService }         from './ad.service';
 import { AdItem }            from './ad-item';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   template: `
     <div>
-      <add-banner [ads]="ads"></add-banner>
+      <app-ad-banner [ads]="ads"></app-ad-banner>
     </div>
   `
 })

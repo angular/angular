@@ -14,7 +14,7 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
 import {SpyChangeDetectorRef} from '../spies';
 
-export function main() {
+{
   describe('AsyncPipe', () => {
 
     describe('Observable', () => {

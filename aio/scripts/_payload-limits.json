@@ -1,0 +1,12 @@
+{
+  "aio": {
+    "master": {
+      "uncompressed": {
+        "runtime": 2768,
+        "main": 475855,
+        "polyfills": 38453,
+        "prettify": 14913
+      }
+    }
+  }
+}

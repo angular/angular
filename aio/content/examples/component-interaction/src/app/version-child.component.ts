@@ -3,7 +3,7 @@
 import { Component, Input, OnChanges, SimpleChange } from '@angular/core';
 
 @Component({
-  selector: 'version-child',
+  selector: 'app-version-child',
   template: `
     <h3>Version {{major}}.{{minor}}</h3>
     <h4>Change log:</h4>

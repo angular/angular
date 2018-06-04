@@ -1,8 +1,0 @@
-{
-  "description": "TypeScript to JavaScript",
-  "basePath": "src/",
-  "files":[
-    "!**/karma*.*"
-  ],
-  "tags":["cookbook"]
-}

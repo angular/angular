@@ -9,7 +9,7 @@
 import {Component} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 
-export function main() {
+{
   describe('binding to CSS class list', () => {
     let fixture: ComponentFixture<any>|null;
 
@@ -288,6 +288,17 @@ export function main() {
 
            getComponent().objExpr = null;
            detectChangesAndExpectClassName(`init foo`);
+         }));
+
+      it('should co-operate with the interpolated class attribute when interpolation changes',
+         async(() => {
+           fixture = createTestComponent(
+               `<div [ngClass]="{large: false, small: true}" class="{{strExpr}}"></div>`);
+
+           detectChangesAndExpectClassName(`foo small`);
+
+           getComponent().strExpr = 'bar';
+           detectChangesAndExpectClassName(`bar small`);
          }));
 
       it('should co-operate with the class attribute and binding to it', async(() => {

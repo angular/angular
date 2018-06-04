@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@angular/core';
 import { PlatformLocation } from '@angular/common';
 import { DOCUMENT } from '@angular/platform-browser';
-import {fromEvent} from 'rxjs/observable/fromEvent';
+import { fromEvent } from 'rxjs';
 
 export const topMargin = 16;
 /**
@@ -17,10 +17,10 @@ export class ScrollService {
   // at the top (e.g. toolbar) + some margin
   get topOffset() {
     if (!this._topOffset) {
-      const toolbar = this.document.querySelector('md-toolbar.app-toolbar');
+      const toolbar = this.document.querySelector('.app-toolbar');
       this._topOffset = (toolbar && toolbar.clientHeight || 0) + topMargin;
     }
-    return this._topOffset;
+    return this._topOffset!;
   }
 
   get topOfPageElement() {
@@ -54,7 +54,7 @@ export class ScrollService {
    * Scroll to the element.
    * Don't scroll if no element.
    */
-  scrollToElement(element: Element) {
+  scrollToElement(element: Element|null) {
     if (element) {
       element.scrollIntoView();
 
@@ -83,6 +83,6 @@ export class ScrollService {
    * Return the hash fragment from the `PlatformLocation`, minus the leading `#`.
    */
   private getCurrentHash() {
-    return this.location.hash.replace(/^#/, '');
+    return decodeURIComponent(this.location.hash.replace(/^#/, ''));
   }
 }

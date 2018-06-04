@@ -1,6 +1,7 @@
+import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { DOCUMENT, DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { ReplaySubject } from 'rxjs/ReplaySubject';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { ReplaySubject } from 'rxjs';
 import { ScrollSpyInfo, ScrollSpyService } from 'app/shared/scroll-spy.service';
 
 
@@ -16,7 +17,7 @@ export interface TocItem {
 export class TocService {
   tocList = new ReplaySubject<TocItem[]>(1);
   activeItemIndex = new ReplaySubject<number | null>(1);
-  private scrollSpyInfo: ScrollSpyInfo | null;
+  private scrollSpyInfo: ScrollSpyInfo | null = null;
 
   constructor(
       @Inject(DOCUMENT) private document: any,
@@ -37,7 +38,7 @@ export class TocService {
       content: this.extractHeadingSafeHtml(heading),
       href: `${docId}#${this.getId(heading, idMap)}`,
       level: heading.tagName.toLowerCase(),
-      title: heading.textContent.trim(),
+      title: (heading.textContent || '').trim(),
     }));
 
     this.tocList.next(tocList);
@@ -53,15 +54,25 @@ export class TocService {
 
   // This bad boy exists only to strip off the anchor link attached to a heading
   private extractHeadingSafeHtml(heading: HTMLHeadingElement) {
-    const a = this.document.createElement('a') as HTMLAnchorElement;
-    a.innerHTML = heading.innerHTML;
-    const anchorLink = a.querySelector('a');
-    if (anchorLink) {
-      a.removeChild(anchorLink);
+    const div: HTMLDivElement = this.document.createElement('div');
+    div.innerHTML = heading.innerHTML;
+    const anchorLinks: NodeListOf<HTMLAnchorElement> = div.querySelectorAll('a');
+    for (let i = 0; i < anchorLinks.length; i++) {
+      const anchorLink = anchorLinks[i];
+      if (!anchorLink.classList.contains('header-link')) {
+        // this is an anchor that contains actual content that we want to keep
+        // move the contents of the anchor into its parent
+        const parent = anchorLink.parentNode!;
+        while (anchorLink.childNodes.length) {
+          parent.insertBefore(anchorLink.childNodes[0], anchorLink);
+        }
+      }
+      // now remove the anchor
+      anchorLink.remove();
     }
     // security: the document element which provides this heading content
     // is always authored by the documentation team and is considered to be safe
-    return this.domSanitizer.bypassSecurityTrustHtml(a.innerHTML.trim());
+    return this.domSanitizer.bypassSecurityTrustHtml(div.innerHTML.trim());
   }
 
   private findTocHeadings(docElement: Element): HTMLHeadingElement[] {
@@ -87,7 +98,7 @@ export class TocService {
     if (id) {
       addToMap(id);
     } else {
-      id = h.textContent.trim().toLowerCase().replace(/\W+/g, '-');
+      id = (h.textContent || '').trim().toLowerCase().replace(/\W+/g, '-');
       id = addToMap(id);
       h.id = id;
     }
@@ -95,7 +106,9 @@ export class TocService {
 
     // Map guards against duplicate id creation.
     function addToMap(key: string) {
-      const count = idMap[key] = idMap[key] ? idMap[key] + 1 : 1;
+      const oldCount = idMap.get(key) || 0;
+      const count = oldCount + 1;
+      idMap.set(key, count);
       return count === 1 ? key : `${key}-${count}`;
     }
   }

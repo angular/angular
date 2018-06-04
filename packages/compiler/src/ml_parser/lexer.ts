@@ -150,7 +150,7 @@ class _Tokenizer {
   }
 
   /**
-   * @returns {boolean} whether an ICU token has been created
+   * @returns whether an ICU token has been created
    * @internal
    */
   private _tokenizeExpansionForm(): boolean {

@@ -7,7 +7,7 @@ import {
 import { LoggerService }  from './logger.service';
 
 @Component({
-  selector: 'my-counter',
+  selector: 'app-counter',
   template: `
   <div class="counter">
     Counter = {{counter}}
@@ -27,7 +27,7 @@ export class MyCounterComponent implements OnChanges {
     // Empty the changeLog whenever counter goes to zero
     // hint: this is a way to respond programmatically to external value changes.
     if (this.counter === 0) {
-      this.changeLog.length = 0;
+      this.changeLog = [];
     }
 
     // A change to `counter` is the only change we care about
@@ -38,8 +38,6 @@ export class MyCounterComponent implements OnChanges {
   }
 }
 
-/***************************************/
-
 @Component({
   selector: 'counter-parent',
   template: `
@@ -49,7 +47,7 @@ export class MyCounterComponent implements OnChanges {
     <button (click)="updateCounter()">Update counter</button>
     <button (click)="reset()">Reset Counter</button>
 
-    <my-counter [counter]="value"></my-counter>
+    <app-counter [counter]="value"></app-counter>
 
     <h4>-- Spy Lifecycle Hook Log --</h4>
     <div *ngFor="let msg of spyLog">{{msg}}</div>

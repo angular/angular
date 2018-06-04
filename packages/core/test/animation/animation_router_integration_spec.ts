@@ -5,21 +5,28 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {animate, animateChild, query, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
+import {animate, animateChild, group, query, sequence, style, transition, trigger, ɵAnimationGroupPlayer as AnimationGroupPlayer} from '@angular/animations';
 import {AnimationDriver, ɵAnimationEngine} from '@angular/animations/browser';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 import {Component, HostBinding} from '@angular/core';
-import {TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {TestBed, fakeAsync, flushMicrotasks, tick} from '@angular/core/testing';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {Router, RouterOutlet} from '@angular/router';
+import {ActivatedRoute, Router, RouterOutlet} from '@angular/router';
 import {RouterTestingModule} from '@angular/router/testing';
 
-export function main() {
+(function() {
   // these tests are only mean't to be run within the DOM (for now)
-  if (typeof Element == 'undefined') return;
+  if (isNode) return;
 
   describe('Animation Router Tests', function() {
+    function getLog(): MockAnimationPlayer[] {
+      return MockAnimationDriver.log as MockAnimationPlayer[];
+    }
+
+    function resetLog() { MockAnimationDriver.log = []; }
+
     beforeEach(() => {
+      resetLog();
       TestBed.configureTestingModule({
         imports: [RouterTestingModule, BrowserAnimationsModule],
         providers: [{provide: AnimationDriver, useClass: MockAnimationDriver}]
@@ -437,8 +444,82 @@ export function main() {
          expect(ip1.element.innerText).toEqual('page1');
          expect(ip2.element.innerText).toEqual('page2');
        }));
+
+    it('should allow a recursive set of :leave animations to occur for nested routes',
+       fakeAsync(() => {
+         @Component({selector: 'ani-cmp', template: '<router-outlet name="recur"></router-outlet>'})
+         class ContainerCmp {
+           constructor(private _router: Router) {}
+           log: string[] = [];
+
+           enter() { this._router.navigateByUrl('/(recur:recur/nested)'); }
+
+           leave() { this._router.navigateByUrl('/'); }
+         }
+
+         @Component({
+           selector: 'recur-page',
+           template: 'Depth: {{ depth }} \n <router-outlet></router-outlet>',
+           animations: [
+             trigger(
+                 'pageAnimations',
+                 [
+                   transition(':leave', [group([
+                                sequence([style({opacity: 1}), animate('1s', style({opacity: 0}))]),
+                                query('@*', animateChild(), {optional: true})
+                              ])]),
+                 ]),
+           ]
+         })
+         class RecurPageCmp {
+           @HostBinding('@pageAnimations') public animatePage = true;
+
+           @HostBinding('attr.data-depth') public depth = 0;
+
+           constructor(private container: ContainerCmp, private route: ActivatedRoute) {
+             this.route.data.subscribe(data => {
+               this.container.log.push(`DEPTH ${data.depth}`);
+               this.depth = data.depth;
+             });
+           }
+         }
+
+         TestBed.configureTestingModule({
+           declarations: [ContainerCmp, RecurPageCmp],
+           imports: [RouterTestingModule.withRoutes([{
+             path: 'recur',
+             component: RecurPageCmp,
+             outlet: 'recur',
+             data: {depth: 0},
+             children: [{path: 'nested', component: RecurPageCmp, data: {depth: 1}}]
+           }])]
+         });
+
+         const fixture = TestBed.createComponent(ContainerCmp);
+         const cmp = fixture.componentInstance;
+         cmp.enter();
+         tick();
+         fixture.detectChanges();
+         flushMicrotasks();
+
+         expect(cmp.log).toEqual([
+           'DEPTH 0',
+           'DEPTH 1',
+         ]);
+
+         cmp.leave();
+         tick();
+         fixture.detectChanges();
+
+         const players = getLog();
+         expect(players.length).toEqual(2);
+
+         const [p1, p2] = players;
+         expect(p1.element.getAttribute('data-depth')).toEqual('0');
+         expect(p2.element.getAttribute('data-depth')).toEqual('1');
+       }));
   });
-}
+});
 
 function makeAnimationData(value: string, params: {[key: string]: any} = {}): {[key: string]: any} {
   return {'animation': {value, params}};

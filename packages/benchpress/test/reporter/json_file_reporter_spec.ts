@@ -8,9 +8,9 @@
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {JsonFileReporter, MeasureValues, Options, ReflectiveInjector, SampleDescription} from '../../index';
+import {Injector, JsonFileReporter, MeasureValues, Options, SampleDescription} from '../../index';
 
-export function main() {
+{
   describe('file reporter', () => {
     let loggedFile: any;
 
@@ -34,7 +34,7 @@ export function main() {
           }
         }
       ];
-      return ReflectiveInjector.resolveAndCreate(providers).get(JsonFileReporter);
+      return Injector.create(providers).get<JsonFileReporter>(JsonFileReporter);
     }
 
     it('should write all data into a file',

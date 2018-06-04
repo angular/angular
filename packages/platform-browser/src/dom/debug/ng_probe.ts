@@ -26,22 +26,13 @@ export function inspectNativeElement(element: any): core.DebugNode|null {
   return core.getDebugNode(element);
 }
 
-/**
- * Deprecated. Use the one from '@angular/core'.
- * @deprecated
- */
-export class NgProbeToken {
-  constructor(public name: string, public token: any) {}
-}
-
-export function _createNgProbe(extraTokens: NgProbeToken[], coreTokens: core.NgProbeToken[]): any {
-  const tokens = (extraTokens || []).concat(coreTokens || []);
+export function _createNgProbe(coreTokens: core.NgProbeToken[]): any {
   exportNgVar(INSPECT_GLOBAL_NAME, inspectNativeElement);
-  exportNgVar(CORE_TOKENS_GLOBAL_NAME, {...CORE_TOKENS, ..._ngProbeTokensToMap(tokens || [])});
+  exportNgVar(CORE_TOKENS_GLOBAL_NAME, {...CORE_TOKENS, ..._ngProbeTokensToMap(coreTokens || [])});
   return () => inspectNativeElement;
 }
 
-function _ngProbeTokensToMap(tokens: NgProbeToken[]): {[name: string]: any} {
+function _ngProbeTokensToMap(tokens: core.NgProbeToken[]): {[name: string]: any} {
   return tokens.reduce((prev: any, t: any) => (prev[t.name] = t.token, prev), {});
 }
 
@@ -53,7 +44,6 @@ export const ELEMENT_PROBE_PROVIDERS: core.Provider[] = [
     provide: core.APP_INITIALIZER,
     useFactory: _createNgProbe,
     deps: [
-      [NgProbeToken, new core.Optional()],
       [core.NgProbeToken, new core.Optional()],
     ],
     multi: true,

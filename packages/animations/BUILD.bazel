@@ -1,0 +1,33 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+ng_module(
+    name = "animations",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    module_name = "@angular/animations",
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/animations/browser:package.json",
+        "//packages/animations/browser/testing:package.json",
+    ],
+    entry_point = "packages/animations/index.js",
+    tags = ["release-with-framework"],
+    deps = [
+        ":animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+    ],
+)

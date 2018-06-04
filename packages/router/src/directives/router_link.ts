@@ -8,30 +8,25 @@
 
 import {LocationStrategy} from '@angular/common';
 import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, isDevMode} from '@angular/core';
-import {Subscription} from 'rxjs/Subscription';
+import {Subscription} from 'rxjs';
 
 import {QueryParamsHandling} from '../config';
-import {NavigationEnd} from '../events';
+import {NavigationEnd, RouterEvent} from '../events';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
 
+
 /**
- * @whatItDoes Lets you link to specific parts of your app.
- *
- * @howToUse
- *
- * Consider the following route configuration:
- * `[{ path: 'user/:name', component: UserCmp }]`
- *
- * When linking to this `user/:name` route, you can write:
- * `<a routerLink='/user/bob'>link to user component</a>`
- *
  * @description
  *
- * The RouterLink directives let you link to specific parts of your app.
+ * Lets you link to specific routes in your app.
  *
- * When the link is static, you can use the directive as follows:
+ * Consider the following route configuration:
+ * `[{ path: 'user/:name', component: UserCmp }]`.
+ * When linking to this `user/:name` route, you use the `RouterLink` directive.
+ *
+ * If the link is static, you can use the directive as follows:
  * `<a routerLink="/user/bob">link to user component</a>`
  *
  * If you use dynamic values to generate the link, you can pass an array of path
@@ -69,10 +64,12 @@ import {UrlTree} from '../url_tree';
  * ```
  *
  * You can tell the directive to how to handle queryParams, available options are:
- *  - 'merge' merge the queryParams into the current queryParams
- *  - 'preserve' prserve the current queryParams
- *  - default / '' use the queryParams only
- *  same options for {@link NavigationExtras#queryParamsHandling}
+ *  - `'merge'`: merge the queryParams into the current queryParams
+ *  - `'preserve'`: preserve the current queryParams
+ *  - default/`''`: use the queryParams only
+ *
+ * Same options for {@link NavigationExtras#queryParamsHandling
+ * NavigationExtras#queryParamsHandling}.
  *
  * ```
  * <a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" queryParamsHandling="merge">
@@ -87,11 +84,11 @@ import {UrlTree} from '../url_tree';
  * Then the following link `<a [routerLink]="['/user/jim']">Jim</a>` will generate the link
  * `/user/(jim//aux:team)`.
  *
+ * See {@link Router#createUrlTree createUrlTree} for more information.
+ *
  * @ngModule RouterModule
  *
- * See {@link Router#createUrlTree} for more information.
  *
- * @stable
  */
 @Directive({selector: ':not(a)[routerLink]'})
 export class RouterLink {
@@ -155,13 +152,15 @@ export class RouterLink {
 }
 
 /**
- * @whatItDoes Lets you link to specific parts of your app.
+ * @description
  *
- * See {@link RouterLink} for more information.
+ * Lets you link to specific routes in your app.
+ *
+ * See `RouterLink` for more information.
  *
  * @ngModule RouterModule
  *
- * @stable
+ *
  */
 @Directive({selector: 'a[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
@@ -182,7 +181,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   constructor(
       private router: Router, private route: ActivatedRoute,
       private locationStrategy: LocationStrategy) {
-    this.subscription = router.events.subscribe(s => {
+    this.subscription = router.events.subscribe((s: RouterEvent) => {
       if (s instanceof NavigationEnd) {
         this.updateTargetUrlAndHref();
       }

@@ -1,0 +1,70 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "render3_lib",
+    testonly = 1,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*_perf.ts",
+            "domino.d.ts",
+            "load_domino.ts",
+            "jit_spec.ts",
+        ],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+    ],
+)
+
+ts_library(
+    name = "domino",
+    testonly = 1,
+    srcs = [
+        "domino.d.ts",
+        "load_domino.ts",
+    ],
+    deps = [
+        "//packages/platform-browser",
+        "//packages/platform-server",
+    ],
+)
+
+ts_library(
+    name = "render3_node_lib",
+    testonly = 1,
+    srcs = [],
+    deps = [
+        ":domino",
+        ":render3_lib",
+    ],
+)
+
+jasmine_node_test(
+    name = "render3",
+    bootstrap = [
+        "angular/packages/core/test/render3/load_domino",
+    ],
+    deps = [
+        ":render3_node_lib",
+    ],
+)
+
+ts_web_test_suite(
+    name = "render3_web",
+    deps = [
+        ":render3_lib",
+    ],
+)

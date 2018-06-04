@@ -1,4 +1,3 @@
-/** @stable */
 export declare class MockLocationStrategy extends LocationStrategy {
     internalBaseHref: string;
     internalPath: string;
@@ -21,15 +20,15 @@ export declare class SpyLocation implements Location {
     urlChanges: string[];
     back(): void;
     forward(): void;
-    go(path: string, query?: string): void;
+    go(path: string, query?: string, state?: any): void;
     isCurrentPathEqualTo(path: string, query?: string): boolean;
     normalize(url: string): string;
     path(): string;
     prepareExternalUrl(url: string): string;
-    replaceState(path: string, query?: string): void;
+    replaceState(path: string, query?: string, state?: any): void;
     setBaseHref(url: string): void;
     setInitialPath(url: string): void;
     simulateHashChange(pathname: string): void;
     simulateUrlPop(pathname: string): void;
-    subscribe(onNext: (value: any) => void, onThrow?: ((error: any) => void) | null, onReturn?: (() => void) | null): Object;
+    subscribe(onNext: (value: any) => void, onThrow?: ((error: any) => void) | null, onReturn?: (() => void) | null): SubscriptionLike;
 }

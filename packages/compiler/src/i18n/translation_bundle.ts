@@ -6,12 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MissingTranslationStrategy, ɵConsole as Console} from '@angular/core';
+import {MissingTranslationStrategy} from '../core';
 import * as html from '../ml_parser/ast';
 import {HtmlParser} from '../ml_parser/html_parser';
+import {Console} from '../util';
+
 import * as i18n from './i18n_ast';
 import {I18nError} from './parse_util';
 import {PlaceholderMapper, Serializer} from './serializers/serializer';
+import {escapeXml} from './serializers/xml_helper';
+
 
 /**
  * A container for translated messages
@@ -85,7 +89,11 @@ class I18nToHtmlVisitor implements i18n.Visitor {
     };
   }
 
-  visitText(text: i18n.Text, context?: any): string { return text.value; }
+  visitText(text: i18n.Text, context?: any): string {
+    // `convert()` uses an `HtmlParser` to return `html.Node`s
+    // we should then make sure that any special characters are escaped
+    return escapeXml(text.value);
+  }
 
   visitContainer(container: i18n.Container, context?: any): any {
     return container.children.map(n => n.visit(this)).join('');

@@ -1,0 +1,58 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "node_modules_filegroup")
+
+exports_files([
+    "tsconfig.json",
+    "LICENSE",
+])
+
+# Developers should always run `bazel run :install`
+# This ensures that package.json in subdirectories get installed as well.
+alias(
+    name = "install",
+    actual = "@nodejs//:yarn",
+)
+
+node_modules_filegroup(
+    name = "node_modules",
+    packages = [
+        "bytebuffer",
+        "hammerjs",
+        "jasmine",
+        "minimist",
+        "protobufjs",
+        "reflect-metadata",
+        "source-map-support",
+        "tsickle",
+        "tslib",
+        "tsutils",
+        "typescript",
+        "zone.js",
+        "@angular-devkit/core",
+        "@angular-devkit/schematics",
+        "@types",
+        "@webcomponents/custom-elements",
+    ],
+)
+
+filegroup(
+    name = "web_test_bootstrap_scripts",
+    # do not sort
+    srcs = [
+        "//:node_modules/reflect-metadata/Reflect.js",
+        "//:node_modules/zone.js/dist/zone.js",
+        "//:node_modules/zone.js/dist/zone-testing.js",
+        "//:node_modules/zone.js/dist/task-tracking.js",
+    ],
+)
+
+filegroup(
+    name = "angularjs_scripts",
+    srcs = [
+        "//:node_modules/angular-1.5/angular.js",
+        "//:node_modules/angular-mocks-1.5/angular-mocks.js",
+        "//:node_modules/angular-mocks/angular-mocks.js",
+        "//:node_modules/angular/angular.js",
+    ],
+)

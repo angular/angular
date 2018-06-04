@@ -20,7 +20,17 @@ const __window = typeof window !== 'undefined' && window;
 const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
     self instanceof WorkerGlobalScope && self;
 const __global = typeof global !== 'undefined' && global;
-const _global: {[name: string]: any} = __window || __global || __self;
+
+// Check __global first, because in Node tests both __global and __window may be defined and _global
+// should be __global in that case.
+const _global: {[name: string]: any} = __global || __window || __self;
+
+const promise: Promise<any> = Promise.resolve(0);
+/**
+ * Attention: whenever providing a new value, be sure to add an
+ * entry into the corresponding `....externs.js` file,
+ * so that closure won't use that global for its purposes.
+ */
 export {_global as global};
 
 // When Symbol.iterator doesn't exist, retrieves the key used in es6-shim
@@ -47,7 +57,12 @@ export function getSymbolIterator(): string|symbol {
 }
 
 export function scheduleMicroTask(fn: Function) {
-  Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
+  if (typeof Zone === 'undefined') {
+    // use promise to schedule microTask instead of use Zone
+    promise.then(() => { fn && fn.apply(null, null); });
+  } else {
+    Zone.current.scheduleMicroTask('scheduleMicrotask', fn);
+  }
 }
 
 // JS has NaN !== NaN
@@ -58,6 +73,10 @@ export function looseIdentical(a: any, b: any): boolean {
 export function stringify(token: any): string {
   if (typeof token === 'string') {
     return token;
+  }
+
+  if (token instanceof Array) {
+    return '[' + token.map(stringify).join(', ') + ']';
   }
 
   if (token == null) {

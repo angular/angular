@@ -8,12 +8,12 @@
 
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 
-export function main() {
+{
   describe('Shim', () => {
 
     it('should provide correct function.name ', () => {
       const functionWithoutName = identity(() => function(_: any /** TODO #9100 */) {});
-      function foo(_: any /** TODO #9100 */){};
+      function foo(_: any /** TODO #9100 */) {}
 
       expect((<any>functionWithoutName).name).toBeFalsy();
       expect((<any>foo).name).toEqual('foo');

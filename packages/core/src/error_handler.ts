@@ -11,9 +11,9 @@ import {ERROR_ORIGINAL_ERROR, getDebugContext, getErrorLogger, getOriginalError}
 
 
 /**
- * @whatItDoes Provides a hook for centralized exception handling.
  *
  * @description
+ * Provides a hook for centralized exception handling.
  *
  * The default implementation of `ErrorHandler` prints error messages to the `console`. To
  * intercept error handling, write a custom exception handler that replaces this default as
@@ -34,20 +34,13 @@ import {ERROR_ORIGINAL_ERROR, getDebugContext, getErrorLogger, getOriginalError}
  * class MyModule {}
  * ```
  *
- * @stable
+ *
  */
 export class ErrorHandler {
   /**
    * @internal
    */
   _console: Console = console;
-
-  constructor(
-      /**
-       * @deprecated since v4.0 parameter no longer has an effect, as ErrorHandler will never
-       * rethrow.
-       */
-      deprecatedParameter?: boolean) {}
 
   handleError(error: any): void {
     const originalError = this._findOriginalError(error);

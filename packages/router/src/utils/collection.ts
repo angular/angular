@@ -7,14 +7,9 @@
  */
 
 import {NgModuleFactory, ɵisObservable as isObservable, ɵisPromise as isPromise} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {fromPromise} from 'rxjs/observable/fromPromise';
-import {of } from 'rxjs/observable/of';
-import {concatAll} from 'rxjs/operator/concatAll';
-import {every} from 'rxjs/operator/every';
-import * as l from 'rxjs/operator/last';
-import {map} from 'rxjs/operator/map';
-import {mergeAll} from 'rxjs/operator/mergeAll';
+import {Observable, from, of } from 'rxjs';
+import {concatAll, every, last as lastValue, map, mergeAll} from 'rxjs/operators';
+
 import {PRIMARY_OUTLET} from '../shared';
 
 export function shallowEqualArrays(a: any[], b: any[]): boolean {
@@ -41,14 +36,23 @@ export function shallowEqual(a: {[x: string]: any}, b: {[x: string]: any}): bool
   return true;
 }
 
+/**
+ * Flattens single-level nested arrays.
+ */
 export function flatten<T>(arr: T[][]): T[] {
   return Array.prototype.concat.apply([], arr);
 }
 
+/**
+ * Return the last element of an array.
+ */
 export function last<T>(a: T[]): T|null {
   return a.length > 0 ? a[a.length - 1] : null;
 }
 
+/**
+ * Verifys all booleans in an array are `true`.
+ */
 export function and(bools: boolean[]): boolean {
   return !bools.some(v => !v);
 }
@@ -64,7 +68,7 @@ export function forEach<K, V>(map: {[key: string]: V}, callback: (v: V, k: strin
 export function waitForMap<A, B>(
     obj: {[k: string]: A}, fn: (k: string, a: A) => Observable<B>): Observable<{[k: string]: B}> {
   if (Object.keys(obj).length === 0) {
-    return of ({})
+    return of ({});
   }
 
   const waitHead: Observable<B>[] = [];
@@ -72,7 +76,7 @@ export function waitForMap<A, B>(
   const res: {[k: string]: B} = {};
 
   forEach(obj, (a: A, k: string) => {
-    const mapped = map.call(fn(k, a), (r: B) => res[k] = r);
+    const mapped = fn(k, a).pipe(map((r: B) => res[k] = r));
     if (k === PRIMARY_OUTLET) {
       waitHead.push(mapped);
     } else {
@@ -80,14 +84,16 @@ export function waitForMap<A, B>(
     }
   });
 
-  const concat$ = concatAll.call(of (...waitHead, ...waitTail));
-  const last$ = l.last.call(concat$);
-  return map.call(last$, () => res);
+  // Closure compiler has problem with using spread operator here. So just using Array.concat.
+  return of .apply(null, waitHead.concat(waitTail)).pipe(concatAll(), lastValue(), map(() => res));
 }
 
+/**
+ * ANDs Observables by merging all input observables, reducing to an Observable verifying all
+ * input Observables return `true`.
+ */
 export function andObservables(observables: Observable<Observable<any>>): Observable<boolean> {
-  const merged$ = mergeAll.call(observables);
-  return every.call(merged$, (result: any) => result === true);
+  return observables.pipe(mergeAll(), every((result: any) => result === true));
 }
 
 export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>| Observable<T>):
@@ -100,8 +106,8 @@ export function wrapIntoObservable<T>(value: T | NgModuleFactory<T>| Promise<T>|
     // Use `Promise.resolve()` to wrap promise-like instances.
     // Required ie when a Resolver returns a AngularJS `$q` promise to correctly trigger the
     // change detection.
-    return fromPromise(Promise.resolve(value));
+    return from(Promise.resolve(value));
   }
 
-  return of (value);
+  return of (value as T);
 }

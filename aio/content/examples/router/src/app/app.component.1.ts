@@ -3,7 +3,7 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'my-app',
+  selector: 'app-root',
   // #docregion template
   template: `
     <h1>Angular Router</h1>

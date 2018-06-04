@@ -33,14 +33,14 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
 
 /**
  * The default accessor for writing a value and listening to changes that is used by the
- * {@link NgModel}, {@link FormControlDirective}, and {@link FormControlName} directives.
+ * `NgModel`, `FormControlDirective`, and `FormControlName` directives.
  *
  *  ### Example
  *  ```
  *  <input type="text" name="searchQuery" ngModel>
  *  ```
  *
- *  @stable
+ *
  */
 @Directive({
   selector:
@@ -49,10 +49,10 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
   // https://github.com/angular/angular/issues/3011 is implemented
   // selector: '[ngModel],[formControl],[formControlName]',
   host: {
-    '(input)': '_handleInput($event.target.value)',
+    '(input)': '$any(this)._handleInput($event.target.value)',
     '(blur)': 'onTouched()',
-    '(compositionstart)': '_compositionStart()',
-    '(compositionend)': '_compositionEnd($event.target.value)'
+    '(compositionstart)': '$any(this)._compositionStart()',
+    '(compositionend)': '$any(this)._compositionEnd($event.target.value)'
   },
   providers: [DEFAULT_VALUE_ACCESSOR]
 })
@@ -83,14 +83,17 @@ export class DefaultValueAccessor implements ControlValueAccessor {
     this._renderer.setProperty(this._elementRef.nativeElement, 'disabled', isDisabled);
   }
 
+  /** @internal */
   _handleInput(value: any): void {
     if (!this._compositionMode || (this._compositionMode && !this._composing)) {
       this.onChange(value);
     }
   }
 
+  /** @internal */
   _compositionStart(): void { this._composing = true; }
 
+  /** @internal */
   _compositionEnd(value: any): void {
     this._composing = false;
     this._compositionMode && this.onChange(value);

@@ -70,6 +70,6 @@ describe('convertToJson processor', () => {
   it('should log a warning', () => {
     const docs = [{ docType: 'test-doc' }];
     processor.$process(docs);
-    expect(log.warn).toHaveBeenCalled();
+    expect(log.warn).toHaveBeenCalledWith('Title property expected - doc (test-doc) ');
   });
 });

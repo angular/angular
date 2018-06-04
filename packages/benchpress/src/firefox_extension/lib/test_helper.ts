@@ -28,7 +28,7 @@ exports.getFirefoxProfile = function(extensionPath: string) {
 
   const firefoxProfile = new FirefoxProfile();
   firefoxProfile.addExtensions([extensionPath], () => {
-    firefoxProfile.encoded((encodedProfile: any) => {
+    firefoxProfile.encoded((err: any, encodedProfile: string) => {
       const multiCapabilities = [{browserName: 'firefox', firefox_profile: encodedProfile}];
       deferred.resolve(multiCapabilities);
     });

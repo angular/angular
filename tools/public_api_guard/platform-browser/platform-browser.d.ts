@@ -1,9 +1,12 @@
-/** @stable */
 export declare class BrowserModule {
     constructor(parentModule: BrowserModule);
     /** @experimental */ static withServerTransition(params: {
         appId: string;
     }): ModuleWithProviders;
+}
+
+/** @experimental */
+export declare class BrowserTransferStateModule {
 }
 
 /** @experimental */
@@ -19,7 +22,6 @@ export declare function disableDebugTools(): void;
 /** @deprecated */
 export declare const DOCUMENT: InjectionToken<Document>;
 
-/** @stable */
 export declare abstract class DomSanitizer implements Sanitizer {
     abstract bypassSecurityTrustHtml(value: string): SafeHtml;
     abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
@@ -32,10 +34,8 @@ export declare abstract class DomSanitizer implements Sanitizer {
 /** @experimental */
 export declare function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T>;
 
-/** @stable */
 export declare const EVENT_MANAGER_PLUGINS: InjectionToken<EventManagerPlugin[]>;
 
-/** @stable */
 export declare class EventManager {
     constructor(plugins: EventManagerPlugin[], _zone: NgZone);
     addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
@@ -46,14 +46,31 @@ export declare class EventManager {
 /** @experimental */
 export declare const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 
+export declare const HAMMER_LOADER: InjectionToken<HammerLoader>;
+
 /** @experimental */
 export declare class HammerGestureConfig {
     events: string[];
+    options?: {
+        cssProps?: any;
+        domEvents?: boolean;
+        enable?: boolean | ((manager: any) => boolean);
+        preset?: any[];
+        touchAction?: string;
+        recognizers?: any[];
+        inputClass?: any;
+        inputTarget?: EventTarget;
+    };
     overrides: {
         [key: string]: Object;
     };
     buildHammer(element: HTMLElement): HammerInstance;
 }
+
+export declare type HammerLoader = () => Promise<void>;
+
+/** @experimental */
+export declare function makeStateKey<T = void>(key: string): StateKey<T>;
 
 /** @experimental */
 export declare class Meta {
@@ -82,39 +99,30 @@ export declare type MetaDefinition = {
     [prop: string]: string;
 };
 
-/** @deprecated */
-export declare class NgProbeToken {
-    name: string;
-    token: any;
-    constructor(name: string, token: any);
-}
+export declare const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
 
-/** @stable */
-export declare const platformBrowser: (extraProviders?: Provider[]) => PlatformRef;
-
-/** @stable */
 export interface SafeHtml extends SafeValue {
 }
 
-/** @stable */
 export interface SafeResourceUrl extends SafeValue {
 }
 
-/** @stable */
 export interface SafeScript extends SafeValue {
 }
 
-/** @stable */
 export interface SafeStyle extends SafeValue {
 }
 
-/** @stable */
 export interface SafeUrl extends SafeValue {
 }
 
-/** @stable */
 export interface SafeValue {
 }
+
+/** @experimental */
+export declare type StateKey<T> = string & {
+    __not_a_string: never;
+};
 
 /** @experimental */
 export declare class Title {
@@ -123,5 +131,14 @@ export declare class Title {
     setTitle(newTitle: string): void;
 }
 
-/** @stable */
+/** @experimental */
+export declare class TransferState {
+    get<T>(key: StateKey<T>, defaultValue: T): T;
+    hasKey<T>(key: StateKey<T>): boolean;
+    onSerialize<T>(key: StateKey<T>, callback: () => T): void;
+    remove<T>(key: StateKey<T>): void;
+    set<T>(key: StateKey<T>, value: T): void;
+    toJson(): string;
+}
+
 export declare const VERSION: Version;

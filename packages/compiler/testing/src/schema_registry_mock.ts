@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementSchemaRegistry} from '@angular/compiler';
-import {SchemaMetadata, SecurityContext} from '@angular/core';
+import {ElementSchemaRegistry, core} from '@angular/compiler';
 
 export class MockSchemaRegistry implements ElementSchemaRegistry {
   constructor(
@@ -16,20 +15,20 @@ export class MockSchemaRegistry implements ElementSchemaRegistry {
       public existingElements: {[key: string]: boolean}, public invalidProperties: Array<string>,
       public invalidAttributes: Array<string>) {}
 
-  hasProperty(tagName: string, property: string, schemas: SchemaMetadata[]): boolean {
+  hasProperty(tagName: string, property: string, schemas: core.SchemaMetadata[]): boolean {
     const value = this.existingProperties[property];
     return value === void 0 ? true : value;
   }
 
-  hasElement(tagName: string, schemaMetas: SchemaMetadata[]): boolean {
+  hasElement(tagName: string, schemaMetas: core.SchemaMetadata[]): boolean {
     const value = this.existingElements[tagName.toLowerCase()];
     return value === void 0 ? true : value;
   }
 
   allKnownElementNames(): string[] { return Object.keys(this.existingElements); }
 
-  securityContext(selector: string, property: string, isAttribute: boolean): SecurityContext {
-    return SecurityContext.NONE;
+  securityContext(selector: string, property: string, isAttribute: boolean): core.SecurityContext {
+    return core.SecurityContext.NONE;
   }
 
   getMappedPropName(attrName: string): string { return this.attrPropMapping[attrName] || attrName; }

@@ -7,7 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 
 import {BaseRequestOptions, RequestOptions} from './base_request_options';
 import {RequestMethod} from './enums';
@@ -51,7 +51,8 @@ function mergeOptions(
  *
  * ```typescript
  * import {Http, HTTP_PROVIDERS} from '@angular/http';
- * import 'rxjs/add/operator/map'
+ * import {map} from 'rxjs/operators';
+ *
  * @Component({
  *   selector: 'http-app',
  *   viewProviders: [HTTP_PROVIDERS],
@@ -61,7 +62,7 @@ function mergeOptions(
  *   constructor(http: Http) {
  *     http.get('people.json')
  *       // Call map on the response observable to get the parsed people object
- *       .map(res => res.json())
+ *       .pipe(map(res => res.json()))
  *       // Subscribe to the observable to get the parsed people object and attach it to the
  *       // component
  *       .subscribe(people => this.people = people);
@@ -98,7 +99,7 @@ function mergeOptions(
  * http.get('request-from-mock-backend.json').subscribe((res:Response) => doSomething(res));
  * ```
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 @Injectable()
 export class Http {
@@ -186,7 +187,7 @@ export class Http {
 
 
 /**
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
 @Injectable()
 export class Jsonp extends Http {

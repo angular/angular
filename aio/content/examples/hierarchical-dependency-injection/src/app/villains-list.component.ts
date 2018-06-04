@@ -1,12 +1,12 @@
 // #docregion
 import { Component }  from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { Villain, VillainsService } from './villains.service';
 
 // #docregion metadata
 @Component({
-  selector: 'villains-list',
+  selector: 'app-villains-list',
   templateUrl: './villains-list.component.html',
   providers: [ VillainsService ]
 })

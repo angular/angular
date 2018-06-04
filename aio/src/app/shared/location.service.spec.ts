@@ -1,7 +1,7 @@
 import { ReflectiveInjector } from '@angular/core';
 import { Location, LocationStrategy, PlatformLocation } from '@angular/common';
 import { MockLocationStrategy } from '@angular/common/testing';
-import { Subject } from 'rxjs/Subject';
+import { Subject } from 'rxjs';
 
 import { GaService } from 'app/shared/ga.service';
 import { SwUpdatesService } from 'app/sw-updates/sw-updates.service';
@@ -39,7 +39,7 @@ describe('LocationService', () => {
       location.simulatePopState('/next-url2');
       location.simulatePopState('/next-url3');
 
-      let initialUrl;
+      let initialUrl: string|undefined;
       service.currentUrl.subscribe(url => initialUrl = url);
       expect(initialUrl).toEqual('next-url3');
     });
@@ -49,7 +49,7 @@ describe('LocationService', () => {
       location.simulatePopState('/initial-url2');
       location.simulatePopState('/initial-url3');
 
-      const urls = [];
+      const urls: string[] = [];
       service.currentUrl.subscribe(url => urls.push(url));
 
       location.simulatePopState('/next-url1');
@@ -69,13 +69,13 @@ describe('LocationService', () => {
       location.simulatePopState('/initial-url2');
       location.simulatePopState('/initial-url3');
 
-      const urls1 = [];
+      const urls1: string[] = [];
       service.currentUrl.subscribe(url => urls1.push(url));
 
       location.simulatePopState('/next-url1');
       location.simulatePopState('/next-url2');
 
-      const urls2 = [];
+      const urls2: string[] = [];
       service.currentUrl.subscribe(url => urls2.push(url));
 
       location.simulatePopState('/next-url3');
@@ -150,7 +150,7 @@ describe('LocationService', () => {
     });
 
     it('should strip the query off the url', () => {
-      let path: string;
+      let path: string|undefined;
 
       service.currentPath.subscribe(p => path = p);
 
@@ -182,7 +182,7 @@ describe('LocationService', () => {
       location.simulatePopState('/next/url2');
       location.simulatePopState('/next/url3');
 
-      let initialPath: string;
+      let initialPath: string|undefined;
       service.currentPath.subscribe(path => initialPath = path);
 
       expect(initialPath).toEqual('next/url3');
@@ -247,7 +247,7 @@ describe('LocationService', () => {
     });
 
     it('should emit the new url', () => {
-      const urls = [];
+      const urls: string[] = [];
       service.go('some-initial-url');
 
       service.currentUrl.subscribe(url => urls.push(url));
@@ -259,7 +259,7 @@ describe('LocationService', () => {
     });
 
     it('should strip leading and trailing slashes', () => {
-      let url: string;
+      let url: string|undefined;
 
       service.currentUrl.subscribe(u => url = u);
       service.go('/some/url/');
@@ -269,23 +269,18 @@ describe('LocationService', () => {
       expect(url).toBe('some/url');
     });
 
-    it('should ignore undefined URL string', noUrlTest(undefined));
-    it('should ignore null URL string', noUrlTest(null));
-    it('should ignore empty URL string', noUrlTest(''));
-    function noUrlTest(testUrl: string) {
-      return function() {
+    it('should ignore empty URL string', () => {
         const initialUrl = 'some/url';
         const goExternalSpy = spyOn(service, 'goExternal');
-        let url: string;
+        let url: string|undefined;
 
         service.go(initialUrl);
         service.currentUrl.subscribe(u => url = u);
 
-        service.go(testUrl);
+        service.go('');
         expect(url).toEqual(initialUrl, 'should not have re-navigated locally');
         expect(goExternalSpy).not.toHaveBeenCalled();
-      };
-    }
+    });
 
     it('should leave the site for external url that starts with "http"', () => {
       const goExternalSpy = spyOn(service, 'goExternal');
@@ -310,7 +305,7 @@ describe('LocationService', () => {
     });
 
     it('should not update currentUrl for external url that starts with "http"', () => {
-      let localUrl: string;
+      let localUrl: string|undefined;
       spyOn(service, 'goExternal');
       service.currentUrl.subscribe(url => localUrl = url);
       service.go('https://some/far/away/land');

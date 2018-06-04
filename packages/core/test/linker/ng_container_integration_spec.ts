@@ -12,7 +12,7 @@ import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('jit', () => { declareTests({useJit: true}); });
   describe('no jit', () => { declareTests({useJit: false}); });
 }

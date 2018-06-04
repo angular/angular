@@ -1,0 +1,33 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+ng_module(
+    name = "upgrade",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    module_name = "@angular/upgrade",
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/upgrade/static:package.json",
+    ],
+    entry_point = "packages/upgrade/index.js",
+    tags = ["release-with-framework"],
+    deps = [
+        ":upgrade",
+        "//packages/upgrade/static",
+    ],
+)

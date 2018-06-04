@@ -1,0 +1,39 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*_spec.ts",
+            "**/*_spec",
+        ],
+    ),
+    deps = [
+        "//packages:types",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(
+        ["**/*_spec.ts"],
+        exclude = ["symbol_extractor_spec/**"],
+    ),
+    deps = [
+        ":lib",
+        "//packages:types",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = glob(["symbol_extractor_spec/**"]),
+    deps = [
+        ":test_lib",
+    ],
+)

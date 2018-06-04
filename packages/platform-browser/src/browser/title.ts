@@ -27,7 +27,6 @@ export class Title {
   constructor(@Inject(DOCUMENT) private _doc: any) {}
   /**
    * Get the title of the current HTML document.
-   * @returns {string}
    */
   getTitle(): string { return getDOM().getTitle(this._doc); }
 

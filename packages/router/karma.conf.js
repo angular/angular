@@ -28,16 +28,9 @@ module.exports = function(config) {
 
       // Zone.js dependencies
       'node_modules/zone.js/dist/zone.js',
-      'node_modules/zone.js/dist/long-stack-trace-zone.js',
-      'node_modules/zone.js/dist/proxy.js',
-      'node_modules/zone.js/dist/sync-test.js',
-      'node_modules/zone.js/dist/jasmine-patch.js',
-      'node_modules/zone.js/dist/async-test.js',
-      'node_modules/zone.js/dist/fake-async-test.js',
+      'node_modules/zone.js/dist/zone-testing.js',
 
-      // RxJs.
-      {pattern: 'node_modules/rxjs/**/*.js', included: false, watched: false},
-      {pattern: 'node_modules/rxjs/**/*.js.map', included: false, watched: false},
+      {pattern: 'node_modules/rxjs/**/*', included: false, watched: false},
 
       // shim
       {pattern: 'packages/router/karma-test-shim.js', included: true, watched: true},

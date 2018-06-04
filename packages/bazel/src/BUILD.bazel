@@ -1,0 +1,28 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "package_assets",
+    srcs = glob(["*"]) + [
+        "//packages/bazel/src/ng_package:package_assets",
+        "//packages/bazel/src/ngc-wrapped:package_assets",
+    ],
+    visibility = ["//packages/bazel:__subpackages__"],
+)
+
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
+
+nodejs_binary(
+    name = "rollup_with_build_optimizer",
+    data = ["@angular_devkit//packages/angular_devkit/build_optimizer:lib"],
+    # Since our rule extends the one in rules_nodejs, we use the same runtime
+    # dependency @build_bazel_rules_nodejs_rollup_deps. We don't need any
+    # additional npm dependencies when we run rollup or uglify.
+    entry_point = "build_bazel_rules_nodejs_rollup_deps/node_modules/rollup/bin/rollup",
+    node_modules = "@build_bazel_rules_nodejs_rollup_deps//:node_modules",
+)
+
+nodejs_binary(
+    name = "modify_tsconfig",
+    data = ["modify_tsconfig.js"],
+    entry_point = "angular/packages/bazel/src/modify_tsconfig.js",
+)

@@ -13,10 +13,10 @@ import {UpgradeModule} from '@angular/upgrade/static';
 
 
 /**
- * @whatItDoes Creates an initializer that in addition to setting up the Angular
- * router sets up the ngRoute integration.
+ * @description
  *
- * @howToUse
+ * Creates an initializer that in addition to setting up the Angular
+ * router sets up the ngRoute integration.
  *
  * ```
  * @NgModule({
@@ -38,7 +38,7 @@ import {UpgradeModule} from '@angular/upgrade/static';
 export const RouterUpgradeInitializer = {
   provide: APP_BOOTSTRAP_LISTENER,
   multi: true,
-  useFactory: locationSyncBootstrapListener,
+  useFactory: locationSyncBootstrapListener as(ngUpgrade: UpgradeModule) => () => void,
   deps: [UpgradeModule]
 };
 
@@ -50,7 +50,9 @@ export function locationSyncBootstrapListener(ngUpgrade: UpgradeModule) {
 }
 
 /**
- * @whatItDoes Sets up a location synchronization.
+ * @description
+ *
+ * Sets up a location synchronization.
  *
  * History.pushState does not fire onPopState, so the Angular location
  * doesn't detect it. The workaround is to attach a location change listener

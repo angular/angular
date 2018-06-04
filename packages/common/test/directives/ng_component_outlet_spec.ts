@@ -8,11 +8,11 @@
 
 import {CommonModule} from '@angular/common';
 import {NgComponentOutlet} from '@angular/common/src/directives/ng_component_outlet';
-import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, Optional, Provider, QueryList, ReflectiveInjector, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
+import {Compiler, Component, ComponentRef, Inject, InjectionToken, Injector, NO_ERRORS_SCHEMA, NgModule, NgModuleFactory, Optional, QueryList, StaticProvider, TemplateRef, Type, ViewChild, ViewChildren, ViewContainerRef} from '@angular/core';
 import {TestBed, async, fakeAsync} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('insert/remove', () => {
 
     beforeEach(() => { TestBed.configureTestingModule({imports: [TestModule]}); });
@@ -96,7 +96,7 @@ export function main() {
 
          const uniqueValue = {};
          fixture.componentInstance.currentComponent = InjectedComponent;
-         fixture.componentInstance.injector = ReflectiveInjector.resolveAndCreate(
+         fixture.componentInstance.injector = Injector.create(
              [{provide: TEST_TOKEN, useValue: uniqueValue}], fixture.componentRef.injector);
 
          fixture.detectChanges();

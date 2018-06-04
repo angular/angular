@@ -1,18 +1,26 @@
 // #docregion
 import { NgModule }      from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent }           from './app.component';
-import { HeroFormTemplateModule } from './template/hero-form-template.module';
-import { HeroFormReactiveModule } from './reactive/hero-form-reactive.module';
+import { HeroFormTemplateComponent } from './template/hero-form-template.component';
+import { HeroFormReactiveComponent } from './reactive/hero-form-reactive.component';
+import { ForbiddenValidatorDirective } from './shared/forbidden-name.directive';
+
 
 @NgModule({
   imports: [
     BrowserModule,
-    HeroFormTemplateModule,
-    HeroFormReactiveModule
+    FormsModule,
+    ReactiveFormsModule
   ],
-  declarations: [ AppComponent ],
+  declarations: [
+    AppComponent,
+    HeroFormTemplateComponent,
+    HeroFormReactiveComponent,
+    ForbiddenValidatorDirective
+  ],
   bootstrap:    [ AppComponent ]
 })
 export class AppModule { }

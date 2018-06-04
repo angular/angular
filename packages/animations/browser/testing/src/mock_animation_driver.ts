@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AUTO_STYLE, AnimationPlayer, NoopAnimationPlayer, ɵStyleData} from '@angular/animations';
+import {ɵAnimationDriver as AnimationDriver, ɵallowPreviousPlayerStylesMerge as allowPreviousPlayerStylesMerge, ɵcontainsElement as containsElement, ɵinvokeQuery as invokeQuery, ɵmatchesElement as matchesElement, ɵvalidateStyleProperty as validateStyleProperty} from '@angular/animations/browser';
 
-import {AnimationDriver} from '../../src/render/animation_driver';
-import {containsElement, invokeQuery, matchesElement} from '../../src/render/shared';
-import {allowPreviousPlayerStylesMerge} from '../../src/util';
 
 /**
  * @experimental Animation support is experimental.
  */
 export class MockAnimationDriver implements AnimationDriver {
   static log: AnimationPlayer[] = [];
+
+  validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
 
   matchesElement(element: any, selector: string): boolean {
     return matchesElement(element, selector);
@@ -55,7 +55,7 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
       public element: any, public keyframes: {[key: string]: string | number}[],
       public duration: number, public delay: number, public easing: string,
       public previousPlayers: any[]) {
-    super();
+    super(duration, delay);
 
     if (allowPreviousPlayerStylesMerge(duration, delay)) {
       previousPlayers.forEach(player => {
@@ -65,8 +65,6 @@ export class MockAnimationPlayer extends NoopAnimationPlayer {
         }
       });
     }
-
-    this.totalTime = delay + duration;
   }
 
   /* @internal */

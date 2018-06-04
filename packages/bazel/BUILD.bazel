@@ -1,0 +1,24 @@
+load("//tools:defaults.bzl", "npm_package")
+
+genrule(
+    name = "workspace",
+    outs = ["WORKSPACE"],
+    cmd = "echo 'workspace(name=\"angular\")' > $@",
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+        "BUILD.bazel",
+        "index.bzl",
+        "package.json",
+        "//packages/bazel/src:package_assets",
+    ],
+    # Re-host //packages/bazel/ which is just // in the public distro
+    replacements = {
+        "//packages/bazel/": "//",
+        "angular/packages/bazel/": "angular/",
+    },
+    tags = ["release-with-framework"],
+    deps = [":workspace"],
+)

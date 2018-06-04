@@ -13,15 +13,17 @@
  * something else.
  */
 
-import {AotCompilerHost, AotSummaryResolver, StaticReflector, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
-import {AngularCompilerOptions, NgcCliOptions} from '@angular/tsc-wrapped';
+/**
+ *********************************************************************
+ * Changes to this file need to be approved by the Angular CLI team. *
+ *********************************************************************
+ */
+
 import * as ts from 'typescript';
 
-import {CodeGenerator} from './codegen';
-import {CompilerHost, CompilerHostContext, ModuleResolutionHostAdapter} from './compiler_host';
-import {Extractor} from './extractor';
-import {listLazyRoutesOfModule} from './ngtools_impl';
-import {PathMappedCompilerHost} from './path_mapped_compiler_host';
+import {CompilerHost, CompilerOptions, LazyRoute} from './transformers/api';
+import {getOriginalReferences} from './transformers/compiler_host';
+import {createProgram} from './transformers/entry_points';
 
 export interface NgTools_InternalApi_NG2_CodeGen_Options {
   basePath: string;
@@ -29,7 +31,7 @@ export interface NgTools_InternalApi_NG2_CodeGen_Options {
   program: ts.Program;
   host: ts.CompilerHost;
 
-  angularCompilerOptions: AngularCompilerOptions;
+  angularCompilerOptions: CompilerOptions;
 
   // i18n options.
   i18nFormat?: string;
@@ -45,7 +47,7 @@ export interface NgTools_InternalApi_NG2_CodeGen_Options {
 export interface NgTools_InternalApi_NG2_ListLazyRoutes_Options {
   program: ts.Program;
   host: ts.CompilerHost;
-  angularCompilerOptions: AngularCompilerOptions;
+  angularCompilerOptions: CompilerOptions;
   entryModule: string;
 
   // Every new property under this line should be optional.
@@ -58,7 +60,7 @@ export interface NgTools_InternalApi_NG2_ExtractI18n_Options {
   compilerOptions: ts.CompilerOptions;
   program: ts.Program;
   host: ts.CompilerHost;
-  angularCompilerOptions: AngularCompilerOptions;
+  angularCompilerOptions: CompilerOptions;
   i18nFormat?: string;
   readResource: (fileName: string) => Promise<string>;
   // Every new property under this line should be optional.
@@ -67,94 +69,65 @@ export interface NgTools_InternalApi_NG2_ExtractI18n_Options {
 }
 
 /**
- * A ModuleResolutionHostAdapter that overrides the readResource() method with the one
- * passed in the interface.
- */
-class CustomLoaderModuleResolutionHostAdapter extends ModuleResolutionHostAdapter {
-  constructor(
-      private _readResource: (path: string) => Promise<string>, host: ts.ModuleResolutionHost) {
-    super(host);
-  }
-
-  readResource(path: string) { return this._readResource(path); }
-}
-
-/**
  * @internal
- * @private
+ * @deprecatd Use ngtools_api2 instead!
  */
 export class NgTools_InternalApi_NG_2 {
   /**
    * @internal
-   * @private
    */
   static codeGen(options: NgTools_InternalApi_NG2_CodeGen_Options): Promise<any> {
-    const hostContext: CompilerHostContext =
-        new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
-
-    const cliOptions: NgcCliOptions = {
-      i18nFormat: options.i18nFormat !,
-      i18nFile: options.i18nFile !,
-      locale: options.locale !,
-      missingTranslation: options.missingTranslation !,
-      basePath: options.basePath
-    };
-    const ngOptions = options.angularCompilerOptions;
-    if (ngOptions.enableSummariesForJit === undefined) {
-      // default to false
-      ngOptions.enableSummariesForJit = false;
-    }
-
-    // Create the Code Generator.
-    const codeGenerator =
-        CodeGenerator.create(ngOptions, cliOptions, options.program, options.host, hostContext);
-
-    return codeGenerator.codegen();
+    throw throwNotSupportedError();
   }
 
   /**
    * @internal
-   * @private
    */
   static listLazyRoutes(options: NgTools_InternalApi_NG2_ListLazyRoutes_Options):
       NgTools_InternalApi_NG_2_LazyRouteMap {
-    const angularCompilerOptions = options.angularCompilerOptions;
-    const program = options.program;
+    // TODO(tbosch): Also throwNotSupportedError once Angular CLI 1.5.1 ships,
+    // as we only needed this to support Angular CLI 1.5.0 rc.*
+    const ngProgram = createProgram({
+      rootNames: options.program.getRootFileNames(),
+      options: {...options.angularCompilerOptions, collectAllErrors: true},
+      host: options.host
+    });
+    const lazyRoutes = ngProgram.listLazyRoutes(options.entryModule);
 
-    const moduleResolutionHost = new ModuleResolutionHostAdapter(options.host);
-    const usePathMapping =
-        !!angularCompilerOptions.rootDirs && angularCompilerOptions.rootDirs.length > 0;
-    const ngCompilerHost: AotCompilerHost = usePathMapping ?
-        new PathMappedCompilerHost(program, angularCompilerOptions, moduleResolutionHost) :
-        new CompilerHost(program, angularCompilerOptions, moduleResolutionHost);
+    // reset the referencedFiles that the ng.Program added to the SourceFiles
+    // as the host might be caching the source files!
+    for (const sourceFile of options.program.getSourceFiles()) {
+      const originalReferences = getOriginalReferences(sourceFile);
+      if (originalReferences) {
+        sourceFile.referencedFiles = originalReferences;
+      }
+    }
 
-    const symbolCache = new StaticSymbolCache();
-    const summaryResolver = new AotSummaryResolver(ngCompilerHost, symbolCache);
-    const symbolResolver = new StaticSymbolResolver(ngCompilerHost, symbolCache, summaryResolver);
-    const staticReflector = new StaticReflector(summaryResolver, symbolResolver);
-    const routeMap = listLazyRoutesOfModule(options.entryModule, ngCompilerHost, staticReflector);
+    const result: NgTools_InternalApi_NG_2_LazyRouteMap = {};
+    lazyRoutes.forEach(lazyRoute => {
+      const route = lazyRoute.route;
+      const referencedFilePath = lazyRoute.referencedModule.filePath;
+      if (result[route] && result[route] != referencedFilePath) {
+        throw new Error(
+            `Duplicated path in loadChildren detected: "${route}" is used in 2 loadChildren, ` +
+            `but they point to different modules "(${result[route]} and ` +
+            `"${referencedFilePath}"). Webpack cannot distinguish on context and would fail to ` +
+            'load the proper one.');
+      }
+      result[route] = referencedFilePath;
+    });
 
-    return Object.keys(routeMap).reduce(
-        (acc: NgTools_InternalApi_NG_2_LazyRouteMap, route: string) => {
-          acc[route] = routeMap[route].absoluteFilePath;
-          return acc;
-        },
-        {});
+    return result;
   }
 
   /**
    * @internal
-   * @private
    */
   static extractI18n(options: NgTools_InternalApi_NG2_ExtractI18n_Options): Promise<any> {
-    const hostContext: CompilerHostContext =
-        new CustomLoaderModuleResolutionHostAdapter(options.readResource, options.host);
-
-    // Create the i18n extractor.
-    const locale = options.locale || null;
-    const extractor = Extractor.create(
-        options.angularCompilerOptions, options.program, options.host, locale, hostContext);
-
-    return extractor.extract(options.i18nFormat !, options.outFile || null);
+    throw throwNotSupportedError();
   }
+}
+
+function throwNotSupportedError() {
+  throw new Error(`Please update @angular/cli. Angular 5+ requires at least Angular CLI 1.5+`);
 }

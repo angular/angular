@@ -8,7 +8,7 @@
 
 import {PlaceholderRegistry} from '../../../src/i18n/serializers/placeholder';
 
-export function main(): void {
+{
   describe('PlaceholderRegistry', () => {
     let reg: PlaceholderRegistry;
 

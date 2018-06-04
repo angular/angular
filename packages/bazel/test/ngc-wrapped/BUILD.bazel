@@ -1,0 +1,35 @@
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+
+ts_library(
+    name = "ngc_test_lib",
+    srcs = [
+        "index_test.ts",
+        "test_support.ts",
+        "tsconfig_template.ts",
+    ],
+    tsconfig = ":tsconfig.json",
+    deps = [
+        "//packages/bazel/src/ngc-wrapped:ngc_lib",
+        "//packages/compiler-cli",
+    ],
+)
+
+# We need a filegroup so that we can refer
+# .d.ts files (by default, jasmine_node_test would get the .js files).
+filegroup(
+    name = "angular_core",
+    srcs = ["//packages/core"],
+)
+
+jasmine_node_test(
+    name = "ngc_test",
+    size = "small",
+    srcs = [":ngc_test_lib"],
+    data = [
+        ":angular_core",
+        "//packages/bazel/test/ngc-wrapped/empty:empty_tsconfig.json",
+        "//packages/bazel/test/ngc-wrapped/empty:tsconfig.json",
+        "@build_bazel_rules_typescript//internal:worker_protocol.proto",
+    ],
+)

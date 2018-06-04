@@ -9,7 +9,7 @@
 import {AfterContentChecked, AfterContentInit, AfterViewChecked, AfterViewInit, Component, DoCheck, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, Type} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 
-export function main() {
+(function() {
   describe('lifecycle hooks examples', () => {
     it('should work with ngOnInit', () => {
       // #docregion OnInit
@@ -147,4 +147,4 @@ export function main() {
       proto[method] = (...args: any[]) => { log.push([method, args]); };
     });
   }
-}
+})();

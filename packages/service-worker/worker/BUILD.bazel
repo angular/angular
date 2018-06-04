@@ -1,0 +1,31 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
+
+ts_library(
+    name = "worker",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+        exclude = ["main.ts"],
+    ),
+    tsconfig = ":tsconfig.json",
+)
+
+ts_library(
+    name = "main",
+    srcs = ["main.ts"],
+    tsconfig = ":tsconfig.json",
+    deps = [":worker"],
+)
+
+ng_rollup_bundle(
+    name = "ngsw_worker",
+    entry_point = "packages/service-worker/worker/main.js",
+    deps = [
+        ":main",
+    ],
+)

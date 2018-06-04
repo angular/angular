@@ -1,0 +1,748 @@
+arbitrary-npm-package-main.js
+arbitrary_bin.txt
+arbitrary_genfiles.txt
+bundles
+  bundles/waffels-secondary.umd.js
+  bundles/waffels-secondary.umd.js.map
+  bundles/waffels-secondary.umd.min.js
+  bundles/waffels-secondary.umd.min.js.map
+  bundles/waffels.umd.js
+  bundles/waffels.umd.js.map
+  bundles/waffels.umd.min.js
+  bundles/waffels.umd.min.js.map
+esm2015
+  esm2015/example.externs.js
+  esm2015/example_public_index.js
+  esm2015/index.js
+  esm2015/mymodule.js
+  esm2015/secondary
+    esm2015/secondary/index.js
+    esm2015/secondary/secondary.externs.js
+    esm2015/secondary/secondary_public_index.js
+    esm2015/secondary/secondarymodule.js
+esm5
+  esm5/example_public_index.js
+  esm5/index.js
+  esm5/mymodule.js
+  esm5/secondary
+    esm5/secondary/index.js
+    esm5/secondary/secondary_public_index.js
+    esm5/secondary/secondarymodule.js
+example_public_index.d.ts
+example_public_index.metadata.json
+extra-styles.css
+fesm2015
+  fesm2015/secondary.js
+  fesm2015/secondary.js.map
+  fesm2015/waffels.js
+  fesm2015/waffels.js.map
+fesm5
+  fesm5/secondary.js
+  fesm5/secondary.js.map
+  fesm5/waffels.js
+  fesm5/waffels.js.map
+index.d.ts
+mymodule.d.ts
+package.json
+secondary
+  secondary/index.d.ts
+  secondary/package.json
+  secondary/secondary_public_index.d.ts
+  secondary/secondary_public_index.metadata.json
+  secondary/secondarymodule.d.ts
+secondary.d.ts
+secondary.metadata.json
+some-file.txt
+--- arbitrary-npm-package-main.js ---
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+const x = 1;
+
+
+--- arbitrary_bin.txt ---
+
+World
+
+
+--- arbitrary_genfiles.txt ---
+
+Hello
+
+
+--- bundles/waffels-secondary.umd.js ---
+
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+	typeof define === 'function' && define.amd ? define(['exports', '@angular/core'], factory) :
+	(factory((global.npm_package = {}),global.ng.core));
+}(this, (function (exports,core) { 'use strict';
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+var SecondaryModule = /** @class */ (function () {
+    function SecondaryModule() {
+    }
+    SecondaryModule.decorators = [
+        { type: core.NgModule, args: [{},] }
+    ];
+    /** @nocollapse */
+    SecondaryModule.ctorParameters = function () { return []; };
+    return SecondaryModule;
+}());
+var a = 1;
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+exports.SecondaryModule = SecondaryModule;
+exports.a = a;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+//# sourceMappingURL=waffels-secondary.umd.js.map
+
+
+--- bundles/waffels-secondary.umd.js.map ---
+
+{"version":3,"file":"waffels-secondary.umd.js","sources":["../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.esm5/packages/bazel/test/ng_package/example/secondary/secondary_public_index.js"],"sourcesContent":["/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nvar SecondaryModule = /** @class */ (function () {\n    function SecondaryModule() {\n    }\n    SecondaryModule.decorators = [\n        { type: NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    SecondaryModule.ctorParameters = function () { return []; };\n    return SecondaryModule;\n}());\nexport { SecondaryModule };\nexport var a = 1;\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBRXRDLFFBQVEsU0FBQyxFQUFFOzs7OzBCQVZaOztTQVdhLGVBQWU7QUFHNUIsTUFBTSxDQUFDLElBQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=","/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport * from './secondarymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQVFBLGNBQWMsbUJBQW1CLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vc2Vjb25kYXJ5bW9kdWxlJztcbiJdfQ==","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5X3B1YmxpY19pbmRleC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL3NlY29uZGFyeS9zZWNvbmRhcnlfcHVibGljX2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYyxTQUFTLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuIl19"],"names":["NgModule"],"mappings":";;;;;;AAAA;;;;;;;AAOA,AACA,IAAI,eAAe,kBAAkB,YAAY;IAC7C,SAAS,eAAe,GAAG;KAC1B;IACD,eAAe,CAAC,UAAU,GAAG;QACzB,EAAE,IAAI,EAAEA,aAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;KAClC,CAAC;;IAEF,eAAe,CAAC,cAAc,GAAG,YAAY,EAAE,OAAO,EAAE,CAAC,EAAE,CAAC;IAC5D,OAAO,eAAe,CAAC;CAC1B,EAAE,CAAC,CAAC;AACL,AACO,IAAI,CAAC,GAAG,CAAC;;ACnBhB;;;;;;GAMG;;ACNH;;GAEG;;;;;;;;;;;;;"}
+
+--- bundles/waffels-secondary.umd.min.js ---
+
+!function(e,n){"object"==typeof exports&&"undefined"!=typeof module?n(exports,require("@angular/core")):"function"==typeof define&&define.amd?define(["exports","@angular/core"],n):n(e.npm_package={},e.ng.core)}(this,function(e,n){"use strict";
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */var o=function(){function e(){}return e.decorators=[{type:n.NgModule,args:[{}]}],e.ctorParameters=function(){return[]},e}();
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+e.SecondaryModule=o,e.a=1,Object.defineProperty(e,"__esModule",{value:!0})});
+
+--- bundles/waffels-secondary.umd.min.js.map ---
+
+{"version":3,"sources":["packages/bazel/test/ng_package/example/waffels-secondary.umd.js"],"names":["global","factory","exports","module","require","define","amd","npm_package","ng","core","this","SecondaryModule","decorators","type","NgModule","args","ctorParameters","a","Object","defineProperty","value"],"mappings":"CAAC,SAAUA,EAAQC,GACC,iBAAZC,SAA0C,oBAAXC,OAAyBF,EAAQC,QAASE,QAAQ,kBACtE,mBAAXC,QAAyBA,OAAOC,IAAMD,QAAQ,UAAW,iBAAkBJ,GACjFA,EAASD,EAAOO,eAAkBP,EAAOQ,GAAGC,MAH9C,CAIEC,KAAM,SAAWR,EAAQO,GAAQ;;;;;;;GASnC,IAAIE,EAAiC,WACjC,SAASA,KAOT,OALAA,EAAgBC,aACVC,KAAMJ,EAAKK,SAAUC,YAG3BJ,EAAgBK,eAAiB,WAAc,UACxCL,EARyB;;;;;;;;AAwBpCT,EAAQS,gBAAkBA,EAC1BT,EAAQe,EAfA,EAiBRC,OAAOC,eAAejB,EAAS,cAAgBkB,OAAO","sourcesContent":["(function (global, factory) {\n\ttypeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :\n\ttypeof define === 'function' && define.amd ? define(['exports', '@angular/core'], factory) :\n\t(factory((global.npm_package = {}),global.ng.core));\n}(this, (function (exports,core) { 'use strict';\n\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nvar SecondaryModule = /** @class */ (function () {\n    function SecondaryModule() {\n    }\n    SecondaryModule.decorators = [\n        { type: core.NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    SecondaryModule.ctorParameters = function () { return []; };\n    return SecondaryModule;\n}());\nvar a = 1;\n\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\n\n/**\n * Generated bundle index. Do not edit.\n */\n\nexports.SecondaryModule = SecondaryModule;\nexports.a = a;\n\nObject.defineProperty(exports, '__esModule', { value: true });\n\n})));\n//# sourceMappingURL=waffels-secondary.umd.js.map\n"]}
+
+--- bundles/waffels.umd.js ---
+
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :
+	typeof define === 'function' && define.amd ? define(['exports', '@angular/core'], factory) :
+	(factory((global.npm_package = {}),global.ng.core));
+}(this, (function (exports,core) { 'use strict';
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+var MyModule = /** @class */ (function () {
+    function MyModule() {
+    }
+    MyModule.decorators = [
+        { type: core.NgModule, args: [{},] }
+    ];
+    /** @nocollapse */
+    MyModule.ctorParameters = function () { return []; };
+    return MyModule;
+}());
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+exports.MyModule = MyModule;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+//# sourceMappingURL=waffels.umd.js.map
+
+
+--- bundles/waffels.umd.js.map ---
+
+{"version":3,"file":"waffels.umd.js","sources":["../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.esm5/packages/bazel/test/ng_package/example/example_public_index.js"],"sourcesContent":["/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nvar MyModule = /** @class */ (function () {\n    function MyModule() {\n    }\n    MyModule.decorators = [\n        { type: NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    MyModule.ctorParameters = function () { return []; };\n    return MyModule;\n}());\nexport { MyModule };\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBR3RDLFFBQVEsU0FBQyxFQUFFOzs7O21CQVhaOztTQVlhLFFBQVEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==","/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport * from './mymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsY0FBYyxZQUFZLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vbXltb2R1bGUnOyJdfQ==","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZV9wdWJsaWNfaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9leGFtcGxlX3B1YmxpY19pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ=="],"names":["NgModule"],"mappings":";;;;;;AAAA;;;;;;;AAOA,AACA,IAAI,QAAQ,kBAAkB,YAAY;IACtC,SAAS,QAAQ,GAAG;KACnB;IACD,QAAQ,CAAC,UAAU,GAAG;QAClB,EAAE,IAAI,EAAEA,aAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;KAClC,CAAC;;IAEF,QAAQ,CAAC,cAAc,GAAG,YAAY,EAAE,OAAO,EAAE,CAAC,EAAE,CAAC;IACrD,OAAO,QAAQ,CAAC;CACnB,EAAE,CAAC;;ACjBJ;;;;;;GAMG;;ACNH;;GAEG;;;;;;;;;;;;"}
+
+--- bundles/waffels.umd.min.js ---
+
+!function(e,n){"object"==typeof exports&&"undefined"!=typeof module?n(exports,require("@angular/core")):"function"==typeof define&&define.amd?define(["exports","@angular/core"],n):n(e.npm_package={},e.ng.core)}(this,function(e,n){"use strict";
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */var o=function(){function e(){}return e.decorators=[{type:n.NgModule,args:[{}]}],e.ctorParameters=function(){return[]},e}();
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */e.MyModule=o,Object.defineProperty(e,"__esModule",{value:!0})});
+
+--- bundles/waffels.umd.min.js.map ---
+
+{"version":3,"sources":["packages/bazel/test/ng_package/example/waffels.umd.js"],"names":["global","factory","exports","module","require","define","amd","npm_package","ng","core","this","MyModule","decorators","type","NgModule","args","ctorParameters","Object","defineProperty","value"],"mappings":"CAAC,SAAUA,EAAQC,GACC,iBAAZC,SAA0C,oBAAXC,OAAyBF,EAAQC,QAASE,QAAQ,kBACtE,mBAAXC,QAAyBA,OAAOC,IAAMD,QAAQ,UAAW,iBAAkBJ,GACjFA,EAASD,EAAOO,eAAkBP,EAAOQ,GAAGC,MAH9C,CAIEC,KAAM,SAAWR,EAAQO,GAAQ;;;;;;;GASnC,IAAIE,EAA0B,WAC1B,SAASA,KAOT,OALAA,EAASC,aACHC,KAAMJ,EAAKK,SAAUC,YAG3BJ,EAASK,eAAiB,WAAc,UACjCL,EARkB;;;;;;;GAuB7BT,EAAQS,SAAWA,EAEnBM,OAAOC,eAAehB,EAAS,cAAgBiB,OAAO","sourcesContent":["(function (global, factory) {\n\ttypeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core')) :\n\ttypeof define === 'function' && define.amd ? define(['exports', '@angular/core'], factory) :\n\t(factory((global.npm_package = {}),global.ng.core));\n}(this, (function (exports,core) { 'use strict';\n\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nvar MyModule = /** @class */ (function () {\n    function MyModule() {\n    }\n    MyModule.decorators = [\n        { type: core.NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    MyModule.ctorParameters = function () { return []; };\n    return MyModule;\n}());\n\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\n\n/**\n * Generated bundle index. Do not edit.\n */\n\nexports.MyModule = MyModule;\n\nObject.defineProperty(exports, '__esModule', { value: true });\n\n})));\n//# sourceMappingURL=waffels.umd.js.map\n"]}
+
+--- esm2015/example.externs.js ---
+
+/** @externs */
+/**
+ * @externs
+ * @suppress {duplicate,checkTypes}
+ */
+// NOTE: generated by tsickle, do not edit.
+
+
+--- esm2015/example_public_index.js ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZV9wdWJsaWNfaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9leGFtcGxlX3B1YmxpY19pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ==
+
+--- esm2015/index.js ---
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+export { MyModule } from './mymodule';
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLHlCQUFjLFlBQVksQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9teW1vZHVsZSc7Il19
+
+--- esm2015/mymodule.js ---
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { NgModule } from '@angular/core';
+export class MyModule {
+}
+MyModule.decorators = [
+    { type: NgModule, args: [{},] }
+];
+/** @nocollapse */
+MyModule.ctorParameters = () => [];
+function MyModule_tsickle_Closure_declarations() {
+    /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */
+    MyModule.decorators;
+    /**
+     * @nocollapse
+     * @type {function(): !Array<(null|{type: ?, decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>)})>}
+     */
+    MyModule.ctorParameters;
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLE9BQU8sRUFBQyxRQUFRLEVBQUMsTUFBTSxlQUFlLENBQUM7QUFJdkMsTUFBTTs7O1lBREwsUUFBUSxTQUFDLEVBQUUiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==
+
+--- esm2015/secondary/index.js ---
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+export { SecondaryModule, a } from './secondarymodule';
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7QUFRQSxtQ0FBYyxtQkFBbUIsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9zZWNvbmRhcnltb2R1bGUnO1xuIl19
+
+--- esm2015/secondary/secondary.externs.js ---
+
+/** @externs */
+/**
+ * @externs
+ * @suppress {duplicate,checkTypes}
+ */
+// NOTE: generated by tsickle, do not edit.
+
+
+--- esm2015/secondary/secondary_public_index.js ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5X3B1YmxpY19pbmRleC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL3NlY29uZGFyeS9zZWNvbmRhcnlfcHVibGljX2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYyxTQUFTLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuIl19
+
+--- esm2015/secondary/secondarymodule.js ---
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { NgModule } from '@angular/core';
+export class SecondaryModule {
+}
+SecondaryModule.decorators = [
+    { type: NgModule, args: [{},] }
+];
+/** @nocollapse */
+SecondaryModule.ctorParameters = () => [];
+function SecondaryModule_tsickle_Closure_declarations() {
+    /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */
+    SecondaryModule.decorators;
+    /**
+     * @nocollapse
+     * @type {function(): !Array<(null|{type: ?, decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>)})>}
+     */
+    SecondaryModule.ctorParameters;
+}
+export const /** @type {?} */ a = 1;
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLE9BQU8sRUFBQyxRQUFRLEVBQUMsTUFBTSxlQUFlLENBQUM7QUFHdkMsTUFBTTs7O1lBREwsUUFBUSxTQUFDLEVBQUU7Ozs7Ozs7Ozs7Ozs7QUFJWixNQUFNLENBQUMsdUJBQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=
+
+--- esm5/example_public_index.js ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZV9wdWJsaWNfaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9leGFtcGxlX3B1YmxpY19pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ==
+
+--- esm5/index.js ---
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+export * from './mymodule';
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsY0FBYyxZQUFZLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vbXltb2R1bGUnOyJdfQ==
+
+--- esm5/mymodule.js ---
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { NgModule } from '@angular/core';
+var MyModule = /** @class */ (function () {
+    function MyModule() {
+    }
+    MyModule.decorators = [
+        { type: NgModule, args: [{},] }
+    ];
+    /** @nocollapse */
+    MyModule.ctorParameters = function () { return []; };
+    return MyModule;
+}());
+export { MyModule };
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBR3RDLFFBQVEsU0FBQyxFQUFFOzs7O21CQVhaOztTQVlhLFFBQVEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==
+
+--- esm5/secondary/index.js ---
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+export * from './secondarymodule';
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQVFBLGNBQWMsbUJBQW1CLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vc2Vjb25kYXJ5bW9kdWxlJztcbiJdfQ==
+
+--- esm5/secondary/secondary_public_index.js ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5X3B1YmxpY19pbmRleC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL3NlY29uZGFyeS9zZWNvbmRhcnlfcHVibGljX2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYyxTQUFTLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuIl19
+
+--- esm5/secondary/secondarymodule.js ---
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { NgModule } from '@angular/core';
+var SecondaryModule = /** @class */ (function () {
+    function SecondaryModule() {
+    }
+    SecondaryModule.decorators = [
+        { type: NgModule, args: [{},] }
+    ];
+    /** @nocollapse */
+    SecondaryModule.ctorParameters = function () { return []; };
+    return SecondaryModule;
+}());
+export { SecondaryModule };
+export var a = 1;
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBRXRDLFFBQVEsU0FBQyxFQUFFOzs7OzBCQVZaOztTQVdhLGVBQWU7QUFHNUIsTUFBTSxDQUFDLElBQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=
+
+--- example_public_index.d.ts ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+
+
+--- example_public_index.metadata.json ---
+
+{"__symbolic":"module","version":4,"metadata":{"MyModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":11,"character":1},"arguments":[{}]}],"members":{}}},"origins":{"MyModule":"./mymodule"},"importAs":"example"}
+
+--- extra-styles.css ---
+
+.special {
+  color: goldenrod;
+}
+
+
+--- fesm2015/secondary.js ---
+
+import { NgModule } from '@angular/core';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+class SecondaryModule {
+}
+SecondaryModule.decorators = [
+    { type: NgModule, args: [{},] }
+];
+/** @nocollapse */
+SecondaryModule.ctorParameters = () => [];
+const a = 1;
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+export { SecondaryModule, a };
+//# sourceMappingURL=secondary.js.map
+
+
+--- fesm2015/secondary.js.map ---
+
+{"version":3,"file":"secondary.js","sources":["../../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.es6/packages/bazel/test/ng_package/example/secondary/secondary_public_index.js"],"sourcesContent":["/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nexport class SecondaryModule {\n}\nSecondaryModule.decorators = [\n    { type: NgModule, args: [{},] }\n];\n/** @nocollapse */\nSecondaryModule.ctorParameters = () => [];\nfunction SecondaryModule_tsickle_Closure_declarations() {\n    /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */\n    SecondaryModule.decorators;\n    /**\n     * @nocollapse\n     * @type {function(): !Array<(null|{type: ?, decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>)})>}\n     */\n    SecondaryModule.ctorParameters;\n}\nexport const /** @type {?} */ a = 1;\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLE9BQU8sRUFBQyxRQUFRLEVBQUMsTUFBTSxlQUFlLENBQUM7QUFHdkMsTUFBTTs7O1lBREwsUUFBUSxTQUFDLEVBQUU7Ozs7Ozs7Ozs7Ozs7QUFJWixNQUFNLENBQUMsdUJBQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=","/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport { SecondaryModule, a } from './secondarymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7QUFRQSxtQ0FBYyxtQkFBbUIsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9zZWNvbmRhcnltb2R1bGUnO1xuIl19","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5X3B1YmxpY19pbmRleC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL3NlY29uZGFyeS9zZWNvbmRhcnlfcHVibGljX2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYyxTQUFTLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuIl19"],"names":[],"mappings":";;AAAA;;;;;;;;;;;AAWA,AACO,MAAM,eAAe,CAAC;CAC5B;AACD,eAAe,CAAC,UAAU,GAAG;IACzB,EAAE,IAAI,EAAE,QAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;CAClC,CAAC;;AAEF,eAAe,CAAC,cAAc,GAAG,MAAM,EAAE,CAAC;AAC1C,AASO,MAAuB,CAAC,GAAG,CAAC;;AC5BnC;;;;;;;;;;GAUG;;ACVH;;GAEG;;;;"}
+
+--- fesm2015/waffels.js ---
+
+import { NgModule } from '@angular/core';
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+class MyModule {
+}
+MyModule.decorators = [
+    { type: NgModule, args: [{},] }
+];
+/** @nocollapse */
+MyModule.ctorParameters = () => [];
+
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes} checked by tsc
+ */
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+export { MyModule };
+//# sourceMappingURL=waffels.js.map
+
+
+--- fesm2015/waffels.js.map ---
+
+{"version":3,"file":"waffels.js","sources":["../../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.es6/packages/bazel/test/ng_package/example/example_public_index.js"],"sourcesContent":["/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nexport class MyModule {\n}\nMyModule.decorators = [\n    { type: NgModule, args: [{},] }\n];\n/** @nocollapse */\nMyModule.ctorParameters = () => [];\nfunction MyModule_tsickle_Closure_declarations() {\n    /** @type {!Array<{type: !Function, args: (undefined|!Array<?>)}>} */\n    MyModule.decorators;\n    /**\n     * @nocollapse\n     * @type {function(): !Array<(null|{type: ?, decorators: (undefined|!Array<{type: !Function, args: (undefined|!Array<?>)}>)})>}\n     */\n    MyModule.ctorParameters;\n}\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLE9BQU8sRUFBQyxRQUFRLEVBQUMsTUFBTSxlQUFlLENBQUM7QUFJdkMsTUFBTTs7O1lBREwsUUFBUSxTQUFDLEVBQUUiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==","/**\n * @fileoverview added by tsickle\n * @suppress {checkTypes} checked by tsc\n */\n/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport { MyModule } from './mymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7OztBQVFBLHlCQUFjLFlBQVksQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9teW1vZHVsZSc7Il19","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZV9wdWJsaWNfaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9leGFtcGxlX3B1YmxpY19pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ=="],"names":[],"mappings":";;AAAA;;;;;;;;;;;AAWA,AACO,MAAM,QAAQ,CAAC;CACrB;AACD,QAAQ,CAAC,UAAU,GAAG;IAClB,EAAE,IAAI,EAAE,QAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;CAClC,CAAC;;AAEF,QAAQ,CAAC,cAAc,GAAG,MAAM,EAAE,CAAC;;AClBnC;;;;;;;;;;GAUG;;ACVH;;GAEG;;;;"}
+
+--- fesm5/secondary.js ---
+
+import { NgModule } from '@angular/core';
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+var SecondaryModule = /** @class */ (function () {
+    function SecondaryModule() {
+    }
+    SecondaryModule.decorators = [
+        { type: NgModule, args: [{},] }
+    ];
+    /** @nocollapse */
+    SecondaryModule.ctorParameters = function () { return []; };
+    return SecondaryModule;
+}());
+var a = 1;
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+export { SecondaryModule, a };
+//# sourceMappingURL=secondary.js.map
+
+
+--- fesm5/secondary.js.map ---
+
+{"version":3,"file":"secondary.js","sources":["../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.esm5/packages/bazel/test/ng_package/example/secondary/secondary_public_index.js"],"sourcesContent":["/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nvar SecondaryModule = /** @class */ (function () {\n    function SecondaryModule() {\n    }\n    SecondaryModule.decorators = [\n        { type: NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    SecondaryModule.ctorParameters = function () { return []; };\n    return SecondaryModule;\n}());\nexport { SecondaryModule };\nexport var a = 1;\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5bW9kdWxlLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXMiOlsiLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vLi4vcGFja2FnZXMvYmF6ZWwvdGVzdC9uZ19wYWNrYWdlL2V4YW1wbGUvc2Vjb25kYXJ5L3NlY29uZGFyeW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBRXRDLFFBQVEsU0FBQyxFQUFFOzs7OzBCQVZaOztTQVdhLGVBQWU7QUFHNUIsTUFBTSxDQUFDLElBQU0sQ0FBQyxHQUFHLENBQUMsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogQGxpY2Vuc2VcbiAqIENvcHlyaWdodCBHb29nbGUgSW5jLiBBbGwgUmlnaHRzIFJlc2VydmVkLlxuICpcbiAqIFVzZSBvZiB0aGlzIHNvdXJjZSBjb2RlIGlzIGdvdmVybmVkIGJ5IGFuIE1JVC1zdHlsZSBsaWNlbnNlIHRoYXQgY2FuIGJlXG4gKiBmb3VuZCBpbiB0aGUgTElDRU5TRSBmaWxlIGF0IGh0dHBzOi8vYW5ndWxhci5pby9saWNlbnNlXG4gKi9cblxuaW1wb3J0IHtOZ01vZHVsZX0gZnJvbSAnQGFuZ3VsYXIvY29yZSc7XG5cbkBOZ01vZHVsZSh7fSlcbmV4cG9ydCBjbGFzcyBTZWNvbmRhcnlNb2R1bGUge1xufVxuXG5leHBvcnQgY29uc3QgYSA9IDE7XG4iXX0=","/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport * from './secondarymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9zZWNvbmRhcnkvaW5kZXgudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7OztBQVFBLGNBQWMsbUJBQW1CLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vc2Vjb25kYXJ5bW9kdWxlJztcbiJdfQ==","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoic2Vjb25kYXJ5X3B1YmxpY19pbmRleC5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbIi4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uLy4uL3BhY2thZ2VzL2JhemVsL3Rlc3QvbmdfcGFja2FnZS9leGFtcGxlL3NlY29uZGFyeS9zZWNvbmRhcnlfcHVibGljX2luZGV4LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOztHQUVHO0FBRUgsY0FBYyxTQUFTLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEdlbmVyYXRlZCBidW5kbGUgaW5kZXguIERvIG5vdCBlZGl0LlxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vaW5kZXgnO1xuIl19"],"names":[],"mappings":";;AAAA;;;;;;;AAOA,AACA,IAAI,eAAe,kBAAkB,YAAY;IAC7C,SAAS,eAAe,GAAG;KAC1B;IACD,eAAe,CAAC,UAAU,GAAG;QACzB,EAAE,IAAI,EAAE,QAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;KAClC,CAAC;;IAEF,eAAe,CAAC,cAAc,GAAG,YAAY,EAAE,OAAO,EAAE,CAAC,EAAE,CAAC;IAC5D,OAAO,eAAe,CAAC;CAC1B,EAAE,CAAC,CAAC;AACL,AACO,IAAI,CAAC,GAAG,CAAC;;ACnBhB;;;;;;GAMG;;ACNH;;GAEG;;;;"}
+
+--- fesm5/waffels.js ---
+
+import { NgModule } from '@angular/core';
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+var MyModule = /** @class */ (function () {
+    function MyModule() {
+    }
+    MyModule.decorators = [
+        { type: NgModule, args: [{},] }
+    ];
+    /** @nocollapse */
+    MyModule.ctorParameters = function () { return []; };
+    return MyModule;
+}());
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+
+export { MyModule };
+//# sourceMappingURL=waffels.js.map
+
+
+--- fesm5/waffels.js.map ---
+
+{"version":3,"file":"waffels.js","sources":["../../../../../../../../../../../../../execroot/angular/bazel-bin/packages/bazel/test/ng_package/example/npm_package.esm5/packages/bazel/test/ng_package/example/example_public_index.js"],"sourcesContent":["/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nimport { NgModule } from '@angular/core';\nvar MyModule = /** @class */ (function () {\n    function MyModule() {\n    }\n    MyModule.decorators = [\n        { type: NgModule, args: [{},] }\n    ];\n    /** @nocollapse */\n    MyModule.ctorParameters = function () { return []; };\n    return MyModule;\n}());\nexport { MyModule };\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibXltb2R1bGUuanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9teW1vZHVsZS50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsT0FBTyxFQUFDLFFBQVEsRUFBQyxNQUFNLGVBQWUsQ0FBQzs7Ozs7Z0JBR3RDLFFBQVEsU0FBQyxFQUFFOzs7O21CQVhaOztTQVlhLFFBQVEiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmltcG9ydCB7TmdNb2R1bGV9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHthfSBmcm9tICcuL3NlY29uZGFyeS9zZWNvbmRhcnltb2R1bGUnO1xuXG5ATmdNb2R1bGUoe30pXG5leHBvcnQgY2xhc3MgTXlNb2R1bGUge1xufSJdfQ==","/**\n * @license\n * Copyright Google Inc. All Rights Reserved.\n *\n * Use of this source code is governed by an MIT-style license that can be\n * found in the LICENSE file at https://angular.io/license\n */\nexport * from './mymodule';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7O0FBUUEsY0FBYyxZQUFZLENBQUMiLCJzb3VyY2VzQ29udGVudCI6WyIvKipcbiAqIEBsaWNlbnNlXG4gKiBDb3B5cmlnaHQgR29vZ2xlIEluYy4gQWxsIFJpZ2h0cyBSZXNlcnZlZC5cbiAqXG4gKiBVc2Ugb2YgdGhpcyBzb3VyY2UgY29kZSBpcyBnb3Zlcm5lZCBieSBhbiBNSVQtc3R5bGUgbGljZW5zZSB0aGF0IGNhbiBiZVxuICogZm91bmQgaW4gdGhlIExJQ0VOU0UgZmlsZSBhdCBodHRwczovL2FuZ3VsYXIuaW8vbGljZW5zZVxuICovXG5cbmV4cG9ydCAqIGZyb20gJy4vbXltb2R1bGUnOyJdfQ==","/**\n * Generated bundle index. Do not edit.\n */\nexport * from './index';\n\n//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiZXhhbXBsZV9wdWJsaWNfaW5kZXguanMiLCJzb3VyY2VSb290IjoiIiwic291cmNlcyI6WyIuLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi8uLi9wYWNrYWdlcy9iYXplbC90ZXN0L25nX3BhY2thZ2UvZXhhbXBsZS9leGFtcGxlX3B1YmxpY19pbmRleC50cyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTs7R0FFRztBQUVILGNBQWMsU0FBUyxDQUFDIiwic291cmNlc0NvbnRlbnQiOlsiLyoqXG4gKiBHZW5lcmF0ZWQgYnVuZGxlIGluZGV4LiBEbyBub3QgZWRpdC5cbiAqL1xuXG5leHBvcnQgKiBmcm9tICcuL2luZGV4JztcbiJdfQ=="],"names":[],"mappings":";;AAAA;;;;;;;AAOA,AACA,IAAI,QAAQ,kBAAkB,YAAY;IACtC,SAAS,QAAQ,GAAG;KACnB;IACD,QAAQ,CAAC,UAAU,GAAG;QAClB,EAAE,IAAI,EAAE,QAAQ,EAAE,IAAI,EAAE,CAAC,EAAE,EAAE,EAAE;KAClC,CAAC;;IAEF,QAAQ,CAAC,cAAc,GAAG,YAAY,EAAE,OAAO,EAAE,CAAC,EAAE,CAAC;IACrD,OAAO,QAAQ,CAAC;CACnB,EAAE,CAAC;;ACjBJ;;;;;;GAMG;;ACNH;;GAEG;;;;"}
+
+--- index.d.ts ---
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+export * from './mymodule';
+
+
+--- mymodule.d.ts ---
+
+export declare class MyModule {
+}
+
+
+--- package.json ---
+
+{
+  "name": "example",
+  "main": "./bundles/example.umd.js",
+  "fesm5": "./fesm5/example.js",
+  "fesm2015": "./fesm2015/example.js",
+  "esm5": "./esm5/example_public_index.js",
+  "esm2015": "./esm2015/example_public_index.js",
+  "typings": "./example_public_index.d.ts",
+  "module": "./fesm5/example.js",
+  "es2015": "./fesm2015/example.js"
+}
+
+--- secondary/index.d.ts ---
+
+/**
+ * @license
+ * Copyright Google Inc. All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+export * from './secondarymodule';
+
+
+--- secondary/package.json ---
+
+{
+  "name": "example/secondary",
+  "main": "../bundles/example-secondary.umd.js",
+  "fesm5": "../fesm5/secondary.js",
+  "fesm2015": "../fesm2015/secondary.js",
+  "esm5": "../esm5/secondary/secondary_public_index.js",
+  "esm2015": "../esm2015/secondary/secondary_public_index.js",
+  "typings": "./secondary_public_index.d.ts",
+  "module": "../fesm5/secondary.js",
+  "es2015": "../fesm2015/secondary.js"
+}
+
+--- secondary/secondary_public_index.d.ts ---
+
+/**
+ * Generated bundle index. Do not edit.
+ */
+export * from './index';
+
+
+--- secondary/secondary_public_index.metadata.json ---
+
+{"__symbolic":"module","version":4,"metadata":{"SecondaryModule":{"__symbolic":"class","decorators":[{"__symbolic":"call","expression":{"__symbolic":"reference","module":"@angular/core","name":"NgModule","line":10,"character":1},"arguments":[{}]}],"members":{}},"a":1},"origins":{"SecondaryModule":"./secondarymodule","a":"./secondarymodule"},"importAs":"example/secondary"}
+
+--- secondary/secondarymodule.d.ts ---
+
+export declare class SecondaryModule {
+}
+export declare const a = 1;
+
+
+--- secondary.d.ts ---
+
+
+  export * from './secondary/secondary_public_index';
+  
+
+--- secondary.metadata.json ---
+
+{"__symbolic":"module","version":3,"metadata":{},"exports":[{"from":"./secondary/secondary_public_index"}],"flatModuleIndexRedirect":true}
+
+
+--- some-file.txt ---
+
+This file is just copied into the package.
+

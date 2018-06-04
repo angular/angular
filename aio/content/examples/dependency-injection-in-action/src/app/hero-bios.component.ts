@@ -8,11 +8,11 @@ import { LoggerService }        from './logger.service';
 //////// HeroBiosComponent ////
 // #docregion simple
 @Component({
-  selector: 'hero-bios',
+  selector: 'app-hero-bios',
   template: `
-    <hero-bio [heroId]="1"></hero-bio>
-    <hero-bio [heroId]="2"></hero-bio>
-    <hero-bio [heroId]="3"></hero-bio>`,
+    <app-hero-bio [heroId]="1"></app-hero-bio>
+    <app-hero-bio [heroId]="2"></app-hero-bio>
+    <app-hero-bio [heroId]="3"></app-hero-bio>`,
   providers: [HeroService]
 })
 export class HeroBiosComponent {
@@ -29,12 +29,12 @@ export class HeroBiosComponent {
 //////// HeroBiosAndContactsComponent ////
 // #docregion hero-bios-and-contacts
 @Component({
-  selector: 'hero-bios-and-contacts',
+  selector: 'app-hero-bios-and-contacts',
   // #docregion template
   template: `
-    <hero-bio [heroId]="1"> <hero-contact></hero-contact> </hero-bio>
-    <hero-bio [heroId]="2"> <hero-contact></hero-contact> </hero-bio>
-    <hero-bio [heroId]="3"> <hero-contact></hero-contact> </hero-bio>`,
+    <app-hero-bio [heroId]="1"> <app-hero-contact></app-hero-contact> </app-hero-bio>
+    <app-hero-bio [heroId]="2"> <app-hero-contact></app-hero-contact> </app-hero-bio>
+    <app-hero-bio [heroId]="3"> <app-hero-contact></app-hero-contact> </app-hero-bio>`,
   // #enddocregion template
   // #docregion class-provider
   providers: [HeroService]

@@ -15,7 +15,7 @@ import {HttpRequest} from '../src/request';
 const TEST_URL = 'http://angular.io';
 const TEST_STRING = `I'm a body!`;
 
-export function main() {
+{
   describe('HttpRequest', () => {
     describe('constructor', () => {
       it('initializes url', () => {

@@ -13,7 +13,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('jit', () => { declareTests({useJit: true}); });
 
   describe('no jit', () => { declareTests({useJit: false}); });
@@ -121,7 +121,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         expect(MyCountingComp.calls).toBe(1);
       });
 
-      it('should evalute a conditional in a statement binding', () => {
+      it('should evaluate a conditional in a statement binding', () => {
         @Component({selector: 'some-comp', template: '<p (click)="nullValue?.click()"></p>'})
         class SomeComponent {
           nullValue: SomeReferencedClass;
@@ -409,7 +409,7 @@ function declareTestsUsingBootstrap() {
 
       logger = new MockConsole();
       errorHandler = new ErrorHandler();
-      errorHandler._console = logger as any;
+      (errorHandler as any)._console = logger as any;
     }));
 
     afterEach(() => { destroyPlatform(); });

@@ -1,0 +1,37 @@
+load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
+load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages/common",
+        "//packages/common/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/testing",
+        "//packages/router",
+        "//packages/router/testing",
+        "@rxjs",
+        "@rxjs//operators",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    deps = [
+        ":test_lib",
+        "//tools/testing:node",
+    ],
+)
+
+ts_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib",
+    ],
+)

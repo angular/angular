@@ -21,6 +21,7 @@ const _XMLNS = 'urn:oasis:names:tc:xliff:document:2.0';
 const _DEFAULT_SOURCE_LANG = 'en';
 const _PLACEHOLDER_TAG = 'ph';
 const _PLACEHOLDER_SPANNING_TAG = 'pc';
+const _MARKER_TAG = 'mrk';
 
 const _XLIFF_TAG = 'xliff';
 const _SOURCE_TAG = 'source';
@@ -165,15 +166,20 @@ class _WriteVisitor implements i18n.Visitor {
   }
 
   visitPlaceholder(ph: i18n.Placeholder, context?: any): xml.Node[] {
+    const idStr = (this._nextPlaceholderId++).toString();
     return [new xml.Tag(_PLACEHOLDER_TAG, {
-      id: (this._nextPlaceholderId++).toString(),
+      id: idStr,
       equiv: ph.name,
       disp: `{{${ph.value}}}`,
     })];
   }
 
   visitIcuPlaceholder(ph: i18n.IcuPlaceholder, context?: any): xml.Node[] {
-    return [new xml.Tag(_PLACEHOLDER_TAG, {id: (this._nextPlaceholderId++).toString()})];
+    const cases = Object.keys(ph.value.cases).map((value: string) => value + ' {...}').join(' ');
+    const idStr = (this._nextPlaceholderId++).toString();
+    return [new xml.Tag(
+        _PLACEHOLDER_TAG,
+        {id: idStr, equiv: ph.name, disp: `{${ph.value.expression}, ${ph.value.type}, ${cases}}`})];
   }
 
   serialize(nodes: i18n.Node[]): xml.Node[] {
@@ -327,6 +333,8 @@ class XmlToI18n implements ml.Visitor {
               new i18n.Placeholder('', endId, el.sourceSpan));
         }
         break;
+      case _MARKER_TAG:
+        return [].concat(...ml.visitAll(this, el.children));
       default:
         this._addError(el, `Unexpected tag`);
     }

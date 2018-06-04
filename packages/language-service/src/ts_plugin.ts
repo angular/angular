@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 
 import {createLanguageService} from './language_service';
-import {Completion, Diagnostic, LanguageService, LanguageServiceHost} from './types';
+import {Completion, Diagnostic, DiagnosticMessageChain, LanguageService, LanguageServiceHost} from './types';
 import {TypeScriptServiceHost} from './typescript_host';
 
 const projectHostMap = new WeakMap<any, TypeScriptServiceHost>();
@@ -21,64 +21,10 @@ export function getExternalFiles(project: any): string[]|undefined {
   }
 }
 
-const angularOnlyResults = process.argv.indexOf('--angularOnlyResults') >= 0;
-
-function angularOnlyFilter(ls: ts.LanguageService): ts.LanguageService {
-  return {
-    cleanupSemanticCache: () => ls.cleanupSemanticCache(),
-    getSyntacticDiagnostics: fileName => <ts.Diagnostic[]>[],
-    getSemanticDiagnostics: fileName => <ts.Diagnostic[]>[],
-    getCompilerOptionsDiagnostics: () => <ts.Diagnostic[]>[],
-    getSyntacticClassifications: (fileName, span) => [],
-    getSemanticClassifications: (fileName, span) => [],
-    getEncodedSyntacticClassifications: (fileName, span) => <ts.Classifications><any>{undefined},
-    getEncodedSemanticClassifications: (fileName, span) => <ts.Classifications><any>undefined,
-    getCompletionsAtPosition: (fileName, position) => <ts.CompletionInfo><any>undefined,
-    getCompletionEntryDetails: (fileName, position, entryName) =>
-                                   <ts.CompletionEntryDetails><any>undefined,
-    getCompletionEntrySymbol: (fileName, position, entryName) => <ts.Symbol><any>undefined,
-    getQuickInfoAtPosition: (fileName, position) => <ts.QuickInfo><any>undefined,
-    getNameOrDottedNameSpan: (fileName, startPos, endPos) => <ts.TextSpan><any>undefined,
-    getBreakpointStatementAtPosition: (fileName, position) => <ts.TextSpan><any>undefined,
-    getSignatureHelpItems: (fileName, position) => <ts.SignatureHelpItems><any>undefined,
-    getRenameInfo: (fileName, position) => <ts.RenameInfo><any>undefined,
-    findRenameLocations: (fileName, position, findInStrings, findInComments) =>
-                             <ts.RenameLocation[]>[],
-    getDefinitionAtPosition: (fileName, position) => <ts.DefinitionInfo[]>[],
-    getTypeDefinitionAtPosition: (fileName, position) => <ts.DefinitionInfo[]>[],
-    getImplementationAtPosition: (fileName, position) => <ts.ImplementationLocation[]>[],
-    getReferencesAtPosition: (fileName: string, position: number) => <ts.ReferenceEntry[]>[],
-    findReferences: (fileName: string, position: number) => <ts.ReferencedSymbol[]>[],
-    getDocumentHighlights: (fileName, position, filesToSearch) => <ts.DocumentHighlights[]>[],
-    /** @deprecated */
-    getOccurrencesAtPosition: (fileName, position) => <ts.ReferenceEntry[]>[],
-    getNavigateToItems: searchValue => <ts.NavigateToItem[]>[],
-    getNavigationBarItems: fileName => <ts.NavigationBarItem[]>[],
-    getNavigationTree: fileName => <ts.NavigationTree><any>undefined,
-    getOutliningSpans: fileName => <ts.OutliningSpan[]>[],
-    getTodoComments: (fileName, descriptors) => <ts.TodoComment[]>[],
-    getBraceMatchingAtPosition: (fileName, position) => <ts.TextSpan[]>[],
-    getIndentationAtPosition: (fileName, position, options) => <number><any>undefined,
-    getFormattingEditsForRange: (fileName, start, end, options) => <ts.TextChange[]>[],
-    getFormattingEditsForDocument: (fileName, options) => <ts.TextChange[]>[],
-    getFormattingEditsAfterKeystroke: (fileName, position, key, options) => <ts.TextChange[]>[],
-    getDocCommentTemplateAtPosition: (fileName, position) => <ts.TextInsertion><any>undefined,
-    isValidBraceCompletionAtPosition: (fileName, position, openingBrace) => <boolean><any>undefined,
-    getCodeFixesAtPosition: (fileName, start, end, errorCodes) => <ts.CodeAction[]>[],
-    getEmitOutput: fileName => <ts.EmitOutput><any>undefined,
-    getProgram: () => ls.getProgram(),
-    dispose: () => ls.dispose()
-  };
-}
-
 export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageService {
   // Create the proxy
   const proxy: ts.LanguageService = Object.create(null);
   let oldLS: ts.LanguageService = info.languageService;
-
-  if (angularOnlyResults) {
-    oldLS = angularOnlyFilter(oldLS);
-  }
 
   function tryCall<T>(fileName: string | undefined, callback: () => T): T {
     if (fileName && !oldLS.getProgram().getSourceFile(fileName)) {
@@ -118,7 +64,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   }
 
   function typescriptOnly(ls: ts.LanguageService): ts.LanguageService {
-    return {
+    const languageService: ts.LanguageService = {
       cleanupSemanticCache: () => ls.cleanupSemanticCache(),
       getSyntacticDiagnostics: tryFilenameCall(ls.getSyntacticDiagnostics),
       getSemanticDiagnostics: tryFilenameCall(ls.getSemanticDiagnostics),
@@ -127,9 +73,9 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getSemanticClassifications: tryFilenameOneCall(ls.getSemanticClassifications),
       getEncodedSyntacticClassifications: tryFilenameOneCall(ls.getEncodedSyntacticClassifications),
       getEncodedSemanticClassifications: tryFilenameOneCall(ls.getEncodedSemanticClassifications),
-      getCompletionsAtPosition: tryFilenameOneCall(ls.getCompletionsAtPosition),
-      getCompletionEntryDetails: tryFilenameTwoCall(ls.getCompletionEntryDetails),
-      getCompletionEntrySymbol: tryFilenameTwoCall(ls.getCompletionEntrySymbol),
+      getCompletionsAtPosition: tryFilenameTwoCall(ls.getCompletionsAtPosition),
+      getCompletionEntryDetails: tryFilenameFourCall(ls.getCompletionEntryDetails),
+      getCompletionEntrySymbol: tryFilenameThreeCall(ls.getCompletionEntrySymbol),
       getQuickInfoAtPosition: tryFilenameOneCall(ls.getQuickInfoAtPosition),
       getNameOrDottedNameSpan: tryFilenameTwoCall(ls.getNameOrDottedNameSpan),
       getBreakpointStatementAtPosition: tryFilenameOneCall(ls.getBreakpointStatementAtPosition),
@@ -159,11 +105,25 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getFormattingEditsAfterKeystroke: tryFilenameThreeCall(ls.getFormattingEditsAfterKeystroke),
       getDocCommentTemplateAtPosition: tryFilenameOneCall(ls.getDocCommentTemplateAtPosition),
       isValidBraceCompletionAtPosition: tryFilenameTwoCall(ls.isValidBraceCompletionAtPosition),
+      getSpanOfEnclosingComment: tryFilenameTwoCall(ls.getSpanOfEnclosingComment),
       getCodeFixesAtPosition: tryFilenameFourCall(ls.getCodeFixesAtPosition),
+      applyCodeActionCommand:
+          <any>((action: any) => tryCall(undefined, () => ls.applyCodeActionCommand(action))),
       getEmitOutput: tryFilenameCall(ls.getEmitOutput),
       getProgram: () => ls.getProgram(),
-      dispose: () => ls.dispose()
-    };
+      dispose: () => ls.dispose(),
+      getApplicableRefactors: tryFilenameOneCall(ls.getApplicableRefactors),
+      getEditsForRefactor: tryFilenameFourCall(ls.getEditsForRefactor),
+      getDefinitionAndBoundSpan: tryFilenameOneCall(ls.getDefinitionAndBoundSpan),
+      getCombinedCodeFix:
+          (scope: ts.CombinedCodeFixScope, fixId: {}, formatOptions: ts.FormatCodeSettings) =>
+              tryCall(undefined, () => ls.getCombinedCodeFix(scope, fixId, formatOptions)),
+      // TODO(kyliau): dummy implementation to compile with ts 2.8, create real one
+      getSuggestionDiagnostics: (fileName: string) => [],
+      // TODO(kyliau): dummy implementation to compile with ts 2.8, create real one
+      organizeImports: (scope: ts.CombinedCodeFixScope, formatOptions: ts.FormatCodeSettings) => [],
+    } as ts.LanguageService;
+    return languageService;
   }
 
   oldLS = typescriptOnly(oldLS);
@@ -173,7 +133,31 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   }
 
   function completionToEntry(c: Completion): ts.CompletionEntry {
-    return {kind: c.kind, name: c.name, sortText: c.sort, kindModifiers: ''};
+    return {
+      // TODO: remove any and fix type error.
+      kind: c.kind as any,
+      name: c.name,
+      sortText: c.sort,
+      kindModifiers: ''
+    };
+  }
+
+  function diagnosticChainToDiagnosticChain(chain: DiagnosticMessageChain):
+      ts.DiagnosticMessageChain {
+    return {
+      messageText: chain.message,
+      category: ts.DiagnosticCategory.Error,
+      code: 0,
+      next: chain.next ? diagnosticChainToDiagnosticChain(chain.next) : undefined
+    };
+  }
+
+  function diagnosticMessageToDiagnosticMessageText(message: string | DiagnosticMessageChain):
+      string|ts.DiagnosticMessageChain {
+    if (typeof message === 'string') {
+      return message;
+    }
+    return diagnosticChainToDiagnosticChain(message);
   }
 
   function diagnosticToDiagnostic(d: Diagnostic, file: ts.SourceFile): ts.Diagnostic {
@@ -181,7 +165,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       file,
       start: d.span.start,
       length: d.span.end - d.span.start,
-      messageText: d.message,
+      messageText: diagnosticMessageToDiagnosticMessageText(d.message),
       category: ts.DiagnosticCategory.Error,
       code: 0,
       source: 'ng'
@@ -204,8 +188,9 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   serviceHost.setSite(ls);
   projectHostMap.set(info.project, serviceHost);
 
-  proxy.getCompletionsAtPosition = function(fileName: string, position: number) {
-    let base = oldLS.getCompletionsAtPosition(fileName, position) || {
+  proxy.getCompletionsAtPosition = function(
+      fileName: string, position: number, options: ts.GetCompletionsAtPositionOptions|undefined) {
+    let base = oldLS.getCompletionsAtPosition(fileName, position, options) || {
       isGlobalCompletion: false,
       isMemberCompletion: false,
       isNewIdentifierLocation: false,
@@ -265,7 +250,9 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       const ours = ls.getDiagnostics(fileName);
       if (ours && ours.length) {
         const file = oldLS.getProgram().getSourceFile(fileName);
-        base.push.apply(base, ours.map(d => diagnosticToDiagnostic(d, file)));
+        if (file) {
+          base.push.apply(base, ours.map(d => diagnosticToDiagnostic(d, file)));
+        }
       }
     });
 
@@ -288,9 +275,10 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
                    fileName: loc.fileName,
                    textSpan: {start: loc.span.start, length: loc.span.end - loc.span.start},
                    name: '',
-                   kind: 'definition',
+                   // TODO: remove any and fix type error.
+                   kind: 'definition' as any,
                    containerName: loc.fileName,
-                   containerKind: 'file'
+                   containerKind: 'file' as any,
                  });
                }
              }

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ElementRef, EventEmitter, Output } from '@angular/core';
 import { LocationService } from 'app/shared/location.service';
-import { Subject } from 'rxjs/Subject';
-import 'rxjs/add/operator/distinctUntilChanged';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 /**
  * This component provides a text box to type a search query that will be sent to the SearchService.
@@ -30,7 +30,7 @@ export class SearchBoxComponent implements OnInit {
   private searchSubject = new Subject<string>();
 
   @ViewChild('searchBox') searchBox: ElementRef;
-  @Output() onSearch = this.searchSubject.distinctUntilChanged().debounceTime(this.searchDebounce);
+  @Output() onSearch = this.searchSubject.pipe(distinctUntilChanged(), debounceTime(this.searchDebounce));
   @Output() onFocus = new EventEmitter<string>();
 
   constructor(private locationService: LocationService) { }

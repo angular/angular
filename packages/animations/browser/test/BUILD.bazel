@@ -1,0 +1,15 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "test",
+    testonly = 1,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/core",
+        "//packages/core/testing",
+    ],
+)

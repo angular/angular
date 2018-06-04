@@ -97,7 +97,7 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
 
           // Special case properties that contain content relating to "members"
           // of a doc that represents, say, a class or interface
-          if (key === 'methods' || key === 'properties' || key === 'events') {
+          if (key === 'members' || key === 'statics') {
             value.forEach(function(member) { extractWords(member.name, members, membersMap); });
           }
         });

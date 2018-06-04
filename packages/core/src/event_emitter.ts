@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Subject} from 'rxjs/Subject';
+import {Subject, Subscription} from 'rxjs';
 
 /**
  * Use by directives and components to emit custom Events.
@@ -53,7 +53,7 @@ import {Subject} from 'rxjs/Subject';
  * https://github.com/jhusain/observable-spec
  *
  * Once a reference implementation of the spec is available, switch to it.
- * @stable
+ *
  */
 export class EventEmitter<T> extends Subject<T> {
   // TODO: mark this as internal once all the facades are gone
@@ -111,6 +111,12 @@ export class EventEmitter<T> extends Subject<T> {
       }
     }
 
-    return super.subscribe(schedulerFn, errorFn, completeFn);
+    const sink = super.subscribe(schedulerFn, errorFn, completeFn);
+
+    if (generatorOrNext instanceof Subscription) {
+      generatorOrNext.add(sink);
+    }
+
+    return sink;
   }
 }

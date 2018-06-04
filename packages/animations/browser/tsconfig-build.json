@@ -1,20 +1,27 @@
 {
-  "extends": "../tsconfig-build",
+  "extends": "../tsconfig-build.json",
 
   "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "../",
     "paths": {
-      "@angular/animations": ["../../dist/packages/animations"]
-    }
+      "@angular/animations": ["../../../dist/packages/animations"],
+      "@angular/core": ["../../../dist/packages/core"]
+    },
+    "outDir": "../../../dist/packages/animations"
   },
+
   "files": [
     "public_api.ts",
     "../../../node_modules/zone.js/dist/zone.js.d.ts",
     "../../system.d.ts"
   ],
+
   "angularCompilerOptions": {
     "annotateForClosureCompiler": true,
-    "strictMetadataEmit": true,
-    "flatModuleOutFile": "index.js",
+    "strictMetadataEmit": false,
+    "skipTemplateCodegen": true,
+    "flatModuleOutFile": "browser.js",
     "flatModuleId": "@angular/animations/browser"
   }
 }

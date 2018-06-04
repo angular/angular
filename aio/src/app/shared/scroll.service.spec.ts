@@ -111,7 +111,7 @@ describe('ScrollService', () => {
 
       const topOfPage = new MockElement();
       document.getElementById.and
-              .callFake(id  => id === 'top-of-page' ? topOfPage : null);
+              .callFake((id: string) => id === 'top-of-page' ? topOfPage : null);
 
       scrollService.scroll();
       expect(topOfPage.scrollIntoView).toHaveBeenCalled();
@@ -133,6 +133,17 @@ describe('ScrollService', () => {
 
       scrollService.scroll();
       expect(document.getElementById).toHaveBeenCalledWith('some-id');
+      expect(element.scrollIntoView).toHaveBeenCalled();
+      expect(window.scrollBy).toHaveBeenCalled();
+    });
+
+    it('should scroll to the element whose id matches the hash with encoded characters', () => {
+      const element = new MockElement();
+      location.hash = '%F0%9F%91%8D'; // 👍
+      document.getElementById.and.returnValue(element);
+
+      scrollService.scroll();
+      expect(document.getElementById).toHaveBeenCalledWith('👍');
       expect(element.scrollIntoView).toHaveBeenCalled();
       expect(window.scrollBy).toHaveBeenCalled();
     });
@@ -190,7 +201,7 @@ describe('ScrollService', () => {
     it('should scroll to top', () => {
       const topOfPageElement = <Element><any> new MockElement();
       document.getElementById.and.callFake(
-        id => id === 'top-of-page' ? topOfPageElement : null
+        (id: string) => id === 'top-of-page' ? topOfPageElement : null
       );
 
       scrollService.scrollToTop();

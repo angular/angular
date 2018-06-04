@@ -1,7 +1,8 @@
-/** @stable */
 export declare function async(fn: Function): (done: any) => any;
 
-/** @stable */
+/** @experimental */
+export declare function cleanupDocument(): void;
+
 export declare class ComponentFixture<T> {
     changeDetectorRef: ChangeDetectorRef;
     componentInstance: T;
@@ -30,6 +31,9 @@ export declare const ComponentFixtureNoNgZone: InjectionToken<boolean[]>;
 export declare function discardPeriodicTasks(): void;
 
 /** @experimental */
+export declare function ensureDocument(): void;
+
+/** @experimental */
 export declare function fakeAsync(fn: Function): (...args: any[]) => any;
 
 /** @experimental */
@@ -41,7 +45,6 @@ export declare function flushMicrotasks(): void;
 /** @experimental */
 export declare function getTestBed(): TestBed;
 
-/** @stable */
 export declare function inject(tokens: any[], fn: Function): () => any;
 
 /** @experimental */
@@ -52,15 +55,14 @@ export declare class InjectSetupWrapper {
 
 /** @experimental */
 export declare type MetadataOverride<T> = {
-    add?: T;
-    remove?: T;
-    set?: T;
+    add?: Partial<T>;
+    remove?: Partial<T>;
+    set?: Partial<T>;
 };
 
 /** @experimental */
 export declare function resetFakeAsyncZone(): void;
 
-/** @stable */
 export declare class TestBed implements Injector {
     ngModule: Type<any> | Type<any>[];
     platform: PlatformRef;
@@ -71,6 +73,13 @@ export declare class TestBed implements Injector {
     }): void;
     configureTestingModule(moduleDef: TestModuleMetadata): void;
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    deprecatedOverrideProvider(token: any, provider: {
+        useValue: any;
+    }): void;
+    /** @deprecated */ deprecatedOverrideProvider(token: any, provider: {
+        useFactory: Function;
+        deps: any[];
+    }): void;
     execute(tokens: any[], fn: Function, context?: any): any;
     get(token: any, notFoundValue?: any): any;
     /** @experimental */ initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
@@ -85,6 +94,7 @@ export declare class TestBed implements Injector {
     overrideProvider(token: any, provider: {
         useValue: any;
     }): void;
+    overrideTemplateUsingTestingModule(component: Type<any>, template: string): void;
     /** @experimental */ resetTestEnvironment(): void;
     resetTestingModule(): void;
     static compileComponents(): Promise<any>;
@@ -94,6 +104,13 @@ export declare class TestBed implements Injector {
     }): typeof TestBed;
     static configureTestingModule(moduleDef: TestModuleMetadata): typeof TestBed;
     static createComponent<T>(component: Type<T>): ComponentFixture<T>;
+    static deprecatedOverrideProvider(token: any, provider: {
+        useValue: any;
+    }): void;
+    /** @deprecated */ static deprecatedOverrideProvider(token: any, provider: {
+        useFactory: Function;
+        deps: any[];
+    }): void;
     static get(token: any, notFoundValue?: any): any;
     /** @experimental */ static initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
     static overrideComponent(component: Type<any>, override: MetadataOverride<Component>): typeof TestBed;
@@ -103,11 +120,12 @@ export declare class TestBed implements Injector {
     static overrideProvider(token: any, provider: {
         useFactory: Function;
         deps: any[];
-    }): void;
+    }): typeof TestBed;
     static overrideProvider(token: any, provider: {
         useValue: any;
-    }): void;
+    }): typeof TestBed;
     static overrideTemplate(component: Type<any>, template: string): typeof TestBed;
+    static overrideTemplateUsingTestingModule(component: Type<any>, template: string): typeof TestBed;
     /** @experimental */ static resetTestEnvironment(): void;
     static resetTestingModule(): typeof TestBed;
 }
@@ -123,10 +141,15 @@ export declare type TestModuleMetadata = {
     declarations?: any[];
     imports?: any[];
     schemas?: Array<SchemaMetadata | any[]>;
+    aotSummaries?: () => any[];
 };
 
 /** @experimental */
 export declare function tick(millis?: number): void;
 
 /** @experimental */
+export declare function withBody<T>(html: string, blockFn: T): T;
+
+/** @experimental */
 export declare function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
+export declare function withModule(moduleDef: TestModuleMetadata, fn: Function): () => any;

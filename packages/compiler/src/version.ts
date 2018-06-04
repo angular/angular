@@ -12,8 +12,6 @@
  * Entry point for all public APIs of the common package.
  */
 
-import {Version} from '@angular/core';
-/**
- * @stable
- */
+import {Version} from './util';
+
 export const VERSION = new Version('0.0.0-PLACEHOLDER');

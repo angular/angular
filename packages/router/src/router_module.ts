@@ -9,13 +9,13 @@
 import {APP_BASE_HREF, HashLocationStrategy, LOCATION_INITIALIZED, Location, LocationStrategy, PathLocationStrategy, PlatformLocation} from '@angular/common';
 import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, ApplicationRef, Compiler, ComponentRef, Inject, Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, NgModuleFactoryLoader, NgProbeToken, Optional, Provider, SkipSelf, SystemJsNgModuleLoader} from '@angular/core';
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
-import {Subject} from 'rxjs/Subject';
-import {of } from 'rxjs/observable/of';
+import {Subject, of } from 'rxjs';
 
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
 import {RouterOutlet} from './directives/router_outlet';
+import {RouterEvent} from './events';
 import {RouteReuseStrategy} from './route_reuse_strategy';
 import {ErrorHandler, Router} from './router';
 import {ROUTES} from './router_config_loader';
@@ -27,15 +27,22 @@ import {DefaultUrlSerializer, UrlSerializer} from './url_tree';
 import {flatten} from './utils/collection';
 
 
+
 /**
- * @whatItDoes Contains a list of directives
- * @stable
+ * @description
+ *
+ * Contains a list of directives
+ *
+ *
  */
 const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
 
 /**
- * @whatItDoes Is used in DI to configure the router.
- * @stable
+ * @description
+ *
+ * Is used in DI to configure the router.
+ *
+ *
  */
 export const ROUTER_CONFIGURATION = new InjectionToken<ExtraOptions>('ROUTER_CONFIGURATION');
 
@@ -70,9 +77,7 @@ export function routerNgProbeToken() {
 }
 
 /**
- * @whatItDoes Adds router directives and providers.
- *
- * @howToUse
+ * @usageNotes
  *
  * RouterModule can be imported multiple times: once per lazily-loaded bundle.
  * Since the router deals with a global shared resource--location, we cannot have
@@ -106,6 +111,8 @@ export function routerNgProbeToken() {
  *
  * @description
  *
+ * Adds router directives and providers.
+ *
  * Managing state transitions is one of the hardest parts of building applications. This is
  * especially true on the web, where you also need to ensure that the state is reflected in the URL.
  * In addition, we often want to split applications into multiple bundles and load them on demand.
@@ -118,7 +125,7 @@ export function routerNgProbeToken() {
  * [Read this developer guide](https://angular.io/docs/ts/latest/guide/router.html) to get an
  * overview of how the router should be used.
  *
- * @stable
+ *
  */
 @NgModule({declarations: ROUTER_DIRECTIVES, exports: ROUTER_DIRECTIVES})
 export class RouterModule {
@@ -129,12 +136,15 @@ export class RouterModule {
    * Creates a module with all the router providers and directives. It also optionally sets up an
    * application listener to perform an initial navigation.
    *
-   * Options:
+   * Options (see `ExtraOptions`):
    * * `enableTracing` makes the router log all its internal events to the console.
    * * `useHash` enables the location strategy that uses the URL fragment instead of the history
    * API.
    * * `initialNavigation` disables the initial navigation.
    * * `errorHandler` provides a custom error handler.
+   * * `preloadingStrategy` configures a preloading strategy (see `PreloadAllModules`).
+   * * `onSameUrlNavigation` configures how the router handles navigation to the current URL. See
+   * `ExtraOptions` for more details.
    */
   static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
     return {
@@ -189,9 +199,11 @@ export function provideForRootGuard(router: Router): any {
 }
 
 /**
- * @whatItDoes Registers routes.
+ * @description
  *
- * @howToUse
+ * Registers routes.
+ *
+ * ### Example
  *
  * ```
  * @NgModule({
@@ -201,7 +213,7 @@ export function provideForRootGuard(router: Router): any {
  * class MyNgModule {}
  * ```
  *
- * @stable
+ *
  */
 export function provideRoutes(routes: Routes): any {
   return [
@@ -211,9 +223,10 @@ export function provideRoutes(routes: Routes): any {
 }
 
 /**
- * @whatItDoes Represents an option to configure when the initial navigation is performed.
- *
  * @description
+ *
+ * Represents an option to configure when the initial navigation is performed.
+ *
  * * 'enabled' - the initial navigation starts before the root component is created.
  * The bootstrap is blocked until the initial navigation is complete.
  * * 'disabled' - the initial navigation is not performed. The location listener is set up before
@@ -238,9 +251,11 @@ export type InitialNavigation =
     true | false | 'enabled' | 'disabled' | 'legacy_enabled' | 'legacy_disabled';
 
 /**
- * @whatItDoes Represents options to configure the router.
+ * @description
  *
- * @stable
+ * Represents options to configure the router.
+ *
+ *
  */
 export interface ExtraOptions {
   /**
@@ -264,9 +279,27 @@ export interface ExtraOptions {
   errorHandler?: ErrorHandler;
 
   /**
-   * Configures a preloading strategy. See {@link PreloadAllModules}.
+   * Configures a preloading strategy. See `PreloadAllModules`.
    */
   preloadingStrategy?: any;
+
+  /**
+   * Define what the router should do if it receives a navigation request to the current URL.
+   * By default, the router will ignore this navigation. However, this prevents features such
+   * as a "refresh" button. Use this option to configure the behavior when navigating to the
+   * current URL. Default is 'ignore'.
+   */
+  onSameUrlNavigation?: 'reload'|'ignore';
+
+  /**
+   * Defines how the router merges params, data and resolved data from parent to child
+   * routes. Available options are:
+   *
+   * - `'emptyOnly'`, the default, only inherits parent params for path-less or component-less
+   *   routes.
+   * - `'always'`, enables unconditional inheritance of parent params.
+   */
+  paramsInheritanceStrategy?: 'emptyOnly'|'always';
 }
 
 export function setupRouter(
@@ -291,12 +324,20 @@ export function setupRouter(
 
   if (opts.enableTracing) {
     const dom = getDOM();
-    router.events.subscribe(e => {
+    router.events.subscribe((e: RouterEvent) => {
       dom.logGroup(`Router Event: ${(<any>e.constructor).name}`);
       dom.log(e.toString());
       dom.log(e);
       dom.logGroupEnd();
     });
+  }
+
+  if (opts.onSameUrlNavigation) {
+    router.onSameUrlNavigation = opts.onSameUrlNavigation;
+  }
+
+  if (opts.paramsInheritanceStrategy) {
+    router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
   }
 
   return router;
@@ -366,7 +407,7 @@ export class RouterInitializer {
     const opts = this.injector.get(ROUTER_CONFIGURATION);
     const preloader = this.injector.get(RouterPreloader);
     const router = this.injector.get(Router);
-    const ref = this.injector.get(ApplicationRef);
+    const ref = this.injector.get<ApplicationRef>(ApplicationRef);
 
     if (bootstrappedComponentRef !== ref.components[0]) {
       return;

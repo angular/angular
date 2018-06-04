@@ -20,7 +20,7 @@ function mockSystem(modules: {[module: string]: any}) {
   };
 }
 
-export function main() {
+{
   describe('SystemJsNgModuleLoader', () => {
     let oldSystem: any = null;
     beforeEach(() => {
@@ -53,4 +53,4 @@ export function main() {
          });
        }));
   });
-};
+}

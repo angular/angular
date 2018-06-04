@@ -1,6 +1,12 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "strict": true,
+    "noImplicitAny": false,
+    // disabled because this is on by default in tsc 2.7 breaking our codebase - we need to refactor
+    "strictPropertyInitialization": false,
+    // disabled because of https://github.com/angular/angular/issues/22877
+    "skipLibCheck": true,
     "outDir": "./dist/out-tsc",
     "baseUrl": "src",
     "sourceMap": true,
@@ -8,6 +14,7 @@
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "noUnusedLocals": true,
     "target": "es5",
     "typeRoots": [
       "node_modules/@types"

@@ -1,0 +1,35 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+ng_module(
+    name = "platform-browser-dynamic",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    module_name = "@angular/platform-browser-dynamic",
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/platform-browser-dynamic/testing:package.json",
+    ],
+    entry_point = "packages/platform-browser-dynamic/index.js",
+    tags = ["release-with-framework"],
+    deps = [
+        ":platform-browser-dynamic",
+        "//packages/platform-browser-dynamic/testing",
+    ],
+)

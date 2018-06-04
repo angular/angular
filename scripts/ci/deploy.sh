@@ -15,12 +15,7 @@ if [[ ${TRAVIS_TEST_RESULT=0} == 1 ]]; then
 fi
 
 
-# Don't deploy if not running against angular/angular
-# TODO(i): because we don't let deploy to run outside of angular/angular folks can't use their
-#   private travis build to deploy anywhere. This is likely ok, but this means that @alexeagle's
-#   fancy setup to publish ES2015 packages to github -build repos no longer works. This is ok
-#   since with flat modules we'll have this feature built-in. We should still go and remove
-#   stuff that Alex put in for this from publish-build-artifacts.sh
+# Don't deploy Angular.io if we are running in a fork
 if [[ ${TRAVIS_REPO_SLUG} != "angular/angular" ]]; then
   echo "Skipping deploy because this is not angular/angular."
   exit 0
@@ -28,45 +23,12 @@ fi
 
 
 case ${CI_MODE} in
-  e2e)
-    # Don't deploy if this is a PR build
-    if [[ ${TRAVIS_PULL_REQUEST} != "false" ]]; then
-      echo "Skipping deploy because this is a PR build."
-      exit 0
-    fi
-
-    travisFoldStart "deploy.packages"
-      ${thisDir}/publish-build-artifacts.sh
-    travisFoldEnd "deploy.packages"
-    ;;
   aio)
-    # Only deploy if this not a PR. PRs are deployed early in `build.sh`.
-    if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then
-
-      # Don't deploy if this build is not for master or the stable branch.
-      if [[ $TRAVIS_BRANCH != "master" ]] && [[ $TRAVIS_BRANCH != $STABLE_BRANCH ]]; then
-        echo "Skipping deploy because this build is not for master or the stable branch ($STABLE_BRANCH)."
-        exit 0
-      fi
-
-      travisFoldStart "deploy.aio"
-      (
-        cd ${TRAVIS_BUILD_DIR}/aio
-
-        if [[ $TRAVIS_BRANCH == $STABLE_BRANCH ]]; then
-          # This is upstream <stable-branch>: Deploy to production.
-          travisFoldStart "deploy.aio.production"
-            yarn deploy-production
-          travisFoldEnd "deploy.aio.production"
-        else
-          # This is upstream master: Deploy to staging.
-          travisFoldStart "deploy.aio.staging"
-            yarn deploy-staging
-          travisFoldEnd "deploy.aio.staging"
-        fi
-      )
-      travisFoldEnd "deploy.aio"
-
-    fi
+    travisFoldStart "deploy.aio"
+    (
+      cd ${TRAVIS_BUILD_DIR}/aio
+      yarn deploy-production
+    )
+    travisFoldEnd "deploy.aio"
     ;;
 esac

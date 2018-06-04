@@ -1,0 +1,40 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+ng_module(
+    name = "platform-server",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    module_name = "@angular/platform-server",
+    deps = [
+        "//packages/animations/browser",
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/http",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "@rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/platform-server/testing:package.json",
+    ],
+    entry_point = "packages/platform-server/index.js",
+    tags = ["release-with-framework"],
+    deps = [
+        ":platform-server",
+        "//packages/platform-server/testing",
+    ],
+)

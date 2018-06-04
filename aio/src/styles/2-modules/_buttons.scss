@@ -1,7 +1,7 @@
 /* Button Styles */
 
 .button,
-a.button.md-button {
+a.button.mat-button {
   display: inline-block;
   line-height: 32px;
   padding: 0px 16px;
@@ -61,7 +61,7 @@ a.button.md-button {
   }
 
   &.button-shield,
-  &.button-shield.md-button {
+  &.button-shield.mat-button {
     background-color: $blue;
     background: $blue url('assets/images/logos/angular/angular_whiteTransparent.svg') 24px 13px no-repeat;
     color: rgba($white, .87);
@@ -105,6 +105,6 @@ a.filter-button {
   }
 }
 
-[md-button], [md-raised-button], [mat-button], [mat-raised-button] {
+[mat-button], [mat-raised-button], [mat-button], [mat-raised-button] {
   text-transform: uppercase;
 }

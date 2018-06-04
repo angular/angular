@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 
-class Hero {
-  constructor(public name: string,
-              public state = 'inactive') {
-  }
+// #docregion hero
+export class Hero {
+  constructor(public name: string, public state = 'inactive') { }
 
   toggleState() {
-    this.state = (this.state === 'active' ? 'inactive' : 'active');
+    this.state = this.state === 'active' ? 'inactive' : 'active';
   }
 }
+// #enddocregion hero
 
-let ALL_HEROES = [
+const ALL_HEROES = [
   'Windstorm',
   'RubberMan',
   'Bombasto',
@@ -25,36 +25,30 @@ let ALL_HEROES = [
 ].map(name => new Hero(name));
 
 @Injectable()
-export class Heroes implements Iterable<Hero> {
+export class HeroService {
 
-  currentHeroes: Hero[] = [];
-
-  [Symbol.iterator]() {
-    return this.currentHeroes.values();
-  }
+  heroes: Hero[] = [];
 
   canAdd() {
-    return this.currentHeroes.length < ALL_HEROES.length;
+    return this.heroes.length < ALL_HEROES.length;
   }
 
   canRemove() {
-    return this.currentHeroes.length > 0;
+    return this.heroes.length > 0;
   }
 
-  addActive() {
-    let hero = ALL_HEROES[this.currentHeroes.length];
-    hero.state = 'active';
-    this.currentHeroes.push(hero);
+  addActive(active = true) {
+    let hero = ALL_HEROES[this.heroes.length];
+    hero.state = active ? 'active' : 'inactive';
+    this.heroes.push(hero);
   }
 
   addInactive() {
-    let hero = ALL_HEROES[this.currentHeroes.length];
-    hero.state = 'inactive';
-    this.currentHeroes.push(hero);
+    this.addActive(false);
   }
 
   remove() {
-    this.currentHeroes.splice(this.currentHeroes.length - 1, 1);
+    this.heroes.length -= 1;
   }
 
 }

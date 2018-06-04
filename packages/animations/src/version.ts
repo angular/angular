@@ -13,21 +13,21 @@
  */
 
 /**
- * @whatItDoes Represents the version of angular/animations
+ * @description
  *
- * @stable
+ * Represents the version of angular/animations
  */
 export class Version {
-  constructor(public full: string) {}
+  public readonly major: string;
+  public readonly minor: string;
+  public readonly patch: string;
 
-  get major(): string { return this.full.split('.')[0]; }
-
-  get minor(): string { return this.full.split('.')[1]; }
-
-  get patch(): string { return this.full.split('.').slice(2).join('.'); }
+  constructor(public full: string) {
+    const splits = full.split('.');
+    this.major = splits[0];
+    this.minor = splits[1];
+    this.patch = splits.slice(2).join('.');
+  }
 }
 
-/**
- * @stable
- */
 export const VERSION = new Version('0.0.0-PLACEHOLDER');

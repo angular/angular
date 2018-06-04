@@ -19,8 +19,8 @@ ARG      AIO_DOMAIN_NAME=ngbuilds.io
 ARG TEST_AIO_DOMAIN_NAME=$AIO_DOMAIN_NAME.localhost
 ARG      AIO_GITHUB_ORGANIZATION=angular
 ARG TEST_AIO_GITHUB_ORGANIZATION=angular
-ARG      AIO_GITHUB_TEAM_SLUGS=angular-core,aio-contributors
-ARG TEST_AIO_GITHUB_TEAM_SLUGS=angular-core,aio-contributors
+ARG      AIO_GITHUB_TEAM_SLUGS=team,aio-contributors
+ARG TEST_AIO_GITHUB_TEAM_SLUGS=team,aio-contributors
 ARG      AIO_NGINX_HOSTNAME=$AIO_DOMAIN_NAME
 ARG TEST_AIO_NGINX_HOSTNAME=$TEST_AIO_DOMAIN_NAME
 ARG      AIO_NGINX_PORT_HTTP=80
@@ -156,7 +156,7 @@ RUN find $AIO_SCRIPTS_SH_DIR -maxdepth 1 -type f -printf "%P\n" \
 # Set up the Node.js scripts
 COPY scripts-js/ $AIO_SCRIPTS_JS_DIR/
 WORKDIR $AIO_SCRIPTS_JS_DIR/
-RUN yarn install --production
+RUN yarn install --production --frozen-lockfile
 
 
 # Set up health check

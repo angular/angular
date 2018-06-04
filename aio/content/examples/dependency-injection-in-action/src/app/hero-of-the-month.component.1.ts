@@ -6,9 +6,9 @@ import { MinimalLogger }       from './minimal-logger.service';
 
 // #docregion
 @Component({
-  selector: 'hero-of-the-month',
+  selector: 'app-hero-of-the-month',
   templateUrl: './hero-of-the-month.component.html',
-  // Todo: move this aliasing, `useExisting` provider to the AppModule
+  // TODO: move this aliasing, `useExisting` provider to the AppModule
   providers: [{ provide: MinimalLogger, useExisting: LoggerService }]
 })
 export class HeroOfTheMonthComponent {

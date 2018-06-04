@@ -6,15 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompilerHostContext} from '@angular/compiler-cli/src/compiler_host';
 import * as ts from 'typescript';
 
 export type Entry = string | Directory;
 
 export interface Directory { [name: string]: Entry; }
 
-export class MockAotContext implements CompilerHostContext {
-  constructor(public currentDirectory: string, private files: Entry) {}
+export class MockAotContext {
+  private files: Entry[];
+
+  constructor(public currentDirectory: string, ...files: Entry[]) { this.files = files; }
 
   fileExists(fileName: string): boolean { return typeof this.getEntry(fileName) === 'string'; }
 
@@ -54,19 +55,7 @@ export class MockAotContext implements CompilerHostContext {
     }
     parts.shift();
     parts = normalize(parts);
-    let current = this.files;
-    while (parts.length) {
-      const part = parts.shift() !;
-      if (typeof current === 'string') {
-        return undefined;
-      }
-      const next = (<Directory>current)[part];
-      if (next === undefined) {
-        return undefined;
-      }
-      current = next;
-    }
-    return current;
+    return first(this.files, files => getEntryFromFiles(parts, files));
   }
 
   getDirectories(path: string): string[] {
@@ -77,6 +66,31 @@ export class MockAotContext implements CompilerHostContext {
       return Object.keys(dir).filter(key => typeof dir[key] === 'object');
     }
   }
+
+  override(files: Entry) { return new MockAotContext(this.currentDirectory, files, ...this.files); }
+}
+
+function first<T>(a: T[], cb: (value: T) => T | undefined): T|undefined {
+  for (const value of a) {
+    const result = cb(value);
+    if (result != null) return result;
+  }
+}
+
+function getEntryFromFiles(parts: string[], files: Entry) {
+  let current = files;
+  while (parts.length) {
+    const part = parts.shift() !;
+    if (typeof current === 'string') {
+      return undefined;
+    }
+    const next = (<Directory>current)[part];
+    if (next === undefined) {
+      return undefined;
+    }
+    current = next;
+  }
+  return current;
 }
 
 function normalize(parts: string[]): string[] {
@@ -111,7 +125,7 @@ export class MockCompilerHost implements ts.CompilerHost {
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: (message: string) => void): ts.SourceFile {
     const sourceText = this.context.readFile(fileName);
-    if (sourceText) {
+    if (sourceText != null) {
       return ts.createSourceFile(fileName, sourceText, languageVersion);
     } else {
       return undefined !;

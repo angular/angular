@@ -6,7 +6,7 @@ import { LoggerService }  from './logger.service';
 
 //////////////////
 @Component({
-  selector: 'my-child',
+  selector: 'app-child',
   template: '<input [(ngModel)]="hero">'
 })
 export class ChildComponent {
@@ -86,29 +86,27 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
     <div *ngIf="show">` +
 // #docregion parent-template
      `<after-content>
-        <my-child></my-child>
+        <app-child></app-child>
       </after-content>`
 // #enddocregion parent-template
 + `</div>
 
     <h4>-- AfterContent Logs --</h4>
     <p><button (click)="reset()">Reset</button></p>
-    <div *ngFor="let msg of logs">{{msg}}</div>
+    <div *ngFor="let msg of logger.logs">{{msg}}</div>
   </div>
   `,
   styles: ['.parent {background: burlywood}'],
   providers: [LoggerService]
 })
 export class AfterContentParentComponent {
-  logs: string[];
   show = true;
 
-  constructor(private logger: LoggerService) {
-    this.logs = logger.logs;
+  constructor(public logger: LoggerService) {
   }
 
   reset() {
-    this.logs.length = 0;
+    this.logger.clear();
     // quickly remove and reload AfterContentComponent which recreates it
     this.show = false;
     this.logger.tick_then(() => this.show = true);

@@ -1,9 +1,0 @@
-{
-  "description": "Component Communication Cookbook samples",
-  "basePath": "src/",
-  "files":[
-    "!**/*.d.ts",
-    "!**/*.js"
-  ],
-  "tags":["cookbook", "component"]
-}

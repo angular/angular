@@ -153,7 +153,8 @@ describe('BuildCreator', () => {
         it('should abort and skip further operations if the build does already exist', done => {
           existsValues[shaDir] = true;
           bc.create(pr, sha, archive, isPublic).catch(err => {
-            expectToBeUploadError(err, 409, `Request to overwrite existing directory: ${shaDir}`);
+            const publicOrNot = isPublic ? 'public' : 'non-public';
+            expectToBeUploadError(err, 409, `Request to overwrite existing ${publicOrNot} directory: ${shaDir}`);
             expect(shellMkdirSpy).not.toHaveBeenCalled();
             expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
             expect(bcEmitSpy).not.toHaveBeenCalled();
@@ -169,7 +170,8 @@ describe('BuildCreator', () => {
           expect(bcExistsSpy(shaDir)).toBe(false);
 
           bc.create(pr, sha, archive, isPublic).catch(err => {
-            expectToBeUploadError(err, 409, `Request to overwrite existing directory: ${shaDir}`);
+            const publicOrNot = isPublic ? 'public' : 'non-public';
+            expectToBeUploadError(err, 409, `Request to overwrite existing ${publicOrNot} directory: ${shaDir}`);
             expect(shellMkdirSpy).not.toHaveBeenCalled();
             expect(bcExtractArchiveSpy).not.toHaveBeenCalled();
             expect(bcEmitSpy).not.toHaveBeenCalled();
@@ -221,6 +223,7 @@ describe('BuildCreator', () => {
 
 
         it('should reject with an UploadError', done => {
+          // tslint:disable-next-line: no-string-throw
           shellMkdirSpy.and.callFake(() => { throw 'Test'; });
           bc.create(pr, sha, archive, isPublic).catch(err => {
             expectToBeUploadError(err, 500, `Error while uploading to directory: ${shaDir}\nTest`);
@@ -405,6 +408,7 @@ describe('BuildCreator', () => {
 
 
         it('should reject with an UploadError', done => {
+          // tslint:disable-next-line: no-string-throw
           shellMvSpy.and.callFake(() => { throw 'Test'; });
           bc.updatePrVisibility(pr, makePublic).catch(err => {
             expectToBeUploadError(err, 500, `Error while making PR ${pr} ${makePublic ? 'public' : 'hidden'}.\nTest`);
@@ -432,11 +436,11 @@ describe('BuildCreator', () => {
 
   describe('exists()', () => {
     let fsAccessSpy: jasmine.Spy;
-    let fsAccessCbs: Function[];
+    let fsAccessCbs: ((v?: any) => void)[];
 
     beforeEach(() => {
       fsAccessCbs = [];
-      fsAccessSpy = spyOn(fs, 'access').and.callFake((_: string, cb: Function) => fsAccessCbs.push(cb));
+      fsAccessSpy = spyOn(fs, 'access').and.callFake((_: string, cb: (v?: any) => void) => fsAccessCbs.push(cb));
     });
 
 
@@ -480,7 +484,7 @@ describe('BuildCreator', () => {
     let shellChmodSpy: jasmine.Spy;
     let shellRmSpy: jasmine.Spy;
     let cpExecSpy: jasmine.Spy;
-    let cpExecCbs: Function[];
+    let cpExecCbs: ((...args: any[]) => void)[];
 
     beforeEach(() => {
       cpExecCbs = [];
@@ -488,7 +492,7 @@ describe('BuildCreator', () => {
       consoleWarnSpy = spyOn(console, 'warn');
       shellChmodSpy = spyOn(shell, 'chmod');
       shellRmSpy = spyOn(shell, 'rm');
-      cpExecSpy = spyOn(cp, 'exec').and.callFake((_: string, cb: Function) => cpExecCbs.push(cb));
+      cpExecSpy = spyOn(cp, 'exec').and.callFake((_: string, cb: (...args: any[]) => void) => cpExecCbs.push(cb));
     });
 
 
@@ -554,7 +558,11 @@ describe('BuildCreator', () => {
           done();
         });
 
-        shellChmodSpy.and.callFake(() => { throw 'Test'; });
+        shellChmodSpy.and.callFake(() => {
+          // tslint:disable-next-line: no-string-throw
+          throw 'Test';
+        });
+
         cpExecCbs[0]();
       });
 
@@ -567,7 +575,11 @@ describe('BuildCreator', () => {
           done();
         });
 
-        shellRmSpy.and.callFake(() => { throw 'Test'; });
+        shellRmSpy.and.callFake(() => {
+          // tslint:disable-next-line: no-string-throw
+          throw 'Test';
+        });
+
         cpExecCbs[0]();
       });
 

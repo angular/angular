@@ -6,21 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {animate, style, transition, trigger} from '@angular/animations';
+import {AnimationBuilder, animate, style, transition, trigger} from '@angular/animations';
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Injectable, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
-import {BrowserModule, DOCUMENT, Title} from '@angular/platform-browser';
+import {BrowserModule, DOCUMENT, StateKey, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
-import {INITIAL_CONFIG, PlatformState, ServerModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
-import {Subscription} from 'rxjs/Subscription';
-import {filter} from 'rxjs/operator/filter';
-import {first} from 'rxjs/operator/first';
-import {toPromise} from 'rxjs/operator/toPromise';
+import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
+import {Observable} from 'rxjs';
+import {first} from 'rxjs/operators';
 
 @Component({selector: 'app', template: `Works!`})
 class MyServerApp {
@@ -36,6 +34,50 @@ class MyServerApp {
   ]
 })
 class ExampleModule {
+}
+
+function getTitleRenderHook(doc: any) {
+  return () => {
+    // Set the title as part of the render hook.
+    doc.title = 'RenderHook';
+  };
+}
+
+function exceptionRenderHook() {
+  throw new Error('error');
+}
+
+function getMetaRenderHook(doc: any) {
+  return () => {
+    // Add a meta tag before rendering the document.
+    const metaElement = doc.createElement('meta');
+    metaElement.setAttribute('name', 'description');
+    doc.head.appendChild(metaElement);
+  };
+}
+
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  providers: [
+    {provide: BEFORE_APP_SERIALIZED, useFactory: getTitleRenderHook, multi: true, deps: [DOCUMENT]},
+  ]
+})
+class RenderHookModule {
+}
+
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [BrowserModule.withServerTransition({appId: 'render-hook'}), ServerModule],
+  providers: [
+    {provide: BEFORE_APP_SERIALIZED, useFactory: getTitleRenderHook, multi: true, deps: [DOCUMENT]},
+    {provide: BEFORE_APP_SERIALIZED, useValue: exceptionRenderHook, multi: true},
+    {provide: BEFORE_APP_SERIALIZED, useFactory: getMetaRenderHook, multi: true, deps: [DOCUMENT]},
+  ]
+})
+class MultiRenderHookModule {
 }
 
 @Component({selector: 'app', template: `Works too!`})
@@ -100,6 +142,8 @@ class SVGServerModule {
       [transition('void => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
 })
 class MyAnimationApp {
+  constructor(private builder: AnimationBuilder) {}
+
   text = 'Works!';
 }
 
@@ -111,7 +155,11 @@ class MyAnimationApp {
 class AnimationServerModule {
 }
 
-@Component({selector: 'app', template: `Works!`, styles: [':host { color: red; }']})
+@Component({
+  selector: 'app',
+  template: `<div>Works!</div>`,
+  styles: ['div {color: blue; } :host { color: red; }']
+})
 class MyStylesApp {
 }
 
@@ -152,7 +200,27 @@ export class HttpAfterExampleModule {
   declarations: [MyServerApp],
   imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
 })
-export class HttpClientExmapleModule {
+export class HttpClientExampleModule {
+}
+
+@Injectable()
+export class MyHttpInterceptor implements HttpInterceptor {
+  constructor(private http: HttpClient) {}
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return next.handle(req);
+  }
+}
+
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, multi: true, useClass: MyHttpInterceptor},
+  ],
+})
+export class HttpInterceptorExampleModule {
 }
 
 @Component({selector: 'app', template: `<img [src]="'link'">`})
@@ -211,7 +279,76 @@ class MyInputComponent {
 class NameModule {
 }
 
-export function main() {
+@Component({selector: 'app', template: '<div [innerHTML]="html"></div>'})
+class HTMLTypesApp {
+  html = '<b>foo</b> bar';
+  constructor(@Inject(DOCUMENT) doc: Document) {}
+}
+
+@NgModule({
+  declarations: [HTMLTypesApp],
+  imports: [BrowserModule.withServerTransition({appId: 'inner-html'}), ServerModule],
+  bootstrap: [HTMLTypesApp]
+})
+class HTMLTypesModule {
+}
+
+const TEST_KEY = makeStateKey<number>('test');
+const STRING_KEY = makeStateKey<string>('testString');
+
+@Component({selector: 'app', template: 'Works!'})
+class TransferComponent {
+  constructor(private transferStore: TransferState) {}
+  ngOnInit() { this.transferStore.set(TEST_KEY, 10); }
+}
+
+@Component({selector: 'esc-app', template: 'Works!'})
+class EscapedComponent {
+  constructor(private transferStore: TransferState) {}
+  ngOnInit() {
+    this.transferStore.set(STRING_KEY, '</script><script>alert(\'Hello&\' + "World");');
+  }
+}
+
+@NgModule({
+  bootstrap: [TransferComponent],
+  declarations: [TransferComponent],
+  imports: [
+    BrowserModule.withServerTransition({appId: 'transfer'}),
+    ServerModule,
+    ServerTransferStateModule,
+  ]
+})
+class TransferStoreModule {
+}
+
+@NgModule({
+  bootstrap: [EscapedComponent],
+  declarations: [EscapedComponent],
+  imports: [
+    BrowserModule.withServerTransition({appId: 'transfer'}),
+    ServerModule,
+    ServerTransferStateModule,
+  ]
+})
+class EscapedTransferStoreModule {
+}
+
+@Component({selector: 'app', template: '<input [hidden]="true"><input [hidden]="false">'})
+class MyHiddenComponent {
+  @Input()
+  name = '';
+}
+
+@NgModule({
+  declarations: [MyHiddenComponent],
+  bootstrap: [MyHiddenComponent],
+  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'hidden-attributes'})]
+})
+class HiddenModule {
+}
+
+(function() {
   if (getDOM().supportsDOMEvents()) return;  // NODE only
 
   describe('platform-server integration', () => {
@@ -229,9 +366,8 @@ export function main() {
 
            expect(doc.head).toBe(getDOM().querySelector(doc, 'head'));
            expect(doc.body).toBe(getDOM().querySelector(doc, 'body'));
-           expect((<any>doc)._window).toEqual({});
 
-           expect(getDOM().getText(doc)).toEqual('Works!');
+           expect(getDOM().getText(doc.documentElement)).toEqual('Works!');
 
            platform.destroy();
          });
@@ -247,13 +383,13 @@ export function main() {
 
          platform.bootstrapModule(ExampleModule).then((moduleRef) => {
            const doc = moduleRef.injector.get(DOCUMENT);
-           expect(getDOM().getText(doc)).toEqual('Works!');
+           expect(getDOM().getText(doc.documentElement)).toEqual('Works!');
            platform.destroy();
          });
 
          platform2.bootstrapModule(ExampleModule2).then((moduleRef) => {
            const doc = moduleRef.injector.get(DOCUMENT);
-           expect(getDOM().getText(doc)).toEqual('Works too!');
+           expect(getDOM().getText(doc.documentElement)).toEqual('Works too!');
            platform2.destroy();
          });
        }));
@@ -308,7 +444,7 @@ export function main() {
            const appRef: ApplicationRef = ref.injector.get(ApplicationRef);
            const app = appRef.components[0].location.nativeElement;
            const img = getDOM().getElementsByTagName(app, 'img')[0] as any;
-           expect(img.attribs['src']).toEqual('link');
+           expect(img.attributes['src'].value).toEqual('link');
          });
        }));
 
@@ -381,7 +517,7 @@ export function main() {
       let doc: string;
       let called: boolean;
       let expectedOutput =
-          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 innerText="fine">fine</h1></app></body></html>';
+          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!<h1 innertext="fine">fine</h1></app></body></html>';
 
       beforeEach(() => {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
@@ -390,15 +526,15 @@ export function main() {
       });
       afterEach(() => { expect(called).toBe(true); });
 
-      it('using long from should work', async(() => {
+      it('using long form should work', async(() => {
            const platform =
                platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: doc}}]);
 
            platform.bootstrapModule(AsyncServerModule)
                .then((moduleRef) => {
                  const applicationRef: ApplicationRef = moduleRef.injector.get(ApplicationRef);
-                 return toPromise.call(first.call(
-                     filter.call(applicationRef.isStable, (isStable: boolean) => isStable)));
+                 return applicationRef.isStable.pipe(first((isStable: boolean) => isStable))
+                     .toPromise();
                })
                .then((b) => {
                  expect(platform.injector.get(PlatformState).renderToString()).toBe(expectedOutput);
@@ -437,9 +573,8 @@ export function main() {
 
       it('works with animation', async(() => {
            renderModule(AnimationServerModule, {document: doc}).then(output => {
-             expect(output).toBe(
-                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
-                 '<div>Works!</div></app></body></html>');
+             expect(output).toContain('Works!');
+             expect(output).toContain('ng-trigger-myAnimation');
              called = true;
            });
          }));
@@ -448,6 +583,15 @@ export function main() {
            renderModule(NativeExampleModule, {document: doc}).then(output => {
              expect(output).not.toBe('');
              expect(output).toContain('color: red');
+             called = true;
+           });
+         }));
+
+
+      it('sets a prefix for the _nghost and _ngcontent attributes', async(() => {
+           renderModule(ExampleStylesModule, {document: doc}).then(output => {
+             expect(output).toMatch(
+                 /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
              called = true;
            });
          }));
@@ -469,6 +613,50 @@ export function main() {
              called = true;
            });
          }));
+
+      it('should work with sanitizer to handle "innerHTML"', async(() => {
+           // Clear out any global states. These should be set when platform-server
+           // is initialized.
+           (global as any).Node = undefined;
+           (global as any).Document = undefined;
+           renderModule(HTMLTypesModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<div><b>foo</b> bar</div></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should handle element property "hidden"', async(() => {
+           renderModule(HiddenModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<input hidden=""><input></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should call render hook', async(() => {
+           renderModule(RenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><title>RenderHook</title></head><body>' +
+                 '<app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should call multiple render hooks', async(() => {
+           const consoleSpy = spyOn(console, 'warn');
+           renderModule(MultiRenderHookModule, {document: doc}).then(output => {
+             // title should be added by the render hook.
+             expect(output).toBe(
+                 '<html><head><title>RenderHook</title><meta name="description"></head>' +
+                 '<body><app ng-version="0.0.0-PLACEHOLDER">Works!</app></body></html>');
+             expect(consoleSpy).toHaveBeenCalled();
+             called = true;
+           });
+         }));
     });
 
     describe('http', () => {
@@ -485,7 +673,7 @@ export function main() {
            platform.bootstrapModule(ExampleModule).then(ref => {
              const mock = ref.injector.get(MockBackend);
              const http = ref.injector.get(Http);
-             ref.injector.get(NgZone).run(() => {
+             ref.injector.get<NgZone>(NgZone).run(() => {
                NgZone.assertInAngularZone();
                mock.connections.subscribe((mc: MockConnection) => {
                  NgZone.assertInAngularZone();
@@ -505,11 +693,11 @@ export function main() {
            platform.bootstrapModule(ExampleModule).then(ref => {
              const mock = ref.injector.get(MockBackend);
              const http = ref.injector.get(Http);
-             expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeFalsy();
-             ref.injector.get(NgZone).run(() => {
+             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
+             ref.injector.get<NgZone>(NgZone).run(() => {
                NgZone.assertInAngularZone();
                mock.connections.subscribe((mc: MockConnection) => {
-                 expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
+                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
                  mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
                http.get('http://localhost/testing').subscribe(resp => {
@@ -524,11 +712,11 @@ export function main() {
            platform.bootstrapModule(HttpBeforeExampleModule).then(ref => {
              const mock = ref.injector.get(MockBackend);
              const http = ref.injector.get(Http);
-             expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeFalsy();
-             ref.injector.get(NgZone).run(() => {
+             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
+             ref.injector.get<NgZone>(NgZone).run(() => {
                NgZone.assertInAngularZone();
                mock.connections.subscribe((mc: MockConnection) => {
-                 expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
+                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
                  mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
                http.get('http://localhost/testing').subscribe(resp => {
@@ -543,11 +731,11 @@ export function main() {
            platform.bootstrapModule(HttpAfterExampleModule).then(ref => {
              const mock = ref.injector.get(MockBackend);
              const http = ref.injector.get(Http);
-             expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeFalsy();
-             ref.injector.get(NgZone).run(() => {
+             expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
+             ref.injector.get<NgZone>(NgZone).run(() => {
                NgZone.assertInAngularZone();
                mock.connections.subscribe((mc: MockConnection) => {
-                 expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
+                 expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
                  mc.mockRespond(new Response(new ResponseOptions({body: 'success!', status: 200})));
                });
                http.get('http://localhost/testing').subscribe(resp => {
@@ -571,17 +759,17 @@ export function main() {
       it('can inject HttpClient', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+           platform.bootstrapModule(HttpClientExampleModule).then(ref => {
              expect(ref.injector.get(HttpClient) instanceof HttpClient).toBeTruthy();
            });
          }));
       it('can make HttpClient requests', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+           platform.bootstrapModule(HttpClientExampleModule).then(ref => {
              const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
              const http = ref.injector.get(HttpClient);
-             ref.injector.get(NgZone).run(() => {
+             ref.injector.get<NgZone>(NgZone).run(() => {
                http.get('http://localhost/testing').subscribe(body => {
                  NgZone.assertInAngularZone();
                  expect(body).toEqual('success!');
@@ -593,19 +781,75 @@ export function main() {
       it('requests are macrotasks', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+           platform.bootstrapModule(HttpClientExampleModule).then(ref => {
              const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
              const http = ref.injector.get(HttpClient);
-             ref.injector.get(NgZone).run(() => {
+             ref.injector.get<NgZone>(NgZone).run(() => {
                http.get('http://localhost/testing').subscribe(body => {
                  expect(body).toEqual('success!');
                });
-               expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeTruthy();
+               expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeTruthy();
                mock.expectOne('http://localhost/testing').flush('success!');
-               expect(ref.injector.get(NgZone).hasPendingMacrotasks).toBeFalsy();
+               expect(ref.injector.get<NgZone>(NgZone).hasPendingMacrotasks).toBeFalsy();
              });
+           });
+         }));
+      it('can use HttpInterceptor that injects HttpClient', () => {
+        const platform =
+            platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+        platform.bootstrapModule(HttpInterceptorExampleModule).then(ref => {
+          const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+          const http = ref.injector.get(HttpClient);
+          ref.injector.get<NgZone>(NgZone).run(() => {
+            http.get('http://localhost/testing').subscribe(body => {
+              NgZone.assertInAngularZone();
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost/testing').flush('success!');
+          });
+        });
+      });
+    });
+
+    describe('ServerTransferStoreModule', () => {
+      let called = false;
+      const defaultExpectedOutput =
+          '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">Works!</app><script id="transfer-state" type="application/json">{&q;test&q;:10}</script></body></html>';
+
+      beforeEach(() => { called = false; });
+      afterEach(() => { expect(called).toBe(true); });
+
+      it('adds transfer script tag when using renderModule', async(() => {
+           renderModule(TransferStoreModule, {document: '<app></app>'}).then(output => {
+             expect(output).toBe(defaultExpectedOutput);
+             called = true;
+           });
+         }));
+
+      it('adds transfer script tag when using renderModuleFactory',
+         async(inject([PlatformRef], (defaultPlatform: PlatformRef) => {
+           const compilerFactory: CompilerFactory =
+               defaultPlatform.injector.get(CompilerFactory, null);
+           const moduleFactory =
+               compilerFactory.createCompiler().compileModuleSync(TransferStoreModule);
+           renderModuleFactory(moduleFactory, {document: '<app></app>'}).then(output => {
+             expect(output).toBe(defaultExpectedOutput);
+             called = true;
+           });
+         })));
+
+      it('cannot break out of <script> tag in serialized output', async(() => {
+           renderModule(EscapedTransferStoreModule, {
+             document: '<esc-app></esc-app>'
+           }).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><esc-app ng-version="0.0.0-PLACEHOLDER">Works!</esc-app>' +
+                 '<script id="transfer-state" type="application/json">' +
+                 '{&q;testString&q;:&q;&l;/script&g;&l;script&g;' +
+                 'alert(&s;Hello&a;&s; + \\&q;World\\&q;);&q;}</script></body></html>');
+             called = true;
            });
          }));
     });
   });
-}
+})();

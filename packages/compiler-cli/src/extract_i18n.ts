@@ -13,29 +13,34 @@
  */
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
+import * as api from './transformers/api';
+import {ParsedConfiguration} from './perform_compile';
+import {main, readCommandLineAndConfiguration} from './main';
 
-import * as tsc from '@angular/tsc-wrapped';
-import * as ts from 'typescript';
+export function mainXi18n(
+    args: string[], consoleError: (msg: string) => void = console.error): number {
+  const config = readXi18nCommandLineAndConfiguration(args);
+  return main(args, consoleError, config);
+}
 
-import {Extractor} from './extractor';
+function readXi18nCommandLineAndConfiguration(args: string[]): ParsedConfiguration {
+  const options: api.CompilerOptions = {};
+  const parsedArgs = require('minimist')(args);
+  if (parsedArgs.outFile) options.i18nOutFile = parsedArgs.outFile;
+  if (parsedArgs.i18nFormat) options.i18nOutFormat = parsedArgs.i18nFormat;
+  if (parsedArgs.locale) options.i18nOutLocale = parsedArgs.locale;
 
-function extract(
-    ngOptions: tsc.AngularCompilerOptions, cliOptions: tsc.I18nExtractionCliOptions,
-    program: ts.Program, host: ts.CompilerHost) {
-  return Extractor.create(ngOptions, program, host, cliOptions.locale)
-      .extract(cliOptions.i18nFormat !, cliOptions.outFile);
+  const config = readCommandLineAndConfiguration(args, options, [
+    'outFile',
+    'i18nFormat',
+    'locale',
+  ]);
+  // only emit the i18nBundle but nothing else.
+  return {...config, emitFlags: api.EmitFlags.I18nBundle};
 }
 
 // Entry point
 if (require.main === module) {
-  const args = require('minimist')(process.argv.slice(2));
-  const project = args.p || args.project || '.';
-  const cliOptions = new tsc.I18nExtractionCliOptions(args);
-  tsc.main(project, cliOptions, extract, {noEmit: true})
-      .then((exitCode: any) => process.exit(exitCode))
-      .catch((e: any) => {
-        console.error(e.stack);
-        console.error('Extraction failed');
-        process.exit(1);
-      });
+  const args = process.argv.slice(2);
+  process.exitCode = mainXi18n(args);
 }

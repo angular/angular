@@ -16,10 +16,9 @@ import {LocationChangeListener, PlatformLocation} from './platform_location';
 
 
 /**
- * @whatItDoes Use URL hash for storing application location data.
  * @description
- * `HashLocationStrategy` is a {@link LocationStrategy} used to configure the
- * {@link Location} service to represent its state in the
+ * A {@link LocationStrategy} used to configure the {@link Location} service to
+ * represent its state in the
  * [hash fragment](https://en.wikipedia.org/wiki/Uniform_Resource_Locator#Syntax)
  * of the browser's URL.
  *
@@ -30,7 +29,7 @@ import {LocationChangeListener, PlatformLocation} from './platform_location';
  *
  * {@example common/location/ts/hash_location_component.ts region='LocationComponent'}
  *
- * @stable
+ *
  */
 @Injectable()
 export class HashLocationStrategy extends LocationStrategy {

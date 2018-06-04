@@ -7,19 +7,23 @@
  */
 
 import {EventEmitter, Injectable} from '@angular/core';
+import {SubscriptionLike} from 'rxjs';
 
 import {LocationStrategy} from './location_strategy';
 
 /** @experimental */
 export interface PopStateEvent {
   pop?: boolean;
+  state?: any;
   type?: string;
   url?: string;
 }
 
 /**
- * @whatItDoes `Location` is a service that applications can use to interact with a browser's URL.
  * @description
+ *
+ * A service that applications can use to interact with a browser's URL.
+ *
  * Depending on which {@link LocationStrategy} is used, `Location` will either persist
  * to the URL's path or the URL's hash segment.
  *
@@ -36,7 +40,7 @@ export interface PopStateEvent {
  *
  * ### Example
  * {@example common/location/ts/path_location_component.ts region='LocationComponent'}
- * @stable
+ *
  */
 @Injectable()
 export class Location {
@@ -55,6 +59,7 @@ export class Location {
       this._subject.emit({
         'url': this.path(true),
         'pop': true,
+        'state': ev.state,
         'type': ev.type,
       });
     });
@@ -102,16 +107,16 @@ export class Location {
    * Changes the browsers URL to the normalized version of the given URL, and pushes a
    * new item onto the platform's history.
    */
-  go(path: string, query: string = ''): void {
-    this._platformStrategy.pushState(null, '', path, query);
+  go(path: string, query: string = '', state: any = null): void {
+    this._platformStrategy.pushState(state, '', path, query);
   }
 
   /**
    * Changes the browsers URL to the normalized version of the given URL, and replaces
    * the top item on the platform's history stack.
    */
-  replaceState(path: string, query: string = ''): void {
-    this._platformStrategy.replaceState(null, '', path, query);
+  replaceState(path: string, query: string = '', state: any = null): void {
+    this._platformStrategy.replaceState(state, '', path, query);
   }
 
   /**
@@ -129,7 +134,7 @@ export class Location {
    */
   subscribe(
       onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void)|null,
-      onReturn?: (() => void)|null): Object {
+      onReturn?: (() => void)|null): SubscriptionLike {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
   }
 
@@ -169,7 +174,7 @@ export class Location {
 
   /**
    * If url has a trailing slash, remove it, otherwise return url as is. This
-   * method looks for the first occurence of either #, ?, or the end of the
+   * method looks for the first occurrence of either #, ?, or the end of the
    * line as `/` characters after any of these should not be replaced.
    */
   public static stripTrailingSlash(url: string): string {

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, ReflectiveInjector, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
 
 import * as angular from './angular1';
 import {PropertyBinding} from './component_info';
 import {$SCOPE} from './constants';
-import {getAttributesAsArray, getComponentName, hookupNgModel, strictEquals} from './util';
+import {getComponentName, hookupNgModel, strictEquals} from './util';
 
 const INITIAL_VALUE = {
   __UNINITIALIZED__: true
@@ -25,18 +25,16 @@ export class DowngradeComponentAdapter {
   private componentRef: ComponentRef<any>;
   private component: any;
   private changeDetector: ChangeDetectorRef;
-  private appRef: ApplicationRef;
+  private viewChangeDetector: ChangeDetectorRef;
 
   constructor(
-      private id: string, private element: angular.IAugmentedJQuery,
-      private attrs: angular.IAttributes, private scope: angular.IScope,
-      private ngModel: angular.INgModelController, private parentInjector: Injector,
-      private $injector: angular.IInjectorService, private $compile: angular.ICompileService,
-      private $parse: angular.IParseService, private componentFactory: ComponentFactory<any>,
+      private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,
+      private scope: angular.IScope, private ngModel: angular.INgModelController,
+      private parentInjector: Injector, private $injector: angular.IInjectorService,
+      private $compile: angular.ICompileService, private $parse: angular.IParseService,
+      private componentFactory: ComponentFactory<any>,
       private wrapCallback: <T>(cb: () => T) => () => T) {
-    (this.element[0] as any).id = id;
     this.componentScope = scope.$new();
-    this.appRef = parentInjector.get(ApplicationRef);
   }
 
   compileContents(): Node[][] {
@@ -57,13 +55,25 @@ export class DowngradeComponentAdapter {
   }
 
   createComponent(projectableNodes: Node[][]) {
-    const childInjector = ReflectiveInjector.resolveAndCreate(
-        [{provide: $SCOPE, useValue: this.componentScope}], this.parentInjector);
+    const providers: StaticProvider[] = [{provide: $SCOPE, useValue: this.componentScope}];
+    const childInjector = Injector.create(
+        {providers: providers, parent: this.parentInjector, name: 'DowngradeComponentAdapter'});
 
     this.componentRef =
         this.componentFactory.create(childInjector, projectableNodes, this.element[0]);
+    this.viewChangeDetector = this.componentRef.injector.get(ChangeDetectorRef);
     this.changeDetector = this.componentRef.changeDetectorRef;
     this.component = this.componentRef.instance;
+
+    // testability hook is commonly added during component bootstrap in
+    // packages/core/src/application_ref.bootstrap()
+    // in downgraded application, component creation will take place here as well as adding the
+    // testability hook.
+    const testability = this.componentRef.injector.get(Testability, null);
+    if (testability) {
+      this.componentRef.injector.get(TestabilityRegistry)
+          .registerApplication(this.componentRef.location.nativeElement, testability);
+    }
 
     hookupNgModel(this.ngModel, this.component);
   }
@@ -92,7 +102,7 @@ export class DowngradeComponentAdapter {
         })(input.prop);
         attrs.$observe(input.attr, observeFn);
 
-        // Use `$watch()` (in addition to `$observe()`) in order to initialize the input  in time
+        // Use `$watch()` (in addition to `$observe()`) in order to initialize the input in time
         // for `ngOnChanges()`. This is necessary if we are already in a `$digest`, which means that
         // `ngOnChanges()` (which is called by a watcher) will run before the `$observe()` callback.
         let unwatch: Function|null = this.componentScope.$watch(() => {
@@ -131,8 +141,9 @@ export class DowngradeComponentAdapter {
         (<OnChanges>this.component).ngOnChanges(inputChanges !);
       }
 
-      // If opted out of propagating digests, invoke change detection
-      // when inputs change
+      this.viewChangeDetector.markForCheck();
+
+      // If opted out of propagating digests, invoke change detection when inputs change.
       if (!propagateDigest) {
         detectChanges();
       }
@@ -143,9 +154,16 @@ export class DowngradeComponentAdapter {
       this.componentScope.$watch(this.wrapCallback(detectChanges));
     }
 
-    // Attach the view so that it will be dirty-checked.
-    if (needsNgZone) {
-      this.appRef.attachView(this.componentRef.hostView);
+    // If necessary, attach the view so that it will be dirty-checked.
+    // (Allow time for the initial input values to be set and `ngOnChanges()` to be called.)
+    if (needsNgZone || !propagateDigest) {
+      let unwatch: Function|null = this.componentScope.$watch(() => {
+        unwatch !();
+        unwatch = null;
+
+        const appRef = this.parentInjector.get<ApplicationRef>(ApplicationRef);
+        appRef.attachView(this.componentRef.hostView);
+      });
     }
   }
 
@@ -154,51 +172,54 @@ export class DowngradeComponentAdapter {
     const outputs = this.componentFactory.outputs || [];
     for (let j = 0; j < outputs.length; j++) {
       const output = new PropertyBinding(outputs[j].propName, outputs[j].templateName);
-      let expr: string|null = null;
-      let assignExpr = false;
-
       const bindonAttr = output.bindonAttr.substring(0, output.bindonAttr.length - 6);
       const bracketParenAttr =
           `[(${output.bracketParenAttr.substring(2, output.bracketParenAttr.length - 8)})]`;
-
-      if (attrs.hasOwnProperty(output.onAttr)) {
-        expr = attrs[output.onAttr];
-      } else if (attrs.hasOwnProperty(output.parenAttr)) {
-        expr = attrs[output.parenAttr];
-      } else if (attrs.hasOwnProperty(bindonAttr)) {
-        expr = attrs[bindonAttr];
-        assignExpr = true;
-      } else if (attrs.hasOwnProperty(bracketParenAttr)) {
-        expr = attrs[bracketParenAttr];
-        assignExpr = true;
+      // order below is important - first update bindings then evaluate expressions
+      if (attrs.hasOwnProperty(bindonAttr)) {
+        this.subscribeToOutput(output, attrs[bindonAttr], true);
       }
-
-      if (expr != null && assignExpr != null) {
-        const getter = this.$parse(expr);
-        const setter = getter.assign;
-        if (assignExpr && !setter) {
-          throw new Error(`Expression '${expr}' is not assignable!`);
-        }
-        const emitter = this.component[output.prop] as EventEmitter<any>;
-        if (emitter) {
-          emitter.subscribe({
-            next: assignExpr ? (v: any) => setter !(this.scope, v) :
-                               (v: any) => getter(this.scope, {'$event': v})
-          });
-        } else {
-          throw new Error(
-              `Missing emitter '${output.prop}' on component '${getComponentName(this.componentFactory.componentType)}'!`);
-        }
+      if (attrs.hasOwnProperty(bracketParenAttr)) {
+        this.subscribeToOutput(output, attrs[bracketParenAttr], true);
+      }
+      if (attrs.hasOwnProperty(output.onAttr)) {
+        this.subscribeToOutput(output, attrs[output.onAttr]);
+      }
+      if (attrs.hasOwnProperty(output.parenAttr)) {
+        this.subscribeToOutput(output, attrs[output.parenAttr]);
       }
     }
   }
 
-  registerCleanup(needsNgZone: boolean) {
-    this.element.on !('$destroy', () => {
-      this.componentScope.$destroy();
-      this.componentRef.destroy();
-      if (needsNgZone) {
-        this.appRef.detachView(this.componentRef.hostView);
+  private subscribeToOutput(output: PropertyBinding, expr: string, isAssignment: boolean = false) {
+    const getter = this.$parse(expr);
+    const setter = getter.assign;
+    if (isAssignment && !setter) {
+      throw new Error(`Expression '${expr}' is not assignable!`);
+    }
+    const emitter = this.component[output.prop] as EventEmitter<any>;
+    if (emitter) {
+      emitter.subscribe({
+        next: isAssignment ? (v: any) => setter !(this.scope, v) :
+                             (v: any) => getter(this.scope, {'$event': v})
+      });
+    } else {
+      throw new Error(
+          `Missing emitter '${output.prop}' on component '${getComponentName(this.componentFactory.componentType)}'!`);
+    }
+  }
+
+  registerCleanup() {
+    const destroyComponentRef = this.wrapCallback(() => this.componentRef.destroy());
+    let destroyed = false;
+
+    this.element.on !('$destroy', () => this.componentScope.$destroy());
+    this.componentScope.$on('$destroy', () => {
+      if (!destroyed) {
+        destroyed = true;
+        this.componentRef.injector.get(TestabilityRegistry)
+            .unregisterApplication(this.componentRef.location.nativeElement);
+        destroyComponentRef();
       }
     });
   }

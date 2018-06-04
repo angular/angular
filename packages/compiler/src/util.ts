@@ -6,19 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵisPromise as isPromise} from '@angular/core';
+import {ConstantPool} from './constant_pool';
 
 import * as o from './output/output_ast';
 import {ParseError} from './parse_util';
 
-export const MODULE_SUFFIX = '';
-
-const CAMEL_CASE_REGEXP = /([A-Z])/g;
 const DASH_CASE_REGEXP = /-+([a-z0-9])/g;
-
-export function camelCaseToDashCase(input: string): string {
-  return input.replace(CAMEL_CASE_REGEXP, (...m: any[]) => '-' + m[1].toLowerCase());
-}
 
 export function dashCaseToCamelCase(input: string): string {
   return input.replace(DASH_CASE_REGEXP, (...m: any[]) => m[1].toUpperCase());
@@ -99,6 +92,10 @@ export const SyncAsync = {
   }
 };
 
+export function error(msg: string): never {
+  throw new Error(`Internal Error: ${msg}`);
+}
+
 export function syntaxError(msg: string, parseErrors?: ParseError[]): Error {
   const error = Error(msg);
   (error as any)[ERROR_SYNTAX_ERROR] = true;
@@ -117,6 +114,7 @@ export function getParseErrors(error: Error): ParseError[] {
   return (error as any)[ERROR_PARSE_ERRORS] || [];
 }
 
+// Escape characters that have a special meaning in Regular Expressions
 export function escapeRegExp(s: string): string {
   return s.replace(/([.*+?^=!:${}()|[\]\/\\])/g, '\\$1');
 }
@@ -161,5 +159,77 @@ export function utf8Encode(str: string): string {
 export interface OutputContext {
   genFilePath: string;
   statements: o.Statement[];
-  importExpr(reference: any, typeParams?: o.Type[]|null): o.Expression;
+  constantPool: ConstantPool;
+  importExpr(reference: any, typeParams?: o.Type[]|null, useSummaries?: boolean): o.Expression;
+}
+
+export function stringify(token: any): string {
+  if (typeof token === 'string') {
+    return token;
+  }
+
+  if (token instanceof Array) {
+    return '[' + token.map(stringify).join(', ') + ']';
+  }
+
+  if (token == null) {
+    return '' + token;
+  }
+
+  if (token.overriddenName) {
+    return `${token.overriddenName}`;
+  }
+
+  if (token.name) {
+    return `${token.name}`;
+  }
+
+  // WARNING: do not try to `JSON.stringify(token)` here
+  // see https://github.com/angular/angular/issues/23440
+  const res = token.toString();
+
+  if (res == null) {
+    return '' + res;
+  }
+
+  const newLineIndex = res.indexOf('\n');
+  return newLineIndex === -1 ? res : res.substring(0, newLineIndex);
+}
+
+/**
+ * Lazily retrieves the reference value from a forwardRef.
+ */
+export function resolveForwardRef(type: any): any {
+  if (typeof type === 'function' && type.hasOwnProperty('__forward_ref__')) {
+    return type();
+  } else {
+    return type;
+  }
+}
+
+/**
+ * Determine if the argument is shaped like a Promise
+ */
+export function isPromise(obj: any): obj is Promise<any> {
+  // allow any Promise/A+ compliant thenable.
+  // It's up to the caller to ensure that obj.then conforms to the spec
+  return !!obj && typeof obj.then === 'function';
+}
+
+export class Version {
+  public readonly major: string;
+  public readonly minor: string;
+  public readonly patch: string;
+
+  constructor(public full: string) {
+    const splits = full.split('.');
+    this.major = splits[0];
+    this.minor = splits[1];
+    this.patch = splits.slice(2).join('.');
+  }
+}
+
+export interface Console {
+  log(message: string): void;
+  warn(message: string): void;
 }

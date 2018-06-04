@@ -8,9 +8,9 @@
 
 import {AsyncTestCompleter, describe, expect, inject, it} from '@angular/core/testing/src/testing_internal';
 
-import {MeasureValues, Metric, Options, ReflectiveInjector, Reporter, Sampler, Validator, WebDriverAdapter} from '../index';
+import {Injector, MeasureValues, Metric, Options, Reporter, Sampler, Validator, WebDriverAdapter} from '../index';
 
-export function main() {
+{
   const EMPTY_EXECUTE = () => {};
 
   describe('sampler', () => {
@@ -44,7 +44,7 @@ export function main() {
         providers.push({provide: Options.PREPARE, useValue: prepare});
       }
 
-      sampler = ReflectiveInjector.resolveAndCreate(providers).get(Sampler);
+      sampler = Injector.create(providers).get(Sampler);
     }
 
     it('should call the prepare and execute callbacks using WebDriverAdapter.waitFor',

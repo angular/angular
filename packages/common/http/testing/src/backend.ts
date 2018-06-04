@@ -8,9 +8,7 @@
 
 import {HttpBackend, HttpEvent, HttpEventType, HttpRequest} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
-import {startWith} from 'rxjs/operator/startWith';
+import {Observable, Observer} from 'rxjs';
 
 import {HttpTestingController, RequestMatch} from './api';
 import {TestRequest} from './request';
@@ -25,7 +23,7 @@ import {TestRequest} from './request';
  * requests were made and then flush them. In the end, a verify() method asserts
  * that no unexpected requests were made.
  *
- * @experimental
+ *
  */
 @Injectable()
 export class HttpClientTestingBackend implements HttpBackend, HttpTestingController {
@@ -126,7 +124,7 @@ export class HttpClientTestingBackend implements HttpBackend, HttpTestingControl
       const requests = open.map(testReq => {
                              const url = testReq.request.urlWithParams.split('?')[0];
                              const method = testReq.request.method;
-                             return `${method} ${url}`
+                             return `${method} ${url}`;
                            })
                            .join(', ');
       throw new Error(`Expected no open requests, found ${open.length}: ${requests}`);

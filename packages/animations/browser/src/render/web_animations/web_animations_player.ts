@@ -7,7 +7,7 @@
  */
 import {AnimationPlayer} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, copyStyles} from '../../util';
+import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, computeStyle, copyStyles} from '../../util';
 
 import {DOMAnimation} from './dom_animation';
 
@@ -15,7 +15,6 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _onDoneFns: Function[] = [];
   private _onStartFns: Function[] = [];
   private _onDestroyFns: Function[] = [];
-  private _player: DOMAnimation;
   private _duration: number;
   private _delay: number;
   private _initialized = false;
@@ -23,26 +22,19 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   private _started = false;
   private _destroyed = false;
   private _finalKeyframe: {[key: string]: string | number};
+
+  public readonly domPlayer: DOMAnimation;
   public time = 0;
 
   public parentPlayer: AnimationPlayer|null = null;
-  public previousStyles: {[styleName: string]: string | number} = {};
   public currentSnapshot: {[styleName: string]: string | number} = {};
 
   constructor(
       public element: any, public keyframes: {[key: string]: string | number}[],
-      public options: {[key: string]: string | number},
-      private previousPlayers: WebAnimationsPlayer[] = []) {
+      public options: {[key: string]: string | number}) {
     this._duration = <number>options['duration'];
     this._delay = <number>options['delay'] || 0;
     this.time = this._duration + this._delay;
-
-    if (allowPreviousPlayerStylesMerge(this._duration, this._delay)) {
-      previousPlayers.forEach(player => {
-        let styles = player.currentSnapshot;
-        Object.keys(styles).forEach(prop => this.previousStyles[prop] = styles[prop]);
-      });
-    }
   }
 
   private _onFinish() {
@@ -62,33 +54,11 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     if (this._initialized) return;
     this._initialized = true;
 
-    const keyframes = this.keyframes.map(styles => copyStyles(styles, false));
-    const previousStyleProps = Object.keys(this.previousStyles);
-    if (previousStyleProps.length) {
-      let startingKeyframe = keyframes[0];
-      let missingStyleProps: string[] = [];
-      previousStyleProps.forEach(prop => {
-        if (!startingKeyframe.hasOwnProperty(prop)) {
-          missingStyleProps.push(prop);
-        }
-        startingKeyframe[prop] = this.previousStyles[prop];
-      });
-
-      if (missingStyleProps.length) {
-        const self = this;
-        // tslint:disable-next-line
-        for (var i = 1; i < keyframes.length; i++) {
-          let kf = keyframes[i];
-          missingStyleProps.forEach(function(prop) {
-            kf[prop] = _computeStyle(self.element, prop);
-          });
-        }
-      }
-    }
-
-    this._player = this._triggerWebAnimation(this.element, keyframes, this.options);
+    const keyframes = this.keyframes;
+    (this as{domPlayer: DOMAnimation}).domPlayer =
+        this._triggerWebAnimation(this.element, keyframes, this.options);
     this._finalKeyframe = keyframes.length ? keyframes[keyframes.length - 1] : {};
-    this._player.addEventListener('finish', () => this._onFinish());
+    this.domPlayer.addEventListener('finish', () => this._onFinish());
   }
 
   private _preparePlayerBeforeStart() {
@@ -96,7 +66,7 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     if (this._delay) {
       this._resetDomPlayerState();
     } else {
-      this._player.pause();
+      this.domPlayer.pause();
     }
   }
 
@@ -106,8 +76,6 @@ export class WebAnimationsPlayer implements AnimationPlayer {
     // supported yet across common browsers (we polyfill it for Edge/Safari) [CL #143630929]
     return element['animate'](keyframes, options) as DOMAnimation;
   }
-
-  get domPlayer() { return this._player; }
 
   onStart(fn: () => void): void { this._onStartFns.push(fn); }
 
@@ -122,18 +90,18 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       this._onStartFns = [];
       this._started = true;
     }
-    this._player.play();
+    this.domPlayer.play();
   }
 
   pause(): void {
     this.init();
-    this._player.pause();
+    this.domPlayer.pause();
   }
 
   finish(): void {
     this.init();
     this._onFinish();
-    this._player.finish();
+    this.domPlayer.finish();
   }
 
   reset(): void {
@@ -144,8 +112,8 @@ export class WebAnimationsPlayer implements AnimationPlayer {
   }
 
   private _resetDomPlayerState() {
-    if (this._player) {
-      this._player.cancel();
+    if (this.domPlayer) {
+      this.domPlayer.cancel();
     }
   }
 
@@ -158,17 +126,17 @@ export class WebAnimationsPlayer implements AnimationPlayer {
 
   destroy(): void {
     if (!this._destroyed) {
+      this._destroyed = true;
       this._resetDomPlayerState();
       this._onFinish();
-      this._destroyed = true;
       this._onDestroyFns.forEach(fn => fn());
       this._onDestroyFns = [];
     }
   }
 
-  setPosition(p: number): void { this._player.currentTime = p * this.time; }
+  setPosition(p: number): void { this.domPlayer.currentTime = p * this.time; }
 
-  getPosition(): number { return this._player.currentTime / this.time; }
+  getPosition(): number { return this.domPlayer.currentTime / this.time; }
 
   get totalTime(): number { return this._delay + this._duration; }
 
@@ -178,14 +146,17 @@ export class WebAnimationsPlayer implements AnimationPlayer {
       Object.keys(this._finalKeyframe).forEach(prop => {
         if (prop != 'offset') {
           styles[prop] =
-              this._finished ? this._finalKeyframe[prop] : _computeStyle(this.element, prop);
+              this._finished ? this._finalKeyframe[prop] : computeStyle(this.element, prop);
         }
       });
     }
     this.currentSnapshot = styles;
   }
-}
 
-function _computeStyle(element: any, prop: string): string {
-  return (<any>window.getComputedStyle(element))[prop];
+  /* @internal */
+  triggerCallback(phaseName: string): void {
+    const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
+    methods.forEach(fn => fn());
+    methods.length = 0;
+  }
 }

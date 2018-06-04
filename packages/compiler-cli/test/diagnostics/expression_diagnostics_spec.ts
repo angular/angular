@@ -7,20 +7,22 @@
  */
 
 import {StaticSymbol} from '@angular/compiler';
-import {AngularCompilerOptions, CompilerHost} from '@angular/compiler-cli';
+import {CompilerHost} from '@angular/compiler-cli';
+import {ReflectorHost} from '@angular/language-service/src/reflector_host';
 import * as ts from 'typescript';
 
 import {getExpressionDiagnostics, getTemplateExpressionDiagnostics} from '../../src/diagnostics/expression_diagnostics';
+import {CompilerOptions} from '../../src/transformers/api';
 import {Directory} from '../mocks';
 
 import {DiagnosticContext, MockLanguageServiceHost, getDiagnosticTemplateInfo} from './mocks';
 
 describe('expression diagnostics', () => {
   let registry: ts.DocumentRegistry;
+
   let host: MockLanguageServiceHost;
   let service: ts.LanguageService;
   let context: DiagnosticContext;
-  let aotHost: CompilerHost;
   let type: StaticSymbol;
 
   beforeAll(() => {
@@ -29,11 +31,11 @@ describe('expression diagnostics', () => {
     service = ts.createLanguageService(host, registry);
     const program = service.getProgram();
     const checker = program.getTypeChecker();
-    const options: AngularCompilerOptions = Object.create(host.getCompilationSettings());
+    const options: CompilerOptions = Object.create(host.getCompilationSettings());
     options.genDir = '/dist';
     options.basePath = '/src';
-    aotHost = new CompilerHost(program, options, host, {verboseInvalidExpression: true});
-    context = new DiagnosticContext(service, program, checker, aotHost);
+    const symbolResolverHost = new ReflectorHost(() => program, host, options);
+    context = new DiagnosticContext(service, program, checker, symbolResolverHost);
     type = context.getStaticSymbol('app/app.component.ts', 'AppComponent');
   });
 
@@ -50,7 +52,7 @@ describe('expression diagnostics', () => {
     function expectNoDiagnostics(diagnostics: ts.Diagnostic[]) {
       if (diagnostics && diagnostics.length) {
         const message =
-            'messags: ' + diagnostics.map(d => messageToString(d.messageText)).join('\n');
+            'messages: ' + diagnostics.map(d => messageToString(d.messageText)).join('\n');
         expect(message).toEqual('');
       }
     }
@@ -174,7 +176,7 @@ describe('expression diagnostics', () => {
   it('should reject an uncalled event handler',
      () => reject(
          '<div (click)="click">{{person.name.first}}</div>', 'Unexpected callable expression'));
-  describe('with comparisions between nullable and non-nullable', () => {
+  describe('with comparisons between nullable and non-nullable', () => {
     it('should accept ==', () => accept(`<div>{{e == 1 ? 'a' : 'b'}}</div>`));
     it('should accept ===', () => accept(`<div>{{e === 1 ? 'a' : 'b'}}</div>`));
     it('should accept !=', () => accept(`<div>{{e != 1 ? 'a' : 'b'}}</div>`));

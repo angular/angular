@@ -1,0 +1,7 @@
+{
+  "description": "Forms",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js"
+  ]
+}

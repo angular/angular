@@ -6,16 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export default {
-  entry: '../../../dist/packages-dist/common/@angular/common/http.es5.js',
+const globals = {
+  '@angular/core': 'ng.core',
+  '@angular/platform-browser': 'ng.platformBrowser',
+  '@angular/common': 'ng.common',
+  'rxjs': 'rxjs',
+  'rxjs/operators': 'rxjs.operators',
+};
+
+module.exports = {
+  entry: '../../../dist/packages-dist/common/fesm5/http.js',
   dest: '../../../dist/packages-dist/common/bundles/common-http.umd.js',
   format: 'umd',
   exports: 'named',
-  moduleName: 'ng.commmon.http',
-  globals: {
-    '@angular/core': 'ng.core',
-    '@angular/platform-browser': 'ng.platformBrowser',
-    'rxjs/Observable': 'Rx',
-    'rxjs/Subject': 'Rx'
-  }
+  amd: {id: '@angular/common/http'},
+  moduleName: 'ng.common.http',
+  external: Object.keys(globals),
+  globals: globals
 };

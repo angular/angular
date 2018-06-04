@@ -9,7 +9,7 @@
 import {describe, expect, it} from '../../../core/testing/src/testing_internal';
 import {CssLexer, CssLexerMode, CssToken, CssTokenType, cssScannerError, getRawMessage, getToken} from '../../src/css_parser/css_lexer';
 
-export function main() {
+(function() {
   function tokenize(
       code: string, trackComments: boolean = false,
       mode: CssLexerMode = CssLexerMode.ALL): CssToken[] {
@@ -373,4 +373,4 @@ export function main() {
              });
         });
   });
-}
+})();

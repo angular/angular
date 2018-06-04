@@ -7,8 +7,7 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
+import {Observable, Observer} from 'rxjs';
 
 import {ResponseOptions} from '../base_response_options';
 import {ReadyState, RequestMethod, ResponseType} from '../enums';
@@ -22,11 +21,16 @@ const JSONP_ERR_NO_CALLBACK = 'JSONP injected script did not invoke callback.';
 const JSONP_ERR_WRONG_METHOD = 'JSONP requests must use GET request method.';
 
 /**
- * Abstract base class for an in-flight JSONP request.
+ * Base class for an in-flight JSONP request.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
-export abstract class JSONPConnection implements Connection {
+export class JSONPConnection implements Connection {
+  private _id: string;
+  private _script: Element;
+  private _responseData: any;
+  private _finished: boolean = false;
+
   /**
    * The {@link ReadyState} of this request.
    */
@@ -42,22 +46,9 @@ export abstract class JSONPConnection implements Connection {
    */
   response: Observable<Response>;
 
-  /**
-   * Callback called when the JSONP request completes, to notify the application
-   * of the new data.
-   */
-  abstract finished(data?: any): void;
-}
-
-export class JSONPConnection_ extends JSONPConnection {
-  private _id: string;
-  private _script: Element;
-  private _responseData: any;
-  private _finished: boolean = false;
-
+  /** @internal */
   constructor(
       req: Request, private _dom: BrowserJsonp, private baseResponseOptions?: ResponseOptions) {
-    super();
     if (req.method !== RequestMethod.Get) {
       throw new TypeError(JSONP_ERR_WRONG_METHOD);
     }
@@ -129,6 +120,10 @@ export class JSONPConnection_ extends JSONPConnection {
     });
   }
 
+  /**
+   * Callback called when the JSONP request completes, to notify the application
+   * of the new data.
+   */
   finished(data?: any) {
     // Don't leak connections
     this._finished = true;
@@ -141,17 +136,16 @@ export class JSONPConnection_ extends JSONPConnection {
 /**
  * A {@link ConnectionBackend} that uses the JSONP strategy of making requests.
  *
- * @experimental
+ * @deprecated use @angular/common/http instead
  */
-export abstract class JSONPBackend extends ConnectionBackend {}
-
 @Injectable()
-export class JSONPBackend_ extends JSONPBackend {
+export class JSONPBackend extends ConnectionBackend {
+  /** @internal */
   constructor(private _browserJSONP: BrowserJsonp, private _baseResponseOptions: ResponseOptions) {
     super();
   }
 
   createConnection(request: Request): JSONPConnection {
-    return new JSONPConnection_(request, this._browserJSONP, this._baseResponseOptions);
+    return new JSONPConnection(request, this._browserJSONP, this._baseResponseOptions);
   }
 }

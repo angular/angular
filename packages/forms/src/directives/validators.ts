@@ -6,10 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, OnChanges, Provider, SimpleChanges, forwardRef} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Directive, Input, OnChanges, SimpleChanges, StaticProvider, forwardRef} from '@angular/core';
+import {Observable} from 'rxjs';
+
 import {AbstractControl} from '../model';
 import {NG_VALIDATORS, Validators} from '../validators';
+
 
 /** @experimental */
 export type ValidationErrors = {
@@ -33,7 +35,7 @@ export type ValidationErrors = {
  * }
  * ```
  *
- * @stable
+ *
  */
 export interface Validator {
   validate(c: AbstractControl): ValidationErrors|null;
@@ -45,13 +47,13 @@ export interface AsyncValidator extends Validator {
   validate(c: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
 
-export const REQUIRED_VALIDATOR: Provider = {
+export const REQUIRED_VALIDATOR: StaticProvider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => RequiredValidator),
   multi: true
 };
 
-export const CHECKBOX_REQUIRED_VALIDATOR: Provider = {
+export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
   provide: NG_VALIDATORS,
   useExisting: forwardRef(() => CheckboxRequiredValidator),
   multi: true
@@ -60,7 +62,7 @@ export const CHECKBOX_REQUIRED_VALIDATOR: Provider = {
 
 /**
  * A Directive that adds the `required` validator to any controls marked with the
- * `required` attribute, via the {@link NG_VALIDATORS} binding.
+ * `required` attribute, via the `NG_VALIDATORS` binding.
  *
  * ### Example
  *
@@ -68,7 +70,7 @@ export const CHECKBOX_REQUIRED_VALIDATOR: Provider = {
  * <input name="fullName" ngModel required>
  * ```
  *
- * @stable
+ *
  */
 @Directive({
   selector:
@@ -98,7 +100,7 @@ export class RequiredValidator implements Validator {
 
 /**
  * A Directive that adds the `required` validator to checkbox controls marked with the
- * `required` attribute, via the {@link NG_VALIDATORS} binding.
+ * `required` attribute, via the `NG_VALIDATORS` binding.
  *
  * ### Example
  *
@@ -121,7 +123,7 @@ export class CheckboxRequiredValidator extends RequiredValidator {
 }
 
 /**
- * Provider which adds {@link EmailValidator} to {@link NG_VALIDATORS}.
+ * Provider which adds `EmailValidator` to `NG_VALIDATORS`.
  */
 export const EMAIL_VALIDATOR: any = {
   provide: NG_VALIDATORS,
@@ -131,7 +133,7 @@ export const EMAIL_VALIDATOR: any = {
 
 /**
  * A Directive that adds the `email` validator to controls marked with the
- * `email` attribute, via the {@link NG_VALIDATORS} binding.
+ * `email` attribute, via the `NG_VALIDATORS` binding.
  *
  * ### Example
  *
@@ -164,20 +166,14 @@ export class EmailValidator implements Validator {
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 }
 
-/**
- * @stable
- */
 export interface ValidatorFn { (c: AbstractControl): ValidationErrors|null; }
 
-/**
- * @stable
- */
 export interface AsyncValidatorFn {
   (c: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
 
 /**
- * Provider which adds {@link MinLengthValidator} to {@link NG_VALIDATORS}.
+ * Provider which adds `MinLengthValidator` to `NG_VALIDATORS`.
  *
  * ## Example:
  *
@@ -190,10 +186,10 @@ export const MIN_LENGTH_VALIDATOR: any = {
 };
 
 /**
- * A directive which installs the {@link MinLengthValidator} for any `formControlName`,
+ * A directive which installs the `MinLengthValidator` for any `formControlName`,
  * `formControl`, or control with `ngModel` that also has a `minlength` attribute.
  *
- * @stable
+ *
  */
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
@@ -226,7 +222,7 @@ export class MinLengthValidator implements Validator,
 }
 
 /**
- * Provider which adds {@link MaxLengthValidator} to {@link NG_VALIDATORS}.
+ * Provider which adds `MaxLengthValidator` to `NG_VALIDATORS`.
  *
  * ## Example:
  *
@@ -239,11 +235,11 @@ export const MAX_LENGTH_VALIDATOR: any = {
 };
 
 /**
- * A directive which installs the {@link MaxLengthValidator} for any `formControlName,
+ * A directive which installs the `MaxLengthValidator` for any `formControlName,
  * `formControl`,
  * or control with `ngModel` that also has a `maxlength` attribute.
  *
- * @stable
+ *
  */
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
@@ -285,7 +281,7 @@ export const PATTERN_VALIDATOR: any = {
 
 /**
  * A Directive that adds the `pattern` validator to any controls marked with the
- * `pattern` attribute, via the {@link NG_VALIDATORS} binding. Uses attribute value
+ * `pattern` attribute, via the `NG_VALIDATORS` binding. Uses attribute value
  * as the regex to validate Control value against.  Follows pattern attribute
  * semantics; i.e. regex must match entire Control value.
  *
@@ -294,7 +290,7 @@ export const PATTERN_VALIDATOR: any = {
  * ```
  * <input [name]="fullName" pattern="[a-zA-Z ]*" ngModel>
  * ```
- * @stable
+ *
  */
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',

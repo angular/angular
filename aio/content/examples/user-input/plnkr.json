@@ -1,9 +1,0 @@
-{
-  "description": "User Input",
-  "basePath": "src/",
-  "files": [
-    "!**/*.d.ts",
-    "!**/*.js"
-  ],
-  "tags": ["input"]
-}

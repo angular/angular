@@ -1,8 +1,6 @@
-/** @experimental */
 export declare class HttpClientTestingModule {
 }
 
-/** @experimental */
 export declare abstract class HttpTestingController {
     abstract expectNone(url: string, description?: string): void;
     abstract expectNone(params: RequestMatch, description?: string): void;
@@ -18,13 +16,11 @@ export declare abstract class HttpTestingController {
     }): void;
 }
 
-/** @experimental */
 export interface RequestMatch {
     method?: string;
     url?: string;
 }
 
-/** @experimental */
 export declare class TestRequest {
     readonly cancelled: boolean;
     request: HttpRequest<any>;

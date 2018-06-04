@@ -13,7 +13,7 @@ import {TestBed} from '@angular/core/testing';
 import {Console} from '../../src/console';
 
 
-export function main() {
+{
   describe('jit', () => { declareTests({useJit: true}); });
   describe('no jit', () => { declareTests({useJit: false}); });
 }
@@ -55,7 +55,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       expect(cfr.resolveComponentFactory(NestedChildComp) !.componentType).toBe(NestedChildComp);
     });
 
-    it('should be able to get a component form a parent component (view hiearchy)', () => {
+    it('should be able to get a component form a parent component (view hierarchy)', () => {
       TestBed.overrideComponent(MainComp, {set: {template: '<child></child>'}});
 
       const compFixture = TestBed.createComponent(MainComp);

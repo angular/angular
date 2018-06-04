@@ -7,7 +7,7 @@ this user?_) and authorization (_What can this user do?_).
 
 For more information about the attacks and mitigations described below, see [OWASP Guide Project](https://www.owasp.org/index.php/Category:OWASP_Guide_Project).
 
-You can run the <live-example></live-example> in Plunker and download the code from there.
+You can run the <live-example></live-example> in Stackblitz and download the code from there.
 
 
 

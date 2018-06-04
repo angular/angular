@@ -70,6 +70,10 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.println(stmt, `};`);
   }
 
+  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
+    throw new Error('Cannot emit a WrappedNodeExpr in Javascript.');
+  }
+
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): string|null {
     if (ast.builtin === o.BuiltinVar.This) {
       ctx.print(ast, 'self');
@@ -82,8 +86,11 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     return null;
   }
   visitDeclareVarStmt(stmt: o.DeclareVarStmt, ctx: EmitterVisitorContext): any {
-    ctx.print(stmt, `var ${stmt.name} = `);
-    stmt.value.visitExpression(this, ctx);
+    ctx.print(stmt, `var ${stmt.name}`);
+    if (stmt.value) {
+      ctx.print(stmt, ' = ');
+      stmt.value.visitExpression(this, ctx);
+    }
     ctx.println(stmt, `;`);
     return null;
   }
@@ -107,7 +114,7 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     return null;
   }
   visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
-    ctx.print(ast, `function(`);
+    ctx.print(ast, `function${ast.name ? ' ' + ast.name : ''}(`);
     this._visitParams(ast.params, ctx);
     ctx.println(ast, `) {`);
     ctx.incIndent();

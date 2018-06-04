@@ -68,7 +68,7 @@ describe('postProcessHtml', function() {
     };
     processor.plugins = [() => addWarning];
     processor.$process([{ docType: 'a', renderedContent: '' }]);
-    expect(log.warn).toHaveBeenCalled();
+    expect(log.warn).toHaveBeenCalledWith('There was a problem - doc (a) ');
   });
 
   it('should throw on fatal errors', () => {

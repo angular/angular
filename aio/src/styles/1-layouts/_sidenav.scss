@@ -1,11 +1,6 @@
-// Disable sidenav animations while starting the app
-// See https://github.com/angular/material2/blob/master/src/lib/sidenav/sidenav-transitions.scss
-.starting.mat-sidenav-transition {
-  .mat-sidenav,
-  .mat-sidenav-content,
-  .mat-sidenav-backdrop.mat-sidenav-shown {
-    transition: none;
-  }
+// Disable sidenav animations for the initial render.
+.starting.mat-drawer-transition .mat-drawer-content {
+  transition: none;
 }
 
 aio-nav-menu {
@@ -26,7 +21,7 @@ aio-nav-menu {
   }
 }
 
-md-sidenav.mat-sidenav.sidenav {
+mat-sidenav.mat-sidenav.sidenav {
   position: fixed;
   top: 64px;
   bottom: 0;
@@ -35,27 +30,26 @@ md-sidenav.mat-sidenav.sidenav {
   min-width: 260px;
   background-color: $offwhite;
   box-shadow: 6px 0 6px rgba(0,0,0,0.10);
-  height: calc(100vh - 64px);
 
   &.collapsed {
     top: 56px;
   }
 }
 
-md-sidenav-container.sidenav-container {
-    min-height: 100%;
-    height: auto !important;
-    max-width: 100%;
-    margin: 0;
-    transform: none;
+mat-sidenav-container.sidenav-container {
+  min-height: 100%;
+  height: auto !important;
+  max-width: 100%;
+  margin: 0;
+  transform: none;
 
-    &.has-floating-toc {
-      max-width: 82%;
-    }
+  &.has-floating-toc {
+    max-width: 82%;
+  }
 }
 
-md-sidenav-container div.mat-sidenav-content {
-    height: auto;
+mat-sidenav-container div.mat-sidenav-content {
+  height: auto;
 }
 
 .vertical-menu-item {
@@ -129,6 +123,12 @@ button.vertical-menu-item {
   transition-timing-function: ease-out;
 }
 
+.no-animations {
+  .heading-children.expanded, .heading-children.collapsed {
+    transition: none! important;
+  }
+}
+
 .level-1 {
   font-family: $main-font;
   font-size: 14px;
@@ -160,7 +160,6 @@ button.vertical-menu-item {
 
 .level-1:not(.expanded) .mat-icon, .level-2:not(.expanded) .mat-icon {
   @include rotate(0deg);
- // margin: 4px;
 }
 
 aio-nav-menu.top-menu {
@@ -176,7 +175,7 @@ aio-nav-menu.top-menu {
 }
 
 // Angular Version Selector
-md-sidenav .doc-version {
+mat-sidenav .doc-version {
   padding: 8px;
   border-top: 1px solid $lightgray;
 

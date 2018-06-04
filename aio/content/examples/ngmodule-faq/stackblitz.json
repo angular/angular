@@ -1,0 +1,40 @@
+{
+  "description": "NgModule Final",
+  "files": [
+    "src/app/app.component.ts",
+    "src/app/app.module.ts",
+    "src/app/app-routing.module.ts",
+
+    "src/app/contact/contact.component.css",
+    "src/app/contact/contact.component.html",
+    "src/app/contact/contact.service.ts",
+
+    "src/app/contact/contact.component.ts",
+    "src/app/contact/contact.module.ts",
+    "src/app/contact/contact-routing.module.ts",
+
+    "src/app/crisis/*.ts",
+
+    "src/app/hero/hero-detail.component.ts",
+    "src/app/hero/hero-list.component.ts",
+    "src/app/hero/hero.service.ts",
+
+    "src/app/hero/hero.component.ts",
+    "src/app/hero/hero.module.ts",
+    "src/app/hero/hero-routing.module.ts",
+
+    "src/app/core/*.css",
+    "src/app/core/*.html",
+    "src/app/core/*.ts",
+
+    "src/app/shared/*.css",
+    "src/app/shared/*.html",
+    "src/app/shared/*.ts",
+
+    "src/main.ts",
+    "src/styles.css",
+    "src/index.html"
+  ],
+  "main": "src/index.html",
+  "tags": ["NgModule"]
+}

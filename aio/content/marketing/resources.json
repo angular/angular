@@ -10,6 +10,12 @@
             "rev": true,
             "title": "Catalog of Angular Components & Libraries",
             "url": "https://github.com/brillout/awesome-angular-components"
+          },
+          "angular-ru": {
+            "desc": "Angular-RU Community on GitHub is a single entry point for all resources, chats, podcasts and meetups for Angular in Russia.",
+            "rev": true,
+            "title": "Angular Conferences and Angular Camps in Moscow, Russia.",
+            "url": "https://angular-ru.github.io/"
           }
         }
       },
@@ -130,6 +136,13 @@
             "rev": true,
             "title": "Apollo",
             "url": "http://docs.apollostack.com/apollo-client/angular2.html"
+          },
+          "ab4": {
+            "desc": "Angular Commerce is a solution for building modern e-commerce applications with power of Google Firebase. Set of components is design agnostic and allows to easily extend functionality.",
+            "logo": "",
+            "rev": true,
+            "title": "AngularCommerce",
+            "url": "https://github.com/NodeArt/angular-commerce"
           }
         }
       },
@@ -147,7 +160,7 @@
             "desc": "Lightweight yet powerful IDE, perfectly equipped for complex client-side development and server-side development with Node.js",
             "logo": "",
             "rev": true,
-            "title": "Webstorm",
+            "title": "WebStorm",
             "url": "https://www.jetbrains.com/webstorm/"
           },
           "ab3": {
@@ -189,7 +202,7 @@
             "url": "https://github.com/angular/universal"
           },
           "c1": {
-            "desc": "Lightweight development only node server",
+            "desc": "Lightweight development only Node.js® server",
             "logo": "",
             "rev": true,
             "title": "Lite-server",
@@ -202,7 +215,7 @@
             "url": "https://cli.angular.io"
           },
           "d1": {
-            "desc": "A set of tslint rules for static code analysis of Angular TypeScript projects.",
+            "desc": "Static analysis for Angular projects.",
             "logo": "",
             "rev": true,
             "title": "Codelyzer",
@@ -222,18 +235,37 @@
             "title": "Compodoc",
             "url": "https://github.com/compodoc/compodoc"
           },
-          "amexiovsc": {
-            "desc": "This extension will help the developers of Visual Studio Code with quick code snippet for the Amexio Angular Extension Markup as well as Amexio TypeScript.",
+          "ncg": {
+            "desc": "Generate several types of CRUD apps complete with e2e testing using template-sets for Angular, Material Design, Bootstrap, Kendo UI, Ionic, ...",
+            "logo": "https://avatars3.githubusercontent.com/u/27976684",
             "rev": true,
-            "title": "Amexio Angular Extensions for Visual Studio Code",
-            "url": "https://www.amexio.tech/features",
-            "logo": "https://github.com/meta-magic/Amexio-VSC-Extension/blob/master/images/Amexio-VSC-Icon-3.png"
-          }          
+            "title": "NinjaCodeGen - Angular CRUD Generator",
+            "url": "https://ninjaCodeGen.com"
+          },
+          "angular-playground": {
+            "desc": "UI development environment for building, testing, and documenting Angular applications.",
+            "rev": true,
+            "title": "Angular Playground",
+            "url": "http://www.angularplayground.it/"
+          },
+          "nx": {
+            "desc": "Nx (Nrwl Extensions for Angular) is an open source toolkit built on top of Angular CLI to help enterprise teams develop Angular at scale.",
+            "rev": true,
+            "title": "Nx",
+            "logo": "https://nrwl.io/assets/nx-logo.png",
+            "url": "https://nrwl.io/nx"
+          }
         }
       },
       "UI Components": {
         "order": 4,
         "resources": {
+          "IgniteUIforAngular": {
+            "desc": "Ignite UI for Angular is a dependency-free Angular toolkit for building modern web apps.",
+            "rev": true,
+            "title": "Ignite UI for Angular",
+            "url": "https://www.infragistics.com/products/ignite-ui-angular"
+          },
           "DevExtreme": {
             "desc": "50+ UI components including data grid, pivot grid, scheduler, charts, editors, maps and other multi-purpose controls for creating highly responsive web applications for touch devices and traditional desktops.",
             "rev": true,
@@ -310,8 +342,21 @@
             "desc": "Material Design components for Angular",
             "logo": "",
             "rev": true,
-            "title": "Angular Material 2",
+            "title": "Angular Material",
             "url": "https://github.com/angular/material2"
+          },
+          "mcc": {
+            "desc": "Material components made by the community",
+            "logo": "",
+            "rev": true,
+            "title": "Material Community Components",
+            "url": "https://github.com/tiaguinho/material-community-components"
+          },
+          "ngzorro": {
+            "desc": "A set of enterprise-class UI components based on Ant Design and Angular",
+            "rev": true,
+            "title": "Ant Design of Angular (ng-zorro-antd)",
+            "url": "https://ng.ant.design/docs/introduce/en"
           },
           "aggrid": {
             "desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
@@ -320,10 +365,10 @@
             "url": "https://www.ag-grid.com/best-angular-2-data-grid/"
           },
           "jqwidgets": {
-            "desc": "Angular UI Components including Grids, Charts, Scheduling and more.",
+            "desc": "Angular UI Components including data grid, tree grid, pivot grid, scheduler, charts, editors and other multi-purpose components",
             "rev": true,
             "title": "jQWidgets",
-            "url": "http://www.jqwidgets.com/angular/"
+            "url": "https://www.jqwidgets.com/angular/"
           },
           "amexio": {
             "desc": "Amexio (Angular MetaMagic EXtensions for Inputs and Outputs)  is a rich set of Angular components powered by Bootstrap for Responsive Design. UI Components include Standard Form Components, Data Grids, Tree Grids, Tabs etc. Open Source (Apache 2 License) & Free and backed by MetaMagic Global Inc",
@@ -331,7 +376,20 @@
             "title": "Amexio - Angular Extensions",
             "url": "http://www.amexio.tech/",
             "logo": "http://www.amexio.org/amexio-logo.png"
-          }          
+          },
+          "bm": {
+            "desc": "A lightweight Material Design library for Angular, based upon Google's Material Components for the Web",
+            "logo": "https://blox.src.zone/assets/bloxmaterial.03ecfe4fa0147a781487749dc1cc4580.svg",
+            "rev": true,
+            "title": "Blox Material",
+            "url": "https://github.com/src-zone/material"
+          },
+          "essentialjs2": {
+            "desc": "Essential JS 2 for Angular is a collection modern TypeScript based true Angular Components. It has support for Ahead Of Time (AOT) compilation and Tree-Shaking. All the components are developed from the ground up to be lightweight, responsive, modular and touch friendly.",
+            "rev": true,
+            "title": "Essential JS 2",
+            "url": "https://www.syncfusion.com/products/angular-js2"
+          }
         }
       }
     }
@@ -419,6 +477,13 @@
             "rev": true,
             "title": "Essential Angular",
             "url": "https://gumroad.com/l/essential_angular"
+          },
+          "angular-buch": {
+            "desc": "The first German book about Angular. It gives you a detailed practical overview of the key concepts of the platform. In each chapter a sample application is built upon with a new Angular topic. All sources are available on GitHub.",
+            "logo": "https://angular-buch.com/assets/img/brand.svg",
+            "rev": true,
+            "title": "Angular-Buch (German)",
+            "url": "https://angular-buch.com/"
           }
         }
       },
@@ -463,19 +528,19 @@
             "title": "CodeSchool: Accelerating Through Angular",
             "url": "https://www.codeschool.com/courses/accelerating-through-angular-2"
           },
+          "angular-playbook": {
+            "desc": "Learn advanced Angular best practices for enterprise teams, created by Nrwl.io.",
+            "logo": "https://nrwl.io/assets/logo_footer_2x.png",
+            "rev": true,
+            "title": "Angular Enterprise Playbook",
+            "url": "https://angularplaybook.com"
+          },
           "a2b": {
             "desc": "Hundreds of Angular courses for all skill levels",
             "logo": "",
             "rev": true,
             "title": "Pluralsight",
             "url": "https://www.pluralsight.com/search?q=angular+2&categories=all"
-          },
-          "ab": {
-            "desc": "Take this introduction to Angular course, to learn the fundamentals in just two days, free of charge.",
-            "logo": "",
-            "rev": true,
-            "title": "Rangle.io",
-            "url": "https://rangle.io/services/javascript-training/training-angular1-angular2-with-ngupgrade/"
           },
           "ab3": {
             "desc": "Angular courses hosted by  Udemy",
@@ -489,7 +554,7 @@
             "logo": "",
             "rev": true,
             "title": "Egghead.io",
-            "url": "https://egghead.io/technologies/angular2"
+            "url": "https://egghead.io/browse/frameworks/angular"
           },
           "ab5": {
             "desc": "Build Web Apps with Angular - recorded video content",
@@ -522,23 +587,29 @@
             "title": "Learn Angular (francais)",
             "url": "http://www.learn-angular.fr/"
           },
+          "upgrading-ajs": {
+            "desc": "The world's most comprehensive, step-by-step course on using best practices and avoiding pitfalls while migrating from AngularJS to Angular.",
+            "rev": true,
+            "title": "Upgrading AngularJS",
+            "url": "https://www.upgradingangularjs.com"
+          },
           "toddmotto-ultimateangular": {
             "desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to functional application, then move on to advanced topics with Todd Motto and collaborators.",
             "rev": true,
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
+          },
+          "angular-firebase": {
+            "desc": "Video lessons covering progressive web apps with Angular, Firebase, RxJS, and related APIs.",
+            "rev": true,
+            "title": "AngularFirebase.com",
+            "url": "https://angularfirebase.com/"
           }
         }
       },
       "Workshops & Onsite Training": {
         "order": 2,
         "resources": {
-          "-KLIBo3ANF3-1B9wxsoB": {
-            "desc": "Angular Classes from Intertech in Minnesota",
-            "rev": true,
-            "title": "Intertech",
-            "url": "http://www.intertech.com/Training/Web-Dev/AngularJS/AngularJS/Angular-2-Training"
-          },
           "-KLIBoFWStce29UCwkvY": {
             "desc": "Private Angular Training and Mentoring",
             "rev": true,
@@ -614,6 +685,26 @@
             "rev": true,
             "title": "SFEIR School (French)",
             "url": "https://school.sfeir.com/project/sa200/"
+          },
+          "formationjs": {
+            "desc": "Angular onsite training in Paris (France). Monthly Angular workshops and custom onsite classes. We are focused on Angular, so we are always up to date.",
+            "rev": true,
+            "title": "Formation JavaScript (French)",
+            "url": "https://formationjavascript.com/formation-angular/"
+          },
+          "wao": {
+            "desc": "Onsite Angular Training delivered by We Are One Sàrl in Switzerland",
+            "logo": "https://weareone.ch/wordpress/wao-content/uploads/2014/12/logo_200_2x.png",
+            "rev": true,
+            "title": "We Are One Sàrl",
+            "url": "https://weareone.ch/courses/angular/"
+          },
+          "angular-schule": {
+            "desc": "Angular onsite training and public workshops in Germany from the authors of the German Angular book. We also regularly post articles and videos on our blog (in English and German language).",
+            "logo": "https://angular.schule/assets/img/brand.svg",
+            "rev": true,
+            "title": "Angular.Schule (German)",
+            "url": "https://angular.schule/"
           }
         }
       }

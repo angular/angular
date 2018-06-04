@@ -6,32 +6,40 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, ModuleWithProviders, NgModule, Optional} from '@angular/core';
+import {Injectable, Injector, ModuleWithProviders, NgModule} from '@angular/core';
+import {Observable} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
 import {HttpClient} from './client';
 import {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptorHandler, NoopInterceptor} from './interceptor';
 import {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp';
+import {HttpRequest} from './request';
+import {HttpEvent} from './response';
 import {BrowserXhr, HttpXhrBackend, XhrFactory} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
 
-
-
 /**
- * Constructs an `HttpHandler` that applies a bunch of `HttpInterceptor`s
+ * An `HttpHandler` that applies a bunch of `HttpInterceptor`s
  * to a request before passing it to the given `HttpBackend`.
  *
- * Meant to be used as a factory function within `HttpClientModule`.
- *
- * @experimental
+ * The interceptors are loaded lazily from the injector, to allow
+ * interceptors to themselves inject classes depending indirectly
+ * on `HttpInterceptingHandler` itself.
  */
-export function interceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null = []): HttpHandler {
-  if (!interceptors) {
-    return backend;
+@Injectable()
+export class HttpInterceptingHandler implements HttpHandler {
+  private chain: HttpHandler|null = null;
+
+  constructor(private backend: HttpBackend, private injector: Injector) {}
+
+  handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+    if (this.chain === null) {
+      const interceptors = this.injector.get(HTTP_INTERCEPTORS, []);
+      this.chain = interceptors.reduceRight(
+          (next, interceptor) => new HttpInterceptorHandler(next, interceptor), this.backend);
+    }
+    return this.chain.handle(req);
   }
-  return interceptors.reduceRight(
-      (next, interceptor) => new HttpInterceptorHandler(next, interceptor), backend);
 }
 
 /**
@@ -40,7 +48,7 @@ export function interceptingHandler(
  * Ordinarily JSONP callbacks are stored on the `window` object, but this may not exist
  * in test environments. In that case, callbacks are stored on an anonymous object instead.
  *
- * @experimental
+ *
  */
 export function jsonpCallbackContext(): Object {
   if (typeof window === 'object') {
@@ -59,7 +67,7 @@ export function jsonpCallbackContext(): Object {
  * If no such names are provided, the default is to use `X-XSRF-TOKEN` for
  * the header name and `XSRF-TOKEN` for the cookie name.
  *
- * @experimental
+ *
  */
 @NgModule({
   providers: [
@@ -107,7 +115,7 @@ export class HttpClientXsrfModule {
  * Interceptors can be added to the chain behind `HttpClient` by binding them
  * to the multiprovider for `HTTP_INTERCEPTORS`.
  *
- * @experimental
+ *
  */
 @NgModule({
   imports: [
@@ -118,13 +126,7 @@ export class HttpClientXsrfModule {
   ],
   providers: [
     HttpClient,
-    // HttpHandler is the backend + interceptors and is constructed
-    // using the interceptingHandler factory function.
-    {
-      provide: HttpHandler,
-      useFactory: interceptingHandler,
-      deps: [HttpBackend, [new Optional(), new Inject(HTTP_INTERCEPTORS)]],
-    },
+    {provide: HttpHandler, useClass: HttpInterceptingHandler},
     HttpXhrBackend,
     {provide: HttpBackend, useExisting: HttpXhrBackend},
     BrowserXhr,
@@ -140,7 +142,7 @@ export class HttpClientModule {
  * Without this module, Jsonp requests will reach the backend
  * with method JSONP, where they'll be rejected.
  *
- * @experimental
+ *
  */
 @NgModule({
   providers: [

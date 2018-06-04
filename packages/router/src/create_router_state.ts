@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {BehaviorSubject} from 'rxjs/BehaviorSubject';
+import {BehaviorSubject} from 'rxjs';
 
 import {DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot} from './router_state';
@@ -30,16 +30,19 @@ function createNode(
     return new TreeNode<ActivatedRoute>(value, children);
 
     // retrieve an activated route that is used to be displayed, but is not currently displayed
-  } else if (routeReuseStrategy.retrieve(curr.value)) {
-    const tree: TreeNode<ActivatedRoute> =
-        (<DetachedRouteHandleInternal>routeReuseStrategy.retrieve(curr.value)).route;
-    setFutureSnapshotsOfActivatedRoutes(curr, tree);
-    return tree;
-
   } else {
-    const value = createActivatedRoute(curr.value);
-    const children = curr.children.map(c => createNode(routeReuseStrategy, c));
-    return new TreeNode<ActivatedRoute>(value, children);
+    const detachedRouteHandle =
+        <DetachedRouteHandleInternal>routeReuseStrategy.retrieve(curr.value);
+    if (detachedRouteHandle) {
+      const tree: TreeNode<ActivatedRoute> = detachedRouteHandle.route;
+      setFutureSnapshotsOfActivatedRoutes(curr, tree);
+      return tree;
+
+    } else {
+      const value = createActivatedRoute(curr.value);
+      const children = curr.children.map(c => createNode(routeReuseStrategy, c));
+      return new TreeNode<ActivatedRoute>(value, children);
+    }
   }
 }
 

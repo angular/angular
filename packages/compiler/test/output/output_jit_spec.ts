@@ -9,10 +9,11 @@
 import {EmitterVisitorContext} from '@angular/compiler/src/output/abstract_emitter';
 import * as o from '@angular/compiler/src/output/output_ast';
 import {JitEmitterVisitor} from '@angular/compiler/src/output/output_jit';
+import {JitReflector} from '@angular/platform-browser-dynamic/src/compiler_reflector';
 
 const anotherModuleUrl = 'somePackage/someOtherPath';
 
-export function main() {
+{
   describe('Output JIT', () => {
     describe('regression', () => {
       it('should generate unique argument names', () => {
@@ -23,7 +24,7 @@ export function main() {
             (_, index) => new o.ExternalReference(
                 anotherModuleUrl, `id_${index}_1`, {name: `id_${index}_1`}));
         const ctx = EmitterVisitorContext.createRoot();
-        const converter = new JitEmitterVisitor();
+        const converter = new JitEmitterVisitor(new JitReflector());
         converter.visitAllStatements(
             [o.literalArr([...externalIds1, ...externalIds].map(id => o.importExpr(id))).toStmt()],
             ctx);
@@ -31,5 +32,5 @@ export function main() {
         expect(Object.keys(args).length).toBe(20);
       });
     });
-  })
+  });
 }

@@ -9,7 +9,7 @@
 import {describe, expect, it} from '@angular/core/testing/src/testing_internal';
 import {Statistic} from '../src/statistic';
 
-export function main() {
+{
   describe('statistic', () => {
 
     it('should calculate the mean', () => {

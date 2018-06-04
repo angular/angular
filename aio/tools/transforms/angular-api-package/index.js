@@ -14,25 +14,55 @@ const { API_SOURCE_PATH, API_TEMPLATES_PATH, requireFolder } = require('../confi
 module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
 
   // Register the processors
+  .processor(require('./processors/migrateLegacyJSDocTags'))
+  .processor(require('./processors/splitDescription'))
   .processor(require('./processors/convertPrivateClassesToInterfaces'))
   .processor(require('./processors/generateApiListDoc'))
   .processor(require('./processors/addNotYetDocumentedProperty'))
   .processor(require('./processors/mergeDecoratorDocs'))
   .processor(require('./processors/extractDecoratedClasses'))
+  .processor(require('./processors/extractPipeParams'))
   .processor(require('./processors/matchUpDirectiveDecorators'))
+  .processor(require('./processors/addMetadataAliases'))
+  .processor(require('./processors/computeApiBreadCrumbs'))
   .processor(require('./processors/filterContainedDocs'))
+  .processor(require('./processors/processClassLikeMembers'))
   .processor(require('./processors/markBarredODocsAsPrivate'))
   .processor(require('./processors/filterPrivateDocs'))
   .processor(require('./processors/computeSearchTitle'))
   .processor(require('./processors/simplifyMemberAnchors'))
+  .processor(require('./processors/computeStability'))
+
+  /**
+   * These are the API doc types that will be rendered to actual files.
+   * This is a super set of the exported docs, since we convert some classes to
+   * more Angular specific API types, such as decorators and directives.
+   */
+  .factory(function API_DOC_TYPES_TO_RENDER(EXPORT_DOC_TYPES) {
+    return EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe', 'module']);
+  })
+
+  /**
+   * These are the doc types that are API docs, including ones that will be merged into container docs,
+   * such as members and overloads.
+   */
+  .factory(function API_DOC_TYPES(API_DOC_TYPES_TO_RENDER) {
+    return API_DOC_TYPES_TO_RENDER.concat(['member', 'function-overload']);
+  })
 
   // Where do we get the source files?
-  .config(function(readTypeScriptModules, readFilesProcessor, collectExamples) {
+  .config(function(readTypeScriptModules, readFilesProcessor, collectExamples, tsParser) {
+
+    // Tell TypeScript how to load modules that start with with `@angular`
+    tsParser.options.paths = { '@angular/*': [API_SOURCE_PATH + '/*'] };
+    tsParser.options.baseUrl = '.';
 
     // API files are typescript
     readTypeScriptModules.basePath = API_SOURCE_PATH;
     readTypeScriptModules.ignoreExportsMatching = [/^[_ɵ]|^VERSION$/];
     readTypeScriptModules.hidePrivateMembers = true;
+
+    // NOTE: This list shold be in sync with tools/public_api_guard/BUILD.bazel
     readTypeScriptModules.sourceFiles = [
       'animations/index.ts',
       'animations/browser/index.ts',
@@ -43,6 +73,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'common/testing/index.ts',
       'core/index.ts',
       'core/testing/index.ts',
+      'elements/index.ts',
       'forms/index.ts',
       'http/index.ts',
       'http/testing/index.ts',
@@ -58,6 +89,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'router/index.ts',
       'router/testing/index.ts',
       'router/upgrade/index.ts',
+      'service-worker/index.ts',
       'upgrade/index.ts',
       'upgrade/static/index.ts',
     ];
@@ -78,17 +110,39 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     // Load up all the tag definitions in the tag-defs folder
     parseTagsProcessor.tagDefinitions =
         parseTagsProcessor.tagDefinitions.concat(getInjectables(requireFolder(__dirname, './tag-defs')));
-
-    // We actually don't want to parse param docs in this package as we are getting the data out using TS
-    // TODO: rewire the param docs to the params extracted from TS
-    parseTagsProcessor.tagDefinitions.forEach(function(tagDef) {
-      if (tagDef.name === 'param') {
-        tagDef.docProperty = 'paramData';
-        tagDef.transforms = [];
-      }
-    });
   })
 
+  .config(function(computeStability, splitDescription, addNotYetDocumentedProperty, EXPORT_DOC_TYPES, API_DOC_TYPES) {
+    computeStability.docTypes = EXPORT_DOC_TYPES;
+    // Only split the description on the API docs
+    splitDescription.docTypes = API_DOC_TYPES;
+    addNotYetDocumentedProperty.docTypes = API_DOC_TYPES;
+  })
+
+  .config(function(checkContentRules, EXPORT_DOC_TYPES) {
+    // Min length rules
+    const createMinLengthRule = require('./content-rules/minLength');
+    const paramRuleSet = checkContentRules.docTypeRules['parameter'] = checkContentRules.docTypeRules['parameter'] || {};
+    const paramRules = paramRuleSet['name'] = paramRuleSet['name'] || [];
+    paramRules.push(createMinLengthRule());
+
+    // Heading rules
+    const createNoMarkdownHeadingsRule = require('./content-rules/noMarkdownHeadings');
+    const noMarkdownHeadings = createNoMarkdownHeadingsRule();
+    const allowOnlyLevel3Headings = createNoMarkdownHeadingsRule(1, 2, '4,');
+    const DOC_TYPES_TO_CHECK = EXPORT_DOC_TYPES.concat(['member', 'overload-info']);
+    const PROPS_TO_CHECK = ['description', 'shortDescription'];
+
+    DOC_TYPES_TO_CHECK.forEach(docType => {
+      const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
+      PROPS_TO_CHECK.forEach(prop => {
+        const rules = ruleSet[prop] = ruleSet[prop] || [];
+        rules.push(noMarkdownHeadings);
+      });
+      const rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
+      rules.push(allowOnlyLevel3Headings);
+    });
+  })
 
   .config(function(computePathsProcessor, EXPORT_DOC_TYPES, generateApiListDoc) {
 
@@ -117,11 +171,9 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   })
 
 
-  .config(function(convertToJsonProcessor, postProcessHtml, EXPORT_DOC_TYPES, autoLinkCode) {
-    const DOCS_TO_CONVERT = EXPORT_DOC_TYPES.concat([
-      'decorator', 'directive', 'pipe', 'module'
-    ]);
-    convertToJsonProcessor.docTypes = convertToJsonProcessor.docTypes.concat(DOCS_TO_CONVERT);
-    postProcessHtml.docTypes = convertToJsonProcessor.docTypes.concat(DOCS_TO_CONVERT);
-    autoLinkCode.docTypes = DOCS_TO_CONVERT;
+  .config(function(convertToJsonProcessor, postProcessHtml, API_DOC_TYPES_TO_RENDER, API_DOC_TYPES, autoLinkCode) {
+    convertToJsonProcessor.docTypes = convertToJsonProcessor.docTypes.concat(API_DOC_TYPES_TO_RENDER);
+    postProcessHtml.docTypes = convertToJsonProcessor.docTypes.concat(API_DOC_TYPES_TO_RENDER);
+    autoLinkCode.docTypes = API_DOC_TYPES;
+    autoLinkCode.codeElements = ['code', 'code-example', 'code-pane'];
   });

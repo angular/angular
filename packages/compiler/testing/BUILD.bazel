@@ -1,0 +1,19 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "testing",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["testing.ts"],
+    ),
+    module_name = "@angular/compiler/testing",
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core",
+    ],
+)

@@ -1,4 +1,5 @@
 {
   "build": "build:webpack",
-  "run": "serve:cli"
+  "run": "serve:cli",
+  "projectType": "systemjs"
 }

@@ -21,13 +21,15 @@ following products on your development machine:
   [Windows](http://windows.github.com)); [GitHub's Guide to Installing
   Git](https://help.github.com/articles/set-up-git) is a good source of information.
 
-* [Node.js](http://nodejs.org), (version `>=6.9.5 <7.0.0`) which is used to run a development web server,
-  run tests, and generate distributable files. We also use Node's Package Manager, `npm`
-  (version `>=3.10.7 <4.0.0`), which comes with Node. Depending on your system, you can install Node either from
-  source or as a pre-packaged bundle.
+* [Node.js](http://nodejs.org), (version specified in the engines field of [`package.json`](../package.json)) which is used to run a development web server,
+  run tests, and generate distributable files.
+
+* [Yarn](https://yarnpkg.com) (version specified in the engines field of [`package.json`](../package.json)) which is used to install dependencies.
 
 * [Java Development Kit](http://www.oracle.com/technetwork/es/java/javase/downloads/index.html) which is used
   to execute the selenium standalone server for e2e testing.
+
+* (Optional for now) [Bazel](https://bazel.build/), please follow instructions in [BAZEL.md](https://github.com/angular/angular/blob/master/docs/BAZEL.md)
 
 ## Getting the Sources
 
@@ -56,38 +58,14 @@ Next, install the JavaScript modules needed to build and test Angular:
 
 ```shell
 # Install Angular project dependencies (package.json)
-npm install
+yarn install
 ```
 
-**Optional**: In this document, we make use of project local `npm` package scripts and binaries
-(stored under `./node_modules/.bin`) by prefixing these command invocations with `$(npm bin)`; in
-particular `gulp` and `protractor` commands. If you prefer, you can drop this path prefix by either:
-
-*Option 1*: globally installing these two packages as follows:
-
-* `npm install -g gulp` (you might need to prefix this command with `sudo`)
-* `npm install -g protractor` (you might need to prefix this command with `sudo`)
-
-Since global installs can become stale, and required versions can vary by project, we avoid their
-use in these instructions.
-
-*Option 2*: globally installing the package `npm-run` by running `npm install -g npm-run`
-(you might need to prefix this command with `sudo`). You will then be able to run locally installed
-package scripts by invoking: e.g., `npm-run gulp build`
-(see [npm-run project page](https://github.com/timoxley/npm-run) for more details).
+**Optional**: In this document, we make use of installed npm package scripts and binaries
+(stored under `./node_modules/.bin`) by prefixing these command invocations with `$(yarn bin)`; in
+particular `gulp` and `protractor` commands.
 
 
-*Option 3*: defining a bash alias like `alias nbin='PATH=$(npm bin):$PATH'` as detailed in this
-[Stack Overflow answer](http://stackoverflow.com/questions/9679932/how-to-use-package-installed-locally-in-node-modules/15157360#15157360) and used like this: e.g., `nbin gulp build`.
-
-## Installing Bower Modules
-
-Now run `bower` to install additional dependencies:
-
-```shell
-# Install other Angular project dependencies (bower.json)
-bower install
-```
 
 ## Windows only
 
@@ -119,28 +97,20 @@ To run tests:
 $ ./test.sh node             # Run all angular tests on node
 
 $ ./test.sh browser          # Run all angular tests in browser
+
 $ ./test.sh browserNoRouter  # Optionally run all angular tests without router in browser
 
-$ ./test.sh tools            # Run angular tooling (not framework) tests
+$ ./test.sh router           # Optionally run only the router tests in browser
 ```
 
 You should execute the 3 test suites before submitting a PR to github.
+
+See [DEBUG.md](DEBUG.md) for information on debugging the code while running the unit tests.
 
 All the tests are executed on our Continuous Integration infrastructure and a PR could only be merged once the tests pass.
 
 - CircleCI fails if your code is not formatted properly,
 - Travis CI fails if any of the test suites described above fails.
-
-## Update the public API tests
-
-If you happen to modify the public API of Angular, API golden files must be updated using:
-
-``` shell
-$ gulp public-api:update
-```
-
-Note: The command `gulp public-api:enforce` fails when the API doesn't match the golden files. Make sure to rebuild
-the project before trying to verify after an API change.
 
 ## <a name="clang-format"></a> Formatting your source code
 
@@ -163,11 +133,10 @@ $ gulp lint
 
 ## Publishing snapshot builds
 
-When the `master` branch successfully builds on Travis, it automatically publishes build artifacts
+When a build of any branch on the upstream fork angular/angular is green on CircleCI,
+it automatically publishes build artifacts
 to repositories in the Angular org, eg. the `@angular/core` package is published to
 http://github.com/angular/core-builds.
-The ES2015 version of Angular is published to a different branch in these repos, for example
-http://github.com/angular/core-builds#master-es2015
 
 You may find that your un-merged change needs some validation from external participants.
 Rather than requiring them to pull your Pull Request and build Angular locally, you can
@@ -177,7 +146,7 @@ First time, you need to create the github repositories:
 
 ``` shell
 $ export TOKEN=[get one from https://github.com/settings/tokens]
-$ CREATE_REPOS=1 ./scripts/publish/publish-build-artifacts.sh [github username]
+$ CREATE_REPOS=1 TRAVIS= ./scripts/ci/publish-build-artifacts.sh [github username]
 ```
 
 For subsequent snapshots, just run

@@ -8,9 +8,6 @@
 
 import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, OnChanges, SimpleChanges, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
 
-/**
- * @stable
- */
 export class NgForOfContext<T> {
   constructor(
       public $implicit: T, public ngForOf: NgIterable<T>, public index: number,
@@ -79,7 +76,6 @@ export class NgForOfContext<T> {
  * ### Syntax
  *
  * - `<li *ngFor="let item of items; index as i; trackBy: trackByFn">...</li>`
- * - `<li template="ngFor let item of items; index as i; trackBy: trackByFn">...</li>`
  *
  * With `<ng-template>` element:
  *
@@ -94,7 +90,7 @@ export class NgForOfContext<T> {
  * See a [live demo](http://plnkr.co/edit/KVuXxDp0qinGDyo307QW?p=preview) for a more detailed
  * example.
  *
- * @stable
+ *
  */
 @Directive({selector: '[ngFor][ngForOf]'})
 export class NgForOf<T> implements DoCheck, OnChanges {
@@ -198,16 +194,6 @@ export class NgForOf<T> implements DoCheck, OnChanges {
 class RecordViewTuple<T> {
   constructor(public record: any, public view: EmbeddedViewRef<NgForOfContext<T>>) {}
 }
-
-/**
- * @deprecated from v4.0.0 - Use NgForOf<any> instead.
- */
-export type NgFor = NgForOf<any>;
-
-/**
- * @deprecated from v4.0.0 - Use NgForOf instead.
- */
-export const NgFor = NgForOf;
 
 export function getTypeNameForDebugging(type: any): string {
   return type['name'] || typeof type;

@@ -54,7 +54,7 @@ If you do, this page can help you understand their purpose.
       the bootstrap file, `main.ts`.
 
       Try the <live-example name="setup">sample application</live-example>
-      and the <live-example name="setup" plnkr="quickstart-specs">unit test</live-example>
+      and the <live-example name="setup" stackblitz="quickstart-specs">unit test</live-example>
       as _live examples_.
     </td>
 

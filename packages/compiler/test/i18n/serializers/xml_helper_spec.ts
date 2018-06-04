@@ -8,7 +8,7 @@
 
 import * as xml from '../../../src/i18n/serializers/xml_helper';
 
-export function main(): void {
+{
   describe('XML helper', () => {
     it('should serialize XML declaration', () => {
       expect(xml.serialize([new xml.Declaration({version: '1.0'})]))

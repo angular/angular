@@ -1,0 +1,33 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_package")
+
+ng_module(
+    name = "http",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    module_name = "@angular/http",
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "@rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/http/testing:package.json",
+    ],
+    entry_point = "packages/http/index.js",
+    tags = ["release-with-framework"],
+    deps = [
+        ":http",
+        "//packages/http/testing",
+    ],
+)

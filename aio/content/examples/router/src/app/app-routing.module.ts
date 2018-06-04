@@ -28,7 +28,7 @@ const appRoutes: Routes = [
     data: { preload: true }
   },
   // #enddocregion preload-v2
-  { path: '',   redirectTo: '/heroes', pathMatch: 'full' },
+  { path: '',   redirectTo: '/superheroes', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
 

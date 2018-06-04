@@ -1,9 +1,0 @@
-{
-  "description": "Hierarchical Dependency Injection",
-  "basePath": "src/",
-  "files":[
-    "!**/*.d.ts",
-    "!**/*.js"
-  ],
-  "tags": ["dependency", "injection"]
-}

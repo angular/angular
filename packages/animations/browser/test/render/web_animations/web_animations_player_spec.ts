@@ -8,7 +8,7 @@
 import {DOMAnimation} from '../../../src/render/web_animations/dom_animation';
 import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animations_player';
 
-export function main() {
+{
   let element: any;
   let innerPlayer: MockDomAnimation|null = null;
   beforeEach(() => {
@@ -44,6 +44,26 @@ export function main() {
       player.play();
       const p = innerPlayer !;
       expect(p.log).toEqual(['play']);
+    });
+
+    it('should fire start/done callbacks manually when called directly', () => {
+      const log: string[] = [];
+
+      const player = new WebAnimationsPlayer(element, [], {duration: 1000});
+      player.onStart(() => log.push('started'));
+      player.onDone(() => log.push('done'));
+
+      (player as any).triggerCallback('start');
+      expect(log).toEqual(['started']);
+
+      player.play();
+      expect(log).toEqual(['started']);
+
+      (player as any).triggerCallback('done');
+      expect(log).toEqual(['started', 'done']);
+
+      player.finish();
+      expect(log).toEqual(['started', 'done']);
     });
   });
 }

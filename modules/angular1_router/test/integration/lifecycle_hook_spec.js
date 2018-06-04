@@ -32,11 +32,11 @@ describe('Navigation lifecycle', function () {
 
     registerComponent('oneCmp', {
       template: '<div>{{oneCmp.number}}</div>',
-      controller: function () {this.number = 'one'}
+      controller: function () {this.number = 'one';}
     });
     registerComponent('twoCmp', {
       template: '<div><a ng-link="[\'/Two\']">{{twoCmp.number}}</a></div>',
-      controller: function () {this.number = 'two'}
+      controller: function () {this.number = 'two';}
     });
   });
 

@@ -1,0 +1,20 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files(["package.json"])
+
+load("//tools:defaults.bzl", "ng_module")
+
+ng_module(
+    name = "testing",
+    srcs = glob(["**/*.ts"]),
+    module_name = "@angular/platform-browser-dynamic/testing",
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler/testing",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/testing",
+    ],
+)

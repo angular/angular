@@ -1,0 +1,11 @@
+{
+  "description": "QuickStart",
+  "files": [
+    "src/app/app.component.ts",
+    "src/app/app.module.ts",
+    "src/main.ts",
+    "src/index.html"
+  ],
+  "file": "src/app/app.component.ts",
+  "tags": ["quickstart"]
+}

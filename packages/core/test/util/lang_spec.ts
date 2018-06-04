@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {isObservable, isPromise} from '@angular/core/src/util/lang';
-import {of } from 'rxjs/observable/of';
+import {of } from 'rxjs';
 
-export function main() {
+{
   describe('isPromise', () => {
     it('should be true for native Promises',
        () => expect(isPromise(Promise.resolve(true))).toEqual(true));

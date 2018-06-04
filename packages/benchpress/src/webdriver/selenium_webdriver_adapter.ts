@@ -6,15 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StaticProvider} from '@angular/core';
+
 import {WebDriverAdapter} from '../web_driver_adapter';
+
 
 /**
  * Adapter for the selenium-webdriver.
  */
 export class SeleniumWebDriverAdapter extends WebDriverAdapter {
-  static PROTRACTOR_PROVIDERS = [{
+  static PROTRACTOR_PROVIDERS = <StaticProvider[]>[{
     provide: WebDriverAdapter,
-    useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser)
+    useFactory: () => new SeleniumWebDriverAdapter((<any>global).browser),
+    deps: []
   }];
 
   constructor(private _driver: any) { super(); }
@@ -30,7 +34,9 @@ export class SeleniumWebDriverAdapter extends WebDriverAdapter {
   capabilities(): Promise<{[key: string]: any}> {
     return this._driver.getCapabilities().then((capsObject: any) => {
       const localData: {[key: string]: any} = {};
-      capsObject.forEach((value: any, key: string) => { localData[key] = value; });
+      for (const key of Array.from((<Map<string, any>>capsObject).keys())) {
+        localData[key] = capsObject.get(key);
+      }
       return localData;
     });
   }

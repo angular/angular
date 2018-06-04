@@ -8,11 +8,11 @@
 
 import {fakeAsync, tick} from '@angular/core/testing';
 import {AsyncTestCompleter, beforeEach, describe, inject, it} from '@angular/core/testing/src/testing_internal';
-import {AbstractControl, FormArray, FormControl, FormGroup} from '@angular/forms';
+import {AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors} from '@angular/forms';
+import {Validators} from '@angular/forms/src/validators';
+import {of } from 'rxjs';
 
-import {Validators} from '../src/validators';
-
-export function main() {
+(function() {
   function asyncValidator(expected: string, timeouts = {}) {
     return (c: AbstractControl) => {
       let resolve: (result: any) => void = undefined !;
@@ -622,6 +622,36 @@ export function main() {
         expect(c.pending).toEqual(true);
         expect(a.pending).toEqual(false);
       });
+
+      describe('status change events', () => {
+        let logger: string[];
+
+        beforeEach(() => {
+          logger = [];
+          a.statusChanges.subscribe((status) => logger.push(status));
+        });
+
+        it('should emit event after marking control as pending', () => {
+          c.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+
+        it('should not emit event from parent when onlySelf is true', () => {
+          c.markAsPending({onlySelf: true});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit event when emitEvent = false', () => {
+          c.markAsPending({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+        it('should emit event when parent is markedAsPending', () => {
+          a.markAsPending();
+          expect(logger).toEqual(['PENDING']);
+        });
+      });
+
     });
 
     describe('valueChanges', () => {
@@ -725,16 +755,111 @@ export function main() {
       });
     });
 
+    describe('validator', () => {
+      function simpleValidator(c: AbstractControl): ValidationErrors|null {
+        return c.get([0]) !.value === 'correct' ? null : {'broken': true};
+      }
+
+      function arrayRequiredValidator(c: AbstractControl): ValidationErrors|null {
+        return Validators.required(c.get([0]) as AbstractControl);
+      }
+
+      it('should set a single validator', () => {
+        const a = new FormArray([new FormControl()], simpleValidator);
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'broken': true});
+
+        a.setValue(['correct']);
+        expect(a.valid).toBe(true);
+      });
+
+      it('should set a single validator from options obj', () => {
+        const a = new FormArray([new FormControl()], {validators: simpleValidator});
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'broken': true});
+
+        a.setValue(['correct']);
+        expect(a.valid).toBe(true);
+      });
+
+      it('should set multiple validators from an array', () => {
+        const a = new FormArray([new FormControl()], [simpleValidator, arrayRequiredValidator]);
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'required': true, 'broken': true});
+
+        a.setValue(['c']);
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'broken': true});
+
+        a.setValue(['correct']);
+        expect(a.valid).toBe(true);
+      });
+
+      it('should set multiple validators from options obj', () => {
+        const a = new FormArray(
+            [new FormControl()], {validators: [simpleValidator, arrayRequiredValidator]});
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'required': true, 'broken': true});
+
+        a.setValue(['c']);
+        expect(a.valid).toBe(false);
+        expect(a.errors).toEqual({'broken': true});
+
+        a.setValue(['correct']);
+        expect(a.valid).toBe(true);
+      });
+    });
+
     describe('asyncValidator', () => {
+      function otherObservableValidator() { return of ({'other': true}); }
+
       it('should run the async validator', fakeAsync(() => {
            const c = new FormControl('value');
            const g = new FormArray([c], null !, asyncValidator('expected'));
 
            expect(g.pending).toEqual(true);
 
-           tick(1);
+           tick();
 
            expect(g.errors).toEqual({'async': true});
+           expect(g.pending).toEqual(false);
+         }));
+
+      it('should set a single async validator from options obj', fakeAsync(() => {
+           const g = new FormArray(
+               [new FormControl('value')], {asyncValidators: asyncValidator('expected')});
+
+           expect(g.pending).toEqual(true);
+
+           tick();
+
+           expect(g.errors).toEqual({'async': true});
+           expect(g.pending).toEqual(false);
+         }));
+
+      it('should set multiple async validators from an array', fakeAsync(() => {
+           const g = new FormArray(
+               [new FormControl('value')], null !,
+               [asyncValidator('expected'), otherObservableValidator]);
+
+           expect(g.pending).toEqual(true);
+
+           tick();
+
+           expect(g.errors).toEqual({'async': true, 'other': true});
+           expect(g.pending).toEqual(false);
+         }));
+
+      it('should set multiple async validators from options obj', fakeAsync(() => {
+           const g = new FormArray(
+               [new FormControl('value')],
+               {asyncValidators: [asyncValidator('expected'), otherObservableValidator]});
+
+           expect(g.pending).toEqual(true);
+
+           tick();
+
+           expect(g.errors).toEqual({'async': true, 'other': true});
            expect(g.pending).toEqual(false);
          }));
     });
@@ -958,6 +1083,28 @@ export function main() {
           expect(logger).toEqual(['control', 'array', 'form']);
         });
 
+        it('should not emit value change events when emitEvent = false', () => {
+          c.valueChanges.subscribe(() => logger.push('control'));
+          a.valueChanges.subscribe(() => logger.push('array'));
+          form.valueChanges.subscribe(() => logger.push('form'));
+
+          a.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          a.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
+        it('should not emit status change events when emitEvent = false', () => {
+          c.statusChanges.subscribe(() => logger.push('control'));
+          a.statusChanges.subscribe(() => logger.push('array'));
+          form.statusChanges.subscribe(() => logger.push('form'));
+
+          a.disable({emitEvent: false});
+          expect(logger).toEqual([]);
+          a.enable({emitEvent: false});
+          expect(logger).toEqual([]);
+        });
+
       });
 
       describe('setControl()', () => {
@@ -1005,4 +1152,4 @@ export function main() {
 
     });
   });
-}
+})();

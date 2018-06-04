@@ -1,9 +1,0 @@
-{
-  "description": "Second authors style guide plunker (non-executing)",
-  "basePath": "src/",
-  "files": [
-    "index.2.html"
-  ],
-  "main": "index.2.html",
-  "tags": ["author", "style guide"]
-}

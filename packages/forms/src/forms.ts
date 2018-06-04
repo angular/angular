@@ -9,8 +9,8 @@
 /**
  * @module
  * @description
- * This module is used for handling user input, by defining and building a {@link FormGroup} that
- * consists of {@link FormControl} objects, and mapping them onto the DOM. {@link FormControl}
+ * This module is used for handling user input, by defining and building a `FormGroup` that
+ * consists of `FormControl` objects, and mapping them onto the DOM. `FormControl`
  * objects can then be used to read information from the form DOM elements.
  *
  * Forms providers are not included in default providers; you must import these providers
@@ -40,7 +40,7 @@ export {NgSelectOption, SelectControlValueAccessor} from './directives/select_co
 export {SelectMultipleControlValueAccessor} from './directives/select_multiple_control_value_accessor';
 export {AsyncValidator, AsyncValidatorFn, CheckboxRequiredValidator, EmailValidator, MaxLengthValidator, MinLengthValidator, PatternValidator, RequiredValidator, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
 export {FormBuilder} from './form_builder';
-export {AbstractControl, FormArray, FormControl, FormGroup} from './model';
+export {AbstractControl, AbstractControlOptions, FormArray, FormControl, FormGroup} from './model';
 export {NG_ASYNC_VALIDATORS, NG_VALIDATORS, Validators} from './validators';
 export {VERSION} from './version';
 

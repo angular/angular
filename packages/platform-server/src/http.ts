@@ -8,14 +8,12 @@
 
 const xhr2: any = require('xhr2');
 
-import {Injectable, Optional, Provider} from '@angular/core';
+import {Injectable, Injector, Optional, Provider, InjectFlags} from '@angular/core';
 import {BrowserXhr, Connection, ConnectionBackend, Http, ReadyState, Request, RequestOptions, Response, XHRBackend, XSRFStrategy} from '@angular/http';
 
-import {HttpClient, HttpEvent, HttpRequest, HttpHandler, HttpInterceptor, HttpResponse, HTTP_INTERCEPTORS, HttpBackend, XhrFactory, ɵinterceptingHandler as interceptingHandler} from '@angular/common/http';
+import {HttpEvent, HttpRequest, HttpHandler, HttpInterceptor, HTTP_INTERCEPTORS, HttpBackend, XhrFactory, ɵHttpInterceptingHandler as HttpInterceptingHandler} from '@angular/common/http';
 
-import {Observable} from 'rxjs/Observable';
-import {Observer} from 'rxjs/Observer';
-import {Subscription} from 'rxjs/Subscription';
+import {Observable, Observer, Subscription} from 'rxjs';
 
 const isAbsoluteUrl = /^[a-zA-Z\-\+.]+:\/\//;
 
@@ -158,9 +156,8 @@ export function httpFactory(xhrBackend: XHRBackend, options: RequestOptions) {
   return new Http(macroBackend, options);
 }
 
-export function zoneWrappedInterceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null) {
-  const realBackend: HttpBackend = interceptingHandler(backend, interceptors);
+export function zoneWrappedInterceptingHandler(backend: HttpBackend, injector: Injector) {
+  const realBackend: HttpBackend = new HttpInterceptingHandler(backend, injector);
   return new ZoneClientBackend(realBackend);
 }
 
@@ -170,6 +167,6 @@ export const SERVER_HTTP_PROVIDERS: Provider[] = [
   {provide: XhrFactory, useClass: ServerXhr}, {
     provide: HttpHandler,
     useFactory: zoneWrappedInterceptingHandler,
-    deps: [HttpBackend, [new Optional(), HTTP_INTERCEPTORS]]
+    deps: [HttpBackend, Injector]
   }
 ];

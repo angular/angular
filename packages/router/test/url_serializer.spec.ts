@@ -7,7 +7,7 @@
  */
 
 import {PRIMARY_OUTLET} from '../src/shared';
-import {DefaultUrlSerializer, UrlSegmentGroup, encode, serializePath} from '../src/url_tree';
+import {DefaultUrlSerializer, UrlSegmentGroup, encodeUriFragment, encodeUriQuery, encodeUriSegment, serializePath} from '../src/url_tree';
 
 describe('url serializer', () => {
   const url = new DefaultUrlSerializer();
@@ -189,7 +189,7 @@ describe('url serializer', () => {
   describe('encoding/decoding', () => {
     it('should encode/decode path segments and parameters', () => {
       const u =
-          `/${encode("one two")};${encode("p 1")}=${encode("v 1")};${encode("p 2")}=${encode("v 2")}`;
+          `/${encodeUriSegment("one two")};${encodeUriSegment("p 1")}=${encodeUriSegment("v 1")};${encodeUriSegment("p 2")}=${encodeUriSegment("v 2")}`;
       const tree = url.parse(u);
 
       expect(tree.root.children[PRIMARY_OUTLET].segments[0].path).toEqual('one two');
@@ -199,7 +199,8 @@ describe('url serializer', () => {
     });
 
     it('should encode/decode "slash" in path segments and parameters', () => {
-      const u = `/${encode("one/two")};${encode("p/1")}=${encode("v/1")}/three`;
+      const u =
+          `/${encodeUriSegment("one/two")};${encodeUriSegment("p/1")}=${encodeUriSegment("v/1")}/three`;
       const tree = url.parse(u);
       const segment = tree.root.children[PRIMARY_OUTLET].segments[0];
       expect(segment.path).toEqual('one/two');
@@ -210,7 +211,8 @@ describe('url serializer', () => {
     });
 
     it('should encode/decode query params', () => {
-      const u = `/one?${encode("p 1")}=${encode("v 1")}&${encode("p 2")}=${encode("v 2")}`;
+      const u =
+          `/one?${encodeUriQuery("p 1")}=${encodeUriQuery("v 1")}&${encodeUriQuery("p 2")}=${encodeUriQuery("v 2")}`;
       const tree = url.parse(u);
 
       expect(tree.queryParams).toEqual({'p 1': 'v 1', 'p 2': 'v 2'});
@@ -219,28 +221,151 @@ describe('url serializer', () => {
       expect(url.serialize(tree)).toEqual(u);
     });
 
+    it('should decode spaces in query as %20 or +', () => {
+      const u1 = `/one?foo=bar baz`;
+      const u2 = `/one?foo=bar+baz`;
+      const u3 = `/one?foo=bar%20baz`;
+
+      const u1p = url.parse(u1);
+      const u2p = url.parse(u2);
+      const u3p = url.parse(u3);
+
+      expect(url.serialize(u1p)).toBe(url.serialize(u2p));
+      expect(url.serialize(u2p)).toBe(url.serialize(u3p));
+      expect(u1p.queryParamMap.get('foo')).toBe('bar baz');
+      expect(u2p.queryParamMap.get('foo')).toBe('bar baz');
+      expect(u3p.queryParamMap.get('foo')).toBe('bar baz');
+    });
+
     it('should encode query params leaving sub-delimiters intact', () => {
-      const percentChars = '/?#[]&+= ';
-      const percentCharsEncoded = '%2F%3F%23%5B%5D%26%2B%3D%20';
+      const percentChars = '/?#&+=[] ';
+      const percentCharsEncoded = '%2F%3F%23%26%2B%3D%5B%5D%20';
       const intactChars = '!$\'()*,;:';
       const params = percentChars + intactChars;
       const paramsEncoded = percentCharsEncoded + intactChars;
       const mixedCaseString = 'sTrInG';
 
-      expect(percentCharsEncoded).toEqual(encode(percentChars));
-      expect(intactChars).toEqual(encode(intactChars));
+      expect(percentCharsEncoded).toEqual(encodeUriQuery(percentChars));
+      expect(intactChars).toEqual(encodeUriQuery(intactChars));
       // Verify it replaces repeated characters correctly
-      expect(paramsEncoded + paramsEncoded).toEqual(encode(params + params));
+      expect(paramsEncoded + paramsEncoded).toEqual(encodeUriQuery(params + params));
       // Verify it doesn't change the case of alpha characters
-      expect(mixedCaseString + paramsEncoded).toEqual(encode(mixedCaseString + params));
+      expect(mixedCaseString + paramsEncoded).toEqual(encodeUriQuery(mixedCaseString + params));
     });
 
     it('should encode/decode fragment', () => {
-      const u = `/one#${encodeURI("one two=three four")}`;
+      const u = `/one#${encodeUriFragment('one two=three four')}`;
       const tree = url.parse(u);
 
       expect(tree.fragment).toEqual('one two=three four');
-      expect(url.serialize(tree)).toEqual(u);
+      expect(url.serialize(tree)).toEqual('/one#one%20two=three%20four');
+    });
+  });
+
+  describe('special character encoding/decoding', () => {
+
+    // Tests specific to https://github.com/angular/angular/issues/10280
+    it('should parse encoded parens in matrix params', () => {
+      const auxRoutesUrl = '/abc;foo=(other:val)';
+      const fooValueUrl = '/abc;foo=%28other:val%29';
+
+      const auxParsed = url.parse(auxRoutesUrl).root;
+      const fooParsed = url.parse(fooValueUrl).root;
+
+
+      // Test base case
+      expect(auxParsed.children[PRIMARY_OUTLET].segments.length).toBe(1);
+      expect(auxParsed.children[PRIMARY_OUTLET].segments[0].path).toBe('abc');
+      expect(auxParsed.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({foo: ''});
+      expect(auxParsed.children['other'].segments.length).toBe(1);
+      expect(auxParsed.children['other'].segments[0].path).toBe('val');
+
+      // Confirm matrix params are URL decoded
+      expect(fooParsed.children[PRIMARY_OUTLET].segments.length).toBe(1);
+      expect(fooParsed.children[PRIMARY_OUTLET].segments[0].path).toBe('abc');
+      expect(fooParsed.children[PRIMARY_OUTLET].segments[0].parameters).toEqual({
+        foo: '(other:val)'
+      });
+    });
+
+    it('should serialize encoded parens in matrix params', () => {
+      const testUrl = '/abc;foo=%28one%29';
+
+      const parsed = url.parse(testUrl);
+
+      expect(url.serialize(parsed)).toBe('/abc;foo=%28one%29');
+    });
+
+    it('should not serialize encoded parens in query params', () => {
+      const testUrl = '/abc?foo=%28one%29';
+
+      const parsed = url.parse(testUrl);
+
+      expect(parsed.queryParams).toEqual({foo: '(one)'});
+
+      expect(url.serialize(parsed)).toBe('/abc?foo=(one)');
+    });
+
+    // Test special characters in general
+
+    // From http://www.ietf.org/rfc/rfc3986.txt
+    const unreserved = `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._~`;
+
+    it('should encode a minimal set of special characters in queryParams', () => {
+      const notEncoded = unreserved + `:@!$'*,();`;
+      const encode = ` +%&=#[]/?`;
+      const encoded = `%20%2B%25%26%3D%23%5B%5D%2F%3F`;
+
+      const parsed = url.parse('/foo');
+
+      parsed.queryParams = {notEncoded, encode};
+
+      expect(url.serialize(parsed)).toBe(`/foo?notEncoded=${notEncoded}&encode=${encoded}`);
+    });
+
+    it('should encode a minimal set of special characters in fragment', () => {
+      const notEncoded = unreserved + `:@!$'*,();+&=#/?`;
+      const encode = ' %<>`"[]';
+      const encoded = `%20%25%3C%3E%60%22%5B%5D`;
+
+      const parsed = url.parse('/foo');
+
+      parsed.fragment = notEncoded + encode;
+
+      expect(url.serialize(parsed)).toBe(`/foo#${notEncoded}${encoded}`);
+    });
+
+    it('should encode minimal special characters plus parens and semi-colon in matrix params',
+       () => {
+         const notEncoded = unreserved + `:@!$'*,&`;
+         const encode = ` /%=#()[];?+`;
+         const encoded = `%20%2F%25%3D%23%28%29%5B%5D%3B%3F%2B`;
+
+         const parsed = url.parse('/foo');
+
+         parsed.root.children[PRIMARY_OUTLET].segments[0].parameters = {notEncoded, encode};
+
+         expect(url.serialize(parsed)).toBe(`/foo;notEncoded=${notEncoded};encode=${encoded}`);
+       });
+
+    it('should encode special characters in the path the same as matrix params', () => {
+      const notEncoded = unreserved + `:@!$'*,&`;
+      const encode = ` /%=#()[];?+`;
+      const encoded = `%20%2F%25%3D%23%28%29%5B%5D%3B%3F%2B`;
+
+      const parsed = url.parse('/foo');
+
+      parsed.root.children[PRIMARY_OUTLET].segments[0].path = notEncoded + encode;
+
+      expect(url.serialize(parsed)).toBe(`/${notEncoded}${encoded}`);
+    });
+
+    it('should correctly encode ampersand in segments', () => {
+      const testUrl = '/parent&child';
+
+      const parsed = url.parse(testUrl);
+
+      expect(url.serialize(parsed)).toBe(testUrl);
     });
   });
 

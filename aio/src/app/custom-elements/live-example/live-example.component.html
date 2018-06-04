@@ -1,0 +1,22 @@
+<!-- Content projection is used to get the content HTML provided to the component. -->
+<span #content style="display: none"><ng-content></ng-content></span>
+
+<span [ngSwitch]="mode">
+  <span *ngSwitchCase="'embedded'">
+    <div title="{{title}}">
+      <aio-embedded-stackblitz [src]="stackblitz"></aio-embedded-stackblitz>
+    </div>
+    <p *ngIf="enableDownload">
+      You can also <a [href]="zip" download title="Download example">download this example</a>.
+    </p>
+  </span>
+  <span *ngSwitchCase="'downloadOnly'">
+    <a [href]="zip" download title="{{title}}">{{title}}</a>
+  </span>
+  <span *ngSwitchDefault>
+    <a [href]="stackblitz" target="_blank" title="{{title}}">{{title}}</a>
+    <span *ngIf="enableDownload">
+      / <a [href]="zip" download title="Download example">download example</a>
+    </span>
+  </span>
+</span>

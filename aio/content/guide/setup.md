@@ -10,7 +10,7 @@ Setting up a new project on your machine is quick and easy with the **QuickStart
 maintained [on github](https://github.com/angular/quickstart "Install the github QuickStart repo").
 
 
-Make sure you have [node and npm installed](guide/setup#install-prerequisites "What if you don't have node and npm?").
+Make sure you have [Node.js® and npm installed](guide/setup#install-prerequisites "What if you don't have Node.js and npm?").
 
 {@a clone}
 
@@ -270,10 +270,10 @@ The following are all in `src/`
 
 
       Compiles the application with the [JIT compiler](guide/glossary#jit) and
-      [bootstraps](guide/bootstrapping#main "bootstrap the application")
+      [bootstraps](guide/bootstrapping)
       the application's main module (`AppModule`) to run in the browser.
       The JIT compiler is a reasonable choice during the development of most projects and
-      it's the only viable choice for a sample running in a _live-coding_ environment like Plunker.
+      it's the only viable choice for a sample running in a _live-coding_ environment like Stackblitz.
       You'll learn about alternative compiling and [deployment](guide/deployment) options later in the documentation.
 
     </td>
@@ -301,23 +301,22 @@ If you're new to Angular, we recommend you follow the [tutorial](tutorial "Tour 
 
 
 
-## Appendix: node and npm
+## Appendix: Node.js and npm
 
 
-Node.js and npm are essential to modern web development with Angular and other platforms.
-Node powers client development and build tools.
-The _npm_ package manager, itself a _node_ application, installs JavaScript libraries.
+[Node.js](https://nodejs.org/en/) and the [npm](https://www.npmjs.com/) package manager are essential to modern web development with Angular and other platforms.
+Node.js powers client development and build tools.
+The _npm_ package manager, which is itself a _Node.js_ application, installs JavaScript libraries.
 
 <a href="https://docs.npmjs.com/getting-started/installing-node" target="_blank" title="Installing Node.js and updating npm">
 Get them now</a> if they're not already installed on your machine.
 
-**Verify that you are running node `v4.x.x` or higher and npm `3.x.x` or higher**
+**Verify that you are running Node.js `v8.x` or higher and npm `5.x` or higher**
 by running the commands `node -v` and `npm -v` in a terminal/console window.
 Older versions produce errors.
 
-We recommend [nvm](https://github.com/creationix/nvm) for managing multiple versions of node and npm.
-You may need [nvm](https://github.com/creationix/nvm) if you already have projects running on your machine that
-use other versions of node and npm.
+We recommend [nvm](https://github.com/creationix/nvm) for managing multiple versions of Node.js and npm.
+You may need [nvm](https://github.com/creationix/nvm) if you already have projects running on your machine that use other versions of Node.js and npm.
 
 
 {@a why-locally}
@@ -326,7 +325,7 @@ use other versions of node and npm.
 
 ## Appendix: Why develop locally
 
-<live-example title="QuickStart Seed in Plunker">Live coding</live-example> in the browser is a great way to explore Angular.
+<live-example title="QuickStart Seed in Stackblitz">Live coding</live-example> in the browser is a great way to explore Angular.
 
 Links on almost every documentation page open completed samples in the browser.
 You can play with the sample code, share your changes with friends, and download and run the code on your own machine.
@@ -338,15 +337,22 @@ The other samples are based on the QuickStart seed.
 
 As much fun as this is ...
 
-* you can't ship your app in plunker
+* you can't ship your app in Stackblitz
 * you aren't always online when writing code
 * transpiling TypeScript in the browser is slow
 * the type support, refactoring, and code completion only work in your local IDE
 
-Use the <live-example title="QuickStart Seed in Plunker">live coding</live-example> environment as a _playground_,
+Use the <live-example title="QuickStart Seed in Stackblitz">live coding</live-example> environment as a _playground_,
 a place to try the documentation samples and experiment on your own.
 It's the perfect place to reproduce a bug when you want to
 <a href="https://github.com/angular/angular/issues/new" title="File a documentation issue">file a documentation issue</a> or
 <a href="https://github.com/angular/angular/issues/new" title="File an Angular issue">file an issue with Angular itself</a>.
 
 For real development, we strongly recommend [developing locally](guide/setup#develop-locally).
+
+## Appendix: develop locally with IE
+
+If you develop angular locally with `ng serve`, there will be `websocket` connection being setup automatically between browser and local dev server, so when your code change, browser can automatically refresh.
+
+In windows, by default one application can only have 6 websocket connections, <a href="https://msdn.microsoft.com/library/ee330736%28v=vs.85%29.aspx?f=255&MSPPError=-2147217396#websocket_maxconn" title="MSDN WebSocket settings">MSDN WebSocket Settings</a>.
+So if IE was refreshed manunally or automatically by `ng serve`, sometimes, the websocket will not close properly, when websocket connections exceed limitations, `SecurityError` will be thrown, this error will not affect the angular application, you can just restart IE to clear this error, or modify the windows registry to update the limitations.

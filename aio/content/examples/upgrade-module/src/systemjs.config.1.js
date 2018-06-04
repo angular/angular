@@ -26,18 +26,17 @@
       // #enddocregion upgrade-static-umd
 
       // other libraries
-      'rxjs':                      'npm:rxjs',
+      'rxjs': 'npm:rxjs',
       'angular-in-memory-web-api': 'npm:angular-in-memory-web-api/bundles/in-memory-web-api.umd.js'
     },
     // packages tells the System loader how to load when no filename and/or no extension
     packages: {
-      app: {
-        main: './main.js',
-        defaultExtension: 'js'
-      },
-      rxjs: {
-        defaultExtension: 'js'
-      }
+      'app': { main: './main.js', defaultExtension: 'js' },
+      'rxjs/ajax': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs/operators': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs/testing': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs/websocket': {main: 'index.js', defaultExtension: 'js' },
+      'rxjs': { main: 'index.js', defaultExtension: 'js' },
     }
   });
 })(this);

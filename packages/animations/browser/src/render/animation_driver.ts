@@ -6,14 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnimationPlayer, NoopAnimationPlayer} from '@angular/animations';
+import {Injectable} from '@angular/core';
 
-import {containsElement, invokeQuery, matchesElement} from './shared';
-
+import {containsElement, invokeQuery, matchesElement, validateStyleProperty} from './shared';
 
 /**
  * @experimental
  */
+@Injectable()
 export class NoopAnimationDriver implements AnimationDriver {
+  validateStyleProperty(prop: string): boolean { return validateStyleProperty(prop); }
+
   matchesElement(element: any, selector: string): boolean {
     return matchesElement(element, selector);
   }
@@ -30,8 +33,9 @@ export class NoopAnimationDriver implements AnimationDriver {
 
   animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
-      easing: string, previousPlayers: any[] = []): AnimationPlayer {
-    return new NoopAnimationPlayer();
+      easing: string, previousPlayers: any[] = [],
+      scrubberAccessRequested?: boolean): AnimationPlayer {
+    return new NoopAnimationPlayer(duration, delay);
   }
 }
 
@@ -40,6 +44,8 @@ export class NoopAnimationDriver implements AnimationDriver {
  */
 export abstract class AnimationDriver {
   static NOOP: AnimationDriver = new NoopAnimationDriver();
+
+  abstract validateStyleProperty(prop: string): boolean;
 
   abstract matchesElement(element: any, selector: string): boolean;
 
@@ -51,5 +57,5 @@ export abstract class AnimationDriver {
 
   abstract animate(
       element: any, keyframes: {[key: string]: string | number}[], duration: number, delay: number,
-      easing?: string|null, previousPlayers?: any[]): any;
+      easing?: string|null, previousPlayers?: any[], scrubberAccessRequested?: boolean): any;
 }

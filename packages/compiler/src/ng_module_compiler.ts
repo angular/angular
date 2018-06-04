@@ -6,12 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵNodeFlags as NodeFlags} from '@angular/core';
-
 import {CompileNgModuleMetadata, CompileProviderMetadata, identifierName} from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
+import {NodeFlags} from './core';
 import {Identifiers} from './identifiers';
-import {CompilerInjectable} from './injectable';
 import * as o from './output/output_ast';
 import {typeSourceSpan} from './parse_util';
 import {NgModuleProviderAnalyzer} from './provider_analyzer';
@@ -24,7 +22,6 @@ export class NgModuleCompileResult {
 
 const LOG_VAR = o.variable('_l');
 
-@CompilerInjectable()
 export class NgModuleCompiler {
   constructor(private reflector: CompileReflector) {}
   compile(
@@ -58,10 +55,11 @@ export class NgModuleCompiler {
         ]));
 
     if (ngModuleMeta.id) {
-      const registerFactoryStmt =
-          o.importExpr(Identifiers.RegisterModuleFactoryFn)
-              .callFn([o.literal(ngModuleMeta.id), o.variable(ngModuleFactoryVar)])
-              .toStmt();
+      const id = typeof ngModuleMeta.id === 'string' ? o.literal(ngModuleMeta.id) :
+                                                       ctx.importExpr(ngModuleMeta.id);
+      const registerFactoryStmt = o.importExpr(Identifiers.RegisterModuleFactoryFn)
+                                      .callFn([id, o.variable(ngModuleFactoryVar)])
+                                      .toStmt();
       ctx.statements.push(registerFactoryStmt);
     }
 

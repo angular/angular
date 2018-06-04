@@ -1,12 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
-import { AsyncSubject } from 'rxjs/AsyncSubject';
-import { combineLatest } from 'rxjs/observable/combineLatest';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/publishLast';
-import 'rxjs/add/operator/publishReplay';
+import { combineLatest, ConnectableObservable, Observable } from 'rxjs';
+import { map, publishLast, publishReplay } from 'rxjs/operators';
 
 import { LocationService } from 'app/shared/location.service';
 import { CONTENT_URL_PREFIX } from 'app/documents/document.service';
@@ -36,7 +32,7 @@ export class NavigationService {
    */
   currentNodes: Observable<CurrentNodes>;
 
-  constructor(private http: Http, private location: LocationService) {
+  constructor(private http: HttpClient, private location: LocationService) {
     const navigationInfo = this.fetchNavigationInfo();
     this.navigationViews = this.getNavigationViews(navigationInfo);
 
@@ -57,32 +53,33 @@ export class NavigationService {
    * We are not storing the subscription from connecting as we do not expect this service to be destroyed.
    */
   private fetchNavigationInfo(): Observable<NavigationResponse> {
-    const navigationInfo = this.http.get(navigationPath)
-      .map(res => res.json() as NavigationResponse)
-      .publishLast();
-    navigationInfo.connect();
+    const navigationInfo = this.http.get<NavigationResponse>(navigationPath)
+      .pipe(publishLast());
+    (navigationInfo as ConnectableObservable<NavigationResponse>).connect();
     return navigationInfo;
   }
 
   private getVersionInfo(navigationInfo: Observable<NavigationResponse>) {
-    const versionInfo = navigationInfo
-      .map(response => response.__versionInfo)
-      .publishLast();
-    versionInfo.connect();
+    const versionInfo = navigationInfo.pipe(
+      map(response => response.__versionInfo),
+      publishLast(),
+    );
+    (versionInfo as ConnectableObservable<VersionInfo>).connect();
     return versionInfo;
   }
 
   private getNavigationViews(navigationInfo: Observable<NavigationResponse>): Observable<NavigationViews> {
-    const navigationViews = navigationInfo
-      .map(response => {
+    const navigationViews = navigationInfo.pipe(
+      map(response => {
         const views = Object.assign({}, response);
         Object.keys(views).forEach(key => {
           if (key[0] === '_') { delete views[key]; }
         });
         return views as NavigationViews;
-      })
-      .publishLast();
-    navigationViews.connect();
+      }),
+      publishLast(),
+    );
+    (navigationViews as ConnectableObservable<NavigationViews>).connect();
     return navigationViews;
   }
 
@@ -94,15 +91,15 @@ export class NavigationService {
    */
   private getCurrentNodes(navigationViews: Observable<NavigationViews>): Observable<CurrentNodes> {
     const currentNodes = combineLatest(
-      navigationViews.map(views => this.computeUrlToNavNodesMap(views)),
+      navigationViews.pipe(map(views => this.computeUrlToNavNodesMap(views))),
       this.location.currentPath,
 
       (navMap, url) => {
         const urlKey = url.startsWith('api/') ? 'api' : url;
-        return navMap[urlKey] || { '' : { view: '', url: urlKey, nodes: [] }};
+        return navMap.get(urlKey) || { '' : { view: '', url: urlKey, nodes: [] }};
       })
-      .publishReplay(1);
-    currentNodes.connect();
+      .pipe(publishReplay(1));
+    (currentNodes as ConnectableObservable<CurrentNodes>).connect();
     return currentNodes;
   }
 
@@ -147,7 +144,10 @@ export class NavigationService {
       if (url) {
         // Strip off trailing slashes from nodes in the navMap - they are not relevant to matching
         const cleanedUrl = url.replace(/\/$/, '');
-        const navMapItem = navMap[cleanedUrl] = navMap[cleanedUrl] || {};
+        if (!navMap.has(cleanedUrl)) {
+          navMap.set(cleanedUrl, {});
+        }
+        const navMapItem = navMap.get(cleanedUrl)!;
         navMapItem[view] = { url, view, nodes };
       }
 

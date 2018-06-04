@@ -38,9 +38,18 @@ export const ngControlStatusHost = {
 
 /**
  * Directive automatically applied to Angular form controls that sets CSS classes
- * based on control status (valid/invalid/dirty/etc).
+ * based on control status. The following classes are applied as the properties
+ * become true:
  *
- * @stable
+ * * ng-valid
+ * * ng-invalid
+ * * ng-pending
+ * * ng-pristine
+ * * ng-dirty
+ * * ng-untouched
+ * * ng-touched
+ *
+ *
  */
 @Directive({selector: '[formControlName],[ngModel],[formControl]', host: ngControlStatusHost})
 export class NgControlStatus extends AbstractControlStatus {
@@ -51,7 +60,7 @@ export class NgControlStatus extends AbstractControlStatus {
  * Directive automatically applied to Angular form groups that sets CSS classes
  * based on control status (valid/invalid/dirty/etc).
  *
- * @stable
+ *
  */
 @Directive({
   selector:

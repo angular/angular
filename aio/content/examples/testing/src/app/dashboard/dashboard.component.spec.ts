@@ -2,21 +2,15 @@
 import { async, inject, ComponentFixture, TestBed
 } from '@angular/core/testing';
 
-import { addMatchers, click } from '../../testing';
-import { HeroService }        from '../model';
-import { FakeHeroService }    from '../model/testing';
+import { addMatchers, asyncData, click } from '../../testing';
+import { HeroService }   from '../model/hero.service';
+import { getTestHeroes } from '../model/testing/test-heroes';
 
 import { By }     from '@angular/platform-browser';
 import { Router } from '@angular/router';
 
 import { DashboardComponent } from './dashboard.component';
 import { DashboardModule }    from './dashboard.module';
-
-// #docregion router-stub
-class RouterStub {
-  navigateByUrl(url: string) { return url; }
-}
-// #enddocregion router-stub
 
 beforeEach ( addMatchers );
 
@@ -37,8 +31,8 @@ describe('DashboardComponent (deep)', () => {
   tests(clickForDeep);
 
   function clickForDeep() {
-    // get first <div class="hero"> DebugElement
-    const heroEl = fixture.debugElement.query(By.css('.hero'));
+    // get first <div class="hero">
+    const heroEl: HTMLElement = fixture.nativeElement.querySelector('.hero');
     click(heroEl);
   }
 });
@@ -61,24 +55,32 @@ describe('DashboardComponent (shallow)', () => {
 
   function clickForShallow() {
     // get first <dashboard-hero> DebugElement
-    const heroEl = fixture.debugElement.query(By.css('dashboard-hero'));
-    heroEl.triggerEventHandler('selected', comp.heroes[0]);
+    const heroDe = fixture.debugElement.query(By.css('dashboard-hero'));
+    heroDe.triggerEventHandler('selected', comp.heroes[0]);
   }
 });
 
 /** Add TestBed providers, compile, and create DashboardComponent */
 function compileAndCreate() {
   // #docregion compile-and-create-body
-  beforeEach( async(() => {
+  beforeEach(async(() => {
+    // #docregion router-spy
+    const routerSpy = jasmine.createSpyObj('Router', ['navigateByUrl']);
+    const heroServiceSpy = jasmine.createSpyObj('HeroService', ['getHeroes']);
+
     TestBed.configureTestingModule({
       providers: [
-        { provide: HeroService, useClass: FakeHeroService },
-        { provide: Router,      useClass: RouterStub }
+        { provide: HeroService, useValue: heroServiceSpy },
+        { provide: Router,      useValue: routerSpy }
       ]
     })
+    // #enddocregion router-spy
     .compileComponents().then(() => {
       fixture = TestBed.createComponent(DashboardComponent);
       comp = fixture.componentInstance;
+
+      // getHeroes spy returns observable of test heroes
+      heroServiceSpy.getHeroes.and.returnValue(asyncData(getTestHeroes()));
     });
     // #enddocregion compile-and-create-body
   }));
@@ -104,8 +106,11 @@ function tests(heroClick: Function) {
 
   describe('after get dashboard heroes', () => {
 
+    let router: Router;
+
      // Trigger component so it gets heroes and binds to them
-     beforeEach( async(() => {
+     beforeEach(async(() => {
+        router = fixture.debugElement.injector.get(Router);
         fixture.detectChanges(); // runs ngOnInit -> getHeroes
         fixture.whenStable() // No need for the `lastPromise` hack!
           .then(() => fixture.detectChanges()); // bind to heroes
@@ -119,29 +124,25 @@ function tests(heroClick: Function) {
     it('should DISPLAY heroes', () => {
       // Find and examine the displayed heroes
       // Look for them in the DOM by css class
-      const heroes = fixture.debugElement.queryAll(By.css('dashboard-hero'));
+      const heroes = fixture.nativeElement.querySelectorAll('dashboard-hero');
       expect(heroes.length).toBe(4, 'should display 4 heroes');
     });
 
-    // #docregion navigate-test, inject
-    it('should tell ROUTER to navigate when hero clicked',
-      inject([Router], (router: Router) => { // ...
-    // #enddocregion inject
-
-      const spy = spyOn(router, 'navigateByUrl');
+    // #docregion navigate-test
+    it('should tell ROUTER to navigate when hero clicked', () => {
 
       heroClick(); // trigger click on first inner <div class="hero">
 
-      // args passed to router.navigateByUrl()
+      // args passed to router.navigateByUrl() spy
+      const spy = router.navigateByUrl as jasmine.Spy;
       const navArgs = spy.calls.first().args[0];
 
       // expecting to navigate to id of the component's first hero
       const id = comp.heroes[0].id;
       expect(navArgs).toBe('/heroes/' + id,
         'should nav to HeroDetail for first hero');
-    // #docregion inject
-    }));
-    // #enddocregion navigate-test, inject
+    });
+    // #enddocregion navigate-test
   });
 }
 

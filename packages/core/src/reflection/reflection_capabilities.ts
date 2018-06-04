@@ -8,13 +8,19 @@
 
 import {Type, isType} from '../type';
 import {global, stringify} from '../util';
+import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
+
 import {PlatformReflectionCapabilities} from './platform_reflection_capabilities';
 import {GetterFn, MethodFn, SetterFn} from './types';
 
+
 /**
- * Attention: This regex has to hold even if the code is minified!
+ * Attention: These regex has to hold even if the code is minified!
  */
 export const DELEGATE_CTOR = /^function\s+\S+\(\)\s*{[\s\S]+\.apply\(this,\s*arguments\)/;
+export const INHERITED_CLASS = /^class\s+[A-Za-z\d$_]*\s*extends\s+[A-Za-z\d$_]+\s*{/;
+export const INHERITED_CLASS_WITH_CTOR =
+    /^class\s+[A-Za-z\d$_]*\s*extends\s+[A-Za-z\d$_]+\s*{[\s\S]*constructor\s*\(/;
 
 export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   private _reflect: any;
@@ -54,6 +60,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   }
 
   private _ownParameters(type: Type<any>, parentCtor: any): any[][]|null {
+    const typeStr = type.toString();
     // If we have no decorators, we only have function.length as metadata.
     // In that case, to detect whether a child class declared an own constructor or not,
     // we need to look inside of that constructor to check whether it is
@@ -61,7 +68,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     // This also helps to work around for https://github.com/Microsoft/TypeScript/issues/12439
     // that sets 'design:paramtypes' to []
     // if a class inherits from another class but has no ctor declared itself.
-    if (DELEGATE_CTOR.exec(type.toString())) {
+    if (DELEGATE_CTOR.exec(typeStr) ||
+        (INHERITED_CLASS.exec(typeStr) && !INHERITED_CLASS_WITH_CTOR.exec(typeStr))) {
       return null;
     }
 
@@ -85,12 +93,11 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     }
 
     // API for metadata created by invoking the decorators.
-    if (this._reflect != null && this._reflect.getOwnMetadata != null) {
-      const paramAnnotations = this._reflect.getOwnMetadata('parameters', type);
-      const paramTypes = this._reflect.getOwnMetadata('design:paramtypes', type);
-      if (paramTypes || paramAnnotations) {
-        return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
-      }
+    const paramAnnotations = type.hasOwnProperty(PARAMETERS) && (type as any)[PARAMETERS];
+    const paramTypes = this._reflect && this._reflect.getOwnMetadata &&
+        this._reflect.getOwnMetadata('design:paramtypes', type);
+    if (paramTypes || paramAnnotations) {
+      return this._zipTypesAndAnnotations(paramTypes, paramAnnotations);
     }
 
     // If a class has no decorators, at least create metadata
@@ -130,8 +137,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     }
 
     // API for metadata created by invoking the decorators.
-    if (this._reflect && this._reflect.getOwnMetadata) {
-      return this._reflect.getOwnMetadata('annotations', typeOrFunc);
+    if (typeOrFunc.hasOwnProperty(ANNOTATIONS)) {
+      return (typeOrFunc as any)[ANNOTATIONS];
     }
     return null;
   }
@@ -169,8 +176,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
     }
 
     // API for metadata created by invoking the decorators.
-    if (this._reflect && this._reflect.getOwnMetadata) {
-      return this._reflect.getOwnMetadata('propMetadata', typeOrFunc);
+    if (typeOrFunc.hasOwnProperty(PROP_METADATA)) {
+      return (typeOrFunc as any)[PROP_METADATA];
     }
     return null;
   }
@@ -204,6 +211,8 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
   hasLifecycleHook(type: any, lcProperty: string): boolean {
     return type instanceof Type && lcProperty in type.prototype;
   }
+
+  guards(type: any): {[key: string]: any} { return {}; }
 
   getter(name: string): GetterFn { return <GetterFn>new Function('o', 'return o.' + name + ';'); }
 
@@ -248,7 +257,7 @@ function convertTsickleDecoratorIntoMetadata(decoratorInvocations: any[]): any[]
 }
 
 function getParentCtor(ctor: Function): Type<any> {
-  const parentProto = Object.getPrototypeOf(ctor.prototype);
+  const parentProto = ctor.prototype ? Object.getPrototypeOf(ctor.prototype) : null;
   const parentCtor = parentProto ? parentProto.constructor : null;
   // Note: We always use `Object` as the null value
   // to simplify checking later on.

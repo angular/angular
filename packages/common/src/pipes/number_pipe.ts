@@ -6,169 +6,176 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, LOCALE_ID, Pipe, PipeTransform, Type} from '@angular/core';
-import {NumberFormatStyle, NumberFormatter} from './intl';
+import {Inject, LOCALE_ID, Pipe, PipeTransform} from '@angular/core';
+import {formatCurrency, formatNumber, formatPercent} from '../i18n/format_number';
+import {getCurrencySymbol} from '../i18n/locale_data_api';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
-
-const _NUMBER_FORMAT_REGEXP = /^(\d+)?\.((\d+)(-(\d+))?)?$/;
-
-function formatNumber(
-    pipe: Type<any>, locale: string, value: number | string, style: NumberFormatStyle,
-    digits?: string | null, currency: string | null = null,
-    currencyAsSymbol: boolean = false): string|null {
-  if (value == null) return null;
-
-  // Convert strings to numbers
-  value = typeof value === 'string' && isNumeric(value) ? +value : value;
-  if (typeof value !== 'number') {
-    throw invalidPipeArgumentError(pipe, value);
-  }
-
-  let minInt: number|undefined = undefined;
-  let minFraction: number|undefined = undefined;
-  let maxFraction: number|undefined = undefined;
-  if (style !== NumberFormatStyle.Currency) {
-    // rely on Intl default for currency
-    minInt = 1;
-    minFraction = 0;
-    maxFraction = 3;
-  }
-
-  if (digits) {
-    const parts = digits.match(_NUMBER_FORMAT_REGEXP);
-    if (parts === null) {
-      throw new Error(`${digits} is not a valid digit info for number pipes`);
-    }
-    if (parts[1] != null) {  // min integer digits
-      minInt = parseIntAutoRadix(parts[1]);
-    }
-    if (parts[3] != null) {  // min fraction digits
-      minFraction = parseIntAutoRadix(parts[3]);
-    }
-    if (parts[5] != null) {  // max fraction digits
-      maxFraction = parseIntAutoRadix(parts[5]);
-    }
-  }
-
-  return NumberFormatter.format(value as number, locale, style, {
-    minimumIntegerDigits: minInt,
-    minimumFractionDigits: minFraction,
-    maximumFractionDigits: maxFraction,
-    currency: currency,
-    currencyAsSymbol: currencyAsSymbol,
-  });
-}
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Formats a number according to locale rules.
- * @howToUse `number_expression | number[:digitInfo]`
+ * @description
+ *
+ * Uses the function {@link formatNumber} to format a number according to locale rules.
  *
  * Formats a number as text. Group sizing and separator and other locale-specific
- * configurations are based on the active locale.
- *
- * where `expression` is a number:
- *  - `digitInfo` is a `string` which has a following format: <br>
- *     <code>{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}</code>
- *   - `minIntegerDigits` is the minimum number of integer digits to use. Defaults to `1`.
- *   - `minFractionDigits` is the minimum number of digits after fraction. Defaults to `0`.
- *   - `maxFractionDigits` is the maximum number of digits after fraction. Defaults to `3`.
- *
- * For more information on the acceptable range for each of these numbers and other
- * details see your native internationalization library.
- *
- * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
- * and may require a polyfill. See [Browser Support](guide/browser-support) for details.
+ * configurations are based on the locale.
  *
  * ### Example
  *
  * {@example common/pipes/ts/number_pipe.ts region='NumberPipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'number'})
 export class DecimalPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
-  transform(value: any, digits?: string): string|null {
-    return formatNumber(DecimalPipe, this._locale, value, NumberFormatStyle.Decimal, digits);
+  /**
+   * @param value a number to be formatted.
+   * @param digitsInfo a `string` which has a following format: <br>
+   * <code>{minIntegerDigits}.{minFractionDigits}-{maxFractionDigits}</code>.
+   *   - `minIntegerDigits` is the minimum number of integer digits to use. Defaults to `1`.
+   *   - `minFractionDigits` is the minimum number of digits after the decimal point. Defaults to
+   * `0`.
+   *   - `maxFractionDigits` is the maximum number of digits after the decimal point. Defaults to
+   * `3`.
+   * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
+   * default).
+   */
+  transform(value: any, digitsInfo?: string, locale?: string): string|null {
+    if (isEmpty(value)) return null;
+
+    locale = locale || this._locale;
+
+    try {
+      const num = strToNumber(value);
+      return formatNumber(num, locale, digitsInfo);
+    } catch (error) {
+      throw invalidPipeArgumentError(DecimalPipe, error.message);
+    }
   }
 }
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Formats a number as a percentage according to locale rules.
- * @howToUse `number_expression | percent[:digitInfo]`
- *
  * @description
  *
- * Formats a number as percentage.
- *
- * - `digitInfo` See {@link DecimalPipe} for detailed description.
- *
- * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
- * and may require a polyfill. See [Browser Support](guide/browser-support) for details.
+ * Uses the function {@link formatPercent} to format a number as a percentage according
+ * to locale rules.
  *
  * ### Example
  *
- * {@example common/pipes/ts/number_pipe.ts region='PercentPipe'}
+ * {@example common/pipes/ts/percent_pipe.ts region='PercentPipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'percent'})
 export class PercentPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
-  transform(value: any, digits?: string): string|null {
-    return formatNumber(PercentPipe, this._locale, value, NumberFormatStyle.Percent, digits);
+  /**
+   *
+   * @param value a number to be formatted as a percentage.
+   * @param digitsInfo see {@link DecimalPipe} for more details.
+   * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
+ * default).
+   */
+  transform(value: any, digitsInfo?: string, locale?: string): string|null {
+    if (isEmpty(value)) return null;
+
+    locale = locale || this._locale;
+
+    try {
+      const num = strToNumber(value);
+      return formatPercent(num, locale, digitsInfo);
+    } catch (error) {
+      throw invalidPipeArgumentError(PercentPipe, error.message);
+    }
   }
 }
 
 /**
  * @ngModule CommonModule
- * @whatItDoes Formats a number as currency using locale rules.
- * @howToUse `number_expression | currency[:currencyCode[:symbolDisplay[:digitInfo]]]`
  * @description
  *
- * Use `currency` to format a number as currency.
- *
- * - `currencyCode` is the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code, such
- *    as `USD` for the US dollar and `EUR` for the euro.
- * - `symbolDisplay` is a boolean indicating whether to use the currency symbol or code.
- *   - `true`: use symbol (e.g. `$`).
- *   - `false`(default): use code (e.g. `USD`).
- * - `digitInfo` See {@link DecimalPipe} for detailed description.
- *
- * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
- * and may require a polyfill. See [Browser Support](guide/browser-support) for details.
+ * Uses the functions {@link getCurrencySymbol} and {@link formatCurrency} to format a
+ * number as currency using locale rules.
  *
  * ### Example
  *
- * {@example common/pipes/ts/number_pipe.ts region='CurrencyPipe'}
+ * {@example common/pipes/ts/currency_pipe.ts region='CurrencyPipe'}
  *
- * @stable
+ *
  */
 @Pipe({name: 'currency'})
 export class CurrencyPipe implements PipeTransform {
   constructor(@Inject(LOCALE_ID) private _locale: string) {}
 
+  /**
+   *
+   * @param value a number to be formatted as currency.
+   * @param currencyCodeis the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code,
+   * such as `USD` for the US dollar and `EUR` for the euro.
+   * @param display indicates whether to show the currency symbol, the code or a custom value:
+   *   - `code`: use code (e.g. `USD`).
+   *   - `symbol`(default): use symbol (e.g. `$`).
+   *   - `symbol-narrow`: some countries have two symbols for their currency, one regular and one
+   *     narrow (e.g. the canadian dollar CAD has the symbol `CA$` and the symbol-narrow `$`).
+   *   - `string`: use this value instead of a code or a symbol.
+   *   - boolean (deprecated from v5): `true` for symbol and false for `code`.
+   *   If there is no narrow symbol for the chosen currency, the regular symbol will be used.
+   * @param digitsInfo see {@link DecimalPipe} for more details.
+   * @param locale a `string` defining the locale to use (uses the current {@link LOCALE_ID} by
+   * default).
+   */
   transform(
-      value: any, currencyCode: string = 'USD', symbolDisplay: boolean = false,
-      digits?: string): string|null {
-    return formatNumber(
-        CurrencyPipe, this._locale, value, NumberFormatStyle.Currency, digits, currencyCode,
-        symbolDisplay);
+      value: any, currencyCode?: string,
+      display: 'code'|'symbol'|'symbol-narrow'|string|boolean = 'symbol', digitsInfo?: string,
+      locale?: string): string|null {
+    if (isEmpty(value)) return null;
+
+    locale = locale || this._locale;
+
+    if (typeof display === 'boolean') {
+      if (<any>console && <any>console.warn) {
+        console.warn(
+            `Warning: the currency pipe has been changed in Angular v5. The symbolDisplay option (third parameter) is now a string instead of a boolean. The accepted values are "code", "symbol" or "symbol-narrow".`);
+      }
+      display = display ? 'symbol' : 'code';
+    }
+
+    let currency: string = currencyCode || 'USD';
+    if (display !== 'code') {
+      if (display === 'symbol' || display === 'symbol-narrow') {
+        currency = getCurrencySymbol(currency, display === 'symbol' ? 'wide' : 'narrow', locale);
+      } else {
+        currency = display;
+      }
+    }
+
+    try {
+      const num = strToNumber(value);
+      return formatCurrency(num, locale, currency, currencyCode, digitsInfo);
+    } catch (error) {
+      throw invalidPipeArgumentError(CurrencyPipe, error.message);
+    }
   }
 }
 
-function parseIntAutoRadix(text: string): number {
-  const result: number = parseInt(text);
-  if (isNaN(result)) {
-    throw new Error('Invalid integer literal when parsing ' + text);
-  }
-  return result;
+function isEmpty(value: any): boolean {
+  return value == null || value === '' || value !== value;
 }
 
-export function isNumeric(value: any): boolean {
-  return !isNaN(value - parseFloat(value));
+/**
+ * Transforms a string into a number (if needed)
+ */
+function strToNumber(value: number | string): number {
+  // Convert strings to numbers
+  if (typeof value === 'string' && !isNaN(Number(value) - parseFloat(value))) {
+    return Number(value);
+  }
+  if (typeof value !== 'number') {
+    throw new Error(`${value} is not a number`);
+  }
+  return value;
 }

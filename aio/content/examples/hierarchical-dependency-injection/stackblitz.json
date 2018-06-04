@@ -1,0 +1,8 @@
+{
+  "description": "Hierarchical Dependency Injection",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js"
+  ],
+  "tags": ["dependency", "injection"]
+}

@@ -1,0 +1,34 @@
+{
+  "name": "angular-bazel",
+  "description": "example and integration test for building Angular apps with Bazel",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "rxjs": "file:../../node_modules/rxjs",
+    "zone.js": "file:../../node_modules/zone.js"
+  },
+  "devDependencies": {
+    "@angular/bazel": "file:../../dist/packages-dist/bazel",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@types/jasmine": "2.8.7",
+    "@types/source-map": "0.5.1",
+    "concurrently": "3.5.1",
+    "http-server": "0.11.1",
+    "protractor": "file:../../node_modules/protractor",
+    "typescript": "file:../../node_modules/typescript"
+  },
+  "scripts": {
+    "postinstall": "concurrently \"webdriver-manager update $CHROMEDRIVER_VERSION_ARG\" \"ngc -p angular.tsconfig.json\"",
+    "test": "bazel build //... --noshow_progress && yarn e2e",
+    "pree2e": "bazel build test/...",
+    "e2e": "yarn e2e-prodserver && yarn e2e-devserver",
+    "e2e-prodserver": "concurrently \"bazel run //src:prodserver\" \"while ! nc -z 127.0.0.1 5432; do sleep 1; done && protractor\" --kill-others --success first",
+    "e2e-devserver": "concurrently \"bazel run //src:devserver\" \"while ! nc -z 127.0.0.1 5432; do sleep 1; done && protractor\" --kill-others --success first"
+  }
+}

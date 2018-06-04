@@ -1,0 +1,63 @@
+load(
+    "@build_bazel_rules_nodejs//:defs.bzl",
+    "nodejs_binary",
+    "jasmine_node_test",
+    "npm_package",
+    "node_modules_filegroup",
+)
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+
+exports_files(["bin/ts-api-guardian"])
+
+ts_library(
+    name = "lib",
+    srcs = glob(["lib/*.ts"]),
+    module_name = "ts-api-guardian",
+    tsconfig = "//tools:tsconfig.json",
+    visibility = ["//visibility:public"],
+)
+
+# Copy Angular's license to govern ts-api-guardian as well.
+# We use a genrule to put it in this package, so it will be in the right root directory.
+genrule(
+    name = "license",
+    srcs = ["//:LICENSE"],
+    outs = ["LICENSE"],
+    cmd = "cp $< $@",
+)
+
+npm_package(
+    name = "ts-api-guardian",
+    srcs = [
+        "README.md",
+        "bin/ts-api-guardian",
+        "package.json",
+    ],
+    deps = [
+        ":lib",
+        ":license",
+    ],
+)
+
+#######################################3
+# Tests for this package
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["test/*.ts"]),
+    deps = [":lib"],
+)
+
+jasmine_node_test(
+    name = "tests",
+    srcs = [":test_lib"],
+    bootstrap = ["angular/tools/ts-api-guardian/test/bootstrap.js"],
+    data = glob([
+        "test/fixtures/*.ts",
+        "test/fixtures/*.patch",
+    ]) + [
+        ":ts-api-guardian",
+    ],
+    node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
+)

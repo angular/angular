@@ -1,0 +1,26 @@
+{
+  "description": "Contact NgModule v.2",
+  "files": [
+    "src/app/app.component.2.ts",
+    "src/app/app.module.2.ts",
+    "src/app/highlight.directive.ts",
+    "src/app/title.component.html",
+    "src/app/title.component.ts",
+    "src/app/user.service.ts",
+
+    "src/app/contact/contact.component.css",
+    "src/app/contact/contact.component.html",
+    "src/app/contact/contact.service.ts",
+
+    "src/app/contact/awesome.pipe.ts",
+    "src/app/contact/contact.component.3.ts",
+    "src/app/contact/contact.module.2.ts",
+    "src/app/contact/contact-highlight.directive.ts",
+
+    "src/main.2.ts",
+    "src/styles.css",
+    "src/index.2.html"
+  ],
+  "main": "src/index.2.html",
+  "tags": ["NgModule"]
+}

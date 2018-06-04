@@ -38,28 +38,36 @@ export class UpgradeNg1ComponentAdapterBuilder {
         name.replace(CAMEL_CASE, (all: string, next: string) => '-' + next.toLowerCase());
     const self = this;
 
-    this.type =
-        Directive({selector: selector, inputs: this.inputsRename, outputs: this.outputsRename})
-            .Class({
-              constructor: [
-                new Inject($SCOPE), Injector, ElementRef,
-                function(scope: angular.IScope, injector: Injector, elementRef: ElementRef) {
-                  const helper = new UpgradeHelper(injector, name, elementRef, this.directive);
-                  return new UpgradeNg1ComponentAdapter(
-                      helper, scope, self.template, self.inputs, self.outputs, self.propertyOutputs,
-                      self.checkProperties, self.propertyMap);
-                }
-              ],
-              ngOnInit: function() { /* needs to be here for ng2 to properly detect it */ },
-              ngOnChanges: function() { /* needs to be here for ng2 to properly detect it */ },
-              ngDoCheck: function() { /* needs to be here for ng2 to properly detect it */ },
-              ngOnDestroy: function() { /* needs to be here for ng2 to properly detect it */ },
-            });
+    // Note: There is a bug in TS 2.4 that prevents us from
+    // inlining this into @Directive
+    // TODO(tbosch): find or file a bug against TypeScript for this.
+    const directive = {selector: selector, inputs: this.inputsRename, outputs: this.outputsRename};
+
+    @Directive(directive)
+    class MyClass {
+      directive: angular.IDirective;
+      constructor(
+          @Inject($SCOPE) scope: angular.IScope, injector: Injector, elementRef: ElementRef) {
+        const helper = new UpgradeHelper(injector, name, elementRef, this.directive);
+        return new UpgradeNg1ComponentAdapter(
+            helper, scope, self.template, self.inputs, self.outputs, self.propertyOutputs,
+            self.checkProperties, self.propertyMap) as any;
+      }
+      ngOnInit() { /* needs to be here for ng2 to properly detect it */
+      }
+      ngOnChanges() { /* needs to be here for ng2 to properly detect it */
+      }
+      ngDoCheck() { /* needs to be here for ng2 to properly detect it */
+      }
+      ngOnDestroy() { /* needs to be here for ng2 to properly detect it */
+      }
+    }
+    this.type = MyClass;
   }
 
   extractBindings() {
     const btcIsObject = typeof this.directive !.bindToController === 'object';
-    if (btcIsObject && Object.keys(this.directive !.scope).length) {
+    if (btcIsObject && Object.keys(this.directive !.scope !).length) {
       throw new Error(
           `Binding definitions on scope and controller at the same time are not supported.`);
     }
@@ -166,8 +174,10 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     }
     for (let j = 0; j < outputs.length; j++) {
       const emitter = (this as any)[outputs[j]] = new EventEmitter<any>();
-      this.setComponentProperty(
-          outputs[j], (emitter => (value: any) => emitter.emit(value))(emitter));
+      if (this.propOuts.indexOf(outputs[j]) === -1) {
+        this.setComponentProperty(
+            outputs[j], (emitter => (value: any) => emitter.emit(value))(emitter));
+      }
     }
     for (let k = 0; k < propOuts.length; k++) {
       this.checkLastValues.push(INITIAL_VALUE);
@@ -253,6 +263,8 @@ class UpgradeNg1ComponentAdapter implements OnInit, OnChanges, DoCheck {
     if (this.controllerInstance && isFunction(this.controllerInstance.$onDestroy)) {
       this.controllerInstance.$onDestroy();
     }
+
+    this.componentScope.$destroy();
   }
 
   setComponentProperty(name: string, value: any) {

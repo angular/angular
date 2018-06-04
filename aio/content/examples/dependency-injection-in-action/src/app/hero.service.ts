@@ -5,7 +5,7 @@ import { Hero }       from './hero';
 @Injectable()
 export class HeroService {
 
-  // TODO move to database
+  // TODO: move to database
   private heroes: Array<Hero> = [
     new Hero(1, 'RubberMan', 'Hero of many talents', '123-456-7899'),
     new Hero(2, 'Magma', 'Hero of all trades', '555-555-5555'),

@@ -1,7 +1,8 @@
 language: node_js
 sudo: false
+dist: trusty
 node_js:
-  - '6.9.5'
+  - '8.9.1'
 
 addons:
 #  firefox: "38.0"
@@ -44,23 +45,22 @@ env:
   matrix:
     # Order: a slower build first, so that we don't occupy an idle travis worker waiting for others to complete.
     - CI_MODE=e2e
-    - CI_MODE=e2e_2
     - CI_MODE=js
     - CI_MODE=saucelabs_required
-    - CI_MODE=browserstack_required
+    # deactivated, see #19768
+    # - CI_MODE=browserstack_required
     - CI_MODE=saucelabs_optional
     - CI_MODE=browserstack_optional
-    - CI_MODE=docs_test
+    - CI_MODE=aio_tools_test
     - CI_MODE=aio
-    - CI_MODE=aio_e2e
-    - CI_MODE=bazel
+    - CI_MODE=aio_e2e AIO_SHARD=0
+    - CI_MODE=aio_e2e AIO_SHARD=1
 
 matrix:
   fast_finish: true
   allow_failures:
     - env: "CI_MODE=saucelabs_optional"
     - env: "CI_MODE=browserstack_optional"
-    - env: "CI_MODE=aio_e2e"
 
 before_install:
   # source the env.sh script so that the exported variables are available to other scripts later on

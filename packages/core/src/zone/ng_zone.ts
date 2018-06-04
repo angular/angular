@@ -31,7 +31,7 @@ import {EventEmitter} from '../event_emitter';
  * import {NgIf} from '@angular/common';
  *
  * @Component({
- *   selector: 'ng-zone-demo'.
+ *   selector: 'ng-zone-demo',
  *   template: `
  *     <h2>Demo: NgZone</h2>
  *
@@ -63,9 +63,10 @@ import {EventEmitter} from '../event_emitter';
  *     this.progress = 0;
  *     this._ngZone.runOutsideAngular(() => {
  *       this._increaseProgress(() => {
- *       // reenter the Angular zone and display done
- *       this._ngZone.run(() => {console.log('Outside Done!') });
- *     }}));
+ *         // reenter the Angular zone and display done
+ *         this._ngZone.run(() => { console.log('Outside Done!'); });
+ *       });
+ *     });
  *   }
  *
  *   _increaseProgress(doneCallback: () => void) {
@@ -73,7 +74,7 @@ import {EventEmitter} from '../event_emitter';
  *     console.log(`Current progress: ${this.progress}%`);
  *
  *     if (this.progress < 100) {
- *       window.setTimeout(() => this._increaseProgress(doneCallback)), 10)
+ *       window.setTimeout(() => this._increaseProgress(doneCallback), 10);
  *     } else {
  *       doneCallback();
  *     }
@@ -98,7 +99,7 @@ export class NgZone {
   readonly onUnstable: EventEmitter<any> = new EventEmitter(false);
 
   /**
-   * Notifies when there is no more microtasks enqueue in the current VM Turn.
+   * Notifies when there is no more microtasks enqueued in the current VM Turn.
    * This is a hint for Angular to do change detection, which may enqueue more microtasks.
    * For this reason this event can fire multiple times per VM Turn.
    */
@@ -118,7 +119,7 @@ export class NgZone {
 
   constructor({enableLongStackTrace = false}) {
     if (typeof Zone == 'undefined') {
-      throw new Error('Angular requires Zone.js prolyfill.');
+      throw new Error(`In this configuration Angular requires Zone.js`);
     }
 
     Zone.assertZonePatched();
@@ -129,6 +130,10 @@ export class NgZone {
 
     if ((Zone as any)['wtfZoneSpec']) {
       self._inner = self._inner.fork((Zone as any)['wtfZoneSpec']);
+    }
+
+    if ((Zone as any)['TaskTrackingZoneSpec']) {
+      self._inner = self._inner.fork(new ((Zone as any)['TaskTrackingZoneSpec'] as any));
     }
 
     if (enableLongStackTrace && (Zone as any)['longStackTraceZoneSpec']) {
@@ -164,13 +169,39 @@ export class NgZone {
    *
    * If a synchronous error happens it will be rethrown and not reported via `onError`.
    */
-  run(fn: () => any): any { return (this as any as NgZonePrivate)._inner.run(fn); }
+  run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
+    return (this as any as NgZonePrivate)._inner.run(fn, applyThis, applyArgs) as T;
+  }
+
+  /**
+   * Executes the `fn` function synchronously within the Angular zone as a task and returns value
+   * returned by the function.
+   *
+   * Running functions via `run` allows you to reenter Angular zone from a task that was executed
+   * outside of the Angular zone (typically started via {@link #runOutsideAngular}).
+   *
+   * Any future tasks or microtasks scheduled from within this function will continue executing from
+   * within the Angular zone.
+   *
+   * If a synchronous error happens it will be rethrown and not reported via `onError`.
+   */
+  runTask<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[], name?: string): T {
+    const zone = (this as any as NgZonePrivate)._inner;
+    const task = zone.scheduleEventTask('NgZoneEvent: ' + name, fn, EMPTY_PAYLOAD, noop, noop);
+    try {
+      return zone.runTask(task, applyThis, applyArgs) as T;
+    } finally {
+      zone.cancelTask(task);
+    }
+  }
 
   /**
    * Same as `run`, except that synchronous errors are caught and forwarded via `onError` and not
    * rethrown.
    */
-  runGuarded(fn: () => any): any { return (this as any as NgZonePrivate)._inner.runGuarded(fn); }
+  runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T {
+    return (this as any as NgZonePrivate)._inner.runGuarded(fn, applyThis, applyArgs) as T;
+  }
 
   /**
    * Executes the `fn` function synchronously in Angular's parent zone and returns value returned by
@@ -185,8 +216,14 @@ export class NgZone {
    *
    * Use {@link #run} to reenter the Angular zone and do work that updates the application model.
    */
-  runOutsideAngular(fn: () => any): any { return (this as any as NgZonePrivate)._outer.run(fn); }
+  runOutsideAngular<T>(fn: (...args: any[]) => T): T {
+    return (this as any as NgZonePrivate)._outer.run(fn) as T;
+  }
 }
+
+function noop() {}
+const EMPTY_PAYLOAD = {};
+
 
 interface NgZonePrivate extends NgZone {
   _outer: Zone;
@@ -258,7 +295,7 @@ function forkInnerZoneWithAngularBehavior(zone: NgZonePrivate) {
 
     onHandleError: (delegate: ZoneDelegate, current: Zone, target: Zone, error: any): boolean => {
       delegate.handleError(target, error);
-      zone.onError.emit(error);
+      zone.runOutsideAngular(() => zone.onError.emit(error));
       return false;
     }
   });
@@ -275,4 +312,26 @@ function onEnter(zone: NgZonePrivate) {
 function onLeave(zone: NgZonePrivate) {
   zone._nesting--;
   checkStable(zone);
+}
+
+/**
+ * Provides a noop implementation of `NgZone` which does nothing. This zone requires explicit calls
+ * to framework to perform rendering.
+ */
+export class NoopNgZone implements NgZone {
+  readonly hasPendingMicrotasks: boolean = false;
+  readonly hasPendingMacrotasks: boolean = false;
+  readonly isStable: boolean = true;
+  readonly onUnstable: EventEmitter<any> = new EventEmitter();
+  readonly onMicrotaskEmpty: EventEmitter<any> = new EventEmitter();
+  readonly onStable: EventEmitter<any> = new EventEmitter();
+  readonly onError: EventEmitter<any> = new EventEmitter();
+
+  run(fn: () => any): any { return fn(); }
+
+  runGuarded(fn: () => any): any { return fn(); }
+
+  runOutsideAngular(fn: () => any): any { return fn(); }
+
+  runTask<T>(fn: () => any): any { return fn(); }
 }

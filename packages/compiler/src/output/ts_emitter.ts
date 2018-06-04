@@ -35,12 +35,14 @@ export function debugOutputAstAsTypeScript(ast: o.Statement | o.Expression | o.T
   return ctx.toSource();
 }
 
+export type ReferenceFilter = (reference: o.ExternalReference) => boolean;
 
 export class TypeScriptEmitter implements OutputEmitter {
   emitStatementsAndContext(
-      srcFilePath: string, genFilePath: string, stmts: o.Statement[], preamble: string = '',
-      emitSourceMaps: boolean = true): {sourceText: string, context: EmitterVisitorContext} {
-    const converter = new _TsEmitterVisitor();
+      genFilePath: string, stmts: o.Statement[], preamble: string = '',
+      emitSourceMaps: boolean = true, referenceFilter?: ReferenceFilter,
+      importFilter?: ReferenceFilter): {sourceText: string, context: EmitterVisitorContext} {
+    const converter = new _TsEmitterVisitor(referenceFilter, importFilter);
 
     const ctx = EmitterVisitorContext.createRoot();
 
@@ -61,7 +63,7 @@ export class TypeScriptEmitter implements OutputEmitter {
     });
 
     const sm = emitSourceMaps ?
-        ctx.toSourceMapGenerator(srcFilePath, genFilePath, preambleLines.length).toJsComment() :
+        ctx.toSourceMapGenerator(genFilePath, preambleLines.length).toJsComment() :
         '';
     const lines = [...preambleLines, ctx.toSource(), sm];
     if (sm) {
@@ -72,16 +74,18 @@ export class TypeScriptEmitter implements OutputEmitter {
     return {sourceText: lines.join('\n'), context: ctx};
   }
 
-  emitStatements(
-      srcFilePath: string, genFilePath: string, stmts: o.Statement[], preamble: string = '') {
-    return this.emitStatementsAndContext(srcFilePath, genFilePath, stmts, preamble).sourceText;
+  emitStatements(genFilePath: string, stmts: o.Statement[], preamble: string = '') {
+    return this.emitStatementsAndContext(genFilePath, stmts, preamble).sourceText;
   }
 }
+
 
 class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor {
   private typeExpression = 0;
 
-  constructor() { super(false); }
+  constructor(private referenceFilter?: ReferenceFilter, private importFilter?: ReferenceFilter) {
+    super(false);
+  }
 
   importsWithPrefixes = new Map<string, string>();
   reexports = new Map<string, {name: string, as: string}[]>();
@@ -157,10 +161,16 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     }
     ctx.print(stmt, ` ${stmt.name}`);
     this._printColonType(stmt.type, ctx);
-    ctx.print(stmt, ` = `);
-    stmt.value.visitExpression(this, ctx);
+    if (stmt.value) {
+      ctx.print(stmt, ` = `);
+      stmt.value.visitExpression(this, ctx);
+    }
     ctx.println(stmt, `;`);
     return null;
+  }
+
+  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): never {
+    throw new Error('Cannot visit a WrappedNodeExpr when outputting Typescript.');
   }
 
   visitCastExpr(ast: o.CastExpr, ctx: EmitterVisitorContext): any {
@@ -214,8 +224,15 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
       // comment out as a workaround for #10967
       ctx.print(null, `/*private*/ `);
     }
+    if (field.hasModifier(o.StmtModifier.Static)) {
+      ctx.print(null, 'static ');
+    }
     ctx.print(null, field.name);
     this._printColonType(field.type, ctx);
+    if (field.initializer) {
+      ctx.print(null, ' = ');
+      field.initializer.visitExpression(this, ctx);
+    }
     ctx.println(null, `;`);
   }
 
@@ -258,15 +275,23 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   }
 
   visitFunctionExpr(ast: o.FunctionExpr, ctx: EmitterVisitorContext): any {
+    if (ast.name) {
+      ctx.print(ast, 'function ');
+      ctx.print(ast, ast.name);
+    }
     ctx.print(ast, `(`);
     this._visitParams(ast.params, ctx);
     ctx.print(ast, `)`);
     this._printColonType(ast.type, ctx, 'void');
-    ctx.println(ast, ` => {`);
+    if (!ast.name) {
+      ctx.print(ast, ` => `);
+    }
+    ctx.println(ast, '{');
     ctx.incIndent();
     this.visitAllStatements(ast.statements, ctx);
     ctx.decIndent();
     ctx.print(ast, `}`);
+
     return null;
   }
 
@@ -303,7 +328,7 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
     return null;
   }
 
-  visitBuiltintType(type: o.BuiltinType, ctx: EmitterVisitorContext): any {
+  visitBuiltinType(type: o.BuiltinType, ctx: EmitterVisitorContext): any {
     let typeStr: string;
     switch (type.name) {
       case o.BuiltinTypeName.Bool:
@@ -377,7 +402,11 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
   private _visitIdentifier(
       value: o.ExternalReference, typeParams: o.Type[]|null, ctx: EmitterVisitorContext): void {
     const {name, moduleName} = value;
-    if (moduleName) {
+    if (this.referenceFilter && this.referenceFilter(value)) {
+      ctx.print(null, '(null as any)');
+      return;
+    }
+    if (moduleName && (!this.importFilter || !this.importFilter(value))) {
       let prefix = this.importsWithPrefixes.get(moduleName);
       if (prefix == null) {
         prefix = `i${this.importsWithPrefixes.size}`;

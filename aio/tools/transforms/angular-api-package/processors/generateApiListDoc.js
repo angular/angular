@@ -26,7 +26,9 @@ function getModuleInfo(moduleDoc) {
     title: moduleName,
     items: moduleDoc.exports
                   // Ignore internals and private exports (indicated by the ɵ prefix)
-                  .filter(doc => !doc.internal && !doc.privateExport).map(getExportInfo)
+                  .filter(doc => !doc.internal && !doc.privateExport)
+                  .map(getExportInfo)
+                  .sort((a, b) => a.name === b.name ? 0 : a.name > b.name ? 1 : -1)
   };
 }
 

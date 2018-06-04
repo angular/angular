@@ -1,10 +1,8 @@
 /* tslint:disable:member-ordering */
-// #docregion imports,
 import { Directive, ElementRef, HostListener, Input } from '@angular/core';
-// #enddocregion imports
 
 @Directive({
-  selector: '[myHighlight]'
+  selector: '[appHighlight]'
 })
 export class HighlightDirective {
 
@@ -15,7 +13,7 @@ export class HighlightDirective {
   // #enddocregion defaultColor
 
   // #docregion color
-  @Input('myHighlight') highlightColor: string;
+  @Input('appHighlight') highlightColor: string;
   // #enddocregion color
 
   // #docregion mouse-enter

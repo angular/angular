@@ -85,7 +85,7 @@ describe('UrlTree', () => {
         expect(containsTree(t1, t2, false)).toBe(true);
       });
 
-      it('should return true container has its paths splitted into multiple segments', () => {
+      it('should return true container has its paths split into multiple segments', () => {
         const t1 = serializer.parse('/one/(two//left:three)');
         const t2 = serializer.parse('/one/two');
         expect(containsTree(t1, t2, false)).toBe(true);

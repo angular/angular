@@ -18,9 +18,9 @@ import {AsyncValidatorFn, ValidatorFn} from './validators';
 
 
 /**
- * This is a base class for code shared between {@link NgModelGroup} and {@link FormGroupName}.
+ * This is a base class for code shared between `NgModelGroup` and `FormGroupName`.
  *
- * @stable
+ *
  */
 export class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
   /** @internal */
@@ -44,7 +44,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
   }
 
   /**
-   * Get the {@link FormGroup} backing this binding.
+   * Get the `FormGroup` backing this binding.
    */
   get control(): FormGroup { return this.formDirective !.getFormGroup(this); }
 
@@ -54,7 +54,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
   get path(): string[] { return controlPath(this.name, this._parent); }
 
   /**
-   * Get the {@link Form} to which this group belongs.
+   * Get the `Form` to which this group belongs.
    */
   get formDirective(): Form|null { return this._parent ? this._parent.formDirective : null; }
 

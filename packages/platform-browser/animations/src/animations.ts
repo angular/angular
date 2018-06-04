@@ -13,4 +13,6 @@
  */
 export {BrowserAnimationsModule, NoopAnimationsModule} from './module';
 
+export {ANIMATION_MODULE_TYPE} from './providers';
+
 export * from './private_export';

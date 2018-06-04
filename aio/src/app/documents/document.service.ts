@@ -1,12 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Http, Response } from '@angular/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
-import { Observable } from 'rxjs/Observable';
-import { AsyncSubject } from 'rxjs/AsyncSubject';
-import { of } from 'rxjs/observable/of';
-import 'rxjs/add/operator/catch';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/switchMap';
+import { AsyncSubject, Observable, of } from 'rxjs';
+import { catchError, switchMap, tap } from 'rxjs/operators';
 
 import { DocumentContents } from './document-contents';
 export { DocumentContents } from './document-contents';
@@ -41,10 +37,10 @@ export class DocumentService {
 
   constructor(
     private logger: Logger,
-    private http: Http,
+    private http: HttpClient,
     location: LocationService) {
     // Whenever the URL changes we try to get the appropriate doc
-    this.currentDocument = location.currentPath.switchMap(path => this.getDocument(path));
+    this.currentDocument = location.currentPath.pipe(switchMap(path => this.getDocument(path)));
   }
 
   private getDocument(url: string) {
@@ -53,26 +49,35 @@ export class DocumentService {
     if ( !this.cache.has(id)) {
       this.cache.set(id, this.fetchDocument(id));
     }
-    return this.cache.get(id);
+    return this.cache.get(id)!;
   }
 
   private fetchDocument(id: string): Observable<DocumentContents> {
     const requestPath = `${DOC_CONTENT_URL_PREFIX}${id}.json`;
+    const subject = new AsyncSubject<DocumentContents>();
+
     this.logger.log('fetching document from', requestPath);
-    const subject = new AsyncSubject();
     this.http
-      .get(requestPath)
-      .map(response => response.json())
-      .catch((error: Response) => {
-        return error.status === 404 ? this.getFileNotFoundDoc(id) : this.getErrorDoc(id, error);
-      })
+      .get<DocumentContents>(requestPath, {responseType: 'json'})
+      .pipe(
+        tap(data => {
+          if (!data || typeof data !== 'object') {
+            this.logger.log('received invalid data:', data);
+            throw Error('Invalid data');
+          }
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return error.status === 404 ? this.getFileNotFoundDoc(id) : this.getErrorDoc(id, error);
+        }),
+      )
       .subscribe(subject);
+
     return subject.asObservable();
   }
 
   private getFileNotFoundDoc(id: string): Observable<DocumentContents> {
     if (id !== FILE_NOT_FOUND_ID) {
-      this.logger.error(`Document file not found at '${id}'`);
+      this.logger.error(new Error(`Document file not found at '${id}'`));
       // using `getDocument` means that we can fetch the 404 doc contents from the server and cache it
       return this.getDocument(FILE_NOT_FOUND_ID);
     } else {
@@ -83,10 +88,10 @@ export class DocumentService {
     }
   }
 
-  private getErrorDoc(id: string, error: Response): Observable<DocumentContents> {
-    this.logger.error('Error fetching document', error);
+  private getErrorDoc(id: string, error: HttpErrorResponse): Observable<DocumentContents> {
+    this.logger.error(new Error(`Error fetching document '${id}': (${error.message})`));
     this.cache.delete(id);
-    return Observable.of({
+    return of({
       id: FETCHING_ERROR_ID,
       contents: FETCHING_ERROR_CONTENTS
     });

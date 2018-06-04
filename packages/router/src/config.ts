@@ -7,14 +7,15 @@
  */
 
 import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
 /**
- * @whatItDoes Represents router configuration.
- *
  * @description
+ *
+ * Represents router configuration.
+ *
  * `Routes` is an array of route configurations. Each one has the following properties:
  *
  * - `path` is a string that uses the route matcher DSL.
@@ -24,21 +25,21 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * - `redirectTo` is the url fragment which will replace the current matched segment.
  * - `outlet` is the name of the outlet the component should be placed into.
  * - `canActivate` is an array of DI tokens used to look up CanActivate handlers. See
- *   {@link CanActivate} for more info.
+ *   `CanActivate` for more info.
  * - `canActivateChild` is an array of DI tokens used to look up CanActivateChild handlers. See
- *   {@link CanActivateChild} for more info.
+ *   `CanActivateChild` for more info.
  * - `canDeactivate` is an array of DI tokens used to look up CanDeactivate handlers. See
- *   {@link CanDeactivate} for more info.
+ *   `CanDeactivate` for more info.
  * - `canLoad` is an array of DI tokens used to look up CanLoad handlers. See
- *   {@link CanLoad} for more info.
+ *   `CanLoad` for more info.
  * - `data` is additional data provided to the component via `ActivatedRoute`.
- * - `resolve` is a map of DI tokens used to look up data resolvers. See {@link Resolve} for more
+ * - `resolve` is a map of DI tokens used to look up data resolvers. See `Resolve` for more
  *   info.
  * - `runGuardsAndResolvers` defines when guards and resolvers will be run. By default they run only
  *    when the matrix parameters of the route change. When set to `paramsOrQueryParamsChange` they
  *    will also run when query params change. And when set to `always`, they will run every time.
  * - `children` is an array of child route definitions.
- * - `loadChildren` is a reference to lazy loaded child routes. See {@link LoadChildren} for more
+ * - `loadChildren` is a reference to lazy loaded child routes. See `LoadChildren` for more
  *   info.
  *
  * ### Simple Configuration
@@ -250,12 +251,12 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * Then it will extract the set of routes defined in that NgModule, and will transparently add
  * those routes to the main configuration.
  *
- * @stable use Routes
+ *  use Routes
  */
 export type Routes = Route[];
 
 /**
- * @whatItDoes Represents the results of the URL matching.
+ * @description Represents the results of the URL matching.
  *
  * * `consumed` is an array of the consumed URL segments.
  * * `posParams` is a map of positional parameters.
@@ -267,9 +268,9 @@ export type UrlMatchResult = {
 };
 
 /**
- * @whatItDoes A function matching URLs
- *
  * @description
+ *
+ * A function matching URLs
  *
  * A custom URL matcher can be provided when a combination of `path` and `pathMatch` isn't
  * expressive enough.
@@ -277,11 +278,11 @@ export type UrlMatchResult = {
  * For instance, the following matcher matches html files.
  *
  * ```
- * function htmlFiles(url: UrlSegment[]) {
- *  return url.length === 1 && url[0].path.endsWith('.html') ? ({consumed: url}) : null;
+ * export function htmlFiles(url: UrlSegment[]) {
+ *   return url.length === 1 && url[0].path.endsWith('.html') ? ({consumed: url}) : null;
  * }
  *
- * const routes = [{ matcher: htmlFiles, component: HtmlCmp }];
+ * export const routes = [{ matcher: htmlFiles, component: AnyComponent }];
  * ```
  *
  * @experimental
@@ -290,55 +291,73 @@ export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route:
     UrlMatchResult;
 
 /**
- * @whatItDoes Represents the static data associated with a particular route.
- * See {@link Routes} for more details.
- * @stable
+ * @description
+ *
+ * Represents the static data associated with a particular route.
+ *
+ * See `Routes` for more details.
+ *
  */
 export type Data = {
   [name: string]: any
 };
 
 /**
- * @whatItDoes Represents the resolved data associated with a particular route.
- * See {@link Routes} for more details.
- * @stable
+ * @description
+ *
+ * Represents the resolved data associated with a particular route.
+ *
+ * See `Routes` for more details.
+ *
  */
 export type ResolveData = {
   [name: string]: any
 };
 
 /**
- * @whatItDoes The type of `loadChildren`.
- * See {@link Routes} for more details.
- * @stable
+ * @description
+ *
+ * The type of `loadChildren`.
+ *
+ * See `Routes` for more details.
+ *
  */
 export type LoadChildrenCallback = () =>
     Type<any>| NgModuleFactory<any>| Promise<Type<any>>| Observable<Type<any>>;
 
 /**
- * @whatItDoes The type of `loadChildren`.
- * See {@link Routes} for more details.
- * @stable
+ * @description
+ *
+ * The type of `loadChildren`.
+ *
+ * See `Routes` for more details.
+ *
  */
 export type LoadChildren = string | LoadChildrenCallback;
 
 /**
- * @whatItDoes The type of `queryParamsHandling`.
- * See {@link RouterLink} for more details.
- * @stable
+ * @description
+ *
+ * The type of `queryParamsHandling`.
+ *
+ * See `RouterLink` for more details.
+ *
  */
 export type QueryParamsHandling = 'merge' | 'preserve' | '';
 
 /**
- * @whatItDoes The type of `runGuardsAndResolvers`.
- * See {@link Routes} for more details.
+ * @description
+ *
+ * The type of `runGuardsAndResolvers`.
+ *
+ * See `Routes` for more details.
  * @experimental
  */
 export type RunGuardsAndResolvers = 'paramsChange' | 'paramsOrQueryParamsChange' | 'always';
 
 /**
- * See {@link Routes} for more details.
- * @stable
+ * See `Routes` for more details.
+ *
  */
 export interface Route {
   path?: string;
@@ -456,4 +475,10 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
   } else {
     return `${parentPath}/${currentRoute.path}`;
   }
+}
+
+
+export function copyConfig(r: Route): Route {
+  const children = r.children && r.children.map(copyConfig);
+  return children ? {...r, children} : {...r};
 }

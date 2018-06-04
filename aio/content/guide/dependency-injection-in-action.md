@@ -5,72 +5,24 @@ Dependency Injection is a powerful pattern for managing code dependencies.
 This cookbook explores many of the features of Dependency Injection (DI) in Angular.
 {@a toc}
 
-<!--
-
-# Contents
-
-* [Application-wide dependencies](guide/dependency-injection-in-action#app-wide-dependencies)
-* [External module configuration](guide/dependency-injection-in-action#external-module-configuration)
-* [`@Injectable()` and nested service dependencies](guide/dependency-injection-in-action#nested-dependencies)
-
-  * [`@Injectable()`](guide/dependency-injection-in-action#injectable-1)
-
-* [Limit service scope to a component subtree](guide/dependency-injection-in-action#service-scope)
-* [Multiple service instances (sandboxing)](guide/dependency-injection-in-action#multiple-service-instances)
-* [Qualify dependency lookup with `@Optional()` and `@Host()`](guide/dependency-injection-in-action#qualify-dependency-lookup)
-
-  * [Demonstration](guide/dependency-injection-in-action#demonstration)
-
-* [Inject the component's DOM element](guide/dependency-injection-in-action#component-element)
-* [Define dependencies with providers](guide/dependency-injection-in-action#providers)
-
-  * [Defining providers](guide/dependency-injection-in-action#defining-providers)
-  * [The *provide* object literal](guide/dependency-injection-in-action#provide)
-  * [`useValue`&mdash;the *value provider*](guide/dependency-injection-in-action#usevalue)
-  * [`useClass`&mdash;the *class provider*](guide/dependency-injection-in-action#useclass)
-  * [`useExisting`&mdash;the *alias provider*](guide/dependency-injection-in-action#useexisting)
-  * [`useFactory`&mdash;the *factory provider*](guide/dependency-injection-in-action#usefactory)
-
-* [Provider token alternatives: the class-interface and `InjectionToken`](guide/dependency-injection-in-action#tokens)
-
-  * [class-interface](guide/dependency-injection-in-action#class-interface)
-  * [`InjectionToken`](guide/dependency-injection-in-action#injection-token)
-
-* [Inject into a derived class](guide/dependency-injection-in-action#di-inheritance)
-* [Find a parent component by injection](guide/dependency-injection-in-action#find-parent)
-
-  * [Find parent with a known component type](guide/dependency-injection-in-action#known-parent)
-  * [Cannot find a parent by its base class](guide/dependency-injection-in-action#base-parent)
-  * [Find a parent by its class-interface](guide/dependency-injection-in-action#class-interface-parent)
-  * [Find a parent in a tree of parents with `@SkipSelf()`](guide/dependency-injection-in-action#parent-tree)
-  * [The `Parent` class-interface](guide/dependency-injection-in-action#parent-token)
-  * [A `provideParent()` helper function](guide/dependency-injection-in-action#provideparent)
-
-* [Break circularities with a forward class reference (*forwardRef*)](guide/dependency-injection-in-action#forwardref)
-
--->
-
 See the <live-example name="dependency-injection-in-action"></live-example>
 of the code in this cookbook.
 
 {@a app-wide-dependencies}
 
 ## Application-wide dependencies
-Register providers for dependencies used throughout the application in the root application component, `AppComponent`.
+Register providers for dependencies used throughout the application 
+in the `@Injectable()` decorator of the service itself. 
 
-The following example shows importing and registering
-the `LoggerService`, `UserContext`, and the `UserService`
-in the `@Component` metadata `providers` array.
-
-
-<code-example path="dependency-injection-in-action/src/app/app.component.ts" region="import-services" title="src/app/app.component.ts (excerpt)" linenums="false">
-
+<code-example path="dependency-injection/src/app/heroes/hero.service.3.ts" title="src/app/heroes/hero.service.3.ts" linenums="false">
 </code-example>
 
+`providedIn` here tells Angular that the root injector is responsible for creating an instance of the `HeroService`.
+Services that are provided this way are automatically made available to the entire 
+application and don't need to be listed in any module.
 
 
-All of these services are implemented as classes.
-Service classes can act as their own providers which is why listing them in the `providers` array
+Service classes can act as their own providers which is why defining them in the `@Injectable` decorator
 is all the registration you need.
 
 <div class="l-sub-section">
@@ -79,36 +31,27 @@ is all the registration you need.
 
 A *provider* is something that can create or deliver a service.
 Angular creates a service instance from a class provider by using `new`.
-Read more about providers in the [Dependency Injection](guide/dependency-injection#injector-providers)
+Read more about providers in the [Dependency Injection](guide/dependency-injection#register-providers-ngmodule)
 guide.
 
 </div>
 
 
-
 Now that you've registered these services,
 Angular can inject them into the constructor of *any* component or service, *anywhere* in the application.
 
-<code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="ctor" title="src/app/hero-bios.component.ts (component constructor injection)" linenums="false">
-
-</code-example>
-
-
-
-<code-example path="dependency-injection-in-action/src/app/user-context.service.ts" region="ctor" title="src/app/user-context.service.ts (service constructor injection)" linenums="false">
-
-</code-example>
 
 {@a external-module-configuration}
 
 
 ## External module configuration
-Generally, register providers in the `NgModule` rather than in the root application component.
+If a provider cannot be configured in the `@Injectable` decorator of the service, then register application-wide providers in the root `AppModule`, not in the `AppComponent`. Generally, register providers in the `NgModule` rather than in the root application component.
 
-Do this when you expect the service to be injectable everywhere,
-or you are configuring another application global service _before the application starts_.
+Do this when users should explicitly opt-in to use a service, or the service should be 
+provided in a lazily-loaded context, 
+or when you are configuring another application global service _before the application starts_.
 
-Here is an example of the second case, where the component router configuration includes a non-default
+Here is an example of the case where the component router configuration includes a non-default
 [location strategy](guide/router#location-strategy) by listing its provider
 in the `providers` list of the `AppModule`.
 
@@ -184,41 +127,7 @@ Notice the `@Injectable()`decorator on the `UserContextService` class.
 </code-example>
 
 
-
-That decorator makes it possible for Angular to identify the types of its two dependencies, `LoggerService` and `UserService`.
-
-Technically, the `@Injectable()`decorator is only required for a service class that has _its own dependencies_.
-The `LoggerService` doesn't depend on anything. The logger would work if you omitted `@Injectable()`
-and the generated code would be slightly smaller.
-
-But the service would break the moment you gave it a dependency and you'd have to go back
-and add `@Injectable()` to fix it. Add `@Injectable()` from the start for the sake
-of consistency and to avoid future pain.
-
-
-<div class="alert is-helpful">
-
-
-
-Although this site recommends applying `@Injectable()` to all service classes, don't feel bound by it.
-Some developers prefer to add it only where needed and that's a reasonable policy too.
-
-
-</div>
-
-
-
-<div class="l-sub-section">
-
-
-
-The `AppComponent` class had two dependencies as well but no `@Injectable()`.
-It didn't need `@Injectable()` because that component class has the `@Component` decorator.
-In Angular with TypeScript, a *single* decorator&mdash;*any* decorator&mdash;is sufficient to identify dependency types.
-
-
-
-</div>
+The `@Injectable` decorator indicates that the Angular DI system is used to create one or more instances of `UserContextService`.
 
 {@a service-scope}
 
@@ -540,7 +449,7 @@ If the search is futile, the injector throws an error&mdash;unless the request w
 A new injector has no providers.
 Angular initializes the injectors it creates with some providers it cares about.
 You have to register your _own_ application providers manually,
-usually in the `providers` array of the `Component` or `Directive` metadata:
+usually in the `@Injectable` decorator of the service, `providers` array of the `NgModule` or `Directive` metadata:
 
 <code-example path="dependency-injection-in-action/src/app/app.component.ts" region="providers" title="src/app/app.component.ts (providers)">
 
@@ -553,13 +462,16 @@ usually in the `providers` array of the `Component` or `Directive` metadata:
 
 ### Defining providers
 
-The simple class provider is the most typical by far.
-You mention the class in the `providers` array and you're done.
+The simple way of defining providers in the `@Injectable` decorator of the class is recommended.
+
+<code-example path="dependency-injection/src/app/heroes/hero.service.0.ts" title="src/app/heroes/hero.service.0.ts" linenums="false">
+</code-example>
+
+Another alternative is to mention the class in the providers array of the `@NgModule` and you're done.
 
 <code-example path="dependency-injection-in-action/src/app/hero-bios.component.ts" region="class-provider" title="src/app/hero-bios.component.ts (class provider)" linenums="false">
 
 </code-example>
-
 
 
 It's that simple because the most common injected service is an instance of a class.

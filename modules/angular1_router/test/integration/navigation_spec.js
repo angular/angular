@@ -37,15 +37,15 @@ describe('navigation', function () {
     });
     registerDirective('oneCmp', {
       template: '<div>{{oneCmp.number}}</div>',
-      controller: function () {this.number = 'one'}
+      controller: function () {this.number = 'one';}
     });
     registerDirective('twoCmp', {
       template: '<div>{{twoCmp.number}}</div>',
-      controller: function () {this.number = 'two'}
+      controller: function () {this.number = 'two';}
     });
     registerComponent('threeCmp', {
       template: '<div>{{$ctrl.number}}</div>',
-      controller: function () {this.number = 'three'}
+      controller: function () {this.number = 'three';}
     });
     registerComponent('getParams', {
       template: '<div>{{$ctrl.params.x}}</div>',
@@ -54,7 +54,7 @@ describe('navigation', function () {
           this.params = next.params;
         };
       }
-    })
+    });
   });
 
   it('should work in a simple case', function () {
@@ -331,7 +331,7 @@ describe('navigation', function () {
     var definition = {
       template: options.template || '',
       controller: getController(options),
-    }
+    };
     applyStaticProperties(definition.controller, options);
     $compileProvider.component(name, definition);
   }

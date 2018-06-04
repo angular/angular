@@ -131,7 +131,16 @@ QuickStart identifies two *typings*, or `d.ts`, files:
 
 * [jasmine](http://jasmine.github.io/) typings for the Jasmine test framework.
 
-* [node](https://www.npmjs.com/package/@types/node) for code that references objects in the *nodejs* environment;
+* [node](https://www.npmjs.com/package/@types/node) for code that references objects in the *Node.js®* environment;
 you can view an example in the [webpack](guide/webpack) page.
 
 QuickStart doesn't require these typings but many of the samples do.
+
+
+{@a target}
+
+
+### *target*
+
+By default, the target is `es5`, you can configure the target to `es6` if you only want to deploy the application to
+es6 compatible browser. But if you configure the target to `es6` in some old browser such as `IE`, `Syntax Error` will be thrown.

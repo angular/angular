@@ -8,7 +8,7 @@
 
 import {Inject, ReflectiveInjector, forwardRef, resolveForwardRef} from '@angular/core';
 
-export function main() {
+{
   describe('forwardRef examples', () => {
     it('ForwardRefFn example works', () => {
       // #docregion forward_ref_fn

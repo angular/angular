@@ -9,9 +9,11 @@ ISSUES MISSING IMPORTANT INFORMATION MAY BE CLOSED WITHOUT INVESTIGATION.
 <pre><code>
 [ ] Regression (a behavior that used to work and stopped working in a new release)
 [ ] Bug report  <!-- Please search GitHub for a similar issue or PR before submitting -->
+[ ] Performance issue
 [ ] Feature request
 [ ] Documentation issue or request
 [ ] Support request => Please do not submit support request here, instead see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
+[ ] Other... Please describe:
 </code></pre>
 
 ## Current behavior
@@ -25,7 +27,7 @@ ISSUES MISSING IMPORTANT INFORMATION MAY BE CLOSED WITHOUT INVESTIGATION.
 ## Minimal reproduction of the problem with instructions
 <!--
 For bug reports please provide the *STEPS TO REPRODUCE* and if possible a *MINIMAL DEMO* of the problem via
-https://plnkr.co or similar (you can use this template as a starting point: http://plnkr.co/edit/tpl:AvJOMERrnz94ekVua0u5).
+https://stackblitz.com or similar (you can use this template as a starting point: https://stackblitz.com/fork/angular-gitter).
 -->
 
 ## What is the motivation / use case for changing the behavior?

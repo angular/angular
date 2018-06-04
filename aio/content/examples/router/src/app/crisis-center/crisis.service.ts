@@ -1,5 +1,8 @@
 // #docplaster
 // #docregion , mock-crises
+import { BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
+
 export class Crisis {
   constructor(public id: number, public name: string) { }
 }
@@ -12,20 +15,19 @@ const CRISES = [
 ];
 // #enddocregion mock-crises
 
-let crisesPromise = Promise.resolve(CRISES);
-
 import { Injectable } from '@angular/core';
 
 @Injectable()
 export class CrisisService {
-
   static nextCrisisId = 100;
+  private crises$: BehaviorSubject<Crisis[]> = new BehaviorSubject<Crisis[]>(CRISES);
 
-  getCrises() { return crisesPromise; }
+  getCrises() { return this.crises$; }
 
   getCrisis(id: number | string) {
-    return crisesPromise
-      .then(crises => crises.find(crisis => crisis.id === +id));
+    return this.getCrises().pipe(
+      map(crises => crises.find(crisis => crisis.id === +id))
+    );
   }
 
   // #enddocregion
@@ -33,7 +35,8 @@ export class CrisisService {
     name = name.trim();
     if (name) {
       let crisis = new Crisis(CrisisService.nextCrisisId++, name);
-      crisesPromise.then(crises => crises.push(crisis));
+      CRISES.push(crisis);
+      this.crises$.next(CRISES);
     }
   }
   // #docregion

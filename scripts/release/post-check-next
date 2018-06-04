@@ -1,0 +1,16 @@
+
+#!/usr/bin/env bash
+
+# use for BETA and RC releases
+# Verify that all packages are published with correct version:
+
+mkdir tmp
+cd tmp
+npm init -y
+npm install typescript@~2.7 rxjs@^6.0.0-beta.4 zone.js@~0.8.20 @angular/{animations,core,common,forms,router,platform-browser,platform-browser-dynamic,platform-webworker,platform-webworker-dynamic,platform-server,compiler,compiler-cli,language-service,service-worker,upgrade}@next --save
+cd ..
+rm -rf tmp
+
+echo "CHECK THE DIST-TAGS"
+
+grep '"name": "@angular' $(find packages -name package.json) | grep -o '@angular/[^/"]*' | sort -u | xargs -n 1 -I% npm show \% name dist-tags

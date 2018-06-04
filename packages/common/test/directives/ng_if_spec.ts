@@ -13,7 +13,7 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-export function main() {
+{
   describe('ngIf directive', () => {
     let fixture: ComponentFixture<any>;
 
@@ -138,7 +138,7 @@ export function main() {
          expect(fixture.nativeElement).toHaveText('hello');
        }));
 
-    describe('else', () => {
+    describe('then/else templates', () => {
       it('should support else', async(() => {
            const template = '<span *ngIf="booleanCondition; else elseBlock">TRUE</span>' +
                '<ng-template #elseBlock>FALSE</ng-template>';
@@ -168,6 +168,37 @@ export function main() {
            fixture.detectChanges();
            expect(fixture.nativeElement).toHaveText('ELSE');
          }));
+
+      it('should support removing the then/else templates', () => {
+        const template = `<span *ngIf="booleanCondition;
+            then nestedBooleanCondition ? tplRef : null;
+            else nestedBooleanCondition ? tplRef : null"></span>
+        <ng-template #tplRef>Template</ng-template>`;
+
+        fixture = createTestComponent(template);
+        const comp = fixture.componentInstance;
+        // then template
+        comp.booleanCondition = true;
+
+        comp.nestedBooleanCondition = true;
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('Template');
+
+        comp.nestedBooleanCondition = false;
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('');
+
+        // else template
+        comp.booleanCondition = true;
+
+        comp.nestedBooleanCondition = true;
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('Template');
+
+        comp.nestedBooleanCondition = false;
+        fixture.detectChanges();
+        expect(fixture.nativeElement).toHaveText('');
+      });
 
       it('should support dynamic else', async(() => {
            const template =
@@ -215,6 +246,28 @@ export function main() {
            getComponent().booleanCondition = false;
            fixture.detectChanges();
            expect(fixture.nativeElement).toHaveText('false');
+         }));
+    });
+
+    describe('Type guarding', () => {
+      it('should throw when then block is not template', async(() => {
+           const template = '<span *ngIf="booleanCondition; then thenBlock">IGNORE</span>' +
+               '<div #thenBlock>THEN</div>';
+
+           fixture = createTestComponent(template);
+
+           expect(() => fixture.detectChanges())
+               .toThrowError(/ngIfThen must be a TemplateRef, but received/);
+         }));
+
+      it('should throw when else block is not template', async(() => {
+           const template = '<span *ngIf="booleanCondition; else elseBlock">IGNORE</span>' +
+               '<div #elseBlock>ELSE</div>';
+
+           fixture = createTestComponent(template);
+
+           expect(() => fixture.detectChanges())
+               .toThrowError(/ngIfElse must be a TemplateRef, but received/);
          }));
     });
   });

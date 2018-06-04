@@ -9,7 +9,7 @@ readonly defaultImageNameAndTag="aio-builds:latest"
 # (Necessary, because only `scripts-js/dist/` is copied to the docker image.)
 (
   cd "$SCRIPTS_JS_DIR"
-  yarn install
+  yarn install --frozen-lockfile --non-interactive
   yarn build
 )
 
