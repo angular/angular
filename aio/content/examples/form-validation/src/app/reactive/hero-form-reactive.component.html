@@ -3,27 +3,17 @@
 
   <h1>Reactive Form</h1>
 
-  <!-- #docregion cross-validation -->
   <form [formGroup]="heroForm" #formDir="ngForm">
-  <!-- #enddocregion cross-validation -->
 
     <div [hidden]="formDir.submitted">
 
-      <!-- #docregion cross-validation -->
-      <!-- #docregion cross-validation-error-class -->
       <div class="cross-validation" [class.cross-validation-error]="heroForm.errors?.identityRevealed && (heroForm.touched || heroForm.dirty)">
-      <!-- #enddocregion cross-validation-error-class -->
-      <!-- #enddocregion cross-validation -->
         <div class="form-group">
 
           <label for="name">Name</label>
           <!-- #docregion name-with-error-msg -->
-          <!-- #docregion cross-validation -->
-          <!-- #docregion cross-validation-error-class-->
           <input id="name" class="form-control"
                 formControlName="name" required >
-          <!-- #enddocregion cross-validation -->
-          <!-- #enddocregion cross-validation-error-class-->
 
           <div *ngIf="name.invalid && (name.dirty || name.touched)"
               class="alert alert-danger">
@@ -43,27 +33,16 @@
 
         <div class="form-group">
           <label for="alterEgo">Alter Ego</label>
-          <!-- #docregion cross-validation -->
-          <!-- #docregion cross-validation-error-class-->
           <input id="alterEgo" class="form-control"
               formControlName="alterEgo"  >
-          <!-- #enddocregion cross-validation -->
-          <!-- #enddocregion cross-validation-error-class -->
         </div>
 
         <!-- #docregion cross-validation-error-message -->
-        <!-- #docregion cross-validation -->
         <div *ngIf="heroForm.errors?.identityRevealed && (heroForm.touched || heroForm.dirty)" class="cross-validation-error-message alert alert-danger">
             Name cannot match alter ego.
         </div>
-        <!-- #enddocregion cross-validation -->
         <!-- #enddocregion cross-validation-error-message -->
-
-      <!-- #docregion cross-validation -->
-      <!-- #docregion cross-validation-error-class-->
       </div>
-      <!-- #enddocregion cross-validation -->
-      <!-- #enddocregion cross-validation-error-class -->
 
       <div class="form-group">
         <label for="power">Hero Power</label>
@@ -82,9 +61,7 @@
       <button type="button" class="btn btn-default"
              (click)="formDir.resetForm({})">Reset</button>
     </div>
-  <!-- #docregion cross-validation -->
   </form>
-  <!-- #enddocregion cross-validation -->
 
   <div class="submitted-message" *ngIf="formDir.submitted">
     <p>You've submitted your hero, {{ heroForm.value.name }}!</p>
