@@ -31,7 +31,7 @@ ts_web_test_suite(
     name = "test_web",
     static_files = [
         "//packages/platform-browser/test:static_assets/test.html",
-        "//packages/platform-browser/test:browser/static_assets/200.html"
+        "//packages/platform-browser/test:browser/static_assets/200.html",
     ],
     deps = [
         ":test_lib",
