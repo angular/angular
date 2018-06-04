@@ -27,7 +27,7 @@ ts_devserver(
     deps = ["//src"],
 )
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "rollup_bundle", "nodejs_binary")
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "rollup_bundle")
 
 rollup_bundle(
     name = "bundle",
