@@ -76,7 +76,7 @@ WELL_KNOWN_GLOBALS = { p: _global_name(p) for p in [
     "rxjs/operators",
 ]}
 
-def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es", package_name = "", include_tslib = False):
+def _rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, format = "es", package_name = "", include_tslib = False):
   map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
 
   args = ctx.actions.args()
@@ -112,7 +112,7 @@ def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es", p
   if ctx.version_file:
     other_inputs.append(ctx.version_file)
   ctx.actions.run(
-      progress_message = "ng_package: Rollup %s" % ctx.label,
+      progress_message = "ng_package: Rollup %s %s" % (bundle_name, ctx.label),
       mnemonic = "AngularPackageRollup",
       inputs = inputs.to_list() + other_inputs,
       outputs = [js_output, map_output],
@@ -142,6 +142,10 @@ def _filter_out_generated_files(files):
     if (not(file.path.endswith(".ngfactory.js") or file.path.endswith(".ngsummary.js") or file.path.endswith(".ngstyle.js"))):
       result.append(file)
   return depset(result)
+
+
+def _esm2015_root_dir(ctx):
+  return ctx.label.name + ".es6"
 
 
 # ng_package produces package that is npm-ready.
@@ -191,7 +195,7 @@ def _ng_package_impl(ctx):
     es2015_entry_point = "/".join([p for p in [
         ctx.bin_dir.path,
         ctx.label.package,
-        ctx.label.name + ".es6",
+        _esm2015_root_dir(ctx),
         ctx.label.package,
         entry_point,
         flat_module_out_file,
@@ -218,13 +222,14 @@ def _ng_package_impl(ctx):
       umd_output = ctx.outputs.umd
       min_output = ctx.outputs.umd_min
 
-    config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]))
+    esm2015_config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, _esm2015_root_dir(ctx)]), filename="_%s.rollup_esm2015.conf.js")
+    esm5_config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]), filename="_%s.rollup_esm5.conf.js")
 
-    fesm2015.append(_rollup(ctx, config, es2015_entry_point, esm_2015_files, fesm2015_output))
-    fesm5.append(_rollup(ctx, config, es5_entry_point, esm5_sources, fesm5_output))
+    fesm2015.append(_rollup(ctx, "fesm2015", esm2015_config, es2015_entry_point, esm_2015_files, fesm2015_output))
+    fesm5.append(_rollup(ctx, "fesm5", esm5_config, es5_entry_point, esm5_sources, fesm5_output))
 
     bundles.append(
-        _rollup(ctx, config, es5_entry_point, esm5_sources, umd_output,
+        _rollup(ctx, "umd", esm5_config, es5_entry_point, esm5_sources, umd_output,
                 format = "umd", package_name = package_name, include_tslib = True))
     uglify_sourcemap = run_uglify(ctx, umd_output, min_output,
         config_name = entry_point.replace("/", "_"))
