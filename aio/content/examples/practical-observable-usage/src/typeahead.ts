@@ -14,5 +14,5 @@ const typeahead = fromEvent(searchBox, 'input').pipe(
 );
 
 typeahead.subscribe(data => {
- // Handle the data from the API
+ // 서버 요청으로 받은 데이터를 처리합니다.
 });
