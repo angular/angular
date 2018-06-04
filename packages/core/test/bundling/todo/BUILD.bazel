@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "ivy_ng_module")
+load("//tools:defaults.bzl", "ivy_ng_module", "ts_library")
 load("//tools/http-server:http_server.bzl", "http_server")
 load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
 load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
