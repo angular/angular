@@ -22,7 +22,7 @@ export class ComponentNgElementZoneStrategyFactory extends ComponentNgElementStr
 }
 
 /**
- * extends ComponentNgElementStrategy to insure callbacks run in the Angular zone
+ * extends ComponentNgElementStrategy to ensure callbacks run in the Angular zone
  *
  * @experimental
  */
@@ -35,20 +35,20 @@ export class ComponentNgElementZoneStrategy extends ComponentNgElementStrategy {
   }
 
   connect(element: HTMLElement) {
-    this.insureAngularZone(() => { super.connect(element); });
+    this.runInZone(() => { super.connect(element); });
   }
 
-  disconnect() { this.insureAngularZone(super.disconnect); }
+  disconnect() {
+    this.runInZone(() => { super.disconnect(); });
+  }
 
   getInputValue(propName: string) {
-    return this.insureAngularZone(() => { return super.getInputValue(propName); });
+    return this.runInZone(() => { return super.getInputValue(propName); });
   }
 
   setInputValue(propName: string, value: string) {
-    this.insureAngularZone(() => { super.setInputValue(propName, value); });
+    this.runInZone(() => { super.setInputValue(propName, value); });
   }
 
-  private insureAngularZone(fn: () => any) {
-    return NgZone.isInAngularZone() ? fn() : this.ngZone.run(fn);
-  }
+  private runInZone(fn: () => any) { return NgZone.isInAngularZone() ? fn() : this.ngZone.run(fn); }
 }
