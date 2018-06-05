@@ -28,7 +28,10 @@ ng_package(
     packages = [
         "//packages/elements/schematics:npm_package",
     ],
-    tags = ["release-with-framework"],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
     deps = [
         ":elements",
     ],
