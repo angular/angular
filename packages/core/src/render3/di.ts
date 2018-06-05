@@ -668,7 +668,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
   remove(index?: number): void {
     const adjustedIdx = this._adjustIndex(index, -1);
     removeView(this._lContainerNode, adjustedIdx);
-    this._viewRefs.splice(adjustedIdx, 1)[0] || null;
+    this._viewRefs.splice(adjustedIdx, 1);
   }
 
   detach(index?: number): viewEngine_ViewRef|null {
