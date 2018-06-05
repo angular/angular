@@ -154,30 +154,14 @@ let data: any[];
  */
 let directives: any[]|null;
 
-/**
- * When a view is destroyed, listeners need to be released and outputs need to be
- * unsubscribed. This cleanup array stores both listener data (in chunks of 4)
- * and output data (in chunks of 2) for a particular view. Combining the arrays
- * saves on memory (70 bytes per array) and on a few bytes of code size (for two
- * separate for loops).
- *
- * If it's a listener being stored:
- * 1st index is: event name to remove
- * 2nd index is: native element
- * 3rd index is: listener function
- * 4th index is: useCapture boolean
- *
- * If it's an output subscription:
- * 1st index is: unsubscribe function
- * 2nd index is: context for function
- */
-let cleanup: any[]|null;
-
-export function getCleanup(): any[] {
+function getCleanup(view: LView): any[] {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return cleanup || (cleanup = currentView.cleanup = []);
+  return view.cleanupInstances || (view.cleanupInstances = []);
 }
 
+function getTViewCleanup(view: LView): any[] {
+  return view.tView.cleanup || (view.tView.cleanup = []);
+}
 /**
  * In this mode, any changes in bindings will throw an ExpressionChangedAfterChecked error.
  *
@@ -213,7 +197,6 @@ export function enterView(newView: LView, host: LElementNode | LViewNode | null)
   creationMode = newView && (newView.flags & LViewFlags.CreationMode) === LViewFlags.CreationMode;
   firstTemplatePass = newView && newView.tView.firstTemplatePass;
 
-  cleanup = newView && newView.cleanup;
   renderer = newView && newView.renderer;
 
   if (host != null) {
@@ -312,7 +295,7 @@ export function createLView<T>(
     data: [],
     directives: null,
     tView: tView,
-    cleanup: null,
+    cleanupInstances: null,
     renderer: renderer,
     tail: null,
     next: null,
@@ -818,6 +801,7 @@ export function createTView(
     viewCheckHooks: null,
     destroyHooks: null,
     pipeDestroyHooks: null,
+    cleanup: null,
     hostBindings: null,
     components: null,
     directiveRegistry: typeof directives === 'function' ? directives() : directives,
@@ -915,19 +899,23 @@ export function listener(
   ngDevMode && assertPreviousIsParent();
   const node = previousOrParentNode;
   const native = node.native as RElement;
+  ngDevMode && ngDevMode.rendererAddEventListener++;
 
   // In order to match current behavior, native DOM event listeners must be added for all
   // events (including outputs).
-  const cleanupFns = getCleanup();
-  ngDevMode && ngDevMode.rendererAddEventListener++;
   if (isProceduralRenderer(renderer)) {
     const wrappedListener = wrapListenerWithDirtyLogic(currentView, listenerFn);
     const cleanupFn = renderer.listen(native, eventName, wrappedListener);
-    cleanupFns.push(cleanupFn, null);
+    storeCleanupFn(currentView, cleanupFn);
   } else {
     const wrappedListener = wrapListenerWithDirtyAndDefault(currentView, listenerFn);
     native.addEventListener(eventName, wrappedListener, useCapture);
-    cleanupFns.push(eventName, native, wrappedListener, useCapture);
+    const cleanupInstances = getCleanup(currentView);
+    cleanupInstances.push(wrappedListener);
+    if (firstTemplatePass) {
+      getTViewCleanup(currentView)
+          .push(eventName, node.tNode.index, cleanupInstances !.length - 1, useCapture);
+    }
   }
 
   let tNode: TNode|null = node.tNode;
@@ -952,7 +940,39 @@ function createOutput(outputs: PropertyAliasValue, listener: Function): void {
   for (let i = 0; i < outputs.length; i += 2) {
     ngDevMode && assertDataInRange(outputs[i] as number, directives !);
     const subscription = directives ![outputs[i] as number][outputs[i + 1]].subscribe(listener);
-    getCleanup().push(subscription.unsubscribe, subscription);
+    storeCleanupWithContext(currentView, subscription, subscription.unsubscribe);
+  }
+}
+
+/**
+ * Saves context for this cleanup function in LView.cleanupInstances.
+ *
+ * On the first template pass, saves in TView:
+ * - Cleanup function
+ * - Index of context we just saved in LView.cleanupInstances
+ */
+export function storeCleanupWithContext(
+    view: LView = currentView, context: any, cleanupFn: Function): void {
+  getCleanup(view).push(context);
+
+  if (view.tView.firstTemplatePass) {
+    getTViewCleanup(view).push(cleanupFn, view.cleanupInstances !.length - 1);
+  }
+}
+
+/**
+ * Saves the cleanup function itself in LView.cleanupInstances.
+ *
+ * This is necessary for functions that are wrapped with their contexts, like in renderer2
+ * listeners.
+ *
+ * On the first template pass, the index of the cleanup function is saved in TView.
+ */
+export function storeCleanupFn(view: LView, cleanupFn: Function): void {
+  getCleanup(view).push(cleanupFn);
+
+  if (view.tView.firstTemplatePass) {
+    getTViewCleanup(view).push(view.cleanupInstances !.length - 1, null);
   }
 }
 
