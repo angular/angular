@@ -25,7 +25,10 @@ ng_package(
         "//packages/upgrade/static:package.json",
     ],
     entry_point = "packages/upgrade/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
     deps = [
         ":upgrade",
         "//packages/upgrade/static",

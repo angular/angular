@@ -24,7 +24,10 @@ ng_package(
         "//packages/animations/browser/testing:package.json",
     ],
     entry_point = "packages/animations/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
     deps = [
         ":animations",
         "//packages/animations/browser",
