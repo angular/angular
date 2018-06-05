@@ -9,7 +9,7 @@
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
-import {checkNoChanges, detectChanges, markViewDirty} from './instructions';
+import {checkNoChanges, detectChanges, markViewDirty, storeCleanupFn} from './instructions';
 import {ComponentTemplate} from './interfaces/definition';
 import {LViewNode} from './interfaces/node';
 import {LView, LViewFlags} from './interfaces/view';
@@ -33,9 +33,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
 
   destroy(): void { destroyLView(this._view); }
 
-  onDestroy(callback: Function) {
-    (this._view.cleanup || (this._view.cleanup = [])).push(callback, null);
-  }
+  onDestroy(callback: Function) { storeCleanupFn(this._view, callback); }
 
   /**
    * Marks a view and all of its ancestors dirty.
