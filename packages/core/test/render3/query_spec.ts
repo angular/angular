@@ -9,6 +9,7 @@
 import {NgForOfContext} from '@angular/common';
 import {TemplateRef, ViewContainerRef} from '@angular/core';
 
+import {EventEmitter} from '../..';
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges, injectViewContainerRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective} from '../../src/render3/instructions';
@@ -16,7 +17,7 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
 
 import {NgForOf, NgIf} from './common_with_def';
-import {ComponentFixture, createComponent, createDirective, renderComponent} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent, createDirective, renderComponent} from './render_util';
 
 
 
@@ -1236,5 +1237,59 @@ describe('query', () => {
       expect(changes).toBe(2);
     });
 
+  });
+
+  describe('queryList', () => {
+    it('should be destroyed when the containing view is destroyed', () => {
+      let queryInstance: QueryList<any>;
+
+      const SimpleComponentWithQuery =
+          createComponent('some-component-with-query', function(rf: RenderFlags, ctx: any) {
+            let tmp: any;
+            if (rf & RenderFlags.Create) {
+              query(0, ['foo'], false, QUERY_READ_FROM_NODE);
+              elementStart(1, 'div', null, ['foo', '']);
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              queryRefresh(tmp = load<QueryList<any>>(0)) &&
+                  (ctx.query = queryInstance = tmp as QueryList<any>);
+            }
+          });
+
+      function createTemplate() { container(0); }
+
+      function updateTemplate() {
+        containerRefreshStart(0);
+        {
+          if (condition) {
+            let rf1 = embeddedViewStart(1);
+            {
+              if (rf1 & RenderFlags.Create) {
+                elementStart(0, 'some-component-with-query');
+                elementEnd();
+              }
+            }
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      }
+
+      /**
+       * % if (condition) {
+       *   <some-component-with-query></some-component-with-query>
+       * %}
+       */
+      let condition = true;
+      const t = new TemplateFixture(createTemplate, updateTemplate, [SimpleComponentWithQuery]);
+      expect(t.html).toEqual('<some-component-with-query><div></div></some-component-with-query>');
+      expect((queryInstance !.changes as EventEmitter<any>).closed).toBeFalsy();
+
+      condition = false;
+      t.update();
+      expect(t.html).toEqual('');
+      expect((queryInstance !.changes as EventEmitter<any>).closed).toBeTruthy();
+    });
   });
 });

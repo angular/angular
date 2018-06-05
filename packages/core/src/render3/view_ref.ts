@@ -6,19 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
 
 import {checkNoChanges, detectChanges, markViewDirty} from './instructions';
 import {ComponentTemplate} from './interfaces/definition';
 import {LViewNode} from './interfaces/node';
 import {LView, LViewFlags} from './interfaces/view';
-import {notImplemented} from './util';
+import {destroyLView} from './node_manipulation';
 
 export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
   context: T;
   rootNodes: any[];
 
-  constructor(private _view: LView, context: T|null, ) { this.context = context !; }
+  constructor(protected _view: LView, context: T|null) { this.context = context !; }
 
   /** @internal */
   _setComponentContext(view: LView, context: T) {
@@ -26,9 +27,15 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
     this.context = context;
   }
 
-  destroy(): void { notImplemented(); }
-  destroyed: boolean;
-  onDestroy(callback: Function) { notImplemented(); }
+  get destroyed(): boolean {
+    return (this._view.flags & LViewFlags.Destroyed) === LViewFlags.Destroyed;
+  }
+
+  destroy(): void { destroyLView(this._view); }
+
+  onDestroy(callback: Function) {
+    (this._view.cleanup || (this._view.cleanup = [])).push(callback, null);
+  }
 
   /**
    * Marks a view and all of its ancestors dirty.
@@ -213,48 +220,21 @@ export class EmbeddedViewRef<T> extends ViewRef<T> {
    * @internal
    */
   _lViewNode: LViewNode;
+  private _viewContainerRef: viewEngine_ViewContainerRef|null = null;
 
   constructor(viewNode: LViewNode, template: ComponentTemplate<T>, context: T) {
     super(viewNode.data, context);
     this._lViewNode = viewNode;
   }
-}
 
-/**
- * Creates a ViewRef bundled with destroy functionality.
- *
- * @param context The context for this view
- * @returns The ViewRef
- */
-export function createViewRef<T>(view: LView | null, context: T): ViewRef<T> {
-  // TODO: add detectChanges back in when implementing ChangeDetectorRef.detectChanges
-  return addDestroyable(new ViewRef(view !, context));
-}
+  destroy(): void {
+    if (this._viewContainerRef &&
+        (this._view.flags & LViewFlags.Attached) === LViewFlags.Attached) {
+      this._viewContainerRef.detach(this._viewContainerRef.indexOf(this));
+      this._viewContainerRef = null;
+    }
+    super.destroy();
+  }
 
-/** Interface for destroy logic. Implemented by addDestroyable. */
-export interface DestroyRef<T> {
-  /** Whether or not this object has been destroyed */
-  destroyed: boolean;
-  /** Destroy the instance and call all onDestroy callbacks. */
-  destroy(): void;
-  /** Register callbacks that should be called onDestroy */
-  onDestroy(cb: Function): void;
-}
-
-/**
- * Decorates an object with destroy logic (implementing the DestroyRef interface)
- * and returns the enhanced object.
- *
- * @param obj The object to decorate
- * @returns The object with destroy logic
- */
-export function addDestroyable<T, C>(obj: any): T&DestroyRef<C> {
-  let destroyFn: Function[]|null = null;
-  obj.destroyed = false;
-  obj.destroy = function() {
-    destroyFn && destroyFn.forEach((fn) => fn());
-    this.destroyed = true;
-  };
-  obj.onDestroy = (fn: Function) => (destroyFn || (destroyFn = [])).push(fn);
-  return obj;
+  attachToViewContainerRef(vcRef: viewEngine_ViewContainerRef) { this._viewContainerRef = vcRef; }
 }

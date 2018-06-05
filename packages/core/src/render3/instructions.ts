@@ -81,7 +81,7 @@ let renderer: Renderer3;
 let rendererFactory: RendererFactory3;
 
 export function getRenderer(): Renderer3 {
-  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return renderer;
 }
 
@@ -93,7 +93,7 @@ export function getCurrentSanitizer(): Sanitizer|null {
 let previousOrParentNode: LNode;
 
 export function getPreviousOrParentNode(): LNode {
-  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return previousOrParentNode;
 }
 
@@ -126,7 +126,7 @@ let currentView: LView = null !;
 let currentQueries: LQueries|null;
 
 export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
-  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return currentQueries || (currentQueries = new QueryType());
 }
 
@@ -136,7 +136,7 @@ export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
 let creationMode: boolean;
 
 export function getCreationMode(): boolean {
-  // top level variables should not be exported for performance reason (PERF_NOTES.md)
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return creationMode;
 }
 
@@ -172,6 +172,11 @@ let directives: any[]|null;
  * 2nd index is: context for function
  */
 let cleanup: any[]|null;
+
+export function getCleanup(): any[] {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  return cleanup || (cleanup = currentView.cleanup = []);
+}
 
 /**
  * In this mode, any changes in bindings will throw an ExpressionChangedAfterChecked error.
@@ -913,7 +918,7 @@ export function listener(
 
   // In order to match current behavior, native DOM event listeners must be added for all
   // events (including outputs).
-  const cleanupFns = cleanup || (cleanup = currentView.cleanup = []);
+  const cleanupFns = getCleanup();
   ngDevMode && ngDevMode.rendererAddEventListener++;
   if (isProceduralRenderer(renderer)) {
     const wrappedListener = wrapListenerWithDirtyLogic(currentView, listenerFn);
@@ -947,7 +952,7 @@ function createOutput(outputs: PropertyAliasValue, listener: Function): void {
   for (let i = 0; i < outputs.length; i += 2) {
     ngDevMode && assertDataInRange(outputs[i] as number, directives !);
     const subscription = directives ![outputs[i] as number][outputs[i + 1]].subscribe(listener);
-    cleanup !.push(subscription.unsubscribe, subscription);
+    getCleanup().push(subscription.unsubscribe, subscription);
   }
 }
 

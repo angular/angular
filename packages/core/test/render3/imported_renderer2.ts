@@ -35,7 +35,15 @@ export class SimpleDomEventsPlugin extends EventManagerPlugin {
 export function getRendererFactory2(document: any): RendererFactory2 {
   const fakeNgZone: NgZone = new NoopNgZone();
   const eventManager = new EventManager([new SimpleDomEventsPlugin(document)], fakeNgZone);
-  return new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document));
+  const rendererFactory =
+      new ɵDomRendererFactory2(eventManager, new ɵDomSharedStylesHost(document));
+  const origCreateRenderer = rendererFactory.createRenderer;
+  rendererFactory.createRenderer = function() {
+    const renderer = origCreateRenderer.apply(this, arguments);
+    renderer.destroyNode = () => {};
+    return renderer;
+  };
+  return rendererFactory;
 }
 
 export function getAnimationRendererFactory2(document: any): RendererFactory2 {

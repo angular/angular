@@ -238,22 +238,25 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 ### `______Ref`s
 | Method                 | View Container Ref | Template Ref | Embeded View Ref | View Ref | Element Ref | Change Detection Ref |
 | ---------------------- | ------------------ | ------------ | ---------------- | -------- | ----------- | -------------------- |
-| `clear()`              |  ❌                | n/a          | n/a              | n/a      | n/a         | n/a                  |
-| `get()`                |  ❌                | n/a          | n/a              | n/a      | n/a         | n/a                  |
+| `clear()`              |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
+| `get()`                |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `createEmbededView()`  |  ✅                | ✅           | n/a              | n/a      | n/a         | n/a                  |
-| `createComponent()`    |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
+| `createComponent()`    |  ❌                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `insert()`             |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
-| `move()`               |  ❌                | n/a          | n/a              | n/a      | n/a         | n/a                  |
-| `indexOf()`            |  ❌                | n/a          | n/a              | n/a      | n/a         | n/a                  |
-| `destroy()`            | n/a                | n/a          |  ❌              | ❌       | n/a         | n/a                  |
-| `destroyed`            | n/a                | n/a          |  ❌              | ❌       | n/a         | n/a                  |
-| `onDestroy()`          | n/a                | n/a          |  ❌              | ❌       | n/a         | n/a                  |
-| `markForCheck()`       | n/a                | n/a          |  ❌              | n/a      | n/a         | ✅                   |
-| `detach()`             |  ❌                | n/a          |  ❌              | n/a      | n/a         | ✅                   |
-| `detachChanges()`      | n/a                | n/a          |  ❌              | n/a      | n/a         | ✅                   |
-| `checkNoChanges()`     | n/a                | n/a          |  ❌              | n/a      | n/a         | ✅                   |
-| `reattach()`           | n/a                | n/a          |  ❌              | n/a      | n/a         | ✅                   |
-| `nativeElement()`      | n/a                | n/a          | n/a              | n/a      |  ✅         | n/a                  |
+| `move()`               |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
+| `indexOf()`            |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
+| `length()`             |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
+| `remove()`             |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
+| `destroy()`            | n/a                | n/a          |  ✅              | ✅       | n/a         | n/a                  |
+| `destroyed`            | n/a                | n/a          |  ✅              | ✅       | n/a         | n/a                  |
+| `onDestroy()`          | n/a                | n/a          |  ✅              | ✅       | n/a         | n/a                  |
+| `markForCheck()`       | n/a                | n/a          |  ✅              | ✅       | n/a         | ✅                   |
+| `detach()`             |  ✅                | n/a          |  ✅              | ✅       | n/a         | ✅                   |
+| `detachChanges()`      | n/a                | n/a          |  ✅              | ✅       | n/a         | ✅                   |
+| `checkNoChanges()`     | n/a                | n/a          |  ✅              | ✅       | n/a         | ✅                   |
+| `reattach()`           | n/a                | n/a          |  ✅              | ✅       | n/a         | ✅                   |
+| `nativeElement()`      | n/a                | n/a          | n/a              | n/a     |  ✅         | n/a                  |
+| `elementRef`           | n/a                | ✅           | n/a              | n/a      |  n/a        | n/a                  |
 
 ### Renderer2
 | Method                              | Runtime |
@@ -268,8 +271,8 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `insertBefore()`                    |  ✅     |
 | `removeChild()`                     |  ✅     |
 | `selectRootElement()`               |  ✅     |
-| `parentNode()`                      |  ❌     |
-| `nextSibling()`                     |  ❌     |
+| `parentNode()`                      |  n/a    |
+| `nextSibling()`                     |  n/a    |
 | `setAttribute()`                    |  ✅     |
 | `removeAttribute()`                 |  ✅     |
 | `addClass()`                        |  ✅     |
