@@ -177,12 +177,24 @@ type NavigationParams = {
 /**
  * @internal
  */
-export type RouterHook = (snapshot: RouterStateSnapshot) => Observable<void>;
+export type RouterHook = (snapshot: RouterStateSnapshot, runExtras: {
+  appliedUrlTree: UrlTree,
+  rawUrlTree: UrlTree,
+  skipLocationChange: boolean,
+  replaceUrl: boolean,
+  navigationId: number
+}) => Observable<void>;
 
 /**
  * @internal
  */
-function defaultRouterHook(snapshot: RouterStateSnapshot): Observable<void> {
+function defaultRouterHook(snapshot: RouterStateSnapshot, runExtras: {
+  appliedUrlTree: UrlTree,
+  rawUrlTree: UrlTree,
+  skipLocationChange: boolean,
+  replaceUrl: boolean,
+  navigationId: number
+}): Observable<void> {
   return of (null) as any;
 }
 
@@ -645,7 +657,13 @@ export class Router {
       const beforePreactivationDone$ =
           urlAndSnapshot$.pipe(mergeMap((p): Observable<NavStreamValue> => {
             if (typeof p === 'boolean') return of (p);
-            return this.hooks.beforePreactivation(p.snapshot).pipe(map(() => p));
+            return this.hooks
+                .beforePreactivation(p.snapshot, {
+                  navigationId: id,
+                  appliedUrlTree: url,
+                  rawUrlTree: rawUrl, skipLocationChange, replaceUrl,
+                })
+                .pipe(map(() => p));
           }));
 
       // run preactivation: guards and data resolvers
@@ -698,7 +716,13 @@ export class Router {
       const preactivationDone$ =
           preactivationResolveData$.pipe(mergeMap((p): Observable<NavStreamValue> => {
             if (typeof p === 'boolean' || this.navigationId !== id) return of (false);
-            return this.hooks.afterPreactivation(p.snapshot).pipe(map(() => p));
+            return this.hooks
+                .afterPreactivation(p.snapshot, {
+                  navigationId: id,
+                  appliedUrlTree: url,
+                  rawUrlTree: rawUrl, skipLocationChange, replaceUrl,
+                })
+                .pipe(map(() => p));
           }));
 
 
