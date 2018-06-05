@@ -13,7 +13,7 @@ import { ItemDirective } from './item.directive';
 // #enddocregion directive-import
 
 
-// @NgModule decorator with its metadata
+// @NgModule 데코레이터에 메타데이터를 지정합니다.
 @NgModule({
 // #docregion declarations
   declarations: [
