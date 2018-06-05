@@ -297,7 +297,7 @@ export function destroyViewTree(rootView: LView): void {
     } else if (viewOrContainer.next) {
       // Only move to the side and clean if operating below rootView -
       // otherwise we would start cleaning up sibling views of the rootView.
-      cleanUpView(viewOrContainer as LView);
+      cleanUpView(viewOrContainer);
       next = viewOrContainer.next;
     }
 
@@ -306,10 +306,10 @@ export function destroyViewTree(rootView: LView): void {
       // with a root view that doesn't have children. We didn't descend into child views
       // so no need to go back up the views tree.
       while (viewOrContainer && !viewOrContainer !.next && viewOrContainer !== rootView) {
-        cleanUpView(viewOrContainer as LView);
+        cleanUpView(viewOrContainer);
         viewOrContainer = getParentState(viewOrContainer, rootView);
       }
-      cleanUpView(viewOrContainer as LView || rootView);
+      cleanUpView(viewOrContainer || rootView);
 
       next = viewOrContainer && viewOrContainer.next;
     }
@@ -472,30 +472,42 @@ export function getParentState(state: LViewOrLContainer, rootView: LView): LView
  *
  * @param view The LView to clean up
  */
-function cleanUpView(view: LView): void {
-  removeListeners(view);
-  executeOnDestroys(view);
-  executePipeOnDestroys(view);
-  // For component views only, the local renderer is destroyed as clean up time.
-  if (view.tView && view.tView.id === -1 && isProceduralRenderer(view.renderer)) {
-    ngDevMode && ngDevMode.rendererDestroy++;
-    view.renderer.destroy();
+function cleanUpView(viewOrContainer: LViewOrLContainer): void {
+  if ((viewOrContainer as LView).tView) {
+    const view = viewOrContainer as LView;
+    removeListeners(view);
+    executeOnDestroys(view);
+    executePipeOnDestroys(view);
+    // For component views only, the local renderer is destroyed as clean up time.
+    if (view.tView.id === -1 && isProceduralRenderer(view.renderer)) {
+      ngDevMode && ngDevMode.rendererDestroy++;
+      view.renderer.destroy();
+    }
   }
 }
 
 /** Removes listeners and unsubscribes from output subscriptions */
 function removeListeners(view: LView): void {
-  const cleanup = view.cleanup !;
+  const cleanup = view.tView.cleanup !;
   if (cleanup != null) {
     for (let i = 0; i < cleanup.length - 1; i += 2) {
       if (typeof cleanup[i] === 'string') {
-        cleanup ![i + 1].removeEventListener(cleanup[i], cleanup[i + 2], cleanup[i + 3]);
+        // This is a listener with the native renderer
+        const native = view.data[cleanup[i + 1]].native;
+        const listener = view.cleanupInstances ![cleanup[i + 2]];
+        native.removeEventListener(cleanup[i], listener, cleanup[i + 3]);
         i += 2;
+      } else if (typeof cleanup[i] === 'number') {
+        // This is a listener with renderer2 (cleanup fn can be found by index)
+        const cleanupFn = view.cleanupInstances ![cleanup[i]];
+        cleanupFn();
       } else {
-        cleanup[i].call(cleanup[i + 1]);
+        // This is a cleanup function that is grouped with the index of its context
+        const context = view.cleanupInstances ![cleanup[i + 1]];
+        cleanup[i].call(context);
       }
     }
-    view.cleanup = null;
+    view.cleanupInstances = null;
   }
 }
 

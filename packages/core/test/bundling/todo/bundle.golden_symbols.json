@@ -444,6 +444,9 @@
     "name": "getSymbolIterator"
   },
   {
+    "name": "getTViewCleanup"
+  },
+  {
     "name": "getTypeNameForDebugging"
   },
   {
@@ -625,6 +628,12 @@
   },
   {
     "name": "setUpAttributes"
+  },
+  {
+    "name": "storeCleanupFn"
+  },
+  {
+    "name": "storeCleanupWithContext"
   },
   {
     "name": "stringify"
