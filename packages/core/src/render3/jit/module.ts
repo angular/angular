@@ -29,34 +29,47 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
 
   // Compute transitiveCompileScope
   const transitiveCompileScope = {
-    directives: [] as any[],
-    pipes: [] as any[],
+    directives: new Set<any>(),
+    pipes: new Set<any>(),
+    modules: new Set<any>(),
   };
 
   function addExportsFrom(module: Type<any>& {ngModuleDef: NgModuleDef<any>}): void {
-    module.ngModuleDef.exports.forEach((exp: any) => {
-      if (isNgModule(exp)) {
-        addExportsFrom(exp);
-      } else if (exp.ngPipeDef) {
-        transitiveCompileScope.pipes.push(exp);
-      } else {
-        transitiveCompileScope.directives.push(exp);
-      }
-    });
+    if (!transitiveCompileScope.modules.has(module)) {
+      module.ngModuleDef.exports.forEach((exp: any) => {
+        if (isNgModule(exp)) {
+          addExportsFrom(exp);
+        } else if (exp.ngPipeDef) {
+          transitiveCompileScope.pipes.add(exp);
+        } else {
+          transitiveCompileScope.directives.add(exp);
+        }
+      });
+    }
   }
 
-  flatten([(ngModule.imports || EMPTY_ARRAY), (ngModule.exports || EMPTY_ARRAY)])
-      .filter(importExport => isNgModule(importExport))
-      .forEach(mod => addExportsFrom(mod));
+  flatten([
+    (ngModule.imports || EMPTY_ARRAY), (ngModule.exports || EMPTY_ARRAY)
+  ]).forEach(importExport => {
+    const maybeModule = expandModuleWithProviders(importExport);
+    if (isNgModule(maybeModule)) {
+      addExportsFrom(maybeModule);
+    }
+  });
 
   flatten(ngModule.declarations || EMPTY_ARRAY).forEach(decl => {
     if (decl.ngPipeDef) {
-      transitiveCompileScope.pipes.push(decl);
+      transitiveCompileScope.pipes.add(decl);
+    } else if (decl.ngDirectiveDef) {
+      transitiveCompileScope.directives.add(decl);
     } else if (decl.ngComponentDef) {
-      transitiveCompileScope.directives.push(decl);
+      transitiveCompileScope.directives.add(decl);
       patchComponentWithScope(decl, type as any);
     } else {
-      transitiveCompileScope.directives.push(decl);
+      // A component that has not been compiled yet because the template is being fetched
+      // we need to store a reference to the module to update the selector scope after
+      // the component gets compiled
+      transitiveCompileScope.directives.add(decl);
       decl.ngSelectorScope = type;
     }
   });
@@ -77,7 +90,10 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
         };
         const res = compileR3NgModule(meta);
         def = jitExpression(res.expression, angularCoreEnv, `ng://${type.name}/ngModuleDef.js`);
-        def.transitiveCompileScope = transitiveCompileScope;
+        def.transitiveCompileScope = {
+          directives: Array.from(transitiveCompileScope.directives),
+          pipes: Array.from(transitiveCompileScope.pipes),
+        };
       }
       return def;
     },
