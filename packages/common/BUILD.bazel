@@ -27,7 +27,10 @@ ng_package(
     ],
     entry_point = "packages/common/index.js",
     packages = ["//packages/common/locales:package"],
-    tags = ["release-with-framework"],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
     deps = [
         "//packages/common",
         "//packages/common/http",
