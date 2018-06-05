@@ -149,21 +149,21 @@ function getNextOrParentSiblingNode(initialNode: LNode, rootNode: LNode): LNode|
  * @returns RNode The first RNode of the given LNode or null if there is none.
  */
 function findFirstRNode(rootNode: LNode): RElement|RText|null {
-  return walkLNodeTree(rootNode, rootNode, WalkLNodeTreeAction.FIND) || null;
+  return walkLNodeTree(rootNode, rootNode, WalkLNodeTreeAction.Find) || null;
 }
 
 const enum WalkLNodeTreeAction {
   /** returns the first available native node */
-  FIND = 0,
+  Find = 0,
 
   /** node insert in the native environment */
-  INSERT = 1,
+  Insert = 1,
 
   /** node detach from the native environment */
-  DETACH = 2,
+  Detach = 2,
 
   /** node destruction using the renderer's API */
-  DESTROY = 3,
+  Destroy = 3,
 }
 
 /**
@@ -189,20 +189,20 @@ function walkLNodeTree(
     let nextNode: LNode|null = null;
     if (node.tNode.type === TNodeType.Element) {
       // Execute the action
-      if (action === WalkLNodeTreeAction.FIND) {
+      if (action === WalkLNodeTreeAction.Find) {
         return node.native;
-      } else if (action === WalkLNodeTreeAction.INSERT) {
+      } else if (action === WalkLNodeTreeAction.Insert) {
         const parent = renderParentNode !.native;
         isProceduralRenderer(renderer !) ?
             (renderer as ProceduralRenderer3)
                 .insertBefore(parent !, node.native !, beforeNode as RNode | null) :
             parent !.insertBefore(node.native !, beforeNode as RNode | null, true);
-      } else if (action === WalkLNodeTreeAction.DETACH) {
+      } else if (action === WalkLNodeTreeAction.Detach) {
         const parent = renderParentNode !.native;
         isProceduralRenderer(renderer !) ?
             (renderer as ProceduralRenderer3).removeChild(parent as RElement, node.native !) :
             parent !.removeChild(node.native !);
-      } else if (action === WalkLNodeTreeAction.DESTROY) {
+      } else if (action === WalkLNodeTreeAction.Destroy) {
         ngDevMode && ngDevMode.rendererDestroyNode++;
         (renderer as ProceduralRenderer3).destroyNode !(node.native !);
       }
@@ -262,7 +262,7 @@ export function addRemoveViewFromContainer(
     let node: LNode|null = getChildLNode(rootNode);
     const renderer = container.view.renderer;
     walkLNodeTree(
-        node, rootNode, insertMode ? WalkLNodeTreeAction.INSERT : WalkLNodeTreeAction.DETACH,
+        node, rootNode, insertMode ? WalkLNodeTreeAction.Insert : WalkLNodeTreeAction.Detach,
         renderer, parentNode, beforeNode);
   }
 }
@@ -436,7 +436,7 @@ export function getLViewChild(view: LView): LView|LContainer|null {
 export function destroyLView(view: LView) {
   const renderer = view.renderer;
   if (isProceduralRenderer(renderer) && renderer.destroyNode) {
-    walkLNodeTree(view.node, view.node, WalkLNodeTreeAction.DESTROY, renderer);
+    walkLNodeTree(view.node, view.node, WalkLNodeTreeAction.Destroy, renderer);
   }
   destroyViewTree(view);
   // Sets the destroyed flag
