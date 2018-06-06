@@ -133,11 +133,14 @@ describe('compiler compliance: template', () => {
       };
 
       const template = `
+        // ...
         template:function MyComponent_Template(rf: IDENT, $ctx$: IDENT){
           if (rf & 1) {
             $i0$.ɵEe(0,'div');
           }
         }`;
+
+      debugger;
 
       const result = compile(files, angularFiles);
 
