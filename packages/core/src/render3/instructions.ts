@@ -842,28 +842,15 @@ export function createTView(
 function setUpAttributes(native: RElement, attrs: TAttributes): void {
   const isProc = isProceduralRenderer(renderer);
   for (let i = 0; i < attrs.length; i += 2) {
-    let attrName = attrs[i];
-    if (attrName === 0) {  // NS.FULL
-      // Namespaced attribute
-      const attrNS = attrs[i + 1] as string;
-      attrName = attrs[i + 2] as string;
-      const attrVal = attrs[i + 3] as string;
-      i += 2;
-      if (isProc) {
-        (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal, attrNS);
-      } else {
-        native.setAttributeNS(attrNS, attrName, attrVal);
-      }
-    } else {
-      if (attrName === AttributeMarker.SELECT_ONLY) break;
-      if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
-        const attrVal = attrs[i + 1];
-        ngDevMode && ngDevMode.rendererSetAttribute++;
-        isProc ?
-            (renderer as ProceduralRenderer3)
-                .setAttribute(native, attrName as string, attrVal as string) :
-            native.setAttribute(attrName as string, attrVal as string);
-      }
+    const attrName = attrs[i];
+    if (attrName === AttributeMarker.SELECT_ONLY) break;
+    if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
+      const attrVal = attrs[i + 1];
+      ngDevMode && ngDevMode.rendererSetAttribute++;
+      isProc ?
+          (renderer as ProceduralRenderer3)
+              .setAttribute(native, attrName as string, attrVal as string) :
+          native.setAttribute(attrName as string, attrVal as string);
     }
   }
 }
@@ -1506,8 +1493,7 @@ function generateInitialInputs(
 
   const attrs = tNode.attrs !;
   for (let i = 0; i < attrs.length; i += 2) {
-    const first = attrs[i];
-    const attrName = first === 0 ? attrs[i += 2] : first;  // 0 = NS.FULL
+    const attrName = attrs[i];
     const minifiedInputName = inputs[attrName];
     const attrValue = attrs[i + 1];
 
@@ -1920,7 +1906,7 @@ function appendToProjectionNode(
  *        - 1 based index of the selector from the {@link projectionDef}
  */
 export function projection(
-    nodeIndex: number, localIndex: number, selectorIndex: number = 0, attrs?: TAttributes): void {
+    nodeIndex: number, localIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
   const node = createLNode(
       nodeIndex, TNodeType.Projection, null, null, attrs || null, {head: null, tail: null});
 
