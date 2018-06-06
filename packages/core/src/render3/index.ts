@@ -54,11 +54,6 @@ export {
   elementStyle as s,
   elementStyleNamed as sn,
 
-  namespace as N,
-  namespaceHTML as NH,
-  namespaceMathML as NM,
-  namespaceSVG as NS,
-
   listener as L,
   store as st,
   load as ld,

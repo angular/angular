@@ -496,7 +496,6 @@ export function renderEmbeddedTemplate<T>(
       rf = RenderFlags.Create;
     }
     oldView = enterView(viewNode.data, viewNode);
-    namespaceHTML();
     tView.template !(rf, context);
     if (rf & RenderFlags.Update) {
       refreshView();
@@ -522,7 +521,6 @@ export function renderComponentOrTemplate<T>(
       rendererFactory.begin();
     }
     if (template) {
-      namespaceHTML();
       template(getRenderFlags(hostView), componentOrContext !);
       refreshView();
     } else {
@@ -2188,7 +2186,6 @@ export function detectChangesInternal<T>(hostView: LView, hostNode: LElementNode
   const template = hostView.tView.template !;
 
   try {
-    namespaceHTML();
     template(getRenderFlags(hostView), component);
     refreshView();
   } finally {

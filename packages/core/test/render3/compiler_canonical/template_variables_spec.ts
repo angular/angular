@@ -133,57 +133,6 @@ describe('template variables', () => {
     expect(toHtml(renderComponent(MyComponent))).toEqual('<ul></ul>');
   });
 
-  it('should support a let variable and reference inside of SVG', () => {
-    type $MyComponent$ = MyComponent;
-    const $_c0$ = ['for', '', 'forOf', ''];
-
-    interface Item {
-      name: number;
-    }
-
-    @Component({
-      selector: 'my-component',
-      template: `<svg><g *for="let item of items"><circle></circle></g></svg>`
-    })
-    class MyComponent {
-      items = [{data: 42}, {data: 42}];
-
-      // NORMATIVE
-      static ngComponentDef = $r3$.ɵdefineComponent({
-        type: MyComponent,
-        selectors: [['my-component']],
-        factory: function MyComponent_Factory() { return new MyComponent(); },
-        template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
-          if (rf & 1) {
-            $r3$.ɵNS();
-            $r3$.ɵE(0, 'svg');
-            $r3$.ɵC(1, MyComponent__svg_g_Template_1, null, $_c0$);
-            $r3$.ɵe();
-          }
-          if (rf & 2) {
-            $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
-          }
-          function MyComponent__svg_g_Template_1(rf: $RenderFlags$, ctx0: $MyComponent$) {
-            if (rf & 1) {
-              $r3$.ɵE(0, 'g');
-              $r3$.ɵEe(1, 'circle');
-              $r3$.ɵe();
-            }
-          }
-        }
-      });
-      // /NORMATIVE
-    }
-
-    // NON-NORMATIVE
-    (MyComponent.ngComponentDef as ComponentDef<any>).directiveDefs =
-        [ForOfDirective.ngDirectiveDef];
-    // /NON-NORMATIVE
-
-    // TODO(chuckj): update when the changes to enable ngForOf lands.
-    expect(toHtml(renderComponent(MyComponent))).toEqual('<svg></svg>');
-  });
-
   it('should support accessing parent template variables', () => {
     type $MyComponent$ = MyComponent;
 
