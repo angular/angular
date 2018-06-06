@@ -612,6 +612,12 @@
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
           },
+          "willh-angular-zero": {
+            "desc": "Online video course in Chinese for newbies who need to learning from the scratch in Chinese.  It's covering Angular, Angular CLI, TypeScript, VSCode, and some must known knowledge of Angular development.",
+            "rev": true,
+            "title": "Angular in Action: Start From Scratch (正體中文)",
+            "url": "https://www.udemy.com/angular-zero/?couponCode=ANGULAR.IO"
+          },
           "angular-firebase": {
             "desc": "Video lessons covering progressive web apps with Angular, Firebase, RxJS, and related APIs.",
             "rev": true,
