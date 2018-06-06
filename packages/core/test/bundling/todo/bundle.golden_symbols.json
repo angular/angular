@@ -399,6 +399,9 @@
     "name": "executeInitHooks"
   },
   {
+    "name": "executeNodeAction"
+  },
+  {
     "name": "executeOnDestroys"
   },
   {
@@ -418,12 +421,6 @@
   },
   {
     "name": "findDirectiveMatches"
-  },
-  {
-    "name": "findFirstRNode"
-  },
-  {
-    "name": "findNextRNodeSibling"
   },
   {
     "name": "firstTemplatePass"
@@ -454,9 +451,6 @@
   },
   {
     "name": "getNextLNodeWithProjection"
-  },
-  {
-    "name": "getNextOrParentSiblingNode"
   },
   {
     "name": "getOrCreateContainerRef"

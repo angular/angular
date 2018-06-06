@@ -24,7 +24,7 @@ import {assertNodeType} from './node_assert';
 import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode, getLViewChild} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
-import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
+import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {ViewRef} from './view_ref';
 
@@ -308,7 +308,7 @@ export function createLViewData<T>(
  */
 export function createLNodeObject(
     type: TNodeType, currentView: LViewData, parent: LNode | null,
-    native: RText | RElement | null | undefined, state: any,
+    native: RText | RElement | RComment | null, state: any,
     queries: LQueries | null): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
   return {
     native: native as any,
@@ -341,15 +341,15 @@ export function createLNode(
     index: number, type: TNodeType.View, native: null, name: null, attrs: null,
     lViewData: LViewData): LViewNode;
 export function createLNode(
-    index: number, type: TNodeType.Container, native: undefined, name: string | null,
+    index: number, type: TNodeType.Container, native: RComment, name: string | null,
     attrs: TAttributes | null, lContainer: LContainer): LContainerNode;
 export function createLNode(
     index: number, type: TNodeType.Projection, native: null, name: null, attrs: TAttributes | null,
     lProjection: LProjection): LProjectionNode;
 export function createLNode(
-    index: number, type: TNodeType, native: RText | RElement | null | undefined,
-    name: string | null, attrs: TAttributes | null, state?: null | LViewData | LContainer |
-        LProjection): LElementNode&LTextNode&LViewNode&LContainerNode&LProjectionNode {
+    index: number, type: TNodeType, native: RText | RElement | RComment | null, name: string | null,
+    attrs: TAttributes | null, state?: null | LViewData | LContainer | LProjection): LElementNode&
+    LTextNode&LViewNode&LContainerNode&LProjectionNode {
   const parent = isParent ? previousOrParentNode :
                             previousOrParentNode && getParentLNode(previousOrParentNode) !as LNode;
   // Parents cannot cross component boundaries because components will be used in multiple places,
@@ -1571,8 +1571,10 @@ export function container(
   const currentParent = isParent ? previousOrParentNode : getParentLNode(previousOrParentNode) !;
   const lContainer = createLContainer(currentParent, viewData);
 
-  const node = createLNode(
-      index, TNodeType.Container, undefined, tagName || null, attrs || null, lContainer);
+  const comment = renderer.createComment(ngDevMode ? 'container' : '');
+  const node =
+      createLNode(index, TNodeType.Container, comment, tagName || null, attrs || null, lContainer);
+  appendChild(getParentLNode(node), comment, viewData);
 
   if (firstTemplatePass) {
     node.tNode.tViews =
@@ -1609,9 +1611,6 @@ export function containerRefreshStart(index: number): void {
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.Container);
   isParent = true;
   (previousOrParentNode as LContainerNode).data[ACTIVE_INDEX] = 0;
-  ngDevMode && assertSame(
-                   (previousOrParentNode as LContainerNode).native, undefined,
-                   `the container's native element should not have been set yet.`);
 
   if (!checkNoChangesMode) {
     // We need to execute init hooks here so ngOnInit hooks are called in top level views
@@ -1635,7 +1634,6 @@ export function containerRefreshEnd(): void {
   }
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.Container);
   const container = previousOrParentNode as LContainerNode;
-  container.native = undefined;
   ngDevMode && assertNodeType(container, TNodeType.Container);
   const nextIndex = container.data[ACTIVE_INDEX] !;
 

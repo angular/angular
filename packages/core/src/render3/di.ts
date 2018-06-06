@@ -26,9 +26,9 @@ import {LInjector} from './interfaces/injector';
 import {AttributeMarker, LContainerNode, LElementNode, LNode, LViewNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {LQueries, QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
-import {DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, TVIEW, TView} from './interfaces/view';
+import {DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {detachView, getParentLNode, insertView, removeView} from './node_manipulation';
+import {appendChild, detachView, getParentLNode, insertView, removeView} from './node_manipulation';
 import {notImplemented, stringify} from './util';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
 
@@ -526,8 +526,7 @@ export class ReadFromInjectorFn<T> {
  * @returns The ElementRef instance to use
  */
 export function getOrCreateElementRef(di: LInjector): viewEngine_ElementRef {
-  return di.elementRef || (di.elementRef = new ElementRef(
-                               di.node.tNode.type === TNodeType.Container ? null : di.node.native));
+  return di.elementRef || (di.elementRef = new ElementRef(di.node.native));
 }
 
 export const QUERY_READ_TEMPLATE_REF = <QueryReadType<viewEngine_TemplateRef<any>>>(
@@ -574,8 +573,10 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
     ngDevMode && assertNodeOfPossibleTypes(vcRefHost, TNodeType.Container, TNodeType.Element);
     const hostParent = getParentLNode(vcRefHost) !;
     const lContainer = createLContainer(hostParent, vcRefHost.view, true);
+    const comment = vcRefHost.view[RENDERER].createComment(ngDevMode ? 'container' : '');
     const lContainerNode: LContainerNode = createLNodeObject(
-        TNodeType.Container, vcRefHost.view, hostParent, undefined, lContainer, null);
+        TNodeType.Container, vcRefHost.view, hostParent, comment, lContainer, null);
+    appendChild(hostParent, comment, vcRefHost.view);
 
 
     if (vcRefHost.queries) {
@@ -648,9 +649,6 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     (viewRef as EmbeddedViewRef<any>).attachToViewContainerRef(this);
 
     insertView(this._lContainerNode, lViewNode, adjustedIdx);
-    // invalidate cache of next sibling RNode (we do similar operation in the containerRefreshEnd
-    // instruction)
-    this._lContainerNode.native = undefined;
 
     this._viewRefs.splice(adjustedIdx, 0, viewRef);
 

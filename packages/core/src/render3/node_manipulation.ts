@@ -10,59 +10,12 @@ import {callHooks} from './hooks';
 import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
-import {ProceduralRenderer3, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
+import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
 import {stringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
-
-/**
- * Returns the first RNode following the given LNode in the same parent DOM element.
- *
- * This is needed in order to insert the given node with insertBefore.
- *
- * @param node The node whose following DOM node must be found.
- * @param stopNode A parent node at which the lookup in the tree should be stopped, or null if the
- * lookup should not be stopped until the result is found.
- * @returns RNode before which the provided node should be inserted or null if the lookup was
- * stopped
- * or if there is no native node after the given logical node in the same native parent.
- */
-function findNextRNodeSibling(node: LNode | null, stopNode: LNode | null): RElement|RText|null {
-  let currentNode = node;
-  while (currentNode && currentNode !== stopNode) {
-    let pNextOrParent = currentNode.pNextOrParent;
-    if (pNextOrParent) {
-      while (pNextOrParent.tNode.type !== TNodeType.Projection) {
-        const nativeNode = findFirstRNode(pNextOrParent);
-        if (nativeNode) {
-          return nativeNode;
-        }
-        pNextOrParent = pNextOrParent.pNextOrParent !;
-      }
-      currentNode = pNextOrParent;
-    } else {
-      let currentSibling = getNextLNode(currentNode);
-      while (currentSibling) {
-        const nativeNode = findFirstRNode(currentSibling);
-        if (nativeNode) {
-          return nativeNode;
-        }
-        currentSibling = getNextLNode(currentSibling);
-      }
-      const parentNode = getParentLNode(currentNode);
-      currentNode = null;
-      if (parentNode) {
-        const parentType = parentNode.tNode.type;
-        if (parentType === TNodeType.Container || parentType === TNodeType.View) {
-          currentNode = parentNode;
-        }
-      }
-    }
-  }
-  return null;
-}
 
 /** Retrieves the sibling node for the given node. */
 export function getNextLNode(node: LNode): LNode|null {
@@ -84,8 +37,8 @@ export function getChildLNode(node: LNode): LNode|null {
 }
 
 /** Retrieves the parent LNode of a given node. */
-export function getParentLNode(node: LElementNode | LTextNode | LProjectionNode): LElementNode|
-    LViewNode;
+export function getParentLNode(node: LContainerNode | LElementNode | LTextNode | LProjectionNode):
+    LElementNode|LViewNode;
 export function getParentLNode(node: LViewNode): LContainerNode|null;
 export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null;
 export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null {
@@ -115,98 +68,47 @@ function getNextLNodeWithProjection(node: LNode): LNode|null {
   return getNextLNode(node);
 }
 
-/**
- * Find the next node in the LNode tree, taking into account the place where a node is
- * projected (in the shadow DOM) rather than where it comes from (in the light DOM).
- *
- * If there is no sibling node, this function goes to the next sibling of the parent node...
- * until it reaches rootNode (at which point null is returned).
- *
- * @param initialNode The node whose following node in the LNode tree must be found.
- * @param rootNode The root node at which the lookup should stop.
- * @return LNode|null The following node in the LNode tree.
- */
-function getNextOrParentSiblingNode(initialNode: LNode, rootNode: LNode): LNode|null {
-  let node: LNode|null = initialNode;
-  let nextNode = getNextLNodeWithProjection(node);
-  while (node && !nextNode) {
-    // if node.pNextOrParent is not null here, it is not the next node
-    // (because, at this point, nextNode is null, so it is the parent)
-    node = node.pNextOrParent || getParentLNode(node);
-    if (node === rootNode) {
-      return null;
-    }
-    nextNode = node && getNextLNodeWithProjection(node);
-  }
-  return nextNode;
-}
-
-/**
- * Returns the first RNode inside the given LNode.
- *
- * @param node The node whose first DOM node must be found
- * @returns RNode The first RNode of the given LNode or null if there is none.
- */
-function findFirstRNode(rootNode: LNode): RElement|RText|null {
-  return walkLNodeTree(rootNode, rootNode, WalkLNodeTreeAction.Find) || null;
-}
-
 const enum WalkLNodeTreeAction {
-  /** returns the first available native node */
-  Find = 0,
-
   /** node insert in the native environment */
-  Insert = 1,
+  Insert = 0,
 
   /** node detach from the native environment */
-  Detach = 2,
+  Detach = 1,
 
   /** node destruction using the renderer's API */
-  Destroy = 3,
+  Destroy = 2,
 }
 
 /**
  * Walks a tree of LNodes, applying a transformation on the LElement nodes, either only on the first
  * one found, or on all of them.
- * NOTE: for performance reasons, the possible actions are inlined within the function instead of
- * being passed as an argument.
  *
  * @param startingNode the node from which the walk is started.
  * @param rootNode the root node considered.
- * @param action Identifies the action to be performed on the LElement nodes.
- * @param renderer Optional the current renderer, required for action modes 1, 2 and 3.
- * @param renderParentNode Optionnal the render parent node to be set in all LContainerNodes found,
- * required for action modes 1 and 2.
- * @param beforeNode Optionnal the node before which elements should be added, required for action
- * modes 1.
+ * @param action identifies the action to be performed on the LElement nodes.
+ * @param renderer the current renderer.
+ * @param renderParentNode Optional the render parent node to be set in all LContainerNodes found,
+ * required for action modes Insert and Destroy.
+ * @param beforeNode Optional the node before which elements should be added, required for action
+ * Insert.
  */
 function walkLNodeTree(
-    startingNode: LNode | null, rootNode: LNode, action: WalkLNodeTreeAction, renderer?: Renderer3,
+    startingNode: LNode | null, rootNode: LNode, action: WalkLNodeTreeAction, renderer: Renderer3,
     renderParentNode?: LElementNode | null, beforeNode?: RNode | null) {
   let node: LNode|null = startingNode;
   while (node) {
     let nextNode: LNode|null = null;
+    const parent = renderParentNode ? renderParentNode.native : null;
     if (node.tNode.type === TNodeType.Element) {
       // Execute the action
-      if (action === WalkLNodeTreeAction.Find) {
-        return node.native;
-      } else if (action === WalkLNodeTreeAction.Insert) {
-        const parent = renderParentNode !.native;
-        isProceduralRenderer(renderer !) ?
-            (renderer as ProceduralRenderer3)
-                .insertBefore(parent !, node.native !, beforeNode as RNode | null) :
-            parent !.insertBefore(node.native !, beforeNode as RNode | null, true);
-      } else if (action === WalkLNodeTreeAction.Detach) {
-        const parent = renderParentNode !.native;
-        isProceduralRenderer(renderer !) ?
-            (renderer as ProceduralRenderer3).removeChild(parent as RElement, node.native !) :
-            parent !.removeChild(node.native !);
-      } else if (action === WalkLNodeTreeAction.Destroy) {
-        ngDevMode && ngDevMode.rendererDestroyNode++;
-        (renderer as ProceduralRenderer3).destroyNode !(node.native !);
+      executeNodeAction(action, renderer, parent, node.native !, beforeNode);
+      if (node.dynamicLContainerNode) {
+        executeNodeAction(
+            action, renderer, parent, node.dynamicLContainerNode.native !, beforeNode);
       }
       nextNode = getNextLNode(node);
     } else if (node.tNode.type === TNodeType.Container) {
+      executeNodeAction(action, renderer, parent, node.native !, beforeNode);
       const lContainerNode: LContainerNode = (node as LContainerNode);
       const childContainerData: LContainer = lContainerNode.dynamicLContainerNode ?
           lContainerNode.dynamicLContainerNode.data :
@@ -216,6 +118,13 @@ function walkLNodeTree(
       }
       nextNode =
           childContainerData[VIEWS].length ? getChildLNode(childContainerData[VIEWS][0]) : null;
+      if (nextNode) {
+        // When the walker enters a container, then the beforeNode has to become the local native
+        // comment node.
+        beforeNode = lContainerNode.dynamicLContainerNode ?
+            lContainerNode.dynamicLContainerNode.native :
+            lContainerNode.native;
+      }
     } else if (node.tNode.type === TNodeType.Projection) {
       // For Projection look at the first projected node
       nextNode = (node as LProjectionNode).data.head;
@@ -224,7 +133,55 @@ function walkLNodeTree(
       nextNode = getChildLNode(node as LViewNode);
     }
 
-    node = nextNode === null ? getNextOrParentSiblingNode(node, rootNode) : nextNode;
+    if (nextNode == null) {
+      /**
+       * Find the next node in the LNode tree, taking into account the place where a node is
+       * projected (in the shadow DOM) rather than where it comes from (in the light DOM).
+       *
+       * If there is no sibling node, then it goes to the next sibling of the parent node...
+       * until it reaches rootNode (at which point null is returned).
+       */
+      let currentNode: LNode|null = node;
+      node = getNextLNodeWithProjection(currentNode);
+      while (currentNode && !node) {
+        // if node.pNextOrParent is not null here, it is not the next node
+        // (because, at this point, nextNode is null, so it is the parent)
+        currentNode = currentNode.pNextOrParent || getParentLNode(currentNode);
+        if (currentNode === rootNode) {
+          return null;
+        }
+        // When the walker exits a container, the beforeNode has to be restored to the previous
+        // value.
+        if (currentNode && !currentNode.pNextOrParent &&
+            currentNode.tNode.type === TNodeType.Container) {
+          beforeNode = currentNode.native;
+        }
+        node = currentNode && getNextLNodeWithProjection(currentNode);
+      }
+    } else {
+      node = nextNode;
+    }
+  }
+}
+
+/**
+ * NOTE: for performance reasons, the possible actions are inlined within the function instead of
+ * being passed as an argument.
+ */
+function executeNodeAction(
+    action: WalkLNodeTreeAction, renderer: Renderer3, parent: RElement | null,
+    node: RComment | RElement | RText, beforeNode?: RNode | null) {
+  if (action === WalkLNodeTreeAction.Insert) {
+    isProceduralRenderer(renderer !) ?
+        (renderer as ProceduralRenderer3).insertBefore(parent !, node, beforeNode as RNode | null) :
+        parent !.insertBefore(node, beforeNode as RNode | null, true);
+  } else if (action === WalkLNodeTreeAction.Detach) {
+    isProceduralRenderer(renderer !) ?
+        (renderer as ProceduralRenderer3).removeChild(parent !, node) :
+        parent !.removeChild(node);
+  } else if (action === WalkLNodeTreeAction.Destroy) {
+    ngDevMode && ngDevMode.rendererDestroyNode++;
+    (renderer as ProceduralRenderer3).destroyNode !(node);
   }
 }
 
@@ -354,15 +311,9 @@ export function insertView(
   // and we should wait until that parent processes its nodes (otherwise, we will insert this view's
   // nodes twice - once now and once when its parent inserts its views).
   if (container.data[RENDER_PARENT] !== null) {
-    let beforeNode = findNextRNodeSibling(viewNode, container);
-
-    if (!beforeNode) {
-      let containerNextNativeNode = container.native;
-      if (containerNextNativeNode === undefined) {
-        containerNextNativeNode = container.native = findNextRNodeSibling(container, null);
-      }
-      beforeNode = containerNextNativeNode;
-    }
+    // Find the node to insert in front of
+    const beforeNode =
+        index + 1 < views.length ? (getChildLNode(views[index + 1]) !).native : container.native;
     addRemoveViewFromContainer(container, viewNode, true, beforeNode);
   }
 
@@ -581,9 +532,8 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: LVi
 export function appendProjectedNode(
     node: LElementNode | LTextNode | LContainerNode, currentParent: LElementNode,
     currentView: LViewData): void {
-  if (node.tNode.type !== TNodeType.Container) {
-    appendChild(currentParent, (node as LElementNode | LTextNode).native, currentView);
-  } else {
+  appendChild(currentParent, node.native, currentView);
+  if (node.tNode.type === TNodeType.Container) {
     // The node we are adding is a Container and we are adding it to Element which
     // is not a component (no more re-projection).
     // Alternatively a container is projected at the root of a component's template
@@ -598,5 +548,6 @@ export function appendProjectedNode(
   }
   if (node.dynamicLContainerNode) {
     node.dynamicLContainerNode.data[RENDER_PARENT] = currentParent;
+    appendChild(currentParent, node.dynamicLContainerNode.native, currentView);
   }
 }
