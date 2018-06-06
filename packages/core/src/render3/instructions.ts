@@ -8,7 +8,7 @@
 
 import './ng_dev_mode';
 
-import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual, assertSame} from './assert';
+import {assertEqual, assertLessThan, assertNotEqual, assertNotNull, assertNull, assertSame} from './assert';
 import {LContainer} from './interfaces/container';
 import {LInjector} from './interfaces/injector';
 import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
@@ -406,8 +406,7 @@ export function createLNode(
   if ((type & TNodeType.ViewOrElement) === TNodeType.ViewOrElement && isState) {
     // Bit of a hack to bust through the readonly because there is a circular dep between
     // LView and LNode.
-    ngDevMode &&
-        assertNotDefined((state as LView).node, 'LView.node should not have been initialized');
+    ngDevMode && assertNull((state as LView).node, 'LView.node should not have been initialized');
     (state as{node: LNode}).node = node;
     if (firstTemplatePass) (state as LView).tView.node = node.tNode;
   }
@@ -456,7 +455,7 @@ export function renderTemplate<T>(
             sanitizer));
   }
   const hostView = host.data !;
-  ngDevMode && assertDefined(hostView, 'Host node should have an LView defined in host.data.');
+  ngDevMode && assertNotNull(hostView, 'Host node should have an LView defined in host.data.');
   renderComponentOrTemplate(host, hostView, context, template);
   return host;
 }
@@ -1301,8 +1300,8 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
   if (value !== NO_CHANGE) {
     ngDevMode && assertDataInRange(index);
     const existingNode = data[index] as LTextNode;
-    ngDevMode && assertDefined(existingNode, 'LNode should exist');
-    ngDevMode && assertDefined(existingNode.native, 'native element should exist');
+    ngDevMode && assertNotNull(existingNode, 'LNode should exist');
+    ngDevMode && assertNotNull(existingNode.native, 'native element should exist');
     ngDevMode && ngDevMode.rendererSetText++;
     isProceduralRenderer(renderer) ? renderer.setValue(existingNode.native, stringify(value)) :
                                      existingNode.native.textContent = stringify(value);
@@ -1326,7 +1325,7 @@ export function directiveCreate<T>(
     index: number, directive: T, directiveDef: DirectiveDef<T>| ComponentDef<T>): T {
   const instance = baseDirectiveCreate(index, directive, directiveDef);
 
-  ngDevMode && assertDefined(previousOrParentNode.tNode, 'previousOrParentNode.tNode');
+  ngDevMode && assertNotNull(previousOrParentNode.tNode, 'previousOrParentNode.tNode');
   const tNode = previousOrParentNode.tNode;
 
   const isComponent = (directiveDef as ComponentDef<T>).template;
@@ -1495,7 +1494,7 @@ function generateInitialInputs(
 export function createLContainer(
     parentLNode: LNode, currentView: LView, template?: ComponentTemplate<any>,
     isForViewContainerRef?: boolean): LContainer {
-  ngDevMode && assertDefined(parentLNode, 'containers should have a parent');
+  ngDevMode && assertNotNull(parentLNode, 'containers should have a parent');
   return <LContainer>{
     views: [],
     nextIndex: isForViewContainerRef ? null : 0,
@@ -1612,7 +1611,7 @@ function refreshDynamicChildren() {
         const lViewNode = container.views[i];
         // The directives and pipes are not needed here as an existing view is only being refreshed.
         const dynamicView = lViewNode.data;
-        ngDevMode && assertDefined(dynamicView.tView, 'TView must be allocated');
+        ngDevMode && assertNotNull(dynamicView.tView, 'TView must be allocated');
         renderEmbeddedTemplate(lViewNode, dynamicView.tView, dynamicView.context !, renderer);
       }
     }
@@ -1700,7 +1699,7 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
 function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TView {
   ngDevMode && assertNodeType(parent, TNodeType.Container);
   const containerTViews = (parent !.tNode as TContainerNode).tViews as TView[];
-  ngDevMode && assertDefined(containerTViews, 'TView expected');
+  ngDevMode && assertNotNull(containerTViews, 'TView expected');
   ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     const tView = currentView.tView;
@@ -1774,7 +1773,7 @@ export function componentRefresh<T>(directiveIndex: number, elementIndex: number
   ngDevMode && assertDataInRange(elementIndex);
   const element = data ![elementIndex] as LElementNode;
   ngDevMode && assertNodeType(element, TNodeType.Element);
-  ngDevMode && assertDefined(element.data, `Component's host node should have an LView attached.`);
+  ngDevMode && assertNotNull(element.data, `Component's host node should have an LView attached.`);
   const hostView = element.data !;
 
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
@@ -1929,13 +1928,13 @@ export function projection(
 function findComponentHost(lView: LView): LElementNode {
   let viewRootLNode = lView.node;
   while (viewRootLNode.tNode.type === TNodeType.View) {
-    ngDevMode && assertDefined(lView.parent, 'lView.parent');
+    ngDevMode && assertNotNull(lView.parent, 'lView.parent');
     lView = lView.parent !;
     viewRootLNode = lView.node;
   }
 
   ngDevMode && assertNodeType(viewRootLNode, TNodeType.Element);
-  ngDevMode && assertDefined(viewRootLNode.data, 'node.data');
+  ngDevMode && assertNotNull(viewRootLNode.data, 'node.data');
 
   return viewRootLNode as LElementNode;
 }
@@ -2013,7 +2012,7 @@ export function markViewDirty(view: LView): void {
   }
   currentView.flags |= LViewFlags.Dirty;
 
-  ngDevMode && assertDefined(currentView !.context, 'rootContext');
+  ngDevMode && assertNotNull(currentView !.context, 'rootContext');
   scheduleTick(currentView !.context as RootContext);
 }
 
@@ -2034,7 +2033,7 @@ export function scheduleTick<T>(rootContext: RootContext) {
     let res: null|((val: null) => void);
     rootContext.clean = new Promise<null>((r) => res = r);
     rootContext.scheduler(() => {
-      tickRootContext(rootContext);
+      tick(rootContext.component);
       res !(null);
       rootContext.clean = _CLEAN_PROMISE;
     });
@@ -2055,18 +2054,11 @@ export function scheduleTick<T>(rootContext: RootContext) {
  */
 export function tick<T>(component: T): void {
   const rootView = getRootView(component);
-  const rootContext = rootView.context as RootContext;
-  tickRootContext(rootContext);
-}
+  const rootComponent = (rootView.context as RootContext).component;
+  const hostNode = _getComponentHostLElementNode(rootComponent);
 
-function tickRootContext(rootContext: RootContext) {
-  for (let i = 0; i < rootContext.components.length; i++) {
-    const rootComponent = rootContext.components[i];
-    const hostNode = _getComponentHostLElementNode(rootComponent);
-
-    ngDevMode && assertDefined(hostNode.data, 'Component host node should be attached to an LView');
-    renderComponentOrTemplate(hostNode, getRootView(rootComponent), rootComponent);
-  }
+  ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
+  renderComponentOrTemplate(hostNode, rootView, rootComponent);
 }
 
 /**
@@ -2077,7 +2069,7 @@ function tickRootContext(rootContext: RootContext) {
  */
 
 export function getRootView(component: any): LView {
-  ngDevMode && assertDefined(component, 'component');
+  ngDevMode && assertNotNull(component, 'component');
   const lElementNode = _getComponentHostLElementNode(component);
   let lView = lElementNode.view;
   while (lView.parent) {
@@ -2101,7 +2093,7 @@ export function getRootView(component: any): LView {
  */
 export function detectChanges<T>(component: T): void {
   const hostNode = _getComponentHostLElementNode(component);
-  ngDevMode && assertDefined(hostNode.data, 'Component host node should be attached to an LView');
+  ngDevMode && assertNotNull(hostNode.data, 'Component host node should be attached to an LView');
   detectChangesInternal(hostNode.data as LView, hostNode, component);
 }
 
@@ -2150,7 +2142,7 @@ export function detectChangesInternal<T>(hostView: LView, hostNode: LElementNode
  * @param component Component to mark as dirty.
  */
 export function markDirty<T>(component: T) {
-  ngDevMode && assertDefined(component, 'component');
+  ngDevMode && assertNotNull(component, 'component');
   const lElementNode = _getComponentHostLElementNode(component);
   markViewDirty(lElementNode.view);
 }
@@ -2396,7 +2388,7 @@ export function load<T>(index: number): T {
 
 /** Retrieves a value from the `directives` array. */
 export function loadDirective<T>(index: number): T {
-  ngDevMode && assertDefined(directives, 'Directives array should be defined if reading a dir.');
+  ngDevMode && assertNotNull(directives, 'Directives array should be defined if reading a dir.');
   ngDevMode && assertDataInRange(index, directives !);
   return directives ![index];
 }
@@ -2461,7 +2453,7 @@ export function assertPreviousIsParent() {
 }
 
 function assertHasParent() {
-  assertDefined(getParentLNode(previousOrParentNode), 'previousOrParentNode should have a parent');
+  assertNotNull(getParentLNode(previousOrParentNode), 'previousOrParentNode should have a parent');
 }
 
 function assertDataInRange(index: number, arr?: any[]) {
@@ -2492,9 +2484,9 @@ export function assertReservedSlotInitialized(slotOffset: number, numSlots: numb
 }
 
 export function _getComponentHostLElementNode<T>(component: T): LElementNode {
-  ngDevMode && assertDefined(component, 'expecting component got null');
+  ngDevMode && assertNotNull(component, 'expecting component got null');
   const lElementNode = (component as any)[NG_HOST_SYMBOL] as LElementNode;
-  ngDevMode && assertDefined(component, 'object is not a component');
+  ngDevMode && assertNotNull(component, 'object is not a component');
   return lElementNode;
 }
 

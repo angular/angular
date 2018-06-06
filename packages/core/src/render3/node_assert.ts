@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {assertDefined, assertEqual} from './assert';
+import {assertEqual, assertNotNull} from './assert';
 import {LNode, TNodeType} from './interfaces/node';
 
 export function assertNodeType(node: LNode, type: TNodeType) {
-  assertDefined(node, 'should be called with a node');
+  assertNotNull(node, 'should be called with a node');
   assertEqual(node.tNode.type, type, `should be a ${typeName(type)}`);
 }
 
 export function assertNodeOfPossibleTypes(node: LNode, ...types: TNodeType[]) {
-  assertDefined(node, 'should be called with a node');
+  assertNotNull(node, 'should be called with a node');
   const found = types.some(type => node.tNode.type === type);
   assertEqual(found, true, `Should be one of ${types.map(typeName).join(', ')}`);
 }

@@ -15,7 +15,7 @@ import {QueryList as viewEngine_QueryList} from '../linker/query_list';
 import {Type} from '../type';
 import {getSymbolIterator} from '../util';
 
-import {assertDefined, assertEqual} from './assert';
+import {assertEqual, assertNotNull} from './assert';
 import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
 import {assertPreviousIsParent, getCurrentQueries, store, storeCleanupWithContext} from './instructions';
 import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
@@ -163,7 +163,7 @@ export class LQueries_ implements LQueries {
     let query = this.deep;
     while (query) {
       ngDevMode &&
-          assertDefined(
+          assertNotNull(
               query.containerValues, 'View queries need to have a pointer to container values.');
       query.containerValues !.splice(index, 0, query.values);
       query = query.next;
@@ -179,7 +179,7 @@ export class LQueries_ implements LQueries {
     let query = this.deep;
     while (query) {
       ngDevMode &&
-          assertDefined(
+          assertNotNull(
               query.containerValues, 'View queries need to have a pointer to container values.');
       const removed = query.containerValues !.splice(index, 1);
 
@@ -273,7 +273,7 @@ function add(query: LQuery<any>| null, node: LNode) {
         if (directiveIdx !== null) {
           // a node is matching a predicate - determine what to read
           // note that queries using name selector must specify read strategy
-          ngDevMode && assertDefined(predicate.read, 'the node should have a predicate');
+          ngDevMode && assertNotNull(predicate.read, 'the node should have a predicate');
           const result = readFromNodeInjector(nodeInjector, node, predicate.read !, directiveIdx);
           if (result !== null) {
             addMatch(query, result);

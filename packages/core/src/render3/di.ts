@@ -18,9 +18,9 @@ import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
 import {Type} from '../type';
 
-import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
+import {assertGreaterThan, assertLessThan, assertNotNull} from './assert';
 import {addToViewTree, assertPreviousIsParent, createLContainer, createLNodeObject, createTNode, createTView, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
-import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDefList} from './interfaces/definition';
+import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {AttributeMarker, LContainerNode, LElementNode, LNode, LViewNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {LQueries, QueryReadType} from './interfaces/query';
@@ -256,7 +256,7 @@ export function injectAttribute(attrNameToInject: string): string|undefined {
   const lElement = getPreviousOrParentNode() as LElementNode;
   ngDevMode && assertNodeType(lElement, TNodeType.Element);
   const tElement = lElement.tNode;
-  ngDevMode && assertDefined(tElement, 'expecting tNode');
+  ngDevMode && assertNotNull(tElement, 'expecting tNode');
   const attrs = tElement.attrs;
   if (attrs) {
     for (let i = 0; i < attrs.length; i = i + 2) {
@@ -707,7 +707,7 @@ export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef
       hostTNode.tViews = createTView(
           -1, hostNode.data.template !, hostTView.directiveRegistry, hostTView.pipeRegistry);
     }
-    ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
+    ngDevMode && assertNotNull(hostTNode.tViews, 'TView must be allocated');
     di.templateRef = new TemplateRef<any>(
         getOrCreateElementRef(di), hostTNode.tViews as TView, getRenderer(), hostNode.data.queries);
   }
