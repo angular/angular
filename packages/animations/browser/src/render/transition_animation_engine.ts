@@ -104,7 +104,6 @@ export class StateValue {
 
 export const VOID_VALUE = 'void';
 export const DEFAULT_STATE_VALUE = new StateValue(VOID_VALUE);
-export const DELETED_STATE_VALUE = new StateValue('DELETED');
 
 export class AnimationTransitionNamespace {
   public players: TransitionAnimationPlayer[] = [];
@@ -208,8 +207,6 @@ export class AnimationTransitionNamespace {
 
     if (!fromState) {
       fromState = DEFAULT_STATE_VALUE;
-    } else if (fromState === DELETED_STATE_VALUE) {
-      return player;
     }
 
     const isRemoval = toState.value === VOID_VALUE;
@@ -772,10 +769,6 @@ export class TransitionAnimationEngine {
           player.destroy();
         }
       });
-    }
-    const stateMap = this.statesByElement.get(element);
-    if (stateMap) {
-      Object.keys(stateMap).forEach(triggerName => stateMap[triggerName] = DELETED_STATE_VALUE);
     }
   }
 
