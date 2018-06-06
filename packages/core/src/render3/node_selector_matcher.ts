@@ -107,7 +107,8 @@ function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
   if (attrs === null) return -1;
   for (let i = 0; i < attrs.length; i += step) {
     const attrName = attrs[i];
-    if (attrName === AttributeMarker.NAMESPACE_URI) {
+    if (attrName === 0) {
+      // NS.FULL
       step = 2;
     } else if (attrName === name) {
       return i;

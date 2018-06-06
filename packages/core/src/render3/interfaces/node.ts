@@ -12,6 +12,18 @@ import {LQueries} from './query';
 import {RElement, RNode, RText} from './renderer';
 import {LView, TData, TView} from './view';
 
+
+/**
+ * Namespace attribute flags.
+ */
+export const enum NS {
+  /**
+   * Use the next value as the full namespaces URI, the values after that
+   * are then the name and the value, respectively.
+   */
+  FULL = 0,
+}
+
 /**
  * TNodeType corresponds to the TNode.type property. It contains information
  * on how to map a particular set of bits in LNode.flags to the node type.
@@ -160,11 +172,7 @@ export interface LProjectionNode extends LNode {
  * items are not regular attributes and the processing should be adapted accordingly.
  */
 export const enum AttributeMarker {
-  /**
-   * Use the next value as the full namespaces URI, the values after that
-   * are then the name and the value, respectively.
-   */
-  NAMESPACE_URI = 0,  // namespace. Has to be repeated.
+  NS = 0,  // namespace. Has to be repeated.
 
   /**
    * This marker indicates that the following attribute names were extracted from bindings (ex.:
@@ -180,7 +188,7 @@ export const enum AttributeMarker {
  * - attribute names and values
  * - special markers acting as flags to alter attributes processing.
  */
-export type TAttributes = (string | AttributeMarker)[];
+export type TAttributes = (string | AttributeMarker | NS)[];
 
 /**
  * LNode binding data (flyweight) for a particular node that is shared between all templates
