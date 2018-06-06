@@ -36,7 +36,6 @@ export type Renderer3 = ObjectOrientedRenderer3 | ProceduralRenderer3;
  * */
 export interface ObjectOrientedRenderer3 {
   createElement(tagName: string): RElement;
-  createElementNS(namespace: string, name: string): RElement;
   createTextNode(data: string): RText;
 
   querySelector(selectors: string): RElement|null;

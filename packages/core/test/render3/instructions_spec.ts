@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 
 import {RenderFlags, directiveInject} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
-import {bind, container, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, setHtmlNS, setSvgNS, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, text, textBinding} from '../../src/render3/instructions';
 import {LElementNode, LNode} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {TrustedString, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
@@ -390,40 +390,6 @@ describe('instructions', () => {
       t.update(() => elementProperty(0, 'innerHTML', inputValue, sanitizeHtml));
       expect(t.html).toEqual(`<div>${outputValue}</div>`);
       expect(s.lastSanitizedValue).toBeFalsy();
-    });
-  });
-
-  describe('namespace', () => {
-    it('should render SVG', () => {
-      const t = new TemplateFixture(() => {
-        elementStart(0, 'div', ['id', 'container']);
-        setSvgNS();
-        elementStart(1, 'svg', [
-          // id="display"
-          'id',
-          'display',
-          // width="400"
-          'width',
-          '400',
-          // height="300"
-          'height',
-          '300',
-        ]);
-        elementStart(2, 'circle', ['cx', '200', 'cy', '150', 'fill', '#0000ff']);
-        elementEnd();
-        elementEnd();
-        setHtmlNS();
-        elementEnd();
-      });
-
-
-      // Most browsers will print <circle></circle>, some will print <circle />, both are valid
-      const standardHTML =
-          '<div id="container"><svg id="display" width="400" height="300"><circle cx="200" cy="150" fill="#0000ff"></circle></svg></div>';
-      const ie11HTML =
-          '<div id="container"><svg xmlns="http://www.w3.org/2000/svg" id="display" width="400" height="300"><circle fill="#0000ff" cx="200" cy="150" /></svg></div>';
-
-      expect([standardHTML, ie11HTML]).toContain(t.html);
     });
   });
 });
