@@ -556,38 +556,22 @@ function getRenderFlags(view: LView): RenderFlags {
 //////////////////////////
 //// Namespace
 //////////////////////////
-let _currentNamespace: string|null = null;
+let _currentNS: string|null = null;
 
-/**
- * Sets the namespace URI that will be used to create elements in {@link element}
- * and {@link elementStart}
- * @param uri the full namespaceUri
- */
-export function namespace(uri: string | null) {
-  _currentNamespace = uri;
+export function setNS(namespace: string) {
+  _currentNS = namespace;
 }
 
-/**
- * Sets the current namespace URI to null, meaning createElement (not createElementNS)
- * will be used to create elements in {@link element} and {@link elementStart}
- */
-export function namespaceHTML() {
-  _currentNamespace = null;
+export function setHtmlNS() {
+  _currentNS = null;
 }
 
-/**
- * Sets the current namespace URI to http://www.w3.org/2000/svg, which will be
- * used in conjunction with createElementNS in {@link element} and {@link elementStart}
- */
-export function namespaceSVG() {
-  _currentNamespace = 'http://www.w3.org/2000/svg';
+export function setSvgNS() {
+  _currentNS = 'http://www.w3.org/2000/svg';
 }
-/**
- * Sets the current namespace URI to http://www.w3.org/1998/Math/MathML, which will be
- * used in conjunction with createElementNS in {@link element} and {@link elementStart}
- */
-export function namespaceMathML() {
-  _currentNamespace = 'http://www.w3.org/1998/Math/MathML';
+
+export function setMathML() {
+  _currentNS = 'http://www.w3.org/1998/Math/MathML';
 }
 
 
@@ -615,9 +599,9 @@ export function elementStart(
 
   ngDevMode && ngDevMode.rendererCreateElement++;
 
-  const native: RElement = _currentNamespace === null || isProceduralRenderer(renderer) ?
+  const native: RElement = _currentNS === null || isProceduralRenderer(renderer) ?
       renderer.createElement(name) :
-      (renderer as ObjectOrientedRenderer3).createElementNS(_currentNamespace, name);
+      (renderer as ObjectOrientedRenderer3).createElementNS(_currentNS, name);
 
   ngDevMode && assertDataInRange(index - 1);
 
