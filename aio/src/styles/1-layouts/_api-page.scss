@@ -57,7 +57,8 @@
         }
 
         hr {
-            margin: 16px 0;
+            margin: 16px -24px 24px;
+            height: 2px;
         }
 
         tr:last-child {
@@ -74,6 +75,10 @@
             td {
                 padding: 16px 24px;
             }
+        }
+
+        .short-description {
+            margin-left: 0;
         }
     }
 }

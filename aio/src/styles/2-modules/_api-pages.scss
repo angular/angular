@@ -44,9 +44,12 @@
   }
 
   .api-heading {
-    padding: 5px 0;
-    font-size: 16px;
-    font-weight: bold;
+    margin: 10px 0;
+    font-size: 18px;
+
+    &:first-child {
+      margin-top: 0px;
+    }
   }
 
   .short-description {
