@@ -119,6 +119,17 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     addNotYetDocumentedProperty.docTypes = API_DOC_TYPES;
   })
 
+  .config(function(mergeDecoratorDocs) {
+    mergeDecoratorDocs.propertiesToMerge = [
+      'shortDescription',
+      'description',
+      'security',
+      'deprecated',
+      'see',
+      'usageNotes',
+    ];
+  })
+
   .config(function(checkContentRules, EXPORT_DOC_TYPES) {
     // Min length rules
     const createMinLengthRule = require('./content-rules/minLength');
