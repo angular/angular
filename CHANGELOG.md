@@ -1,3 +1,18 @@
+<a name="6.0.4"></a>
+## [6.0.4](https://github.com/angular/angular/compare/6.0.3...6.0.4) (2018-06-06)
+
+
+### Bug Fixes
+
+* **animations:** Fix browser detection logic ([#24188](https://github.com/angular/angular/issues/24188)) ([c9eb491](https://github.com/angular/angular/commit/c9eb491))
+* **animations:** retain trigger-state for nodes that are moved around ([#24238](https://github.com/angular/angular/issues/24238)) ([19deca1](https://github.com/angular/angular/commit/19deca1))
+* **forms:** properly handle special properties in FormGroup.get ([#22249](https://github.com/angular/angular/issues/22249)) ([dc3e8aa](https://github.com/angular/angular/commit/dc3e8aa)), closes [#17195](https://github.com/angular/angular/issues/17195)
+* **platform-server:** avoid clash between server and client style encapsulation attributes ([#24158](https://github.com/angular/angular/issues/24158)) ([e9f2203](https://github.com/angular/angular/commit/e9f2203))
+* **platform-server:** avoid dependency cycle when using http interceptor ([#24229](https://github.com/angular/angular/issues/24229)) ([2991b1b](https://github.com/angular/angular/commit/2991b1b)), closes [#23023](https://github.com/angular/angular/issues/23023)
+* **platform-server:** don't reflect innerHTML property to attibute ([#24213](https://github.com/angular/angular/issues/24213)) ([c17098d](https://github.com/angular/angular/commit/c17098d)), closes [#19278](https://github.com/angular/angular/issues/19278)
+* **platform-server:** provide Domino DOM types globally ([#24116](https://github.com/angular/angular/issues/24116)) ([906b3ec](https://github.com/angular/angular/commit/906b3ec)), closes [#23280](https://github.com/angular/angular/issues/23280) [#23133](https://github.com/angular/angular/issues/23133)
+
+
 <a name="6.0.3"></a>
 ## [6.0.3](https://github.com/angular/angular/compare/6.0.2...6.0.3) (2018-05-22)
 
@@ -42,7 +57,7 @@
 
 Angular v6 is the first release of Angular that unifies the Framework, Material and CLI.
 
-To learn about the release highlights and our new CLI-powered update workflow for your projects please check out the [v6 release announcement](https://blog.angular.io/version-6-0-0-of-angular-now-available-cc56b0efa7a4). 
+To learn about the release highlights and our new CLI-powered update workflow for your projects please check out the [v6 release announcement](https://blog.angular.io/version-6-0-0-of-angular-now-available-cc56b0efa7a4).
 
 
 
@@ -193,10 +208,10 @@ To learn about the release highlights and our new CLI-powered update workflow fo
   This change removes support for `<template>`. `<ng-template>` should be used instead.
 
   BEFORE:
-  
+
       <!-- html template -->
       <template>some template content</template>
-  
+
       # tsconfig.json
       {
         # ...
@@ -206,12 +221,12 @@ To learn about the release highlights and our new CLI-powered update workflow fo
           "enableLegacyTemplate": [true|false]
         }
       }
-  
+
   AFTER:
-  
+
       <!-- html template -->
       <ng-template>some template content</ng-template>
-      
+
 * **core:** it is no longer possible to import animation-related functions from @angular/core. All animation symbols must now be imported from @angular/animations.
 
 
@@ -224,35 +239,35 @@ To learn about the release highlights and our new CLI-powered update workflow fo
 
   Previously, ngModelChange was emitted before its underlying control was updated.
   This was fine if you passed through the value directly through the $event keyword, e.g.
-  
+
   ```
   <input [(ngModel)]="name" (ngModelChange)="onChange($event)">
-  
+
   onChange(value) {
      console.log(value);               // would log updated value
   }
   ```
-  
+
   However, if you had a handler for the ngModelChange event that checked the value through the control,
   you would get the old value rather than the updated value. e.g:
-  
+
   ```
   <input #modelDir="ngModel" [(ngModel)]="name" (ngModelChange)="onChange(modelDir)">
-  
+
   onChange(ngModel: NgModel) {
     console.log(ngModel.value);        // would log old value, not updated value
   }
   ```
-  
+
   Now the value and validity will be updated before the ngModelChange event is emitted,
   so the same setup will log the updated value.
-  
+
   ```
   onChange(ngModel: NgModel) {
      console.log(ngModel.value);       // will log updated value
   }
   ```
-  
+
   We think this order will be less confusing when the control is checked directly.
   You will only need to update your app if it has relied on this bug to keep track of the old control value.
   If that is the case, you should be able to track the old value directly by saving it on your component.
