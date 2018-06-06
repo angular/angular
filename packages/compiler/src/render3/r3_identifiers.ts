@@ -17,11 +17,9 @@ export class Identifiers {
   static PATCH_DEPS = 'patchedDeps';
 
   /* Instructions */
-  static elementStart: o.ExternalReference = {name: 'ɵE', moduleName: CORE};
+  static createElement: o.ExternalReference = {name: 'ɵE', moduleName: CORE};
 
   static elementEnd: o.ExternalReference = {name: 'ɵe', moduleName: CORE};
-
-  static element: o.ExternalReference = {name: 'ɵEe', moduleName: CORE};
 
   static elementProperty: o.ExternalReference = {name: 'ɵp', moduleName: CORE};
 

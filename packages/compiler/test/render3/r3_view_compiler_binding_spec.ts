@@ -75,7 +75,8 @@ describe('compiler compliance: bindings', () => {
       const template = `
       template:function MyComponent_Template(rf: IDENT, $ctx$: IDENT){
         if (rf & 1) {
-          $i0$.ɵEe(0, 'a');
+          $i0$.ɵE(0, 'a');
+          $i0$.ɵe();
         }
         if (rf & 2) {
           $i0$.ɵp(0, 'title', $i0$.ɵb($ctx$.title));
@@ -107,7 +108,8 @@ describe('compiler compliance: bindings', () => {
       const template = `
       template:function MyComponent_Template(rf: IDENT, $ctx$: IDENT){
         if (rf & 1) {
-          $i0$.ɵEe(0, 'a');
+          $i0$.ɵE(0, 'a');
+          $i0$.ɵe();
         }
         if (rf & 2) {
           $i0$.ɵp(0, 'title', $i0$.ɵi1('Hello ', $ctx$.name, ''));
