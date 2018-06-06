@@ -231,9 +231,9 @@ const heroForm = new FormGroup({
 });
 ```
 
-Notice that the name and alterEgo are sibling controls. To evaluate both controls in a single custom validator, we should perform the validation in a common ancestor control: the FormGroup. That way, we can query the FormGroup for the child controls which will allow us to compare their values.
+Notice that the name and alterEgo are sibling controls. To evaluate both controls in a single custom validator, we should perform the validation in a common ancestor control: the `FormGroup`. That way, we can query the `FormGroup` for the child controls which will allow us to compare their values.
 
-To add a validator to the FormGroup, pass the new validator in as the second argument on creation.
+To add a validator to the `FormGroup`, pass the new validator in as the second argument on creation.
 
 ```javascript
 const heroForm = new FormGroup({
@@ -248,7 +248,7 @@ The validator code is as follows:
 <code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-validator" title="shared/identity-revealed.directive.ts" linenums="false">
 </code-example>
 
-Identity validator implements the `ValidatorFn` interface. It takes an Angular control object as an argument and returns either null if the form is valid, or `ValidationErrors` otherwise.
+The identity validator implements the `ValidatorFn` interface. It takes an Angular control object as an argument and returns either null if the form is valid, or `ValidationErrors` otherwise.
 
 First we retrieve the child controls by calling the `FormGroup`'s [get](api/forms/AbstractControl#get) method. Then we simply compare the values of the `name` and `alterEgo` controls. 
 
