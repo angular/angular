@@ -177,9 +177,6 @@
     "name": "_currentInjector"
   },
   {
-    "name": "_currentNS"
-  },
-  {
     "name": "_devMode"
   },
   {

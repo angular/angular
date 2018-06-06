@@ -8,27 +8,24 @@
 
 import './ng_dev_mode';
 
-import {Sanitizer} from '../sanitization/security';
-
 import {assertEqual, assertLessThan, assertNotEqual, assertNotNull, assertNull, assertSame} from './assert';
-import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
-import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {LContainer} from './interfaces/container';
-import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {ObjectOrientedRenderer3, ProceduralRenderer3, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {CurrentMatchesList, LView, LViewFlags, RootContext, TData, TView} from './interfaces/view';
 
 import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
 import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode, getLViewChild} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
+import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
+import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
+import {executeHooks, queueLifecycleHooks, queueInitHooks, executeInitHooks} from './hooks';
 import {ViewRef} from './view_ref';
-
-
+import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
+import {Sanitizer} from '../sanitization/security';
 
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
@@ -554,28 +551,6 @@ function getRenderFlags(view: LView): RenderFlags {
 }
 
 //////////////////////////
-//// Namespace
-//////////////////////////
-let _currentNS: string|null = null;
-
-export function setNS(namespace: string) {
-  _currentNS = namespace;
-}
-
-export function setHtmlNS() {
-  _currentNS = null;
-}
-
-export function setSvgNS() {
-  _currentNS = 'http://www.w3.org/2000/svg';
-}
-
-export function setMathML() {
-  _currentNS = 'http://www.w3.org/1998/Math/MathML';
-}
-
-
-//////////////////////////
 //// Element
 //////////////////////////
 
@@ -598,11 +573,7 @@ export function elementStart(
       assertEqual(currentView.bindingIndex, -1, 'elements should be created before any bindings');
 
   ngDevMode && ngDevMode.rendererCreateElement++;
-
-  const native: RElement = _currentNS === null || isProceduralRenderer(renderer) ?
-      renderer.createElement(name) :
-      (renderer as ObjectOrientedRenderer3).createElementNS(_currentNS, name);
-
+  const native: RElement = renderer.createElement(name);
   ngDevMode && assertDataInRange(index - 1);
 
   const node: LElementNode =
