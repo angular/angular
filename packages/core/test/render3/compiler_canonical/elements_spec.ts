@@ -55,44 +55,6 @@ describe('elements', () => {
         .toEqual('<div class="my-app" title="Hello">Hello <b>World</b>!</div>');
   });
 
-  it('should translate DOM structure with SVG', () => {
-    type $MyComponent$ = MyComponent;
-
-    // Important: keep arrays outside of function to not create new instances.
-    const $e0_attrs$ = ['class', 'my-app', 'title', 'Hello'];
-    const $e2_attrs$ = ['cx', '50', 'cy', '100', 'r', '25'];
-
-    @Component({
-      selector: 'my-component',
-      template:
-          `<div class="my-app" title="Hello"><svg><circle cx="50" cy="100" r="25"/></svg></div>`
-    })
-    class MyComponent {
-      // NORMATIVE
-      static ngComponentDef = $r3$.ɵdefineComponent({
-        type: MyComponent,
-        selectors: [['my-component']],
-        factory: () => new MyComponent(),
-        template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
-          if (rf & 1) {
-            $r3$.ɵE(0, 'div', $e0_attrs$);
-            $r3$.ɵNS();
-            $r3$.ɵE(1, 'svg');
-            $r3$.ɵEe(2, 'circle', $e2_attrs$);
-            $r3$.ɵe();
-            $r3$.ɵNH();
-            $r3$.ɵe();
-          }
-        }
-      });
-      // /NORMATIVE
-    }
-
-    expect(toHtml(renderComponent(MyComponent)))
-        .toEqual(
-            '<div class="my-app" title="Hello"><svg><circle cx="50" cy="100" r="25"></circle></svg></div>');
-  });
-
   it('should support local refs', () => {
     type $LocalRefComp$ = LocalRefComp;
 
