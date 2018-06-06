@@ -277,7 +277,7 @@ To provide better user experience, we show an appropriate error message when the
 </code-example>
 
 Note that we check if:
-- the `FormGroup` has the cross validation error returned by the `identityRevealed` validator, 
+- the form has the cross validation error returned by the `identityRevealed` validator, 
 - the user is yet to [interact](guide/form-validation#why-check-dirty-and-touched) with the form.
 
 This completes the cross validation example. We managed to:
