@@ -497,6 +497,10 @@ describe('instructions', () => {
           'title',
           'abc',
 
+          // style="background: #dead11"
+          'style',
+          'background: #dead11',
+
           // NS1:whatever="wee"
           AttributeMarker.NAMESPACE_URI,
           'http://www.example.com/2014/test',
@@ -512,16 +516,19 @@ describe('instructions', () => {
       });
 
       const standardHTML =
-          '<div id="container" title="abc" whatever="wee" shazbot="wocka wocka"></div>';
+          '<div id="container" title="abc" style="background: #dead11" whatever="wee" shazbot="wocka wocka"></div>';
+      const ieHTML =
+          '<div id="container" style="background: rgb(222, 173, 17);" title="abc" whatever="wee" shazbot="wocka wocka"></div>';
 
-      expect(t.html).toEqual(standardHTML);
+      expect([standardHTML, ieHTML]).toContain(t.html);
 
       const div = t.hostElement.querySelector('#container');
-      expect(div !.attributes.length).toBe(4);
+      expect(div !.attributes.length).toBe(5);
 
       const expectedAttributes: {[key: string]: string} = {
         'id': 'container',
         'http://www.example.com/2014/test:title': 'abc',
+        'style': 'background: #dead11',
         'http://www.example.com/2014/test:whatever': 'wee',
         'http://www.whatever.com/2016/blah:shazbot': 'wocka wocka',
       };
