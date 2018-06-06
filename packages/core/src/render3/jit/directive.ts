@@ -13,6 +13,7 @@ import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Type} from '../../type';
 
 import {angularCoreEnv} from './environment';
+import {patchComponentDefWithScope} from './module';
 import {getReflect, reflectDependencies} from './util';
 
 let _pendingPromises: Promise<void>[] = [];
@@ -61,12 +62,25 @@ export function compileComponent(type: Type<any>, metadata: Component): Promise<
 
         def = jitExpression(
             res.expression, angularCoreEnv, `ng://${type.name}/ngComponentDef.js`, constantPool);
+
+        // If component compilation is async, then the @NgModule annotation which declares the
+        // component may execute and set an ngSelectorScope property on the component type. This
+        // allows the component to patch itself with directiveDefs from the module after it finishes
+        // compiling.
+        if (hasSelectorScope(type)) {
+          patchComponentDefWithScope(def, type.ngSelectorScope);
+        }
       }
       return def;
     },
   });
 
   return null;
+}
+
+function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
+    {ngSelectorScope: Type<any>} {
+  return (component as{ngSelectorScope?: any}).ngSelectorScope !== undefined;
 }
 
 /**

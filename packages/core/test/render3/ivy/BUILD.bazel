@@ -28,6 +28,9 @@ jasmine_node_test(
     bootstrap = [
         "angular/packages/core/test/render3/load_domino",
     ],
+    tags = [
+        "ivy-jit",
+    ],
     deps = [
         ":ivy_node_lib",
     ],
