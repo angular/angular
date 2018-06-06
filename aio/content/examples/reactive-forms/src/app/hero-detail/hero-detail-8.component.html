@@ -15,7 +15,7 @@
     <div formArrayName="secretLairs" class="well well-lg">
     <!-- #enddocregion form-array-name -->
       <div *ngFor="let address of secretLairs.controls; let i=index" [formGroupName]="i" >
-        <!-- The repeated address template -->
+        <!-- address 템플릿 반복 시작 -->
     <!-- #enddocregion form-array-skeleton -->
         <h4>Address #{{i + 1}}</h4>
         <div style="margin-left: 1em;">
@@ -43,7 +43,7 @@
           </div>
         </div>
         <br>
-        <!-- End of the repeated address template -->
+        <!-- address 템플릿 반복 끝 -->
     <!-- #docregion form-array-skeleton -->
       </div>
     <!-- #enddocregion form-array-skeleton -->

@@ -12,7 +12,7 @@ const squaredNums = squareValues(nums);
 
 squaredNums.subscribe(x => console.log(x));
 
-// Logs
+// 로그
 // 1
 // 4
 // 9

@@ -7,8 +7,7 @@ function sequenceSubscriber(observer) {
   const seq = [1, 2, 3];
   let timeoutId;
 
-  // Will run through an array of numbers, emitting one value
-  // per second until it gets to the end of the array.
+  // 배열을 순회하면서 배열의 항목을 1초마다 하나씩 발행합니다.
   function doSequence(arr, idx) {
     timeoutId = setTimeout(() => {
       observer.next(arr[idx]);
@@ -22,13 +21,13 @@ function sequenceSubscriber(observer) {
 
   doSequence(seq, 0);
 
-  // Unsubscribe should clear the timeout to stop execution
+  // 구독이 해지되면 타이머를 중지합니다.
   return {unsubscribe() {
     clearTimeout(timeoutId);
   }};
 }
 
-// Create a new Observable that will deliver the above sequence
+// 위에서 정의한 데이터 스트림을 발생하는 옵저버블을 생성합니다.
 const sequence = new Observable(sequenceSubscriber);
 
 sequence.subscribe({
@@ -36,23 +35,23 @@ sequence.subscribe({
   complete() { console.log('Finished sequence'); }
 });
 
-// Logs:
-// (at 1 second): 1
-// (at 2 seconds): 2
-// (at 3 seconds): 3
-// (at 3 seconds): Finished sequence
+// 로그:
+// (1초 후): 1
+// (2초 후): 2
+// (3초 후): 3
+// (3초 후): Finished sequence
 
 // #enddocregion delay_sequence
 
 // #docregion subscribe_twice
 
-// Subscribe starts the clock, and will emit after 1 second
+// 구독을 시작하면 타이머가 시작되면서, 1초마다 데이터가 전달됩니다.
 sequence.subscribe({
   next(num) { console.log('1st subscribe: ' + num); },
   complete() { console.log('1st sequence finished.'); }
 });
 
-// After 1/2 second, subscribe again.
+// 0.5초 후에 새로운 구독을 시작합니다.
 setTimeout(() => {
   sequence.subscribe({
     next(num) { console.log('2nd subscribe: ' + num); },
@@ -60,15 +59,15 @@ setTimeout(() => {
   });
 }, 500);
 
-// Logs:
-// (at 1 second): 1st subscribe: 1
-// (at 1.5 seconds): 2nd subscribe: 1
-// (at 2 seconds): 1st subscribe: 2
-// (at 2.5 seconds): 2nd subscribe: 2
-// (at 3 seconds): 1st subscribe: 3
-// (at 3 seconds): 1st sequence finished
-// (at 3.5 seconds): 2nd subscribe: 3
-// (at 3.5 seconds): 2nd sequence finished
+// 로그:
+// (1초 후): 1st subscribe: 1
+// (1.5초 후): 2nd subscribe: 1
+// (2초 후): 1st subscribe: 2
+// (2.5초 후): 2nd subscribe: 2
+// (3초 후): 1st subscribe: 3
+// (3초 후): 1st sequence finished
+// (3.5초 후): 2nd subscribe: 3
+// (3.5초 후): 2nd sequence finished
 
 // #enddocregion subscribe_twice
 
@@ -76,25 +75,25 @@ setTimeout(() => {
 
 function multicastSequenceSubscriber() {
   const seq = [1, 2, 3];
-  // Keep track of each observer (one for every active subscription)
+  // 구독중인 옵저버를 추적합니다.
   const observers = [];
-  // Still a single timeoutId because there will only ever be one
-  // set of values being generated, multicasted to each subscriber
+  // 한 번 생성된 데이터는 모든 구독자에게 멀티캐스팅되기 때문에
+  // 타이머 id는 하나로 관리합니다.
   let timeoutId;
 
-  // Return the subscriber function (runs when subscribe()
-  // function is invoked)
+  // 구독자 함수를 반환합니다.
+  // 이 함수는 subscribe()가 실행될 때 함께 실행됩니다.
   return (observer) => {
     observers.push(observer);
-    // When this is the first subscription, start the sequence
+    // 구독이 처음 실행되면 스트림을 발생하기 시작합니다.
     if (observers.length === 1) {
       timeoutId = doSequence({
         next(val) {
-          // Iterate through observers and notify all subscriptions
+          // 모든 구독에 대해 스트림을 발행합니다.
           observers.forEach(obs => obs.next(val));
         },
         complete() {
-          // Notify all complete callbacks
+          // 모든 구독에 종료 스트림을 전달합니다.
           observers.forEach(obs => obs.complete());
         }
       }, seq, 0);
@@ -102,9 +101,9 @@ function multicastSequenceSubscriber() {
 
     return {
       unsubscribe() {
-        // Remove from the observers array so it's no longer notified
+        // 구독을 해지한 옵저버는 배열에서 제거합니다.
         observers.splice(observers.indexOf(observer), 1);
-        // If there's no more listeners, do cleanup
+        // 구독자가 없으면 타이머를 종료합니다.
         if (observers.length === 0) {
           clearTimeout(timeoutId);
         }
@@ -113,8 +112,7 @@ function multicastSequenceSubscriber() {
   };
 }
 
-// Run through an array of numbers, emitting one value
-// per second until it gets to the end of the array.
+// 배열을 순회하면서 1초마다 하나씩 스트림을 발행합니다.
 function doSequence(observer, arr, idx) {
   return setTimeout(() => {
     observer.next(arr[idx]);
@@ -126,16 +124,17 @@ function doSequence(observer, arr, idx) {
   }, 1000);
 }
 
-// Create a new Observable that will deliver the above sequence
+// doSequence()에 정의된 스트림을 발행하는 옵저버블을 생성합니다.
 const multicastSequence = new Observable(multicastSequenceSubscriber);
 
-// Subscribe starts the clock, and begins to emit after 1 second
+// 옵저버블을 구독하면 타이머를 시작하고 1초마다 스트림을 받습니다.
 multicastSequence.subscribe({
   next(num) { console.log('1st subscribe: ' + num); },
   complete() { console.log('1st sequence finished.'); }
 });
 
-// After 1 1/2 seconds, subscribe again (should "miss" the first value).
+// 0.5초 후에 또 다른 구독을 시작합니다.
+// (첫번째 값은 다시 받지 않습니다.)
 setTimeout(() => {
   multicastSequence.subscribe({
     next(num) { console.log('2nd subscribe: ' + num); },
@@ -143,13 +142,13 @@ setTimeout(() => {
   });
 }, 1500);
 
-// Logs:
-// (at 1 second): 1st subscribe: 1
-// (at 2 seconds): 1st subscribe: 2
-// (at 2 seconds): 2nd subscribe: 2
-// (at 3 seconds): 1st subscribe: 3
-// (at 3 seconds): 1st sequence finished
-// (at 3 seconds): 2nd subscribe: 3
-// (at 3 seconds): 2nd sequence finished
+// 로그:
+// (1초 후): 1st subscribe: 1
+// (2초 후): 1st subscribe: 2
+// (2초 후): 2nd subscribe: 2
+// (3초 후): 1st subscribe: 3
+// (3초 후): 1st sequence finished
+// (3초 후): 2nd subscribe: 3
+// (3초 후): 2nd sequence finished
 
 // #enddocregion multicast_sequence

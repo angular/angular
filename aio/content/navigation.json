@@ -141,29 +141,29 @@
 
     {
       "title!": "Fundamentals",
-      "title": "기초",
+      "title": "가이드",
       "tooltip!": "The fundamentals of Angular",
-      "tooltip": "Angular 기초",
+      "tooltip": "Angular 가이드",
       "children": [
         {
           "title!": "Architecture",
-	  "title": "아키텍처",
+	        "title": "아키텍처",
           "tooltip!": "The basic building blocks of Angular applications.",
-	  "tooltip": "Angular 애플리케이션을 구성하는 기본 요소",
+	        "tooltip": "Angular 애플리케이션을 구성하는 기본 요소",
           "children": [
             {
               "url": "guide/architecture",
               "title!": "Architecture Overview",
-	      "title": "개요",
+	            "title": "개요",
               "tooltip!": "Basic building blocks of Angular applications.",
-	      "tooltip": "Angular 애플리케이션을 구성하는 기본 요소"
+	            "tooltip": "Angular 애플리케이션을 구성하는 기본 요소"
             },
             {
               "url": "guide/architecture-modules",
               "title!": "Intro to Modules",
               "title": "모듈",
               "tooltip!": "About NgModules.",
-              "tooltip": "NgModule"
+              "tooltip": "NgModule 소개"
             },
             {
               "url": "guide/architecture-components",
@@ -190,7 +190,7 @@
         },
         {
           "title!": "Components & Templates",
-	  "title": "컴포넌트 & 템플릿",
+	        "title": "컴포넌트 & 템플릿",
           "tooltip!": "Building dynamic views with data binding",
           "tooltip": "데이터 바인딩으로 뷰를 동적으로 구성해 보세요.",
           "children": [
@@ -225,19 +225,20 @@
             {
               "url": "guide/component-styles",
               "title!": "Component Styles",
-	      "title": "컴포넌트 스타일",
+	            "title": "컴포넌트 스타일",
               "tooltip!": "Add CSS styles that are specific to a component.",
-	      "tooltip": "CSS 스타일을 추가해서 컴포넌트를 꾸밀 수 있습니다."
+	            "tooltip": "CSS 스타일을 추가해서 컴포넌트를 꾸밀 수 있습니다."
             },
             {
               "url": "guide/elements",
               "title": "Angular Elements",
-              "tooltip": "Convert components to Custom Elements."
+              "tooltip!": "Convert components to Custom Elements.",
+              "tooltip": "컴포넌트를 커스텀 엘리먼트로 활용하세요."
             },
             {
               "url": "guide/dynamic-component-loader",
               "title!": "Dynamic Components",
-	      "title": "동적 컴포넌트",
+	            "title": "동적 컴포넌트",
               "tooltip!": "Load components dynamically.",
               "tooltip": "컴포넌트를 동적으로 불러올 수 있습니다."
             },
@@ -273,14 +274,14 @@
         },
         {
           "title!": "Forms",
-	  "title": "폼",
+	        "title": "폼",
           "tooltip!": "Angular Forms",
           "tooltip": "Angular 폼",
           "children": [
             {
               "url": "guide/user-input",
               "title!": "User Input",
-              "title": "사용자 입력",
+              "title": "사용자 동작",
               "tooltip!": "User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models.",
               "tooltip": "사용자가 입력을 하거나 마우스를 클릭하면 DOM 이벤트가 발생합니다. 이 이벤트를 바인딩해서 컴포넌트 변수나 모델에 적용할 수 있습니다."
             },
@@ -315,32 +316,39 @@
           ]
         },
         {
-          "title": "Observables & RxJS",
-          "tooltip": "Observables & RxJS",
+          "title!": "Observables & RxJS",
+          "title": "옵저버블 & RxJS",
+          "tooltip!": "Observables & RxJS",
+          "tooltip": "옵저버블 & RxJS",
           "children": [
             {
               "url": "guide/observables",
-              "title": "Observables",
+              "title!": "Observables",
+              "title": "옵저버블",
               "tooltip": ""
             },
             {
               "url": "guide/rx-library",
-              "title": "The RxJS Library",
+              "title!": "The RxJS Library",
+              "title": "RxJS 라이브러리",
               "tooltip": ""
             },
             {
               "url": "guide/observables-in-angular",
-              "title": "Observables in Angular",
+              "title!": "Observables in Angular",
+              "title": "Angular에서 옵저버블 활용하기",
               "tooltip": ""
             },
             {
               "url": "guide/practical-observable-usage",
-              "title": "Practical Usage",
+              "title!": "Practical Usage",
+              "title": "실전 예제",
               "tooltip": ""
             },
             {
               "url": "guide/comparing-observables",
-              "title": "Compare to Other Techniques",
+              "title!": "Compare to Other Techniques",
+              "title": "옵저버블 활용 테크닉",
               "tooltip": ""
             }
           ]
@@ -360,58 +368,79 @@
           "children": [
             {
               "url": "guide/ngmodules",
-              "title": "NgModules Introduction",
-              "tooltip": "Use NgModules to make your apps efficient."
+              "title!": "NgModules Introduction",
+              "title": "NgModule 소개",
+              "tooltip!": "Use NgModules to make your apps efficient.",
+              "tooltip": "앱을 효율적으로 구현하려면 NgModule을 사용하세요."
             },
             {
               "url": "guide/ngmodule-vs-jsmodule",
-              "title": "JS Modules vs NgModules",
-              "tooltip": "Differentiate between JavaScript modules and NgModules."
+              "title!": "JS Modules vs NgModules",
+              "title": "JS 모듈 vs NgModule",
+              "tooltip!": "Differentiate between JavaScript modules and NgModules.",
+              "tooltip": "JavaScript 모듈과 NgModule의 차이점을 알아봅니다."
             },
             {
               "url": "guide/frequent-ngmodules",
-              "title": "Frequently Used NgModules",
-              "tooltip": "Introduction to the most frequently used NgModules."
+              "title!": "Frequently Used NgModules",
+              "title": "자주 사용하는 NgModule",
+              "tooltip!": "Introduction to the most frequently used NgModules.",
+              "tooltip": "자주 사용하는 NgModule을 알아봅니다."
             },
             {
               "url": "guide/module-types",
-              "title": "Types of Feature Modules",
-              "tooltip": "Description of the different types of feature modules."
+              "title!": "Types of Feature Modules",
+              "title": "기능 모듈의 종류",
+              "tooltip!": "Description of the different types of feature modules.",
+              "tooltip": "기능 모듈의 종류에 대해 알아봅니다."
             },
             {
               "url": "guide/entry-components",
-              "title": "Entry Components",
-              "tooltip": "All about entry components in Angular."
+              "title!": "Entry Components",
+              "title": "진입 컴포넌트",
+              "tooltip!": "All about entry components in Angular.",
+              "tooltip": "진입 컴포넌트가 어떤 것인지 알아봅니다."
             },
             {
               "url": "guide/feature-modules",
-              "title": "Feature Modules",
-              "tooltip": "Create feature modules to organize your code."
+              "title!": "Feature Modules",
+              "title": "기능 모듈",
+              "tooltip!": "Create feature modules to organize your code.",
+              "tooltip": "코드를 효율적으로 구성하는 기능 모듈을 만들어 봅니다."
             },
             {
               "url": "guide/providers",
-              "title": "Providers",
-              "tooltip": "Providers and NgModules."
+              "title!": "Providers",
+              "title": "프로바이더",
+              "tooltip!": "Providers and NgModules.",
+              "tooltip": "프로바이더와 NgModule"
             },
             {
               "url": "guide/singleton-services",
-              "title": "Singleton Services",
-              "tooltip": "Creating singleton services."
+              "title!": "Singleton Services",
+              "title": "싱글턴 서비스",
+              "tooltip!": "Creating singleton services.",
+              "tooltip": "서비스를 싱글턴으로 만들어 봅니다."
             },
             {
               "url": "guide/lazy-loading-ngmodules",
-              "title": "Lazy Loading Feature Modules",
-              "tooltip": "Lazy load modules to speed up your apps."
+              "title!": "Lazy Loading Feature Modules",
+              "title": "기능 모듈을 지연 로딩하는 방법",
+              "tooltip!": "Lazy load modules to speed up your apps.",
+              "tooltip": "모듈을 지연 로딩 하면 앱 초기 실행 속도를 향상시킬 수 있습니다."
             },
             {
               "url": "guide/sharing-ngmodules",
-              "title": "Sharing NgModules",
-              "tooltip": "Share NgModules to streamline your apps."
+              "title!": "Sharing NgModules",
+              "title": "모듈 공유하기",
+              "tooltip!": "Share NgModules to streamline your apps.",
+              "tooltip": "앱 전반에 NgModule을 공유해 보세요."
             },
             {
               "url": "guide/ngmodule-api",
               "title": "NgModule API",
-              "tooltip": "Understand the details of NgModules."
+              "tooltip!": "Understand the details of NgModules.",
+              "tooltip": "NgModule에서 제공하는 API를 좀 더 자세하게 알아봅니다."
             },
             {
               "url": "guide/ngmodule-faq",
@@ -575,7 +604,8 @@
         {
           "title!": "Service Workers",
           "title": "서비스 워커",
-          "tooltip": "Angular service workers: Controlling caching of application resources.",
+          "tooltip!": "Angular service workers: Controlling caching of application resources.",
+          "tooltip": "Angular 서비스 워커 : 애플리케이션 리소스 캐싱하기",
           "children": [
             {
               "url": "guide/service-worker-intro",
@@ -616,18 +646,24 @@
         },
 
         {
-          "title": "Keeping Up-to-Date",
-          "tooltip": "Angular release practices, planning for updates, and update resources.",
+          "title!": "Keeping Up-to-Date",
+          "title": "최신 버전 유지하기",
+          "tooltip!": "Angular release practices, planning for updates, and update resources.",
+          "tooltip": "Angular 릴리즈 전략, 업데이트 계획하기, 리소스 업데이트하기",
           "children": [
             { 
               "url": "guide/updating",
-              "title": "Updating Your Projects",
-              "tooltip": "Information about updating Angular applications and libraries to the latest version."
+              "title!": "Updating Your Projects",
+              "title": "프로젝트 업데이트하기",
+              "tooltip!": "Information about updating Angular applications and libraries to the latest version.",
+              "tooltip": "Angular 애플리케이션을 업데이트 과정을 단계적으로 안내합니다."
             },
             { 
               "url": "guide/releases",
-              "title": "Angular Releases",
-              "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+              "title!": "Angular Releases",
+              "title": "Angular 릴리즈 계획",
+              "tooltip!": "Angular versioning, release, support, and deprecation policies and practices.",
+              "tooltip": "Angular 버전 정책, 릴리즈 정책, 지원 계획, 지원 중단 계획"
             }
           ]
         },  
@@ -759,8 +795,10 @@
         },
         {
           "url": "https://github.com/angular/code-of-conduct/blob/master/CODE_OF_CONDUCT.md",
-          "title": "Code of Conduct",
-          "tooltip": "Treating each other with respect."
+          "title!": "Code of Conduct",
+          "title": "커뮤니티 활용 수칙",
+          "tooltip!": "Treating each other with respect.",
+          "tooltip": "서로 친하게 지내요:)"
         }
       ]
     },

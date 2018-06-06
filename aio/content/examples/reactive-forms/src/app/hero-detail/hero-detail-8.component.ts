@@ -28,7 +28,7 @@ export class HeroDetailComponent8 implements OnChanges {
     // #docregion secretLairs-form-array
     this.heroForm = this.fb.group({
       name: ['', Validators.required ],
-      secretLairs: this.fb.array([]), // <-- secretLairs as an empty FormArray
+      secretLairs: this.fb.array([]), // <-- secretLairs는 비어있는 FormArray로 초기화
       power: '',
       sidekick: ''
     });

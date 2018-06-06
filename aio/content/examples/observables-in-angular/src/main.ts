@@ -61,7 +61,7 @@ export class Routable1Component implements OnInit {
   navStart: Observable<NavigationStart>;
 
   constructor(private router: Router) {
-    // Create a new Observable the publishes only the NavigationStart event
+    // NavigationStart 이벤트에 해당하는 옵저버블만 받습니다.
     this.navStart = router.events.pipe(
       filter(evt => evt instanceof NavigationStart)
     ) as Observable<NavigationStart>;

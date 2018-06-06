@@ -23,7 +23,7 @@ export class HeroListComponent implements OnInit {
   getHeroes() {
     this.isLoading = true;
     this.heroes = this.heroService.getHeroes()
-                      // TODO: error handling
+                      // TODO: 에러 처리
                       .pipe(finalize(() => this.isLoading = false));
     this.selectedHero = undefined;
   }

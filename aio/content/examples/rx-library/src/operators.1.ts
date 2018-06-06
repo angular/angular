@@ -6,16 +6,16 @@ import { filter, map } from 'rxjs/operators';
 
 const nums = of(1, 2, 3, 4, 5);
 
-// Create a function that accepts an Observable.
+// 옵저버블을 처리하는 함수를 정의합니다.
 const squareOddVals = pipe(
   filter(n => n % 2),
   map(n => n * n)
 );
 
-// Create an Observable that will run the filter and map functions
+// filter()와 map()을 실행하는 옵저버블을 생성합니다.
 const squareOdd = squareOddVals(nums);
 
-// Suscribe to run the combined functions
+// 구독을 시작합니다.
 squareOdd.subscribe(x => console.log(x));
 
 // #enddocregion

@@ -3,7 +3,7 @@ import { Directive, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { AbstractControl, NG_VALIDATORS, Validator, ValidatorFn, Validators } from '@angular/forms';
 
 // #docregion custom-validator
-/** A hero's name can't match the given regular expression */
+/** 히어로의 이름은 인자로 받은 정규표현식에 매칭되지 않아야 합니다.  */
 export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
   return (control: AbstractControl): {[key: string]: any} => {
     const forbidden = nameRe.test(control.value);
