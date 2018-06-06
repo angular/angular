@@ -26,3 +26,8 @@ export function main() {
         profile(() => createDom(component), () => destroyDom(component), 'create'));
   }
 }
+
+const isBazelMode = location.pathname.indexOf('/all/') !== 0;
+if (isBazelMode) {
+  main();
+}

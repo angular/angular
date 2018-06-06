@@ -7,8 +7,17 @@ ts_library(
     srcs = ["test.spec.ts"],
 )
 
+ts_library(
+    name = "ts_conf",
+    testonly = True,
+    srcs = ["conf.ts"],
+    tsconfig = ":tsconfig.json",
+    deps = ["//packages/bazel/src/protractor/utils"],
+)
+
 protractor_web_test_suite(
-    name = "demo",
-    conf = "conf.js",
+    name = "test",
+    configuration = ":ts_conf",
+    data = ["//packages/bazel/src/protractor/utils"],
     deps = [":ts_spec"],
 )
