@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 import { MatProgressBar, MatSidenav } from '@angular/material';
 import { By } from '@angular/platform-browser';
 
-import { timer } from 'rxjs';
+import { of, timer } from 'rxjs';
 import { first, mapTo } from 'rxjs/operators';
 
 import { AppComponent } from './app.component';
@@ -14,6 +14,7 @@ import { AppModule } from './app.module';
 import { DocumentService } from 'app/documents/document.service';
 import { DocViewerComponent } from 'app/layout/doc-viewer/doc-viewer.component';
 import { Deployment } from 'app/shared/deployment.service';
+import { ElementsLoader } from 'app/custom-elements/elements-loader';
 import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { Logger } from 'app/shared/logger.service';
@@ -26,7 +27,6 @@ import { SearchBoxComponent } from 'app/search/search-box/search-box.component';
 import { SearchResultsComponent } from 'app/shared/search-results/search-results.component';
 import { SearchService } from 'app/search/search.service';
 import { SelectComponent } from 'app/shared/select/select.component';
-import { TocComponent } from 'app/layout/toc/toc.component';
 import { TocItem, TocService } from 'app/shared/toc.service';
 
 const sideBySideBreakPoint = 992;
@@ -92,11 +92,11 @@ describe('AppComponent', () => {
     });
 
     describe('hasFloatingToc', () => {
-      it('should initially be true', () => {
+      it('should initially be false', () => {
         const fixture2 = TestBed.createComponent(AppComponent);
         const component2 = fixture2.componentInstance;
 
-        expect(component2.hasFloatingToc).toBe(true);
+        expect(component2.hasFloatingToc).toBe(false);
       });
 
       it('should be false on narrow screens', () => {
@@ -621,54 +621,64 @@ describe('AppComponent', () => {
     });
 
     describe('aio-toc', () => {
-      let tocDebugElement: DebugElement;
-      let tocContainer: DebugElement|null;
+      let tocContainer: HTMLElement|null;
+      let toc: HTMLElement|null;
 
       const setHasFloatingToc = (hasFloatingToc: boolean) => {
         component.hasFloatingToc = hasFloatingToc;
         fixture.detectChanges();
 
-        tocDebugElement = fixture.debugElement.query(By.directive(TocComponent));
-        tocContainer = tocDebugElement && tocDebugElement.parent;
+        tocContainer = fixture.debugElement.nativeElement.querySelector('.toc-container');
+        toc = tocContainer && tocContainer.querySelector('aio-toc');
       };
-
-      beforeEach(() => setHasFloatingToc(true));
 
 
       it('should show/hide `<aio-toc>` based on `hasFloatingToc`', () => {
-        expect(tocDebugElement).toBeTruthy();
-        expect(tocContainer).toBeTruthy();
-
-        setHasFloatingToc(false);
-        expect(tocDebugElement).toBeFalsy();
         expect(tocContainer).toBeFalsy();
+        expect(toc).toBeFalsy();
 
         setHasFloatingToc(true);
-        expect(tocDebugElement).toBeTruthy();
         expect(tocContainer).toBeTruthy();
+        expect(toc).toBeTruthy();
+
+        setHasFloatingToc(false);
+        expect(tocContainer).toBeFalsy();
+        expect(toc).toBeFalsy();
       });
 
       it('should have a non-embedded `<aio-toc>` element', () => {
-        expect(tocDebugElement.classes['embedded']).toBeFalsy();
+        setHasFloatingToc(true);
+        expect(toc!.classList.contains('embedded')).toBe(false);
       });
 
       it('should update the TOC container\'s `maxHeight` based on `tocMaxHeight`', () => {
-        expect(tocContainer!.styles['max-height']).toBeNull();
+        setHasFloatingToc(true);
+
+        expect(tocContainer!.style['max-height']).toBe('');
 
         component.tocMaxHeight = '100';
         fixture.detectChanges();
 
-        expect(tocContainer!.styles['max-height']).toBe('100px');
+        expect(tocContainer!.style['max-height']).toBe('100px');
       });
 
       it('should restrain scrolling inside the ToC container', () => {
         const restrainScrolling = spyOn(component, 'restrainScrolling');
-        const evt = {};
+        const evt = new MouseEvent('mousewheel');
 
+        setHasFloatingToc(true);
         expect(restrainScrolling).not.toHaveBeenCalled();
 
-        tocContainer!.triggerEventHandler('mousewheel', evt);
+        tocContainer!.dispatchEvent(evt);
         expect(restrainScrolling).toHaveBeenCalledWith(evt);
+      });
+
+      it('should not be loaded/registered until necessary', () => {
+        const loader: TestElementsLoader = fixture.debugElement.injector.get(ElementsLoader);
+        expect(loader.loadCustomElement).not.toHaveBeenCalled();
+
+        setHasFloatingToc(true);
+        expect(loader.loadCustomElement).toHaveBeenCalledWith('aio-toc');
       });
     });
 
@@ -1280,6 +1290,7 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
     imports: [ AppModule ],
     providers: [
       { provide: APP_BASE_HREF, useValue: '/' },
+      { provide: ElementsLoader, useClass: TestElementsLoader },
       { provide: GaService, useClass: TestGaService },
       { provide: HttpClient, useClass: TestHttpClient },
       { provide: LocationService, useFactory: () => mockLocationService },
@@ -1292,6 +1303,14 @@ function createTestingModule(initialUrl: string, mode: string = 'stable') {
       }},
     ]
   });
+}
+
+class TestElementsLoader {
+  loadContainedCustomElements = jasmine.createSpy('loadContainedCustomElements')
+      .and.returnValue(of(undefined));
+
+  loadCustomElement = jasmine.createSpy('loadCustomElement')
+      .and.returnValue(Promise.resolve());
 }
 
 class TestGaService {
@@ -1368,7 +1387,7 @@ class TestHttpClient {
       const id = match[1]!;
       // Make up a title for test purposes
       const title = id.split('/').pop()!.replace(/^([a-z])/, (_, letter) => letter.toUpperCase());
-      const h1 = (id === 'no-title') ? '' : `<h1>${title}</h1>`;
+      const h1 = (id === 'no-title') ? '' : `<h1 class="no-toc">${title}</h1>`;
       const contents = `${h1}<h2 id="#somewhere">Some heading</h2>`;
       data = { id, contents };
     }

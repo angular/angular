@@ -9,7 +9,7 @@
 import {AstPath} from '../ast_path';
 import {CompileDirectiveSummary, CompileProviderMetadata, CompileTokenMetadata} from '../compile_metadata';
 import {SecurityContext} from '../core';
-import {AST, BoundElementBindingType, BoundElementProperty, ParsedEvent, ParsedEventType, ParsedVariable} from '../expression_parser/ast';
+import {AST, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType, ParsedVariable} from '../expression_parser/ast';
 import {LifecycleHooks} from '../lifecycle_reflector';
 import {ParseSourceSpan} from '../parse_util';
 
@@ -72,11 +72,11 @@ export enum PropertyBindingType {
 }
 
 const BoundPropertyMapping = {
-  [BoundElementBindingType.Animation]: PropertyBindingType.Animation,
-  [BoundElementBindingType.Attribute]: PropertyBindingType.Attribute,
-  [BoundElementBindingType.Class]: PropertyBindingType.Class,
-  [BoundElementBindingType.Property]: PropertyBindingType.Property,
-  [BoundElementBindingType.Style]: PropertyBindingType.Style,
+  [BindingType.Animation]: PropertyBindingType.Animation,
+  [BindingType.Attribute]: PropertyBindingType.Attribute,
+  [BindingType.Class]: PropertyBindingType.Class,
+  [BindingType.Property]: PropertyBindingType.Property,
+  [BindingType.Style]: PropertyBindingType.Style,
 };
 
 /**

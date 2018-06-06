@@ -28,19 +28,25 @@ export interface LQueries {
   addNode(node: LNode): void;
 
   /**
-   * Notify `LQueries` that a  `LNode` has been created and needs to be added to query results
-   * if matching query predicate.
+   * Notify `LQueries` that a new LContainer was added to ivy data structures. As a result we need
+   * to prepare room for views that might be inserted into this container.
    */
   container(): LQueries|null;
 
   /**
-   * Notify `LQueries` that a new view was created and is being entered in the creation mode.
-   * This allow queries to prepare space for matching nodes from views.
+   * Notify `LQueries` that a new `LView` has been created. As a result we need to prepare room
+   * and collect nodes that match query predicate.
    */
-  enterView(newViewIndex: number): LQueries|null;
+  createView(): LQueries|null;
 
   /**
-   * Notify `LQueries` that an `LViewNode` has been removed from `LContainerNode`. As a result all
+   * Notify `LQueries` that a new `LView` has been added to `LContainer`. As a result all
+   * the matching nodes from this view should be added to container's queries.
+   */
+  insertView(newViewIndex: number): void;
+
+  /**
+   * Notify `LQueries` that an `LView` has been removed from `LContainer`. As a result all
    * the matching nodes from this view should be removed from container's queries.
    */
   removeView(removeIndex: number): void;

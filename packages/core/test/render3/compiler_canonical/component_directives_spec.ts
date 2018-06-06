@@ -502,9 +502,10 @@ describe('components & directives', () => {
             if (rf & 1) {
               $r3$.ɵE(0, 'my-array-comp');
               $r3$.ɵe();
+              $r3$.ɵrS(1);
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'names', $r3$.ɵb(ctx.someFn($r3$.ɵf0($e0_ff$))));
+              $r3$.ɵp(0, 'names', $r3$.ɵb(ctx.someFn($r3$.ɵf0(1, $e0_ff$))));
             }
           }
         });
@@ -563,9 +564,10 @@ describe('components & directives', () => {
             if (rf & 1) {
               $r3$.ɵE(0, 'my-comp');
               $r3$.ɵe();
+              $r3$.ɵrS(1);
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'num', $r3$.ɵb($r3$.ɵf0($e0_ff$).length + 1));
+              $r3$.ɵp(0, 'num', $r3$.ɵb($r3$.ɵf0(1, $e0_ff$).length + 1));
             }
           }
         });
@@ -606,9 +608,10 @@ describe('components & directives', () => {
             if (rf & 1) {
               $r3$.ɵE(0, 'my-array-comp');
               $r3$.ɵe();
+              $r3$.ɵrS(2);
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.customName)));
+              $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1(2, $e0_ff$, ctx.customName)));
             }
           }
         });
@@ -716,12 +719,13 @@ describe('components & directives', () => {
             if (rf & 1) {
               $r3$.ɵE(0, 'my-comp');
               $r3$.ɵe();
+              $r3$.ɵrS(10);
             }
             if (rf & 2) {
               $r3$.ɵp(
                   0, 'names',
-                  $r3$.ɵb(
-                      $r3$.ɵfV($e0_ff$, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8])));
+                  $r3$.ɵb($r3$.ɵfV(
+                      10, $e0_ff$, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8])));
             }
           }
         });
@@ -794,9 +798,10 @@ describe('components & directives', () => {
             if (rf & 1) {
               $r3$.ɵE(0, 'object-comp');
               $r3$.ɵe();
+              $r3$.ɵrS(2);
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1($e0_ff$, ctx.name)));
+              $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1(2, $e0_ff$, ctx.name)));
             }
           }
         });
@@ -879,12 +884,13 @@ describe('components & directives', () => {
             if (rf & 1) {
               $r3$.ɵE(0, 'nested-comp');
               $r3$.ɵe();
+              $r3$.ɵrS(7);
             }
             if (rf & 2) {
               $r3$.ɵp(
-                  0, 'config', $r3$.ɵf2(
-                                   $e0_ff_2$, ctx.name,
-                                   $r3$.ɵb($r3$.ɵf1($e0_ff_1$, $r3$.ɵf1($e0_ff$, ctx.duration)))));
+                  0, 'config', $r3$.ɵb($r3$.ɵf2(
+                                   7, $e0_ff_2$, ctx.name,
+                                   $r3$.ɵf1(4, $e0_ff_1$, $r3$.ɵf1(2, $e0_ff$, ctx.duration)))));
             }
           }
         });

@@ -50,6 +50,7 @@ export {JitCompiler} from './jit/compiler';
 export * from './compile_reflector';
 export * from './url_resolver';
 export * from './resource_loader';
+export {ConstantPool} from './constant_pool';
 export {DirectiveResolver} from './directive_resolver';
 export {PipeResolver} from './pipe_resolver';
 export {NgModuleResolver} from './ng_module_resolver';
@@ -79,4 +80,10 @@ export {ViewCompiler} from './view_compiler/view_compiler';
 export {getParseErrors, isSyntaxError, syntaxError, Version} from './util';
 export {SourceMap} from './output/source_map';
 export * from './injectable_compiler_2';
+export * from './render3/view/api';
+export {jitExpression} from './render3/r3_jit';
+export {R3DependencyMetadata, R3FactoryMetadata, R3ResolvedDependencyType} from './render3/r3_factory';
+export {compileNgModule, R3NgModuleMetadata} from './render3/r3_module_compiler';
+export {makeBindingParser, parseTemplate} from './render3/view/template';
+export {compileComponentFromMetadata, compileDirectiveFromMetadata} from './render3/view/compiler';
 // This file only reexports content of the `src` folder. Keep it that way.

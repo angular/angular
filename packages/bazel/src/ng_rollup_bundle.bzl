@@ -27,6 +27,29 @@ PLUGIN_CONFIG="{sideEffectFreeModules: [\n%s]}" % ",\n".join(
 BO_ROLLUP="angular_devkit/packages/angular_devkit/build_optimizer/src/build-optimizer/rollup-plugin.js"
 BO_PLUGIN="require('%s').default(%s)" % (BO_ROLLUP, PLUGIN_CONFIG)
 
+def _use_plain_rollup(ctx):
+  """Determine whether to use the Angular or upstream versions of the rollup_bundle rule.
+
+  In legacy mode, the Angular version of rollup is used. This runs build optimizer as part of its
+  processing, which affects decorators and annotations.
+
+  In other modes, an emulation of the upstream rollup_bundle rule is used. This avoids running
+  build optimizer on code which isn't designed to be optimized by it.
+
+  Args:
+    ctx: skylark rule execution context
+
+  Returns:
+    true iff the Angular version of rollup with build optimizer should be used, false otherwise
+  """
+
+  if 'compile' not in ctx.var:
+    return False
+
+  strategy = ctx.var['compile']
+  return strategy != 'legacy'
+  
+
 def run_brotli(ctx, input, output):
   ctx.actions.run(
       executable = ctx.executable._brotli,
@@ -35,7 +58,41 @@ def run_brotli(ctx, input, output):
       arguments = ["--output=%s" % output.path, input.path],
   )
 
+# Borrowed from bazelbuild/rules_nodejs
+def _run_tsc(ctx, input, output):
+  args = ctx.actions.args()
+  args.add(["--target", "es5"])
+  args.add("--allowJS")
+  args.add(input.path)
+  args.add(["--outFile", output.path])
+
+  ctx.action(
+      executable = ctx.executable._tsc,
+      inputs = [input],
+      outputs = [output],
+      arguments = [args]
+  )
+
+# Borrowed from bazelbuild/rules_nodejs, with the addition of brotli compression output
+def _plain_rollup_bundle(ctx):
+  rollup_config = write_rollup_config(ctx)
+  run_rollup(ctx, collect_es2015_sources(ctx), rollup_config, ctx.outputs.build_es6)
+  _run_tsc(ctx, ctx.outputs.build_es6, ctx.outputs.build_es5)
+  source_map = run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min)
+  run_uglify(ctx, ctx.outputs.build_es5, ctx.outputs.build_es5_min_debug, debug = True)
+  umd_rollup_config = write_rollup_config(ctx, filename = "_%s_umd.rollup.conf.js", output_format = "umd")
+  run_rollup(ctx, collect_es2015_sources(ctx), umd_rollup_config, ctx.outputs.build_umd)
+  run_sourcemapexplorer(ctx, ctx.outputs.build_es5_min, source_map, ctx.outputs.explore_html)
+
+  run_brotli(ctx, ctx.outputs.build_es5_min, ctx.outputs.build_es5_min_compressed)
+  files = [ctx.outputs.build_es5_min, source_map]
+  return DefaultInfo(files = depset(files), runfiles = ctx.runfiles(files))
+
 def _ng_rollup_bundle(ctx):
+  # Escape and use the plain rollup rule if the compilation strategy requires it
+  if _use_plain_rollup(ctx):
+    return _plain_rollup_bundle(ctx)
+
   # We don't expect anyone to make use of this bundle yet, but it makes this rule
   # compatible with rollup_bundle which allows them to be easily swapped back and
   # forth.

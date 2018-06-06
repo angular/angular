@@ -5,7 +5,7 @@ import { AbstractControl, NG_VALIDATORS, Validator, ValidatorFn, Validators } fr
 // #docregion custom-validator
 /** 히어로의 이름은 인자로 받은 정규표현식에 매칭되지 않아야 합니다.  */
 export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
-  return (control: AbstractControl): {[key: string]: any} => {
+  return (control: AbstractControl): {[key: string]: any} | null => {
     const forbidden = nameRe.test(control.value);
     return forbidden ? {'forbiddenName': {value: control.value}} : null;
   };
@@ -22,7 +22,7 @@ export function forbiddenNameValidator(nameRe: RegExp): ValidatorFn {
 export class ForbiddenValidatorDirective implements Validator {
   @Input('appForbiddenName') forbiddenName: string;
 
-  validate(control: AbstractControl): {[key: string]: any} {
+  validate(control: AbstractControl): {[key: string]: any} | null {
     return this.forbiddenName ? forbiddenNameValidator(new RegExp(this.forbiddenName, 'i'))(control)
                               : null;
   }

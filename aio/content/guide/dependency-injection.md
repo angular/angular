@@ -32,7 +32,7 @@ from the [The Tour of Heroes](tutorial/).
 </code-tabs>
 
 The `HeroesComponent` is the top-level heroes component.
-It's only purpose is to display the `HeroListComponent`
+Its only purpose is to display the `HeroListComponent`
 which displays a list of hero names.
 
 This version of the `HeroListComponent` gets its `heroes` from the `HEROES` array, an in-memory collection

@@ -10,7 +10,7 @@ import {Directive, OnChanges, OnDestroy, Pipe, PipeTransform} from '@angular/cor
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 import {defineDirective, definePipe} from '../../src/render3/definition';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, load, loadDirective, reserveSlots, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pipe, pipeBind1, pipeBind3, pipeBind4, pipeBindV} from '../../src/render3/pipe';
 
@@ -38,9 +38,10 @@ describe('pipe', () => {
       if (rf & RenderFlags.Create) {
         text(0);
         pipe(1, 'countingPipe');
+        reserveSlots(2);
       }
       if (rf & RenderFlags.Update) {
-        textBinding(0, interpolation1('', pipeBind1(1, person.name), ''));
+        textBinding(0, interpolation1('', pipeBind1(1, 2, person.name), ''));
       }
     }
 
@@ -53,9 +54,10 @@ describe('pipe', () => {
       if (rf & RenderFlags.Create) {
         text(0);
         pipe(1, 'randomPipeName');
+        reserveSlots(2);
       }
       if (rf & RenderFlags.Update) {
-        textBinding(0, interpolation1('', pipeBind1(1, ctx.value), ''));
+        textBinding(0, interpolation1('', pipeBind1(1, 2, ctx.value), ''));
       }
     }, [], pipes);
 
@@ -97,9 +99,10 @@ describe('pipe', () => {
         elementStart(0, 'div', ['myDir', '']);
         pipe(1, 'double');
         elementEnd();
+        reserveSlots(2);
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'elprop', bind(pipeBind1(1, ctx)));
+        elementProperty(0, 'elprop', bind(pipeBind1(1, 2, ctx)));
         directive = loadDirective(0);
       }
     }
@@ -112,10 +115,11 @@ describe('pipe', () => {
       if (rf & RenderFlags.Create) {
         text(0);
         pipe(1, 'multiArgPipe');
+        reserveSlots(4);
       }
       if (rf & RenderFlags.Update) {
         textBinding(
-            0, interpolation1('', pipeBind3(1, person.name, 'one', person.address !.city), ''));
+            0, interpolation1('', pipeBind3(1, 4, person.name, 'one', person.address !.city), ''));
       }
     }
 
@@ -129,11 +133,12 @@ describe('pipe', () => {
         text(0);
         pipe(1, 'multiArgPipe');
         pipe(2, 'multiArgPipe');
+        reserveSlots(9);
       }
       if (rf & RenderFlags.Update) {
         textBinding(
-            0,
-            interpolation1('', pipeBind4(2, pipeBindV(1, [person.name, 'a', 'b']), 0, 1, 2), ''));
+            0, interpolation1(
+                   '', pipeBind4(2, 9, pipeBindV(1, 4, [person.name, 'a', 'b']), 0, 1, 2), ''));
       }
     }
 
@@ -158,9 +163,10 @@ describe('pipe', () => {
         elementStart(0, 'div');
         pipe(1, 'identityPipe');
         elementEnd();
+        reserveSlots(2);
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'someProp', bind(pipeBind1(1, 'Megatron')));
+        elementProperty(0, 'someProp', bind(pipeBind1(1, 2, 'Megatron')));
       }
     }
 
@@ -178,9 +184,10 @@ describe('pipe', () => {
         if (rf & RenderFlags.Create) {
           text(0);
           pipe(1, 'countingPipe');
+          reserveSlots(2);
         }
         if (rf & RenderFlags.Update) {
-          textBinding(0, interpolation1('', pipeBind1(1, person.name), ''));
+          textBinding(0, interpolation1('', pipeBind1(1, 2, person.name), ''));
         }
       }
 
@@ -207,9 +214,10 @@ describe('pipe', () => {
         if (rf & RenderFlags.Create) {
           text(0);
           pipe(1, 'countingImpurePipe');
+          reserveSlots(2);
         }
         if (rf & RenderFlags.Update) {
-          textBinding(0, interpolation1('', pipeBind1(1, person.name), ''));
+          textBinding(0, interpolation1('', pipeBind1(1, 2, person.name), ''));
         }
       }
 
@@ -228,10 +236,11 @@ describe('pipe', () => {
           pipe(3, 'countingImpurePipe');
           elementEnd();
           container(4);
+          reserveSlots(4);
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(0, 'someProp', bind(pipeBind1(1, true)));
-          elementProperty(2, 'someProp', bind(pipeBind1(3, true)));
+          elementProperty(0, 'someProp', bind(pipeBind1(1, 2, true)));
+          elementProperty(2, 'someProp', bind(pipeBind1(3, 4, true)));
           pipeInstances.push(load<CountingImpurePipe>(1), load(3));
           containerRefreshStart(4);
           {
@@ -242,9 +251,10 @@ describe('pipe', () => {
                   elementStart(0, 'div');
                   pipe(1, 'countingImpurePipe');
                   elementEnd();
+                  reserveSlots(2);
                 }
                 if (rf1 & RenderFlags.Update) {
-                  elementProperty(0, 'someProp', bind(pipeBind1(1, true)));
+                  elementProperty(0, 'someProp', bind(pipeBind1(1, 2, true)));
                   pipeInstances.push(load<CountingImpurePipe>(1));
                 }
               }
@@ -296,9 +306,10 @@ describe('pipe', () => {
                 if (rf1 & RenderFlags.Create) {
                   text(0);
                   pipe(1, 'pipeWithOnDestroy');
+                  reserveSlots(2);
                 }
                 if (rf & RenderFlags.Update) {
-                  textBinding(0, interpolation1('', pipeBind1(1, person.age), ''));
+                  textBinding(0, interpolation1('', pipeBind1(1, 2, person.age), ''));
                 }
               }
               embeddedViewEnd();

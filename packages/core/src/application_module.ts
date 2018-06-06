@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationInitStatus} from './application_init';
+import {APP_INITIALIZER, ApplicationInitStatus} from './application_init';
 import {ApplicationRef} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
+import {forwardRef} from './di/forward_ref';
 import {Inject, Optional, SkipSelf} from './di/metadata';
 import {LOCALE_ID} from './i18n/tokens';
 import {Compiler} from './linker/compiler';
@@ -46,7 +47,7 @@ export function _localeFactory(locale?: string): string {
       useFactory: _localeFactory,
       deps: [[new Inject(LOCALE_ID), new Optional(), new SkipSelf()]]
     },
-  ]
+  ],
 })
 export class ApplicationModule {
   // Inject ApplicationRef to make it eager...

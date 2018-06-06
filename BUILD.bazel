@@ -11,7 +11,7 @@ exports_files([
 # This ensures that package.json in subdirectories get installed as well.
 alias(
     name = "install",
-    actual = "@yarn//:yarn",
+    actual = "@nodejs//:yarn",
 )
 
 node_modules_filegroup(
@@ -44,14 +44,16 @@ filegroup(
         "//:node_modules/zone.js/dist/zone.js",
         "//:node_modules/zone.js/dist/zone-testing.js",
         "//:node_modules/zone.js/dist/task-tracking.js",
+        "//:test-events.js",
     ],
 )
 
 filegroup(
-    name = "angularjs",
-    # do not sort
+    name = "angularjs_scripts",
     srcs = [
-        "//:node_modules/angular/angular.js",
+        "//:node_modules/angular-1.5/angular.js",
+        "//:node_modules/angular-mocks-1.5/angular-mocks.js",
         "//:node_modules/angular-mocks/angular-mocks.js",
+        "//:node_modules/angular/angular.js",
     ],
 )

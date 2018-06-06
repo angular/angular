@@ -74,22 +74,58 @@ The following table contains our current target release dates for the next two m
 
 
 {@a lts}
-## Long-term support
+{@a support}
+## Support policy
 
-All of our releases are supported actively for about 6 months (until the next major release), and then they are supported through long-term support (LTS) for another 12 months.
+All of our major releases are supported for 18 months. 
 
-During the LTS period, only critical fixes and security patches will be merged and released.
+* 6 months of active support, during which regularly-scheduled updates and patches are released, as described above in [Release frequency](#frequency "Release frequency").
 
-The LTS state of one major version starts on the day of the next major release. LTS status ends approximately one year later, when we release another major version. 
+* 12 months of long-term support (LTS). During the LTS period, only critical fixes and security patches will be released.
 
+The following table provides the support status and key dates for Angular version 4.0.0 and higher. 
 
+<style>
 
- Version     | LTS Start Date | LTS End Date
- ----------- | -------------- | ------------
- ^4.0.0      | October 2017   | October 2018
- ^5.0.0      | April 2018     | April 2019
- ^6.0.0      | October 2018   | October 2019
+    td, th {vertical-align: top}
 
+</style>
+
+<table>
+
+    <tr>
+        <th>Version</th>
+        <th>Status</th>
+        <th>Release Date</th>
+        <th>LTS Start Date</th>
+        <th>LTS End Date</th>
+    </tr>
+
+    <tr>
+        <td>^4.0.0</td>
+        <td>LTS</td>
+        <td>March 23, 2017</td>
+        <td>September 23, 2017</td>
+        <td>September 23, 2018</td>
+    </tr>
+
+    <tr>
+        <td>^5.0.0</td>
+        <td>LTS</td>
+        <td>November 1, 2017</td>
+        <td>May 1, 2018</td>
+        <td>May 1, 2019</td>
+    </tr>
+
+    <tr>
+        <td>^6.0.0</td>
+        <td>Active</td>
+        <td>May 3, 2018</td>
+        <td>November 3, 2018</td>
+        <td>November 3, 2019</td>
+    </tr>
+
+</table>
 
 
 
@@ -106,7 +142,7 @@ To make these transitions as easy as possible, we make two commitments to you:
 
 To help ensure that you have sufficient time and a clear path to update, this is our deprecation policy:
 
-* When announce deprecated features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log").
+* We announce deprecated features in the [change log](https://github.com/angular/angular/blob/master/CHANGELOG.md "Angular change log").
 
 * When we announce a deprecation, we also announce a recommended update path.
 
@@ -127,8 +163,6 @@ Any changes to the public API surface will be done using the versioning, support
 {@a labs}
 ## Angular Labs
 
-Angular Labs is an initiative to cultivate new features and iterate on them quickly. Angular Labs provides a safe place for exploration and experimentation by the Angular team. 
+Angular Labs is an initiative to cultivate new features and iterate on them quickly. Angular Labs provides a safe place for exploration and experimentation by the Angular team.
 
-Angular Labs projects are are not ready for production use, and no commitment is made to bring them to production. The policies and practices that are described in this document do not apply to Angular Labs projects. 
-
-Angular Labs projects typically are in separate branches in the Angular repo, clearly separated from the main Angular codebase. 
+Angular Labs projects are not ready for production use, and no commitment is made to bring them to production. The policies and practices that are described in this document do not apply to Angular Labs projects.

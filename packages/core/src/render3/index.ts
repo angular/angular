@@ -64,12 +64,18 @@ export {
   text as T,
   textBinding as t,
 
+  reserveSlots as rS,
+
   embeddedViewStart as V,
   embeddedViewEnd as v,
   detectChanges,
   markDirty,
   tick,
 } from './instructions';
+
+export {
+    AttributeMarker
+} from './interfaces/node';
 
 export {
   pipe as Pp,

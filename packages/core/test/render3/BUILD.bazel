@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "ts_web_test")
+load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
 load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
 
 ts_library(
@@ -12,6 +12,7 @@ ts_library(
             "**/*_perf.ts",
             "domino.d.ts",
             "load_domino.ts",
+            "jit_spec.ts",
         ],
     ),
     deps = [
@@ -29,16 +30,25 @@ ts_library(
 )
 
 ts_library(
-    name = "render3_node_lib",
+    name = "domino",
     testonly = 1,
     srcs = [
         "domino.d.ts",
         "load_domino.ts",
     ],
     deps = [
-        ":render3_lib",
         "//packages/platform-browser",
         "//packages/platform-server",
+    ],
+)
+
+ts_library(
+    name = "render3_node_lib",
+    testonly = 1,
+    srcs = [],
+    deps = [
+        ":domino",
+        ":render3_lib",
     ],
 )
 
@@ -52,7 +62,7 @@ jasmine_node_test(
     ],
 )
 
-ts_web_test(
+ts_web_test_suite(
     name = "render3_web",
     deps = [
         ":render3_lib",

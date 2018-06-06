@@ -47,6 +47,9 @@ jasmine_node_test(
         ":bundle.min.js.br",
         ":bundle.min_debug.js",
     ],
+    tags = [
+        "ivy-jit",
+    ],
     deps = [":test_lib"],
 )
 

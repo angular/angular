@@ -182,9 +182,17 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * Not all features are supported with this option enabled. It is only supported
    * for experimentation and testing of Render3 style code generation.
    *
+   * Acceptable values are as follows:
+   *
+   * `false` - run ngc normally
+   * `true` - run ngc with its usual global analysis, but compile decorators to Ivy fields instead
+   *  of running the View Engine compilers
+   * `ngtsc` - run the ngtsc compiler instead of the normal ngc compiler
+   * `tsc` - behave like plain tsc as much as possible (used for testing JIT code)
+   *
    * @experimental
    */
-  enableIvy?: boolean|'ngtsc';
+  enableIvy?: boolean|'ngtsc'|'tsc';
 
   /** @internal */
   collectAllErrors?: boolean;
@@ -312,7 +320,7 @@ export interface Program {
    * and CSS.
    *
    * Note it is important to displaying TypeScript semantic diagnostics along with Angular
-   * structural diagnostics as an error in the program strucutre might cause errors detected in
+   * structural diagnostics as an error in the program structure might cause errors detected in
    * semantic analysis and a semantic error might cause errors in specifying the program structure.
    *
    * Angular structural information is required to produce these diagnostics.

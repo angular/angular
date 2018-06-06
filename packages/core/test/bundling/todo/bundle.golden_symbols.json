@@ -60,25 +60,16 @@
     "name": "NgIfContext"
   },
   {
-    "name": "NgOnChangesFeature"
-  },
-  {
     "name": "Optional"
   },
   {
     "name": "PARAMETERS"
   },
   {
-    "name": "PRIVATE_PREFIX"
-  },
-  {
     "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
     "name": "RecordViewTuple"
-  },
-  {
-    "name": "SimpleChange"
   },
   {
     "name": "SkipSelf"
@@ -118,9 +109,6 @@
   },
   {
     "name": "__extends"
-  },
-  {
-    "name": "__global"
   },
   {
     "name": "__read"
@@ -205,9 +193,6 @@
   },
   {
     "name": "addComponentLogic"
-  },
-  {
-    "name": "addDestroyable"
   },
   {
     "name": "addRemoveViewFromContainer"
@@ -306,7 +291,13 @@
     "name": "defineInjector"
   },
   {
+    "name": "destroyLView"
+  },
+  {
     "name": "destroyViewTree"
+  },
+  {
+    "name": "detachView"
   },
   {
     "name": "detectChanges"
@@ -384,7 +375,22 @@
     "name": "generatePropertyAliases"
   },
   {
+    "name": "getChildLNode"
+  },
+  {
+    "name": "getCleanup"
+  },
+  {
+    "name": "getCurrentSanitizer"
+  },
+  {
     "name": "getDirectiveInstance"
+  },
+  {
+    "name": "getLViewChild"
+  },
+  {
+    "name": "getNextLNode"
   },
   {
     "name": "getNextLNodeWithProjection"
@@ -414,6 +420,9 @@
     "name": "getOrCreateTemplateRef"
   },
   {
+    "name": "getParentLNode"
+  },
+  {
     "name": "getParentState"
   },
   {
@@ -433,6 +442,9 @@
   },
   {
     "name": "getSymbolIterator"
+  },
+  {
+    "name": "getTViewCleanup"
   },
   {
     "name": "getTypeNameForDebugging"
@@ -481,6 +493,9 @@
   },
   {
     "name": "isJsObject"
+  },
+  {
+    "name": "isLContainer"
   },
   {
     "name": "isListLikeIterable"
@@ -615,7 +630,10 @@
     "name": "setUpAttributes"
   },
   {
-    "name": "setViewNext"
+    "name": "storeCleanupFn"
+  },
+  {
+    "name": "storeCleanupWithContext"
   },
   {
     "name": "stringify"
@@ -646,6 +664,9 @@
   },
   {
     "name": "viewAttached"
+  },
+  {
+    "name": "walkLNodeTree"
   },
   {
     "name": "wrapListenerWithDirtyAndDefault"

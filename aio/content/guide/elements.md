@@ -27,6 +27,18 @@ Transforming a component to a custom element makes all of the required Angular i
 -->
 이렇게 Angular 컴포넌트를 커스텀 엘리먼트로 변환하면, Angular 애플리케이션을 브라우저에서 동작시킬 때 필요한 Angular 요구사항을 모두 만족시킬 수 있습니다. Angular에서 제공하는 커스텀 엘리먼트 변환 방식은 아주 단순하며 직관적이고, 컴포넌트에 정의된 뷰에서 동작하는 변화 감지 메커니즘, 데이터 바인딩, Angular에서 네이티브 HTML에 접근하는 기능을 모두 자동으로 연결합니다.
 
+<div class="l-sub-section">
+
+    <!--
+    We are working on custom elements that can be used by web apps built on other frameworks. 
+    A minimal, self-contained version of the Angular framework will be injected as a service to support the component's change-detection and data-binding functionality. 
+    For more about the direction of development, check out this [video presentation](https://www.youtube.com/watch?v=Z1gLFPLVJjY&t=4s).
+    -->
+    Angular 팀은 Angular 방식으로 만든 커스텀 엘리먼트를 다른 프레임워크로 만든 웹 앱에서도 사용할 수 있도록 준비하고 있습니다. 그래서 Angular로 만든 커스텀 엘리먼트에는 컴포넌트의 변화 감지, 데이터 바인딩 등 엘리먼트가 동작하는 데에 필요한 기능만 최소한으로 들어갑니다.
+    개발 방향에 대해 더 알아보려면 [이 영상](https://www.youtube.com/watch?v=Z1gLFPLVJjY&t=4s)을 참고하세요.
+
+</div>
+
 <!--
 ## Using custom elements
 -->
@@ -84,18 +96,6 @@ When your custom element is placed on a page, the browser creates an instance of
 </figure>
 
 <hr class="clear">
-
-<div class="l-sub-section">
-
-    <!--
-    We are working on custom elements that can be used by web apps built on other frameworks. 
-    A minimal, self-contained version of the Angular framework will be injected as a service to support the component's change-detection and data-binding functionality. 
-    For more about the direction of development, check out this [video presentation](https://www.youtube.com/watch?v=vHI5C-9vH-E).
-    -->
-    Angular 팀은 Angular 방식으로 만든 커스텀 엘리먼트를 다른 프레임워크로 만든 웹 앱에서도 사용할 수 있도록 준비하고 있습니다. 그래서 Angular로 만든 커스텀 엘리먼트에는 컴포넌트의 변화 감지, 데이터 바인딩 등 엘리먼트가 동작하는 데에 필요한 기능만 최소한으로 들어갑니다.
-    개발 방향에 대해 더 알아보려면 [이 영상](https://www.youtube.com/watch?v=vHI5C-9vH-E)을 참고하세요.
-
-</div>
 
 <!--
 ## Transforming components to custom elements

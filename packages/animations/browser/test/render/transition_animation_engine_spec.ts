@@ -20,7 +20,7 @@ const DEFAULT_NAMESPACE_ID = 'id';
   const driver = new MockAnimationDriver();
 
   // these tests are only mean't to be run within the DOM
-  if (typeof Element == 'undefined') return;
+  if (isNode) return;
 
   describe('TransitionAnimationEngine', () => {
     let element: any;
@@ -615,6 +615,13 @@ const DEFAULT_NAMESPACE_ID = 'id';
 
         expect(element.contains(child1)).toBe(true);
         expect(element.contains(child2)).toBe(true);
+      });
+
+      it('should not throw an error if a missing namespace is used', () => {
+        const engine = makeEngine();
+        const ID = 'foo';
+        const TRIGGER = 'fooTrigger';
+        expect(() => { engine.trigger(ID, element, TRIGGER, 'something'); }).not.toThrow();
       });
     });
   });

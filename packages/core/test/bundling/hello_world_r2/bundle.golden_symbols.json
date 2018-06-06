@@ -1041,6 +1041,9 @@
     "name": "MethodCall"
   },
   {
+    "name": "MissingTranslationStrategy"
+  },
+  {
     "name": "MissingTranslationStrategy$1"
   },
   {
@@ -1203,6 +1206,9 @@
     "name": "PLATFORM_INITIALIZER"
   },
   {
+    "name": "PLATFORM_SERVER_ID"
+  },
+  {
     "name": "PLURAL_CASES"
   },
   {
@@ -1324,6 +1330,9 @@
   },
   {
     "name": "Quote"
+  },
+  {
+    "name": "R3_COMPILE_INJECTABLE"
   },
   {
     "name": "REMOVE_EVENT_LISTENER"
@@ -1462,6 +1471,9 @@
   },
   {
     "name": "SanitizingHtmlSerializer"
+  },
+  {
+    "name": "SecurityContext"
   },
   {
     "name": "SecurityContext$1"
@@ -2068,9 +2080,6 @@
   },
   {
     "name": "__extends$7"
-  },
-  {
-    "name": "__global"
   },
   {
     "name": "__read"
@@ -3348,6 +3357,9 @@
     "name": "isObservable"
   },
   {
+    "name": "isPlatformServer"
+  },
+  {
     "name": "isPrefixEnd"
   },
   {
@@ -3600,7 +3612,7 @@
     "name": "parseIntAutoRadix"
   },
   {
-    "name": "pipeBinding"
+    "name": "pipeBindingCallInfo"
   },
   {
     "name": "pipeBindingIdentifiers"
@@ -3619,6 +3631,9 @@
   },
   {
     "name": "platformCoreDynamic"
+  },
+  {
+    "name": "preR3InjectableCompile"
   },
   {
     "name": "preparseElement"
@@ -3655,6 +3670,9 @@
   },
   {
     "name": "pureArrayDef"
+  },
+  {
+    "name": "pureFunctionCallInfo"
   },
   {
     "name": "pureFunctionIdentifiers"

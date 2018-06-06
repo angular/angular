@@ -17,3 +17,25 @@ filegroup(
         ],
     ),
 )
+
+ANGULAR_TESTING = [
+    "node_modules/@angular/*/bundles/*-testing.umd.js",
+    # We use AOT, so the compiler and the dynamic platform-browser should be
+    # visible only in tests
+    "node_modules/@angular/compiler/bundles/*.umd.js",
+    "node_modules/@angular/platform-browser-dynamic/bundles/*.umd.js",
+]
+
+filegroup(
+    name = "angular_bundles",
+    srcs = glob(
+        ["node_modules/@angular/*/bundles/*.umd.js"],
+        exclude = ANGULAR_TESTING,
+    ),
+)
+
+filegroup(
+    name = "angular_test_bundles",
+    testonly = 1,
+    srcs = glob(ANGULAR_TESTING),
+)
