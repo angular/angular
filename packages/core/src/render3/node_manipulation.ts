@@ -426,7 +426,7 @@ function cleanUpView(view: LView): void {
   executeOnDestroys(view);
   executePipeOnDestroys(view);
   // For component views only, the local renderer is destroyed as clean up time.
-  if (view.id === -1 && isProceduralRenderer(view.renderer)) {
+  if (view.tView && view.tView.id === -1 && isProceduralRenderer(view.renderer)) {
     ngDevMode && ngDevMode.rendererDestroy++;
     view.renderer.destroy();
   }
