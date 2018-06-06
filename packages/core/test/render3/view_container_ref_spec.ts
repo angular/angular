@@ -595,7 +595,7 @@ describe('ViewContainerRef', () => {
         expect(fixture.html).toEqual('<p vcref=""></p>ABC');
 
         // The DOM is manually modified here to ensure that the text node is actually moved
-        fixture.hostElement.childNodes[1].nodeValue = '**A**';
+        fixture.hostElement.childNodes[2].nodeValue = '**A**';
         expect(fixture.html).toEqual('<p vcref=""></p>**A**BC');
 
         let viewRef = directiveInstance !.vcref.get(0);

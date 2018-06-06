@@ -266,7 +266,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `data()`                            |  n/a    |
 | `destroy()`                         |  ✅     |
 | `createElement()`                   |  ✅     |
-| `createComment()`                   |  n/a    |
+| `createComment()`                   |  ✅    |
 | `createText()`                      |  ✅     |
 | `destroyNode()`                     |  ✅     |
 | `appendChild()`                     |  ✅     |

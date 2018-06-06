@@ -32,11 +32,7 @@ export abstract class BaseFixture {
   /**
    * Current state of rendered HTML.
    */
-  get html(): string {
-    return (this.hostElement as any as Element)
-        .innerHTML.replace(/ style=""/g, '')
-        .replace(/ class=""/g, '');
-  }
+  get html(): string { return toHtml(this.hostElement as any as Element); }
 }
 
 function noop() {}
@@ -223,9 +219,10 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
   } else {
     return stringifyElement(componentOrElement)
         .replace(/^<div host="">/, '')
+        .replace(/^<div fixture="mark">/, '')
         .replace(/<\/div>$/, '')
         .replace(' style=""', '')
-        .replace(/<!--[\w]*-->/g, '');
+        .replace(/<!--container-->/g, '');
   }
 }
 
