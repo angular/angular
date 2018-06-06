@@ -57,4 +57,14 @@ describe('pipe', () => {
       expect(element.all(by.css('titlecase-pipe p')).get(5).getText()).toEqual('Foo-vs-bar');
     });
   });
+  describe('titlecase', () => {
+    it('should work properly', () => {
+      browser.get(URL);
+      waitForElement('keyvalue-pipe');
+      expect(element.all(by.css('keyvalue-pipe div')).get(0).getText()).toEqual('1:bar');
+      expect(element.all(by.css('keyvalue-pipe div')).get(1).getText()).toEqual('2:foo');
+      expect(element.all(by.css('keyvalue-pipe div')).get(2).getText()).toEqual('1:bar');
+      expect(element.all(by.css('keyvalue-pipe div')).get(3).getText()).toEqual('2:foo');
+    });
+  });
 });

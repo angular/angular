@@ -175,6 +175,23 @@ export declare class JsonPipe implements PipeTransform {
     transform(value: any): string;
 }
 
+export interface KeyValue<K, V> {
+    key: K;
+    value: V;
+}
+
+export declare class KeyValuePipe implements PipeTransform {
+    constructor(differs: KeyValueDiffers);
+    transform<K, V>(input: null, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): null;
+    transform<V>(input: {
+        [key: string]: V;
+    } | Map<string, V>, compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number): Array<KeyValue<string, V>>;
+    transform<V>(input: {
+        [key: number]: V;
+    } | Map<number, V>, compareFn?: (a: KeyValue<number, V>, b: KeyValue<number, V>) => number): Array<KeyValue<number, V>>;
+    transform<K, V>(input: Map<K, V>, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>;
+}
+
 export declare class Location {
     constructor(platformStrategy: LocationStrategy);
     back(): void;
