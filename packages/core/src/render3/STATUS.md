@@ -156,7 +156,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `<div (bubble.click)>`                      |  ❌     |  ❌      |  ❌      |
 | `<div (keyup.enter)>`                       |  ❌     |  ❌      |  ❌      |
 | `<div (hammer.js)>`                         |  ❌     |  ❌      |  ❌      |
-| [`<div (directiveOut)>`][gh23560]           |  ❌     |  ❌      |  ❌      |
+| [`<div (directiveOut)>`][gh23560]           |  ✅     |  ❌      |  ❌      |
 | [`<ng-template (directiveOut)>`][gh23561]   |  ❌     |  ❌      |  ❌      |
 
 [gh23560]: https://github.com/angular/angular/issues/23560
