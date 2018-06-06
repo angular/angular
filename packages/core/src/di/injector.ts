@@ -32,9 +32,6 @@ export const INJECTOR = new InjectionToken<Injector>('INJECTOR');
 export class NullInjector implements Injector {
   get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
     if (notFoundValue === _THROW_IF_NOT_FOUND) {
-      // Intentionally left behind: With dev tools open the debugger will stop here. There is no
-      // reason why correctly written application should cause this exception.
-      debugger;
       throw new Error(`NullInjectorError: No provider for ${stringify(token)}!`);
     }
     return notFoundValue;
@@ -490,11 +487,11 @@ export function injectArgs(types: (Type<any>| InjectionToken<any>| any[])[]): an
 
       for (let j = 0; j < arg.length; j++) {
         const meta = arg[j];
-        if (meta instanceof Optional || meta.ngMetadataName === 'Optional') {
+        if (meta instanceof Optional || meta.__proto__.ngMetadataName === 'Optional') {
           flags |= InjectFlags.Optional;
-        } else if (meta instanceof SkipSelf || meta.ngMetadataName === 'SkipSelf') {
+        } else if (meta instanceof SkipSelf || meta.__proto__.ngMetadataName === 'SkipSelf') {
           flags |= InjectFlags.SkipSelf;
-        } else if (meta instanceof Self || meta.ngMetadataName === 'Self') {
+        } else if (meta instanceof Self || meta.__proto__.ngMetadataName === 'Self') {
           flags |= InjectFlags.Self;
         } else if (meta instanceof Inject) {
           type = meta.token;

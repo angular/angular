@@ -18,7 +18,7 @@ export {forwardRef, resolveForwardRef, ForwardRefFn} from './di/forward_ref';
 export {Injectable, InjectableDecorator, InjectableProvider} from './di/injectable';
 export {inject, InjectFlags, INJECTOR, Injector} from './di/injector';
 export {ReflectiveInjector} from './di/reflective_injector';
-export {StaticProvider, ValueProvider, ConstructorSansProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ClassProvider} from './di/provider';
+export {StaticProvider, ValueProvider, ExistingProvider, FactoryProvider, Provider, TypeProvider, ClassProvider} from './di/provider';
 export {createInjector} from './di/r3_injector';
 export {ResolvedReflectiveFactory, ResolvedReflectiveProvider} from './di/reflective_provider';
 export {ReflectiveKey} from './di/reflective_key';

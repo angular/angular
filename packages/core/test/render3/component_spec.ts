@@ -7,9 +7,9 @@
  */
 
 
-import {DoCheck, ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
+import {ComponentFactory, DoCheck, ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
 import {getRenderedText} from '../../src/render3/component';
-import {ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty} from '../../src/render3/index';
+import {LifecycleHooksFeature, defineComponent, directiveInject, markDirty} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding, tick} from '../../src/render3/instructions';
 import {ComponentDef, DirectiveDef, RenderFlags} from '../../src/render3/interfaces/definition';
 import {createRendererType2} from '../../src/view/index';
@@ -364,27 +364,4 @@ describe('recursive components', () => {
     tick(comp);
     expect(events).toEqual(['check6', 'check2', 'check0', 'check1', 'check5', 'check3', 'check4']);
   });
-
-  it('should map inputs minified & unminified names', async() => {
-    class TestInputsComponent {
-      minifiedName: string;
-      static ngComponentDef = defineComponent({
-        type: TestInputsComponent,
-        selectors: [['test-inputs']],
-        inputs: {minifiedName: 'unminifiedName'},
-        factory: () => new TestInputsComponent(),
-        template: function(rf: RenderFlags, ctx: TestInputsComponent): void {
-          // Template not needed for this test
-        }
-      });
-    }
-
-    const testInputsComponentFactory = new ComponentFactory(TestInputsComponent.ngComponentDef);
-
-    expect([
-      {propName: 'minifiedName', templateName: 'unminifiedName'}
-    ]).toEqual(testInputsComponentFactory.inputs);
-
-  });
-
 });

@@ -1,5 +1,5 @@
 export declare class BrowserModule {
-    constructor(parentModule: BrowserModule | null);
+    constructor(parentModule: BrowserModule);
     /** @experimental */ static withServerTransition(params: {
         appId: string;
     }): ModuleWithProviders;
