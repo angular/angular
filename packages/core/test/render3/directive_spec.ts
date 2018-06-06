@@ -34,7 +34,7 @@ describe('directive', () => {
       }
 
       function Template() {
-        elementStart(0, 'span', [AttributeMarker.SelectOnly, 'dir']);
+        elementStart(0, 'span', [AttributeMarker.SELECT_ONLY, 'dir']);
         elementEnd();
       }
 
@@ -82,7 +82,7 @@ describe('directive', () => {
        */
       function createTemplate() {
         // using 2 bindings to show example shape of attributes array
-        elementStart(0, 'span', ['class', 'fade', AttributeMarker.SelectOnly, 'test', 'other']);
+        elementStart(0, 'span', ['class', 'fade', AttributeMarker.SELECT_ONLY, 'test', 'other']);
         elementEnd();
       }
 
@@ -132,7 +132,7 @@ describe('directive', () => {
          function createTemplate() {
            // putting name (test) in the "usual" value position
            elementStart(
-               0, 'span', ['class', 'fade', AttributeMarker.SelectOnly, 'prop1', 'test', 'prop2']);
+               0, 'span', ['class', 'fade', AttributeMarker.SELECT_ONLY, 'prop1', 'test', 'prop2']);
            elementEnd();
          }
 
@@ -168,7 +168,7 @@ describe('directive', () => {
        * <span (out)="someVar = true"></span>
        */
       function createTemplate() {
-        elementStart(0, 'span', [AttributeMarker.SelectOnly, 'out']);
+        elementStart(0, 'span', [AttributeMarker.SELECT_ONLY, 'out']);
         { listener('out', () => {}); }
         elementEnd();
       }
