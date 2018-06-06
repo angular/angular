@@ -11,7 +11,7 @@ import {NgForOfContext} from '@angular/common';
 import {RenderFlags, directiveInject} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
 import {bind, container, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, setHtmlNS, setSvgNS, text, textBinding} from '../../src/render3/instructions';
-import {LElementNode, LNode, NS} from '../../src/render3/interfaces/node';
+import {LElementNode, LNode} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {TrustedString, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
@@ -86,43 +86,6 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
-        tView: 1,
-        rendererCreateElement: 1,
-        rendererSetAttribute: 2
-      });
-    });
-
-    it('should use sanitizer function even on elements with namespaced attributes', () => {
-      const t = new TemplateFixture(() => {
-        elementStart(0, 'div', [
-          NS.FULL,
-          'http://www.example.com/2004/test',
-          'whatever',
-          'abc',
-        ]);
-        elementEnd();
-      });
-
-      t.update(() => elementAttribute(0, 'title', 'javascript:true', sanitizeUrl));
-
-
-      let standardHTML = '<div whatever="abc" title="unsafe:javascript:true"></div>';
-      let ieHTML = '<div title="unsafe:javascript:true" whatever="abc"></div>';
-
-      expect([standardHTML, ieHTML]).toContain(t.html);
-
-      t.update(
-          () => elementAttribute(
-              0, 'title', bypassSanitizationTrustUrl('javascript:true'), sanitizeUrl));
-
-      standardHTML = '<div whatever="abc" title="javascript:true"></div>';
-      ieHTML = '<div title="javascript:true" whatever="abc"></div>';
-
-      expect([standardHTML, ieHTML]).toContain(t.html);
-
-      expect(ngDevMode).toHaveProperties({
-        firstTemplatePass: 1,
-        tNode: 2,
         tView: 1,
         rendererCreateElement: 1,
         rendererSetAttribute: 2
@@ -445,11 +408,6 @@ describe('instructions', () => {
           // height="300"
           'height',
           '300',
-          // test:title="abc"
-          NS.FULL,
-          'http://www.example.com/2014/test',
-          'title',
-          'abc',
         ]);
         elementStart(2, 'circle', ['cx', '200', 'cy', '150', 'fill', '#0000ff']);
         elementEnd();
@@ -461,70 +419,11 @@ describe('instructions', () => {
 
       // Most browsers will print <circle></circle>, some will print <circle />, both are valid
       const standardHTML =
-          '<div id="container"><svg id="display" width="400" height="300" title="abc"><circle cx="200" cy="150" fill="#0000ff"></circle></svg></div>';
+          '<div id="container"><svg id="display" width="400" height="300"><circle cx="200" cy="150" fill="#0000ff"></circle></svg></div>';
       const ie11HTML =
-          '<div id="container"><svg xmlns="http://www.w3.org/2000/svg" xmlns:NS1="http://www.example.com/2014/test" NS1:title="abc" id="display" width="400" height="300"><circle fill="#0000ff" cx="200" cy="150" /></svg></div>';
+          '<div id="container"><svg xmlns="http://www.w3.org/2000/svg" id="display" width="400" height="300"><circle fill="#0000ff" cx="200" cy="150" /></svg></div>';
 
       expect([standardHTML, ie11HTML]).toContain(t.html);
-    });
-
-    it('should set an attribute with a namespace', () => {
-      const t = new TemplateFixture(() => {
-        elementStart(0, 'div', [
-          'id',
-          'container',
-          // test:title="abc"
-          NS.FULL,
-          'http://www.example.com/2014/test',
-          'title',
-          'abc',
-        ]);
-        elementEnd();
-      });
-
-      const standardHTML = '<div id="container" title="abc"></div>';
-      const ie11HTML =
-          '<div id="container" xmlns:NS1="https://www.example.com/2014/test" NS1:title="abc"></div>';
-      expect([standardHTML, ie11HTML]).toContain(t.html);
-    });
-
-    it('should set attributes including more than one namespaced attribute', () => {
-      const t = new TemplateFixture(() => {
-        elementStart(0, 'div', [
-          'id',
-          'container',
-
-          // NS1:title="abc"
-          NS.FULL,
-          'http://www.example.com/2014/test',
-          'title',
-          'abc',
-
-          // style="background: #dead11"
-          'style',
-          'background: #dead11',
-
-          // NS1:whatever="wee"
-          NS.FULL,
-          'http://www.example.com/2014/test',
-          'whatever',
-          'wee',
-
-          // NS2:shazbot="wocka wocka"
-          NS.FULL,
-          'http://www.whatever.com/2016/blah',
-          'shazbot',
-          'wocka wocka',
-        ]);
-        elementEnd();
-      });
-
-      const standardHTML =
-          '<div id="container" title="abc" style="background: #dead11" whatever="wee" shazbot="wocka wocka"></div>';
-      const ieHTML =
-          '<div id="container" style="background: rgb(222, 173, 17);" title="abc" whatever="wee" shazbot="wocka wocka"></div>';
-
-      expect([standardHTML, ieHTML]).toContain(t.html);
     });
   });
 });
