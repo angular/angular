@@ -134,6 +134,80 @@ describe('JS control flow', () => {
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
   });
 
+  it('should work with nested adjacent if blocks', () => {
+    // Note: this test fails without the beforeNodeStack in node_manipulation.ts,
+    // comment nodes are wrongly inserted in the DOM tree, causing the final output
+    // to be 'WorldHello' instead of 'HelloWorld'
+    const ctx: {condition: boolean,
+                condition2: boolean,
+                condition3: boolean} = {condition: true, condition2: false, condition3: true};
+
+    /**
+     * % if(ctx.condition) {
+     *   % if(ctx.condition2) {
+     *     Hello
+     *   % }
+     *   % if(ctx.condition3) {
+     *     World
+     *   % }
+     * % }
+     */
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        { container(0); }
+      }
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            let rf1 = embeddedViewStart(1);
+            {
+              if (rf1 & RenderFlags.Create) {
+                { container(0); }
+                { container(1); }
+              }
+              if (rf1 & RenderFlags.Update) {
+                containerRefreshStart(0);
+                {
+                  if (ctx.condition2) {
+                    let rf2 = embeddedViewStart(2);
+                    {
+                      if (rf2 & RenderFlags.Create) {
+                        text(0, 'Hello');
+                      }
+                    }
+                    embeddedViewEnd();
+                  }
+                }
+                containerRefreshEnd();
+                containerRefreshStart(1);
+                {
+                  if (ctx.condition3) {
+                    let rf2 = embeddedViewStart(2);
+                    {
+                      if (rf2 & RenderFlags.Create) {
+                        text(0, 'World');
+                      }
+                    }
+                    embeddedViewEnd();
+                  }
+                }
+                containerRefreshEnd();
+              }
+            }
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      }
+    }
+
+    expect(renderToHtml(Template, ctx)).toEqual('World');
+
+    ctx.condition2 = true;
+    expect(renderToHtml(Template, ctx)).toEqual('HelloWorld');
+  });
+
   it('should work with adjacent if blocks managing views in the same container', () => {
 
     const ctx = {condition1: true, condition2: true, condition3: true};
