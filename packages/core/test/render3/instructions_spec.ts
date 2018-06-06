@@ -521,22 +521,6 @@ describe('instructions', () => {
           '<div id="container" style="background: rgb(222, 173, 17);" title="abc" whatever="wee" shazbot="wocka wocka"></div>';
 
       expect([standardHTML, ieHTML]).toContain(t.html);
-
-      const div = t.hostElement.querySelector('#container');
-      expect(div !.attributes.length).toBe(5);
-
-      const expectedAttributes: {[key: string]: string} = {
-        'id': 'container',
-        'http://www.example.com/2014/test:title': 'abc',
-        'style': 'background: #dead11',
-        'http://www.example.com/2014/test:whatever': 'wee',
-        'http://www.whatever.com/2016/blah:shazbot': 'wocka wocka',
-      };
-
-      Array.from(div !.attributes).forEach(attr => {
-        const key = attr.namespaceURI ? attr.namespaceURI + ':' + attr.name : attr.name;
-        expect(attr.value).toEqual(expectedAttributes[key]);
-      });
     });
   });
 });
