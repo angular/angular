@@ -13,6 +13,8 @@ import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Type} from '../../type';
 
 import {angularCoreEnv} from './environment';
+import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from './fields';
+import {patchComponentDefWithScope} from './module';
 import {getReflect, reflectDependencies} from './util';
 
 let _pendingPromises: Promise<void>[] = [];
@@ -34,7 +36,7 @@ export function compileComponent(type: Type<any>, metadata: Component): Promise<
   const templateStr = metadata.template;
 
   let def: any = null;
-  Object.defineProperty(type, 'ngComponentDef', {
+  Object.defineProperty(type, NG_COMPONENT_DEF, {
     get: () => {
       if (def === null) {
         // The ConstantPool is a requirement of the JIT'er.
@@ -61,12 +63,25 @@ export function compileComponent(type: Type<any>, metadata: Component): Promise<
 
         def = jitExpression(
             res.expression, angularCoreEnv, `ng://${type.name}/ngComponentDef.js`, constantPool);
+
+        // If component compilation is async, then the @NgModule annotation which declares the
+        // component may execute and set an ngSelectorScope property on the component type. This
+        // allows the component to patch itself with directiveDefs from the module after it finishes
+        // compiling.
+        if (hasSelectorScope(type)) {
+          patchComponentDefWithScope(def, type.ngSelectorScope);
+        }
       }
       return def;
     },
   });
 
   return null;
+}
+
+function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
+    {ngSelectorScope: Type<any>} {
+  return (component as{ngSelectorScope?: any}).ngSelectorScope !== undefined;
 }
 
 /**
@@ -78,7 +93,7 @@ export function compileComponent(type: Type<any>, metadata: Component): Promise<
  */
 export function compileDirective(type: Type<any>, directive: Directive): Promise<void>|null {
   let def: any = null;
-  Object.defineProperty(type, 'ngDirectiveDef', {
+  Object.defineProperty(type, NG_DIRECTIVE_DEF, {
     get: () => {
       if (def === null) {
         const constantPool = new ConstantPool();
