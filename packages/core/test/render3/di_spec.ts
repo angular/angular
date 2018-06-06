@@ -1225,7 +1225,7 @@ describe('di', () => {
 
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['exist', 'existValue', AttributeMarker.SelectOnly, 'nonExist']);
+          elementStart(0, 'div', ['exist', 'existValue', AttributeMarker.SELECT_ONLY, 'nonExist']);
           exist = injectAttribute('exist');
           nonExist = injectAttribute('nonExist');
         }
@@ -1243,7 +1243,7 @@ describe('di', () => {
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div', [
-            'exist', 'existValue', AttributeMarker.SelectOnly, 'binding1', 'nonExist', 'binding2'
+            'exist', 'existValue', AttributeMarker.SELECT_ONLY, 'binding1', 'nonExist', 'binding2'
           ]);
           exist = injectAttribute('exist');
           nonExist = injectAttribute('nonExist');

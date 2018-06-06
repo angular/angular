@@ -561,6 +561,15 @@ function getRenderFlags(view: LView): RenderFlags {
 let _currentNamespace: string|null = null;
 
 /**
+ * Sets the namespace URI that will be used to create elements in {@link element}
+ * and {@link elementStart}
+ * @param uri the full namespaceUri
+ */
+export function namespace(uri: string | null) {
+  _currentNamespace = uri;
+}
+
+/**
  * Sets the current namespace URI to null, meaning createElement (not createElementNS)
  * will be used to create elements in {@link element} and {@link elementStart}
  */
@@ -608,17 +617,9 @@ export function elementStart(
 
   ngDevMode && ngDevMode.rendererCreateElement++;
 
-  let native: RElement;
-
-  if (isProceduralRenderer(renderer)) {
-    native = renderer.createElement(name, _currentNamespace);
-  } else {
-    if (_currentNamespace === null) {
-      native = renderer.createElement(name);
-    } else {
-      native = renderer.createElementNS(_currentNamespace, name);
-    }
-  }
+  const native: RElement = _currentNamespace === null || isProceduralRenderer(renderer) ?
+      renderer.createElement(name) :
+      (renderer as ObjectOrientedRenderer3).createElementNS(_currentNamespace, name);
 
   ngDevMode && assertDataInRange(index - 1);
 
@@ -860,7 +861,7 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
   const isProc = isProceduralRenderer(renderer);
   for (let i = 0; i < attrs.length; i += 2) {
     let attrName = attrs[i];
-    if (attrName === AttributeMarker.NamespaceUri) {
+    if (attrName === AttributeMarker.NAMESPACE_URI) {
       const attrNS = attrs[i + 1] as string;
       attrName = attrs[i + 2] as string;
       const attrVal = attrs[i + 3] as string;
@@ -871,7 +872,7 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
         native.setAttributeNS(attrNS, attrName, attrVal);
       }
     } else {
-      if (attrName === AttributeMarker.SelectOnly) break;
+      if (attrName === AttributeMarker.SELECT_ONLY) break;
       if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
         const attrVal = attrs[i + 1];
         ngDevMode && ngDevMode.rendererSetAttribute++;
@@ -1532,11 +1533,11 @@ function generateInitialInputs(
   const attrs = tNode.attrs !;
   for (let i = 0; i < attrs.length; i += 2) {
     const first = attrs[i];
-    const attrName = first === AttributeMarker.NamespaceUri ? attrs[i += 2] : first;
+    const attrName = first === AttributeMarker.NAMESPACE_URI ? attrs[i += 2] : first;
     const minifiedInputName = inputs[attrName];
     const attrValue = attrs[i + 1];
 
-    if (attrName === AttributeMarker.SelectOnly) break;
+    if (attrName === AttributeMarker.SELECT_ONLY) break;
     if (minifiedInputName !== undefined) {
       const inputsToStore: InitialInputs =
           initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);

@@ -179,14 +179,14 @@ describe('css selector matching', () => {
       });
 
       it('should take optional binding attribute names into account', () => {
-        expect(isMatching('span', [AttributeMarker.SelectOnly, 'directive'], [
+        expect(isMatching('span', [AttributeMarker.SELECT_ONLY, 'directive'], [
           '', 'directive', ''
         ])).toBeTruthy(`Selector '[directive]' should match <span [directive]="exp">`);
       });
 
       it('should not match optional binding attribute names if attribute selector has value',
          () => {
-           expect(isMatching('span', [AttributeMarker.SelectOnly, 'directive'], [
+           expect(isMatching('span', [AttributeMarker.SELECT_ONLY, 'directive'], [
              '', 'directive', 'value'
            ])).toBeFalsy(`Selector '[directive=value]' should not match <span [directive]="exp">`);
          });
@@ -194,7 +194,7 @@ describe('css selector matching', () => {
       it('should not match optional binding attribute names if attribute selector has value and next name equals to value',
          () => {
            expect(isMatching(
-                      'span', [AttributeMarker.SelectOnly, 'directive', 'value'],
+                      'span', [AttributeMarker.SELECT_ONLY, 'directive', 'value'],
                       ['', 'directive', 'value']))
                .toBeFalsy(
                    `Selector '[directive=value]' should not match <span [directive]="exp" [value]="otherExp">`);
