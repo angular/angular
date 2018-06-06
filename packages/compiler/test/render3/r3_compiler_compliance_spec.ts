@@ -90,7 +90,8 @@ describe('compiler compliance', () => {
       const template = `
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
-            $r3$.ɵEe(0, 'div');
+            $r3$.ɵE(0, 'div');
+            $r3$.ɵe();
           }
           if (rf & 2) {
             $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.id));
@@ -134,8 +135,9 @@ describe('compiler compliance', () => {
       const template = `
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
-            $r3$.ɵEe(0, 'div');
+            $r3$.ɵE(0, 'div');
             $r3$.ɵPp(1,'pipe');
+            $r3$.ɵe();
             $r3$.ɵrS(10);
           }
           if (rf & 2) {
@@ -179,7 +181,8 @@ describe('compiler compliance', () => {
       const template = `
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
-            $r3$.ɵEe(0, 'div');
+            $r3$.ɵE(0, 'div');
+            $r3$.ɵe();
           }
           if (rf & 2) {
             $r3$.ɵkn(0, 'error', $r3$.ɵb(ctx.error));
@@ -251,7 +254,8 @@ describe('compiler compliance', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'child', $c1$);
+              $r3$.ɵE(0, 'child', $c1$);
+              $r3$.ɵe();
               $r3$.ɵT(1, '!');
             }
           },
@@ -457,7 +461,8 @@ describe('compiler compliance', () => {
             factory: function MyApp_Factory() { return new MyApp(); },
             template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
               if (rf & 1) {
-                $r3$.ɵEe(0, 'my-comp');
+                $r3$.ɵE(0, 'my-comp');
+                $r3$.ɵe();
                 $r3$.ɵrS(2);
               }
               if (rf & 2) {
@@ -536,7 +541,8 @@ describe('compiler compliance', () => {
             factory: function MyApp_Factory() { return new MyApp(); },
             template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
               if (rf & 1) {
-                $r3$.ɵEe(0, 'my-comp');
+                $r3$.ɵE(0, 'my-comp');
+                $r3$.ɵe();
                 $r3$.ɵrS(10);
               }
               if (rf & 2) {
@@ -597,7 +603,8 @@ describe('compiler compliance', () => {
             factory: function MyApp_Factory() { return new MyApp(); },
             template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
               if (rf & 1) {
-                $r3$.ɵEe(0, 'object-comp');
+                $r3$.ɵE(0, 'object-comp');
+                $r3$.ɵe();
                 $r3$.ɵrS(2);
               }
               if (rf & 2) {
@@ -662,7 +669,8 @@ describe('compiler compliance', () => {
             factory: function MyApp_Factory() { return new MyApp(); },
             template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
               if (rf & 1) {
-                $r3$.ɵEe(0, 'nested-comp');
+                $r3$.ɵE(0, 'nested-comp');
+                $r3$.ɵe();
                 $r3$.ɵrS(7);
               }
               if (rf & 2) {
@@ -806,7 +814,8 @@ describe('compiler compliance', () => {
               var $tmp$: $any$;
               if (rf & 1) {
                 $r3$.ɵQ(0, SomeDirective, true);
-                $r3$.ɵEe(1, 'div', $e0_attrs$);
+                $r3$.ɵE(1, 'div', $e0_attrs$);
+                $r3$.ɵe();
               }
               if (rf & 2) {
                 ($r3$.ɵqR(($tmp$ = $r3$.ɵld(0))) && (ctx.someDir = $tmp$.first));
@@ -1000,7 +1009,8 @@ describe('compiler compliance', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'input', null, $c1$);
+              $r3$.ɵE(0, 'input', null, $c1$);
+              $r3$.ɵe();
               $r3$.ɵT(2);
             }
             const $user$ = $r3$.ɵld(1);
@@ -1079,8 +1089,10 @@ describe('compiler compliance', () => {
             factory: function SimpleLayout_Factory() { return new SimpleLayout(); },
             template: function SimpleLayout_Template(rf: IDENT, ctx: IDENT) {
               if (rf & 1) {
-                $r3$.ɵEe(0, 'lifecycle-comp');
-                $r3$.ɵEe(1, 'lifecycle-comp');
+                $r3$.ɵE(0, 'lifecycle-comp');
+                $r3$.ɵe();
+                $r3$.ɵE(1, 'lifecycle-comp');
+                $r3$.ɵe();
               }
               if (rf & 2) {
                 $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));

@@ -109,43 +109,4 @@ describe('compiler compliance: template', () => {
     expectEmit(result.source, template, 'Incorrect template');
   });
 
-  // tslint:disable-next-line:ban
-  describe('element with no children', () => {
-    it('should just use the element instruction', () => {
-      const files = {
-        app: {
-          'spec.ts': `
-                import {Component, NgModule} from '@angular/core';
-                import {CommonModule} from '@angular/common';
-
-                @Component({
-                  selector: 'my-component',
-                  template: \`
-                    <div></div>\`
-                })
-                export class MyComponent {
-                }
-
-                @NgModule({declarations: [MyComponent], imports: [CommonModule]})
-                export class MyModule {}
-            `
-        }
-      };
-
-      const template = `
-        // ...
-        template:function MyComponent_Template(rf: IDENT, $ctx$: IDENT){
-          if (rf & 1) {
-            $i0$.ɵEe(0,'div');
-          }
-        }`;
-
-      debugger;
-
-      const result = compile(files, angularFiles);
-
-      expectEmit(result.source, template, 'Incorrect template');
-    });
-  });
-
 });

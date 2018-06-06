@@ -314,42 +314,32 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     if (i18nMessages.length > 0) {
       this._creationCode.push(...i18nMessages);
     }
-
-    let isSelfClosingElement = element.outputs.length === 0 && element.children.length === 0;
-
+    this.instruction(
+        this._creationCode, element.sourceSpan, R3.createElement, ...trimTrailingNulls(parameters));
 
     const implicit = o.variable(CONTEXT_NAME);
 
-    if (isSelfClosingElement) {
+    // Generate Listeners (outputs)
+    element.outputs.forEach((outputAst: t.BoundEvent) => {
+      const elName = sanitizeIdentifier(element.name);
+      const evName = sanitizeIdentifier(outputAst.name);
+      const functionName = `${this.templateName}_${elName}_${evName}_listener`;
+      const localVars: o.Statement[] = [];
+      const bindingScope =
+          this._bindingScope.nestedScope((lhsVar: o.ReadVarExpr, rhsExpression: o.Expression) => {
+            localVars.push(
+                lhsVar.set(rhsExpression).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
+          });
+      const bindingExpr = convertActionBinding(
+          bindingScope, implicit, outputAst.handler, 'b', () => error('Unexpected interpolation'));
+      const handler = o.fn(
+          [new o.FnParam('$event', o.DYNAMIC_TYPE)], [...localVars, ...bindingExpr.render3Stmts],
+          o.INFERRED_TYPE, null, functionName);
       this.instruction(
-          this._creationCode, element.sourceSpan, R3.element, ...trimTrailingNulls(parameters));
-    } else {
-      this.instruction(
-          this._creationCode, element.sourceSpan, R3.elementStart,
-          ...trimTrailingNulls(parameters));
+          this._creationCode, outputAst.sourceSpan, R3.listener, o.literal(outputAst.name),
+          handler);
+    });
 
-      // Generate Listeners (outputs)
-      element.outputs.forEach((outputAst: t.BoundEvent) => {
-        const elName = sanitizeIdentifier(element.name);
-        const evName = sanitizeIdentifier(outputAst.name);
-        const functionName = `${this.templateName}_${elName}_${evName}_listener`;
-        const localVars: o.Statement[] = [];
-        const bindingScope =
-            this._bindingScope.nestedScope((lhsVar: o.ReadVarExpr, rhsExpression: o.Expression) => {
-              localVars.push(
-                  lhsVar.set(rhsExpression).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
-            });
-        const bindingExpr = convertActionBinding(
-            bindingScope, implicit, outputAst.handler, 'b',
-            () => error('Unexpected interpolation'));
-        const handler = o.fn(
-            [new o.FnParam('$event', o.DYNAMIC_TYPE)], [...localVars, ...bindingExpr.render3Stmts],
-            o.INFERRED_TYPE, null, functionName);
-        this.instruction(
-            this._creationCode, outputAst.sourceSpan, R3.listener, o.literal(outputAst.name),
-            handler);
-      });
-    }
 
     // Generate element input bindings
     element.inputs.forEach((input: t.BoundAttribute) => {
@@ -377,11 +367,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       t.visitAll(this, element.children);
     }
 
-    if (!isSelfClosingElement) {
-      // Finish element construction mode.
-      this.instruction(
-          this._creationCode, element.endSourceSpan || element.sourceSpan, R3.elementEnd);
-    }
+    // Finish element construction mode.
+    this.instruction(
+        this._creationCode, element.endSourceSpan || element.sourceSpan, R3.elementEnd);
+
     // Restore the state before exiting this node
     this._inI18nSection = wasInI18nSection;
   }
