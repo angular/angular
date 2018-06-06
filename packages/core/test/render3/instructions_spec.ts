@@ -11,7 +11,7 @@ import {NgForOfContext} from '@angular/common';
 import {RenderFlags, directiveInject} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
 import {bind, container, element, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, setHtmlNS, setSvgNS, text, textBinding} from '../../src/render3/instructions';
-import {AttributeMarker, LElementNode, LNode} from '../../src/render3/interfaces/node';
+import {LElementNode, LNode, NS} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {TrustedString, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
@@ -95,7 +95,7 @@ describe('instructions', () => {
     it('should use sanitizer function even on elements with namespaced attributes', () => {
       const t = new TemplateFixture(() => {
         element(0, 'div', [
-          AttributeMarker.NAMESPACE_URI,
+          NS.FULL,
           'http://www.example.com/2004/test',
           'whatever',
           'abc',
@@ -445,7 +445,7 @@ describe('instructions', () => {
           'height',
           '300',
           // test:title="abc"
-          AttributeMarker.NAMESPACE_URI,
+          NS.FULL,
           'http://www.example.com/2014/test',
           'title',
           'abc',
@@ -472,7 +472,7 @@ describe('instructions', () => {
           'id',
           'container',
           // test:title="abc"
-          AttributeMarker.NAMESPACE_URI,
+          NS.FULL,
           'http://www.example.com/2014/test',
           'title',
           'abc',
@@ -492,7 +492,7 @@ describe('instructions', () => {
           'container',
 
           // NS1:title="abc"
-          AttributeMarker.NAMESPACE_URI,
+          NS.FULL,
           'http://www.example.com/2014/test',
           'title',
           'abc',
@@ -502,13 +502,13 @@ describe('instructions', () => {
           'background: #dead11',
 
           // NS1:whatever="wee"
-          AttributeMarker.NAMESPACE_URI,
+          NS.FULL,
           'http://www.example.com/2014/test',
           'whatever',
           'wee',
 
           // NS2:shazbot="wocka wocka"
-          AttributeMarker.NAMESPACE_URI,
+          NS.FULL,
           'http://www.whatever.com/2016/blah',
           'shazbot',
           'wocka wocka',
