@@ -17,7 +17,7 @@ import {getSymbolIterator} from '../util';
 
 import {assertEqual, assertNotNull} from './assert';
 import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
-import {assertPreviousIsParent, getCurrentQueries, store} from './instructions';
+import {assertPreviousIsParent, getCurrentQueries, store, storeCleanupWithContext} from './instructions';
 import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, TNode, TNodeFlags, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
@@ -76,6 +76,12 @@ export interface LQuery<T> {
    * This is what builds up the `QueryList._valuesTree`.
    */
   values: any[];
+
+  /**
+   * A pointer to an array that stores collected values from views. This is necessary so we know a
+   * container into which to insert nodes collected from views.
+   */
+  containerValues: any[]|null;
 }
 
 export class LQueries_ implements LQueries {
@@ -118,8 +124,13 @@ export class LQueries_ implements LQueries {
     while (query) {
       const containerValues: any[] = [];  // prepare room for views
       query.values.push(containerValues);
-      const clonedQuery: LQuery<any> =
-          {next: null, list: query.list, predicate: query.predicate, values: containerValues};
+      const clonedQuery: LQuery<any> = {
+        next: null,
+        list: query.list,
+        predicate: query.predicate,
+        values: containerValues,
+        containerValues: null
+      };
       clonedQuery.next = result;
       result = clonedQuery;
       query = query.next;
@@ -128,21 +139,35 @@ export class LQueries_ implements LQueries {
     return result ? new LQueries_(result) : null;
   }
 
-  enterView(index: number): LQueries|null {
+  createView(): LQueries|null {
     let result: LQuery<any>|null = null;
     let query = this.deep;
 
     while (query) {
-      const viewValues: any[] = [];  // prepare room for view nodes
-      query.values.splice(index, 0, viewValues);
-      const clonedQuery: LQuery<any> =
-          {next: null, list: query.list, predicate: query.predicate, values: viewValues};
+      const clonedQuery: LQuery<any> = {
+        next: null,
+        list: query.list,
+        predicate: query.predicate,
+        values: [],
+        containerValues: query.values
+      };
       clonedQuery.next = result;
       result = clonedQuery;
       query = query.next;
     }
 
     return result ? new LQueries_(result) : null;
+  }
+
+  insertView(index: number): void {
+    let query = this.deep;
+    while (query) {
+      ngDevMode &&
+          assertNotNull(
+              query.containerValues, 'View queries need to have a pointer to container values.');
+      query.containerValues !.splice(index, 0, query.values);
+      query = query.next;
+    }
   }
 
   addNode(node: LNode): void {
@@ -153,7 +178,10 @@ export class LQueries_ implements LQueries {
   removeView(index: number): void {
     let query = this.deep;
     while (query) {
-      const removed = query.values.splice(index, 1);
+      ngDevMode &&
+          assertNotNull(
+              query.containerValues, 'View queries need to have a pointer to container values.');
+      const removed = query.containerValues !.splice(index, 1);
 
       // mark a query as dirty only when removed view had matching modes
       ngDevMode && assertEqual(removed.length, 1, 'removed.length');
@@ -195,7 +223,7 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
  */
 function getIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
   const defs = node.view.tView.directives !;
-  const flags = node.tNode !.flags;
+  const flags = node.tNode.flags;
   const count = flags & TNodeFlags.DirectiveCountMask;
   const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
   const end = start + count;
@@ -241,8 +269,7 @@ function add(query: LQuery<any>| null, node: LNode) {
     } else {
       const selector = predicate.selector !;
       for (let i = 0; i < selector.length; i++) {
-        ngDevMode && assertNotNull(node.tNode, 'node.tNode');
-        const directiveIdx = getIdxOfMatchingSelector(node.tNode !, selector[i]);
+        const directiveIdx = getIdxOfMatchingSelector(node.tNode, selector[i]);
         if (directiveIdx !== null) {
           // a node is matching a predicate - determine what to read
           // note that queries using name selector must specify read strategy
@@ -280,7 +307,8 @@ function createQuery<T>(
     next: previous,
     list: queryList,
     predicate: createPredicate(predicate, read),
-    values: (queryList as any as QueryList_<T>)._valuesTree
+    values: (queryList as any as QueryList_<T>)._valuesTree,
+    containerValues: null
   };
 }
 
@@ -388,7 +416,7 @@ export function query<T>(
   const queryList = new QueryList<T>();
   const queries = getCurrentQueries(LQueries_);
   queries.track(queryList, predicate, descend, read);
-
+  storeCleanupWithContext(undefined, queryList, queryList.destroy);
   if (memoryIndex != null) {
     store(memoryIndex, queryList);
   }

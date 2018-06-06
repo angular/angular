@@ -46,6 +46,8 @@ export declare class EventManager {
 /** @experimental */
 export declare const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
 
+export declare const HAMMER_LOADER: InjectionToken<HammerLoader>;
+
 /** @experimental */
 export declare class HammerGestureConfig {
     events: string[];
@@ -64,6 +66,8 @@ export declare class HammerGestureConfig {
     };
     buildHammer(element: HTMLElement): HammerInstance;
 }
+
+export declare type HammerLoader = () => Promise<void>;
 
 /** @experimental */
 export declare function makeStateKey<T = void>(key: string): StateKey<T>;

@@ -28,7 +28,7 @@ const XSSI_PREFIX = /^\)\]\}',?\n/;
  * This class would typically not be created or interacted with directly inside applications, though
  * the {@link MockConnection} may be interacted with in tests.
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
  */
 export class XHRConnection implements Connection {
   request: Request;
@@ -187,7 +187,7 @@ export class XHRConnection implements Connection {
  * with different `cookieName` and `headerName` values. See the main HTTP documentation for more
  * details.
  *
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
  */
 export class CookieXSRFStrategy implements XSRFStrategy {
   constructor(
@@ -225,7 +225,7 @@ export class CookieXSRFStrategy implements XSRFStrategy {
  *   }
  * }
  * ```
- * @deprecated use @angular/common/http instead
+ * @deprecated see https://angular.io/guide/http
  */
 @Injectable()
 export class XHRBackend implements ConnectionBackend {

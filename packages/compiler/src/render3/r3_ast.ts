@@ -7,7 +7,7 @@
  */
 
 import {SecurityContext} from '../core';
-import {AST, BoundElementBindingType, BoundElementProperty, ParsedEvent, ParsedEventType} from '../expression_parser/ast';
+import {AST, BindingType, BoundElementProperty, ParsedEvent, ParsedEventType} from '../expression_parser/ast';
 import {ParseSourceSpan} from '../parse_util';
 
 export interface Node {
@@ -29,14 +29,13 @@ export class TextAttribute implements Node {
   constructor(
       public name: string, public value: string, public sourceSpan: ParseSourceSpan,
       public valueSpan?: ParseSourceSpan) {}
-  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitAttribute(this); }
+  visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitTextAttribute(this); }
 }
 
 export class BoundAttribute implements Node {
   constructor(
-      public name: string, public type: BoundElementBindingType,
-      public securityContext: SecurityContext, public value: AST, public unit: string|null,
-      public sourceSpan: ParseSourceSpan) {}
+      public name: string, public type: BindingType, public securityContext: SecurityContext,
+      public value: AST, public unit: string|null, public sourceSpan: ParseSourceSpan) {}
 
   static fromBoundElementProperty(prop: BoundElementProperty) {
     return new BoundAttribute(
@@ -106,7 +105,7 @@ export interface Visitor<Result = any> {
   visitContent(content: Content): Result;
   visitVariable(variable: Variable): Result;
   visitReference(reference: Reference): Result;
-  visitAttribute(attribute: TextAttribute): Result;
+  visitTextAttribute(attribute: TextAttribute): Result;
   visitBoundAttribute(attribute: BoundAttribute): Result;
   visitBoundEvent(attribute: BoundEvent): Result;
   visitText(text: Text): Result;
@@ -119,7 +118,7 @@ export class NullVisitor implements Visitor<void> {
   visitContent(content: Content): void {}
   visitVariable(variable: Variable): void {}
   visitReference(reference: Reference): void {}
-  visitAttribute(attribute: TextAttribute): void {}
+  visitTextAttribute(attribute: TextAttribute): void {}
   visitBoundAttribute(attribute: BoundAttribute): void {}
   visitBoundEvent(attribute: BoundEvent): void {}
   visitText(text: Text): void {}
@@ -141,7 +140,7 @@ export class RecursiveVisitor implements Visitor<void> {
   visitContent(content: Content): void {}
   visitVariable(variable: Variable): void {}
   visitReference(reference: Reference): void {}
-  visitAttribute(attribute: TextAttribute): void {}
+  visitTextAttribute(attribute: TextAttribute): void {}
   visitBoundAttribute(attribute: BoundAttribute): void {}
   visitBoundEvent(attribute: BoundEvent): void {}
   visitText(text: Text): void {}
@@ -185,7 +184,7 @@ export class TransformVisitor implements Visitor<Node> {
 
   visitVariable(variable: Variable): Node { return variable; }
   visitReference(reference: Reference): Node { return reference; }
-  visitAttribute(attribute: TextAttribute): Node { return attribute; }
+  visitTextAttribute(attribute: TextAttribute): Node { return attribute; }
   visitBoundAttribute(attribute: BoundAttribute): Node { return attribute; }
   visitBoundEvent(attribute: BoundEvent): Node { return attribute; }
   visitText(text: Text): Node { return text; }

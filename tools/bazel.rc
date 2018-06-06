@@ -53,3 +53,10 @@ test --experimental_ui
 ################################
 
 # Bazel flags for CircleCI are in /.circleci/bazel.rc
+
+################################
+# Temporary Settings for Ivy   #
+################################
+# to determine if the compiler used should be Ivy or ViewEngine one can use `--define=compile=local` on 
+# any bazel target. This is a temporary flag until codebase is permanently switched to Ivy.
+build --define=compile=legacy

@@ -10,7 +10,6 @@
 # andrewseguin - Andrew Seguin
 # brandonroberts - Brandon Roberts
 # brocco - Mike Brocchi
-# chuckjaz - Chuck Jazdzewski
 # filipesilva - Filipe Silva
 # gkalpak - George Kalpakas
 # hansl - Hans Larsen
@@ -18,6 +17,7 @@
 # jasonaden - Jason Aden
 # kapunahelewong - Kapunahele Wong
 # kara - Kara Erickson
+# kyliau - Keen Yee Liau
 # matsko - Matias Niemelä
 # mhevery - Misko Hevery
 # petebacondarwin - Pete Bacon Darwin
@@ -94,7 +94,7 @@ groups:
           - "tools/bazel.rc"
     users:
       - alexeagle #primary
-      - chuckjaz
+      - kyliau
       - IgorMinar #fallback
       - mhevery
       - vikerman #fallback
@@ -133,7 +133,7 @@ groups:
         - "packages/core/*"
     users:
       - mhevery #primary
-      - chuckjaz
+      - jasonaden
       - kara
       - vicb
       - IgorMinar #fallback
@@ -237,7 +237,7 @@ groups:
       files:
         - "packages/language-service/*"
     users:
-      - chuckjaz #primary
+      - kyliau #primary
       # needs secondary
       - vicb
       - IgorMinar #fallback

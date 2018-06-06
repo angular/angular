@@ -70,9 +70,10 @@ export abstract class AbstractJsEmitterVisitor extends AbstractEmitterVisitor {
     ctx.println(stmt, `};`);
   }
 
-  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): never {
+  visitWrappedNodeExpr(ast: o.WrappedNodeExpr<any>, ctx: EmitterVisitorContext): any {
     throw new Error('Cannot emit a WrappedNodeExpr in Javascript.');
   }
+
   visitReadVarExpr(ast: o.ReadVarExpr, ctx: EmitterVisitorContext): string|null {
     if (ast.builtin === o.BuiltinVar.This) {
       ctx.print(ast, 'self');

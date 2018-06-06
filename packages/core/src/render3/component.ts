@@ -11,6 +11,7 @@
 import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
+import {Sanitizer} from '../sanitization/security';
 
 import {assertComponentType, assertNotNull} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
@@ -20,7 +21,7 @@ import {LElementNode, TNodeFlags} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LView, LViewFlags, RootContext} from './interfaces/view';
 import {stringify} from './util';
-import {createViewRef} from './view_ref';
+import {ViewRef} from './view_ref';
 
 
 
@@ -28,6 +29,9 @@ import {createViewRef} from './view_ref';
 export interface CreateComponentOptions {
   /** Which renderer factory to use. */
   rendererFactory?: RendererFactory3;
+
+  /** A custom sanitizer instance */
+  sanitizer?: Sanitizer;
 
   /**
    * Host element on which the component will be bootstrapped. If not specified,
@@ -78,7 +82,7 @@ export function createComponentRef<T>(
     componentType: ComponentType<T>, opts: CreateComponentOptions): viewEngine_ComponentRef<T> {
   const component = renderComponent(componentType, opts);
   const hostView = _getComponentHostLElementNode(component).data as LView;
-  const hostViewRef = createViewRef(hostView, component);
+  const hostViewRef = new ViewRef(hostView, component);
   return {
     location: {nativeElement: getHostElement(component)},
     injector: opts.injector || NULL_INJECTOR,
@@ -120,6 +124,7 @@ export function renderComponent<T>(
     opts: CreateComponentOptions = {}): T {
   ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
+  const sanitizer = opts.sanitizer || null;
   const componentDef = (componentType as ComponentType<T>).ngComponentDef as ComponentDef<T>;
   if (componentDef.type != componentType) componentDef.type = componentType;
   let component: T;
@@ -133,8 +138,8 @@ export function renderComponent<T>(
     clean: CLEAN_PROMISE,
   };
   const rootView: LView = createLView(
-      -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType),
-      createTView(null, null), null, rootContext,
+      rendererFactory.createRenderer(hostNode, componentDef.rendererType),
+      createTView(-1, null, null, null), rootContext,
       componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
   rootView.injector = opts.injector || null;
 
@@ -144,7 +149,7 @@ export function renderComponent<T>(
     if (rendererFactory.begin) rendererFactory.begin();
 
     // Create element node at index 0 in data array
-    elementNode = hostElement(componentTag, hostNode, componentDef);
+    elementNode = hostElement(componentTag, hostNode, componentDef, sanitizer);
 
     // Create directive instance with factory() and store at index 0 in directives array
     component = rootContext.component =
@@ -155,7 +160,7 @@ export function renderComponent<T>(
 
     executeInitAndContentHooks();
     setHostBindings(ROOT_DIRECTIVE_INDICES);
-    detectChangesInternal(elementNode.data as LView, elementNode, componentDef, component);
+    detectChangesInternal(elementNode.data as LView, elementNode, component);
   } finally {
     leaveView(oldView);
     if (rendererFactory.end) rendererFactory.end();
@@ -182,7 +187,7 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
 
   // Root component is always created at dir index 0
   queueInitHooks(0, def.onInit, def.doCheck, elementNode.view.tView);
-  queueLifecycleHooks(elementNode.tNode !.flags, elementNode.view);
+  queueLifecycleHooks(elementNode.tNode.flags, elementNode.view);
 }
 
 /**

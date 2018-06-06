@@ -15,6 +15,7 @@ export {ChangeDetectorStatus as ɵChangeDetectorStatus, isDefaultChangeDetection
 export {Console as ɵConsole} from './console';
 export {inject as ɵinject, setCurrentInjector as ɵsetCurrentInjector} from './di/injector';
 export {APP_ROOT as ɵAPP_ROOT} from './di/scope';
+export {ivyEnabled as ɵivyEnabled} from './ivy_switch';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
 export {CodegenComponentFactoryResolver as ɵCodegenComponentFactoryResolver} from './linker/component_factory_resolver';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';

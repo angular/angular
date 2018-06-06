@@ -12,9 +12,9 @@ import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
 import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
-import {LNodeType} from '../../src/render3/interfaces/node';
+import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
 import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
@@ -1199,21 +1199,61 @@ describe('di', () => {
     });
   });
 
-  it('should injectAttribute', () => {
-    let exist: string|undefined = 'wrong';
-    let nonExist: string|undefined = 'wrong';
+  describe('@Attribute', () => {
 
-    const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
-      if (rf & RenderFlags.Create) {
-        elementStart(0, 'div', ['exist', 'existValue', 'other', 'ignore']);
-        exist = injectAttribute('exist');
-        nonExist = injectAttribute('nonExist');
-      }
+    it('should inject attribute', () => {
+      let exist: string|undefined = 'wrong';
+      let nonExist: string|undefined = 'wrong';
+
+      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div', ['exist', 'existValue', 'other', 'ignore']);
+          exist = injectAttribute('exist');
+          nonExist = injectAttribute('nonExist');
+        }
+      });
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(exist).toEqual('existValue');
+      expect(nonExist).toEqual(undefined);
     });
 
-    const app = renderComponent(MyApp);
-    expect(exist).toEqual('existValue');
-    expect(nonExist).toEqual(undefined);
+    // https://stackblitz.com/edit/angular-8ytqkp?file=src%2Fapp%2Fapp.component.ts
+    it('should not inject attributes representing bindings and outputs', () => {
+      let exist: string|undefined = 'wrong';
+      let nonExist: string|undefined = 'wrong';
+
+      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div', ['exist', 'existValue', AttributeMarker.SELECT_ONLY, 'nonExist']);
+          exist = injectAttribute('exist');
+          nonExist = injectAttribute('nonExist');
+        }
+      });
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(exist).toEqual('existValue');
+      expect(nonExist).toEqual(undefined);
+    });
+
+    it('should not accidentally inject attributes representing bindings and outputs', () => {
+      let exist: string|undefined = 'wrong';
+      let nonExist: string|undefined = 'wrong';
+
+      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div', [
+            'exist', 'existValue', AttributeMarker.SELECT_ONLY, 'binding1', 'nonExist', 'binding2'
+          ]);
+          exist = injectAttribute('exist');
+          nonExist = injectAttribute('nonExist');
+        }
+      });
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(exist).toEqual('existValue');
+      expect(nonExist).toEqual(undefined);
+    });
   });
 
   describe('inject', () => {
@@ -1364,15 +1404,15 @@ describe('di', () => {
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
       const contentView =
-          createLView(-1, null !, createTView(null, null), null, null, LViewFlags.CheckAlways);
+          createLView(null !, createTView(-1, null, null, null), null, LViewFlags.CheckAlways);
       const oldView = enterView(contentView, null !);
       try {
-        const parent = createLNode(0, LNodeType.Element, null, null);
+        const parent = createLNode(0, TNodeType.Element, null, null, null, null);
 
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values
         // so that we have smaller HelloWorld.
-        (parent as{parent: any}).parent = undefined;
+        (parent.tNode as{parent: any}).parent = undefined;
 
         const injector = getOrCreateNodeInjector();
         expect(injector).not.toBe(null);

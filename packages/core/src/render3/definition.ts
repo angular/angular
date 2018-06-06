@@ -253,32 +253,39 @@ export function NgOnChangesFeature(inputPropertyNames?: {[key: string]: string})
   return function(definition: DirectiveDef<any>): void {
     const inputs = definition.inputs;
     const proto = definition.type.prototype;
-    // Place where we will store SimpleChanges if there is a change
-    Object.defineProperty(proto, PRIVATE_PREFIX, {value: undefined, writable: true});
     for (let pubKey in inputs) {
       const minKey = inputs[pubKey];
       const propertyName = inputPropertyNames && inputPropertyNames[minKey] || pubKey;
       const privateMinKey = PRIVATE_PREFIX + minKey;
-      // Create a place where the actual value will be stored and make it non-enumerable
-      Object.defineProperty(proto, privateMinKey, {value: undefined, writable: true});
-
-      const existingDesc = Object.getOwnPropertyDescriptor(proto, minKey);
-
+      const originalProperty = Object.getOwnPropertyDescriptor(proto, minKey);
+      const getter = originalProperty && originalProperty.get;
+      const setter = originalProperty && originalProperty.set;
       // create a getter and setter for property
       Object.defineProperty(proto, minKey, {
-        get: function(this: OnChangesExpando) {
-          return (existingDesc && existingDesc.get) ? existingDesc.get.call(this) :
-                                                      this[privateMinKey];
-        },
+        get: getter ||
+            (setter ? undefined : function(this: OnChangesExpando) { return this[privateMinKey]; }),
         set: function(this: OnChangesExpando, value: any) {
           let simpleChanges = this[PRIVATE_PREFIX];
-          let isFirstChange = simpleChanges === undefined;
-          if (simpleChanges == null) {
-            simpleChanges = this[PRIVATE_PREFIX] = {};
+          if (!simpleChanges) {
+            // Place where we will store SimpleChanges if there is a change
+            Object.defineProperty(
+                this, PRIVATE_PREFIX, {value: simpleChanges = {}, writable: true});
           }
-          simpleChanges[propertyName] = new SimpleChange(this[privateMinKey], value, isFirstChange);
-          (existingDesc && existingDesc.set) ? existingDesc.set.call(this, value) :
-                                               this[privateMinKey] = value;
+          const isFirstChange = !this.hasOwnProperty(privateMinKey);
+          const currentChange: SimpleChange|undefined = simpleChanges[propertyName];
+          if (currentChange) {
+            currentChange.currentValue = value;
+          } else {
+            simpleChanges[propertyName] =
+                new SimpleChange(this[privateMinKey], value, isFirstChange);
+          }
+          if (isFirstChange) {
+            // Create a place where the actual value will be stored and make it non-enumerable
+            Object.defineProperty(this, privateMinKey, {value, writable: true});
+          } else {
+            this[privateMinKey] = value;
+          }
+          setter && setter.call(this, value);
         }
       });
     }
@@ -431,7 +438,7 @@ export function definePipe<T>(pipeDef: {
 }): never {
   return (<PipeDef<T>>{
     name: pipeDef.name,
-    n: pipeDef.factory,
+    factory: pipeDef.factory,
     pure: pipeDef.pure !== false,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
   }) as never;

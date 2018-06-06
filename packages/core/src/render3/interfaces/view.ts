@@ -7,6 +7,8 @@
  */
 
 import {Injector} from '../../di/injector';
+import {Sanitizer} from '../../sanitization/security';
+
 import {LContainer} from './container';
 import {ComponentTemplate, DirectiveDef, DirectiveDefList, PipeDef, PipeDefList} from './definition';
 import {LElementNode, LViewNode, TNode} from './node';
@@ -44,25 +46,11 @@ export interface LView {
    *
    * If `LElementNode`, this is the LView of a component.
    */
+  // TODO(kara): Remove when we have parent/child on TNodes
   readonly node: LViewNode|LElementNode;
-
-  /**
-   * ID to determine whether this view is the same as the previous view
-   * in this position. If it's not, we know this view needs to be inserted
-   * and the one that exists needs to be removed (e.g. if/else statements)
-   */
-  readonly id: number;
 
   /** Renderer to be used for this view. */
   readonly renderer: Renderer3;
-
-  /**
-   * The binding start index is the index at which the nodes array
-   * starts to store bindings only. Saving this value ensures that we
-   * will begin reading bindings at the correct point in the array when
-   * we are in update mode.
-   */
-  bindingStartIndex: number;
 
   /**
    * The binding index we should access next.
@@ -75,50 +63,14 @@ export interface LView {
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be
-   * unsubscribed. This cleanup array stores both listener data (in chunks of 4)
-   * and output data (in chunks of 2) for a particular view. Combining the arrays
-   * saves on memory (70 bytes per array) and on a few bytes of code size (for two
-   * separate for loops).
+   * unsubscribed. This context array stores both listener functions wrapped with
+   * their context and output subscription instances for a particular view.
    *
-   * If it's a listener being stored:
-   * 1st index is: event name to remove
-   * 2nd index is: native element
-   * 3rd index is: listener function
-   * 4th index is: useCapture boolean
-   *
-   * If it's an output subscription:
-   * 1st index is: unsubscribe function
-   * 2nd index is: context for function
+   * These change per LView instance, so they cannot be stored on TView. Instead,
+   * TView.cleanup saves an index to the necessary context in this array.
    */
-  cleanup: any[]|null;
-
-  /**
-   * This number tracks the next lifecycle hook that needs to be run.
-   *
-   * If lifecycleStage === LifecycleStage.ON_INIT, the init hooks haven't yet been run
-   * and should be executed by the first r() instruction that runs OR the first
-   * cR() instruction that runs (so inits are run for the top level view before any
-   * embedded views).
-   *
-   * If lifecycleStage === LifecycleStage.CONTENT_INIT, the init hooks have been run, but
-   * the content hooks have not yet been run. They should be executed on the first
-   * r() instruction that runs.
-   *
-   * If lifecycleStage === LifecycleStage.VIEW_INIT, both the init hooks and content hooks
-   * have already been run.
-   */
-  lifecycleStage: LifecycleStage;
-
-  /**
-   * The first LView or LContainer beneath this LView in the hierarchy.
-   *
-   * Necessary to store this so views can traverse through their nested views
-   * to remove listeners and call onDestroy callbacks.
-   *
-   * For embedded views, we store the LContainer rather than the first ViewState
-   * to avoid managing splicing when views are added/removed.
-   */
-  child: LView|LContainer|null;
+  // TODO: collapse into data[]
+  cleanupInstances: any[]|null;
 
   /**
    * The last LView or LContainer beneath this LView in the hierarchy.
@@ -167,24 +119,11 @@ export interface LView {
   tView: TView;
 
   /**
-   * For dynamically inserted views, the template function to refresh the view.
-   */
-  template: ComponentTemplate<{}>|null;
-
-  /**
    * - For embedded views, the context with which to render the template.
    * - For root view of the root component the context contains change detection data.
    * - `null` otherwise.
    */
   context: {}|RootContext|null;
-
-  /**
-   * A count of dynamic views that are children of this view (indirectly via containers).
-   *
-   * This is used to decide whether to scan children of this view when refreshing dynamic views
-   * after refreshing the view itself.
-   */
-  dynamicViewCount: number;
 
   /**
    * Queries active for this view - nodes from a view are reported to those queries
@@ -195,6 +134,11 @@ export interface LView {
    * An optional Module Injector to be used as fall back after Element Injectors are consulted.
    */
   injector: Injector|null;
+
+  /**
+   * An optional custom sanitizer
+   */
+  sanitizer: Sanitizer|null;
 }
 
 /** Flags associated with an LView (saved in LView.flags) */
@@ -207,23 +151,35 @@ export const enum LViewFlags {
    * back into the parent view, `data` will be defined and `creationMode` will be
    * improperly reported as false.
    */
-  CreationMode = 0b0001,
+  CreationMode = 0b000001,
 
   /** Whether this view has default change detection strategy (checks always) or onPush */
-  CheckAlways = 0b0010,
+  CheckAlways = 0b000010,
 
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b0100,
+  Dirty = 0b000100,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b1000,
+  Attached = 0b001000,
+
+  /**
+   *  Whether or not the init hooks have run.
+   *
+   * If on, the init hooks haven't yet been run and should be executed by the first component that
+   * runs OR the first cR() instruction that runs (so inits are run for the top level view before
+   * any embedded views).
+   */
+  RunInit = 0b010000,
+
+  /** Whether or not this view is destroyed. */
+  Destroyed = 0b100000,
 }
 
 /** Interface necessary to work with view tree traversal */
 export interface LViewOrLContainer {
   next: LView|LContainer|null;
-  child?: LView|LContainer|null;
   views?: LViewNode[];
+  tView?: TView;
   parent: LView|null;
 }
 
@@ -234,11 +190,57 @@ export interface LViewOrLContainer {
  * Stored on the template function as ngPrivateData.
  */
 export interface TView {
+  /**
+   * ID for inline views to determine whether a view is the same as the previous view
+   * in a certain position. If it's not, we know the new view needs to be inserted
+   * and the one that exists needs to be removed (e.g. if/else statements)
+   *
+   * If this is -1, then this is a component view or a dynamically created view.
+   */
+  readonly id: number;
+
+  /**
+   * The template function used to refresh the view of dynamically created views
+   * and components. Will be null for inline views.
+   */
+  template: ComponentTemplate<{}>|null;
+
+  /**
+   * Pointer to the `TNode` that represents the root of the view.
+   *
+   * If this is a `TNode` for an `LViewNode`, this is an embedded view of a container.
+   * We need this pointer to be able to efficiently find this node when inserting the view
+   * into an anchor.
+   *
+   * If this is a `TNode` for an `LElementNode`, this is the TView of a component.
+   */
+  node: TNode;
+
   /** Whether or not this template has been processed. */
   firstTemplatePass: boolean;
 
   /** Static data equivalent of LView.data[]. Contains TNodes. */
   data: TData;
+
+  /**
+   * The binding start index is the index at which the data array
+   * starts to store bindings only. Saving this value ensures that we
+   * will begin reading bindings at the correct point in the array when
+   * we are in update mode.
+   */
+  bindingStartIndex: number;
+
+  /**
+   * Index of the host node of the first LView or LContainer beneath this LView in
+   * the hierarchy.
+   *
+   * Necessary to store this so views can traverse through their nested views
+   * to remove listeners and call onDestroy callbacks.
+   *
+   * For embedded views, we store the index of an LContainer's host rather than the first
+   * LView to avoid managing splicing when views are added/removed.
+   */
+  childIndex: number;
 
   /**
    * Selector matches for a node are temporarily cached on the TView so the
@@ -359,6 +361,29 @@ export interface TView {
   pipeDestroyHooks: HookData|null;
 
   /**
+   * When a view is destroyed, listeners need to be released and outputs need to be
+   * unsubscribed. This cleanup array stores both listener data (in chunks of 4)
+   * and output data (in chunks of 2) for a particular view. Combining the arrays
+   * saves on memory (70 bytes per array) and on a few bytes of code size (for two
+   * separate for loops).
+   *
+   * If it's a native DOM listener being stored:
+   * 1st index is: event name to remove
+   * 2nd index is: index of native element in LView.data[]
+   * 3rd index is: index of wrapped listener function in LView.cleanupInstances[]
+   * 4th index is: useCapture boolean
+   *
+   * If it's a renderer2 style listener or ViewRef destroy hook being stored:
+   * 1st index is: index of the cleanup function in LView.cleanupInstances[]
+   * 2nd index is: null
+   *
+   * If it's an output subscription or query list destroy hook:
+   * 1st index is: output unsubscribe function / query list destroy function
+   * 2nd index is: index of function context in LView.cleanupInstances[]
+   */
+  cleanup: any[]|null;
+
+  /**
    * A list of directive and element indices for child components that will need to be
    * refreshed when the current view has finished its check.
    *
@@ -408,17 +433,6 @@ export interface RootContext {
  * Odd indices: Hook function
  */
 export type HookData = (number | (() => void))[];
-
-/** Possible values of LView.lifecycleStage, used to determine which hooks to run.  */
-// TODO: Remove this enum when containerRefresh instructions are removed
-export const enum LifecycleStage {
-
-  /* Init hooks need to be run, if any. */
-  Init = 1,
-
-  /* Content hooks need to be run, if any. Init hooks have already run. */
-  AfterInit = 2,
-}
 
 /**
  * Static data that corresponds to the instance-specific data array on an LView.

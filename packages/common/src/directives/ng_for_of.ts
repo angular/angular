@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, OnChanges, SimpleChanges, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
+import {ChangeDetectorRef, Directive, DoCheck, EmbeddedViewRef, Input, IterableChangeRecord, IterableChanges, IterableDiffer, IterableDiffers, NgIterable, TemplateRef, TrackByFunction, ViewContainerRef, forwardRef, isDevMode} from '@angular/core';
 
-/**
- *
- */
 export class NgForOfContext<T> {
   constructor(
       public $implicit: T, public ngForOf: NgIterable<T>, public index: number,
@@ -96,8 +93,12 @@ export class NgForOfContext<T> {
  *
  */
 @Directive({selector: '[ngFor][ngForOf]'})
-export class NgForOf<T> implements DoCheck, OnChanges {
-  @Input() ngForOf: NgIterable<T>;
+export class NgForOf<T> implements DoCheck {
+  @Input()
+  set ngForOf(ngForOf: NgIterable<T>) {
+    this._ngForOf = ngForOf;
+    this._ngForOfDirty = true;
+  }
   @Input()
   set ngForTrackBy(fn: TrackByFunction<T>) {
     if (isDevMode() && fn != null && typeof fn !== 'function') {
@@ -113,6 +114,8 @@ export class NgForOf<T> implements DoCheck, OnChanges {
 
   get ngForTrackBy(): TrackByFunction<T> { return this._trackByFn; }
 
+  private _ngForOf: NgIterable<T>;
+  private _ngForOfDirty: boolean = true;
   private _differ: IterableDiffer<T>|null = null;
   private _trackByFn: TrackByFunction<T>;
 
@@ -130,10 +133,11 @@ export class NgForOf<T> implements DoCheck, OnChanges {
     }
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if ('ngForOf' in changes) {
+  ngDoCheck(): void {
+    if (this._ngForOfDirty) {
+      this._ngForOfDirty = false;
       // React on ngForOf changes only once all inputs have been initialized
-      const value = changes['ngForOf'].currentValue;
+      const value = this._ngForOf;
       if (!this._differ && value) {
         try {
           this._differ = this._differs.find(value).create(this.ngForTrackBy);
@@ -143,11 +147,8 @@ export class NgForOf<T> implements DoCheck, OnChanges {
         }
       }
     }
-  }
-
-  ngDoCheck(): void {
     if (this._differ) {
-      const changes = this._differ.diff(this.ngForOf);
+      const changes = this._differ.diff(this._ngForOf);
       if (changes) this._applyChanges(changes);
     }
   }
@@ -158,7 +159,7 @@ export class NgForOf<T> implements DoCheck, OnChanges {
         (item: IterableChangeRecord<any>, adjustedPreviousIndex: number, currentIndex: number) => {
           if (item.previousIndex == null) {
             const view = this._viewContainer.createEmbeddedView(
-                this._template, new NgForOfContext<T>(null !, this.ngForOf, -1, -1), currentIndex);
+                this._template, new NgForOfContext<T>(null !, this._ngForOf, -1, -1), currentIndex);
             const tuple = new RecordViewTuple<T>(item, view);
             insertTuples.push(tuple);
           } else if (currentIndex == null) {

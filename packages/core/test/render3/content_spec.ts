@@ -8,10 +8,11 @@
 
 import {SelectorFlags} from '@angular/core/src/render3/interfaces/projection';
 
-import {detectChanges} from '../../src/render3/index';
-import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, projection, projectionDef, text} from '../../src/render3/instructions';
+import {AttributeMarker, detectChanges} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, projection, projectionDef, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {createComponent, renderComponent, toHtml} from './render_util';
+
+import {ComponentFixture, createComponent, renderComponent, toHtml} from './render_util';
 
 describe('content projection', () => {
   it('should project content', () => {
@@ -581,6 +582,43 @@ describe('content projection', () => {
       expect(toHtml(parent))
           .toEqual(
               '<child><div id="first"><span title="toFirst">1</span></div><div id="second"><span title="toSecond">2</span></div></child>');
+    });
+
+    // https://stackblitz.com/edit/angular-psokum?file=src%2Fapp%2Fapp.module.ts
+    it('should project nodes where attribute selector matches a binding', () => {
+      /**
+       *  <ng-content select="[title]"></ng-content>
+       */
+      const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          projectionDef(0, [[['', 'title', '']]], ['[title]']);
+          { projection(1, 0, 1); }
+        }
+      });
+
+      /**
+       * <child>
+       *  <span [title]="'Some title'">Has title</span>
+       * </child>
+       */
+      const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'child');
+          {
+            elementStart(1, 'span', [AttributeMarker.SELECT_ONLY, 'title']);
+            { text(2, 'Has title'); }
+            elementEnd();
+          }
+          elementEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(1, 'title', bind('Some title'));
+        }
+      }, [Child]);
+
+      const fixture = new ComponentFixture(Parent);
+      expect(fixture.html).toEqual('<child><span title="Some title">Has title</span></child>');
+
     });
 
     it('should project nodes using class selectors', () => {

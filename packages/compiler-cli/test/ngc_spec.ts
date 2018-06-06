@@ -672,7 +672,7 @@ describe('ngc transformer command-line', () => {
         expect(mymoduleSource).toContain('args: [{ declarations: [] },] }');
         expect(mymoduleSource).not.toContain(`__metadata`);
         expect(mymoduleSource).toContain(`import { AClass } from './aclass';`);
-        expect(mymoduleSource).toContain(`{ type: AClass, }`);
+        expect(mymoduleSource).toContain(`{ type: AClass }`);
       });
     });
 
@@ -2066,6 +2066,7 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')]);
       expect(exitCode).toBe(0, 'Compile failed');
       expect(emittedFile('hello-world.js')).toContain('ngComponentDef');
+      expect(emittedFile('hello-world.js')).toContain('HelloWorldComponent_Factory');
     });
 
     it('should emit an injection of a string token', () => {

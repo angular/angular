@@ -62,10 +62,7 @@ export class MockClients implements Clients {
 
   remove(clientId: string): void { this.clients.delete(clientId); }
 
-  async get(id: string): Promise<Client> {
-    this.add(id);
-    return this.clients.get(id) !as any as Client;
-  }
+  async get(id: string): Promise<Client> { return this.clients.get(id) !as any as Client; }
 
   getMock(id: string): MockClient|undefined { return this.clients.get(id); }
 
@@ -190,12 +187,17 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
 
   waitUntil(promise: Promise<void>): void {}
 
-  handleFetch(req: Request, clientId?: string): [Promise<Response|undefined>, Promise<void>] {
+  handleFetch(req: Request, clientId: string|null = null):
+      [Promise<Response|undefined>, Promise<void>] {
     if (!this.eventHandlers.has('fetch')) {
       throw new Error('No fetch handler registered');
     }
-    const event = new MockFetchEvent(req, clientId || null);
+    const event = new MockFetchEvent(req, clientId);
     this.eventHandlers.get('fetch') !.call(this, event);
+
+    if (clientId) {
+      this.clients.add(clientId);
+    }
 
     return [event.response, event.ready];
   }
@@ -209,7 +211,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
       event = new MockMessageEvent(data, null);
     } else {
       this.clients.add(clientId);
-      event = new MockMessageEvent(data, this.clients.getMock(clientId) as any);
+      event = new MockMessageEvent(data, this.clients.getMock(clientId) || null);
     }
     this.eventHandlers.get('message') !.call(this, event);
     return event.ready;

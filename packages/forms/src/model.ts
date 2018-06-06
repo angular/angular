@@ -44,7 +44,7 @@ function _find(control: AbstractControl, path: Array<string|number>| string, del
 
   return (<Array<string|number>>path).reduce((v: AbstractControl, name) => {
     if (v instanceof FormGroup) {
-      return v.controls[name] || null;
+      return v.controls.hasOwnProperty(name as string) ? v.controls[name] : null;
     }
 
     if (v instanceof FormArray) {
@@ -363,7 +363,7 @@ export abstract class AbstractControl {
    *
    * An event will be emitted by `statusChanges` by default.
    *
-   * Passing `false` for `emitEvent` will cause `statusChanges` to not event an event.
+   * Passing `false` for `emitEvent` will cause `statusChanges` to not emit an event.
    */
   markAsPending(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     (this as{status: string}).status = PENDING;

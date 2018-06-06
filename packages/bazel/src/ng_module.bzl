@@ -14,6 +14,90 @@ load(":rules_typescript.bzl",
     "ts_providers_dict_to_struct",
 )
 
+def _compile_strategy(ctx):
+  """Detect which strategy should be used to implement ng_module.
+
+  Depending on the value of the 'compile' define flag or the '_global_mode' attribute, ng_module
+  can be implemented in various ways. This function reads the configuration passed by the user and
+  determines which mode is active.
+
+  Args:
+    ctx: skylark rule execution context
+
+  Returns:
+    one of 'legacy', 'local', 'jit', or 'global' depending on the configuration in ctx
+  """
+
+  strategy = 'legacy'
+  if 'compile' in ctx.var:
+    strategy = ctx.var['compile']
+
+  if strategy not in ['legacy', 'local', 'jit']:
+    fail("Unknown --define=compile value '%s'" % strategy)
+
+  if strategy == 'legacy' and hasattr(ctx.attr, '_global_mode') and ctx.attr._global_mode:
+    strategy = 'global'
+
+  return strategy
+
+def _compiler_name(ctx):
+  """Selects a user-visible name depending on the current compilation strategy.
+
+  Args:
+    ctx: skylark rule execution context
+
+  Returns:
+    the name of the current compiler to be displayed in build output
+  """
+
+  strategy = _compile_strategy(ctx)
+  if strategy == 'legacy':
+    return 'ngc'
+  elif strategy == 'global':
+    return 'ngc.ivy'
+  elif strategy == 'local':
+    return 'ngtsc'
+  elif strategy == 'jit':
+    return 'tsc'
+  else:
+    fail('unreachable')
+
+def _enable_ivy_value(ctx):
+  """Determines the value of the enableIvy option in the generated tsconfig.
+
+  Args:
+    ctx: skylark rule execution context
+
+  Returns:
+    the value of enableIvy that needs to be set in angularCompilerOptions in the generated tsconfig
+  """
+
+  strategy = _compile_strategy(ctx)
+  if strategy == 'legacy':
+    return False
+  elif strategy == 'global':
+    return True
+  elif strategy == 'local':
+    return 'ngtsc'
+  elif strategy == 'jit':
+    return 'tsc'
+  else:
+    fail('unreachable')
+
+def _include_ng_files(ctx):
+  """Determines whether Angular outputs will be produced by the current compilation strategy.
+
+  Args:
+    ctx: skylark rule execution context
+
+  Returns:
+    true iff the current compilation strategy will produce View Engine compilation outputs (such as
+    factory files), false otherwise
+  """
+
+  strategy = _compile_strategy(ctx)
+  return strategy == 'legacy' or strategy == 'global'
+
 def _basename_of(ctx, file):
   ext_len = len(".ts")
   if file.short_path.endswith(".ng.html"):
@@ -61,6 +145,8 @@ def _should_produce_flat_module_outs(ctx):
 # in the library. Most of these will be produced as empty files but it is
 # unknown, without parsing, which will be empty.
 def _expected_outs(ctx):
+  include_ng_files = _include_ng_files(ctx)
+
   devmode_js_files = []
   closure_js_files = []
   declaration_files = []
@@ -78,7 +164,7 @@ def _expected_outs(ctx):
 
     if short_path.endswith(".ts") and not short_path.endswith(".d.ts"):
       basename = short_path[len(package_prefix):-len(".ts")]
-      if len(factory_basename_set) == 0 or basename in factory_basename_set:
+      if include_ng_files and (len(factory_basename_set) == 0 or basename in factory_basename_set):
         devmode_js = [
             ".ngfactory.js",
             ".ngsummary.js",
@@ -90,7 +176,7 @@ def _expected_outs(ctx):
         devmode_js = [".js"]
         summaries = []
         metadata = []
-    elif short_path.endswith(".css"):
+    elif include_ng_files and short_path.endswith(".css"):
       basename = short_path[len(package_prefix):-len(".css")]
       devmode_js = [
           ".css.shim.ngstyle.js",
@@ -113,7 +199,7 @@ def _expected_outs(ctx):
       metadata_files  += [ctx.actions.declare_file(basename + ext) for ext in metadata]
 
   # We do this just when producing a flat module index for a publishable ng_module
-  if _should_produce_flat_module_outs(ctx):
+  if include_ng_files and _should_produce_flat_module_outs(ctx):
     flat_module_out = _flat_module_out_file(ctx)
     devmode_js_files.append(ctx.actions.declare_file("%s.js" % flat_module_out))
     closure_js_files.append(ctx.actions.declare_file("%s.closure.js" % flat_module_out))
@@ -123,7 +209,12 @@ def _expected_outs(ctx):
   else:
     bundle_index_typings = None
 
-  i18n_messages_files = [ctx.new_file(ctx.genfiles_dir, ctx.label.name + "_ngc_messages.xmb")]
+  # TODO(alxhub): i18n is only produced by the legacy compiler currently. This should be re-enabled
+  # when ngtsc can extract messages
+  if include_ng_files:
+    i18n_messages_files = [ctx.new_file(ctx.genfiles_dir, ctx.label.name + "_ngc_messages.xmb")]
+  else:
+    i18n_messages_files = []
 
   return struct(
     closure_js = closure_js_files,
@@ -135,14 +226,9 @@ def _expected_outs(ctx):
     i18n_messages = i18n_messages_files,
   )
 
-def _ivy_tsconfig(ctx, files, srcs, **kwargs):
-  return _ngc_tsconfig_helper(ctx, files, srcs, True, **kwargs)
-
 def _ngc_tsconfig(ctx, files, srcs, **kwargs):
-  return _ngc_tsconfig_helper(ctx, files, srcs, False, **kwargs)
-
-def _ngc_tsconfig_helper(ctx, files, srcs, enable_ivy, **kwargs):
   outs = _expected_outs(ctx)
+  include_ng_files = _include_ng_files(ctx)
   if "devmode_manifest" in kwargs:
     expected_outs = outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
   else:
@@ -152,8 +238,9 @@ def _ngc_tsconfig_helper(ctx, files, srcs, enable_ivy, **kwargs):
       "enableResourceInlining": ctx.attr.inline_resources,
       "generateCodeForLibraries": False,
       "allowEmptyCodegenFiles": True,
-      "enableSummariesForJit": True,
-      "enableIvy": enable_ivy,
+      # Summaries are only enabled if Angular outputs are to be produced.
+      "enableSummariesForJit": include_ng_files,
+      "enableIvy": _enable_ivy_value(ctx),
       "fullTemplateTypeCheck": ctx.attr.type_check,
       # FIXME: wrong place to de-dupe
       "expectedOut": depset([o.path for o in expected_outs]).to_list()
@@ -216,8 +303,10 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
     the parameters of the compilation which will be used to replay the ngc action for i18N.
   """
 
+  include_ng_files = _include_ng_files(ctx)
+
   mnemonic = "AngularTemplateCompile"
-  progress_message = "Compiling Angular templates (ngc) %s" % label
+  progress_message = "Compiling Angular templates (%s) %s" % (_compiler_name(ctx), label)
 
   if locale:
     mnemonic = "AngularI18NMerging"
@@ -251,7 +340,7 @@ def ngc_compile_action(ctx, label, inputs, outputs, messages_out, tsconfig_file,
       },
   )
 
-  if messages_out != None:
+  if include_ng_files and messages_out != None:
     ctx.actions.run(
         inputs = list(inputs),
         outputs = messages_out,
@@ -313,7 +402,7 @@ def _ts_expected_outs(ctx, label):
   _ignored = [label]
   return _expected_outs(ctx)
 
-def ng_module_impl(ctx, ts_compile_actions, ivy = False):
+def ng_module_impl(ctx, ts_compile_actions):
   """Implementation function for the ng_module rule.
 
   This is exposed so that google3 can have its own entry point that re-uses this
@@ -322,29 +411,30 @@ def ng_module_impl(ctx, ts_compile_actions, ivy = False):
   Args:
     ctx: the skylark rule context
     ts_compile_actions: generates all the actions to run an ngc compilation
-    ivy: if True, run the compiler in Ivy mode (internal only)
 
   Returns:
     the result of the ng_module rule as a dict, suitable for
     conversion by ts_providers_dict_to_struct
   """
 
-  tsconfig = _ngc_tsconfig if not ivy else _ivy_tsconfig
+  include_ng_files = _include_ng_files(ctx)
 
   providers = ts_compile_actions(
       ctx, is_library=True, compile_action=_prodmode_compile_action,
       devmode_compile_action=_devmode_compile_action,
-      tsc_wrapped_tsconfig=tsconfig,
+      tsc_wrapped_tsconfig=_ngc_tsconfig,
       outputs = _ts_expected_outs)
 
   outs = _expected_outs(ctx)
-  providers["angular"] = {
-    "summaries": outs.summaries,
-    "metadata": outs.metadata
-  }
-  providers["ngc_messages"] = outs.i18n_messages
 
-  if _should_produce_flat_module_outs(ctx):
+  if include_ng_files:
+    providers["angular"] = {
+      "summaries": outs.summaries,
+      "metadata": outs.metadata
+    }
+    providers["ngc_messages"] = outs.i18n_messages
+
+  if include_ng_files and _should_produce_flat_module_outs(ctx):
     if len(outs.metadata) > 1:
       fail("expecting exactly one metadata output for " + str(ctx.label))
 
@@ -359,9 +449,6 @@ def ng_module_impl(ctx, ts_compile_actions, ivy = False):
 
 def _ng_module_impl(ctx):
   return ts_providers_dict_to_struct(ng_module_impl(ctx, compile_ts))
-
-def _ivy_module_impl(ctx):
-  return ts_providers_dict_to_struct(ng_module_impl(ctx, compile_ts, True))
 
 NG_MODULE_ATTRIBUTES = {
     "srcs": attr.label_list(allow_files = [".ts"]),
@@ -429,11 +516,16 @@ ng_module = rule(
     outputs = COMMON_OUTPUTS,
 )
 
-# TODO(alxhub): this rule exists to allow early testing of the Ivy compiler within angular/angular,
-# and should not be made public. When ng_module() supports Ivy-mode outputs, this rule should be
-# removed and its usages refactored to use ng_module() directly.
-internal_ivy_ng_module = rule(
-    implementation = _ivy_module_impl,
-    attrs = NG_MODULE_RULE_ATTRS,
+
+# TODO(alxhub): this rule causes legacy ngc to produce Ivy outputs from global analysis information.
+# It exists to facilitate testing of the Ivy runtime until ngtsc is mature enough to be used
+# instead, and should be removed once ngtsc is capable of fulfilling the same requirements.
+internal_global_ng_module = rule(
+    implementation = _ng_module_impl,
+    attrs = dict(NG_MODULE_RULE_ATTRS, **{
+        "_global_mode": attr.bool(
+            default = True,
+        ),
+    }),
     outputs = COMMON_OUTPUTS,
 )

@@ -651,14 +651,14 @@
           "tooltip!": "Angular release practices, planning for updates, and update resources.",
           "tooltip": "Angular 릴리즈 전략, 업데이트 계획하기, 리소스 업데이트하기",
           "children": [
-            { 
+            {
               "url": "guide/updating",
               "title!": "Updating Your Projects",
               "title": "프로젝트 업데이트하기",
               "tooltip!": "Information about updating Angular applications and libraries to the latest version.",
               "tooltip": "Angular 애플리케이션을 업데이트 과정을 단계적으로 안내합니다."
             },
-            { 
+            {
               "url": "guide/releases",
               "title!": "Angular Releases",
               "title": "Angular 릴리즈 계획",
@@ -666,7 +666,7 @@
               "tooltip": "Angular 버전 정책, 릴리즈 정책, 지원 계획, 지원 중단 계획"
             }
           ]
-        },  
+        },
 
         {
           "title!": "Upgrading from AngularJS",
@@ -854,9 +854,9 @@
   ],
 
   "docVersions": [
-    { "title": "v4 (LTS)", "url": "https://v4.angular.io" },
+    { "title": "v5", "url": "https://v5.angular.io" },
+    { "title": "v4", "url": "https://v4.angular.io" },
     { "title": "v2", "url": "https://v2.angular.io" },
     { "title": "AngularDart", "url": "https://webdev.dartlang.org/angular" }
-
   ]
 }

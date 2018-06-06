@@ -72,7 +72,7 @@ fi
 if [[ "$STATUS" != "All checks passed!" ]]; then
   echo PR $PR_NUMBER is failing with: $STATUS
   if [[ $FORCE == 1 ]]; then
-    echo FORCING: --force flag used to ignor PR status.
+    echo FORCING: --force flag used to ignore PR status.
   else
     echo Exting...
     exit 1
@@ -100,11 +100,11 @@ CHECKOUT_MASTER="git checkout merge_pr_master"
 CHECKOUT_PATCH="git checkout merge_pr_patch"
 RESTORE_BRANCH="git checkout $CURRENT_BRANCH"
 
-FETCH_PR="git fetch git@github.com:angular/angular.git pull/$PR_NUMBER/head:merge_pr heads/master:merge_pr_master heads/$PATCH_BRANCH:merge_pr_patch -f"
+FETCH_PR="git fetch git@github.com:angular/angular.git pull/$PR_NUMBER/head:merge_pr heads/$MASTER_BRANCH:merge_pr_master heads/$PATCH_BRANCH:merge_pr_patch -f"
 BASE_PR="git checkout merge_pr~$PR_SHA_COUNT -B merge_pr_base"
 SQUASH_PR="git rebase --autosquash --interactive merge_pr_base merge_pr"
 REWRITE_MESSAGE="git filter-branch -f --msg-filter \"$BASEDIR/utils/github_closes.js $PR_NUMBER\" merge_pr_base..merge_pr"
-PUSH_BRANCHES="git push git@github.com:angular/angular.git merge_pr_master:master merge_pr_patch:$PATCH_BRANCH"
+PUSH_BRANCHES="git push git@github.com:angular/angular.git merge_pr_master:$MASTER_BRANCH merge_pr_patch:$PATCH_BRANCH"
 CHERRY_PICK_PR="git cherry-pick merge_pr_base..merge_pr"
 
 echo "======================"

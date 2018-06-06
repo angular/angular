@@ -204,12 +204,9 @@ export interface PipeDef<T> {
   name: string;
 
   /**
-   * factory function used to create a new directive instance.
-   *
-   * NOTE: this property is short (1 char) because it is used in
-   * component templates which is sensitive to size.
+   * Factory function used to create a new pipe instance.
    */
-  n: () => T;
+  factory: () => T;
 
   /**
    * Whether or not the pipe is pure.

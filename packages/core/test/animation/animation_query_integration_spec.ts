@@ -21,7 +21,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
 
 (function() {
   // these tests are only mean't to be run within the DOM (for now)
-  if (typeof Element == 'undefined') return;
+  if (isNode) return;
 
   describe('animation query tests', function() {
     function getLog(): MockAnimationPlayer[] {

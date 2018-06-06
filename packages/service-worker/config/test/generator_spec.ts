@@ -74,8 +74,8 @@ import {MockFilesystem} from '../testing/mock';
                installMode: 'prefetch',
                updateMode: 'prefetch',
                urls: [
-                 '/test/index.html',
                  '/test/foo/test.html',
+                 '/test/index.html',
                  '/test/test.txt',
                ],
                patterns: [
@@ -102,9 +102,9 @@ import {MockFilesystem} from '../testing/mock';
                {positive: false, regex: '^http:\\/\\/example\\.com\\/excluded$'},
              ],
              hashTable: {
-               '/test/test.txt': '18f6f8eb7b1c23d2bb61bff028b83d867a9e4643',
+               '/test/foo/test.html': '18f6f8eb7b1c23d2bb61bff028b83d867a9e4643',
                '/test/index.html': 'a54d88e06612d820bc3be72877c74f257b561b19',
-               '/test/foo/test.html': '18f6f8eb7b1c23d2bb61bff028b83d867a9e4643'
+               '/test/test.txt': '18f6f8eb7b1c23d2bb61bff028b83d867a9e4643'
              }
            });
            done();

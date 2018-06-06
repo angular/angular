@@ -10,6 +10,10 @@ import {AUTO_STYLE, AnimationEvent, AnimationPlayer, NoopAnimationPlayer, ɵAnim
 import {AnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {AnimationDriver} from '../../src/render/animation_driver';
 
+export function isBrowser() {
+  return (typeof window !== 'undefined' && typeof window.document !== 'undefined');
+}
+
 export function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer {
   switch (players.length) {
     case 0:
@@ -138,7 +142,7 @@ let _query: (element: any, selector: string, multi: boolean) => any[] =
       return [];
     };
 
-if (typeof Element != 'undefined') {
+if (isBrowser()) {
   // this is well supported in all browsers
   _contains = (elm1: any, elm2: any) => { return elm1.contains(elm2) as boolean; };
 

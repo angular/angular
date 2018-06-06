@@ -1,5 +1,14 @@
 # Configuration for angular-robot
 
+#options for the size plugin
+size:
+  disabled: false
+  maxSizeIncrease: 1000
+  circleCiStatusName: "ci/circleci: build-packages-dist"
+  status:
+    disabled: false
+    context: "ci/angular: size"
+
 # options for the merge plugin
 merge:
   # the status will be added to your pull requests
@@ -36,10 +45,12 @@ merge:
       - "packages/language-service/**"
       - "**/.gitignore"
       - "**/.gitkeep"
+      - "**/package.json"
       - "**/tsconfig-build.json"
       - "**/tsconfig.json"
       - "**/rollup.config.js"
       - "**/BUILD.bazel"
+      - "packages/**/integrationtest/**"
       - "packages/**/test/**"
 
   # comment that will be added to a PR when there is a conflict, leave empty or set to false to disable

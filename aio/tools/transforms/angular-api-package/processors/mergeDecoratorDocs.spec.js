@@ -32,8 +32,7 @@ describe('mergeDecoratorDocs processor', () => {
         {
           isCallMember: true,
           description: 'The actual description of the call signature',
-          whatItDoes: 'Does something cool...',
-          howToUse: 'Use it like this...'
+          usageNotes: 'Use it like this...'
         },
         {
           description: 'Some other member'
@@ -69,8 +68,7 @@ describe('mergeDecoratorDocs processor', () => {
   it('should copy across properties from the call signature doc', () => {
     processor.$process([decoratorDoc, metadataDoc, otherDoc]);
     expect(decoratorDoc.description).toEqual('The actual description of the call signature');
-    expect(decoratorDoc.whatItDoes).toEqual('Does something cool...');
-    expect(decoratorDoc.howToUse).toEqual('Use it like this...');
+    expect(decoratorDoc.usageNotes).toEqual('Use it like this...');
   });
 
   it('should remove the metadataDoc from the module exports', () => {

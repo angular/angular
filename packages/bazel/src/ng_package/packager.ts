@@ -211,7 +211,8 @@ function main(args: string[]): number {
     const entryPointName = entryPointPackageName.substr(rootPackageName.length + 1);
     if (!entryPointName) return;
 
-    createMetadataReexportFile(entryPointName, modulesManifest[entryPointPackageName]['metadata']);
+    createMetadataReexportFile(
+        entryPointName, modulesManifest[entryPointPackageName]['metadata'], entryPointPackageName);
     createTypingsReexportFile(
         entryPointName, licenseBanner, modulesManifest[entryPointPackageName]['typings']);
 
@@ -274,6 +275,8 @@ function main(args: string[]): number {
       // So ignore package.json files when we are missing data.
       console.error('WARNING: no module metadata for package', packageName);
       console.error('   Not updating the package.json file to point to it');
+      console.error(
+          '   The ng_module for this package is possibly missing the module_name attribute ');
       return JSON.stringify(parsedPackage, null, 2);
     }
 
@@ -316,7 +319,8 @@ function main(args: string[]): number {
   }
 
   /** Creates metadata re-export file for a secondary entry-point. */
-  function createMetadataReexportFile(entryPointName: string, metadataFile: string) {
+  function createMetadataReexportFile(
+      entryPointName: string, metadataFile: string, packageName: string) {
     const inputPath = path.join(srcDir, `${entryPointName}.metadata.json`);
     writeFileFromInputPath(inputPath, JSON.stringify({
       '__symbolic': 'module',
@@ -325,6 +329,7 @@ function main(args: string[]): number {
       'exports':
           [{'from': `${srcDirRelative(inputPath, metadataFile.replace(/.metadata.json$/, ''))}`}],
       'flatModuleIndexRedirect': true,
+      'importAs': packageName
     }) + '\n');
   }
 

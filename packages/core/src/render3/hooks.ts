@@ -9,7 +9,8 @@
 import {assertEqual} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNodeFlags} from './interfaces/node';
-import {HookData, LView, LifecycleStage, TView} from './interfaces/view';
+import {HookData, LView, LViewFlags, TView} from './interfaces/view';
+
 
 /**
  * If this is the first template pass, any ngOnInit or ngDoCheck hooks will be queued into
@@ -97,9 +98,9 @@ function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
  * @param currentView The current view
  */
 export function executeInitHooks(currentView: LView, tView: TView, creationMode: boolean): void {
-  if (currentView.lifecycleStage === LifecycleStage.Init) {
+  if (currentView.flags & LViewFlags.RunInit) {
     executeHooks(currentView.directives !, tView.initHooks, tView.checkHooks, creationMode);
-    currentView.lifecycleStage = LifecycleStage.AfterInit;
+    currentView.flags &= ~LViewFlags.RunInit;
   }
 }
 
