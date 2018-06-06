@@ -75,7 +75,7 @@ export class HttpXhrBackend implements HttpBackend {
     // Quick check to give a better error message when a user attempts to use
     // HttpClient.jsonp() without installing the JsonpClientModule
     if (req.method === 'JSONP') {
-      throw new Error(`Attempted to construct Jsonp request without JsonpClientModule installed.`);
+      throw new Error(`Attempted to construct Jsonp request without HttpClientJsonpModule installed.`);
     }
 
     // Everything happens on Observable subscription.
