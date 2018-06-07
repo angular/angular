@@ -8,14 +8,13 @@
 
 import * as ts from 'typescript';
 
+import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {Parameter, reflectConstructorParameters} from '../src/reflector';
-
-import {getDeclaration, makeProgram} from './in_memory_typescript';
 
 describe('reflector', () => {
   describe('ctor params', () => {
     it('should reflect a single argument', () => {
-      const program = makeProgram([{
+      const {program} = makeProgram([{
         name: 'entry.ts',
         contents: `
             class Bar {}
@@ -33,7 +32,7 @@ describe('reflector', () => {
     });
 
     it('should reflect a decorated argument', () => {
-      const program = makeProgram([
+      const {program} = makeProgram([
         {
           name: 'dec.ts',
           contents: `
@@ -61,7 +60,7 @@ describe('reflector', () => {
     });
 
     it('should reflect a decorated argument with a call', () => {
-      const program = makeProgram([
+      const {program} = makeProgram([
         {
           name: 'dec.ts',
           contents: `
@@ -89,7 +88,7 @@ describe('reflector', () => {
     });
 
     it('should reflect a decorated argument with an indirection', () => {
-      const program = makeProgram([
+      const {program} = makeProgram([
         {
           name: 'bar.ts',
           contents: `

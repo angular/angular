@@ -8,17 +8,17 @@
 
 import * as ts from 'typescript';
 
+import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {ResolvedValue, staticallyResolve} from '../src/resolver';
 
-import {getDeclaration, makeProgram} from './in_memory_typescript';
-
 function makeSimpleProgram(contents: string): ts.Program {
-  return makeProgram([{name: 'entry.ts', contents}]);
+  return makeProgram([{name: 'entry.ts', contents}]).program;
 }
 
 function makeExpression(
     code: string, expr: string): {expression: ts.Expression, checker: ts.TypeChecker} {
-  const program = makeProgram([{name: 'entry.ts', contents: `${code}; const target$ = ${expr};`}]);
+  const {program} =
+      makeProgram([{name: 'entry.ts', contents: `${code}; const target$ = ${expr};`}]);
   const checker = program.getTypeChecker();
   const decl = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
   return {
@@ -34,7 +34,7 @@ function evaluate<T extends ResolvedValue>(code: string, expr: string): T {
 
 describe('ngtsc metadata', () => {
   it('reads a file correctly', () => {
-    const program = makeProgram([
+    const {program} = makeProgram([
       {
         name: 'entry.ts',
         contents: `
@@ -117,7 +117,7 @@ describe('ngtsc metadata', () => {
   });
 
   it('reads values from default exports', () => {
-    const program = makeProgram([
+    const {program} = makeProgram([
       {name: 'second.ts', contents: 'export default {property: "test"}'},
       {
         name: 'entry.ts',
@@ -135,7 +135,7 @@ describe('ngtsc metadata', () => {
   });
 
   it('reads values from named exports', () => {
-    const program = makeProgram([
+    const {program} = makeProgram([
       {name: 'second.ts', contents: 'export const a = {property: "test"};'},
       {
         name: 'entry.ts',
@@ -152,7 +152,7 @@ describe('ngtsc metadata', () => {
   });
 
   it('chain of re-exports works', () => {
-    const program = makeProgram([
+    const {program} = makeProgram([
       {name: 'const.ts', contents: 'export const value = {property: "test"};'},
       {name: 'def.ts', contents: `import {value} from './const'; export default value;`},
       {name: 'indirect-reexport.ts', contents: `import value from './def'; export {value};`},
