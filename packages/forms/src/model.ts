@@ -549,7 +549,7 @@ export abstract class AbstractControl {
    * If no path is given, it checks for the error on the present control.
    */
   getError(errorCode: string, path?: string[]): any {
-    const control = path ? this.get(path) : this;
+    const control = this._resolvePath(path);
     return control && control.errors ? control.errors[errorCode] : null;
   }
 
@@ -559,7 +559,19 @@ export abstract class AbstractControl {
    *
    * If no path is given, it checks for the error on the present control.
    */
-  hasError(errorCode: string, path?: string[]): boolean { return !!this.getError(errorCode, path); }
+  hasError(errorCode: string, path?: string[]): boolean {
+    const control = this._resolvePath(path);
+    return control && control.errors ? (control.errors as Object).hasOwnProperty(errorCode) : false;
+  }
+
+  /**
+   * Returns the control for the given path.
+   *
+   * If no path is given, it returns the present control.
+   *
+   * @internal
+   */
+  _resolvePath(path?: string[]): AbstractControl|null { return path ? this.get(path) : this; }
 
   /**
    * Retrieves the top-level ancestor of this control.
