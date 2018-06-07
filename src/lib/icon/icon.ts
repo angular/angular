@@ -182,6 +182,16 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
 
   private _setSvgElement(svg: SVGElement) {
     this._clearSvgElement();
+
+    // Workaround for IE11 and Edge ignoring `style` tags inside dynamically-created SVGs.
+    // See: https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/10898469/
+    // Do this before inserting the element into the DOM, in order to avoid a style recalculation.
+    const styleTags = svg.querySelectorAll('style') as NodeListOf<HTMLStyleElement>;
+
+    for (let i = 0; i < styleTags.length; i++) {
+      styleTags[i].textContent += ' ';
+    }
+
     this._elementRef.nativeElement.appendChild(svg);
   }
 
