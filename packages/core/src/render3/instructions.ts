@@ -1494,7 +1494,7 @@ function generateInitialInputs(
  * @returns LContainer
  */
 export function createLContainer(
-    parentLNode: LNode, currentView: LView, template?: ComponentTemplate<any>,
+    parentLNode: LNode, currentView: LView,
     isForViewContainerRef?: boolean): LContainer {
   ngDevMode && assertDefined(parentLNode, 'containers should have a parent');
   return <LContainer>{
@@ -1503,7 +1503,6 @@ export function createLContainer(
     // If the direct parent of the container is a view, its views will need to be added
     // through insertView() when its parent view is being inserted:
     renderParent: canInsertNativeNode(parentLNode, currentView) ? parentLNode : null,
-    template: template == null ? null : template,
     next: null,
     parent: currentView,
     queries: null
@@ -1529,12 +1528,16 @@ export function container(
           currentView.bindingIndex, -1, 'container nodes should be created before any bindings');
 
   const currentParent = isParent ? previousOrParentNode : getParentLNode(previousOrParentNode) !;
-  const lContainer = createLContainer(currentParent, currentView, template);
+  const lContainer = createLContainer(currentParent, currentView);
 
   const node = createLNode(
       index, TNodeType.Container, undefined, tagName || null, attrs || null, lContainer);
 
-  if (firstTemplatePass && template == null) node.tNode.tViews = [];
+  if (firstTemplatePass) {
+    const tView = currentView.tView;
+    node.tNode.tViews =
+        template ? createTView(-1, template, tView.directiveRegistry, tView.pipeRegistry) : [];
+  }
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
