@@ -123,6 +123,16 @@ You can automatically format your code by running:
 $ gulp format
 ```
 
+There is a handy [clang-format extension](https://marketplace.visualstudio.com/items?itemName=xaver.clang-format)
+for Visual Studio Code. Use the following settings to format your code when you save a file:
+
+```json
+{
+    "editor.formatOnSave": true,
+    "clang-format.executable": "${workspaceRoot}/node_modules/.bin/clang-format"
+}
+```
+
 ## Linting/verifying your source code
 
 You can check that your code is properly formatted and adheres to coding style by running:
