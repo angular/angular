@@ -21,7 +21,7 @@ export class MatTreeNestedDataSource<T> extends DataSource<T> {
   _data = new BehaviorSubject<T[]>([]);
 
   /**
-   * Data for the nested treee
+   * Data for the nested tree
    */
   get data() { return this._data.value; }
   set data(value: T[]) { this._data.next(value); }
