@@ -7,6 +7,8 @@
        *ngFor="let tab of _tabs; let i = index"
        [id]="_getTabLabelId(i)"
        [attr.tabIndex]="_getTabIndex(tab, i)"
+       [attr.aria-posinset]="i + 1"
+       [attr.aria-setsize]="_tabs.length"
        [attr.aria-controls]="_getTabContentId(i)"
        [attr.aria-selected]="selectedIndex == i"
        [class.mat-tab-label-active]="selectedIndex == i"

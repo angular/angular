@@ -221,6 +221,16 @@ describe('MatTabGroup', () => {
 
       expect(fixture.componentInstance.animationDone).toHaveBeenCalled();
     }));
+
+    it('should add the proper `aria-setsize` and `aria-posinset`', () => {
+      fixture.detectChanges();
+
+      const labels = Array.from(element.querySelectorAll('.mat-tab-label'));
+
+      expect(labels.map(label => label.getAttribute('aria-posinset'))).toEqual(['1', '2', '3']);
+      expect(labels.every(label => label.getAttribute('aria-setsize') === '3')).toBe(true);
+    });
+
   });
 
   describe('disable tabs', () => {
