@@ -1031,16 +1031,16 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('query: 2 fragment: fragment2');
      })));
 
-  it('should ignore null and undefined query params',
+  it('should ignore undefined and include null and empty string query params',
      fakeAsync(inject([Router], (router: Router) => {
        const fixture = createRoot(router, RootCmp);
 
        router.resetConfig([{path: 'query', component: EmptyQueryParamsCmp}]);
 
-       router.navigate(['query'], {queryParams: {name: 1, age: null, page: undefined}});
+       router.navigate(['query'], {queryParams: {name: 1, age: null, page: undefined, search: ''}});
        advance(fixture);
        const cmp = fixture.debugElement.children[1].componentInstance;
-       expect(cmp.recordedParams).toEqual([{name: '1'}]);
+       expect(cmp.recordedParams).toEqual([{name: '1', age: null, search: ''}]);
      })));
 
   it('should throw an error when one of the commands is null/undefined',
@@ -1881,7 +1881,7 @@ describe('Integration', () => {
          @Component({
            selector: 'someRoot',
            template:
-               `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{removeMe: null, q: 456}" queryParamsHandling="merge">Link</a>`
+               `<router-outlet></router-outlet><a routerLink="/home" [queryParams]="{removeMe: undefined, q: 456}" queryParamsHandling="merge">Link</a>`
          })
          class RootCmpWithLink {
          }

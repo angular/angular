@@ -404,9 +404,13 @@ function serializeMatrixParams(params: {[key: string]: string}): string {
 function serializeQueryParams(params: {[key: string]: any}): string {
   const strParams: string[] = Object.keys(params).map((name) => {
     const value = params[name];
-    return Array.isArray(value) ?
-        value.map(v => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&') :
-        `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
+    if (Array.isArray(value)) {
+      return value.map(v => `${encodeUriQuery(name)}=${encodeUriQuery(v)}`).join('&');
+    } else if (value === null) {
+      return `${encodeUriQuery(name)}`;
+    } else {
+      return `${encodeUriQuery(name)}=${encodeUriQuery(value)}`;
+    }
   });
 
   return strParams.length ? `?${strParams.join("&")}` : '';
@@ -542,17 +546,20 @@ class UrlParser {
       return;
     }
     this.capture(key);
-    let value: any = '';
+    let decodedVal: any;
     if (this.consumeOptional('=')) {
+      let value: any = '';
       const valueMatch = matchUrlQueryParamValue(this.remaining);
       if (valueMatch) {
         value = valueMatch;
         this.capture(value);
       }
+      decodedVal = decodeQuery(value);
+    } else {
+      decodedVal = null;
     }
 
     const decodedKey = decodeQuery(key);
-    const decodedVal = decodeQuery(value);
 
     if (params.hasOwnProperty(decodedKey)) {
       // Append to existing values

@@ -43,7 +43,13 @@ function tree(
   let qp: any = {};
   if (queryParams) {
     forEach(queryParams, (value: any, name: any) => {
-      qp[name] = Array.isArray(value) ? value.map((v: any) => `${v}`) : `${value}`;
+      if (Array.isArray(value)) {
+        qp[name] = value.map((v: any) => `${v}`);
+      } else if (value === null) {
+        qp[name] = null;
+      } else {
+        qp[name] = `${value}`;
+      }
     });
   }
 
