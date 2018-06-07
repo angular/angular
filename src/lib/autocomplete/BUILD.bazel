@@ -7,7 +7,7 @@ ng_module(
   name = "autocomplete",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/autocomplete",
-  assets = [":autocomplete_css"] + glob(["**/*.html"]),
+  assets = [":autocomplete.css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/lib/form-field",
@@ -32,15 +32,6 @@ sass_binary(
   name = "autocomplete_scss",
   src = "autocomplete.scss",
   deps = ["//src/lib/core:core_scss_lib"],
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "autocomplete_css",
-  srcs = [":autocomplete_scss.css"],
-  outs = ["autocomplete.css"],
-  cmd = "cp $< $@",
 )
 
 sass_library(

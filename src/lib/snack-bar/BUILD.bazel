@@ -8,8 +8,8 @@ ng_module(
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/snack-bar",
   assets = [
-    ":snack_bar_container_css",
-    "simple_snack_bar_css",
+    ":snack-bar-container.css",
+    ":simple-snack-bar.css",
   ] + glob(["**/*.html"]),
   deps = [
     "//src/lib/button",
@@ -39,24 +39,6 @@ sass_binary(
   name = "simple_snack_bar_scss",
   src = "simple-snack-bar.scss",
   deps = ["//src/lib/core:core_scss_lib"],
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "snack_bar_container_css",
-  srcs = [":snack_bar_container_scss.css"],
-  outs = ["snack-bar-container.css"],
-  cmd = "cp $< $@",
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "simple_snack_bar_css",
-  srcs = [":simple_snack_bar_scss.css"],
-  outs = ["simple-snack-bar.css"],
-  cmd = "cp $< $@",
 )
 
 sass_library(

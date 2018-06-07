@@ -7,7 +7,7 @@ ng_module(
   name = "button-toggle",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/button-toggle",
-  assets = [":button_toggle_css"] + glob(["**/*.html"]),
+  assets = [":button-toggle.css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/a11y",
@@ -27,15 +27,6 @@ sass_binary(
   name = "button_toggle_scss",
   src = "button-toggle.scss",
   deps = ["//src/lib/core:core_scss_lib"],
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "button_toggle_css",
-  srcs = [":button_toggle_scss.css"],
-  outs = ["button-toggle.css"],
-  cmd = "cp $< $@",
 )
 
 sass_library(

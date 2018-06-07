@@ -7,7 +7,7 @@ ng_module(
   name = "menu",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/menu",
-  assets = [":menu_css"] + glob(["**/*.html"]),
+  assets = [":menu.css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/a11y",
@@ -30,15 +30,6 @@ sass_binary(
   name = "menu_scss",
   src = "menu.scss",
   deps = ["//src/lib/core:core_scss_lib"],
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "menu_css",
-  srcs = [":menu_scss.css"],
-  outs = ["menu.css"],
-  cmd = "cp $< $@",
 )
 
 sass_library(

@@ -8,10 +8,10 @@ ng_module(
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/tabs",
   assets = [
-    ":tab_body_css",
-    ":tab_header_css",
-    ":tab_group_css",
-    ":tab_nav_bar_css",
+    ":tab-body.css",
+    ":tab-header.css",
+    ":tab-group.css",
+    ":tab-nav-bar/tab-nav-bar.css",
   ] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
@@ -75,43 +75,6 @@ sass_binary(
     "tabs_scss_lib",
   ],
 )
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "tab_body_css",
-  srcs = [":tab_body_scss.css"],
-  outs = ["tab-body.css"],
-  cmd = "cp $< $@",
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "tab_header_css",
-  srcs = [":tab_header_scss.css"],
-  outs = ["tab-header.css"],
-  cmd = "cp $< $@",
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "tab_group_css",
-  srcs = [":tab_group_scss.css"],
-  outs = ["tab-group.css"],
-  cmd = "cp $< $@",
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "tab_nav_bar_css",
-  srcs = [":tab_nav_bar_scss.css"],
-  outs = ["tab-nav-bar/tab-nav-bar.css"],
-  cmd = "cp $< $@",
-)
-
 
 sass_library(
   name = "theme",

@@ -7,7 +7,7 @@ ng_module(
   name = "grid-list",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/grid-list",
-  assets = [":grid_list_css"] + glob(["**/*.html"]),
+  assets = [":grid-list.css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/bidi",
@@ -25,15 +25,6 @@ sass_binary(
   name = "grid_list_scss",
   src = "grid-list.scss",
   deps = ["//src/lib/core:core_scss_lib"],
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "grid_list_css",
-  srcs = [":grid_list_scss.css"],
-  outs = ["grid-list.css"],
-  cmd = "cp $< $@",
 )
 
 sass_library(

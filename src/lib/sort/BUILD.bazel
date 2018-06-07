@@ -7,7 +7,7 @@ ng_module(
   name = "sort",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/sort",
-  assets = [":sort_header_css"] + glob(["**/*.html"]),
+  assets = [":sort-header.css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/coercion",
@@ -27,15 +27,6 @@ sass_binary(
   name = "sort_header_scss",
   src = "sort-header.scss",
   deps = ["//src/lib/core:core_scss_lib"],
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "sort_header_css",
-  srcs = [":sort_header_scss.css"],
-  outs = ["sort-header.css"],
-  cmd = "cp $< $@",
 )
 
 sass_library(

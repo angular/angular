@@ -12,9 +12,9 @@ ng_module(
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/core",
   assets = [
-    ":pseudo_checkbox_css",
-    ":option_css",
-    ":optgroup_css",
+    ":selection/pseudo-checkbox/pseudo-checkbox.css",
+    ":option/option.css",
+    ":option/optgroup.css",
   ] + glob(["**/*.html"]),
   deps = [
     "//src/cdk/bidi",
@@ -62,29 +62,6 @@ sass_binary(
   name = "optgroup_scss",
   src = "option/optgroup.scss",
   deps = [":core_scss_lib"],
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "pseudo_checkbox_css",
-  srcs = [":pseudo_checkbox_scss.css"],
-  outs = ["selection/pseudo-checkbox/pseudo-checkbox.css"],
-  cmd = "cp $< $@",
-)
-
-genrule(
-  name = "option_css",
-  srcs = [":option_scss.css"],
-  outs = ["option/option.css"],
-  cmd = "cp $< $@",
-)
-
-genrule(
-  name = "optgroup_css",
-  srcs = [":optgroup_scss.css"],
-  outs = ["option/optgroup.css"],
-  cmd = "cp $< $@",
 )
 
 sass_library(

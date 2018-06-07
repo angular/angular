@@ -16,13 +16,14 @@ check_bazel_version("0.13.0")
 node_repositories(package_json = ["//:package.json"])
 
 # Add sass rules
-git_repository(
+http_archive(
   name = "io_bazel_rules_sass",
-  remote = "https://github.com/bazelbuild/rules_sass.git",
-  tag = "0.0.3",
+  url = "https://github.com/bazelbuild/rules_sass/archive/0.1.0.zip",
+  strip_prefix = "rules_sass-0.1.0",
+  sha256 = "b243c4d64f054c174051785862ab079050d90b37a1cef7da93821c6981cb9ad4",
 )
 
-load("@io_bazel_rules_sass//sass:sass.bzl", "sass_repositories")
+load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 sass_repositories()
 
 # Add TypeScript rules

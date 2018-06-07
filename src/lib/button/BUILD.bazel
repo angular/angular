@@ -7,7 +7,7 @@ ng_module(
   name = "button",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/button",
-  assets = [":button_css"] + glob(["**/*.html"]),
+  assets = [":button.css"] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
     "//src/cdk/a11y",
@@ -34,16 +34,6 @@ sass_binary(
   src = "button.scss",
   deps = [":button_scss_lib"],
 )
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "button_css",
-  srcs = [":button_scss.css"],
-  outs = ["button.css"],
-  cmd = "cp $< $@",
-)
-
 
 sass_library(
   name = "theme",

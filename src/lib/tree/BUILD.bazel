@@ -7,7 +7,7 @@ ng_module(
   name = "tree",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/tree",
-  assets = [":tree_css"] + glob(["**/*.html"]),
+  assets = [":tree.css"] + glob(["**/*.html"]),
   deps = [
     "//src/cdk/tree",
     "//src/lib/core",
@@ -26,15 +26,6 @@ sass_binary(
   name = "tree_scss",
   src = "tree.scss",
   deps = ["//src/lib/core:core_scss_lib"],
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "tree_css",
-  srcs = [":tree_scss.css"],
-  outs = ["tree.css"],
-  cmd = "cp $< $@",
 )
 
 sass_library(

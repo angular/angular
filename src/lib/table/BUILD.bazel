@@ -7,7 +7,7 @@ ng_module(
   name = "table",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/table",
-  assets = [":table_css"],
+  assets = [":table.css"],
   deps = [
     "//src/cdk/bidi",
     "//src/lib/core",
@@ -29,15 +29,6 @@ sass_binary(
   name = "table_scss",
   src = "table.scss",
   deps = ["//src/lib/core:core_scss_lib"],
-)
-
-# TODO(jelbourn): remove this when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "table_css",
-  srcs = [":table_scss.css"],
-  outs = ["table.css"],
-  cmd = "cp $< $@",
 )
 
 sass_library(

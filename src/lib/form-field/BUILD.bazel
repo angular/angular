@@ -8,12 +8,12 @@ ng_module(
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
   module_name = "@angular/material/form-field",
   assets = [
-    ":form_field_css",
-    ":form_field_fill_css",
-    ":form_field_legacy_css",
-    ":form_field_outline_css",
-    ":form_field_standard_css",
-    "//src/lib/input:input_css"
+    ":form-field.css",
+    ":form-field-fill.css",
+    ":form-field-legacy.css",
+    ":form-field-outline.css",
+    ":form-field-standard.css",
+    "//src/lib/input:input.css"
   ] + glob(["**/*.html"]),
   deps = [
     "//src/lib/core",
@@ -57,43 +57,6 @@ sass_binary(
   name = "form_field_standard_scss",
   src = "form-field-standard.scss",
   deps = ["//src/lib/core:core_scss_lib"],
-)
-
-# TODO(jelbourn): remove these when sass_binary supports specifying an output filename and dir.
-# Copy the output of the sass_binary such that the filename and path match what we expect.
-genrule(
-  name = "form_field_css",
-  srcs = [":form_field_scss.css"],
-  outs = ["form-field.css"],
-  cmd = "cp $< $@",
-)
-
-genrule(
-  name = "form_field_fill_css",
-  srcs = [":form_field_fill_scss.css"],
-  outs = ["form-field-fill.css"],
-  cmd = "cp $< $@",
-)
-
-genrule(
-  name = "form_field_legacy_css",
-  srcs = [":form_field_legacy_scss.css"],
-  outs = ["form-field-legacy.css"],
-  cmd = "cp $< $@",
-)
-
-genrule(
-  name = "form_field_outline_css",
-  srcs = [":form_field_outline_scss.css"],
-  outs = ["form-field-outline.css"],
-  cmd = "cp $< $@",
-)
-
-genrule(
-  name = "form_field_standard_css",
-  srcs = [":form_field_standard_scss.css"],
-  outs = ["form-field-standard.css"],
-  cmd = "cp $< $@",
 )
 
 sass_library(
