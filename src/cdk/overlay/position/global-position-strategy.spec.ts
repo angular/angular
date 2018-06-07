@@ -270,6 +270,25 @@ describe('GlobalPositonStrategy', () => {
       expect(elementStyle.height).toBe('300px');
     });
 
+  it('should invert `justify-content` when using `left` in RTL', () => {
+    attachOverlay({
+      positionStrategy: overlay.position().global().left('0'),
+      direction: 'rtl'
+    });
+
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+    expect(parentStyle.justifyContent).toBe('flex-end');
+  });
+
+  it('should invert `justify-content` when using `right` in RTL', () => {
+    attachOverlay({
+      positionStrategy: overlay.position().global().right('0'),
+      direction: 'rtl'
+    });
+
+    const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+    expect(parentStyle.justifyContent).toBe('flex-start');
+  });
 });
 
 
