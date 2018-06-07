@@ -119,7 +119,7 @@ const INDETERMINATE_ANIMATION_TEMPLATE = `
 export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements CanColor {
 
   private _value = 0;
-  private _strokeWidth = this._defaults ? this._defaults.strokeWidth : undefined;
+  private _strokeWidth: number;
   private _fallbackAnimation = false;
 
   /** Tracks diameters of existing instances to de-dupe generated styles (default d = 100) */
@@ -141,8 +141,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
       this._attachStyleNode();
     }
   }
-  private _diameter = this._defaults && this._defaults.diameter ?
-      this._defaults.diameter : BASE_SIZE;
+  private _diameter = BASE_SIZE;
 
   /** Stroke width of the progress spinner. */
   @Input()
@@ -168,13 +167,23 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   constructor(public _elementRef: ElementRef,
               platform: Platform,
               @Optional() @Inject(DOCUMENT) private _document: any,
-              // @deletion-target 7.0.0 _animationMode and _defaults parameters to be made required.
+              // @deletion-target 7.0.0 _animationMode and defaults parameters to be made required.
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
               @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
-                  private _defaults?: MatProgressSpinnerDefaultOptions) {
+                  defaults?: MatProgressSpinnerDefaultOptions) {
 
     super(_elementRef);
     this._fallbackAnimation = platform.EDGE || platform.TRIDENT;
+
+    if (defaults) {
+      if (defaults.diameter) {
+        this.diameter = defaults.diameter;
+      }
+
+      if (defaults.strokeWidth) {
+        this.strokeWidth = defaults.strokeWidth;
+      }
+    }
 
     // On IE and Edge, we can't animate the `stroke-dashoffset`
     // reliably so we fall back to a non-spec animation.
