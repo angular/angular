@@ -572,7 +572,7 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
 
     ngDevMode && assertNodeOfPossibleTypes(vcRefHost, TNodeType.Container, TNodeType.Element);
     const hostParent = getParentLNode(vcRefHost) !;
-    const lContainer = createLContainer(hostParent, vcRefHost.view, undefined, true);
+    const lContainer = createLContainer(hostParent, vcRefHost.view, true);
     const lContainerNode: LContainerNode = createLNodeObject(
         TNodeType.Container, vcRefHost.view, hostParent, undefined, lContainer, null);
 
@@ -702,11 +702,6 @@ export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef
     ngDevMode && assertNodeType(di.node, TNodeType.Container);
     const hostNode = di.node as LContainerNode;
     const hostTNode = hostNode.tNode;
-    const hostTView = hostNode.view.tView;
-    if (!hostTNode.tViews) {
-      hostTNode.tViews = createTView(
-          -1, hostNode.data.template !, hostTView.directiveRegistry, hostTView.pipeRegistry);
-    }
     ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
     di.templateRef = new TemplateRef<any>(
         getOrCreateElementRef(di), hostTNode.tViews as TView, getRenderer(), hostNode.data.queries);
