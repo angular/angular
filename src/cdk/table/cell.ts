@@ -7,6 +7,8 @@
  */
 
 import {ContentChild, Directive, ElementRef, Input, TemplateRef} from '@angular/core';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {CanStick, mixinHasStickyInput} from './can-stick';
 
 /** Base interface for a cell definition. Captures a column's cell template definition. */
 export interface CellDef {
@@ -40,12 +42,20 @@ export class CdkFooterCellDef implements CellDef {
   constructor(/** @docs-private */ public template: TemplateRef<any>) { }
 }
 
+// Boilerplate for applying mixins to CdkColumnDef.
+/** @docs-private */
+export class CdkColumnDefBase {}
+export const _CdkColumnDefBase = mixinHasStickyInput(CdkColumnDefBase);
+
 /**
  * Column definition for the CDK table.
  * Defines a set of cells available for a table column.
  */
-@Directive({selector: '[cdkColumnDef]'})
-export class CdkColumnDef {
+@Directive({
+  selector: '[cdkColumnDef]',
+  inputs: ['sticky']
+})
+export class CdkColumnDef extends _CdkColumnDefBase implements CanStick {
   /** Unique name for this column. */
   @Input('cdkColumnDef')
   get name(): string { return this._name; }
@@ -58,6 +68,20 @@ export class CdkColumnDef {
     this.cssClassFriendlyName = name.replace(/[^a-z0-9_-]/ig, '-');
   }
   _name: string;
+
+  /**
+   * Whether this column should be sticky positioned on the end of the row. Should make sure
+   * that it mimics the `CanStick` mixin such that `_hasStickyChanged` is set to true if the value
+   * has been changed.
+   */
+  @Input('stickyEnd')
+  get stickyEnd(): boolean { return this._stickyEnd; }
+  set stickyEnd(v: boolean) {
+    const prevValue = this._stickyEnd;
+    this._stickyEnd = coerceBooleanProperty(v);
+    this._hasStickyChanged = prevValue !== this._stickyEnd;
+  }
+  _stickyEnd: boolean = false;
 
   /** @docs-private */
   @ContentChild(CdkCellDef) cell: CdkCellDef;

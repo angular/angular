@@ -24,6 +24,7 @@ import {
   getTableUnknownColumnError,
   getTableUnknownDataSourceError
 } from './table-errors';
+import {BidiModule} from '@angular/cdk/bidi';
 
 describe('CdkTable', () => {
   let fixture: ComponentFixture<any>;
@@ -33,7 +34,7 @@ describe('CdkTable', () => {
   function createComponent<T>(componentType: Type<T>, declarations: any[] = []):
       ComponentFixture<T> {
     TestBed.configureTestingModule({
-      imports: [CdkTableModule],
+      imports: [CdkTableModule, BidiModule],
       declarations: [componentType, ...declarations],
     }).compileComponents();
 
@@ -43,9 +44,9 @@ describe('CdkTable', () => {
   function setupTableTestApp(componentType: Type<any>, declarations: any[] = []) {
     fixture = createComponent(componentType, declarations);
     component = fixture.componentInstance;
-    tableElement = fixture.nativeElement.querySelector('cdk-table');
-
     fixture.detectChanges();
+
+    tableElement = fixture.nativeElement.querySelector('.cdk-table');
   }
 
   describe('in a typical simple use case', () => {
@@ -694,7 +695,385 @@ describe('CdkTable', () => {
     });
   });
 
+  describe('with sticky positioning', () => {
+    interface PositionDirections {
+      top?: string;
+      bottom?: string;
+      left?: string;
+      right?: string;
+    }
 
+    function expectNoStickyStyles(elements: any[]) {
+      elements.forEach(element => {
+        expect(element.classList.contains('cdk-table-sticky'));
+        expect(element.style.position).toBe('');
+        expect(element.style.zIndex || '0').toBe('0');
+        ['top', 'bottom', 'left', 'right'].forEach(d => {
+          expect(element.style[d] || 'unset').toBe('unset', `Expected ${d} to be unset`);
+        });
+      });
+    }
+
+    function expectStickyStyles(
+        element: any, zIndex: string, directions: PositionDirections = {}) {
+      expect(element.style.position).toContain('sticky');
+      expect(element.style.zIndex).toBe(zIndex, `Expected zIndex to be ${zIndex}`);
+
+      ['top', 'bottom', 'left', 'right'].forEach(d => {
+        if (!directions[d]) {
+          // If no expected position for this direction, must either be unset or empty string
+          expect(element.style[d] || 'unset').toBe('unset', `Expected ${d} to be unset`);
+          return;
+        }
+
+        expect(element.style[d])
+            .toBe(directions[d], `Expected direction ${d} to be ${directions[d]}`);
+      });
+    }
+
+    describe('on "display: flex" table style', () => {
+      let dataRows: Element[];
+      let headerRows: Element[];
+      let footerRows: Element[];
+
+      beforeEach(() => {
+        setupTableTestApp(StickyFlexLayoutCdkTableApp);
+
+        headerRows = getHeaderRows(tableElement);
+        footerRows = getFooterRows(tableElement);
+        dataRows = getRows(tableElement);
+      });
+
+      it('should stick and unstick headers', () => {
+        component.stickyHeaders = ['header-1', 'header-3'];
+        fixture.detectChanges();
+
+        expectStickyStyles(headerRows[0], '100', {top: '0px'});
+        expectNoStickyStyles([headerRows[1]]);
+        expectStickyStyles(headerRows[2], '100',
+            {top: headerRows[0].getBoundingClientRect().height + 'px'});
+
+        component.stickyHeaders = [];
+        fixture.detectChanges();
+        expectNoStickyStyles(headerRows);
+      });
+
+      it('should stick and unstick footers', () => {
+        component.stickyFooters = ['footer-1', 'footer-3'];
+        fixture.detectChanges();
+
+        expectStickyStyles(footerRows[0], '10',
+            {bottom: footerRows[1].getBoundingClientRect().height + 'px'});
+        expectNoStickyStyles([footerRows[1]]);
+        expectStickyStyles(footerRows[2], '10', {bottom: '0px'});
+
+        component.stickyFooters = [];
+        fixture.detectChanges();
+        expectNoStickyStyles(footerRows);
+      });
+
+      it('should stick and unstick left columns', () => {
+        component.stickyStartColumns = ['column-1', 'column-3'];
+        fixture.detectChanges();
+
+        headerRows.forEach(row => {
+          let cells = getHeaderCells(row);
+          expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
+        });
+        dataRows.forEach(row => {
+          let cells = getCells(row);
+          expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
+        });
+        footerRows.forEach(row => {
+          let cells = getFooterCells(row);
+          expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
+        });
+
+        component.stickyStartColumns = [];
+        fixture.detectChanges();
+        headerRows.forEach(row => expectNoStickyStyles(getHeaderCells(row)));
+        dataRows.forEach(row => expectNoStickyStyles(getCells(row)));
+        footerRows.forEach(row => expectNoStickyStyles(getFooterCells(row)));
+      });
+
+      it('should stick and unstick right columns', () => {
+        component.stickyEndColumns = ['column-4', 'column-6'];
+        fixture.detectChanges();
+
+        headerRows.forEach(row => {
+          let cells = getHeaderCells(row);
+          expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
+        });
+        dataRows.forEach(row => {
+          let cells = getCells(row);
+          expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
+        });
+        footerRows.forEach(row => {
+          let cells = getFooterCells(row);
+          expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
+        });
+
+        component.stickyEndColumns = [];
+        fixture.detectChanges();
+        headerRows.forEach(row => expectNoStickyStyles(getHeaderCells(row)));
+        dataRows.forEach(row => expectNoStickyStyles(getCells(row)));
+        footerRows.forEach(row => expectNoStickyStyles(getFooterCells(row)));
+      });
+
+      it('should reverse directions for sticky columns in rtl', () => {
+        component.dir = 'rtl';
+        component.stickyStartColumns = ['column-1', 'column-2'];
+        component.stickyEndColumns = ['column-5', 'column-6'];
+        fixture.detectChanges();
+
+        const firstColumnWidth = getHeaderCells(headerRows[0])[0].getBoundingClientRect().width;
+        const lastColumnWidth = getHeaderCells(headerRows[0])[5].getBoundingClientRect().width;
+
+        let headerCells = getHeaderCells(headerRows[0]);
+        expectStickyStyles(headerCells[0], '1', {right: '0px'});
+        expectStickyStyles(headerCells[1], '1', {right: `${firstColumnWidth}px`});
+        expectStickyStyles(headerCells[4], '1', {left: `${lastColumnWidth}px`});
+        expectStickyStyles(headerCells[5], '1', {left: '0px'});
+
+        dataRows.forEach(row => {
+          let cells = getCells(row);
+          expectStickyStyles(cells[0], '1', {right: '0px'});
+          expectStickyStyles(cells[1], '1', {right: `${firstColumnWidth}px`});
+          expectStickyStyles(cells[4], '1', {left: `${lastColumnWidth}px`});
+          expectStickyStyles(cells[5], '1', {left: '0px'});
+        });
+
+        let footerCells = getFooterCells(footerRows[0]);
+        expectStickyStyles(footerCells[0], '1', {right: '0px'});
+        expectStickyStyles(footerCells[1], '1', {right: `${firstColumnWidth}px`});
+        expectStickyStyles(footerCells[4], '1', {left: `${lastColumnWidth}px`});
+        expectStickyStyles(footerCells[5], '1', {left: '0px'});
+      });
+
+      it('should stick and unstick combination of sticky header, footer, and columns', () => {
+        component.stickyHeaders = ['header-1'];
+        component.stickyFooters = ['footer-3'];
+        component.stickyStartColumns = ['column-1'];
+        component.stickyEndColumns = ['column-6'];
+        fixture.detectChanges();
+
+        let headerCells = getHeaderCells(headerRows[0]);
+        expectStickyStyles(headerRows[0], '100', {top: '0px'});
+        expectStickyStyles(headerCells[0], '1', {left: '0px'});
+        expectStickyStyles(headerCells[5], '1', {right: '0px'});
+        expectNoStickyStyles([headerCells[1], headerCells[2], headerCells[3], headerCells[4]]);
+        expectNoStickyStyles([headerRows[1], headerRows[2]]);
+
+        dataRows.forEach(row => {
+          let cells = getCells(row);
+          expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectNoStickyStyles([cells[1], cells[2], cells[3], cells[4]]);
+        });
+
+        let footerCells = getFooterCells(footerRows[0]);
+        expectStickyStyles(footerRows[0], '10', {bottom: '0px'});
+        expectStickyStyles(footerCells[0], '1', {left: '0px'});
+        expectStickyStyles(footerCells[5], '1', {right: '0px'});
+        expectNoStickyStyles([footerCells[1], footerCells[2], footerCells[3], footerCells[4]]);
+        expectNoStickyStyles([footerRows[1], footerRows[2]]);
+
+        component.stickyHeaders = [];
+        component.stickyFooters = [];
+        component.stickyStartColumns = [];
+        component.stickyEndColumns = [];
+        fixture.detectChanges();
+
+        headerRows.forEach(row => expectNoStickyStyles([row, ...getHeaderCells(row)]));
+        dataRows.forEach(row => expectNoStickyStyles([row, ...getCells(row)]));
+        footerRows.forEach(row => expectNoStickyStyles([row, ...getFooterCells(row)]));
+      });
+    });
+
+    describe('on native table layout', () => {
+      let dataRows: Element[];
+      let headerRows: Element[];
+      let footerRows: Element[];
+
+      beforeEach(() => {
+        setupTableTestApp(StickyNativeLayoutCdkTableApp);
+
+        headerRows = getHeaderRows(tableElement);
+        footerRows = getFooterRows(tableElement);
+        dataRows = getRows(tableElement);
+      });
+
+      it('should stick and unstick headers', () => {
+        component.stickyHeaders = ['header-1', 'header-3'];
+        fixture.detectChanges();
+
+        getHeaderCells(headerRows[0]).forEach(cell => {
+          expectStickyStyles(cell, '100', {top: '0px'});
+        });
+        const firstHeaderHeight = headerRows[0].getBoundingClientRect().height;
+        getHeaderCells(headerRows[2]).forEach(cell => {
+          expectStickyStyles(cell, '100', {top: firstHeaderHeight + 'px'});
+        });
+        expectNoStickyStyles(getHeaderCells(headerRows[1]));
+        expectNoStickyStyles(headerRows);  // No sticky styles on rows for native table
+
+        component.stickyHeaders = [];
+        fixture.detectChanges();
+        expectNoStickyStyles(headerRows);  // No sticky styles on rows for native table
+        headerRows.forEach(row => expectNoStickyStyles(getHeaderCells(row)));
+      });
+
+      it('should stick and unstick footers', () => {
+        component.stickyFooters = ['footer-1', 'footer-3'];
+        fixture.detectChanges();
+
+        getFooterCells(footerRows[2]).forEach(cell => {
+          expectStickyStyles(cell, '10', {bottom: '0px'});
+        });
+        const thirdFooterHeight = footerRows[2].getBoundingClientRect().height;
+        getFooterCells(footerRows[0]).forEach(cell => {
+          expectStickyStyles(cell, '10', {bottom: thirdFooterHeight + 'px'});
+        });
+        expectNoStickyStyles(getFooterCells(footerRows[1]));
+        expectNoStickyStyles(footerRows);  // No sticky styles on rows for native table
+
+        component.stickyFooters = [];
+        fixture.detectChanges();
+        expectNoStickyStyles(footerRows);  // No sticky styles on rows for native table
+        footerRows.forEach(row => expectNoStickyStyles(getFooterCells(row)));
+      });
+
+      it('should stick tfoot when all rows are stuck', () => {
+        const tfoot = tableElement.querySelector('tfoot');
+        component.stickyFooters = ['footer-1'];
+        fixture.detectChanges();
+        expectNoStickyStyles([tfoot]);
+
+        component.stickyFooters = ['footer-1', 'footer-2', 'footer-3'];
+        fixture.detectChanges();
+        expectStickyStyles(tfoot, '10', {bottom: '0px'});
+
+        component.stickyFooters = ['footer-1', 'footer-2'];
+        fixture.detectChanges();
+        expectNoStickyStyles([tfoot]);
+      });
+
+      it('should stick and unstick left columns', () => {
+        component.stickyStartColumns = ['column-1', 'column-3'];
+        fixture.detectChanges();
+
+        headerRows.forEach(row => {
+          let cells = getHeaderCells(row);
+          expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
+        });
+        dataRows.forEach(row => {
+          let cells = getCells(row);
+          expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
+        });
+        footerRows.forEach(row => {
+          let cells = getFooterCells(row);
+          expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyStyles(cells[2], '1', {left: '20px'});
+          expectNoStickyStyles([cells[1], cells[3], cells[4], cells[5]]);
+        });
+
+        component.stickyStartColumns = [];
+        fixture.detectChanges();
+        headerRows.forEach(row => expectNoStickyStyles(getHeaderCells(row)));
+        dataRows.forEach(row => expectNoStickyStyles(getCells(row)));
+        footerRows.forEach(row => expectNoStickyStyles(getFooterCells(row)));
+      });
+
+      it('should stick and unstick right columns', () => {
+        component.stickyEndColumns = ['column-4', 'column-6'];
+        fixture.detectChanges();
+
+        headerRows.forEach(row => {
+          let cells = getHeaderCells(row);
+          expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
+        });
+        dataRows.forEach(row => {
+          let cells = getCells(row);
+          expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
+        });
+        footerRows.forEach(row => {
+          let cells = getFooterCells(row);
+          expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectStickyStyles(cells[3], '1', {right: '20px'});
+          expectNoStickyStyles([cells[0], cells[1], cells[2], cells[4]]);
+        });
+
+        component.stickyEndColumns = [];
+        fixture.detectChanges();
+        headerRows.forEach(row => expectNoStickyStyles(getHeaderCells(row)));
+        dataRows.forEach(row => expectNoStickyStyles(getCells(row)));
+        footerRows.forEach(row => expectNoStickyStyles(getFooterCells(row)));
+      });
+
+      it('should stick and unstick combination of sticky header, footer, and columns', () => {
+        component.stickyHeaders = ['header-1'];
+        component.stickyFooters = ['footer-3'];
+        component.stickyStartColumns = ['column-1'];
+        component.stickyEndColumns = ['column-6'];
+        fixture.detectChanges();
+
+        const headerCells = getHeaderCells(headerRows[0]);
+        expectStickyStyles(headerCells[0], '101', {top: '0px', left: '0px'});
+        expectStickyStyles(headerCells[1], '100', {top: '0px'});
+        expectStickyStyles(headerCells[2], '100', {top: '0px'});
+        expectStickyStyles(headerCells[3], '100', {top: '0px'});
+        expectStickyStyles(headerCells[4], '100', {top: '0px'});
+        expectStickyStyles(headerCells[5], '101', {top: '0px', right: '0px'});
+        expectNoStickyStyles(headerRows);
+
+        dataRows.forEach(row => {
+          let cells = getCells(row);
+          expectStickyStyles(cells[0], '1', {left: '0px'});
+          expectStickyStyles(cells[5], '1', {right: '0px'});
+          expectNoStickyStyles([cells[1], cells[2], cells[3], cells[4]]);
+        });
+
+        const footerCells = getFooterCells(footerRows[0]);
+        expectStickyStyles(footerCells[0], '11', {bottom: '0px', left: '0px'});
+        expectStickyStyles(footerCells[1], '10', {bottom: '0px'});
+        expectStickyStyles(footerCells[2], '10', {bottom: '0px'});
+        expectStickyStyles(footerCells[3], '10', {bottom: '0px'});
+        expectStickyStyles(footerCells[4], '10', {bottom: '0px'});
+        expectStickyStyles(footerCells[5], '11', {bottom: '0px', right: '0px'});
+        expectNoStickyStyles(footerRows);
+
+        component.stickyHeaders = [];
+        component.stickyFooters = [];
+        component.stickyStartColumns = [];
+        component.stickyEndColumns = [];
+        fixture.detectChanges();
+
+        headerRows.forEach(row => expectNoStickyStyles([row, ...getHeaderCells(row)]));
+        dataRows.forEach(row => expectNoStickyStyles([row, ...getCells(row)]));
+        footerRows.forEach(row => expectNoStickyStyles([row, ...getFooterCells(row)]));
+      });
+    });
+  });
 
   describe('with trackBy', () => {
     function createTestComponentWithTrackyByTable(trackByStrategy) {
@@ -1362,6 +1741,110 @@ class TrackByCdkTableApp {
 
 @Component({
   template: `
+    <cdk-table [dataSource]="dataSource" [dir]="dir">
+      <ng-container [cdkColumnDef]="column" *ngFor="let column of columns"
+                    [sticky]="isStuck(stickyStartColumns, column)"
+                    [stickyEnd]="isStuck(stickyEndColumns, column)">
+        <cdk-header-cell *cdkHeaderCellDef> Header {{column}} </cdk-header-cell>
+        <cdk-cell *cdkCellDef="let row"> {{column}} </cdk-cell>
+        <cdk-footer-cell *cdkFooterCellDef> Footer {{column}} </cdk-footer-cell>
+      </ng-container>
+
+      <cdk-header-row *cdkHeaderRowDef="columns; sticky: isStuck(stickyHeaders, 'header-1')">
+      </cdk-header-row>
+      <cdk-header-row *cdkHeaderRowDef="columns; sticky: isStuck(stickyHeaders, 'header-2')">
+      </cdk-header-row>
+      <cdk-header-row *cdkHeaderRowDef="columns; sticky: isStuck(stickyHeaders, 'header-3')">
+      </cdk-header-row>
+
+      <cdk-row *cdkRowDef="let row; columns: columns"></cdk-row>
+
+      <cdk-footer-row *cdkFooterRowDef="columns; sticky: isStuck(stickyFooters, 'footer-1')">
+      </cdk-footer-row>
+      <cdk-footer-row *cdkFooterRowDef="columns; sticky: isStuck(stickyFooters, 'footer-2')">
+      </cdk-footer-row>
+      <cdk-footer-row *cdkFooterRowDef="columns; sticky: isStuck(stickyFooters, 'footer-3')">
+      </cdk-footer-row>
+    </cdk-table>
+  `,
+  styles: [`
+    .cdk-header-cell, .cdk-cell, .cdk-footer-cell {
+      display: block;
+      width: 20px;
+    }
+  `]
+})
+class StickyFlexLayoutCdkTableApp {
+  dataSource: FakeDataSource = new FakeDataSource();
+  columns = ['column-1', 'column-2', 'column-3', 'column-4', 'column-5', 'column-6'];
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
+
+  dir = 'ltr';
+  stickyHeaders: string[] = [];
+  stickyFooters: string[] = [];
+  stickyStartColumns: string[] = [];
+  stickyEndColumns: string[] = [];
+
+  isStuck(list: string[], id: string) {
+    return list.indexOf(id) != -1;
+  }
+}
+
+@Component({
+  template: `
+    <table cdk-table [dataSource]="dataSource">
+      <ng-container [cdkColumnDef]="column" *ngFor="let column of columns"
+                    [sticky]="isStuck(stickyStartColumns, column)"
+                    [stickyEnd]="isStuck(stickyEndColumns, column)">
+        <th cdk-header-cell *cdkHeaderCellDef> Header {{column}} </th>
+        <td cdk-cell *cdkCellDef="let row"> {{column}} </td>
+        <td cdk-footer-cell *cdkFooterCellDef> Footer {{column}} </td>
+      </ng-container>
+
+      <tr cdk-header-row *cdkHeaderRowDef="columns; sticky: isStuck(stickyHeaders, 'header-1')">
+      </tr>
+      <tr cdk-header-row *cdkHeaderRowDef="columns; sticky: isStuck(stickyHeaders, 'header-2')">
+      </tr>
+      <tr cdk-header-row *cdkHeaderRowDef="columns; sticky: isStuck(stickyHeaders, 'header-3')">
+      </tr>
+
+      <tr cdk-row *cdkRowDef="let row; columns: columns"></tr>
+
+      <tr cdk-footer-row *cdkFooterRowDef="columns; sticky: isStuck(stickyFooters, 'footer-1')">
+      </tr>
+      <tr cdk-footer-row *cdkFooterRowDef="columns; sticky: isStuck(stickyFooters, 'footer-2')">
+      </tr>
+      <tr cdk-footer-row *cdkFooterRowDef="columns; sticky: isStuck(stickyFooters, 'footer-3')">
+      </tr>
+    </table>
+  `,
+  styles: [`
+    .cdk-header-cell, .cdk-cell, .cdk-footer-cell {
+      display: block;
+      width: 20px;
+      box-sizing: border-box;
+    }
+  `]
+})
+class StickyNativeLayoutCdkTableApp {
+  dataSource: FakeDataSource = new FakeDataSource();
+  columns = ['column-1', 'column-2', 'column-3', 'column-4', 'column-5', 'column-6'];
+
+  @ViewChild(CdkTable) table: CdkTable<TestData>;
+
+  stickyHeaders: string[] = [];
+  stickyFooters: string[] = [];
+  stickyStartColumns: string[] = [];
+  stickyEndColumns: string[] = [];
+
+  isStuck(list: string[], id: string) {
+    return list.indexOf(id) != -1;
+  }
+}
+
+@Component({
+  template: `
     <cdk-table [dataSource]="dataSource">
       <ng-container [cdkColumnDef]="column" *ngFor="let column of dynamicColumns">
         <cdk-header-cell *cdkHeaderCellDef> {{column}} </cdk-header-cell>
@@ -1700,7 +2183,7 @@ function getCells(row: Element): Element[] {
 
   let cells = getElements(row, 'cdk-cell');
   if (!cells.length) {
-    cells = getElements(row, 'td');
+    cells = getElements(row, 'td.cdk-cell');
   }
 
   return cells;
@@ -1709,7 +2192,7 @@ function getCells(row: Element): Element[] {
 function getHeaderCells(headerRow: Element): Element[] {
   let cells = getElements(headerRow, 'cdk-header-cell');
   if (!cells.length) {
-    cells = getElements(headerRow, 'th');
+    cells = getElements(headerRow, 'th.cdk-header-cell');
   }
 
   return cells;
@@ -1718,7 +2201,7 @@ function getHeaderCells(headerRow: Element): Element[] {
 function getFooterCells(footerRow: Element): Element[] {
   let cells = getElements(footerRow, 'cdk-footer-cell');
   if (!cells.length) {
-    cells = getElements(footerRow, 'td');
+    cells = getElements(footerRow, 'td.cdk-footer-cell');
   }
 
   return cells;

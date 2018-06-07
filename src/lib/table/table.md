@@ -292,6 +292,41 @@ the ripple effect to extend beyond the cell.
 
 <!--- example(table-selection) -->
 
+#### Sticky Rows and Columns
+
+By using `position: sticky` styling, the table's rows and columns can be fixed so that they do not 
+leave the viewport even when scrolled. The table provides inputs that will automatically apply the 
+correct CSS styling so that the rows and columns become sticky.
+
+In order to fix the header row to the top of the scrolling viewport containing the table, you can 
+add a `sticky` input to the `matHeaderRowDef`. 
+
+<!--- example(table-sticky-header) -->
+
+Similarly, this can also be applied to the table's footer row. Note that if you are using the native
+`<table>` and using Safari, then the footer will only stick if `sticky` is applied to all the 
+rendered footer rows.
+
+<!--- example(table-sticky-footer) -->
+
+It is also possible to fix cell columns to the start or end of the horizontally scrolling viewport.
+To do this, add the `sticky` or `stickyEnd` directive to the `ng-container` column definition.
+
+<!--- example(table-sticky-columns) -->
+
+This feature is supported by Chrome, Firefox, Safari, and Edge. It is not supported in IE, but
+it does fail gracefully so that the rows simply do not stick.
+
+Note that on Safari mobile when using the flex-based table, a cell stuck in more than one direction
+will struggle to stay in the correct position as you scroll. For example, if a header row is stuck 
+to the top and the first column is stuck, then the top-left-most cell will appear jittery as you 
+scroll.
+
+Also, sticky positioning in Edge will appear shaky for special cases. For example, if the scrolling
+container has a complex box shadow and has sibling elements, the stuck cells will appear jittery. 
+There is currently an [open issue with Edge](https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/17514118/) 
+to resolve this.
+
 ### Accessibility
 Tables without text or labels should be given a meaningful label via `aria-label` or 
 `aria-labelledby`. The `aria-readonly` defaults to `true` if it's not set.

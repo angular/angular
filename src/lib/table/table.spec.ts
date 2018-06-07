@@ -21,6 +21,7 @@ describe('MatTable', () => {
         NativeHtmlTableApp,
         MatTableWithSortApp,
         MatTableWithPaginatorApp,
+        StickyTableApp,
       ],
     }).compileComponents();
   }));
@@ -116,6 +117,14 @@ describe('MatTable', () => {
       [data[1].a, data[1].b, data[1].c],
       [data[2].a, data[2].b, data[2].c],
     ]);
+  });
+
+  it('should apply custom sticky CSS class to sticky cells', () => {
+    let fixture = TestBed.createComponent(StickyTableApp);
+    fixture.detectChanges();
+
+    const stuckCellElement = fixture.nativeElement.querySelector('.mat-table th')!;
+    expect(stuckCellElement.classList).toContain('mat-table-sticky');
   });
 
   describe('with MatTableDataSource and sort/pagination/filter', () => {
@@ -496,6 +505,26 @@ class MatTableApp {
 class NativeHtmlTableApp {
   dataSource: FakeDataSource | null = new FakeDataSource();
   columnsToRender = ['column_a', 'column_b', 'column_c'];
+
+  @ViewChild(MatTable) table: MatTable<TestData>;
+}
+
+@Component({
+  template: `
+    <table mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="column_a">
+        <th mat-header-cell *matHeaderCellDef> Column A </th>
+        <td mat-cell *matCellDef="let row"> {{row.a}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columnsToRender; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: columnsToRender"></tr>
+    </table>
+  `
+})
+class StickyTableApp {
+  dataSource = new FakeDataSource();
+  columnsToRender = ['column_a'];
 
   @ViewChild(MatTable) table: MatTable<TestData>;
 }

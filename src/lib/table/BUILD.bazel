@@ -9,6 +9,7 @@ ng_module(
   module_name = "@angular/material/table",
   assets = [":table_css"],
   deps = [
+    "//src/cdk/bidi",
     "//src/lib/core",
     "//src/lib/paginator",
     "//src/lib/sort",

@@ -28,7 +28,7 @@ import {
 @Directive({
   selector: '[matHeaderRowDef]',
   providers: [{provide: CdkHeaderRowDef, useExisting: MatHeaderRowDef}],
-  inputs: ['columns: matHeaderRowDef'],
+  inputs: ['columns: matHeaderRowDef', 'sticky: matHeaderRowDefSticky'],
 })
 export class MatHeaderRowDef extends CdkHeaderRowDef {
   // TODO(andrewseguin): Remove this constructor after compiler-cli is updated; see issue #9329
@@ -44,7 +44,7 @@ export class MatHeaderRowDef extends CdkHeaderRowDef {
 @Directive({
   selector: '[matFooterRowDef]',
   providers: [{provide: CdkFooterRowDef, useExisting: MatFooterRowDef}],
-  inputs: ['columns: matFooterRowDef'],
+  inputs: ['columns: matFooterRowDef', 'sticky: matFooterRowDefSticky'],
 })
 export class MatFooterRowDef extends CdkFooterRowDef {
   // TODO(andrewseguin): Remove this constructor after compiler-cli is updated; see issue #9329
@@ -82,6 +82,7 @@ export class MatRowDef<T> extends CdkRowDef<T> {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matHeaderRow',
+  providers: [{provide: CdkHeaderRow, useExisting: MatHeaderRow}],
 })
 export class MatHeaderRow extends CdkHeaderRow { }
 
@@ -97,6 +98,7 @@ export class MatHeaderRow extends CdkHeaderRow { }
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matFooterRow',
+  providers: [{provide: CdkFooterRow, useExisting: MatFooterRow}],
 })
 export class MatFooterRow extends CdkFooterRow { }
 
@@ -112,5 +114,6 @@ export class MatFooterRow extends CdkFooterRow { }
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   exportAs: 'matRow',
+  providers: [{provide: CdkRow, useExisting: MatRow}],
 })
 export class MatRow extends CdkRow { }

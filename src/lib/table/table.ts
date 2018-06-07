@@ -13,9 +13,11 @@ import {
   Component,
   ElementRef,
   IterableDiffers,
+  Optional,
   ViewEncapsulation
 } from '@angular/core';
 import {CDK_TABLE_TEMPLATE, CdkTable} from '@angular/cdk/table';
+import {Directionality} from '@angular/cdk/bidi';
 
 /**
  * Wrapper for the CdkTable with Material design styles.
@@ -33,6 +35,9 @@ import {CDK_TABLE_TEMPLATE, CdkTable} from '@angular/cdk/table';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatTable<T> extends CdkTable<T> {
+  /** Overrides the sticky CSS class set by the `CdkTable`. */
+  protected stickyCssClass = 'mat-table-sticky';
+
   // TODO(andrewseguin): Remove this explicitly set constructor when the compiler knows how to
   // properly build the es6 version of the class. Currently sets ctorParameters to empty due to a
   // fixed bug.
@@ -41,7 +46,8 @@ export class MatTable<T> extends CdkTable<T> {
   constructor(protected _differs: IterableDiffers,
               protected _changeDetectorRef: ChangeDetectorRef,
               protected _elementRef: ElementRef,
-              @Attribute('role') role: string) {
-    super(_differs, _changeDetectorRef, _elementRef, role);
+              @Attribute('role') role: string,
+              @Optional() protected readonly _dir: Directionality) {
+    super(_differs, _changeDetectorRef, _elementRef, role, _dir);
   }
 }

@@ -20,6 +20,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {CdkCellDef, CdkColumnDef} from './cell';
+import {CanStick, mixinHasStickyInput} from './can-stick';
 
 /**
  * The row template that can be used by the mat-table. Should not be used outside of the
@@ -44,8 +45,8 @@ export abstract class BaseRowDef implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     // Create a new columns differ if one does not yet exist. Initialize it based on initial value
     // of the columns property or an empty array if none is provided.
-    const columns = changes['columns'].currentValue || [];
     if (!this._columnsDiffer) {
+      const columns = (changes['columns'] && changes['columns'].currentValue) || [];
       this._columnsDiffer = this._differs.find(columns).create();
       this._columnsDiffer.diff(columns);
     }
@@ -60,8 +61,21 @@ export abstract class BaseRowDef implements OnChanges {
   }
 
   /** Gets this row def's relevant cell template from the provided column def. */
-  abstract extractCellTemplate(column: CdkColumnDef): TemplateRef<any>;
+  extractCellTemplate(column: CdkColumnDef): TemplateRef<any> {
+    if (this instanceof CdkHeaderRowDef) {
+      return column.headerCell.template;
+    } if (this instanceof CdkFooterRowDef) {
+      return column.footerCell.template;
+    } else {
+      return column.cell.template;
+    }
+  }
 }
+
+// Boilerplate for applying mixins to CdkHeaderRowDef.
+/** @docs-private */
+export class CdkHeaderRowDefBase extends BaseRowDef {}
+export const _CdkHeaderRowDefBase = mixinHasStickyInput(CdkHeaderRowDefBase);
 
 /**
  * Header row definition for the CDK table.
@@ -69,18 +83,24 @@ export abstract class BaseRowDef implements OnChanges {
  */
 @Directive({
   selector: '[cdkHeaderRowDef]',
-  inputs: ['columns: cdkHeaderRowDef'],
+  inputs: ['columns: cdkHeaderRowDef', 'sticky: cdkHeaderRowDefSticky'],
 })
-export class CdkHeaderRowDef extends BaseRowDef {
+export class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements CanStick, OnChanges {
   constructor(template: TemplateRef<any>, _differs: IterableDiffers) {
     super(template, _differs);
   }
 
-  /** Gets this row def's relevant cell template from the provided column def. */
-  extractCellTemplate(column: CdkColumnDef): TemplateRef<any> {
-    return column.headerCell.template;
+  // Prerender fails to recognize that ngOnChanges in a part of this class through inheritance.
+  // Explicitly define it so that the method is called as part of the Angular lifecycle.
+  ngOnChanges(changes: SimpleChanges): void {
+    super.ngOnChanges(changes);
   }
 }
+
+// Boilerplate for applying mixins to CdkFooterRowDef.
+/** @docs-private */
+export class CdkFooterRowDefBase extends BaseRowDef {}
+export const _CdkFooterRowDefBase = mixinHasStickyInput(CdkFooterRowDefBase);
 
 /**
  * Footer row definition for the CDK table.
@@ -88,16 +108,17 @@ export class CdkHeaderRowDef extends BaseRowDef {
  */
 @Directive({
   selector: '[cdkFooterRowDef]',
-  inputs: ['columns: cdkFooterRowDef'],
+  inputs: ['columns: cdkFooterRowDef', 'sticky: cdkFooterRowDefSticky'],
 })
-export class CdkFooterRowDef extends BaseRowDef {
+export class CdkFooterRowDef extends _CdkFooterRowDefBase implements CanStick, OnChanges {
   constructor(template: TemplateRef<any>, _differs: IterableDiffers) {
     super(template, _differs);
   }
 
-  /** Gets this row def's relevant cell template from the provided column def. */
-  extractCellTemplate(column: CdkColumnDef): TemplateRef<any> {
-    return column.footerCell.template;
+  // Prerender fails to recognize that ngOnChanges in a part of this class through inheritance.
+  // Explicitly define it so that the method is called as part of the Angular lifecycle.
+  ngOnChanges(changes: SimpleChanges): void {
+    super.ngOnChanges(changes);
   }
 }
 
@@ -123,11 +144,6 @@ export class CdkRowDef<T> extends BaseRowDef {
   //   if this template should be used.
   constructor(template: TemplateRef<any>, _differs: IterableDiffers) {
     super(template, _differs);
-  }
-
-  /** Gets this row def's relevant cell template from the provided column def. */
-  extractCellTemplate(column: CdkColumnDef): TemplateRef<any> {
-    return column.cell.template;
   }
 }
 
