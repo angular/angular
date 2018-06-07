@@ -116,6 +116,13 @@ export class SelectionModel<T> {
     }
   }
 
+  /**
+   * Gets whether multiple values can be selected.
+   */
+  isMultipleSelection() {
+    return this._multiple;
+  }
+
   /** Emits a change event and clears the records of selected and deselected values. */
   private _emitChangeEvent() {
     // Clear the selected values so they can be re-cached.

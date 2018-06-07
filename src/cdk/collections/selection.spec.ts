@@ -269,4 +269,12 @@ describe('SelectionModel', () => {
   it('should be empty if an empty array is passed for the preselected values', () => {
     expect(new SelectionModel(false, []).selected).toEqual([]);
   });
+
+  it('should be able to determine whether multiple values can be selected', () => {
+    let multipleSelectionModel = new SelectionModel(true);
+    expect(multipleSelectionModel.isMultipleSelection()).toBe(true);
+
+    let singleSelectionModel = new SelectionModel();
+    expect(singleSelectionModel.isMultipleSelection()).toBe(false);
+  });
 });
