@@ -23,7 +23,6 @@ export class TableDemo {
     'table-filtering',
     'table-footer-row',
     'table-http',
-    'table-native-only',
     'table-overview',
     'table-pagination',
     'table-row-context',

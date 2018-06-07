@@ -373,12 +373,3 @@ selectors. For example, `<table mat-table>` becomes `<mat-table>`; `<tr mat-row`
 
 Note that this approach means you cannot include certain native-table features such colspan/rowspan
 or have columns that resize themselves based on their content.
-
-### Applying material styles to native table
-
-If you want to have a Material design styled `<table>` without using the `MatTable`, simply apply 
-the appropriate classes to the table elements. This may be useful if you have an existing table
-or if you do not need the additional benefits and features of the `MatTable`.
-
-<!--- example(table-native-only) -->
- 
