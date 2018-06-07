@@ -7,6 +7,7 @@
  */
 
 import {OverlayModule} from '@angular/cdk/overlay';
+import {A11yModule} from '@angular/cdk/a11y';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
 import {MatCommonModule} from '@angular/material/core';
@@ -18,6 +19,7 @@ import {
 
 @NgModule({
   imports: [
+    A11yModule,
     CommonModule,
     OverlayModule,
     MatCommonModule,
