@@ -264,29 +264,14 @@ export class OverlayRef implements PortalOutlet {
 
   /** Updates the size of the overlay element based on the overlay config. */
   private _updateElementSize() {
-    if (this._config.width || this._config.width === 0) {
-      this._pane.style.width = coerceCssPixelValue(this._config.width);
-    }
+    const style = this._pane.style;
 
-    if (this._config.height || this._config.height === 0) {
-      this._pane.style.height = coerceCssPixelValue(this._config.height);
-    }
-
-    if (this._config.minWidth || this._config.minWidth === 0) {
-      this._pane.style.minWidth = coerceCssPixelValue(this._config.minWidth);
-    }
-
-    if (this._config.minHeight || this._config.minHeight === 0) {
-      this._pane.style.minHeight = coerceCssPixelValue(this._config.minHeight);
-    }
-
-    if (this._config.maxWidth || this._config.maxWidth === 0) {
-      this._pane.style.maxWidth = coerceCssPixelValue(this._config.maxWidth);
-    }
-
-    if (this._config.maxHeight || this._config.maxHeight === 0) {
-      this._pane.style.maxHeight = coerceCssPixelValue(this._config.maxHeight);
-    }
+    style.width = coerceCssPixelValue(this._config.width);
+    style.height = coerceCssPixelValue(this._config.height);
+    style.minWidth = coerceCssPixelValue(this._config.minWidth);
+    style.minHeight = coerceCssPixelValue(this._config.minHeight);
+    style.maxWidth = coerceCssPixelValue(this._config.maxWidth);
+    style.maxHeight = coerceCssPixelValue(this._config.maxHeight);
   }
 
   /** Toggles the pointer events for the overlay pane element. */
