@@ -13,24 +13,33 @@ import {AsyncValidatorFn, ValidationErrors, ValidatorFn} from './directives/vali
 import {toObservable} from './validators';
 
 /**
- * Indicates that a FormControl is valid, i.e. that no errors exist in the input value.
+ * @description
+ * Reports that a FormControl is valid, in that no errors exist in the input value.
+ *
  */
 export const VALID = 'VALID';
 
 /**
- * Indicates that a FormControl is invalid, i.e. that an error exists in the input value.
+ * @description
+ * Reports that a FormControl is invalid, in that an error exists in the input value.
  */
 export const INVALID = 'INVALID';
 
 /**
- * Indicates that a FormControl is pending, i.e. that async validation is occurring and
+ * @description
+ * Reports that a FormControl is pending, in that that async validation is occurring and
  * errors are not yet available for the input value.
+ * 
+ * @see `markAsPending`
  */
 export const PENDING = 'PENDING';
 
 /**
- * Indicates that a FormControl is disabled, i.e. that the control is exempt from ancestor
+ * @description
+ * Reports that a FormControl is disabled, i.e. that the control is exempt from ancestor
  * calculations of validity or value.
+ * 
+ * @see `markAsDisabled`
  */
 export const DISABLED = 'DISABLED';
 
@@ -140,6 +149,13 @@ export abstract class AbstractControl {
 
   private _parent: FormGroup|FormArray;
   private _asyncValidationSubscription: any;
+
+  /**
+   * @description
+   * Reports the current value of the control. Only includes
+   * the values of enabled controls.
+   * 
+   */
   public readonly value: any;
 
   /**
@@ -320,7 +336,8 @@ export abstract class AbstractControl {
 
   /**
    * @description
-   * Marks the control as `touched`.
+   * Marks the control as `touched`. A control is touched by focus and
+   * blur events that do not change the value; compare markAsDirty
    *
    *  @param opts Configuration options that how marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
@@ -360,7 +377,8 @@ export abstract class AbstractControl {
 
   /**
    * @description
-   * Marks the control as `dirty`.
+   * Marks the control as `dirty`. A control is dirty by changing 
+   * the control; compare `markAsTouched`
    *
    *  @param opts Configuration options that how marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
@@ -1304,6 +1322,8 @@ export class FormGroup extends AbstractControl {
    * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity updateValueAndValidity} method.
    *
+   * @usageNotes
+   * 
    * ### Reset the form group values
    *
    * ```ts
@@ -1350,7 +1370,8 @@ export class FormGroup extends AbstractControl {
    * The aggregate value of the `FormGroup`, including any disabled controls.
    *
    * Retrieves all values regardless of disabled status.
-   * The `value` property is the best way to get the value of the group.
+   * The `value` property is the best way to get the value of the group, because
+   * it excludes disabled controls in the `FormGroup`.
    */
   getRawValue(): any {
     return this._reduceChildren(
@@ -1635,14 +1656,12 @@ export class FormArray extends AbstractControl {
    * console.log(arr.value);   // ['Nancy', 'Drew']
    * ```
    *
-   * @param value Array of latest values for the controls
+   * @param value Array of values for the controls
    * @param options Configure options for emitting events when the control value changes
    *
-   * * If `onlySelf` is `true`, this change will only affect the validation of this `FormArray`
-   * and not its parent component. This defaults to false.
-   *
-   * * If `emitEvent` is `true`, this change will cause a `valueChanges` event on the `FormArray`
-   * to be emitted. This defaults to true (as it falls through to `updateValueAndValidity`).
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is false.
+   * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
+   * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity updateValueAndValidity} method.
    */
   setValue(value: any[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._checkAllValuesPresent(value);
@@ -1677,11 +1696,9 @@ export class FormArray extends AbstractControl {
    * @param value Array of latest values for the controls
    * @param options Configure options for emitting events when the control value changes
    *
-   * * If `onlySelf` is `true`, this change will only affect the validation of this `FormArray`
-   * and not its parent component. This defaults to false.
-   *
-   * * If `emitEvent` is `true`, this change will cause a `valueChanges` event on the `FormArray`
-   * to be emitted. This defaults to true (as it falls through to `updateValueAndValidity`).
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is false.
+   * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
+   * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity updateValueAndValidity} method.
    */
   patchValue(value: any[], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     value.forEach((newValue: any, index: number) => {
@@ -1728,14 +1745,12 @@ export class FormArray extends AbstractControl {
    * console.log(this.arr.get(0).status);  // 'DISABLED'
    * ```
    *
-   * @param value Array of latest values for the controls
+   * @param value Array of values for the controls
    * @param options Configure options for emitting events when the control value changes
    *
-   * * If `onlySelf` is `true`, this change will only affect the validation of this `FormArray`
-   * and not its parent component. This defaults to false.
-   *
-   * * If `emitEvent` is `true`, this change will cause a `valueChanges` event on the `FormArray`
-   * to be emitted. This defaults to true (as it falls through to `updateValueAndValidity`).
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is false.
+   * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
+   * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity updateValueAndValidity} method.
    */
   reset(value: any = [], options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._forEachChild((control: AbstractControl, index: number) => {
@@ -1750,8 +1765,8 @@ export class FormArray extends AbstractControl {
    * @description
    * The aggregate value of the array, including any disabled controls.
    *
-   * If you'd like to include all values regardless of disabled status, use this method.
-   * Otherwise, the `value` property is the best way to get the value of the array.
+   * Reports all values regardless of disabled status.
+   * For enabled controls only, the `value` property is the best way to get the value of the array.
    */
   getRawValue(): any[] {
     return this.controls.map((control: AbstractControl) => {
