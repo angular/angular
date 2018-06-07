@@ -81,19 +81,15 @@ export default function(): Rule {
     // Delete the temporary schematics directory.
     context.addTask(
         new RunSchematicTask('ng-post-update', {
-          deleteFiles: updateSrcs
-              .map(entry => entry.path.replace(schematicsSrcPath, schematicsTmpPath))
+          deletePath: schematicsTmpPath
         }), [upgradeTask]);
   };
 }
 
 /** Post-update schematic to be called when ng update is finished. */
-export function postUpdate(options: {deleteFiles: string[]}): Rule {
+export function postUpdate(options: {deletePath: string}): Rule {
   return (tree: Tree, context: SchematicContext) => {
-    for (let file of options.deleteFiles) {
-      tree.delete(file);
-    }
-
+    tree.delete(options.deletePath);
     context.addTask(new RunSchematicTask('ng-post-post-update', {}));
   };
 }
