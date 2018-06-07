@@ -22,9 +22,11 @@
  * Applies styles for users in high contrast mode. Note that this only applies
  * to Microsoft browsers. Chrome can be included by checking for the `html[hc]`
  * attribute, however Chrome handles high contrast differently.
+ * @param target Which kind of high contrast setting to target. Defaults to `active`, can be
+ *    `white-on-black` or `black-on-white`.
  */
-@mixin cdk-high-contrast {
-  @media screen and (-ms-high-contrast: active) {
+@mixin cdk-high-contrast($target: active) {
+  @media screen and (-ms-high-contrast: $target) {
     @content;
   }
 }

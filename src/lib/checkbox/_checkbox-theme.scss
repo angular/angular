@@ -1,5 +1,6 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
+@import '../../cdk/a11y/a11y';
 
 
 @mixin mat-checkbox-theme($theme) {
@@ -29,9 +30,15 @@
   }
 
   .mat-checkbox-checkmark-path {
-    // !important is needed here because a stroke must be set as an attribute on the SVG in order
-    // for line animation to work properly.
+    // !important is needed here because a stroke must be set as an
+    // attribute on the SVG in order for line animation to work properly.
     stroke: $checkbox-mark-color !important;
+
+    @include cdk-high-contrast(black-on-white) {
+      // Having the one above be !important ends up overriding the browser's automatic
+      // color inversion so we need to re-invert it ourselves for black-on-white.
+      stroke: #000 !important;
+    }
   }
 
   .mat-checkbox-mixedmark {
@@ -67,6 +74,19 @@
 
     .mat-checkbox-label {
       color: $disabled-color;
+    }
+
+    @include cdk-high-contrast {
+      opacity: 0.5;
+    }
+  }
+
+  // This one is moved down here so it can target both
+  // the theme colors and the disabled state.
+  @include cdk-high-contrast {
+    .mat-checkbox-background {
+      // Needs to be removed because it hides the checkbox outline.
+      background: none;
     }
   }
 
