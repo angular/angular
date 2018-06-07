@@ -177,8 +177,8 @@ export class MatMonthView<D> implements AfterContentInit {
     // navigation should skip over disabled dates, and if so, how to implement that efficiently.
 
     const oldActiveDate = this._activeDate;
-
     const isRtl = this._isRtl();
+
     switch (event.keyCode) {
       case LEFT_ARROW:
         this.activeDate = this._dateAdapter.addCalendarDays(this._activeDate, isRtl ? 1 : -1);

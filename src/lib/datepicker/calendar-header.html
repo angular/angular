@@ -1,9 +1,11 @@
 <div class="mat-calendar-header">
   <div class="mat-calendar-controls">
     <button mat-button type="button" class="mat-calendar-period-button"
-            (click)="currentPeriodClicked()" [attr.aria-label]="periodButtonLabel">
+            (click)="currentPeriodClicked()" [attr.aria-label]="periodButtonLabel"
+            cdkAriaLive="polite">
       {{periodButtonText}}
-      <div class="mat-calendar-arrow" [class.mat-calendar-invert]="calendar.currentView != 'month'"></div>
+      <div class="mat-calendar-arrow"
+           [class.mat-calendar-invert]="calendar.currentView != 'month'"></div>
     </button>
 
     <div class="mat-calendar-spacer"></div>
