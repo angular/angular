@@ -66,7 +66,23 @@ describe('MatTabNavBar', () => {
       fixture.detectChanges();
       expect(tabLinkElements[0].classList.contains('mat-tab-label-active')).toBeFalsy();
       expect(tabLinkElements[1].classList.contains('mat-tab-label-active')).toBeTruthy();
+    });
 
+    it('should toggle aria-current based on active state', () => {
+      let tabLink1 = fixture.debugElement.queryAll(By.css('a'))[0];
+      let tabLink2 = fixture.debugElement.queryAll(By.css('a'))[1];
+      const tabLinkElements = fixture.debugElement.queryAll(By.css('a'))
+        .map(tabLinkDebugEl => tabLinkDebugEl.nativeElement);
+
+      tabLink1.nativeElement.click();
+      fixture.detectChanges();
+      expect(tabLinkElements[0].getAttribute('aria-current')).toEqual('true');
+      expect(tabLinkElements[1].getAttribute('aria-current')).toEqual('false');
+
+      tabLink2.nativeElement.click();
+      fixture.detectChanges();
+      expect(tabLinkElements[0].getAttribute('aria-current')).toEqual('false');
+      expect(tabLinkElements[1].getAttribute('aria-current')).toEqual('true');
     });
 
     it('should add the disabled class if disabled', () => {
