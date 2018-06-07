@@ -1,3 +1,12 @@
 .demo-badge {
   margin-bottom: 25px;
 }
+
+.mat-badge {
+  margin-right: 22px;
+
+  [dir='rtl'] & {
+    margin-right: 0;
+    margin-left: 22px;
+  }
+}
