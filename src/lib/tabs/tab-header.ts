@@ -8,7 +8,7 @@
 
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {coerceNumberProperty} from '@angular/cdk/coercion';
-import {END, ENTER, HOME, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
+import {END, ENTER, HOME, SPACE} from '@angular/cdk/keycodes';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterContentChecked,
@@ -31,6 +31,7 @@ import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
 import {merge, of as observableOf, Subscription} from 'rxjs';
 import {MatInkBar} from './ink-bar';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
+import {FocusKeyManager} from '@angular/cdk/a11y';
 
 
 /**
@@ -80,9 +81,6 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
   @ViewChild('tabListContainer') _tabListContainer: ElementRef;
   @ViewChild('tabList') _tabList: ElementRef;
 
-  /** The tab index that is focused. */
-  private _focusIndex: number = 0;
-
   /** The distance in pixels that the tab labels should be translated to the left. */
   private _scrollDistance = 0;
 
@@ -110,6 +108,9 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
   /** Whether the scroll distance has changed and should be applied after the view is checked. */
   private _scrollDistanceChanged: boolean;
 
+  /** Used to manage focus between the tabs. */
+  private _keyManager: FocusKeyManager<MatTabLabelWrapper>;
+
   private _selectedIndex: number = 0;
 
   /** The index of the active tab. */
@@ -119,7 +120,10 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
     value = coerceNumberProperty(value);
     this._selectedIndexChanged = this._selectedIndex != value;
     this._selectedIndex = value;
-    this._focusIndex = value;
+
+    if (this._keyManager) {
+      this._keyManager.updateActiveItemIndex(value);
+    }
   }
 
   /** Event emitted when the option is selected. */
@@ -164,18 +168,12 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
 
   _handleKeydown(event: KeyboardEvent) {
     switch (event.keyCode) {
-      case RIGHT_ARROW:
-        this._focusNextTab();
-        break;
-      case LEFT_ARROW:
-        this._focusPreviousTab();
-        break;
       case HOME:
-        this._focusFirstTab();
+        this._keyManager.setFirstItemActive();
         event.preventDefault();
         break;
       case END:
-        this._focusLastTab();
+        this._keyManager.setLastItemActive();
         event.preventDefault();
         break;
       case ENTER:
@@ -183,6 +181,8 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
         this.selectFocusedIndex.emit(this.focusIndex);
         event.preventDefault();
         break;
+      default:
+        this._keyManager.onKeydown(event);
     }
   }
 
@@ -197,10 +197,19 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
       this._alignInkBarToSelectedTab();
     };
 
+    this._keyManager = new FocusKeyManager(this._labelWrappers)
+      .withHorizontalOrientation(this._getLayoutDirection());
+
+    this._keyManager.updateActiveItemIndex(0);
+
     // Defer the first call in order to allow for slower browsers to lay out the elements.
     // This helps in cases where the user lands directly on a page with paginated tabs.
     typeof requestAnimationFrame !== 'undefined' ? requestAnimationFrame(realign) : realign();
-    this._realignInkBar = merge(dirChange, resize).subscribe(realign);
+
+    this._realignInkBar = merge(dirChange, resize).subscribe(() => {
+      realign();
+      this._keyManager.withHorizontalOrientation(this._getLayoutDirection());
+    });
   }
 
   ngOnDestroy() {
@@ -227,14 +236,14 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
 
   /** Tracks which element has focus; used for keyboard navigation */
   get focusIndex(): number {
-    return this._focusIndex;
+    return this._keyManager ? this._keyManager.activeItemIndex! : 0;
   }
 
   /** When the focus index is set, we must manually send focus to the correct label */
   set focusIndex(value: number) {
-    if (!this._isValidIndex(value) || this._focusIndex == value) { return; }
+    if (!this._isValidIndex(value) || this.focusIndex == value || !this._keyManager) { return; }
 
-    this._focusIndex = value;
+    this._keyManager.setActiveItem(value);
     this.indexFocused.emit(value);
     this._setTabFocus(value);
   }
@@ -272,53 +281,6 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
         containerEl.scrollLeft = 0;
       } else {
         containerEl.scrollLeft = containerEl.scrollWidth - containerEl.offsetWidth;
-      }
-    }
-  }
-
-  /**
-   * Moves the focus towards the beginning or the end of the list depending on the offset provided.
-   * Valid offsets are 1 and -1.
-   */
-  _moveFocus(offset: number) {
-    if (this._labelWrappers) {
-      const tabs: MatTabLabelWrapper[] = this._labelWrappers.toArray();
-
-      for (let i = this.focusIndex + offset; i < tabs.length && i >= 0; i += offset) {
-        if (this._isValidIndex(i)) {
-          this.focusIndex = i;
-          return;
-        }
-      }
-    }
-  }
-
-  /** Increment the focus index by 1 until a valid tab is found. */
-  _focusNextTab(): void {
-    this._moveFocus(this._getLayoutDirection() == 'ltr' ? 1 : -1);
-  }
-
-  /** Decrement the focus index by 1 until a valid tab is found. */
-  _focusPreviousTab(): void {
-    this._moveFocus(this._getLayoutDirection() == 'ltr' ? -1 : 1);
-  }
-
-  /** Focuses the first tab. */
-  private _focusFirstTab(): void {
-    for (let i = 0; i < this._labelWrappers.length; i++) {
-      if (this._isValidIndex(i)) {
-        this.focusIndex = i;
-        break;
-      }
-    }
-  }
-
-  /** Focuses the last tab. */
-  private _focusLastTab(): void {
-    for (let i = this._labelWrappers.length - 1; i > -1; i--) {
-      if (this._isValidIndex(i)) {
-        this.focusIndex = i;
-        break;
       }
     }
   }
