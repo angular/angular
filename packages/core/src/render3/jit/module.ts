@@ -13,6 +13,7 @@ import {Type} from '../../type';
 import {ComponentDef} from '../interfaces/definition';
 
 import {angularCoreEnv} from './environment';
+import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 
 const EMPTY_ARRAY: Type<any>[] = [];
 
@@ -20,7 +21,7 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
   const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
 
   let def: any = null;
-  Object.defineProperty(type, 'ngModuleDef', {
+  Object.defineProperty(type, NG_MODULE_DEF, {
     get: () => {
       if (def === null) {
         const meta: R3NgModuleMetadata = {
@@ -44,11 +45,12 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
     // Some declared components may be compiled asynchronously, and thus may not have their
     // ngComponentDef set yet. If this is the case, then a reference to the module is written into
     // the `ngSelectorScope` property of the declared type.
-    if (declaration.hasOwnProperty('ngComponentDef')) {
+    if (declaration.hasOwnProperty(NG_COMPONENT_DEF)) {
       // An `ngComponentDef` field exists - go ahead and patch the component directly.
       patchComponentDefWithScope(
           (declaration as Type<any>& {ngComponentDef: ComponentDef<any>}).ngComponentDef, type);
-    } else {
+    } else if (
+        !declaration.hasOwnProperty(NG_DIRECTIVE_DEF) && !declaration.hasOwnProperty(NG_PIPE_DEF)) {
       // Set `ngSelectorScope` for future reference when the component compilation finishes.
       (declaration as Type<any>& {ngSelectorScope?: any}).ngSelectorScope = type;
     }

@@ -13,6 +13,7 @@ import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Type} from '../../type';
 
 import {angularCoreEnv} from './environment';
+import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from './fields';
 import {patchComponentDefWithScope} from './module';
 import {getReflect, reflectDependencies} from './util';
 
@@ -35,7 +36,7 @@ export function compileComponent(type: Type<any>, metadata: Component): Promise<
   const templateStr = metadata.template;
 
   let def: any = null;
-  Object.defineProperty(type, 'ngComponentDef', {
+  Object.defineProperty(type, NG_COMPONENT_DEF, {
     get: () => {
       if (def === null) {
         // The ConstantPool is a requirement of the JIT'er.
@@ -92,7 +93,7 @@ function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
  */
 export function compileDirective(type: Type<any>, directive: Directive): Promise<void>|null {
   let def: any = null;
-  Object.defineProperty(type, 'ngDirectiveDef', {
+  Object.defineProperty(type, NG_DIRECTIVE_DEF, {
     get: () => {
       if (def === null) {
         const constantPool = new ConstantPool();
