@@ -1,7 +1,7 @@
 module.exports = function generateApiListDoc() {
 
   return {
-    $runAfter: ['extra-docs-added'],
+    $runAfter: ['extra-docs-added', 'computeStability'],
     $runBefore: ['rendering-docs'],
     outputFolder: null,
     $validate: {outputFolder: {presence: true}},

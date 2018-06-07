@@ -13,7 +13,7 @@ describe('generateApiListDoc processor', () => {
 
   it('should run after the correct processor', () => {
     const processor = processorFactory();
-    expect(processor.$runAfter).toEqual(['extra-docs-added']);
+    expect(processor.$runAfter).toEqual(['extra-docs-added', 'computeStability']);
   });
 
   it('should run before the correct processor', () => {
