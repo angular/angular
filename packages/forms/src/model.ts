@@ -281,14 +281,14 @@ export abstract class AbstractControl {
 
   /**
    * @description
-   * An observable that emits an event every time the value of the control changes, in
+   * A multicasted observable that emits an event every time the value of the control changes, in
    * the UI or programmatically.
    */
   public readonly valueChanges: Observable<any>;
 
   /**
    * @description
-   * An observable that emits an event every time the validation `status` of the control
+   * A multicasted observable that emits an event every time the validation `status` of the control
    * is re-calculated.
    */
   public readonly statusChanges: Observable<any>;
