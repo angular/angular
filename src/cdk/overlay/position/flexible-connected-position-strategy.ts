@@ -17,7 +17,7 @@ import {
   validateVerticalPosition,
 } from './connected-position';
 import {Observable, Subscription, Subject} from 'rxjs';
-import {OverlayRef} from '../overlay-ref';
+import {OverlayReference} from '../overlay-reference';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
 import {coerceCssPixelValue} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
@@ -34,7 +34,7 @@ import {Platform} from '@angular/cdk/platform';
  */
 export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   /** The overlay to which this strategy is attached. */
-  private _overlayRef: OverlayRef;
+  private _overlayRef: OverlayReference;
 
   /** Whether we're performing the very first positioning of the overlay. */
   private _isInitialRender = true;
@@ -137,7 +137,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   }
 
   /** Attaches this position strategy to an overlay. */
-  attach(overlayRef: OverlayRef): void {
+  attach(overlayRef: OverlayReference): void {
     if (this._overlayRef && overlayRef !== this._overlayRef) {
       throw Error('This position strategy is already attached to an overlay');
     }

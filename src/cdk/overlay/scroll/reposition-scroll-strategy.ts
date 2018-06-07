@@ -9,7 +9,7 @@
 import {NgZone} from '@angular/core';
 import {Subscription} from 'rxjs';
 import {ScrollStrategy, getMatScrollStrategyAlreadyAttachedError} from './scroll-strategy';
-import {OverlayRef} from '../overlay-ref';
+import {OverlayReference} from '../overlay-reference';
 import {ScrollDispatcher, ViewportRuler} from '@angular/cdk/scrolling';
 import {isElementScrolledOutsideView} from '../position/scroll-clip';
 
@@ -29,7 +29,7 @@ export interface RepositionScrollStrategyConfig {
  */
 export class RepositionScrollStrategy implements ScrollStrategy {
   private _scrollSubscription: Subscription|null = null;
-  private _overlayRef: OverlayRef;
+  private _overlayRef: OverlayReference;
 
   constructor(
     private _scrollDispatcher: ScrollDispatcher,
@@ -38,7 +38,7 @@ export class RepositionScrollStrategy implements ScrollStrategy {
     private _config?: RepositionScrollStrategyConfig) { }
 
   /** Attaches this scroll strategy to an overlay. */
-  attach(overlayRef: OverlayRef) {
+  attach(overlayRef: OverlayReference) {
     if (this._overlayRef) {
       throw getMatScrollStrategyAlreadyAttachedError();
     }

@@ -7,7 +7,7 @@
  */
 
 import {PositionStrategy} from './position-strategy';
-import {OverlayRef} from '../overlay-ref';
+import {OverlayReference} from '../overlay-reference';
 
 
 /**
@@ -18,7 +18,7 @@ import {OverlayRef} from '../overlay-ref';
  */
 export class GlobalPositionStrategy implements PositionStrategy {
   /** The overlay to which this strategy is attached. */
-  private _overlayRef: OverlayRef;
+  private _overlayRef: OverlayReference;
   private _cssPosition: string = 'static';
   private _topOffset: string = '';
   private _bottomOffset: string = '';
@@ -29,7 +29,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
   private _width: string = '';
   private _height: string = '';
 
-  attach(overlayRef: OverlayRef): void {
+  attach(overlayRef: OverlayReference): void {
     const config = overlayRef.getConfig();
 
     this._overlayRef = overlayRef;
