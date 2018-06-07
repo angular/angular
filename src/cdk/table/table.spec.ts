@@ -2095,7 +2095,7 @@ class WrapperCdkTableApp<T> implements AfterContentInit {
     // Register the content's column, row, and header row definitions.
     this.columnDefs.forEach(columnDef => this.table.addColumnDef(columnDef));
     this.rowDefs.forEach(rowDef => this.table.addRowDef(rowDef));
-    this.table.setHeaderRowDef(this.headerRowDef);
+    this.table.addHeaderRowDef(this.headerRowDef);
   }
 }
 

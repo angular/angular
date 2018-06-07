@@ -433,7 +433,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   private _menuClosingActions() {
     const backdrop = this._overlayRef!.backdropClick();
     const detachments = this._overlayRef!.detachments();
-    const parentClose = this._parentMenu ? this._parentMenu.close : observableOf();
+    const parentClose = this._parentMenu ? this._parentMenu.closed : observableOf();
     const hover = this._parentMenu ? this._parentMenu._hovered().pipe(
       filter(active => active !== this._menuItemInstance),
       filter(() => this._menuOpen)

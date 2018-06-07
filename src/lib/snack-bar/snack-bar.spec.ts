@@ -317,17 +317,17 @@ describe('MatSnackBar', () => {
   }));
 
   it('should indicate in `afterClosed` whether it was dismissed by an action', fakeAsync(() => {
-    const closeSpy = jasmine.createSpy('dismiss spy');
+    const dismissSpy = jasmine.createSpy('dismiss spy');
     const snackBarRef = snackBar.open('Some content');
     viewContainerFixture.detectChanges();
 
-    snackBarRef.afterDismissed().subscribe(closeSpy);
+    snackBarRef.afterDismissed().subscribe(dismissSpy);
 
-    snackBarRef.closeWithAction();
+    snackBarRef.dismissWithAction();
     viewContainerFixture.detectChanges();
     tick();
 
-    expect(closeSpy).toHaveBeenCalledWith(jasmine.objectContaining({dismissedByAction: true}));
+    expect(dismissSpy).toHaveBeenCalledWith(jasmine.objectContaining({dismissedByAction: true}));
     tick(500);
   }));
 
