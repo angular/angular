@@ -877,6 +877,51 @@ import {FormArray} from '@angular/forms/src/model';
       });
     });
 
+    describe('hasError', () => {
+      let c: FormControl;
+
+      beforeEach(() => { c = new FormControl(null); });
+
+      it('should return false if errors is undefined on present control',
+         () => { expect(c.hasError('nonExisting')).toBeFalsy(); });
+      it('should return false if errors is undefined for given path', () => {
+        const g = new FormGroup({'one': c});
+
+        expect(g.hasError('nonExisting', ['one'])).toBeFalsy();
+      });
+      it('should return false if control for the given path does not exist', () => {
+        const g = new FormGroup({'one': c});
+
+        c.setErrors({anErrorCode: true});
+
+        expect(g.hasError('anErrorCode', ['two'])).toBeFalsy();
+      });
+      it('should return false if error code is undefined on present control', () => {
+        c.setErrors({anErrorCode: true});
+
+        expect(c.hasError('unknownErrorCode')).toBeFalsy();
+      });
+      it('should return false if error code is undefined for given path', () => {
+        const g = new FormGroup({'one': c});
+
+        c.setErrors({anErrorCode: true});
+
+        expect(g.hasError('unknownErrorCode', ['one'])).toBeFalsy();
+      });
+      it('should return true if error code exists on present control', () => {
+        c.setErrors({anErrorCode: undefined});
+
+        expect(c.hasError('anErrorCode')).toBeTruthy();
+      });
+      it('should return true if error code exists for given path', () => {
+        const g = new FormGroup({'one': c});
+
+        c.setErrors({anErrorCode: undefined});
+
+        expect(g.hasError('anErrorCode', ['one'])).toBeTruthy();
+      });
+    });
+
     describe('disable() & enable()', () => {
 
       it('should mark the control as disabled', () => {
