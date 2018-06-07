@@ -1630,6 +1630,60 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
          }));
     });
 
+    describe('ngForm deprecation warnings', () => {
+      let warnSpy: jasmine.Spy;
+
+      @Component({selector: 'ng-form-deprecated', template: `<ngForm></ngForm><ngForm></ngForm>`})
+      class ngFormDeprecated {
+      }
+
+      beforeEach(() => {
+        warnSpy = jasmine.createSpy('warn');
+        console.warn = warnSpy;
+      });
+
+      describe(`when using the deprecated 'ngForm' selector`, () => {
+        it(`should warn for each instance by default`, () => {
+          initTest(ngFormDeprecated);
+          expect(warnSpy).toHaveBeenCalledTimes(2);
+          expect(warnSpy.calls.mostRecent().args[0])
+              .toMatch(/It looks like you're using 'ngForm'/gi);
+        });
+
+        it(`should only warn once when global provider is provided with "once"`, () => {
+          TestBed.configureTestingModule({
+            declarations: [ngFormDeprecated],
+            imports: [FormsModule.withConfig({warnOnDeprecatedNgFormSelector: 'once'})]
+          });
+          TestBed.createComponent(ngFormDeprecated);
+          expect(warnSpy).toHaveBeenCalledTimes(1);
+          expect(warnSpy.calls.mostRecent().args[0])
+              .toMatch(/It looks like you're using 'ngForm'/gi);
+        });
+
+        it(`should not warn when global provider is provided with "never"`, () => {
+          TestBed.configureTestingModule({
+            declarations: [ngFormDeprecated],
+            imports: [FormsModule.withConfig({warnOnDeprecatedNgFormSelector: 'never'})]
+          });
+          TestBed.createComponent(ngFormDeprecated);
+          expect(warnSpy).not.toHaveBeenCalled();
+        });
+
+        it(`should only warn for each instance when global provider is provided with "always"`,
+           () => {
+             TestBed.configureTestingModule({
+               declarations: [ngFormDeprecated],
+               imports: [FormsModule.withConfig({warnOnDeprecatedNgFormSelector: 'always'})]
+             });
+
+             TestBed.createComponent(ngFormDeprecated);
+             expect(warnSpy).toHaveBeenCalledTimes(2);
+             expect(warnSpy.calls.mostRecent().args[0])
+                 .toMatch(/It looks like you're using 'ngForm'/gi);
+           });
+      });
+    });
   });
 }
 
