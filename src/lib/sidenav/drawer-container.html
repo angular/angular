@@ -5,6 +5,6 @@
 
 <ng-content select="mat-drawer-content">
 </ng-content>
-<mat-drawer-content *ngIf="!_content">
+<mat-drawer-content *ngIf="!_content" cdkScrollable>
   <ng-content></ng-content>
 </mat-drawer-content>

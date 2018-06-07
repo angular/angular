@@ -11,7 +11,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {Platform} from '@angular/cdk/platform';
-import {CdkScrollable, ScrollDispatcher} from '@angular/cdk/scrolling';
+import {CdkScrollable} from '@angular/cdk/scrolling';
 import {DOCUMENT} from '@angular/common';
 import {
   AfterContentChecked,
@@ -75,14 +75,10 @@ export function MAT_DRAWER_DEFAULT_AUTOSIZE_FACTORY(): boolean {
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class MatDrawerContent extends CdkScrollable implements AfterContentInit {
+export class MatDrawerContent implements AfterContentInit {
   constructor(
       private _changeDetectorRef: ChangeDetectorRef,
-      @Inject(forwardRef(() => MatDrawerContainer)) public _container: MatDrawerContainer,
-      elementRef: ElementRef<HTMLElement>,
-      scrollDispatcher: ScrollDispatcher,
-      ngZone: NgZone) {
-    super(elementRef, scrollDispatcher, ngZone);
+      @Inject(forwardRef(() => MatDrawerContainer)) public _container: MatDrawerContainer) {
   }
 
   ngAfterContentInit() {
@@ -405,7 +401,6 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
 export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy {
   @ContentChildren(MatDrawer) _drawers: QueryList<MatDrawer>;
   @ContentChild(MatDrawerContent) _content: MatDrawerContent;
-  @ViewChild(MatDrawerContent) _userContent: MatDrawerContent;
 
   /** The drawer child with the `start` position. */
   get start(): MatDrawer | null { return this._start; }
@@ -476,9 +471,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
   readonly _contentMarginChanges = new Subject<{left: number|null, right: number|null}>();
 
   /** Reference to the CdkScrollable instance that wraps the scrollable content. */
-  get scrollable(): CdkScrollable {
-    return this._userContent || this._content;
-  }
+  @ViewChild(CdkScrollable) scrollable: CdkScrollable;
 
   constructor(@Optional() private _dir: Directionality,
               private _element: ElementRef,

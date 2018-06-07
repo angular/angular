@@ -109,8 +109,8 @@ The `<mat-sidenav>` can render in one of three different ways based on the `mode
 
 | Mode   | Description                                                                             |
 |--------|-----------------------------------------------------------------------------------------|
-| `over` | Sidenav floats over the primary content, which is covered by a backdrop                 |
-| `push` | Sidenav pushes the primary content out of its way, also covering it with a backdrop     |
+| `over` | Sidenav floats over the primary content, which is covered by a backdrop               |
+| `push` | Sidenav pushes the primary content out of its way, also covering it with a backdrop   |
 | `side` | Sidenav appears side-by-side with the main content, shrinking the main content's width to make space for the sidenav. |
 
 If no `mode` is specified, `over` is used by default.
@@ -186,10 +186,10 @@ To react to scrolling inside the `<mat-sidenav-container>`, you can get a hold o
 `CdkScrollable` instance through the `MatSidenavContainer`.
 
 ```ts
-class YourComponent implements AfterViewInit {
+class YourComponent {
   @ViewChild(MatSidenavContainer) sidenavContainer: MatSidenavContainer;
 
-  ngAfterViewInit() {
+  constructor() {
     this.sidenavContainer.scrollable.elementScrolled().subscribe(() => /* react to scrolling */);
   }
 }

@@ -17,13 +17,10 @@ import {
   Input,
   ViewEncapsulation,
   QueryList,
-  ElementRef,
-  NgZone,
 } from '@angular/core';
 import {MatDrawer, MatDrawerContainer, MatDrawerContent} from './drawer';
 import {matDrawerAnimations} from './drawer-animations';
 import {coerceBooleanProperty, coerceNumberProperty} from '@angular/cdk/coercion';
-import {ScrollDispatcher} from '@angular/cdk/scrolling';
 
 
 @Component({
@@ -41,11 +38,8 @@ import {ScrollDispatcher} from '@angular/cdk/scrolling';
 export class MatSidenavContent extends MatDrawerContent {
   constructor(
       changeDetectorRef: ChangeDetectorRef,
-      @Inject(forwardRef(() => MatSidenavContainer)) container: MatSidenavContainer,
-      elementRef: ElementRef<HTMLElement>,
-      scrollDispatcher: ScrollDispatcher,
-      ngZone: NgZone) {
-    super(changeDetectorRef, container, elementRef, scrollDispatcher, ngZone);
+      @Inject(forwardRef(() => MatSidenavContainer)) container: MatSidenavContainer) {
+    super(changeDetectorRef, container);
   }
 }
 
