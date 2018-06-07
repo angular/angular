@@ -28,6 +28,7 @@ export {Form} from './directives/form_interface';
 export {NgControl} from './directives/ng_control';
 export {NgControlStatus, NgControlStatusGroup} from './directives/ng_control_status';
 export {NgForm} from './directives/ng_form';
+export {NgFormSelectorWarning} from './directives/ng_form_selector_warning';
 export {NgModel} from './directives/ng_model';
 export {NgModelGroup} from './directives/ng_model_group';
 export {RadioControlValueAccessor} from './directives/radio_control_value_accessor';
