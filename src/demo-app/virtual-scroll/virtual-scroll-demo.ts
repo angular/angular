@@ -7,7 +7,7 @@
  */
 
 import {Component, ViewEncapsulation} from '@angular/core';
-import {BehaviorSubject} from 'rxjs/index';
+import {BehaviorSubject} from 'rxjs';
 
 
 type State = {

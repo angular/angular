@@ -98,6 +98,7 @@
     "ts-loader": true,
     "no-exposed-todo": true,
     "setters-after-getters": true,
+    "rxjs-imports": true,
     "no-host-decorator-in-concrete": [
       true,
       "HostBinding",
