@@ -41,6 +41,8 @@ export class CdkScrollable implements OnInit, OnDestroy {
     if (this._scrollListener) {
       this.getElementRef().nativeElement.removeEventListener('scroll', this._scrollListener);
     }
+
+    this._elementScrolled.complete();
   }
 
   /**

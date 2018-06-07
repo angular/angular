@@ -3,7 +3,7 @@ import {NgModule, Component, ViewChild, ElementRef} from '@angular/core';
 import {CdkScrollable, ScrollDispatcher, ScrollDispatchModule} from './public-api';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
 
-describe('Scroll Dispatcher', () => {
+describe('ScrollDispatcher', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -101,6 +101,17 @@ describe('Scroll Dispatcher', () => {
 
       subscription.unsubscribe();
     });
+
+    it('should complete the scrollable stream when it is destroyed', () => {
+      const scrollable = fixture.componentInstance.scrollable;
+      const spy = jasmine.createSpy('complete spy');
+      const subscription = scrollable.elementScrolled().subscribe(undefined, undefined, spy);
+
+      fixture.destroy();
+      expect(spy).toHaveBeenCalled();
+      subscription.unsubscribe();
+    });
+
   });
 
   describe('Nested scrollables', () => {
