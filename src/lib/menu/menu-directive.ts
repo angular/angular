@@ -28,6 +28,7 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
+  OnInit,
 } from '@angular/core';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, switchMap, take} from 'rxjs/operators';
@@ -97,7 +98,7 @@ const MAT_MENU_BASE_ELEVATION = 2;
     {provide: MAT_MENU_PANEL, useExisting: MatMenu}
   ]
 })
-export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnDestroy {
+export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnInit, OnDestroy {
   private _keyManager: FocusKeyManager<MatMenuItem>;
   private _xPosition: MenuPositionX = this._defaultOptions.xPosition;
   private _yPosition: MenuPositionY = this._defaultOptions.yPosition;
@@ -141,6 +142,7 @@ export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnD
       throwMatMenuInvalidPositionX();
     }
     this._xPosition = value;
+    this.setPositionClasses();
   }
 
   /** Position of the menu in the Y axis. */
@@ -151,6 +153,7 @@ export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnD
       throwMatMenuInvalidPositionY();
     }
     this._yPosition = value;
+    this.setPositionClasses();
   }
 
   /** @docs-private */
@@ -229,6 +232,10 @@ export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnD
     private _elementRef: ElementRef,
     private _ngZone: NgZone,
     @Inject(MAT_MENU_DEFAULT_OPTIONS) private _defaultOptions: MatMenuDefaultOptions) { }
+
+  ngOnInit() {
+    this.setPositionClasses();
+  }
 
   ngAfterContentInit() {
     this._keyManager = new FocusKeyManager<MatMenuItem>(this._items).withWrap().withTypeAhead();
@@ -345,6 +352,21 @@ export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnD
       this._items.splice(index, 1);
       this._itemChanges.next(this._items);
     }
+  }
+
+  /**
+   * Adds classes to the menu panel based on its position. Can be used by
+   * consumers to add specific styling based on the position.
+   * @param posX Position of the menu along the x axis.
+   * @param posY Position of the menu along the y axis.
+   * @docs-private
+   */
+  setPositionClasses(posX: MenuPositionX = this.xPosition, posY: MenuPositionY = this.yPosition) {
+    const classes = this._classList;
+    classes['mat-menu-before'] = posX === 'before';
+    classes['mat-menu-after'] = posX === 'after';
+    classes['mat-menu-above'] = posY === 'above';
+    classes['mat-menu-below'] = posY === 'below';
   }
 
   /** Starts the enter animation. */
