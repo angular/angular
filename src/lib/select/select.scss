@@ -105,6 +105,10 @@ $mat-select-placeholder-arrow-space: 2 * ($mat-select-arrow-size + $mat-select-a
   transition: color $swift-ease-out-duration $swift-ease-out-duration / 3
       $swift-ease-out-timing-function;
 
+  ._mat-animation-noopable & {
+    transition: none;
+  }
+
   .mat-form-field-hide-placeholder & {
     color: transparent;
 

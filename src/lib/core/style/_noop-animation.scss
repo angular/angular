@@ -17,5 +17,6 @@
   @at-root ._mat-animation-noopable#{&} {
     transition: none;
     animation: none;
+    @content;
   }
 }
