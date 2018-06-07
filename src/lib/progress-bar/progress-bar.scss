@@ -1,6 +1,7 @@
 @import '../core/style/variables';
 @import '../core/style/vendor-prefixes';
 @import '../core/style/noop-animation';
+@import '../../cdk/a11y/a11y';
 
 $mat-progress-bar-height: 5px !default;
 $mat-progress-bar-full-animation-duration: 2000ms !default;
@@ -30,6 +31,10 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
     // The width is set to be 10px longer than the container as it will be translated 10px
     // during the background scroll animation.
     width: calc(100% + 10px);
+
+    @include cdk-high-contrast {
+      display: none;
+    }
   }
 
   // The progress bar buffer is the bar indicator showing the buffer value and is only visible
@@ -38,6 +43,11 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
     @include _noop-animation();
     transform-origin: top left;
     transition: transform $mat-progress-bar-piece-animation-duration ease;
+
+    @include cdk-high-contrast {
+      border-top: solid 5px;
+      opacity: 0.5;
+    }
   }
 
   // The secondary progress bar is only used in the indeterminate animation, because of this it
@@ -52,6 +62,10 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
     animation: none;
     transform-origin: top left;
     transition: transform $mat-progress-bar-piece-animation-duration ease;
+
+    @include cdk-high-contrast {
+      border-top: solid $mat-progress-bar-height;
+    }
   }
 
   // A pseudo element is created for each progress bar bar that fills with the indicator color.
@@ -124,6 +138,10 @@ $mat-progress-bar-piece-animation-duration: 250ms !default;
       @include backface-visibility(hidden);
       animation: mat-progress-bar-background-scroll
           $mat-progress-bar-piece-animation-duration infinite linear;
+
+      // Needs to be explicit here so it can overwrite the `display: none`
+      // in all other variants in high contrast mode.
+      display: block;
     }
   }
 }
