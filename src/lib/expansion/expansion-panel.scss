@@ -1,5 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/elevation';
+@import '../../cdk/a11y/a11y';
 
 .mat-expansion-panel {
   @include mat-elevation-transition;
@@ -8,6 +9,10 @@
   display: block;
   margin: 0;
   transition: margin 225ms $mat-fast-out-slow-in-timing-function;
+
+  @include cdk-high-contrast {
+    outline: solid 1px;
+  }
 }
 
 .mat-expansion-panel-content {
