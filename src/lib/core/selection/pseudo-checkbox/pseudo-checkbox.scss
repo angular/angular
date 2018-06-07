@@ -32,7 +32,7 @@ $_mat-pseudo-checkmark-size: $mat-checkbox-size - (2 * $_mat-pseudo-checkbox-pad
   }
 
   &.mat-pseudo-checkbox-checked, &.mat-pseudo-checkbox-indeterminate {
-    border: none;
+    border-color: transparent;
   }
 }
 
@@ -41,15 +41,16 @@ $_mat-pseudo-checkmark-size: $mat-checkbox-size - (2 * $_mat-pseudo-checkbox-pad
 }
 
 .mat-pseudo-checkbox-indeterminate::after {
-  top: ($mat-checkbox-size - $mat-checkbox-border-width) / 2;
-  left: $mat-checkbox-border-width;
+  top: ($mat-checkbox-size - $mat-checkbox-border-width) / 2 - $mat-checkbox-border-width;
+  left: 0;
   width: $mat-checkbox-size - ($mat-checkbox-border-width * 2);
   opacity: 1;
 }
 
 .mat-pseudo-checkbox-checked::after {
-  top: ($mat-checkbox-size / 2) - ($_mat-pseudo-checkmark-size / 4) - ($mat-checkbox-size / 10);
-  left: $_mat-pseudo-checkbox-padding - $mat-checkbox-border-width / 2;
+  top: ($mat-checkbox-size / 2) - ($_mat-pseudo-checkmark-size / 4) -
+      ($mat-checkbox-size / 10) - $mat-checkbox-border-width;
+  left: $_mat-pseudo-checkbox-padding - $mat-checkbox-border-width * 1.5;
   width: $_mat-pseudo-checkmark-size;
   height: ($_mat-pseudo-checkmark-size - $mat-checkbox-border-width) / 2;
   border-left: $mat-checkbox-border-width solid currentColor;
