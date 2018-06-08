@@ -98,8 +98,7 @@ class Helper {
     const prDir = this.getPrDir(pr, isPublic);
 
     if (fs.existsSync(prDir)) {
-      // Undocumented signature (see https://github.com/shelljs/shelljs/pull/663).
-      (shell as any).chmod('-R', 'a+w', prDir);
+      shell.chmod('-R', 'a+w', prDir);
       shell.rm('-rf', prDir);
     }
   }
