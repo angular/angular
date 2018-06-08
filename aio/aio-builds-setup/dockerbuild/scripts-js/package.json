@@ -33,7 +33,7 @@
     "@types/jasmine": "^2.6.0",
     "@types/jsonwebtoken": "^7.2.3",
     "@types/node": "^8.0.30",
-    "@types/shelljs": "^0.7.4",
+    "@types/shelljs": "^0.8.0",
     "@types/supertest": "^2.0.3",
     "concurrently": "^3.5.0",
     "nodemon": "^1.12.1",
