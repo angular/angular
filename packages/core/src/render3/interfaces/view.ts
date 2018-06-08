@@ -16,132 +16,138 @@ import {LQueries} from './query';
 import {Renderer3} from './renderer';
 
 
+/** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
+const _HEADER_OFFSET = 14;
 
 /**
- * `LView` stores all of the information needed to process the instructions as
+ * `LViewData` stores all of the information needed to process the instructions as
  * they are invoked from the template. Each embedded view and component view has its
- * own `LView`. When processing a particular view, we set the `currentView` to that
- * `LView`. When that view is done processing, the `currentView` is set back to
- * whatever the original `currentView` was before (the parent `LView`).
+ * own `LViewData`. When processing a particular view, we set the `viewData` to that
+ * `LViewData`. When that view is done processing, the `viewData` is set back to
+ * whatever the original `viewData` was before (the parent `LViewData`).
  *
  * Keeping separate state for each view facilities view insertion / deletion, so we
  * don't have to edit the data array based on which views are present.
  */
-export interface LView {
-  /** Flags for this view (see LViewFlags for definition of each bit). */
-  flags: LViewFlags;
+export type LViewData = [
+  any | LContainer | null,   // next            TODO: find a way to replace any with LViewData
+  any | LContainer | null,   // parent
+  LQueries | null,           // queries
+  TView,                     // tView
+  LViewFlags,                // flags
+  LViewNode | LElementNode,  // hostNode
+  number,                    // bindingIndex
+  any[] | null,              // directives
+  any[] | null,              // cleanupInstances
+  {} | RootContext | null,   // context
+  Injector | null,           // injector
+  Renderer3,                 // renderer
+  Sanitizer | null,          // sanitizer
+  any | LContainer | null    // tail
+];
 
-  /**
-   * The parent view is needed when we exit the view and must restore the previous
-   * `LView`. Without this, the render method would have to keep a stack of
-   * views as it is recursively rendering templates.
-   */
-  readonly parent: LView|null;
+// Below are constants for LViewData indices to help us look up LViewData members
+// without having to remember the specific indices.
+// Uglify will inline these when minifying so there shouldn't be a cost.
 
-  /**
-   * Pointer to the `LViewNode` or `LElementNode` which represents the root of the view.
-   *
-   * If `LViewNode`, this is an embedded view of a container. We need this to be able to
-   * efficiently find the `LViewNode` when inserting the view into an anchor.
-   *
-   * If `LElementNode`, this is the LView of a component.
-   */
-  // TODO(kara): Remove when we have parent/child on TNodes
-  readonly node: LViewNode|LElementNode;
+/**
+ *
+ * The next sibling LViewData or LContainer.
+ *
+ * Allows us to propagate between sibling view states that aren't in the same
+ * container. Embedded views already have a node.next, but it is only set for
+ * views in the same container. We need a way to link component views and views
+ * across containers as well.
+ */
+const _NEXT = 0;
 
-  /** Renderer to be used for this view. */
-  readonly renderer: Renderer3;
+/**
+ * The parent view is needed when we exit the view and must restore the previous
+ * `LViewData`. Without this, the render method would have to keep a stack of
+ * views as it is recursively rendering templates.
+ */
+const _PARENT = 1;
 
-  /**
-   * The binding index we should access next.
-   *
-   * This is stored so that bindings can continue where they left off
-   * if a view is left midway through processing bindings (e.g. if there is
-   * a setter that creates an embedded view, like in ngIf).
-   */
-  bindingIndex: number;
+/** Queries active for this view - nodes from a view are reported to those queries. */
+const _QUERIES = 2;
 
-  /**
-   * When a view is destroyed, listeners need to be released and outputs need to be
-   * unsubscribed. This context array stores both listener functions wrapped with
-   * their context and output subscription instances for a particular view.
-   *
-   * These change per LView instance, so they cannot be stored on TView. Instead,
-   * TView.cleanup saves an index to the necessary context in this array.
-   */
-  // TODO: collapse into data[]
-  cleanupInstances: any[]|null;
+/**
+ * The static data for this view. We need a reference to this so we can easily walk up the
+ * node tree in DI and get the TView.data array associated with a node (where the
+ * directive defs are stored).
+ */
+const _TVIEW = 3;
 
-  /**
-   * The last LView or LContainer beneath this LView in the hierarchy.
-   *
-   * The tail allows us to quickly add a new state to the end of the view list
-   * without having to propagate starting from the first child.
-   */
-  tail: LView|LContainer|null;
+/** See LViewFlags */
+const _FLAGS = 4;
 
-  /**
-   * The next sibling LView or LContainer.
-   *
-   * Allows us to propagate between sibling view states that aren't in the same
-   * container. Embedded views already have a node.next, but it is only set for
-   * views in the same container. We need a way to link component views and views
-   * across containers as well.
-   */
-  next: LView|LContainer|null;
+/**
+ * Pointer to the `LViewNode` or `LElementNode` which represents the root of the view.
+ *
+ * If `LViewNode`, this is an embedded view of a container. We need this to be able to
+ * efficiently find the `LViewNode` when inserting the view into an anchor.
+ *
+ * If `LElementNode`, this is the LView of a component.
+ */
+// TODO(kara): Replace with index
+const _HOST_NODE = 5;
 
-  /**
-   * This array stores all element/text/container nodes created inside this view
-   * and their bindings. Stored as an array rather than a linked list so we can
-   * look up nodes directly in the case of forward declaration or bindings
-   * (e.g. E(1)).
-   *
-   * All bindings for a given view are stored in the order in which they
-   * appear in the template, starting with `bindingStartIndex`.
-   * We use `bindingIndex` to internally keep track of which binding
-   * is currently active.
-   */
-  readonly data: any[];
+/**
+ * The binding index we should access next.
+ *
+ * This is stored so that bindings can continue where they left off
+ * if a view is left midway through processing bindings (e.g. if there is
+ * a setter that creates an embedded view, like in ngIf).
+ */
+const _BINDING_INDEX = 6;
 
-  /**
-   * An array of directive instances in the current view.
-   *
-   * These must be stored separately from LNodes because their presence is
-   * unknown at compile-time and thus space cannot be reserved in data[].
-   */
-  directives: any[]|null;
+/**
+ * An array of directive instances in the current view.
+ *
+ * These must be stored separately from LNodes because their presence is
+ * unknown at compile-time and thus space cannot be reserved in data[].
+ */
+// TODO: flatten into LViewData[]
+const _DIRECTIVES = 7;
 
-  /**
-   * The static data for this view. We need a reference to this so we can easily walk up the
-   * node tree in DI and get the TView.data array associated with a node (where the
-   * directive defs are stored).
-   */
-  tView: TView;
+/**
+ * When a view is destroyed, listeners need to be released and outputs need to be
+ * unsubscribed. This context array stores both listener functions wrapped with
+ * their context and output subscription instances for a particular view.
+ *
+ * These change per LView instance, so they cannot be stored on TView. Instead,
+ * TView.cleanup saves an index to the necessary context in this array.
+ */
+// TODO: flatten into LViewData[]
+const _CLEANUP = 8;
 
-  /**
-   * - For embedded views, the context with which to render the template.
-   * - For root view of the root component the context contains change detection data.
-   * - `null` otherwise.
-   */
-  context: {}|RootContext|null;
+/**
+ * - For embedded views, the context with which to render the template.
+ * - For root view of the root component the context contains change detection data.
+ * - `null` otherwise.
+ */
+const _CONTEXT = 9;
 
-  /**
-   * Queries active for this view - nodes from a view are reported to those queries
-   */
-  queries: LQueries|null;
+/** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
+const _INJECTOR = 10;
 
-  /**
-   * An optional Module Injector to be used as fall back after Element Injectors are consulted.
-   */
-  injector: Injector|null;
+/** Renderer to be used for this view. */
+const _RENDERER = 11;
 
-  /**
-   * An optional custom sanitizer
-   */
-  sanitizer: Sanitizer|null;
-}
+/** An optional custom sanitizer. */
+const _SANITIZER = 12;
 
-/** Flags associated with an LView (saved in LView.flags) */
+/**
+ * The last LViewData or LContainer beneath this LViewData in the hierarchy.
+ *
+ * The tail allows us to quickly add a new state to the end of the view list
+ * without having to propagate starting from the first child.
+ */
+// TODO: replace with global
+const _TAIL = 13;
+
+
+/** Flags associated with an LView (saved in LViewData[FLAGS]) */
 export const enum LViewFlags {
   /**
    * Whether or not the view is in creationMode.
@@ -173,14 +179,6 @@ export const enum LViewFlags {
 
   /** Whether or not this view is destroyed. */
   Destroyed = 0b100000,
-}
-
-/** Interface necessary to work with view tree traversal */
-export interface LViewOrLContainer {
-  next: LView|LContainer|null;
-  views?: LViewNode[];
-  tView?: TView;
-  parent: LView|null;
 }
 
 /**
@@ -388,7 +386,7 @@ export interface TView {
    * refreshed when the current view has finished its check.
    *
    * Even indices: Directive indices
-   * Odd indices: Element indices
+   * Odd indices: Element indices (adjusted for LViewData header offset)
    */
   components: number[]|null;
 
@@ -397,6 +395,9 @@ export interface TView {
    *
    * Even indices: Directive indices
    * Odd indices: Element indices
+   *
+   * Element indices are NOT adjusted for LViewData header offset because
+   * they will be fed into instructions that expect the raw index (e.g. elementProperty)
    */
   hostBindings: number[]|null;
 }
@@ -446,6 +447,22 @@ export type TData = (TNode | PipeDef<any>| null)[];
 
 /** Type for TView.currentMatches */
 export type CurrentMatchesList = [DirectiveDef<any>, (string | number | null)];
+
+export const HEADER_OFFSET = _HEADER_OFFSET;
+export const TVIEW = _TVIEW;
+export const FLAGS = _FLAGS;
+export const NEXT = _NEXT;
+export const TAIL = _TAIL;
+export const PARENT = _PARENT;
+export const HOST_NODE = _HOST_NODE;
+export const BINDING_INDEX = _BINDING_INDEX;
+export const DIRECTIVES = _DIRECTIVES;
+export const CLEANUP = _CLEANUP;
+export const CONTEXT = _CONTEXT;
+export const QUERIES = _QUERIES;
+export const INJECTOR = _INJECTOR;
+export const RENDERER = _RENDERER;
+export const SANITIZER = _SANITIZER;
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

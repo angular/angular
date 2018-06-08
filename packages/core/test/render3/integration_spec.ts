@@ -9,8 +9,8 @@
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleNamed, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
-import {LViewFlags} from '../../src/render3/interfaces/view';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleNamed, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding,} from '../../src/render3/instructions';
+import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
@@ -849,8 +849,8 @@ describe('render3 integration test', () => {
       renderToHtml(Template, {condition: true});
 
       const oldTemplateData = (Template as any).ngPrivateData;
-      const oldContainerData = (oldTemplateData as any).data[0];
-      const oldElementData = oldContainerData.tViews[0][0];
+      const oldContainerData = (oldTemplateData as any).data[HEADER_OFFSET];
+      const oldElementData = oldContainerData.tViews[0][HEADER_OFFSET];
       expect(oldContainerData).not.toBeNull();
       expect(oldElementData).not.toBeNull();
 
@@ -858,8 +858,8 @@ describe('render3 integration test', () => {
       renderToHtml(Template, {condition: true});
 
       const newTemplateData = (Template as any).ngPrivateData;
-      const newContainerData = (oldTemplateData as any).data[0];
-      const newElementData = oldContainerData.tViews[0][0];
+      const newContainerData = (oldTemplateData as any).data[HEADER_OFFSET];
+      const newElementData = oldContainerData.tViews[0][HEADER_OFFSET];
       expect(newTemplateData === oldTemplateData).toBe(true);
       expect(newContainerData === oldContainerData).toBe(true);
       expect(newElementData === oldElementData).toBe(true);

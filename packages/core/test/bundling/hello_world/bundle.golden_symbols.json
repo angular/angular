@@ -1,6 +1,18 @@
 [
   {
+    "name": "ACTIVE_INDEX"
+  },
+  {
+    "name": "BINDING_INDEX"
+  },
+  {
     "name": "CLEAN_PROMISE"
+  },
+  {
+    "name": "CONTEXT"
+  },
+  {
+    "name": "DIRECTIVES"
   },
   {
     "name": "EMPTY$2"
@@ -9,10 +21,25 @@
     "name": "EMPTY_RENDERER_TYPE_ID"
   },
   {
+    "name": "FLAGS"
+  },
+  {
+    "name": "HEADER_OFFSET"
+  },
+  {
+    "name": "HOST_NODE"
+  },
+  {
     "name": "HelloWorld"
   },
   {
+    "name": "INJECTOR$1"
+  },
+  {
     "name": "INeedToExistEvenThoughIAmNotNeeded"
+  },
+  {
+    "name": "NEXT"
   },
   {
     "name": "NG_HOST_SYMBOL"
@@ -21,10 +48,25 @@
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
+    "name": "QUERIES"
+  },
+  {
+    "name": "RENDERER"
+  },
+  {
     "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
+    "name": "SANITIZER"
+  },
+  {
+    "name": "TVIEW"
+  },
+  {
     "name": "UNDEFINED_RENDERER_TYPE_ID"
+  },
+  {
+    "name": "VIEWS"
   },
   {
     "name": "_renderCompCount"
@@ -54,9 +96,6 @@
     "name": "createLNodeObject"
   },
   {
-    "name": "createLView"
-  },
-  {
     "name": "createRootContext"
   },
   {
@@ -69,7 +108,7 @@
     "name": "createTextNode"
   },
   {
-    "name": "currentView"
+    "name": "createViewData"
   },
   {
     "name": "defineComponent"
@@ -130,9 +169,6 @@
   },
   {
     "name": "invertObject"
-  },
-  {
-    "name": "isLContainer"
   },
   {
     "name": "isProceduralRenderer"

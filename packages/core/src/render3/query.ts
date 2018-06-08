@@ -22,6 +22,7 @@ import {DirectiveDef, unusedValueExportToPlacateAjd as unused1} from './interfac
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
 import {LContainerNode, LElementNode, LNode, TNode, TNodeFlags, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
+import {DIRECTIVES, TVIEW} from './interfaces/view';
 import {flatten} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
@@ -222,7 +223,7 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
  * @returns Index of a found directive or null when none found.
  */
 function getIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
-  const defs = node.view.tView.directives !;
+  const defs = node.view[TVIEW].directives !;
   const flags = node.tNode.flags;
   const count = flags & TNodeFlags.DirectiveCountMask;
   const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
@@ -244,7 +245,7 @@ function readFromNodeInjector(
   } else {
     const matchingIdx = getIdxOfMatchingDirective(node, read as Type<any>);
     if (matchingIdx !== null) {
-      return node.view.directives ![matchingIdx];
+      return node.view[DIRECTIVES] ![matchingIdx];
     }
   }
   return null;
@@ -416,7 +417,7 @@ export function query<T>(
   const queryList = new QueryList<T>();
   const queries = getCurrentQueries(LQueries_);
   queries.track(queryList, predicate, descend, read);
-  storeCleanupWithContext(undefined, queryList, queryList.destroy);
+  storeCleanupWithContext(null, queryList, queryList.destroy);
   if (memoryIndex != null) {
     store(memoryIndex, queryList);
   }
