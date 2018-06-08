@@ -158,6 +158,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `<div (hammer.js)>`                         |  ❌     |  ❌      |  ❌      |
 | [`<div (directiveOut)>`][gh23560]           |  ✅     |  ❌      |  ❌      |
 | [`<ng-template (directiveOut)>`][gh23561]   |  ❌     |  ❌      |  ❌      |
+| `<ng-container>`                            |  n/a    |  ❌      |  ❌      |
 
 [gh23560]: https://github.com/angular/angular/issues/23560
 [gh23561]: https://github.com/angular/angular/issues/23561
