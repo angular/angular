@@ -75,7 +75,11 @@ describe('instructions', () => {
   describe('element', () => {
     it('should create an element', () => {
       const t = new TemplateFixture(() => { element(0, 'div', ['id', 'test', 'title', 'Hello']); });
-      expect(t.html).toEqual('<div id="test" title="Hello"></div>');
+
+      const div = (t.hostNode.native as HTMLElement).querySelector('div') !;
+      expect(div.id).toEqual('test');
+      expect(div.title).toEqual('Hello');
+
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element

@@ -425,7 +425,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     });
 
-
     // Traverse element child nodes
     if (this._inI18nSection && element.children.length == 1 &&
         element.children[0] instanceof t.Text) {
