@@ -34,6 +34,9 @@ npm_package(
     srcs = [
         "package.json",
     ],
-    tags = ["release-with-framework"],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
     deps = [":compiler-cli"],
 )

@@ -24,7 +24,10 @@ ng_package(
     name = "npm_package",
     srcs = ["package.json"],
     entry_point = "packages/platform-webworker/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
     deps = [
         ":platform-webworker",
     ],

@@ -111,6 +111,42 @@ jobs:
           paths:
             - "node_modules"
             - "~/bazel_repository_cache"
+  # Temporary job to test what will happen when we flip the Ivy flag to true
+  test_ivy_jit:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      # See remote cache documentation in /docs/BAZEL.md
+      - run: .circleci/setup_cache.sh
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup-bazel-remote-cache
+
+      - restore_cache:
+          key: *cache_key
+
+      - run: bazel run @yarn//:yarn
+      - run: bazel query --output=label //... | xargs bazel test --define=compile=jit --build_tag_filters=ivy-jit --test_tag_filters=-manual,ivy-jit
+
+  test_ivy_aot:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      # See remote cache documentation in /docs/BAZEL.md
+      - run: .circleci/setup_cache.sh
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup-bazel-remote-cache
+
+      - restore_cache:
+          key: *cache_key
+
+      - run: bazel run @yarn//:yarn
+      - run: bazel query --output=label //... | xargs bazel test --define=compile=local --build_tag_filters=ivy-local --test_tag_filters=-manual,ivy-local
 
   # This job exists only for backwards-compatibility with old scripts and tests
   # that rely on the pre-Bazel dist/packages-dist layout.
@@ -140,6 +176,8 @@ jobs:
           root: dist
           paths:
             - packages-dist
+            - packages-dist-ivy-jit
+            - packages-dist-ivy-local
 
   # We run the integration tests outside of Bazel for now.
   # They are a separate workflow job so that they can be easily re-run.
@@ -200,6 +238,8 @@ workflows:
     jobs:
       - lint
       - test
+      - test_ivy_jit
+      - test_ivy_aot
       - build-packages-dist
       - integration_test:
           requires:
@@ -212,6 +252,8 @@ workflows:
           requires:
             # Only publish if tests and integration tests pass
             - test
+            - test_ivy_jit
+            - test_ivy_aot
             - integration_test
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.

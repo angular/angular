@@ -32,7 +32,10 @@ ng_package(
         "//packages/platform-server/testing:package.json",
     ],
     entry_point = "packages/platform-server/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
     deps = [
         ":platform-server",
         "//packages/platform-server/testing",

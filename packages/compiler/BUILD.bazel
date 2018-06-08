@@ -21,7 +21,10 @@ ng_package(
     ],
     entry_point = "packages/compiler/compiler.js",
     include_devmode_srcs = True,
-    tags = ["release-with-framework"],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
     deps = [
         ":compiler",
         "//packages/compiler/testing",
