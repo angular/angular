@@ -168,14 +168,15 @@ Download the [Tour of Heroes](generated/zips/toh-pt6/toh-pt6.zip) project and in
 To get started, install these packages.
 
  * `@angular/platform-server` - Universal server-side components.
- * `@nguniversal/module-map-ngfactory-loader` - For handling lazy-loading in the context of a server-render.
- * `@nguniversal/express-engine` - An express engine for Universal applications.
+ * `@nguniversal/module-map-ngfactory-loader` - For handling lazy-loading in the context of a server-render
+ * `@nguniversal/express-engine` - An express engine for Universal applications
  * `ts-loader` - To transpile the server application
+ * `webpack-cli` - To run Webpack directly for bundling the server app
 
 Install them with the following commands:
 
 <code-example format="." language="bash">
-npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader ts-loader @nguniversal/express-engine
+npm install --save @angular/platform-server @nguniversal/module-map-ngfactory-loader @nguniversal/express-engine ts-loader webpack-cli
 </code-example>
 
 {@a transition}
@@ -214,14 +215,15 @@ You can get runtime information about the current platform and the `appId` by in
 
 A Universal app is distributed in two parts: the server-side code that serves up the initial application, and the client-side code that's loaded in dynamically. 
 
-The Angular CLI outputs the client-side code in the `dist` directory by default, so you modify the `outputPath` for the __build__ target in the `angular.json` to keep the client-side build outputs separate from the server-side code. The client-side build output will be served by the Express server.
+The Angular CLI outputs the client-side code in the `dist` directory by default, in a separate folder named by the project name.
+So you modify the `outputPath` for the __build__ target in the `angular.json` to keep the client-side build outputs separate from the server-side code. The client-side build output will be served by the Express server.
 
 ```
 ...
 "build": {
   "builder": "@angular-devkit/build-angular:browser",
   "options": {
-    "outputPath": "dist/browser",
+    "outputPath": "dist/angular.io-example/browser",
     ...
   } 
 }
