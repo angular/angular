@@ -16,41 +16,25 @@ import {LQueries} from './query';
 import {Renderer3} from './renderer';
 
 /** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
-const _HEADER_OFFSET = 14;
-export const HEADER_OFFSET = _HEADER_OFFSET;
+export const HEADER_OFFSET = 14;
 
 // Below are constants for LViewData indices to help us look up LViewData members
 // without having to remember the specific indices.
 // Uglify will inline these when minifying so there shouldn't be a cost.
-const _TVIEW = 0;
-const _PARENT = 1;
-const _NEXT = 2;
-const _QUERIES = 3;
-const _FLAGS = 4;
-const _HOST_NODE = 5;
-const _BINDING_INDEX = 6;
-const _DIRECTIVES = 7;
-const _CLEANUP = 8;
-const _CONTEXT = 9;
-const _INJECTOR = 10;
-const _RENDERER = 11;
-const _SANITIZER = 12;
-const _TAIL = 13;
-
-export const TVIEW = _TVIEW;
-export const PARENT = _PARENT;
-export const NEXT = _NEXT;
-export const QUERIES = _QUERIES;
-export const FLAGS = _FLAGS;
-export const HOST_NODE = _HOST_NODE;
-export const BINDING_INDEX = _BINDING_INDEX;
-export const DIRECTIVES = _DIRECTIVES;
-export const CLEANUP = _CLEANUP;
-export const CONTEXT = _CONTEXT;
-export const INJECTOR = _INJECTOR;
-export const RENDERER = _RENDERER;
-export const SANITIZER = _SANITIZER;
-export const TAIL = _TAIL;
+export const TVIEW = 0;
+export const PARENT = 1;
+export const NEXT = 2;
+export const QUERIES = 3;
+export const FLAGS = 4;
+export const HOST_NODE = 5;
+export const BINDING_INDEX = 6;
+export const DIRECTIVES = 7;
+export const CLEANUP = 8;
+export const CONTEXT = 9;
+export const INJECTOR = 10;
+export const RENDERER = 11;
+export const SANITIZER = 12;
+export const TAIL = 13;
 
 /**
  * `LViewData` stores all of the information needed to process the instructions as

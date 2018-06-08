@@ -15,15 +15,11 @@ import {LViewData, NEXT, PARENT, QUERIES} from './view';
  * without having to remember the specific indices.
  * Uglify will inline these when minifying so there shouldn't be a cost.
  */
-const _ACTIVE_INDEX = 0;
+export const ACTIVE_INDEX = 0;
 // PARENT, NEXT, and QUERIES are indices 1, 2, and 3.
 // As we already have these constants in LViewData, we don't need to re-create them.
-const _VIEWS = 4;
-const _RENDER_PARENT = 5;
-
-export const ACTIVE_INDEX = _ACTIVE_INDEX;
-export const VIEWS = _VIEWS;
-export const RENDER_PARENT = _RENDER_PARENT;
+export const VIEWS = 4;
+export const RENDER_PARENT = 5;
 
 /**
  * The state associated with an LContainerNode.
