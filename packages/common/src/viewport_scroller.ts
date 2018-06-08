@@ -149,3 +149,35 @@ export class BrowserViewportScroller implements ViewportScroller {
     }
   }
 }
+
+
+/**
+ * @whatItDoes Provides an empty implementation of the viewport scroller. This will
+ * live in @angular/common as it will be used by both platform-server and platform-webworker.
+ */
+export class NullViewportScroller implements ViewportScroller {
+  /**
+   * @whatItDoes empty implementation
+   */
+  setOffset(offset: [number, number]|(() => [number, number])): void {}
+
+  /**
+   * @whatItDoes empty implementation
+   */
+  getScrollPosition(): [number, number] { return [0, 0]; }
+
+  /**
+   * @whatItDoes empty implementation
+   */
+  scrollToPosition(position: [number, number]): void {}
+
+  /**
+   * @whatItDoes empty implementation
+   */
+  scrollToAnchor(anchor: string): void {}
+
+  /**
+   * @whatItDoes empty implementation
+   */
+  setHistoryScrollRestoration(scrollRestoration: 'auto'|'manual'): void {}
+}
