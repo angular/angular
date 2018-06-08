@@ -8,7 +8,7 @@
 
 import './ng_dev_mode';
 
-import {assertDefined} from './assert';
+import {assertDefined, assertNotEqual} from './assert';
 import {AttributeMarker, TAttributes, TNode, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 
@@ -40,7 +40,7 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
 
   let mode: SelectorFlags = SelectorFlags.ELEMENT;
   const nodeAttrs = tNode.attrs !;
-  const selectOnlyMarkerIdx = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.SELECT_ONLY) : -1;
+  const selectOnlyMarkerIdx = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.SelectOnly) : -1;
 
   // When processing ":not" selectors, we skip to the next ":not" if the
   // current one doesn't match
@@ -81,9 +81,16 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
 
       const selectorAttrValue = mode & SelectorFlags.CLASS ? current : selector[++i];
       if (selectorAttrValue !== '') {
-        const nodeAttrValue = selectOnlyMarkerIdx > -1 && attrIndexInNode > selectOnlyMarkerIdx ?
-            '' :
-            nodeAttrs[attrIndexInNode + 1];
+        let nodeAttrValue: string;
+        const maybeAttrName = nodeAttrs[attrIndexInNode];
+        if (selectOnlyMarkerIdx > -1 && attrIndexInNode > selectOnlyMarkerIdx) {
+          nodeAttrValue = '';
+        } else {
+          ngDevMode && assertNotEqual(
+                           maybeAttrName, AttributeMarker.NamespaceURI,
+                           'We do not match directives on namespaced attributes');
+          nodeAttrValue = nodeAttrs[attrIndexInNode + 1] as string;
+        }
         if (mode & SelectorFlags.CLASS &&
                 !isCssClassMatching(nodeAttrValue as string, selectorAttrValue as string) ||
             mode & SelectorFlags.ATTRIBUTE && selectorAttrValue !== nodeAttrValue) {
@@ -101,16 +108,34 @@ function isPositive(mode: SelectorFlags): boolean {
   return (mode & SelectorFlags.NOT) === 0;
 }
 
+/**
+ * Examines an attributes definition array from a node to find the index of the
+ * attribute with the specified name.
+ *
+ * NOTE: Will not find namespaced attributes.
+ *
+ * @param name the name of the attribute to find
+ * @param attrs the attribute array to examine
+ */
 function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
-  let step = 2;
   if (attrs === null) return -1;
-  for (let i = 0; i < attrs.length; i += step) {
-    const attrName = attrs[i];
-    if (attrName === name) return i;
-    if (attrName === AttributeMarker.SELECT_ONLY) {
-      step = 1;
+  let selectOnlyMode = false;
+  let i = 0;
+  while (i < attrs.length) {
+    const maybeAttrName = attrs[i];
+    if (maybeAttrName === name) {
+      return i;
+    } else if (maybeAttrName === AttributeMarker.NamespaceURI) {
+      // NOTE(benlesh): will not find namespaced attributes. This is by design.
+      i += 4;
+    } else {
+      if (maybeAttrName === AttributeMarker.SelectOnly) {
+        selectOnlyMode = true;
+      }
+      i += selectOnlyMode ? 1 : 2;
     }
   }
+
   return -1;
 }
 

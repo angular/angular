@@ -147,6 +147,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `<div style="literal">`                     |  ✅     |  ✅      |  ✅      |
 | `<div [style]="exp">`                       |  ✅     |  ✅      |  ✅      |
 | `<div [style.foo]="exp">`                   |  ✅     |  ✅      |  ✅      |
+| `<div xmlns:foo="url" foo:bar="baz">` <br/>Compiler still needs to be updated to process templates with namespaced attributes. ([see #24386](https://github.com/angular/angular/pull/24386))       |  ✅     |  ✅      |  ❌      |
 | `{{ ['literal', exp ] }}`                   |  ✅     |  ✅      |  ✅      |
 | `{{ { a: 'literal', b: exp } }}`            |  ✅     |  ✅      |  ✅      |
 | `{{ exp \| pipe: arg }}`                    |  ✅     |  ✅      |  ✅      |

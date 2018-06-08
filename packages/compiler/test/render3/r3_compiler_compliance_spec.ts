@@ -163,6 +163,53 @@ describe('compiler compliance', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
+    // TODO(https://github.com/angular/angular/issues/24426): We need to support the parser actually
+    // building the proper attributes based off of xmlns atttribuates.
+    xit('should support namspaced attributes', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: \`<div xmlns:foo="http://someuri/foo" class="my-app" foo:bar="baz" title="Hello" foo:qux="quacks">Hello <b>World</b>!</div>\`
+                })
+                export class MyComponent {}
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      // The factory should look like this:
+      const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
+
+      // The template should look like this (where IDENT is a wild card for an identifier):
+      const template = `
+          const $c1$ = ['class', 'my-app', 0, 'http://someuri/foo', 'foo:bar', 'baz', 'title', 'Hello', 0, 'http://someuri/foo', 'foo:qux', 'quacks'];
+          …
+          template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+            if (rf & 1) {
+              $r3$.ɵE(0, 'div', $e0_attrs$);
+              $r3$.ɵT(1, 'Hello ');
+              $r3$.ɵE(2, 'b');
+              $r3$.ɵT(3, 'World');
+              $r3$.ɵe();
+              $r3$.ɵT(4, '!');
+              $r3$.ɵe();
+            }
+          }
+        `;
+
+
+      const result = compile(files, angularFiles);
+
+      expectEmit(result.source, factory, 'Incorrect factory');
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
     it('should bind to element properties', () => {
       const files = {
         app: {

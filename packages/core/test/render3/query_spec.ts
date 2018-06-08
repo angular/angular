@@ -859,7 +859,7 @@ describe('query', () => {
                  }
                }, null, []);
 
-               container(5, undefined, null, [AttributeMarker.SELECT_ONLY, 'vc']);
+               container(5, undefined, null, [AttributeMarker.SelectOnly, 'vc']);
              }
 
              if (rf & RenderFlags.Update) {
@@ -938,8 +938,8 @@ describe('query', () => {
                  }
                }, null, []);
 
-               container(2, undefined, null, [AttributeMarker.SELECT_ONLY, 'vc']);
-               container(3, undefined, null, [AttributeMarker.SELECT_ONLY, 'vc']);
+               container(2, undefined, null, [AttributeMarker.SelectOnly, 'vc']);
+               container(3, undefined, null, [AttributeMarker.SelectOnly, 'vc']);
              }
 
              if (rf & RenderFlags.Update) {
