@@ -623,6 +623,23 @@ const DEFAULT_NAMESPACE_ID = 'id';
         const TRIGGER = 'fooTrigger';
         expect(() => { engine.trigger(ID, element, TRIGGER, 'something'); }).not.toThrow();
       });
+
+      it('should still apply state-styling to an element even if it is not yet inserted into the DOM',
+         () => {
+           const engine = makeEngine();
+           const orphanElement = document.createElement('div');
+           orphanElement.classList.add('orphan');
+
+           registerTrigger(
+               orphanElement, engine, trigger('trig', [
+                 state('go', style({opacity: 0.5})), transition('* => go', animate(1000))
+               ]));
+
+           setProperty(orphanElement, engine, 'trig', 'go');
+           engine.flush();
+           expect(engine.players.length).toEqual(0);
+           expect(orphanElement.style.opacity).toEqual('0.5');
+         });
     });
   });
 })();
