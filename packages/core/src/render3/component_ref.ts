@@ -18,7 +18,7 @@ import {Type} from '../type';
 
 import {assertComponentType, assertDefined} from './assert';
 import {createRootContext} from './component';
-import {baseDirectiveCreate, createTView, createViewData, enterView, hostElement, initChangeDetectorIfExisting, locateHostElement} from './instructions';
+import {baseDirectiveCreate, createTView, createLViewData, enterView, hostElement, initChangeDetectorIfExisting, locateHostElement} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
@@ -94,7 +94,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rootContext: RootContext = ngModule !.injector.get(ROOT_CONTEXT);
 
     // Create the root view. Uses empty TView and ContentTemplate.
-    const rootView: LViewData = createViewData(
+    const rootView: LViewData = createLViewData(
         rendererFactory.createRenderer(hostNode, this.componentDef.rendererType),
         createTView(-1, null, null, null), null,
         this.componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);

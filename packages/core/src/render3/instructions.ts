@@ -50,8 +50,12 @@ export type SanitizerFn = (value: any) => string;
  * Directive and element indices for top-level directive.
  *
  * Saved here to avoid re-instantiating an array on every change detection run.
+ *
+ * Note: Element is not actually stored at index 0 because of the LViewData
+ * header, but the host bindings function expects an index that is NOT adjusted
+ * because it will ultimately be fed to instructions like elementProperty.
  */
-export const _ROOT_DIRECTIVE_INDICES = [0, 0];
+const _ROOT_DIRECTIVE_INDICES = [0, 0];
 
 /**
  * Token set in currentMatches while dependencies are being resolved.
@@ -267,7 +271,7 @@ export function executeInitAndContentHooks(): void {
   }
 }
 
-export function createViewData<T>(
+export function createLViewData<T>(
     renderer: Renderer3, tView: TView, context: T | null, flags: LViewFlags,
     sanitizer?: Sanitizer | null): LViewData {
   return [
@@ -435,7 +439,7 @@ export function renderTemplate<T>(
     const tView = getOrCreateTView(template, directives || null, pipes || null);
     host = createLNode(
         -1, TNodeType.Element, hostNode, null, null,
-        createViewData(
+        createLViewData(
             providedRendererFactory.createRenderer(null, null), tView, {}, LViewFlags.CheckAlways,
             sanitizer));
   }
@@ -468,7 +472,7 @@ export function renderEmbeddedTemplate<T>(
 
     if (viewNode == null) {
       const lView =
-          createViewData(renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer());
+          createLViewData(renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer());
 
       if (queries) {
         lView[QUERIES] = queries.createView();
@@ -857,7 +861,7 @@ export function hostElement(
   resetApplicationState();
   const node = createLNode(
       0, TNodeType.Element, rNode, null, null,
-      createViewData(
+      createLViewData(
           renderer, getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs), null,
           def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer));
 
@@ -1343,7 +1347,7 @@ function addComponentLogic<T>(directiveIndex: number, instance: T, def: Componen
   // accessed through their containers because they may be removed / re-added later.
   const componentView = addToViewTree(
       viewData, previousOrParentNode.tNode.index as number,
-      createViewData(
+      createLViewData(
           rendererFactory.createRenderer(previousOrParentNode.native as RElement, def.rendererType),
           tView, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
           getCurrentSanitizer()));
@@ -1655,7 +1659,7 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
     enterView(viewNode.data, viewNode);
   } else {
     // When we create a new LView, we always reset the state of the instructions.
-    const newView = createViewData(
+    const newView = createLViewData(
         renderer, getOrCreateEmbeddedTView(viewBlockId, container), null, LViewFlags.CheckAlways,
         getCurrentSanitizer());
 
@@ -1988,15 +1992,15 @@ export function wrapListenerWithDirtyAndDefault(
 
 /** Marks current view and all ancestors dirty */
 export function markViewDirty(view: LViewData): void {
-  let currentView: LViewData|null = view;
+  let currentView: LViewData = view;
 
-  while (currentView ![PARENT] != null) {
-    currentView ![FLAGS] |= LViewFlags.Dirty;
-    currentView = currentView ![PARENT];
+  while (currentView[PARENT] != null) {
+    currentView[FLAGS] |= LViewFlags.Dirty;
+    currentView = currentView[PARENT];
   }
-  currentView ![FLAGS] |= LViewFlags.Dirty;
-  ngDevMode && assertDefined(currentView ![CONTEXT], 'rootContext');
-  scheduleTick(currentView ![CONTEXT] as RootContext);
+  currentView[FLAGS] |= LViewFlags.Dirty;
+  ngDevMode && assertDefined(currentView[CONTEXT], 'rootContext');
+  scheduleTick(currentView[CONTEXT] as RootContext);
 }
 
 

@@ -30,20 +30,20 @@ const _HEADER_OFFSET = 14;
  * don't have to edit the data array based on which views are present.
  */
 export type LViewData = [
-  any | LContainer | null,   // next            TODO: find a way to replace any with LViewData
-  any | LContainer | null,   // parent
-  LQueries | null,           // queries
-  TView,                     // tView
-  LViewFlags,                // flags
-  LViewNode | LElementNode,  // hostNode
-  number,                    // bindingIndex
-  any[] | null,              // directives
-  any[] | null,              // cleanupInstances
-  {} | RootContext | null,   // context
-  Injector | null,           // injector
-  Renderer3,                 // renderer
-  Sanitizer | null,          // sanitizer
-  any | LContainer | null    // tail
+  /** LViewData */ any | LContainer | null,   // next
+  /** LViewData */ any | LContainer | null,   // parent
+  LQueries | null,                            // queries
+  TView,                                      // tView
+  LViewFlags,                                 // flags
+  LViewNode | LElementNode,                   // hostNode
+  number,                                     // bindingIndex
+  any[] | null,                               // directives
+  any[] | null,                               // cleanupInstances
+  {} | RootContext | null,                    // context
+  Injector | null,                            // injector
+  Renderer3,                                  // renderer
+  Sanitizer | null,                           // sanitizer
+  /** LViewData */ any | LContainer | null    // tail
 ];
 
 // Below are constants for LViewData indices to help us look up LViewData members

@@ -18,12 +18,12 @@ import {LQueries} from './query';
  * of type.
  */
 export type LContainer = [
-  any | null,          // next          TODO: replace any with LViewData|LContainer
-  any | null,          // parent
-  LQueries | null,     // queries
-  number | null,       // active index
-  LViewNode[],         // views
-  LElementNode | null  // render parent
+  /** LViewData | LContainer */  any | null,        // next
+  /** LViewData | LContainer */  any | null,        // parent
+  LQueries | null,                                  // queries
+  number | null,                                    // active index
+  LViewNode[],                                      // views
+  LElementNode | null                               // render parent
 ];
 
 /**
