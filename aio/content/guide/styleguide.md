@@ -3109,9 +3109,9 @@ module are referenced across the entire application.
 
 
 
-**Avoid** providing services in shared modules. Services are usually
+**Consider** _not_ providing services in shared modules. Services are usually
 singletons that are provided once for the entire application or
-in a particular feature module.
+in a particular feature module. There are exceptions, however. For example, in the sample code that follows, notice that the `SharedModule` provides `FilterTextService`. This is acceptable here because the service is stateless;that is, the consumers of the service aren't impacted by new instances.
 
 
 </div>
