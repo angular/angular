@@ -860,14 +860,25 @@ function setUpAttributes(native: RElement, attrs: TAttributes): void {
   const isProc = isProceduralRenderer(renderer);
   for (let i = 0; i < attrs.length; i += 2) {
     const attrName = attrs[i];
-    if (attrName === AttributeMarker.SELECT_ONLY) break;
+    if (attrName === AttributeMarker.SelectOnly) break;
     if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
-      const attrVal = attrs[i + 1];
       ngDevMode && ngDevMode.rendererSetAttribute++;
-      isProc ?
-          (renderer as ProceduralRenderer3)
-              .setAttribute(native, attrName as string, attrVal as string) :
-          native.setAttribute(attrName as string, attrVal as string);
+      if (attrName === AttributeMarker.NamespaceURI) {
+        const namespaceURI = attrs[i + 1] as string;
+        const attrName = attrs[i + 2] as string;
+        const attrVal = attrs[i + 3] as string;
+        i += 2;
+        isProc ?
+            (renderer as ProceduralRenderer3)
+                .setAttribute(native, attrName, attrVal, namespaceURI) :
+            native.setAttributeNS(namespaceURI, attrName, attrVal);
+      } else {
+        const attrVal = attrs[i + 1];
+        isProc ?
+            (renderer as ProceduralRenderer3)
+                .setAttribute(native, attrName as string, attrVal as string) :
+            native.setAttribute(attrName as string, attrVal as string);
+      }
     }
   }
 }
@@ -1510,11 +1521,12 @@ function generateInitialInputs(
 
   const attrs = tNode.attrs !;
   for (let i = 0; i < attrs.length; i += 2) {
-    const attrName = attrs[i];
+    const first = attrs[i];
+    const attrName = first === AttributeMarker.NamespaceURI ? attrs[i += 2] : first;
     const minifiedInputName = inputs[attrName];
     const attrValue = attrs[i + 1];
 
-    if (attrName === AttributeMarker.SELECT_ONLY) break;
+    if (attrName === AttributeMarker.SelectOnly) break;
     if (minifiedInputName !== undefined) {
       const inputsToStore: InitialInputs =
           initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);
