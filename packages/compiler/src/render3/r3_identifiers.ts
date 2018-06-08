@@ -23,7 +23,9 @@ export class Identifiers {
 
   static namespaceSVG: o.ExternalReference = {name: 'ɵNS', moduleName: CORE};
 
-  static createElement: o.ExternalReference = {name: 'ɵE', moduleName: CORE};
+  static element: o.ExternalReference = {name: 'ɵEe', moduleName: CORE};
+
+  static elementStart: o.ExternalReference = {name: 'ɵE', moduleName: CORE};
 
   static elementEnd: o.ExternalReference = {name: 'ɵe', moduleName: CORE};
 

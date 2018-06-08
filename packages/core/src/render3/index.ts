@@ -44,6 +44,7 @@ export {
   containerRefreshStart as cR,
   containerRefreshEnd as cr,
 
+  element as Ee,
   elementAttribute as a,
   elementClass as k,
   elementClassNamed as kn,
