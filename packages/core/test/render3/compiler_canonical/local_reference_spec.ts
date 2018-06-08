@@ -28,8 +28,7 @@ describe('local references', () => {
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           let l1_user: any;
           if (rf & 1) {
-            $r3$.ɵE(0, 'input', null, ['user', '']);
-            $r3$.ɵe();
+            $r3$.ɵEe(0, 'input', null, ['user', '']);
             $r3$.ɵT(2);
           }
           if (rf & 2) {

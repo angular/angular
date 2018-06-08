@@ -91,8 +91,7 @@ describe('elements', () => {
           let $tmp$: any;
           let $tmp_2$: any;
           if (rf & 1) {
-            $r3$.ɵE(0, 'div', $e0_attrs$, $e0_locals$);
-            $r3$.ɵe();
+            $r3$.ɵEe(0, 'div', $e0_attrs$, $e0_locals$);
             $r3$.ɵT(3);
           }
           if (rf & 2) {
@@ -165,8 +164,7 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵe();
+              $r3$.ɵEe(0, 'div');
             }
             if (rf & 2) {
               $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someProperty));
@@ -197,8 +195,7 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵe();
+              $r3$.ɵEe(0, 'div');
             }
             if (rf & 2) {
               $r3$.ɵa(0, 'title', $r3$.ɵb(ctx.someAttribute));
@@ -229,8 +226,7 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵe();
+              $r3$.ɵEe(0, 'div');
             }
             if (rf & 2) {
               $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someFlag));
@@ -265,8 +261,7 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵe();
+              $r3$.ɵEe(0, 'div');
             }
             if (rf & 2) {
               $r3$.ɵsn(0, 'color', $r3$.ɵb(ctx.someColor));
@@ -315,8 +310,7 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div', $e0_attrs$);
-              $r3$.ɵe();
+              $r3$.ɵEe(0, 'div', $e0_attrs$);
             }
             if (rf & 2) {
               $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someString + 1));
@@ -351,8 +345,7 @@ describe('elements', () => {
           factory: function StyleComponent_Factory() { return new StyleComponent(); },
           template: function StyleComponent_Template(rf: $RenderFlags$, ctx: $StyleComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵe();
+              $r3$.ɵEe(0, 'div');
             }
             if (rf & 2) {
               $r3$.ɵk(0, $r3$.ɵb(ctx.classExp));
