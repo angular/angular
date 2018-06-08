@@ -110,7 +110,7 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string): any {
     if (namespace) {
-      return document.createElementNS(NAMESPACE_URIS[namespace], name);
+      return document.createElementNS(NAMESPACE_URIS[namespace] || namespace, name);
     }
 
     return document.createElement(name);
@@ -150,13 +150,8 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   setAttribute(el: any, name: string, value: string, namespace?: string): void {
     if (namespace) {
-      name = `${namespace}:${name}`;
-      const namespaceUri = NAMESPACE_URIS[namespace];
-      if (namespaceUri) {
-        el.setAttributeNS(namespaceUri, name, value);
-      } else {
-        el.setAttribute(name, value);
-      }
+      const namespaceUri = NAMESPACE_URIS[namespace] || namespace;
+      el.setAttributeNS(namespaceUri, name, value);
     } else {
       el.setAttribute(name, value);
     }
@@ -164,12 +159,8 @@ class DefaultDomRenderer2 implements Renderer2 {
 
   removeAttribute(el: any, name: string, namespace?: string): void {
     if (namespace) {
-      const namespaceUri = NAMESPACE_URIS[namespace];
-      if (namespaceUri) {
-        el.removeAttributeNS(namespaceUri, name);
-      } else {
-        el.removeAttribute(`${namespace}:${name}`);
-      }
+      const namespaceUri = NAMESPACE_URIS[namespace] || namespace;
+      el.removeAttributeNS(namespaceUri, name);
     } else {
       el.removeAttribute(name);
     }

@@ -14,17 +14,17 @@ import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotE
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {LContainer} from './interfaces/container';
+import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
+import {ObjectOrientedRenderer3, ProceduralRenderer3, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {CurrentMatchesList, LView, LViewFlags, RootContext, TData, TView} from './interfaces/view';
 
 import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
 import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode, getLViewChild} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDef, ComponentTemplate, DirectiveDef, DirectiveDefList, DirectiveDefListOrFactory, PipeDefList, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
-import {RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {ViewRef} from './view_ref';
 
@@ -495,6 +495,7 @@ export function renderEmbeddedTemplate<T>(
       rf = RenderFlags.Create;
     }
     oldView = enterView(viewNode.data, viewNode);
+    namespaceHTML();
     tView.template !(rf, context);
     if (rf & RenderFlags.Update) {
       refreshView();
@@ -520,6 +521,7 @@ export function renderComponentOrTemplate<T>(
       rendererFactory.begin();
     }
     if (template) {
+      namespaceHTML();
       template(getRenderFlags(hostView), componentOrContext !);
       refreshView();
     } else {
@@ -553,6 +555,35 @@ function getRenderFlags(view: LView): RenderFlags {
 }
 
 //////////////////////////
+//// Namespace
+//////////////////////////
+let _currentNamespace: string|null = null;
+
+/**
+ * Sets the current namespace URI to null, meaning createElement (not createElementNS)
+ * will be used to create elements in {@link element} and {@link elementStart}
+ */
+export function namespaceHTML() {
+  _currentNamespace = null;
+}
+
+/**
+ * Sets the current namespace URI to http://www.w3.org/2000/svg, which will be
+ * used in conjunction with createElementNS in {@link element} and {@link elementStart}
+ */
+export function namespaceSVG() {
+  _currentNamespace = 'http://www.w3.org/2000/svg';
+}
+/**
+ * Sets the current namespace URI to http://www.w3.org/1998/Math/MathML, which will be
+ * used in conjunction with createElementNS in {@link element} and {@link elementStart}
+ */
+export function namespaceMathML() {
+  _currentNamespace = 'http://www.w3.org/1998/Math/MathML';
+}
+
+
+//////////////////////////
 //// Element
 //////////////////////////
 
@@ -575,7 +606,19 @@ export function elementStart(
       assertEqual(currentView.bindingIndex, -1, 'elements should be created before any bindings');
 
   ngDevMode && ngDevMode.rendererCreateElement++;
-  const native: RElement = renderer.createElement(name);
+
+  let native: RElement;
+
+  if (isProceduralRenderer(renderer)) {
+    native = renderer.createElement(name, _currentNamespace);
+  } else {
+    if (_currentNamespace === null) {
+      native = renderer.createElement(name);
+    } else {
+      native = renderer.createElementNS(_currentNamespace, name);
+    }
+  }
+
   ngDevMode && assertDataInRange(index - 1);
 
   const node: LElementNode =
@@ -815,15 +858,27 @@ export function createTView(
 function setUpAttributes(native: RElement, attrs: TAttributes): void {
   const isProc = isProceduralRenderer(renderer);
   for (let i = 0; i < attrs.length; i += 2) {
-    const attrName = attrs[i];
-    if (attrName === AttributeMarker.SELECT_ONLY) break;
-    if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
-      const attrVal = attrs[i + 1];
-      ngDevMode && ngDevMode.rendererSetAttribute++;
-      isProc ?
-          (renderer as ProceduralRenderer3)
-              .setAttribute(native, attrName as string, attrVal as string) :
-          native.setAttribute(attrName as string, attrVal as string);
+    let attrName = attrs[i];
+    if (attrName === AttributeMarker.NamespaceUri) {
+      const attrNS = attrs[i + 1] as string;
+      attrName = attrs[i + 2] as string;
+      const attrVal = attrs[i + 3] as string;
+      i += 2;
+      if (isProc) {
+        (renderer as ProceduralRenderer3).setAttribute(native, attrName, attrVal, attrNS);
+      } else {
+        native.setAttributeNS(attrNS, attrName, attrVal);
+      }
+    } else {
+      if (attrName === AttributeMarker.SelectOnly) break;
+      if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
+        const attrVal = attrs[i + 1];
+        ngDevMode && ngDevMode.rendererSetAttribute++;
+        isProc ?
+            (renderer as ProceduralRenderer3)
+                .setAttribute(native, attrName as string, attrVal as string) :
+            native.setAttribute(attrName as string, attrVal as string);
+      }
     }
   }
 }
@@ -990,6 +1045,15 @@ export function elementEnd() {
   const queries = previousOrParentNode.queries;
   queries && queries.addNode(previousOrParentNode);
   queueLifecycleHooks(previousOrParentNode.tNode.flags, currentView);
+}
+
+/** Marks the beginning and end of an element in one call. */
+export function element(
+    index: number, name: string, attrs?: TAttributes | null | undefined,
+    localRefs?: string[] | null | undefined): RElement {
+  const relement = elementStart(index, name, attrs, localRefs);
+  elementEnd();
+  return relement;
 }
 
 /**
@@ -1466,11 +1530,12 @@ function generateInitialInputs(
 
   const attrs = tNode.attrs !;
   for (let i = 0; i < attrs.length; i += 2) {
-    const attrName = attrs[i];
+    const first = attrs[i];
+    const attrName = first === AttributeMarker.NamespaceUri ? attrs[i += 2] : first;
     const minifiedInputName = inputs[attrName];
     const attrValue = attrs[i + 1];
 
-    if (attrName === AttributeMarker.SELECT_ONLY) break;
+    if (attrName === AttributeMarker.SelectOnly) break;
     if (minifiedInputName !== undefined) {
       const inputsToStore: InitialInputs =
           initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);
@@ -1881,7 +1946,7 @@ function appendToProjectionNode(
  *        - 1 based index of the selector from the {@link projectionDef}
  */
 export function projection(
-    nodeIndex: number, localIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
+    nodeIndex: number, localIndex: number, selectorIndex: number = 0, attrs?: TAttributes): void {
   const node = createLNode(
       nodeIndex, TNodeType.Projection, null, null, attrs || null, {head: null, tail: null});
 
@@ -2130,6 +2195,7 @@ export function detectChangesInternal<T>(hostView: LView, hostNode: LElementNode
   const template = hostView.tView.template !;
 
   try {
+    namespaceHTML();
     template(getRenderFlags(hostView), component);
     refreshView();
   } finally {

@@ -605,7 +605,7 @@ describe('content projection', () => {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'child');
           {
-            elementStart(1, 'span', [AttributeMarker.SELECT_ONLY, 'title']);
+            elementStart(1, 'span', [AttributeMarker.SelectOnly, 'title']);
             { text(2, 'Has title'); }
             elementEnd();
           }

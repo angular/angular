@@ -17,9 +17,11 @@ export class Identifiers {
   static PATCH_DEPS = 'patchedDeps';
 
   /* Instructions */
-  static createElement: o.ExternalReference = {name: 'ɵE', moduleName: CORE};
+  static elementStart: o.ExternalReference = {name: 'ɵE', moduleName: CORE};
 
   static elementEnd: o.ExternalReference = {name: 'ɵe', moduleName: CORE};
+
+  static element: o.ExternalReference = {name: 'ɵEe', moduleName: CORE};
 
   static elementProperty: o.ExternalReference = {name: 'ɵp', moduleName: CORE};
 
@@ -36,6 +38,12 @@ export class Identifiers {
   static textBinding: o.ExternalReference = {name: 'ɵt', moduleName: CORE};
 
   static bind: o.ExternalReference = {name: 'ɵb', moduleName: CORE};
+
+
+  static namespace: o.ExternalReference = {name: 'ɵN', moduleName: CORE};
+  static namespaceHTML: o.ExternalReference = {name: 'ɵNH', moduleName: CORE};
+  static namespaceMathML: o.ExternalReference = {name: 'ɵNM', moduleName: CORE};
+  static namespaceSVG: o.ExternalReference = {name: 'ɵNS', moduleName: CORE};
 
   static interpolation1: o.ExternalReference = {name: 'ɵi1', moduleName: CORE};
   static interpolation2: o.ExternalReference = {name: 'ɵi2', moduleName: CORE};

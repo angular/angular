@@ -150,7 +150,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `{{ ['literal', exp ] }}`                   |  ✅     |  ✅      |  ✅      |
 | `{{ { a: 'literal', b: exp } }}`            |  ✅     |  ✅      |  ✅      |
 | `{{ exp \| pipe: arg }}`                    |  ✅     |  ✅      |  ✅      |
-| `<svg:g svg:p>`                             |  ❌     |  ❌      |  ❌      |
+| `<svg:g svg:p>`                             |  ✅     |  ✅      |  ✅      |
 | `<img src=[userData]>` sanitization         |  ❌     |  ❌      |  ❌      |
 | `<div (nocd.click)>`                        |  ❌     |  ❌      |  ❌      |
 | `<div (bubble.click)>`                      |  ❌     |  ❌      |  ❌      |

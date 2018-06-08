@@ -12,6 +12,7 @@ import {assertDefined} from './assert';
 import {AttributeMarker, TAttributes, TNode, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 
+
 const unusedValueToPlacateAjd = unused1 + unused2;
 
 function isCssClassMatching(nodeClassAttrVal: string, cssClassToMatch: string): boolean {
@@ -40,7 +41,7 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
 
   let mode: SelectorFlags = SelectorFlags.ELEMENT;
   const nodeAttrs = tNode.attrs !;
-  const selectOnlyMarkerIdx = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.SELECT_ONLY) : -1;
+  const selectOnlyMarkerIdx = nodeAttrs ? nodeAttrs.indexOf(AttributeMarker.SelectOnly) : -1;
 
   // When processing ":not" selectors, we skip to the next ":not" if the
   // current one doesn't match
@@ -106,8 +107,11 @@ function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
   if (attrs === null) return -1;
   for (let i = 0; i < attrs.length; i += step) {
     const attrName = attrs[i];
-    if (attrName === name) return i;
-    if (attrName === AttributeMarker.SELECT_ONLY) {
+    if (attrName === AttributeMarker.NamespaceUri) {
+      step = 2;
+    } else if (attrName === name) {
+      return i;
+    } else if (attrName === AttributeMarker.SelectOnly) {
       step = 1;
     }
   }

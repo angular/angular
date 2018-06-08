@@ -28,23 +28,14 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
 
     describe('setAttribute', () => {
       describe('with namespace', () => {
-        it('xmlns', () => shouldSetAttributeWithNs('xmlns'));
         it('xml', () => shouldSetAttributeWithNs('xml'));
         it('svg', () => shouldSetAttributeWithNs('svg'));
         it('xhtml', () => shouldSetAttributeWithNs('xhtml'));
         it('xlink', () => shouldSetAttributeWithNs('xlink'));
-
-        it('unknown', () => {
-          const div = document.createElement('div');
-          expect(div.hasAttribute('unknown:name')).toBe(false);
-
-          renderer.setAttribute(div, 'name', 'value', 'unknown');
-
-          expect(div.getAttribute('unknown:name')).toBe('value');
-        });
+        it('custom', () => shouldSetAttributeWithNs('custom'));
 
         function shouldSetAttributeWithNs(namespace: string): void {
-          const namespaceUri = NAMESPACE_URIS[namespace];
+          const namespaceUri = NAMESPACE_URIS[namespace] || namespace;
           const div = document.createElement('div');
           expect(div.hasAttributeNS(namespaceUri, 'name')).toBe(false);
 
@@ -57,26 +48,16 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
 
     describe('removeAttribute', () => {
       describe('with namespace', () => {
-        it('xmlns', () => shouldRemoveAttributeWithNs('xmlns'));
         it('xml', () => shouldRemoveAttributeWithNs('xml'));
         it('svg', () => shouldRemoveAttributeWithNs('svg'));
         it('xhtml', () => shouldRemoveAttributeWithNs('xhtml'));
         it('xlink', () => shouldRemoveAttributeWithNs('xlink'));
-
-        it('unknown', () => {
-          const div = document.createElement('div');
-          div.setAttribute('unknown:name', 'value');
-          expect(div.hasAttribute('unknown:name')).toBe(true);
-
-          renderer.removeAttribute(div, 'name', 'unknown');
-
-          expect(div.hasAttribute('unknown:name')).toBe(false);
-        });
+        it('custom', () => shouldRemoveAttributeWithNs('custom'));
 
         function shouldRemoveAttributeWithNs(namespace: string): void {
-          const namespaceUri = NAMESPACE_URIS[namespace];
+          const namespaceUri = NAMESPACE_URIS[namespace] || namespace;
           const div = document.createElement('div');
-          div.setAttributeNS(namespaceUri, `${namespace}:name`, 'value');
+          div.setAttributeNS(namespaceUri, 'name', 'value');
           expect(div.hasAttributeNS(namespaceUri, 'name')).toBe(true);
 
           renderer.removeAttribute(div, 'name', namespace);
