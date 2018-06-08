@@ -86,6 +86,12 @@ describe('css selector matching', () => {
         ])).toBeFalsy(`Selector '[other]' should NOT match <span title="">'`);
       });
 
+      it('should match namespaced attributes', () => {
+        expect(isMatching(
+            'span', [AttributeMarker.NamespaceURI, 'http://some/uri', 'title', 'name'],
+            ['', 'title', '']));
+      });
+
       it('should match selector with one attribute without value when element has several attributes',
          () => {
            expect(isMatching('span', ['id', 'my_id', 'title', 'test_title'], [

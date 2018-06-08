@@ -81,9 +81,15 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
 
       const selectorAttrValue = mode & SelectorFlags.CLASS ? current : selector[++i];
       if (selectorAttrValue !== '') {
-        const nodeAttrValue = selectOnlyMarkerIdx > -1 && attrIndexInNode > selectOnlyMarkerIdx ?
-            '' :
-            nodeAttrs[attrIndexInNode + 1];
+        let nodeAttrValue: string;
+        const maybeAttrName = nodeAttrs[attrIndexInNode];
+        if (selectOnlyMarkerIdx > -1 && attrIndexInNode > selectOnlyMarkerIdx) {
+          nodeAttrValue = ''
+        } else if (maybeAttrName === AttributeMarker.NamespaceURI) {
+          nodeAttrValue = nodeAttrs[attrIndexInNode + 2] as string;
+        } else {
+          nodeAttrValue = nodeAttrs[attrIndexInNode + 1] as string;
+        }
         if (mode & SelectorFlags.CLASS &&
                 !isCssClassMatching(nodeAttrValue as string, selectorAttrValue as string) ||
             mode & SelectorFlags.ATTRIBUTE && selectorAttrValue !== nodeAttrValue) {
@@ -101,19 +107,34 @@ function isPositive(mode: SelectorFlags): boolean {
   return (mode & SelectorFlags.NOT) === 0;
 }
 
+/**
+ * Examines an attributes definition array from a node to find the index of the
+ * attribute with the specified name.
+ *
+ * NOTE: Will not find namespaced attributes.
+ *
+ * @param name the name of the attribute to find
+ * @param attrs the attribute array to examine
+ */
 function findAttrIndexInNode(name: string, attrs: TAttributes | null): number {
-  let step = 2;
   if (attrs === null) return -1;
-  for (let i = 0; i < attrs.length; i += step) {
-    const attrName = attrs[i];
-    if (attrName === name) return i;
-    if (attrName === AttributeMarker.SelectOnly) {
-      step = 1;
-    }
-    if (attrName === AttributeMarker.NamespaceURI) {
-      step = 4;
+  let selectOnlyMode = false;
+  let i = 0;
+  while (i < attrs.length) {
+    const maybeAttrName = attrs[i];
+    if (maybeAttrName === name) {
+      return i;
+    } else if (maybeAttrName === AttributeMarker.NamespaceURI) {
+      // NOTE(benlesh): will not find namespaced attributes. This is by design.
+      i += 4;
+    } else {
+      if (maybeAttrName === AttributeMarker.SelectOnly) {
+        selectOnlyMode = true;
+      }
+      i += selectOnlyMode ? 1 : 2;
     }
   }
+
   return -1;
 }
 

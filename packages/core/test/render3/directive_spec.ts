@@ -127,7 +127,7 @@ describe('directive', () => {
          }
 
          /**
-          * <span [prop1]="true" [test]="false" [prop2]="true"></span>
+          * <span class="fade" [prop1]="true" [test]="false" [prop2]="true"></span>
           */
          function createTemplate() {
            // putting name (test) in the "usual" value position
