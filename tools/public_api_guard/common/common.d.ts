@@ -433,6 +433,15 @@ export declare class UpperCasePipe implements PipeTransform {
 
 export declare const VERSION: Version;
 
+export declare abstract class ViewportScroller {
+    abstract getScrollPosition(): [number, number];
+    abstract scrollToAnchor(anchor: string): void;
+    abstract scrollToPosition(position: [number, number]): void;
+    abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
+    abstract setOffset(offset: [number, number] | (() => [number, number])): void;
+    static ngInjectableDef: never;
+}
+
 /** @experimental */
 export declare enum WeekDay {
     Sunday = 0,
