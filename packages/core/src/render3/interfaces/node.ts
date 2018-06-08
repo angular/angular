@@ -163,15 +163,20 @@ export interface LProjectionNode extends LNode {
  * items are not regular attributes and the processing should be adapted accordingly.
  */
 export const enum AttributeMarker {
-  NS = 0,  // namespace. Has to be repeated.
+  /**
+   * Marker indicates that the following 3 values in the attributes array are:
+   * namespaceUri, attributeName, attributeValue
+   * in that order.
+   */
+  NamespaceURI = 0,
 
   /**
    * This marker indicates that the following attribute names were extracted from bindings (ex.:
    * [foo]="exp") and / or event handlers (ex. (bar)="doSth()").
    * Taking the above bindings and outputs as an example an attributes array could look as follows:
-   * ['class', 'fade in', AttributeMarker.SELECT_ONLY, 'foo', 'bar']
+   * ['class', 'fade in', AttributeMarker.SelectOnly, 'foo', 'bar']
    */
-  SELECT_ONLY = 1
+  SelectOnly = 1
 }
 
 /**

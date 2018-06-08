@@ -11,7 +11,7 @@ import {NgForOfContext} from '@angular/common';
 import {RenderFlags, directiveInject} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
 import {bind, container, element, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, text, textBinding} from '../../src/render3/instructions';
-import {LElementNode, LNode} from '../../src/render3/interfaces/node';
+import {AttributeMarker, LElementNode, LNode} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {TrustedString, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
@@ -79,12 +79,53 @@ describe('instructions', () => {
       const div = (t.hostNode.native as HTMLElement).querySelector('div') !;
       expect(div.id).toEqual('test');
       expect(div.title).toEqual('Hello');
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 1,
+        tNode: 2,  // 1 for div, 1 for host element
+        tView: 1,
+        rendererCreateElement: 1,
+      });
+    });
+
+    it('should allow setting namespaced attributes', () => {
+      const t = new TemplateFixture(() => {
+        elementStart(0, 'div', [
+          // id="test"
+          'id',
+          'test',
+          // test:foo="bar"
+          AttributeMarker.NamespaceURI,
+          'http://someuri.com/2018/test',
+          'test:foo',
+          'bar',
+          // title="Hello"
+          'title',
+          'Hello',
+        ]);
+        elementEnd();
+      });
+
+      const div = (t.hostNode.native as HTMLElement).querySelector('div') !;
+      const attrs: any = div.attributes;
+
+      expect(attrs['id'].name).toEqual('id');
+      expect(attrs['id'].namespaceURI).toEqual(null);
+      expect(attrs['id'].value).toEqual('test');
+
+      expect(attrs['test:foo'].name).toEqual('test:foo');
+      expect(attrs['test:foo'].namespaceURI).toEqual('http://someuri.com/2018/test');
+      expect(attrs['test:foo'].value).toEqual('bar');
+
+      expect(attrs['title'].name).toEqual('title');
+      expect(attrs['title'].namespaceURI).toEqual(null);
+      expect(attrs['title'].value).toEqual('Hello');
 
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
         tView: 1,
         rendererCreateElement: 1,
+        rendererSetAttribute: 3
       });
     });
   });

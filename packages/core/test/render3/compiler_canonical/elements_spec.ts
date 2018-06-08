@@ -10,8 +10,10 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
+import {AttributeMarker} from '../../../src/render3';
 import {ComponentDef} from '../../../src/render3/interfaces/definition';
 import {ComponentFixture, renderComponent, toHtml} from '../render_util';
+
 
 
 /// See: `normative.md`
@@ -148,6 +150,60 @@ describe('elements', () => {
 
     const listenerComp = renderComponent(ListenerComp);
     expect(toHtml(listenerComp)).toEqual('<button>Click</button>');
+  });
+
+  it('should support namespaced attributes', () => {
+    type $MyComponent$ = MyComponent;
+
+    // Important: keep arrays outside of function to not create new instances.
+    const $e0_attrs$ = [
+      // class="my-app"
+      'class',
+      'my-app',
+      // foo:bar="baz"
+      AttributeMarker.NamespaceURI,
+      'http://someuri/foo',
+      'foo:bar',
+      'baz',
+      // title="Hello"
+      'title',
+      'Hello',
+      // foo:qux="quacks"
+      AttributeMarker.NamespaceURI,
+      'http://someuri/foo',
+      'foo:qux',
+      'quacks',
+    ];
+
+    @Component({
+      selector: 'my-component',
+      template:
+          `<div xmlns:foo="http://someuri/foo" class="my-app" foo:bar="baz" title="Hello" foo:qux="quacks">Hello <b>World</b>!</div>`
+    })
+    class MyComponent {
+      // NORMATIVE
+      static ngComponentDef = $r3$.ɵdefineComponent({
+        type: MyComponent,
+        selectors: [['my-component']],
+        factory: () => new MyComponent(),
+        template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
+          if (rf & 1) {
+            $r3$.ɵE(0, 'div', $e0_attrs$);
+            $r3$.ɵT(1, 'Hello ');
+            $r3$.ɵE(2, 'b');
+            $r3$.ɵT(3, 'World');
+            $r3$.ɵe();
+            $r3$.ɵT(4, '!');
+            $r3$.ɵe();
+          }
+        }
+      });
+      // /NORMATIVE
+    }
+
+    expect(toHtml(renderComponent(MyComponent)))
+        .toEqual(
+            '<div class="my-app" foo:bar="baz" foo:qux="quacks" title="Hello">Hello <b>World</b>!</div>');
   });
 
   describe('bindings', () => {
