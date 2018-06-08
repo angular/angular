@@ -11,10 +11,10 @@ import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detec
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
-import {checkNoChanges, detectChanges, markViewDirty, storeCleanupFn} from './instructions';
+import {checkNoChanges, detectChanges, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
 import {ComponentTemplate} from './interfaces/definition';
 import {LViewNode} from './interfaces/node';
-import {LView, LViewFlags} from './interfaces/view';
+import {FLAGS, LViewData, LViewFlags} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
 
 // Needed due to tsickle downleveling where multiple `implements` with classes creates
@@ -29,16 +29,16 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   context: T;
   rootNodes: any[];
 
-  constructor(protected _view: LView, context: T|null) { this.context = context !; }
+  constructor(protected _view: LViewData, context: T|null) { this.context = context !; }
 
   /** @internal */
-  _setComponentContext(view: LView, context: T) {
+  _setComponentContext(view: LViewData, context: T) {
     this._view = view;
     this.context = context;
   }
 
   get destroyed(): boolean {
-    return (this._view.flags & LViewFlags.Destroyed) === LViewFlags.Destroyed;
+    return (this._view[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
   }
 
   destroy(): void { destroyLView(this._view); }
@@ -132,7 +132,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  detach(): void { this._view.flags &= ~LViewFlags.Attached; }
+  detach(): void { this._view[FLAGS] &= ~LViewFlags.Attached; }
 
   /**
    * Re-attaches a view to the change detection tree.
@@ -189,7 +189,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
    * }
    * ```
    */
-  reattach(): void { this._view.flags |= LViewFlags.Attached; }
+  reattach(): void { this._view[FLAGS] |= LViewFlags.Attached; }
 
   /**
    * Checks the view and its children.
@@ -240,8 +240,7 @@ export class EmbeddedViewRef<T> extends ViewRef<T> {
   }
 
   destroy(): void {
-    if (this._viewContainerRef &&
-        (this._view.flags & LViewFlags.Attached) === LViewFlags.Attached) {
+    if (this._viewContainerRef && viewAttached(this._view)) {
       this._viewContainerRef.detach(this._viewContainerRef.indexOf(this));
       this._viewContainerRef = null;
     }

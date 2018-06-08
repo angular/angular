@@ -18,11 +18,11 @@ import {Type} from '../type';
 
 import {assertComponentType, assertDefined} from './assert';
 import {createRootContext} from './component';
-import {baseDirectiveCreate, createLView, createTView, enterView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement} from './instructions';
+import {baseDirectiveCreate, createLViewData, createTView, enterView, hostElement, initChangeDetectorIfExisting, locateHostElement} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
-import {LView, LViewFlags, RootContext} from './interfaces/view';
+import {INJECTOR, LViewData, LViewFlags, RootContext} from './interfaces/view';
 import {ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
@@ -94,11 +94,11 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rootContext: RootContext = ngModule !.injector.get(ROOT_CONTEXT);
 
     // Create the root view. Uses empty TView and ContentTemplate.
-    const rootView: LView = createLView(
+    const rootView: LViewData = createLViewData(
         rendererFactory.createRenderer(hostNode, this.componentDef.rendererType),
         createTView(-1, null, null, null), null,
         this.componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
-    rootView.injector = ngModule && ngModule.injector || null;
+    rootView[INJECTOR] = ngModule && ngModule.injector || null;
 
     // rootView is the parent when bootstrapping
     const oldView = enterView(rootView, null !);
@@ -145,7 +145,7 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
   componentType: Type<T>;
 
   constructor(
-      componentType: Type<T>, instance: T, rootView: LView, injector: Injector,
+      componentType: Type<T>, instance: T, rootView: LViewData, injector: Injector,
       hostNode: RElement) {
     super();
     this.instance = instance;

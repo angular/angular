@@ -13,7 +13,7 @@ import {LNode} from './node';
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */
 export interface LQueries {
   /**
-   * Used to ask queries if those should be cloned to the child element.
+   * Used to ask querieis if those should be cloned to the child element.
    *
    * For example in the case of deep queries the `child()` returns
    * queries for the child node. In case of shallow queries it returns
