@@ -15,28 +15,68 @@ import {LElementNode, LViewNode, TNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
 
+/** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
+export const HEADER_OFFSET = 14;
 
+// Below are constants for LViewData indices to help us look up LViewData members
+// without having to remember the specific indices.
+// Uglify will inline these when minifying so there shouldn't be a cost.
+export const TVIEW = 0;
+export const PARENT = 1;
+export const NEXT = 2;
+export const QUERIES = 3;
+export const FLAGS = 4;
+export const HOST_NODE = 5;
+export const BINDING_INDEX = 6;
+export const DIRECTIVES = 7;
+export const CLEANUP = 8;
+export const CONTEXT = 9;
+export const INJECTOR = 10;
+export const RENDERER = 11;
+export const SANITIZER = 12;
+export const TAIL = 13;
 
 /**
- * `LView` stores all of the information needed to process the instructions as
+ * `LViewData` stores all of the information needed to process the instructions as
  * they are invoked from the template. Each embedded view and component view has its
- * own `LView`. When processing a particular view, we set the `currentView` to that
- * `LView`. When that view is done processing, the `currentView` is set back to
- * whatever the original `currentView` was before (the parent `LView`).
+ * own `LViewData`. When processing a particular view, we set the `viewData` to that
+ * `LViewData`. When that view is done processing, the `viewData` is set back to
+ * whatever the original `viewData` was before (the parent `LViewData`).
  *
  * Keeping separate state for each view facilities view insertion / deletion, so we
  * don't have to edit the data array based on which views are present.
  */
-export interface LView {
-  /** Flags for this view (see LViewFlags for definition of each bit). */
-  flags: LViewFlags;
+export interface LViewData extends Array<any> {
+  /**
+   * The static data for this view. We need a reference to this so we can easily walk up the
+   * node tree in DI and get the TView.data array associated with a node (where the
+   * directive defs are stored).
+   */
+  [TVIEW]: TView;
 
   /**
    * The parent view is needed when we exit the view and must restore the previous
-   * `LView`. Without this, the render method would have to keep a stack of
+   * `LViewData`. Without this, the render method would have to keep a stack of
    * views as it is recursively rendering templates.
    */
-  readonly parent: LView|null;
+  [PARENT]: LViewData|null;
+
+  /**
+   *
+   * The next sibling LViewData or LContainer.
+   *
+   * Allows us to propagate between sibling view states that aren't in the same
+   * container. Embedded views already have a node.next, but it is only set for
+   * views in the same container. We need a way to link component views and views
+   * across containers as well.
+   */
+  [NEXT]: LViewData|LContainer|null;
+
+  /** Queries active for this view - nodes from a view are reported to those queries. */
+  [QUERIES]: LQueries|null;
+
+  /** Flags for this view. See LViewFlags for more info. */
+  [FLAGS]: LViewFlags;
 
   /**
    * Pointer to the `LViewNode` or `LElementNode` which represents the root of the view.
@@ -46,11 +86,8 @@ export interface LView {
    *
    * If `LElementNode`, this is the LView of a component.
    */
-  // TODO(kara): Remove when we have parent/child on TNodes
-  readonly node: LViewNode|LElementNode;
-
-  /** Renderer to be used for this view. */
-  readonly renderer: Renderer3;
+  // TODO(kara): Replace with index
+  [HOST_NODE]: LViewNode|LElementNode;
 
   /**
    * The binding index we should access next.
@@ -59,7 +96,16 @@ export interface LView {
    * if a view is left midway through processing bindings (e.g. if there is
    * a setter that creates an embedded view, like in ngIf).
    */
-  bindingIndex: number;
+  [BINDING_INDEX]: number;
+
+  /**
+   * An array of directive instances in the current view.
+   *
+   * These must be stored separately from LNodes because their presence is
+   * unknown at compile-time and thus space cannot be reserved in data[].
+   */
+  // TODO: flatten into LViewData[]
+  [DIRECTIVES]: any[]|null;
 
   /**
    * When a view is destroyed, listeners need to be released and outputs need to be
@@ -69,79 +115,36 @@ export interface LView {
    * These change per LView instance, so they cannot be stored on TView. Instead,
    * TView.cleanup saves an index to the necessary context in this array.
    */
-  // TODO: collapse into data[]
-  cleanupInstances: any[]|null;
-
-  /**
-   * The last LView or LContainer beneath this LView in the hierarchy.
-   *
-   * The tail allows us to quickly add a new state to the end of the view list
-   * without having to propagate starting from the first child.
-   */
-  tail: LView|LContainer|null;
-
-  /**
-   * The next sibling LView or LContainer.
-   *
-   * Allows us to propagate between sibling view states that aren't in the same
-   * container. Embedded views already have a node.next, but it is only set for
-   * views in the same container. We need a way to link component views and views
-   * across containers as well.
-   */
-  next: LView|LContainer|null;
-
-  /**
-   * This array stores all element/text/container nodes created inside this view
-   * and their bindings. Stored as an array rather than a linked list so we can
-   * look up nodes directly in the case of forward declaration or bindings
-   * (e.g. E(1)).
-   *
-   * All bindings for a given view are stored in the order in which they
-   * appear in the template, starting with `bindingStartIndex`.
-   * We use `bindingIndex` to internally keep track of which binding
-   * is currently active.
-   */
-  readonly data: any[];
-
-  /**
-   * An array of directive instances in the current view.
-   *
-   * These must be stored separately from LNodes because their presence is
-   * unknown at compile-time and thus space cannot be reserved in data[].
-   */
-  directives: any[]|null;
-
-  /**
-   * The static data for this view. We need a reference to this so we can easily walk up the
-   * node tree in DI and get the TView.data array associated with a node (where the
-   * directive defs are stored).
-   */
-  tView: TView;
+  // TODO: flatten into LViewData[]
+  [CLEANUP]: any[]|null;
 
   /**
    * - For embedded views, the context with which to render the template.
    * - For root view of the root component the context contains change detection data.
    * - `null` otherwise.
-   */
-  context: {}|RootContext|null;
+  */
+  [CONTEXT]: {}|RootContext|null;
+
+  /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
+  [INJECTOR]: Injector|null;
+
+  /** Renderer to be used for this view. */
+  [RENDERER]: Renderer3;
+
+  /** An optional custom sanitizer. */
+  [SANITIZER]: Sanitizer|null;
 
   /**
-   * Queries active for this view - nodes from a view are reported to those queries
+   * The last LViewData or LContainer beneath this LViewData in the hierarchy.
+   *
+   * The tail allows us to quickly add a new state to the end of the view list
+   * without having to propagate starting from the first child.
    */
-  queries: LQueries|null;
-
-  /**
-   * An optional Module Injector to be used as fall back after Element Injectors are consulted.
-   */
-  injector: Injector|null;
-
-  /**
-   * An optional custom sanitizer
-   */
-  sanitizer: Sanitizer|null;
+  // TODO: replace with global
+  [TAIL]: LViewData|LContainer|null;
 }
 
-/** Flags associated with an LView (saved in LView.flags) */
+/** Flags associated with an LView (saved in LViewData[FLAGS]) */
 export const enum LViewFlags {
   /**
    * Whether or not the view is in creationMode.
@@ -173,14 +176,6 @@ export const enum LViewFlags {
 
   /** Whether or not this view is destroyed. */
   Destroyed = 0b100000,
-}
-
-/** Interface necessary to work with view tree traversal */
-export interface LViewOrLContainer {
-  next: LView|LContainer|null;
-  views?: LViewNode[];
-  tView?: TView;
-  parent: LView|null;
 }
 
 /**
@@ -388,7 +383,7 @@ export interface TView {
    * refreshed when the current view has finished its check.
    *
    * Even indices: Directive indices
-   * Odd indices: Element indices
+   * Odd indices: Element indices (adjusted for LViewData header offset)
    */
   components: number[]|null;
 
@@ -397,6 +392,9 @@ export interface TView {
    *
    * Even indices: Directive indices
    * Odd indices: Element indices
+   *
+   * Element indices are NOT adjusted for LViewData header offset because
+   * they will be fed into instructions that expect the raw index (e.g. elementProperty)
    */
   hostBindings: number[]|null;
 }

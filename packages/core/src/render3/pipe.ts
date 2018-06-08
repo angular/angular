@@ -10,6 +10,7 @@ import {PipeTransform} from '../change_detection/pipe_transform';
 
 import {getTView, load, store} from './instructions';
 import {PipeDef, PipeDefList} from './interfaces/definition';
+import {HEADER_OFFSET} from './interfaces/view';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
 
 /**
@@ -22,15 +23,17 @@ import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction
 export function pipe(index: number, pipeName: string): any {
   const tView = getTView();
   let pipeDef: PipeDef<any>;
+  const adjustedIndex = index + HEADER_OFFSET;
 
   if (tView.firstTemplatePass) {
     pipeDef = getPipeDef(pipeName, tView.pipeRegistry);
-    tView.data[index] = pipeDef;
+    tView.data[adjustedIndex] = pipeDef;
     if (pipeDef.onDestroy) {
-      (tView.pipeDestroyHooks || (tView.pipeDestroyHooks = [])).push(index, pipeDef.onDestroy);
+      (tView.pipeDestroyHooks || (tView.pipeDestroyHooks = [
+       ])).push(adjustedIndex, pipeDef.onDestroy);
     }
   } else {
-    pipeDef = tView.data[index] as PipeDef<any>;
+    pipeDef = tView.data[adjustedIndex] as PipeDef<any>;
   }
 
   const pipeInstance = pipeDef.factory();
@@ -148,5 +151,5 @@ export function pipeBindV(index: number, slotOffset: number, values: any[]): any
 }
 
 function isPure(index: number): boolean {
-  return (<PipeDef<any>>getTView().data[index]).pure;
+  return (<PipeDef<any>>getTView().data[index + HEADER_OFFSET]).pure;
 }

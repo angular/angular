@@ -10,19 +10,16 @@
 // correctly implementing its interfaces for backwards compatibility.
 import {Type} from '../core';
 import {Injector} from '../di/injector';
-import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {Sanitizer} from '../sanitization/security';
 
 import {assertComponentType, assertDefined} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, ROOT_DIRECTIVE_INDICES, _getComponentHostLElementNode, baseDirectiveCreate, createLView, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings} from './instructions';
+import {CLEAN_PROMISE, ROOT_DIRECTIVE_INDICES, _getComponentHostLElementNode, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings,} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
-import {LElementNode, TNodeFlags} from './interfaces/node';
+import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {LView, LViewFlags, RootContext} from './interfaces/view';
+import {LViewData, LViewFlags, RootContext, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
 import {stringify} from './util';
-import {ViewRef} from './view_ref';
-
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -71,7 +68,6 @@ export interface CreateComponentOptions {
   scheduler?: (work: () => void) => void;
 }
 
-
 // TODO: A hack to not pull in the NullInjector from @angular/core.
 export const NULL_INJECTOR: Injector = {
   get: (token: any, notFoundValue?: any) => {
@@ -108,11 +104,11 @@ export function renderComponent<T>(
   const hostNode = locateHostElement(rendererFactory, opts.host || componentTag);
   const rootContext = createRootContext(opts.scheduler || requestAnimationFrame.bind(window));
 
-  const rootView: LView = createLView(
+  const rootView: LViewData = createLViewData(
       rendererFactory.createRenderer(hostNode, componentDef.rendererType),
       createTView(-1, null, null, null), rootContext,
       componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
-  rootView.injector = opts.injector || null;
+  rootView[INJECTOR] = opts.injector || null;
 
   const oldView = enterView(rootView, null !);
   let elementNode: LElementNode;
@@ -131,7 +127,7 @@ export function renderComponent<T>(
 
     executeInitAndContentHooks();
     setHostBindings(ROOT_DIRECTIVE_INDICES);
-    detectChangesInternal(elementNode.data as LView, elementNode, component);
+    detectChangesInternal(elementNode.data as LViewData, elementNode, component);
   } finally {
     leaveView(oldView);
     if (rendererFactory.end) rendererFactory.end();
@@ -165,8 +161,9 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
   const elementNode = _getComponentHostLElementNode(component);
 
   // Root component is always created at dir index 0
-  queueInitHooks(0, def.onInit, def.doCheck, elementNode.view.tView);
-  queueLifecycleHooks(elementNode.tNode.flags, elementNode.view);
+  const tView = elementNode.view[TVIEW];
+  queueInitHooks(0, def.onInit, def.doCheck, tView);
+  queueLifecycleHooks(elementNode.tNode.flags, tView);
 }
 
 /**
@@ -176,7 +173,7 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
  * @param component any component
  */
 function getRootContext(component: any): RootContext {
-  const rootContext = getRootView(component).context as RootContext;
+  const rootContext = getRootView(component)[CONTEXT] as RootContext;
   ngDevMode && assertDefined(rootContext, 'rootContext');
   return rootContext;
 }

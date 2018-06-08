@@ -1,15 +1,30 @@
 [
   {
+    "name": "ACTIVE_INDEX"
+  },
+  {
+    "name": "BINDING_INDEX"
+  },
+  {
     "name": "BLOOM_SIZE"
   },
   {
     "name": "CIRCULAR$2"
   },
   {
+    "name": "CLEANUP"
+  },
+  {
     "name": "CLEAN_PROMISE"
   },
   {
+    "name": "CONTEXT"
+  },
+  {
     "name": "CommonModule"
+  },
+  {
+    "name": "DIRECTIVES"
   },
   {
     "name": "DefaultIterableDiffer"
@@ -30,10 +45,28 @@
     "name": "EmbeddedViewRef$1"
   },
   {
+    "name": "FLAGS"
+  },
+  {
+    "name": "HEADER_FILLER"
+  },
+  {
+    "name": "HEADER_OFFSET"
+  },
+  {
+    "name": "HOST_NODE"
+  },
+  {
+    "name": "INJECTOR$1"
+  },
+  {
     "name": "IterableChangeRecord_"
   },
   {
     "name": "IterableDiffers"
+  },
+  {
+    "name": "NEXT"
   },
   {
     "name": "NG_ELEMENT_ID"
@@ -66,13 +99,34 @@
     "name": "PARAMETERS"
   },
   {
+    "name": "PARENT"
+  },
+  {
+    "name": "QUERIES"
+  },
+  {
+    "name": "RENDERER"
+  },
+  {
+    "name": "RENDER_PARENT"
+  },
+  {
     "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
     "name": "RecordViewTuple"
   },
   {
+    "name": "SANITIZER"
+  },
+  {
     "name": "SkipSelf"
+  },
+  {
+    "name": "TAIL"
+  },
+  {
+    "name": "TVIEW"
   },
   {
     "name": "TemplateRef$1"
@@ -91,6 +145,9 @@
   },
   {
     "name": "UNDEFINED_RENDERER_TYPE_ID"
+  },
+  {
+    "name": "VIEWS"
   },
   {
     "name": "ViewContainerRef$1"
@@ -264,7 +321,7 @@
     "name": "createLNodeObject"
   },
   {
-    "name": "createLView"
+    "name": "createLViewData"
   },
   {
     "name": "createOutput"
@@ -280,9 +337,6 @@
   },
   {
     "name": "createTextNode"
-  },
-  {
-    "name": "currentView"
   },
   {
     "name": "defineComponent"
@@ -501,9 +555,6 @@
     "name": "isJsObject"
   },
   {
-    "name": "isLContainer"
-  },
-  {
     "name": "isListLikeIterable"
   },
   {
@@ -529,6 +580,9 @@
   },
   {
     "name": "load"
+  },
+  {
+    "name": "loadInternal"
   },
   {
     "name": "locateHostElement"

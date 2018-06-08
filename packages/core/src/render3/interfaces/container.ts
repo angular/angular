@@ -6,14 +6,30 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LContainerNode, LElementNode, LViewNode} from './node';
+import {LElementNode, LViewNode} from './node';
 import {LQueries} from './query';
-import {LView, TView} from './view';
+import {LViewData, NEXT, PARENT, QUERIES} from './view';
 
+/**
+ * Below are constants for LContainer indices to help us look up LContainer members
+ * without having to remember the specific indices.
+ * Uglify will inline these when minifying so there shouldn't be a cost.
+ */
+export const ACTIVE_INDEX = 0;
+// PARENT, NEXT, and QUERIES are indices 1, 2, and 3.
+// As we already have these constants in LViewData, we don't need to re-create them.
+export const VIEWS = 4;
+export const RENDER_PARENT = 5;
 
-
-/** The state associated with an LContainer */
-export interface LContainer {
+/**
+ * The state associated with an LContainerNode.
+ *
+ * This is an array so that its structure is closer to LViewData. This helps
+ * when traversing the view tree (which is a mix of containers and component
+ * views), so we can jump to viewOrContainer[NEXT] in the same way regardless
+ * of type.
+ */
+export interface LContainer extends Array<any> {
   /**
    * The next active index in the views array to read or write to. This helps us
    * keep track of where we are in the views array.
@@ -21,19 +37,25 @@ export interface LContainer {
    * it is set to null to identify this scenario, as indices are "absolute" in that case,
    * i.e. provided directly by the user of the ViewContainerRef API.
    */
-  nextIndex: number|null;
-
-  /**
-   * This allows us to jump from a container to a sibling container or
-   * component view with the same parent, so we can remove listeners efficiently.
-   */
-  next: LView|LContainer|null;
+  [ACTIVE_INDEX]: number|null;
 
   /**
    * Access to the parent view is necessary so we can propagate back
-   * up from inside a container to parent.next.
+   * up from inside a container to parent[NEXT].
    */
-  parent: LView|null;
+  [PARENT]: LViewData|null;
+
+  /**
+   * This allows us to jump from a container to a sibling container or component
+   * view with the same parent, so we can remove listeners efficiently.
+   */
+  [NEXT]: LViewData|LContainer|null;
+
+  /**
+   * Queries active for this container - all the views inserted to / removed from
+   * this container are reported to queries referenced here.
+   */
+  [QUERIES]: LQueries|null;
 
   /**
    * A list of the container's currently active child views. Views will be inserted
@@ -42,7 +64,7 @@ export interface LContainer {
    * (and don't need to be re-added) and so we can remove views from the DOM when they
    * are no longer required.
    */
-  readonly views: LViewNode[];
+  [VIEWS]: LViewNode[];
 
   /**
    * Parent Element which will contain the location where all of the Views will be
@@ -64,13 +86,7 @@ export interface LContainer {
    * - not `null`, then use the `projectedParent.native` as the `RElement` to insert
    *   `LViewNode`s into.
    */
-  renderParent: LElementNode|null;
-
-  /**
-   * Queries active for this container - all the views inserted to / removed from
-   * this container are reported to queries referenced here.
-   */
-  queries: LQueries|null;
+  [RENDER_PARENT]: LElementNode|null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

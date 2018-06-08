@@ -9,7 +9,7 @@
 import {assertEqual} from './assert';
 import {DirectiveDef} from './interfaces/definition';
 import {TNodeFlags} from './interfaces/node';
-import {HookData, LView, LViewFlags, TView} from './interfaces/view';
+import {DIRECTIVES, FLAGS, HookData, LViewData, LViewFlags, TView} from './interfaces/view';
 
 
 /**
@@ -20,7 +20,7 @@ import {HookData, LView, LViewFlags, TView} from './interfaces/view';
  * directive index), then saved in the even indices of the initHooks array. The odd indices
  * hold the hook functions themselves.
  *
- * @param index The index of the directive in LView.data
+ * @param index The index of the directive in LViewData[DIRECTIVES]
  * @param hooks The static hooks map on the directive def
  * @param tView The current TView
  */
@@ -42,9 +42,8 @@ export function queueInitHooks(
  * Loops through the directives on a node and queues all their hooks except ngOnInit
  * and ngDoCheck, which are queued separately in directiveCreate.
  */
-export function queueLifecycleHooks(flags: number, currentView: LView): void {
-  const tView = currentView.tView;
-  if (tView.firstTemplatePass === true) {
+export function queueLifecycleHooks(flags: number, tView: TView): void {
+  if (tView.firstTemplatePass) {
     const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
     const count = flags & TNodeFlags.DirectiveCountMask;
     const end = start + count;
@@ -97,10 +96,11 @@ function queueDestroyHooks(def: DirectiveDef<any>, tView: TView, i: number): voi
  *
  * @param currentView The current view
  */
-export function executeInitHooks(currentView: LView, tView: TView, creationMode: boolean): void {
-  if (currentView.flags & LViewFlags.RunInit) {
-    executeHooks(currentView.directives !, tView.initHooks, tView.checkHooks, creationMode);
-    currentView.flags &= ~LViewFlags.RunInit;
+export function executeInitHooks(
+    currentView: LViewData, tView: TView, creationMode: boolean): void {
+  if (currentView[FLAGS] & LViewFlags.RunInit) {
+    executeHooks(currentView[DIRECTIVES] !, tView.initHooks, tView.checkHooks, creationMode);
+    currentView[FLAGS] &= ~LViewFlags.RunInit;
   }
 }
 
