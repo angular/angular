@@ -24,6 +24,9 @@
     "name": "FLAGS"
   },
   {
+    "name": "HEADER_FILLER"
+  },
+  {
     "name": "HEADER_OFFSET"
   },
   {
@@ -69,6 +72,12 @@
     "name": "VIEWS"
   },
   {
+    "name": "_CLEAN_PROMISE"
+  },
+  {
+    "name": "_ROOT_DIRECTIVE_INDICES"
+  },
+  {
     "name": "_renderCompCount"
   },
   {
@@ -96,6 +105,9 @@
     "name": "createLNodeObject"
   },
   {
+    "name": "createLViewData"
+  },
+  {
     "name": "createRootContext"
   },
   {
@@ -106,9 +118,6 @@
   },
   {
     "name": "createTextNode"
-  },
-  {
-    "name": "createViewData"
   },
   {
     "name": "defineComponent"

@@ -18,7 +18,7 @@ import {Type} from '../type';
 
 import {assertComponentType, assertDefined} from './assert';
 import {createRootContext} from './component';
-import {baseDirectiveCreate, createTView, createLViewData, enterView, hostElement, initChangeDetectorIfExisting, locateHostElement} from './instructions';
+import {baseDirectiveCreate, createLViewData, createTView, enterView, hostElement, initChangeDetectorIfExisting, locateHostElement} from './instructions';
 import {ComponentDef, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement} from './interfaces/renderer';

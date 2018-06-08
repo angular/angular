@@ -15,9 +15,42 @@ import {LElementNode, LViewNode, TNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
 
-
 /** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
 const _HEADER_OFFSET = 14;
+export const HEADER_OFFSET = _HEADER_OFFSET;
+
+// Below are constants for LViewData indices to help us look up LViewData members
+// without having to remember the specific indices.
+// Uglify will inline these when minifying so there shouldn't be a cost.
+const _TVIEW = 0;
+const _PARENT = 1;
+const _NEXT = 2;
+const _QUERIES = 3;
+const _FLAGS = 4;
+const _HOST_NODE = 5;
+const _BINDING_INDEX = 6;
+const _DIRECTIVES = 7;
+const _CLEANUP = 8;
+const _CONTEXT = 9;
+const _INJECTOR = 10;
+const _RENDERER = 11;
+const _SANITIZER = 12;
+const _TAIL = 13;
+
+export const TVIEW = _TVIEW;
+export const PARENT = _PARENT;
+export const NEXT = _NEXT;
+export const QUERIES = _QUERIES;
+export const FLAGS = _FLAGS;
+export const HOST_NODE = _HOST_NODE;
+export const BINDING_INDEX = _BINDING_INDEX;
+export const DIRECTIVES = _DIRECTIVES;
+export const CLEANUP = _CLEANUP;
+export const CONTEXT = _CONTEXT;
+export const INJECTOR = _INJECTOR;
+export const RENDERER = _RENDERER;
+export const SANITIZER = _SANITIZER;
+export const TAIL = _TAIL;
 
 /**
  * `LViewData` stores all of the information needed to process the instructions as
@@ -29,123 +62,103 @@ const _HEADER_OFFSET = 14;
  * Keeping separate state for each view facilities view insertion / deletion, so we
  * don't have to edit the data array based on which views are present.
  */
-export type LViewData = [
-  /** LViewData */ any | LContainer | null,   // next
-  /** LViewData */ any | LContainer | null,   // parent
-  LQueries | null,                            // queries
-  TView,                                      // tView
-  LViewFlags,                                 // flags
-  LViewNode | LElementNode,                   // hostNode
-  number,                                     // bindingIndex
-  any[] | null,                               // directives
-  any[] | null,                               // cleanupInstances
-  {} | RootContext | null,                    // context
-  Injector | null,                            // injector
-  Renderer3,                                  // renderer
-  Sanitizer | null,                           // sanitizer
-  /** LViewData */ any | LContainer | null    // tail
-];
+export interface LViewData extends Array<any> {
+  /**
+   * The static data for this view. We need a reference to this so we can easily walk up the
+   * node tree in DI and get the TView.data array associated with a node (where the
+   * directive defs are stored).
+   */
+  [TVIEW]: TView;
 
-// Below are constants for LViewData indices to help us look up LViewData members
-// without having to remember the specific indices.
-// Uglify will inline these when minifying so there shouldn't be a cost.
+  /**
+   * The parent view is needed when we exit the view and must restore the previous
+   * `LViewData`. Without this, the render method would have to keep a stack of
+   * views as it is recursively rendering templates.
+   */
+  [PARENT]: LViewData|null;
 
-/**
- *
- * The next sibling LViewData or LContainer.
- *
- * Allows us to propagate between sibling view states that aren't in the same
- * container. Embedded views already have a node.next, but it is only set for
- * views in the same container. We need a way to link component views and views
- * across containers as well.
- */
-const _NEXT = 0;
+  /**
+   *
+   * The next sibling LViewData or LContainer.
+   *
+   * Allows us to propagate between sibling view states that aren't in the same
+   * container. Embedded views already have a node.next, but it is only set for
+   * views in the same container. We need a way to link component views and views
+   * across containers as well.
+   */
+  [NEXT]: LViewData|LContainer|null;
 
-/**
- * The parent view is needed when we exit the view and must restore the previous
- * `LViewData`. Without this, the render method would have to keep a stack of
- * views as it is recursively rendering templates.
- */
-const _PARENT = 1;
+  /** Queries active for this view - nodes from a view are reported to those queries. */
+  [QUERIES]: LQueries|null;
 
-/** Queries active for this view - nodes from a view are reported to those queries. */
-const _QUERIES = 2;
+  /** Flags for this view. See LViewFlags for more info. */
+  [FLAGS]: LViewFlags;
 
-/**
- * The static data for this view. We need a reference to this so we can easily walk up the
- * node tree in DI and get the TView.data array associated with a node (where the
- * directive defs are stored).
- */
-const _TVIEW = 3;
+  /**
+   * Pointer to the `LViewNode` or `LElementNode` which represents the root of the view.
+   *
+   * If `LViewNode`, this is an embedded view of a container. We need this to be able to
+   * efficiently find the `LViewNode` when inserting the view into an anchor.
+   *
+   * If `LElementNode`, this is the LView of a component.
+   */
+  // TODO(kara): Replace with index
+  [HOST_NODE]: LViewNode|LElementNode;
 
-/** See LViewFlags */
-const _FLAGS = 4;
+  /**
+   * The binding index we should access next.
+   *
+   * This is stored so that bindings can continue where they left off
+   * if a view is left midway through processing bindings (e.g. if there is
+   * a setter that creates an embedded view, like in ngIf).
+   */
+  [BINDING_INDEX]: number;
 
-/**
- * Pointer to the `LViewNode` or `LElementNode` which represents the root of the view.
- *
- * If `LViewNode`, this is an embedded view of a container. We need this to be able to
- * efficiently find the `LViewNode` when inserting the view into an anchor.
- *
- * If `LElementNode`, this is the LView of a component.
- */
-// TODO(kara): Replace with index
-const _HOST_NODE = 5;
+  /**
+   * An array of directive instances in the current view.
+   *
+   * These must be stored separately from LNodes because their presence is
+   * unknown at compile-time and thus space cannot be reserved in data[].
+   */
+  // TODO: flatten into LViewData[]
+  [DIRECTIVES]: any[]|null;
 
-/**
- * The binding index we should access next.
- *
- * This is stored so that bindings can continue where they left off
- * if a view is left midway through processing bindings (e.g. if there is
- * a setter that creates an embedded view, like in ngIf).
- */
-const _BINDING_INDEX = 6;
+  /**
+   * When a view is destroyed, listeners need to be released and outputs need to be
+   * unsubscribed. This context array stores both listener functions wrapped with
+   * their context and output subscription instances for a particular view.
+   *
+   * These change per LView instance, so they cannot be stored on TView. Instead,
+   * TView.cleanup saves an index to the necessary context in this array.
+   */
+  // TODO: flatten into LViewData[]
+  [CLEANUP]: any[]|null;
 
-/**
- * An array of directive instances in the current view.
- *
- * These must be stored separately from LNodes because their presence is
- * unknown at compile-time and thus space cannot be reserved in data[].
- */
-// TODO: flatten into LViewData[]
-const _DIRECTIVES = 7;
+  /**
+   * - For embedded views, the context with which to render the template.
+   * - For root view of the root component the context contains change detection data.
+   * - `null` otherwise.
+  */
+  [CONTEXT]: {}|RootContext|null;
 
-/**
- * When a view is destroyed, listeners need to be released and outputs need to be
- * unsubscribed. This context array stores both listener functions wrapped with
- * their context and output subscription instances for a particular view.
- *
- * These change per LView instance, so they cannot be stored on TView. Instead,
- * TView.cleanup saves an index to the necessary context in this array.
- */
-// TODO: flatten into LViewData[]
-const _CLEANUP = 8;
+  /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
+  [INJECTOR]: Injector|null;
 
-/**
- * - For embedded views, the context with which to render the template.
- * - For root view of the root component the context contains change detection data.
- * - `null` otherwise.
- */
-const _CONTEXT = 9;
+  /** Renderer to be used for this view. */
+  [RENDERER]: Renderer3;
 
-/** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
-const _INJECTOR = 10;
+  /** An optional custom sanitizer. */
+  [SANITIZER]: Sanitizer|null;
 
-/** Renderer to be used for this view. */
-const _RENDERER = 11;
-
-/** An optional custom sanitizer. */
-const _SANITIZER = 12;
-
-/**
- * The last LViewData or LContainer beneath this LViewData in the hierarchy.
- *
- * The tail allows us to quickly add a new state to the end of the view list
- * without having to propagate starting from the first child.
- */
-// TODO: replace with global
-const _TAIL = 13;
-
+  /**
+   * The last LViewData or LContainer beneath this LViewData in the hierarchy.
+   *
+   * The tail allows us to quickly add a new state to the end of the view list
+   * without having to propagate starting from the first child.
+   */
+  // TODO: replace with global
+  [TAIL]: LViewData|LContainer|null;
+}
 
 /** Flags associated with an LView (saved in LViewData[FLAGS]) */
 export const enum LViewFlags {
@@ -447,22 +460,6 @@ export type TData = (TNode | PipeDef<any>| null)[];
 
 /** Type for TView.currentMatches */
 export type CurrentMatchesList = [DirectiveDef<any>, (string | number | null)];
-
-export const HEADER_OFFSET = _HEADER_OFFSET;
-export const TVIEW = _TVIEW;
-export const FLAGS = _FLAGS;
-export const NEXT = _NEXT;
-export const TAIL = _TAIL;
-export const PARENT = _PARENT;
-export const HOST_NODE = _HOST_NODE;
-export const BINDING_INDEX = _BINDING_INDEX;
-export const DIRECTIVES = _DIRECTIVES;
-export const CLEANUP = _CLEANUP;
-export const CONTEXT = _CONTEXT;
-export const QUERIES = _QUERIES;
-export const INJECTOR = _INJECTOR;
-export const RENDERER = _RENDERER;
-export const SANITIZER = _SANITIZER;
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.

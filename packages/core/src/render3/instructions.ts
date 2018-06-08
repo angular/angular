@@ -58,6 +58,15 @@ export type SanitizerFn = (value: any) => string;
 const _ROOT_DIRECTIVE_INDICES = [0, 0];
 
 /**
+ * TView.data needs to fill the same number of slots as the LViewData header
+ * so the indices of nodes are consistent between LViewData and TView.data.
+ *
+ * It's much faster to keep a blueprint of the pre-filled array and slice it
+ * than it is to create a new array and fill it each time a TView is created.
+ */
+const HEADER_FILLER = new Array(HEADER_OFFSET).fill(null);
+
+/**
  * Token set in currentMatches while dependencies are being resolved.
  *
  * If we visit a directive that has a value set to CIRCULAR, we know we've
@@ -275,10 +284,10 @@ export function createLViewData<T>(
     renderer: Renderer3, tView: TView, context: T | null, flags: LViewFlags,
     sanitizer?: Sanitizer | null): LViewData {
   return [
-    null,                                                                        // next
-    viewData,                                                                    // parent
-    null,                                                                        // queries
     tView,                                                                       // tView
+    viewData,                                                                    // parent
+    null,                                                                        // next
+    null,                                                                        // queries
     flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit,  // flags
     null !,                                                                      // hostNode
     -1,                                                                          // bindingIndex
@@ -779,9 +788,9 @@ export function createTView(
     id: viewIndex,
     template: template,
     node: null !,
-    data: new Array(HEADER_OFFSET).fill(null),  // Fill in to match HEADER_OFFSET in LViewData
-    childIndex: -1,                             // Children set in addToViewTree(), if any
-    bindingStartIndex: -1,                      // Set in initBindings()
+    data: HEADER_FILLER.slice(),  // Fill in to match HEADER_OFFSET in LViewData
+    childIndex: -1,               // Children set in addToViewTree(), if any
+    bindingStartIndex: -1,        // Set in initBindings()
     directives: null,
     firstTemplatePass: true,
     initHooks: null,
@@ -1485,10 +1494,10 @@ export function createLContainer(
     parentLNode: LNode, currentView: LViewData, isForViewContainerRef?: boolean): LContainer {
   ngDevMode && assertDefined(parentLNode, 'containers should have a parent');
   return [
-    null,                              // next
-    currentView,                       // parent
-    null,                              // queries
     isForViewContainerRef ? null : 0,  // active index
+    currentView,                       // parent
+    null,                              // next
+    null,                              // queries
     [],                                // views
     canInsertNativeNode(parentLNode, currentView) ? parentLNode as LElementNode :
                                                     null  // renderParent
@@ -1717,7 +1726,7 @@ export function embeddedViewEnd(): void {
 
     lContainer[ACTIVE_INDEX] !++;
   }
-  leaveView(viewData[PARENT]);
+  leaveView(viewData[PARENT] !);
   ngDevMode && assertEqual(isParent, false, 'isParent');
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.View);
 }
@@ -1754,11 +1763,11 @@ function setRenderParentInProjectedNodes(
  * Refreshes components by entering the component view and processing its bindings, queries, etc.
  *
  * @param directiveIndex Directive index in LViewData[DIRECTIVES]
- * @param elementIndex  Element index in LViewData[] (adjusted for HEADER_OFFSET)
+ * @param adjustedElementIndex  Element index in LViewData[] (adjusted for HEADER_OFFSET)
  */
-export function componentRefresh<T>(directiveIndex: number, elementIndex: number): void {
-  ngDevMode && assertDataInRange(elementIndex);
-  const element = viewData[elementIndex] as LElementNode;
+export function componentRefresh<T>(directiveIndex: number, adjustedElementIndex: number): void {
+  ngDevMode && assertDataInRange(adjustedElementIndex);
+  const element = viewData[adjustedElementIndex] as LElementNode;
   ngDevMode && assertNodeType(element, TNodeType.Element);
   ngDevMode &&
       assertDefined(element.data, `Component's host node should have an LViewData attached.`);
@@ -1916,6 +1925,7 @@ export function projection(
  */
 function findComponentHost(lViewData: LViewData): LElementNode {
   let viewRootLNode = lViewData[HOST_NODE];
+
   while (viewRootLNode.tNode.type === TNodeType.View) {
     ngDevMode && assertDefined(lViewData[PARENT], 'lViewData.parent');
     lViewData = lViewData[PARENT] !;
@@ -1942,7 +1952,7 @@ function findComponentHost(lViewData: LViewData): LElementNode {
 export function addToViewTree<T extends LViewData|LContainer>(
     currentView: LViewData, adjustedHostIndex: number, state: T): T {
   if (currentView[TAIL]) {
-    currentView[TAIL][NEXT] = state;
+    currentView[TAIL] ![NEXT] = state;
   } else if (firstTemplatePass) {
     tView.childIndex = adjustedHostIndex;
   }
@@ -1996,7 +2006,7 @@ export function markViewDirty(view: LViewData): void {
 
   while (currentView[PARENT] != null) {
     currentView[FLAGS] |= LViewFlags.Dirty;
-    currentView = currentView[PARENT];
+    currentView = currentView[PARENT] !;
   }
   currentView[FLAGS] |= LViewFlags.Dirty;
   ngDevMode && assertDefined(currentView[CONTEXT], 'rootContext');
@@ -2067,7 +2077,7 @@ export function getRootView(component: any): LViewData {
   const lElementNode = _getComponentHostLElementNode(component);
   let lViewData = lElementNode.view;
   while (lViewData[PARENT]) {
-    lViewData = lViewData[PARENT];
+    lViewData = lViewData[PARENT] !;
   }
   return lViewData;
 }

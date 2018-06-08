@@ -48,6 +48,9 @@
     "name": "FLAGS"
   },
   {
+    "name": "HEADER_FILLER"
+  },
+  {
     "name": "HEADER_OFFSET"
   },
   {
@@ -315,6 +318,9 @@
     "name": "createLNodeObject"
   },
   {
+    "name": "createLViewData"
+  },
+  {
     "name": "createOutput"
   },
   {
@@ -328,9 +334,6 @@
   },
   {
     "name": "createTextNode"
-  },
-  {
-    "name": "createViewData"
   },
   {
     "name": "defineComponent"
