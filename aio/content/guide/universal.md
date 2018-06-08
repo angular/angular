@@ -372,7 +372,7 @@ The web server must distinguish _app page requests_ from other kinds of requests
 
 It's not as simple as intercepting a request to the root address `/`.
 The browser could ask for one of the application routes such as `/dashboard`, `/heroes`, or `/detail/12`.
-In fact, if the app was _only_ rendered by the server, _every_ app link clicked would arrive at the server
+In fact, if the app were _only_ rendered by the server, _every_ app link clicked would arrive at the server
 as a navigation URL intended for the router.
 
 Fortunately, application routes have something in common: their URLs lack file extensions.
@@ -381,7 +381,7 @@ Data requests also lack extensions but they're easy to recognize because they al
 All static asset requests have a file extension (e.g., `main.js` or `/node_modules/zone.js/dist/zone.js`).
 So we can easily recognize the three types of requests and handle them differently.
 
-1. **Data request:** request URL that begins `/api`
+1. **Data request:** request URL that begins with `/api`
 2. **App navigation:** request URL with no file extension
 3. **Static asset:** all other requests.
 
@@ -475,7 +475,7 @@ Create a `webpack.server.config.js` file in the project root directory with the 
 
 The CLI provides builders for different types of __targets__. Commonly known targets such as `build` and `serve` already exist in the `angular.json` configuration. To target a server-side build, add a `server` target to the `architect` configuration object.
 
-* The `outputPath` tells where the resulting build will be created.
+* The `outputPath` tells where the resulting build will be created. This will be the `server` directory inside the application specific build folder `dist/angular.io-example`.
 * The `main` provides the main entry point to the previously created `main.server.ts`.
 * The `tsConfig` uses the `tsconfig.server.json` as configuration for the TypeScript and AOT compilation.
 
@@ -485,7 +485,7 @@ The CLI provides builders for different types of __targets__. Commonly known tar
   "server": {
     "builder": "@angular-devkit/build-angular:server",
     "options": {
-      "outputPath": "dist/server",
+      "outputPath": "dist/angular.io-example/server",
       "main": "src/main.server.ts",
       "tsConfig": "src/tsconfig.server.json"
     }
@@ -510,6 +510,9 @@ First add the _build_ and _serve_ commands to the `scripts` section of the `pack
     ...
 }
 ```
+
+Remember to replace `angular.io-example` with your app name as specified in your `angular.json`.
+
 
 {@a build}
 
