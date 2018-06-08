@@ -203,6 +203,6 @@ You may also be interested in the following:
 -->
 다음 내용에 대해 더 알아보세요:
 * [NgModule의 종류](guide/module-types)
-* [Angular 라우터로 모듈을 지연 로딩하는 방법](guide/lazy-loading-ngmodules).
-* [프로바이더](guide/providers).
-* [NgModules FAQ](guide/ngmodule-faq).
+* [Angular 라우터로 모듈을 지연 로딩하는 방법](guide/lazy-loading-ngmodules)
+* [프로바이더](guide/providers)
+* [NgModules FAQ](guide/ngmodule-faq)
