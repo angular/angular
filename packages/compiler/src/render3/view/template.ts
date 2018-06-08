@@ -39,6 +39,14 @@ const BINDING_INSTRUCTION_MAP: {[type: number]: o.ExternalReference} = {
   [BindingType.Style]: R3.elementStyleNamed,
 };
 
+// `className` is used below instead of `class` because the interception
+// code (where this map is used) deals with DOM element property values
+// (like elm.propName) and not component bindining properties (like [propName]).
+const SPECIAL_CASED_PROPERTIES_INSTRUCTION_MAP: {[index: string]: o.ExternalReference} = {
+  'className': R3.elementClass,
+  'style': R3.elementStyle
+};
+
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
   private _dataIndex = 0;
   private _bindingContext = 0;
@@ -382,6 +390,18 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         this._unsupported('animations');
       }
       const convertedBinding = this.convertPropertyBinding(implicit, input.value);
+      const specialInstruction = SPECIAL_CASED_PROPERTIES_INSTRUCTION_MAP[input.name];
+      if (specialInstruction) {
+        // special case for [style] and [class] bindings since they are not handled as
+        // standard properties within this implementation. Instead they are
+        // handed off to special cased instruction handlers which will then
+        // delegate them as animation sequences (or input bindings for dirs/cmps)
+        this.instruction(
+            this._bindingCode, input.sourceSpan, specialInstruction, o.literal(elementIndex),
+            convertedBinding);
+        return;
+      }
+
       const instruction = BINDING_INSTRUCTION_MAP[input.type];
       if (instruction) {
         // TODO(chuckj): runtime: security context?
