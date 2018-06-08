@@ -858,26 +858,33 @@ export function createTView(
 
 function setUpAttributes(native: RElement, attrs: TAttributes): void {
   const isProc = isProceduralRenderer(renderer);
-  for (let i = 0; i < attrs.length; i += 2) {
+  let i = 0;
+
+  while (i < attrs.length) {
     const attrName = attrs[i];
     if (attrName === AttributeMarker.SelectOnly) break;
-    if (attrName !== NG_PROJECT_AS_ATTR_NAME) {
+    if (attrName === NG_PROJECT_AS_ATTR_NAME) {
+      i += 2;
+    } else {
       ngDevMode && ngDevMode.rendererSetAttribute++;
       if (attrName === AttributeMarker.NamespaceURI) {
+        // Namespaced attributes
         const namespaceURI = attrs[i + 1] as string;
         const attrName = attrs[i + 2] as string;
         const attrVal = attrs[i + 3] as string;
-        i += 2;
         isProc ?
             (renderer as ProceduralRenderer3)
                 .setAttribute(native, attrName, attrVal, namespaceURI) :
             native.setAttributeNS(namespaceURI, attrName, attrVal);
+        i += 4;
       } else {
+        // Standard attributes
         const attrVal = attrs[i + 1];
         isProc ?
             (renderer as ProceduralRenderer3)
                 .setAttribute(native, attrName as string, attrVal as string) :
             native.setAttribute(attrName as string, attrVal as string);
+        i += 2;
       }
     }
   }
