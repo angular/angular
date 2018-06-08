@@ -42,7 +42,6 @@ import {SlideToggleDemo} from '../slide-toggle/slide-toggle-demo';
 import {SliderDemo} from '../slider/slider-demo';
 import {SnackBarDemo} from '../snack-bar/snack-bar-demo';
 import {StepperDemo} from '../stepper/stepper-demo';
-import {TABS_DEMO_ROUTES} from '../tabs/routes';
 import {TabsDemo} from '../tabs/tabs-demo';
 import {ToolbarDemo} from '../toolbar/toolbar-demo';
 import {TooltipDemo} from '../tooltip/tooltip-demo';
@@ -95,7 +94,7 @@ export const DEMO_APP_ROUTES: Routes = [
     {path: 'snack-bar', component: SnackBarDemo},
     {path: 'stepper', component: StepperDemo},
     {path: 'table', component: TableDemo},
-    {path: 'tabs', component: TabsDemo, children: TABS_DEMO_ROUTES},
+    {path: 'tabs', component: TabsDemo},
     {path: 'toolbar', component: ToolbarDemo},
     {path: 'tooltip', component: TooltipDemo},
     {path: 'tree', component: TreeDemo},
