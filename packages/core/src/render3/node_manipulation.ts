@@ -114,20 +114,18 @@ const enum WalkLNodeTreeAction {
 /**
  * Walks a tree of LNodes, applying a transformation on the LElement nodes, either only on the first
  * one found, or on all of them.
- * NOTE: for performance reasons, the possible actions are inlined within the function instead of
- * being passed as an argument.
  *
  * @param startingNode the node from which the walk is started.
  * @param rootNode the root node considered.
- * @param action Identifies the action to be performed on the LElement nodes.
- * @param renderer Optional the current renderer, required for action modes 1, 2 and 3.
- * @param renderParentNode Optionnal the render parent node to be set in all LContainerNodes found,
- * required for action modes 1 and 2.
- * @param beforeNode Optionnal the node before which elements should be added, required for action
- * modes 1.
+ * @param action identifies the action to be performed on the LElement nodes.
+ * @param renderer the current renderer.
+ * @param renderParentNode Optional the render parent node to be set in all LContainerNodes found,
+ * required for action modes Insert and Destroy.
+ * @param beforeNode Optional the node before which elements should be added, required for action
+ * Insert.
  */
 function walkLNodeTree(
-    startingNode: LNode | null, rootNode: LNode, action: WalkLNodeTreeAction, renderer?: Renderer3,
+    startingNode: LNode | null, rootNode: LNode, action: WalkLNodeTreeAction, renderer: Renderer3,
     renderParentNode?: LElementNode | null, beforeNode?: RNode | null) {
   let node: LNode|null = startingNode;
   let beforeNodeStack: (RNode | null | undefined)[] = [beforeNode];
@@ -136,14 +134,14 @@ function walkLNodeTree(
     const parent = renderParentNode ? renderParentNode.native : null;
     if (node.tNode.type === TNodeType.Element) {
       // Execute the action
-      executeNodeAction(action, renderer !, parent, node.native !, beforeNode);
+      executeNodeAction(action, renderer, parent, node.native !, beforeNode);
       if (node.dynamicLContainerNode) {
         executeNodeAction(
-            action, renderer !, parent, node.dynamicLContainerNode.native !, beforeNode);
+            action, renderer, parent, node.dynamicLContainerNode.native !, beforeNode);
       }
       nextNode = getNextLNode(node);
     } else if (node.tNode.type === TNodeType.Container) {
-      executeNodeAction(action, renderer !, parent, node.native !, beforeNode);
+      executeNodeAction(action, renderer, parent, node.native !, beforeNode);
       const lContainerNode: LContainerNode = (node as LContainerNode);
       const childContainerData: LContainer = lContainerNode.dynamicLContainerNode ?
           lContainerNode.dynamicLContainerNode.data :
@@ -176,6 +174,10 @@ function walkLNodeTree(
   }
 }
 
+/**
+ * NOTE: for performance reasons, the possible actions are inlined within the function instead of
+ * being passed as an argument.
+ */
 function executeNodeAction(
     action: WalkLNodeTreeAction, renderer: Renderer3, parent: RElement | null,
     node: RComment | RElement | RText, beforeNode?: RNode | null) {
