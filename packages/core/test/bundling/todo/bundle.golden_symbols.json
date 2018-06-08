@@ -177,6 +177,9 @@
     "name": "_currentInjector"
   },
   {
+    "name": "_currentNamespace"
+  },
+  {
     "name": "_devMode"
   },
   {
@@ -544,6 +547,9 @@
   },
   {
     "name": "markViewDirty"
+  },
+  {
+    "name": "namespaceHTML"
   },
   {
     "name": "notImplemented"
