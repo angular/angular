@@ -1,4 +1,9 @@
+{% import "githubLinks.html" as github -%}
+
 {% if doc.title %}{$ ('# ' + doc.title.trim()) | marked $}{% endif %}
+<div class="page-actions">
+  <a href="{$ github.githubEditHref(doc, versionInfo) $}" aria-label="Suggest Edits" title="Suggest Edits"><i class="material-icons" aria-hidden="true" role="img">mode_edit</i></a>
+</div>
 <div class="content">
 {$ doc.description | marked $}
 </div>

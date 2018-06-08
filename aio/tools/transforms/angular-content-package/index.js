@@ -43,7 +43,7 @@ module.exports = new Package('angular-content', [basePackage, contentPackage])
     readFilesProcessor.sourceFiles = readFilesProcessor.sourceFiles.concat([
       {
         basePath: CONTENTS_PATH,
-        include: CONTENTS_PATH + '/{cookbook,guide,tutorial}/**/*.md',
+        include: CONTENTS_PATH + '/{guide,tutorial}/**/*.md',
         fileReader: 'contentFileReader'
       },
       {
