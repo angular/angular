@@ -495,6 +495,7 @@ export function renderEmbeddedTemplate<T>(
       rf = RenderFlags.Create;
     }
     oldView = enterView(viewNode.data, viewNode);
+    namespaceHTML();
     tView.template !(rf, context);
     if (rf & RenderFlags.Update) {
       refreshView();
@@ -520,6 +521,7 @@ export function renderComponentOrTemplate<T>(
       rendererFactory.begin();
     }
     if (template) {
+      namespaceHTML();
       template(getRenderFlags(hostView), componentOrContext !);
       refreshView();
     } else {
@@ -553,6 +555,24 @@ function getRenderFlags(view: LView): RenderFlags {
 }
 
 //////////////////////////
+//// Namespace
+//////////////////////////
+
+let _currentNamespace: string|null = null;
+
+export function namespaceSVG() {
+  _currentNamespace = 'http://www.w3.org/2000/svg/';
+}
+
+export function namespaceMathML() {
+  _currentNamespace = 'http://www.w3.org/1998/MathML/';
+}
+
+export function namespaceHTML() {
+  _currentNamespace = null;
+}
+
+//////////////////////////
 //// Element
 //////////////////////////
 
@@ -575,7 +595,19 @@ export function elementStart(
       assertEqual(currentView.bindingIndex, -1, 'elements should be created before any bindings');
 
   ngDevMode && ngDevMode.rendererCreateElement++;
-  const native: RElement = renderer.createElement(name);
+
+  let native: RElement;
+
+  if (isProceduralRenderer(renderer)) {
+    native = renderer.createElement(name, _currentNamespace);
+  } else {
+    if (_currentNamespace === null) {
+      native = renderer.createElement(name);
+    } else {
+      native = renderer.createElementNS(_currentNamespace, name);
+    }
+  }
+
   ngDevMode && assertDataInRange(index - 1);
 
   const node: LElementNode =
@@ -2130,6 +2162,7 @@ export function detectChangesInternal<T>(hostView: LView, hostNode: LElementNode
   const template = hostView.tView.template !;
 
   try {
+    namespaceHTML();
     template(getRenderFlags(hostView), component);
     refreshView();
   } finally {

@@ -17,6 +17,12 @@ export class Identifiers {
   static PATCH_DEPS = 'patchedDeps';
 
   /* Instructions */
+  static namespaceHTML: o.ExternalReference = {name: 'ɵNH', moduleName: CORE};
+
+  static namespaceMathML: o.ExternalReference = {name: 'ɵNM', moduleName: CORE};
+
+  static namespaceSVG: o.ExternalReference = {name: 'ɵNS', moduleName: CORE};
+
   static createElement: o.ExternalReference = {name: 'ɵE', moduleName: CORE};
 
   static elementEnd: o.ExternalReference = {name: 'ɵe', moduleName: CORE};

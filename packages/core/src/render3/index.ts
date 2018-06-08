@@ -58,6 +58,10 @@ export {
   load as ld,
   loadDirective as d,
 
+  namespaceHTML as NH,
+  namespaceMathML as NM,
+  namespaceSVG as NS,
+
   projection as P,
   projectionDef as pD,
 
