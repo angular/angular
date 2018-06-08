@@ -4,11 +4,11 @@ import {Component} from '@angular/core';
  * @title Table with a sticky columns
  */
 @Component({
-  selector: 'table-sticky-column-example',
-  styleUrls: ['table-sticky-column-example.css'],
-  templateUrl: 'table-sticky-column-example.html',
+  selector: 'table-sticky-columns-example',
+  styleUrls: ['table-sticky-columns-example.css'],
+  templateUrl: 'table-sticky-columns-example.html',
 })
-export class TableStickyColumnExample {
+export class TableStickyColumnsExample {
   displayedColumns =
       ['name', 'position', 'weight', 'symbol', 'position', 'weight', 'symbol', 'star'];
   dataSource = ELEMENT_DATA;

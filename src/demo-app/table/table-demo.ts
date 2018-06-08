@@ -30,7 +30,7 @@ export class TableDemo {
     'table-sorting',
     'table-expandable-rows',
     'table-sticky-header',
-    'table-sticky-column',
+    'table-sticky-columns',
     'table-sticky-footer',
     'table-sticky-complex',
     'table-sticky-complex-flex',
