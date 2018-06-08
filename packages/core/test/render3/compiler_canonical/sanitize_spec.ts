@@ -43,10 +43,8 @@ describe('compiler sanitization', () => {
         factory: function MyComponent_Factory() { return new MyComponent(); },
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'div');
-            $r3$.ɵe();
-            $r3$.ɵE(1, 'img');
-            $r3$.ɵe();
+            $r3$.ɵEe(0, 'div');
+            $r3$.ɵEe(1, 'img');
           }
           if (rf & 2) {
             $r3$.ɵp(0, 'innerHTML', $r3$.ɵb(ctx.innerHTML), $r3$.ɵsanitizeHtml);
