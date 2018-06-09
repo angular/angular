@@ -100,22 +100,13 @@ export class DynamicDataSource {
     }
     node.isLoading = true;
 
-    let count = 0;
-
     setTimeout(() => {
       if (expand) {
         const nodes = children.map(name =>
           new DynamicFlatNode(name, node.level + 1, this.database.isExpandable(name)));
         this.data.splice(index + 1, 0, ...nodes);
       } else {
-        for (let i = index + 1; i < this.data.length; i++) {
-          if (this.data[i].level > node.level) {
-              count++;
-          } else {
-            break;
-          }
-        }
-        this.data.splice(index + 1, count);
+        this.data.splice(index + 1, children.length);
       }
 
       // notify the change
