@@ -31,7 +31,7 @@ function addPackageJsonDependency() {
 
       // If not already present, add the dependency.
       const pkg = 'document-register-element';
-      const version = '^1.7.2';
+      const version = '1.7.2';
       if (!json[type][pkg]) {
         json[type][pkg] = version;
       }
