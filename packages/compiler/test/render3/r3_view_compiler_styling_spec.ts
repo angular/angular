@@ -40,8 +40,7 @@ describe('compiler compliance: styling', () => {
       const template = `
           template: function MyComponent_Template(rf: $RenderFlags$, $ctx$: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵe();
+              $r3$.ɵEe(0, 'div');
             }
             if (rf & 2) {
               $r3$.ɵs(0,$r3$.ɵb($ctx$.myStyleExp));
@@ -78,8 +77,7 @@ describe('compiler compliance: styling', () => {
       const template = `
           template: function MyComponent_Template(rf: $RenderFlags$, $ctx$: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵe();
+              $r3$.ɵEe(0, 'div');
             }
             if (rf & 2) {
               $r3$.ɵk(0,$r3$.ɵb($ctx$.myClassExp));

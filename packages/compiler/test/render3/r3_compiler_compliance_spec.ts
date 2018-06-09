@@ -52,8 +52,7 @@ describe('compiler compliance', () => {
             $r3$.ɵE(0, 'div', $c1$);
             $r3$.ɵNS();
             $r3$.ɵE(1, 'svg');
-            $r3$.ɵE(2, 'circle', $c2$);
-            $r3$.ɵe();
+            $r3$.ɵEe(2, 'circle', $c2$);
             $r3$.ɵe();
             $r3$.ɵNH();
             $r3$.ɵE(3, 'p');
@@ -101,8 +100,7 @@ describe('compiler compliance', () => {
             $r3$.ɵE(0, 'div', $c1$);
             $r3$.ɵNM();
             $r3$.ɵE(1, 'math');
-            $r3$.ɵE(2, 'infinity');
-            $r3$.ɵe();
+            $r3$.ɵEe(2, 'infinity');
             $r3$.ɵe();
             $r3$.ɵNH();
             $r3$.ɵE(3, 'p');
@@ -1307,8 +1305,7 @@ describe('compiler compliance', () => {
                     if (rf & 1) {
                       $r3$.ɵNS();
                       $r3$.ɵE(0,'g');
-                      $r3$.ɵE(1,'circle');
-                      $r3$.ɵe();
+                      $r3$.ɵEe(1,'circle');
                       $r3$.ɵe();
                     }
                   }
