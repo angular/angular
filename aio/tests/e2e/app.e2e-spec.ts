@@ -179,4 +179,25 @@ describe('site App', function() {
       expect(results).toContain('Router');
     });
   });
+
+  describe('suggest edit link', () => {
+    it('should be present on all docs pages', () => {
+      page.navigateTo('tutorial/toh-pt1');
+      expect(page.ghLinks.count()).toEqual(1);
+      /* tslint:disable:max-line-length */
+      expect(page.ghLinks.get(0).getAttribute('href'))
+        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/master\/aio\/content\/tutorial\/toh-pt1\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
+
+      page.navigateTo('guide/http');
+      expect(page.ghLinks.count()).toEqual(1);
+      /* tslint:disable:max-line-length */
+      expect(page.ghLinks.get(0).getAttribute('href'))
+        .toMatch(/https:\/\/github\.com\/angular\/angular\/edit\/master\/aio\/content\/guide\/http\.md\?message=docs%3A%20describe%20your%20change\.\.\./);
+    });
+
+    it('should not be present on top level pages', () => {
+      page.navigateTo('features');
+      expect(page.ghLinks.count()).toEqual(0);
+    });
+  });
 });
