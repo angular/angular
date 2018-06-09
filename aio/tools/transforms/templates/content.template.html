@@ -1,10 +1,10 @@
-{% import "githubLinks.html" as github -%}
+{% import "lib/githubLinks.html" as github -%}
 
 {% set relativePath = doc.fileInfo.relativePath %}
 {% if doc.title %}{$ ('# ' + doc.title.trim()) | marked $}{% endif %}
 {% if 'guide/' in relativePath or 'tutorial/' in relativePath or 'docs.md' in relativePath %}
-  <div class="page-actions">
-    <a href="{$ github.githubEditHref(doc, versionInfo) $}" aria-label="Suggest Edits" title="Suggest Edits"><i class="material-icons" aria-hidden="true" role="img">mode_edit</i></a>
+  <div class="github-links">
+    {$ github.githubEditLink(doc, versionInfo) $}
   </div>
 {% endif %}
 <div class="content">
