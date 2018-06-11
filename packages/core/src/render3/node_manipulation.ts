@@ -393,7 +393,7 @@ export function detachView(container: LContainerNode, removeIndex: number): LVie
   // Notify query that view has been removed
   const removedLview = viewNode.data;
   if (removedLview[QUERIES]) {
-    removedLview[QUERIES] !.removeView(removeIndex);
+    removedLview[QUERIES] !.removeView();
   }
   // Unsets the attached flag
   viewNode.data[FLAGS] &= ~LViewFlags.Attached;
