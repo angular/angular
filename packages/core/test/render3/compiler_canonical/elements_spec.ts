@@ -168,11 +168,17 @@ describe('elements', () => {
       // title="Hello"
       'title',
       'Hello',
+      // foo:bar="baz"
+      AttributeMarker.NamespaceURI,
+      'http://someuri/foo',
+      'foo:qux',
+      'quacks',
     ];
 
     @Component({
       selector: 'my-component',
-      template: `<div class="my-app" foo:bar="baz" title="Hello">Hello <b>World</b>!</div>`
+      template:
+          `<div class="my-app" foo:bar="baz" title="Hello" foo:qux="quacks">Hello <b>World</b>!</div>`
     })
     class MyComponent {
       // NORMATIVE
@@ -196,7 +202,8 @@ describe('elements', () => {
     }
 
     expect(toHtml(renderComponent(MyComponent)))
-        .toEqual('<div class="my-app" foo:bar="baz" title="Hello">Hello <b>World</b>!</div>');
+        .toEqual(
+            '<div class="my-app" foo:bar="baz" foo:qux="quacks" title="Hello">Hello <b>World</b>!</div>');
   });
 
   describe('bindings', () => {

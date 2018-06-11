@@ -8,7 +8,7 @@
 
 import './ng_dev_mode';
 
-import {assertDefined} from './assert';
+import {assertDefined, assertNotEqual} from './assert';
 import {AttributeMarker, TAttributes, TNode, unusedValueExportToPlacateAjd as unused1} from './interfaces/node';
 import {CssSelector, CssSelectorList, NG_PROJECT_AS_ATTR_NAME, SelectorFlags, unusedValueExportToPlacateAjd as unused2} from './interfaces/projection';
 
@@ -85,9 +85,10 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
         const maybeAttrName = nodeAttrs[attrIndexInNode];
         if (selectOnlyMarkerIdx > -1 && attrIndexInNode > selectOnlyMarkerIdx) {
           nodeAttrValue = '';
-        } else if (maybeAttrName === AttributeMarker.NamespaceURI) {
-          nodeAttrValue = nodeAttrs[attrIndexInNode + 2] as string;
         } else {
+          ngDevMode && assertNotEqual(
+                           maybeAttrName, AttributeMarker.NamespaceURI,
+                           'We do not match directives on namespaced attributes');
           nodeAttrValue = nodeAttrs[attrIndexInNode + 1] as string;
         }
         if (mode & SelectorFlags.CLASS &&

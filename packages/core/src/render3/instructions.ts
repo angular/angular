@@ -1527,18 +1527,25 @@ function generateInitialInputs(
   initialInputData[directiveIndex] = null;
 
   const attrs = tNode.attrs !;
-  for (let i = 0; i < attrs.length; i += 2) {
-    const first = attrs[i];
-    const attrName = first === AttributeMarker.NamespaceURI ? attrs[i += 2] : first;
+  let i = 0;
+  while (i < attrs.length) {
+    const attrName = attrs[i];
+    if (attrName === AttributeMarker.SelectOnly) break;
+    if (attrName === AttributeMarker.NamespaceURI) {
+      // We do not allow inputs on namespaced attributes.
+      i += 4;
+      continue;
+    }
     const minifiedInputName = inputs[attrName];
     const attrValue = attrs[i + 1];
 
-    if (attrName === AttributeMarker.SelectOnly) break;
     if (minifiedInputName !== undefined) {
       const inputsToStore: InitialInputs =
           initialInputData[directiveIndex] || (initialInputData[directiveIndex] = []);
       inputsToStore.push(minifiedInputName, attrValue as string);
     }
+
+    i += 2;
   }
   return initialInputData;
 }
