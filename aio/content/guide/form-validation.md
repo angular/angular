@@ -268,7 +268,7 @@ First we must create a directive that will wrap the validator function. We provi
 <code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-directive" title="shared/identity-revealed.directive.ts" linenums="false">
 </code-example>
 
-Next, we have to add the directive to the html template. Since the validator must be registered at the `FormGroup` level, we put the directive on the `form` tag.
+Next, we have to add the directive to the html template. Since the validator must be registered at the highest level in the form, we put the directive on the `form` tag.
 <code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" title="template/hero-form-template.component.html" linenums="false">
 </code-example>
 
