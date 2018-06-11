@@ -147,6 +147,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `<div style="literal">`                     |  ✅     |  ✅      |  ✅      |
 | `<div [style]="exp">`                       |  ✅     |  ✅      |  ✅      |
 | `<div [style.foo]="exp">`                   |  ✅     |  ✅      |  ✅      |
+| `<div xmlns:foo="url" foo:bar="baz">`       |  ✅     |  ✅      |  ❌      |
 | `{{ ['literal', exp ] }}`                   |  ✅     |  ✅      |  ✅      |
 | `{{ { a: 'literal', b: exp } }}`            |  ✅     |  ✅      |  ✅      |
 | `{{ exp \| pipe: arg }}`                    |  ✅     |  ✅      |  ✅      |

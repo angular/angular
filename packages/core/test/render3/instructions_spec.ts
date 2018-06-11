@@ -86,6 +86,7 @@ describe('instructions', () => {
         rendererCreateElement: 1,
       });
     });
+
     it('should allow setting namespaced attributes', () => {
       const t = new TemplateFixture(() => {
         elementStart(0, 'div', [
