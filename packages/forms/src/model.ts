@@ -362,10 +362,10 @@ export abstract class AbstractControl {
    * Marks the control as `touched`. A control is touched by focus and
    * blur events that do not change the value; compare `markAsDirty`;
    *
-   *  @param opts Configuration options that determine how the control events events after
-   * marking is applied.
+   *  @param opts Configuration options that determine how the control propagates changes
+   * and emits events events after marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
-   * marks all direct ancestors, in order to maintain the model.
+   * marks all direct ancestors. Default is false.
    */
   markAsTouched(opts: {onlySelf?: boolean} = {}): void {
     (this as{touched: boolean}).touched = true;
@@ -382,10 +382,10 @@ export abstract class AbstractControl {
    * If the control has any children, also marks all children as `untouched`
    * and recalculates the `touched` status of all parent controls.
    *
-   *  @param opts Configuration options that determine how the control emits events after
-   * the marking is applied.
+   *  @param opts Configuration options that determine how the control propagates changes
+   * and emits events after the marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
-   * marks all direct ancestors, in order to maintain the model.
+   * marks all direct ancestors. Default is false.
    */
   markAsUntouched(opts: {onlySelf?: boolean} = {}): void {
     (this as{touched: boolean}).touched = false;
@@ -404,10 +404,10 @@ export abstract class AbstractControl {
    * Marks the control as `dirty`. A control becomes dirty when
    * the control's is changed through the UI; compare `markAsTouched`.
    *
-   *  @param opts Configuration options that determine how the control emits events after
-   * marking is applied.
+   *  @param opts Configuration options that determine how the control propagates changes
+   * and emits events after marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
-   * marks all direct ancestors, in order to maintain the model.
+   * marks all direct ancestors. Default is false.
    */
   markAsDirty(opts: {onlySelf?: boolean} = {}): void {
     (this as{pristine: boolean}).pristine = false;
@@ -428,7 +428,7 @@ export abstract class AbstractControl {
    *  @param opts Configuration options that determine how the control emits events after
    * marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
-   * marks all direct ancestors, in order to maintain the model.
+   * marks all direct ancestors. Default is false..
    */
   markAsPristine(opts: {onlySelf?: boolean} = {}): void {
     (this as{pristine: boolean}).pristine = true;
@@ -447,11 +447,13 @@ export abstract class AbstractControl {
    *
    * A control is pending while the control performs async validation.
    *
-   *  @param opts Configuration options that determine how the control propagates and
+   *  @param opts Configuration options that determine how the control propagates changes and
    * emits events after marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
-   * marks all direct ancestors, in order to maintain the model.
-   * * `emitEvent`: When false, A `statusChanges` event is not emitted.
+   * marks all direct ancestors. Default is false..
+   * * `emitEvent`: When true or not supplied (the default), the `statusChanges`
+   * observable emits an event with the latest status the control is marked pending.
+   * When false, no events are emitted.
    *
    */
   markAsPending(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
@@ -476,9 +478,11 @@ export abstract class AbstractControl {
    *  @param opts Configuration options that determine how the control propagates
    * changes and emits events after the control is disabled.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
-   * marks all direct ancestors, in order to maintain the model.
-   * * `emitEvent`: Set to false to prevent observables from emitting both statusChanges
-   * and valuesChanges events.
+   * marks all direct ancestors. Default is false..
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is disabled.
+   * When false, no events are emitted.
    */
   disable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     (this as{status: string}).status = DISABLED;
@@ -507,9 +511,11 @@ export abstract class AbstractControl {
    *  @param opts Configure options that control how the control propagates changes and
    * emits events when marked as untouched
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
-   * marks all direct ancestors, in order to maintain the model.
-   * * `emitEvent`: Set to false to prevent observables from emitting both statusChanges
-   * and valuesChanges events.
+   * marks all direct ancestors. Default is false..
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is enabled.
+   * When false, no events are emitted.
    */
   enable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     (this as{status: string}).status = VALID;
@@ -558,12 +564,14 @@ export abstract class AbstractControl {
    *
    * By default, it also updates the value and validity of its ancestors.
    *
-   * @param opts Configuration options determine how the control is updated and emits events
-   * after validity checks are applied.
+   * @param opts Configuration options determine how the control propagates changes and emits events
+   * after updates and validity checks are applied.
    * * `onlySelf`: When true, only update this control. When false or not supplied,
-   * update all direct ancestors, in order to maintain the model.
-   * * `emitEvent`: Set to false to prevent observables from emitting both statusChanges
-   * and valuesChanges events.
+   * update all direct ancestors. Default is false..
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is updated.
+   * When false, no events are emitted.
    */
   updateValueAndValidity(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._setInitialStatus();
@@ -940,17 +948,22 @@ export class FormControl extends AbstractControl {
    * Sets a new value for the form control.
    *
    * @param value The new value for the control.
-   * @param options Configuration options that determine how the control emits events when the
-   * value changes.
+   * @param options Configuration options that determine how the control proopagates changes
+   * and emits events when the value changes.
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    *
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
-   * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
-   * * `emitModelToViewChange`: When true (the default), each change triggers an `onChange` event to
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control value is updated.
+   * When false, no events are emitted.
+   * * `emitModelToViewChange`: When true or not supplied  (the default), each change triggers an
+   * `onChange` event to
    * update the view.
-   * * `emitViewToModelChange`: When true (the default), each change triggers an `ngModelChange`
+   * * `emitViewToModelChange`: When true or not supplied (the default), each change triggers an
+   * `ngModelChange`
    * event to update the model.
    *
    */
@@ -996,12 +1009,15 @@ export class FormControl extends AbstractControl {
    * or with an object that defines the initial value, status, and options
    * for handling updates and validation.
    *
-   * @param options Configuration options that determine how the control is updated and
-   * emits events after the value changes.
+   * @param options Configuration options that determine how the control propagates changes
+   * and emits events after the value changes.
    *
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
-   * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is reset.
+   * When false, no events are emitted.
    *
    */
   reset(formState: any = null, options: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
@@ -1282,14 +1298,17 @@ export class FormGroup extends AbstractControl {
    * that doesn't exist or if you excluding the value of a control.
    *
    * @param value The new value for the control that matches the structure of the group.
-   * @param options Configuration options that determine how the control is updated and
-   * emits events after the value changes.
+   * @param options Configuration options that determine how the control propagates changes
+   * and emits events after the value changes.
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    *
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
-   * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control value is updated.
+   * When false, no events are emitted.
    */
   setValue(value: {[key: string]: any}, options: {onlySelf?: boolean, emitEvent?: boolean} = {}):
       void {
@@ -1324,11 +1343,14 @@ export class FormGroup extends AbstractControl {
    *  ```
    *
    * @param value The object that matches the structure of the group
-   * @param options Configure options that determines how the control emits events after
-   * the value is patched
+   * @param options Configure options that determines how the control propagates changes and
+   * emits events after the value is patched
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
-   * false.
-   * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
+   * true.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control value is updated.
+   * When false, no events are emitted.
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
@@ -1360,7 +1382,10 @@ export class FormGroup extends AbstractControl {
    * and emits events when the group is reset.
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
-   * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is reset.
+   * When false, no events are emitted.
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    *
@@ -1699,12 +1724,15 @@ export class FormArray extends AbstractControl {
    * ```
    *
    * @param value Array of values for the controls
-   * @param options Configure options that determine how the control emits events after the
-   * value changes
+   * @param options Configure options that determine how the control propagates changes and
+   * emits events after the value changes
    *
-   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
-   * false.
-   * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   * is false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control value is updated.
+   * When false, no events are emitted.
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
@@ -1739,12 +1767,15 @@ export class FormArray extends AbstractControl {
    * ```
    *
    * @param value Array of latest values for the controls
-   * @param options Configure options that determine how the control emits events after the
-   * value changes
+   * @param options Configure options that determine how the control propagates changes and
+   * emits events after the value changes
    *
-   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
-   * false.
-   * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   * is false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control value is updated.
+   * When false, no events are emitted.
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
@@ -1791,12 +1822,15 @@ export class FormArray extends AbstractControl {
    * ```
    *
    * @param value Array of values for the controls
-   * @param options Configure options that determine how the control emits events after the
-   * value changes
+   * @param options Configure options that determine how the control propagates changes and
+   * emits events after the value changes
    *
-   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
-   * false.
-   * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
+   * * `onlySelf`: When true, each change only affects this control, and not its parent. Default
+   * is false.
+   * * `emitEvent`: When true or not supplied (the default), both the `statusChanges` and
+   * `valueChanges`
+   * observables emit events with the latest status and value when the control is reset.
+   * When false, no events are emitted.
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    */
