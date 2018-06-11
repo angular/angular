@@ -173,7 +173,7 @@ describe('compiler compliance', () => {
 
                 @Component({
                   selector: 'my-component',
-                  template: \`<div xmlns:foo="http://someurl/foo" class="my-app" foo:bar="baz" title="Hello" foo:qux="quacks">Hello <b>World</b>!</div>\`
+                  template: \`<div xmlns:foo="http://someuri/foo" class="my-app" foo:bar="baz" title="Hello" foo:qux="quacks">Hello <b>World</b>!</div>\`
                 })
                 export class MyComponent {}
 

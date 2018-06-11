@@ -178,7 +178,7 @@ describe('elements', () => {
     @Component({
       selector: 'my-component',
       template:
-          `<div class="my-app" foo:bar="baz" title="Hello" foo:qux="quacks">Hello <b>World</b>!</div>`
+          `<div xmlns:foo="http://someuri/foo" class="my-app" foo:bar="baz" title="Hello" foo:qux="quacks">Hello <b>World</b>!</div>`
     })
     class MyComponent {
       // NORMATIVE
