@@ -645,5 +645,14 @@
     "website": "https://kmaida.io/",
     "bio": "Kim is an an Angular consultant, developer, speaker, writer, and Google Developer Expert. She is passionate about learning from and sharing knowledge with other developers through blogging, speaking, workshops, and open source.",
     "group": "GDE"
+  },
+
+  "loiane": {
+    "name": "Loiane Groner",
+    "picture": "loiane.jpg",
+    "twitter": "loiane",
+    "website": "https://loiane.com",
+    "bio": "Loiane is a passionate developer and loves writing blog posts and recording free video courses for her training portal https://loiane.training. She is also a GDE (Google Developer Expert) in Angular and Web Technologies.",
+    "group": "GDE"
   }
 }
