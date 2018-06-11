@@ -168,7 +168,7 @@ describe('elements', () => {
       // title="Hello"
       'title',
       'Hello',
-      // foo:bar="baz"
+      // foo:qux="quacks"
       AttributeMarker.NamespaceURI,
       'http://someuri/foo',
       'foo:qux',

@@ -173,7 +173,7 @@ describe('compiler compliance', () => {
 
                 @Component({
                   selector: 'my-component',
-                  template: \`<div xmlns:foo="http://someurl/foo" class="my-app" foo:bar="baz" title="Hello">Hello <b>World</b>!</div>\`
+                  template: \`<div xmlns:foo="http://someurl/foo" class="my-app" foo:bar="baz" title="Hello" foo:qux="quacks">Hello <b>World</b>!</div>\`
                 })
                 export class MyComponent {}
 
@@ -188,7 +188,7 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-          const $c1$ = ['class', 'my-app', 0, 'http://someuri/foo', 'foo:bar', 'baz', 'title', 'Hello'];
+          const $c1$ = ['class', 'my-app', 0, 'http://someuri/foo', 'foo:bar', 'baz', 'title', 'Hello', 0, 'http://someuri/foo', 'foo:qux', 'quacks'];
           …
           template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
             if (rf & 1) {
