@@ -90,7 +90,7 @@ const serverUpdate =
       mock.messages.subscribe(msg => { scope.handleMessage(msg, 'default'); });
 
       mock.setupSw();
-      reg = await mock.mockRegistration;
+      reg = mock.mockRegistration !;
 
       await Promise.all(scope.handleFetch(new MockRequest('/only.txt'), 'default'));
       await driver.initialized;
