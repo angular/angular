@@ -4,7 +4,7 @@ import {addModuleImportToModule, findModuleFromOptions} from '../utils/ast';
 import {buildComponent} from '../utils/devkit-utils/component';
 
 /**
- * Scaffolds a new navigation component.
+ * Scaffolds a new dashboard component.
  * Internally it bootstraps the base component schematic
  */
 export default function(options: Schema): Rule {
@@ -25,6 +25,7 @@ function addNavModulesToModule(options: Schema) {
     addModuleImportToModule(host, modulePath, 'MatMenuModule', '@angular/material');
     addModuleImportToModule(host, modulePath, 'MatIconModule', '@angular/material');
     addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material');
+    addModuleImportToModule(host, modulePath, 'LayoutModule', '@angular/cdk/layout');
     return host;
   };
 }

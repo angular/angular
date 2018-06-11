@@ -5,31 +5,30 @@
     // Adds Angular Material to an application without changing any templates
     "ng-add": {
       "description": "Adds Angular Material to the application without affecting any templates",
-      "factory": "./shell",
-      "schema": "./shell/schema.json",
-      "aliases": ["material-shell"]
+      "factory": "./install",
+      "schema": "./install/schema.json",
+      "aliases": ["material-shell", "materialShell"]
     },
-
     // Create a dashboard component
-    "materialDashboard": {
+    "dashboard": {
       "description": "Create a card-based dashboard component",
       "factory": "./dashboard/index",
       "schema": "./dashboard/schema.json",
-      "aliases": [ "material-dashboard" ]
+      "aliases": ["material-dashboard", "materialDashboard"]
     },
     // Creates a table component
-    "materialTable": {
+    "table": {
       "description": "Create a component that displays data with a data-table",
       "factory": "./table/index",
       "schema": "./table/schema.json",
-      "aliases": [ "material-table" ]
+      "aliases": ["material-table", "materialTable"]
     },
     // Creates toolbar and navigation components
-    "materialNav": {
+    "nav": {
       "description": "Create a component with a responsive sidenav for navigation",
       "factory": "./nav/index",
       "schema": "./nav/schema.json",
-      "aliases": [ "material-nav" ]
+      "aliases": ["material-nav", "materialNav"]
     }
   }
 }

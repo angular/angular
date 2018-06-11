@@ -28,7 +28,7 @@ describe('material-nav-schematic', () => {
   });
 
   it('should create nav files and add them to module', () => {
-    const tree = runner.runSchematic('materialNav', { ...options }, createTestApp());
+    const tree = runner.runSchematic('nav', { ...options }, createTestApp());
     const files = tree.files;
 
     expect(files).toContain('/src/app/foo/foo.component.css');
@@ -42,7 +42,7 @@ describe('material-nav-schematic', () => {
   });
 
   it('should add nav imports to module', () => {
-    const tree = runner.runSchematic('materialNav', { ...options }, createTestApp());
+    const tree = runner.runSchematic('nav', { ...options }, createTestApp());
     const moduleContent = getFileContent(tree, '/src/app/app.module.ts');
 
     expect(moduleContent).toContain('LayoutModule');

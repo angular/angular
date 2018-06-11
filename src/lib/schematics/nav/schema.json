@@ -13,7 +13,10 @@
     "project": {
       "type": "string",
       "description": "The name of the project.",
-      "visible": false
+      "visible": false,
+      "$default": {
+        "$source": "projectName"
+      }
     },
     "name": {
       "type": "string",
@@ -90,7 +93,5 @@
       "description": "Specifies if declaring module exports the component."
     }
   },
-  "required": [
-    "name"
-  ]
+  "required": []
 }

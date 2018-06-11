@@ -20,7 +20,7 @@ describe('material-shell-schematic', () => {
   });
 
   it('should update package.json', () => {
-    const tree = runner.runSchematic('materialShell', {}, appTree);
+    const tree = runner.runSchematic('install', {}, appTree);
     const packageJson = JSON.parse(getFileContent(tree, '/package.json'));
 
     expect(packageJson.dependencies['@angular/material']).toBeDefined();
@@ -28,7 +28,7 @@ describe('material-shell-schematic', () => {
   });
 
   it('should add default theme', () => {
-    const tree = runner.runSchematic('materialShell', {}, appTree);
+    const tree = runner.runSchematic('shell', {}, appTree);
     const config: any = getConfig(tree);
     config.apps.forEach(app => {
       expect(app.styles).toContain(
@@ -37,7 +37,7 @@ describe('material-shell-schematic', () => {
   });
 
   it('should add custom theme', () => {
-    const tree = runner.runSchematic('materialShell', {
+    const tree = runner.runSchematic('install', {
       theme: 'custom'
     }, appTree);
 
@@ -53,7 +53,7 @@ describe('material-shell-schematic', () => {
   });
 
   it('should add font links', () => {
-    const tree = runner.runSchematic('materialShell', {}, appTree);
+    const tree = runner.runSchematic('install', {}, appTree);
     const config: any = getConfig(tree);
     const workspace = getWorkspace(tree);
     const project = getProjectFromWorkspace(workspace, config.project.name);

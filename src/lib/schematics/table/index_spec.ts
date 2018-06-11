@@ -28,7 +28,7 @@ describe('material-table-schematic', () => {
   });
 
   it('should create table files and add them to module', () => {
-    const tree = runner.runSchematic('materialTable', { ...options }, createTestApp());
+    const tree = runner.runSchematic('table', { ...options }, createTestApp());
     const files = tree.files;
 
     expect(files).toContain('/src/app/foo/foo.component.css');
@@ -50,7 +50,7 @@ describe('material-table-schematic', () => {
   });
 
   it('should add table imports to module', () => {
-    const tree = runner.runSchematic('materialTable', { ...options }, createTestApp());
+    const tree = runner.runSchematic('table', { ...options }, createTestApp());
     const moduleContent = getFileContent(tree, '/src/app/app.module.ts');
 
     expect(moduleContent).toContain('MatTableModule');

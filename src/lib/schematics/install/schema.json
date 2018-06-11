@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "id": "SchematicsMaterialShell",
-  "title": "Material Shell Options Schema",
+  "id": "SchematicsMaterialInstall",
+  "title": "Material Install Options Schema",
   "type": "object",
   "properties": {
     "skipPackageJson": {

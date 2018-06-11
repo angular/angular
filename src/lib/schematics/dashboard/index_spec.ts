@@ -28,7 +28,7 @@ describe('material-dashboard-schematic', () => {
   });
 
   it('should create dashboard files and add them to module', () => {
-    const tree = runner.runSchematic('materialDashboard', { ...options }, createTestApp());
+    const tree = runner.runSchematic('dashboard', { ...options }, createTestApp());
     const files = tree.files;
 
     expect(files).toContain('/src/app/foo/foo.component.css');
