@@ -84,7 +84,7 @@ export function isNodeMatchingSelector(tNode: TNode, selector: CssSelector): boo
         let nodeAttrValue: string;
         const maybeAttrName = nodeAttrs[attrIndexInNode];
         if (selectOnlyMarkerIdx > -1 && attrIndexInNode > selectOnlyMarkerIdx) {
-          nodeAttrValue = ''
+          nodeAttrValue = '';
         } else if (maybeAttrName === AttributeMarker.NamespaceURI) {
           nodeAttrValue = nodeAttrs[attrIndexInNode + 2] as string;
         } else {
