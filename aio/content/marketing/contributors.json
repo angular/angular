@@ -653,5 +653,14 @@
     "twitter": "elanathellama",
     "bio": "Elana is a Developer Relations intern on the Angular team at Google. She is working on migration paths from AngularJS to Angular and would love to chat about your experience with upgrading.",
     "group": "Angular"
+  },
+  
+  "loiane": {
+    "name": "Loiane Groner",
+    "picture": "loiane.jpg",
+    "twitter": "loiane",
+    "website": "https://loiane.com",
+    "bio": "Loiane is a passionate developer and loves writing blog posts and recording free video courses for her training portal https://loiane.training. She is also a GDE (Google Developer Expert) in Angular and Web Technologies.",
+    "group": "GDE"
   }
 }
