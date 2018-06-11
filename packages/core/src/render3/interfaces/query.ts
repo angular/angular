@@ -49,7 +49,7 @@ export interface LQueries {
    * Notify `LQueries` that an `LView` has been removed from `LContainer`. As a result all
    * the matching nodes from this view should be removed from container's queries.
    */
-  removeView(removeIndex: number): void;
+  removeView(): void;
 
   /**
    * Add additional `QueryList` to track.
