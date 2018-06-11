@@ -240,7 +240,8 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
 
         it('should update selected DOM element when options added via a nested component', () => {
           if (isNode) return;
-          const fixture = initTest(FormControlSelectWithInnerComponent, FormControlSelectOptionsInnerComponent);
+          const fixture =
+              initTest(FormControlSelectWithInnerComponent, FormControlSelectOptionsInnerComponent);
           fixture.detectChanges();
 
           const select = fixture.debugElement.query(By.css('select'));
@@ -458,6 +459,19 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              expect(sfOption.nativeElement.selected).toBe(true);
            }));
 
+        it('should update selected DOM element when options added via a nested component', () => {
+          if (isNode) return;
+          const fixture = initTest(
+              FormControlSelectMultipleWithInnerComponent, FormControlSelectOptionsInnerComponent);
+          fixture.detectChanges();
+
+          const select = fixture.debugElement.query(By.css('select'));
+          const options = fixture.debugElement.queryAll(By.css('option'));
+
+          expect(options[0].nativeElement.selected).toBe(false);
+          expect(options[1].nativeElement.selected).toBe(true);
+          expect(options[2].nativeElement.selected).toBe(true);
+        });
       });
 
       describe('in template-driven forms', () => {
@@ -1245,6 +1259,17 @@ class FormControlSelectMultipleWithCompareFn {
       (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl([{id: 1, name: 'SF'}])});
+}
+
+@Component({
+  selector: 'form-control-select-multiple-with-inner-component',
+  template: `
+    <div [formGroup]="form">
+      <select multiple formControlName="number" [formControlSelectOptionsInnerComponent]></select>
+    </div>`
+})
+class FormControlSelectMultipleWithInnerComponent {
+  form = new FormGroup({number: new FormControl([2, 3])});
 }
 
 

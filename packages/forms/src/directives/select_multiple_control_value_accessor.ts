@@ -234,7 +234,7 @@ export class ɵNgSelectMultipleOption implements OnDestroy {
 
   constructor(
       private _element: ElementRef, private _renderer: Renderer2,
-      @Optional() @Host() private _select: SelectMultipleControlValueAccessor) {
+      @Optional() private _select: SelectMultipleControlValueAccessor) {
     if (this._select) {
       this.id = this._select._registerOption(this);
     }
