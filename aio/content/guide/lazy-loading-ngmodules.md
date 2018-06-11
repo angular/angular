@@ -26,7 +26,7 @@ A basic understanding of the following:
 For the final sample app with two lazy loaded modules that this page describes, see the
 <live-example></live-example>.
 -->
-이 문서에서는 지연 로딩되는 모듈 2개를 만들어 봅니다. 이 문서에서 설명하는 예제의 코드는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
+이 문서에서는 지연 로딩되는 모듈 2개를 만들어 봅니다. 이 문서에서 설명하는 예제 코드는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 <hr>
 
@@ -72,7 +72,7 @@ generates a file called `app-routing.module.ts`, which is one of
 the files you need for setting up lazy loading for your feature module.
 Navigate into the project by issuing the command `cd customer-app`.
 -->
-이 명령을 실행하면 `customer-app` 이라는 이름으로 애플리케이션이 생되는데, 이 때 옵션으로 `--routing` 플래그를 설정했기 때문에 `app-routing.module.ts` 파일이 함께 생성됩니다. 이 파일은 기능 모듈을 지연 로딩하도록 설정할 때 사용합니다.
+이 명령을 실행하면 `customer-app` 이라는 이름으로 애플리케이션이 생성되는데, 이 때 옵션으로 `--routing` 플래그를 설정했기 때문에 `app-routing.module.ts` 파일이 함께 생성됩니다. 이 파일은 기능 모듈을 지연 로딩하도록 설정할 때 사용합니다.
 애플리케이션이 생성되고 나면 `cd customer-app` 명령을 실행해서 프로젝트 폴더로 이동합니다.
 
 <!--
@@ -99,7 +99,7 @@ the app grows and allows you to reuse this module while easily keeping its routi
 -->
 이 명령을 실행하면 `customers` 폴더에 `CustomersModule`과 `CustomersRoutingModule`에 해당하는 파일이 생성됩니다. `CustomersModule`은 고객에 관련된 기능을 전담하는 용도로 사용할 것입니다.
 그리고 `CustomersRoutingModule`은 `CustomersModule` 안에서 라우팅 하는 용도로 사용합니다.
-이렇게 구성하면 이 모듈의 라우팅 설정은 애플리케이션과 분리되어 있기 때문에 모듈 외부의 영향을 받지 않으며, 이 모듈만 떼서 다른 애플리케이션에 재사용하기도 좋습니다.
+이렇게 구성하면 이 모듈의 라우팅 설정은 애플리케이션의 라우팅 설정과 분리되기 때문에 모듈 외부의 영향을 받지 않으며, 이 모듈만 떼서 다른 애플리케이션에 재사용하기도 좋습니다.
 
 <!--
 The CLI imports the `CustomersRoutingModule` into the `CustomersModule` by
@@ -255,81 +255,127 @@ The import statements stay the same. The first two paths are the routes to the `
 <!--
 Next, take a look at `customers.module.ts`. If you’re using the CLI and following the steps outlined in this page, you don’t have to do anything here. The feature module is like a connector between the `AppRoutingModule` and the feature routing module. The `AppRoutingModule` imports the feature module, `CustomersModule`, and `CustomersModule` in turn imports the `CustomersRoutingModule`.
 -->
-다음으로 `customers.module.ts` 파일을 보면, 지금까지 단계를 Angular CLI를 활용하면서 그대로 따라왔다면 수정할 것은 아무것도 없습니다. 기능 모듈 자체는 `AppRoutingModule`과 기능 모듈 안에 있는 라우팅 모듈을 연결하는 역할만 합니다. 그래서 `AppRoutingModule`이 기능 모듈인 `CustomersModule`을 로드하면, `CustomersModule`이 다시 `CustomerRoutingModule`을 로드합니다.
+다음으로 `customers.module.ts` 파일을 확인하는데, 지금까지 단계를 Angular CLI를 활용하면서 그대로 따라왔다면 추가로 수정할 내용은 없습니다. 기능 모듈 자체는 `AppRoutingModule`과 기능 모듈 안에 있는 라우팅 모듈을 연결하는 역할만 합니다. 그래서 `AppRoutingModule`이 기능 모듈인 `CustomersModule`을 로드하면, `CustomersModule`이 다시 `CustomerRoutingModule`을 로드합니다.
 
 <code-example path="lazy-loading-ngmodules/src/app/customers/customers.module.ts" region="customers-module" title="src/app/customers/customers.module.ts" linenums="false">
 
 </code-example>
 
 
-
+<!--
 The `customers.module.ts` file imports the `CustomersRoutingModule` and `CustomerListComponent` so the `CustomersModule` class can have access to them. `CustomersRoutingModule` is then listed in the `@NgModule` `imports` array giving `CustomersModule` access to its own routing module, and `CustomerListComponent` is in the `declarations` array, which means `CustomerListComponent` belongs to the `CustomersModule`.
+-->
+`customers.module.ts` 파일에 정의된 `CustomersModule`은 `CustomersRoutingModule`을 로드하기 때문에 이 라우팅 모듈에 접근할 수 있습니다. 이 라우팅 모듈을 `@NgModule`의 `imports` 프로퍼티에 등록하면 `CustomersModule`의 라우팅을 담당하는 모듈로 동작하며, `CustomerListComponent`도 `CustomersModule`에 포함되도록 `declarations` 프로퍼티에 등록했습니다.
 
-
+<!--
 ### Configure the feature module’s routes
+-->
+### 기능 모듈의 라우팅 설정하기
 
+<!--
 The next step is in `customers-routing.module.ts`. First, import the component at the top of the file with the other JavaScript import statements. Then, add the route to `CustomerListComponent`.
+-->
+다음으로 볼 파일은 `customers-routing.module.ts` 파일입니다. 먼저, 파일 제일 위쪽에 라우팅과 관련된 심볼을 로드하고, 그 다음에는 라우팅에 사용할 `CustomerListComponent`를 로드합니다.
 
 <code-example path="lazy-loading-ngmodules/src/app/customers/customers-routing.module.ts" region="customers-routing-module" title="src/app/customers/customers-routing.module.ts" linenums="false">
 
 </code-example>
 
-
+<!--
 Notice that the `path` is set to an empty string. This is because the path in `AppRoutingModule` is already set to `customers`, so this route in the `CustomersRoutingModule`, is already within the `customers` context. Every route in this routing module is a child route.
+-->
+이 때 라우팅 설정에서 `path`에는 빈 주소를 지정했습니다. 이렇게 사용한 이유는 `AppRoutingModule`에서 주소를 지정할 때 이미 `customers`로 지정했기 때문이며, 이제 `CustomersRoutingModule`이 라우팅하는 주소는 `customers` 주소가 기준점이 됩니다.
 
+<!--
 Repeat this last step of importing the `OrdersListComponent` and configuring the Routes array for the `orders-routing.module.ts`:
+-->
+이 내용은 `orders-routing.module.ts` 파일에서 `OrdersListComponent`에 대한 라우팅 설정을 할 때도 마찬가지입니다:
 
 <code-example path="lazy-loading-ngmodules/src/app/orders/orders-routing.module.ts" region="orders-routing-module-detail" title="src/app/orders/orders-routing.module.ts (excerpt)" linenums="false">
 
 </code-example>
 
+<!--
 Now, if you view the app in the browser, the three buttons take you to each module.
+-->
+이제 브라우저에서 앱을 실행해보면 이전에 만들었던 버튼 3개가 모두 동작하는 것을 확인할 수 있습니다.
 
+<!--
 ## Confirm it’s working
+-->
+## 동작 확인하기
 
+<!--
 You can check to see that a module is indeed being lazy loaded with the Chrome developer tools. In Chrome, open the dev tools by pressing `Cmd+Option+i` on a Mac or `Ctrl+Alt+i` on a PC and go to the Network Tab.
+-->
+Chrome 개발자 도구를 활용하면 모듈이 정말 지연 로딩되었는지 확인할 수 있습니다. Chrome 브라우저에서 개발자 도구를 열고 네트워크 탭으로 이동합니다.
 
 <figure>
  <img src="generated/images/guide/lazy-loading-ngmodules/network-tab.png" width="600" alt="lazy loaded modules diagram">
 </figure>
 
-
+<!--
 Click on the Orders or Customers button. If you see a chunk appear, you’ve wired everything up properly and the feature module is being lazy loaded. A chunk should appear for Orders and for Customers but will only appear once for each.
-
+-->
+그리고 이제 Orders나 Customers 버튼을 클릭해 봅시다. 그러면 애플리케이션 패키지 파일과 별개의 청크(chunk) 파일로 패키징된 지연 로딩 모듈이 로드되는 것을 확인할 수 있습니다. 이 파일은 `OrdersModule`이나 `CustomersModule`에 접근할 때 한 번씩만 로드됩니다.
 
 <figure>
  <img src="generated/images/guide/lazy-loading-ngmodules/chunk-arrow.png" width="600" alt="lazy loaded modules diagram">
 </figure>
 
-
+<!--
 To see it again, or to test after working in the project, clear everything out by clicking the circle with a line through it in the upper left of the Network Tab:
+-->
+이 과정을 다시 확인하려면 브라우저에 애플리케이션을 다시 실행해야 합니다. 먼저, 네트워크 탭에서 Clear 버튼을 눌러서 네트워크 기록을 초기화합니다:
 
 <figure>
  <img src="generated/images/guide/lazy-loading-ngmodules/clear.gif" width="200" alt="lazy loaded modules diagram">
 </figure>
 
-
+<!--
 Then reload with `Cmd+r` or `Ctrl+r`, depending on your platform.
+-->
+그리고 페이지를 새로고침하면 애플리케이션이 다시 실행될 것입니다.
 
+<!--
 ## `forRoot()` and `forChild()`
+-->
+## `forRoot()`와 `forChild()`
 
+<!--
 You might have noticed that the CLI adds `RouterModule.forRoot(routes)` to the `app-routing.module.ts` `imports` array. This lets Angular know that this module,
 `AppRoutingModule`, is a routing module and `forRoot()` specifies that this is the root
 routing module. It configures all the
 routes you pass to it, gives you access to the router directives, and registers the `RouterService`.
 Use `forRoot()` in the `AppRoutingModule`&mdash;that is, one time in the app at the root level.
+-->
+Angular CLI로 생성한 `app-routing.module.ts` 파일을 보면, `imports` 배열에 라우팅 모듈을 등록할 때 `RouterModule.forRoot(routes)`로 지정한 것을 확인할 수 있습니다. `forRoot()` 메소드를 사용하면 이 라우팅 모듈이 최상위 라우팅 모듈이라는 것을 의미합니다. 그러면 이 애플리케이션에서 라우팅할 때는 모두 이 라우팅 모듈을 거치게 될 것이며, 이 라우팅 모듈의 설정이 모든 라우팅에 적용됩니다. 그래서 `forRoot()`는 애플리케이션의 최상위 계층에서 한 번만 사용해야 합니다.
 
+<!--
 The CLI also adds `RouterModule.forChild(routes)` to feature routing modules. This way, Angular
 knows that the route list is only responsible for providing additional routes and is intended for feature modules. You can use `forChild()` in multiple modules.
+-->
+이와 다르게, 기능 모듈에 만든 라우팅 모듈은 `RouterModule.forChild(routes)`로 지정되어 있습니다. `forChild()` 함수를 사용하면 이 라우팅 모듈이 최상위 모듈의 자식 라우터로 동작한다는 것을 의미하며, 동시에 어떤 기능 모듈 안에 포함된다는 것으로 판단합니다. `forChild()` 함수는 여러번 사용해도 문제 없습니다.
 
+<!--
 `forRoot()` contains injector configuration which is global; such as configuring the Router. `forChild()` has no injector configuration, only directives such as `RouterOutlet` and `RouterLink`.
-
+-->
+`forRoot()`를 사용하면 전역에서 사용할 수 있는 인젝터가 생성되는데, 브라우저 전체에서 사용되는 Router 객체가 이 인젝터에 포함됩니다. 반면에 `forChild()`는 `RouterOutlet`과 `RouterLink` 디렉티브만 제공합니다.
 
 <hr>
 
+<!--
 ## More on NgModules and routing
+-->
+## NgModule과 라우팅 더 알아보기
 
+<!--
 You may also be interested in the following:
 * [Routing and Navigation](guide/router).
 * [Providers](guide/providers).
 * [Types of Feature Modules](guide/module-types).
+-->
+다음 내용에 대해서도 더 확인해 보세요:
+* [라우팅, 네비게이션](guide/router)
+* [프로바이더](guide/providers)
+* [기능 모듈의 종류](guide/module-types)
