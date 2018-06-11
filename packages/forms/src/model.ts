@@ -14,32 +14,37 @@ import {toObservable} from './validators';
 
 /**
  * @description
- * Reports that a FormControl is valid, in that no errors exist in the input value.
+ * Reports that a FormControl is valid, meaning that no errors exist in the input value.
  *
+ * @see `status`
  */
 export const VALID = 'VALID';
 
 /**
  * @description
- * Reports that a FormControl is invalid, in that an error exists in the input value.
+ * Reports that a FormControl is invalid, meaning that an error exists in the input value.
+ * 
+ * @see `status`
  */
 export const INVALID = 'INVALID';
 
 /**
  * @description
- * Reports that a FormControl is pending, in that that async validation is occurring and
+ * Reports that a FormControl is pending, meaning that that async validation is occurring and
  * errors are not yet available for the input value.
  * 
  * @see `markAsPending`
+ * @see `status`
  */
 export const PENDING = 'PENDING';
 
 /**
  * @description
- * Reports that a FormControl is disabled, i.e. that the control is exempt from ancestor
+ * Reports that a FormControl is disabled, meaning that the control is exempt from ancestor
  * calculations of validity or value.
  * 
  * @see `markAsDisabled`
+ * @see `status`
  */
 export const DISABLED = 'DISABLED';
 
@@ -152,8 +157,12 @@ export abstract class AbstractControl {
 
   /**
    * @description
-   * Reports the current value of the control. Only includes
-   * the values of enabled controls.
+   * The current value of the control.
+   *
+   * * For a `FormControl`, the current value.
+   * * For a `FormGroup`, the values of enabled controls as an object
+   * with a key-value pair for each member of the group.
+   * * For a `FormArray`, the values of enabled controls as an array.
    *
    */
   public readonly value: any;
@@ -162,8 +171,8 @@ export abstract class AbstractControl {
    * @description
    * Initialize the AbstractControl instance.
    *
-   * @param validator The function that will determine the synchronous validity of this control.
-   * @param asyncValidator The function that will determine the asynchronous validity of this
+   * @param validator The function that determines the synchronous validity of this control.
+   * @param asyncValidator The function that determines the asynchronous validity of this
    * control.
    */
   constructor(public validator: ValidatorFn|null, public asyncValidator: AsyncValidatorFn|null) {}
@@ -192,8 +201,10 @@ export abstract class AbstractControl {
   /**
    * @description
    * A control is `valid` when its `status` is `VALID`.
+   * 
+   * @see `status`
    *
-   * True if the control has passed all of its validation tests,
+   * @returns True if the control has passed all of its validation tests,
    * false otherwise.
    */
   get valid(): boolean { return this.status === VALID; }
@@ -201,8 +212,10 @@ export abstract class AbstractControl {
   /**
    * @description
    * A control is `invalid` when its `status` is `INVALID`.
-   *
-   * True if this control has failed one or more of its validation checks,
+   * 
+   * @see `status`
+   * 
+   * @returns True if this control has failed one or more of its validation checks,
    * false otherwise.
    */
   get invalid(): boolean { return this.status === INVALID; }
@@ -210,8 +223,10 @@ export abstract class AbstractControl {
   /**
    * @description
    * A control is `pending` when its `status` is `PENDING`.
-   *
-   * True if this control is in the process of conducting a validation check,
+   * 
+   * @see `status`
+   * 
+   * @returns True if this control is in the process of conducting a validation check,
    * false otherwise.
    */
   get pending(): boolean { return this.status == PENDING; }
@@ -220,19 +235,23 @@ export abstract class AbstractControl {
    * @description
    * A control is `disabled` when its `status` is `DISABLED`.
    *
-   * True if the control is disabled, false otherwise.
-   *
+   * @see `status`
+   * 
    * Disabled controls are exempt from validation checks and
    * are not included in the aggregate value of their ancestor
    * controls.
+   *
+   * @returns True if the control is disabled, false otherwise.
    */
   get disabled(): boolean { return this.status === DISABLED; }
 
   /**
    * @description
    * A control is `enabled` as long as its `status` is not `DISABLED`.
-   *
-   * True if the control has any status other than 'DISABLED',
+   * 
+   * @see `status`
+   * 
+   * @returns True if the control has any status other than 'DISABLED',
    * false if the status is 'DISABLED'.
    *
    */
@@ -250,7 +269,7 @@ export abstract class AbstractControl {
    * A control is `pristine` if the user has not yet changed
    * the value in the UI.
    *
-   * True if the user has not yet changed the value in the UI; compare `dirty`.
+   * @returns True if the user has not yet changed the value in the UI; compare `dirty`.
    * Programmatic changes to a control's value do not mark it dirty.
    */
   public readonly pristine: boolean = true;
@@ -260,13 +279,15 @@ export abstract class AbstractControl {
    * A control is `dirty` if the user has changed the value
    * in the UI.
    *
-   * True if the user has changed the value of this control in the UI; compare `pristine`.
+   * @returns True if the user has changed the value of this control in the UI; compare `pristine`.
    * Programmatic changes to a control's value do not mark it dirty.
    */
   get dirty(): boolean { return !this.pristine; }
 
   /**
    * @description
+   * True if the control is marked as `touched`.
+   *
    * A control is marked `touched` once the user has triggered
    * a `blur` event on it.
    */
@@ -274,6 +295,8 @@ export abstract class AbstractControl {
 
   /**
    * @description
+   * True if the control has not been marked as touched
+   *
    * A control is `untouched` if the user has not yet triggered
    * a `blur` event on it.
    */
@@ -281,22 +304,22 @@ export abstract class AbstractControl {
 
   /**
    * @description
-   * A multicasted observable that emits an event every time the value of the control changes, in
+   * A multicasting observable that emits an event every time the value of the control changes, in
    * the UI or programmatically.
    */
   public readonly valueChanges: Observable<any>;
 
   /**
    * @description
-   * A multicasted observable that emits an event every time the validation `status` of the control
-   * is re-calculated.
+   * A multicasting observable that emits an event every time the validation `status` of the control
+   * recalculates.
    */
   public readonly statusChanges: Observable<any>;
 
   /**
    * @description
-   * Reports the update strategy of the `AbstractControl` (i.e.
-   * the event on which the control will update itself).
+   * Reports the update strategy of the `AbstractControl` (meaning
+   * the event on which the control updates itself).
    * Possible values: `'change'` | `'blur'` | `'submit'`
    * Default value: `'change'`
    */
@@ -307,7 +330,7 @@ export abstract class AbstractControl {
   /**
    * @description
    * Sets the synchronous validators that are active on this control.  Calling
-   * this will overwrite any existing sync validators.
+   * this overwrites any existing sync validators.
    */
   setValidators(newValidator: ValidatorFn|ValidatorFn[]|null): void {
     this.validator = coerceToValidator(newValidator);
@@ -316,7 +339,7 @@ export abstract class AbstractControl {
   /**
    * @description
    * Sets the async validators that are active on this control. Calling this
-   * will overwrite any existing async validators.
+   * overwrites any existing async validators.
    */
   setAsyncValidators(newValidator: AsyncValidatorFn|AsyncValidatorFn[]|null): void {
     this.asyncValidator = coerceToAsyncValidator(newValidator);
@@ -337,9 +360,10 @@ export abstract class AbstractControl {
   /**
    * @description
    * Marks the control as `touched`. A control is touched by focus and
-   * blur events that do not change the value; compare markAsDirty
+   * blur events that do not change the value; compare `markAsDirty`;
    *
-   *  @param opts Configuration options that how marking is applied.
+   *  @param opts Configuration options that determine how the control events events after
+   * marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors, in order to maintain the model.
    */
@@ -355,11 +379,11 @@ export abstract class AbstractControl {
    * @description
    * Marks the control as `untouched`.
    *
-   * If the control has any children, it will also mark all children as `untouched`
-   * to maintain the model, and re-calculate the `touched` status of all parent
-   * controls.
+   * If the control has any children, also marks all children as `untouched`
+   * and recalculates the `touched` status of all parent controls.
    *
-   *  @param opts Configuration options that how marking is applied.
+   *  @param opts Configuration options that determine how the control emits events after
+   * the marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors, in order to maintain the model.
    */
@@ -377,10 +401,11 @@ export abstract class AbstractControl {
 
   /**
    * @description
-   * Marks the control as `dirty`. A control is dirty by changing
-   * the control; compare `markAsTouched`
+   * Marks the control as `dirty`. A control becomes dirty when
+   * the control's is changed through the UI; compare `markAsTouched`.
    *
-   *  @param opts Configuration options that how marking is applied.
+   *  @param opts Configuration options that determine how the control emits events after
+   * marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors, in order to maintain the model.
    */
@@ -396,11 +421,12 @@ export abstract class AbstractControl {
    * @description
    * Marks the control as `pristine`.
    *
-   * If the control has any children, it will also mark all children as `pristine`
-   * to maintain the model, and re-calculate the `pristine` status of all parent
+   * If the control has any children, marks all children as `pristine`,
+   * and recalculates the `pristine` status of all parent
    * controls.
    *
-   *  @param opts Configuration options that how marking is applied.
+   *  @param opts Configuration options that determine how the control emits events after
+   * marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors, in order to maintain the model.
    */
@@ -419,12 +445,13 @@ export abstract class AbstractControl {
    * @description
    * Marks the control as `pending`.
    *
-   * An event will be emitted by `statusChanges` by default.
+   * A control is pending while the control performs async validation.
    *
-   *  @param opts Configuration options that how marking is applied.
+   *  @param opts Configuration options that determine how the control propagates and
+   * emits events after marking is applied.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors, in order to maintain the model.
-   * * `emitEvent`: When false, `statusChanges` will not emit an event.
+   * * `emitEvent`: When false, A `statusChanges` event is not emitted.
    *
    */
   markAsPending(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
@@ -441,17 +468,17 @@ export abstract class AbstractControl {
 
   /**
    * @description
-   * Disables the control. This means the control will be exempt from validation checks and
+   * Disables the control. This means the control is exempt from validation checks and
    * excluded from the aggregate value of any parent. Its status is `DISABLED`.
    *
-   * If the control has children, all children will be disabled to maintain the model.
+   * If the control has children, all children are also disabled.
    *
-   *  @param opts Configuration options that how marking is applied.
+   *  @param opts Configuration options that determine how the control propagates
+   * changes and emits events after the control is disabled.
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors, in order to maintain the model.
-   * * `emitEvent`: When false, `statusChanges` and `valueChanges` will not emit an event.
-   * Otherwise,
-   * both Observables will emit a status and value event.
+   * * `emitEvent`: Set to false to prevent observables from emitting both statusChanges
+   * and valuesChanges events.
    */
   disable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     (this as{status: string}).status = DISABLED;
@@ -471,18 +498,18 @@ export abstract class AbstractControl {
 
   /**
    * @description
-   * Enables the control. This means the control will be included in validation checks and
-   * the aggregate value of its parent. Its status is re-calculated based on its value and
+   * Enables the control. This means the control is included in validation checks and
+   * the aggregate value of its parent. Its status recalculates based on its value and
    * its validators.
    *
-   * By default, if the control has children, all children will be enabled.
+   * By default, if the control has children, all children are enabled.
    *
-   *  @param opts Configure options that happen when marked as untouched
+   *  @param opts Configure options that control how the control propagates changes and
+   * emits events when marked as untouched
    * * `onlySelf`: When true, mark only this control. When false or not supplied,
    * marks all direct ancestors, in order to maintain the model.
-   * * `emitEvent`: When false, `statusChanges` and `valueChanges` will not emit an event.
-   * Otherwise,
-   * both Observables will emit a status and value event.
+   * * `emitEvent`: Set to false to prevent observables from emitting both statusChanges
+   * and valuesChanges events.
    */
   enable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     (this as{status: string}).status = VALID;
@@ -527,17 +554,16 @@ export abstract class AbstractControl {
   abstract reset(value?: any, options?: Object): void;
 
   /**
-   * Re-calculates the value and validation status of the control.
+   * Recalculates the value and validation status of the control.
    *
-   * By default, it will also update the value and validity of its ancestors.
+   * By default, it also updates the value and validity of its ancestors.
    *
-   * @param opts Configuration options that control events after updating and
-   * validity checks are applied.
+   * @param opts Configuration options determine how the control is updated and emits events
+   * after validity checks are applied.
    * * `onlySelf`: When true, only update this control. When false or not supplied,
    * update all direct ancestors, in order to maintain the model.
-   * * `emitEvent`: When false, `statusChanges` and `valueChanges` will not emit an event.
-   * Otherwise,
-   * both Observables will emit a status and value event.
+   * * `emitEvent`: Set to false to prevent observables from emitting both statusChanges
+   * and valuesChanges events.
    */
   updateValueAndValidity(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     this._setInitialStatus();
@@ -594,11 +620,9 @@ export abstract class AbstractControl {
 
   /**
    * @description
-   * Sets errors on a form control.
+   * Sets errors on a form control when running validations manually, rather than automatically.
    *
-   * This is used when validations are run manually by the user, rather than automatically.
-   *
-   * Calling `setErrors` will also update the validity of the parent control.
+   * Calling `setErrors` also updates the validity of the parent control.
    *
    * ### Manually set the errors for a control
    *
@@ -625,7 +649,7 @@ export abstract class AbstractControl {
    * @description
    * Retrieves a child control given the control's name or path.
    *
-   * @param path dot-delimited string or array of string/number values that define the path to the
+   * @param path A dot-delimited string or array of string/number values that define the path to the
    * control.
    *
    * ### Retrieve a nested control
@@ -647,6 +671,7 @@ export abstract class AbstractControl {
    * @param errorCode The error code for which to retrieve data
    * @param path The path to a control to check. If not supplied, checks for the error in this
    * control.
+   *
    * @returns The error data if the control with the given path has the given error, otherwise null
    * or undefined.
    */
@@ -790,6 +815,8 @@ export abstract class AbstractControl {
  * @see [Usage Notes](#usage-notes)
  * 
  * @usageNotes
+ * 
+ * ### Initializing Form Controls
  *
  * Instantiate a `FormControl`, with an initial value.
  *
@@ -798,9 +825,8 @@ export abstract class AbstractControl {
  * console.log(ctrl.value);     // 'some value'
  *```
  *
- * Initializing the control with a form state object.
- *
- * The `value` and `disabled` keys are required when initializing with a form state object.
+ * The following example initializes the control with a form state object. The `value` 
+ * and `disabled` keys are required in this case.
  *
  * ```ts
  * const ctrl = new FormControl({ value: 'n/a', disabled: true });
@@ -816,7 +842,7 @@ export abstract class AbstractControl {
  * console.log(ctrl.status);     // 'INVALID'
  * ```
  *
- * The example below initializes the control using an options object.
+ * The following example initializes the control using an options object.
  *
  * ```ts
  * const ctrl = new FormControl('', {
@@ -843,7 +869,7 @@ export abstract class AbstractControl {
  * 
  * ### Reset the control back to an initial value
  * 
- * You can also reset to a specific form state by passing through a standalone
+ * You reset to a specific form state by passing through a standalone
  * value or a form state object that contains both a value and a disabled state
  * (these are the only two properties that cannot be calculated).
  *
@@ -914,7 +940,8 @@ export class FormControl extends AbstractControl {
    * Sets a new value for the form control.
    *
    * @param value The new value for the control.
-   * @param options Configuration options for how the control emits events when the value changes.
+   * @param options Configuration options that determine how the control emits events when the
+   * value changes.
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    *
@@ -949,7 +976,7 @@ export class FormControl extends AbstractControl {
    * It exists for symmetry with {@link FormGroup#patchValue patchValue} on `FormGroups` and
    * `FormArrays`, where it does behave differently.
    * 
-   * @see See `setValue` for options
+   * @see `setValue` for options
    */
   patchValue(value: any, options: {
     onlySelf?: boolean,
@@ -962,19 +989,15 @@ export class FormControl extends AbstractControl {
 
   /**
    * @description
-   * Resets the form control
-   *
-   * By default, the following actions happen when the control is reset.
-   *
-   * * it is marked as `pristine`
-   * * it is marked as `untouched`
-   * * value is set to null
+   * Resets the form control, marking it `pristine` and `untouched`, and setting
+   * the value to null.
    *
    * @param formState Initializes the control with an initial state value,
    * or with an object that defines the initial value, status, and options
    * for handling updates and validation.
    *
-   * @param options Configuration options for emitting events when the control value changes.
+   * @param options Configuration options that determine how the control is updated and
+   * emits events after the value changes.
    *
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
@@ -1074,7 +1097,7 @@ export class FormControl extends AbstractControl {
  * along with `FormControl` and `FormArray`.
  *
  * When instantiating a `FormGroup`, pass in a collection of child controls as the first
- * argument. The key for each child will be the name under which it is registered.
+ * argument. The key for each child registers the name for the control.
  *
  * @usageNotes
  *
@@ -1092,7 +1115,7 @@ export class FormControl extends AbstractControl {
  *
  * ### Create a form group with a group-level validator
  *
- * You can also include group-level validators as the second arg, or group-level async
+ * You include group-level validators as the second arg, or group-level async
  * validators as the third arg. These come in handy when you want to perform validation
  * that considers the value of more than one child control.
  *
@@ -1109,7 +1132,7 @@ export class FormControl extends AbstractControl {
  * }
  * ```
  *
- * Like `FormControl` instances, you can alternatively choose to pass in
+ * Like `FormControl` instances, you choose to pass in
  * validators and async validators as part of an options object.
  *
  * ```
@@ -1121,9 +1144,9 @@ export class FormControl extends AbstractControl {
  *
  * ### Set the updateOn property for all controls in a form group
  *
- * The options object can also be used to set a default value for each child
+ * The options object is used to set a default value for each child
  * control's `updateOn` property. If you set `updateOn` to `'blur'` at the
- * group level, all child controls will default to 'blur', unless the child
+ * group level, all child controls default to 'blur', unless the child
  * has explicitly specified a different `updateOn` value.
  *
  * ```ts
@@ -1225,10 +1248,12 @@ export class FormGroup extends AbstractControl {
    * @description
    * Check whether there is an enabled control with the given name in the group.
    *
-   * It will return false for disabled controls. If you'd like to check for existence in the group
+   * Reports false for disabled controls. If you'd like to check for existence in the group
    * only, use {@link AbstractControl#get get} instead.
    *
    * @param name The control name to check for existence in the collection
+   *
+   * @returns false for disabled controls, true otherwise.
    */
   contains(controlName: string): boolean {
     return this.controls.hasOwnProperty(controlName) && this.controls[controlName].enabled;
@@ -1257,7 +1282,8 @@ export class FormGroup extends AbstractControl {
    * that doesn't exist or if you excluding the value of a control.
    *
    * @param value The new value for the control that matches the structure of the group.
-   * @param options Configuration options for how the control emits events when the value changes.
+   * @param options Configuration options that determine how the control is updated and
+   * emits events after the value changes.
    * The configuration options are passed to the {@link AbstractControl#updateValueAndValidity
    * updateValueAndValidity} method.
    *
@@ -1278,7 +1304,7 @@ export class FormGroup extends AbstractControl {
   /**
    * @description
    * Patches the value of the `FormGroup`. It accepts an object with control
-   * names as keys, and will do its best to match the values to the correct controls
+   * names as keys, and does its best to match the values to the correct controls
    * in the group.
    *
    * It accepts both super-sets and sub-sets of the group without throwing an error.
@@ -1298,7 +1324,8 @@ export class FormGroup extends AbstractControl {
    *  ```
    *
    * @param value The object that matches the structure of the group
-   * @param options Configure options that happen when the value is patched
+   * @param options Configure options that determines how the control emits events after
+   * the value is patched
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
    * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
@@ -1317,22 +1344,20 @@ export class FormGroup extends AbstractControl {
 
   /**
    * @description
-   * Resets the `FormGroup`. This means by default:
+   * Resets the `FormGroup`, marks all descendants are marked `pristine` and `untouched`, and
+   * the value of all descendants to null.
    *
-   * * The group and all descendants are marked `pristine`
-   * * The group and all descendants are marked `untouched`
-   * * The value of all descendants will be null or null maps
-   *
-   * You can also reset to a specific form state by passing in a map of states
+   * You reset to a specific form state by passing in a map of states
    * that matches the structure of your form, with control names as keys. The state
-   * can be a standalone value or a form state object with both a value and a disabled
+   * is a standalone value or a form state object with both a value and a disabled
    * status.
    *
    * @param value Initializes the control with an initial state value,
    * or with an object that defines the initial value, status,
    * and options for handling updates and validation.
    *
-   * @param options Configuration options that happen when the group is reset.
+   * @param options Configuration options that determine how the control propagates changes
+   * and emits events when the group is reset.
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
    * * `emitEvent`: When true (the default), each change triggers a valueChanges event.
@@ -1513,11 +1538,11 @@ export class FormGroup extends AbstractControl {
  *
  * ### Create a form array with array-level validators
  *
- * You can also include array-level validators and async validators. These come in handy
+ * You include array-level validators and async validators. These come in handy
  * when you want to perform validation that considers the value of more than one child
  * control.
  *
- * The two types of validators can be passed in separately as the second and third arg
+ * The two types of validators are passed in separately as the second and third arg
  * respectively, or together as part of an options object.
  *
  * ```
@@ -1529,9 +1554,9 @@ export class FormGroup extends AbstractControl {
  *
   * ### Set the updateOn property for all controls in a form array
  *
- * The options object can also be used to set a default value for each child
+ * The options object is used to set a default value for each child
  * control's `updateOn` property. If you set `updateOn` to `'blur'` at the
- * array level, all child controls will default to 'blur', unless the child
+ * array level, all child controls default to 'blur', unless the child
  * has explicitly specified a different `updateOn` value.
  *
  * ```ts
@@ -1545,7 +1570,7 @@ export class FormGroup extends AbstractControl {
  * To change the controls in the array, use the `push`, `insert`, or `removeAt` methods
  * in `FormArray` itself. These methods ensure the controls are properly tracked in the
  * form's hierarchy. Do not modify the array of `AbstractControl`s used to instantiate
- * the `FormArray` directly, as that will result in strange and unexpected behavior such
+ * the `FormArray` directly, as that result in strange and unexpected behavior such
  * as broken change detection.
  *
  *
@@ -1555,7 +1580,7 @@ export class FormArray extends AbstractControl {
   * @description
   * Creates a new `FormArray` instance.
   *
-  * @param controls An array of child controls. Each child control will be given an index
+  * @param controls An array of child controls. Each child control is given an index
   * wheh it is registered.
   *
   * @param validatorOrOpts A synchronous validator function, or an array of
@@ -1656,7 +1681,7 @@ export class FormArray extends AbstractControl {
    * Sets the value of the `FormArray`. It accepts an array that matches
    * the structure of the control.
    *
-   * This method performs strict checks, so it will throw an error if you try
+   * This method performs strict checks, and throws an error if you try
    * to set the value of a control that doesn't exist or if you exclude the
    * value of a control.
    *
@@ -1674,7 +1699,8 @@ export class FormArray extends AbstractControl {
    * ```
    *
    * @param value Array of values for the controls
-   * @param options Configure options for emitting events when the control value changes
+   * @param options Configure options that determine how the control emits events after the
+   * value changes
    *
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
@@ -1694,7 +1720,7 @@ export class FormArray extends AbstractControl {
   /**
    * @description
    * Patches the value of the `FormArray`. It accepts an array that matches the
-   * structure of the control, and will do its best to match the values to the correct
+   * structure of the control, and does its best to match the values to the correct
    * controls in the group.
    *
    * It accepts both super-sets and sub-sets of the array without throwing an error.
@@ -1713,7 +1739,8 @@ export class FormArray extends AbstractControl {
    * ```
    *
    * @param value Array of latest values for the controls
-   * @param options Configure options for emitting events when the control value changes
+   * @param options Configure options that determine how the control emits events after the
+   * value changes
    *
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
@@ -1732,14 +1759,11 @@ export class FormArray extends AbstractControl {
 
   /**
    * @description
-   * Resets the `FormArray`. This means by default:
+   * Resets the `FormArray` and all descendants are marked `pristine` and `untouched`, and the
+   * value of all descendants to null or null maps.
    *
-   * * The array and all descendants are marked `pristine`
-   * * The array and all descendants are marked `untouched`
-   * * The value of all descendants will be null or null maps
-   *
-   * You can also reset to a specific form state by passing in an array of states
-   * that matches the structure of the control. The state can be a standalone value
+   * You reset to a specific form state by passing in an array of states
+   * that matches the structure of the control. The state is a standalone value
    * or a form state object with both a value and a disabled status.
    *
    * ### Reset the values in a form array
@@ -1767,7 +1791,8 @@ export class FormArray extends AbstractControl {
    * ```
    *
    * @param value Array of values for the controls
-   * @param options Configure options for emitting events when the control value changes
+   * @param options Configure options that determine how the control emits events after the
+   * value changes
    *
    * * `onlySelf`: When true, each change only affects this control, and not its parent. Default is
    * false.
