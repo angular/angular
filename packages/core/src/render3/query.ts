@@ -176,13 +176,16 @@ export class LQueries_ implements LQueries {
     add(this.deep, node);
   }
 
-  removeView(index: number): void {
+  removeView(): void {
     let query = this.deep;
     while (query) {
       ngDevMode &&
           assertDefined(
               query.containerValues, 'View queries need to have a pointer to container values.');
-      const removed = query.containerValues !.splice(index, 1);
+
+      const containerValues = query.containerValues !;
+      const viewValuesIdx = containerValues.indexOf(query.values);
+      const removed = containerValues.splice(viewValuesIdx, 1);
 
       // mark a query as dirty only when removed view had matching modes
       ngDevMode && assertEqual(removed.length, 1, 'removed.length');
