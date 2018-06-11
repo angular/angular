@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 
 import {RenderFlags, directiveInject} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
-import {bind, container, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, element, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, text, textBinding} from '../../src/render3/instructions';
 import {LElementNode, LNode} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {TrustedString, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
@@ -68,6 +68,23 @@ describe('instructions', () => {
         tView: 1,
         rendererCreateElement: 1,
         rendererSetProperty: 1
+      });
+    });
+  });
+
+  describe('element', () => {
+    it('should create an element', () => {
+      const t = new TemplateFixture(() => { element(0, 'div', ['id', 'test', 'title', 'Hello']); });
+
+      const div = (t.hostNode.native as HTMLElement).querySelector('div') !;
+      expect(div.id).toEqual('test');
+      expect(div.title).toEqual('Hello');
+
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 1,
+        tNode: 2,  // 1 for div, 1 for host element
+        tView: 1,
+        rendererCreateElement: 1,
       });
     });
   });

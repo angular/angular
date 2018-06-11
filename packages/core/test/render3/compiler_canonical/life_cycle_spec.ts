@@ -70,10 +70,8 @@ describe('lifecycle hooks', () => {
       factory: function SimpleLayout_Factory() { return simpleLayout = new SimpleLayout(); },
       template: function SimpleLayout_Template(rf: $RenderFlags$, ctx: $SimpleLayout$) {
         if (rf & 1) {
-          $r3$.ɵE(0, 'lifecycle-comp');
-          $r3$.ɵe();
-          $r3$.ɵE(1, 'lifecycle-comp');
-          $r3$.ɵe();
+          $r3$.ɵEe(0, 'lifecycle-comp');
+          $r3$.ɵEe(1, 'lifecycle-comp');
         }
         if (rf & 2) {
           $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
