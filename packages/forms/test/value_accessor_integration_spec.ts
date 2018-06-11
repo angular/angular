@@ -11,7 +11,6 @@ import {ComponentFixture, TestBed, async, fakeAsync, tick} from '@angular/core/t
 import {AbstractControl, ControlValueAccessor, FormControl, FormGroup, FormsModule, NG_VALIDATORS, NG_VALUE_ACCESSOR, NgControl, NgForm, NgModel, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
-
 {
   describe('value accessors', () => {
 
@@ -239,6 +238,16 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           expect(nyOption.nativeElement.selected).toBe(true);
         });
 
+        it('should update selected DOM element when options added via a nested component', () => {
+          if (isNode) return;
+          const fixture = initTest(FormControlSelectWithInnerComponent, FormControlSelectOptionsInnerComponent);
+          fixture.detectChanges();
+
+          const select = fixture.debugElement.query(By.css('select'));
+
+          expect(select.nativeElement.selectedIndex).toEqual(1);
+          expect(select.nativeElement.value).toEqual('2');
+        });
       });
 
       describe('in template-driven forms', () => {
@@ -1170,6 +1179,28 @@ class FormControlSelectWithCompareFn {
       (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl({id: 1, name: 'SF'})});
+}
+
+@Component({
+  selector: '[formControlSelectOptionsInnerComponent]',
+  template: `
+    <option [value]="1">#1</option>
+    <option [value]="2">#2</option>
+    <option [value]="3">#3</option>`
+})
+class FormControlSelectOptionsInnerComponent {
+  @Input() formControlSelectOptionsInnerComponent: any;
+}
+
+@Component({
+  selector: 'form-control-select-with-inner-component',
+  template: `
+    <div [formGroup]="form">
+      <select formControlName="number" [formControlSelectOptionsInnerComponent]></select>
+    </div>`
+})
+class FormControlSelectWithInnerComponent {
+  form = new FormGroup({number: new FormControl(2)});
 }
 
 @Component({

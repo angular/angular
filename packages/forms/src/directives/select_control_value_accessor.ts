@@ -210,7 +210,7 @@ export class NgSelectOption implements OnDestroy {
 
   constructor(
       private _element: ElementRef, private _renderer: Renderer2,
-      @Optional() @Host() private _select: SelectControlValueAccessor) {
+      @Optional() private _select: SelectControlValueAccessor) {
     if (this._select) this.id = this._select._registerOption();
   }
 
