@@ -86,7 +86,7 @@ describe('MatSelect', () => {
    * overall test time.
    * @param declarations Components to declare for this block
    */
-  function configureMatSelectTestingModule(declarations) {
+  function configureMatSelectTestingModule(declarations: any[]) {
     TestBed.configureTestingModule({
       imports: [
         MatFormFieldModule,
@@ -1094,6 +1094,23 @@ describe('MatSelect', () => {
         expect(fixture.componentInstance.options.first.selected).toBe(true);
         expect(fixture.componentInstance.select.selected)
             .toBe(fixture.componentInstance.options.first);
+      }));
+
+      it('should be able to select an option using the MatOption API', fakeAsync(() => {
+        trigger.click();
+        fixture.detectChanges();
+        flush();
+
+        const optionInstances = fixture.componentInstance.options.toArray();
+        const optionNodes: NodeListOf<HTMLElement> =
+            overlayContainerElement.querySelectorAll('mat-option');
+
+        optionInstances[1].select();
+        fixture.detectChanges();
+
+        expect(optionNodes[1].classList).toContain('mat-selected');
+        expect(optionInstances[1].selected).toBe(true);
+        expect(fixture.componentInstance.select.selected).toBe(optionInstances[1]);
       }));
 
       it('should deselect other options when one is selected', fakeAsync(() => {

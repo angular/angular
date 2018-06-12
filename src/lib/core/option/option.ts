@@ -145,16 +145,20 @@ export class MatOption implements AfterViewChecked, OnDestroy {
 
   /** Selects the option. */
   select(): void {
-    this._selected = true;
-    this._changeDetectorRef.markForCheck();
-    this._emitSelectionChangeEvent();
+    if (!this._selected) {
+      this._selected = true;
+      this._changeDetectorRef.markForCheck();
+      this._emitSelectionChangeEvent();
+    }
   }
 
   /** Deselects the option. */
   deselect(): void {
-    this._selected = false;
-    this._changeDetectorRef.markForCheck();
-    this._emitSelectionChangeEvent();
+    if (this._selected) {
+      this._selected = false;
+      this._changeDetectorRef.markForCheck();
+      this._emitSelectionChangeEvent();
+    }
   }
 
   /** Sets focus onto this option. */

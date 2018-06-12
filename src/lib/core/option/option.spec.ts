@@ -27,6 +27,50 @@ describe('MatOption component', () => {
     subscription.unsubscribe();
   });
 
+  it('should not emit to `onSelectionChange` if selecting an already-selected option', () => {
+    const fixture = TestBed.createComponent(OptionWithDisable);
+    fixture.detectChanges();
+
+    const optionInstance: MatOption =
+        fixture.debugElement.query(By.directive(MatOption)).componentInstance;
+
+    optionInstance.select();
+    expect(optionInstance.selected).toBe(true);
+
+    const spy = jasmine.createSpy('selection change spy');
+    const subscription = optionInstance.onSelectionChange.subscribe(spy);
+
+    optionInstance.select();
+    fixture.detectChanges();
+
+    expect(optionInstance.selected).toBe(true);
+    expect(spy).not.toHaveBeenCalled();
+
+    subscription.unsubscribe();
+  });
+
+  it('should not emit to `onSelectionChange` if deselecting an unselected option', () => {
+    const fixture = TestBed.createComponent(OptionWithDisable);
+    fixture.detectChanges();
+
+    const optionInstance: MatOption =
+        fixture.debugElement.query(By.directive(MatOption)).componentInstance;
+
+    optionInstance.deselect();
+    expect(optionInstance.selected).toBe(false);
+
+    const spy = jasmine.createSpy('selection change spy');
+    const subscription = optionInstance.onSelectionChange.subscribe(spy);
+
+    optionInstance.deselect();
+    fixture.detectChanges();
+
+    expect(optionInstance.selected).toBe(false);
+    expect(spy).not.toHaveBeenCalled();
+
+    subscription.unsubscribe();
+  });
+
   describe('ripples', () => {
     let fixture: ComponentFixture<OptionWithDisable>;
     let optionDebugElement: DebugElement;

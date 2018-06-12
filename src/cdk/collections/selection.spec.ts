@@ -82,6 +82,14 @@ describe('SelectionModel', () => {
 
       expect(model.selected).toEqual([1, 2, 3]);
     });
+
+    it('should sort values if `selected` has not been accessed before', () => {
+      model = new SelectionModel(true, [2, 3, 1]);
+
+      // Important: don't assert `selected` before sorting so the getter isn't invoked
+      model.sort();
+      expect(model.selected).toEqual([1, 2, 3]);
+    });
   });
 
   describe('onChange event', () => {

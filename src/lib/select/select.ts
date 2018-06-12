@@ -479,7 +479,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   }
 
   ngOnInit() {
-    this._selectionModel = new SelectionModel<MatOption>(this.multiple, undefined, false);
+    this._selectionModel = new SelectionModel<MatOption>(this.multiple);
     this.stateChanges.next();
 
     // We need `distinctUntilChanged` here, because some browsers will
@@ -502,6 +502,11 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   ngAfterContentInit() {
     this._initKeyManager();
+
+    this._selectionModel.onChange!.pipe(takeUntil(this._destroy)).subscribe(event => {
+      event.added.forEach(option => option.select());
+      event.removed.forEach(option => option.deselect());
+    });
 
     this.options.changes.pipe(startWith(null), takeUntil(this._destroy)).subscribe(() => {
       this._resetOptions();
@@ -765,19 +770,18 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    * Sets the selected option based on a value. If no option can be
    * found with the designated value, the select trigger is cleared.
    */
-  private _setSelectionByValue(value: any | any[], isUserInput = false): void {
+  private _setSelectionByValue(value: any | any[]): void {
     if (this.multiple && value) {
       if (!Array.isArray(value)) {
         throw getMatSelectNonArrayValueError();
       }
 
-      this._clearSelection();
-      value.forEach((currentValue: any) => this._selectValue(currentValue, isUserInput));
+      this._selectionModel.clear();
+      value.forEach((currentValue: any) => this._selectValue(currentValue));
       this._sortValues();
     } else {
-      this._clearSelection();
-
-      const correspondingOption = this._selectValue(value, isUserInput);
+      this._selectionModel.clear();
+      const correspondingOption = this._selectValue(value);
 
       // Shift focus to the active item. Note that we shouldn't do this in multiple
       // mode, because we don't know what option the user interacted with last.
@@ -793,7 +797,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    * Finds and selects and option based on its value.
    * @returns Option that has the corresponding value.
    */
-  private _selectValue(value: any, isUserInput = false): MatOption | undefined {
+  private _selectValue(value: any): MatOption | undefined {
     const correspondingOption = this.options.find((option: MatOption) => {
       try {
         // Treat null as a special reset value.
@@ -808,27 +812,10 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     });
 
     if (correspondingOption) {
-      isUserInput ? correspondingOption._selectViaInteraction() : correspondingOption.select();
       this._selectionModel.select(correspondingOption);
-      this.stateChanges.next();
     }
 
     return correspondingOption;
-  }
-
-
-  /**
-   * Clears the select trigger and deselects every option in the list.
-   * @param skip Option that should not be deselected.
-   */
-  private _clearSelection(skip?: MatOption): void {
-    this._selectionModel.clear();
-    this.options.forEach(option => {
-      if (option !== skip) {
-        option.deselect();
-      }
-    });
-    this.stateChanges.next();
   }
 
   /** Sets up a key manager to listen to keyboard events on the overlay panel. */
@@ -858,16 +845,14 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   private _resetOptions(): void {
     const changedOrDestroyed = merge(this.options.changes, this._destroy);
 
-    this.optionSelectionChanges
-      .pipe(takeUntil(changedOrDestroyed), filter(event => event.isUserInput))
-      .subscribe(event => {
-        this._onSelect(event.source);
+    this.optionSelectionChanges.pipe(takeUntil(changedOrDestroyed)).subscribe(event => {
+      this._onSelect(event.source, event.isUserInput);
 
-        if (!this.multiple && this._panelOpen) {
-          this.close();
-          this.focus();
-        }
-      });
+      if (event.isUserInput && !this.multiple && this._panelOpen) {
+        this.close();
+        this.focus();
+      }
+    });
 
     // Listen to changes in the internal state of the options and react accordingly.
     // Handles cases like the labels of the selected options changing.
@@ -882,51 +867,42 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   }
 
   /** Invoked when an option is clicked. */
-  private _onSelect(option: MatOption): void {
+  private _onSelect(option: MatOption, isUserInput: boolean): void {
     const wasSelected = this._selectionModel.isSelected(option);
 
-    // TODO(crisbeto): handle blank/null options inside multi-select.
-    if (this.multiple) {
-      this._selectionModel.toggle(option);
-      this.stateChanges.next();
-      wasSelected ? option.deselect() : option.select();
-      this._keyManager.setActiveItem(option);
-      this._sortValues();
-
-      // In case the user select the option with their mouse, we
-      // want to restore focus back to the trigger, in order to
-      // prevent the select keyboard controls from clashing with
-      // the ones from `mat-option`.
-      this.focus();
+    if (option.value == null) {
+      this._selectionModel.clear();
+      this._propagateChanges(option.value);
     } else {
-      this._clearSelection(option.value == null ? undefined : option);
+      option.selected ? this._selectionModel.select(option) : this._selectionModel.deselect(option);
 
-      if (option.value == null) {
-        this._propagateChanges(option.value);
-      } else {
-        this._selectionModel.select(option);
-        this.stateChanges.next();
+      // TODO(crisbeto): handle blank/null options inside multi-select.
+      if (this.multiple) {
+        this._sortValues();
+
+        if (isUserInput) {
+          this._keyManager.setActiveItem(option);
+          // In case the user selected the option with their mouse, we
+          // want to restore focus back to the trigger, in order to
+          // prevent the select keyboard controls from clashing with
+          // the ones from `mat-option`.
+          this.focus();
+        }
       }
     }
 
     if (wasSelected !== this._selectionModel.isSelected(option)) {
       this._propagateChanges();
     }
+
+    this.stateChanges.next();
   }
 
-  /**
-   * Sorts the model values, ensuring that they keep the same
-   * order that they have in the panel.
-   */
-  private _sortValues(): void {
-    if (this._multiple) {
-      this._selectionModel.clear();
-
-      this.options.forEach(option => {
-        if (option.selected) {
-          this._selectionModel.select(option);
-        }
-      });
+  /** Sorts the selected values in the selected based on their order in the panel. */
+  private _sortValues() {
+    if (this.multiple) {
+      const options = this.options.toArray();
+      this._selectionModel.sort((a, b) => options.indexOf(a) - options.indexOf(b));
       this.stateChanges.next();
     }
   }

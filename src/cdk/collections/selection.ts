@@ -13,7 +13,7 @@ import {Subject} from 'rxjs';
  */
 export class SelectionModel<T> {
   /** Currently-selected values. */
-  private _selection: Set<T> = new Set();
+  private _selection = new Set<T>();
 
   /** Keeps track of the deselected options that haven't been emitted by the change event. */
   private _deselectedToEmit: T[] = [];
@@ -111,8 +111,8 @@ export class SelectionModel<T> {
    * Sorts the selected values based on a predicate function.
    */
   sort(predicate?: (a: T, b: T) => number): void {
-    if (this._multiple && this._selected) {
-      this._selected.sort(predicate);
+    if (this._multiple && this.selected) {
+      this._selected!.sort(predicate);
     }
   }
 
