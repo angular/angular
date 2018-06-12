@@ -28,9 +28,9 @@ Open the `HeroesComponent` class file and import the mock `HEROES`.
 <code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="import-heroes" title="src/app/heroes/heroes.component.ts (import HEROES)">
 </code-example>
 
-Add a `heroes` property to the class that exposes these heroes for binding.
+In the same file (`HeroesComponent` class), define a component property called `heroes` to expose `HEROES` array for binding.
 
-<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="heroes">
+<code-example path="toh-pt2/src/app/heroes/heroes.component.ts" region="component">
 </code-example>
 
 ### List heroes with _*ngFor_
@@ -245,6 +245,7 @@ Here are the code files discussed on this page, including the `HeroesComponent` 
 
   <code-pane title="src/app/heroes/heroes.component.css" path="toh-pt2/src/app/heroes/heroes.component.css">
   </code-pane>
+
 </code-tabs>
 
 ## Summary
