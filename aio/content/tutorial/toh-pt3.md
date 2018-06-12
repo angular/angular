@@ -1,6 +1,6 @@
 # Master/Detail Components
 
-At the moment, the `HeroesComponent` displays both the list of heroes and the selected hero's details. 
+At the moment, the `HeroesComponent` displays both the list of heroes and the selected hero's details.
 
 Keeping all features in one component as the application grows will not be maintainable.
 You'll want to split up large components into smaller sub-components, each focused on a specific task or workflow.
@@ -18,7 +18,19 @@ Use the Angular CLI to generate a new component named `hero-detail`.
   ng generate component hero-detail
 </code-example>
 
-The command scaffolds the `HeroDetailComponent` files and declares the component in `AppModule`.
+The command scaffolds the following:
+
+* Creates a directory `src/app/hero-detail`.
+
+Inside that directory four files are generated:
+
+* A CSS file for the component styles.
+* An HTML file for the component template.
+* A TypeScript file with a component class named `HeroDetailComponent`.
+* A test file for the `HeroDetailComponent` class.
+
+The command also adds the `HeroDetailComponent` as a declaration in the `@NgModule` decorator of the `src/app/app.module.ts` file.
+
 
 ### Write the template
 
@@ -26,7 +38,7 @@ Cut the HTML for the hero detail from the bottom of the `HeroesComponent` templa
 
 The pasted HTML refers to a `selectedHero`.
 The new `HeroDetailComponent` can present _any_ hero, not just a selected hero.
-So replace "selectedHero" with "hero" everywhere in the template. 
+So replace "selectedHero" with "hero" everywhere in the template.
 
 When you're done, the `HeroDetailComponent` template should look like this:
 
@@ -41,11 +53,11 @@ which is of type `Hero`.
 
 Open the `HeroDetailComponent` class file and import the `Hero` symbol.
 
-<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts" 
+<code-example path="toh-pt3/src/app/hero-detail/hero-detail.component.ts"
 region="import-hero" title="src/app/hero-detail/hero-detail.component.ts (import Hero)">
 </code-example>
 
-The `hero` property 
+The `hero` property
 [must be an _Input_ property](guide/template-syntax#inputs-outputs "Input and Output properties"),
 annotated with the `@Input()` decorator,
 because the _external_ `HeroesComponent` [will bind to it](#heroes-component-template) like this.
@@ -64,17 +76,17 @@ Add a `hero` property, preceded by the `@Input()` decorator.
 </code-example>
 
 That's the only change you should make to the `HeroDetailComponent` class.
-There are no more properties. There's no presentation logic. 
+There are no more properties. There's no presentation logic.
 This component simply receives a hero object through its `hero` property and displays it.
 
 ## Show the `HeroDetailComponent`
 
-The `HeroesComponent` is still a master/detail view. 
+The `HeroesComponent` is still a master/detail view.
 
 It used to display the hero details on its own, before you cut that portion of the template. Now it will delegate to the `HeroDetailComponent`.
 
 The two components will have a parent/child relationship.
-The parent `HeroesComponent` will control the child `HeroDetailComponent` 
+The parent `HeroesComponent` will control the child `HeroDetailComponent`
 by sending it a new hero to display whenever
 the user selects a hero from the list.
 
@@ -155,6 +167,6 @@ Here are the code files discussed on this page and your app should look like thi
 * You used a [property binding](guide/template-syntax#property-binding) to give the parent `HeroesComponent` control over the child `HeroDetailComponent`.
 
 
-* You used the [`@Input` decorator](guide/template-syntax#inputs-outputs) 
+* You used the [`@Input` decorator](guide/template-syntax#inputs-outputs)
 to make the `hero` property available for binding
 by the external `HeroesComponent`.
