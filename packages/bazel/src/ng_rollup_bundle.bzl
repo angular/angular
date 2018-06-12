@@ -48,7 +48,7 @@ def _use_plain_rollup(ctx):
 
   strategy = ctx.var['compile']
   return strategy != 'legacy'
-  
+
 
 def run_brotli(ctx, input, output):
   ctx.actions.run(
@@ -61,10 +61,10 @@ def run_brotli(ctx, input, output):
 # Borrowed from bazelbuild/rules_nodejs
 def _run_tsc(ctx, input, output):
   args = ctx.actions.args()
-  args.add(["--target", "es5"])
+  args.add("--target", "es5")
   args.add("--allowJS")
-  args.add(input.path)
-  args.add(["--outFile", output.path])
+  args.add(input)
+  args.add("--outFile", output)
 
   ctx.action(
       executable = ctx.executable._tsc,
