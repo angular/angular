@@ -10,14 +10,14 @@ import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoad
 // TODO(i): switch to fromPromise once it's expored in rxjs
 import {Observable, from, of } from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
-import {LoadChildren, LoadedRouterConfig, Route, standardizeConfig} from './config';
+import {LoadChildren, LoadedRouterConfig, Route, Routes, standardizeConfig} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 
 /**
  * @docsNotRequired
  * @experimental
  */
-export const ROUTES = new InjectionToken<Route[][]>('ROUTES');
+export const ROUTES = new InjectionToken<Routes[]>('ROUTES');
 
 export class RouterConfigLoader {
   constructor(
