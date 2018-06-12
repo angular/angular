@@ -3,7 +3,7 @@
 Every application starts out with what seems like a simple task: get data, transform them, and show them to users.
 Getting data could be as simple as creating a local variable or as complex as streaming data over a WebSocket.
 
-Once data arrive, you could push their raw `toString` values directly to the view,
+Once data arrives, you could push their raw `toString` values directly to the view,
 but that rarely makes for a good user experience.
 For example, in most use cases, users prefer to see a date in a simple format like
 <samp>April 15, 1988</samp> rather than the raw string format
