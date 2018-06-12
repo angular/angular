@@ -68,38 +68,6 @@ function getNextLNodeWithProjection(node: LNode): LNode|null {
   return getNextLNode(node);
 }
 
-/**
- * Find the next node in the LNode tree, taking into account the place where a node is
- * projected (in the shadow DOM) rather than where it comes from (in the light DOM).
- *
- * If there is no sibling node, this function goes to the next sibling of the parent node...
- * until it reaches rootNode (at which point null is returned).
- *
- * @param initialNode The node whose following node in the LNode tree must be found.
- * @param rootNode The root node at which the lookup should stop.
- * @return LNode|null The following node in the LNode tree.
- */
-function getNextOrParentSiblingNode(
-    initialNode: LNode, rootNode: LNode, beforeNodeStack: (RNode | null | undefined)[]): LNode|
-    null {
-  let node: LNode|null = initialNode;
-  let nextNode = getNextLNodeWithProjection(node);
-  while (node && !nextNode) {
-    // if node.pNextOrParent is not null here, it is not the next node
-    // (because, at this point, nextNode is null, so it is the parent)
-    node = node.pNextOrParent || getParentLNode(node);
-    if (node === rootNode) {
-      return null;
-    }
-    // When the walker exits a container, the beforeNode has to be restored to the previous value.
-    if (node && !node.pNextOrParent && node.tNode.type === TNodeType.Container) {
-      beforeNodeStack.pop();
-    }
-    nextNode = node && getNextLNodeWithProjection(node);
-  }
-  return nextNode;
-}
-
 const enum WalkLNodeTreeAction {
   /** node insert in the native environment */
   Insert = 0,
@@ -128,7 +96,6 @@ function walkLNodeTree(
     startingNode: LNode | null, rootNode: LNode, action: WalkLNodeTreeAction, renderer: Renderer3,
     renderParentNode?: LElementNode | null, beforeNode?: RNode | null) {
   let node: LNode|null = startingNode;
-  let beforeNodeStack: (RNode | null | undefined)[] = [beforeNode];
   while (node) {
     let nextNode: LNode|null = null;
     const parent = renderParentNode ? renderParentNode.native : null;
@@ -149,14 +116,15 @@ function walkLNodeTree(
       if (renderParentNode) {
         childContainerData[RENDER_PARENT] = renderParentNode;
       }
-      // When the walker enters a container, then the beforeNode has to become the local native
-      // comment node.
-      beforeNodeStack.push(beforeNode);
-      beforeNode = lContainerNode.dynamicLContainerNode ?
-          lContainerNode.dynamicLContainerNode.native :
-          lContainerNode.native;
       nextNode =
           childContainerData[VIEWS].length ? getChildLNode(childContainerData[VIEWS][0]) : null;
+      if (nextNode) {
+        // When the walker enters a container, then the beforeNode has to become the local native
+        // comment node.
+        beforeNode = lContainerNode.dynamicLContainerNode ?
+            lContainerNode.dynamicLContainerNode.native :
+            lContainerNode.native;
+      }
     } else if (node.tNode.type === TNodeType.Projection) {
       // For Projection look at the first projected node
       nextNode = (node as LProjectionNode).data.head;
@@ -166,8 +134,30 @@ function walkLNodeTree(
     }
 
     if (nextNode == null) {
-      node = getNextOrParentSiblingNode(node, rootNode, beforeNodeStack);
-      beforeNode = beforeNodeStack[beforeNodeStack.length - 1];
+      /**
+       * Find the next node in the LNode tree, taking into account the place where a node is
+       * projected (in the shadow DOM) rather than where it comes from (in the light DOM).
+       *
+       * If there is no sibling node, then it goes to the next sibling of the parent node...
+       * until it reaches rootNode (at which point null is returned).
+       */
+      let currentNode: LNode|null = node;
+      node = getNextLNodeWithProjection(currentNode);
+      while (currentNode && !node) {
+        // if node.pNextOrParent is not null here, it is not the next node
+        // (because, at this point, nextNode is null, so it is the parent)
+        currentNode = currentNode.pNextOrParent || getParentLNode(currentNode);
+        if (currentNode === rootNode) {
+          return null;
+        }
+        // When the walker exits a container, the beforeNode has to be restored to the previous
+        // value.
+        if (currentNode && !currentNode.pNextOrParent &&
+            currentNode.tNode.type === TNodeType.Container) {
+          beforeNode = currentNode.native;
+        }
+        node = currentNode && getNextLNodeWithProjection(currentNode);
+      }
     } else {
       node = nextNode;
     }

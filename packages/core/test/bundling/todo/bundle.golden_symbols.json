@@ -453,9 +453,6 @@
     "name": "getNextLNodeWithProjection"
   },
   {
-    "name": "getNextOrParentSiblingNode"
-  },
-  {
     "name": "getOrCreateContainerRef"
   },
   {
