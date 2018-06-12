@@ -21,6 +21,7 @@ The components have a clear piece of source code associated with it within the `
 * `comp: core & compiler` - because core, compiler, compiler-cli and
   browser-platforms are very intertwined, we will be treating them as one
 * `comp: ivy` - a subset of core representing the new Ivy renderer.
+* `comp: elements`
 * `comp: forms`
 * `comp: http`
 * `comp: i18n`
