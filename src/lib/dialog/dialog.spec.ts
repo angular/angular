@@ -537,6 +537,27 @@ describe('MatDialog', () => {
     expect(overlayPane.style.width).toBe('200px');
   });
 
+  it('should reset the overlay dimensions to their initial size', () => {
+    let dialogRef = dialog.open(PizzaMsg);
+
+    viewContainerFixture.detectChanges();
+
+    let overlayPane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+
+    expect(overlayPane.style.width).toBeFalsy();
+    expect(overlayPane.style.height).toBeFalsy();
+
+    dialogRef.updateSize('200px', '200px');
+
+    expect(overlayPane.style.width).toBe('200px');
+    expect(overlayPane.style.height).toBe('200px');
+
+    dialogRef.updateSize();
+
+    expect(overlayPane.style.width).toBeFalsy();
+    expect(overlayPane.style.height).toBeFalsy();
+  });
+
   it('should allow setting the layout direction', () => {
     dialog.open(PizzaMsg, { direction: 'rtl' });
 

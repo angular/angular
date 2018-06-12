@@ -181,7 +181,7 @@ export class MatDialogRef<T, R = any> {
    * @param width New width of the dialog.
    * @param height New height of the dialog.
    */
-  updateSize(width: string = 'auto', height: string = 'auto'): this {
+  updateSize(width: string = '', height: string = ''): this {
     this._getPositionStrategy().width(width).height(height);
     this._overlayRef.updatePosition();
     return this;
