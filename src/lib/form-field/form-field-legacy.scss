@@ -1,5 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/vendor-prefixes';
+@import '../../cdk/a11y/a11y';
 
 
 // Styles that only apply to the legacy appearance of the form-field.
@@ -36,11 +37,22 @@ $mat-form-field-legacy-underline-height: 1px !default;
   // The ripple is the blue animation coming on top of it.
   .mat-form-field-underline {
     height: $mat-form-field-legacy-underline-height;
+
+    @include cdk-high-contrast {
+      height: 0;
+      border-top: solid $mat-form-field-legacy-underline-height;
+    }
   }
 
   .mat-form-field-ripple {
+    $height: $mat-form-field-legacy-underline-height * 2;
     top: 0;
-    height: $mat-form-field-legacy-underline-height * 2;
+    height: $height;
+
+    @include cdk-high-contrast {
+      height: 0;
+      border-top: solid $height;
+    }
   }
 
   &.mat-form-field-disabled .mat-form-field-underline {
