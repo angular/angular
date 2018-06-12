@@ -24,6 +24,7 @@ def ts_api_guardian_test(name, golden, actual, data = [], **kwargs):
   data += [
       "//tools/ts-api-guardian:lib",
       "//tools/ts-api-guardian:bin/ts-api-guardian",
+      "@bazel_tools//tools/bash/runfiles",
   ]
 
   args = [
