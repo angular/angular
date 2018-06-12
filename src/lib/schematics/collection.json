@@ -28,7 +28,14 @@
       "description": "Create a component with a responsive sidenav for navigation",
       "factory": "./nav/index",
       "schema": "./nav/schema.json",
-      "aliases": ["material-nav", "materialNav"]
+      "aliases": [ "material-nav", "materialNav ]
+    },
+    // Creates a address form component
+    "addressForm": {
+      "description": "Create a component with a address form",
+      "factory": "./address-form/index",
+      "schema": "./address-form/schema.json",
+      "aliases": ["address-form"]
     }
   }
 }
