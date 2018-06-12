@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, R3DirectiveMetadata, WrappedNodeExpr, compileComponentFromMetadata as compileR3Component, compileDirectiveFromMetadata as compileR3Directive, jitExpression, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, R3DirectiveMetadata, WrappedNodeExpr, compileComponentFromMetadata as compileR3Component, compileDirectiveFromMetadata as compileR3Directive, jitExpression, makeBindingParser, parseHostBindings, parseTemplate} from '@angular/compiler';
 
-import {Component, Directive, HostBinding, Input, Output} from '../../metadata/directives';
+import {Component, Directive, HostBinding, HostListener, Input, Output} from '../../metadata/directives';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Type} from '../../type';
 
@@ -18,6 +18,10 @@ import {patchComponentDefWithScope} from './module';
 import {getReflect, reflectDependencies} from './util';
 
 let _pendingPromises: Promise<void>[] = [];
+
+type StringMap = {
+  [key: string]: string
+};
 
 /**
  * Compile an Angular component according to its decorator metadata, and patch the resulting
@@ -138,8 +142,10 @@ export function awaitCurrentlyCompilingComponents(): Promise<void> {
 function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMetadata {
   // Reflect inputs and outputs.
   const props = getReflect().propMetadata(type);
-  const inputs: {[key: string]: string} = {};
-  const outputs: {[key: string]: string} = {};
+  const inputs: StringMap = {};
+  const outputs: StringMap = {};
+
+  const host = extractHostBindings(metadata, props);
 
   for (let field in props) {
     props[field].forEach(ann => {
@@ -155,14 +161,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     name: type.name,
     type: new WrappedNodeExpr(type),
     selector: metadata.selector !,
-    deps: reflectDependencies(type),
-    host: {
-      attributes: {},
-      listeners: {},
-      properties: {},
-    },
-    inputs,
-    outputs,
+    deps: reflectDependencies(type), host, inputs, outputs,
     queries: [],
     lifecycle: {
       usesOnChanges: type.prototype.ngOnChanges !== undefined,
@@ -171,10 +170,40 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
   };
 }
 
+function extractHostBindings(metadata: Directive, props: {[key: string]: any[]}): {
+  attributes: StringMap,
+  listeners: StringMap,
+  properties: StringMap,
+} {
+  // First parse the declarations from the metadata.
+  const host = parseHostBindings(metadata.host || {});
+
+  // Next, loop over the properties of the object, looking for @HostBinding and @HostListener.
+  for (let field in props) {
+    props[field].forEach(ann => {
+      if (isHostBinding(ann)) {
+        host.properties[ann.hostPropertyName || field] = field;
+      } else if (isHostListener(ann)) {
+        host.listeners[ann.eventName || field] = `${field}(${(ann.args || []).join(',')})`;
+      }
+    });
+  }
+
+  return host;
+}
+
 function isInput(value: any): value is Input {
   return value.ngMetadataName === 'Input';
 }
 
 function isOutput(value: any): value is Output {
   return value.ngMetadataName === 'Output';
+}
+
+function isHostBinding(value: any): value is HostBinding {
+  return value.ngMetadataName === 'HostBinding';
+}
+
+function isHostListener(value: any): value is HostListener {
+  return value.ngMetadataName === 'HostListener';
 }

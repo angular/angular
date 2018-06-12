@@ -445,3 +445,34 @@ function typeMapToExpressionMap(
       ([key, type]): [string, o.Expression] => [key, outputCtx.importExpr(type)]);
   return new Map(entries);
 }
+
+
+// group 0: "[prop] or (event) or @trigger"
+// group 1: "prop" from "[prop]"
+// group 2: "event" from "(event)"
+// group 3: "@trigger" from "@trigger"
+const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
+
+export function parseHostBindings(host: {[key: string]: string}): {
+  attributes: {[key: string]: string},
+  listeners: {[key: string]: string},
+  properties: {[key: string]: string},
+} {
+  const attributes: {[key: string]: string} = {};
+  const listeners: {[key: string]: string} = {};
+  const properties: {[key: string]: string} = {};
+
+  Object.keys(host).forEach(key => {
+    const value = host[key];
+    const matches = key.match(HOST_REG_EXP);
+    if (matches === null) {
+      attributes[key] = value;
+    } else if (matches[1] != null) {
+      properties[matches[1]] = value;
+    } else if (matches[2] != null) {
+      listeners[matches[2]] = value;
+    }
+  });
+
+  return {attributes, listeners, properties};
+}
