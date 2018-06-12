@@ -263,7 +263,7 @@ def _collect_summaries_aspect_impl(target, ctx):
   srcs = ctx.rule.attr.srcs if hasattr(ctx.rule.attr, "srcs") else []
 
   # "re-export" rules should expose all the files of their deps
-  if not srcs:
+  if not srcs and hasattr(ctx.rule.attr, "deps"):
     for dep in ctx.rule.attr.deps:
       if (hasattr(dep, "angular")):
         results = depset(dep.angular.summaries, transitive = [results])
