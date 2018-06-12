@@ -365,6 +365,14 @@ describe('MatStepper', () => {
       expect(stepperComponent.selectedIndex).toBe(-1);
     });
 
+    it('should set the correct aria-posinset and aria-setsize', () => {
+      const headers =
+          Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.mat-step-header'));
+
+      expect(headers.map(header => header.getAttribute('aria-posinset'))).toEqual(['1', '2', '3']);
+      expect(headers.every(header => header.getAttribute('aria-setsize') === '3')).toBe(true);
+    });
+
   });
 
   describe('icon overrides', () => {

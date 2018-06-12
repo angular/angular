@@ -4,6 +4,8 @@
                    (keydown)="_onKeydown($event)"
                    [tabIndex]="_getFocusIndex() == i ? 0 : -1"
                    [id]="_getStepLabelId(i)"
+                   [attr.aria-posinset]="i + 1"
+                   [attr.aria-setsize]="_steps.length"
                    [attr.aria-controls]="_getStepContentId(i)"
                    [attr.aria-selected]="selectedIndex === i"
                    [index]="i"
