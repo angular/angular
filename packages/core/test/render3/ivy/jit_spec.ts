@@ -9,7 +9,7 @@
 import {Injectable} from '@angular/core/src/di/injectable';
 import {inject, setCurrentInjector} from '@angular/core/src/di/injector';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
-import {Component} from '@angular/core/src/metadata/directives';
+import {Component, HostBinding, HostListener} from '@angular/core/src/metadata/directives';
 import {NgModule, NgModuleDef} from '@angular/core/src/metadata/ng_module';
 import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
 
@@ -160,6 +160,29 @@ ivyEnabled && describe('render3 jit', () => {
     const moduleDef: NgModuleDef<Module> = (Module as any).ngModuleDef;
     expect(cmpDef.directiveDefs instanceof Function).toBe(true);
     expect((cmpDef.directiveDefs as Function)()).toEqual([cmpDef]);
+  });
+
+  it('should add hostbindings and hostlisteners', () => {
+    @Component({
+      template: 'foo',
+      selector: 'foo',
+      host: {
+        '[class.red]': 'isRed',
+        '(click)': 'onClick()',
+      },
+    })
+    class Cmp {
+      @HostBinding('class.green')
+      green: boolean = false;
+
+      @HostListener('change', ['$event'])
+      onChange(event: any): void {}
+    }
+
+    const cmpDef = (Cmp as any).ngComponentDef as ComponentDef<Cmp>;
+
+    expect(cmpDef.hostBindings).toBeDefined();
+    expect(cmpDef.hostBindings !.length).toBe(2);
   });
 });
 
