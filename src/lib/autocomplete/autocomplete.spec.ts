@@ -470,6 +470,16 @@ describe('MatAutocomplete', () => {
           .toBe(false, `Expected panel to remain closed.`);
     });
 
+    it('should continue to update the model if the autocomplete is disabled', () => {
+      fixture.componentInstance.autocompleteDisabled = true;
+      fixture.detectChanges();
+
+      typeInElement('hello', input);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.stateCtrl.value).toBe('hello');
+    });
+
   });
 
   it('should have the correct text direction in RTL', () => {
