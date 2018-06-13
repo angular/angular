@@ -174,7 +174,7 @@ export const enum AttributeMarker {
    * This marker indicates that the following attribute names were extracted from bindings (ex.:
    * [foo]="exp") and / or event handlers (ex. (bar)="doSth()").
    * Taking the above bindings and outputs as an example an attributes array could look as follows:
-   * ['class', 'fade in', AttributeMarker.SELECT_ONLY, 'foo', 'bar']
+   * ['class', 'fade in', AttributeMarker.SelectOnly, 'foo', 'bar']
    */
   SelectOnly = 1
 }
