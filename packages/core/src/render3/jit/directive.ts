@@ -141,14 +141,14 @@ export function awaitCurrentlyCompilingComponents(): Promise<void> {
  */
 function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMetadata {
   // Reflect inputs and outputs.
-  const props = getReflect().propMetadata(type);
+  const propMetadata = getReflect().propMetadata(type);
   const inputs: StringMap = {};
   const outputs: StringMap = {};
 
-  const host = extractHostBindings(metadata, props);
+  const host = extractHostBindings(metadata, propMetadata);
 
-  for (let field in props) {
-    props[field].forEach(ann => {
+  for (let field in propMetadata) {
+    propMetadata[field].forEach(ann => {
       if (isInput(ann)) {
         inputs[field] = ann.bindingPropertyName || field;
       } else if (isOutput(ann)) {
@@ -170,26 +170,30 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
   };
 }
 
-function extractHostBindings(metadata: Directive, props: {[key: string]: any[]}): {
+function extractHostBindings(metadata: Directive, propMetadata: {[key: string]: any[]}): {
   attributes: StringMap,
   listeners: StringMap,
   properties: StringMap,
 } {
   // First parse the declarations from the metadata.
-  const host = parseHostBindings(metadata.host || {});
+  const {attributes, listeners, properties, animations} = parseHostBindings(metadata.host || {});
+
+  if (Object.keys(animations).length > 0) {
+    throw new Error(`Animation bindings are as-of-yet unsupported in Ivy`);
+  }
 
   // Next, loop over the properties of the object, looking for @HostBinding and @HostListener.
-  for (let field in props) {
-    props[field].forEach(ann => {
+  for (let field in propMetadata) {
+    propMetadata[field].forEach(ann => {
       if (isHostBinding(ann)) {
-        host.properties[ann.hostPropertyName || field] = field;
+        properties[ann.hostPropertyName || field] = field;
       } else if (isHostListener(ann)) {
-        host.listeners[ann.eventName || field] = `${field}(${(ann.args || []).join(',')})`;
+        listeners[ann.eventName || field] = `${field}(${(ann.args || []).join(',')})`;
       }
     });
   }
 
-  return host;
+  return {attributes, listeners, properties};
 }
 
 function isInput(value: any): value is Input {
