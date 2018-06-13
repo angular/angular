@@ -9,20 +9,20 @@
 import {Expression, R3DependencyMetadata, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Reference, reflectConstructorParameters} from '../../metadata';
-import {reflectImportedIdentifier} from '../../metadata/src/reflector';
+import {Decorator, ReflectionHost} from '../../host';
+import {Reference} from '../../metadata';
 
 export function getConstructorDependencies(
-    clazz: ts.ClassDeclaration, checker: ts.TypeChecker): R3DependencyMetadata[] {
+    clazz: ts.ClassDeclaration, reflector: ReflectionHost): R3DependencyMetadata[] {
   const useType: R3DependencyMetadata[] = [];
-  const ctorParams = (reflectConstructorParameters(clazz, checker) || []);
-  ctorParams.forEach(param => {
-    let tokenExpr = param.typeValueExpr;
+  const ctorParams = reflector.getConstructorParameters(clazz) || [];
+  ctorParams.forEach((param, idx) => {
+    let tokenExpr = param.type;
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
-    param.decorators.filter(dec => dec.from === '@angular/core').forEach(dec => {
+    (param.decorators || []).filter(isAngularCore).forEach(dec => {
       if (dec.name === 'Inject') {
-        if (dec.args.length !== 1) {
+        if (dec.args === null || dec.args.length !== 1) {
           throw new Error(`Unexpected number of arguments to @Inject().`);
         }
         tokenExpr = dec.args[0];
@@ -35,7 +35,7 @@ export function getConstructorDependencies(
       } else if (dec.name === 'Host') {
         host = true;
       } else if (dec.name === 'Attribute') {
-        if (dec.args.length !== 1) {
+        if (dec.args === null || dec.args.length !== 1) {
           throw new Error(`Unexpected number of arguments to @Attribute().`);
         }
         tokenExpr = dec.args[0];
@@ -46,10 +46,10 @@ export function getConstructorDependencies(
     });
     if (tokenExpr === null) {
       throw new Error(
-          `No suitable token for parameter ${(param.name as ts.Identifier).text} of class ${clazz.name!.text} with decorators ${param.decorators.map(dec => dec.from + '#' + dec.name).join(',')}`);
+          `No suitable token for parameter ${param.name || idx} of class ${clazz.name!.text}`);
     }
     if (ts.isIdentifier(tokenExpr)) {
-      const importedSymbol = reflectImportedIdentifier(tokenExpr, checker);
+      const importedSymbol = reflector.getImportOfIdentifier(tokenExpr);
       if (importedSymbol !== null && importedSymbol.from === '@angular/core') {
         switch (importedSymbol.name) {
           case 'ElementRef':
@@ -81,4 +81,8 @@ export function referenceToExpression(ref: Reference, context: ts.SourceFile): E
     throw new Error(`Could not refer to ${ts.SyntaxKind[ref.node.kind]}`);
   }
   return exp;
+}
+
+export function isAngularCore(decorator: Decorator): boolean {
+  return decorator.import !== null && decorator.import.from === '@angular/core';
 }

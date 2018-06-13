@@ -9,11 +9,12 @@
 import {ConstantPool, Expression, R3DirectiveMetadata, R3NgModuleMetadata, WrappedNodeExpr, compileNgModule, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator, Reference, ResolvedValue, reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {Decorator} from '../../host';
+import {Reference, ResolvedValue, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {referenceToExpression} from './util';
+import {isAngularCore, referenceToExpression} from './util';
 
 /**
  * Compiles @NgModule annotations to ngModuleDef fields.
@@ -24,11 +25,13 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<R3NgModuleMeta
   constructor(private checker: ts.TypeChecker, private scopeRegistry: SelectorScopeRegistry) {}
 
   detect(decorators: Decorator[]): Decorator|undefined {
-    return decorators.find(
-        decorator => decorator.name === 'NgModule' && decorator.from === '@angular/core');
+    return decorators.find(decorator => decorator.name === 'NgModule' && isAngularCore(decorator));
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3NgModuleMetadata> {
+    if (decorator.args === null || decorator.args.length !== 1) {
+      throw new Error(`Incorrect number of arguments to @NgModule decorator`);
+    }
     const meta = decorator.args[0];
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new Error(`Decorator argument must be literal.`);

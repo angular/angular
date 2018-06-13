@@ -9,7 +9,7 @@
 import {Expression, Statement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator} from '../../metadata';
+import {Decorator} from '../../host';
 
 /**
  * Provides the interface between a decorator compiler from @angular/compiler and the Typescript
@@ -31,13 +31,13 @@ export interface DecoratorHandler<A> {
    * if successful, or an array of diagnostic messages if the analysis fails or the decorator
    * isn't valid.
    */
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<A>;
+  analyze(node: ts.Declaration, decorator: Decorator): AnalysisOutput<A>;
 
   /**
    * Generate a description of the field which should be added to the class, including any
    * initialization code to be generated.
    */
-  compile(node: ts.ClassDeclaration, analysis: A): CompileResult;
+  compile(node: ts.Declaration, analysis: A): CompileResult;
 }
 
 /**
