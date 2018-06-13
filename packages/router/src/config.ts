@@ -288,7 +288,7 @@ export type UrlMatchResult = {
  * @experimental
  */
 export type UrlMatcher = (segments: UrlSegment[], group: UrlSegmentGroup, route: Route) =>
-    UrlMatchResult;
+    UrlMatchResult | null;
 
 /**
  * @description
