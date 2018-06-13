@@ -77,7 +77,7 @@ http_archive(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-check_bazel_version("0.14.0")
+check_bazel_version("0.13.0")
 node_repositories(package_json = ["//:package.json"])
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")

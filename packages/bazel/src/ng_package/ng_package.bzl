@@ -80,14 +80,14 @@ def _rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, for
   map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
 
   args = ctx.actions.args()
-  args.add("--config", rollup_config)
+  args.add(["--config", rollup_config.path])
 
-  args.add("--input", entry_point)
-  args.add("--output.file", js_output)
-  args.add("--output.format", format)
+  args.add(["--input", entry_point])
+  args.add(["--output.file", js_output.path])
+  args.add(["--output.format", format])
   if package_name:
-    args.add("--output.name", _global_name(package_name))
-    args.add("--amd.id", package_name)
+    args.add(["--output.name", _global_name(package_name)])
+    args.add(["--amd.id", package_name])
 
   # Note: if the input has external source maps then we need to also install and use
   #   `rollup-plugin-sourcemaps`, which will require us to use rollup.config.js file instead
@@ -95,15 +95,14 @@ def _rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, for
   args.add("--sourcemap")
 
   globals = dict(WELL_KNOWN_GLOBALS, **ctx.attr.globals)
+  args.add("--external")
   external = globals.keys()
   if not include_tslib:
     external.append("tslib")
-  args.add_joined("--external", external, join_with=",")
+  args.add(external, join_with=",")
 
-  args.add_joined(
-      "--globals",
-      ["%s:%s" % g for g in globals.items()],
-      join_with=",")
+  args.add("--globals")
+  args.add(["%s:%s" % g for g in globals.items()], join_with=",")
 
   args.add("--silent")
 
@@ -252,8 +251,8 @@ def _ng_package_impl(ctx):
   # The order of arguments matters here, as they are read in order in packager.ts.
   packager_args.add(npm_package_directory.path)
   packager_args.add(ctx.label.package)
-  packager_args.add_joined([ctx.bin_dir.path, ctx.label.package], join_with="/")
-  packager_args.add_joined([ctx.genfiles_dir.path, ctx.label.package], join_with="/")
+  packager_args.add([ctx.bin_dir.path, ctx.label.package], join_with="/")
+  packager_args.add([ctx.genfiles_dir.path, ctx.label.package], join_with="/")
 
   # Marshal the metadata into a JSON string so we can parse the data structure
   # in the TypeScript program easily.
@@ -274,19 +273,19 @@ def _ng_package_impl(ctx):
     # placeholder
     packager_args.add("")
 
-  packager_args.add_joined(_flatten_paths(fesm2015), join_with=",")
-  packager_args.add_joined(_flatten_paths(fesm5), join_with=",")
-  packager_args.add_joined(_flatten_paths(esm2015), join_with=",")
-  packager_args.add_joined(_flatten_paths(esm5), join_with=",")
-  packager_args.add_joined(_flatten_paths(bundles), join_with=",")
-  packager_args.add_joined([s.path for s in ctx.files.srcs], join_with=",")
+  packager_args.add(_flatten_paths(fesm2015), join_with=",")
+  packager_args.add(_flatten_paths(fesm5), join_with=",")
+  packager_args.add(_flatten_paths(esm2015), join_with=",")
+  packager_args.add(_flatten_paths(esm5), join_with=",")
+  packager_args.add(_flatten_paths(bundles), join_with=",")
+  packager_args.add([s.path for s in ctx.files.srcs], join_with=",")
 
   # TODO: figure out a better way to gather runfiles providers from the transitive closure.
-  packager_args.add_joined([d.path for d in ctx.files.data], join_with=",")
+  packager_args.add([d.path for d in ctx.files.data], join_with=",")
 
   if ctx.file.license_banner:
     packager_inputs.append(ctx.file.license_banner)
-    packager_args.add(ctx.file.license_banner)
+    packager_args.add(ctx.file.license_banner.path)
   else:
     # placeholder
     packager_args.add("")
