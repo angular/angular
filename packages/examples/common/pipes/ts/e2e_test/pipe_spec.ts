@@ -57,7 +57,8 @@ describe('pipe', () => {
       expect(element.all(by.css('titlecase-pipe p')).get(5).getText()).toEqual('Foo-vs-bar');
     });
   });
-  describe('titlecase', () => {
+
+  describe('keyvalue', () => {
     it('should work properly', () => {
       browser.get(URL);
       waitForElement('keyvalue-pipe');
