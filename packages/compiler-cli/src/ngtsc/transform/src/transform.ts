@@ -46,7 +46,8 @@ class IvyVisitor extends Visitor {
       node = ts.updateClassDeclaration(
           node,
           // Remove the decorator which triggered this compilation, leaving the others alone.
-          maybeFilterDecorator(node.decorators, this.compilation.ivyDecoratorFor(node) !),
+          maybeFilterDecorator(
+              node.decorators, this.compilation.ivyDecoratorFor(node) !.node as ts.Decorator),
           node.modifiers, node.name, node.typeParameters, node.heritageClauses || [],
           [...node.members, property]);
       const statements = res.statements.map(stmt => translateStatement(stmt, this.importManager));
