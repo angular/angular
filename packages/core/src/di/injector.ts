@@ -34,7 +34,7 @@ export class NullInjector implements Injector {
     if (notFoundValue === _THROW_IF_NOT_FOUND) {
       // Intentionally left behind: With dev tools open the debugger will stop here. There is no
       // reason why correctly written application should cause this exception.
-      // TODO(misko): on-comment the next line once `ngDevMode` works with closure.
+      // TODO(misko): uncomment the next line once `ngDevMode` works with closure.
       // if(ngDevMode) debugger;
       throw new Error(`NullInjectorError: No provider for ${stringify(token)}!`);
     }
