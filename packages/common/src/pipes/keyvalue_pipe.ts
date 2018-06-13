@@ -36,7 +36,7 @@ export interface KeyValue<K, V> {
  * This examples show how an Object or a Map and be iterated by ngFor with the use of this keyvalue
  * pipe.
  *
- * {@example common/pipes/ts/keyvalue.ts region='KeyValuePipe'}
+ * {@example common/pipes/ts/keyvalue_pipe.ts region='KeyValuePipe'}
  */
 @Pipe({name: 'keyvalue', pure: false})
 export class KeyValuePipe implements PipeTransform {
