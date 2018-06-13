@@ -9,26 +9,26 @@
 import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator} from '../../metadata';
-import {reflectConstructorParameters, reflectImportedIdentifier, reflectObjectLiteral} from '../../metadata/src/reflector';
-import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform/src/api';
+import {Decorator, ReflectionHost} from '../../host';
+import {reflectObjectLiteral} from '../../metadata';
+import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
-import {getConstructorDependencies} from './util';
+import {getConstructorDependencies, isAngularCore} from './util';
 
 
 /**
  * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
 export class InjectableDecoratorHandler implements DecoratorHandler<R3InjectableMetadata> {
-  constructor(private checker: ts.TypeChecker) {}
+  constructor(private reflector: ReflectionHost) {}
 
   detect(decorator: Decorator[]): Decorator|undefined {
-    return decorator.find(dec => dec.name === 'Injectable' && dec.from === '@angular/core');
+    return decorator.find(decorator => decorator.name === 'Injectable' && isAngularCore(decorator));
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3InjectableMetadata> {
     return {
-      analysis: extractInjectableMetadata(node, decorator, this.checker),
+      analysis: extractInjectableMetadata(node, decorator, this.reflector),
     };
   }
 
@@ -49,18 +49,21 @@ export class InjectableDecoratorHandler implements DecoratorHandler<R3Injectable
  */
 function extractInjectableMetadata(
     clazz: ts.ClassDeclaration, decorator: Decorator,
-    checker: ts.TypeChecker): R3InjectableMetadata {
+    reflector: ReflectionHost): R3InjectableMetadata {
   if (clazz.name === undefined) {
     throw new Error(`@Injectables must have names`);
   }
   const name = clazz.name.text;
   const type = new WrappedNodeExpr(clazz.name);
+  if (decorator.args === null) {
+    throw new Error(`@Injectable must be called`);
+  }
   if (decorator.args.length === 0) {
     return {
       name,
       type,
       providedIn: new LiteralExpr(null),
-      deps: getConstructorDependencies(clazz, checker),
+      deps: getConstructorDependencies(clazz, reflector),
     };
   } else if (decorator.args.length === 1) {
     const metaNode = decorator.args[0];
@@ -95,11 +98,11 @@ function extractInjectableMetadata(
         if (depsExpr.elements.length > 0) {
           throw new Error(`deps not yet supported`);
         }
-        deps.push(...depsExpr.elements.map(dep => getDep(dep, checker)));
+        deps.push(...depsExpr.elements.map(dep => getDep(dep, reflector)));
       }
       return {name, type, providedIn, useFactory: factory, deps};
     } else {
-      const deps = getConstructorDependencies(clazz, checker);
+      const deps = getConstructorDependencies(clazz, reflector);
       return {name, type, providedIn, deps};
     }
   } else {
@@ -109,7 +112,7 @@ function extractInjectableMetadata(
 
 
 
-function getDep(dep: ts.Expression, checker: ts.TypeChecker): R3DependencyMetadata {
+function getDep(dep: ts.Expression, reflector: ReflectionHost): R3DependencyMetadata {
   const meta: R3DependencyMetadata = {
     token: new WrappedNodeExpr(dep),
     host: false,
@@ -119,8 +122,9 @@ function getDep(dep: ts.Expression, checker: ts.TypeChecker): R3DependencyMetada
     skipSelf: false,
   };
 
-  function maybeUpdateDecorator(dec: ts.Identifier, token?: ts.Expression): void {
-    const source = reflectImportedIdentifier(dec, checker);
+  function maybeUpdateDecorator(
+      dec: ts.Identifier, reflector: ReflectionHost, token?: ts.Expression): void {
+    const source = reflector.getImportOfIdentifier(dec);
     if (source === null || source.from !== '@angular/core') {
       return;
     }
@@ -145,10 +149,10 @@ function getDep(dep: ts.Expression, checker: ts.TypeChecker): R3DependencyMetada
   if (ts.isArrayLiteralExpression(dep)) {
     dep.elements.forEach(el => {
       if (ts.isIdentifier(el)) {
-        maybeUpdateDecorator(el);
+        maybeUpdateDecorator(el, reflector);
       } else if (ts.isNewExpression(el) && ts.isIdentifier(el.expression)) {
         const token = el.arguments && el.arguments.length > 0 && el.arguments[0] || undefined;
-        maybeUpdateDecorator(el.expression, token);
+        maybeUpdateDecorator(el.expression, reflector, token);
       }
     });
   }

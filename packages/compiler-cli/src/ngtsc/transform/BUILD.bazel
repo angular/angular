@@ -11,6 +11,7 @@ ts_library(
     module_name = "@angular/compiler-cli/src/ngtsc/transform",
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngtsc/host",
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/util",
     ],

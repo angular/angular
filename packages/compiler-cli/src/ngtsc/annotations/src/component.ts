@@ -9,11 +9,13 @@
 import {ConstantPool, Expression, R3ComponentMetadata, R3DirectiveMetadata, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator, reflectNonStaticField, reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {Decorator, ReflectionHost} from '../../host';
+import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {extractDirectiveMetadata} from './directive';
 import {SelectorScopeRegistry} from './selector_scope';
+import {isAngularCore} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 
@@ -21,14 +23,18 @@ const EMPTY_MAP = new Map<string, Expression>();
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
 export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMetadata> {
-  constructor(private checker: ts.TypeChecker, private scopeRegistry: SelectorScopeRegistry) {}
+  constructor(
+      private checker: ts.TypeChecker, private reflector: ReflectionHost,
+      private scopeRegistry: SelectorScopeRegistry) {}
 
   detect(decorators: Decorator[]): Decorator|undefined {
-    return decorators.find(
-        decorator => decorator.name === 'Component' && decorator.from === '@angular/core');
+    return decorators.find(decorator => decorator.name === 'Component' && isAngularCore(decorator));
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3ComponentMetadata> {
+    if (decorator.args === null || decorator.args.length !== 1) {
+      throw new Error(`Incorrect number of arguments to @Component decorator`);
+    }
     const meta = decorator.args[0];
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new Error(`Decorator argument must be literal.`);
@@ -36,7 +42,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
 
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
-    const directiveMetadata = extractDirectiveMetadata(node, decorator, this.checker);
+    const directiveMetadata =
+        extractDirectiveMetadata(node, decorator, this.checker, this.reflector);
     if (directiveMetadata === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
       // case, compilation of the decorator is skipped. Returning an empty object signifies
@@ -93,6 +100,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
       }
     };
   }
+
   compile(node: ts.ClassDeclaration, analysis: R3ComponentMetadata): CompileResult {
     const pool = new ConstantPool();
 
