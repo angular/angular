@@ -56,7 +56,15 @@ BUILD_EXAMPLES=true
 COMPILE_SOURCE=true
 TYPECHECK_ALL=true
 BUILD_TOOLS=true
-export NODE_PATH=${NODE_PATH:-}:${currentDir}/dist/tools
+
+#if on cygwin build a windows style path for node, since the node
+#will be the windows build
+if [ $OSTYPE = cygwin ]; then
+  export NODE_PATH=${NODE_PATH:-}\;$(cygpath -w ${currentDir}/dist/tools)
+  echo "$NODE_PATH"
+else
+  export NODE_PATH=${NODE_PATH:-}:${currentDir}/dist/tools
+fi
 
 for ARG in "$@"; do
   case "$ARG" in
@@ -243,7 +251,11 @@ compilePackage() {
   else
     echo "======      [${3}]: COMPILING: ${NGC} -p ${1}/tsconfig-build.json"
     local package_name=$(basename "${2}")
-    $NGC -p ${1}/tsconfig-build.json
+    if [ $OSTYPE = cygwin ]; then
+      $NGC -p $(cygpath -w ${1}/tsconfig-build.json)
+    else
+      $NGC -p ${1}/tsconfig-build.json
+    fi 
     if [[ "${package_name}" != "locales" ]]; then
       echo "======           Create ${1}/../${package_name}.d.ts re-export file for tsickle"
       echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/${package_name}'" > ${2}/../${package_name}.d.ts
@@ -278,7 +290,12 @@ compilePackageES5() {
   else
     echo "======      [${3}]: COMPILING: ${NGC} -p ${1}/tsconfig-build.json --target es5 -d false --outDir ${2} --importHelpers true --sourceMap"
     local package_name=$(basename "${2}")
-    $NGC -p ${1}/tsconfig-build.json --target es5 -d false --outDir ${2} --importHelpers true --sourceMap
+    if [ $OSTYPE = cygwin ]; then
+      $NGC -p $(cygpath -w ${1}/tsconfig-build.json) --target es5 -d false --outDir $(cygpath -w ${2} ) --importHelpers true --sourceMap
+    else
+      $NGC -p ${1}/tsconfig-build.json --target es5 -d false --outDir ${2} --importHelpers true --sourceMap
+
+    fi
   fi
 
   for DIR in ${1}/* ; do
@@ -345,7 +362,14 @@ echo "====== BUILDING: Version ${VERSION}"
 N="
 "
 TSC=`pwd`/node_modules/.bin/tsc
-NGC="node --max-old-space-size=3000 `pwd`/dist/tools/@angular/compiler-cli/src/main"
+
+#if on cygwin build a windows style path for node, since the node
+#will be the windows build
+if [ $OSTYPE = cygwin ]; then
+  NGC="node --max-old-space-size=3000 $(cygpath -w $(pwd)/dist/tools/@angular/compiler-cli/src/main)"
+else
+  NGC="node --max-old-space-size=3000 `pwd`/dist/tools/@angular/compiler-cli/src/main"
+fi
 UGLIFY=`pwd`/node_modules/.bin/uglifyjs
 TSCONFIG=./tools/tsconfig.json
 ROLLUP=`pwd`/node_modules/.bin/rollup
