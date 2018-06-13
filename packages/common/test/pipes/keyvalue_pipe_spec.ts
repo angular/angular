@@ -94,7 +94,7 @@ describe('KeyValuePipe', () => {
     it('should order by complex types with compareFn', () => {
       const pipe = new KeyValuePipe(defaultKeyValueDiffers);
       const input = new Map([[{id: 1}, 1], [{id: 0}, 1]]);
-      expect(pipe.transform<{id: number}, number>(input, (a, b) => a.key.id > b.key.id ? 1 : 2))
+      expect(pipe.transform<{id: number}, number>(input, (a, b) => a.key.id > b.key.id ? 1 : -1))
           .toEqual([
             {key: {id: 0}, value: 1},
             {key: {id: 1}, value: 1},
