@@ -530,7 +530,11 @@ describe('components & directives', () => {
               $r3$.ɵT(0);
             }
             if (rf & 2) {
+              // clang-format wants to break this line by changing the second 'ɵ' to an invalid
+              // unicode sequence.
+              // clang-format off
               $r3$.ɵt(0, $r3$.ɵb(ctx.num));
+              // clang-format on
             }
           },
           inputs: {num: 'num'}
