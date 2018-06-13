@@ -48,7 +48,7 @@ export class MockConnection implements Connection {
    * Sends a mock response to the connection. This response is the value that is emitted to the
    * {@link EventEmitter} returned by {@link Http}.
    *
-   * ### Example
+   * **Example**
    *
    * ```
    * var connection;
@@ -87,7 +87,7 @@ export class MockConnection implements Connection {
    * returned
    * from {@link Http}.
    *
-   * ### Example
+   * **Example**
    *
    * ```
    * var connection;
@@ -110,7 +110,7 @@ export class MockConnection implements Connection {
  * This class can be injected in tests, and should be used to override providers
  * to other backends, such as {@link XHRBackend}.
  *
- * ### Example
+ * **Example**
  *
  * ```
  * import {Injectable, Injector} from '@angular/core';
@@ -198,7 +198,7 @@ export class MockBackend implements ConnectionBackend {
    * of {@link MockConnection} instances that have been created by this backend. Can be subscribed
    * to in order to respond to connections.
    *
-   * ### Example
+   * **Example**
    *
    * ```
    * import {Injector} from '@angular/core';

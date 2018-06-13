@@ -21,7 +21,7 @@ import {Headers} from './headers';
  * usually instantiated by end-users, it is the primary object interacted with when it comes time to
  * add data to a view.
  *
- * ### Example
+ * **Example**
  *
  * ```
  * http.request('my-friends.txt').subscribe(response => this.friends = response.text());
