@@ -468,10 +468,10 @@ export interface KeyValueChanges<K, V> {
 }
 
 export interface KeyValueDiffer<K, V> {
-    diff(object: Map<K, V>): KeyValueChanges<K, V>;
+    diff(object: Map<K, V>): KeyValueChanges<K, V> | null;
     diff(object: {
         [key: string]: V;
-    }): KeyValueChanges<string, V>;
+    }): KeyValueChanges<string, V> | null;
 }
 
 export interface KeyValueDifferFactory {
