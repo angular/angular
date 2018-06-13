@@ -38,7 +38,6 @@ merge:
     # list of labels that a PR needs to have, checked with a regexp (e.g. "PR target:" will work for the label "PR target: master")
     requiredLabels:
       - "target: *"
-      - "pr: merge ready"
       - "cla: yes"
 
     # list of labels that a PR shouldn't have, checked after the required labels with a regexp
