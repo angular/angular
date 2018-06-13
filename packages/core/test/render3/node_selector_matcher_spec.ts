@@ -86,6 +86,12 @@ describe('css selector matching', () => {
         ])).toBeFalsy(`Selector '[other]' should NOT match <span title="">'`);
       });
 
+      it('should match namespaced attributes', () => {
+        expect(isMatching(
+            'span', [AttributeMarker.NamespaceURI, 'http://some/uri', 'title', 'name'],
+            ['', 'title', '']));
+      });
+
       it('should match selector with one attribute without value when element has several attributes',
          () => {
            expect(isMatching('span', ['id', 'my_id', 'title', 'test_title'], [
@@ -179,14 +185,14 @@ describe('css selector matching', () => {
       });
 
       it('should take optional binding attribute names into account', () => {
-        expect(isMatching('span', [AttributeMarker.SELECT_ONLY, 'directive'], [
+        expect(isMatching('span', [AttributeMarker.SelectOnly, 'directive'], [
           '', 'directive', ''
         ])).toBeTruthy(`Selector '[directive]' should match <span [directive]="exp">`);
       });
 
       it('should not match optional binding attribute names if attribute selector has value',
          () => {
-           expect(isMatching('span', [AttributeMarker.SELECT_ONLY, 'directive'], [
+           expect(isMatching('span', [AttributeMarker.SelectOnly, 'directive'], [
              '', 'directive', 'value'
            ])).toBeFalsy(`Selector '[directive=value]' should not match <span [directive]="exp">`);
          });
@@ -194,7 +200,7 @@ describe('css selector matching', () => {
       it('should not match optional binding attribute names if attribute selector has value and next name equals to value',
          () => {
            expect(isMatching(
-                      'span', [AttributeMarker.SELECT_ONLY, 'directive', 'value'],
+                      'span', [AttributeMarker.SelectOnly, 'directive', 'value'],
                       ['', 'directive', 'value']))
                .toBeFalsy(
                    `Selector '[directive=value]' should not match <span [directive]="exp" [value]="otherExp">`);
