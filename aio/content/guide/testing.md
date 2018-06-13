@@ -398,7 +398,7 @@ But a component is more than just its class.
 A component interacts with the DOM and with other components.
 The _class-only_ tests can tell you about class behavior.
 They cannot tell you if the component is going to render properly,
-respond to user input and gestures, or integrate with its parent and and child components.
+respond to user input and gestures, or integrate with its parent and child components.
 
 None of the _class-only_ tests above can answer key questions about how the
 components actually behave on screen.
