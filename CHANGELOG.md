@@ -1,3 +1,34 @@
+<a name="6.1.0-beta.1"></a>
+# [6.1.0-beta.1](https://github.com/angular/angular/compare/6.1.0-beta.0...6.1.0-beta.1) (2018-06-13)
+
+
+### Bug Fixes
+
+* **animations:** always render end-state styles for orphaned DOM nodes ([#24236](https://github.com/angular/angular/issues/24236)) ([dc4a3d0](https://github.com/angular/angular/commit/dc4a3d0))
+* **bazel:** Allow ng_module to depend on targets w no deps ([#24446](https://github.com/angular/angular/issues/24446)) ([282d351](https://github.com/angular/angular/commit/282d351))
+* **docs-infra:** use script nomodule to load IE polyfills, skip other polyfills ([#24317](https://github.com/angular/angular/issues/24317)) ([8be6892](https://github.com/angular/angular/commit/8be6892)), closes [#23647](https://github.com/angular/angular/issues/23647)
+* **ivy:** compute transitive scopes from NgModuleDef only ([#24334](https://github.com/angular/angular/issues/24334)) ([1135563](https://github.com/angular/angular/commit/1135563))
+* **ivy:** correctly handle queries with embedded views ([#24418](https://github.com/angular/angular/issues/24418)) ([014949f](https://github.com/angular/angular/commit/014949f))
+* **ivy:** remove debugger statement ([#24480](https://github.com/angular/angular/issues/24480)) ([70ef061](https://github.com/angular/angular/commit/70ef061))
+* **ivy:** special case [style] and [class] bindings for future use ([#23232](https://github.com/angular/angular/issues/23232)) ([1b253e1](https://github.com/angular/angular/commit/1b253e1))
+* **router:** fix lazy loading of aux routes ([#23459](https://github.com/angular/angular/issues/23459)) ([5731d07](https://github.com/angular/angular/commit/5731d07)), closes [#10981](https://github.com/angular/angular/issues/10981)
+* **service-worker:** fix `SwPush.unsubscribe()` ([#24162](https://github.com/angular/angular/issues/24162)) ([3ed2d75](https://github.com/angular/angular/commit/3ed2d75)), closes [#24095](https://github.com/angular/angular/issues/24095)
+
+
+### Features
+
+* **common:** introduce KeyValuePipe ([#24319](https://github.com/angular/angular/issues/24319)) ([2b49bf7](https://github.com/angular/angular/commit/2b49bf7))
+* **core:** export defaultKeyValueDiffers to private api ([#24319](https://github.com/angular/angular/issues/24319)) ([92b278c](https://github.com/angular/angular/commit/92b278c))
+* **core:** expose a Compiler API for accessing module ids from NgModule types ([#24258](https://github.com/angular/angular/issues/24258)) ([bd02b27](https://github.com/angular/angular/commit/bd02b27))
+* **core:** KeyValueDiffer#diff allows null values ([#24319](https://github.com/angular/angular/issues/24319)) ([52ce9d5](https://github.com/angular/angular/commit/52ce9d5))
+* **ivy:** a generic visitor which allows prefixing nodes for ngtsc ([#24230](https://github.com/angular/angular/issues/24230)) ([ca79e11](https://github.com/angular/angular/commit/ca79e11))
+* **ivy:** add support of ApplicationRef.bootstrapModuleFactory ([#23811](https://github.com/angular/angular/issues/23811)) ([e3759f7](https://github.com/angular/angular/commit/e3759f7))
+* **ivy:** namespaced attributes added to output instructions ([#24386](https://github.com/angular/angular/issues/24386)) ([82c5313](https://github.com/angular/angular/commit/82c5313))
+* **ivy:** now supports SVG and MathML elements ([#24377](https://github.com/angular/angular/issues/24377)) ([8c1ac28](https://github.com/angular/angular/commit/8c1ac28))
+* **router:** implement scrolling restoration service ([#20030](https://github.com/angular/angular/issues/20030)) ([49c5234](https://github.com/angular/angular/commit/49c5234)), closes [#13636](https://github.com/angular/angular/issues/13636) [#10929](https://github.com/angular/angular/issues/10929) [#7791](https://github.com/angular/angular/issues/7791) [#6595](https://github.com/angular/angular/issues/6595)
+
+
+
 <a name="6.0.5"></a>
 ## [6.0.5](https://github.com/angular/angular/compare/6.0.4...6.0.5) (2018-06-13)
 
