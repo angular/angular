@@ -111,7 +111,7 @@ export class MetadataBundler {
     const origins = Array.from(this.symbolMap.values())
                         .filter(s => s.referenced && !s.reexport)
                         .reduce<{[name: string]: string}>((p, s) => {
-                          p[s.isPrivate ? s.privateName ! : s.name] = s.declaration !.module;
+                          p[s.isPrivate ? s.privateName ! : s.name] = getRootExport(s).declaration !.module;
                           return p;
                         }, {});
     const exports = this.getReExports(exportedSymbols);
@@ -312,7 +312,7 @@ export class MetadataBundler {
     for (const symbol of exportedSymbols) {
       if (symbol.reexport) {
         // symbol.declaration is guaranteed to be defined during the phase this method is called.
-        const declaration = symbol.declaration !;
+        const declaration = getRootExport(symbol).declaration !;
         const module = declaration.module;
         if (declaration !.name == '*') {
           // Reexport all the symbols.
@@ -343,7 +343,7 @@ export class MetadataBundler {
     if (!canonicalSymbol.referenced) {
       canonicalSymbol.referenced = true;
       // declaration is ensured to be definded before this method is called.
-      const declaration = canonicalSymbol.declaration !;
+      const declaration = getRootExport(canonicalSymbol).declaration !;
       const module = this.getMetadata(declaration.module);
       if (module) {
         const value = module.metadata[declaration.name];
@@ -485,7 +485,7 @@ export class MetadataBundler {
           __symbolic: 'reference',
           get name() {
             // Resolved lazily because private names are assigned late.
-            const canonicalSymbol = symbol.canonicalSymbol !;
+            const canonicalSymbol = getRootExport(symbol.canonicalSymbol !);
             if (canonicalSymbol.isPrivate == null) {
               throw Error('Invalid state: isPrivate was not initialized');
             }
