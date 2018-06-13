@@ -49,6 +49,9 @@ export interface Workspace {
 export interface Project {
   name: string;
 
+  /** Application prefix. */
+  prefix: string;
+
   /** Project type. */
   projectType: 'application' | 'library';
   /** Root of the project sourcefiles. */

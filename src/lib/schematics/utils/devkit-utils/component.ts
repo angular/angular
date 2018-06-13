@@ -82,16 +82,16 @@ function addDeclarationToNgModule(options: any): Rule {
   };
 }
 
-
-function buildSelector(options: any) {
+function buildSelector(options: any, projectPrefix: string) {
   let selector = strings.dasherize(options.name);
   if (options.prefix) {
     selector = `${options.prefix}-${selector}`;
+  } else if (options.prefix === undefined && projectPrefix) {
+    selector = `${projectPrefix}-${selector}`;
   }
 
   return selector;
 }
-
 
 export function buildComponent(options: any): Rule {
   return (host: Tree, context: SchematicContext) => {
@@ -105,7 +105,7 @@ export function buildComponent(options: any): Rule {
       options.path = `/${project.root}/src/app`;
     }
 
-    options.selector = options.selector || buildSelector(options);
+    options.selector = options.selector || buildSelector(options, project.prefix);
     options.module = findModuleFromOptions(host, options);
 
     const parsedPath = parseName(options.path, options.name);
