@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineInjectable} from '../../di/defs';
+import {defineInjectable, defineInjector,} from '../../di/defs';
 import {inject} from '../../di/injector';
 import {defineNgModule} from '../../metadata/ng_module';
 import * as r3 from '../index';
@@ -21,7 +21,9 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵdefineComponent': r3.defineComponent,
   'ɵdefineDirective': r3.defineDirective,
   'defineInjectable': defineInjectable,
+  'defineInjector': defineInjector,
   'ɵdefineNgModule': defineNgModule,
+  'ɵdefinePipe': r3.definePipe,
   'ɵdirectiveInject': r3.directiveInject,
   'inject': inject,
   'ɵinjectAttribute': r3.injectAttribute,
@@ -60,18 +62,23 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵi6': r3.i6,
   'ɵi7': r3.i7,
   'ɵi8': r3.i8,
+  'ɵiV': r3.iV,
   'ɵk': r3.k,
   'ɵkn': r3.kn,
   'ɵL': r3.L,
   'ɵld': r3.ld,
+  'ɵP': r3.P,
   'ɵp': r3.p,
   'ɵpb1': r3.pb1,
   'ɵpb2': r3.pb2,
   'ɵpb3': r3.pb3,
   'ɵpb4': r3.pb4,
   'ɵpbV': r3.pbV,
+  'ɵpD': r3.pD,
+  'ɵPp': r3.Pp,
   'ɵQ': r3.Q,
   'ɵqR': r3.qR,
+  'ɵrS': r3.rS,
   'ɵs': r3.s,
   'ɵsn': r3.sn,
   'ɵst': r3.st,
