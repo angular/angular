@@ -19,7 +19,7 @@ RUN JAVA_DEBIAN_VERSION="8u131-b11-1~bpo8+1" \
 ###
 # Bazel install
 # See https://bazel.build/versions/master/docs/install-ubuntu.html#using-bazel-custom-apt-repository-recommended
-RUN BAZEL_VERSION="0.13.0" \
+RUN BAZEL_VERSION="0.14.1" \
  && wget -q -O - https://bazel.build/bazel-release.pub.gpg | apt-key add - \
  && echo "deb [arch=amd64] http://storage.googleapis.com/bazel-apt stable jdk1.8" > /etc/apt/sources.list.d/bazel.list \
  && apt-get update \
