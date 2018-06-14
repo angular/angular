@@ -1,41 +1,71 @@
 # NgModule FAQs
 
-
+<!--
 #### Prerequisites:
-
+-->
+#### 사전지식
+<!--
 A basic understanding of the following concepts:
 * [NgModules](guide/ngmodules).
+-->
+다음 내용을 먼저 이해하고 이 문서를 보는 것이 좋습니다:
+* [NgModule](guide/ngmodules)
 
 <hr />
 
+<!--
 NgModules help organize an application into cohesive blocks of functionality.
 
 This page answers the questions many developers ask about NgModule design and implementation.
+-->
+NgModule은 애플리케이션 코드를 기능별로 분리해서 효율적으로 구성할 수 있는 단위입니다.
 
+이 문서는 NgModule의 개발 철학과 구현방법에 대해 많은 개발자들이 물어본 내용을 소개합니다.
 
+<!--
 ## What classes should I add to the `declarations` array?
+-->
+## `declarations` 배열에는 어떤 클래스를 추가해야 하나요?
 
+<!--
 Add [declarable](guide/bootstrapping#the-declarations-array) classes&mdash;components, directives, and pipes&mdash;to a `declarations` list.
 
 Declare these classes in _exactly one_ module of the application.
 Declare them in a module if they belong to that particular module.
+-->
+이 배열에는 모듈에 포함되는 컴포넌트나 디렉티브, 파이프를 등록하며, 이 Angular 구성요소들을 [declarable](guide/bootstrapping#the-declarations-array)이라고도 합니다.
+대상 클래스는 _딱 하나의_ 모듈에만 등록해야 합니다.
 
 <hr/>
 
 {@a q-declarable}
 
+<!--
 ## What is a _declarable_?
+-->
+## _declarable_ 이 무엇인가요?
 
+<!--
 Declarables are the class types&mdash;components, directives, and pipes&mdash;that
 you can add to a module's `declarations` list.
 They're the only classes that you can add to `declarations`.
+-->
+Declarable은 컴포넌트나 디렉티브, 파이프와 같이 모듈의 `declarations` 배열에 등록하는 클래스입니다.
+Declarable은 Angular 구성요소이면서, JavaScript 클래스이기도 합니다.
 
 <hr/>
 
+<!--
 ## What classes should I _not_ add to `declarations`?
+-->
+## `declarations` 배열에 추가하지 _말아야_ 할 클래스는 어떤 것이 있나요?
 
+<!--
 Add only [declarable](guide/bootstrapping#the-declarations-array) classes to an NgModule's `declarations` list.
+-->
+NgModule의 `declarations` 배열에는 [declarable](guide/bootstrapping#the-declarations-array) 클래스만 추가해야 합니다.
 
+<!--
 Do *not* declare the following:
 
 * A class that's already declared in another module, whether an app module, @NgModule, or third-party module.
@@ -46,63 +76,121 @@ For example, don't declare `FORMS_DIRECTIVES` from `@angular/forms` because the 
 * Service classes.
 * Non-Angular classes and objects, such as
 strings, numbers, functions, entity models, configurations, business logic, and helper classes.
+-->
+그래서 다음과 같은 항목은 추가하면 *안됩니다*:
+
+* 다른 모듈, 서드파티 모듈에 이미 추가된 클래스
+* 다른 모듈에서 가져온 디렉티브
+예를 들어 `@angular/forms` 라이브러리에서 `FormsModule` 모듈을 로드했다면, 이 모듈에 있는 `FORMS_DIRECTIVES`는 추가하면 안됩니다.
+
+* 모듈 클래스
+* 서비스 클래스
+* Angular 구성요소가 아닌 클래스나 객체 : 문자열, 숫자, 함수, 데이터 모델, config 설정, 업무 로직 클래스, 헬퍼 클래스
 
 <hr/>
 
-
+<!--
 ## Why list the same component in multiple `NgModule` properties?
+-->
+## `NgModule` 프로퍼티에 컴포넌트가 여러번 사용되는 경우도 있나요?
 
+<!--
 `AppComponent` is often listed in both `declarations` and `bootstrap`.
 You might see the same component listed in `declarations`, `exports`, and `entryComponents`.
 
 While that seems redundant, these properties have different functions.
 Membership in one list doesn't imply membership in another list.
+-->
+`AppComponent`는 `declarations` 배열에 추가되기도 하지만 `bootstrap` 배열에 추가되기도 합니다.
+어떤 경우에는 `declarations`, `exports`, `entryComponents`에 모두 등록되어 있는 컴포넌트도 있습니다.
 
+이런 문법은 조금 귀찮을 수 있지만 각각의 프로퍼티는 다른 역할을 하기 때문에 프로퍼티마다 따로 등록하는 작업이 필요합니다.
+프로퍼티는 서로 다른 프로퍼티에 영향을 주지 않습니다.
+
+<!--
 * `AppComponent` could be declared in this module but not bootstrapped.
 * `AppComponent` could be bootstrapped in this module but declared in a different feature module.
 * A component could be imported from another app module (so you can't declare it) and re-exported by this module.
 * A component could be exported for inclusion in an external component's template
 as well as dynamically loaded in a pop-up dialog.
+-->
+* `AppComponent`는 모듈에 등록되어 있지만 부트스트랩되지 않을 수도 있습니다.
+* 다른 기능 모듈에서 불러온 `AppComponent`가 부트스트랩 될 수도 있습니다.
+* 다른 앱 모듈에서 가져온 컴포넌트를 `exports`로 다시 추가하는 경우도 있습니다.
+* 팝업과 같이 동적으로 로딩되는 컴포넌트가 있을 수도 있습니다.
 
 <hr/>
 
+<!--
 ## What does "Can't bind to 'x' since it isn't a known property of 'y'" mean?
+-->
+## "Can't bind to 'x' since it isn't a known property of 'y'" 에러가 발생하는 이유는 무엇인가요?
 
+<!--
 This error often means that you haven't declared the directive "x"
 or haven't imported the NgModule to which "x" belongs.
+-->
+이 에러는 디렉티브 "x"를 모듈에 등록하지 않았거나 디렉티브 "x"가 등록된 모듈을 로드하지 않았을 때 발생합니다.
 
 <div class="l-sub-section">
 
+<!--
 Perhaps you declared "x" in an application sub-module but forgot to export it.
 The "x" class isn't visible to other modules until you add it to the `exports` list.
+-->
+어쩌면 어딘가에 디렉티브 "x"를 등록했지만 모듈 외부로 공개하지 않은 경우일 수도 있습니다.
+모듈의 `exports` 배열에 등록되지 않은 Angular 구성요소는 다른 모듈에서 참조할 수 없습니다.
 
 </div>
 
 <hr/>
 
+<!--
 ## What should I import?
+-->
+## 어떤 모듈을 로드(import)해야 하나요?
 
+<!--
 Import NgModules whose public (exported) [declarable classes](guide/bootstrapping#the-declarations-array)
 you need to reference in this module's component templates.
+-->
+이 모듈의 컴포넌트 템플릿에서 사용하려는 [Angular 구성요소의 클래스](guide/bootstrapping#the-declarations-array)를 제공하는 NgModule을 로드하면 됩니다.
 
+<!--
 This always means importing `CommonModule` from `@angular/common` for access to
 the Angular directives such as `NgIf` and `NgFor`.
 You can import it directly or from another NgModule that [re-exports](guide/ngmodule-faq#q-reexport) it.
+-->
+그래서 `NgIf`나 `NgFor`와 같은 Angular 기본 디렉티브를 사용하려면 `@angular/common` 라이브러리에서 `CommonModule`을 불러오면 됩니다.
+이 때 디렉티브가 선언된 모듈을 불러와도 되고, 다른 모듈이 불러 와서 [다시 모듈 외부로 공개](guide/ngmodule-faq#q-reexport)하는 모듈을 불러와도 됩니다.
 
+<!--
 Import `FormsModule` from `@angular/forms`
 if your components have `[(ngModel)]` two-way binding expressions.
+-->
+컴포넌트에서 `[(ngModel)]`로 양방향 바인딩하려면 `@angular/forms` 라이브러리에서 `FormsModule`을 불러오면 됩니다.
 
+<!--
 Import _shared_ and _feature_ modules when this module's components incorporate their
 components, directives, and pipes.
+-->
+그리고 현재 모듈에 등록된 컴포넌트나 디렉티브, 파이프가 다른 모듈과 연관되어 있다면 그 모듈을 로드하는 것이 좋습니다.
 
+<!--
 Import only [BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module) in the root `AppModule`.
+-->
+[BrowserModule](guide/ngmodule-faq#q-browser-vs-common-module)은 애플리케이션의 최상위 `AppModule`에서만 로드합니다.
 
 <hr/>
 
 {@a q-browser-vs-common-module}
 
+<!--
 ## Should I import `BrowserModule` or `CommonModule`?
+-->
+## `BrowserModule`을 로드해야 하나요, `CommonModule`을 로드해야 하나요?
 
+<!--
 The root application module, `AppModule`, of almost every browser application
 should import `BrowserModule` from `@angular/platform-browser`.
 
@@ -117,44 +205,86 @@ Do not import `BrowserModule` in any other module.
 They need the common directives. They don't need to re-install the app-wide providers.
 
 Importing `CommonModule` also frees feature modules for use on _any_ target platform, not just browsers.
+-->
+브라우저에서 실행되는 애플리케이션의 최상위 모듈인 `AppModule`은 `@angular/platform-browser`에서 제공하는 `BrowserModule`을 로드해야 하는데, `BrowserModule`에는 브라우저에서 앱을 실행하는 데 필요한 서비스들이 정의되어 있습니다.
+
+`BrowserModule`은 `@angular/commoon`에서 제공하는 `CommonModule`을 확장하는 모듈이기도 한데, 이것은 `AppModule` 안에 있는 모든 컴포넌트에서 `NgIf`나 `NgFor`와 같은 Angular 기본 디렉티브를 사용할 수 있다는 것을 의미하기도 합니다.
+
+하지만 앱 모듈이 아닌 모듈에서 `BrowserModule`을 로드하면 안됩니다.
+*기능 모듈*이나 *지연 로딩되는 모듈*은 `BrowserModule` 대신 `CommonModule`을 로드해야 합니다.
+앱 모듈이 아닌 경우에도 Angular 기본 디렉티브는 사용할 수 있지만, 앱 전역에 설정되는 프로바이더를 다시 초기화할 필요는 없습니다.
+
+브라우저에서 동작하지 않는 Angular 애플리케이션이라면 `BrowserModule` 없이 `CommonModule`을 사용하는 경우도 있습니다.
 
 <hr/>
 
 {@a q-reimport}
 
+<!--
 ## What if I import the same module twice?
+-->
+## 모듈을 두 번 로드하면 어떻게 되나요?
 
+<!--
 That's not a problem. When three modules all import Module 'A',
 Angular evaluates Module 'A' once, the first time it encounters it, and doesn't do so again.
+-->
+문제가 되지 않습니다. 만약 3개의 모듈에서 모듈 'A'를 각각 로드한다고 해도 Angular는 모듈 'A'를 한 번만 초기화합니다. 
 
+<!--
 That's true at whatever level `A` appears in a hierarchy of imported NgModules.
 When Module 'B' imports Module 'A', Module 'C' imports 'B', and Module 'D' imports `[C, B, A]`,
 then 'D' triggers the evaluation of 'C', which triggers the evaluation of 'B', which evaluates 'A'.
 When Angular gets to the 'B' and 'A' in 'D', they're already cached and ready to go.
+-->
+이 때 모듈이 초기화되는 순서는 모듈이 로드되는 순서에 따라 달라집니다.
+만약 모듈 'B'가 모듈 'A'를 로드하고, 모듈 'C'가 모듈 'B'를 참조하고, 마지막으로 모듈 'D'가 모듈 `[C, B, A]`를 로드한다고 합시다. 그러면 모듈 'D'가 로드될 때 모듈 'C'를 초기화하는데, 이 때 모듈 'C'에서 참조하는 모듈 'B'가 먼저 초기화되고, 모듈 'B'에서 참조하는 모듈 'A'가 가장 먼저 초기화됩니다.
+그리고 모듈 'D'에서 모듈 'B'와 'A'를 참조할 때는 캐시된 객체를 사용합니다.
 
+<!--
 Angular doesn't like NgModules with circular references, so don't let Module 'A' import Module 'B', which imports Module 'A'.
+-->
+Angular는 순환 참조를 지원하지 않습니다. 모듈 'A'가 모듈 'B'를 참조하는 상태에서 모듈 'B'가 모듈 'A'를 다시 참조하면 안됩니다.
 
 <hr/>
 
 {@a q-reexport}
 
+<!--
 ## What should I export?
+-->
+## 무엇을 모듈 외부로 공개해야 하나요?
 
+<!--
 Export [declarable](guide/bootstrapping#the-declarations-array) classes that components in _other_ NgModules
 are able to reference in their templates. These are your _public_ classes.
 If you don't export a declarable class, it stays _private_, visible only to other components
 declared in this NgModule.
+-->
+다른 모듈의 템플릿에서 사용되어야 할 [컴포넌트나 디렉티브, 파이프](guide/bootstrapping#the-declarations-array) 클래스를 모듈 외부로 공개해야 합니다.
+이렇게 지정하는 클래스들이 이 모듈의 _public_ 클래스입니다.
+모듈 외부로 지정하지 않은 Angular 구성요소는 기본적으로 _private_ 이며, 해당 모듈 안에서만 사용할 수 있습니다.
 
+<!--
 You _can_ export any declarable class&mdash;components, directives, and pipes&mdash;whether
 it's declared in this NgModule or in an imported NgModule.
+-->
+이 때 `exports` 배열로 지정하는 클래스는 해당 모듈의 `declarations` 배열에 추가된 클래스이거나 다른 모듈에서 가져온 클래스일 수 있습니다.
 
+<!--
 You _can_ re-export entire imported NgModules, which effectively re-exports all of their exported classes.
 An NgModule can even export a module that it doesn't import.
+-->
+불러온 모듈에 등록된 Angular 구성요소 전체를 다시 공개할 수도 있고, 아무것도 추가하지 않고 그대로 다시 공개할 수도 있습니다.
 
 <hr/>
 
+<!--
 ## What should I *not* export?
+-->
+## 모듈 외부로 공개하지 *말아야* 하는 것은 어떤 것이 있나요?
 
+<!--
 Don't export the following:
 
 * Private components, directives, and pipes that you need only within components declared in this NgModule.
@@ -166,6 +296,17 @@ While there's no harm in exporting them, there's also no benefit.
 * Pure service modules that don't have public (exported) declarations.
 For example, there's no point in re-exporting `HttpClientModule` because it doesn't export anything.
 Its only purpose is to add http service providers to the application as a whole.
+-->
+다음 항목은 모듈 외부로 공개하면 안됩니다:
+
+* 해당 모듈에서만 사용하는 private 컴포넌트, 디렉티브, 파이프
+다른 모듈에 사용되는 것을 원하지 않는다면 모듈 외부로 공개하지 않으면 됩니다.
+* 컴포넌트, 디렉티브, 파이프가 아닌 객체 : 서비스, 함수, config 설정, 데이터 모델
+* 라우터나 부트스트랩 대상으로 지정되어 동적으로 로딩되는 컴포넌트.
+[진입 컴포넌트](guide/ngmodule-faq#q-entry-component-defined)는 다른 컴포넌트 템플릿에 사용될 필요가 없습니다.
+진입 컴포넌트를 모듈 외부로 공개해도 별 문제는 없지만, 아무 이득없이 모듈 외부로 공개할 필요도 없습니다.
+* public `declarations` 배열이 없는 서비스 모듈.
+`HttpClientModule`과 같은 모듈은 불러와서 다시 공개할 이유가 없습니다. 왜냐하면 이 모듈은 아무것도 모듈 외부로 공개하지 않으며, 앱 전역에서 사용하는 http 서비스 프로바이더만 제공하기 때문입니다.
 
 <hr/>
 
