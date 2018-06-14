@@ -12,8 +12,8 @@
 ## IMPORTANT
 # If you change the `docker_image` version, also change the `cache_key` suffix and the version of
 # `com_github_bazelbuild_buildtools` in the `/WORKSPACE` file.
-var_1: &docker_image angular/ngcontainer:0.3.0
-var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.3.0
+var_1: &docker_image angular/ngcontainer:0.3.2
+var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.3.2
 
 # Define common ENV vars
 var_3: &define_env_vars
@@ -187,6 +187,10 @@ jobs:
   # See comments inside the integration/run_tests.sh script.
   integration_test:
     <<: *job_defaults
+    # Note: we run Bazel in one of the integration tests, and it can consume >2G
+    # of memory. Together with the system under test, this can exhaust the RAM
+    # on a 4G worker so we use a larger machine here too.
+    resource_class: xlarge
     steps:
       - *define_env_vars
       - checkout:
