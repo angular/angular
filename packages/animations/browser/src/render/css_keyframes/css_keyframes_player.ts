@@ -57,8 +57,7 @@ export class CssKeyframesPlayer implements AnimationPlayer {
     if (this.state >= AnimatorControlState.DESTROYED) return;
     this.state = AnimatorControlState.DESTROYED;
     this._styler.destroy();
-    this._flushStartFns();
-    this._flushDoneFns();
+    this._onFinish();
     this._onDestroyFns.forEach(fn => fn());
     this._onDestroyFns = [];
   }
@@ -73,13 +72,17 @@ export class CssKeyframesPlayer implements AnimationPlayer {
     this._onStartFns = [];
   }
 
-  finish() {
-    this.init();
+  private _onFinish() {
     if (this.state >= AnimatorControlState.FINISHED) return;
     this.state = AnimatorControlState.FINISHED;
-    this._styler.finish();
     this._flushStartFns();
     this._flushDoneFns();
+  }
+
+  finish() {
+    this.init();
+    this._onFinish();
+    this._styler.finish();
   }
 
   setPosition(value: number) { this._styler.setPosition(value); }
