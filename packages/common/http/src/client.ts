@@ -1974,8 +1974,8 @@ export class HttpClient {
 
   /**
    * Constructs an `Observable` which, when subscribed, will cause the configured
-   * POST request to be executed on the server. See the individual overloads for
-   * details of `post()`'s return type based on the provided options.
+   * PUT request to be executed on the server. See the individual overloads for
+   * details of `put()`'s return type based on the provided options.
    */
   put(url: string, body: any|null, options: {
     headers?: HttpHeaders | {[header: string]: string | string[]},
