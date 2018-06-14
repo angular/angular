@@ -19,7 +19,7 @@ describe('ContributorService', () => {
       ]
     });
 
-    contribService = injector.get(ContributorService);
+    contribService = injector.get<ContributorService>(ContributorService);
     httpMock = injector.get(HttpTestingController);
   });
 

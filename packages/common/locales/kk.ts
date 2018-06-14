@@ -9,18 +9,15 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === 1) return 1;
   return 5;
 }
 
 export default [
-  'kk',
-  [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
+  'kk', [['AM', 'PM'], u, u], u,
   [
     ['Ж', 'Д', 'С', 'С', 'Б', 'Ж', 'С'],
     ['Жс', 'Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб'],
@@ -64,16 +61,11 @@ export default [
     ]
   ],
   [
-    ['б.з.д.', 'б.з.'], ,
+    ['б.з.д.', 'б.з.'], u,
     ['Біздің заманымызға дейін', 'біздің заманымыз']
   ],
   1, [6, 0], ['dd.MM.yy', 'y \'ж\'. dd MMM', 'y \'ж\'. d MMMM', 'y \'ж\'. d MMMM, EEEE'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, u, u],
   [',', ' ', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'сан емес', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], '₸', 'Қазақстан теңгесі',
   {'JPY': ['JP¥', '¥'], 'KZT': ['₸'], 'RUB': ['₽'], 'THB': ['฿'], 'TWD': ['NT$']}, plural

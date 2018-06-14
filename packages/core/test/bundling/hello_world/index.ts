@@ -14,7 +14,7 @@ export class HelloWorld {
 // TODO(misko): Forgetting to export HelloWorld and not having NgModule fails silently.
 
 @NgModule({declarations: [HelloWorld]})
-export class INeedToExistEvenThoughtIAmNotNeeded {
+export class INeedToExistEvenThoughIAmNotNeeded {
 }
 // TODO(misko): Package should not be required to make this work.
 

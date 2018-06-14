@@ -1,6 +1,5 @@
-/** @stable */
 export declare class BrowserModule {
-    constructor(parentModule: BrowserModule);
+    constructor(parentModule: BrowserModule | null);
     /** @experimental */ static withServerTransition(params: {
         appId: string;
     }): ModuleWithProviders;
@@ -23,7 +22,6 @@ export declare function disableDebugTools(): void;
 /** @deprecated */
 export declare const DOCUMENT: InjectionToken<Document>;
 
-/** @stable */
 export declare abstract class DomSanitizer implements Sanitizer {
     abstract bypassSecurityTrustHtml(value: string): SafeHtml;
     abstract bypassSecurityTrustResourceUrl(value: string): SafeResourceUrl;
@@ -36,10 +34,8 @@ export declare abstract class DomSanitizer implements Sanitizer {
 /** @experimental */
 export declare function enableDebugTools<T>(ref: ComponentRef<T>): ComponentRef<T>;
 
-/** @stable */
 export declare const EVENT_MANAGER_PLUGINS: InjectionToken<EventManagerPlugin[]>;
 
-/** @stable */
 export declare class EventManager {
     constructor(plugins: EventManagerPlugin[], _zone: NgZone);
     addEventListener(element: HTMLElement, eventName: string, handler: Function): Function;
@@ -49,6 +45,8 @@ export declare class EventManager {
 
 /** @experimental */
 export declare const HAMMER_GESTURE_CONFIG: InjectionToken<HammerGestureConfig>;
+
+export declare const HAMMER_LOADER: InjectionToken<HammerLoader>;
 
 /** @experimental */
 export declare class HammerGestureConfig {
@@ -68,6 +66,8 @@ export declare class HammerGestureConfig {
     };
     buildHammer(element: HTMLElement): HammerInstance;
 }
+
+export declare type HammerLoader = () => Promise<void>;
 
 /** @experimental */
 export declare function makeStateKey<T = void>(key: string): StateKey<T>;
@@ -99,30 +99,23 @@ export declare type MetaDefinition = {
     [prop: string]: string;
 };
 
-/** @stable */
 export declare const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
 
-/** @stable */
 export interface SafeHtml extends SafeValue {
 }
 
-/** @stable */
 export interface SafeResourceUrl extends SafeValue {
 }
 
-/** @stable */
 export interface SafeScript extends SafeValue {
 }
 
-/** @stable */
 export interface SafeStyle extends SafeValue {
 }
 
-/** @stable */
 export interface SafeUrl extends SafeValue {
 }
 
-/** @stable */
 export interface SafeValue {
 }
 
@@ -148,5 +141,4 @@ export declare class TransferState {
     toJson(): string;
 }
 
-/** @stable */
 export declare const VERSION: Version;

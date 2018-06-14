@@ -184,6 +184,8 @@ export function stringify(token: any): string {
     return `${token.name}`;
   }
 
+  // WARNING: do not try to `JSON.stringify(token)` here
+  // see https://github.com/angular/angular/issues/23440
   const res = token.toString();
 
   if (res == null) {

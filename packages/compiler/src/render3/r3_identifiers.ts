@@ -12,13 +12,20 @@ const CORE = '@angular/core';
 
 export class Identifiers {
   /* Methods */
-  static NEW_METHOD = 'n';
-  static HOST_BINDING_METHOD = 'h';
+  static NEW_METHOD = 'factory';
   static TRANSFORM_METHOD = 'transform';
   static PATCH_DEPS = 'patchedDeps';
 
   /* Instructions */
-  static createElement: o.ExternalReference = {name: 'ɵE', moduleName: CORE};
+  static namespaceHTML: o.ExternalReference = {name: 'ɵNH', moduleName: CORE};
+
+  static namespaceMathML: o.ExternalReference = {name: 'ɵNM', moduleName: CORE};
+
+  static namespaceSVG: o.ExternalReference = {name: 'ɵNS', moduleName: CORE};
+
+  static element: o.ExternalReference = {name: 'ɵEe', moduleName: CORE};
+
+  static elementStart: o.ExternalReference = {name: 'ɵE', moduleName: CORE};
 
   static elementEnd: o.ExternalReference = {name: 'ɵe', moduleName: CORE};
 
@@ -26,25 +33,19 @@ export class Identifiers {
 
   static elementAttribute: o.ExternalReference = {name: 'ɵa', moduleName: CORE};
 
+  static elementClass: o.ExternalReference = {name: 'ɵk', moduleName: CORE};
+
   static elementClassNamed: o.ExternalReference = {name: 'ɵkn', moduleName: CORE};
+
+  static elementStyle: o.ExternalReference = {name: 'ɵs', moduleName: CORE};
 
   static elementStyleNamed: o.ExternalReference = {name: 'ɵsn', moduleName: CORE};
 
   static containerCreate: o.ExternalReference = {name: 'ɵC', moduleName: CORE};
 
-  static containerEnd: o.ExternalReference = {name: 'ɵc', moduleName: CORE};
-
-  static containerRefreshStart: o.ExternalReference = {name: 'ɵcR', moduleName: CORE};
-
-  static containerRefreshEnd: o.ExternalReference = {name: 'ɵcr', moduleName: CORE};
-
-  static directiveCreate: o.ExternalReference = {name: 'ɵD', moduleName: CORE};
-
   static text: o.ExternalReference = {name: 'ɵT', moduleName: CORE};
 
-  static directiveInput: o.ExternalReference = {name: 'ɵi', moduleName: CORE};
-
-  static textCreateBound: o.ExternalReference = {name: 'ɵt', moduleName: CORE};
+  static textBinding: o.ExternalReference = {name: 'ɵt', moduleName: CORE};
 
   static bind: o.ExternalReference = {name: 'ɵb', moduleName: CORE};
 
@@ -76,15 +77,16 @@ export class Identifiers {
   static pipeBindV: o.ExternalReference = {name: 'ɵpbV', moduleName: CORE};
 
   static load: o.ExternalReference = {name: 'ɵld', moduleName: CORE};
+  static loadDirective: o.ExternalReference = {name: 'ɵd', moduleName: CORE};
 
   static pipe: o.ExternalReference = {name: 'ɵPp', moduleName: CORE};
 
   static projection: o.ExternalReference = {name: 'ɵP', moduleName: CORE};
   static projectionDef: o.ExternalReference = {name: 'ɵpD', moduleName: CORE};
 
-  static refreshComponent: o.ExternalReference = {name: 'ɵr', moduleName: CORE};
+  static inject: o.ExternalReference = {name: 'inject', moduleName: CORE};
 
-  static directiveLifeCycle: o.ExternalReference = {name: 'ɵl', moduleName: CORE};
+  static injectAttribute: o.ExternalReference = {name: 'ɵinjectAttribute', moduleName: CORE};
 
   static injectElementRef: o.ExternalReference = {name: 'ɵinjectElementRef', moduleName: CORE};
 
@@ -93,12 +95,22 @@ export class Identifiers {
   static injectViewContainerRef:
       o.ExternalReference = {name: 'ɵinjectViewContainerRef', moduleName: CORE};
 
-  static inject: o.ExternalReference = {name: 'ɵinject', moduleName: CORE};
+  static directiveInject: o.ExternalReference = {name: 'ɵdirectiveInject', moduleName: CORE};
 
   static defineComponent: o.ExternalReference = {name: 'ɵdefineComponent', moduleName: CORE};
 
+  static ComponentDef: o.ExternalReference = {
+    name: 'ComponentDef',
+    moduleName: CORE,
+  };
+
   static defineDirective: o.ExternalReference = {
     name: 'ɵdefineDirective',
+    moduleName: CORE,
+  };
+
+  static DirectiveDef: o.ExternalReference = {
+    name: 'DirectiveDef',
     moduleName: CORE,
   };
 
@@ -106,6 +118,13 @@ export class Identifiers {
     name: 'defineInjector',
     moduleName: CORE,
   };
+
+  static NgModuleDef: o.ExternalReference = {
+    name: 'NgModuleDef',
+    moduleName: CORE,
+  };
+
+  static defineNgModule: o.ExternalReference = {name: 'ɵdefineNgModule', moduleName: CORE};
 
   static definePipe: o.ExternalReference = {name: 'ɵdefinePipe', moduleName: CORE};
 
@@ -115,4 +134,7 @@ export class Identifiers {
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵNgOnChangesFeature', moduleName: CORE};
 
   static listener: o.ExternalReference = {name: 'ɵL', moduleName: CORE};
+
+  // Reserve slots for pure functions
+  static reserveSlots: o.ExternalReference = {name: 'ɵrS', moduleName: CORE};
 }

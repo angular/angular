@@ -10,8 +10,8 @@ describe('example-boilerplate tool', () => {
     const sharedDir = path.resolve(__dirname, 'shared');
     const sharedNodeModulesDir = path.resolve(sharedDir, 'node_modules');
     const BPFiles = {
-      cli: 18,
-      i18n: 1,
+      cli: 19,
+      i18n: 2,
       universal: 2,
       systemjs: 7,
       common: 1
@@ -84,7 +84,7 @@ describe('example-boilerplate tool', () => {
         (BPFiles.common * exampleFolders.length)
       );
       // for example
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/i18n`, 'a/b', '../cli/.angular-cli.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/i18n`, 'a/b', '../cli/angular.json');
       expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/i18n`, 'a/b', 'package.json');
       expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/common`, 'c/d', 'src/styles.css');
     });
@@ -100,7 +100,7 @@ describe('example-boilerplate tool', () => {
       );
       // for example
       expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/universal`, 'a/b', '../cli/tslint.json');
-      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/universal`, 'a/b', '.angular-cli.json');
+      expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/universal`, 'a/b', 'angular.json');
       expect(exampleBoilerPlate.copyFile).toHaveBeenCalledWith(`${boilerplateDir}/common`, 'c/d', 'src/styles.css');
     });
 

@@ -36,10 +36,6 @@
       'rxjs/operators': {main: 'index.js', defaultExtension: 'js' },
       'rxjs/testing': {main: 'index.js', defaultExtension: 'js' },
       'rxjs/websocket': {main: 'index.js', defaultExtension: 'js' },
-      'rxjs/ajax': {main: 'index.js', defaultExtension: 'js' },
-      'rxjs/operators': {main: 'index.js', defaultExtension: 'js' },
-      'rxjs/testing': {main: 'index.js', defaultExtension: 'js' },
-      'rxjs/websocket': {main: 'index.js', defaultExtension: 'js' },
       'rxjs': { main: 'index.js', defaultExtension: 'js' },
     }
   });

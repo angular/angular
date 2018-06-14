@@ -26,6 +26,7 @@ export interface Config {
   index: string;
   assetGroups?: AssetGroup[];
   dataGroups?: DataGroup[];
+  navigationUrls?: string[];
 }
 
 /**
@@ -37,7 +38,13 @@ export interface AssetGroup {
   name: string;
   installMode?: 'prefetch'|'lazy';
   updateMode?: 'prefetch'|'lazy';
-  resources: {files?: Glob[]; versionedFiles?: Glob[]; urls?: Glob[];};
+  resources: {
+    files?: Glob[];
+    /** @deprecated As of v6 `versionedFiles` and `files` options have the same behavior. Use
+       `files` instead. */
+    versionedFiles?: Glob[];
+    urls?: Glob[];
+  };
 }
 
 /**

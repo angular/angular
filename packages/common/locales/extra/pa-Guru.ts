@@ -9,20 +9,22 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     [
       'ਅੱਧੀ ਰਾਤ', 'ਸਵੇਰੇ', 'ਦੁਪਹਿਰੇ', 'ਸ਼ਾਮੀਂ',
       'ਰਾਤੀਂ'
     ],
-    ,
+    u, u
   ],
   [
     [
       'ਅੱਧੀ ਰਾਤ', 'ਸਵੇਰੇ', 'ਦੁਪਹਿਰੇ', 'ਸ਼ਾਮੀਂ',
       'ਰਾਤੀਂ'
     ],
-    ,
+    u,
     [
       'ਅੱਧੀ ਰਾਤ', 'ਸਵੇਰੇ', 'ਦੁਪਹਿਰੇ', 'ਸ਼ਾਮ',
       'ਰਾਤ'

@@ -31,7 +31,7 @@ let lastCreatedRenderer: Renderer2;
     if (!getDOM().supportsDOMEvents()) return;
     // TODO(tbosch): investigate why this is failing on iOS7 for unrelated reasons
     // Note: it's hard to debug this as SauceLabs starts with iOS8. Maybe drop
-    // iOS7 alltogether?
+    // iOS7 altogether?
     if (browserDetection.isIOS7) return;
 
     let uiRenderStore: RenderStore;

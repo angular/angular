@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ContentChild, Directive, Injectable, Injector, InjectorDef, Input, NgModule, NgModuleFactory, NgModuleRef, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, defineInjector} from '../../../src/core';
+import {Component, ContentChild, Directive, Injectable, Injector, Input, NgModule, NgModuleFactory, NgModuleRef, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, defineInjector} from '../../../src/core';
 import * as r3 from '../../../src/render3/index';
 
 const details_elided = {

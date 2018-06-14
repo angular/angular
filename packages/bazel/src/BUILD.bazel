@@ -26,15 +26,3 @@ nodejs_binary(
     data = ["modify_tsconfig.js"],
     entry_point = "angular/packages/bazel/src/modify_tsconfig.js",
 )
-
-nodejs_binary(
-    name = "index_bundler",
-    data = [
-        # BEGIN-INTERNAL
-        # Only needed when compiling within the Angular repo.
-        # Users will get this dependency from node_modules.
-        "//packages/compiler-cli",
-        # END-INTERNAL
-    ],
-    entry_point = "@angular/compiler-cli/src/metadata/bundle_index_main.js",
-)

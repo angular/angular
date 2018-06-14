@@ -5,7 +5,9 @@ import { Observable, of } from 'rxjs';
 
 import { Hero } from './hero.model';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class HeroService {
   getHeroes() {
     let heroes: Hero[] = [];

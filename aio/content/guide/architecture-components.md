@@ -22,7 +22,7 @@ Angular creates, updates, and destroys components as the user moves through the 
 
 <img src="generated/images/guide/architecture/metadata.png" alt="Metadata" class="left">
 
-The `@Component` decorator identifies the class immediately below it as a component class, and specifies its metadata. In the example code below, you can see that `HeroListComponent` is just a class, with no special Angular notation or syntax at all. It's not a component until mark it as one with the `@Component` decorator.
+The `@Component` decorator identifies the class immediately below it as a component class, and specifies its metadata. In the example code below, you can see that `HeroListComponent` is just a class, with no special Angular notation or syntax at all. It's not a component until you mark it as one with the `@Component` decorator.
 
 The metadata for a component tells Angular where to get the major building blocks it needs to create and present the component and its view. In particular, it associates a _template_ with the component, either directly with inline code, or by reference. Together, the component and its template describe a _view_.
 
@@ -76,7 +76,7 @@ This template uses typical HTML elements like `<h2>` and  `<p>`, and also includ
 
 Without a framework, you would be responsible for pushing data values into the HTML controls and turning user responses into actions and value updates. Writing such push/pull logic by hand is tedious, error-prone, and a nightmare to read, as any experienced jQuery programmer can attest.
 
-Angular supports *two-way data binding*, a mechanism for coordinating parts of a template with parts of a component. Add binding markup to the template HTML to tell Angular how to connect both sides. 
+Angular supports *two-way data binding*, a mechanism for coordinating parts of a template with parts of a component. Add binding markup to the template HTML to tell Angular how to connect both sides.
 
 The following diagram shows the four forms of data binding markup. Each form has a direction&mdash;to the DOM, from the DOM, or in both directions.
 

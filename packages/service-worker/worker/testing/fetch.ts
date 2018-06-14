@@ -110,6 +110,9 @@ export class MockRequest extends MockBody implements Request {
         Object.keys(headers).forEach(header => { this.headers.set(header, headers[header]); });
       }
     }
+    if (init.cache !== undefined) {
+      this.cache = init.cache;
+    }
     if (init.mode !== undefined) {
       this.mode = init.mode;
     }

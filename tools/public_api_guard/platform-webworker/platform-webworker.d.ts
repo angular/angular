@@ -78,7 +78,6 @@ export declare class UiArguments {
     constructor(method: string, args?: FnArg[] | undefined);
 }
 
-/** @stable */
 export declare const VERSION: Version;
 
 /** @experimental */

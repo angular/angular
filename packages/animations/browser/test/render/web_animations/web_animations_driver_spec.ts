@@ -12,7 +12,7 @@ import {WebAnimationsPlayer} from '../../../src/render/web_animations/web_animat
 
 {
   describe('WebAnimationsDriver', () => {
-    if (typeof Element == 'undefined' || typeof document == 'undefined') return;
+    if (isNode) return;
 
     describe('when web-animations are not supported natively', () => {
       it('should return an instance of a CssKeyframePlayer if scrubbing is not requested', () => {

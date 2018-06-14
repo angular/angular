@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, NgZone} from '@angular/core';
+import {isPlatformServer} from '@angular/common';
+import {Inject, Injectable, NgZone, Optional, PLATFORM_ID} from '@angular/core';
+
+
 // Import zero symbols from zone.js. This causes the zone ambient type to be
 // added to the type-checker, without emitting any runtime module load statement
 import {} from 'zone.js';
@@ -60,7 +63,7 @@ interface TaskData {
 }
 
 // a global listener to handle all dom event,
-// so we do not need to create a closure everytime
+// so we do not need to create a closure every time
 const globalListener = function(event: Event) {
   const symbolName = symbolNames[event.type];
   if (!symbolName) {
@@ -103,14 +106,18 @@ const globalListener = function(event: Event) {
 
 @Injectable()
 export class DomEventsPlugin extends EventManagerPlugin {
-  constructor(@Inject(DOCUMENT) doc: any, private ngZone: NgZone) {
+  constructor(
+      @Inject(DOCUMENT) doc: any, private ngZone: NgZone,
+      @Optional() @Inject(PLATFORM_ID) platformId: {}|null) {
     super(doc);
 
-    this.patchEvent();
+    if (!platformId || !isPlatformServer(platformId)) {
+      this.patchEvent();
+    }
   }
 
   private patchEvent() {
-    if (!Event || !Event.prototype) {
+    if (typeof Event === 'undefined' || !Event || !Event.prototype) {
       return;
     }
     if ((Event.prototype as any)[stopMethodSymbol]) {
@@ -125,7 +132,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
       }
 
       // should call native delegate in case
-      // in some enviroment part of the application
+      // in some environment part of the application
       // will not use the patched Event
       delegate && delegate.apply(this, arguments);
     };
@@ -221,7 +228,7 @@ export class DomEventsPlugin extends EventManagerPlugin {
       }
     } else {
       // not found in taskDatas, the callback may be added inside of ngZone
-      // use native remove listener to remove the calback
+      // use native remove listener to remove the callback
       target[NATIVE_REMOVE_LISTENER].apply(target, [eventName, callback, false]);
     }
   }

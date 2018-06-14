@@ -255,7 +255,7 @@ class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
 
     this.push(ast);
 
-    // Find directive that refernces this template
+    // Find directive that references this template
     this.directiveSummary =
         ast.directives.map(d => d.directive).find(d => hasTemplateReference(d.type)) !;
 

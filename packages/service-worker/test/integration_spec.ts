@@ -41,6 +41,7 @@ const manifest: Manifest = {
     urls: ['/only.txt'],
     patterns: [],
   }],
+  navigationUrls: [],
   hashTable: tmpHashTableForFs(dist),
 };
 
@@ -55,6 +56,7 @@ const manifestUpdate: Manifest = {
     urls: ['/only.txt'],
     patterns: [],
   }],
+  navigationUrls: [],
   hashTable: tmpHashTableForFs(distUpdate),
 };
 
@@ -78,7 +80,7 @@ const serverUpdate =
     async_beforeEach(async() => {
       // Fire up the client.
       mock = new MockServiceWorkerContainer();
-      comm = new NgswCommChannel(mock as any, 'browser');
+      comm = new NgswCommChannel(mock as any);
       scope = new SwTestHarnessBuilder().withServerState(server).build();
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
 
@@ -88,7 +90,7 @@ const serverUpdate =
       mock.messages.subscribe(msg => { scope.handleMessage(msg, 'default'); });
 
       mock.setupSw();
-      reg = await mock.mockRegistration;
+      reg = mock.mockRegistration !;
 
       await Promise.all(scope.handleFetch(new MockRequest('/only.txt'), 'default'));
       await driver.initialized;

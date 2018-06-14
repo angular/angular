@@ -10,11 +10,13 @@ import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
-
+import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {containerEl, renderToHtml} from './render_util';
 
 describe('outputs', () => {
   let buttonToggle: ButtonToggle;
+  let destroyComp: DestroyComp;
+  let buttonDir: MyButton;
 
   class ButtonToggle {
     change = new EventEmitter();
@@ -22,8 +24,8 @@ describe('outputs', () => {
 
     static ngComponentDef = defineComponent({
       type: ButtonToggle,
-      tag: 'button-toggle',
-      template: function(ctx: any, cm: boolean) {},
+      selectors: [['button-toggle']],
+      template: function(rf: RenderFlags, ctx: any) {},
       factory: () => buttonToggle = new ButtonToggle(),
       outputs: {change: 'change', resetStream: 'reset'}
     });
@@ -36,16 +38,44 @@ describe('outputs', () => {
 
     static ngDirectiveDef = defineDirective({
       type: OtherDir,
+      selectors: [['', 'otherDir', '']],
       factory: () => otherDir = new OtherDir,
       outputs: {changeStream: 'change'}
     });
   }
 
+  class DestroyComp {
+    events: string[] = [];
+    ngOnDestroy() { this.events.push('destroy'); }
+
+    static ngComponentDef = defineComponent({
+      type: DestroyComp,
+      selectors: [['destroy-comp']],
+      template: function(rf: RenderFlags, ctx: any) {},
+      factory: () => destroyComp = new DestroyComp()
+    });
+  }
+
+  /** <button myButton (click)="onClick()">Click me</button> */
+  class MyButton {
+    click = new EventEmitter();
+
+    static ngDirectiveDef = defineDirective({
+      type: MyButton,
+      selectors: [['', 'myButton', '']],
+      factory: () => buttonDir = new MyButton,
+      outputs: {click: 'click'}
+    });
+  }
+
+
+  const deps = [ButtonToggle, OtherDir, DestroyComp, MyButton];
+
   it('should call component output function when event is emitted', () => {
     /** <button-toggle (change)="onChange()"></button-toggle> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, ButtonToggle);
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'button-toggle');
         {
           listener('change', function() { return ctx.onChange(); });
         }
@@ -55,7 +85,7 @@ describe('outputs', () => {
 
     let counter = 0;
     const ctx = {onChange: () => counter++};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
@@ -66,9 +96,9 @@ describe('outputs', () => {
 
   it('should support more than 1 output function on the same node', () => {
     /** <button-toggle (change)="onChange()" (reset)="onReset()"></button-toggle> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, ButtonToggle);
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'button-toggle');
         {
           listener('change', function() { return ctx.onChange(); });
           listener('reset', function() { return ctx.onReset(); });
@@ -80,7 +110,7 @@ describe('outputs', () => {
     let counter = 0;
     let resetCounter = 0;
     const ctx = {onChange: () => counter++, onReset: () => resetCounter++};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
@@ -91,9 +121,9 @@ describe('outputs', () => {
 
   it('should eval component output expression when event is emitted', () => {
     /** <button-toggle (change)="counter++"></button-toggle> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, ButtonToggle);
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'button-toggle');
         {
           listener('change', function() { return ctx.counter++; });
         }
@@ -102,7 +132,7 @@ describe('outputs', () => {
     }
 
     const ctx = {counter: 0};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(ctx.counter).toEqual(1);
@@ -119,35 +149,38 @@ describe('outputs', () => {
      * % }
      */
 
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         container(0);
       }
-      containerRefreshStart(0);
-      {
-        if (ctx.condition) {
-          if (embeddedViewStart(0)) {
-            elementStart(0, ButtonToggle);
-            {
-              listener('change', function() { return ctx.onChange(); });
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              elementStart(0, 'button-toggle');
+              {
+                listener('change', function() { return ctx.onChange(); });
+              }
+              elementEnd();
             }
-            elementEnd();
+            embeddedViewEnd();
           }
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     let counter = 0;
     const ctx = {onChange: () => counter++, condition: true};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
 
     ctx.condition = false;
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
@@ -163,65 +196,55 @@ describe('outputs', () => {
      * % }
      */
 
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         container(0);
       }
-      containerRefreshStart(0);
-      {
-        if (ctx.condition) {
-          if (embeddedViewStart(0)) {
-            container(0);
-          }
-          containerRefreshStart(0);
-          {
-            if (ctx.condition2) {
-              if (embeddedViewStart(0)) {
-                elementStart(0, ButtonToggle);
-                {
-                  listener('change', function() { return ctx.onChange(); });
-                }
-                elementEnd();
-              }
-              embeddedViewEnd();
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              container(0);
             }
+            containerRefreshStart(0);
+            {
+              if (ctx.condition2) {
+                let rf1 = embeddedViewStart(0);
+                if (rf1 & RenderFlags.Create) {
+                  elementStart(0, 'button-toggle');
+                  {
+                    listener('change', function() { return ctx.onChange(); });
+                  }
+                  elementEnd();
+                }
+                embeddedViewEnd();
+              }
+            }
+            containerRefreshEnd();
+            embeddedViewEnd();
           }
-          containerRefreshEnd();
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     let counter = 0;
     const ctx = {onChange: () => counter++, condition: true, condition2: true};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
 
     ctx.condition = false;
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
   });
 
   it('should work properly when view also has listeners and destroys', () => {
-    let destroyComp: DestroyComp;
-
-    class DestroyComp {
-      events: string[] = [];
-      ngOnDestroy() { this.events.push('destroy'); }
-
-      static ngComponentDef = defineComponent({
-        type: DestroyComp,
-        tag: 'destroy-comp',
-        template: function(ctx: any, cm: boolean) {},
-        factory: () => destroyComp = new DestroyComp()
-      });
-    }
-
     /**
      * % if (condition) {
      *   <button (click)="onClick()">Click me</button>
@@ -229,38 +252,41 @@ describe('outputs', () => {
      *   <destroy-comp></destroy-comp>
      * % }
      */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         container(0);
       }
-      containerRefreshStart(0);
-      {
-        if (ctx.condition) {
-          if (embeddedViewStart(0)) {
-            elementStart(0, 'button');
-            {
-              listener('click', function() { return ctx.onClick(); });
-              text(1, 'Click me');
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          if (ctx.condition) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              elementStart(0, 'button');
+              {
+                listener('click', function() { return ctx.onClick(); });
+                text(1, 'Click me');
+              }
+              elementEnd();
+              elementStart(2, 'button-toggle');
+              {
+                listener('change', function() { return ctx.onChange(); });
+              }
+              elementEnd();
+              elementStart(3, 'destroy-comp');
+              elementEnd();
             }
-            elementEnd();
-            elementStart(2, ButtonToggle);
-            {
-              listener('change', function() { return ctx.onChange(); });
-            }
-            elementEnd();
-            elementStart(3, DestroyComp);
-            elementEnd();
+            embeddedViewEnd();
           }
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     let clickCounter = 0;
     let changeCounter = 0;
     const ctx = {condition: true, onChange: () => changeCounter++, onClick: () => clickCounter++};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(changeCounter).toEqual(1);
@@ -272,7 +298,7 @@ describe('outputs', () => {
     expect(clickCounter).toEqual(1);
 
     ctx.condition = false;
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     expect(destroyComp !.events).toEqual(['destroy']);
 
@@ -283,19 +309,9 @@ describe('outputs', () => {
   });
 
   it('should fire event listeners along with outputs if they match', () => {
-    let buttonDir: MyButton;
-
-    /** <button myButton (click)="onClick()">Click me</button> */
-    class MyButton {
-      click = new EventEmitter();
-
-      static ngDirectiveDef = defineDirective(
-          {type: MyButton, factory: () => buttonDir = new MyButton, outputs: {click: 'click'}});
-    }
-
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, 'button', null, [MyButton]);
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'button', ['myButton', '']);
         {
           listener('click', function() { return ctx.onClick(); });
         }
@@ -304,7 +320,7 @@ describe('outputs', () => {
     }
 
     let counter = 0;
-    renderToHtml(Template, {counter, onClick: () => counter++});
+    renderToHtml(Template, {counter, onClick: () => counter++}, deps);
 
     // To match current Angular behavior, the click listener is still
     // set up in addition to any matching outputs.
@@ -318,9 +334,9 @@ describe('outputs', () => {
 
   it('should work with two outputs of the same name', () => {
     /** <button-toggle (change)="onChange()" otherDir></button-toggle> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, ButtonToggle, null, [OtherDir]);
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'button-toggle', ['otherDir', '']);
         {
           listener('change', function() { return ctx.onChange(); });
         }
@@ -329,7 +345,7 @@ describe('outputs', () => {
     }
 
     let counter = 0;
-    renderToHtml(Template, {counter, onChange: () => counter++});
+    renderToHtml(Template, {counter, onChange: () => counter++}, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
@@ -339,32 +355,39 @@ describe('outputs', () => {
   });
 
   it('should work with an input and output of the same name', () => {
-    let otherDir: OtherDir;
+    let otherDir: OtherChangeDir;
 
-    class OtherDir {
+    class OtherChangeDir {
       change: boolean;
 
-      static ngDirectiveDef = defineDirective(
-          {type: OtherDir, factory: () => otherDir = new OtherDir, inputs: {change: 'change'}});
+      static ngDirectiveDef = defineDirective({
+        type: OtherChangeDir,
+        selectors: [['', 'otherChangeDir', '']],
+        factory: () => otherDir = new OtherChangeDir,
+        inputs: {change: 'change'}
+      });
     }
 
-    /** <button-toggle (change)="onChange()" otherDir [change]="change"></button-toggle> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, ButtonToggle, null, [OtherDir]);
+    /** <button-toggle (change)="onChange()" otherChangeDir [change]="change"></button-toggle> */
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'button-toggle', ['otherChangeDir', '']);
         {
           listener('change', function() { return ctx.onChange(); });
         }
         elementEnd();
       }
-      elementProperty(0, 'change', bind(ctx.change));
+      if (rf & RenderFlags.Update) {
+        elementProperty(0, 'change', bind(ctx.change));
+      }
     }
 
     let counter = 0;
-    renderToHtml(Template, {counter, onChange: () => counter++, change: true});
+    const deps = [ButtonToggle, OtherChangeDir];
+    renderToHtml(Template, {counter, onChange: () => counter++, change: true}, deps);
     expect(otherDir !.change).toEqual(true);
 
-    renderToHtml(Template, {counter, onChange: () => counter++, change: false});
+    renderToHtml(Template, {counter, onChange: () => counter++, change: false}, deps);
     expect(otherDir !.change).toEqual(false);
 
     buttonToggle !.change.next();
@@ -381,8 +404,8 @@ describe('outputs', () => {
      * 'changeStream']}
      * % }
      */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
         elementStart(0, 'button');
         {
           listener('click', function() { return ctx.onClick(); });
@@ -391,40 +414,43 @@ describe('outputs', () => {
         elementEnd();
         container(2);
       }
-      containerRefreshStart(2);
-      {
-        if (ctx.condition) {
-          if (embeddedViewStart(0)) {
-            elementStart(0, ButtonToggle);
-            {
-              listener('change', function() { return ctx.onChange(); });
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(2);
+        {
+          if (ctx.condition) {
+            let rf1 = embeddedViewStart(0);
+            if (rf1 & RenderFlags.Create) {
+              elementStart(0, 'button-toggle');
+              {
+                listener('change', function() { return ctx.onChange(); });
+              }
+              elementEnd();
             }
-            elementEnd();
-          }
-          embeddedViewEnd();
-        } else {
-          if (embeddedViewStart(1)) {
-            elementStart(0, 'div', null, [OtherDir]);
-            {
-              listener('change', function() { return ctx.onChange(); });
+            embeddedViewEnd();
+          } else {
+            if (embeddedViewStart(1)) {
+              elementStart(0, 'div', ['otherDir', '']);
+              {
+                listener('change', function() { return ctx.onChange(); });
+              }
+              elementEnd();
             }
-            elementEnd();
+            embeddedViewEnd();
           }
-          embeddedViewEnd();
         }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
     }
 
     let counter = 0;
     const ctx = {condition: true, onChange: () => counter++, onClick: () => {}};
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
 
     buttonToggle !.change.next();
     expect(counter).toEqual(1);
 
     ctx.condition = false;
-    renderToHtml(Template, ctx);
+    renderToHtml(Template, ctx, deps);
     expect(counter).toEqual(1);
 
     otherDir !.changeStream.next();

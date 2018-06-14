@@ -4,7 +4,7 @@ export interface AssetGroup {
     name: string;
     resources: {
         files?: Glob[];
-        versionedFiles?: Glob[];
+        /** @deprecated */ versionedFiles?: Glob[];
         urls?: Glob[];
     };
     updateMode?: 'prefetch' | 'lazy';
@@ -16,6 +16,7 @@ export interface Config {
     assetGroups?: AssetGroup[];
     dataGroups?: DataGroup[];
     index: string;
+    navigationUrls?: string[];
 }
 
 /** @experimental */

@@ -1,8 +1,8 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "ivy_ng_module")
+load("//tools:defaults.bzl", "ivy_ng_module", "ts_library")
 load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
+load("//tools/http-server:http_server.bzl", "http_server")
 
 ivy_ng_module(
     name = "hello_world_i18n",
@@ -14,7 +14,12 @@ ivy_ng_module(
 
 ng_rollup_bundle(
     name = "bundle",
-    # Remove once #22913 lands
+    # TODO(alexeagle): This is inconsistent.
+    # We try to teach users to always have their workspace at the start of a
+    # path, to disambiguate from other workspaces.
+    # Here, the rule implementation is looking in an execroot where the layout
+    # has an "external" directory for external dependencies.
+    # This should probably start with "angular/" and let the rule deal with it.
     entry_point = "packages/core/test/bundling/hello_world_i18n/index.js",
     deps = [
         ":hello_world_i18n",
@@ -22,15 +27,11 @@ ng_rollup_bundle(
     ],
 )
 
-ts_devserver(
-    name = "devserver",
-    static_files = [
-        ":bundle.min_debug.js",
-        ":bundle.min.js",
+http_server(
+    name = "prodserver",
+    data = [
         "index.html",
-    ],
-    deps = [
-        # fix for ibazel until https://github.com/angular/angular/pull/22912 gets merged
-        "//packages/compiler",
+        ":bundle.min.js",
+        ":bundle.min_debug.js",
     ],
 )

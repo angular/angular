@@ -43,29 +43,12 @@ export class HttpInterceptingHandler implements HttpHandler {
 }
 
 /**
- * Constructs an `HttpHandler` that applies a bunch of `HttpInterceptor`s
- * to a request before passing it to the given `HttpBackend`.
- *
- * Meant to be used as a factory function within `HttpClientModule`.
- *
- * @stable
- */
-export function interceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null = []): HttpHandler {
-  if (!interceptors) {
-    return backend;
-  }
-  return interceptors.reduceRight(
-      (next, interceptor) => new HttpInterceptorHandler(next, interceptor), backend);
-}
-
-/**
  * Factory function that determines where to store JSONP callbacks.
  *
  * Ordinarily JSONP callbacks are stored on the `window` object, but this may not exist
  * in test environments. In that case, callbacks are stored on an anonymous object instead.
  *
- * @stable
+ *
  */
 export function jsonpCallbackContext(): Object {
   if (typeof window === 'object') {
@@ -84,7 +67,7 @@ export function jsonpCallbackContext(): Object {
  * If no such names are provided, the default is to use `X-XSRF-TOKEN` for
  * the header name and `XSRF-TOKEN` for the cookie name.
  *
- * @stable
+ *
  */
 @NgModule({
   providers: [
@@ -132,7 +115,7 @@ export class HttpClientXsrfModule {
  * Interceptors can be added to the chain behind `HttpClient` by binding them
  * to the multiprovider for `HTTP_INTERCEPTORS`.
  *
- * @stable
+ *
  */
 @NgModule({
   imports: [
@@ -159,7 +142,7 @@ export class HttpClientModule {
  * Without this module, Jsonp requests will reach the backend
  * with method JSONP, where they'll be rejected.
  *
- * @stable
+ *
  */
 @NgModule({
   providers: [

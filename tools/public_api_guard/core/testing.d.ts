@@ -1,10 +1,8 @@
-/** @stable */
 export declare function async(fn: Function): (done: any) => any;
 
 /** @experimental */
 export declare function cleanupDocument(): void;
 
-/** @stable */
 export declare class ComponentFixture<T> {
     changeDetectorRef: ChangeDetectorRef;
     componentInstance: T;
@@ -47,7 +45,6 @@ export declare function flushMicrotasks(): void;
 /** @experimental */
 export declare function getTestBed(): TestBed;
 
-/** @stable */
 export declare function inject(tokens: any[], fn: Function): () => any;
 
 /** @experimental */
@@ -58,15 +55,14 @@ export declare class InjectSetupWrapper {
 
 /** @experimental */
 export declare type MetadataOverride<T> = {
-    add?: T;
-    remove?: T;
-    set?: T;
+    add?: Partial<T>;
+    remove?: Partial<T>;
+    set?: Partial<T>;
 };
 
 /** @experimental */
 export declare function resetFakeAsyncZone(): void;
 
-/** @stable */
 export declare class TestBed implements Injector {
     ngModule: Type<any> | Type<any>[];
     platform: PlatformRef;

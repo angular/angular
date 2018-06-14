@@ -20,7 +20,7 @@ import {ViewRef} from './view_ref';
  * `ComponentRef` provides access to the Component Instance as well other objects related to this
  * Component Instance and allows you to destroy the Component Instance via the {@link #destroy}
  * method.
- * @stable
+ *
  */
 export abstract class ComponentRef<C> {
   /**
@@ -64,9 +64,6 @@ export abstract class ComponentRef<C> {
   abstract onDestroy(callback: Function): void;
 }
 
-/**
- * @stable
- */
 export abstract class ComponentFactory<C> {
   abstract get selector(): string;
   abstract get componentType(): Type<any>;

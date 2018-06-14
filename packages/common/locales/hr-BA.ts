@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
       f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
@@ -22,18 +24,13 @@ function plural(n: number): number {
 }
 
 export default [
-  'hr-BA',
-  [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
+  'hr-BA', [['AM', 'PM'], u, u], u,
   [
     ['N', 'P', 'U', 'S', 'Č', 'P', 'S'], ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub'],
     ['nedjelja', 'ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota'],
     ['ned', 'pon', 'uto', 'sri', 'čet', 'pet', 'sub']
   ],
-  ,
+  u,
   [
     ['1.', '2.', '3.', '4.', '5.', '6.', '7.', '8.', '9.', '10.', '11.', '12.'],
     ['sij', 'velj', 'ožu', 'tra', 'svi', 'lip', 'srp', 'kol', 'ruj', 'lis', 'stu', 'pro'],
@@ -52,32 +49,27 @@ export default [
   ],
   [['pr.n.e.', 'AD'], ['pr. Kr.', 'po. Kr.'], ['prije Krista', 'poslije Krista']], 1, [6, 0],
   ['d. M. yy.', 'd. MMM y.', 'd. MMMM y.', 'EEEE, d. MMMM y.'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss (zzzz)'],
-  [
-    '{1} {0}',
-    ,
-    '{1} \'u\' {0}',
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss (zzzz)'], ['{1} {0}', u, '{1} \'u\' {0}', u],
   [',', '.', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##0.###', '#,##0%', '#,##0.00 ¤', '#E0'], 'KM', 'konvertibilna marka', {
-    'AUD': [, '$'],
+    'AUD': [u, '$'],
     'BAM': ['KM'],
-    'BRL': [, 'R$'],
-    'CAD': [, '$'],
-    'CNY': [, '¥'],
-    'EUR': [, '€'],
-    'GBP': [, '£'],
-    'HKD': [, '$'],
-    'ILS': [, '₪'],
-    'INR': [, '₹'],
-    'JPY': [, '¥'],
-    'KRW': [, '₩'],
-    'MXN': [, '$'],
-    'NZD': [, '$'],
-    'TWD': [, 'NT$'],
-    'USD': [, '$'],
-    'VND': [, '₫'],
-    'XCD': [, '$'],
+    'BRL': [u, 'R$'],
+    'CAD': [u, '$'],
+    'CNY': [u, '¥'],
+    'EUR': [u, '€'],
+    'GBP': [u, '£'],
+    'HKD': [u, '$'],
+    'ILS': [u, '₪'],
+    'INR': [u, '₹'],
+    'JPY': [u, '¥'],
+    'KRW': [u, '₩'],
+    'MXN': [u, '$'],
+    'NZD': [u, '$'],
+    'TWD': [u, 'NT$'],
+    'USD': [u, '$'],
+    'VND': [u, '₫'],
+    'XCD': [u, '$'],
     'XPF': []
   },
   plural

@@ -136,7 +136,7 @@ export class DocViewerComponent implements OnDestroy {
         //           and is considered to be safe.
         tap(() => this.nextViewContainer.innerHTML = doc.contents || ''),
         tap(() => addTitleAndToc = this.prepareTitleAndToc(this.nextViewContainer, doc.id)),
-        switchMap(() => this.elementsLoader.loadContainingCustomElements(this.nextViewContainer)),
+        switchMap(() => this.elementsLoader.loadContainedCustomElements(this.nextViewContainer)),
         tap(() => this.docReady.emit()),
         switchMap(() => this.swapViews(addTitleAndToc)),
         tap(() => this.docRendered.emit()),
@@ -155,10 +155,8 @@ export class DocViewerComponent implements OnDestroy {
    */
   private setNoIndex(val: boolean) {
     if (val) {
-      this.metaService.addTag({ name: 'googlebot', content: 'noindex' });
       this.metaService.addTag({ name: 'robots', content: 'noindex' });
     } else {
-      this.metaService.removeTag('name="googlebot"');
       this.metaService.removeTag('name="robots"');
     }
   }

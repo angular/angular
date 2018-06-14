@@ -13,7 +13,6 @@ import {map, switchMap, take} from 'rxjs/operators';
 import {ERR_SW_NOT_SUPPORTED, NgswCommChannel} from './low_level';
 
 
-
 /**
  * Subscribe and listen to push notifications from the Service Worker.
  *
@@ -55,7 +54,7 @@ export class SwPush {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
     const pushOptions: PushSubscriptionOptionsInit = {userVisibleOnly: true};
-    let key = atob(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
+    let key = this.decodeBase64(options.serverPublicKey.replace(/_/g, '/').replace(/-/g, '+'));
     let applicationServerKey = new Uint8Array(new ArrayBuffer(key.length));
     for (let i = 0; i < key.length; i++) {
       applicationServerKey[i] = key.charCodeAt(i);
@@ -74,20 +73,23 @@ export class SwPush {
     if (!this.sw.isEnabled) {
       return Promise.reject(new Error(ERR_SW_NOT_SUPPORTED));
     }
-    const unsubscribe = this.subscription.pipe(switchMap((sub: PushSubscription | null) => {
-      if (sub !== null) {
-        return sub.unsubscribe().then(success => {
-          if (success) {
-            this.subscriptionChanges.next(null);
-            return undefined;
-          } else {
-            throw new Error('Unsubscribe failed!');
-          }
-        });
-      } else {
+
+    const doUnsubscribe = (sub: PushSubscription | null) => {
+      if (sub === null) {
         throw new Error('Not subscribed to push notifications.');
       }
-    }));
-    return unsubscribe.pipe(take(1)).toPromise();
+
+      return sub.unsubscribe().then(success => {
+        if (!success) {
+          throw new Error('Unsubscribe failed!');
+        }
+
+        this.subscriptionChanges.next(null);
+      });
+    };
+
+    return this.subscription.pipe(take(1), switchMap(doUnsubscribe)).toPromise();
   }
+
+  private decodeBase64(input: string): string { return atob(input); }
 }

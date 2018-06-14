@@ -14,11 +14,11 @@ import {NgControl} from './ng_control';
 
 
 /**
- * An interface that {@link FormGroupDirective} and {@link NgForm} implement.
+ * An interface that `FormGroupDirective` and `NgForm` implement.
  *
  * Only used by the forms module.
  *
- * @stable
+ *
  */
 export interface Form {
   /**
@@ -32,7 +32,7 @@ export interface Form {
   removeControl(dir: NgControl): void;
 
   /**
-   * Look up the {@link FormControl} associated with a particular {@link NgControl}.
+   * Look up the `FormControl` associated with a particular `NgControl`.
    */
   getControl(dir: NgControl): FormControl;
 
@@ -47,7 +47,7 @@ export interface Form {
   removeFormGroup(dir: AbstractFormGroupDirective): void;
 
   /**
-   * Look up the {@link FormGroup} associated with a particular {@link AbstractFormGroupDirective}.
+   * Look up the `FormGroup` associated with a particular `AbstractFormGroupDirective`.
    */
   getFormGroup(dir: AbstractFormGroupDirective): FormGroup;
 

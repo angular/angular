@@ -28,6 +28,17 @@ const _SELECTOR_REGEXP = new RegExp(
 export class CssSelector {
   element: string|null = null;
   classNames: string[] = [];
+  /**
+   * The selectors are encoded in pairs where:
+   * - even locations are attribute names
+   * - odd locations are attribute values.
+   *
+   * Example:
+   * Selector: `[key1=value1][key2]` would parse to:
+   * ```
+   * ['key1', 'value1', 'key2', '']
+   * ```
+   */
   attrs: string[] = [];
   notSelectors: CssSelector[] = [];
 

@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Generates the data used by the stamping feature in bazel.
-# A genrule with stamp=1 can read the resulting file from bazel-out/volatile-status.txt
 # See the section on stamping in docs/BAZEL.md
 
 set -u -e -E -o pipefail
@@ -27,7 +26,10 @@ if [[ "$(git tag)" == "" ]]; then
   echo ""
 fi
 
-BUILD_SCM_VERSION_RAW=$(git describe --abbrev=7 --tags HEAD)
+# Only match the latest tag that is a version such as 6.0.0, 6.0.0-rc.5, etc...
+# This will ignore non-version tags which would break unit tests expecting a valid version
+# number in the package headers
+BUILD_SCM_VERSION_RAW=$(git describe --match [0-9].[0-9].[0-9]* --abbrev=7 --tags HEAD)
 
 # Find out if there are any uncommitted local changes
 # TODO(i): is it ok to use "--untracked-files=no" to ignore untracked files since they should not affect anything?

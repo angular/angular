@@ -2,8 +2,14 @@
 import { Injectable } from '@angular/core';
 import { HEROES }     from './mock-heroes';
 import { Logger }     from '../logger.service';
+import { UserService } from '../user.service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+  useFactory: (logger: Logger, userService: UserService) =>
+      new HeroService(logger, userService.user.isAuthorized),
+  deps: [Logger, UserService],
+})
 export class HeroService {
   // #docregion internals
   constructor(

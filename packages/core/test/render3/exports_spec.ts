@@ -7,22 +7,25 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
-
-import {renderToHtml} from './render_util';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, text, textBinding} from '../../src/render3/instructions';
+import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {ComponentFixture, createComponent, renderToHtml} from './render_util';
 
 describe('exports', () => {
   it('should support export of DOM element', () => {
 
     /** <input value="one" #myInput> {{ myInput.value }} */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, 'input', ['value', 'one'], null, ['myInput', '']);
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'input', ['value', 'one'], ['myInput', '']);
         elementEnd();
-        text(1);
+        text(2);
       }
-      let myInput = elementStart(0);
-      textBinding(1, (myInput as any).value);
+      let tmp: any;
+      if (rf & RenderFlags.Update) {
+        tmp = load(1);
+        textBinding(2, tmp.value);
+      }
     }
 
     expect(renderToHtml(Template, {})).toEqual('<input value="one">one');
@@ -31,14 +34,17 @@ describe('exports', () => {
   it('should support basic export of component', () => {
 
     /** <comp #myComp></comp> {{ myComp.name }} */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, MyComponent, null, null, ['myComp', '']);
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'comp', null, ['myComp', '']);
         elementEnd();
-        text(1);
+        text(2);
       }
-      // TODO: replace loadDirective when removing directive refs
-      textBinding(1, loadDirective<MyComponent>(0).name);
+      let tmp: any;
+      if (rf & RenderFlags.Update) {
+        tmp = load(1);
+        textBinding(2, tmp.name);
+      }
     }
 
     class MyComponent {
@@ -46,13 +52,13 @@ describe('exports', () => {
 
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        tag: 'comp',
+        selectors: [['comp']],
         template: function() {},
         factory: () => new MyComponent
       });
     }
 
-    expect(renderToHtml(Template, {})).toEqual('<comp></comp>Nancy');
+    expect(renderToHtml(Template, {}, [MyComponent])).toEqual('<comp></comp>Nancy');
   });
 
   it('should support component instance fed into directive', () => {
@@ -63,7 +69,7 @@ describe('exports', () => {
       constructor() { myComponent = this; }
       static ngComponentDef = defineComponent({
         type: MyComponent,
-        tag: 'comp',
+        selectors: [['comp']],
         template: function() {},
         factory: () => new MyComponent
       });
@@ -72,59 +78,92 @@ describe('exports', () => {
     class MyDir {
       myDir: MyComponent;
       constructor() { myDir = this; }
-      static ngDirectiveDef =
-          defineDirective({type: MyDir, factory: () => new MyDir, inputs: {myDir: 'myDir'}});
+      static ngDirectiveDef = defineDirective({
+        type: MyDir,
+        selectors: [['', 'myDir', '']],
+        factory: () => new MyDir,
+        inputs: {myDir: 'myDir'}
+      });
     }
+
+    const defs = [MyComponent, MyDir];
 
     /** <comp #myComp></comp> <div [myDir]="myComp"></div> */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, MyComponent, null, null, ['myComp', '']);
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'comp', null, ['myComp', '']);
         elementEnd();
-        elementStart(1, 'div', null, [MyDir]);
+        elementStart(2, 'div', ['myDir', '']);
         elementEnd();
       }
-      // TODO: replace loadDirective when removing directive refs
-      elementProperty(1, 'myDir', bind(loadDirective<MyComponent>(0)));
+      let tmp: any;
+      if (rf & RenderFlags.Update) {
+        tmp = load(1);
+        elementProperty(2, 'myDir', bind(tmp));
+      }
     }
 
-    renderToHtml(Template, {});
+    renderToHtml(Template, {}, defs);
     expect(myDir !.myDir).toEqual(myComponent !);
   });
 
   it('should work with directives with exportAs set', () => {
 
     /** <div someDir #myDir="someDir"></div> {{ myDir.name }} */
-    function Template(ctx: any, cm: boolean) {
-      if (cm) {
-        elementStart(0, 'div', null, [SomeDir], ['myDir', 'someDir']);
+    function Template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'div', ['someDir', ''], ['myDir', 'someDir']);
         elementEnd();
-        text(1);
+        text(2);
       }
-      // TODO: replace loadDirective when removing directive refs
-      textBinding(1, loadDirective<SomeDir>(0).name);
+      let tmp: any;
+      if (rf & RenderFlags.Update) {
+        tmp = load(1);
+        textBinding(2, tmp.name);
+      }
     }
 
     class SomeDir {
       name = 'Drew';
-      static ngDirectiveDef =
-          defineDirective({type: SomeDir, factory: () => new SomeDir, exportAs: 'someDir'});
+      static ngDirectiveDef = defineDirective({
+        type: SomeDir,
+        selectors: [['', 'someDir', '']],
+        factory: () => new SomeDir,
+        exportAs: 'someDir'
+      });
     }
 
-    expect(renderToHtml(Template, {})).toEqual('<div></div>Drew');
+    expect(renderToHtml(Template, {}, [SomeDir])).toEqual('<div somedir=""></div>Drew');
+  });
+
+  it('should throw if export name is not found', () => {
+
+    /** <div #myDir="someDir"></div> */
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'div', null, ['myDir', 'someDir']);
+        elementEnd();
+      }
+    });
+
+    expect(() => {
+      const fixture = new ComponentFixture(App);
+    }).toThrowError(/Export of name 'someDir' not found!/);
   });
 
   describe('forward refs', () => {
     it('should work with basic text bindings', () => {
       /** {{ myInput.value}} <input value="one" #myInput> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           text(0);
-          elementStart(1, 'input', ['value', 'one'], null, ['myInput', '']);
+          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
-        let myInput = elementStart(1);
-        textBinding(0, bind((myInput as any).value));
+        const tmp = load(2) as any;
+        if (rf & RenderFlags.Update) {
+          textBinding(0, bind(tmp.value));
+        }
       }
 
       expect(renderToHtml(Template, {})).toEqual('one<input value="one">');
@@ -133,15 +172,17 @@ describe('exports', () => {
 
     it('should work with element properties', () => {
       /** <div [title]="myInput.value"</div> <input value="one" #myInput> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
           elementEnd();
-          elementStart(1, 'input', ['value', 'one'], null, ['myInput', '']);
+          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
-        let myInput = elementStart(1);
-        elementProperty(0, 'title', bind(myInput && (myInput as any).value));
+        const tmp = load(2) as any;
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'title', bind(tmp.value));
+        }
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div title="one"></div><input value="one">');
@@ -149,15 +190,17 @@ describe('exports', () => {
 
     it('should work with element attrs', () => {
       /** <div [attr.aria-label]="myInput.value"</div> <input value="one" #myInput> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
           elementEnd();
-          elementStart(1, 'input', ['value', 'one'], null, ['myInput', '']);
+          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
-        let myInput = elementStart(1);
-        elementAttribute(0, 'aria-label', bind(myInput && (myInput as any).value));
+        const tmp = load(2) as any;
+        if (rf & RenderFlags.Update) {
+          elementAttribute(0, 'aria-label', bind(tmp.value));
+        }
       }
 
       expect(renderToHtml(Template, {})).toEqual('<div aria-label="one"></div><input value="one">');
@@ -165,15 +208,17 @@ describe('exports', () => {
 
     it('should work with element classes', () => {
       /** <div [class.red]="myInput.checked"</div> <input type="checkbox" checked #myInput> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
           elementEnd();
-          elementStart(1, 'input', ['type', 'checkbox', 'checked', 'true'], null, ['myInput', '']);
+          elementStart(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
           elementEnd();
         }
-        let myInput = elementStart(1);
-        elementClassNamed(0, 'red', bind(myInput && (myInput as any).checked));
+        const tmp = load(2) as any;
+        if (rf & RenderFlags.Update) {
+          elementClassNamed(0, 'red', bind(tmp.checked));
+        }
       }
 
       expect(renderToHtml(Template, {}))
@@ -190,8 +235,8 @@ describe('exports', () => {
 
         static ngComponentDef = defineComponent({
           type: MyComponent,
-          tag: 'comp',
-          template: function(ctx: MyComponent, cm: boolean) {},
+          selectors: [['comp']],
+          template: function(rf: RenderFlags, ctx: MyComponent) {},
           factory: () => new MyComponent
         });
       }
@@ -201,43 +246,53 @@ describe('exports', () => {
 
         constructor() { myDir = this; }
 
-        static ngDirectiveDef =
-            defineDirective({type: MyDir, factory: () => new MyDir, inputs: {myDir: 'myDir'}});
+        static ngDirectiveDef = defineDirective({
+          type: MyDir,
+          selectors: [['', 'myDir', '']],
+          factory: () => new MyDir,
+          inputs: {myDir: 'myDir'}
+        });
       }
 
       /** <div [myDir]="myComp"></div><comp #myComp></comp> */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
-          elementStart(0, 'div', null, [MyDir]);
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div', ['myDir', '']);
           elementEnd();
-          elementStart(1, MyComponent, null, null, ['myComp', '']);
+          elementStart(1, 'comp', null, ['myComp', '']);
           elementEnd();
         }
-        // TODO: replace loadDirective when removing directive refs
-        elementProperty(0, 'myDir', bind(loadDirective<MyComponent>(1)));
+        let tmp: any;
+        if (rf & RenderFlags.Update) {
+          tmp = load(2) as any;
+          elementProperty(0, 'myDir', bind(tmp));
+        }
       }
 
-      renderToHtml(Template, {});
+      renderToHtml(Template, {}, [MyComponent, MyDir]);
       expect(myDir !.myDir).toEqual(myComponent !);
     });
 
     it('should work with multiple forward refs', () => {
       /** {{ myInput.value }} {{ myComp.name }} <comp #myComp></comp> <input value="one" #myInput>
        */
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           text(0);
           text(1);
-          elementStart(2, MyComponent, null, null, ['myComp', '']);
+          elementStart(2, 'comp', null, ['myComp', '']);
           elementEnd();
-          elementStart(3, 'input', ['value', 'one'], null, ['myInput', '']);
+          elementStart(4, 'input', ['value', 'one'], ['myInput', '']);
           elementEnd();
         }
-        let myInput = elementStart(3);
-        // TODO: replace loadDirective when removing directive refs
-        let myComp = loadDirective<MyComponent>(0);
-        textBinding(0, bind(myInput && (myInput as any).value));
-        textBinding(1, bind(myComp && myComp.name));
+        let tmp1: any;
+        let tmp2: any;
+        if (rf & RenderFlags.Update) {
+          tmp1 = load(3) as any;
+          tmp2 = load(5) as any;
+          textBinding(0, bind(tmp2.value));
+          textBinding(1, bind(tmp1.name));
+        }
       }
 
       let myComponent: MyComponent;
@@ -249,38 +304,44 @@ describe('exports', () => {
 
         static ngComponentDef = defineComponent({
           type: MyComponent,
-          tag: 'comp',
+          selectors: [['comp']],
           template: function() {},
           factory: () => new MyComponent
         });
       }
-      expect(renderToHtml(Template, {})).toEqual('oneNancy<comp></comp><input value="one">');
+      expect(renderToHtml(Template, {}, [MyComponent]))
+          .toEqual('oneNancy<comp></comp><input value="one">');
     });
 
     it('should work inside a view container', () => {
-      function Template(ctx: any, cm: boolean) {
-        if (cm) {
+      function Template(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
           { container(1); }
           elementEnd();
         }
-        containerRefreshStart(1);
-        {
-          if (ctx.condition) {
-            let cm1 = embeddedViewStart(1);
-            {
-              if (cm1) {
-                text(0);
-                elementStart(1, 'input', ['value', 'one'], null, ['myInput', '']);
-                elementEnd();
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(1);
+          {
+            if (ctx.condition) {
+              let rf1 = embeddedViewStart(1);
+              {
+                let tmp: any;
+                if (rf1 & RenderFlags.Create) {
+                  text(0);
+                  elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
+                  elementEnd();
+                }
+                if (rf1 & RenderFlags.Update) {
+                  tmp = load(2);
+                  textBinding(0, bind(tmp.value));
+                }
               }
-              let myInput = elementStart(1);
-              textBinding(0, bind(myInput && (myInput as any).value));
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
         }
-        containerRefreshEnd();
       }
 
       expect(renderToHtml(Template, {

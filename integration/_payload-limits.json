@@ -2,18 +2,17 @@
   "cli-hello-world": {
     "master": {
       "uncompressed": {
-        "inline": 1508,
-        "main": "TODO(i): temporarily increase the payload size limit to 257298 from 155112, we need CLI v6 to bring the size down",
-        "main": 257298,
-        "polyfills": 59483
+        "runtime": 1110,
+        "main": 151765,
+        "polyfills": 59462
       }
     }
   },
   "hello_world__closure": {
     "master": {
       "uncompressed": {
-        "bundle": "TODO(i): temporarily increase the payload size limit to 226340git  from 105779 - we need CLI v6 to bring the size down",
-        "bundle": 226340
+        "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
+        "bundle": 178101
       }
     }
   },
@@ -36,8 +35,9 @@
       "uncompressed": {
         "inline": 1447,
         "main": 40513,
-        "polyfills": 61085
+        "polyfills": 60105
       }
     }
   }
 }
+

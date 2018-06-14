@@ -11,7 +11,7 @@ import {HttpHeaders} from './headers';
 /**
  * Type enumeration for the different kinds of `HttpEvent`.
  *
- * @stable
+ *
  */
 export enum HttpEventType {
   /**
@@ -48,7 +48,7 @@ export enum HttpEventType {
 /**
  * Base interface for progress events.
  *
- * @stable
+ *
  */
 export interface HttpProgressEvent {
   /**
@@ -71,7 +71,7 @@ export interface HttpProgressEvent {
 /**
  * A download progress event.
  *
- * @stable
+ *
  */
 export interface HttpDownloadProgressEvent extends HttpProgressEvent {
   type: HttpEventType.DownloadProgress;
@@ -87,7 +87,7 @@ export interface HttpDownloadProgressEvent extends HttpProgressEvent {
 /**
  * An upload progress event.
  *
- * @stable
+ *
  */
 export interface HttpUploadProgressEvent extends HttpProgressEvent {
   type: HttpEventType.UploadProgress;
@@ -98,7 +98,7 @@ export interface HttpUploadProgressEvent extends HttpProgressEvent {
  * when a request may be retried multiple times, to distinguish between
  * retries on the final event stream.
  *
- * @stable
+ *
  */
 export interface HttpSentEvent { type: HttpEventType.Sent; }
 
@@ -108,7 +108,7 @@ export interface HttpSentEvent { type: HttpEventType.Sent; }
  * Grouping all custom events under this type ensures they will be handled
  * and forwarded by all implementations of interceptors.
  *
- * @stable
+ *
  */
 export interface HttpUserEvent<T> { type: HttpEventType.User; }
 
@@ -118,7 +118,7 @@ export interface HttpUserEvent<T> { type: HttpEventType.User; }
  *
  * It bundles the Error object with the actual response body that failed to parse.
  *
- * @stable
+ *
  */
 export interface HttpJsonParseError {
   error: Error;
@@ -130,7 +130,7 @@ export interface HttpJsonParseError {
  *
  * Typed according to the expected type of the response.
  *
- * @stable
+ *
  */
 export type HttpEvent<T> =
     HttpSentEvent | HttpHeaderResponse | HttpResponse<T>| HttpProgressEvent | HttpUserEvent<T>;
@@ -138,7 +138,7 @@ export type HttpEvent<T> =
 /**
  * Base class for both `HttpResponse` and `HttpHeaderResponse`.
  *
- * @stable
+ *
  */
 export abstract class HttpResponseBase {
   /**
@@ -206,7 +206,7 @@ export abstract class HttpResponseBase {
  * `HttpHeaderResponse` is a `HttpEvent` available on the response
  * event stream, only when progress events are requested.
  *
- * @stable
+ *
  */
 export class HttpHeaderResponse extends HttpResponseBase {
   /**
@@ -247,7 +247,7 @@ export class HttpHeaderResponse extends HttpResponseBase {
  * `HttpResponse` is a `HttpEvent` available on the response event
  * stream.
  *
- * @stable
+ *
  */
 export class HttpResponse<T> extends HttpResponseBase {
   /**
@@ -297,7 +297,7 @@ export class HttpResponse<T> extends HttpResponseBase {
  * will contain either a wrapped Error object or the error response returned
  * from the server.
  *
- * @stable
+ *
  */
 export class HttpErrorResponse extends HttpResponseBase implements Error {
   readonly name = 'HttpErrorResponse';

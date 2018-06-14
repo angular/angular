@@ -11,7 +11,8 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {main, readCommandLineAndConfiguration, watchMode} from '../src/main';
-import {makeTempDir} from './test_support';
+
+import {isInBazel, makeTempDir, setup} from './test_support';
 
 function getNgRootDir() {
   const moduleFilename = module.filename.replace(/\\/g, '/');
@@ -43,16 +44,33 @@ describe('ngc transformer command-line', () => {
 
   beforeEach(() => {
     errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    basePath = makeTempDir();
-    process.chdir(basePath);
-    write = (fileName: string, content: string) => {
-      const dir = path.dirname(fileName);
-      if (dir != '.') {
-        const newDir = path.join(basePath, dir);
-        if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
-      }
-      fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
-    };
+    if (isInBazel) {
+      const support = setup();
+      basePath = support.basePath;
+      outDir = path.join(basePath, 'built');
+      process.chdir(basePath);
+      write = (fileName: string, content: string) => { support.write(fileName, content); };
+    } else {
+      basePath = makeTempDir();
+      process.chdir(basePath);
+      write = (fileName: string, content: string) => {
+        const dir = path.dirname(fileName);
+        if (dir != '.') {
+          const newDir = path.join(basePath, dir);
+          if (!fs.existsSync(newDir)) fs.mkdirSync(newDir);
+        }
+        fs.writeFileSync(path.join(basePath, fileName), content, {encoding: 'utf-8'});
+      };
+      outDir = path.resolve(basePath, 'built');
+      const ngRootDir = getNgRootDir();
+      const nodeModulesPath = path.resolve(basePath, 'node_modules');
+      fs.mkdirSync(nodeModulesPath);
+      fs.symlinkSync(
+          path.resolve(ngRootDir, 'dist', 'all', '@angular'),
+          path.resolve(nodeModulesPath, '@angular'));
+      fs.symlinkSync(
+          path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
+    }
     write('tsconfig-base.json', `{
       "compilerOptions": {
         "experimentalDecorators": true,
@@ -70,15 +88,6 @@ describe('ngc transformer command-line', () => {
         "typeRoots": ["node_modules/@types"]
       }
     }`);
-    outDir = path.resolve(basePath, 'built');
-    const ngRootDir = getNgRootDir();
-    const nodeModulesPath = path.resolve(basePath, 'node_modules');
-    fs.mkdirSync(nodeModulesPath);
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'dist', 'all', '@angular'),
-        path.resolve(nodeModulesPath, '@angular'));
-    fs.symlinkSync(
-        path.resolve(ngRootDir, 'node_modules', 'rxjs'), path.resolve(nodeModulesPath, 'rxjs'));
   });
 
   it('should compile without errors', () => {
@@ -243,10 +252,19 @@ describe('ngc transformer command-line', () => {
       expect(exitCode).toEqual(0);
 
       expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngfactory.js'))).toBe(true);
-      expect(fs.existsSync(path.resolve(
-                 outDir, 'node_modules', '@angular', 'core', 'src',
-                 'application_module.ngfactory.js')))
-          .toBe(true);
+
+      if (isInBazel()) {
+        // In bazel we use the packaged version so the factory is at the root and we
+        // get the flattened factory.
+        expect(fs.existsSync(
+                   path.resolve(outDir, 'node_modules', '@angular', 'core', 'core.ngfactory.js')))
+            .toBe(true);
+      } else {
+        expect(fs.existsSync(path.resolve(
+                   outDir, 'node_modules', '@angular', 'core', 'src',
+                   'application_module.ngfactory.js')))
+            .toBe(true);
+      }
     });
 
     describe('comments', () => {
@@ -351,10 +369,18 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
       expect(exitCode).toEqual(0);
       expect(fs.existsSync(path.resolve(outDir, 'mymodule.ngfactory.js'))).toBe(true);
-      expect(fs.existsSync(path.resolve(
-                 outDir, 'node_modules', '@angular', 'core', 'src',
-                 'application_module.ngfactory.js')))
-          .toBe(true);
+      if (isInBazel()) {
+        // In bazel we use the packaged version so the factory is at the root and we
+        // get the flattened factory.
+        expect(fs.existsSync(
+                   path.resolve(outDir, 'node_modules', '@angular', 'core', 'core.ngfactory.js')))
+            .toBe(true);
+      } else {
+        expect(fs.existsSync(path.resolve(
+                   outDir, 'node_modules', '@angular', 'core', 'src',
+                   'application_module.ngfactory.js')))
+            .toBe(true);
+      }
     });
 
     describe(`emit generated files depending on the source file`, () => {
@@ -646,7 +672,7 @@ describe('ngc transformer command-line', () => {
         expect(mymoduleSource).toContain('args: [{ declarations: [] },] }');
         expect(mymoduleSource).not.toContain(`__metadata`);
         expect(mymoduleSource).toContain(`import { AClass } from './aclass';`);
-        expect(mymoduleSource).toContain(`{ type: AClass, }`);
+        expect(mymoduleSource).toContain(`{ type: AClass }`);
       });
     });
 
@@ -826,6 +852,57 @@ describe('ngc transformer command-line', () => {
         expect(mymoduleSource).not.toContain('ɵ0');
       });
 
+      it('should lower an NgModule id', () => {
+        write('mymodule.ts', `
+          import {NgModule} from '@angular/core';
+
+          @NgModule({
+            id: (() => 'test')(),
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('id: ɵ0');
+        expect(mymoduleSource).toMatch(/ɵ0 = .*'test'/);
+      });
+
+      it('should lower loadChildren', () => {
+        write('mymodule.ts', `
+          import {Component, NgModule} from '@angular/core';
+          import {RouterModule} from '@angular/router';
+          
+          export function foo(): string {
+            console.log('side-effect');
+            return 'test';
+          }
+
+          @Component({
+            selector: 'route',
+            template: 'route',
+          })
+          export class Route {}
+
+          @NgModule({
+            declarations: [Route],
+            imports: [
+              RouterModule.forRoot([
+                {path: '', pathMatch: 'full', component: Route, loadChildren: foo()}
+              ]),
+            ]
+          })
+          export class MyModule {}
+        `);
+        expect(compile()).toEqual(0);
+
+        const mymodulejs = path.resolve(outDir, 'mymodule.js');
+        const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
+        expect(mymoduleSource).toContain('loadChildren: ɵ0');
+        expect(mymoduleSource).toMatch(/ɵ0 = .*foo\(\)/);
+      });
+
       it('should be able to lower supported expressions', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
@@ -932,7 +1009,8 @@ describe('ngc transformer command-line', () => {
         "angularCompilerOptions": {
           "flatModuleId": "flat_module",
           "flatModuleOutFile": "${outFile}",
-          "skipTemplateCodegen": true
+          "skipTemplateCodegen": true,
+          "enableResourceInlining": true
         },
         "files": ["public-api.ts"]
       }
@@ -961,7 +1039,7 @@ describe('ngc transformer command-line', () => {
           ],
           exports: [
             FlatComponent,
-          ]
+          ],
         })
         export class FlatModule {
         }`);
@@ -974,6 +1052,20 @@ describe('ngc transformer command-line', () => {
       expect(exitCode).toEqual(0);
       shouldExist('index.js');
       shouldExist('index.metadata.json');
+    });
+
+    it('should downlevel templates in flat module metadata', () => {
+      writeFlatModule('index.js');
+
+      const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+      expect(exitCode).toEqual(0);
+      shouldExist('index.js');
+      shouldExist('index.metadata.json');
+
+      const metadataPath = path.resolve(outDir, 'index.metadata.json');
+      const metadataSource = fs.readFileSync(metadataPath, 'utf8');
+      expect(metadataSource).not.toContain('templateUrl');
+      expect(metadataSource).toContain('<div>flat module component</div>');
     });
 
     describe('with tree example', () => {
@@ -1107,7 +1199,10 @@ describe('ngc transformer command-line', () => {
           }
         `);
 
-      expect(main(['-p', path.join(basePath, 'tsconfig-ng.json')], errorSpy)).toBe(0);
+      if (!isInBazel()) {
+        // This is not necessary in bazel as it uses the npm_package
+        expect(main(['-p', path.join(basePath, 'tsconfig-ng.json')], errorSpy)).toBe(0);
+      }
       expect(main(['-p', path.join(basePath, 'lib1', 'tsconfig-lib1.json')], errorSpy)).toBe(0);
       expect(main(['-p', path.join(basePath, 'lib2', 'tsconfig-lib2.json')], errorSpy)).toBe(0);
       expect(main(['-p', path.join(basePath, 'app', 'tsconfig-app.json')], errorSpy)).toBe(0);
@@ -1144,106 +1239,109 @@ describe('ngc transformer command-line', () => {
       shouldExist('app/main.js');
     });
 
-    it('should be able to compile libraries with summaries and flat modules', () => {
-      writeFiles();
-      compile();
+    if (!isInBazel()) {
+      // This is an unnecessary test bazel as it always uses flat modules
+      it('should be able to compile libraries with summaries and flat modules', () => {
+        writeFiles();
+        compile();
 
-      // libraries
-      // make `shouldExist` / `shouldNotExist` relative to `node_modules`
-      outDir = path.resolve(basePath, 'node_modules');
-      shouldExist('flat_module/index.ngfactory.js');
-      shouldExist('flat_module/index.ngsummary.json');
+        // libraries
+        // make `shouldExist` / `shouldNotExist` relative to `node_modules`
+        outDir = path.resolve(basePath, 'node_modules');
+        shouldExist('flat_module/index.ngfactory.js');
+        shouldExist('flat_module/index.ngsummary.json');
 
-      // app
-      // make `shouldExist` / `shouldNotExist` relative to `built`
-      outDir = path.resolve(basePath, 'built');
-      shouldExist('app/main.ngfactory.js');
+        // app
+        // make `shouldExist` / `shouldNotExist` relative to `built`
+        outDir = path.resolve(basePath, 'built');
+        shouldExist('app/main.ngfactory.js');
 
-      const factory = fs.readFileSync(path.resolve(outDir, 'app/main.ngfactory.js')).toString();
-      // reference to the module itself
-      expect(factory).toMatch(/from "flat_module"/);
-      // no reference to a deep file
-      expect(factory).not.toMatch(/from "flat_module\//);
+        const factory = fs.readFileSync(path.resolve(outDir, 'app/main.ngfactory.js')).toString();
+        // reference to the module itself
+        expect(factory).toMatch(/from "flat_module"/);
+        // no reference to a deep file
+        expect(factory).not.toMatch(/from "flat_module\//);
 
-      function writeFiles() {
-        createFlatModuleInNodeModules();
+        function writeFiles() {
+          createFlatModuleInNodeModules();
 
-        // Angular + flat module
-        write('tsconfig-lib.json', `{
-          "extends": "./tsconfig-base.json",
-          "angularCompilerOptions": {
-            "generateCodeForLibraries": true
-          },
-          "compilerOptions": {
-            "outDir": "."
-          },
-          "include": ["node_modules/@angular/core/**/*", "node_modules/flat_module/**/*"],
-          "exclude": [
-            "node_modules/@angular/core/test/**",
-            "node_modules/@angular/core/testing/**"
-          ]
-        }`);
+          // Angular + flat module
+          write('tsconfig-lib.json', `{
+            "extends": "./tsconfig-base.json",
+            "angularCompilerOptions": {
+              "generateCodeForLibraries": true
+            },
+            "compilerOptions": {
+              "outDir": "."
+            },
+            "include": ["node_modules/@angular/core/**/*", "node_modules/flat_module/**/*"],
+            "exclude": [
+              "node_modules/@angular/core/test/**",
+              "node_modules/@angular/core/testing/**"
+            ]
+          }`);
 
-        // Application
-        write('app/tsconfig-app.json', `{
-          "extends": "../tsconfig-base.json",
-          "angularCompilerOptions": {
-            "generateCodeForLibraries": false
-          },
-          "compilerOptions": {
-            "rootDir": ".",
-            "outDir": "../built/app"
-          }
-        }`);
-        write('app/main.ts', `
-          import {NgModule} from '@angular/core';
-          import {FlatModule} from 'flat_module';
-
-          @NgModule({
-            imports: [FlatModule]
-          })
-          export class AppModule {}
-        `);
-      }
-
-      function createFlatModuleInNodeModules() {
-        // compile the flat module
-        writeFlatModule('index.js');
-        expect(main(['-p', basePath], errorSpy)).toBe(0);
-
-        // move the flat module output into node_modules
-        const flatModuleNodeModulesPath = path.resolve(basePath, 'node_modules', 'flat_module');
-        fs.renameSync(outDir, flatModuleNodeModulesPath);
-        fs.renameSync(
-            path.resolve(basePath, 'src/flat.component.html'),
-            path.resolve(flatModuleNodeModulesPath, 'src/flat.component.html'));
-        // and remove the sources.
-        fs.renameSync(path.resolve(basePath, 'src'), path.resolve(basePath, 'flat_module_src'));
-        fs.unlinkSync(path.resolve(basePath, 'public-api.ts'));
-
-        // add a flatModuleIndexRedirect
-        write('node_modules/flat_module/redirect.metadata.json', `{
-          "__symbolic": "module",
-          "version": 3,
-          "metadata": {},
-          "exports": [
-            {
-              "from": "./index"
+          // Application
+          write('app/tsconfig-app.json', `{
+            "extends": "../tsconfig-base.json",
+            "angularCompilerOptions": {
+              "generateCodeForLibraries": false
+            },
+            "compilerOptions": {
+              "rootDir": ".",
+              "outDir": "../built/app"
             }
-          ],
-          "flatModuleIndexRedirect": true,
-          "importAs": "flat_module"
-        }`);
-        write('node_modules/flat_module/redirect.d.ts', `export * from './index';`);
-        // add a package.json to use the redirect
-        write('node_modules/flat_module/package.json', `{"typings": "./redirect.d.ts"}`);
-      }
+          }`);
+          write('app/main.ts', `
+            import {NgModule} from '@angular/core';
+            import {FlatModule} from 'flat_module';
 
-      function compile() {
-        expect(main(['-p', path.join(basePath, 'tsconfig-lib.json')], errorSpy)).toBe(0);
-        expect(main(['-p', path.join(basePath, 'app', 'tsconfig-app.json')], errorSpy)).toBe(0);
-      }
-    });
+            @NgModule({
+              imports: [FlatModule]
+            })
+            export class AppModule {}
+          `);
+        }
+
+        function createFlatModuleInNodeModules() {
+          // compile the flat module
+          writeFlatModule('index.js');
+          expect(main(['-p', basePath], errorSpy)).toBe(0);
+
+          // move the flat module output into node_modules
+          const flatModuleNodeModulesPath = path.resolve(basePath, 'node_modules', 'flat_module');
+          fs.renameSync(outDir, flatModuleNodeModulesPath);
+          fs.renameSync(
+              path.resolve(basePath, 'src/flat.component.html'),
+              path.resolve(flatModuleNodeModulesPath, 'src/flat.component.html'));
+          // and remove the sources.
+          fs.renameSync(path.resolve(basePath, 'src'), path.resolve(basePath, 'flat_module_src'));
+          fs.unlinkSync(path.resolve(basePath, 'public-api.ts'));
+
+          // add a flatModuleIndexRedirect
+          write('node_modules/flat_module/redirect.metadata.json', `{
+            "__symbolic": "module",
+            "version": 3,
+            "metadata": {},
+            "exports": [
+              {
+                "from": "./index"
+              }
+            ],
+            "flatModuleIndexRedirect": true,
+            "importAs": "flat_module"
+          }`);
+          write('node_modules/flat_module/redirect.d.ts', `export * from './index';`);
+          // add a package.json to use the redirect
+          write('node_modules/flat_module/package.json', `{"typings": "./redirect.d.ts"}`);
+        }
+
+        function compile() {
+          expect(main(['-p', path.join(basePath, 'tsconfig-lib.json')], errorSpy)).toBe(0);
+          expect(main(['-p', path.join(basePath, 'app', 'tsconfig-app.json')], errorSpy)).toBe(0);
+        }
+      });
+    }
 
     describe('enableResourceInlining', () => {
       it('should inline templateUrl and styleUrl in JS and metadata', () => {
@@ -1290,6 +1388,7 @@ describe('ngc transformer command-line', () => {
       });
     });
   });
+
 
   describe('expression lowering', () => {
     const shouldExist = (fileName: string) => {
@@ -1922,6 +2021,7 @@ describe('ngc transformer command-line', () => {
       const exitCode = main(['-p', path.join(basePath, 'tsconfig.json')]);
       expect(exitCode).toBe(0, 'Compile failed');
       expect(emittedFile('hello-world.js')).toContain('ngComponentDef');
+      expect(emittedFile('hello-world.js')).toContain('HelloWorldComponent_Factory');
     });
 
     it('should emit an injection of a string token', () => {
@@ -2138,7 +2238,7 @@ describe('ngc transformer command-line', () => {
           constructor(e: Existing|null) {}
         }
       `);
-      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, null, 0\)/);
+      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, 8\)/);
     });
 
     it('compiles a useFactory InjectableDef with skip-self dep', () => {
@@ -2158,7 +2258,7 @@ describe('ngc transformer command-line', () => {
           constructor(e: Existing) {}
         }
       `);
-      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, undefined, 1\)/);
+      expect(source).toMatch(/ngInjectableDef.*return ..\(..\.inject\(Existing, 4\)/);
     });
 
     it('compiles a service that depends on a token', () => {
@@ -2320,5 +2420,32 @@ describe('ngc transformer command-line', () => {
       expect(moduleSource).not.toMatch(/inject\(i0\.Injector/);
       expect(moduleSource).toMatch(/inject\(i0\.INJECTOR/);
     });
+  });
+
+  it('libraries should not break strictMetadataEmit', () => {
+    // first only generate .d.ts / .js / .metadata.json files
+    writeConfig(`{
+        "extends": "./tsconfig-base.json",
+        "angularCompilerOptions": {
+          "skipTemplateCodegen": true,
+          "strictMetadataEmit": true,
+          "fullTemplateTypeCheck": true
+        },
+        "compilerOptions": {
+          "outDir": "lib"
+        },
+        "files": ["main.ts", "test.d.ts"]
+      }`);
+    write('main.ts', `
+        import {Test} from './test';
+        export const bar = Test.bar;
+    `);
+    write('test.d.ts', `
+        declare export class Test {
+          static bar: string;
+        }
+    `);
+    let exitCode = main(['-p', path.join(basePath, 'tsconfig.json')], errorSpy);
+    expect(exitCode).toEqual(0);
   });
 });

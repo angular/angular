@@ -12,7 +12,7 @@ import {concatMap, filter, map} from 'rxjs/operators';
 
 import {HttpHandler} from './backend';
 import {HttpHeaders} from './headers';
-import {HttpParams} from './params';
+import {HttpParams, HttpParamsOptions} from './params';
 import {HttpRequest} from './request';
 import {HttpEvent, HttpResponse} from './response';
 
@@ -42,9 +42,6 @@ function addBody<T>(
   };
 }
 
-/**
- * @stable
- */
 export type HttpObserve = 'body' | 'events' | 'response';
 
 /**
@@ -54,7 +51,7 @@ export type HttpObserve = 'body' | 'events' | 'response';
  * Each request method has multiple signatures, and the return type varies according to which
  * signature is called (mainly the values of `observe` and `responseType`).
  *
- * @stable
+ *
  */
 @Injectable()
 export class HttpClient {
@@ -361,7 +358,7 @@ export class HttpClient {
         if (options.params instanceof HttpParams) {
           params = options.params;
         } else {
-          params = new HttpParams({fromObject: options.params});
+          params = new HttpParams({ fromObject: options.params } as HttpParamsOptions);
         }
       }
 

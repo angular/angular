@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "outDir": "../built/e2e",
-    "types": ["jasmine"],
-    // TODO(alexeagle): was required for Protractor 4.0.11
-    "skipLibCheck": true
-  }
-}

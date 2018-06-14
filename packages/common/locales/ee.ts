@@ -9,24 +9,21 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === 1) return 1;
   return 5;
 }
 
 export default [
-  'ee',
-  [
-    ['ŋ', 'ɣ'],
-    ['ŋdi', 'ɣetrɔ'],
-  ],
-  ,
+  'ee', [['ŋ', 'ɣ'], ['ŋdi', 'ɣetrɔ'], u], u,
   [
     ['k', 'd', 'b', 'k', 'y', 'f', 'm'], ['kɔs', 'dzo', 'bla', 'kuɖ', 'yaw', 'fiɖ', 'mem'],
     ['kɔsiɖa', 'dzoɖa', 'blaɖa', 'kuɖa', 'yawoɖa', 'fiɖa', 'memleɖa'],
     ['kɔs', 'dzo', 'bla', 'kuɖ', 'yaw', 'fiɖ', 'mem']
   ],
-  ,
+  u,
   [
     ['d', 'd', 't', 'a', 'd', 'm', 's', 'd', 'a', 'k', 'a', 'd'],
     ['dzv', 'dzd', 'ted', 'afɔ', 'dam', 'mas', 'sia', 'dea', 'any', 'kel', 'ade', 'dzm'],
@@ -35,15 +32,10 @@ export default [
       'anyɔnyɔ', 'kele', 'adeɛmekpɔxe', 'dzome'
     ]
   ],
-  , [['HYV', 'Yŋ'], , ['Hafi Yesu Va', 'Yesu ŋɔli']], 1, [6, 0],
+  u, [['HYV', 'Yŋ'], u, ['Hafi Yesu Va', 'Yesu ŋɔli']], 1, [6, 0],
   ['M/d/yy', 'MMM d \'lia\', y', 'MMMM d \'lia\' y', 'EEEE, MMMM d \'lia\' y'],
   ['a \'ga\' h:mm', 'a \'ga\' h:mm:ss', 'a \'ga\' h:mm:ss z', 'a \'ga\' h:mm:ss zzzz'],
-  [
-    '{0} {1}',
-    ,
-    ,
-  ],
-  ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'mnn', ':'],
+  ['{0} {1}', u, u, u], ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'mnn', ':'],
   ['#,##0.###', '#,##0%', '¤#,##0.00', '#E0'], 'GH₵', 'ghana siɖi', {
     'AUD': ['AU$', '$'],
     'GHS': ['GH₵'],

@@ -12,7 +12,7 @@ import {BehaviorSubject, Observable, Subject, Subscription, of } from 'rxjs';
 import {concatMap, map, mergeMap} from 'rxjs/operators';
 
 import {applyRedirects} from './apply_redirects';
-import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, copyConfig, validateConfig} from './config';
+import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
@@ -30,9 +30,11 @@ import {TreeNode, nodeChildrenAsMap} from './utils/tree';
 
 
 /**
- * @whatItDoes Represents the extra options used during navigation.
+ * @description
  *
- * @stable
+ * Represents the extra options used during navigation.
+ *
+ *
  */
 export interface NavigationExtras {
   /**
@@ -142,14 +144,15 @@ export interface NavigationExtras {
 }
 
 /**
- * @whatItDoes Error handler that is invoked when a navigation errors.
- *
  * @description
+ *
+ * Error handler that is invoked when a navigation errors.
+ *
  * If the handler returns a value, the navigation promise will be resolved with this value.
  * If the handler throws an exception, the navigation promise will be rejected with
  * the exception.
  *
- * @stable
+ *
  */
 export type ErrorHandler = (error: any) => any;
 
@@ -174,23 +177,37 @@ type NavigationParams = {
 /**
  * @internal
  */
-export type RouterHook = (snapshot: RouterStateSnapshot) => Observable<void>;
+export type RouterHook = (snapshot: RouterStateSnapshot, runExtras: {
+  appliedUrlTree: UrlTree,
+  rawUrlTree: UrlTree,
+  skipLocationChange: boolean,
+  replaceUrl: boolean,
+  navigationId: number
+}) => Observable<void>;
 
 /**
  * @internal
  */
-function defaultRouterHook(snapshot: RouterStateSnapshot): Observable<void> {
+function defaultRouterHook(snapshot: RouterStateSnapshot, runExtras: {
+  appliedUrlTree: UrlTree,
+  rawUrlTree: UrlTree,
+  skipLocationChange: boolean,
+  replaceUrl: boolean,
+  navigationId: number
+}): Observable<void> {
   return of (null) as any;
 }
 
 /**
- * @whatItDoes Provides the navigation and url manipulation capabilities.
+ * @description
  *
- * See {@link Routes} for more details and examples.
+ * Provides the navigation and url manipulation capabilities.
+ *
+ * See `Routes` for more details and examples.
  *
  * @ngModule RouterModule
  *
- * @stable
+ *
  */
 export class Router {
   private currentUrlTree: UrlTree;
@@ -208,7 +225,7 @@ export class Router {
   /**
    * Error handler that is invoked when a navigation errors.
    *
-   * See {@link ErrorHandler} for more information.
+   * See `ErrorHandler` for more information.
    */
   errorHandler: ErrorHandler = defaultErrorHandler;
 
@@ -340,7 +357,7 @@ export class Router {
    */
   resetConfig(config: Routes): void {
     validateConfig(config);
-    this.config = config.map(copyConfig);
+    this.config = config.map(standardizeConfig);
     this.navigated = false;
     this.lastSuccessfulId = -1;
   }
@@ -481,10 +498,10 @@ export class Router {
     return this.navigateByUrl(this.createUrlTree(commands, extras), extras);
   }
 
-  /** Serializes a {@link UrlTree} into a string */
+  /** Serializes a `UrlTree` into a string */
   serializeUrl(url: UrlTree): string { return this.urlSerializer.serialize(url); }
 
-  /** Parses a string into a {@link UrlTree} */
+  /** Parses a string into a `UrlTree` */
   parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
 
   /** Returns whether the url is activated */
@@ -526,7 +543,6 @@ export class Router {
       rawUrl: UrlTree, source: NavigationTrigger, state: {navigationId: number}|null,
       extras: NavigationExtras): Promise<boolean> {
     const lastNavigation = this.navigations.value;
-
     // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
     // and that navigation results in 'replaceState' that leads to the same URL,
     // we should skip those.
@@ -640,7 +656,13 @@ export class Router {
       const beforePreactivationDone$ =
           urlAndSnapshot$.pipe(mergeMap((p): Observable<NavStreamValue> => {
             if (typeof p === 'boolean') return of (p);
-            return this.hooks.beforePreactivation(p.snapshot).pipe(map(() => p));
+            return this.hooks
+                .beforePreactivation(p.snapshot, {
+                  navigationId: id,
+                  appliedUrlTree: url,
+                  rawUrlTree: rawUrl, skipLocationChange, replaceUrl,
+                })
+                .pipe(map(() => p));
           }));
 
       // run preactivation: guards and data resolvers
@@ -693,7 +715,13 @@ export class Router {
       const preactivationDone$ =
           preactivationResolveData$.pipe(mergeMap((p): Observable<NavStreamValue> => {
             if (typeof p === 'boolean' || this.navigationId !== id) return of (false);
-            return this.hooks.afterPreactivation(p.snapshot).pipe(map(() => p));
+            return this.hooks
+                .afterPreactivation(p.snapshot, {
+                  navigationId: id,
+                  appliedUrlTree: url,
+                  rawUrlTree: rawUrl, skipLocationChange, replaceUrl,
+                })
+                .pipe(map(() => p));
           }));
 
 

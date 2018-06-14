@@ -40,13 +40,19 @@ export function assertLessThan<T>(actual: T, expected: T, msg: string) {
   }
 }
 
-export function assertNull<T>(actual: T, msg: string) {
+export function assertGreaterThan<T>(actual: T, expected: T, msg: string) {
+  if (actual <= expected) {
+    throwError(msg);
+  }
+}
+
+export function assertNotDefined<T>(actual: T, msg: string) {
   if (actual != null) {
     throwError(msg);
   }
 }
 
-export function assertNotNull<T>(actual: T, msg: string) {
+export function assertDefined<T>(actual: T, msg: string) {
   if (actual == null) {
     throwError(msg);
   }
@@ -62,5 +68,6 @@ export function assertComponentType(
 }
 
 function throwError(msg: string): never {
+  debugger;  // Left intentionally for better debugger experience.
   throw new Error(`ASSERTION ERROR: ${msg}`);
 }

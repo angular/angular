@@ -31,11 +31,6 @@ export interface SerializationOptions {
    * whitelisting angular.
    */
   allowModuleIdentifiers?: string[];
-  /**
-   * Warns or errors if stability annotations are missing on an export.
-   * Supports experimental, stable and deprecated.
-   */
-  onStabilityMissing?: DiagnosticSeverity;
 }
 
 export type DiagnosticSeverity = 'warn' | 'error' | 'none';
@@ -124,12 +119,6 @@ class ResolvedDeclarationEmitter {
         const match = stabilityAnnotationPattern.exec(trivia);
         if (match) {
           output += `/** @${match[1]} */\n`;
-        } else if (['warn', 'error'].indexOf(this.options.onStabilityMissing as string) >= 0) {
-          this.diagnostics.push({
-            type: this.options.onStabilityMissing,
-            message: createErrorMessage(
-                decl, `No stability annotation found for symbol "${symbol.name}"`)
-          });
         }
 
         output += stripEmptyLines(this.emitNode(decl)) + '\n';

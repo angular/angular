@@ -21,7 +21,7 @@ describe('ApiService', () => {
       ]
     });
 
-    service = injector.get(ApiService);
+    service = injector.get<ApiService>(ApiService);
     httpMock = injector.get(HttpTestingController);
   });
 

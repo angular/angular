@@ -82,6 +82,7 @@ const manifest: Manifest = {
       version: 1,
     },
   ],
+  navigationUrls: [],
   hashTable: tmpHashTableForFs(dist),
 };
 

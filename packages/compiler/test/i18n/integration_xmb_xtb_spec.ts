@@ -63,6 +63,7 @@ const XTB = `
   <translation id="3780349238193953556"><ph name="START_ITALIC_TEXT"/>avec des espaces réservés<ph name="CLOSE_ITALIC_TEXT"/></translation>
   <translation id="5415448997399451992"><ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex></ph>avec <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex></ph>des espaces réservés<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph> imbriqués<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph></translation>
   <translation id="5525133077318024839">sur des balises non traductibles</translation>
+  <translation id="2174788525135228764">&lt;b&gt;gras&lt;/b&gt;</translation>
   <translation id="8670732454866344690">sur des balises traductibles</translation>
   <translation id="4593805537723189714">{VAR_PLURAL, plural, =0 {zero} =1 {un} =2 {deux} other {<ph name="START_BOLD_TEXT"/>beaucoup<ph name="CLOSE_BOLD_TEXT"/>}}</translation>
   <translation id="703464324060964421"><ph name="ICU"/></translation>
@@ -93,6 +94,7 @@ const XMB = `<msg id="615790887472569365"><source>file.ts:3</source>i18n attribu
   <msg id="3780349238193953556"><source>file.ts:9</source><source>file.ts:10</source><ph name="START_ITALIC_TEXT"><ex>&lt;i&gt;</ex></ph>with placeholders<ph name="CLOSE_ITALIC_TEXT"><ex>&lt;/i&gt;</ex></ph></msg>
   <msg id="5415448997399451992"><source>file.ts:11</source><ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex></ph>with <ph name="START_TAG_DIV"><ex>&lt;div&gt;</ex></ph>nested<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph> placeholders<ph name="CLOSE_TAG_DIV"><ex>&lt;/div&gt;</ex></ph></msg>
   <msg id="5525133077318024839"><source>file.ts:14</source>on not translatable node</msg>
+  <msg id="2174788525135228764"><source>file.ts:14</source>&lt;b&gt;bold&lt;/b&gt;</msg>
   <msg id="8670732454866344690"><source>file.ts:15</source>on translatable node</msg>
   <msg id="4593805537723189714"><source>file.ts:20</source><source>file.ts:37</source>{VAR_PLURAL, plural, =0 {zero} =1 {one} =2 {two} other {<ph name="START_BOLD_TEXT"><ex>&lt;b&gt;</ex></ph>many<ph name="CLOSE_BOLD_TEXT"><ex>&lt;/b&gt;</ex></ph>} }</msg>
   <msg id="703464324060964421"><source>file.ts:22,24</source>

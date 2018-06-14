@@ -3,7 +3,7 @@
 //
 //   Try: `npm run webdriver:update`
 //
-// AND THEN EVERYTIME ...
+// AND THEN EVERY TIME ...
 //   1. Compile with `tsc`
 //   2. Make sure the test server (e.g., http-server: localhost:8080) is running.
 //   3. ./node_modules/.bin/protractor protractor.config.js

@@ -67,7 +67,7 @@ abstract class HTMLCollection {
  * }
  * ```
  *
- * @stable
+ *
  */
 @Directive({
   selector:

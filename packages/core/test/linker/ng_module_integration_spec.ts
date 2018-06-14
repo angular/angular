@@ -883,6 +883,35 @@ function declareTests({useJit}: {useJit: boolean}) {
 
           expect(createModule(MyModule).injector.get('eager1')).toBe('v1: v2');
         });
+
+        it('eager providers should get initialized only once', () => {
+          @Injectable()
+          class MyService1 {
+            public innerService: MyService2;
+            constructor(injector: Injector) {
+              // Create MyService2 before it it's initialized by TestModule.
+              this.innerService = injector.get(MyService2);
+            }
+          }
+
+          @Injectable()
+          class MyService2 {
+            constructor() {}
+          }
+
+          @NgModule({
+            providers: [MyService1, MyService2],
+          })
+          class TestModule {
+            constructor(public service1: MyService1, public service2: MyService2) {}
+          }
+
+          const moduleRef = createModule(TestModule, injector);
+          const module = moduleRef.instance;
+
+          // MyService2 should not get initialized twice.
+          expect(module.service1.innerService).toBe(module.service2);
+        });
       });
 
       it('should throw when no provider defined', () => {

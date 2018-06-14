@@ -26,6 +26,11 @@ ng_package(
         "//packages/common/testing:package.json",
     ],
     entry_point = "packages/common/index.js",
+    packages = ["//packages/common/locales:package"],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
     deps = [
         "//packages/common",
         "//packages/common/http",

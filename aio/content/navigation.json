@@ -185,6 +185,11 @@
               "tooltip": "Add CSS styles that are specific to a component."
             },
             {
+              "url": "guide/elements",
+              "title": "Angular Elements",
+              "tooltip": "Convert components to Custom Elements."
+            },
+            {
               "url": "guide/dynamic-component-loader",
               "title": "Dynamic Components",
               "tooltip": "Load components dynamically."
@@ -458,11 +463,6 @@
           ]
         },
         {
-          "url": "guide/custom-elements",
-          "title": "Custom Elements",
-          "tooltip": "Using Angular Components as Custom Elements."
-        },
-        {
           "title": "Service Workers",
           "tooltip": "Angular service workers: Controlling caching of application resources.",
           "children": [
@@ -495,17 +495,34 @@
         },
 
         {
-          "title": "Upgrading",
+          "title": "Keeping Up-to-Date",
+          "tooltip": "Angular release practices, planning for updates, and update resources.",
+          "children": [
+            {
+              "url": "guide/updating",
+              "title": "Updating Your Projects",
+              "tooltip": "Information about updating Angular applications and libraries to the latest version."
+            },
+            {
+              "url": "guide/releases",
+              "title": "Angular Releases",
+              "tooltip": "Angular versioning, release, support, and deprecation policies and practices."
+            }
+          ]
+        },
+
+        {
+          "title": "Upgrading from AngularJS",
           "tooltip": "Incrementally upgrade an AngularJS application to Angular.",
           "children": [
             {
               "url": "guide/upgrade",
-              "title": "Upgrading from AngularJS",
+              "title": "Upgrading Instructions",
               "tooltip": "Incrementally upgrade an AngularJS application to Angular."
             },
             {
               "url": "guide/ajs-quick-reference",
-              "title": "Upgrade Cheatsheet",
+              "title": "AngularJS-Angular Concepts",
               "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
             }
           ]
@@ -633,15 +650,19 @@
         {
           "title": "中文版",
           "url": "https://angular.cn/"
+        },
+        {
+          "title": "日本語版",
+          "url": "https://angular.jp/"
         }
       ]
     }
   ],
 
   "docVersions": [
-    { "title": "v4 (LTS)", "url": "https://v4.angular.io" },
+    { "title": "v5", "url": "https://v5.angular.io" },
+    { "title": "v4", "url": "https://v4.angular.io" },
     { "title": "v2", "url": "https://v2.angular.io" },
     { "title": "AngularDart", "url": "https://webdev.dartlang.org/angular" }
-
   ]
 }

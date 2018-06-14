@@ -57,11 +57,11 @@ The tests run again, the browser refreshes, and the new test results appear.
 
 The CLI takes care of Jasmine and karma configuration for you.
 
-You can fine-tune many options by editing the `karma.conf.js` file in the project root folder and
-the `test.ts` file in the `src/` folder.
+You can fine-tune many options by editing the `karma.conf.js` and
+the `test.ts` files in the `src/` folder.
 
 The `karma.conf.js` file is a partial karma configuration file.
-The CLI constructs the full runtime configuration in memory,based on application structure specified in the `.angular-cli.json` file, supplemented by `karma.conf.js`.
+The CLI constructs the full runtime configuration in memory,based on application structure specified in the `angular.json` file, supplemented by `karma.conf.js`.
 
 Search the web for more details about Jasmine and karma configuration.
 
@@ -204,8 +204,7 @@ The test consumes that spy in the same way it did earlier.
 Most test suites in this guide call `beforeEach()` to set the preconditions for each `it()` test
 and rely on the `TestBed` to create classes and inject services.
 
-There's another school of testing that never calls `beforeEach()` and
-and prefers to create classes explicitly rather than use the `TestBed`.
+There's another school of testing that never calls `beforeEach()` and prefers to create classes explicitly rather than use the `TestBed`.
 
 Here's how you might rewrite one of the `MasterService` tests in that style.
 
@@ -262,13 +261,12 @@ test any service with a dependency.
 
 <div class="alert is-important">
 
-The `HeroService` methods return _Observables_.
-_Subscribe_ to the method observable to (a) cause it to execute and (b)
+The `HeroService` methods return `Observables`. You must
+_subscribe_ to an observable to (a) cause it to execute and (b)
 assert that the method succeeds or fails.
 
-The `subscribe()` method takes a success and fail callback.
-Make sure you provide _both_ callbacks so that you capture errors.
-
+The `subscribe()` method takes a success (`next`) and fail (`error`) callback.
+Make sure you provide _both_ callbacks so that you capture errors. 
 Neglecting to do so produces an asynchronous uncaught observable error that
 the test runner will likely attribute to a completely different test.
 
@@ -348,7 +346,7 @@ It appears within the template of a parent component,
 which binds a _hero_ to the `@Input` property and
 listens for an event raised through the _selected_ `@Output` property.
 
-You can test that the class code works without creating the the `DashboardHeroComponent`
+You can test that the class code works without creating the `DashboardHeroComponent`
 or its parent component.
 
 <code-example 
@@ -400,7 +398,7 @@ But a component is more than just its class.
 A component interacts with the DOM and with other components.
 The _class-only_ tests can tell you about class behavior.
 They cannot tell you if the component is going to render properly,
-respond to user input and gestures, or integrate with its parent and and child components.
+respond to user input and gestures, or integrate with its parent and child components.
 
 None of the _class-only_ tests above can answer key questions about how the
 components actually behave on screen.
@@ -1024,9 +1022,9 @@ Focus on the spy.
   region="spy">
 </code-example>
 
-The spy is designed such that any call to `getQuote` receives an Observable with a test quote.
+The spy is designed such that any call to `getQuote` receives an observable with a test quote.
 Unlike the real `getQuote()` method, this spy bypasses the server
-and returns a synchronous Observable whose value is available immediately.
+and returns a synchronous observable whose value is available immediately.
 
 You can write many useful tests with this spy, even though its `Observable` is synchronous.
 
@@ -1114,14 +1112,14 @@ Or you can copy this one from the sample code.
 
 This helper's observable emits the `data` value in the next turn of the JavaScript engine. 
 
-[RxJS `defer()`](http://reactivex.io/documentation/operators/defer.html) returns an observable.
+The [RxJS `defer()` operator](http://reactivex.io/documentation/operators/defer.html) returns an observable.
 It takes a factory function that returns either a promise or an observable.
 When something subscribes to _defer_'s observable,
 it adds the subscriber to a new observable created with that factory. 
 
-RxJS `defer()` transform the `Promise.resolve()` into a new observable that, 
+The `defer()` operator transforms the `Promise.resolve()` into a new observable that, 
 like `HttpClient`, emits once and completes.
-Subscribers will be unsubscribed after they receive the data value.
+Subscribers are unsubscribed after they receive the data value.
 
 There's a similar helper for producing an async error.
 
@@ -1688,10 +1686,9 @@ Here's the `HeroDetailComponent` constructor:
 <code-example path="testing/src/app/hero/hero-detail.component.ts" region="ctor" title="app/hero/hero-detail.component.ts (constructor)" linenums="false"></code-example>
 
 The `HeroDetail` component needs the `id` parameter so it can fetch 
-the corresponding hero via the `HeroDetailService`.
-
+the corresponding hero via the `HeroDetailService`. 
 The component has to get the `id` from the `ActivatedRoute.paramMap` property
-which is an _Observable_.
+which is an `Observable`.
 
 It can't just reference the `id` property of the `ActivatedRoute.paramMap`.
 The component has to _subscribe_ to the `ActivatedRoute.paramMap` observable and be prepared
@@ -2365,13 +2362,13 @@ Focus on the `overrideComponent` method.
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="override-component-method" title="app/hero/hero-detail.component.spec.ts (overrideComponent)" linenums="false"></code-example>
 
 It takes two arguments: the component type to override (`HeroDetailComponent`) and an override metadata object.
-The [overide metadata object](#metadata-override-object) is a generic defined as follows:
+The [override metadata object](#metadata-override-object) is a generic defined as follows:
 
 <code-example format="." language="javascript">
   type MetadataOverride<T> = {
-    add?: T;
-    remove?: T;
-    set?: T;
+    add?: Partial<T>;
+    remove?: Partial<T>;
+    set?: Partial<T>;
   };
 </code-example>
 
@@ -2727,9 +2724,9 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
 
 <code-example format="." language="javascript">
   type MetadataOverride<T> = {
-    add?: T;
-    remove?: T;
-    set?: T;
+    add?: Partial<T>;
+    remove?: Partial<T>;
+    set?: Partial<T>;
   };
 </code-example>
 
@@ -3381,11 +3378,11 @@ next to their corresponding helper files.
 {@a q-e2e}
 #### Why not rely on E2E tests of DOM integration?
 
-The component DOM tests describe in this guide often require extensive setup and 
-advanced techniques where as the [class-only test](#component-class-testing)
-were comparatively simple.
+The component DOM tests described in this guide often require extensive setup and 
+advanced techniques whereas the [unit tests](#component-class-testing)
+are comparatively simple.
 
-Why not defer DOM integration tests to end-to-end (E2E) testing?
+#### Why not defer DOM integration tests to end-to-end (E2E) testing?
 
 E2E tests are great for high-level validation of the entire system.
 But they can't give you the comprehensive test coverage that you'd expect from unit tests.

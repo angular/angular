@@ -8,15 +8,16 @@
 
 import {AnimationBuilder, animate, style, transition, trigger} from '@angular/animations';
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
-import {HttpClient, HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
-import {ApplicationRef, CompilerFactory, Component, HostListener, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
+import {ApplicationRef, CompilerFactory, Component, HostListener, Inject, Injectable, Input, NgModule, NgModuleRef, NgZone, PLATFORM_ID, PlatformRef, ViewEncapsulation, destroyPlatform, getPlatform} from '@angular/core';
 import {TestBed, async, inject} from '@angular/core/testing';
 import {Http, HttpModule, Response, ResponseOptions, XHRBackend} from '@angular/http';
 import {MockBackend, MockConnection} from '@angular/http/testing';
 import {BrowserModule, DOCUMENT, StateKey, Title, TransferState, makeStateKey} from '@angular/platform-browser';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {BEFORE_APP_SERIALIZED, INITIAL_CONFIG, PlatformState, ServerModule, ServerTransferStateModule, platformDynamicServer, renderModule, renderModuleFactory} from '@angular/platform-server';
+import {Observable} from 'rxjs';
 import {first} from 'rxjs/operators';
 
 @Component({selector: 'app', template: `Works!`})
@@ -154,7 +155,11 @@ class MyAnimationApp {
 class AnimationServerModule {
 }
 
-@Component({selector: 'app', template: `Works!`, styles: [':host { color: red; }']})
+@Component({
+  selector: 'app',
+  template: `<div>Works!</div>`,
+  styles: ['div {color: blue; } :host { color: red; }']
+})
 class MyStylesApp {
 }
 
@@ -195,7 +200,27 @@ export class HttpAfterExampleModule {
   declarations: [MyServerApp],
   imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
 })
-export class HttpClientExmapleModule {
+export class HttpClientExampleModule {
+}
+
+@Injectable()
+export class MyHttpInterceptor implements HttpInterceptor {
+  constructor(private http: HttpClient) {}
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return next.handle(req);
+  }
+}
+
+@NgModule({
+  bootstrap: [MyServerApp],
+  declarations: [MyServerApp],
+  imports: [ServerModule, HttpClientModule, HttpClientTestingModule],
+  providers: [
+    {provide: HTTP_INTERCEPTORS, multi: true, useClass: MyHttpInterceptor},
+  ],
+})
+export class HttpInterceptorExampleModule {
 }
 
 @Component({selector: 'app', template: `<img [src]="'link'">`})
@@ -254,6 +279,20 @@ class MyInputComponent {
 class NameModule {
 }
 
+@Component({selector: 'app', template: '<div [innerHTML]="html"></div>'})
+class HTMLTypesApp {
+  html = '<b>foo</b> bar';
+  constructor(@Inject(DOCUMENT) doc: Document) {}
+}
+
+@NgModule({
+  declarations: [HTMLTypesApp],
+  imports: [BrowserModule.withServerTransition({appId: 'inner-html'}), ServerModule],
+  bootstrap: [HTMLTypesApp]
+})
+class HTMLTypesModule {
+}
+
 const TEST_KEY = makeStateKey<number>('test');
 const STRING_KEY = makeStateKey<string>('testString');
 
@@ -293,6 +332,20 @@ class TransferStoreModule {
   ]
 })
 class EscapedTransferStoreModule {
+}
+
+@Component({selector: 'app', template: '<input [hidden]="true"><input [hidden]="false">'})
+class MyHiddenComponent {
+  @Input()
+  name = '';
+}
+
+@NgModule({
+  declarations: [MyHiddenComponent],
+  bootstrap: [MyHiddenComponent],
+  imports: [ServerModule, BrowserModule.withServerTransition({appId: 'hidden-attributes'})]
+})
+class HiddenModule {
 }
 
 (function() {
@@ -534,6 +587,15 @@ class EscapedTransferStoreModule {
            });
          }));
 
+
+      it('sets a prefix for the _nghost and _ngcontent attributes', async(() => {
+           renderModule(ExampleStylesModule, {document: doc}).then(output => {
+             expect(output).toMatch(
+                 /<html><head><style ng-transition="example-styles">div\[_ngcontent-sc\d+\] {color: blue; } \[_nghost-sc\d+\] { color: red; }<\/style><\/head><body><app _nghost-sc\d+="" ng-version="0.0.0-PLACEHOLDER"><div _ngcontent-sc\d+="">Works!<\/div><\/app><\/body><\/html>/);
+             called = true;
+           });
+         }));
+
       it('should handle false values on attributes', async(() => {
            renderModule(FalseAttributesModule, {document: doc}).then(output => {
              expect(output).toBe(
@@ -552,6 +614,28 @@ class EscapedTransferStoreModule {
            });
          }));
 
+      it('should work with sanitizer to handle "innerHTML"', async(() => {
+           // Clear out any global states. These should be set when platform-server
+           // is initialized.
+           (global as any).Node = undefined;
+           (global as any).Document = undefined;
+           renderModule(HTMLTypesModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<div><b>foo</b> bar</div></app></body></html>');
+             called = true;
+           });
+         }));
+
+      it('should handle element property "hidden"', async(() => {
+           renderModule(HiddenModule, {document: doc}).then(output => {
+             expect(output).toBe(
+                 '<html><head></head><body><app ng-version="0.0.0-PLACEHOLDER">' +
+                 '<input hidden=""><input></app></body></html>');
+             called = true;
+           });
+         }));
+
       it('should call render hook', async(() => {
            renderModule(RenderHookModule, {document: doc}).then(output => {
              // title should be added by the render hook.
@@ -562,7 +646,7 @@ class EscapedTransferStoreModule {
            });
          }));
 
-      it('should call mutliple render hooks', async(() => {
+      it('should call multiple render hooks', async(() => {
            const consoleSpy = spyOn(console, 'warn');
            renderModule(MultiRenderHookModule, {document: doc}).then(output => {
              // title should be added by the render hook.
@@ -675,14 +759,14 @@ class EscapedTransferStoreModule {
       it('can inject HttpClient', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+           platform.bootstrapModule(HttpClientExampleModule).then(ref => {
              expect(ref.injector.get(HttpClient) instanceof HttpClient).toBeTruthy();
            });
          }));
       it('can make HttpClient requests', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+           platform.bootstrapModule(HttpClientExampleModule).then(ref => {
              const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
              const http = ref.injector.get(HttpClient);
              ref.injector.get<NgZone>(NgZone).run(() => {
@@ -697,7 +781,7 @@ class EscapedTransferStoreModule {
       it('requests are macrotasks', async(() => {
            const platform = platformDynamicServer(
                [{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
-           platform.bootstrapModule(HttpClientExmapleModule).then(ref => {
+           platform.bootstrapModule(HttpClientExampleModule).then(ref => {
              const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
              const http = ref.injector.get(HttpClient);
              ref.injector.get<NgZone>(NgZone).run(() => {
@@ -710,6 +794,21 @@ class EscapedTransferStoreModule {
              });
            });
          }));
+      it('can use HttpInterceptor that injects HttpClient', () => {
+        const platform =
+            platformDynamicServer([{provide: INITIAL_CONFIG, useValue: {document: '<app></app>'}}]);
+        platform.bootstrapModule(HttpInterceptorExampleModule).then(ref => {
+          const mock = ref.injector.get(HttpTestingController) as HttpTestingController;
+          const http = ref.injector.get(HttpClient);
+          ref.injector.get<NgZone>(NgZone).run(() => {
+            http.get('http://localhost/testing').subscribe(body => {
+              NgZone.assertInAngularZone();
+              expect(body).toEqual('success!');
+            });
+            mock.expectOne('http://localhost/testing').flush('success!');
+          });
+        });
+      });
     });
 
     describe('ServerTransferStoreModule', () => {

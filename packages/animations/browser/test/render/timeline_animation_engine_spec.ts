@@ -21,7 +21,7 @@ import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_a
   }
 
   // these tests are only mean't to be run within the DOM
-  if (typeof Element == 'undefined') return;
+  if (isNode) return;
 
   describe('TimelineAnimationEngine', () => {
     let element: any;

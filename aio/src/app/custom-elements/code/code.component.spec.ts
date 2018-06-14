@@ -76,7 +76,7 @@ describe('CodeComponent', () => {
       hostComponent.setCode(oneLineCode);
       await untilCodeFormatted();
 
-      // 'pln' spans are a tell-tale for syntax highlighing
+      // 'pln' spans are a tell-tale for syntax highlighting
       const spans = fixture.nativeElement.querySelectorAll('span.pln');
       expect(spans.length).toBeGreaterThan(0, 'formatted spans');
     });

@@ -11,12 +11,14 @@ import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {PipeTransform} from '../change_detection/pipe_transform';
 import {Provider} from '../core';
 import {OnChanges, SimpleChanges} from '../metadata/lifecycle_hooks';
+import {NgModuleDef, NgModuleDefInternal} from '../metadata/ng_module';
 import {RendererType2} from '../render/api';
 import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {ComponentDef, ComponentDefFeature, ComponentTemplate, DirectiveDef, DirectiveDefFeature, PipeDef} from './interfaces/definition';
+import {ComponentDefFeature, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 
 
@@ -40,6 +42,9 @@ export function defineComponent<T>(componentDefinition: {
    * Directive type, needed to configure the injector.
    */
   type: Type<T>;
+
+  /** The selectors that will be used to match nodes to this component. */
+  selectors: CssSelectorList;
 
   /**
    * Factory method used to create an instance of directive.
@@ -89,11 +94,6 @@ export function defineComponent<T>(componentDefinition: {
    * See: {@link Directive.exportAs}
    */
   exportAs?: string;
-
-  /**
-   * HTML tag name to use in place where this component should be instantiated.
-   */
-  tag: string;
 
   /**
    * Template function use for rendering DOM.
@@ -147,20 +147,37 @@ export function defineComponent<T>(componentDefinition: {
    * Defines the set of injectable objects that are visible to its view DOM children.
    */
   viewProviders?: Provider[];
-}): ComponentDef<T> {
+
+  /**
+   * Registry of directives and components that may be found in this component's view.
+   *
+   * The property is either an array of `DirectiveDef`s or a function which returns the array of
+   * `DirectiveDef`s. The function is necessary to be able to support forward declarations.
+   */
+  directives?: DirectiveTypesOrFactory | null;
+
+  /**
+   * Registry of pipes that may be found in this component's view.
+   *
+   * The property is either an array of `PipeDefs`s or a function which returns the array of
+   * `PipeDefs`s. The function is necessary to be able to support forward declarations.
+   */
+  pipes?: PipeTypesOrFactory | null;
+}): never {
   const type = componentDefinition.type;
-  const def = <ComponentDef<any>>{
+  const pipeTypes = componentDefinition.pipes !;
+  const directiveTypes = componentDefinition.directives !;
+  const def: ComponentDefInternal<any> = {
     type: type,
     diPublic: null,
     factory: componentDefinition.factory,
-    tag: componentDefinition.tag || null !,
     template: componentDefinition.template || null !,
     hostBindings: componentDefinition.hostBindings || null,
     attributes: componentDefinition.attributes || null,
     inputs: invertObject(componentDefinition.inputs),
     outputs: invertObject(componentDefinition.outputs),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
-    exportAs: componentDefinition.exportAs,
+    exportAs: componentDefinition.exportAs || null,
     onInit: type.prototype.ngOnInit || null,
     doCheck: type.prototype.ngDoCheck || null,
     afterContentInit: type.prototype.ngAfterContentInit || null,
@@ -168,13 +185,49 @@ export function defineComponent<T>(componentDefinition: {
     afterViewInit: type.prototype.ngAfterViewInit || null,
     afterViewChecked: type.prototype.ngAfterViewChecked || null,
     onDestroy: type.prototype.ngOnDestroy || null,
-    onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush
+    onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
+    directiveDefs: directiveTypes ?
+        () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
+                  .map(extractDirectiveDef) :
+        null,
+    pipeDefs: pipeTypes ?
+        () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
+        null,
+    selectors: componentDefinition.selectors
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
+  return def as never;
+}
+
+export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>):
+    DirectiveDefInternal<any>|ComponentDefInternal<any> {
+  const def = type.ngComponentDef || type.ngDirectiveDef;
+  if (ngDevMode && !def) {
+    throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
+  }
   return def;
 }
 
+export function extractPipeDef(type: PipeType<any>): PipeDef<any> {
+  const def = type.ngPipeDef;
+  if (ngDevMode && !def) {
+    throw new Error(`'${type.name}' is not a 'PipeType'.`);
+  }
+  return def;
+}
+
+export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T, any, any, any>>): never {
+  const res: NgModuleDefInternal<T> = {
+    type: def.type,
+    bootstrap: def.bootstrap || [],
+    declarations: def.declarations || [],
+    imports: def.imports || [],
+    exports: def.exports || [],
+    transitiveCompileScopes: null,
+  };
+  return res as never;
+}
 
 const PRIVATE_PREFIX = '__ngOnChanges_';
 
@@ -208,35 +261,42 @@ type OnChangesExpando = OnChanges & {
  */
 export function NgOnChangesFeature(inputPropertyNames?: {[key: string]: string}):
     DirectiveDefFeature {
-  return function(definition: DirectiveDef<any>): void {
+  return function(definition: DirectiveDefInternal<any>): void {
     const inputs = definition.inputs;
     const proto = definition.type.prototype;
-    // Place where we will store SimpleChanges if there is a change
-    Object.defineProperty(proto, PRIVATE_PREFIX, {value: undefined, writable: true});
     for (let pubKey in inputs) {
       const minKey = inputs[pubKey];
       const propertyName = inputPropertyNames && inputPropertyNames[minKey] || pubKey;
       const privateMinKey = PRIVATE_PREFIX + minKey;
-      // Create a place where the actual value will be stored and make it non-enumerable
-      Object.defineProperty(proto, privateMinKey, {value: undefined, writable: true});
-
-      const existingDesc = Object.getOwnPropertyDescriptor(proto, minKey);
-
+      const originalProperty = Object.getOwnPropertyDescriptor(proto, minKey);
+      const getter = originalProperty && originalProperty.get;
+      const setter = originalProperty && originalProperty.set;
       // create a getter and setter for property
       Object.defineProperty(proto, minKey, {
-        get: function(this: OnChangesExpando) {
-          return (existingDesc && existingDesc.get) ? existingDesc.get.call(this) :
-                                                      this[privateMinKey];
-        },
+        get: getter ||
+            (setter ? undefined : function(this: OnChangesExpando) { return this[privateMinKey]; }),
         set: function(this: OnChangesExpando, value: any) {
           let simpleChanges = this[PRIVATE_PREFIX];
-          let isFirstChange = simpleChanges === undefined;
-          if (simpleChanges == null) {
-            simpleChanges = this[PRIVATE_PREFIX] = {};
+          if (!simpleChanges) {
+            // Place where we will store SimpleChanges if there is a change
+            Object.defineProperty(
+                this, PRIVATE_PREFIX, {value: simpleChanges = {}, writable: true});
           }
-          simpleChanges[propertyName] = new SimpleChange(this[privateMinKey], value, isFirstChange);
-          (existingDesc && existingDesc.set) ? existingDesc.set.call(this, value) :
-                                               this[privateMinKey] = value;
+          const isFirstChange = !this.hasOwnProperty(privateMinKey);
+          const currentChange: SimpleChange|undefined = simpleChanges[propertyName];
+          if (currentChange) {
+            currentChange.currentValue = value;
+          } else {
+            simpleChanges[propertyName] =
+                new SimpleChange(this[privateMinKey], value, isFirstChange);
+          }
+          if (isFirstChange) {
+            // Create a place where the actual value will be stored and make it non-enumerable
+            Object.defineProperty(this, privateMinKey, {value, writable: true});
+          } else {
+            this[privateMinKey] = value;
+          }
+          setter && setter.call(this, value);
         }
       });
     }
@@ -264,7 +324,7 @@ export function NgOnChangesFeature(inputPropertyNames?: {[key: string]: string})
 }
 
 
-export function PublicFeature<T>(definition: DirectiveDef<T>) {
+export function PublicFeature<T>(definition: DirectiveDefInternal<T>) {
   definition.diPublic = diPublic;
 }
 
@@ -299,6 +359,9 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
    * Directive type, needed to configure the injector.
    */
   type: Type<T>;
+
+  /** The selectors that will be used to match nodes to this directive. */
+  selectors: CssSelectorList;
 
   /**
    * Factory method used to create an instance of directive.
@@ -355,7 +418,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
    * See: {@link Directive.exportAs}
    */
   exportAs?: string;
-}) => DirectiveDef<T>;
+}) => never;
 
 /**
  * Create a pipe definition object.
@@ -369,15 +432,25 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
  *   });
  * }
  * ```
- * @param type Pipe class reference. Needed to extract pipe lifecycle hooks.
- * @param factory A factory for creating a pipe instance.
- * @param pure Whether the pipe is pure.
+ * @param pipeDef Pipe definition generated by the compiler
  */
-export function definePipe<T>(
-    {type, factory, pure}: {type: Type<T>, factory: () => T, pure?: boolean}): PipeDef<T> {
-  return <PipeDef<T>>{
-    n: factory,
-    pure: pure !== false,
-    onDestroy: type.prototype.ngOnDestroy || null
-  };
+export function definePipe<T>(pipeDef: {
+  /** Name of the pipe. Used for matching pipes in template to pipe defs. */
+  name: string,
+
+  /** Pipe class reference. Needed to extract pipe lifecycle hooks. */
+  type: Type<T>,
+
+  /** A factory for creating a pipe instance. */
+  factory: () => T,
+
+  /** Whether the pipe is pure. */
+  pure?: boolean
+}): never {
+  return (<PipeDef<T>>{
+    name: pipeDef.name,
+    factory: pipeDef.factory,
+    pure: pipeDef.pure !== false,
+    onDestroy: pipeDef.type.prototype.ngOnDestroy || null
+  }) as never;
 }

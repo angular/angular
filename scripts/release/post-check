@@ -7,7 +7,7 @@
 mkdir tmp
 cd tmp
 npm init -y
-npm install typescript@2.6 rxjs@5.5.0 zone.js@0.8.10 @angular/{animations,core,common,forms,router,platform-browser,platform-browser-dynamic,platform-webworker,platform-webworker-dynamic,platform-server,service-worker,compiler,compiler-cli,upgrade,language-service} --save
+npm install typescript@~2.7.0 rxjs@^6.0.0 zone.js@~0.8.26 @angular/{animations,core,common,forms,router,platform-browser,platform-browser-dynamic,platform-webworker,platform-webworker-dynamic,platform-server,service-worker,compiler,compiler-cli,upgrade,language-service,elements} --save
 cd ..
 rm -rf tmp
 
