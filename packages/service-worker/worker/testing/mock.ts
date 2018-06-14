@@ -187,6 +187,9 @@ export function tmpManifestSingleAssetGroup(fs: MockFileSystem): Manifest {
   return {
     configVersion: 1,
     index: '/index.html',
+    requestOptions: {
+      credentials: 'omit'
+    },
     assetGroups: [
       {
         name: 'group',

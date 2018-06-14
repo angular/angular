@@ -34,6 +34,9 @@ const manifest: Manifest = {
   configVersion: 1,
   appData: {version: '1'},
   index: '/only.txt',
+  requestOptions: {
+    credentials: 'omit'
+  },
   assetGroups: [{
     name: 'assets',
     installMode: 'prefetch',
@@ -49,6 +52,9 @@ const manifestUpdate: Manifest = {
   configVersion: 1,
   appData: {version: '2'},
   index: '/only.txt',
+  requestOptions: {
+    credentials: 'include'
+  },
   assetGroups: [{
     name: 'assets',
     installMode: 'prefetch',

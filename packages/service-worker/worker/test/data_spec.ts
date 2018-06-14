@@ -40,6 +40,9 @@ const distUpdate = new MockFileSystemBuilder()
 const manifest: Manifest = {
   configVersion: 1,
   index: '/index.html',
+  requestOptions: {
+    credentials: 'omit'
+  },
   assetGroups: [
     {
       name: 'assets',

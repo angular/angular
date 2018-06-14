@@ -11,7 +11,7 @@ import {CacheState, UpdateCacheStatus, UpdateSource, UrlMetadata} from './api';
 import {Database, Table} from './database';
 import {SwCriticalError} from './error';
 import {IdleScheduler} from './idle';
-import {AssetGroupConfig} from './manifest';
+import {AssetGroupConfig, Manifest} from './manifest';
 import {sha1Binary} from './sha1';
 
 /**
@@ -52,7 +52,7 @@ export abstract class AssetGroup {
 
   constructor(
       protected scope: ServiceWorkerGlobalScope, protected adapter: Adapter,
-      protected idle: IdleScheduler, protected config: AssetGroupConfig,
+      protected idle: IdleScheduler, protected config: AssetGroupConfig, protected manifest: Manifest,
       protected hashes: Map<string, string>, protected db: Database, protected prefix: string) {
     this.name = config.name;
     // Patterns in the config are regular expressions disguised as strings. Breathe life into them.
@@ -73,10 +73,10 @@ export abstract class AssetGroup {
         this.adapter.parseUrl(this.scope.registration.scope, this.scope.registration.scope).origin;
   }
 
-  async cacheStatus(url: string): Promise<UpdateCacheStatus> {
+  async cacheStatus(url: string, requestOptions?: RequestInit): Promise<UpdateCacheStatus> {
     const cache = await this.cache;
     const meta = await this.metadata;
-    const res = await cache.match(this.adapter.newRequest(url));
+    const res = await cache.match(this.adapter.newRequest(url, requestOptions));
     if (res === undefined) {
       return UpdateCacheStatus.NOT_CACHED;
     }
@@ -145,7 +145,7 @@ export abstract class AssetGroup {
       // No already-cached response exists, so attempt a fetch/cache operation. The original request
       // may specify things like credential inclusion, but for assets these are not honored in order
       // to avoid issues with opaque responses. The SW requests the data itself.
-      const res = await this.fetchAndCacheOnce(this.adapter.newRequest(req.url));
+      const res = await this.fetchAndCacheOnce(this.adapter.newRequest(req.url, this.manifest.requestOptions));
 
       // If this is successful, the response needs to be cloned as it might be used to respond to
       // multiple fetch operations at the same time.
@@ -252,7 +252,7 @@ export abstract class AssetGroup {
     const metaTable = await this.metadata;
 
     // Lookup the response in the cache.
-    const response = await cache.match(this.adapter.newRequest(url));
+    const response = await cache.match(this.adapter.newRequest(url, this.manifest.requestOptions));
     if (response === undefined) {
       // It's not found, return null.
       return null;
@@ -351,7 +351,7 @@ export abstract class AssetGroup {
       }
 
       // Unwrap the redirect directly.
-      return this.fetchFromNetwork(this.adapter.newRequest(res.url), redirectLimit - 1);
+      return this.fetchFromNetwork(this.adapter.newRequest(res.url, this.manifest.requestOptions), redirectLimit - 1);
     }
 
     return res;
@@ -405,7 +405,7 @@ export abstract class AssetGroup {
         // data, or because the version on the server really doesn't match. A cache-busting
         // request will differentiate these two situations.
         // TODO: handle case where the URL has parameters already (unlikely for assets).
-        const cacheBustReq = this.adapter.newRequest(this.cacheBust(req.url));
+        const cacheBustReq = this.adapter.newRequest(this.cacheBust(req.url), this.manifest.requestOptions);
         const cacheBustedResult = await this.safeFetch(cacheBustReq);
 
         // If the response was unsuccessful, there's nothing more that can be done.
@@ -502,7 +502,7 @@ export class PrefetchAssetGroup extends AssetGroup {
       await previous;
 
       // Construct the Request for this url.
-      const req = this.adapter.newRequest(url);
+      const req = this.adapter.newRequest(url, this.manifest.requestOptions);
 
       // First, check the cache to see if there is already a copy of this resource.
       const alreadyCached = (await cache.match(req)) !== undefined;
@@ -537,7 +537,7 @@ export class PrefetchAssetGroup extends AssetGroup {
           // Finally, process each resource in turn.
           .reduce(async(previous, url) => {
             await previous;
-            const req = this.adapter.newRequest(url);
+            const req = this.adapter.newRequest(url, this.manifest.requestOptions);
 
             // It's possible that the resource in question is already cached. If so,
             // continue to the next one.
@@ -579,7 +579,7 @@ export class LazyAssetGroup extends AssetGroup {
       await previous;
 
       // Construct the Request for this url.
-      const req = this.adapter.newRequest(url);
+      const req = this.adapter.newRequest(url, this.manifest.requestOptions);
 
       // First, check the cache to see if there is already a copy of this resource.
       const alreadyCached = (await cache.match(req)) !== undefined;
@@ -597,7 +597,7 @@ export class LazyAssetGroup extends AssetGroup {
         // except if it was not previously utilized. Check the status of the
         // cached resource to see.
 
-        const cacheStatus = await updateFrom.recentCacheStatus(url);
+        const cacheStatus = await updateFrom.recentCacheStatus(url, this.manifest.requestOptions);
 
         // If the resource is not cached, or was cached but unused, then it will be
         // loaded lazily.

@@ -44,6 +44,9 @@ const brokenFs = new MockFileSystemBuilder().addFile('/foo.txt', 'this is foo').
 const brokenManifest: Manifest = {
   configVersion: 1,
   index: '/foo.txt',
+  requestOptions: {
+    credentials: 'omit'
+  },
   assetGroups: [{
     name: 'assets',
     installMode: 'prefetch',
@@ -62,6 +65,9 @@ const manifest: Manifest = {
   configVersion: 1,
   appData: {
     version: 'original',
+  },
+  requestOptions: {
+    credentials: 'omit'
   },
   index: '/foo.txt',
   assetGroups: [
@@ -104,6 +110,9 @@ const manifestUpdate: Manifest = {
   configVersion: 1,
   appData: {
     version: 'update',
+  },
+  requestOptions: {
+    credentials: 'include'
   },
   index: '/foo.txt',
   assetGroups: [

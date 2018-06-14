@@ -71,10 +71,10 @@ export class AppVersion implements UpdateSource {
       switch (config.installMode) {
         case 'prefetch':
           return new PrefetchAssetGroup(
-              this.scope, this.adapter, this.idle, config, this.hashTable, this.database, prefix);
+              this.scope, this.adapter, this.idle, config, this.manifest, this.hashTable, this.database, prefix);
         case 'lazy':
           return new LazyAssetGroup(
-              this.scope, this.adapter, this.idle, config, this.hashTable, this.database, prefix);
+              this.scope, this.adapter, this.idle, config, this.manifest, this.hashTable, this.database, prefix);
       }
     });
 
@@ -167,7 +167,7 @@ export class AppVersion implements UpdateSource {
     if (req.url !== this.manifest.index && this.isNavigationRequest(req)) {
       // This was a navigation request. Re-enter `handleFetch` with a request for
       // the URL.
-      return this.handleFetch(this.adapter.newRequest(this.manifest.index), context);
+      return this.handleFetch(this.adapter.newRequest(this.manifest.index, this.manifest.requestOptions), context);
     }
 
     return null;
@@ -198,7 +198,7 @@ export class AppVersion implements UpdateSource {
    * Check this version for a given resource with a particular hash.
    */
   async lookupResourceWithHash(url: string, hash: string): Promise<Response|null> {
-    const req = this.adapter.newRequest(url);
+    const req = this.adapter.newRequest(url, this.manifest.requestOptions);
 
     // Verify that this version has the requested resource cached. If not,
     // there's no point in trying.
@@ -247,13 +247,13 @@ export class AppVersion implements UpdateSource {
     }, Promise.resolve<string[]>([]));
   }
 
-  async recentCacheStatus(url: string): Promise<UpdateCacheStatus> {
+  async recentCacheStatus(url: string, requestOptions?: RequestInit): Promise<UpdateCacheStatus> {
     return this.assetGroups.reduce(async(current, group) => {
       const status = await current;
       if (status === UpdateCacheStatus.CACHED) {
         return status;
       }
-      const groupStatus = await group.cacheStatus(url);
+      const groupStatus = await group.cacheStatus(url, this.manifest.requestOptions);
       if (groupStatus === UpdateCacheStatus.NOT_CACHED) {
         return status;
       }

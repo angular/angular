@@ -53,7 +53,7 @@ export interface UpdateSource {
    * This returns a state value which indicates whether the resource was
    * cached at all and whether that cache was utilized.
    */
-  recentCacheStatus(url: string): Promise<UpdateCacheStatus>;
+  recentCacheStatus(url: string, requestOptions?: RequestInit): Promise<UpdateCacheStatus>;
 }
 
 /**

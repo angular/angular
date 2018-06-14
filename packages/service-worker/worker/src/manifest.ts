@@ -13,6 +13,7 @@ export type ManifestHash = string;
 export interface Manifest {
   configVersion: number;
   appData?: {[key: string]: string};
+  requestOptions?: RequestInit;
   index: string;
   assetGroups?: AssetGroupConfig[];
   dataGroups?: DataGroupConfig[];
