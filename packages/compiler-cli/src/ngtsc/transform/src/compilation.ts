@@ -11,9 +11,10 @@ import * as ts from 'typescript';
 
 import {Decorator, reflectDecorator} from '../../metadata';
 
-import {AddStaticFieldInstruction, AnalysisOutput, CompilerAdapter} from './api';
+import {AnalysisOutput, CompileResult, DecoratorHandler} from './api';
 import {DtsFileTransformer} from './declaration';
 import {ImportManager, translateType} from './translator';
+
 
 
 /**
@@ -21,7 +22,7 @@ import {ImportManager, translateType} from './translator';
  * prepare for that operation.
  */
 interface EmitFieldOperation<T> {
-  adapter: CompilerAdapter<T>;
+  adapter: DecoratorHandler<T>;
   analysis: AnalysisOutput<T>;
   decorator: ts.Decorator;
 }
@@ -44,7 +45,7 @@ export class IvyCompilation {
    */
   private dtsMap = new Map<string, DtsFileTransformer>();
 
-  constructor(private adapters: CompilerAdapter<any>[], private checker: ts.TypeChecker) {}
+  constructor(private handlers: DecoratorHandler<any>[], private checker: ts.TypeChecker) {}
 
   /**
    * Analyze a source file and produce diagnostics for it (if any).
@@ -60,8 +61,8 @@ export class IvyCompilation {
             node.decorators.map(decorator => reflectDecorator(decorator, this.checker))
                 .filter(decorator => decorator !== null) as Decorator[];
 
-        // Look through the CompilerAdapters to see if any are relevant.
-        this.adapters.forEach(adapter => {
+        // Look through the DecoratorHandlers to see if any are relevant.
+        this.handlers.forEach(adapter => {
           // An adapter is relevant if it matches one of the decorators on the class.
           const decorator = adapter.detect(decorators);
           if (decorator === undefined) {
@@ -101,7 +102,7 @@ export class IvyCompilation {
    * Perform a compilation operation on the given class declaration and return instructions to an
    * AST transformer if any are available.
    */
-  compileIvyFieldFor(node: ts.ClassDeclaration): AddStaticFieldInstruction|undefined {
+  compileIvyFieldFor(node: ts.ClassDeclaration): CompileResult|undefined {
     // Look to see whether the original node was analyzed. If not, there's nothing to do.
     const original = ts.getOriginalNode(node) as ts.ClassDeclaration;
     if (!this.analysis.has(original)) {

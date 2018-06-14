@@ -72,8 +72,11 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     exports: o.literalArr(exports),
   })]);
 
-  // TODO(alxhub): write a proper type reference when AOT compilation of @NgModule is implemented.
-  const type = new o.ExpressionType(o.NULL_EXPR);
+  const type = new o.ExpressionType(o.importExpr(R3.NgModuleDef, [
+    new o.ExpressionType(moduleType), new o.ExpressionType(o.literalArr(declarations)),
+    new o.ExpressionType(o.literalArr(imports)), new o.ExpressionType(o.literalArr(exports))
+  ]));
+
   const additionalStatements: o.Statement[] = [];
   return {expression, type, additionalStatements};
 }
