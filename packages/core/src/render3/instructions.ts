@@ -124,7 +124,7 @@ let currentQueries: LQueries|null;
 
 export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return currentQueries || (currentQueries = new QueryType());
+  return currentQueries || (currentQueries = (previousOrParentNode.queries || new QueryType()));
 }
 
 /**
