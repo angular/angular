@@ -445,3 +445,45 @@ function typeMapToExpressionMap(
       ([key, type]): [string, o.Expression] => [key, outputCtx.importExpr(type)]);
   return new Map(entries);
 }
+
+const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
+
+// Represents the groups in the above regex.
+const enum HostBindingGroup {
+  // group 1: "prop" from "[prop]"
+  Property = 1,
+
+  // group 2: "event" from "(event)"
+  Event = 2,
+
+  // group 3: "@trigger" from "@trigger"
+  Animation = 3,
+}
+
+export function parseHostBindings(host: {[key: string]: string}): {
+  attributes: {[key: string]: string},
+  listeners: {[key: string]: string},
+  properties: {[key: string]: string},
+  animations: {[key: string]: string},
+} {
+  const attributes: {[key: string]: string} = {};
+  const listeners: {[key: string]: string} = {};
+  const properties: {[key: string]: string} = {};
+  const animations: {[key: string]: string} = {};
+
+  Object.keys(host).forEach(key => {
+    const value = host[key];
+    const matches = key.match(HOST_REG_EXP);
+    if (matches === null) {
+      attributes[key] = value;
+    } else if (matches[HostBindingGroup.Property] != null) {
+      properties[matches[HostBindingGroup.Property]] = value;
+    } else if (matches[HostBindingGroup.Event] != null) {
+      listeners[matches[HostBindingGroup.Event]] = value;
+    } else if (matches[HostBindingGroup.Animation] != null) {
+      animations[matches[HostBindingGroup.Animation]] = value;
+    }
+  });
+
+  return {attributes, listeners, properties, animations};
+}
