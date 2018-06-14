@@ -639,7 +639,7 @@ export class Driver implements Debuggable, UpdateSource {
   private async fetchLatestManifest(ignoreOfflineError: true): Promise<Manifest|null>;
   private async fetchLatestManifest(ignoreOfflineError = false): Promise<Manifest|null> {
     const res =
-        await this.safeFetch(this.adapter.newRequest('ngsw.json?ngsw-cache-bust=' + Math.random())); // TODO make init optional
+        await this.safeFetch(this.adapter.newRequest('ngsw.json?ngsw-cache-bust=' + Math.random()));
     if (!res.ok) {
       if (res.status === 404) {
         await this.deleteAllCaches();
