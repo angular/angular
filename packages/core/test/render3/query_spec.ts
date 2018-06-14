@@ -7,12 +7,12 @@
  */
 
 import {NgForOfContext} from '@angular/common';
-import {TemplateRef, ViewContainerRef} from '@angular/core';
+import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {EventEmitter} from '../..';
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
 
@@ -1364,5 +1364,69 @@ describe('query', () => {
       expect(t.html).toEqual('');
       expect((queryInstance !.changes as EventEmitter<any>).closed).toBeTruthy();
     });
+  });
+
+  describe('content', () => {
+
+    // https://stackblitz.com/edit/angular-wlenwd?file=src%2Fapp%2Fapp.component.ts
+    it('should support view and content queries matching the same element', () => {
+      let withContentComponentInstance: WithContentComponent;
+
+      class WithContentComponent {
+        // @ContentChildren('foo') foos;
+        foos: QueryList<ElementRef>;
+
+        static ngComponentDef = defineComponent({
+          type: WithContentComponent,
+          selectors: [['with-content']],
+          factory: () => {
+            return [new WithContentComponent(), query(null, ['foo'], true, QUERY_READ_FROM_NODE)];
+          },
+          template: (rf: RenderFlags, ctx: WithContentComponent) => {
+            // intentionally left empty, don't need anything for this test
+          },
+          hostBindings: function ContentQueryComponent_HostBindings(
+              dirIndex: number, elIndex: number) {
+            let tmp: any;
+            withContentComponentInstance = loadDirective<any[]>(dirIndex)[0];
+            queryRefresh(tmp = loadDirective<any[]>(dirIndex)[1]) &&
+                (withContentComponentInstance.foos = tmp as QueryList<any>);
+          },
+        });
+      }
+
+      /**
+       * <with-content>
+       *   <div #foo></div>
+       * </with-content>
+       * <div id="after" #bar></div>
+       * class Cmpt {
+       *  @ViewChildren('foo, bar') foos;
+       * }
+       */
+      const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
+        let tmp: any;
+        if (rf & RenderFlags.Create) {
+          query(0, ['foo', 'bar'], true, QUERY_READ_FROM_NODE);
+          elementStart(1, 'with-content');
+          { element(2, 'div', null, ['foo', '']); }
+          elementEnd();
+          element(4, 'div', ['id', 'after'], ['bar', '']);
+        }
+        if (rf & RenderFlags.Update) {
+          queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.foos = tmp as QueryList<any>);
+        }
+      }, [WithContentComponent]);
+
+      const fixture = new ComponentFixture(AppComponent);
+      const viewQList = fixture.component.foos;
+
+      expect(viewQList.length).toBe(2);
+      expect(withContentComponentInstance !.foos.length).toBe(1);
+      expect(viewQList.first.nativeElement)
+          .toBe(withContentComponentInstance !.foos.first.nativeElement);
+      expect(viewQList.last.nativeElement.id).toBe('after');
+    });
+
   });
 });
