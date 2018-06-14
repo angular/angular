@@ -24,9 +24,7 @@ import {MockFilesystem} from '../testing/mock';
           test: true,
         },
         index: '/index.html',
-        requestOptions: {
-          credentials: 'omit'
-        },
+        requestOptions: {credentials: 'omit'},
         assetGroups: [{
           name: 'test',
           resources: {

@@ -291,9 +291,7 @@ export class ConfigBuilder {
       configVersion: 1,
       index: '/index.html', assetGroups,
       navigationUrls: [], hashTable,
-      requestOptions: {
-        credentials: 'omit'
-      }
+      requestOptions: {credentials: 'omit'}
     };
   }
 }

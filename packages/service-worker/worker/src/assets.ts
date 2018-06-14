@@ -52,8 +52,9 @@ export abstract class AssetGroup {
 
   constructor(
       protected scope: ServiceWorkerGlobalScope, protected adapter: Adapter,
-      protected idle: IdleScheduler, protected config: AssetGroupConfig, protected manifest: Manifest,
-      protected hashes: Map<string, string>, protected db: Database, protected prefix: string) {
+      protected idle: IdleScheduler, protected config: AssetGroupConfig,
+      protected manifest: Manifest, protected hashes: Map<string, string>, protected db: Database,
+      protected prefix: string) {
     this.name = config.name;
     // Patterns in the config are regular expressions disguised as strings. Breathe life into them.
     this.patterns = this.config.patterns.map(pattern => new RegExp(pattern));
@@ -145,7 +146,8 @@ export abstract class AssetGroup {
       // No already-cached response exists, so attempt a fetch/cache operation. The original request
       // may specify things like credential inclusion, but for assets these are not honored in order
       // to avoid issues with opaque responses. The SW requests the data itself.
-      const res = await this.fetchAndCacheOnce(this.adapter.newRequest(req.url, this.manifest.requestOptions));
+      const res = await this.fetchAndCacheOnce(
+          this.adapter.newRequest(req.url, this.manifest.requestOptions));
 
       // If this is successful, the response needs to be cloned as it might be used to respond to
       // multiple fetch operations at the same time.
@@ -351,7 +353,8 @@ export abstract class AssetGroup {
       }
 
       // Unwrap the redirect directly.
-      return this.fetchFromNetwork(this.adapter.newRequest(res.url, this.manifest.requestOptions), redirectLimit - 1);
+      return this.fetchFromNetwork(
+          this.adapter.newRequest(res.url, this.manifest.requestOptions), redirectLimit - 1);
     }
 
     return res;
@@ -405,7 +408,8 @@ export abstract class AssetGroup {
         // data, or because the version on the server really doesn't match. A cache-busting
         // request will differentiate these two situations.
         // TODO: handle case where the URL has parameters already (unlikely for assets).
-        const cacheBustReq = this.adapter.newRequest(this.cacheBust(req.url), this.manifest.requestOptions);
+        const cacheBustReq =
+            this.adapter.newRequest(this.cacheBust(req.url), this.manifest.requestOptions);
         const cacheBustedResult = await this.safeFetch(cacheBustReq);
 
         // If the response was unsuccessful, there's nothing more that can be done.

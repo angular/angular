@@ -71,10 +71,12 @@ export class AppVersion implements UpdateSource {
       switch (config.installMode) {
         case 'prefetch':
           return new PrefetchAssetGroup(
-              this.scope, this.adapter, this.idle, config, this.manifest, this.hashTable, this.database, prefix);
+              this.scope, this.adapter, this.idle, config, this.manifest, this.hashTable,
+              this.database, prefix);
         case 'lazy':
           return new LazyAssetGroup(
-              this.scope, this.adapter, this.idle, config, this.manifest, this.hashTable, this.database, prefix);
+              this.scope, this.adapter, this.idle, config, this.manifest, this.hashTable,
+              this.database, prefix);
       }
     });
 
@@ -167,7 +169,8 @@ export class AppVersion implements UpdateSource {
     if (req.url !== this.manifest.index && this.isNavigationRequest(req)) {
       // This was a navigation request. Re-enter `handleFetch` with a request for
       // the URL.
-      return this.handleFetch(this.adapter.newRequest(this.manifest.index, this.manifest.requestOptions), context);
+      return this.handleFetch(
+          this.adapter.newRequest(this.manifest.index, this.manifest.requestOptions), context);
     }
 
     return null;

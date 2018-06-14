@@ -17,7 +17,9 @@ import {Database, NotFound, Table} from './database';
 export class CacheDatabase implements Database {
   private tables = new Map<string, Promise<CacheTable>>();
 
-  constructor(private scope: ServiceWorkerGlobalScope, private adapter: Adapter, private requestOptions?: RequestInit) {}
+  constructor(
+      private scope: ServiceWorkerGlobalScope, private adapter: Adapter,
+      private requestOptions?: RequestInit) {}
 
   'delete'(name: string): Promise<boolean> {
     if (this.tables.has(name)) {
@@ -32,8 +34,9 @@ export class CacheDatabase implements Database {
 
   open(name: string): Promise<Table> {
     if (!this.tables.has(name)) {
-      const table = this.scope.caches.open(`ngsw:db:${name}`)
-                        .then(cache => new CacheTable(name, cache, this.adapter, this.requestOptions));
+      const table =
+          this.scope.caches.open(`ngsw:db:${name}`)
+              .then(cache => new CacheTable(name, cache, this.adapter, this.requestOptions));
       this.tables.set(name, table);
     }
     return this.tables.get(name) !;
@@ -44,9 +47,13 @@ export class CacheDatabase implements Database {
  * A `Table` backed by a `Cache`.
  */
 export class CacheTable implements Table {
-  constructor(readonly table: string, private cache: Cache, private adapter: Adapter, private requestOptions?: RequestInit) {}
+  constructor(
+      readonly table: string, private cache: Cache, private adapter: Adapter,
+      private requestOptions?: RequestInit) {}
 
-  private request(key: string): Request { return this.adapter.newRequest('/' + key, this.requestOptions); }
+  private request(key: string): Request {
+    return this.adapter.newRequest('/' + key, this.requestOptions);
+  }
 
   'delete'(key: string): Promise<boolean> { return this.cache.delete(this.request(key)); }
 
