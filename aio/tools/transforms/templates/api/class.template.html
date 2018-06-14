@@ -9,8 +9,8 @@
 {% block details %}
   {% block additional %}{% endblock %}
   {% include "includes/description.html" %}
-  {$ memberHelpers.renderProperties(doc.staticProperties, 'static-properties', 'static-property', 'Static Properties') $}
-  {$ memberHelpers.renderMethodDetails(versionInfo, doc.staticMethods, 'static-methods', 'static-method', 'Static Methods') $}
+  {$ memberHelpers.renderProperties(doc.staticProperties, 'static-properties', 'static-property', 'Static properties') $}
+  {$ memberHelpers.renderMethodDetails(versionInfo, doc.staticMethods, 'static-methods', 'static-method', 'Static methods') $}
   {% if doc.constructorDoc %}
   <h2>Constructor</h2>
   {$ memberHelpers.renderMethodDetail(versionInfo, doc.constructorDoc, 'constructor') $}{% endif %}
