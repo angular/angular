@@ -40,12 +40,12 @@
 
 {%- macro renderOverloadInfo(overload, cssClass, method) -%}
 
-<code-example language="ts" hideCopy="true" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
-
 {% if overload.shortDescription and (overload.shortDescription != method.shortDescription) %}
 <div class="short-description">
   {$ overload.shortDescription | marked $}
 </div>{% endif %}
+
+<code-example language="ts" hideCopy="true" linenums="false" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
 
 <h4 class="no-anchor">Parameters</h4>
 {$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter') $}
