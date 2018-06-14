@@ -33,11 +33,11 @@ h4 {
   color: #eee;
   max-height: 120px;
   min-width: 120px;
-  background-color: #607D8B;
+  background-color: #607d8b;
   border-radius: 2px;
 }
 .module:hover {
-  background-color: #EEE;
+  background-color: #eee;
   cursor: pointer;
   color: #607d8b;
 }

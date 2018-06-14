@@ -25,16 +25,11 @@ The Angular service worker's behavior follows that design goal:
 * Updates happen in the background, relatively quickly after changes are published. The previous version of the application is served until an update is installed and ready.
 * The service worker conserves bandwidth when possible. Resources are only downloaded if they've changed.
 
-To support these behaviors, the Angular service worker loads a *manifest* file from the server. The manifest describes the resources to cache and includes hashes of every file's contents. When an update to the application is deployed, the contents of the manifest change, informing the service worker that a new version of the application should be downloaded and cached. This manifest is generated from a user-provided configuration file called `ngsw-config.json`, by using a build tool such as the Angular CLI.
+To support these behaviors, the Angular service worker loads a *manifest* file from the server. The manifest describes the resources to cache and includes hashes of every file's contents. When an update to the application is deployed, the contents of the manifest change, informing the service worker that a new version of the application should be downloaded and cached. This manifest is generated from a CLI-generated configuration file called `ngsw-config.json`.
 
 Installing the Angular service worker is as simple as including an `NgModule`. In addition to registering the Angular service worker with the browser, this also makes a few services available for injection which interact with the service worker and can be used to control it. For example, an application can ask to be notified when a new update becomes available, or an application can ask the service worker to check the server for available updates.
 
 ## Prerequisites
-
-To use Angular service workers, you must have the following Angular and CLI versions:
-
-* Angular 5.0.0 or later.
-* Angular CLI 1.6.0 or later.
 
 Your application must run in a web browser that supports service workers. Currently, the latest versions of Chrome and Firefox are supported. To learn about other browsers that are service worker ready, see the [Can I Use](http://caniuse.com/#feat=serviceworkers) page.
 

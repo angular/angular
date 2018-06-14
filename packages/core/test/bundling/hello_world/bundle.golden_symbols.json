@@ -1,21 +1,18 @@
 [
   {
-    "name": "Action"
+    "name": "ACTIVE_INDEX"
   },
   {
-    "name": "AnimationFrameAction"
-  },
-  {
-    "name": "AsapAction"
-  },
-  {
-    "name": "AsyncAction"
-  },
-  {
-    "name": "AsyncScheduler"
+    "name": "BINDING_INDEX"
   },
   {
     "name": "CLEAN_PROMISE"
+  },
+  {
+    "name": "CONTEXT"
+  },
+  {
+    "name": "DIRECTIVES"
   },
   {
     "name": "EMPTY$2"
@@ -24,13 +21,28 @@
     "name": "EMPTY_RENDERER_TYPE_ID"
   },
   {
+    "name": "FLAGS"
+  },
+  {
+    "name": "HEADER_FILLER"
+  },
+  {
+    "name": "HEADER_OFFSET"
+  },
+  {
+    "name": "HOST_NODE"
+  },
+  {
     "name": "HelloWorld"
   },
   {
-    "name": "INeedToExistEvenThoughtIAmNotNeeded"
+    "name": "INJECTOR$1"
   },
   {
-    "name": "Immediate"
+    "name": "INeedToExistEvenThoughIAmNotNeeded"
+  },
+  {
+    "name": "NEXT"
   },
   {
     "name": "NG_HOST_SYMBOL"
@@ -39,64 +51,31 @@
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
-    "name": "Observable"
+    "name": "QUERIES"
   },
   {
-    "name": "QueueAction"
+    "name": "RENDERER"
   },
   {
-    "name": "SafeSubscriber"
+    "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
-    "name": "Scheduler"
+    "name": "SANITIZER"
   },
   {
-    "name": "Subscriber"
-  },
-  {
-    "name": "Subscription"
+    "name": "TVIEW"
   },
   {
     "name": "UNDEFINED_RENDERER_TYPE_ID"
   },
   {
-    "name": "UnsubscriptionError"
+    "name": "VIEWS"
   },
   {
-    "name": "__extends$1"
+    "name": "_CLEAN_PROMISE"
   },
   {
-    "name": "__extends$10"
-  },
-  {
-    "name": "__extends$11"
-  },
-  {
-    "name": "__extends$12"
-  },
-  {
-    "name": "__extends$13"
-  },
-  {
-    "name": "__extends$14"
-  },
-  {
-    "name": "__extends$17"
-  },
-  {
-    "name": "__extends$18"
-  },
-  {
-    "name": "__extends$19"
-  },
-  {
-    "name": "__extends$2"
-  },
-  {
-    "name": "__extends$20"
-  },
-  {
-    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+    "name": "_ROOT_DIRECTIVE_INDICES"
   },
   {
     "name": "_renderCompCount"
@@ -120,13 +99,16 @@
     "name": "componentRefresh"
   },
   {
-    "name": "config"
-  },
-  {
     "name": "createLNode"
   },
   {
-    "name": "createLView"
+    "name": "createLNodeObject"
+  },
+  {
+    "name": "createLViewData"
+  },
+  {
+    "name": "createRootContext"
   },
   {
     "name": "createTNode"
@@ -135,7 +117,7 @@
     "name": "createTView"
   },
   {
-    "name": "currentView"
+    "name": "createTextNode"
   },
   {
     "name": "defineComponent"
@@ -150,13 +132,7 @@
     "name": "domRendererFactory3"
   },
   {
-    "name": "empty"
-  },
-  {
     "name": "enterView"
-  },
-  {
-    "name": "errorObject"
   },
   {
     "name": "executeHooks"
@@ -168,43 +144,40 @@
     "name": "executeInitHooks"
   },
   {
+    "name": "extractDirectiveDef"
+  },
+  {
+    "name": "extractPipeDef"
+  },
+  {
     "name": "firstTemplatePass"
   },
   {
-    "name": "flattenUnsubscriptionErrors"
+    "name": "getCurrentSanitizer"
   },
   {
     "name": "getDirectiveInstance"
   },
   {
+    "name": "getLViewChild"
+  },
+  {
     "name": "getOrCreateTView"
   },
   {
-    "name": "getPromiseCtor"
+    "name": "getParentLNode"
   },
   {
-    "name": "getSymbolIterator$1"
+    "name": "getRenderFlags"
   },
   {
     "name": "hostElement"
-  },
-  {
-    "name": "hostReportError"
   },
   {
     "name": "initChangeDetectorIfExisting"
   },
   {
     "name": "invertObject"
-  },
-  {
-    "name": "isArray"
-  },
-  {
-    "name": "isFunction"
-  },
-  {
-    "name": "isObject"
   },
   {
     "name": "isProceduralRenderer"
@@ -216,31 +189,16 @@
     "name": "locateHostElement"
   },
   {
-    "name": "nextHandle"
-  },
-  {
-    "name": "noop"
-  },
-  {
-    "name": "observable"
-  },
-  {
-    "name": "pipeFromArray"
-  },
-  {
     "name": "refreshChildComponents"
-  },
-  {
-    "name": "refreshDirectives"
   },
   {
     "name": "refreshDynamicChildren"
   },
   {
-    "name": "renderComponent"
+    "name": "refreshView"
   },
   {
-    "name": "renderComponentOrTemplate"
+    "name": "renderComponent"
   },
   {
     "name": "renderEmbeddedTemplate"
@@ -252,15 +210,6 @@
     "name": "resolveRendererType2"
   },
   {
-    "name": "rootDirectiveIndices"
-  },
-  {
-    "name": "runIfPresent"
-  },
-  {
-    "name": "rxSubscriber"
-  },
-  {
     "name": "setHostBindings"
   },
   {
@@ -270,19 +219,7 @@
     "name": "stringify$1"
   },
   {
-    "name": "tasksByHandle"
-  },
-  {
     "name": "text"
-  },
-  {
-    "name": "toSubscriber"
-  },
-  {
-    "name": "tryCatch"
-  },
-  {
-    "name": "tryCatcher"
   },
   {
     "name": "viewAttached"

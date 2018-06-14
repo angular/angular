@@ -1,6 +1,6 @@
 import { ElementRef } from '@angular/core';
 
-import { getAttrs, getAttrValue, getBoolFromAttribute, boolFromValue } from './attribute-utils';
+import { AttrMap, getAttrs, getAttrValue, getBoolFromAttribute, boolFromValue } from './attribute-utils';
 
 describe('Attribute Utilities', () => {
   let testEl: HTMLElement;
@@ -32,17 +32,17 @@ describe('Attribute Utilities', () => {
   });
 
   describe('getAttrValue', () => {
-    let attrMap: { [index: string]: string };
+    let attrMap: AttrMap;
 
     beforeEach(() => {
       attrMap = getAttrs(testEl);
     });
 
-    it('should return empty string value for attribute "a"', () => {
+    it('should return empty string for attribute "a"', () => {
       expect(getAttrValue(attrMap, 'a')).toBe('');
     });
 
-    it('should return empty string value for attribute "A"', () => {
+    it('should return empty string for attribute "A"', () => {
       expect(getAttrValue(attrMap, 'A')).toBe('');
     });
 
@@ -50,7 +50,7 @@ describe('Attribute Utilities', () => {
       expect(getAttrValue(attrMap, 'b')).toBe('true');
     });
 
-    it('should return empty string value for attribute "d-E"', () => {
+    it('should return empty string for attribute "d-E"', () => {
       expect(getAttrValue(attrMap, 'd-E')).toBe('');
     });
 
@@ -68,12 +68,10 @@ describe('Attribute Utilities', () => {
       expect(getAttrValue(attrMap, ['d-e', 'd'])).toBe('');
     });
 
-    it('should return undefined value for non-existent attribute "x"', () => {
+    it('should return undefined for non-existent attributes', () => {
       expect(getAttrValue(attrMap, 'x')).toBeUndefined();
-    });
-
-    it('should return undefined if no argument', () => {
-      expect(getAttrValue(attrMap)).toBeUndefined();
+      expect(getAttrValue(attrMap, '')).toBeUndefined();
+      expect(getAttrValue(attrMap, ['', 'x'])).toBeUndefined();
     });
 
   });

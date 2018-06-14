@@ -52,8 +52,7 @@ export class BuildCleaner {
   protected removeDir(dir: string) {
     try {
       if (shell.test('-d', dir)) {
-        // Undocumented signature (see https://github.com/shelljs/shelljs/pull/663).
-        (shell as any).chmod('-R', 'a+w', dir);
+        shell.chmod('-R', 'a+w', dir);
         shell.rm('-rf', dir);
       }
     } catch (err) {

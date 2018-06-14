@@ -15,11 +15,17 @@ import * as ts from 'typescript';
 import {DiagnosticTemplateInfo} from '../../src/diagnostics/expression_diagnostics';
 import {getClassFromStaticSymbol, getClassMembers, getPipesTable, getSymbolQuery} from '../../src/diagnostics/typescript_symbols';
 import {Directory, MockAotContext} from '../mocks';
+import {isInBazel, setup} from '../test_support';
 
-function calcRootPath() {
-  const moduleFilename = module.filename.replace(/\\/g, '/');
-  const distIndex = moduleFilename.indexOf('/dist/all');
-  return moduleFilename.substr(0, distIndex);
+function calculateAngularPath() {
+  if (isInBazel()) {
+    const support = setup();
+    return path.join(support.basePath, 'node_modules/@angular/*');
+  } else {
+    const moduleFilename = module.filename.replace(/\\/g, '/');
+    const distIndex = moduleFilename.indexOf('/dist/all');
+    return moduleFilename.substr(0, distIndex) + '/packages/*';
+  }
 }
 
 const realFiles = new Map<string, string>();
@@ -43,7 +49,7 @@ export class MockLanguageServiceHost implements ts.LanguageServiceHost {
       strictNullChecks: true,
       baseUrl: currentDirectory,
       lib: ['lib.es2015.d.ts', 'lib.dom.d.ts'],
-      paths: {'@angular/*': [calcRootPath() + '/packages/*']}
+      paths: {'@angular/*': [calculateAngularPath()]}
     };
     this.context = new MockAotContext(currentDirectory, files);
   }

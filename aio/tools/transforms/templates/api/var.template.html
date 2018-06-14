@@ -2,7 +2,7 @@
 
 {% block overview %}
   <code-example language="ts" hideCopy="true" class="no-box api-heading">
-  const {$ doc.name $}: {$ doc.symbolTypeName or 'any' $};
+  const {$ doc.name $}: {$ (doc.type | escape) or 'any' $};
   </code-example>
 {% endblock %}
 

@@ -1,10 +1,13 @@
 # Supported Public API Surface of Angular
 
-Our SemVer, timed-release cycle and deprecation policy currently applies to these npm packages:
+Our semver, timed-release cycle and deprecation policy currently applies to these npm packages:
 
 - `@angular/animations`
 - `@angular/core`
 - `@angular/common`
+- `@angular/elements`
+- `@angular/forms`
+- `@angular/http`
 - `@angular/platform-browser`
 - `@angular/platform-browser-dynamic`
 - `@angular/platform-server`
@@ -12,11 +15,12 @@ Our SemVer, timed-release cycle and deprecation policy currently applies to thes
 - `@angular/platform-webworker-dynamic`
 - `@angular/upgrade`
 - `@angular/router`
-- `@angular/forms`
-- `@angular/http`
+- `@angular/service-worker`
 
 
 One intentional omission from this list is `@angular/compiler`, which is currently considered a low level api and is subject to internal changes. These changes will not affect any applications or libraries using the higher-level apis (the command line interface or JIT compilation via `@angular/platform-browser-dynamic`). Only very specific use-cases require direct access to the compiler API (mostly tooling integration for IDEs, linters, etc). If you are working on this kind of integration, please reach out to us first.
+
+Package `@angular/bazel` is currently an Angular Labs project and not covered by the public API guarantees.
 
 Additionally only the command line usage (not direct use of APIs) of `@angular/compiler-cli` is covered.
 
@@ -31,7 +35,7 @@ Within the supported packages, we provide guarantees for:
 
 We explicitly don't consider the following to be our public API surface:
 
-- any file/import paths within our package except for the `/`, `/testing` and `/bundles/*`
+- any file/import paths within our package except for the `/`, `/testing` and `/bundles/*` and other documented package entry-points.
 - constructors of injectable classes (services and directives) - please use DI to obtain instances of these classes
 - any class members or symbols marked as `private`, or prefixed with underscore (`_`) and [barred latin o](https://en.wikipedia.org/wiki/%C6%9F) (`ɵ`)
 - extending any of our classes unless the support for this is specifically documented in the API docs

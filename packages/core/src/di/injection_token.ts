@@ -36,23 +36,21 @@ import {InjectableDef, defineInjectable} from './defs';
  * overrides the above behavior and marks the token as belonging to a particular `@NgModule`. As
  * mentioned above, `'root'` is the default value for `providedIn`.
  *
- * ### Example
- *
- * #### Tree-shakeable InjectionToken
- *
- * {@example core/di/ts/injector_spec.ts region='ShakeableInjectionToken'}
- *
- * #### Plain InjectionToken
+ * @usageNotes
+ * ### Basic Example
  *
  * {@example core/di/ts/injector_spec.ts region='InjectionToken'}
  *
- * @stable
+ * ### Tree-shakeable Example
+ *
+ * {@example core/di/ts/injector_spec.ts region='ShakeableInjectionToken'}
+ *
  */
 export class InjectionToken<T> {
   /** @internal */
   readonly ngMetadataName = 'InjectionToken';
 
-  readonly ngInjectableDef: InjectableDef<T>|undefined;
+  readonly ngInjectableDef: never|undefined;
 
   constructor(protected _desc: string, options?: {
     providedIn?: Type<any>| 'root' | null,
@@ -71,6 +69,4 @@ export class InjectionToken<T> {
   toString(): string { return `InjectionToken ${this._desc}`; }
 }
 
-export interface InjectableDefToken<T> extends InjectionToken<T> {
-  ngInjectableDef: InjectableDef<T>;
-}
+export interface InjectableDefToken<T> extends InjectionToken<T> { ngInjectableDef: never; }

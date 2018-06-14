@@ -18,7 +18,7 @@ import {ComponentFactoryResolver} from './component_factory_resolver';
  * `NgModuleRef` provides access to the NgModule Instance as well other objects related to this
  * NgModule Instance.
  *
- * @stable
+ *
  */
 export abstract class NgModuleRef<T> {
   /**

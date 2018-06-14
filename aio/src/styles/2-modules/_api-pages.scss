@@ -1,4 +1,4 @@
-.page-actions {
+.github-links {
   float: right;
   .material-icons {
     border-radius: 4px;
@@ -30,10 +30,30 @@
     }
   }
 
-  .method-table {
+  .method-table, .option-table {
+    th {
+      display: flex;
+      align-items: center;
+
+      h3 {
+        flex: 1;
+      }
+
+      .github-links {
+        a {
+          color: $mediumgray;
+          .material-icons:hover {
+            background: none;
+            color: $blue;
+          }
+        }
+      }
+    }
+
     h3 {
       margin: 6px 0;
       font-weight: bold;
+      clear: left;
     }
 
     h4 {
@@ -86,10 +106,6 @@
       }
     }
 }
-
-  .api-section aio-code {
-    background-color: rgba(241, 241, 241, 0.2);
-  }
 
   .from-constructor, .read-only-property {
     font-style: italic;

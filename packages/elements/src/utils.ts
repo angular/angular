@@ -21,7 +21,7 @@ export const scheduler = {
    * Returns a function that when executed will cancel the scheduled function.
    */
   schedule(taskFn: () => void, delay: number): () =>
-      void{const id = window.setTimeout(taskFn, delay); return () => window.clearTimeout(id);},
+      void{const id = setTimeout(taskFn, delay); return () => clearTimeout(id);},
 
   /**
    * Schedule a callback to be called before the next render.
@@ -32,6 +32,11 @@ export const scheduler = {
   scheduleBeforeRender(taskFn: () => void): () => void{
     // TODO(gkalpak): Implement a better way of accessing `requestAnimationFrame()`
     //                (e.g. accounting for vendor prefix, SSR-compatibility, etc).
+    if (typeof window === 'undefined') {
+      // For SSR just schedule immediately.
+      return scheduler.schedule(taskFn, 0);
+    }
+
     if (typeof window.requestAnimationFrame === 'undefined') {
       const frameMs = 16;
       return scheduler.schedule(taskFn, frameMs);

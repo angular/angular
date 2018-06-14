@@ -11,11 +11,11 @@ import {Form} from './form_interface';
 
 
 /**
- * A directive that contains multiple {@link NgControl}s.
+ * A directive that contains multiple `NgControl`s.
  *
  * Only used by the forms module.
  *
- * @stable
+ *
  */
 export abstract class ControlContainer extends AbstractControlDirective {
   name: string;

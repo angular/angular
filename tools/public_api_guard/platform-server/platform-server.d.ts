@@ -45,5 +45,4 @@ export declare class ServerModule {
 export declare class ServerTransferStateModule {
 }
 
-/** @stable */
 export declare const VERSION: Version;

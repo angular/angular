@@ -28,7 +28,7 @@ const IGNORE = {
 
 const USE_VALUE = 'useValue';
 const PROVIDE = 'provide';
-const REFERENCE_SET = new Set([USE_VALUE, 'useFactory', 'data']);
+const REFERENCE_SET = new Set([USE_VALUE, 'useFactory', 'data', 'id', 'loadChildren']);
 const TYPEGUARD_POSTFIX = 'TypeGuard';
 const USE_IF = 'UseIf';
 
@@ -163,7 +163,9 @@ export class StaticReflector implements CompileReflector {
       let ownAnnotations: any[] = [];
       if (classMetadata['decorators']) {
         ownAnnotations = simplify(type, classMetadata['decorators']);
-        annotations.push(...ownAnnotations);
+        if (ownAnnotations) {
+          annotations.push(...ownAnnotations);
+        }
       }
       if (parentType && !this.summaryResolver.isLibraryFile(type.filePath) &&
           this.summaryResolver.isLibraryFile(parentType.filePath)) {

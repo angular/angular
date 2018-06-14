@@ -65,6 +65,11 @@ describe('NgCompilerHost', () => {
           .toBe('@angular/core');
     });
 
+    it('should allow an import o a package whose name contains dot (e.g. @angular.io)', () => {
+      expect(host.fileNameToModuleName('/tmp/node_modules/@angular.io/core.d.ts', '/tmp/main.ts'))
+          .toBe('@angular.io/core');
+    });
+
     it('should use a package import when accessing a package from another package', () => {
       expect(host.fileNameToModuleName(
                  '/tmp/node_modules/mod1/index.d.ts', '/tmp/node_modules/mod2/index.d.ts'))
@@ -141,7 +146,7 @@ describe('NgCompilerHost', () => {
           .toBe('/tmp/src/a/child.d.ts');
     });
 
-    it('should allow to skip the containg file for package imports', () => {
+    it('should allow to skip the containing file for package imports', () => {
       const host =
           createHost({files: {'tmp': {'node_modules': {'@core': {'index.d.ts': dummyModule}}}}});
       expect(host.moduleNameToFileName('@core/index')).toBe('/tmp/node_modules/@core/index.d.ts');

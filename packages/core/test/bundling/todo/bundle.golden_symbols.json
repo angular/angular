@@ -1,0 +1,563 @@
+[
+  {
+    "name": "ACTIVE_INDEX"
+  },
+  {
+    "name": "BINDING_INDEX"
+  },
+  {
+    "name": "BLOOM_SIZE"
+  },
+  {
+    "name": "CIRCULAR$2"
+  },
+  {
+    "name": "CLEANUP"
+  },
+  {
+    "name": "CLEAN_PROMISE"
+  },
+  {
+    "name": "CONTEXT"
+  },
+  {
+    "name": "CommonModule"
+  },
+  {
+    "name": "DIRECTIVES"
+  },
+  {
+    "name": "EMPTY$2"
+  },
+  {
+    "name": "EMPTY_RENDERER_TYPE_ID"
+  },
+  {
+    "name": "FLAGS"
+  },
+  {
+    "name": "HEADER_FILLER"
+  },
+  {
+    "name": "HEADER_OFFSET"
+  },
+  {
+    "name": "HOST_NODE"
+  },
+  {
+    "name": "INJECTOR$1"
+  },
+  {
+    "name": "NEXT"
+  },
+  {
+    "name": "NG_ELEMENT_ID"
+  },
+  {
+    "name": "NG_HOST_SYMBOL"
+  },
+  {
+    "name": "NG_PROJECT_AS_ATTR_NAME"
+  },
+  {
+    "name": "NO_CHANGE"
+  },
+  {
+    "name": "NgForOf"
+  },
+  {
+    "name": "NgForOfContext"
+  },
+  {
+    "name": "NgIf"
+  },
+  {
+    "name": "NgIfContext"
+  },
+  {
+    "name": "PARENT"
+  },
+  {
+    "name": "QUERIES"
+  },
+  {
+    "name": "RENDERER"
+  },
+  {
+    "name": "ROOT_DIRECTIVE_INDICES"
+  },
+  {
+    "name": "RecordViewTuple"
+  },
+  {
+    "name": "SANITIZER"
+  },
+  {
+    "name": "TAIL"
+  },
+  {
+    "name": "TVIEW"
+  },
+  {
+    "name": "ToDoAppComponent"
+  },
+  {
+    "name": "ToDoAppModule"
+  },
+  {
+    "name": "Todo"
+  },
+  {
+    "name": "TodoStore"
+  },
+  {
+    "name": "UNDEFINED_RENDERER_TYPE_ID"
+  },
+  {
+    "name": "VIEWS"
+  },
+  {
+    "name": "_CLEAN_PROMISE"
+  },
+  {
+    "name": "_ROOT_DIRECTIVE_INDICES"
+  },
+  {
+    "name": "_c0"
+  },
+  {
+    "name": "_c1"
+  },
+  {
+    "name": "_c10"
+  },
+  {
+    "name": "_c11"
+  },
+  {
+    "name": "_c12"
+  },
+  {
+    "name": "_c13"
+  },
+  {
+    "name": "_c14"
+  },
+  {
+    "name": "_c15"
+  },
+  {
+    "name": "_c16"
+  },
+  {
+    "name": "_c2"
+  },
+  {
+    "name": "_c3"
+  },
+  {
+    "name": "_c4"
+  },
+  {
+    "name": "_c5"
+  },
+  {
+    "name": "_c6"
+  },
+  {
+    "name": "_c7"
+  },
+  {
+    "name": "_c8"
+  },
+  {
+    "name": "_c9"
+  },
+  {
+    "name": "_currentInjector"
+  },
+  {
+    "name": "_currentNamespace"
+  },
+  {
+    "name": "_devMode"
+  },
+  {
+    "name": "_getComponentHostLElementNode"
+  },
+  {
+    "name": "_renderCompCount"
+  },
+  {
+    "name": "addComponentLogic"
+  },
+  {
+    "name": "addToViewTree"
+  },
+  {
+    "name": "appendChild"
+  },
+  {
+    "name": "assertTemplate"
+  },
+  {
+    "name": "baseDirectiveCreate"
+  },
+  {
+    "name": "bind"
+  },
+  {
+    "name": "bindingUpdated"
+  },
+  {
+    "name": "bloomFindPossibleInjector"
+  },
+  {
+    "name": "bloomHashBit"
+  },
+  {
+    "name": "cacheMatchingDirectivesForNode"
+  },
+  {
+    "name": "cacheMatchingLocalNames"
+  },
+  {
+    "name": "callHooks"
+  },
+  {
+    "name": "canInsertNativeNode"
+  },
+  {
+    "name": "checkNoChangesMode"
+  },
+  {
+    "name": "componentRefresh"
+  },
+  {
+    "name": "container"
+  },
+  {
+    "name": "createDirectivesAndLocals"
+  },
+  {
+    "name": "createLContainer"
+  },
+  {
+    "name": "createLNode"
+  },
+  {
+    "name": "createLNodeObject"
+  },
+  {
+    "name": "createLViewData"
+  },
+  {
+    "name": "createOutput"
+  },
+  {
+    "name": "createRootContext"
+  },
+  {
+    "name": "createTNode"
+  },
+  {
+    "name": "createTView"
+  },
+  {
+    "name": "createTextNode"
+  },
+  {
+    "name": "defineComponent"
+  },
+  {
+    "name": "defineInjectable"
+  },
+  {
+    "name": "defineInjector"
+  },
+  {
+    "name": "detectChangesInternal"
+  },
+  {
+    "name": "directiveCreate"
+  },
+  {
+    "name": "directiveInject"
+  },
+  {
+    "name": "domRendererFactory3"
+  },
+  {
+    "name": "elementClassNamed"
+  },
+  {
+    "name": "elementEnd"
+  },
+  {
+    "name": "elementProperty"
+  },
+  {
+    "name": "elementStart"
+  },
+  {
+    "name": "enterView"
+  },
+  {
+    "name": "executeHooks"
+  },
+  {
+    "name": "executeInitAndContentHooks"
+  },
+  {
+    "name": "executeInitHooks"
+  },
+  {
+    "name": "extractDirectiveDef"
+  },
+  {
+    "name": "extractPipeDef"
+  },
+  {
+    "name": "findAttrIndexInNode"
+  },
+  {
+    "name": "findDirectiveMatches"
+  },
+  {
+    "name": "firstTemplatePass"
+  },
+  {
+    "name": "generateInitialInputs"
+  },
+  {
+    "name": "generatePropertyAliases"
+  },
+  {
+    "name": "getCleanup"
+  },
+  {
+    "name": "getCurrentSanitizer"
+  },
+  {
+    "name": "getDirectiveInstance"
+  },
+  {
+    "name": "getLViewChild"
+  },
+  {
+    "name": "getOrCreateInjectable"
+  },
+  {
+    "name": "getOrCreateNodeInjector"
+  },
+  {
+    "name": "getOrCreateNodeInjectorForNode"
+  },
+  {
+    "name": "getOrCreateTView"
+  },
+  {
+    "name": "getParentLNode"
+  },
+  {
+    "name": "getPreviousOrParentNode"
+  },
+  {
+    "name": "getRenderFlags"
+  },
+  {
+    "name": "getRootView"
+  },
+  {
+    "name": "getTViewCleanup"
+  },
+  {
+    "name": "getTypeNameForDebugging$1"
+  },
+  {
+    "name": "hostElement"
+  },
+  {
+    "name": "initBindings"
+  },
+  {
+    "name": "initChangeDetectorIfExisting"
+  },
+  {
+    "name": "inject"
+  },
+  {
+    "name": "instantiateDirectivesDirectly"
+  },
+  {
+    "name": "interpolation1"
+  },
+  {
+    "name": "invertObject"
+  },
+  {
+    "name": "isCssClassMatching"
+  },
+  {
+    "name": "isDevMode"
+  },
+  {
+    "name": "isDifferent"
+  },
+  {
+    "name": "isNodeMatchingSelector"
+  },
+  {
+    "name": "isNodeMatchingSelectorList"
+  },
+  {
+    "name": "isPositive"
+  },
+  {
+    "name": "isProceduralRenderer"
+  },
+  {
+    "name": "leaveView"
+  },
+  {
+    "name": "listener"
+  },
+  {
+    "name": "load"
+  },
+  {
+    "name": "loadInternal"
+  },
+  {
+    "name": "locateHostElement"
+  },
+  {
+    "name": "markDirtyIfOnPush"
+  },
+  {
+    "name": "markViewDirty"
+  },
+  {
+    "name": "namespaceHTML"
+  },
+  {
+    "name": "queueComponentIndexForCheck"
+  },
+  {
+    "name": "queueContentHooks"
+  },
+  {
+    "name": "queueDestroyHooks"
+  },
+  {
+    "name": "queueHostBindingForCheck"
+  },
+  {
+    "name": "queueInitHooks"
+  },
+  {
+    "name": "queueLifecycleHooks"
+  },
+  {
+    "name": "queueViewHooks"
+  },
+  {
+    "name": "refreshChildComponents"
+  },
+  {
+    "name": "refreshDynamicChildren"
+  },
+  {
+    "name": "refreshView"
+  },
+  {
+    "name": "renderComponent"
+  },
+  {
+    "name": "renderComponentOrTemplate"
+  },
+  {
+    "name": "renderEmbeddedTemplate"
+  },
+  {
+    "name": "resetApplicationState"
+  },
+  {
+    "name": "resolveDirective"
+  },
+  {
+    "name": "resolveRendererType2"
+  },
+  {
+    "name": "sameHostView"
+  },
+  {
+    "name": "saveNameToExportMap"
+  },
+  {
+    "name": "saveResolvedLocalsInData"
+  },
+  {
+    "name": "scheduleTick"
+  },
+  {
+    "name": "searchMatchesQueuedForCreation"
+  },
+  {
+    "name": "setCurrentInjector"
+  },
+  {
+    "name": "setHostBindings"
+  },
+  {
+    "name": "setInputsForProperty"
+  },
+  {
+    "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setUpAttributes"
+  },
+  {
+    "name": "storeCleanupFn"
+  },
+  {
+    "name": "storeCleanupWithContext"
+  },
+  {
+    "name": "stringify"
+  },
+  {
+    "name": "stringify$1"
+  },
+  {
+    "name": "text"
+  },
+  {
+    "name": "textBinding"
+  },
+  {
+    "name": "throwCyclicDependencyError"
+  },
+  {
+    "name": "throwErrorIfNoChangesMode"
+  },
+  {
+    "name": "throwMultipleComponentError"
+  },
+  {
+    "name": "tickRootContext"
+  },
+  {
+    "name": "viewAttached"
+  },
+  {
+    "name": "wrapListenerWithDirtyAndDefault"
+  },
+  {
+    "name": "wrapListenerWithDirtyLogic"
+  },
+  {
+    "name": "ɵ0"
+  }
+]

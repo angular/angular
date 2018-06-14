@@ -16,7 +16,7 @@ import {RouterTestingModule} from '@angular/router/testing';
 
 (function() {
   // these tests are only mean't to be run within the DOM (for now)
-  if (typeof Element == 'undefined') return;
+  if (isNode) return;
 
   describe('Animation Router Tests', function() {
     function getLog(): MockAnimationPlayer[] {

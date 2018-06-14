@@ -96,7 +96,7 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  * <ng-template #elseBlock>...</ng-template>
  * ```
  *
- * @stable
+ *
  */
 @Directive({selector: '[ngIf]'})
 export class NgIf {
@@ -158,9 +158,6 @@ export class NgIf {
   public static ngIfUseIfTypeGuard: void;
 }
 
-/**
- * @stable
- */
 export class NgIfContext {
   public $implicit: any = null;
   public ngIf: any = null;

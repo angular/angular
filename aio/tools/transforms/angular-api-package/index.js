@@ -43,11 +43,18 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   })
 
   /**
+   * These are the doc types that are contained within other docs
+   */
+  .factory(function API_CONTAINED_DOC_TYPES() {
+    return ['member', 'function-overload', 'get-accessor-info', 'set-accessor-info', 'parameter'];
+  })
+
+  /**
    * These are the doc types that are API docs, including ones that will be merged into container docs,
    * such as members and overloads.
    */
-  .factory(function API_DOC_TYPES(API_DOC_TYPES_TO_RENDER) {
-    return API_DOC_TYPES_TO_RENDER.concat(['member', 'function-overload']);
+  .factory(function API_DOC_TYPES(API_DOC_TYPES_TO_RENDER, API_CONTAINED_DOC_TYPES) {
+    return API_DOC_TYPES_TO_RENDER.concat(API_CONTAINED_DOC_TYPES);
   })
 
   // Where do we get the source files?
@@ -112,11 +119,57 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
         parseTagsProcessor.tagDefinitions.concat(getInjectables(requireFolder(__dirname, './tag-defs')));
   })
 
-  .config(function(computeStability, splitDescription, addNotYetDocumentedProperty, EXPORT_DOC_TYPES, API_DOC_TYPES) {
-    computeStability.docTypes = EXPORT_DOC_TYPES;
+  .config(function(computeStability, splitDescription, addNotYetDocumentedProperty, API_DOC_TYPES_TO_RENDER, API_DOC_TYPES) {
+    computeStability.docTypes = API_DOC_TYPES_TO_RENDER;
     // Only split the description on the API docs
     splitDescription.docTypes = API_DOC_TYPES;
     addNotYetDocumentedProperty.docTypes = API_DOC_TYPES;
+  })
+
+  .config(function(mergeDecoratorDocs) {
+    mergeDecoratorDocs.propertiesToMerge = [
+      'shortDescription',
+      'description',
+      'security',
+      'deprecated',
+      'see',
+      'usageNotes',
+    ];
+  })
+
+  .config(function(checkContentRules, EXPORT_DOC_TYPES) {
+    // Min length rules
+    const createMinLengthRule = require('./content-rules/minLength');
+    const paramRuleSet = checkContentRules.docTypeRules['parameter'] = checkContentRules.docTypeRules['parameter'] || {};
+    const paramRules = paramRuleSet['name'] = paramRuleSet['name'] || [];
+    paramRules.push(createMinLengthRule());
+
+    // Heading rules
+    const createNoMarkdownHeadingsRule = require('./content-rules/noMarkdownHeadings');
+    const noMarkdownHeadings = createNoMarkdownHeadingsRule();
+    const allowOnlyLevel3Headings = createNoMarkdownHeadingsRule(1, 2, '4,');
+    const DOC_TYPES_TO_CHECK = EXPORT_DOC_TYPES.concat(['member', 'overload-info']);
+    const PROPS_TO_CHECK = ['description', 'shortDescription'];
+
+    DOC_TYPES_TO_CHECK.forEach(docType => {
+      const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
+      PROPS_TO_CHECK.forEach(prop => {
+        const rules = ruleSet[prop] = ruleSet[prop] || [];
+        rules.push(noMarkdownHeadings);
+      });
+      const rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
+      rules.push(allowOnlyLevel3Headings);
+    });
+  })
+
+  .config(function(filterContainedDocs, API_CONTAINED_DOC_TYPES) {
+    filterContainedDocs.docTypes = API_CONTAINED_DOC_TYPES;
+  })
+
+  .config(function(checkContentRules, API_DOC_TYPES, API_CONTAINED_DOC_TYPES) {
+    addMinLengthRules(checkContentRules);
+    addHeadingRules(checkContentRules, API_DOC_TYPES);
+    addAllowedPropertiesRules(checkContentRules, API_CONTAINED_DOC_TYPES);
   })
 
   .config(function(computePathsProcessor, EXPORT_DOC_TYPES, generateApiListDoc) {
@@ -152,3 +205,45 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     autoLinkCode.docTypes = API_DOC_TYPES;
     autoLinkCode.codeElements = ['code', 'code-example', 'code-pane'];
   });
+
+
+function addMinLengthRules(checkContentRules) {
+  const createMinLengthRule = require('./content-rules/minLength');
+  const paramRuleSet = checkContentRules.docTypeRules['parameter'] = checkContentRules.docTypeRules['parameter'] || {};
+  const paramRules = paramRuleSet['name'] = paramRuleSet['name'] || [];
+  paramRules.push(createMinLengthRule());
+}
+
+function addHeadingRules(checkContentRules, API_DOC_TYPES) {
+  const createNoMarkdownHeadingsRule = require('./content-rules/noMarkdownHeadings');
+  const noMarkdownHeadings = createNoMarkdownHeadingsRule();
+  const allowOnlyLevel3Headings = createNoMarkdownHeadingsRule(1, 2, '4,');
+
+  API_DOC_TYPES.forEach(docType => {
+    let rules;
+    const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
+
+    rules = ruleSet['description'] = ruleSet['description'] || [];
+    rules.push(noMarkdownHeadings);
+
+    rules = ruleSet['shortDescription'] = ruleSet['shortDescription'] || [];
+    rules.push(noMarkdownHeadings);
+
+    rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
+    rules.push(allowOnlyLevel3Headings);
+  });
+}
+
+function addAllowedPropertiesRules(checkContentRules, API_CONTAINED_DOC_TYPES) {
+  API_CONTAINED_DOC_TYPES.forEach(docType => {
+    const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
+
+    const rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
+    rules.push((doc, prop, value) => value && !isMethod(doc) &&
+      `Invalid property: "${prop}" is not allowed on "${doc.docType}" docs.`);
+  });
+}
+
+function isMethod(doc) {
+  return doc.hasOwnProperty('parameters') && !doc.isGetAccessor && !doc.isSetAccessor;
+}

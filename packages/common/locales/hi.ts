@@ -9,6 +9,8 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   let i = Math.floor(Math.abs(n));
   if (i === 0 || n === 1) return 1;
@@ -16,12 +18,7 @@ function plural(n: number): number {
 }
 
 export default [
-  'hi',
-  [
-    ['पू', 'अ'],
-    ['पूर्वाह्न', 'अपराह्न'],
-  ],
-  ,
+  'hi', [['पू', 'अ'], ['पूर्वाह्न', 'अपराह्न'], u], u,
   [
     ['र', 'सो', 'मं', 'बु', 'गु', 'शु', 'श'],
     [
@@ -34,7 +31,7 @@ export default [
     ],
     ['र', 'सो', 'मं', 'बु', 'गु', 'शु', 'श']
   ],
-  ,
+  u,
   [
     [
       'ज', 'फ़', 'मा', 'अ', 'म', 'जू', 'जु', 'अ', 'सि', 'अ', 'न',
@@ -50,20 +47,15 @@ export default [
       'अक्तूबर', 'नवंबर', 'दिसंबर'
     ]
   ],
-  ,
+  u,
   [
-    ['ईसा-पूर्व', 'ईस्वी'], ,
+    ['ईसा-पूर्व', 'ईस्वी'], u,
     ['ईसा-पूर्व', 'ईसवी सन']
   ],
   0, [0, 0], ['d/M/yy', 'd MMM y', 'd MMMM y', 'EEEE, d MMMM y'],
-  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'],
-  [
-    '{1}, {0}',
-    ,
-    '{1} को {0}',
-  ],
+  ['h:mm a', 'h:mm:ss a', 'h:mm:ss a z', 'h:mm:ss a zzzz'], ['{1}, {0}', u, '{1} को {0}', u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'NaN', ':'],
   ['#,##,##0.###', '#,##,##0%', '¤#,##,##0.00', '[#E0]'], '₹',
   'भारतीय रुपया',
-  {'JPY': ['JP¥', '¥'], 'RON': [, 'लेई'], 'THB': ['฿'], 'TWD': ['NT$']}, plural
+  {'JPY': ['JP¥', '¥'], 'RON': [u, 'लेई'], 'THB': ['฿'], 'TWD': ['NT$']}, plural
 ];

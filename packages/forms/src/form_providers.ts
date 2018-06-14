@@ -16,7 +16,7 @@ import {FormBuilder} from './form_builder';
 
 /**
  * The ng module for forms.
- * @stable
+ *
  */
 @NgModule({
   declarations: TEMPLATE_DRIVEN_DIRECTIVES,
@@ -28,7 +28,7 @@ export class FormsModule {
 
 /**
  * The ng module for reactive forms.
- * @stable
+ *
  */
 @NgModule({
   declarations: [REACTIVE_DRIVEN_DIRECTIVES],

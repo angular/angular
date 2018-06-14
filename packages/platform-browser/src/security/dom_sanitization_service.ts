@@ -17,42 +17,42 @@ export {SecurityContext};
 /**
  * Marker interface for a value that's safe to use in a particular context.
  *
- * @stable
+ *
  */
 export interface SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as HTML.
  *
- * @stable
+ *
  */
 export interface SafeHtml extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as style (CSS).
  *
- * @stable
+ *
  */
 export interface SafeStyle extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as JavaScript.
  *
- * @stable
+ *
  */
 export interface SafeScript extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as a URL linking to a document.
  *
- * @stable
+ *
  */
 export interface SafeUrl extends SafeValue {}
 
 /**
  * Marker interface for a value that's safe to use as a URL to load executable code from.
  *
- * @stable
+ *
  */
 export interface SafeResourceUrl extends SafeValue {}
 
@@ -85,7 +85,7 @@ export interface SafeResourceUrl extends SafeValue {}
  * into this call. Make sure any user data is appropriately escaped for this security context.
  * For more detail, see the [Security Guide](http://g.co/ng/security).
  *
- * @stable
+ *
  */
 export abstract class DomSanitizer implements Sanitizer {
   /**

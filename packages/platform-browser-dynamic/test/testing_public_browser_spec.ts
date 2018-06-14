@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {Component} from '@angular/core';
+import {Compiler, Component, NgModule} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 
 import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
@@ -26,7 +26,7 @@ class FancyService {
 
 @Component({
   selector: 'external-template-comp',
-  templateUrl: '/base/packages/platform-browser/test/static_assets/test.html'
+  templateUrl: '/base/angular/packages/platform-browser/test/static_assets/test.html'
 })
 class ExternalTemplateComp {
 }
@@ -48,7 +48,8 @@ class BadTemplateUrl {
 
       it('should run async tests with ResourceLoaders', async(() => {
            const resourceLoader = new ResourceLoaderImpl();
-           resourceLoader.get('/base/packages/platform-browser/test/static_assets/test.html')
+           resourceLoader
+               .get('/base/angular/packages/platform-browser/test/static_assets/test.html')
                .then(() => { actuallyDone = true; });
          }),
          10000);  // Long timeout here because this test makes an actual ResourceLoader.
@@ -73,6 +74,22 @@ class BadTemplateUrl {
              tick();
              expect(value).toEqual('async value');
            })));
+      });
+    });
+
+    describe('Compiler', () => {
+      it('should return NgModule id when asked', () => {
+        @NgModule({
+          id: 'test-module',
+        })
+        class TestModule {
+        }
+
+        TestBed.configureTestingModule({
+          imports: [TestModule],
+        });
+        const compiler = TestBed.get(Compiler) as Compiler;
+        expect(compiler.getModuleId(TestModule)).toBe('test-module');
       });
     });
 

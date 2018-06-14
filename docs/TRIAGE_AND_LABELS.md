@@ -12,7 +12,7 @@ The owner of the component is then responsible for the secondary / component-lev
 The caretaker should be able to determine which component the issue belongs to.
 The components have a clear piece of source code associated with it within the `/packages/` folder of this repo.
 
-* `comp: aio` - the angular.io application
+* `comp: docs-infra` - the angular.io application
 * `comp: animations`
 * `comp: bazel` - @angular/bazel rules
 * `comp: benchpress`

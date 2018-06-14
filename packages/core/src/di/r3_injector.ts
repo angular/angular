@@ -14,7 +14,7 @@ import {InjectableDef, InjectableType, InjectorDef, InjectorType, InjectorTypeWi
 import {resolveForwardRef} from './forward_ref';
 import {InjectableDefToken, InjectionToken} from './injection_token';
 import {INJECTOR, InjectFlags, Injector, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, inject, injectArgs, setCurrentInjector} from './injector';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './provider';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './provider';
 import {APP_ROOT} from './scope';
 
 
@@ -64,14 +64,15 @@ interface Record<T> {
 }
 
 /**
- * Create a new `Injector` which is configured using `InjectorDefType`s.
+ * Create a new `Injector` which is configured using a `defType` of `InjectorType<any>`s.
  *
  * @experimental
  */
 export function createInjector(
-    defType: /* InjectorDefType<any> */ any, parent: Injector | null = null): Injector {
+    defType: /* InjectorType<any> */ any, parent: Injector | null = null,
+    additionalProviders: StaticProvider[] | null = null): Injector {
   parent = parent || getNullInjector();
-  return new R3Injector(defType, parent);
+  return new R3Injector(defType, additionalProviders, parent);
 }
 
 export class R3Injector {
@@ -81,7 +82,7 @@ export class R3Injector {
   private records = new Map<Type<any>|InjectionToken<any>, Record<any>>();
 
   /**
-   * The transitive set of `InjectorDefType`s which define this injector.
+   * The transitive set of `InjectorType`s which define this injector.
    */
   private injectorDefTypes = new Set<InjectorType<any>>();
 
@@ -101,11 +102,17 @@ export class R3Injector {
    */
   private destroyed = false;
 
-  constructor(def: InjectorType<any>, readonly parent: Injector) {
-    // Start off by creating Records for every provider declared in every InjectorDefType
+  constructor(
+      def: InjectorType<any>, additionalProviders: StaticProvider[]|null,
+      readonly parent: Injector) {
+    // Start off by creating Records for every provider declared in every InjectorType
     // included transitively in `def`.
     deepForEach(
         [def], injectorDef => this.processInjectorType(injectorDef, new Set<InjectorType<any>>()));
+
+    additionalProviders &&
+        deepForEach(additionalProviders, provider => this.processProvider(provider));
+
 
     // Make sure the INJECTOR token provides this injector.
     this.records.set(INJECTOR, makeRecord(undefined, this));
@@ -114,7 +121,7 @@ export class R3Injector {
     // any injectable scoped to APP_ROOT_SCOPE.
     this.isRootInjector = this.records.has(APP_ROOT);
 
-    // Eagerly instantiate the InjectorDefType classes themselves.
+    // Eagerly instantiate the InjectorType classes themselves.
     this.injectorDefTypes.forEach(defType => this.get(defType));
   }
 
@@ -187,7 +194,7 @@ export class R3Injector {
   }
 
   /**
-   * Add an `InjectorDefType` or `InjectorDefTypeWithProviders` and all of its transitive providers
+   * Add an `InjectorType` or `InjectorDefTypeWithProviders` and all of its transitive providers
    * to this injector.
    */
   private processInjectorType(
@@ -195,7 +202,7 @@ export class R3Injector {
       parents: Set<InjectorType<any>>) {
     defOrWrappedDef = resolveForwardRef(defOrWrappedDef);
 
-    // Either the defOrWrappedDef is an InjectorDefType (with ngInjectorDef) or an
+    // Either the defOrWrappedDef is an InjectorType (with ngInjectorDef) or an
     // InjectorDefTypeWithProviders (aka ModuleWithProviders). Detecting either is a megamorphic
     // read, so care is taken to only do the read once.
 
@@ -206,7 +213,7 @@ export class R3Injector {
     const ngModule =
         (def == null) && (defOrWrappedDef as InjectorTypeWithProviders<any>).ngModule || undefined;
 
-    // Determine the InjectorDefType. In the case where `defOrWrappedDef` is an `InjectorDefType`,
+    // Determine the InjectorType. In the case where `defOrWrappedDef` is an `InjectorType`,
     // then this is easy. In the case of an InjectorDefTypeWithProviders, then the definition type
     // is the `ngModule`.
     const defType: InjectorType<any> =
@@ -234,7 +241,7 @@ export class R3Injector {
       throw new Error(`Circular dependency: type ${stringify(defType)} ends up importing itself.`);
     }
 
-    // Track the InjectorDefType and add a provider for it.
+    // Track the InjectorType and add a provider for it.
     this.injectorDefTypes.add(defType);
     this.records.set(defType, makeRecord(def.factory));
 
@@ -284,20 +291,18 @@ export class R3Injector {
           throw new Error(`Mixed multi-provider for ${token}.`);
         }
       } else {
-        token = provider;
         multiRecord = makeRecord(undefined, NOT_YET, true);
         multiRecord.factory = () => injectArgs(multiRecord !.multi !);
         this.records.set(token, multiRecord);
       }
       token = provider;
       multiRecord.multi !.push(provider);
+    } else {
+      const existing = this.records.get(token);
+      if (existing && existing.multi !== undefined) {
+        throw new Error(`Mixed multi-provider for ${stringify(token)}`);
+      }
     }
-
-    const existing = this.records.get(token);
-    if (existing && existing.multi !== undefined) {
-      throw new Error(`Mixed multi-provider for ${token}`);
-    }
-
     this.records.set(token, record);
   }
 
@@ -326,7 +331,7 @@ export class R3Injector {
 }
 
 function injectableDefRecord(token: Type<any>| InjectionToken<any>): Record<any> {
-  const def = (token as InjectableType<any>).ngInjectableDef;
+  const def = (token as InjectableType<any>).ngInjectableDef as InjectableDef<any>;
   if (def === undefined) {
     throw new Error(`Type ${stringify(token)} is missing an ngInjectableDef definition.`);
   }

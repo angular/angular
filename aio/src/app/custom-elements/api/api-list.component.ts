@@ -16,9 +16,9 @@ import { ApiSection, ApiService } from './api.service';
 import { Option } from 'app/shared/select/select.component';
 
 class SearchCriteria {
-  query? = '';
-  status? = 'all';
-  type? = 'all';
+  query ? = '';
+  status ? = 'all';
+  type ? = 'all';
 }
 
 @Component({
@@ -78,7 +78,7 @@ export class ApiListComponent implements OnInit {
     this.initializeSearchCriteria();
   }
 
-  // Todo: may need to debounce as the original did
+  // TODO: may need to debounce as the original did
   // although there shouldn't be any perf consequences if we don't
   setQuery(query: string) {
     this.setSearchCriteria({query: (query || '').toLowerCase().trim() });

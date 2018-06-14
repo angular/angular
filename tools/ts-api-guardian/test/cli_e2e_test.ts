@@ -114,19 +114,6 @@ describe('cli: e2e test', () => {
     chai.assert.equal(stdout, '');
     chai.assert.equal(status, 0);
   });
-
-  it('should respect --onStabilityMissing', () => {
-    const {stdout, stderr, status} = execute([
-      '--verify', 'test/fixtures/simple_expected.d.ts', '--onStabilityMissing', 'warn',
-      'test/fixtures/simple.d.ts'
-    ]);
-    chai.assert.equal(stdout, '');
-    chai.assert.equal(
-        stderr,
-        'test/fixtures/simple.d.ts(1,1): error: No stability annotation found for symbol "A"\n' +
-            'test/fixtures/simple.d.ts(2,1): error: No stability annotation found for symbol "B"\n');
-    chai.assert.equal(status, 0, stderr);
-  });
 });
 
 function copyFile(sourceFile: string, targetFile: string) {

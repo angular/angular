@@ -72,8 +72,6 @@ export class DoCheckComponent implements DoCheck {
   }
 }
 
-/***************************************/
-
 @Component({
   selector: 'do-check-parent',
   templateUrl: './do-check-parent.component.html',

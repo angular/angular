@@ -11,6 +11,13 @@ import {Filesystem} from './filesystem';
 import {globToRegex} from './glob';
 import {Config} from './in';
 
+const DEFAULT_NAVIGATION_URLS = [
+  '/**',           // Include all URLs.
+  '!/**/*.*',      // Exclude URLs to files (containing a file extension in the last segment).
+  '!/**/*__*',     // Exclude URLs containing `__` in the last segment.
+  '!/**/*__*/**',  // Exclude URLs containing `__` in any other segment.
+];
+
 /**
  * Consumes service worker configuration files and processes them into control files.
  *
@@ -20,13 +27,16 @@ export class Generator {
   constructor(readonly fs: Filesystem, private baseHref: string) {}
 
   async process(config: Config): Promise<Object> {
-    const hashTable = {};
+    const unorderedHashTable = {};
+    const assetGroups = await this.processAssetGroups(config, unorderedHashTable);
+
     return {
       configVersion: 1,
-      index: joinUrls(this.baseHref, config.index),
       appData: config.appData,
-      assetGroups: await this.processAssetGroups(config, hashTable),
-      dataGroups: this.processDataGroups(config), hashTable,
+      index: joinUrls(this.baseHref, config.index), assetGroups,
+      dataGroups: this.processDataGroups(config),
+      hashTable: withOrderedKeys(unorderedHashTable),
+      navigationUrls: processNavigationUrls(this.baseHref, config.navigationUrls),
     };
   }
 
@@ -34,57 +44,47 @@ export class Generator {
       Promise<Object[]> {
     const seenMap = new Set<string>();
     return Promise.all((config.assetGroups || []).map(async(group) => {
+      if (group.resources.versionedFiles) {
+        console.warn(
+            `Asset-group '${group.name}' in 'ngsw-config.json' uses the 'versionedFiles' option.\n` +
+            'As of v6 \'versionedFiles\' and \'files\' options have the same behavior. ' +
+            'Use \'files\' instead.');
+      }
+
       const fileMatcher = globListToMatcher(group.resources.files || []);
       const versionedMatcher = globListToMatcher(group.resources.versionedFiles || []);
 
-      const allFiles = (await this.fs.list('/'));
-
-      const versionedFiles = allFiles.filter(versionedMatcher).filter(file => !seenMap.has(file));
-      versionedFiles.forEach(file => seenMap.add(file));
+      const allFiles = await this.fs.list('/');
 
       const plainFiles = allFiles.filter(fileMatcher).filter(file => !seenMap.has(file));
       plainFiles.forEach(file => seenMap.add(file));
 
+      const versionedFiles = allFiles.filter(versionedMatcher).filter(file => !seenMap.has(file));
+      versionedFiles.forEach(file => seenMap.add(file));
+
       // Add the hashes.
-      await[...versionedFiles, ...plainFiles].reduce(async(previous, file) => {
+      const matchedFiles = [...plainFiles, ...versionedFiles].sort();
+      await matchedFiles.reduce(async(previous, file) => {
         await previous;
         const hash = await this.fs.hash(file);
         hashTable[joinUrls(this.baseHref, file)] = hash;
       }, Promise.resolve());
 
-
-      // Figure out the patterns.
-      const patterns = (group.resources.urls || [])
-                           .map(
-                               glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                                   glob :
-                                   joinUrls(this.baseHref, glob))
-                           .map(glob => globToRegex(glob));
-
       return {
         name: group.name,
         installMode: group.installMode || 'prefetch',
         updateMode: group.updateMode || group.installMode || 'prefetch',
-        urls: ([] as string[])
-                  .concat(plainFiles)
-                  .concat(versionedFiles)
-                  .map(url => joinUrls(this.baseHref, url)),
-        patterns,
+        urls: matchedFiles.map(url => joinUrls(this.baseHref, url)),
+        patterns: (group.resources.urls || []).map(url => urlToRegex(url, this.baseHref)),
       };
     }));
   }
 
   private processDataGroups(config: Config): Object[] {
     return (config.dataGroups || []).map(group => {
-      const patterns = group.urls
-                           .map(
-                               glob => glob.startsWith('/') || glob.indexOf('://') !== -1 ?
-                                   glob :
-                                   joinUrls(this.baseHref, glob))
-                           .map(glob => globToRegex(glob));
       return {
         name: group.name,
-        patterns,
+        patterns: group.urls.map(url => urlToRegex(url, this.baseHref)),
         strategy: group.cacheConfig.strategy || 'performance',
         maxSize: group.cacheConfig.maxSize,
         maxAge: parseDurationToMs(group.cacheConfig.maxAge),
@@ -93,6 +93,15 @@ export class Generator {
       };
     });
   }
+}
+
+export function processNavigationUrls(
+    baseHref: string, urls = DEFAULT_NAVIGATION_URLS): {positive: boolean, regex: string}[] {
+  return urls.map(url => {
+    const positive = !url.startsWith('!');
+    url = positive ? url : url.substr(1);
+    return {positive, regex: `^${urlToRegex(url, baseHref)}$`};
+  });
 }
 
 function globListToMatcher(globs: string[]): (file: string) => boolean {
@@ -123,6 +132,14 @@ function matches(file: string, patterns: {positive: boolean, regex: RegExp}[]): 
   return res;
 }
 
+function urlToRegex(url: string, baseHref: string): string {
+  if (!url.startsWith('/') && url.indexOf('://') === -1) {
+    url = joinUrls(baseHref, url);
+  }
+
+  return globToRegex(url);
+}
+
 function joinUrls(a: string, b: string): string {
   if (a.endsWith('/') && b.startsWith('/')) {
     return a + b.substr(1);
@@ -130,4 +147,10 @@ function joinUrls(a: string, b: string): string {
     return a + '/' + b;
   }
   return a + b;
+}
+
+function withOrderedKeys<T extends{[key: string]: any}>(unorderedObj: T): T {
+  const orderedObj = {} as T;
+  Object.keys(unorderedObj).sort().forEach(key => orderedObj[key] = unorderedObj[key]);
+  return orderedObj;
 }

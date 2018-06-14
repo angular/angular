@@ -1,5 +1,5 @@
 /**
- * Split the descripton (of selected docs) into:
+ * Split the description (of selected docs) into:
  * * `shortDescription`: the first paragraph
  * * `description`: the rest of the paragraphs
  */

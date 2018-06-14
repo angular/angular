@@ -8,14 +8,16 @@
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
+import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
 import {renderComponent, toHtml} from '../render_util';
+
 
 /// See: `normative.md`
 describe('lifecycle hooks', () => {
   let events: string[] = [];
   let simpleLayout: SimpleLayout;
 
-  type $boolean$ = boolean;
+  type $RenderFlags$ = $r3$.ɵRenderFlags;
   type $LifecycleComp$ = LifecycleComp;
   type $SimpleLayout$ = SimpleLayout;
 
@@ -41,9 +43,9 @@ describe('lifecycle hooks', () => {
     // NORMATIVE
     static ngComponentDef = $r3$.ɵdefineComponent({
       type: LifecycleComp,
-      tag: 'lifecycle-comp',
+      selectors: [['lifecycle-comp']],
       factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
-      template: function LifecycleComp_Template(ctx: $LifecycleComp$, cm: $boolean$) {},
+      template: function LifecycleComp_Template(rf: $RenderFlags$, ctx: $LifecycleComp$) {},
       inputs: {nameMin: 'name'},
       features: [$r3$.ɵNgOnChangesFeature({nameMin: 'nameMin'})]
     });
@@ -64,21 +66,26 @@ describe('lifecycle hooks', () => {
     // NORMATIVE
     static ngComponentDef = $r3$.ɵdefineComponent({
       type: SimpleLayout,
-      tag: 'simple-layout',
+      selectors: [['simple-layout']],
       factory: function SimpleLayout_Factory() { return simpleLayout = new SimpleLayout(); },
-      template: function SimpleLayout_Template(ctx: $SimpleLayout$, cm: $boolean$) {
-        if (cm) {
-          $r3$.ɵE(0, LifecycleComp);
-          $r3$.ɵe();
-          $r3$.ɵE(1, LifecycleComp);
-          $r3$.ɵe();
+      template: function SimpleLayout_Template(rf: $RenderFlags$, ctx: $SimpleLayout$) {
+        if (rf & 1) {
+          $r3$.ɵEe(0, 'lifecycle-comp');
+          $r3$.ɵEe(1, 'lifecycle-comp');
         }
-        $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
-        $r3$.ɵp(1, 'name', $r3$.ɵb(ctx.name2));
+        if (rf & 2) {
+          $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
+          $r3$.ɵp(1, 'name', $r3$.ɵb(ctx.name2));
+        }
       }
     });
     // /NORMATIVE
   }
+
+  // NON-NORMATIVE
+  (SimpleLayout.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
+      [LifecycleComp.ngComponentDef];
+  // /NON-NORMATIVE
 
   it('should gen hooks with a few simple components', () => {
     expect(toHtml(renderComponent(SimpleLayout)))

@@ -24,13 +24,7 @@ export function startCli() {
   const options: SerializationOptions = {
     stripExportPattern: argv['stripExportPattern'],
     allowModuleIdentifiers: [].concat(argv['allowModuleIdentifiers']),
-    onStabilityMissing: argv['onStabilityMissing'] || 'none'
   };
-
-  if (['warn', 'error', 'none'].indexOf(options.onStabilityMissing as string) < 0) {
-    throw new Error(
-        'Argument for "--onStabilityMissing" option must be one of: "warn", "error", "none"');
-  }
 
   for (const error of errors) {
     console.warn(error);
@@ -85,7 +79,7 @@ export function parseArguments(input: string[]):
   const argv = minimist(input, {
     string: [
       'out', 'outDir', 'verify', 'verifyDir', 'rootDir', 'stripExportPattern',
-      'allowModuleIdentifiers', 'onStabilityMissing'
+      'allowModuleIdentifiers'
     ],
     boolean: [
       'help',
@@ -161,10 +155,7 @@ Options:
 
         --stripExportPattern <regexp>   Do not output exports matching the pattern
         --allowModuleIdentifiers <identifier>
-                                        Whitelist identifier for "* as foo" imports
-        --onStabilityMissing <warn|error|none>
-                                        Warn or error if an export has no stability
-                                        annotation`);
+                                        Whitelist identifier for "* as foo" imports`);
   process.exit(error ? 1 : 0);
 }
 

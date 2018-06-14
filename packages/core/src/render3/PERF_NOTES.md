@@ -13,20 +13,22 @@ shown here: https://jsperf.com/small-arrays-vs-linked-objects
 
 ## Monomorphic vs Megamorphic code
 
-Great read: [What's up with monomorphism?](http://mrale.ph/blog/2015/01/11/whats-up-with-monomorphism.html)
+Great reads:
+- [What's up with monomorphism?](http://mrale.ph/blog/2015/01/11/whats-up-with-monomorphism.html)
+- [Impact of polymorphism on component-based frameworks like React](http://benediktmeurer.de/2018/03/23/impact-of-polymorphism-on-component-based-frameworks-like-react/)
 
-1) Monomorphic prop access is 100 times faster then megamorphic.
+1) Monomorphic prop access is 100 times faster than megamorphic.
 2) Monomorphic call is 4 times faster the megamorphic call.
 
  See benchmark [here](https://jsperf.com/mono-vs-megamorphic-property-access).
 
- ## Exporting top level variables
+## Exporting top level variables
 
- Exporting top level variables should be avoided where possible where performance
- and code size matters:
+Exporting top level variables should be avoided where possible where performance
+and code size matters:
 
- ```
- // Typescript
+```
+// Typescript
 export let exported = 0;
 let notExported = 0;
 
@@ -54,7 +56,7 @@ Also writing to a property of `exports` might change its hidden class resulting 
 
 ## Iterating over Keys of an Object.
 
-https://jsperf.com/object-keys-vs-for-in-with-closure/3 implies that `Object.keys` is the fastest way of iterating 
+https://jsperf.com/object-keys-vs-for-in-with-closure/3 implies that `Object.keys` is the fastest way of iterating
 over properties of an object.
 
 ```
@@ -62,3 +64,10 @@ for (var i = 0, keys = Object.keys(obj); i < keys.length; i++) {
   const key = keys[i];
 }
 ```
+
+## Recursive functions
+Avoid recursive functions when possible because they cannot be inlined.
+
+## Loops
+Don't use foreach, it can cause megamorphic function calls (depending on the browser) and function allocations.
+It is [a lot slower than regular `for` loops](https://jsperf.com/for-vs-foreach-misko)

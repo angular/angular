@@ -41,7 +41,7 @@ export function devModeEqual(a: any, b: any): boolean {
  *    return WrappedValue.wrap(this._latestValue); // this will force update
  *  }
  * ```
- * @stable
+ *
  */
 export class WrappedValue {
   /** @deprecated from 5.3, use `unwrap()` instead - will switch to protected */
@@ -64,7 +64,7 @@ export class WrappedValue {
 
 /**
  * Represents a basic change from a previous to a new value.
- * @stable
+ *
  */
 export class SimpleChange {
   constructor(public previousValue: any, public currentValue: any, public firstChange: boolean) {}

@@ -13,7 +13,9 @@ import {ActivatedRoute, ActivatedRouteSnapshot} from './router_state';
 import {TreeNode} from './utils/tree';
 
 /**
- * @whatItDoes Represents the detached route tree.
+ * @description
+ *
+ * Represents the detached route tree.
  *
  * This is an opaque value the router will give to a custom route reuse strategy
  * to store and retrieve later on.
@@ -30,7 +32,9 @@ export type DetachedRouteHandleInternal = {
 };
 
 /**
- * @whatItDoes Provides a way to customize when activated routes get reused.
+ * @description
+ *
+ * Provides a way to customize when activated routes get reused.
  *
  * @experimental
  */

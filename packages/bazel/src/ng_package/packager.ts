@@ -165,16 +165,11 @@ function main(args: string[]): number {
   // of the index JS file, which we need to amend the package.json.
   Object.keys(modulesManifest).forEach(moduleName => {
     const moduleFiles = modulesManifest[moduleName];
-    const indexContent = fs.readFileSync(moduleFiles['index'], 'utf-8');
     const relative = path.relative(binDir, moduleFiles['index']);
 
     moduleFiles['esm5_index'] = path.join(binDir, 'esm5', relative);
     moduleFiles['esm2015_index'] = path.join(binDir, 'esm2015', relative);
 
-    writeFileFromInputPath(moduleFiles['esm5_index'], indexContent);
-    writeFileFromInputPath(moduleFiles['esm2015_index'], indexContent);
-
-    copyFileFromInputPath(moduleFiles['typings']);
     copyFileFromInputPath(moduleFiles['metadata']);
   });
 
@@ -216,7 +211,8 @@ function main(args: string[]): number {
     const entryPointName = entryPointPackageName.substr(rootPackageName.length + 1);
     if (!entryPointName) return;
 
-    createMetadataReexportFile(entryPointName, modulesManifest[entryPointPackageName]['metadata']);
+    createMetadataReexportFile(
+        entryPointName, modulesManifest[entryPointPackageName]['metadata'], entryPointPackageName);
     createTypingsReexportFile(
         entryPointName, licenseBanner, modulesManifest[entryPointPackageName]['typings']);
 
@@ -279,6 +275,8 @@ function main(args: string[]): number {
       // So ignore package.json files when we are missing data.
       console.error('WARNING: no module metadata for package', packageName);
       console.error('   Not updating the package.json file to point to it');
+      console.error(
+          '   The ng_module for this package is possibly missing the module_name attribute ');
       return JSON.stringify(parsedPackage, null, 2);
     }
 
@@ -321,7 +319,8 @@ function main(args: string[]): number {
   }
 
   /** Creates metadata re-export file for a secondary entry-point. */
-  function createMetadataReexportFile(entryPointName: string, metadataFile: string) {
+  function createMetadataReexportFile(
+      entryPointName: string, metadataFile: string, packageName: string) {
     const inputPath = path.join(srcDir, `${entryPointName}.metadata.json`);
     writeFileFromInputPath(inputPath, JSON.stringify({
       '__symbolic': 'module',
@@ -330,6 +329,7 @@ function main(args: string[]): number {
       'exports':
           [{'from': `${srcDirRelative(inputPath, metadataFile.replace(/.metadata.json$/, ''))}`}],
       'flatModuleIndexRedirect': true,
+      'importAs': packageName
     }) + '\n');
   }
 

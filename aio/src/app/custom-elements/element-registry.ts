@@ -13,8 +13,8 @@ export const ELEMENT_MODULE_PATHS_AS_ROUTES = [
     loadChildren: './api/api-list.module#ApiListModule'
   },
   {
-    selector: 'live-example',
-    loadChildren: './live-example/live-example.module#LiveExampleModule'
+    selector: 'aio-contributor-list',
+    loadChildren: './contributor/contributor-list.module#ContributorListModule'
   },
   {
     selector: 'aio-file-not-found-search',
@@ -25,25 +25,29 @@ export const ELEMENT_MODULE_PATHS_AS_ROUTES = [
     loadChildren: './resource/resource-list.module#ResourceListModule'
   },
   {
-    selector: 'current-location',
-    loadChildren: './current-location/current-location.module#CurrentLocationModule'
-  },
-  {
-    selector: 'aio-contributor-list',
-    loadChildren: './contributor/contributor-list.module#ContributorListModule'
-  },
-  {
-    selector: 'code-tabs',
-    loadChildren: './code/code-tabs.module#CodeTabsModule'
+    selector: 'aio-toc',
+    loadChildren: './toc/toc.module#TocModule'
   },
   {
     selector: 'code-example',
     loadChildren: './code/code-example.module#CodeExampleModule'
   },
   {
+    selector: 'code-tabs',
+    loadChildren: './code/code-tabs.module#CodeTabsModule'
+  },
+  {
+    selector: 'current-location',
+    loadChildren: './current-location/current-location.module#CurrentLocationModule'
+  },
+  {
     selector: 'expandable-section',
     loadChildren: './expandable-section/expandable-section.module#ExpandableSectionModule'
-  }
+  },
+  {
+    selector: 'live-example',
+    loadChildren: './live-example/live-example.module#LiveExampleModule'
+  },
 ];
 
 /**

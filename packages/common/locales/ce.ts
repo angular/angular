@@ -9,20 +9,17 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 function plural(n: number): number {
   if (n === 1) return 1;
   return 5;
 }
 
 export default [
-  'ce',
+  'ce', [['AM', 'PM'], u, u], u,
   [
-    ['AM', 'PM'],
-    ,
-  ],
-  ,
-  [
-    ['кӀи', 'ор', 'ши', 'кха', 'еа', 'пӀе', 'шуо'], ,
+    ['кӀи', 'ор', 'ши', 'кха', 'еа', 'пӀе', 'шуо'], u,
     [
       'кӀира', 'оршот', 'шинара', 'кхаара', 'еара', 'пӀераска',
       'шуот'
@@ -50,22 +47,17 @@ export default [
       'декабрь'
     ]
   ],
-  ,
+  u,
   [
-    ['в. э. тӀ. я', 'в. э'], ,
+    ['в. э. тӀ. я', 'в. э'], u,
     [
       'Ӏийса пайхамар вина де кхачале',
       'Ӏийса пайхамар вина дийнахь дуьйна'
     ]
   ],
   1, [6, 0], ['y-MM-dd', 'y MMM d', 'y MMMM d', 'y MMMM d, EEEE'],
-  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'],
-  [
-    '{1} {0}',
-    ,
-    ,
-  ],
+  ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1} {0}', u, u, u],
   ['.', ',', ';', '%', '+', '-', 'E', '×', '‰', '∞', 'Терхьаш дац', ':'],
   ['#,##0.###', '#,##0 %', '#,##0.00 ¤', '#E0'], '₽', 'Российн сом',
-  {'JPY': ['JP¥', '¥'], 'RON': [, 'лей'], 'RUB': ['₽'], 'USD': ['US$', '$']}, plural
+  {'JPY': ['JP¥', '¥'], 'RON': [u, 'лей'], 'RUB': ['₽'], 'USD': ['US$', '$']}, plural
 ];

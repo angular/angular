@@ -25,6 +25,13 @@ ng_package(
         "**/package.json",
     ]),
     entry_point = "packages/elements/index.js",
+    packages = [
+        "//packages/elements/schematics:npm_package",
+    ],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
     deps = [
         ":elements",
     ],

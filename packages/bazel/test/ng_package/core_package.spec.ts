@@ -107,12 +107,15 @@ describe('@angular/core ng_package', () => {
         expect(shx.cat('fesm2015/core.js'))
             .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
       });
+
+      it('should have been built from the generated bundle index',
+         () => { expect(shx.cat('fesm2015/core.js')).toMatch('export {.*makeParamDecorator'); });
     });
 
 
     describe('fesm5', () => {
 
-      it('should have a fesm5 file in the /esm5 directory',
+      it('should have a fesm5 file in the /fesm5 directory',
          () => { expect(shx.cat('fesm5/core.js')).toContain(`export {`); });
 
       it('should have a source map', () => {
@@ -122,6 +125,37 @@ describe('@angular/core ng_package', () => {
       it('should not be processed by tsickle', () => {
         expect(shx.cat('fesm5/core.js')).not.toContain('@fileoverview added by tsickle');
       });
+
+      it('should have annotations rather than decorators',
+         () => { expect(shx.cat('fesm5/core.js')).not.toContain('__decorate'); });
+
+      it('should load tslib from external bundle', () => {
+        expect(shx.cat('fesm5/core.js')).not.toContain('function __extends');
+        expect(shx.cat('fesm5/core.js')).toMatch('import {.*__extends');
+      });
+
+      it('should have been built from the generated bundle index',
+         () => { expect(shx.cat('fesm5/core.js')).toMatch('export {.*makeParamDecorator'); });
+    });
+
+
+    describe('esm2015', () => {
+      it('should not contain any *.ngfactory.js files', () => {
+        expect(shx.find('esm2015').filter(f => f.endsWith('.ngfactory.js'))).toEqual([]);
+      });
+
+      it('should not contain any *.ngsummary.js files', () => {
+        expect(shx.find('esm2015').filter(f => f.endsWith('.ngsummary.js'))).toEqual([]);
+      });
+    });
+
+
+    describe('esm5', () => {
+      it('should not contain any *.ngfactory.js files',
+         () => { expect(shx.find('esm5').filter(f => f.endsWith('.ngfactory.js'))).toEqual([]); });
+
+      it('should not contain any *.ngsummary.js files',
+         () => { expect(shx.find('esm5').filter(f => f.endsWith('.ngsummary.js'))).toEqual([]); });
     });
 
 
@@ -144,8 +178,14 @@ describe('@angular/core ng_package', () => {
             .toMatch(/@license Angular v\d+\.\d+\.\d+(?!-PLACEHOLDER)/);
       });
 
-      it('should have tslib helpers',
-         () => { expect(shx.cat('bundles/core.umd.js')).not.toContain('undefined.__extends'); });
+      it('should have tslib helpers', () => {
+        expect(shx.cat('bundles/core.umd.js')).toContain('function __extends');
+        expect(shx.cat('bundles/core.umd.js')).not.toContain('undefined.__extends');
+      });
+      it('should have an AMD name',
+         () => { expect(shx.cat('bundles/core.umd.js')).toContain('define(\'@angular/core\''); });
+      it('should define ng global symbols',
+         () => { expect(shx.cat('bundles/core.umd.js')).toContain('global.ng.core = {}'); });
     });
   });
 
@@ -238,6 +278,16 @@ describe('@angular/core ng_package', () => {
       it('should have a source map next to the minified umd file', () => {
         expect(shx.ls('bundles/core-testing.umd.min.js.map').length).toBe(1, 'File not found');
       });
+
+      it('should have an AMD name', () => {
+        expect(shx.cat('bundles/core-testing.umd.js'))
+            .toContain('define(\'@angular/core/testing\'');
+      });
+
+      it('should define ng global symbols', () => {
+        expect(shx.cat('bundles/core-testing.umd.js')).toContain('global.ng.core.testing = {}');
+      });
+
     });
   });
 });

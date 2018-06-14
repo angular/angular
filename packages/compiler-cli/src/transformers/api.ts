@@ -73,7 +73,7 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // Whether to generate a flat module index of the given name and the corresponding
   // flat module metadata. This option is intended to be used when creating flat
   // modules similar to how `@angular/core` and `@angular/common` are packaged.
-  // When this option is used the `package.json` for the library should refered to the
+  // When this option is used the `package.json` for the library should referred to the
   // generated flat module index instead of the library index file. When using this
   // option only one .metadata.json file is produced that contains all the metadata
   // necessary for symbols exported from the library index.
@@ -98,6 +98,10 @@ export interface CompilerOptions extends ts.CompilerOptions {
   // will use this module name when importing symbols from the flat module. This is only
   // meaningful when `flatModuleOutFile` is also supplied. It is otherwise ignored.
   flatModuleId?: string;
+
+  // A prefix to insert in generated private symbols, e.g. for "my_prefix_" we
+  // would generate private symbols named like `ɵmy_prefix_a`.
+  flatModulePrivateSymbolPrefix?: string;
 
   // Whether to generate code for library code.
   // If true, produce .ngfactory.ts and .ngstyle.ts files for .d.ts inputs.
@@ -178,9 +182,17 @@ export interface CompilerOptions extends ts.CompilerOptions {
    * Not all features are supported with this option enabled. It is only supported
    * for experimentation and testing of Render3 style code generation.
    *
+   * Acceptable values are as follows:
+   *
+   * `false` - run ngc normally
+   * `true` - run ngc with its usual global analysis, but compile decorators to Ivy fields instead
+   *  of running the View Engine compilers
+   * `ngtsc` - run the ngtsc compiler instead of the normal ngc compiler
+   * `tsc` - behave like plain tsc as much as possible (used for testing JIT code)
+   *
    * @experimental
    */
-  enableIvy?: boolean;
+  enableIvy?: boolean|'ngtsc'|'tsc';
 
   /** @internal */
   collectAllErrors?: boolean;
@@ -219,7 +231,7 @@ export interface CompilerHost extends ts.CompilerHost {
   /**
    * Load a referenced resource either statically or asynchronously. If the host returns a
    * `Promise<string>` it is assumed the user of the corresponding `Program` will call
-   * `loadNgStructureAsync()`. Returing  `Promise<string>` outside `loadNgStructureAsync()` will
+   * `loadNgStructureAsync()`. Returning  `Promise<string>` outside `loadNgStructureAsync()` will
    * cause a diagnostics diagnostic error or an exception to be thrown.
    */
   readResource?(fileName: string): Promise<string>|string;
@@ -262,9 +274,6 @@ export interface TsEmitArguments {
 export interface TsEmitCallback { (args: TsEmitArguments): ts.EmitResult; }
 export interface TsMergeEmitResultsCallback { (results: ts.EmitResult[]): ts.EmitResult; }
 
-/**
- * @internal
- */
 export interface LibrarySummary {
   fileName: string;
   text: string;
@@ -311,7 +320,7 @@ export interface Program {
    * and CSS.
    *
    * Note it is important to displaying TypeScript semantic diagnostics along with Angular
-   * structural diagnostics as an error in the program strucutre might cause errors detected in
+   * structural diagnostics as an error in the program structure might cause errors detected in
    * semantic analysis and a semantic error might cause errors in specifying the program structure.
    *
    * Angular structural information is required to produce these diagnostics.
@@ -319,7 +328,7 @@ export interface Program {
   getNgStructuralDiagnostics(cancellationToken?: ts.CancellationToken): ReadonlyArray<Diagnostic>;
 
   /**
-   * Retrieve the semantic diagnostics from TypeScript. This is equivilent to calling
+   * Retrieve the semantic diagnostics from TypeScript. This is equivalent to calling
    * `getTsProgram().getSemanticDiagnostics()` directly and is included for completeness.
    */
   getTsSemanticDiagnostics(sourceFile?: ts.SourceFile, cancellationToken?: ts.CancellationToken):
@@ -367,8 +376,6 @@ export interface Program {
    * Returns the .d.ts / .ngsummary.json / .ngfactory.d.ts files of libraries that have been emitted
    * in this program or previous programs with paths that emulate the fact that these libraries
    * have been compiled before with no outDir.
-   *
-   * @internal
    */
   getLibrarySummaries(): Map<string, LibrarySummary>;
 

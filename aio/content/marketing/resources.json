@@ -160,7 +160,7 @@
             "desc": "Lightweight yet powerful IDE, perfectly equipped for complex client-side development and server-side development with Node.js",
             "logo": "",
             "rev": true,
-            "title": "Webstorm",
+            "title": "WebStorm",
             "url": "https://www.jetbrains.com/webstorm/"
           },
           "ab3": {
@@ -175,7 +175,13 @@
             "rev": true,
             "title": "Angular IDE by Webclipse",
             "url": "https://www.genuitec.com/products/angular-ide"
-          }
+          },
+          "amexio-canvas": {
+             "desc": "Amexio Canvas is Drag and Drop Environment to create Fully Responsive Web and Smart Device HTML5/Angular Apps. Code will be auto generated and hot deployed by the Canvas for live testing. Out of the box 50+ Material Design Theme support. Commit your code to GitHub public or private repository.",
+            "rev": true,
+            "title": "Amexio Canvas Web Based Drag and Drop IDE by MetaMagic",
+            "url": "https://amexio.tech/"
+          }	
         }
       },
       "Tooling": {
@@ -202,7 +208,7 @@
             "url": "https://github.com/angular/universal"
           },
           "c1": {
-            "desc": "Lightweight development only node server",
+            "desc": "Lightweight development only Node.js® server",
             "logo": "",
             "rev": true,
             "title": "Lite-server",
@@ -345,6 +351,19 @@
             "title": "Angular Material",
             "url": "https://github.com/angular/material2"
           },
+          "mcc": {
+            "desc": "Material components made by the community",
+            "logo": "",
+            "rev": true,
+            "title": "Material Community Components",
+            "url": "https://github.com/tiaguinho/material-community-components"
+          },
+          "ngzorro": {
+            "desc": "A set of enterprise-class UI components based on Ant Design and Angular",
+            "rev": true,
+            "title": "Ant Design of Angular (ng-zorro-antd)",
+            "url": "https://ng.ant.design/docs/introduce/en"
+          },
           "aggrid": {
             "desc": "A datagrid for Angular with enterprise style features such as sorting, filtering, custom rendering, editing, grouping, aggregation and pivoting.",
             "rev": true,
@@ -363,6 +382,13 @@
             "title": "Amexio - Angular Extensions",
             "url": "http://www.amexio.tech/",
             "logo": "http://www.amexio.org/amexio-logo.png"
+          },
+          "bm": {
+            "desc": "A lightweight Material Design library for Angular, based upon Google's Material Components for the Web",
+            "logo": "https://blox.src.zone/assets/bloxmaterial.03ecfe4fa0147a781487749dc1cc4580.svg",
+            "rev": true,
+            "title": "Blox Material",
+            "url": "https://github.com/src-zone/material"
           },
           "essentialjs2": {
             "desc": "Essential JS 2 for Angular is a collection modern TypeScript based true Angular Components. It has support for Ahead Of Time (AOT) compilation and Tree-Shaking. All the components are developed from the ground up to be lightweight, responsive, modular and touch friendly.",
@@ -522,13 +548,6 @@
             "title": "Pluralsight",
             "url": "https://www.pluralsight.com/search?q=angular+2&categories=all"
           },
-          "ab": {
-            "desc": "Take this introduction to Angular course, to learn the fundamentals in just two days, free of charge.",
-            "logo": "",
-            "rev": true,
-            "title": "Rangle.io",
-            "url": "https://rangle.io/services/javascript-training/training-angular1-angular2-with-ngupgrade/"
-          },
           "ab3": {
             "desc": "Angular courses hosted by  Udemy",
             "logo": "",
@@ -541,7 +560,7 @@
             "logo": "",
             "rev": true,
             "title": "Egghead.io",
-            "url": "https://egghead.io/technologies/angular2"
+            "url": "https://egghead.io/browse/frameworks/angular"
           },
           "ab5": {
             "desc": "Build Web Apps with Angular - recorded video content",
@@ -574,6 +593,12 @@
             "title": "Learn Angular (francais)",
             "url": "http://www.learn-angular.fr/"
           },
+          "upgrading-ajs": {
+            "desc": "The world's most comprehensive, step-by-step course on using best practices and avoiding pitfalls while migrating from AngularJS to Angular.",
+            "rev": true,
+            "title": "Upgrading AngularJS",
+            "url": "https://www.upgradingangularjs.com"
+          },
           "toddmotto-ultimateangular": {
             "desc": "Online courses providing in-depth coverage of the Angular ecosystem, AngularJS, Angular and TypeScript, with functional code samples and a full-featured seed environment. Get a deep understanding of Angular and TypeScript from foundation to functional application, then move on to advanced topics with Todd Motto and collaborators.",
             "rev": true,
@@ -591,12 +616,6 @@
       "Workshops & Onsite Training": {
         "order": 2,
         "resources": {
-          "-KLIBo3ANF3-1B9wxsoB": {
-            "desc": "Angular Classes from Intertech in Minnesota",
-            "rev": true,
-            "title": "Intertech",
-            "url": "http://www.intertech.com/Training/Web-Dev/AngularJS/AngularJS/Angular-2-Training"
-          },
           "-KLIBoFWStce29UCwkvY": {
             "desc": "Private Angular Training and Mentoring",
             "rev": true,

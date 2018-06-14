@@ -19,10 +19,10 @@ describe('metadata bundler', () => {
 
   it('should be able to bundle a simple library', () => {
     const host = new MockStringBundlerHost('/', SIMPLE_LIBRARY);
-    const bundler = new MetadataBundler('/lib/index', undefined, host);
+    const bundler = new MetadataBundler('/lib/index', undefined, host, 'prfx_');
     const result = bundler.getMetadataBundle();
     expect(Object.keys(result.metadata.metadata).sort()).toEqual([
-      'ONE_CLASSES', 'One', 'OneMore', 'TWO_CLASSES', 'Two', 'TwoMore', 'ɵa', 'ɵb'
+      'ONE_CLASSES', 'One', 'OneMore', 'TWO_CLASSES', 'Two', 'TwoMore', 'ɵprfx_a', 'ɵprfx_b'
     ]);
 
     const originalOne = './src/one';
@@ -34,11 +34,11 @@ describe('metadata bundler', () => {
           {name: 'ONE_CLASSES', value: originalOne}, {name: 'One', value: originalOne},
           {name: 'OneMore', value: originalOne}, {name: 'TWO_CLASSES', value: originalTwo},
           {name: 'Two', value: originalTwo}, {name: 'TwoMore', value: originalTwo},
-          {name: 'ɵa', value: originalOne}, {name: 'ɵb', value: originalTwo}
+          {name: 'ɵprfx_a', value: originalOne}, {name: 'ɵprfx_b', value: originalTwo}
         ]);
     expect(result.privates).toEqual([
-      {privateName: 'ɵa', name: 'PrivateOne', module: originalOne},
-      {privateName: 'ɵb', name: 'PrivateTwo', module: originalTwo}
+      {privateName: 'ɵprfx_a', name: 'PrivateOne', module: originalOne},
+      {privateName: 'ɵprfx_b', name: 'PrivateTwo', module: originalTwo}
     ]);
   });
 

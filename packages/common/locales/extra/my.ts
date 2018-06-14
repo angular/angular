@@ -9,15 +9,17 @@
 // THIS CODE IS GENERATED - DO NOT MODIFY
 // See angular/tools/gulp-tasks/cldr/extract.js
 
+const u = undefined;
+
 export default [
   [
     [
       'သန်းခေါင်ယံ', 'မွန်းတည့်', 'နံနက်',
       'နေ့လယ်', 'ညနေ', 'ည'
     ],
-    ,
+    u, u
   ],
-  ,
+  u,
   [
     '00:00', '12:00', ['00:00', '12:00'], ['12:00', '16:00'], ['16:00', '19:00'],
     ['19:00', '24:00']

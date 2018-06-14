@@ -95,6 +95,12 @@ const XLIFF2_TOMERGE = `
         <target>sur des balises non traductibles</target>
       </segment>
     </unit>
+    <unit id="2174788525135228764">
+      <segment>
+        <source>&lt;b&gt;bold&lt;/b&gt;</source>
+        <target>&lt;b&gt;gras&lt;/b&gt;</target>
+      </segment>
+    </unit>
     <unit id="8670732454866344690">
       <segment>
         <source>on translatable node</source>
@@ -265,6 +271,14 @@ const XLIFF2_EXTRACTED = `
       </notes>
       <segment>
         <source>on not translatable node</source>
+      </segment>
+    </unit>
+    <unit id="2174788525135228764">
+      <notes>
+        <note category="location">file.ts:14</note>
+      </notes>
+      <segment>
+        <source>&lt;b&gt;bold&lt;/b&gt;</source>
       </segment>
     </unit>
     <unit id="8670732454866344690">

@@ -236,7 +236,7 @@ In this case, the URL is relative to the CSS file into which you're importing.
 
 ### External and global style files
 
-When building with the CLI, you must configure the `.angular-cli.json` to include _all external assets_, including external style files.
+When building with the CLI, you must configure the `angular.json` to include _all external assets_, including external style files.
 
 Register **global** style files in the `styles` section which, by default, is pre-configured with the global `styles.css` file.
 

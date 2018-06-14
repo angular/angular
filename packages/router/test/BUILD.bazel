@@ -1,4 +1,4 @@
-load("//tools:defaults.bzl", "ts_library", "ts_web_test")
+load("//tools:defaults.bzl", "ts_library", "ts_web_test_suite")
 load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
 
 ts_library(
@@ -16,6 +16,7 @@ ts_library(
         "//packages/router",
         "//packages/router/testing",
         "@rxjs",
+        "@rxjs//operators",
     ],
 )
 
@@ -28,7 +29,7 @@ jasmine_node_test(
     ],
 )
 
-ts_web_test(
+ts_web_test_suite(
     name = "test_web",
     deps = [
         ":test_lib",

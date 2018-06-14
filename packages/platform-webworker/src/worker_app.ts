@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, ɵPLATFORM_WORKER_APP_ID as PLATFORM_WORKER_APP_ID} from '@angular/common';
+import {CommonModule, ViewportScroller, ɵNullViewportScroller as NullViewportScroller, ɵPLATFORM_WORKER_APP_ID as PLATFORM_WORKER_APP_ID} from '@angular/common';
 import {APP_INITIALIZER, ApplicationModule, ErrorHandler, NgModule, NgZone, PLATFORM_ID, PlatformRef, RendererFactory2, RootRenderer, StaticProvider, createPlatformFactory, platformCore} from '@angular/core';
 import {DOCUMENT, ɵBROWSER_SANITIZATION_PROVIDERS as BROWSER_SANITIZATION_PROVIDERS} from '@angular/platform-browser';
 
@@ -33,7 +33,7 @@ export function errorHandler(): ErrorHandler {
 }
 
 
-// TODO(jteplitz602) remove this and compile with lib.webworker.d.ts (#3492)
+// TODO(jteplitz602): remove this and compile with lib.webworker.d.ts (#3492)
 const _postMessage = {
   postMessage: (message: any, transferrables?: [ArrayBuffer]) => {
     (<any>postMessage)(message, transferrables);
@@ -71,6 +71,7 @@ export function setupWebWorker(): void {
     {provide: ErrorHandler, useFactory: errorHandler, deps: []},
     {provide: MessageBus, useFactory: createMessageBus, deps: [NgZone]},
     {provide: APP_INITIALIZER, useValue: setupWebWorker, multi: true},
+    {provide: ViewportScroller, useClass: NullViewportScroller, deps: []},
   ],
   exports: [
     CommonModule,

@@ -13,6 +13,12 @@ function _notImplemented(methodName: string) {
   return new Error('This method is not implemented in DominoAdapter: ' + methodName);
 }
 
+function setDomTypes() {
+  // Make all Domino types available as types in the global env.
+  Object.assign(global, domino.impl);
+  (global as any)['KeyboardEvent'] = domino.impl.Event;
+}
+
 /**
  * Parses a document string to a Document object.
  */
@@ -33,7 +39,10 @@ export function serializeDocument(doc: Document): string {
  * DOM Adapter for the server platform based on https://github.com/fgnass/domino.
  */
 export class DominoAdapter extends BrowserDomAdapter {
-  static makeCurrent() { setRootDomAdapter(new DominoAdapter()); }
+  static makeCurrent() {
+    setDomTypes();
+    setRootDomAdapter(new DominoAdapter());
+  }
 
   private static defaultDoc: Document;
 
@@ -91,7 +100,7 @@ export class DominoAdapter extends BrowserDomAdapter {
   getProperty(el: Element, name: string): any {
     if (name === 'href') {
       // Domino tries tp resolve href-s which we do not want. Just return the
-      // atribute value.
+      // attribute value.
       return this.getAttribute(el, 'href');
     } else if (name === 'innerText') {
       // Domino does not support innerText. Just map it to textContent.
@@ -102,8 +111,8 @@ export class DominoAdapter extends BrowserDomAdapter {
 
   setProperty(el: Element, name: string, value: any) {
     if (name === 'href') {
-      // Eventhough the server renderer reflects any properties to attributes
-      // map 'href' to atribute just to handle when setProperty is directly called.
+      // Even though the server renderer reflects any properties to attributes
+      // map 'href' to attribute just to handle when setProperty is directly called.
       this.setAttribute(el, 'href', value);
     } else if (name === 'innerText') {
       // Domino does not support innerText. Just map it to textContent.

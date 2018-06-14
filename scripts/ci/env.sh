@@ -40,7 +40,6 @@ setEnvVar YARN_VERSION 1.3.2
 # Revision 494239 (which was part of Chrome 62.0.3186.0) is the last version that does not cause flakes. (Latest revision checked: 508578)
 setEnvVar CHROMIUM_VERSION 494239 # Chrome 62 linux stable, see https://www.chromium.org/developers/calendar
 setEnvVar CHROMEDRIVER_VERSION_ARG "--versions.chrome 2.33"
-setEnvVar BAZEL_VERSION 0.9.0
 setEnvVar SAUCE_CONNECT_VERSION 4.4.9
 setEnvVar ANGULAR_CLI_VERSION 1.6.3
 setEnvVar PROJECT_ROOT $(cd ${thisDir}/../..; pwd)
@@ -106,7 +105,7 @@ if [[ ${TRAVIS:-} ]]; then
 
   setEnvVar BROWSER_STACK_USERNAME angularteam1
   # not using use setEnvVar so that we don't print the key
-  export BROWSER_STACK_ACCESS_KEY=BWCd4SynLzdDcv8xtzsB
+  export BROWSER_STACK_ACCESS_KEY=CaXMeMHD9pr5PHg8N7Jq
   setEnvVar CHROME_BIN ${HOME}/.chrome/chromium/chrome-linux/chrome
   setEnvVar BROWSER_PROVIDER_READY_FILE /tmp/angular-build/browser-provider-tunnel-init.lock
 fi

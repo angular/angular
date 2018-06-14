@@ -12,11 +12,15 @@
 ## IMPORTANT
 # If you change the `docker_image` version, also change the `cache_key` suffix and the version of
 # `com_github_bazelbuild_buildtools` in the `/WORKSPACE` file.
-var_1: &docker_image angular/ngcontainer:0.1.0
-var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.1.0
+var_1: &docker_image angular/ngcontainer:0.3.2
+var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.3.2
+
+# Define common ENV vars
+var_3: &define_env_vars
+  run: echo "export PROJECT_ROOT=$(pwd)" >> $BASH_ENV
 
 # See remote cache documentation in /docs/BAZEL.md
-var_3: &setup-bazel-remote-cache
+var_4: &setup-bazel-remote-cache
   run:
     name: Start up bazel remote cache proxy
     command: ~/bazel-remote-proxy -backend circleci://
@@ -47,8 +51,10 @@ jobs:
       - run: 'buildifier -mode=check $(find . -type f \( -name BUILD.bazel -or -name BUILD \)) ||
               (echo "BUILD files not formatted. Please run ''yarn buildifier''" ; exit 1)'
       # Run the skylark linter to check our Bazel rules
+      # deprecated-api is disabled because we use actions.new_file(genfiles_dir)
+      # which has no replacement, see https://github.com/bazelbuild/bazel/issues/4858
       - run: 'find . -type f -name "*.bzl" |
-              xargs java -jar /usr/local/bin/Skylint_deploy.jar ||
+              xargs java -jar /usr/local/bin/Skylint_deploy.jar --disable-checks=deprecated-api ||
               (echo -e "\n.bzl files have lint errors. Please run ''yarn skylint''"; exit 1)'
 
       - restore_cache:
@@ -57,10 +63,11 @@ jobs:
       - run: yarn install --frozen-lockfile --non-interactive
       - run: ./node_modules/.bin/gulp lint
 
-  build:
+  test:
     <<: *job_defaults
     resource_class: xlarge
     steps:
+      - *define_env_vars
       - checkout:
           <<: *post_checkout
       # See remote cache documentation in /docs/BAZEL.md
@@ -73,34 +80,196 @@ jobs:
 
       - run: ls /home/circleci/bazel_repository_cache || true
       - run: bazel info release
-      - run: bazel run @yarn//:yarn
-      # We could use bazel query so that we explicitly ask for all buildable targets to be built as well
-      # This would avoid waiting for a build command to finish before running the first test
+      - run: bazel run @nodejs//:yarn
+      # Use bazel query so that we explicitly ask for all buildable targets to be built as well
+      # This avoids waiting for the slowest build target to finish before running the first test
       # See https://github.com/bazelbuild/bazel/issues/4257
-      # - run: bazel query --output=label //... | xargs bazel test
-      # However it makes it more confusing for Angular developers who are still novice at Bazel
-      # So keep it simple for now
-      - run: bazel build //...
-      - run: bazel test //...
+      # NOTE: Angular developers should typically just bazel build //packages/... or bazel test //packages/...
+      - run: bazel query --output=label //... | xargs bazel test --build_tag_filters=-ivy-only --test_tag_filters=-manual,-ivy-only
 
       # CircleCI will allow us to go back and view/download these artifacts from past builds.
       # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
+      # The destination keys need be format {projectName}/{context}/{fileName} so that the github-robot can process them for size calculations
+      # projectName should remain consistant to group files
+      # context and fileName can be almost anything (within usual URI rules)
+      # There should only be exactly 2 forward slashes in the path
+      # This is so they're backwards compatiable with the existing data we have on bundle sizes
       - store_artifacts:
           path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js
-          destination: packages/core/test/bundling/hello_world/bundle.min.js
+          destination: core/hello_world/bundle
       - store_artifacts:
-          path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js.brotli
-          destination: packages/core/test/bundling/hello_world/bundle.min.js.brotli
-
+          path: dist/bin/packages/core/test/bundling/todo/bundle.min.js
+          destination: core/todo/bundle
+      - store_artifacts:
+          path: dist/bin/packages/core/test/bundling/hello_world/bundle.min.js.br
+          destination: core/hello_world/bundle.br
+      - store_artifacts:
+          path: dist/bin/packages/core/test/bundling/todo/bundle.min.js.br
+          destination: core/todo/bundle.br
       - save_cache:
           key: *cache_key
           paths:
             - "node_modules"
             - "~/bazel_repository_cache"
+  # Temporary job to test what will happen when we flip the Ivy flag to true
+  test_ivy_jit:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      # See remote cache documentation in /docs/BAZEL.md
+      - run: .circleci/setup_cache.sh
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup-bazel-remote-cache
+
+      - restore_cache:
+          key: *cache_key
+
+      - run: bazel run @yarn//:yarn
+      - run: bazel query --output=label //... | xargs bazel test --define=compile=jit --build_tag_filters=ivy-jit --test_tag_filters=-manual,ivy-jit
+
+  test_ivy_aot:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      # See remote cache documentation in /docs/BAZEL.md
+      - run: .circleci/setup_cache.sh
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup-bazel-remote-cache
+
+      - restore_cache:
+          key: *cache_key
+
+      - run: bazel run @yarn//:yarn
+      - run: bazel query --output=label //... | xargs bazel test --define=compile=local --build_tag_filters=ivy-local --test_tag_filters=-manual,ivy-local
+
+  # This job exists only for backwards-compatibility with old scripts and tests
+  # that rely on the pre-Bazel dist/packages-dist layout.
+  # It duplicates some work with the job above: we build the bazel packages
+  # twice. Even though we have a remote cache, these jobs will typically run in
+  # parallel so up-to-date outputs will not be available at the time the build
+  # starts.
+  # No new jobs should depend on this one.
+  build-packages-dist:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      # See remote cache documentation in /docs/BAZEL.md
+      - run: .circleci/setup_cache.sh
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup-bazel-remote-cache
+
+      - run: bazel run @nodejs//:yarn
+      - run: scripts/build-packages-dist.sh
+
+      # Save the npm packages from //packages/... for other workflow jobs to read
+      # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
+      - persist_to_workspace:
+          root: dist
+          paths:
+            - packages-dist
+            - packages-dist-ivy-jit
+            - packages-dist-ivy-local
+
+  # We run the integration tests outside of Bazel for now.
+  # They are a separate workflow job so that they can be easily re-run.
+  # When the tests are ported to bazel test targets, they should move to the "test"
+  # job above, as part of the bazel test command. That has flaky_test_attempts so the
+  # need to re-run manually should be alleviated.
+  # See comments inside the integration/run_tests.sh script.
+  integration_test:
+    <<: *job_defaults
+    # Note: we run Bazel in one of the integration tests, and it can consume >2G
+    # of memory. Together with the system under test, this can exhaust the RAM
+    # on a 4G worker so we use a larger machine here too.
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      - attach_workspace:
+          at: dist
+      - run: xvfb-run --auto-servernum ./integration/run_tests.sh
+
+  # This job updates the content of repos like github.com/angular/core-builds
+  # for every green build on angular/angular.
+  publish_snapshot:
+    <<: *job_defaults
+    steps:
+      # See below - ideally this job should not trigger for non-upstream builds.
+      # But since it does, we have to check this condition.
+      - run:
+          name: Skip this job for Pull Requests and Fork builds
+          # Note, `|| true` on the end makes this step always exit 0
+          command: '[[
+              -v CIRCLE_PR_NUMBER
+              || "$CIRCLE_PROJECT_USERNAME" != "angular"
+              || "$CIRCLE_PROJECT_REPONAME" != "angular"
+          ]] && circleci step halt || true'
+      - checkout:
+          <<: *post_checkout
+      - attach_workspace:
+          at: dist
+      # CircleCI has a config setting to force SSH for all github connections
+      # This is not compatible with our mechanism of using a Personal Access Token
+      # Clear the global setting
+      - run: git config --global --unset "url.ssh://git@github.com.insteadof"
+      - run:
+          name: Decrypt github credentials
+          command: 'openssl aes-256-cbc -d -in .circleci/github_token -k "${KEY}" -out ~/.git_credentials'
+      - run: ./scripts/ci/publish-build-artifacts.sh
+
+  aio_monitoring:
+    <<: *job_defaults
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - run: xvfb-run --auto-servernum ./aio/scripts/test-production.sh
 
 workflows:
   version: 2
   default_workflow:
     jobs:
       - lint
-      - build
+      - test
+      - test_ivy_jit
+      - test_ivy_aot
+      - build-packages-dist
+      - integration_test:
+          requires:
+            - build-packages-dist
+      - publish_snapshot:
+          # Note: no filters on this job because we want it to run for all upstream branches
+          # We'd really like to filter out pull requests here, but not yet available:
+          # https://discuss.circleci.com/t/workflows-pull-request-filter/14396/4
+          # Instead, the job just exits immediately at the first step.
+          requires:
+            # Only publish if tests and integration tests pass
+            - test
+            - test_ivy_jit
+            - test_ivy_aot
+            - integration_test
+            # Get the artifacts to publish from the build-packages-dist job
+            # since the publishing script expects the legacy outputs layout.
+            - build-packages-dist
+
+  aio_monitoring:
+    jobs:
+      - aio_monitoring
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
+          filters:
+            branches:
+              only:
+                - master

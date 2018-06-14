@@ -10,24 +10,25 @@
 // correctly implementing its interfaces for backwards compatibility.
 import {Type} from '../core';
 import {Injector} from '../di/injector';
-import {ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
+import {Sanitizer} from '../sanitization/security';
 
-import {assertComponentType, assertNotNull} from './assert';
+import {assertComponentType, assertDefined} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, _getComponentHostLElementNode, baseDirectiveCreate, createLView, createTView, enterView, getRootView, hostElement, initChangeDetectorIfExisting, locateHostElement, renderComponentOrTemplate} from './instructions';
-import {ComponentDef, ComponentType} from './interfaces/definition';
-import {LElementNode, TNodeFlags} from './interfaces/node';
+import {CLEAN_PROMISE, ROOT_DIRECTIVE_INDICES, _getComponentHostLElementNode, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings,} from './instructions';
+import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
+import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {LView, LViewFlags, RootContext} from './interfaces/view';
+import {LViewData, LViewFlags, RootContext, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
 import {stringify} from './util';
-import {createViewRef} from './view_ref';
-
 
 
 /** Options that control how the component should be bootstrapped. */
 export interface CreateComponentOptions {
   /** Which renderer factory to use. */
   rendererFactory?: RendererFactory3;
+
+  /** A custom sanitizer instance */
+  sanitizer?: Sanitizer;
 
   /**
    * Host element on which the component will be bootstrapped. If not specified,
@@ -51,7 +52,7 @@ export interface CreateComponentOptions {
    * features list because there's no way of knowing when the component will be used as
    * a root component.
    */
-  hostFeatures?: (<T>(component: T, componentDef: ComponentDef<T>) => void)[];
+  hostFeatures?: (<T>(component: T, componentDef: ComponentDef<T, string>) => void)[];
 
   /**
    * A function which is used to schedule change detection work in the future.
@@ -66,32 +67,6 @@ export interface CreateComponentOptions {
    */
   scheduler?: (work: () => void) => void;
 }
-
-
-/**
- * Bootstraps a component, then creates and returns a `ComponentRef` for that component.
- *
- * @param componentType Component to bootstrap
- * @param options Optional parameters which control bootstrapping
- */
-export function createComponentRef<T>(
-    componentType: ComponentType<T>, opts: CreateComponentOptions): viewEngine_ComponentRef<T> {
-  const component = renderComponent(componentType, opts);
-  const hostView = _getComponentHostLElementNode(component).data as LView;
-  const hostViewRef = createViewRef(hostView, component);
-  return {
-    location: {nativeElement: getHostElement(component)},
-    injector: opts.injector || NULL_INJECTOR,
-    instance: component,
-    hostView: hostViewRef,
-    changeDetectorRef: hostViewRef,
-    componentType: componentType,
-    // TODO: implement destroy and onDestroy
-    destroy: () => {},
-    onDestroy: (cb: Function) => {}
-  };
-}
-
 
 // TODO: A hack to not pull in the NullInjector from @angular/core.
 export const NULL_INJECTOR: Injector = {
@@ -120,40 +95,54 @@ export function renderComponent<T>(
     opts: CreateComponentOptions = {}): T {
   ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
-  const componentDef = (componentType as ComponentType<T>).ngComponentDef as ComponentDef<T>;
+  const sanitizer = opts.sanitizer || null;
+  const componentDef =
+      (componentType as ComponentType<T>).ngComponentDef as ComponentDefInternal<T>;
   if (componentDef.type != componentType) componentDef.type = componentType;
   let component: T;
-  const hostNode = locateHostElement(rendererFactory, opts.host || componentDef.tag);
-  const rootContext: RootContext = {
-    // Incomplete initialization due to circular reference.
-    component: null !,
-    scheduler: opts.scheduler || requestAnimationFrame,
-    clean: CLEAN_PROMISE,
-  };
-  const rootView = createLView(
-      -1, rendererFactory.createRenderer(hostNode, componentDef.rendererType), createTView(), null,
-      rootContext, componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+  // The first index of the first selector is the tag name.
+  const componentTag = componentDef.selectors ![0] ![0] as string;
+  const hostNode = locateHostElement(rendererFactory, opts.host || componentTag);
+  const rootContext = createRootContext(opts.scheduler || requestAnimationFrame.bind(window));
+
+  const rootView: LViewData = createLViewData(
+      rendererFactory.createRenderer(hostNode, componentDef.rendererType),
+      createTView(-1, null, null, null), rootContext,
+      componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+  rootView[INJECTOR] = opts.injector || null;
 
   const oldView = enterView(rootView, null !);
-
   let elementNode: LElementNode;
   try {
+    if (rendererFactory.begin) rendererFactory.begin();
+
     // Create element node at index 0 in data array
-    elementNode = hostElement(hostNode, componentDef);
+    elementNode = hostElement(componentTag, hostNode, componentDef, sanitizer);
+
     // Create directive instance with factory() and store at index 0 in directives array
-    component = rootContext.component =
-        baseDirectiveCreate(0, componentDef.factory(), componentDef) as T;
-    initChangeDetectorIfExisting(elementNode.nodeInjector, component);
+    rootContext.components.push(
+        component = baseDirectiveCreate(0, componentDef.factory(), componentDef) as T);
+    initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data !);
+
+    opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
+
+    executeInitAndContentHooks();
+    setHostBindings(ROOT_DIRECTIVE_INDICES);
+    detectChangesInternal(elementNode.data as LViewData, elementNode, component);
   } finally {
-    // We must not use leaveView here because it will set creationMode to false too early,
-    // causing init-only hooks not to run. The detectChanges call below will execute
-    // leaveView at the appropriate time in the lifecycle.
-    enterView(oldView, null);
+    leaveView(oldView);
+    if (rendererFactory.end) rendererFactory.end();
   }
 
-  opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
-  renderComponentOrTemplate(elementNode, rootView, component);
   return component;
+}
+
+export function createRootContext(scheduler: (workFn: () => void) => void): RootContext {
+  return {
+    components: [],
+    scheduler: scheduler,
+    clean: CLEAN_PROMISE,
+  };
 }
 
 /**
@@ -169,12 +158,13 @@ export function renderComponent<T>(
  * renderComponent(AppComponent, {features: [RootLifecycleHooks]});
  * ```
  */
-export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): void {
+export function LifecycleHooksFeature(component: any, def: ComponentDefInternal<any>): void {
   const elementNode = _getComponentHostLElementNode(component);
 
   // Root component is always created at dir index 0
-  queueInitHooks(0, def.onInit, def.doCheck, elementNode.view.tView);
-  queueLifecycleHooks(elementNode.tNode !.flags, elementNode.view);
+  const tView = elementNode.view[TVIEW];
+  queueInitHooks(0, def.onInit, def.doCheck, tView);
+  queueLifecycleHooks(elementNode.tNode.flags, tView);
 }
 
 /**
@@ -184,8 +174,8 @@ export function LifecycleHooksFeature(component: any, def: ComponentDef<any>): v
  * @param component any component
  */
 function getRootContext(component: any): RootContext {
-  const rootContext = getRootView(component).context as RootContext;
-  ngDevMode && assertNotNull(rootContext, 'rootContext');
+  const rootContext = getRootView(component)[CONTEXT] as RootContext;
+  ngDevMode && assertDefined(rootContext, 'rootContext');
   return rootContext;
 }
 

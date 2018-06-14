@@ -1,6 +1,6 @@
 {% macro githubViewHref(doc, versionInfo) -%}
 https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInfo.repo $}/tree/{$ versionInfo.currentVersion.isSnapshot and versionInfo.currentVersion.SHA or versionInfo.currentVersion.raw $}/packages/{$ doc.fileInfo.realProjectRelativePath $}#L{$ doc.startingLine + 1 $}-L{$ doc.endingLine + 1 $}
-{%- endmacro %}
+{%- endmacro -%}
 
 
 {% macro githubEditHref(doc, versionInfo) -%}
@@ -9,4 +9,11 @@ https://github.com/{$ versionInfo.gitRepoInfo.owner $}/{$ versionInfo.gitRepoInf
   {%- elseif doc.docType === 'module' %}{$ doc.id.split('/')[0] $}
   {%- else %}...{%- endif -%}
 )%3A%20describe%20your%20change...#L{$ doc.startingLine + 1 $}-L{$ doc.endingLine + 1 $}
-{%- endmacro %}
+{%- endmacro -%}
+
+{% macro githubLinks(doc, versionInfo) -%}
+<div class="github-links">
+  <a href="{$ githubEditHref(doc, versionInfo) $}" aria-label="Suggest Edits" title="Suggest Edits"><i class="material-icons" aria-hidden="true" role="img">mode_edit</i></a>
+  <a href="{$ githubViewHref(doc, versionInfo) $}" aria-label="View Source" title="View Source"><i class="material-icons" aria-hidden="true" role="img">code</i></a>
+</div>
+{%- endmacro -%}

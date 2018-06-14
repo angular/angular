@@ -19,8 +19,6 @@ import { HeroesComponent }      from './heroes/heroes.component';
 // #enddocregion v1
 import { HeroSearchComponent }  from './hero-search/hero-search.component';
 // #docregion v1
-import { HeroService }          from './hero.service';
-import { MessageService }       from './message.service';
 import { MessagesComponent }    from './messages/messages.component';
 
 @NgModule({
@@ -49,7 +47,6 @@ import { MessagesComponent }    from './messages/messages.component';
     HeroSearchComponent
     // #docregion v1
   ],
-  providers: [ HeroService, MessageService ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

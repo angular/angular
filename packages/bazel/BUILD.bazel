@@ -19,5 +19,6 @@ npm_package(
         "//packages/bazel/": "//",
         "angular/packages/bazel/": "angular/",
     },
+    tags = ["release-with-framework"],
     deps = [":workspace"],
 )

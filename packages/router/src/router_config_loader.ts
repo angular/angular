@@ -10,7 +10,7 @@ import {Compiler, InjectionToken, Injector, NgModuleFactory, NgModuleFactoryLoad
 // TODO(i): switch to fromPromise once it's expored in rxjs
 import {Observable, from, of } from 'rxjs';
 import {map, mergeMap} from 'rxjs/operators';
-import {LoadChildren, LoadedRouterConfig, Route, copyConfig} from './config';
+import {LoadChildren, LoadedRouterConfig, Route, standardizeConfig} from './config';
 import {flatten, wrapIntoObservable} from './utils/collection';
 
 /**
@@ -39,7 +39,8 @@ export class RouterConfigLoader {
 
       const module = factory.create(parentInjector);
 
-      return new LoadedRouterConfig(flatten(module.injector.get(ROUTES)).map(copyConfig), module);
+      return new LoadedRouterConfig(
+          flatten(module.injector.get(ROUTES)).map(standardizeConfig), module);
     }));
   }
 

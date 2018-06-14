@@ -31,7 +31,8 @@
     "bazel",
     "compiler-cli/integrationtest",
     "platform-server/integrationtest",
-    "common/locales"
+    "common/locales",
+    "elements/schematics"
   ]
 
 }

@@ -18,21 +18,15 @@ import {UrlTree} from '../url_tree';
 
 
 /**
- * @whatItDoes Lets you link to specific parts of your app.
- *
- * @howToUse
- *
- * Consider the following route configuration:
- * `[{ path: 'user/:name', component: UserCmp }]`
- *
- * When linking to this `user/:name` route, you can write:
- * `<a routerLink='/user/bob'>link to user component</a>`
- *
  * @description
  *
- * The RouterLink directives let you link to specific parts of your app.
+ * Lets you link to specific routes in your app.
  *
- * When the link is static, you can use the directive as follows:
+ * Consider the following route configuration:
+ * `[{ path: 'user/:name', component: UserCmp }]`.
+ * When linking to this `user/:name` route, you use the `RouterLink` directive.
+ *
+ * If the link is static, you can use the directive as follows:
  * `<a routerLink="/user/bob">link to user component</a>`
  *
  * If you use dynamic values to generate the link, you can pass an array of path
@@ -94,7 +88,7 @@ import {UrlTree} from '../url_tree';
  *
  * @ngModule RouterModule
  *
- * @stable
+ *
  */
 @Directive({selector: ':not(a)[routerLink]'})
 export class RouterLink {
@@ -158,13 +152,15 @@ export class RouterLink {
 }
 
 /**
- * @whatItDoes Lets you link to specific parts of your app.
+ * @description
  *
- * See {@link RouterLink} for more information.
+ * Lets you link to specific routes in your app.
+ *
+ * See `RouterLink` for more information.
  *
  * @ngModule RouterModule
  *
- * @stable
+ *
  */
 @Directive({selector: 'a[routerLink]'})
 export class RouterLinkWithHref implements OnChanges, OnDestroy {
