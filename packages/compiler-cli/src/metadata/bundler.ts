@@ -235,7 +235,8 @@ export class MetadataBundler {
     const rootExport = getRootExport(symbol);
     const declaration = getSymbolDeclaration(symbol);
     const isPrivate = !this.exported.has(rootExport);
-    const canonicalSymbol = isPrivate ? declaration : rootExport;
+    let canonicalSymbol = isPrivate ? declaration : rootExport;
+    canonicalSymbol = canonicalSymbol.declaration ? canonicalSymbol : getRootExport(declaration);
     symbol.isPrivate = isPrivate;
     symbol.declaration = declaration;
     symbol.canonicalSymbol = canonicalSymbol;
@@ -600,8 +601,8 @@ export class CompilerHostAdapter implements MetadataBundlerHost {
   constructor(private host: ts.CompilerHost, private cache: MetadataCache|null) {}
 
   getMetadataFor(fileName: string): ModuleMetadata|undefined {
-    if (!this.host.fileExists(fileName + '.ts')) return undefined;
-    const sourceFile = this.host.getSourceFile(fileName + '.ts', ts.ScriptTarget.Latest);
+    if (!this.host.fileExists(`${fileName}.ts`)) return undefined;
+    const sourceFile = this.host.getSourceFile(`${fileName}.ts`, ts.ScriptTarget.Latest);
     // If there is a metadata cache, use it to get the metadata for this source file. Otherwise,
     // fall back on the locally created MetadataCollector.
     if (!sourceFile) {

@@ -193,6 +193,44 @@ describe('metadata bundler', () => {
     expect(result.metadata.origins !['E']).toBeUndefined();
   });
 
+  it('should be able to bundle a library with referenced re-exported symbols', () => {
+    const host = new MockStringBundlerHost('/', {
+      'public-api.ts': `
+        export * from './src/module';
+      `,
+      'src': {
+        'components': {
+          'hello.component.ts': `
+            import { Component } from '@angular/core';
+
+            @Component({
+              template: ''
+            })
+            export class HelloComponent { }
+          `,
+          'index.ts': `
+            export * from './hello.component';
+          `,
+        },
+        'module.ts': `
+          import { NgModule } from '@angular/core';
+          import { HelloComponent } from './components'
+
+          @NgModule({
+            declarations: [
+              HelloComponent
+            ]
+          })
+          export class AppModule {}
+        `
+      }
+    });
+
+    const bundler = new MetadataBundler('/public-api', 'index.js', host);
+    const result = bundler.getMetadataBundle();
+    expect(result.metadata.__symbolic).toEqual('module');
+  });
+
   it('should be able to de-duplicate symbols of re-exported modules', () => {
     const host = new MockStringBundlerHost('/', {
       'public-api.ts': `
