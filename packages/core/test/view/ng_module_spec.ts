@@ -80,11 +80,14 @@ class FromChildWithOptionalDep {
 }
 
 class FromChildWithSkipSelfDep {
-  constructor(public depFromParent: ChildDep|null, public depFromChild: Bar|null) {}
+  constructor(
+      public skipSelfChildDep: ChildDep|null, public selfChildDep: ChildDep|null,
+      public optionalSelfBar: Bar|null) {}
   static ngInjectableDef: InjectableDef<FromChildWithSkipSelfDep> = defineInjectable({
     factory: () => new FromChildWithSkipSelfDep(
                  inject(ChildDep, InjectFlags.SkipSelf|InjectFlags.Optional),
-                 inject(Bar, InjectFlags.Self|InjectFlags.Optional)),
+                 inject(ChildDep, InjectFlags.Self),
+                 inject(Bar, InjectFlags.Self|InjectFlags.Optional), ),
     providedIn: MyChildModule,
   });
 }
@@ -162,8 +165,9 @@ describe('NgModuleRef_ injector', () => {
   it('injects skip-self and self deps across injectors properly', () => {
     const instance = childRef.injector.get(FromChildWithSkipSelfDep);
     expect(instance instanceof FromChildWithSkipSelfDep).toBeTruthy();
-    expect(instance.depFromParent).toBeNull();
-    expect(instance.depFromChild instanceof Bar).toBeTruthy();
+    expect(instance.skipSelfChildDep).toBeNull();
+    expect(instance.selfChildDep instanceof ChildDep).toBeTruthy();
+    expect(instance.optionalSelfBar).toBeNull();
   });
 
   it('does not inject something not scoped to the module',
