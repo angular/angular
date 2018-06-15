@@ -144,17 +144,20 @@ export function awaitCurrentlyCompilingComponents(): Promise<void> {
 function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMetadata {
   // Reflect inputs and outputs.
   const propMetadata = getReflect().propMetadata(type);
-  const inputs: StringMap = {};
-  const outputs: StringMap = {};
 
   const host = extractHostBindings(metadata, propMetadata);
 
+  const inputsFromMetadata = parseInputOutputs(metadata.inputs || []);
+  const outputsFromMetadata = parseInputOutputs(metadata.outputs || []);
+
+  const inputsFromType: StringMap = {};
+  const outputsFromType: StringMap = {};
   for (let field in propMetadata) {
     propMetadata[field].forEach(ann => {
       if (isInput(ann)) {
-        inputs[field] = ann.bindingPropertyName || field;
+        inputsFromType[field] = ann.bindingPropertyName || field;
       } else if (isOutput(ann)) {
-        outputs[field] = ann.bindingPropertyName || field;
+        outputsFromType[field] = ann.bindingPropertyName || field;
       }
     });
   }
@@ -163,7 +166,9 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     name: type.name,
     type: new WrappedNodeExpr(type),
     selector: metadata.selector !,
-    deps: reflectDependencies(type), host, inputs, outputs,
+    deps: reflectDependencies(type), host,
+    inputs: {...inputsFromMetadata, ...inputsFromType},
+    outputs: {...outputsFromMetadata, ...outputsFromType},
     queries: [],
     lifecycle: {
       usesOnChanges: type.prototype.ngOnChanges !== undefined,
@@ -212,4 +217,14 @@ function isHostBinding(value: any): value is HostBinding {
 
 function isHostListener(value: any): value is HostListener {
   return value.ngMetadataName === 'HostListener';
+}
+
+function parseInputOutputs(values: string[]): StringMap {
+  return values.reduce(
+      (map, value) => {
+        const [field, property] = value.split(',').map(piece => piece.trim());
+        map[field] = property || field;
+        return map;
+      },
+      {} as StringMap);
 }
