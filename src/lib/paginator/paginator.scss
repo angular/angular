@@ -5,7 +5,12 @@ $mat-paginator-page-size-margin-right: 8px;
 
 $mat-paginator-items-per-page-label-margin: 0 4px;
 $mat-paginator-selector-margin: 6px 4px 0 4px;
-$mat-paginator-selector-trigger-min-width: 56px;
+$mat-paginator-selector-trigger-width: 56px;
+$mat-paginator-selector-trigger-outline-width: 64px;
+$mat-paginator-selector-trigger-fill-width: 64px;
+
+/** @deprecated Use `$mat-paginator-selector-trigger-width` instead. @deletion-target 8.0.0 */
+$mat-paginator-selector-trigger-min-width: $mat-paginator-selector-trigger-width;
 
 $mat-paginator-range-actions-min-height: 48px;
 
@@ -58,7 +63,15 @@ $mat-paginator-button-last-increment-icon-margin: 9px;
 
 .mat-paginator-page-size-select {
   margin: $mat-paginator-selector-margin;
-  width: $mat-paginator-selector-trigger-min-width;
+  width: $mat-paginator-selector-trigger-width;
+
+  &.mat-form-field-appearance-outline {
+    width: $mat-paginator-selector-trigger-outline-width;
+  }
+
+  &.mat-form-field-appearance-fill {
+    width: $mat-paginator-selector-trigger-fill-width;
+  }
 }
 
 .mat-paginator-range-label {
