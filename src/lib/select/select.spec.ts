@@ -3847,6 +3847,28 @@ describe('MatSelect', () => {
       expect(fixture.componentInstance.select._keyManager.activeItemIndex).toBe(2);
     }));
 
+    it('should be to select an option with a `null` value', fakeAsync(() => {
+      fixture.componentInstance.foods = [
+        { value: null, viewValue: 'Steak' },
+        { value: 'pizza-1', viewValue: 'Pizza' },
+        { value: null, viewValue: 'Tacos' },
+      ];
+
+      fixture.detectChanges();
+      trigger.click();
+      fixture.detectChanges();
+
+      const options = overlayContainerElement.querySelectorAll('mat-option') as
+          NodeListOf<HTMLElement>;
+
+      options[0].click();
+      options[1].click();
+      options[2].click();
+      fixture.detectChanges();
+
+      expect(testInstance.control.value).toEqual([null, 'pizza-1', null]);
+    }));
+
   });
 });
 

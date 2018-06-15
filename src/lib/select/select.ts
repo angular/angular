@@ -870,18 +870,18 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   private _onSelect(option: MatOption, isUserInput: boolean): void {
     const wasSelected = this._selectionModel.isSelected(option);
 
-    if (option.value == null) {
+    if (option.value == null && !this._multiple) {
       this._selectionModel.clear();
       this._propagateChanges(option.value);
     } else {
       option.selected ? this._selectionModel.select(option) : this._selectionModel.deselect(option);
 
-      // TODO(crisbeto): handle blank/null options inside multi-select.
       if (this.multiple) {
         this._sortValues();
 
         if (isUserInput) {
           this._keyManager.setActiveItem(option);
+
           // In case the user selected the option with their mouse, we
           // want to restore focus back to the trigger, in order to
           // prevent the select keyboard controls from clashing with
