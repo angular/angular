@@ -51,9 +51,9 @@ export class CssKeyframesPlayer implements AnimationPlayer {
   destroy() {
     this.init();
     if (this._state >= AnimatorControlState.DESTROYED) return;
-    this._state = AnimatorControlState.DESTROYED;
     this._styler.destroy();
     this._onFinish();
+    this._state = AnimatorControlState.DESTROYED;
     this._onDestroyFns.forEach(fn => fn());
     this._onDestroyFns = [];
   }
