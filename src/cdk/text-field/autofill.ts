@@ -71,10 +71,10 @@ export class AutofillMonitor implements OnDestroy {
     const listener = (event: AnimationEvent) => {
       if (event.animationName === 'cdk-text-field-autofill-start') {
         element.classList.add('cdk-text-field-autofilled');
-        result.next({target: event.target as Element, isAutofilled: true});
+        this._ngZone.run(() => result.next({target: event.target as Element, isAutofilled: true}));
       } else if (event.animationName === 'cdk-text-field-autofill-end') {
         element.classList.remove('cdk-text-field-autofilled');
-        result.next({target: event.target as Element, isAutofilled: false});
+        this._ngZone.run(() => result.next({target: event.target as Element, isAutofilled: false}));
       }
     };
 

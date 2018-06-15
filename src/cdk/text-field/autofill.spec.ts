@@ -7,7 +7,7 @@
  */
 
 import {supportsPassiveEventListeners} from '@angular/cdk/platform';
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import {Component, ElementRef, NgZone, ViewChild} from '@angular/core';
 import {ComponentFixture, inject, TestBed} from '@angular/core/testing';
 import {EMPTY} from 'rxjs';
 import {AutofillEvent, AutofillMonitor} from './autofill';
@@ -150,6 +150,19 @@ describe('AutofillMonitor', () => {
     expect(spy).toHaveBeenCalled();
   });
 
+  it('should emit on stream inside the NgZone', () => {
+    const inputEl = testComponent.input1.nativeElement;
+    let animationStartCallback: Function = () => {};
+    inputEl.addEventListener.and.callFake((_, cb) => animationStartCallback = cb);
+    const autofillStream = autofillMonitor.monitor(inputEl);
+    const spy = jasmine.createSpy('zone spy');
+
+    autofillStream.subscribe(() => spy(NgZone.isInAngularZone()));
+    expect(spy).not.toHaveBeenCalled();
+
+    animationStartCallback({animationName: 'cdk-text-field-autofill-start', target: inputEl});
+    expect(spy).toHaveBeenCalledWith(true);
+  });
 });
 
 describe('cdkAutofill', () => {
