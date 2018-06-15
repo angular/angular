@@ -10,6 +10,7 @@ import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AppComponent } from 'app/app.component';
 import { CustomIconRegistry, SVG_ICONS } from 'app/shared/custom-icon-registry';
@@ -97,6 +98,7 @@ export const svgIconProviders = [
     MatProgressBarModule,
     MatSidenavModule,
     MatToolbarModule,
+    MatTooltipModule,
     SwUpdatesModule,
     SharedModule,
   ],
