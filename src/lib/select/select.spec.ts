@@ -124,6 +124,7 @@ describe('MatSelect', () => {
         MultiSelect,
         SelectWithGroups,
         SelectWithGroupsAndNgContainer,
+        SelectWithFormFieldLabel,
       ]);
     }));
 
@@ -229,6 +230,29 @@ describe('MatSelect', () => {
           fixture.detectChanges();
           expect(select.getAttribute('tabindex')).toEqual('0');
         }));
+
+        it('should set `aria-labelledby` to form field label if there is no placeholder', () => {
+          fixture.destroy();
+
+          const labelFixture = TestBed.createComponent(SelectWithFormFieldLabel);
+          labelFixture.detectChanges();
+          select = labelFixture.debugElement.query(By.css('mat-select')).nativeElement;
+
+          expect(select.getAttribute('aria-labelledby')).toBeTruthy();
+          expect(select.getAttribute('aria-labelledby'))
+              .toBe(labelFixture.nativeElement.querySelector('label').getAttribute('id'));
+        });
+
+        it('should not set `aria-labelledby` if there is a placeholder', () => {
+          fixture.destroy();
+
+          const labelFixture = TestBed.createComponent(SelectWithFormFieldLabel);
+          labelFixture.componentInstance.placeholder = 'Thing selector';
+          labelFixture.detectChanges();
+          select = labelFixture.debugElement.query(By.css('mat-select')).nativeElement;
+
+          expect(select.getAttribute('aria-labelledby')).toBeFalsy();
+        });
 
         it('should select options via the UP/DOWN arrow keys on a closed select', fakeAsync(() => {
           const formControl = fixture.componentInstance.control;
@@ -4560,4 +4584,19 @@ class SelectWithoutOptionCentering {
 
   @ViewChild(MatSelect) select: MatSelect;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
+}
+
+@Component({
+  template: `
+    <mat-form-field>
+      <mat-label>Select a thing</mat-label>
+
+      <mat-select [placeholder]="placeholder">
+        <mat-option value="thing">A thing</mat-option>
+      </mat-select>
+    </mat-form-field>
+  `
+})
+class SelectWithFormFieldLabel {
+  placeholder: string;
 }

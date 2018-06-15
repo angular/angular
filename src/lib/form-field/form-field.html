@@ -12,6 +12,7 @@
         <!-- We add aria-owns as a workaround for an issue in JAWS & NVDA where the label isn't
              read if it comes before the control in the DOM. -->
         <label class="mat-form-field-label"
+               [id]="_labelId"
                [attr.for]="_control.id"
                [attr.aria-owns]="_control.id"
                [class.mat-empty]="_control.empty && !_shouldAlwaysFloat"
