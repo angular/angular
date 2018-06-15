@@ -49,7 +49,6 @@ function baseDirectiveFields(
                       deps: meta.deps,
                       useNew: true,
                       injectFn: R3.directiveInject,
-                      useOptionalParam: false,
                       extraResults: queryDefinitions,
                     }));
 
