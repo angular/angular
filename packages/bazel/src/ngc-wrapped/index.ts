@@ -76,7 +76,8 @@ export function runOneBuild(args: string[], inputs?: {[path: string]: string}): 
 export function relativeToRootDirs(filePath: string, rootDirs: string[]): string {
   if (!filePath) return filePath;
   // NB: the rootDirs should have been sorted longest-first
-  for (const dir of rootDirs || []) {
+  for (let i = 0; i < rootDirs.length; i++) {
+    const dir = rootDirs[i];
     const rel = path.posix.relative(dir, filePath);
     if (rel.indexOf('.') != 0) return rel;
   }
@@ -106,7 +107,9 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     fileLoader = new CachedFileLoader(fileCache, allowNonHermeticReads);
     // Resolve the inputs to absolute paths to match TypeScript internals
     const resolvedInputs: {[path: string]: string} = {};
-    for (const key of Object.keys(inputs)) {
+    const inputKeys = Object.keys(inputs);
+    for (let i = 0; i < inputKeys.length; i++) {
+      const key = inputKeys[i];
       resolvedInputs[resolveNormalizedPath(key)] = inputs[key];
     }
     fileCache.updateCache(resolvedInputs);
@@ -306,8 +309,8 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     fs.writeFileSync(bazelOpts.tsickleExternsPath, externs);
   }
 
-  for (const missing of writtenExpectedOuts) {
-    originalWriteFile(missing, '', false);
+  for (let i = 0; i < writtenExpectedOuts.length; i++) {
+    originalWriteFile(writtenExpectedOuts[i], '', false);
   }
 
   return {program, diagnostics};
@@ -323,7 +326,8 @@ function generateMetadataJson(
     program: ts.Program, files: string[], rootDirs: string[], bazelBin: string,
     tsHost: ts.CompilerHost) {
   const collector = new ng.MetadataCollector();
-  for (const file of files) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
     const sourceFile = program.getSourceFile(file);
     if (sourceFile) {
       const metadata = collector.getMetadata(sourceFile);
@@ -353,7 +357,9 @@ function gatherDiagnosticsForInputsOnly(
   // program.getDeclarationDiagnostics() it somehow corrupts the emit.
   diagnostics.push(...tsProgram.getOptionsDiagnostics());
   diagnostics.push(...tsProgram.getGlobalDiagnostics());
-  for (const sf of tsProgram.getSourceFiles().filter(f => isCompilationTarget(bazelOpts, f))) {
+  const programFiles = tsProgram.getSourceFiles().filter(f => isCompilationTarget(bazelOpts, f));
+  for (let i = 0; i < programFiles.length; i++) {
+    const sf = programFiles[i];
     // Note: We only get the diagnostics for individual files
     // to e.g. not check libraries.
     diagnostics.push(...tsProgram.getSyntacticDiagnostics(sf));
