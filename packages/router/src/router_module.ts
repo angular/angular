@@ -11,6 +11,7 @@ import {ANALYZE_FOR_ENTRY_COMPONENTS, APP_BOOTSTRAP_LISTENER, APP_INITIALIZER, A
 import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {Subject, of } from 'rxjs';
 
+import {EmptyOutletComponent} from './components/empty_outlet';
 import {Route, Routes} from './config';
 import {RouterLink, RouterLinkWithHref} from './directives/router_link';
 import {RouterLinkActive} from './directives/router_link_active';
@@ -36,7 +37,8 @@ import {flatten} from './utils/collection';
  *
  *
  */
-const ROUTER_DIRECTIVES = [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive];
+const ROUTER_DIRECTIVES =
+    [RouterOutlet, RouterLink, RouterLinkWithHref, RouterLinkActive, EmptyOutletComponent];
 
 /**
  * @description
@@ -128,7 +130,11 @@ export function routerNgProbeToken() {
  *
  *
  */
-@NgModule({declarations: ROUTER_DIRECTIVES, exports: ROUTER_DIRECTIVES})
+@NgModule({
+  declarations: ROUTER_DIRECTIVES,
+  exports: ROUTER_DIRECTIVES,
+  entryComponents: [EmptyOutletComponent]
+})
 export class RouterModule {
   // Note: We are injecting the Router so it gets created eagerly...
   constructor(@Optional() @Inject(ROUTER_FORROOT_GUARD) guard: any, @Optional() router: Router) {}

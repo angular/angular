@@ -11,14 +11,15 @@ import * as ts from 'typescript';
 
 import {Decorator} from '../../metadata';
 import {reflectConstructorParameters, reflectImportedIdentifier, reflectObjectLiteral} from '../../metadata/src/reflector';
+import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform/src/api';
 
-import {AddStaticFieldInstruction, AnalysisOutput, CompilerAdapter} from './api';
+import {getConstructorDependencies} from './util';
 
 
 /**
  * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
-export class InjectableCompilerAdapter implements CompilerAdapter<R3InjectableMetadata> {
+export class InjectableDecoratorHandler implements DecoratorHandler<R3InjectableMetadata> {
   constructor(private checker: ts.TypeChecker) {}
 
   detect(decorator: Decorator[]): Decorator|undefined {
@@ -31,11 +32,12 @@ export class InjectableCompilerAdapter implements CompilerAdapter<R3InjectableMe
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3InjectableMetadata): AddStaticFieldInstruction {
+  compile(node: ts.ClassDeclaration, analysis: R3InjectableMetadata): CompileResult {
     const res = compileIvyInjectable(analysis);
     return {
       field: 'ngInjectableDef',
       initializer: res.expression,
+      statements: [],
       type: res.type,
     };
   }
@@ -105,38 +107,7 @@ function extractInjectableMetadata(
   }
 }
 
-function getConstructorDependencies(
-    clazz: ts.ClassDeclaration, checker: ts.TypeChecker): R3DependencyMetadata[] {
-  const useType: R3DependencyMetadata[] = [];
-  const ctorParams = (reflectConstructorParameters(clazz, checker) || []);
-  ctorParams.forEach(param => {
-    let tokenExpr = param.typeValueExpr;
-    let optional = false, self = false, skipSelf = false;
-    param.decorators.filter(dec => dec.from === '@angular/core').forEach(dec => {
-      if (dec.name === 'Inject') {
-        if (dec.args.length !== 1) {
-          throw new Error(`Unexpected number of arguments to @Inject().`);
-        }
-        tokenExpr = dec.args[0];
-      } else if (dec.name === 'Optional') {
-        optional = true;
-      } else if (dec.name === 'SkipSelf') {
-        skipSelf = true;
-      } else if (dec.name === 'Self') {
-        self = true;
-      } else {
-        throw new Error(`Unexpected decorator ${dec.name} on parameter.`);
-      }
-      if (tokenExpr === null) {
-        throw new Error(`No suitable token for parameter!`);
-      }
-    });
-    const token = new WrappedNodeExpr(tokenExpr);
-    useType.push(
-        {token, optional, self, skipSelf, host: false, resolved: R3ResolvedDependencyType.Token});
-  });
-  return useType;
-}
+
 
 function getDep(dep: ts.Expression, checker: ts.TypeChecker): R3DependencyMetadata {
   const meta: R3DependencyMetadata = {

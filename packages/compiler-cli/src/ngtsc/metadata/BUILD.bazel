@@ -10,6 +10,7 @@ ts_library(
     ]),
     module_name = "@angular/compiler-cli/src/ngtsc/metadata",
     deps = [
+        "//packages:types",
         "//packages/compiler",
     ],
 )

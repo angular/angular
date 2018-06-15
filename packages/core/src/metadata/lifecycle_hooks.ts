@@ -27,7 +27,7 @@ export interface SimpleChanges { [propName: string]: SimpleChange; }
  * and content children are checked if at least one of them has changed.
  * The `changes` parameter contains the changed properties.
  *
- * See {@linkDocs guide/lifecycle-hooks#onchanges "Lifecycle Hooks Guide"}.
+ * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#onchanges).
  *
  *
  */
@@ -45,7 +45,7 @@ export interface OnChanges { ngOnChanges(changes: SimpleChanges): void; }
  * first time, and before any of its children have been checked. It is invoked only once when the
  * directive is instantiated.
  *
- * See {@linkDocs guide/lifecycle-hooks "Lifecycle Hooks Guide"}.
+ * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks).
  *
  *
  */
@@ -69,7 +69,7 @@ export interface OnInit { ngOnInit(): void; }
  * See {@link KeyValueDiffers} and {@link IterableDiffers} for implementing custom dirty checking
  * for collections.
  *
- * See {@linkDocs guide/lifecycle-hooks#docheck "Lifecycle Hooks Guide"}.
+ * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#docheck).
  *
  *
  */
@@ -85,7 +85,7 @@ export interface DoCheck { ngDoCheck(): void; }
  * `ngOnDestroy` callback is typically used for any custom cleanup that needs to occur when the
  * instance is destroyed.
  *
- * See {@linkDocs guide/lifecycle-hooks "Lifecycle Hooks Guide"}.
+ * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks).
  *
  *
  */
@@ -100,7 +100,7 @@ export interface OnDestroy { ngOnDestroy(): void; }
  * Lifecycle hook that is called after a directive's content has been fully
  * initialized.
  *
- * See {@linkDocs guide/lifecycle-hooks#aftercontent "Lifecycle Hooks Guide"}.
+ * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#aftercontent).
  *
  *
  */
@@ -113,7 +113,7 @@ export interface AfterContentInit { ngAfterContentInit(): void; }
  * @description
  * Lifecycle hook that is called after every check of a directive's content.
  *
- * See {@linkDocs guide/lifecycle-hooks#aftercontent "Lifecycle Hooks Guide"}.
+ * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#aftercontent).
  *
  *
  */
@@ -127,7 +127,7 @@ export interface AfterContentChecked { ngAfterContentChecked(): void; }
  * Lifecycle hook that is called after a component's view has been fully
  * initialized.
  *
- * See {@linkDocs guide/lifecycle-hooks#afterview "Lifecycle Hooks Guide"}.
+ * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#afterview).
  *
  *
  */
@@ -140,7 +140,7 @@ export interface AfterViewInit { ngAfterViewInit(): void; }
  * @description
  * Lifecycle hook that is called after every check of a component's view.
  *
- * See {@linkDocs guide/lifecycle-hooks#afterview "Lifecycle Hooks Guide"}.
+ * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#afterview).
  *
  *
  */

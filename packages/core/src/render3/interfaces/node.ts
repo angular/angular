@@ -10,7 +10,7 @@ import {LContainer} from './container';
 import {LInjector} from './injector';
 import {LProjection} from './projection';
 import {LQueries} from './query';
-import {RElement, RText} from './renderer';
+import {RComment, RElement, RText} from './renderer';
 import {LViewData, TView} from './view';
 
 
@@ -63,7 +63,7 @@ export interface LNode {
    *  - append children to their element parents in the DOM (e.g. `parent.native.appendChild(...)`)
    *  - retrieve the sibling elements of text nodes whose creation / insertion has been delayed
    */
-  readonly native: RElement|RText|null|undefined;
+  readonly native: RComment|RElement|RText|null;
 
   /**
    * If regular LElementNode, then `data` will be null.
@@ -141,13 +141,13 @@ export interface LViewNode extends LNode {
 /** Abstract node container which contains other views. */
 export interface LContainerNode extends LNode {
   /*
-   * Caches the reference of the first native node following this container in the same native
-   * parent.
-   * This is reset to undefined in containerRefreshEnd.
-   * When it is undefined, it means the value has not been computed yet.
-   * Otherwise, it contains the result of findBeforeNode(container, null).
+   * This comment node is appended to the container's parent element to mark where
+   * in the DOM the container's child views should be added.
+   *
+   * If the container is a root node of a view, this comment will not be appended
+   * until the parent view is processed.
    */
-  native: RElement|RText|null|undefined;
+  native: RComment;
   readonly data: LContainer;
 }
 
@@ -163,15 +163,20 @@ export interface LProjectionNode extends LNode {
  * items are not regular attributes and the processing should be adapted accordingly.
  */
 export const enum AttributeMarker {
-  NS = 0,  // namespace. Has to be repeated.
+  /**
+   * Marker indicates that the following 3 values in the attributes array are:
+   * namespaceUri, attributeName, attributeValue
+   * in that order.
+   */
+  NamespaceURI = 0,
 
   /**
    * This marker indicates that the following attribute names were extracted from bindings (ex.:
    * [foo]="exp") and / or event handlers (ex. (bar)="doSth()").
    * Taking the above bindings and outputs as an example an attributes array could look as follows:
-   * ['class', 'fade in', AttributeMarker.SELECT_ONLY, 'foo', 'bar']
+   * ['class', 'fade in', AttributeMarker.SelectOnly, 'foo', 'bar']
    */
-  SELECT_ONLY = 1
+  SelectOnly = 1
 }
 
 /**

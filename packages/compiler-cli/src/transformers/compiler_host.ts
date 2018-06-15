@@ -18,7 +18,7 @@ import {CompilerHost, CompilerOptions, LibrarySummary} from './api';
 import {MetadataReaderHost, createMetadataReaderCache, readMetadata} from './metadata_reader';
 import {DTS, GENERATED_FILES, isInRootDir, relativeToRootDirs} from './util';
 
-const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-)+|(@(\w|-)+\/(\w|-)+))/;
+const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-|\.)+|(@(\w|-|\.)+\/(\w|-|\.)+))/;
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 
 export function createCompilerHost(

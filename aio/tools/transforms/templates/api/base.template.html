@@ -2,10 +2,7 @@
 {% set comma = joiner(',') %}
 {% set slash = joiner('/') %}
 <article>
-  <div class="page-actions">
-    <a href="{$ github.githubEditHref(doc, versionInfo) $}" aria-label="Suggest Edits" title="Suggest Edits"><i class="material-icons" aria-hidden="true" role="img">mode_edit</i></a>
-    <a href="{$ github.githubViewHref(doc, versionInfo) $}" aria-label="View Source" title="View Source"><i class="material-icons" aria-hidden="true" role="img">code</i></a>
-  </div>
+  {$ github.githubLinks(doc, versionInfo) $}
   <div class="breadcrumb">
     <script type="application/ld+json">
       {

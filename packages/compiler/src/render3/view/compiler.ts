@@ -85,8 +85,9 @@ export function compileDirectiveFromMetadata(
     bindingParser: BindingParser): R3DirectiveDef {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
-  const type =
-      new o.ExpressionType(o.importExpr(R3.DirectiveDef, [new o.ExpressionType(meta.type)]));
+  const type = new o.ExpressionType(o.importExpr(
+      R3.DirectiveDef,
+      [new o.ExpressionType(meta.type), new o.ExpressionType(o.literal(meta.selector || ''))]));
   return {expression, type};
 }
 
@@ -154,8 +155,9 @@ export function compileComponentFromMetadata(
   }
 
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
-  const type =
-      new o.ExpressionType(o.importExpr(R3.ComponentDef, [new o.ExpressionType(meta.type)]));
+  const type = new o.ExpressionType(o.importExpr(
+      R3.ComponentDef,
+      [new o.ExpressionType(meta.type), new o.ExpressionType(o.literal(meta.selector || ''))]));
 
   return {expression, type};
 }
@@ -243,14 +245,14 @@ function directiveMetadataFromGlobalMetadata(
     selector: directive.selector,
     deps: dependenciesFromGlobalMetadata(directive.type, outputCtx, reflector),
     queries: queriesFromGlobalMetadata(directive.queries, outputCtx),
+    lifecycle: {
+      usesOnChanges:
+          directive.type.lifecycleHooks.some(lifecycle => lifecycle == LifecycleHooks.OnChanges),
+    },
     host: {
       attributes: directive.hostAttributes,
       listeners: summary.hostListeners,
       properties: summary.hostProperties,
-    },
-    lifecycle: {
-      usesOnChanges:
-          directive.type.lifecycleHooks.some(lifecycle => lifecycle == LifecycleHooks.OnChanges),
     },
     inputs: directive.inputs,
     outputs: directive.outputs,
@@ -444,4 +446,46 @@ function typeMapToExpressionMap(
   const entries = Array.from(map).map(
       ([key, type]): [string, o.Expression] => [key, outputCtx.importExpr(type)]);
   return new Map(entries);
+}
+
+const HOST_REG_EXP = /^(?:(?:\[([^\]]+)\])|(?:\(([^\)]+)\)))|(\@[-\w]+)$/;
+
+// Represents the groups in the above regex.
+const enum HostBindingGroup {
+  // group 1: "prop" from "[prop]"
+  Property = 1,
+
+  // group 2: "event" from "(event)"
+  Event = 2,
+
+  // group 3: "@trigger" from "@trigger"
+  Animation = 3,
+}
+
+export function parseHostBindings(host: {[key: string]: string}): {
+  attributes: {[key: string]: string},
+  listeners: {[key: string]: string},
+  properties: {[key: string]: string},
+  animations: {[key: string]: string},
+} {
+  const attributes: {[key: string]: string} = {};
+  const listeners: {[key: string]: string} = {};
+  const properties: {[key: string]: string} = {};
+  const animations: {[key: string]: string} = {};
+
+  Object.keys(host).forEach(key => {
+    const value = host[key];
+    const matches = key.match(HOST_REG_EXP);
+    if (matches === null) {
+      attributes[key] = value;
+    } else if (matches[HostBindingGroup.Property] != null) {
+      properties[matches[HostBindingGroup.Property]] = value;
+    } else if (matches[HostBindingGroup.Event] != null) {
+      listeners[matches[HostBindingGroup.Event]] = value;
+    } else if (matches[HostBindingGroup.Animation] != null) {
+      animations[matches[HostBindingGroup.Animation]] = value;
+    }
+  });
+
+  return {attributes, listeners, properties, animations};
 }

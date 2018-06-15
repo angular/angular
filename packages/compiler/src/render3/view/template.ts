@@ -849,7 +849,7 @@ function interpolate(args: o.Expression[]): o.Expression {
  * @param templateUrl URL to use for source mapping of the parsed template
  */
 export function parseTemplate(
-    template: string, templateUrl: string, options: {preserveWhitespace?: boolean} = {}):
+    template: string, templateUrl: string, options: {preserveWhitespaces?: boolean} = {}):
     {errors?: ParseError[], nodes: t.Node[], hasNgContent: boolean, ngContentSelectors: string[]} {
   const bindingParser = makeBindingParser();
   const htmlParser = new HtmlParser();
@@ -860,7 +860,7 @@ export function parseTemplate(
   }
 
   let rootNodes: html.Node[] = parseResult.rootNodes;
-  if (!options.preserveWhitespace) {
+  if (!options.preserveWhitespaces) {
     rootNodes = html.visitAll(new WhitespaceVisitor(), rootNodes);
   }
 

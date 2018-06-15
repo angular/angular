@@ -12,5 +12,6 @@ ts_library(
     deps = [
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/metadata",
+        "//packages/compiler-cli/src/ngtsc/util",
     ],
 )

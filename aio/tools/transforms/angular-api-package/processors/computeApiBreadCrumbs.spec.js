@@ -13,14 +13,15 @@ describe('angular-api-package: computeApiBreadCrumbs processor', () => {
     expect(processor.$runBefore).toEqual(['rendering-docs']);
   });
 
-  it('should attach a breadCrumbs property to each of the EXPORT_DOC_TYPES docs', () => {
-    const EXPORT_DOC_TYPES = ['class', 'interface'];
-    const processor = processorFactory(EXPORT_DOC_TYPES);
+  it('should attach a breadCrumbs property to each of the API_DOC_TYPES_TO_RENDER docs', () => {
+    const API_DOC_TYPES_TO_RENDER = ['class', 'interface', 'module'];
+    const processor = processorFactory(API_DOC_TYPES_TO_RENDER);
 
     const docs = [
       { docType: 'class', name: 'ClassA', path: 'module-1/class-a', moduleDoc: { id: 'moduleOne', path: 'module-1' } },
       { docType: 'interface', name: 'InterfaceB', path: 'module-2/interface-b', moduleDoc: { id: 'moduleTwo', path: 'module-2' } },
       { docType: 'guide', name: 'Guide One', path: 'guide/guide-1' },
+      { docType: 'module', name: 'testing', id: 'http/testing', path: 'http/testing' },
     ];
     processor.$process(docs);
 
@@ -35,5 +36,9 @@ describe('angular-api-package: computeApiBreadCrumbs processor', () => {
       { text: 'InterfaceB', path: 'module-2/interface-b' },
     ]);
     expect(docs[2].breadCrumbs).toBeUndefined();
+    expect(docs[3].breadCrumbs).toEqual([
+      { text: 'API', path: '/api' },
+      { text: 'testing', path: 'http/testing' },
+    ]);
   });
 });

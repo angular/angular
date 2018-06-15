@@ -147,36 +147,7 @@ export class ToDoAppComponent {
   }
 }
 
-// In JIT mode the @Directive decorators in //packages/common will compile the Ivy fields. When
-// running under --define=compile=legacy, //packages/common is not compiled with Ivy fields, so they
-// must be monkey-patched on.
-if (!(NgIf as any).ngDirectiveDef) {
-  // TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
-  (CommonModule as any).ngInjectorDef = defineInjector({factory: () => new CommonModule});
-
-  // TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
-  (NgForOf as any).ngDirectiveDef = defineDirective({
-    type: NgForOf,
-    selectors: [['', 'ngFor', '', 'ngForOf', '']],
-    factory: () => new NgForOf(
-                 injectViewContainerRef(), injectTemplateRef(), directiveInject(IterableDiffers)),
-    inputs: {
-      ngForOf: 'ngForOf',
-      ngForTrackBy: 'ngForTrackBy',
-      ngForTemplate: 'ngForTemplate',
-    }
-  });
-
-  // TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
-  (NgIf as any).ngDirectiveDef = defineDirective({
-    type: NgIf,
-    selectors: [['', 'ngIf', '']],
-    factory: () => new NgIf(injectViewContainerRef(), injectTemplateRef()),
-    inputs: {ngIf: 'ngIf', ngIfThen: 'ngIfThen', ngIfElse: 'ngIfElse'}
-  });
-}
-
-@NgModule({declarations: [ToDoAppComponent, ToDoAppComponent], imports: [CommonModule]})
+@NgModule({declarations: [ToDoAppComponent], imports: [CommonModule]})
 export class ToDoAppModule {
 }
 

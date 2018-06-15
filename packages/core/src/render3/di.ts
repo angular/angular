@@ -21,14 +21,14 @@ import {Type} from '../type';
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
 import {addToViewTree, assertPreviousIsParent, createLContainer, createLNodeObject, createTNode, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
 import {VIEWS} from './interfaces/container';
-import {ComponentTemplate, DirectiveDef} from './interfaces/definition';
+import {ComponentTemplate, DirectiveDefInternal} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {AttributeMarker, LContainerNode, LElementNode, LNode, LViewNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {LQueries, QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
-import {DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, TVIEW, TView} from './interfaces/view';
+import {DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {detachView, getParentLNode, insertView, removeView} from './node_manipulation';
+import {appendChild, detachView, getParentLNode, insertView, removeView} from './node_manipulation';
 import {notImplemented, stringify} from './util';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
 
@@ -141,7 +141,7 @@ export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNo
  * @param di The node injector in which a directive will be added
  * @param def The definition of the directive to be made public
  */
-export function diPublicInInjector(di: LInjector, def: DirectiveDef<any>): void {
+export function diPublicInInjector(di: LInjector, def: DirectiveDefInternal<any>): void {
   bloomAdd(di, def.type);
 }
 
@@ -150,7 +150,7 @@ export function diPublicInInjector(di: LInjector, def: DirectiveDef<any>): void 
  *
  * @param def The definition of the directive to be made public
  */
-export function diPublic(def: DirectiveDef<any>): void {
+export function diPublic(def: DirectiveDefInternal<any>): void {
   diPublicInInjector(getOrCreateNodeInjector(), def);
 }
 
@@ -262,7 +262,7 @@ export function injectAttribute(attrNameToInject: string): string|undefined {
   if (attrs) {
     for (let i = 0; i < attrs.length; i = i + 2) {
       const attrName = attrs[i];
-      if (attrName === AttributeMarker.SELECT_ONLY) break;
+      if (attrName === AttributeMarker.SelectOnly) break;
       if (attrName == attrNameToInject) {
         return attrs[i + 1] as string;
       }
@@ -376,7 +376,7 @@ export function getOrCreateInjectable<T>(
         for (let i = start; i < end; i++) {
           // Get the definition for the directive at this index and, if it is injectable (diPublic),
           // and matches the given token, return the directive instance.
-          const directiveDef = defs[i] as DirectiveDef<any>;
+          const directiveDef = defs[i] as DirectiveDefInternal<any>;
           if (directiveDef.type === token && directiveDef.diPublic) {
             return getDirectiveInstance(node.view[DIRECTIVES] ![i]);
           }
@@ -409,7 +409,7 @@ function searchMatchesQueuedForCreation<T>(node: LNode, token: any): T|null {
   const matches = node.view[TVIEW].currentMatches;
   if (matches) {
     for (let i = 0; i < matches.length; i += 2) {
-      const def = matches[i] as DirectiveDef<any>;
+      const def = matches[i] as DirectiveDefInternal<any>;
       if (def.type === token) {
         return resolveDirective(def, i + 1, matches, node.view[TVIEW]);
       }
@@ -526,8 +526,7 @@ export class ReadFromInjectorFn<T> {
  * @returns The ElementRef instance to use
  */
 export function getOrCreateElementRef(di: LInjector): viewEngine_ElementRef {
-  return di.elementRef || (di.elementRef = new ElementRef(
-                               di.node.tNode.type === TNodeType.Container ? null : di.node.native));
+  return di.elementRef || (di.elementRef = new ElementRef(di.node.native));
 }
 
 export const QUERY_READ_TEMPLATE_REF = <QueryReadType<viewEngine_TemplateRef<any>>>(
@@ -574,8 +573,10 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
     ngDevMode && assertNodeOfPossibleTypes(vcRefHost, TNodeType.Container, TNodeType.Element);
     const hostParent = getParentLNode(vcRefHost) !;
     const lContainer = createLContainer(hostParent, vcRefHost.view, true);
+    const comment = vcRefHost.view[RENDERER].createComment(ngDevMode ? 'container' : '');
     const lContainerNode: LContainerNode = createLNodeObject(
-        TNodeType.Container, vcRefHost.view, hostParent, undefined, lContainer, null);
+        TNodeType.Container, vcRefHost.view, hostParent, comment, lContainer, null);
+    appendChild(hostParent, comment, vcRefHost.view);
 
 
     if (vcRefHost.queries) {
@@ -648,9 +649,6 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     (viewRef as EmbeddedViewRef<any>).attachToViewContainerRef(this);
 
     insertView(this._lContainerNode, lViewNode, adjustedIdx);
-    // invalidate cache of next sibling RNode (we do similar operation in the containerRefreshEnd
-    // instruction)
-    this._lContainerNode.native = undefined;
 
     this._viewRefs.splice(adjustedIdx, 0, viewRef);
 

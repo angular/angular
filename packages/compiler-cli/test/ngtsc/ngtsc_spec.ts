@@ -95,7 +95,7 @@ describe('ngtsc behavioral tests', () => {
     }`);
   });
 
-  it('should compile without errors', () => {
+  it('should compile Injectables without errors', () => {
     writeConfig();
     write('test.ts', `
         import {Injectable} from '@angular/core';
@@ -121,5 +121,63 @@ describe('ngtsc behavioral tests', () => {
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents).toContain('static ngInjectableDef: i0.InjectableDef<Dep>;');
     expect(dtsContents).toContain('static ngInjectableDef: i0.InjectableDef<Service>;');
+  });
+
+  it('should compile Components without errors', () => {
+    writeConfig();
+    write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: 'this is a test',
+        })
+        export class TestCmp {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    expect(jsContents).toContain('TestCmp.ngComponentDef = i0.ɵdefineComponent');
+    expect(jsContents).not.toContain('__decorate');
+
+    const dtsContents = getContents('test.d.ts');
+    expect(dtsContents).toContain('static ngComponentDef: i0.ComponentDef<TestCmp, \'test-cmp\'>');
+  });
+
+  it('should compile NgModules without errors', () => {
+    writeConfig();
+    write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          template: 'this is a test',
+        })
+        export class TestCmp {}
+
+        @NgModule({
+          declarations: [TestCmp],
+        })
+        export class TestModule {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    expect(jsContents)
+        .toContain(
+            'i0.ɵdefineNgModule({ type: TestModule, bootstrap: [], ' +
+            'declarations: [TestCmp], imports: [], exports: [] })');
+
+    const dtsContents = getContents('test.d.ts');
+    expect(dtsContents).toContain('static ngComponentDef: i0.ComponentDef<TestCmp, \'test-cmp\'>');
+    expect(dtsContents)
+        .toContain('static ngModuleDef: i0.NgModuleDef<TestModule, [TestCmp], [], []>');
+    expect(dtsContents).not.toContain('__decorate');
   });
 });

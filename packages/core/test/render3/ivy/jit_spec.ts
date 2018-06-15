@@ -9,9 +9,9 @@
 import {Injectable} from '@angular/core/src/di/injectable';
 import {inject, setCurrentInjector} from '@angular/core/src/di/injector';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
-import {Component} from '@angular/core/src/metadata/directives';
-import {NgModule, NgModuleDef} from '@angular/core/src/metadata/ng_module';
-import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
+import {Component, HostBinding, HostListener} from '@angular/core/src/metadata/directives';
+import {NgModule, NgModuleDefInternal} from '@angular/core/src/metadata/ng_module';
+import {ComponentDefInternal} from '@angular/core/src/render3/interfaces/definition';
 
 ivyEnabled && describe('render3 jit', () => {
   let injector: any;
@@ -134,7 +134,7 @@ ivyEnabled && describe('render3 jit', () => {
     class Module {
     }
 
-    const moduleDef: NgModuleDef<Module> = (Module as any).ngModuleDef;
+    const moduleDef: NgModuleDefInternal<Module> = (Module as any).ngModuleDef;
     expect(moduleDef).toBeDefined();
     expect(moduleDef.declarations.length).toBe(1);
     expect(moduleDef.declarations[0]).toBe(Cmp);
@@ -147,7 +147,7 @@ ivyEnabled && describe('render3 jit', () => {
     })
     class Cmp {
     }
-    const cmpDef: ComponentDef<Cmp> = (Cmp as any).ngComponentDef;
+    const cmpDef: ComponentDefInternal<Cmp> = (Cmp as any).ngComponentDef;
 
     expect(cmpDef.directiveDefs).toBeNull();
 
@@ -157,9 +157,32 @@ ivyEnabled && describe('render3 jit', () => {
     class Module {
     }
 
-    const moduleDef: NgModuleDef<Module> = (Module as any).ngModuleDef;
+    const moduleDef: NgModuleDefInternal<Module> = (Module as any).ngModuleDef;
     expect(cmpDef.directiveDefs instanceof Function).toBe(true);
     expect((cmpDef.directiveDefs as Function)()).toEqual([cmpDef]);
+  });
+
+  it('should add hostbindings and hostlisteners', () => {
+    @Component({
+      template: 'foo',
+      selector: 'foo',
+      host: {
+        '[class.red]': 'isRed',
+        '(click)': 'onClick()',
+      },
+    })
+    class Cmp {
+      @HostBinding('class.green')
+      green: boolean = false;
+
+      @HostListener('change', ['$event'])
+      onChange(event: any): void {}
+    }
+
+    const cmpDef = (Cmp as any).ngComponentDef as ComponentDefInternal<Cmp>;
+
+    expect(cmpDef.hostBindings).toBeDefined();
+    expect(cmpDef.hostBindings !.length).toBe(2);
   });
 });
 

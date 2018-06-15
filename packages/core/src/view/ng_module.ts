@@ -118,6 +118,8 @@ export function resolveNgModuleDep(
       return (
           data._providers[index] =
               _createProviderInstance(data, data._def.providersByKey[depDef.tokenKey]));
+    } else if (depDef.flags & DepFlags.Self) {
+      return notFoundValue;
     }
     return data._parent.get(depDef.token, notFoundValue);
   } finally {

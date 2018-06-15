@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {ComponentDef} from '../../../src/render3/interfaces/definition';
+import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
 import {renderComponent, toHtml} from '../render_util';
 
 
@@ -71,7 +71,7 @@ describe('queries', () => {
     }
 
     // NON-NORMATIVE
-    (ViewQueryComponent.ngComponentDef as ComponentDef<any>).directiveDefs =
+    (ViewQueryComponent.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
         [SomeDirective.ngDirectiveDef];
     // /NON-NORMATIVE
 
@@ -155,7 +155,7 @@ describe('queries', () => {
     }
 
     // NON-NORMATIVE
-    (MyApp.ngComponentDef as ComponentDef<any>).directiveDefs =
+    (MyApp.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
         [ContentQueryComponent.ngComponentDef, SomeDirective.ngDirectiveDef];
     // /NON-NORMATIVE
 
