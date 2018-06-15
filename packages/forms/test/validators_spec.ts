@@ -188,6 +188,15 @@ import {first, map} from 'rxjs/operators';
         });
       });
 
+      it('should not error when valid strings is the number 0',
+         () => { expect(Validators.minLength(1)(new FormControl(0))).toBeNull(); });
+
+      it('should error on short strings with value as the number 0', () => {
+        expect(Validators.minLength(2)(new FormControl(0))).toEqual({
+          'minlength': {'requiredLength': 2, 'actualLength': 1}
+        });
+      });
+
       it('should not error when FormArray has valid length', () => {
         const fa = new FormArray([new FormControl(''), new FormControl('')]);
         expect(Validators.minLength(2)(fa)).toBeNull();

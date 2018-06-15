@@ -228,7 +228,7 @@ export class Validators {
       if (isEmptyInputValue(control.value)) {
         return null;  // don't validate empty values to allow optional controls
       }
-      const length: number = control.value ? control.value.length : 0;
+      const length: number = (Validators.getLength(control.value));
       return length < minLength ?
           {'minlength': {'requiredLength': minLength, 'actualLength': length}} :
           null;
@@ -265,6 +265,10 @@ export class Validators {
           {'maxlength': {'requiredLength': maxLength, 'actualLength': length}} :
           null;
     };
+  }
+
+  private static getLength(value: any): number {
+    return (value.length || (value.length == 0)) ? value.length : value.toString().length;
   }
 
   /**
