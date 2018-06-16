@@ -397,7 +397,7 @@ function factoryFn(a: any){}
     });
   });
 
-  describe('depedency resolution', () => {
+  describe('dependency resolution', () => {
     describe('@Self()', () => {
       it('should return a dependency from self', () => {
         const inj = Injector.create([
