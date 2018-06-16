@@ -311,28 +311,48 @@ Its only purpose is to add http service providers to the application as a whole.
 <hr/>
 
 
-
+<!--
 ## Can I re-export classes and modules?
+-->
+## 불러온 클래스나 모듈을 다시 `exports`로 지정해도 되나요?
 
+<!--
 Absolutely.
+-->
+물론 가능합니다.
 
+<!--
 NgModules are a great way to selectively aggregate classes from other NgModules and
 re-export them in a consolidated, convenience module.
+-->
+그리고 다른 모듈에 있는 클래스를 조합해서 새로운 모듈로 만드는 것도 가능합니다.
 
+<!--
 An NgModule can re-export entire NgModules, which effectively re-exports all of their exported classes.
 Angular's own `BrowserModule` exports a couple of NgModules like this:
+-->
+이 때 `exports` 배열에 모듈을 지정하면 해당 모듈에서 모듈 외부로 공개하도록 지정된 모든 구성요소를 다시 공개하는 선언이 됩니다.
+Angular 라이브러리 중 `BrowserModule`을 보면 다음과 같이 사용된 부분이 있습니다:
 
 ```typescript
   exports: [CommonModule, ApplicationModule]
 ```
 
+<!--
 An NgModule can export a combination of its own declarations, selected imported classes, and imported NgModules.
+-->
+모듈은 모듈 안에 선언된 컴포넌트나 디렉티브, 파이프는 물론이고 다른 모듈에서 불러온 구성요소를 조합해서 모듈 외부로 공개할 수도 있습니다.
 
+<!--
 Don't bother re-exporting pure service modules.
 Pure service modules don't export [declarable](guide/bootstrapping#the-declarations-array) classes that another NgModule could use.
 For example, there's no point in re-exporting `HttpClientModule` because it doesn't export anything.
 Its only purpose is to add http service providers to the application as a whole.
-
+-->
+다만 서비스 모듈은 모듈 외부로 다시 공개하면 안됩니다.
+왜냐하면 서비스 모듈에는 모듈 외부로 공개된 [declarable](guide/bootstrapping#the-declarations-array) 클래스가 없기 때문에 이 모듈을 다시 `exports`로 지정하는 것은 의미가 없습니다.
+예를 들어 `HttpClientModule`은 아무것도 모듈 외부로 공개하지 않습니다.
+이 모듈의 목적은 앱 전역에 http 서비스 프로바이더를 제공하는 것 뿐입니다.
 
 <hr/>
 
