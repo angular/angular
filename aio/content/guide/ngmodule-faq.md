@@ -458,40 +458,76 @@ not just the classes declared in the `HeroModule`.
 
 {@a q-lazy-loaded-module-provider-visibility}
 
+<!--
 ## Why is a service provided in a lazy-loaded module visible only to that module?
+-->
+## 지연로딩 되는 모듈에 등록된 서비스는 왜 그 모듈에서만 접근할 수 있나요?
 
+<!--
 Unlike providers of the modules loaded at launch,
 providers of lazy-loaded modules are *module-scoped*.
+-->
+애플리케이션이 실행될 때 모두 로드되는 프로바이더와는 다르게, 지연로딩 되는 모듈에 등록된 프로바이더는 그 *모듈 범위 안에서만 유효*합니다.
 
+<!--
 When the Angular router lazy-loads a module, it creates a new execution context.
 That [context has its own injector](guide/ngmodule-faq#q-why-child-injector "Why Angular creates a child injector"),
 which is a direct child of the application injector.
+-->
+Angular 라우터가 모듈을 지연로딩하면, 이 모듈은 새로운 실행 컨텍스트에서 동작합니다.
+그리고 애플리케이션 인젝터와는 독립적인 [인젝터](guide/ngmodule-faq#q-why-child-injector "Why Angular creates a child injector")를 구성합니다.
 
+<!--
 The router adds the lazy module's providers and the providers of its imported NgModules to this child injector.
+-->
+이 인젝터는 상위 모듈의 자식 인젝터이며, 지연로딩된 모듈과 이 모듈의 자식 모듈에 등록된 프로바이더는 모두 이 인젝터에 등록됩니다.
 
+<!--
 These providers are insulated from changes to application providers with the same lookup token.
 When the router creates a component within the lazy-loaded context,
 Angular prefers service instances created from these providers to the service instances of the application root injector.
+-->
+하지만 이 때 등록되는 프로바이더의 토큰이 같더라도 모두 상위 모듈의 프로바이더와는 분리됩니다.
+그래서 지연로딩되는 컴포넌트로 라우팅 될 때도 애플리케이션 전역에 있는 인젝터 대신 해당 모듈에 등록된 서비스 프로바이더로 서비스 인스턴스가 생성됩니다.
 
 <hr/>
 
-
+<!--
 ## What if two modules provide the same service?
+-->
+## 같은 서비스가 다른 모듈로 두 번 등록되면 어떻게 되나요?
 
+<!--
 When two imported modules, loaded at the same time, list a provider with the same token,
 the second module's provider "wins". That's because both providers are added to the same injector.
+-->
+동시에 로드되는 모듈에 같은 프로바이더 토큰이 동시에 로드되면, 두 번째 실행되는 모듈의 프로바이더가 앞쪽 토큰을 덮어씁니다. 왜냐하면 두 번 모두 같은 인젝터를 사용하기 때문입니다.
 
+<!--
 When Angular looks to inject a service for that token,
 it creates and delivers the instance created by the second provider.
+-->
+Angular는 주입하는 서비스를 찾을 때 토큰으로 구분하기 때문에, 서비스 인스턴스를 찾거나 생성할 때도 두 번째 등록된 프로바이더를 사용합니다.
 
+<!--
 _Every_ class that injects this service gets the instance created by the second provider.
 Even classes declared within the first module get the instance created by the second provider.
+-->
+그래서 의존성으로 주입되는 서비스의 인스턴스도 모두 두 번째 등록하는 프로바이더에서 만든 인스턴스입니다.
+심지어 첫 번째 모듈에서도 두 번째 등록한 프로바이더가 사용됩니다.
 
+<!--
 If NgModule A provides a service for token 'X' and imports an NgModule B
 that also provides a service for token 'X', then NgModule A's service definition "wins".
+-->
+만약 모듈 B에 서비스 토큰 'X'에 대한 프로바이더를 등록되어 있는데 모듈 A가 모듈 B 로드하면서 이 서비스 프로바이더를 다시 등록하면, 이 때도 모듈 A 프로바이더가 우선됩니다.
 
+<!--
 The service provided by the root `AppModule` takes precedence over services provided by imported NgModules.
 The `AppModule` always wins.
+-->
+하지만, 최상위 `AppModule`에 등록된 서비스 프로바이더는 모든 NgModule에 등록된 서비스 프로바이더보다 우선 처리됩니다.
+토큰이 중복되는 상황이라면 `AppModule`에 지정된 서비스 프로바이더가 최우선으로 동작합니다.
 
 <hr/>
 
