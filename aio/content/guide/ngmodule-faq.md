@@ -356,57 +356,103 @@ Its only purpose is to add http service providers to the application as a whole.
 
 <hr/>
 
-
+<!--
 ## What is the `forRoot()` method?
+-->
+## `forRoot()` 메소드가 뭔가요?
 
+<!--
 The `forRoot()` static method is a convention that makes it easy for developers to configure services and providers that are intended to be singletons. A good example of `forRoot()` is the `RouterModule.forRoot()` method.
+-->
+정적 메소드 `forRoot()`는 싱글턴으로 사용하는 서비스와 프로바이더를 좀 더 쉽게 사용할 수 있도록 제공하는 함수입니다. `forRoot()` 메소드는 많은 모듈에서 제공하며, `RouterModule.forRoot()` 메소드도 이 중 하나입니다.
 
+<!--
 Apps pass a `Routes` object to `RouterModule.forRoot()` in order to configure the app-wide `Router` service with routes.
 `RouterModule.forRoot()` returns a [ModuleWithProviders](api/core/ModuleWithProviders).
 You add that result to the `imports` list of the root `AppModule`.
+-->
+`RouterModule.forRoot()`에 `Routes` 객체를 전달하면 앱 전역에서 사용할 수 있는 `Router` 서비스를 설정하고 [ModuleWithProviders](api/core/ModuleWithProviders) 객체를 반환합니다.
+그리고 이 모듈을 `AppModule`의 `imports` 배열에 추가하면 라우터를 사용할 수 있습니다.
 
+<!--
 Only call and import a `.forRoot()` result in the root application module, `AppModule`.
 Importing it in any other module, particularly in a lazy-loaded module,
 is contrary to the intent and will likely produce a runtime error.
 For more information, see [Singleton Services](guide/singleton-services).
+-->
+`.forRoot()` 메소드는 애플리케이션의 최상위 모듈인 `AppModule`에서만 사용해야 합니다.
+앱 모듈이 아닌 기능 모듈, 특히 지연로딩 되는 다른 모듈에서 이 함수를 사용하면 런타임 에러가 발생할 수 있습니다.
+좀 더 자세한 내용을 확인하려면 [싱글턴 서비스](guide/singleton-services) 문서를 참고하세요.
 
+<!--
 For a service, instead of using `forRoot()`,  specify `providedIn: 'root'` on the service's `@Injectable()` decorator, which 
 makes the service automatically available to the whole application and thus singleton by default.
+-->
+서비스를 싱글턴으로 만드는 것이라면 `forRoot()` 메소드 대신 `@Injectable()` 데코레이터 안에 `providedIn: ''root'`를 지정해도 됩니다. 이렇게 지정된 서비스는 앱 전역으로 사용할 수 있는 싱글턴 서비스로 생성됩니다.
 
+<!--
 `RouterModule` also offers a `forChild` static method for configuring the routes of lazy-loaded modules.
+-->
+정적 모듈에서 `RouterModule`을 사용하려면 `forRoot()` 메소드 대신 `forChild()` 메소드를 사용해야 합니다.
 
+<!--
 `forRoot()` and `forChild()` are conventional names for methods that
 configure services in root and feature modules respectively.
+-->
+`forRoot()` 메소드와 `forChild()` 메소드는 모두 앱 모듈이나 기능 모듈에 서비스를 편하게 등록하기 위한 용도로 제공되는 함수입니다.
 
+<!--
 Angular doesn't recognize these names but Angular developers do.
 Follow this convention when you write similar modules with configurable service providers.
+-->
 <!--KW--I don't understand how Angular doesn't understand these methods...-->
 
 <hr/>
 
-
+<!--
 ## Why is a service provided in a feature module visible everywhere?
+-->
+## 기능 모듈에 등록된 서비스는 왜 외부에서도 접근할 수 있나요?
 
+<!--
 Providers listed in the `@NgModule.providers` of a bootstrapped module have application scope.
 Adding a service provider to `@NgModule.providers` effectively publishes the service to the entire application.
+-->
+부트스트랩되는 모듈의 `@NgModule.providers`에 선언된 프로바이더 목록은 애플리케이션 전체 범위에 유효합니다. 그리고 이 목록에 등록된 프로바이더로 생성하는 서비스도 앱 전체 범위에서 접근할 수 있습니다.
 
+<!--
 When you import an NgModule,
 Angular adds the module's service providers (the contents of its `providers` list)
 to the application root injector.
+-->
+모듈이 로드되면 이 모듈에 등록된 서비스 프로바이더가 애플리케이션 최상위 인젝터에도 등록됩니다.
 
+<!--
 This makes the provider visible to every class in the application that knows the provider's lookup token, or knows its name.
+-->
+그래서 모든 프로바이더는 애플리케이션의 모든 클래스에 자유롭게 사용할 수 있습니다.
 
+<!--
 This is by design.
 Extensibility through NgModule imports is a primary goal of the NgModule system.
 Merging NgModule providers into the application injector
 makes it easy for a module library to enrich the entire application with new services.
 By adding the `HttpClientModule` once, every application component can make HTTP requests.
+-->
+이것은 Angular가 의도한 디자인입니다.
+NgModule 체계에서 가장 중요한 것은 확장성입니다.
+그리고 앱 모듈에 NgModule을 추가로 로드할 때마다 인젝터가 합쳐지는 것은 애플리케이션 전체에 새로운 기능을 추가하기 위한 것입니다.
+`HttpClientModule`을 로드한 이후로는 애플리케이션 전체에서 HTTP 요청을 보낼 수 있는 것을 생각해 보세요.
 
+<!--
 However, this might feel like an unwelcome surprise if you expect the module's services
 to be visible only to the components declared by that feature module.
 If the `HeroModule` provides the `HeroService` and the root `AppModule` imports `HeroModule`,
 any class that knows the `HeroService` _type_ can inject that service,
 not just the classes declared in the `HeroModule`.
+-->
+하지만 기능 모듈 밖으로 서비스가 노출되지 않는 것이 좋다고 생각하는 관점에서는 이 방식이 어색할 수 있습니다.
+확실하게 이해해야 하는 것은, `HeroModule`에 `heroService`가 등록되어 있고 `AppModule`이 `HeroModule`을 로드한다면 `HeroModule` 안에서만이 아니라 앱 전체에서 `HeroService`를 주입받아 사용할 수 있습니다.
 
 <hr/>
 
