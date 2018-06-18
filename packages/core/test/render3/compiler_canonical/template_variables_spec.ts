@@ -27,11 +27,13 @@ describe('template variables', () => {
 
   @Directive({selector: '[forOf]'})
   class ForOfDirective {
-    private previous: any[];
+    // TODO(issue/24571): remove '!'.
+    private previous !: any[];
 
     constructor(private view: ViewContainerRef, private template: TemplateRef<any>) {}
 
-    @Input() forOf: any[];
+    // TODO(issue/24571): remove '!'.
+    @Input() forOf !: any[];
 
     ngOnChanges(simpleChanges: SimpleChanges) {
       if ('forOf' in simpleChanges) {

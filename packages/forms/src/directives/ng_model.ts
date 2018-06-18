@@ -115,8 +115,10 @@ export class NgModel extends NgControl implements OnChanges,
   _registered = false;
   viewModel: any;
 
-  @Input() name: string;
-  @Input('disabled') isDisabled: boolean;
+  // TODO(issue/24571): remove '!'.
+  @Input() name !: string;
+  // TODO(issue/24571): remove '!'.
+  @Input('disabled') isDisabled !: boolean;
   @Input('ngModel') model: any;
 
   /**
@@ -156,7 +158,9 @@ export class NgModel extends NgControl implements OnChanges,
    * ```
    *
    */
-  @Input('ngModelOptions') options: {name?: string, standalone?: boolean, updateOn?: FormHooks};
+  // TODO(issue/24571): remove '!'.
+  @Input('ngModelOptions')
+  options !: {name?: string, standalone?: boolean, updateOn?: FormHooks};
 
   @Output('ngModelChange') update = new EventEmitter();
 

@@ -250,7 +250,8 @@ class NativeExampleModule {
 
 @Component({selector: 'my-child', template: 'Works!'})
 class MyChildComponent {
-  @Input() public attr: boolean;
+  // TODO(issue/24571): remove '!'.
+  @Input() public attr !: boolean;
 }
 
 @Component({selector: 'app', template: '<my-child [attr]="false"></my-child>'})

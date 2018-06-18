@@ -159,7 +159,8 @@ export abstract class Renderer2 {
    * in which case the view engine won't call it.
    * This is used as a performance optimization for production mode.
    */
-  destroyNode: ((node: any) => void)|null;
+  // TODO(issue/24571): remove '!'.
+  destroyNode !: ((node: any) => void) | null;
   abstract appendChild(parent: any, newChild: any): void;
   abstract insertBefore(parent: any, newChild: any, refChild: any): void;
   abstract removeChild(parent: any, oldChild: any): void;

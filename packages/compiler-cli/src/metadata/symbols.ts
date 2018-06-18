@@ -11,7 +11,8 @@ import * as ts from 'typescript';
 import {MetadataSymbolicReferenceExpression, MetadataValue} from './schema';
 
 export class Symbols {
-  private _symbols: Map<string, MetadataValue>;
+  // TODO(issue/24571): remove '!'.
+  private _symbols !: Map<string, MetadataValue>;
   private references = new Map<string, MetadataSymbolicReferenceExpression>();
 
   constructor(private sourceFile: ts.SourceFile) {}

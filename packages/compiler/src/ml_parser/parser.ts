@@ -46,7 +46,8 @@ export class Parser {
 
 class _TreeBuilder {
   private _index: number = -1;
-  private _peek: lex.Token;
+  // TODO(issue/24571): remove '!'.
+  private _peek !: lex.Token;
 
   private _rootNodes: html.Node[] = [];
   private _errors: TreeError[] = [];

@@ -83,9 +83,12 @@ export class ParsedCssResult {
 
 export class CssParser {
   private _errors: CssParseError[] = [];
-  private _file: ParseSourceFile;
-  private _scanner: CssScanner;
-  private _lastToken: CssToken;
+  // TODO(issue/24571): remove '!'.
+  private _file !: ParseSourceFile;
+  // TODO(issue/24571): remove '!'.
+  private _scanner !: CssScanner;
+  // TODO(issue/24571): remove '!'.
+  private _lastToken !: CssToken;
 
   /**
    * @param css the CSS code that will be parsed

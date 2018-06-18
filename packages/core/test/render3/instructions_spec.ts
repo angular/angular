@@ -459,7 +459,8 @@ class LocalSanitizedValue {
 }
 
 class LocalMockSanitizer implements Sanitizer {
-  public lastSanitizedValue: string|null;
+  // TODO(issue/24571): remove '!'.
+  public lastSanitizedValue !: string | null;
 
   constructor(private _interceptor: (value: string|null|any) => string) {}
 

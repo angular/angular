@@ -110,13 +110,18 @@ withEachNg1Version(() => {
         $evalAsync(exp: angular.Ng1Expression, locals?: any) {
           return () => {};
         }
-        $$childTail: angular.IScope;
-        $$childHead: angular.IScope;
-        $$nextSibling: angular.IScope;
+        // TODO(issue/24571): remove '!'.
+        $$childTail !: angular.IScope;
+        // TODO(issue/24571): remove '!'.
+        $$childHead !: angular.IScope;
+        // TODO(issue/24571): remove '!'.
+        $$nextSibling !: angular.IScope;
         [key: string]: any;
         $id = 'mockScope';
-        $parent: angular.IScope;
-        $root: angular.IScope;
+        // TODO(issue/24571): remove '!'.
+        $parent !: angular.IScope;
+        // TODO(issue/24571): remove '!'.
+        $root !: angular.IScope;
       }
 
       function getAdaptor(): DowngradeComponentAdapter {

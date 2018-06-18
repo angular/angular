@@ -2467,7 +2467,8 @@ function sortedClassList(el: HTMLElement) {
 
 @Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 class FormControlComp {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({
@@ -2478,9 +2479,12 @@ class FormControlComp {
     </form>`
 })
 class FormGroupComp {
-  control: FormControl;
-  form: FormGroup;
-  event: Event;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  event !: Event;
 }
 
 @Component({
@@ -2495,7 +2499,8 @@ class FormGroupComp {
     </form>`
 })
 class NestedFormGroupComp {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }
 
 @Component({
@@ -2510,8 +2515,10 @@ class NestedFormGroupComp {
      </form>`
 })
 class FormArrayComp {
-  form: FormGroup;
-  cityArray: FormArray;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  cityArray !: FormArray;
 }
 
 @Component({
@@ -2527,8 +2534,10 @@ class FormArrayComp {
      </div>`
 })
 class FormArrayNestedGroup {
-  form: FormGroup;
-  cityArray: FormArray;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  cityArray !: FormArray;
 }
 
 @Component({
@@ -2540,9 +2549,12 @@ class FormArrayNestedGroup {
    </form>`
 })
 class FormGroupNgModel {
-  form: FormGroup;
-  login: string;
-  password: string;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  login !: string;
+  // TODO(issue/24571): remove '!'.
+  password !: string;
 }
 
 @Component({
@@ -2553,10 +2565,14 @@ class FormGroupNgModel {
   `
 })
 class FormControlNgModel {
-  control: FormControl;
-  login: string;
-  passwordControl: FormControl;
-  password: string;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
+  // TODO(issue/24571): remove '!'.
+  login !: string;
+  // TODO(issue/24571): remove '!'.
+  passwordControl !: FormControl;
+  // TODO(issue/24571): remove '!'.
+  password !: string;
 }
 
 @Component({
@@ -2570,7 +2586,8 @@ class FormControlNgModel {
    </div>`
 })
 class LoginIsEmptyWrapper {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }
 
 @Component({
@@ -2584,11 +2601,16 @@ class LoginIsEmptyWrapper {
    </div>`
 })
 class ValidationBindingsForm {
-  form: FormGroup;
-  required: boolean;
-  minLen: number;
-  maxLen: number;
-  pattern: string;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  required !: boolean;
+  // TODO(issue/24571): remove '!'.
+  minLen !: number;
+  // TODO(issue/24571): remove '!'.
+  maxLen !: number;
+  // TODO(issue/24571): remove '!'.
+  pattern !: string;
 }
 
 @Component({
@@ -2596,7 +2618,8 @@ class ValidationBindingsForm {
   template: `<input type="checkbox" [formControl]="control">`
 })
 class FormControlCheckboxRequiredValidator {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({
@@ -2607,5 +2630,6 @@ class FormControlCheckboxRequiredValidator {
   </div>`
 })
 class UniqLoginWrapper {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }

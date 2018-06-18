@@ -120,7 +120,7 @@ export class IvyCompilation {
 
     // Look up the .d.ts transformer for the input file and record that a field was generated,
     // which will allow the .d.ts to be transformed later.
-    const fileName = node.getSourceFile().fileName;
+    const fileName = original.getSourceFile().fileName;
     const dtsTransformer = this.getDtsTransformer(fileName);
     dtsTransformer.recordStaticField(reflectNameOfDeclaration(node) !, res);
 

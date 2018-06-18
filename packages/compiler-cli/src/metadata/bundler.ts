@@ -85,7 +85,8 @@ export class MetadataBundler {
   private exports = new Map<string, Symbol[]>();
   private rootModule: string;
   private privateSymbolPrefix: string;
-  private exported: Set<Symbol>;
+  // TODO(issue/24571): remove '!'.
+  private exported !: Set<Symbol>;
 
   constructor(
       private root: string, private importAs: string|undefined, private host: MetadataBundlerHost,
