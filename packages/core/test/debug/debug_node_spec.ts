@@ -141,10 +141,13 @@ class LocalsComp {
  `
 })
 class BankAccount {
-  @Input() bank: string;
-  @Input('account') id: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() bank !: string;
+  // TODO(issue/24571): remove '!'.
+  @Input('account') id !: string;
 
-  normalizedBankName: string;
+  // TODO(issue/24571): remove '!'.
+  normalizedBankName !: string;
 }
 
 @Component({

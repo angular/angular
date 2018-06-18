@@ -80,7 +80,8 @@ withEachNg1Version(() => {
 
          @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
          class AppComponent {
-           value: number;
+           // TODO(issue/24571): remove '!'.
+           value !: number;
            constructor() { appComponent = this; }
          }
 
@@ -89,7 +90,8 @@ withEachNg1Version(() => {
            template: '<div>{{ valueFromPromise }}</div>',
          })
          class ChildComponent {
-           valueFromPromise: number;
+           // TODO(issue/24571): remove '!'.
+           valueFromPromise !: number;
            @Input()
            set value(v: number) { expect(NgZone.isInAngularZone()).toBe(true); }
 

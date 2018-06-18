@@ -27,7 +27,8 @@ const trackByIdentity = (index: number, item: any) => item;
  */
 export class DefaultIterableDiffer<V> implements IterableDiffer<V>, IterableChanges<V> {
   public readonly length: number = 0;
-  public readonly collection: V[]|Iterable<V>|null;
+  // TODO(issue/24571): remove '!'.
+  public readonly collection !: V[] | Iterable<V>| null;
   // Keeps track of the used records at any point in time (during & across `_check()` calls)
   private _linkedRecords: _DuplicateMap<V>|null = null;
   // Keeps track of the removed records at any point in time during `_check()` calls.

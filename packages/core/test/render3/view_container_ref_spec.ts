@@ -29,7 +29,8 @@ describe('ViewContainerRef', () => {
       inputs: {tplRef: 'tplRef'}
     });
 
-    tplRef: TemplateRef<{}>;
+    // TODO(issue/24571): remove '!'.
+    tplRef !: TemplateRef<{}>;
 
     // injecting a ViewContainerRef to create a dynamic container in which embedded views will be
     // created
@@ -215,7 +216,8 @@ describe('ViewContainerRef', () => {
             * |after
             */
            class TestComponent {
-             testDir: TestDirective;
+             // TODO(issue/24571): remove '!'.
+             testDir !: TestDirective;
              static ngComponentDef = defineComponent({
                type: TestComponent,
                selectors: [['test-cmp']],
@@ -278,7 +280,8 @@ describe('ViewContainerRef', () => {
             */
            class TestComponent {
              condition = false;
-             testDir: TestDirective;
+             // TODO(issue/24571): remove '!'.
+             testDir !: TestDirective;
              static ngComponentDef = defineComponent({
                type: TestComponent,
                selectors: [['test-cmp']],
@@ -335,7 +338,8 @@ describe('ViewContainerRef', () => {
       it('should apply directives and pipes of the host view to the TemplateRef', () => {
         @Component({selector: 'child', template: `{{name}}`})
         class Child {
-          name: string;
+          // TODO(issue/24571): remove '!'.
+          name !: string;
 
           static ngComponentDef = defineComponent({
             type: Child,
@@ -902,7 +906,8 @@ describe('ViewContainerRef', () => {
     it('should call all hooks in correct order', () => {
       @Component({selector: 'hooks', template: `{{name}}`})
       class ComponentWithHooks {
-        name: string;
+        // TODO(issue/24571): remove '!'.
+        name !: string;
 
         private log(msg: string) { log.push(msg); }
 

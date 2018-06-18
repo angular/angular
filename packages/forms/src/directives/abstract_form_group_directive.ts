@@ -24,13 +24,16 @@ import {AsyncValidatorFn, ValidatorFn} from './validators';
  */
 export class AbstractFormGroupDirective extends ControlContainer implements OnInit, OnDestroy {
   /** @internal */
-  _parent: ControlContainer;
+  // TODO(issue/24571): remove '!'.
+  _parent !: ControlContainer;
 
   /** @internal */
-  _validators: any[];
+  // TODO(issue/24571): remove '!'.
+  _validators !: any[];
 
   /** @internal */
-  _asyncValidators: any[];
+  // TODO(issue/24571): remove '!'.
+  _asyncValidators !: any[];
 
   ngOnInit(): void {
     this._checkParentType();

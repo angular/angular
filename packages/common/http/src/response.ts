@@ -171,7 +171,8 @@ export abstract class HttpResponseBase {
   /**
    * Type of the response, narrowed to either the full response or the header.
    */
-  readonly type: HttpEventType.Response|HttpEventType.ResponseHeader;
+  // TODO(issue/24571): remove '!'.
+  readonly type !: HttpEventType.Response | HttpEventType.ResponseHeader;
 
   /**
    * Super-constructor for all responses.

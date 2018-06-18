@@ -6,6 +6,7 @@
     "module": "es2015",
     "moduleResolution": "node",
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "outDir": "../../../dist/all/@angular/service-worker/worker-es2017",
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,

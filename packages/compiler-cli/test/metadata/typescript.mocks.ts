@@ -102,7 +102,8 @@ export class MockNode implements ts.Node {
 
 export class MockIdentifier extends MockNode implements ts.Identifier {
   public text: string;
-  public escapedText: ts.__String;
+  // TODO(issue/24571): remove '!'.
+  public escapedText !: ts.__String;
   // tslint:disable
   public _declarationBrand: any;
   public _primaryExpressionBrand: any;
@@ -139,7 +140,8 @@ export class MockVariableDeclaration extends MockNode implements ts.VariableDecl
 }
 
 export class MockSymbol implements ts.Symbol {
-  public escapedName: ts.__String;
+  // TODO(issue/24571): remove '!'.
+  public escapedName !: ts.__String;
   constructor(
       public name: string, private node: ts.Declaration = MockVariableDeclaration.of(name),
       public flags: ts.SymbolFlags = 0) {}

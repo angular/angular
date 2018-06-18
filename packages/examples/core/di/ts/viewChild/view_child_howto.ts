@@ -15,7 +15,8 @@ class ChildDirective {
 
 @Component({selector: 'someCmp', templateUrl: 'someCmp.html'})
 class SomeCmp implements AfterViewInit {
-  @ViewChild(ChildDirective) child: ChildDirective;
+  // TODO(issue/24571): remove '!'.
+  @ViewChild(ChildDirective) child !: ChildDirective;
 
   ngAfterViewInit() {
     // child is set

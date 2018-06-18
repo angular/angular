@@ -104,7 +104,8 @@ function containsSegmentGroupHelper(
  */
 export class UrlTree {
   /** @internal */
-  _queryParamMap: ParamMap;
+  // TODO(issue/24571): remove '!'.
+  _queryParamMap !: ParamMap;
 
   /** @internal */
   constructor(
@@ -137,9 +138,11 @@ export class UrlTree {
  */
 export class UrlSegmentGroup {
   /** @internal */
-  _sourceSegment: UrlSegmentGroup;
+  // TODO(issue/24571): remove '!'.
+  _sourceSegment !: UrlSegmentGroup;
   /** @internal */
-  _segmentIndexShift: number;
+  // TODO(issue/24571): remove '!'.
+  _segmentIndexShift !: number;
   /** The parent node in the url tree */
   parent: UrlSegmentGroup|null = null;
 
@@ -189,7 +192,8 @@ export class UrlSegmentGroup {
  */
 export class UrlSegment {
   /** @internal */
-  _parameterMap: ParamMap;
+  // TODO(issue/24571): remove '!'.
+  _parameterMap !: ParamMap;
 
   constructor(
       /** The path part of a URL segment */

@@ -375,7 +375,8 @@ describe('render3 integration test', () => {
        * % }
        */
       class MyComp {
-        condition: boolean;
+        // TODO(issue/24571): remove '!'.
+        condition !: boolean;
         static ngComponentDef = defineComponent({
           type: MyComp,
           selectors: [['comp']],
@@ -491,8 +492,10 @@ describe('render3 integration test', () => {
     }
 
     class ChildComponent {
-      beforeTree: Tree;
-      afterTree: Tree;
+      // TODO(issue/24571): remove '!'.
+      beforeTree !: Tree;
+      // TODO(issue/24571): remove '!'.
+      afterTree !: Tree;
       static ngComponentDef = defineComponent({
         selectors: [['child']],
         type: ChildComponent,

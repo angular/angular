@@ -20,7 +20,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 let existingScripts: MockBrowserJsonp[] = [];
 
 class MockBrowserJsonp extends BrowserJsonp {
-  src: string;
+  // TODO(issue/24571): remove '!'.
+  src !: string;
   callbacks = new Map<string, (data: any) => any>();
 
   addEventListener(type: string, cb: (data: any) => any) { this.callbacks.set(type, cb); }

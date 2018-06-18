@@ -214,7 +214,8 @@ export class Router {
   private rawUrlTree: UrlTree;
   private navigations = new BehaviorSubject<NavigationParams>(null !);
 
-  private locationSubscription: Subscription;
+  // TODO(issue/24571): remove '!'.
+  private locationSubscription !: Subscription;
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
   private ngModule: NgModuleRef<any>;
