@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ApplicationRef} from '../application_ref';
 import {InjectorDef, InjectorType, defineInjector} from '../di/defs';
 import {convertInjectableProviderToFactory} from '../di/injectable';
 import {Provider} from '../di/provider';
@@ -352,3 +353,24 @@ export const NgModule: NgModuleDecorator = makeDecorator(
      * this module's members available to others.
      */
     (type: Type<any>, meta: NgModule) => (R3_COMPILE_NGMODULE || preR3NgModuleCompile)(type, meta));
+
+/**
+ * @description
+ * Hook for manual bootstrapping of the application instead of using bootstrap array in @NgModule
+ * annotation.
+ *
+ * Reference to the current application is provided as a parameter.
+ *
+ * See ["Bootstrapping"](guide/bootstrapping) and ["Entry components"](guide/entry-components).
+ *
+ * @usageNotes
+ * ```typescript
+ * class AppModule implements DoBootstrap {
+ *   ngDoBootstrap(appRef: ApplicationRef) {
+ *     appRef.bootstrap(AppComponent); // Or some other component
+ *   }
+ * }
+ * ```
+ *
+ */
+export interface DoBootstrap { ngDoBootstrap(appRef: ApplicationRef): void; }
