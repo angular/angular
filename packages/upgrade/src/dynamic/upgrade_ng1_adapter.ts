@@ -22,7 +22,8 @@ const NOT_SUPPORTED: any = 'NOT_SUPPORTED';
 
 
 export class UpgradeNg1ComponentAdapterBuilder {
-  type: Type<any>;
+  // TODO(issue/24571): remove '!'.
+  type !: Type<any>;
   inputs: string[] = [];
   inputsRename: string[] = [];
   outputs: string[] = [];
@@ -31,7 +32,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
   checkProperties: string[] = [];
   propertyMap: {[name: string]: string} = {};
   directive: angular.IDirective|null = null;
-  template: string;
+  // TODO(issue/24571): remove '!'.
+  template !: string;
 
   constructor(public name: string) {
     const selector =
@@ -45,7 +47,8 @@ export class UpgradeNg1ComponentAdapterBuilder {
 
     @Directive(directive)
     class MyClass {
-      directive: angular.IDirective;
+      // TODO(issue/24571): remove '!'.
+      directive !: angular.IDirective;
       constructor(
           @Inject($SCOPE) scope: angular.IScope, injector: Injector, elementRef: ElementRef) {
         const helper = new UpgradeHelper(injector, name, elementRef, this.directive);

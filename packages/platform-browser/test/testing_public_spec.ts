@@ -86,8 +86,9 @@ class TestViewProvidersComp {
 
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
 class SomeDirective {
+  // TODO(issue/24571): remove '!'.
   @Input()
-  someDir: string;
+  someDir !: string;
 }
 
 @Pipe({name: 'somePipe'})
@@ -728,8 +729,9 @@ class CompWithUrlTemplate {
           class TestDir {
             constructor() { testDir = this; }
 
+            // TODO(issue/24571): remove '!'.
             @Input('test')
-            test: string;
+            test !: string;
           }
 
           TestBed.overrideTemplateUsingTestingModule(

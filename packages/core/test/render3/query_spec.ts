@@ -933,7 +933,8 @@ describe('query', () => {
          * }
          */
         class Cmpt {
-          value: string[];
+          // TODO(issue/24571): remove '!'.
+          value !: string[];
           query: any;
           static ngComponentDef = defineComponent({
             type: Cmpt,
@@ -1689,7 +1690,8 @@ describe('query', () => {
 
       class WithContentComponent {
         // @ContentChildren('foo') foos;
-        foos: QueryList<ElementRef>;
+        // TODO(issue/24571): remove '!'.
+        foos !: QueryList<ElementRef>;
 
         static ngComponentDef = defineComponent({
           type: WithContentComponent,

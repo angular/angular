@@ -14,7 +14,8 @@ import {Component, Injectable, IterableDiffers, NgModule, defineInjector, ɵNgOn
 export class Todo {
   editing: boolean;
 
-  private _title: string;
+  // TODO(issue/24571): remove '!'.
+  private _title !: string;
   get title() { return this._title; }
   set title(value: string) { this._title = value.trim(); }
 

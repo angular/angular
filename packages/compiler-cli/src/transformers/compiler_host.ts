@@ -74,10 +74,14 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   private emitter = new TypeScriptEmitter();
   private metadataReaderHost: MetadataReaderHost;
 
-  getCancellationToken: () => ts.CancellationToken;
-  getDefaultLibLocation: () => string;
-  trace: (s: string) => void;
-  getDirectories: (path: string) => string[];
+  // TODO(issue/24571): remove '!'.
+  getCancellationToken !: () => ts.CancellationToken;
+  // TODO(issue/24571): remove '!'.
+  getDefaultLibLocation !: () => string;
+  // TODO(issue/24571): remove '!'.
+  trace !: (s: string) => void;
+  // TODO(issue/24571): remove '!'.
+  getDirectories !: (path: string) => string[];
   directoryExists?: (directoryName: string) => boolean;
 
   constructor(

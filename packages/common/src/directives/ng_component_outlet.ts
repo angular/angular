@@ -66,10 +66,14 @@ import {ComponentFactoryResolver, ComponentRef, Directive, Injector, Input, NgMo
  */
 @Directive({selector: '[ngComponentOutlet]'})
 export class NgComponentOutlet implements OnChanges, OnDestroy {
-  @Input() ngComponentOutlet: Type<any>;
-  @Input() ngComponentOutletInjector: Injector;
-  @Input() ngComponentOutletContent: any[][];
-  @Input() ngComponentOutletNgModuleFactory: NgModuleFactory<any>;
+  // TODO(issue/24571): remove '!'.
+  @Input() ngComponentOutlet !: Type<any>;
+  // TODO(issue/24571): remove '!'.
+  @Input() ngComponentOutletInjector !: Injector;
+  // TODO(issue/24571): remove '!'.
+  @Input() ngComponentOutletContent !: any[][];
+  // TODO(issue/24571): remove '!'.
+  @Input() ngComponentOutletNgModuleFactory !: NgModuleFactory<any>;
 
   private _componentRef: ComponentRef<any>|null = null;
   private _moduleRef: NgModuleRef<any>|null = null;

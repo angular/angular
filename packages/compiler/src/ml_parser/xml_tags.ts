@@ -10,9 +10,12 @@ import {TagContentType, TagDefinition} from './tags';
 
 export class XmlTagDefinition implements TagDefinition {
   closedByParent: boolean = false;
-  requiredParents: {[key: string]: boolean};
-  parentToAdd: string;
-  implicitNamespacePrefix: string;
+  // TODO(issue/24571): remove '!'.
+  requiredParents !: {[key: string]: boolean};
+  // TODO(issue/24571): remove '!'.
+  parentToAdd !: string;
+  // TODO(issue/24571): remove '!'.
+  implicitNamespacePrefix !: string;
   contentType: TagContentType = TagContentType.PARSABLE_DATA;
   isVoid: boolean = false;
   ignoreFirstLf: boolean = false;

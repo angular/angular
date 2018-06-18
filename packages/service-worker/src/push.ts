@@ -23,7 +23,8 @@ export class SwPush {
   readonly messages: Observable<object>;
   readonly subscription: Observable<PushSubscription|null>;
 
-  private pushManager: Observable<PushManager>;
+  // TODO(issue/24571): remove '!'.
+  private pushManager !: Observable<PushManager>;
   private subscriptionChanges: Subject<PushSubscription|null> =
       new Subject<PushSubscription|null>();
 

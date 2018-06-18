@@ -81,7 +81,8 @@ function declareTests({useJit}: {useJit: boolean}) {
            @Directive({selector: '[myDir]'})
            class MyDir {
              setterCalls: {[key: string]: any} = {};
-             changes: SimpleChanges;
+             // TODO(issue/24571): remove '!'.
+             changes !: SimpleChanges;
 
              @Input()
              set a(v: number) { this.setterCalls['a'] = v; }
@@ -124,7 +125,8 @@ function declareTests({useJit}: {useJit: boolean}) {
       it('should evaluate a conditional in a statement binding', () => {
         @Component({selector: 'some-comp', template: '<p (click)="nullValue?.click()"></p>'})
         class SomeComponent {
-          nullValue: SomeReferencedClass;
+          // TODO(issue/24571): remove '!'.
+          nullValue !: SomeReferencedClass;
         }
 
         class SomeReferencedClass {
@@ -272,7 +274,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       @Directive({selector: '[someDir]'})
       class MyDir {
-        @Input('someDir') template: TemplateRef<any>;
+        // TODO(issue/24571): remove '!'.
+        @Input('someDir') template !: TemplateRef<any>;
       }
 
       const ctx =
@@ -292,8 +295,9 @@ function declareTests({useJit}: {useJit: boolean}) {
     it('should not recreate ViewContainerRefs in queries', () => {
       @Component({template: '<div #vc></div><div *ngIf="show" #vc></div>'})
       class MyComp {
+        // TODO(issue/24571): remove '!'.
         @ViewChildren('vc', {read: ViewContainerRef})
-        viewContainers: QueryList<ViewContainerRef>;
+        viewContainers !: QueryList<ViewContainerRef>;
 
         show = true;
       }
@@ -344,7 +348,8 @@ function declareTests({useJit}: {useJit: boolean}) {
     it('should support @ContentChild and @Input on the same property for static queries', () => {
       @Directive({selector: 'test'})
       class Test {
-        @Input() @ContentChild(TemplateRef) tpl: TemplateRef<any>;
+        // TODO(issue/24571): remove '!'.
+        @Input() @ContentChild(TemplateRef) tpl !: TemplateRef<any>;
       }
 
       @Component({

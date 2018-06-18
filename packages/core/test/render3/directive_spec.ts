@@ -61,8 +61,10 @@ describe('directive', () => {
           inputs: {test: 'test', other: 'other'}
         });
 
-        testValue: boolean;
-        other: boolean;
+        // TODO(issue/24571): remove '!'.
+        testValue !: boolean;
+        // TODO(issue/24571): remove '!'.
+        other !: boolean;
 
         /**
          * A setter to assert that a binding is not invoked with stringified attribute value
@@ -108,9 +110,12 @@ describe('directive', () => {
              inputs: {test: 'test', prop1: 'prop1', prop2: 'prop2'}
            });
 
-           prop1: boolean;
-           prop2: boolean;
-           testValue: boolean;
+           // TODO(issue/24571): remove '!'.
+           prop1 !: boolean;
+           // TODO(issue/24571): remove '!'.
+           prop2 !: boolean;
+           // TODO(issue/24571): remove '!'.
+           testValue !: boolean;
 
 
            /**

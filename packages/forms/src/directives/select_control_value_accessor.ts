@@ -168,7 +168,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
  */
 @Directive({selector: 'option'})
 export class NgSelectOption implements OnDestroy {
-  id: string;
+  // TODO(issue/24571): remove '!'.
+  id !: string;
 
   constructor(
       private _element: ElementRef, private _renderer: Renderer2,
