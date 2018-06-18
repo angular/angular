@@ -111,6 +111,12 @@ export interface LNode {
    */
   // TODO(kara): Remove when removing LNodes
   dynamicLContainerNode: LContainerNode|null;
+
+  /**
+   * A pointer to a parent LNode created dynamically and virtually by directives requesting
+   * ViewContainerRef. Applicable only to LContainerNode and LViewNode.
+   */
+  dynamicParent: LElementNode|LContainerNode|LViewNode|null;
 }
 
 
@@ -129,6 +135,7 @@ export interface LTextNode extends LNode {
   native: RText;
   readonly data: null;
   dynamicLContainerNode: null;
+  dynamicParent: null;
 }
 
 /** Abstract node which contains root nodes of a view. */
