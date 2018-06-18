@@ -138,6 +138,9 @@ export class Identifiers {
 
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵNgOnChangesFeature', moduleName: CORE};
 
+  static InheritDefinitionFeature:
+      o.ExternalReference = {name: 'ɵInheritDefinitionFeature', moduleName: CORE};
+
   static listener: o.ExternalReference = {name: 'ɵL', moduleName: CORE};
 
   // Reserve slots for pure functions

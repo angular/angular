@@ -106,6 +106,9 @@ export function extractDirectiveMetadata(
                             member => member.isStatic && member.kind === ClassMemberKind.Method &&
                                 member.name === 'ngOnChanges') !== undefined;
 
+  // Detect if the component inherits from another class
+  const usesInheritance = clazz.heritageClauses !== undefined &&
+      clazz.heritageClauses.some(hc => hc.token === ts.SyntaxKind.ExtendsKeyword);
   return {
     name: clazz.name !.text,
     deps: getConstructorDependencies(clazz, reflector),
@@ -121,7 +124,7 @@ export function extractDirectiveMetadata(
     outputs: {...outputsFromMeta, ...outputsFromFields},
     queries: [], selector,
     type: new WrappedNodeExpr(clazz.name !),
-    typeSourceSpan: null !,
+    typeSourceSpan: null !, usesInheritance,
   };
 }
 

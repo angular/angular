@@ -72,7 +72,7 @@ describe('template variables', () => {
         return new ForOfDirective($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
       },
       // TODO(chuckj): Enable when ngForOf enabling lands.
-      // features: [NgOnChangesFeature(NgForOf)],
+      // features: [NgOnChangesFeature],
       inputs: {forOf: 'forOf'}
     });
     // /NORMATIVE

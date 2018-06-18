@@ -1212,7 +1212,7 @@ describe('compiler compliance', () => {
             selectors: [['lifecycle-comp']],
             factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
             inputs: {nameMin: 'name'},
-            features: [$r3$.ɵNgOnChangesFeature(LifecycleComp)],
+            features: [$r3$.ɵNgOnChangesFeature],
             template: function LifecycleComp_Template(rf: IDENT, ctx: IDENT) {}
           });`;
 
@@ -1328,7 +1328,7 @@ describe('compiler compliance', () => {
                 factory: function ForOfDirective_Factory() {
                   return new ForOfDirective($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
                 },
-                features: [$r3$.ɵNgOnChangesFeature(NgForOf)],
+                features: [$r3$.ɵNgOnChangesFeature],
                 inputs: {forOf: 'forOf'}
               });
             `;
@@ -1401,7 +1401,7 @@ describe('compiler compliance', () => {
             factory: function ForOfDirective_Factory() {
               return new ForOfDirective($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
             },
-            features: [$r3$.ɵNgOnChangesFeature(NgForOf)],
+            features: [$r3$.ɵNgOnChangesFeature],
             inputs: {forOf: 'forOf'}
           });
         `;

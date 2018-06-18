@@ -1932,8 +1932,8 @@ describe('lifecycles', () => {
           type: Component,
           selectors: [[name]],
           factory: () => new Component(),
-          features: [NgOnChangesFeature({b: 'val2'})],
-          inputs: {a: 'val1', b: 'publicName'}, template,
+          features: [NgOnChangesFeature],
+          inputs: {a: 'val1', b: ['publicName', 'val2']}, template,
           directives: directives
         });
       };
@@ -1953,8 +1953,8 @@ describe('lifecycles', () => {
         type: Directive,
         selectors: [['', 'dir', '']],
         factory: () => new Directive(),
-        features: [NgOnChangesFeature({b: 'val2'})],
-        inputs: {a: 'val1', b: 'publicName'}
+        features: [NgOnChangesFeature],
+        inputs: {a: 'val1', b: ['publicName', 'val2']}
       });
     }
 
@@ -1976,11 +1976,10 @@ describe('lifecycles', () => {
       renderToHtml(Template, {val1: '1', val2: 'a'}, defs);
       expect(events).toEqual(['comp=comp val1=1 val2=a - changed=[val1,val2]']);
 
+      events.length = 0;
+
       renderToHtml(Template, {val1: '2', val2: 'b'}, defs);
-      expect(events).toEqual([
-        'comp=comp val1=1 val2=a - changed=[val1,val2]',
-        'comp=comp val1=2 val2=b - changed=[val1,val2]'
-      ]);
+      expect(events).toEqual(['comp=comp val1=2 val2=b - changed=[val1,val2]']);
     });
 
     it('should call parent onChanges before child onChanges', () => {
@@ -2336,7 +2335,7 @@ describe('lifecycles', () => {
           selectors: [[name]],
           factory: () => new Component(),
           inputs: {val: 'val'}, template,
-          features: [NgOnChangesFeature()],
+          features: [NgOnChangesFeature],
           directives: directives
         });
       };
