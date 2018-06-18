@@ -318,7 +318,8 @@ export function createLNodeObject(
     queries: queries,
     tNode: null !,
     pNextOrParent: null,
-    dynamicLContainerNode: null
+    dynamicLContainerNode: null,
+    dynamicParent: null
   };
 }
 
