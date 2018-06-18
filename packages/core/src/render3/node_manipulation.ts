@@ -29,6 +29,9 @@ export function getNextLNode(node: LNode): LNode|null {
 
 /** Retrieves the first child of a given node */
 export function getChildLNode(node: LNode): LNode|null {
+  if (node.pChild) {
+    return node.pChild;
+  }
   if (node.tNode.child) {
     const viewData = node.tNode.type === TNodeType.View ? node.data as LViewData : node.view;
     return viewData[node.tNode.child.index];
@@ -313,7 +316,7 @@ export function insertView(
   // If the container's renderParent is null, we know that it is a root node of its own parent view
   // and we should wait until that parent processes its nodes (otherwise, we will insert this view's
   // nodes twice - once now and once when its parent inserts its views).
-  if (container.data[RENDER_PARENT] !== null) {
+  if (container.data[RENDER_PARENT] !== null && !container.tNode.detached) {
     // Find the node to insert in front of
     const beforeNode =
         index + 1 < views.length ? (getChildLNode(views[index + 1]) !).native : container.native;
@@ -343,7 +346,9 @@ export function detachView(container: LContainerNode, removeIndex: number): LVie
     views[removeIndex - 1].data[NEXT] = viewNode.data[NEXT] as LViewData;
   }
   views.splice(removeIndex, 1);
-  addRemoveViewFromContainer(container, viewNode, false);
+  if (!container.tNode.detached) {
+    addRemoveViewFromContainer(container, viewNode, false);
+  }
   // Notify query that view has been removed
   const removedLview = viewNode.data;
   if (removedLview[QUERIES]) {
@@ -506,7 +511,7 @@ export function canInsertNativeNode(parent: LNode, currentView: LViewData): bool
 /**
  * Appends the `child` element to the `parent`.
  *
- * The element insertion might be delayed {@link canInsertNativeNode}
+ * The element insertion might be delayed {@link canInsertNativeNode}.
  *
  * @param parent The parent to which to append the child
  * @param child The child that should be appended
@@ -515,10 +520,29 @@ export function canInsertNativeNode(parent: LNode, currentView: LViewData): bool
  */
 export function appendChild(parent: LNode, child: RNode | null, currentView: LViewData): boolean {
   if (child !== null && canInsertNativeNode(parent, currentView)) {
-    // We only add element if not in View or not projected.
+    // We only add the element if not in View or not projected.
     const renderer = currentView[RENDERER];
     isProceduralRenderer(renderer) ? renderer.appendChild(parent.native !as RElement, child) :
                                      parent.native !.appendChild(child);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Removes the `child` element of the `parent` from the DOM.
+ *
+ * @param parent The parent from which to remove the child
+ * @param child The child that should be removed
+ * @param currentView The current LView
+ * @returns Whether or not the child was removed
+ */
+export function removeChild(parent: LNode, child: RNode | null, currentView: LViewData): boolean {
+  if (child !== null && canInsertNativeNode(parent, currentView)) {
+    // We only remove the element if not in View or not projected.
+    const renderer = currentView[RENDERER];
+    isProceduralRenderer(renderer) ? renderer.removeChild(parent.native as RElement, child) :
+                                     parent.native !.removeChild(child);
     return true;
   }
   return false;
