@@ -35,7 +35,7 @@ export class InjectableDecoratorHandler implements DecoratorHandler<R3Injectable
   compile(node: ts.ClassDeclaration, analysis: R3InjectableMetadata): CompileResult {
     const res = compileIvyInjectable(analysis);
     return {
-      field: 'ngInjectableDef',
+      name: 'ngInjectableDef',
       initializer: res.expression,
       statements: [],
       type: res.type,

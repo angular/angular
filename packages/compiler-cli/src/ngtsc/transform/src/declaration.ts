@@ -17,13 +17,13 @@ import {ImportManager, translateType} from './translator';
  * Processes .d.ts file text and adds static field declarations, with types.
  */
 export class DtsFileTransformer {
-  private ivyFields = new Map<string, CompileResult>();
+  private ivyFields = new Map<string, CompileResult[]>();
   private imports = new ImportManager();
 
   /**
    * Track that a static field was added to the code for a class.
    */
-  recordStaticField(name: string, decl: CompileResult): void { this.ivyFields.set(name, decl); }
+  recordStaticField(name: string, decls: CompileResult[]): void { this.ivyFields.set(name, decls); }
 
   /**
    * Process the .d.ts text for a file and add any declarations which were recorded.
@@ -36,11 +36,18 @@ export class DtsFileTransformer {
       const stmt = dtsFile.statements[i];
       if (ts.isClassDeclaration(stmt) && stmt.name !== undefined &&
           this.ivyFields.has(stmt.name.text)) {
-        const desc = this.ivyFields.get(stmt.name.text) !;
+        const decls = this.ivyFields.get(stmt.name.text) !;
         const before = dts.substring(0, stmt.end - 1);
         const after = dts.substring(stmt.end - 1);
-        const type = translateType(desc.type, this.imports);
-        dts = before + `    static ${desc.field}: ${type};\n` + after;
+
+        dts = before +
+            decls
+                .map(decl => {
+                  const type = translateType(decl.type, this.imports);
+                  return `    static ${decl.name}: ${type};\n`;
+                })
+                .join('') +
+            after;
       }
     }
 
