@@ -6,22 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import './ng_dev_mode';
-
 import {Sanitizer} from '../sanitization/security';
-
-import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual, assertSame} from './assert';
+import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {LInjector} from './interfaces/injector';
+import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, PropertyAliases, PropertyAliasValue, TAttributes, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType,} from './interfaces/node';
 import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {BINDING_INDEX, CLEANUP, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView,} from './interfaces/view';
-
-import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
+import {BINDING_INDEX, CLEANUP, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TVIEW, TView,} from './interfaces/view';
+import './ng_dev_mode';
 import {assertNodeType} from './node_assert';
-import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode, getLViewChild} from './node_manipulation';
+import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeChild, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDefInternal, ComponentTemplate, ComponentQuery, DirectiveDefInternal, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
@@ -101,6 +98,11 @@ export function getRenderer(): Renderer3 {
 
 export function getCurrentSanitizer(): Sanitizer|null {
   return viewData && viewData[SANITIZER];
+}
+
+export function getViewData(): LViewData {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  return viewData;
 }
 
 /** Used to set the parent property when nodes are created. */
@@ -319,7 +321,8 @@ export function createLNodeObject(
     tNode: null !,
     pNextOrParent: null,
     dynamicLContainerNode: null,
-    dynamicParent: null
+    dynamicParent: null,
+    pChild: null,
   };
 }
 
@@ -367,8 +370,8 @@ export function createLNode(
   if (index === -1 || type === TNodeType.View) {
     // View nodes are not stored in data because they can be added / removed at runtime (which
     // would cause indices to change). Their TNodes are instead stored in TView.node.
-    node.tNode =
-        (state as LViewData)[TVIEW].node || createTNode(type, index, null, null, tParent, null);
+    node.tNode = (state ? (state as LViewData)[TVIEW].node : null) ||
+        createTNode(type, index, null, null, tParent, null);
   } else {
     const adjustedIndex = index + HEADER_OFFSET;
 
@@ -1157,7 +1160,8 @@ export function createTNode(
     next: null,
     child: null,
     parent: parent,
-    dynamicContainerNode: null
+    dynamicContainerNode: null,
+    detached: null
   };
 }
 
@@ -1333,8 +1337,6 @@ export function elementStyle<T>(
     }
   }
 }
-
-
 
 //////////////////////////
 //// Text
@@ -1893,7 +1895,16 @@ export function projectionDef(
   }
 
   const componentNode: LElementNode = findComponentHost(viewData);
-  let componentChild: LNode|null = getChildLNode(componentNode);
+  let isProjectingI18nNodes = false;
+  let componentChild: LNode|null;
+  // for i18n translations we use pChild to point to the next child
+  // TODO(kara): Remove when removing LNodes
+  if (componentNode.pChild) {
+    isProjectingI18nNodes = true;
+    componentChild = componentNode.pChild;
+  } else {
+    componentChild = getChildLNode(componentNode);
+  }
 
   while (componentChild !== null) {
     // execute selector matching logic if and only if:
@@ -1906,7 +1917,11 @@ export function projectionDef(
       distributedNodes[0].push(componentChild);
     }
 
-    componentChild = getNextLNode(componentChild);
+    if (isProjectingI18nNodes) {
+      componentChild = componentChild.pNextOrParent;
+    } else {
+      componentChild = getNextLNode(componentChild);
+    }
   }
 
   ngDevMode && assertDataNext(index + HEADER_OFFSET);

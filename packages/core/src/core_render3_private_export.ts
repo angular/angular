@@ -87,6 +87,13 @@ export {
   DirectiveDefInternal as ɵDirectiveDef,
   PipeDef as ɵPipeDef,
   whenRendered as ɵwhenRendered,
+  iA as ɵiA,
+  iEM as ɵiEM,
+  iI as ɵiI,
+  iIV as ɵIV,
+  iM as ɵiM,
+  I18nInstruction as ɵI18nInstruction,
+  I18nExpInstruction as ɵI18nExpInstruction,
 } from './render3/index';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,

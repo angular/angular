@@ -8,8 +8,8 @@
 
 import {LifecycleHooksFeature, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
 import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
+import {I18nExpInstruction, I18nInstruction, i18nExpMapping, i18nInterpolation, i18nInterpolationV} from './i18n';
 import {ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
-
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
 export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
 export {RenderFlags} from './interfaces/definition';
@@ -79,6 +79,16 @@ export {
   tick,
 } from './instructions';
 
+export {
+  i18nApply as iA,
+  i18nMapping as iM,
+  i18nInterpolation as iI,
+  i18nInterpolationV as iIV,
+  i18nExpMapping as iEM,
+  I18nInstruction,
+  I18nExpInstruction
+} from './i18n';
+
 export {NgModuleDef, NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
 
 export {
@@ -96,7 +106,6 @@ export {
 
 export {
   QueryList,
-
   query as Q,
   queryRefresh as qR,
 } from './query';
