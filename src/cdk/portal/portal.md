@@ -10,19 +10,19 @@ Portals and PortalOutlets are low-level building blocks that other concepts, suc
 built upon.
 
 ##### `Portal<T>`
-| Method | Description |
-| --- | --- |
-| `attach(PortalOutlet): Promise<T>` | Attaches the portal to a host. |
-| `detach(): Promise<void>` | Detaches the portal from its host. |
-| `isAttached: boolean` | Whether the portal is attached. |
+| Method                      | Description                         |
+| --------------------------- | ----------------------------------- |
+| `attach(PortalOutlet): T`   | Attaches the portal to a host.      |
+| `detach(): void`            | Detaches the portal from its host.  |
+| `isAttached: boolean`       | Whether the portal is attached.     |
 
 ##### `PortalOutlet`
-| Method | Description |
-| --- | --- |
-| `attach(Portal): Promise<void>` | Attaches a portal to the host. |
-| `detach(): Promise<void>` | Detaches the portal from the host. |
-| `dispose(): Promise<void>` | Permanently dispose the host. |
-| `hasAttached: boolean` | Whether a portal is attached to the host. |
+| Method                  | Description                                 |
+| ----------------------- | ------------------------------------------- |
+| `attach(Portal): any`   | Attaches a portal to the host.              |
+| `detach(): any`         | Detaches the portal from the host.          |
+| `dispose(): void`       | Permanently dispose the host.               |
+| `hasAttached: boolean`  | Whether a portal is attached to the host.   |
 
 
 #### Portals in practice
