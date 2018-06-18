@@ -42,7 +42,10 @@ export function getParentLNode(node: LContainerNode | LElementNode | LTextNode |
 export function getParentLNode(node: LViewNode): LContainerNode|null;
 export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null;
 export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null {
-  if (node.tNode.index === -1) return null;
+  if (node.tNode.index === -1) {
+    // This is a dynamic container or an embedded view inside a dynamic container.
+    return node.dynamicParent;
+  }
   const parent = node.tNode.parent;
   return parent ? node.view[parent.index] : node.view[HOST_NODE];
 }
