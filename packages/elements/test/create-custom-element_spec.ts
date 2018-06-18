@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, EventEmitter, Injector, Input, NgModule, Output, destroyPlatform} from '@angular/core';
+import {Component, DoBootstrap, EventEmitter, Injector, Input, NgModule, Output, destroyPlatform} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {Subject} from 'rxjs';
@@ -109,13 +109,12 @@ class TestComponent {
   @Output() bazBaz = new EventEmitter<boolean>();
   @Output('quxqux') quxQux = new EventEmitter<Object>();
 }
-
 @NgModule({
   imports: [BrowserModule],
   declarations: [TestComponent],
   entryComponents: [TestComponent],
 })
-class TestModule {
+class TestModule implements DoBootstrap {
   ngDoBootstrap() {}
 }
 
