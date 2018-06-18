@@ -29,6 +29,9 @@ export function getNextLNode(node: LNode): LNode|null {
 
 /** Retrieves the first child of a given node */
 export function getChildLNode(node: LNode): LNode|null {
+  if (node.pChild) {
+    return node.pChild;
+  }
   if (node.tNode.child) {
     const viewData = node.tNode.type === TNodeType.View ? node.data as LViewData : node.view;
     return viewData[node.tNode.child.index];
@@ -57,7 +60,7 @@ export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNo
  * @param node The node whose next node in the LNode tree must be found.
  * @return LNode|null The next sibling in the LNode tree.
  */
-function getNextLNodeWithProjection(node: LNode): LNode|null {
+export function getNextLNodeWithProjection(node: LNode): LNode|null {
   const pNextOrParent = node.pNextOrParent;
 
   if (pNextOrParent) {
@@ -506,7 +509,7 @@ export function canInsertNativeNode(parent: LNode, currentView: LViewData): bool
 /**
  * Appends the `child` element to the `parent`.
  *
- * The element insertion might be delayed {@link canInsertNativeNode}
+ * The element insertion might be delayed {@link canInsertNativeNode}.
  *
  * @param parent The parent to which to append the child
  * @param child The child that should be appended
@@ -515,10 +518,29 @@ export function canInsertNativeNode(parent: LNode, currentView: LViewData): bool
  */
 export function appendChild(parent: LNode, child: RNode | null, currentView: LViewData): boolean {
   if (child !== null && canInsertNativeNode(parent, currentView)) {
-    // We only add element if not in View or not projected.
+    // We only add the element if not in View or not projected.
     const renderer = currentView[RENDERER];
     isProceduralRenderer(renderer) ? renderer.appendChild(parent.native !as RElement, child) :
                                      parent.native !.appendChild(child);
+    return true;
+  }
+  return false;
+}
+
+/**
+ * Removes the `child` element of the `parent` from the DOM.
+ *
+ * @param parent The parent from which to remove the child
+ * @param child The child that should be removed
+ * @param currentView The current LView
+ * @returns Whether or not the child was removed
+ */
+export function removeChild(parent: LNode, child: RNode | null, currentView: LViewData): boolean {
+  if (child !== null && canInsertNativeNode(parent, currentView)) {
+    // We only remove the element if not in View or not projected.
+    const renderer = currentView[RENDERER];
+    isProceduralRenderer(renderer) ? renderer.removeChild(parent.native as RElement, child) :
+                                     parent.native !.removeChild(child);
     return true;
   }
   return false;

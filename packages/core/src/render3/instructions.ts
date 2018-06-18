@@ -7,9 +7,7 @@
  */
 
 import './ng_dev_mode';
-
 import {Sanitizer} from '../sanitization/security';
-
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual, assertSame} from './assert';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
@@ -18,15 +16,15 @@ import {LInjector} from './interfaces/injector';
 import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {BINDING_INDEX, CLEANUP, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView,} from './interfaces/view';
-
 import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
 import {assertNodeType} from './node_assert';
-import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode, getLViewChild} from './node_manipulation';
+import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeChild, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDefInternal, ComponentTemplate, ComponentQuery, DirectiveDefInternal, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {ViewRef} from './view_ref';
+import {I18nFlags, I18nInstruction} from './i18n';
 
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
@@ -319,7 +317,8 @@ export function createLNodeObject(
     tNode: null !,
     pNextOrParent: null,
     dynamicLContainerNode: null,
-    dynamicParent: null
+    dynamicParent: null,
+    pChild: null,
   };
 }
 
@@ -367,8 +366,8 @@ export function createLNode(
   if (index === -1 || type === TNodeType.View) {
     // View nodes are not stored in data because they can be added / removed at runtime (which
     // would cause indices to change). Their TNodes are instead stored in TView.node.
-    node.tNode =
-        (state as LViewData)[TVIEW].node || createTNode(type, index, null, null, tParent, null);
+    node.tNode = (state ? (state as LViewData)[TVIEW].node : null) ||
+        createTNode(type, index, null, null, tParent, null);
   } else {
     const adjustedIndex = index + HEADER_OFFSET;
 
@@ -1334,8 +1333,6 @@ export function elementStyle<T>(
   }
 }
 
-
-
 //////////////////////////
 //// Text
 //////////////////////////
@@ -1893,7 +1890,16 @@ export function projectionDef(
   }
 
   const componentNode: LElementNode = findComponentHost(viewData);
-  let componentChild: LNode|null = getChildLNode(componentNode);
+  let isProjectingI18nNodes = false;
+  let componentChild: LNode|null;
+  // for i18n translations we use pChild to point to the next child
+  // TODO(kara): Remove when removing LNodes
+  if (componentNode.pChild) {
+    isProjectingI18nNodes = true;
+    componentChild = componentNode.pChild;
+  } else {
+    componentChild = getChildLNode(componentNode);
+  }
 
   while (componentChild !== null) {
     // execute selector matching logic if and only if:
@@ -1906,7 +1912,11 @@ export function projectionDef(
       distributedNodes[0].push(componentChild);
     }
 
-    componentChild = getNextLNode(componentChild);
+    if (isProjectingI18nNodes) {
+      componentChild = componentChild.pNextOrParent;
+    } else {
+      componentChild = getNextLNode(componentChild);
+    }
   }
 
   ngDevMode && assertDataNext(index + HEADER_OFFSET);
@@ -2601,3 +2611,99 @@ export function _getComponentHostLElementNode<T>(component: T): LElementNode {
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
 export const ROOT_DIRECTIVE_INDICES = _ROOT_DIRECTIVE_INDICES;
+
+///////////////////////////////
+//// I18n
+///////////////////////////////
+
+function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
+  if (ngDevMode) {
+    ngDevMode.rendererMoveNode++;
+  }
+
+  // We only append the node if both the node and the parent are elements
+  // For containers & views we will use the pChild/pNextOrParent pointers
+  if (node.tNode.type === TNodeType.Element && node !== parentNode) {
+    appendChild(parentNode, node.native || null, viewData);
+  }
+
+  if (previousNode === parentNode && parentNode.pChild === null) {
+    parentNode.pChild = node;
+  } else {
+    previousNode.pNextOrParent = node;
+  }
+  return node;
+}
+
+/**
+ * Takes a list of instructions generated by `i18nMapping` to transform the template accordingly.
+ *
+ * @param startIndex Index of the first element to translate (ie: first child of the element with
+ * the i18n attribute).
+ * @param instructions The list of instructions to apply on the current view
+ */
+export function i18nApply(startIndex: number, instructions: I18nInstruction[]): void {
+  if (ngDevMode) {
+    assertEqual(viewData[BINDING_INDEX], -1, 'i18nApply should be called before any binding');
+  }
+
+  let localParentNode: LNode = getParentLNode(load(startIndex)) || previousOrParentNode;
+  let localPreviousNode: LNode = localParentNode;
+
+  for (let i = 0; i < instructions.length; i++) {
+    const instruction = instructions[i] as number;
+    switch (instruction & I18nFlags.InstructionMask) {
+      case I18nFlags.Element:
+        const element: LNode = load(instruction & I18nFlags.IndexMask);
+        localPreviousNode = appendI18nNode(element, localParentNode, localPreviousNode);
+        localParentNode = element;
+        break;
+      case I18nFlags.Expression:
+        const expr: LNode = load(instruction & I18nFlags.IndexMask);
+        localPreviousNode = appendI18nNode(expr, localParentNode, localPreviousNode);
+        break;
+      case I18nFlags.Text:
+        if (ngDevMode) {
+          ngDevMode.rendererCreateTextNode++;
+        }
+        const value = instructions[++i];
+        const textRNode = createTextNode(value, renderer);
+        // Storing global values that will be changed when we create the LNode
+        const _previousOrParentNode = previousOrParentNode;
+        const _isParent = isParent;
+        // If we were to only create a RNode then projections won't move the text.
+        // But since this text doesn't have an index in LViewData, we need to create an LElementNode
+        // with index -1 so that it isn't saved in LViewData
+        const textLNode = createLNode(-1, TNodeType.Element, textRNode, null, null);
+        // Restoring global values
+        previousOrParentNode = _previousOrParentNode;
+        isParent = _isParent;
+        localPreviousNode = appendI18nNode(textLNode, localParentNode, localPreviousNode);
+        break;
+      case I18nFlags.CloseNode:
+        localPreviousNode = localParentNode;
+        localParentNode = getParentLNode(localParentNode) !;
+        break;
+      case I18nFlags.RemoveNode:
+        if (ngDevMode) {
+          ngDevMode.rendererRemoveNode++;
+        }
+        const index = instruction & I18nFlags.IndexMask;
+        let removedNode: LNode|LContainerNode = load(index);
+        if (removedNode.tNode.type === TNodeType.Element) {
+          // TODO(ocombe): refactor this once PR #24346 has landed
+          // If the node to remove is also the parent node, it means that we are in a container
+          if (previousOrParentNode === removedNode) {
+            // To remove it, we need to set the rootNode's child to null
+            const rootNode = getParentLNode(previousOrParentNode);
+            if (rootNode) {
+              rootNode.tNode.child = null;
+            }
+          } else {
+            removeChild(getParentLNode(removedNode) !, removedNode.native || null, viewData);
+          }
+        }
+        break;
+    }
+  }
+}
