@@ -99,7 +99,7 @@ export class NgtscProgram implements api.Program {
       new ComponentDecoratorHandler(checker, reflector, scopeRegistry),
       new DirectiveDecoratorHandler(checker, reflector, scopeRegistry),
       new InjectableDecoratorHandler(reflector),
-      new NgModuleDecoratorHandler(checker, scopeRegistry),
+      new NgModuleDecoratorHandler(checker, reflector, scopeRegistry),
     ];
     const compilation = new IvyCompilation(handlers, checker, reflector);
 

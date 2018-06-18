@@ -180,4 +180,46 @@ describe('ngtsc behavioral tests', () => {
         .toContain('static ngModuleDef: i0.NgModuleDef<TestModule, [TestCmp], [], []>');
     expect(dtsContents).not.toContain('__decorate');
   });
+
+  it('should compile NgModules with services without errors', () => {
+    writeConfig();
+    write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        export class Token {}
+
+        @NgModule({})
+        export class OtherModule {}
+
+        @Component({
+          selector: 'test-cmp',
+          template: 'this is a test',
+        })
+        export class TestCmp {}
+
+        @NgModule({
+          declarations: [TestCmp],
+          providers: [{provide: Token, useValue: 'test'}],
+          imports: [OtherModule],
+        })
+        export class TestModule {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule,');
+    expect(jsContents)
+        .toContain(
+            `TestModule.ngInjectorDef = i0.defineInjector({ factory: ` +
+            `function TestModule_Factory() { return new TestModule(); }, providers: [{ provide: ` +
+            `Token, useValue: 'test' }], imports: [OtherModule] });`);
+
+    const dtsContents = getContents('test.d.ts');
+    expect(dtsContents)
+        .toContain('static ngModuleDef: i0.NgModuleDef<TestModule, [TestCmp], [OtherModule], []>');
+    expect(dtsContents).toContain('static ngInjectorDef: i0.InjectorDef');
+  });
 });

@@ -11,6 +11,7 @@ import * as ts from 'typescript';
 
 import {VisitListEntryResult, Visitor, visit} from '../../util/src/visitor';
 
+import {CompileResult} from './api';
 import {IvyCompilation} from './compilation';
 import {ImportManager, translateExpression, translateStatement} from './translator';
 
@@ -33,14 +34,26 @@ class IvyVisitor extends Visitor {
     // Determine if this class has an Ivy field that needs to be added, and compile the field
     // to an expression if so.
     const res = this.compilation.compileIvyFieldFor(node);
-    if (res !== undefined) {
-      // There is a field to add. Translate the initializer for the field into TS nodes.
-      const exprNode = translateExpression(res.initializer, this.importManager);
 
-      // Create a static property declaration for the new field.
-      const property = ts.createProperty(
-          undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], res.field, undefined, undefined,
-          exprNode);
+    if (res !== undefined) {
+      // There is at least one field to add.
+      const statements: ts.Statement[] = [];
+      const members = [...node.members];
+
+      res.forEach(field => {
+        // Translate the initializer for the field into TS nodes.
+        const exprNode = translateExpression(field.initializer, this.importManager);
+
+        // Create a static property declaration for the new field.
+        const property = ts.createProperty(
+            undefined, [ts.createToken(ts.SyntaxKind.StaticKeyword)], field.name, undefined,
+            undefined, exprNode);
+
+        field.statements.map(stmt => translateStatement(stmt, this.importManager))
+            .forEach(stmt => statements.push(stmt));
+
+        members.push(property);
+      });
 
       // Replace the class declaration with an updated version.
       node = ts.updateClassDeclaration(
@@ -48,9 +61,7 @@ class IvyVisitor extends Visitor {
           // Remove the decorator which triggered this compilation, leaving the others alone.
           maybeFilterDecorator(
               node.decorators, this.compilation.ivyDecoratorFor(node) !.node as ts.Decorator),
-          node.modifiers, node.name, node.typeParameters, node.heritageClauses || [],
-          [...node.members, property]);
-      const statements = res.statements.map(stmt => translateStatement(stmt, this.importManager));
+          node.modifiers, node.name, node.typeParameters, node.heritageClauses || [], members);
       return {node, before: statements};
     }
 
