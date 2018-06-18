@@ -45,21 +45,29 @@ export type PlaceholderMap = {
 export const tagRegex = /\{\$([^}]+)\}/g;
 
 /**
- * A function to recursively generate the instructions for i18nMapping
+ * Internal function that reads the translation parts and generates a set of instructions for each
+ * template.
  *
- * @param index The current index in msgList
- * @param msgList The translation string split into an array of placeholders and text elements
- * @param elements A map of element placeholders and their indexes
- * @param expressions A map of expression placeholders and their indexes
+ * See `i18nMapping()` for more details.
+ *
+ * @param index The current index in `translationParts`.
+ * @param instructions The current list of instructions to update.
+ * @param translationParts The translation string split into an array of placeholders and text
+ * elements.
+ * @param elements An array containing, for each template, the maps of element placeholders and
+ * their indexes.
+ * @param expressions An array containing, for each template, the maps of expression placeholders
+ * and their indexes.
  * @param tmplContainers An array of template container placeholders whose content should be ignored
- * @param lastChildIndex The index of the last child of the i18n node.
- *
+ * when generating the instructions for their parent template.
+ * @param lastChildIndex The index of the last child of the i18n node. Used when the i18n block is
+ * an ng-container.
  * @returns the current index in msgList
  */
 function generateInstructions(
-    index: number, instructions: I18nInstruction[][], msgList: string[],
+    index: number, instructions: I18nInstruction[][], translationParts: string[],
     elements: (PlaceholderMap | null)[] | null, expressions?: (PlaceholderMap | null)[] | null,
-    tmplContainers?: string[] | null, lastChildIndex?: (number | null)[]): number {
+    tmplContainers?: string[] | null, lastChildIndex?: number | null): number {
   const tmplIndex = instructions.length;
   const tmplInstructions: I18nInstruction[] = [];
   const phAdded = [];
@@ -68,27 +76,30 @@ function generateInstructions(
 
   instructions.push(tmplInstructions);
 
-  for (; index < msgList.length; index++) {
-    const value = msgList[index];
+  for (; index < translationParts.length; index++) {
+    const value = translationParts[index];
 
     // Odd indexes are placeholders
     if (index & 1) {
       let phIndex;
 
+      // Test if the value is an element
       if (elements && elements[tmplIndex] &&
           typeof(phIndex = elements[tmplIndex] ![value]) !== 'undefined') {
+        // Add an instruction to move the element to that index
         tmplInstructions.push(phIndex | I18nFlags.Element);
         phAdded.push(value);
 
         if (tmplIndex > 0 || (tmplContainers && tmplContainers.indexOf(value) !== -1)) {
           tagCounter++;
         }
-      } else if (
+      } else if (  // Test if the value is an expression
           expressions && expressions[tmplIndex] &&
           typeof(phIndex = expressions[tmplIndex] ![value]) !== 'undefined') {
+        // Add an instruction to move the expression to that index
         tmplInstructions.push(phIndex | I18nFlags.Expression);
         phAdded.push(value);
-      } else {
+      } else {  // It is a closing tag
         tmplInstructions.push(I18nFlags.CloseNode);
 
         if (tmplIndex > 0) {
@@ -108,7 +119,8 @@ function generateInstructions(
       if (tmplContainers && tmplContainers.indexOf(value) !== -1 &&
           tmplContainers.indexOf(value) >= tmplIndex) {
         index = generateInstructions(
-            index, instructions, msgList, elements, expressions, tmplContainers, lastChildIndex);
+            index, instructions, translationParts, elements, expressions, tmplContainers,
+            lastChildIndex);
       }
 
     } else if (value) {  // It's a string, don't create a text node for empty values
@@ -116,6 +128,7 @@ function generateInstructions(
     }
   }
 
+  // Check if some elements from the template are missing from the translation
   if (elements) {
     const tmplElements = elements[tmplIndex];
 
@@ -127,18 +140,8 @@ function generateInstructions(
 
         if (phAdded.indexOf(ph) === -1) {
           let index = tmplElements[ph];
+          // Add an instruction to remove the element
           tmplInstructions.push(index | I18nFlags.RemoveNode);
-
-          // TODO(ocombe): remove this once PR #24346 has landed
-          // If the element is also a template container
-          if (tmplContainers) {
-            const containerIndex = tmplContainers.indexOf(ph) + 1;
-
-            if (containerIndex > 0) {
-              index = elements[containerIndex] ![ph];
-              instructions[containerIndex] = [index | I18nFlags.RemoveNode];
-            }
-          }
 
           if (index > maxIndex) {
             maxIndex = index;
@@ -148,6 +151,7 @@ function generateInstructions(
     }
   }
 
+  // Check if some expressions from the template are missing from the translation
   if (expressions) {
     const tmplExpressions = expressions[tmplIndex];
 
@@ -159,6 +163,7 @@ function generateInstructions(
 
         if (phAdded.indexOf(ph) === -1) {
           let index = tmplExpressions[ph];
+          // Add an instruction to remove the expression
           tmplInstructions.push(index | I18nFlags.RemoveNode);
 
           if (index > maxIndex) {
@@ -169,17 +174,12 @@ function generateInstructions(
     }
   }
 
-  if (typeof lastChildIndex !== 'undefined') {
-    const lcIndex = lastChildIndex[tmplIndex];
-
-    if (typeof lcIndex === 'number' && maxIndex < lcIndex) {
-      // The current parent has more children, we need to append them at the end to keep the order
-      for (let i = maxIndex + 1; i <= lcIndex; i++) {
-        // We consider those additional placeholders as expressions because we don't care about
-        // their
-        // children, all we need to do is to append them at the end
-        tmplInstructions.push(i | I18nFlags.Expression);
-      }
+  if (tmplIndex === 0 && typeof lastChildIndex === 'number') {
+    // The current parent has more children, we need to append them at the end to keep the order
+    for (let i = maxIndex + 1; i <= lastChildIndex; i++) {
+      // We consider those additional placeholders as expressions because we don't care about
+      // their children, all we need to do is to append them at the end
+      tmplInstructions.push(i | I18nFlags.Expression);
     }
   }
 
@@ -187,28 +187,35 @@ function generateInstructions(
 }
 
 /**
- * Takes a translation string and the initial list of placeholders (elements and expressions)
- * and returns a list of instructions that will be used to translate the template.
+ * Takes a translation string, the initial list of placeholders (elements and expressions) and their
+ * indexes, and returns a list of instructions for each template.
  *
- * @param translation A translation string
- * @param elements A map of element placeholders and their indexes
- * @param expressions A map of expression placeholders and their indexes
+ * Because embedded templates have different indexes for each placeholder, each parameter (except
+ * the translation) is an array, where each value corresponds to a different template, by order of
+ * appearance.
+ *
+ * @param translation A translation string where placeholders are represented by `{$name}`
+ * @param elements An array containing, for each template, the maps of element placeholders and
+ * their indexes.
+ * @param expressions An array containing, for each template, the maps of expression placeholders
+ * and their indexes.
  * @param tmplContainers An array of template container placeholders whose content should be ignored
- * @param lastChildIndex The index of the last child of the i18n node.
- * We are in a ng-template if it is different from the max index listed in the placeholders map
+ * when generating the instructions for their parent template.
+ * @param lastChildIndex The index of the last child of the i18n node. Used when the i18n block is
+ * an ng-container.
  *
- * @returns a list of instructions for each template
+ * @returns A list of instructions used to translate each template.
  */
 export function i18nMapping(
     translation: string, elements: (PlaceholderMap | null)[] | null,
     expressions?: (PlaceholderMap | null)[] | null, tmplContainers?: string[] | null,
-    lastChildIndex?: (number | null)[]): I18nInstruction[][] {
-  const msgList = translation.split(tagRegex);
+    lastChildIndex?: number | null): I18nInstruction[][] {
+  const translationParts = translation.split(tagRegex);
   const instructions: I18nInstruction[][] = [];
 
   // Call the recursive function that will update the instructions
   generateInstructions(
-      0, instructions, msgList, elements, expressions, tmplContainers, lastChildIndex);
+      0, instructions, translationParts, elements, expressions, tmplContainers, lastChildIndex);
 
   return instructions;
 }

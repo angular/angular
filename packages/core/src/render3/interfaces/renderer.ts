@@ -146,7 +146,7 @@ export interface RDomTokenList {
 
 export interface RText extends RNode { textContent: string|null; }
 
-export interface RComment extends RNode {}
+export interface RComment extends RNode { textContent: string|null; }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
