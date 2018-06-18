@@ -269,6 +269,10 @@ export interface DirectiveDecorator {
     new (obj: Directive): Directive;
 }
 
+export interface DoBootstrap {
+    ngDoBootstrap(appRef: ApplicationRef): void;
+}
+
 export interface DoCheck {
     ngDoCheck(): void;
 }
