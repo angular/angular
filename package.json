@@ -20,7 +20,7 @@
     "docs": "gulp docs",
     "api": "gulp api-docs"
   },
-  "version": "6.2.1",
+  "version": "6.3.0",
   "license": "MIT",
   "engines": {
     "node": ">= 5.4.1"
