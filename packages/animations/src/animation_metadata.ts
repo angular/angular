@@ -40,11 +40,12 @@ export declare type AnimateTimings = {
 
 /**
  * @description Options that control animation styling and timing.
+ *
  * The following animation functions accept `AnimationOptions` data:
  *
  * - `transition()`
  * - `sequence()`
- * - `group()`
+ * - `{@link animations/group group()}`
  * - `query()`
  * - `animation()`
  * - `useAnimation()`
@@ -100,7 +101,7 @@ export const enum AnimationMetadataType {
   Sequence = 2,
   /**
    * Contains a set of animation steps.
-   * See `group()`
+   * See `{@link animations/group group()}`
    */
   Group = 3,
   /**
@@ -352,7 +353,7 @@ export interface AnimationSequenceMetadata extends AnimationMetadata {
 
 /**
  * Encapsulates an animation group.
- * Instantiated and returned by the `group()` function.
+ * Instantiated and returned by the `{@link animations/group group()}` function.
  */
 export interface AnimationGroupMetadata extends AnimationMetadata {
   /**
@@ -579,7 +580,7 @@ export function trigger(name: string, definitions: AnimationMetadata[]): Animati
  * @returns An object that encapsulates the animation step.
  *
  * @usageNotes
- * Call within an animation `sequence()`, `group()`, or
+ * Call within an animation `sequence()`, `{@link animations/group group()}`, or
  * `transition()` call to specify an animation step
  * that applies given style data to the parent animation for a given amount of time.
  *
@@ -676,9 +677,9 @@ export function group(
  * @usageNotes
  * When you pass an array of steps to a
  * `transition()` call, the steps run sequentially by default.
- * Compare this to the `group()` call, which runs animation steps in parallel.
+ * Compare this to the `{@link animations/group group()}` call, which runs animation steps in parallel.
  *
- * When a sequence is used within a `group()` or a `transition()` call,
+ * When a sequence is used within a `{@link animations/group group()}` or a `transition()` call,
  * execution continues to the next instruction only after each of the inner animation
  * steps have completed.
  *
@@ -863,7 +864,7 @@ export function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSe
  *  ...]
  * ```
  *
- * Note that when you call the `sequence()` function within a `group()`
+ * Note that when you call the `sequence()` function within a `{@link animations/group group()}`
  * or a `transition()` call, execution does not continue to the next instruction
  * until each of the inner animation steps have completed.
  *
