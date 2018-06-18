@@ -64,10 +64,14 @@ function baseDirectiveFields(
   // e.g 'outputs: {a: 'a'}`
   definitionMap.set('outputs', conditionallyCreateMapObjectLiteral(meta.outputs));
 
-  // e.g. `features: [NgOnChangesFeature(MyComponent)]`
+  // e.g. `features: [NgOnChangesFeature]`
   const features: o.Expression[] = [];
+
+  if (meta.usesInheritance) {
+    features.push(o.importExpr(R3.InheritDefinitionFeature));
+  }
   if (meta.lifecycle.usesOnChanges) {
-    features.push(o.importExpr(R3.NgOnChangesFeature, null, null).callFn([meta.type]));
+    features.push(o.importExpr(R3.NgOnChangesFeature));
   }
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
@@ -255,6 +259,7 @@ function directiveMetadataFromGlobalMetadata(
     },
     inputs: directive.inputs,
     outputs: directive.outputs,
+    usesInheritance: false,
   };
 }
 

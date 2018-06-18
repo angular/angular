@@ -97,6 +97,12 @@ export interface DirectiveDef<T, Selector extends string> {
   readonly inputs: {[P in keyof T]: P};
 
   /**
+   * @deprecated This is only here because `NgOnChanges` incorrectly uses declared name instead of
+   * public or minified name.
+   */
+  readonly declaredInputs: {[P in keyof T]: P};
+
+  /**
    * A dictionary mapping the outputs' minified property names to their public API names, which
    * are their aliases if any, or their original unminified property names
    * (as in `@Output('alias') propertyName: any;`).
@@ -135,6 +141,11 @@ export interface DirectiveDef<T, Selector extends string> {
   afterViewInit: (() => void)|null;
   afterViewChecked: (() => void)|null;
   onDestroy: (() => void)|null;
+
+  /**
+   * The features applied to this directive
+   */
+  features: DirectiveDefFeature[]|null;
 }
 
 /**
