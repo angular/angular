@@ -116,7 +116,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
 
     const res = compileComponentFromMetadata(analysis, pool, makeBindingParser());
     return {
-      field: 'ngComponentDef',
+      name: 'ngComponentDef',
       initializer: res.expression,
       statements: pool.statements,
       type: res.type,

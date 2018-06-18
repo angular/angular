@@ -44,7 +44,7 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
     const pool = new ConstantPool();
     const res = compileDirectiveFromMetadata(analysis, pool, makeBindingParser());
     return {
-      field: 'ngDirectiveDef',
+      name: 'ngDirectiveDef',
       initializer: res.expression,
       statements: pool.statements,
       type: res.type,
