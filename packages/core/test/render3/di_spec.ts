@@ -995,7 +995,7 @@ describe('di', () => {
         selectors: [['', 'myIf', '']],
         factory: () => new IfDirective(injectTemplateRef(), injectViewContainerRef()),
         inputs: {myIf: 'myIf'},
-        features: [PublicFeature, NgOnChangesFeature()]
+        features: [PublicFeature, NgOnChangesFeature]
       });
     }
 

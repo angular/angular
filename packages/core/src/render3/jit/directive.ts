@@ -121,6 +121,10 @@ export function compileDirective(type: Type<any>, directive: Directive): void {
 }
 
 
+export function extendsDirectlyFromObject(type: Type<any>): boolean {
+  return Object.getPrototypeOf(type.prototype) === Object.prototype;
+}
+
 /**
  * Extract the `R3DirectiveMetadata` for a particular directive (either a `Directive` or a
  * `Component`).
@@ -136,14 +140,16 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
 
   const inputsFromType: StringMap = {};
   const outputsFromType: StringMap = {};
-  for (let field in propMetadata) {
-    propMetadata[field].forEach(ann => {
-      if (isInput(ann)) {
-        inputsFromType[field] = ann.bindingPropertyName || field;
-      } else if (isOutput(ann)) {
-        outputsFromType[field] = ann.bindingPropertyName || field;
-      }
-    });
+  for (const field in propMetadata) {
+    if (propMetadata.hasOwnProperty(field)) {
+      propMetadata[field].forEach(ann => {
+        if (isInput(ann)) {
+          inputsFromType[field] = ann.bindingPropertyName || field;
+        } else if (isOutput(ann)) {
+          outputsFromType[field] = ann.bindingPropertyName || field;
+        }
+      });
+    }
   }
 
   return {
@@ -158,6 +164,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
       usesOnChanges: type.prototype.ngOnChanges !== undefined,
     },
     typeSourceSpan: null !,
+    usesInheritance: !extendsDirectlyFromObject(type),
   };
 }
 
@@ -174,14 +181,16 @@ function extractHostBindings(metadata: Directive, propMetadata: {[key: string]: 
   }
 
   // Next, loop over the properties of the object, looking for @HostBinding and @HostListener.
-  for (let field in propMetadata) {
-    propMetadata[field].forEach(ann => {
-      if (isHostBinding(ann)) {
-        properties[ann.hostPropertyName || field] = field;
-      } else if (isHostListener(ann)) {
-        listeners[ann.eventName || field] = `${field}(${(ann.args || []).join(',')})`;
-      }
-    });
+  for (const field in propMetadata) {
+    if (propMetadata.hasOwnProperty(field)) {
+      propMetadata[field].forEach(ann => {
+        if (isHostBinding(ann)) {
+          properties[ann.hostPropertyName || field] = field;
+        } else if (isHostListener(ann)) {
+          listeners[ann.eventName || field] = `${field}(${(ann.args || []).join(',')})`;
+        }
+      });
+    }
   }
 
   return {attributes, listeners, properties};

@@ -86,6 +86,11 @@ export interface R3DirectiveMetadata {
    * A mapping of output field names to the property names.
    */
   outputs: {[field: string]: string};
+
+  /**
+   * Whether or not the component or directive inherits from another class
+   */
+  usesInheritance: boolean;
 }
 
 /**
