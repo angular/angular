@@ -16,7 +16,7 @@ import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_sty
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, iteratorToArray, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
-import {getBodyNode, getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
+import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
 
 const QUEUED_CLASSNAME = 'ng-animate-queued';
 const QUEUED_SELECTOR = '.ng-animate-queued';
@@ -530,7 +530,9 @@ export class TransitionAnimationEngine {
   /** @internal */
   _onRemovalComplete(element: any, context: any) { this.onRemovalComplete(element, context); }
 
-  constructor(public driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
+  constructor(
+      public bodyNode: any, public driver: AnimationDriver,
+      private _normalizer: AnimationStyleNormalizer) {}
 
   get queuedPlayers(): TransitionAnimationPlayer[] {
     const players: TransitionAnimationPlayer[] = [];
@@ -890,7 +892,7 @@ export class TransitionAnimationEngine {
       }
     });
 
-    const bodyNode = getBodyNode();
+    const bodyNode = this.bodyNode;
     const allTriggerElements = Array.from(this.statesByElement.keys());
     const enterNodeMap = buildRootMap(allTriggerElements, this.collectedEnterElements);
 
