@@ -6,14 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgForOf as NgForOfDef, NgIf as NgIfDef} from '@angular/common';
-import {InjectFlags, IterableDiffers} from '@angular/core';
+import {NgForOf as NgForOfDef, NgIf as NgIfDef, NgTemplateOutlet as NgTemplateOutletDef} from '@angular/common';
+import {IterableDiffers} from '@angular/core';
 
-import {defaultIterableDiffers} from '../../src/change_detection/change_detection';
 import {DirectiveType, NgOnChangesFeature, defineDirective, directiveInject, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 
 export const NgForOf: DirectiveType<NgForOfDef<any>> = NgForOfDef as any;
 export const NgIf: DirectiveType<NgIfDef> = NgIfDef as any;
+export const NgTemplateOutlet: DirectiveType<NgTemplateOutletDef> = NgTemplateOutletDef as any;
 
 NgForOf.ngDirectiveDef = defineDirective({
   type: NgForOfDef,
@@ -32,4 +32,14 @@ NgForOf.ngDirectiveDef = defineDirective({
   selectors: [['', 'ngIf', '']],
   factory: () => new NgIfDef(injectViewContainerRef(), injectTemplateRef()),
   inputs: {ngIf: 'ngIf', ngIfThen: 'ngIfThen', ngIfElse: 'ngIfElse'}
+});
+
+(NgTemplateOutlet as any).ngDirectiveDef = defineDirective({
+  type: NgTemplateOutletDef,
+  selectors: [['', 'ngTemplateOutlet', '']],
+  factory: () => new NgTemplateOutletDef(injectViewContainerRef()),
+  features: [NgOnChangesFeature(
+      {ngTemplateOutlet: 'ngTemplateOutlet', ngTemplateOutletContext: 'ngTemplateOutletContext'})],
+  inputs:
+      {ngTemplateOutlet: 'ngTemplateOutlet', ngTemplateOutletContext: 'ngTemplateOutletContext'}
 });
