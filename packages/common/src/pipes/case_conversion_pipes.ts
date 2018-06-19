@@ -68,7 +68,6 @@ const unicodeWordMatch =
 @Pipe({name: 'titlecase'})
 export class TitleCasePipe implements PipeTransform {
   /**
-   *
    * @param value The string to transform.
    */
   transform(value: string): string {
@@ -90,7 +89,6 @@ export class TitleCasePipe implements PipeTransform {
 @Pipe({name: 'uppercase'})
 export class UpperCasePipe implements PipeTransform {
   /**
-   *
    * @param value The string to transform.
    */
   transform(value: string): string {

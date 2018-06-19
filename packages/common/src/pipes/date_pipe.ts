@@ -54,7 +54,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * You can construct a format string using symbols to specify the components
  * of a date-time value, as described in the following table.
  * Format details depend on the locale.
- * Fields marked with (*) are only available if you have imported a locale-specific data set.
+ * Fields marked with (*) are only available in the extra data set for the given locale.
  *
  *  | Field type         | Format      | Description                                                   | Example Value                                              |
  *  |--------------------|-------------|---------------------------------------------------------------|------------------------------------------------------------|
@@ -112,14 +112,14 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *  |                    | O, OO & OOO | Short localized GMT format                                    | GMT-8                                                      |
  *  |                    | OOOO        | Long localized GMT format                                     | GMT-08:00                                                  |
  *
- * Note that time zone correction is not applied to an ISO string that has no time component, such as "2016-09-19"
+ * Note that timezone correction is not applied to an ISO string that has no time component, such as "2016-09-19"
  *
  * ### Format examples
  *
  * These examples transform a date into various formats,
  * assuming that `dateObj` is a JavaScript `Date` object for
- * year: 2015, month: 6, day: 15, hour: 21, minute: 43, second: 11.
- * The output is in the local time for the 'en-US'  locale.
+ * year: 2015, month: 6, day: 15, hour: 21, minute: 43, second: 11,
+ * given in the local time for the 'en-US'  locale.
  *
  * ```
  * {{ dateObj | date }}               // output is 'Jun 15, 2015'
@@ -158,9 +158,9 @@ export class DatePipe implements PipeTransform {
    * (milliseconds since UTC epoch), or an ISO string (https://www.w3.org/TR/NOTE-datetime).
    * @param format The date/time components to include, using predefined options or a
    * custom format string.
-   * @param timezone A time zone offset (such as `'+0430'`), or a standard
-   * UTC/GMT or continental US time zone abbreviation. Deafault is
-   * the local system time zone of the end-user's machine.
+   * @param timezone A timezone offset (such as `'+0430'`), or a standard
+   * UTC/GMT or continental US timezone abbreviation. Default is
+   * the local system timezone of the end-user's machine.
    * @param locale A locale code for the locale format rules to use.
    * When not supplied, uses the value of `LOCALE_ID`, which is `en-US` by default.
    * See [Setting your app locale](guide/i18n#setting-up-the-locale-of-your-app).
