@@ -26,7 +26,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 @Pipe({name: 'lowercase'})
 export class LowerCasePipe implements PipeTransform {
   /**
-   * @param value The string to transform.
+   * @param value The string to transform to lower case.
    */
   transform(value: string): string {
     if (!value) return value;
@@ -53,7 +53,7 @@ const unicodeWordMatch =
  * Transforms text to title case.
  * Capitalizes the first letter of each word, and transforms the
  * rest of the word to lower case.
- * Words are delimited by any whitespace character, such a space, tab, or line-feed character.
+ * Words are delimited by any whitespace character, such as a space, tab, or line-feed character.
  *
  * @see `LowerCasePipe`
  * @see `UpperCasePipe`
@@ -68,7 +68,7 @@ const unicodeWordMatch =
 @Pipe({name: 'titlecase'})
 export class TitleCasePipe implements PipeTransform {
   /**
-   * @param value The string to transform.
+   * @param value The string to transform to title case.
    */
   transform(value: string): string {
     if (!value) return value;
@@ -89,7 +89,7 @@ export class TitleCasePipe implements PipeTransform {
 @Pipe({name: 'uppercase'})
 export class UpperCasePipe implements PipeTransform {
   /**
-   * @param value The string to transform.
+   * @param value The string to transform to upper case.
    */
   transform(value: string): string {
     if (!value) return value;

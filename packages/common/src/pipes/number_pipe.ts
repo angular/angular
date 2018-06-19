@@ -145,7 +145,7 @@ export class CurrencyPipe implements PipeTransform {
   /**
    *
    * @param value The number to be formatted as currency.
-   * @param currencyCodeis the [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code,
+   * @param currencyCode The [ISO 4217](https://en.wikipedia.org/wiki/ISO_4217) currency code,
    * such as `USD` for the US dollar and `EUR` for the euro.
    * @param display The format for the currency indicator. One of the following:
    *   - `code`: Show the code (such as `USD`).

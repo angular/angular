@@ -119,7 +119,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * These examples transform a date into various formats,
  * assuming that `dateObj` is a JavaScript `Date` object for
  * year: 2015, month: 6, day: 15, hour: 21, minute: 43, second: 11,
- * given in the local time for the 'en-US'  locale.
+ * given in the local time for the `en-US` locale.
  *
  * ```
  * {{ dateObj | date }}               // output is 'Jun 15, 2015'
@@ -130,7 +130,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *
  * ### Usage example
  *
- * The following component uses a date pipe to display the current date in two different formats.
+ * The following component uses a date pipe to display the current date in different formats.
  *
  * ```
  * @Component({
@@ -138,7 +138,7 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *  template: `<div>
  *    <p>Today is {{today | date}}</p>
  *    <p>Or if you prefer, {{today | date:'fullDate'}}</p>
- *    <p>The time is {{today | date:'jmZ'}}</p>
+ *    <p>The time is {{today | date:'hmZ'}}</p>
  *  </div>`
  * })
  * // Get the current date and time as a date-time value.
