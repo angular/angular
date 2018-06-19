@@ -56,8 +56,11 @@ export {
   elementEnd as e,
   elementProperty as p,
   elementStart as E,
-  elementStyle as s,
-  elementStyleNamed as sn,
+
+  elementStyling as s,
+  elementStyle as sm,
+  elementStyleProp as sp,
+  elementStylingApply as sa,
 
   listener as L,
   store as st,

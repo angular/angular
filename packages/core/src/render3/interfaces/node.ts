@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {StylingContext} from '../styling';
+
 import {LContainer} from './container';
 import {LInjector} from './injector';
 import {LProjection} from './projection';
@@ -341,6 +343,8 @@ export interface TNode {
    * If this node is not part of an i18n block, this field is null.
    */
   detached: boolean|null;
+
+  stylingTemplate: StylingContext|null;
 }
 
 /** Static data for an LElementNode  */

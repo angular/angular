@@ -6,11 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵC as C, ɵE as E, ɵRenderFlags as RenderFlags, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as detectChanges, ɵe as e, ɵsn as sn, ɵt as t, ɵv as v} from '@angular/core';
+import {ɵC as C, ɵE as E, ɵRenderFlags as RenderFlags, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵs as s, ɵsa as sa, ɵsm as sm, ɵsp as sp, ɵt as t, ɵv as v} from '@angular/core';
 import {ComponentDefInternal} from '@angular/core/src/render3/interfaces/definition';
 
 import {TableCell, buildTable, emptyTable} from '../util';
 
+const c0 = ['background-color'];
 export class LargeTableComponent {
   data: TableCell[][] = emptyTable;
 
@@ -47,12 +48,13 @@ export class LargeTableComponent {
                     {
                       if (rf2 & RenderFlags.Create) {
                         E(0, 'td');
-                        { T(1); }
+                        s(1, c0);
+                        { T(2); }
                         e();
                       }
                       if (rf2 & RenderFlags.Update) {
-                        sn(0, 'background-color', b(cell.row % 2 ? '' : 'grey'));
-                        t(1, b(cell.value));
+                        sp(1, 0, cell.row % 2 ? '' : 'grey');
+                        t(2, b(cell.value));
                       }
                     }
                     v();
