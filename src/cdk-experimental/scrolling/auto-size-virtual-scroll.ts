@@ -424,7 +424,7 @@ export function _autoSizeVirtualScrollStrategyFactory(autoSizeDir: CdkAutoSizeVi
 export class CdkAutoSizeVirtualScroll implements OnChanges {
   /**
    * The minimum amount of buffer rendered beyond the viewport (in pixels).
-   * If the amount of buffer dips below this number, more items will be rendered.
+   * If the amount of buffer dips below this number, more items will be rendered. Defaults to 100px.
    */
   @Input()
   get minBufferPx(): number { return this._minBufferPx; }
@@ -435,6 +435,7 @@ export class CdkAutoSizeVirtualScroll implements OnChanges {
    * The number of pixels worth of buffer to shoot for when rendering new items.
    * If the actual amount turns out to be less it will not necessarily trigger an additional
    * rendering cycle (as long as the amount of buffer is still greater than `minBufferPx`).
+   * Defaults to 200px.
    */
   @Input()
   get addBufferPx(): number { return this._addBufferPx; }

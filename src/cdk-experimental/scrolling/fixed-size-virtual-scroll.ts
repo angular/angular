@@ -150,7 +150,10 @@ export class CdkFixedSizeVirtualScroll implements OnChanges {
   set itemSize(value: number) { this._itemSize = coerceNumberProperty(value); }
   _itemSize = 20;
 
-  /** The number of extra elements to render on either side of the scrolling viewport. */
+  /**
+   * The number of extra elements to render on either side of the scrolling viewport.
+   * Defaults to 5 elements.
+   */
   @Input()
   get bufferSize(): number { return this._bufferSize; }
   set bufferSize(value: number) { this._bufferSize = coerceNumberProperty(value); }
