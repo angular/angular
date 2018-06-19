@@ -106,7 +106,10 @@ export class DynamicDataSource {
           new DynamicFlatNode(name, node.level + 1, this.database.isExpandable(name)));
         this.data.splice(index + 1, 0, ...nodes);
       } else {
-        this.data.splice(index + 1, children.length);
+        let count = 0;
+        for (let i = index + 1; i < this.data.length
+          && this.data[i].level > node.level; i++, count++) {}
+        this.data.splice(index + 1, count);
       }
 
       // notify the change
