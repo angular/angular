@@ -37,9 +37,13 @@ export class Identifiers {
 
   static elementClassNamed: o.ExternalReference = {name: 'ɵkn', moduleName: CORE};
 
-  static elementStyle: o.ExternalReference = {name: 'ɵs', moduleName: CORE};
+  static elementStyling: o.ExternalReference = {name: 'ɵs', moduleName: CORE};
 
-  static elementStyleNamed: o.ExternalReference = {name: 'ɵsn', moduleName: CORE};
+  static elementStyle: o.ExternalReference = {name: 'ɵsm', moduleName: CORE};
+
+  static elementStyleProp: o.ExternalReference = {name: 'ɵsp', moduleName: CORE};
+
+  static elementStylingApply: o.ExternalReference = {name: 'ɵsa', moduleName: CORE};
 
   static containerCreate: o.ExternalReference = {name: 'ɵC', moduleName: CORE};
 

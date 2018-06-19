@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵC as C, ɵE as E, ɵRenderFlags as RenderFlags, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵsn as sn, ɵt as t, ɵv as v} from '@angular/core';
+import {ɵC as C, ɵE as E, ɵRenderFlags as RenderFlags, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵs as s, ɵsa as sa, ɵsm as sm, ɵsp as sp, ɵt as t, ɵv as v} from '@angular/core';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
 
@@ -30,6 +30,7 @@ export function detectChanges(component: TreeComponent) {
   numberOfChecksEl.textContent = `${detectChangesRuns}`;
 }
 
+const c0 = ['background-color'];
 export class TreeComponent {
   data: TreeNode = emptyTree;
 
@@ -40,15 +41,16 @@ export class TreeComponent {
     template: function(rf: RenderFlags, ctx: TreeComponent) {
       if (rf & RenderFlags.Create) {
         E(0, 'span');
-        { T(1); }
+        s(1, c0);
+        { T(2); }
         e();
-        C(2);
         C(3);
+        C(4);
       }
       if (rf & RenderFlags.Update) {
-        sn(0, 'background-color', b(ctx.data.depth % 2 ? '' : 'grey'));
-        t(1, i1(' ', ctx.data.value, ' '));
-        cR(2);
+        sp(1, 0, ctx.data.depth % 2 ? '' : 'grey');
+        t(2, i1(' ', ctx.data.value, ' '));
+        cR(3);
         {
           if (ctx.data.left != null) {
             let rf0 = V(0);
@@ -65,7 +67,7 @@ export class TreeComponent {
           }
         }
         cr();
-        cR(3);
+        cR(4);
         {
           if (ctx.data.right != null) {
             let rf0 = V(0);
@@ -106,22 +108,24 @@ export class TreeFunction {
   });
 }
 
+const c1 = ['background-color'];
 export function TreeTpl(rf: RenderFlags, ctx: TreeNode) {
   if (rf & RenderFlags.Create) {
     E(0, 'tree');
     {
       E(1, 'span');
-      { T(2); }
+      s(2, c1);
+      { T(3); }
       e();
-      C(3);
       C(4);
+      C(5);
     }
     e();
   }
   if (rf & RenderFlags.Update) {
-    sn(1, 'background-color', b(ctx.depth % 2 ? '' : 'grey'));
-    t(2, i1(' ', ctx.value, ' '));
-    cR(3);
+    sp(2, 0, ctx.depth % 2 ? '' : 'grey');
+    t(3, i1(' ', ctx.value, ' '));
+    cR(4);
     {
       if (ctx.left != null) {
         let rf0 = V(0);
@@ -130,7 +134,7 @@ export function TreeTpl(rf: RenderFlags, ctx: TreeNode) {
       }
     }
     cr();
-    cR(4);
+    cR(5);
     {
       if (ctx.right != null) {
         let rf0 = V(0);
