@@ -15,7 +15,7 @@ import {Sanitizer} from '../sanitization/security';
 import {assertComponentType, assertDefined} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
 import {CLEAN_PROMISE, ROOT_DIRECTIVE_INDICES, _getComponentHostLElementNode, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings,} from './instructions';
-import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
+import {ComponentDef, ComponentDefInternal, ComponentType, RenderFlags} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LViewData, LViewFlags, RootContext, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
@@ -107,7 +107,7 @@ export function renderComponent<T>(
 
   const rootView: LViewData = createLViewData(
       rendererFactory.createRenderer(hostNode, componentDef.rendererType),
-      createTView(-1, null, null, null), rootContext,
+      createTView(-1, null, null, null, null), rootContext,
       componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
   rootView[INJECTOR] = opts.injector || null;
 

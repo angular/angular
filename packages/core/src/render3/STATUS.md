@@ -192,7 +192,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `@ContentChildren`              |  ✅     |  ✅      |  ❌       |
 | `@ContentChild`                 |  ✅     |  ✅      |  ✅       |
 | `@ViewChildren`                 |  ✅     |  ✅      |  ❌       |
-| `@ViewChild`                    |  ✅     |  ✅      |  ✅       |
+| `@ViewChild`                    |  ✅     |  ✅      |  ❌       |
 
 
 

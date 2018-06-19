@@ -8,7 +8,6 @@
 
 import {SimpleChange} from '../change_detection/change_detection_util';
 import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {PipeTransform} from '../change_detection/pipe_transform';
 import {Provider} from '../core';
 import {OnChanges, SimpleChanges} from '../metadata/lifecycle_hooks';
 import {NgModuleDef, NgModuleDefInternal} from '../metadata/ng_module';
@@ -17,7 +16,7 @@ import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {ComponentDefFeature, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {ComponentDefFeature, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory, RenderFlags} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 
@@ -127,6 +126,15 @@ export function defineComponent<T>(componentDefinition: {
   template: ComponentTemplate<T>;
 
   /**
+   * Additional set of instructions specific to query processing. This could be seen as an
+   * "additional" template function.
+   * Query-related instructions need to be pulled out to a specific function as a timing of
+   * execution is different as compared to all other instructions (after change detection hooks but
+   * before view hooks).
+   */
+  queryInstructions?: ComponentTemplate<T>| null;
+
+  /**
    * A list of optional features to apply.
    *
    * See: {@link NgOnChangesFeature}, {@link PublicFeature}
@@ -193,7 +201,8 @@ export function defineComponent<T>(componentDefinition: {
     pipeDefs: pipeTypes ?
         () => (typeof pipeTypes === 'function' ? pipeTypes() : pipeTypes).map(extractPipeDef) :
         null,
-    selectors: componentDefinition.selectors
+    selectors: componentDefinition.selectors,
+    queryInstructions: componentDefinition.queryInstructions || null,
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));

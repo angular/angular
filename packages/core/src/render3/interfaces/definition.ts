@@ -159,6 +159,13 @@ export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T
   readonly template: ComponentTemplate<T>;
 
   /**
+   * Query-related instructions for a component.
+   *
+   * NOTE: only used with component directives.
+   */
+  queryInstructions: ComponentTemplate<T>|null;
+
+  /**
    * Renderer type data of the component.
    *
    * NOTE: only used with component directives.

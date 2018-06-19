@@ -189,6 +189,12 @@
     "name": "locateHostElement"
   },
   {
+    "name": "queryCreateInstructions"
+  },
+  {
+    "name": "queryUpdateInstructions"
+  },
+  {
     "name": "refreshChildComponents"
   },
   {

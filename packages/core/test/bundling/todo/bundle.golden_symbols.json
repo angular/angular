@@ -441,6 +441,12 @@
     "name": "namespaceHTML"
   },
   {
+    "name": "queryCreateInstructions"
+  },
+  {
+    "name": "queryUpdateInstructions"
+  },
+  {
     "name": "queueComponentIndexForCheck"
   },
   {

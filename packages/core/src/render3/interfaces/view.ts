@@ -201,6 +201,11 @@ export interface TView {
   template: ComponentTemplate<{}>|null;
 
   /**
+   * A function containing query-related instructions.
+   */
+  queryInstructions: ComponentTemplate<{}>|null;
+
+  /**
    * Pointer to the `TNode` that represents the root of the view.
    *
    * If this is a `TNode` for an `LViewNode`, this is an embedded view of a container.
