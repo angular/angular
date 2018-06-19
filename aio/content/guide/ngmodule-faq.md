@@ -706,32 +706,56 @@ This means that lazy-loaded modules can't reach them.
 
 {@a q-component-or-module}
 
+<!--
 ## Should I add other providers to a module or a component?
+-->
+## 프로바이더는 모듈이나 컴포넌트에 꼭 등록해야 하나요?
 
+<!--
 Providers should be configured using `@Injectable` syntax. If possible, they should be provided in the application root (`providedIn: 'root'`). Services that are configured this way are lazily loaded if they are only used from a lazily loaded context.
+-->
+프로바이더는 `@Injectable` 문법으로 등록되어야 하며, 가능하다면 애플리케이션 최상위 계층에 존재하도록 `providedIn: 'root'`을 지정해야 합니다. 지연로딩되는 모듈에 등록된 프로바이더는 모듈과 함께 필요할 때 로딩됩니다.
 
+<!--
 If it's the consumer's decision whether a provider is available application-wide or not, 
 then register providers in modules (`@NgModule.providers`) instead of registering in components (`@Component.providers`).
+-->
+그리고 이 프로바이더가 애플리케이션 전역에 사용되는지 일부 범위에만 사용되는지에 따라 달라지지만, 프로바이더는 되도록 컴포넌트(`@Component.providers`)에 등록하는 것보다 모듈(`@NgModule.providers`)에 등록하는 것이 좋습니다.
 
+<!--
 Register a provider with a component when you _must_ limit the scope of a service instance
 to that component and its component tree.
 Apply the same reasoning to registering a provider with a directive.
+-->
+프로바이더를 컴포넌트에 등록하는 것은 이 프로바이더의 범위가 특정 컴포넌트 트리 안쪽으로 _제한되어야만 할 때만_ 사용합니다.
+프로바이더를 디렉티브에 등록하는 것도 마찬가지입니다.
 
+<!--
 For example, an editing component that needs a private copy of a caching service should register
 the service with the component.
 Then each new instance of the component gets its own cached service instance.
 The changes that editor makes in its service don't touch the instances elsewhere in the application.
+-->
+예를 들어, 어떤 에디터 컴포넌트는 외부와 분리된 캐시를 유지하기 위해 컴포넌트에 프로바이더를 등록해서 사용한다고 합시다.
+그러면 이 컴포넌트가 생성될 때마다 독립적인 서비스 인스턴스가 계속 생성됩니다.
+그리고 이 컴포넌트에서 서비스에 접근해서 작업하는 모든 내용은 컴포넌트 밖에 아무 영향도 미치지 않을 것입니다.
 
+<!--
 [Always register _application-wide_ services with the root `AppModule`](guide/ngmodule-faq#q-root-component-or-module),
 not the root `AppComponent`.
+-->
+[_애플리케이션 전역에 동작하는 서비스_ 는](guide/ngmodule-faq#q-root-component-or-module) 최상위 컴포넌트 `AppComponent`가 아니라 최상위 모듈 `AppModule`에 등록하는 것이 좋다는 것도 꼭 기억하세요.
 
 <hr/>
 
 {@a q-why-bad}
 
-
+<!--
 ## Why is it bad if a shared module provides a service to a lazy-loaded module?
+-->
+## 지연로딩 모듈에서 공유모듈에 있는 프로바이더를 사용하는 것은 안 좋은가요?
 
+<!--
 ### The eagerly loaded scenario
 When an eagerly loaded module provides a service, for example a `UserService`, that service is available application-wide. If the root module provides `UserService` and
 imports another module that provides the same `UserService`, Angular registers one of
@@ -739,7 +763,15 @@ them in the root app injector (see [What if I import the same module twice?](gui
 
 Then, when some component injects `UserService`, Angular finds it in the app root injector,
 and delivers the app-wide singleton service. No problem.
+-->
+### 즉시 로드되는 모듈의 경우
 
+애플리케이션이 시작되면서 즉시 로드되는 모듈에서 제공하는 서비스, 예를 들어 `UserService`가 있다면 이 서비스는 애플리케이션 전역에 자유롭게 사용할 수 있습니다.
+그리고 최상위 모듈에 `UserService`가 등록되어 있는데 다른 모듈에서 `UserService`가 한 번 더 등록한다고 해도 이 프로바이더는 중복 등록되지 않습니다. [모듈을 두 번 로드하면 어떻게 되나요?](guide/ngmodule-faq#q-reimport) 문단을 참고하세요.
+
+그래서 어떤 컴포넌트가 `UserService`를 의존성으로 주입받는다고 할 때, Angular는 이 서비스의 프로바이더를 애플리케이션 최상위 인젝터에서 찾으며, 앱 전역에 사용하는 싱글턴 서비스 인스턴스를 주입합니다. 문제될 것은 전혀 없습니다.
+
+<!--
 ### The lazy loaded scenario
 
 Now consider a lazy loaded module that also provides a service called `UserService`.
@@ -754,6 +786,7 @@ This is an entirely different `UserService` instance
 than the app-wide singleton version that Angular injected in one of the eagerly loaded components.
 
 This scenario causes your app to create a new instance every time, instead of using the singleton.
+-->
 <!--KW--What does this cause? I wasn't able to get the suggestion of this to work from
 the current FAQ:
 To demonstrate, run the <live-example name="ngmodule">live example</live-example>.
@@ -762,49 +795,103 @@ Then toggle between the "Contact" and "Heroes" links a few times.
 The username goes bonkers as the Angular creates a new `UserService` instance each time.
 I'd like to see the error so I can include it.-->
 
+### 지연로딩되는 모듈의 경우
+
+이번에는 지연로딩되는 모듈에서 `UserService`를 사용하는 경우를 생각해 봅시다.
+
+라우터가 모듈을 지연로딩하면 이 모듈에 생성한 자식 인젝터에 `UserService` 프로바이더를 등록합니다. 이 때 생성되는 자식 인젝터는 애플리케이션 최상위 인젝터와는 _다릅니다_.
+
+그리고 이 모듈에 있는 컴포넌트에서 `UserService`를 주입하려고 하면, 지연로딩된 모듈에 생성된 _자식 인젝터_ 에서 `UserService` 인스턴스를 찾고, 인스턴스가 없으면 새로운 인스턴스를 생성합니다.
+하지만 이 인스턴스는 애플리케이션 전역에 만든 싱글턴 서비스의 인스턴스와는 다릅니다.
+
+모듈이 지연로딩될 때마다 서비스의 인스턴스는 계속 생성되며, 애플리케이션 전역에 싱글턴으로 사용하기 위해 프로바이더를 등록했던 의도와는 달라집니다.
+
+
 <hr/>
 
 {@a q-why-child-injector}
 
+<!--
 ## Why does lazy loading create a child injector?
+-->
+## 지연로딩되는 모듈은 왜 자식 인젝터를 만드나요?
 
+<!--
 Angular adds `@NgModule.providers` to the application root injector, unless the NgModule is lazy-loaded.
 For a lazy-loaded NgModule, Angular creates a _child injector_ and adds the module's providers to the child injector.
+-->
+Angular는 즉시 로딩되는 모듈의 `@NgModule.providers`에 등록된 프로바이더를 애플리케이션 최상위 인젝터에 모두 등록합니다.
+그리고 지연로딩 되는 모듈에는 _자식 인젝터_ 를 생성하며, 이 모듈에 등록된 프로바이더는 이 자식 인젝터에 등록합니다.
 
+<!--
 This means that an NgModule behaves differently depending on whether it's loaded during application start
 or lazy-loaded later. Neglecting that difference can lead to [adverse consequences](guide/ngmodule-faq#q-why-bad).
+-->
+따라서 즉시 로딩되는 모듈과 지연로딩되는 모듈의 동작은 다릅니다. 자세한 설명은 [위에서 언급한 내용](guide/ngmodule-faq#q-why-bad)을 참고하세요.
 
+<!--
 Why doesn't Angular add lazy-loaded providers to the app root injector as it does for eagerly loaded NgModules?
+-->
+그러면 왜 지연로딩된 모듈에 등록된 프로바이더는 애플리케이션 최상위 인젝터에 등록되지 않을까요?
 
+<!--
 The answer is grounded in a fundamental characteristic of the Angular dependency-injection system.
 An injector can add providers _until it's first used_.
 Once an injector starts creating and delivering services, its provider list is frozen; no new providers are allowed.
+-->
+그 이유는 Angular 의존성 주입 방식 때문입니다.
+인젝터는 _처음 사용되기 전에_ 프로바이더 목록을 준비합니다.
+그리고 인젝터가 생성되고 프로바이더가 모두 준비되면 프로바이더 목록을 더이상 수정할 수 없으며, 새로운 프로바이더도 등록할 수 없습니다.
 
+<!--
 When an applications starts, Angular first configures the root injector with the providers of all eagerly loaded NgModules
 _before_ creating its first component and injecting any of the provided services.
 Once the application begins, the app root injector is closed to new providers.
+-->
+애플리케이션이 시작되면 Angular는 먼저 최상위 인젝터를 생성하면서 즉시 로딩되는 모듈에 있는 모든 프로바이더를 준비합니다. 그리고 이 준비가 모두 끝난 후에야 첫 컴포넌트를 생성하고 의존성을 주입합니다.
+애플리케이션이 한 번 시작된 후에는 최상위 인젝터가 관리하는 프로바이더 목록이 변경되지 않으며, 새로운 프로바이더도 추가할 수 없습니다.
 
+<!--
 Time passes and application logic triggers lazy loading of an NgModule.
 Angular must add the lazy-loaded module's providers to an injector somewhere.
 It can't add them to the app root injector because that injector is closed to new providers.
 So Angular creates a new child injector for the lazy-loaded module context.
+-->
+애플리케이션이 동작하다가 모듈을 지연로딩하는 경우를 생각해 봅시다.
+그러면 지연로딩되는 모듈에 있는 프로바이더는 어딘가의 인젝터에 등록되어야 사용할 수 있습니다.
+하지만 애플리케이션의 최상위 인젝터는 이미 닫혔고 새로운 프로바이더도 추가할 수 없기 때문에, 지연로딩된 모듈 컨텍스트에 새로운 자식 인젝터를 생성합니다.
 
 <hr/>
 
 {@a q-is-it-loaded}
 
+<!--
 ## How can I tell if an NgModule or service was previously loaded?
+-->
+## 모듈이나 서비스가 로드되었는지 어떻게 확인하나요?
 
+<!--
 Some NgModules and their services should be loaded only once by the root `AppModule`.
 Importing the module a second time by lazy loading a module could [produce errant behavior](guide/ngmodule-faq#q-why-bad)
 that may be difficult to detect and diagnose.
+-->
+모듈과 서비스는 최상위 `AppModule`에 한 번은 로딩되어야 사용할 수 있습니다.
+지연로딩되는 경우와 같이 모듈이 여러번 로딩되면 [비정상적인 동작](guide/ngmodule-faq#q-why-bad)을 할 수도 있지만, 이런 에러는 발견하기 힘들고 수정하기는 더 힘듭니다.
 
+<!--
 To prevent this issue, write a constructor that attempts to inject the module or service
 from the root app injector. If the injection succeeds, the class has been loaded a second time.
 You can throw an error or take other remedial action.
+-->
+이 문제를 피하기 위해 Angular에서는 생성자에서 의존성을 주입받으며, 이렇게 지정된 의존성 객체는 애플리케이션 최상위 인젝터가 인식합니다. 그리고 의존성 주입이 성공한 이후에 클래스가 로딩됩니다.
+에러가 발생하면 생성자에서 에러를 확인하고 처리할 수 있습니다.
 
+<!--
 Certain NgModules, such as `BrowserModule`, implement such a guard.
 Here is a custom constructor for an NgModule called `CoreModule`.
+-->
+그리고 `BrowserModule`과 같은 모듈은 이 문제를 방지하는 로직을 따로 마련하기도 했습니다.
+`BrowserModule`이 로드되기 전에 `CoreModule`이 이미 로드되었다면, 이 모듈은 다음과 같은 로직으로 에러를 발생시킵니다.
 
 <code-example path="ngmodule-faq/src/app/core/core.module.ts" region="ctor" title="src/app/core/core.module.ts (Constructor)" linenums="false">
 </code-example>
