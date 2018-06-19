@@ -12,5 +12,6 @@ const TARGET = {} as any;
 
 export const NG_COMPONENT_DEF = getClosureSafeProperty({ngComponentDef: TARGET}, TARGET);
 export const NG_DIRECTIVE_DEF = getClosureSafeProperty({ngDirectiveDef: TARGET}, TARGET);
+export const NG_INJECTOR_DEF = getClosureSafeProperty({ngInjectorDef: TARGET}, TARGET);
 export const NG_PIPE_DEF = getClosureSafeProperty({ngPipeDef: TARGET}, TARGET);
 export const NG_MODULE_DEF = getClosureSafeProperty({ngModuleDef: TARGET}, TARGET);
