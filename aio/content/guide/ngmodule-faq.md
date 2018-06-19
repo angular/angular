@@ -531,89 +531,176 @@ The `AppModule` always wins.
 
 <hr/>
 
-
+<!--
 ## How do I restrict service scope to a module?
+-->
+## 서비스를 모듈 범위로 제한하고 싶으면 어떻게 하면 되나요?
 
+<!--
 When a module is loaded at application launch,
 its `@NgModule.providers` have *application-wide scope*;
 that is, they are available for injection throughout the application.
+-->
+모듈은 애플리케이션이 실행될 때 로드되고, 이 때 `@NgModule.providers`에 등록된 프로바이더들은 *애플리케이션 전역 스코프*를 갖습니다. 그래서 의존성으로 주입하는 객체는 이 프로바이더 목록 중에 찾게 됩니다.
 
+<!--
 Imported providers are easily replaced by providers from another imported NgModule.
 Such replacement might be by design. It could be unintentional and have adverse consequences.
+-->
+그리고 모듈이 추가로 로드되면 이 모듈에 등록된 프로바이더가 이전 프로바이더를 대체합니다.
+이것은 새로 추가된 모듈이 새로운 프로바이더를 사용하게 하려는 Angular의 디자인 컨셉입니다.
 
+<!--
 As a general rule, import modules with providers _exactly once_, preferably in the application's _root module_.
 That's also usually the best place to configure, wrap, and override them.
+-->
+일반적으로 모듈은 애플리케이션의 _최상위 모듈_ 에 _한 번만_ 로드되는 것이 좋습니다.
+모듈이 다른 모듈로 랩핑(wrap)되거나 오버라이드 되더라도 일반적으로는 그렇습니다.
 
+<!--
 Suppose a module requires a customized `HttpBackend` that adds a special header for all Http requests.
 If another module elsewhere in the application also customizes `HttpBackend`
 or merely imports the `HttpClientModule`, it could override this module's `HttpBackend` provider,
 losing the special header. The server will reject http requests from this module.
+-->
+모든 Http 요청에 대해 헤더를 추가하기 위해 `HttpBackend`를 커스터마이징하는 모듈이 있다고 합시다.
+그런데 다른 모듈에서 `HttpBackend`를 커스터마이징하거나 `HttpClientModule`을 직접 불러와서 사용하는 모듈이 이 모듈의 프로바이더를 덮어쓸 수도 있습니다. 그러면 커스터마이징 한 헤더가 추가되지 않으니, 이 모듈에서 서버로 보낸 요청은 모두 실패할 것입니다.
 
+<!--
 To avoid this problem, import the `HttpClientModule` only in the `AppModule`, the application _root module_.
+-->
+이 문제를 해결하려면 `HttpClientModule`을 애플리케이션의 _최상위 모듈_ 인 `AppModule`에서 딱 한 번만 로드해야 합니다.
 
+<!--
 If you must guard against this kind of "provider corruption", *don't rely on a launch-time module's `providers`.*
+-->
+그리고 프로바이더가 바뀌는 것을 방지하려면 런타임에 로드되는 모듈의 프로바이더도 신경을 써야 합니다.
 
+<!--
 Load the module lazily if you can.
 Angular gives a [lazy-loaded module](guide/ngmodule-faq#q-lazy-loaded-module-provider-visibility) its own child injector.
 The module's providers are visible only within the component tree created with this injector.
+-->
+가능하다면 모듈을 지연로딩하는 것이 좋습니다.
+Angular가 [모듈을 지연로딩하면](guide/ngmodule-faq#q-lazy-loaded-module-provider-visibility) 모듈에 자식 인젝터가 생성되면서, 모듈 안에 있는 프로바이더는 그 모듈 안에서만 사용할 수 있기 때문입니다.
 
+<!--
 If you must load the module eagerly, when the application starts,
 *provide the service in a component instead.*
+-->
+하지만 모듈을 지연로딩할 수 없다면 *컴포넌트 안에 서비스 프로바이더를 등록하는 방법도 있습니다.*
 
+<!--
 Continuing with the same example, suppose the components of a module truly require a private, custom `HttpBackend`.
+-->
+위에서 언급한 예제를 다시 한 번 생각해봅시다.
 
+<!--
 Create a "top component" that acts as the root for all of the module's components.
 Add the custom `HttpBackend` provider to the top component's `providers` list rather than the module's `providers`.
 Recall that Angular creates a child injector for each component instance and populates the injector
 with the component's own providers.
+-->
+모듈 안에 있는 모든 컴포넌트의 최상위 역할을 하는 "최상위 컴포넌트"를 만듭니다.
+그리고 `HttpBackend` 커스텀 프로바이더를 모듈의 `providers`에 등록하지 않고 컴포넌트에 `providers`에 등록합니다.
+컴포넌트에 프로바이더가 등록되어 있으면, 이 컴포넌트의 자식 인젝터들은 모두 이 프로바이더를 사용한다는 것을 생각하면 됩니다.
 
+<!--
 When a child of this component asks for the `HttpBackend` service,
 Angular provides the local `HttpBackend` service,
 not the version provided in the application root injector.
 Child components make proper HTTP requests no matter what other modules do to `HttpBackend`.
+-->
+실제로 이 컴포넌트의 자식 컴포넌트에서 `HttpBackend` 서비스를 의존성으로 주입받으면, 애플리케이션 최상위 인젝터가 제공하는 인스턴스가 아니라 컴포넌트에 정의된 프로바이더에서 인스턴스를 찾습니다.
+이제 모듈 안에서 `HttpBackend`로 보내는 HTTP 요청은 의도한 대로 동작합니다.
 
+<!--
 Be sure to create module components as children of this module's top component.
+-->
+이 컴포넌트는 물론 모듈의 최상위 컴포넌트로 지정해야 하는 것을 잊지 마세요.
 
+<!--
 You can embed the child components in the top component's template.
 Alternatively, make the top component a routing host by giving it a `<router-outlet>`.
 Define child routes and let the router load module components into that outlet.
+-->
+자식 컴포넌트는 일반적으로 최상위 컴포넌트의 템플릿 안에 사용될 것입니다.
+아니면 `<router-outlet>`으로 라우팅되는 컴포넌트를 활용할 수도 있습니다.
+모듈에 자식 라우터를 설정하면 라우팅 영역 안에 컴포넌트가 표시될 것입니다.
 
 <hr/>
 
 {@a q-root-component-or-module}
 
 
+<!--
 ## Should I add application-wide providers to the root `AppModule` or the root `AppComponent`?
+-->
+## 애플리케이션 전역에 사용하는 프로바이더는 `AppModule`이나 `AppComponent`에 등록해야 하나요?
 
+<!--
  Define application-wide providers by specifying `providedIn: 'root'` on its `@Injectable()` decorator (in the case of services) or at `InjectionToken` construction (in the case where tokens are provided). Providers that are created this way automatically are made available to the entire application and don't need to be listed in any module.
+-->
+애플리케이션 전역에 등록되는 프로바이더는 `@Injectable()`에 `providedIn: 'root'`를 지정하거나 `InjectionToken`를 사용해서 정의할 수 있습니다. 이 때 전자는 서비스에 대한 프로바이더이며, 후자는 토큰에 대한 프로바이더입니다. 이렇게 등록된 프로바이더는 자동으로 애플리케이션 전역에 등록되며, 모듈에서 따로 로드하지 않아도 자유롭게 사용할 수 있습니다.
 
+<!--
 If a provider cannot be configured in this way (perhaps because it has no sensible default value), then register application-wide providers in the root `AppModule`, not in the `AppComponent`.
+-->
+이전에 사용하는 프로바이더와 충돌이 걱정되어 이 방법을 사용할 수 없다면, `AppComponent`에 프로바이더를 등록하지 않고 `AppModule`에 프로바이더를 등록하는 방법도 있습니다.
 
+<!--
 Lazy-loaded modules and their components can inject `AppModule` services;
 they can't inject `AppComponent` services.
+-->
+그러면 이 프로바이더들은 `AppModule`에는 등록되지만 `AppComponent`에는 등록되지 않습니다.
 
+<!--
 Register a service in `AppComponent` providers _only_ if the service must be hidden
 from components outside the `AppComponent` tree. This is a rare use case.
+-->
+서비스 프로바이더를 `AppComponent`에 등록하는 것은 이 서비스가 반드시 `AppComponent` 트리 안에서만 사용하도록 지정할 때 사용합니다. 자주 사용하는 방식은 아닙니다.
 
+<!--
 More generally, [prefer registering providers in NgModules](guide/ngmodule-faq#q-component-or-module) to registering in components.
+-->
+이보다 좀 더 일반적인 경우에는, [프로바이더는 모듈에 등록](guide/ngmodule-faq#q-component-or-module)하는 것이 좋습니다. 이렇게 사용하면 모듈 안에 있는 컴포넌트들은 등록된 프로바이더를 사용할 수 있습니다.
 
+<!--
 <h3 class="no-toc">Discussion</h3>
+-->
+<h3 class="no-toc">주의</h3>
 
+<!--
 Angular registers all startup module providers with the application root injector.
 The services that root injector providers create have application scope, which
 means they are available to the entire application.
+-->
+Angular는 애플리케이션이 시작될 때 로드되는 모듈에 있는 모든 프로바이더를 애플리케이션 최상위 인젝터에 등록합니다.
+그러면 이 인젝터로 참조하는 프로바이더는 애플리케이션 전체 범위에 유효합니다.
 
+<!--
 Certain services, such as the `Router`, only work when you register them in the application root injector.
+-->
+하지만 `Router`와 같이 애플리케이션 최상위 인젝터에 등록해야만 동작하는 서비스도 있습니다.
 
+<!--
 By contrast, Angular registers `AppComponent` providers with the `AppComponent`'s own injector.
 `AppComponent` services are available only to that component and its component tree.
 They have component scope.
+-->
+이와는 다르게, `AppComponent`에 등록하는 프로바이더는 `AppComponent`에 존재하는 인젝터에만 등록됩니다.
+그래서 `AppComponent`에 등록된 서비스는 컴포넌트 범위로 제한되며, 이 컴포넌트의 하위 트리에서만 사용할 수 있습니다.
 
+<!--
 The `AppComponent`'s injector is a child of the root injector, one down in the injector hierarchy.
 For applications that don't use the router, that's almost the entire application.
 But in routed applications, routing operates at the root level
 where `AppComponent` services don't exist.
 This means that lazy-loaded modules can't reach them.
+-->
+`AppComponent`에 존재하는 인젝터는 최상위 인젝터의 자식 인젝터이며, 라우터를 사용하지 않는 애플리케이션이라면 `AppComponent`의 범위는 애플리케이션 전체 범위와 비슷할 수도 있습니다.
+하지만 라우터를 사용하는 애플리케이션이라면 `AppComponent`보다 상위 계층에서 라우팅이 동작합니다.
+따라서 지연로딩되는 모듈은 `AppComponent`의 인젝터에 접근할 수 없습니다.
 
 <hr/>
 
