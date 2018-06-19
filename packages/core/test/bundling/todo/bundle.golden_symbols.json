@@ -267,6 +267,9 @@
     "name": "createTextNode"
   },
   {
+    "name": "createViewQuery"
+  },
+  {
     "name": "defineComponent"
   },
   {
@@ -547,6 +550,9 @@
   },
   {
     "name": "tickRootContext"
+  },
+  {
+    "name": "updateViewQuery"
   },
   {
     "name": "viewAttached"
