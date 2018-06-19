@@ -10,7 +10,7 @@ import {Sanitizer} from '../sanitization/security';
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
-import {I18nFlags, I18nInstruction} from './i18n';
+import {I18nFlags, I18nInstruction, PlaceholderMap, generateMappingInstructions, i18nTagRegex} from './i18n';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {LInjector} from './interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, PropertyAliases, PropertyAliasValue, TAttributes, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType,} from './interfaces/node';
@@ -2712,4 +2712,38 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         break;
     }
   }
+}
+
+/**
+ * Takes a translation string, the initial list of placeholders (elements and expressions) and the
+ * indexes of their corresponding expression nodes to return a list of instructions for each
+ * template.
+ *
+ * Because embedded templates have different indexes for each placeholder, each parameter (except
+ * the translation) is an array, where each value corresponds to a different template, by order of
+ * appearance.
+ *
+ * @param translation A translation string where placeholders are represented by `{$name}`
+ * @param elements An array containing, for each template, the maps of element placeholders and
+ * their indexes.
+ * @param expressions An array containing, for each template, the maps of expression placeholders
+ * and their indexes.
+ * @param tmplContainers An array of template container placeholders whose content should be ignored
+ * when generating the instructions for their parent template.
+ * @param lastChildIndex The index of the last child of the i18n node. Used when the i18n block is
+ * an ng-container.
+ *
+ * @returns A list of instructions used to translate each template.
+ */
+export function i18nMapping(
+    translation: string, elements: (PlaceholderMap | null)[] | null,
+    expressions?: (PlaceholderMap | null)[] | null, tmplContainers?: string[] | null,
+    lastChildIndex?: number | null): I18nInstruction[][] {
+  const translationParts = translation.split(i18nTagRegex);
+  const instructions: I18nInstruction[][] = [];
+
+  generateMappingInstructions(
+      0, translationParts, instructions, elements, expressions, tmplContainers, lastChildIndex);
+
+  return instructions;
 }

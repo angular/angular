@@ -9,8 +9,8 @@
 import {NgForOfContext} from '@angular/common';
 import {Component} from '../../src/core';
 import {defineComponent} from '../../src/render3/definition';
-import {i18nExpMapping, i18nInterpolation, i18nMapping} from '../../src/render3/i18n';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, i18nApply, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {i18nExpMapping, i18nInterpolation} from '../../src/render3/i18n';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, i18nApply, i18nMapping, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
@@ -52,7 +52,7 @@ describe('Runtime i18n', () => {
     expect(fixture.html).toEqual('<div><c>trad 1</c><a>trad 2<b>trad 3</b></a></div>');
   });
 
-  it('should support interpolations', () => {
+  it('should support expressions', () => {
     const MSG_DIV_SECTION_1 = `start {$exp_2} middle {$exp_1} end`;
     const i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{exp_1: 1, exp_2: 2}]);
 
@@ -103,7 +103,7 @@ describe('Runtime i18n', () => {
     expect(fixture.html).toEqual('<div>start expr 2 middle expr 1 end</div>');
   });
 
-  it('should support interpolations on removed nodes', () => {
+  it('should support expressions on removed nodes', () => {
     const MSG_DIV_SECTION_1 = `message`;
     const i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{exp_1: 1}]);
 
@@ -149,7 +149,7 @@ describe('Runtime i18n', () => {
     expect(fixture.html).toEqual('<div>message</div>');
   });
 
-  it('should support interpolations in attributes', () => {
+  it('should support expressions in attributes', () => {
     const MSG_DIV_SECTION_1 = `start {$exp_2} middle {$exp_1} end`;
     const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {exp_1: 0, exp_2: 1});
 
@@ -191,7 +191,7 @@ describe('Runtime i18n', () => {
     expect(fixture.html).toEqual('<div title="start  middle test end"></div>');
   });
 
-  it('should support both html elements, interpolations and interpolations in attributes', () => {
+  it('should support both html elements, expressions and expressions in attributes', () => {
     const MSG_DIV_SECTION_1 = `{$exp_1} {$p_3}trad {$exp_2}{$c_p}`;
     const MSG_ATTR_1 = `start {$exp_2} middle {$exp_1} end`;
     const i18n_1 = i18nMapping(
@@ -1089,6 +1089,67 @@ describe('Runtime i18n', () => {
       const fixture = new ComponentFixture(Parent);
       expect(fixture.html)
           .toEqual('<child><grand-child><div><b>Bonjour</b> Monde!</div></grand-child></child>');
+    });
+
+    it('should project translations with selectors', () => {
+      @Component({
+        selector: 'child',
+        template: `
+          <ng-content select="span"></ng-content>
+        `
+      })
+      class Child {
+        static ngComponentDef = defineComponent({
+          type: Child,
+          selectors: [['child']],
+          factory: () => new Child(),
+          template: (rf: RenderFlags, cmp: Child) => {
+            if (rf & RenderFlags.Create) {
+              projectionDef(0, [[['span']]], ['span']);
+              projection(1, 0, 1);
+            }
+          }
+        });
+      }
+
+      const MSG_DIV_SECTION_1 = `{$p_0}Contenu{$c_p}`;
+      const i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{p_0: 1, p_1: 2}]);
+
+      @Component({
+        selector: 'parent',
+        template: `
+          <child i18n>
+            <span title="keepMe"></span>
+            <span title="deleteMe"></span>
+          </child>
+        `
+      })
+      class Parent {
+        static ngComponentDef = defineComponent({
+          type: Parent,
+          selectors: [['parent']],
+          directives: [Child],
+          factory: () => new Parent(),
+          template: (rf: RenderFlags, cmp: Parent) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'child');
+              {
+                // Start of translated section 1
+                elementStart(1, 'span', ['title', 'keepMe']);  // p_0
+                elementEnd();
+                elementStart(2, 'span', ['title', 'deleteMe']);  // p_1
+                elementEnd();
+                // End of translated section 1
+              }
+              elementEnd();
+              i18nApply(1, i18n_1[0]);
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(Parent);
+      expect(fixture.html).toEqual('<child><span title="keepMe">Contenu</span></child>');
     });
   });
 });

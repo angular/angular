@@ -8,7 +8,7 @@
 
 import {LifecycleHooksFeature, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
 import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
-import {I18nExpInstruction, I18nInstruction, i18nExpMapping, i18nInterpolation, i18nInterpolationV, i18nMapping} from './i18n';
+import {I18nExpInstruction, I18nInstruction, i18nExpMapping, i18nInterpolation, i18nInterpolationV} from './i18n';
 import {ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
 export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
@@ -70,6 +70,7 @@ export {
   text as T,
   textBinding as t,
 
+  i18nMapping as iM,
   i18nApply as iA,
 
   reserveSlots as rS,
@@ -84,6 +85,7 @@ export {
 export {
   i18nInterpolation as iI,
   i18nInterpolationV as iIV,
+  i18nExpMapping as iEM,
   I18nInstruction,
   I18nExpInstruction
 } from './i18n';
@@ -143,7 +145,5 @@ export {
   getHostElement,
   getRenderedText,
   renderComponent,
-  whenRendered,
-  i18nMapping,
-  i18nExpMapping
+  whenRendered
 };
