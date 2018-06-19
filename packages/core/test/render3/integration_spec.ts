@@ -9,7 +9,7 @@
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleNamed, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding,} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
@@ -747,10 +747,12 @@ describe('render3 integration test', () => {
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
+            elementStyling(1, ['border-color']);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
-            elementStyleNamed(0, 'border-color', bind(ctx));
+            elementStyleProp(1, 0, ctx);
+            elementStylingApply(1);
           }
         }
 
@@ -764,10 +766,12 @@ describe('render3 integration test', () => {
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
+            elementStyling(1, ['font-size']);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
-            elementStyleNamed(0, 'font-size', bind(ctx), 'px');
+            elementStyleProp(1, 0, ctx, 'px');
+            elementStylingApply(1);
           }
         }
 
