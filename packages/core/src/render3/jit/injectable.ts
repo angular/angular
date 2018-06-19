@@ -14,6 +14,7 @@ import {Type} from '../../type';
 import {getClosureSafeProperty} from '../../util/property';
 
 import {angularCoreEnv} from './environment';
+import {NG_INJECTABLE_DEF} from './fields';
 import {convertDependencies, reflectDependencies} from './util';
 
 
@@ -28,7 +29,7 @@ export function compileInjectable(type: Type<any>, meta?: Injectable): void {
   }
 
   let def: any = null;
-  Object.defineProperty(type, 'ngInjectableDef', {
+  Object.defineProperty(type, NG_INJECTABLE_DEF, {
     get: () => {
       if (def === null) {
         // Check whether the injectable metadata includes a provider specification.
