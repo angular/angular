@@ -21,7 +21,7 @@ load("@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
 load("@build_bazel_rules_nodejs//internal:collect_es6_sources.bzl", collect_es2015_sources = "collect_es6_sources")
 load(":esm5.bzl", "esm5_outputs_aspect", "flatten_esm5", "esm5_root_dir")
 
-PACKAGES=["packages/core/src", "packages/common/src", "external/rxjs"]
+PACKAGES=["packages/core/src", "packages/common/src", "packages/compiler/src", "external/rxjs"]
 PLUGIN_CONFIG="{sideEffectFreeModules: [\n%s]}" % ",\n".join(
     ["        '.esm5/{0}'".format(p) for p in PACKAGES])
 BO_ROLLUP="angular_devkit/packages/angular_devkit/build_optimizer/src/build-optimizer/rollup-plugin.js"
@@ -30,10 +30,10 @@ BO_PLUGIN="require('%s').default(%s)" % (BO_ROLLUP, PLUGIN_CONFIG)
 def _use_plain_rollup(ctx):
   """Determine whether to use the Angular or upstream versions of the rollup_bundle rule.
 
-  In legacy mode, the Angular version of rollup is used. This runs build optimizer as part of its
+  In most modes, the Angular version of rollup is used. This runs build optimizer as part of its
   processing, which affects decorators and annotations.
 
-  In other modes, an emulation of the upstream rollup_bundle rule is used. This avoids running
+  In JIT modes, an emulation of the upstream rollup_bundle rule is used. This avoids running
   build optimizer on code which isn't designed to be optimized by it.
 
   Args:
@@ -47,7 +47,7 @@ def _use_plain_rollup(ctx):
     return False
 
   strategy = ctx.var['compile']
-  return strategy != 'legacy'
+  return strategy == 'jit'
 
 
 def run_brotli(ctx, input, output):
