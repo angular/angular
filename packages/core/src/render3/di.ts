@@ -590,6 +590,7 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
 
     lContainerNode.tNode = hostTNode.dynamicContainerNode;
     vcRefHost.dynamicLContainerNode = lContainerNode;
+    lContainerNode.dynamicParent = vcRefHost;
 
     addToViewTree(vcRefHost.view, hostTNode.index as number, lContainer);
 
@@ -649,6 +650,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     (viewRef as EmbeddedViewRef<any>).attachToViewContainerRef(this);
 
     insertView(this._lContainerNode, lViewNode, adjustedIdx);
+    lViewNode.dynamicParent = this._lContainerNode;
 
     this._viewRefs.splice(adjustedIdx, 0, viewRef);
 
@@ -672,7 +674,8 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
 
   detach(index?: number): viewEngine_ViewRef|null {
     const adjustedIdx = this._adjustIndex(index, -1);
-    detachView(this._lContainerNode, adjustedIdx);
+    const lViewNode = detachView(this._lContainerNode, adjustedIdx);
+    lViewNode.dynamicParent = null;
     return this._viewRefs.splice(adjustedIdx, 1)[0] || null;
   }
 
