@@ -52,9 +52,9 @@
     "@angular-devkit/schematics" "0.5.4"
     typescript "~2.6.2"
 
-"@types/angularjs@1.5.14-alpha":
-  version "1.5.14-alpha"
-  resolved "https://registry.yarnpkg.com/@types/angularjs/-/angularjs-1.5.14-alpha.tgz#2add80c88e1d84ade07e042918843093b6ac9808"
+"@types/angular@^1.6.47":
+  version "1.6.47"
+  resolved "https://registry.yarnpkg.com/@types/angular/-/angular-1.6.47.tgz#f7a31279a02c0892ed9aa76aae2da1b17791bacd"
 
 "@types/base64-js@1.2.5":
   version "1.2.5"

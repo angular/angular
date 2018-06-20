@@ -20,7 +20,7 @@
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "target": "es5",
-    "types": ["angularjs"]
+    "types": ["angular"]
   },
   "exclude": [
     "angular1_router",
