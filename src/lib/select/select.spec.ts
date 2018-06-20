@@ -1071,6 +1071,26 @@ describe('MatSelect', () => {
         expect(document.querySelectorAll('.cdk-overlay-container mat-option').length)
             .toBeGreaterThan(0, 'Expected at least one option to be rendered.');
       }));
+
+      it('should not consider itself as blurred if the trigger loses focus while the ' +
+        'panel is still open', fakeAsync(() => {
+          const selectElement = fixture.nativeElement.querySelector('.mat-select');
+          const selectInstance = fixture.componentInstance.select;
+
+          dispatchFakeEvent(selectElement, 'focus');
+          fixture.detectChanges();
+
+          expect(selectInstance.focused).toBe(true, 'Expected select to be focused.');
+
+          selectInstance.open();
+          fixture.detectChanges();
+          flush();
+          dispatchFakeEvent(selectElement, 'blur');
+          fixture.detectChanges();
+
+          expect(selectInstance.focused).toBe(true, 'Expected select element to remain focused.');
+        }));
+
     });
 
     describe('selection logic', () => {

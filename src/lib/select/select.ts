@@ -310,7 +310,17 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   private _disableOptionCentering: boolean = false;
 
   /** Whether the select is focused. */
-  focused: boolean = false;
+  get focused(): boolean {
+    return this._focused || this._panelOpen;
+  }
+  /**
+   * @deprecated Setter to be removed as this property is intended to be readonly.
+   * @deletion-target 8.0.0
+   */
+  set focused(value: boolean) {
+    this._focused = value;
+  }
+  private _focused = false;
 
   /** A name for this control that can be used by `mat-form-field`. */
   controlType = 'mat-select';
@@ -718,7 +728,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   _onFocus() {
     if (!this.disabled) {
-      this.focused = true;
+      this._focused = true;
       this.stateChanges.next();
     }
   }
@@ -728,7 +738,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
    * "blur" to the panel when it opens, causing a false positive.
    */
   _onBlur() {
-    this.focused = false;
+    this._focused = false;
 
     if (!this.disabled && !this.panelOpen) {
       this._onTouched();
