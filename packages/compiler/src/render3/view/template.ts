@@ -32,12 +32,20 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 import {R3QueryMetadata} from './api';
 import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, getQueryPredicate, invalid, mapToExpression, noop, temporaryAllocator, trimTrailingNulls, unsupported} from './util';
 
-const BINDING_INSTRUCTION_MAP: {[type: number]: o.ExternalReference} = {
-  [BindingType.Property]: R3.elementProperty,
-  [BindingType.Attribute]: R3.elementAttribute,
-  [BindingType.Class]: R3.elementClassNamed,
-  [BindingType.Style]: R3.elementStyleNamed,
-};
+function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
+  switch (type) {
+    case BindingType.Property:
+      return R3.elementProperty;
+    case BindingType.Attribute:
+      return R3.elementAttribute;
+    case BindingType.Class:
+      return R3.elementClassNamed;
+    case BindingType.Style:
+      return R3.elementStyleNamed;
+    default:
+      return undefined;
+  }
+}
 
 // `className` is used below instead of `class` because the interception
 // code (where this map is used) deals with DOM element property values
@@ -414,7 +422,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         return;
       }
 
-      const instruction = BINDING_INSTRUCTION_MAP[input.type];
+      const instruction = mapBindingToInstruction(input.type);
       if (instruction) {
         // TODO(chuckj): runtime: security context?
         this.instruction(
