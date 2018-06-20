@@ -4,7 +4,7 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'form-field-prefix-suffix-example',
   templateUrl: 'form-field-prefix-suffix-example.html',
-  styleUrls: ['form-field-prefix-suffix-example.css']
+  styleUrls: ['form-field-prefix-suffix-example.css'],
 })
 export class FormFieldPrefixSuffixExample {
   hide = true;

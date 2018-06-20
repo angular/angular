@@ -11,38 +11,25 @@ import {map, startWith} from 'rxjs/operators';
 @Component({
   selector: 'chips-autocomplete-example',
   templateUrl: 'chips-autocomplete-example.html',
-  styleUrls: ['chips-autocomplete-example.css']
+  styleUrls: ['chips-autocomplete-example.css'],
 })
 export class ChipsAutocompleteExample {
-  visible: boolean = true;
-  selectable: boolean = true;
-  removable: boolean = true;
-  addOnBlur: boolean = false;
-
-  separatorKeysCodes = [ENTER, COMMA];
-
+  visible = true;
+  selectable = true;
+  removable = true;
+  addOnBlur = false;
+  separatorKeysCodes: number[] = [ENTER, COMMA];
   fruitCtrl = new FormControl();
-
-  filteredFruits: Observable<any[]>;
-
-  fruits = [
-    'Lemon',
-  ];
-
-  allFruits = [
-    'Apple',
-    'Lemon',
-    'Lime',
-    'Orange',
-    'Strawberry'
-  ];
+  filteredFruits: Observable<string[]>;
+  fruits: string[] = ['Lemon'];
+  allFruits: string[] = ['Apple', 'Lemon', 'Lime', 'Orange', 'Strawberry'];
 
   @ViewChild('fruitInput') fruitInput: ElementRef;
 
   constructor() {
     this.filteredFruits = this.fruitCtrl.valueChanges.pipe(
         startWith(null),
-        map((fruit: string | null) => fruit ? this.filter(fruit) : this.allFruits.slice()));
+        map((fruit: string | null) => fruit ? this._filter(fruit) : this.allFruits.slice()));
   }
 
   add(event: MatChipInputEvent): void {
@@ -62,7 +49,7 @@ export class ChipsAutocompleteExample {
     this.fruitCtrl.setValue(null);
   }
 
-  remove(fruit: any): void {
+  remove(fruit: string): void {
     const index = this.fruits.indexOf(fruit);
 
     if (index >= 0) {
@@ -70,14 +57,15 @@ export class ChipsAutocompleteExample {
     }
   }
 
-  filter(name: string) {
-    return this.allFruits.filter(fruit =>
-        fruit.toLowerCase().indexOf(name.toLowerCase()) === 0);
-  }
-
   selected(event: MatAutocompleteSelectedEvent): void {
     this.fruits.push(event.option.viewValue);
     this.fruitInput.nativeElement.value = '';
     this.fruitCtrl.setValue(null);
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.allFruits.filter(fruit => fruit.toLowerCase().indexOf(filterValue) === 0);
   }
 }

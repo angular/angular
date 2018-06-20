@@ -20,7 +20,7 @@ export class SlideToggleFormsExample {
     });
   }
 
-  onFormSubmit(formValue: any) {
-    alert(JSON.stringify(formValue, null, 2));
+  onFormSubmit() {
+    alert(JSON.stringify(this.formGroup.value, null, 2));
   }
 }

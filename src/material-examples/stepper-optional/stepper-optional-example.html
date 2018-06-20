@@ -2,7 +2,7 @@
   {{!isOptional ? 'Enable optional steps' : 'Disable optional steps'}}
 </button>
 
-<mat-horizontal-stepper [linear]="true" #stepper>
+<mat-horizontal-stepper linear #stepper>
   <mat-step [stepControl]="firstFormGroup">
     <form [formGroup]="firstFormGroup">
       <ng-template matStepLabel>Fill out your name</ng-template>

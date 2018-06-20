@@ -11,7 +11,6 @@ import {FlatTreeControl, TreeControl} from '@angular/cdk/tree';
 import {BehaviorSubject, merge, Observable} from 'rxjs';
 import {map, take} from 'rxjs/operators';
 
-
 /**
  * Tree flattener to convert a normal type of node to node with children & level information.
  * Transform nested nodes of type `T` to flattened nodes of type `F`.
@@ -90,7 +89,7 @@ export class MatTreeFlattener<T, F> {
     let currentExpand: boolean[] = [];
     currentExpand[0] = true;
 
-    nodes.forEach((node) => {
+    nodes.forEach(node => {
       let expand = true;
       for (let i = 0; i <= this.getLevel(node); i++) {
         expand = expand && currentExpand[i];
@@ -151,4 +150,3 @@ export class MatTreeFlatDataSource<T, F> extends DataSource<F> {
     // no op
   }
 }
-

@@ -19,8 +19,8 @@ export class FocusMonitorOverviewExample implements OnDestroy, OnInit {
   @ViewChild('element') element: ElementRef;
   @ViewChild('subtree') subtree: ElementRef;
 
-  elementOrigin: string = this.formatOrigin(null);
-  subtreeOrigin: string = this.formatOrigin(null);
+  elementOrigin = this.formatOrigin(null);
+  subtreeOrigin = this.formatOrigin(null);
 
   constructor(private focusMonitor: FocusMonitor,
               private cdr: ChangeDetectorRef,

@@ -1,18 +1,5 @@
 import {Component} from '@angular/core';
 
-/**
- * @title Basic use of `<mat-table>` (uses display flex)
- */
-@Component({
-  selector: 'table-basic-flex-example',
-  styleUrls: ['table-basic-flex-example.css'],
-  templateUrl: 'table-basic-flex-example.html',
-})
-export class TableBasicFlexExample {
-  displayedColumns = ['position', 'name', 'weight', 'symbol'];
-  dataSource = ELEMENT_DATA;
-}
-
 export interface PeriodicElement {
   name: string;
   position: number;
@@ -32,3 +19,16 @@ const ELEMENT_DATA: PeriodicElement[] = [
   {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
   {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
 ];
+
+/**
+ * @title Basic use of `<mat-table>` (uses display flex)
+ */
+@Component({
+  selector: 'table-basic-flex-example',
+  styleUrls: ['table-basic-flex-example.css'],
+  templateUrl: 'table-basic-flex-example.html',
+})
+export class TableBasicFlexExample {
+  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  dataSource = ELEMENT_DATA;
+}

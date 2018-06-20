@@ -9,5 +9,5 @@ import {Component} from '@angular/core';
   templateUrl: 'list-selection-example.html',
 })
 export class ListSelectionExample {
-  typesOfShoes = ['Boots', 'Clogs', 'Loafers', 'Moccasins', 'Sneakers'];
+  typesOfShoes: string[] = ['Boots', 'Clogs', 'Loafers', 'Moccasins', 'Sneakers'];
 }

@@ -29,7 +29,7 @@
       </mat-radio-group>
     </section>
 
-    <section class="example-section" *ngIf="mode == 'determinate'">
+    <section class="example-section" *ngIf="mode === 'determinate'">
       <label class="example-margin">Progress:</label>
       <mat-slider class="example-margin" [(ngModel)]="value"></mat-slider>
     </section>

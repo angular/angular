@@ -1,9 +1,8 @@
-import {Component, Injectable} from '@angular/core';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FlatTreeControl} from '@angular/cdk/tree';
-import {MatTreeFlattener, MatTreeFlatDataSource} from '@angular/material/tree';
-import {of as ofObservable, Observable, BehaviorSubject} from 'rxjs';
-
+import {Component, Injectable} from '@angular/core';
+import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
+import {BehaviorSubject, Observable, of as observableOf} from 'rxjs';
 
 /**
  * Node for to-do item
@@ -24,21 +23,21 @@ export class TodoItemFlatNode {
  * The Json object for to-do list data.
  */
 const TREE_DATA = {
-  'Reminders': [
+  Groceries: {
+    'Almond Meal flour': null,
+    'Organic eggs': null,
+    'Protein Powder': null,
+    Fruits: {
+      Apple: null,
+      Berries: ['Blueberry', 'Raspberry'],
+      Orange: null
+    }
+  },
+  Reminders: [
     'Cook dinner',
     'Read the Material Design spec',
     'Upgrade Application to Angular'
-  ],
-  'Groceries': {
-    'Organic eggs': null,
-    'Protein Powder': null,
-    'Almond Meal flour': null,
-    'Fruits': {
-      'Apple': null,
-      'Orange': null,
-      'Berries': ['Blueberry', 'Raspberry']
-    }
-  }
+  ]
 };
 
 /**
@@ -48,7 +47,7 @@ const TREE_DATA = {
  */
 @Injectable()
 export class ChecklistDatabase {
-  dataChange: BehaviorSubject<TodoItemNode[]> = new BehaviorSubject<TodoItemNode[]>([]);
+  dataChange = new BehaviorSubject<TodoItemNode[]>([]);
 
   get data(): TodoItemNode[] { return this.dataChange.value; }
 
@@ -69,29 +68,28 @@ export class ChecklistDatabase {
    * Build the file structure tree. The `value` is the Json object, or a sub-tree of a Json object.
    * The return value is the list of `TodoItemNode`.
    */
-  buildFileTree(value: any, level: number) {
-    let data: any[] = [];
-    for (let k in value) {
-      let v = value[k];
-      let node = new TodoItemNode();
-      node.item = `${k}`;
-      if (v === null || v === undefined) {
-        // no action
-      } else if (typeof v === 'object') {
-        node.children = this.buildFileTree(v, level + 1);
-      } else {
-        node.item = v;
+  buildFileTree(obj: object, level: number): TodoItemNode[] {
+    return Object.keys(obj).reduce<TodoItemNode[]>((accumulator, key) => {
+      const value = obj[key];
+      const node = new TodoItemNode();
+      node.item = key;
+
+      if (value != null) {
+        if (typeof value === 'object') {
+          node.children = this.buildFileTree(value, level + 1);
+        } else {
+          node.item = value;
+        }
       }
-      data.push(node);
-    }
-    return data;
+
+      return accumulator.concat(node);
+    }, []);
   }
 
   /** Add an item to to-do list */
   insertItem(parent: TodoItemNode, name: string) {
-    const child = <TodoItemNode>{item: name};
     if (parent.children) {
-      parent.children.push(child);
+      parent.children.push({item: name} as TodoItemNode);
       this.dataChange.next(this.data);
     }
   }
@@ -113,16 +111,16 @@ export class ChecklistDatabase {
 })
 export class TreeChecklistExample {
   /** Map from flat node to nested node. This helps us finding the nested node to be modified */
-  flatNodeMap: Map<TodoItemFlatNode, TodoItemNode> = new Map<TodoItemFlatNode, TodoItemNode>();
+  flatNodeMap = new Map<TodoItemFlatNode, TodoItemNode>();
 
   /** Map from nested node to flattened node. This helps us to keep the same object for selection */
-  nestedNodeMap: Map<TodoItemNode, TodoItemFlatNode> = new Map<TodoItemNode, TodoItemFlatNode>();
+  nestedNodeMap = new Map<TodoItemNode, TodoItemFlatNode>();
 
   /** A selected parent node to be inserted */
   selectedParent: TodoItemFlatNode | null = null;
 
   /** The new item's name */
-  newItemName: string = '';
+  newItemName = '';
 
   treeControl: FlatTreeControl<TodoItemFlatNode>;
 
@@ -144,25 +142,24 @@ export class TreeChecklistExample {
     });
   }
 
-  getLevel = (node: TodoItemFlatNode) => { return node.level; };
+  getLevel = (node: TodoItemFlatNode) => node.level;
 
-  isExpandable = (node: TodoItemFlatNode) => { return node.expandable; };
+  isExpandable = (node: TodoItemFlatNode) => node.expandable;
 
-  getChildren = (node: TodoItemNode): Observable<TodoItemNode[]> => {
-    return ofObservable(node.children);
-  }
+  getChildren = (node: TodoItemNode): Observable<TodoItemNode[]> => observableOf(node.children);
 
-  hasChild = (_: number, _nodeData: TodoItemFlatNode) => { return _nodeData.expandable; };
+  hasChild = (_: number, _nodeData: TodoItemFlatNode) => _nodeData.expandable;
 
-  hasNoContent = (_: number, _nodeData: TodoItemFlatNode) => { return _nodeData.item === ''; };
+  hasNoContent = (_: number, _nodeData: TodoItemFlatNode) => _nodeData.item === '';
 
   /**
    * Transformer to convert nested node to flat node. Record the nodes in maps for later use.
    */
   transformer = (node: TodoItemNode, level: number) => {
-    let flatNode = this.nestedNodeMap.has(node) && this.nestedNodeMap.get(node)!.item === node.item
-      ? this.nestedNodeMap.get(node)!
-      : new TodoItemFlatNode();
+    const existingNode = this.nestedNodeMap.get(node);
+    const flatNode = existingNode && existingNode.item === node.item
+        ? existingNode
+        : new TodoItemFlatNode();
     flatNode.item = node.item;
     flatNode.level = level;
     flatNode.expandable = !!node.children;

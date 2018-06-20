@@ -6,7 +6,7 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'expansion-steps-example',
   templateUrl: 'expansion-steps-example.html',
-  styleUrls: ['expansion-steps-example.css']
+  styleUrls: ['expansion-steps-example.css'],
 })
 export class ExpansionStepsExample {
   step = 0;

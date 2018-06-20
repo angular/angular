@@ -1,18 +1,5 @@
 import {Component} from '@angular/core';
 
-/**
- * @title Basic use of `<table mat-table>`
- */
-@Component({
-  selector: 'table-basic-example',
-  styleUrls: ['table-basic-example.css'],
-  templateUrl: 'table-basic-example.html',
-})
-export class TableBasicExample {
-  displayedColumns = ['position', 'name', 'weight', 'symbol'];
-  dataSource = ELEMENT_DATA;
-}
-
 export interface PeriodicElement {
   name: string;
   position: number;
@@ -32,3 +19,16 @@ const ELEMENT_DATA: PeriodicElement[] = [
   {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
   {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
 ];
+
+/**
+ * @title Basic use of `<table mat-table>`
+ */
+@Component({
+  selector: 'table-basic-example',
+  styleUrls: ['table-basic-example.css'],
+  templateUrl: 'table-basic-example.html',
+})
+export class TableBasicExample {
+  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  dataSource = ELEMENT_DATA;
+}

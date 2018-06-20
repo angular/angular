@@ -1,4 +1,4 @@
-<mat-form-field class="demo-chip-list">
+<mat-form-field class="example-chip-list">
   <mat-chip-list #chipList>
     <mat-chip *ngFor="let fruit of fruits" [selectable]="selectable"
              [removable]="removable" (removed)="remove(fruit)">
@@ -9,6 +9,6 @@
            [matChipInputFor]="chipList"
            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
            [matChipInputAddOnBlur]="addOnBlur"
-           (matChipInputTokenEnd)="add($event)" />
+           (matChipInputTokenEnd)="add($event)">
   </mat-chip-list>
 </mat-form-field>

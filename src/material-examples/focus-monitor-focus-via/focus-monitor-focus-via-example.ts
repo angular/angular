@@ -18,7 +18,7 @@ import {
 export class FocusMonitorFocusViaExample implements OnDestroy, OnInit {
   @ViewChild('monitored') monitoredEl: ElementRef;
 
-  origin: string = this.formatOrigin(null);
+  origin = this.formatOrigin(null);
 
   constructor(public focusMonitor: FocusMonitor,
               private cdr: ChangeDetectorRef,

@@ -9,6 +9,6 @@ import {Component} from '@angular/core';
   templateUrl: 'table-row-context-example.html',
 })
 export class TableRowContextExample {
-  displayedColumns = ['$implicit', 'index', 'count', 'first', 'last', 'even', 'odd'];
+  displayedColumns: string[] = ['$implicit', 'index', 'count', 'first', 'last', 'even', 'odd'];
   data: string[] = ['one', 'two', 'three', 'four', 'five'];
 }

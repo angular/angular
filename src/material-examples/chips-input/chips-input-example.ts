@@ -1,6 +1,10 @@
+import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Component} from '@angular/core';
 import {MatChipInputEvent} from '@angular/material';
-import {ENTER, COMMA} from '@angular/cdk/keycodes';
+
+export interface Fruit {
+  name: string;
+}
 
 /**
  * @title Chips with input
@@ -8,31 +12,27 @@ import {ENTER, COMMA} from '@angular/cdk/keycodes';
 @Component({
   selector: 'chips-input-example',
   templateUrl: 'chips-input-example.html',
-  styleUrls: ['chips-input-example.css']
+  styleUrls: ['chips-input-example.css'],
 })
 export class ChipsInputExample {
-  visible: boolean = true;
-  selectable: boolean = true;
-  removable: boolean = true;
-  addOnBlur: boolean = true;
-
-  // Enter, comma
-  separatorKeysCodes = [ENTER, COMMA];
-
-  fruits = [
-    { name: 'Lemon' },
-    { name: 'Lime' },
-    { name: 'Apple' },
+  visible = true;
+  selectable = true;
+  removable = true;
+  addOnBlur = true;
+  separatorKeysCodes: number[] = [ENTER, COMMA];
+  fruits: Fruit[] = [
+    {name: 'Lemon'},
+    {name: 'Lime'},
+    {name: 'Apple'},
   ];
 
-
   add(event: MatChipInputEvent): void {
-    let input = event.input;
-    let value = event.value;
+    const input = event.input;
+    const value = event.value;
 
     // Add our fruit
     if ((value || '').trim()) {
-      this.fruits.push({ name: value.trim() });
+      this.fruits.push({name: value.trim()});
     }
 
     // Reset the input value
@@ -41,8 +41,8 @@ export class ChipsInputExample {
     }
   }
 
-  remove(fruit: any): void {
-    let index = this.fruits.indexOf(fruit);
+  remove(fruit: Fruit): void {
+    const index = this.fruits.indexOf(fruit);
 
     if (index >= 0) {
       this.fruits.splice(index, 1);

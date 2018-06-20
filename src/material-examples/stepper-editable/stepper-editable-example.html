@@ -2,7 +2,7 @@
   {{!isEditable ? 'Enable edit mode' : 'Disable edit mode'}}
 </button>
 
-<mat-horizontal-stepper [linear]="true" #stepper>
+<mat-horizontal-stepper linear #stepper>
   <mat-step [stepControl]="firstFormGroup" [editable]="isEditable">
     <form [formGroup]="firstFormGroup">
       <ng-template matStepLabel>Fill out your name</ng-template>

@@ -13,7 +13,7 @@ import {catchError, map, startWith, switchMap} from 'rxjs/operators';
   templateUrl: 'table-http-example.html',
 })
 export class TableHttpExample implements OnInit {
-  displayedColumns = ['created', 'state', 'number', 'title'];
+  displayedColumns: string[] = ['created', 'state', 'number', 'title'];
   exampleDatabase: ExampleHttpDao | null;
   data: GithubIssue[] = [];
 

@@ -4,8 +4,7 @@ import {
   Component,
   Host,
   Inject,
-  OnDestroy,
-  ViewEncapsulation
+  OnDestroy
 } from '@angular/core';
 import {MatCalendar} from '@angular/material';
 import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats} from '@angular/material/core';
@@ -17,7 +16,6 @@ import {takeUntil} from 'rxjs/operators';
   selector: 'datepicker-custom-header-example',
   templateUrl: 'datepicker-custom-header-example.html',
   styleUrls: ['datepicker-custom-header-example.css'],
-  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatepickerCustomHeaderExample {
@@ -46,7 +44,6 @@ export class DatepickerCustomHeaderExample {
       </button>
     </div>
   `,
-  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExampleHeader<D> implements OnDestroy {
@@ -73,13 +70,13 @@ export class ExampleHeader<D> implements OnDestroy {
   }
 
   previousClicked(mode: 'month' | 'year') {
-    this.calendar.activeDate = mode == 'month' ?
+    this.calendar.activeDate = mode === 'month' ?
         this.dateAdapter.addCalendarMonths(this.calendar.activeDate, -1) :
         this.dateAdapter.addCalendarYears(this.calendar.activeDate, -1);
   }
 
   nextClicked(mode: 'month' | 'year') {
-    this.calendar.activeDate = mode == 'month' ?
+    this.calendar.activeDate = mode === 'month' ?
         this.dateAdapter.addCalendarMonths(this.calendar.activeDate, 1) :
         this.dateAdapter.addCalendarYears(this.calendar.activeDate, 1);
   }

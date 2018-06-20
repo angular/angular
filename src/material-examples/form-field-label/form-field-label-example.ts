@@ -5,7 +5,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 @Component({
   selector: 'form-field-label-example',
   templateUrl: 'form-field-label-example.html',
-  styleUrls: ['form-field-label-example.css']
+  styleUrls: ['form-field-label-example.css'],
 })
 export class FormFieldLabelExample {
   options: FormGroup;

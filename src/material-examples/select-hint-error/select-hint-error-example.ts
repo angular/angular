@@ -1,6 +1,11 @@
 import {Component} from '@angular/core';
 import {FormControl, Validators} from '@angular/forms';
 
+export interface Animal {
+  name: string;
+  sound: string;
+}
+
 /** @title Select with form field features */
 @Component({
   selector: 'select-hint-error-example',
@@ -9,8 +14,7 @@ import {FormControl, Validators} from '@angular/forms';
 })
 export class SelectHintErrorExample {
   animalControl = new FormControl('', [Validators.required]);
-
-  animals = [
+  animals: Animal[] = [
     {name: 'Dog', sound: 'Woof!'},
     {name: 'Cat', sound: 'Meow!'},
     {name: 'Cow', sound: 'Moo!'},

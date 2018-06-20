@@ -6,6 +6,6 @@ import {Component} from '@angular/core';
 @Component({
   selector: 'nested-menu-example',
   templateUrl: 'nested-menu-example.html',
-  styleUrls: ['nested-menu-example.css']
+  styleUrls: ['nested-menu-example.css'],
 })
 export class NestedMenuExample {}

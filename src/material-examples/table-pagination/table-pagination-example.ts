@@ -10,7 +10,7 @@ import {MatPaginator, MatTableDataSource} from '@angular/material';
   templateUrl: 'table-pagination-example.html',
 })
 export class TablePaginationExample implements OnInit {
-  displayedColumns = ['position', 'name', 'weight', 'symbol'];
+  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
   dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
 
   @ViewChild(MatPaginator) paginator: MatPaginator;

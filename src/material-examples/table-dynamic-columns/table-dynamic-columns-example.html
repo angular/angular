@@ -3,7 +3,7 @@
 <button mat-raised-button (click)="shuffle()"> Shuffle </button>
 
 <table mat-table [dataSource]="data" class="mat-elevation-z8">
-  <ng-container matColumnDef="{{column}}" *ngFor="let column of definedColumns">
+  <ng-container [matColumnDef]="column" *ngFor="let column of displayedColumns">
     <th mat-header-cell *matHeaderCellDef> {{column}} </th>
     <td mat-cell *matCellDef="let element"> {{element[column]}} </td>
   </ng-container>

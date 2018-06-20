@@ -1,6 +1,20 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
 
+export interface UserData {
+  id: string;
+  name: string;
+  progress: string;
+  color: string;
+}
+
+/** Constants used to fill up our data base. */
+const COLORS: string[] = ['maroon', 'red', 'orange', 'yellow', 'olive', 'green', 'purple',
+  'fuchsia', 'lime', 'teal', 'aqua', 'blue', 'navy', 'black', 'gray'];
+const NAMES: string[] = ['Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack',
+  'Charlotte', 'Theodore', 'Isla', 'Oliver', 'Isabella', 'Jasper',
+  'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth'];
+
 /**
  * @title Data table with sorting, pagination, and filtering.
  */
@@ -10,7 +24,7 @@ import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
   templateUrl: 'table-overview-example.html',
 })
 export class TableOverviewExample implements OnInit {
-  displayedColumns = ['id', 'name', 'progress', 'color'];
+  displayedColumns: string[] = ['id', 'name', 'progress', 'color'];
   dataSource: MatTableDataSource<UserData>;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -18,8 +32,7 @@ export class TableOverviewExample implements OnInit {
 
   constructor() {
     // Create 100 users
-    const users: UserData[] = [];
-    for (let i = 1; i <= 100; i++) { users.push(createNewUser(i)); }
+    const users = Array.from({length: 100}, (_, k) => createNewUser(k + 1));
 
     // Assign the data to the data source for the table to render
     this.dataSource = new MatTableDataSource(users);
@@ -31,9 +44,8 @@ export class TableOverviewExample implements OnInit {
   }
 
   applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // Datasource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
@@ -52,18 +64,4 @@ function createNewUser(id: number): UserData {
     progress: Math.round(Math.random() * 100).toString(),
     color: COLORS[Math.round(Math.random() * (COLORS.length - 1))]
   };
-}
-
-/** Constants used to fill up our data base. */
-const COLORS = ['maroon', 'red', 'orange', 'yellow', 'olive', 'green', 'purple',
-  'fuchsia', 'lime', 'teal', 'aqua', 'blue', 'navy', 'black', 'gray'];
-const NAMES = ['Maia', 'Asher', 'Olivia', 'Atticus', 'Amelia', 'Jack',
-  'Charlotte', 'Theodore', 'Isla', 'Oliver', 'Isabella', 'Jasper',
-  'Cora', 'Levi', 'Violet', 'Arthur', 'Mia', 'Thomas', 'Elizabeth'];
-
-export interface UserData {
-  id: string;
-  name: string;
-  progress: string;
-  color: string;
 }

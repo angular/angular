@@ -9,5 +9,5 @@ import {Component} from '@angular/core';
   styleUrls: ['expansion-overview-example.css'],
 })
 export class ExpansionOverviewExample {
-  panelOpenState: boolean = false;
+  panelOpenState = false;
 }

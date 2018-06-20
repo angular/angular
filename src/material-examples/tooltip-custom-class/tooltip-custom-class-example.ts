@@ -11,4 +11,4 @@ import {Component, ViewEncapsulation} from '@angular/core';
   // `tooltip-custom-class-example.css` will not be scoped to this component's view.
   encapsulation: ViewEncapsulation.None,
 })
-export class TooltipCustomClassExample { }
+export class TooltipCustomClassExample {}

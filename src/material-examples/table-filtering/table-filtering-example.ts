@@ -1,25 +1,6 @@
 import {Component} from '@angular/core';
 import {MatTableDataSource} from '@angular/material';
 
-/**
- * @title Table with filtering
- */
-@Component({
-  selector: 'table-filtering-example',
-  styleUrls: ['table-filtering-example.css'],
-  templateUrl: 'table-filtering-example.html',
-})
-export class TableFilteringExample {
-  displayedColumns = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new MatTableDataSource(ELEMENT_DATA);
-
-  applyFilter(filterValue: string) {
-    filterValue = filterValue.trim(); // Remove whitespace
-    filterValue = filterValue.toLowerCase(); // MatTableDataSource defaults to lowercase matches
-    this.dataSource.filter = filterValue;
-  }
-}
-
 export interface PeriodicElement {
   name: string;
   position: number;
@@ -39,3 +20,20 @@ const ELEMENT_DATA: PeriodicElement[] = [
   {position: 9, name: 'Fluorine', weight: 18.9984, symbol: 'F'},
   {position: 10, name: 'Neon', weight: 20.1797, symbol: 'Ne'},
 ];
+
+/**
+ * @title Table with filtering
+ */
+@Component({
+  selector: 'table-filtering-example',
+  styleUrls: ['table-filtering-example.css'],
+  templateUrl: 'table-filtering-example.html',
+})
+export class TableFilteringExample {
+  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  dataSource = new MatTableDataSource(ELEMENT_DATA);
+
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+}

@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 import {MomentDateAdapter} from '@angular/material-moment-adapter';
 import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material/core';
@@ -33,7 +33,6 @@ export const MY_FORMATS = {
   selector: 'datepicker-views-selection-example',
   templateUrl: 'datepicker-views-selection-example.html',
   styleUrls: ['datepicker-views-selection-example.css'],
-  encapsulation: ViewEncapsulation.None,
   providers: [
     // `MomentDateAdapter` can be automatically provided by importing `MomentDateModule` in your
     // application's root module. We provide it at the component level here, due to limitations of

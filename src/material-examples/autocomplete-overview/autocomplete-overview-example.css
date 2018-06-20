@@ -7,3 +7,7 @@
 .example-full-width {
   width: 100%;
 }
+
+.example-option-img {
+  vertical-align: middle;
+}

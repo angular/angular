@@ -7,14 +7,14 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 @Component({
   selector: 'stepper-overview-example',
   templateUrl: 'stepper-overview-example.html',
-  styleUrls: ['stepper-overview-example.css']
+  styleUrls: ['stepper-overview-example.css'],
 })
 export class StepperOverviewExample implements OnInit {
   isLinear = false;
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder) {}
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({

@@ -8,8 +8,8 @@ import {ChangeDetectorRef, Component, NgZone} from '@angular/core';
   styleUrls: ['focus-monitor-directives-example.css']
 })
 export class FocusMonitorDirectivesExample {
-  elementOrigin: string = this.formatOrigin(null);
-  subtreeOrigin: string = this.formatOrigin(null);
+  elementOrigin = this.formatOrigin(null);
+  subtreeOrigin = this.formatOrigin(null);
 
   constructor(private ngZone: NgZone, private cdr: ChangeDetectorRef) {}
 

@@ -12,9 +12,9 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 export class StepperOptionalExample implements OnInit {
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
-  isOptional: boolean = false;
+  isOptional = false;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder) {}
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({

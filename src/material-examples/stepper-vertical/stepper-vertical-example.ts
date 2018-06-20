@@ -14,7 +14,7 @@ export class StepperVerticalExample implements OnInit {
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
 
-  constructor(private _formBuilder: FormBuilder) { }
+  constructor(private _formBuilder: FormBuilder) {}
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({

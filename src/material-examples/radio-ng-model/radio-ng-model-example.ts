@@ -10,11 +10,5 @@ import {Component} from '@angular/core';
 })
 export class RadioNgModelExample {
   favoriteSeason: string;
-
-  seasons = [
-    'Winter',
-    'Spring',
-    'Summer',
-    'Autumn',
-  ];
+  seasons: string[] = ['Winter', 'Spring', 'Summer', 'Autumn'];
 }

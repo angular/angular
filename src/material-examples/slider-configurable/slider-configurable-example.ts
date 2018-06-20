@@ -1,4 +1,5 @@
-import {Component, ViewEncapsulation} from '@angular/core';
+import {coerceNumberProperty} from '@angular/cdk/coercion';
+import {Component} from '@angular/core';
 
 /**
  * @title Configurable slider
@@ -7,7 +8,6 @@ import {Component, ViewEncapsulation} from '@angular/core';
   selector: 'slider-configurable-example',
   templateUrl: 'slider-configurable-example.html',
   styleUrls: ['slider-configurable-example.css'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class SliderConfigurableExample {
   autoTicks = false;
@@ -24,8 +24,8 @@ export class SliderConfigurableExample {
   get tickInterval(): number | 'auto' {
     return this.showTicks ? (this.autoTicks ? 'auto' : this._tickInterval) : 0;
   }
-  set tickInterval(v) {
-    this._tickInterval = Number(v);
+  set tickInterval(value) {
+    this._tickInterval = coerceNumberProperty(value);
   }
   private _tickInterval = 1;
 }

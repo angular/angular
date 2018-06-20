@@ -1,4 +1,4 @@
-import {Component, ViewEncapsulation} from '@angular/core';
+import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 
 /**
@@ -8,7 +8,6 @@ import {FormControl} from '@angular/forms';
   selector: 'select-panel-class-example',
   templateUrl: 'select-panel-class-example.html',
   styleUrls: ['select-panel-class-example.css'],
-  encapsulation: ViewEncapsulation.None,
 })
 export class SelectPanelClassExample {
   panelColor = new FormControl('red');

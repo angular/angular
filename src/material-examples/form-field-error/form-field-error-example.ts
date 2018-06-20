@@ -5,7 +5,7 @@ import {FormControl, Validators} from '@angular/forms';
 @Component({
   selector: 'form-field-error-example',
   templateUrl: 'form-field-error-example.html',
-  styleUrls: ['form-field-error-example.css']
+  styleUrls: ['form-field-error-example.css'],
 })
 export class FormFieldErrorExample {
   email = new FormControl('', [Validators.required, Validators.email]);

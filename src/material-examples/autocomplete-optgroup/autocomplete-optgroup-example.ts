@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {FormGroup, FormBuilder} from '@angular/forms';
+import {FormBuilder, FormGroup} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {startWith, map} from 'rxjs/operators';
 
@@ -7,6 +7,12 @@ export interface StateGroup {
   letter: string;
   names: string[];
 }
+
+export const _filter = (opt: string[], value: string): string[] => {
+  const filterValue = value.toLowerCase();
+
+  return opt.filter(item => item.toLowerCase().indexOf(filterValue) === 0);
+};
 
 /**
  * @title Option groups autocomplete
@@ -84,28 +90,23 @@ export class AutocompleteOptgroupExample implements OnInit {
 
   stateGroupOptions: Observable<StateGroup[]>;
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
     this.stateGroupOptions = this.stateForm.get('stateGroup')!.valueChanges
       .pipe(
         startWith(''),
-        map(val => this.filterGroup(val))
+        map(value => this._filterGroup(value))
       );
   }
 
-  filterGroup(val: string): StateGroup[] {
-    if (val) {
+  private _filterGroup(value: string): StateGroup[] {
+    if (value) {
       return this.stateGroups
-        .map(group => ({ letter: group.letter, names: this._filter(group.names, val) }))
+        .map(group => ({letter: group.letter, names: _filter(group.names, value)}))
         .filter(group => group.names.length > 0);
     }
 
     return this.stateGroups;
-  }
-
-  private _filter(opt: string[], val: string) {
-    const filterValue = val.toLowerCase();
-    return opt.filter(item => item.toLowerCase().startsWith(filterValue));
   }
 }

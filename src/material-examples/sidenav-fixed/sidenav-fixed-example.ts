@@ -12,9 +12,9 @@ export class SidenavFixedExample {
 
   constructor(fb: FormBuilder) {
     this.options = fb.group({
-      'fixed': false,
-      'top': 0,
-      'bottom': 0,
+      bottom: 0,
+      fixed: false,
+      top: 0
     });
   }
 

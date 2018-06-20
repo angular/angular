@@ -35,11 +35,11 @@
       </mat-radio-group>
     </section>
 
-    <section class="example-section" *ngIf="mode == 'determinate' || mode == 'buffer'">
+    <section class="example-section" *ngIf="mode === 'determinate' || mode === 'buffer'">
       <label class="example-margin">Progress:</label>
       <mat-slider class="example-margin" [(ngModel)]="value"></mat-slider>
     </section>
-    <section class="example-section" *ngIf="mode == 'buffer'">
+    <section class="example-section" *ngIf="mode === 'buffer'">
       <label class="example-margin">Buffer:</label>
       <mat-slider class="example-margin" [(ngModel)]="bufferValue"></mat-slider>
     </section>

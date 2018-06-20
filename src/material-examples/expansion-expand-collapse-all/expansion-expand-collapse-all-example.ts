@@ -7,7 +7,7 @@ import {MatAccordion} from '@angular/material';
 @Component({
   selector: 'expansion-toggle-all-example',
   templateUrl: 'expansion-expand-collapse-all-example.html',
-  styleUrls: ['expansion-expand-collapse-all-example.css']
+  styleUrls: ['expansion-expand-collapse-all-example.css'],
 })
 export class ExpansionExpandCollapseAllExample {
   @ViewChild(MatAccordion) accordion: MatAccordion;

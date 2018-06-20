@@ -15,7 +15,7 @@ export interface Transaction {
   templateUrl: 'table-multiple-header-footer-example.html',
 })
 export class TableMultipleHeaderFooterExample {
-  displayedColumns = ['item', 'cost'];
+  displayedColumns: string[] = ['item', 'cost'];
   transactions: Transaction[] = [
     {item: 'Beach ball', cost: 4},
     {item: 'Towel', cost: 5},

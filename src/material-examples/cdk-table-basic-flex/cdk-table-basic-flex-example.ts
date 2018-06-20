@@ -2,24 +2,11 @@ import {DataSource} from '@angular/cdk/collections';
 import {Component} from '@angular/core';
 import {BehaviorSubject, Observable} from 'rxjs';
 
-/**
- * @title Basic use of `<cdk-table>` (uses display flex)
- */
-@Component({
-  selector: 'cdk-table-basic-flex-example',
-  styleUrls: ['cdk-table-basic-flex-example.css'],
-  templateUrl: 'cdk-table-basic-flex-example.html',
-})
-export class CdkTableBasicFlexExample {
-  displayedColumns = ['position', 'name', 'weight', 'symbol'];
-  dataSource = new ExampleDataSource();
-}
-
 export interface PeriodicElement {
   name: string;
   position: number;
-  weight: number;
   symbol: string;
+  weight: number;
 }
 
 const ELEMENT_DATA: PeriodicElement[] = [
@@ -36,6 +23,19 @@ const ELEMENT_DATA: PeriodicElement[] = [
 ];
 
 /**
+ * @title Basic use of `<cdk-table>` (uses display flex)
+ */
+@Component({
+  selector: 'cdk-table-basic-flex-example',
+  styleUrls: ['cdk-table-basic-flex-example.css'],
+  templateUrl: 'cdk-table-basic-flex-example.html',
+})
+export class CdkTableBasicFlexExample {
+  displayedColumns: string[] = ['position', 'name', 'weight', 'symbol'];
+  dataSource = new ExampleDataSource();
+}
+
+/**
  * Data source to provide what data should be rendered in the table. Note that the data source
  * can retrieve its data in any way. In this case, the data source is provided a reference
  * to a common data base, ExampleDatabase. It is not the data source's responsibility to manage
@@ -44,7 +44,7 @@ const ELEMENT_DATA: PeriodicElement[] = [
  */
 export class ExampleDataSource extends DataSource<PeriodicElement> {
   /** Stream of data that is provided to the table. */
-  data: BehaviorSubject<PeriodicElement[]> = new BehaviorSubject<PeriodicElement[]>(ELEMENT_DATA);
+  data = new BehaviorSubject<PeriodicElement[]>(ELEMENT_DATA);
 
   /** Connect function called by the table to retrieve one stream containing the data to render. */
   connect(): Observable<PeriodicElement[]> {
