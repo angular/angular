@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 
 import * as api from '../transformers/api';
 
-import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, SelectorScopeRegistry} from './annotations';
+import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, SelectorScopeRegistry} from './annotations';
 import {CompilerHost} from './compiler_host';
 import {TypeScriptReflectionHost} from './metadata';
 import {IvyCompilation, ivyTransformFactory} from './transform';
@@ -101,6 +101,7 @@ export class NgtscProgram implements api.Program {
       new DirectiveDecoratorHandler(checker, reflector, scopeRegistry, isCore),
       new InjectableDecoratorHandler(reflector, isCore),
       new NgModuleDecoratorHandler(checker, reflector, scopeRegistry, isCore),
+      new PipeDecoratorHandler(reflector, isCore),
     ];
 
     const coreImportsFrom = isCore && getR3SymbolsFile(this.tsProgram) || null;
