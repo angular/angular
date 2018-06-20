@@ -25,10 +25,11 @@ const EMPTY_MAP = new Map<string, Expression>();
 export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMetadata> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
-      private scopeRegistry: SelectorScopeRegistry) {}
+      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
 
   detect(decorators: Decorator[]): Decorator|undefined {
-    return decorators.find(decorator => decorator.name === 'Component' && isAngularCore(decorator));
+    return decorators.find(
+        decorator => decorator.name === 'Component' && (this.isCore || isAngularCore(decorator)));
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3ComponentMetadata> {
@@ -43,7 +44,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
     const directiveMetadata =
-        extractDirectiveMetadata(node, decorator, this.checker, this.reflector);
+        extractDirectiveMetadata(node, decorator, this.checker, this.reflector, this.isCore);
     if (directiveMetadata === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
       // case, compilation of the decorator is skipped. Returning an empty object signifies

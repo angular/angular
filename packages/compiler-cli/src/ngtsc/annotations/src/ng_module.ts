@@ -29,10 +29,11 @@ export interface NgModuleAnalysis {
 export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalysis> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
-      private scopeRegistry: SelectorScopeRegistry) {}
+      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
 
   detect(decorators: Decorator[]): Decorator|undefined {
-    return decorators.find(decorator => decorator.name === 'NgModule' && isAngularCore(decorator));
+    return decorators.find(
+        decorator => decorator.name === 'NgModule' && (this.isCore || isAngularCore(decorator)));
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<NgModuleAnalysis> {
@@ -89,7 +90,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const ngInjectorDef: R3InjectorMetadata = {
       name: node.name !.text,
       type: new WrappedNodeExpr(node.name !),
-      deps: getConstructorDependencies(node, this.reflector), providers,
+      deps: getConstructorDependencies(node, this.reflector, this.isCore), providers,
       imports: new LiteralArrayExpr(
           [...imports, ...exports].map(imp => referenceToExpression(imp, context))),
     };

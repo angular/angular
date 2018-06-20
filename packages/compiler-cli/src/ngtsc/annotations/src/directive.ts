@@ -22,14 +22,16 @@ const EMPTY_OBJECT: {[key: string]: string} = {};
 export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMetadata> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
-      private scopeRegistry: SelectorScopeRegistry) {}
+      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
 
   detect(decorators: Decorator[]): Decorator|undefined {
-    return decorators.find(decorator => decorator.name === 'Directive' && isAngularCore(decorator));
+    return decorators.find(
+        decorator => decorator.name === 'Directive' && (this.isCore || isAngularCore(decorator)));
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3DirectiveMetadata> {
-    const analysis = extractDirectiveMetadata(node, decorator, this.checker, this.reflector);
+    const analysis =
+        extractDirectiveMetadata(node, decorator, this.checker, this.reflector, this.isCore);
 
     // If the directive has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this directive appears in an `@NgModule` scope, its selector can be determined.
@@ -57,7 +59,7 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
  */
 export function extractDirectiveMetadata(
     clazz: ts.ClassDeclaration, decorator: Decorator, checker: ts.TypeChecker,
-    reflector: ReflectionHost): R3DirectiveMetadata|undefined {
+    reflector: ReflectionHost, isCore: boolean): R3DirectiveMetadata|undefined {
   if (decorator.args === null || decorator.args.length !== 1) {
     throw new Error(`Incorrect number of arguments to @${decorator.name} decorator`);
   }
@@ -108,7 +110,7 @@ export function extractDirectiveMetadata(
 
   return {
     name: clazz.name !.text,
-    deps: getConstructorDependencies(clazz, reflector),
+    deps: getConstructorDependencies(clazz, reflector, isCore),
     host: {
       attributes: {},
       listeners: {},

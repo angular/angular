@@ -46,9 +46,18 @@ export class IvyCompilation {
    */
   private dtsMap = new Map<string, DtsFileTransformer>();
 
+  /**
+   * @param handlers array of `DecoratorHandler`s which will be executed against each class in the
+   * program
+   * @param checker TypeScript `TypeChecker` instance for the program
+   * @param reflector `ReflectionHost` through which all reflection operations will be performed
+   * @param coreImportsFrom a TypeScript `SourceFile` which exports symbols needed for Ivy imports
+   * when compiling @angular/core, or `null` if the current program is not @angular/core. This is
+   * `null` in most cases.
+   */
   constructor(
       private handlers: DecoratorHandler<any>[], private checker: ts.TypeChecker,
-      private reflector: ReflectionHost) {}
+      private reflector: ReflectionHost, private coreImportsFrom: ts.SourceFile|null) {}
 
   /**
    * Analyze a source file and produce diagnostics for it (if any).
@@ -147,19 +156,19 @@ export class IvyCompilation {
    * Process a .d.ts source string and return a transformed version that incorporates the changes
    * made to the source file.
    */
-  transformedDtsFor(tsFileName: string, dtsOriginalSource: string): string {
+  transformedDtsFor(tsFileName: string, dtsOriginalSource: string, dtsPath: string): string {
     // No need to transform if no changes have been requested to the input file.
     if (!this.dtsMap.has(tsFileName)) {
       return dtsOriginalSource;
     }
 
     // Return the transformed .d.ts source.
-    return this.dtsMap.get(tsFileName) !.transform(dtsOriginalSource);
+    return this.dtsMap.get(tsFileName) !.transform(dtsOriginalSource, tsFileName);
   }
 
   private getDtsTransformer(tsFileName: string): DtsFileTransformer {
     if (!this.dtsMap.has(tsFileName)) {
-      this.dtsMap.set(tsFileName, new DtsFileTransformer());
+      this.dtsMap.set(tsFileName, new DtsFileTransformer(this.coreImportsFrom));
     }
     return this.dtsMap.get(tsFileName) !;
   }
