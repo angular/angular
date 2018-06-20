@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@bazel/ibazel": "^0.1.1",
-    "@types/angularjs": "1.5.14-alpha",
+    "@types/angular": "^1.6.47",
     "@types/base64-js": "1.2.5",
     "@types/chai": "^4.1.2",
     "@types/chokidar": "1.7.3",
