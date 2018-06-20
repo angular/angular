@@ -18,7 +18,6 @@ const EXAMPLE_CONFIG_FILENAME = 'example-config.json';
 const IGNORED_EXAMPLES = [ // temporary ignores
   'quickstart',
   'setup',
-  'upgrade-p'
 ];
 
 /**
