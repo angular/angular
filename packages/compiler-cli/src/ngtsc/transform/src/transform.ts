@@ -15,11 +15,12 @@ import {CompileResult} from './api';
 import {IvyCompilation} from './compilation';
 import {ImportManager, translateExpression, translateStatement} from './translator';
 
-export function ivyTransformFactory(compilation: IvyCompilation):
-    ts.TransformerFactory<ts.SourceFile> {
+export function ivyTransformFactory(
+    compilation: IvyCompilation,
+    coreImportsFrom: ts.SourceFile | null): ts.TransformerFactory<ts.SourceFile> {
   return (context: ts.TransformationContext): ts.Transformer<ts.SourceFile> => {
     return (file: ts.SourceFile): ts.SourceFile => {
-      return transformIvySourceFile(compilation, context, file);
+      return transformIvySourceFile(compilation, context, coreImportsFrom, file);
     };
   };
 }
@@ -74,18 +75,19 @@ class IvyVisitor extends Visitor {
  */
 function transformIvySourceFile(
     compilation: IvyCompilation, context: ts.TransformationContext,
-    file: ts.SourceFile): ts.SourceFile {
-  const importManager = new ImportManager();
+    coreImportsFrom: ts.SourceFile | null, file: ts.SourceFile): ts.SourceFile {
+  const importManager = new ImportManager(coreImportsFrom !== null);
 
   // Recursively scan through the AST and perform any updates requested by the IvyCompilation.
   const sf = visit(file, new IvyVisitor(compilation, importManager), context);
 
   // Generate the import statements to prepend.
-  const imports = importManager.getAllImports().map(
-      i => ts.createImportDeclaration(
-          undefined, undefined,
-          ts.createImportClause(undefined, ts.createNamespaceImport(ts.createIdentifier(i.as))),
-          ts.createLiteral(i.name)));
+  const imports = importManager.getAllImports(file.fileName, coreImportsFrom).map(i => {
+    return ts.createImportDeclaration(
+        undefined, undefined,
+        ts.createImportClause(undefined, ts.createNamespaceImport(ts.createIdentifier(i.as))),
+        ts.createLiteral(i.name));
+  });
 
   // Prepend imports if needed.
   if (imports.length > 0) {

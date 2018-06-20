@@ -8,6 +8,8 @@
 
 import * as ts from 'typescript';
 
+import {relativePathBetween} from '../../util/src/path';
+
 import {CompileResult} from './api';
 import {ImportManager, translateType} from './translator';
 
@@ -18,7 +20,11 @@ import {ImportManager, translateType} from './translator';
  */
 export class DtsFileTransformer {
   private ivyFields = new Map<string, CompileResult[]>();
-  private imports = new ImportManager();
+  private imports: ImportManager;
+
+  constructor(private coreImportsFrom: ts.SourceFile|null) {
+    this.imports = new ImportManager(coreImportsFrom !== null);
+  }
 
   /**
    * Track that a static field was added to the code for a class.
@@ -28,7 +34,7 @@ export class DtsFileTransformer {
   /**
    * Process the .d.ts text for a file and add any declarations which were recorded.
    */
-  transform(dts: string): string {
+  transform(dts: string, tsPath: string): string {
     const dtsFile =
         ts.createSourceFile('out.d.ts', dts, ts.ScriptTarget.Latest, false, ts.ScriptKind.TS);
 
@@ -51,7 +57,7 @@ export class DtsFileTransformer {
       }
     }
 
-    const imports = this.imports.getAllImports();
+    const imports = this.imports.getAllImports(tsPath, this.coreImportsFrom);
     if (imports.length !== 0) {
       dts = imports.map(i => `import * as ${i.as} from '${i.name}';\n`).join() + dts;
     }
