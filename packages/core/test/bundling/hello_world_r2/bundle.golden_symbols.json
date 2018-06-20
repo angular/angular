@@ -357,9 +357,6 @@
     "name": "CORE"
   },
   {
-    "name": "CORE$1"
-  },
-  {
     "name": "CR"
   },
   {
@@ -804,9 +801,6 @@
     "name": "Identifiers"
   },
   {
-    "name": "Identifiers$1"
-  },
-  {
     "name": "IfStmt"
   },
   {
@@ -1207,9 +1201,6 @@
   },
   {
     "name": "PreparsedElementType"
-  },
-  {
-    "name": "PropertyBindingType"
   },
   {
     "name": "PropertyRead"
