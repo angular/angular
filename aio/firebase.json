@@ -15,7 +15,7 @@
       // A random bad indexed page that used `api/api`
       {"type": 301, "source": "/api/api/:rest*", "destination": "/api/:rest*"},
 
-      // Guide renames
+      // Guide renames/removals
       {"type": 301, "source": "/docs/*/latest/cli-quickstart.html", "destination": "/guide/quickstart"},
       {"type": 301, "source": "/docs/*/latest/glossary.html", "destination": "/guide/glossary"},
       {"type": 301, "source": "/docs/*/latest/quickstart.html", "destination": "/guide/quickstart"},
@@ -25,6 +25,7 @@
       {"type": 301, "source": "/guide/service-worker-getstart", "destination": "/guide/service-worker-getting-started"},
       {"type": 301, "source": "/guide/service-worker-comm", "destination": "/guide/service-worker-communications"},
       {"type": 301, "source": "/guide/service-worker-configref", "destination": "/guide/service-worker-config"},
+      {"type": 301, "source": "/guide/webpack", "destination": "https://v5.angular.io/guide/webpack"},
 
       // some top level guide pages on old site were moved below the guide folder
       {"type": 301, "source": "/styleguide", "destination": "/guide/styleguide"},
