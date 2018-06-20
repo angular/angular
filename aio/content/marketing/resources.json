@@ -490,6 +490,13 @@
             "rev": true,
             "title": "Angular-Buch (German)",
             "url": "https://angular-buch.com/"
+          },
+          "wishtack-guide-angular": {
+            "desc": "The free, open-source and up-to-date Angular guide. This pragmatic guide is focused on best practices and will drive you from scratch to cloud.",
+            "logo": "https://raw.githubusercontent.com/wishtack/gitbook-guide-angular/master/.gitbook/assets/wishtack-logo-with-text.png",
+            "rev": true,
+            "title": "The Angular Guide by Wishtack (Français)",
+            "url": "https://guide-angular.wishtack.io/"
           }
         }
       },
