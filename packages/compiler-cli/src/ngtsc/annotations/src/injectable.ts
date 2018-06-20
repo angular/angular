@@ -20,15 +20,16 @@ import {getConstructorDependencies, isAngularCore} from './util';
  * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
 export class InjectableDecoratorHandler implements DecoratorHandler<R3InjectableMetadata> {
-  constructor(private reflector: ReflectionHost) {}
+  constructor(private reflector: ReflectionHost, private isCore: boolean) {}
 
   detect(decorator: Decorator[]): Decorator|undefined {
-    return decorator.find(decorator => decorator.name === 'Injectable' && isAngularCore(decorator));
+    return decorator.find(
+        decorator => decorator.name === 'Injectable' && (this.isCore || isAngularCore(decorator)));
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3InjectableMetadata> {
     return {
-      analysis: extractInjectableMetadata(node, decorator, this.reflector),
+      analysis: extractInjectableMetadata(node, decorator, this.reflector, this.isCore),
     };
   }
 
@@ -48,8 +49,8 @@ export class InjectableDecoratorHandler implements DecoratorHandler<R3Injectable
  * metadata needed to run `compileIvyInjectable`.
  */
 function extractInjectableMetadata(
-    clazz: ts.ClassDeclaration, decorator: Decorator,
-    reflector: ReflectionHost): R3InjectableMetadata {
+    clazz: ts.ClassDeclaration, decorator: Decorator, reflector: ReflectionHost,
+    isCore: boolean): R3InjectableMetadata {
   if (clazz.name === undefined) {
     throw new Error(`@Injectables must have names`);
   }
@@ -63,7 +64,7 @@ function extractInjectableMetadata(
       name,
       type,
       providedIn: new LiteralExpr(null),
-      deps: getConstructorDependencies(clazz, reflector),
+      deps: getConstructorDependencies(clazz, reflector, isCore),
     };
   } else if (decorator.args.length === 1) {
     const metaNode = decorator.args[0];
@@ -102,7 +103,7 @@ function extractInjectableMetadata(
       }
       return {name, type, providedIn, useFactory: factory, deps};
     } else {
-      const deps = getConstructorDependencies(clazz, reflector);
+      const deps = getConstructorDependencies(clazz, reflector, isCore);
       return {name, type, providedIn, deps};
     }
   } else {

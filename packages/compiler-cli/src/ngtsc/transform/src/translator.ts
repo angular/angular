@@ -8,6 +8,7 @@
 
 import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, ThrowStmt, TryCatchStmt, Type, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import * as ts from 'typescript';
+import {relativePathBetween} from '../../util/src/path';
 
 const BINARY_OPERATORS = new Map<BinaryOperator, ts.BinaryOperator>([
   [BinaryOperator.And, ts.SyntaxKind.AmpersandAmpersandToken],
@@ -28,20 +29,44 @@ const BINARY_OPERATORS = new Map<BinaryOperator, ts.BinaryOperator>([
   [BinaryOperator.Plus, ts.SyntaxKind.PlusToken],
 ]);
 
+const CORE_SUPPORTED_SYMBOLS = new Set<string>([
+  'defineInjectable',
+  'defineInjector',
+  'ɵdefineNgModule',
+  'inject',
+  'InjectableDef',
+  'InjectorDef',
+  'NgModuleDef',
+]);
+
 export class ImportManager {
   private moduleToIndex = new Map<string, string>();
   private nextIndex = 0;
 
-  generateNamedImport(moduleName: string): string {
+  constructor(private isCore: boolean) {}
+
+  generateNamedImport(moduleName: string, symbol: string): string {
     if (!this.moduleToIndex.has(moduleName)) {
       this.moduleToIndex.set(moduleName, `i${this.nextIndex++}`);
+    }
+    if (this.isCore && moduleName === '@angular/core' && !CORE_SUPPORTED_SYMBOLS.has(symbol)) {
+      throw new Error(`Importing unexpected symbol ${symbol} while compiling core`);
     }
     return this.moduleToIndex.get(moduleName) !;
   }
 
-  getAllImports(): {name: string, as: string}[] {
+  getAllImports(contextPath: string, rewriteCoreImportsTo: ts.SourceFile|null):
+      {name: string, as: string}[] {
     return Array.from(this.moduleToIndex.keys()).map(name => {
-      const as = this.moduleToIndex.get(name) !;
+      const as: string|null = this.moduleToIndex.get(name) !;
+      if (rewriteCoreImportsTo !== null && name === '@angular/core') {
+        const relative = relativePathBetween(contextPath, rewriteCoreImportsTo.fileName);
+        if (relative === null) {
+          throw new Error(
+              `Failed to rewrite import inside core: ${contextPath} -> ${rewriteCoreImportsTo.fileName}`);
+        }
+        name = relative;
+      }
       return {name, as};
     });
   }
@@ -166,7 +191,7 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
       throw new Error(`Import unknown module or symbol ${ast.value}`);
     }
     return ts.createPropertyAccess(
-        ts.createIdentifier(this.imports.generateNamedImport(ast.value.moduleName)),
+        ts.createIdentifier(this.imports.generateNamedImport(ast.value.moduleName, ast.value.name)),
         ts.createIdentifier(ast.value.name));
   }
 
@@ -314,7 +339,8 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol`);
     }
-    const base = `${this.imports.generateNamedImport(ast.value.moduleName)}.${ast.value.name}`;
+    const moduleSymbol = this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
+    const base = `${moduleSymbol}.${ast.value.name}`;
     if (ast.typeParams !== null) {
       const generics = ast.typeParams.map(type => type.visitType(this, context)).join(', ');
       return `${base}<${generics}>`;

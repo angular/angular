@@ -9,4 +9,7 @@ ts_library(
         "src/**/*.ts",
     ]),
     module_name = "@angular/compiler-cli/src/ngtsc/util",
+    deps = [
+        "//packages:types",
+    ],
 )

@@ -91,17 +91,21 @@ export class NgtscProgram implements api.Program {
     const mergeEmitResultsCallback = opts && opts.mergeEmitResultsCallback || mergeEmitResults;
 
     const checker = this.tsProgram.getTypeChecker();
+    const isCore = isAngularCorePackage(this.tsProgram);
     const reflector = new TypeScriptReflectionHost(checker);
     const scopeRegistry = new SelectorScopeRegistry(checker, reflector);
 
     // Set up the IvyCompilation, which manages state for the Ivy transformer.
     const handlers = [
-      new ComponentDecoratorHandler(checker, reflector, scopeRegistry),
-      new DirectiveDecoratorHandler(checker, reflector, scopeRegistry),
-      new InjectableDecoratorHandler(reflector),
-      new NgModuleDecoratorHandler(checker, reflector, scopeRegistry),
+      new ComponentDecoratorHandler(checker, reflector, scopeRegistry, isCore),
+      new DirectiveDecoratorHandler(checker, reflector, scopeRegistry, isCore),
+      new InjectableDecoratorHandler(reflector, isCore),
+      new NgModuleDecoratorHandler(checker, reflector, scopeRegistry, isCore),
     ];
-    const compilation = new IvyCompilation(handlers, checker, reflector);
+
+    const coreImportsFrom = isCore && getR3SymbolsFile(this.tsProgram) || null;
+
+    const compilation = new IvyCompilation(handlers, checker, reflector, coreImportsFrom);
 
     // Analyze every source file in the program.
     this.tsProgram.getSourceFiles()
@@ -115,7 +119,7 @@ export class NgtscProgram implements api.Program {
          sourceFiles: ReadonlyArray<ts.SourceFile>) => {
           if (fileName.endsWith('.d.ts')) {
             data = sourceFiles.reduce(
-                (data, sf) => compilation.transformedDtsFor(sf.fileName, data), data);
+                (data, sf) => compilation.transformedDtsFor(sf.fileName, data, fileName), data);
           }
           this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
         };
@@ -128,7 +132,7 @@ export class NgtscProgram implements api.Program {
       options: this.options,
       emitOnlyDtsFiles: false, writeFile,
       customTransformers: {
-        before: [ivyTransformFactory(compilation)],
+        before: [ivyTransformFactory(compilation, coreImportsFrom)],
       },
     });
     return emitResult;
@@ -151,4 +155,48 @@ function mergeEmitResults(emitResults: ts.EmitResult[]): ts.EmitResult {
     emittedFiles.push(...(er.emittedFiles || []));
   }
   return {diagnostics, emitSkipped, emittedFiles};
+}
+
+/**
+ * Find the 'r3_symbols.ts' file in the given `Program`, or return `null` if it wasn't there.
+ */
+function getR3SymbolsFile(program: ts.Program): ts.SourceFile|null {
+  return program.getSourceFiles().find(file => file.fileName.indexOf('r3_symbols.ts') >= 0) || null;
+}
+
+/**
+ * Determine if the given `Program` is @angular/core.
+ */
+function isAngularCorePackage(program: ts.Program): boolean {
+  // Look for its_just_angular.ts somewhere in the program.
+  const r3Symbols = getR3SymbolsFile(program);
+  if (r3Symbols === null) {
+    return false;
+  }
+
+  // Look for the constant ITS_JUST_ANGULAR in that file.
+  return r3Symbols.statements.some(stmt => {
+    // The statement must be a variable declaration statement.
+    if (!ts.isVariableStatement(stmt)) {
+      return false;
+    }
+    // It must be exported.
+    if (stmt.modifiers === undefined ||
+        !stmt.modifiers.some(mod => mod.kind === ts.SyntaxKind.ExportKeyword)) {
+      return false;
+    }
+    // It must declare ITS_JUST_ANGULAR.
+    return stmt.declarationList.declarations.some(decl => {
+      // The declaration must match the name.
+      if (!ts.isIdentifier(decl.name) || decl.name.text !== 'ITS_JUST_ANGULAR') {
+        return false;
+      }
+      // It must initialize the variable to true.
+      if (decl.initializer === undefined || decl.initializer.kind !== ts.SyntaxKind.TrueKeyword) {
+        return false;
+      }
+      // This definition matches.
+      return true;
+    });
+  });
 }
