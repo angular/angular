@@ -15,10 +15,13 @@
     "name": "CONTEXT"
   },
   {
+    "name": "ChangeDetectionStrategy"
+  },
+  {
     "name": "DIRECTIVES"
   },
   {
-    "name": "EMPTY$2"
+    "name": "EMPTY$1"
   },
   {
     "name": "EMPTY_RENDERER_TYPE_ID"
@@ -36,13 +39,7 @@
     "name": "HOST_NODE"
   },
   {
-    "name": "HelloWorld"
-  },
-  {
     "name": "INJECTOR$1"
-  },
-  {
-    "name": "INeedToExistEvenThoughIAmNotNeeded"
   },
   {
     "name": "NEXT"
@@ -73,6 +70,9 @@
   },
   {
     "name": "VIEWS"
+  },
+  {
+    "name": "ViewEncapsulation$1"
   },
   {
     "name": "_CLEAN_PROMISE"
@@ -127,9 +127,6 @@
   },
   {
     "name": "defineComponent"
-  },
-  {
-    "name": "defineInjector"
   },
   {
     "name": "detectChangesInternal"
@@ -195,6 +192,9 @@
     "name": "locateHostElement"
   },
   {
+    "name": "namespaceHTML"
+  },
+  {
     "name": "refreshChildComponents"
   },
   {
@@ -222,7 +222,7 @@
     "name": "setUpAttributes"
   },
   {
-    "name": "stringify$1"
+    "name": "stringify$2"
   },
   {
     "name": "text"

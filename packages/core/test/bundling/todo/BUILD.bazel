@@ -1,15 +1,16 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ivy_ng_module", "ts_library")
+load("//tools:defaults.bzl", "ng_module", "ts_library")
 load("//tools/http-server:http_server.bzl", "http_server")
 load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
 load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
 load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 
-ivy_ng_module(
+ng_module(
     name = "todo",
     srcs = ["index.ts"],
+    tags = ["ivy-only"],
     deps = [
         "//packages/common",
         "//packages/core",
@@ -25,6 +26,7 @@ ng_rollup_bundle(
     # has an "external" directory for external dependencies.
     # This should probably start with "angular/" and let the rule deal with it.
     entry_point = "packages/core/test/bundling/todo/index.js",
+    tags = ["ivy-only"],
     deps = [
         ":todo",
         "//packages/common",
@@ -63,6 +65,10 @@ js_expected_symbol_test(
     name = "symbol_test",
     src = ":bundle.min_debug.js",
     golden = ":bundle.golden_symbols.json",
+    tags = [
+        "ivy-local",
+        "ivy-only",
+    ],
 )
 
 genrule(
