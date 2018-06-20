@@ -120,6 +120,9 @@
     "name": "createTextNode"
   },
   {
+    "name": "createViewQuery"
+  },
+  {
     "name": "defineComponent"
   },
   {
@@ -220,6 +223,9 @@
   },
   {
     "name": "text"
+  },
+  {
+    "name": "updateViewQuery"
   },
   {
     "name": "viewAttached"

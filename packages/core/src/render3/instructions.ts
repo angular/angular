@@ -23,7 +23,7 @@ import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNode
 import {assertNodeType} from './node_assert';
 import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode, getLViewChild} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDefInternal, ComponentTemplate, DirectiveDefInternal, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
+import {ComponentDefInternal, ComponentTemplate, ComponentQuery, DirectiveDefInternal, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {ViewRef} from './view_ref';
@@ -446,7 +446,7 @@ export function renderTemplate<T>(
   if (host == null) {
     resetApplicationState();
     rendererFactory = providedRendererFactory;
-    const tView = getOrCreateTView(template, directives || null, pipes || null);
+    const tView = getOrCreateTView(template, directives || null, pipes || null, null);
     host = createLNode(
         -1, TNodeType.Element, hostNode, null, null,
         createLViewData(
@@ -809,7 +809,7 @@ function saveResolvedLocalsInData(): void {
  */
 function getOrCreateTView(
     template: ComponentTemplate<any>, directives: DirectiveDefListOrFactory | null,
-    pipes: PipeDefListOrFactory | null): TView {
+    pipes: PipeDefListOrFactory | null, viewQuery: ComponentQuery<any>| null): TView {
   // TODO(misko): reading `ngPrivateData` here is problematic for two reasons
   // 1. It is a megamorphic call on each invocation.
   // 2. For nested embedded views (ngFor inside ngFor) the template instance is per
@@ -818,7 +818,7 @@ function getOrCreateTView(
   // and not on embedded templates.
 
   return template.ngPrivateData ||
-      (template.ngPrivateData = createTView(-1, template, directives, pipes) as never);
+      (template.ngPrivateData = createTView(-1, template, directives, pipes, viewQuery) as never);
 }
 
 /**
@@ -830,11 +830,13 @@ function getOrCreateTView(
  */
 export function createTView(
     viewIndex: number, template: ComponentTemplate<any>| null,
-    directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null): TView {
+    directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
+    viewQuery: ComponentQuery<any>| null): TView {
   ngDevMode && ngDevMode.tView++;
   return {
     id: viewIndex,
     template: template,
+    viewQuery: viewQuery,
     node: null !,
     data: HEADER_FILLER.slice(),  // Fill in to match HEADER_OFFSET in LViewData
     childIndex: -1,               // Children set in addToViewTree(), if any
@@ -937,8 +939,8 @@ export function hostElement(
   const node = createLNode(
       0, TNodeType.Element, rNode, null, null,
       createLViewData(
-          renderer, getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs), null,
-          def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer));
+          renderer, getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs, def.viewQuery),
+          null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer));
 
   if (firstTemplatePass) {
     node.tNode.flags = TNodeFlags.isComponent;
@@ -1418,7 +1420,7 @@ export function directiveCreate<T>(
 
 function addComponentLogic<T>(
     directiveIndex: number, instance: T, def: ComponentDefInternal<T>): void {
-  const tView = getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs);
+  const tView = getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs, def.viewQuery);
 
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.
@@ -1608,8 +1610,9 @@ export function container(
   appendChild(getParentLNode(node), comment, viewData);
 
   if (firstTemplatePass) {
-    node.tNode.tViews =
-        template ? createTView(-1, template, tView.directiveRegistry, tView.pipeRegistry) : [];
+    node.tNode.tViews = template ?
+        createTView(-1, template, tView.directiveRegistry, tView.pipeRegistry, null) :
+        [];
   }
 
   // Containers are added to the current view tree instead of their embedded views
@@ -1775,7 +1778,7 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
   ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
     containerTViews[viewIndex] =
-        createTView(viewIndex, null, tView.directiveRegistry, tView.pipeRegistry);
+        createTView(viewIndex, null, tView.directiveRegistry, tView.pipeRegistry, null);
   }
   return containerTViews[viewIndex];
 }
@@ -2198,14 +2201,31 @@ export function checkNoChanges<T>(component: T): void {
 export function detectChangesInternal<T>(
     hostView: LViewData, hostNode: LElementNode, component: T) {
   const oldView = enterView(hostView, hostNode);
-  const template = hostView[TVIEW].template !;
+  const hostTView = hostView[TVIEW];
+  const template = hostTView.template !;
+  const viewQuery = hostTView.viewQuery;
 
   try {
     namespaceHTML();
+    createViewQuery(viewQuery, hostView[FLAGS], component);
     template(getRenderFlags(hostView), component);
     refreshView();
+    updateViewQuery(viewQuery, component);
   } finally {
     leaveView(oldView);
+  }
+}
+
+function createViewQuery<T>(
+    viewQuery: ComponentQuery<{}>| null, flags: LViewFlags, component: T): void {
+  if (viewQuery && (flags & LViewFlags.CreationMode)) {
+    viewQuery(RenderFlags.Create, component);
+  }
+}
+
+function updateViewQuery<T>(viewQuery: ComponentQuery<{}>| null, component: T): void {
+  if (viewQuery) {
+    viewQuery(RenderFlags.Update, component);
   }
 }
 
