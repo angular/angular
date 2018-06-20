@@ -40,9 +40,11 @@ function main(argv: [string, string, string] | [string, string]): boolean {
   } else {
     passed = symbolExtractor.compareAndPrintError(goldenFilePath, goldenContent);
     if (!passed) {
+      const compile = process.env['compile'];
+      const defineFlag = (compile !== 'legacy') ? `--define=compile=${compile} ` : '';
       console.error(`TEST FAILED!`);
       console.error(`  To update the golden file run: `);
-      console.error(`    bazel run ${process.env['BAZEL_TARGET']}.accept`);
+      console.error(`    bazel run ${defineFlag}${process.env['BAZEL_TARGET']}.accept`);
     }
   }
   return passed;
