@@ -495,6 +495,10 @@ export abstract class AbstractControl {
    * When false, no events are emitted.
    */
   disable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    // If parent has been marked artificially dirty we don't want to re-calculate the
+    // parent's dirtiness based on the children.
+    const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
+
     (this as{status: string}).status = DISABLED;
     (this as{errors: ValidationErrors | null}).errors = null;
     this._forEachChild(
@@ -506,7 +510,7 @@ export abstract class AbstractControl {
       (this.statusChanges as EventEmitter<string>).emit(this.status);
     }
 
-    this._updateAncestors(opts);
+    this._updateAncestors({...opts, skipPristineCheck});
     this._onDisabledChange.forEach((changeFn) => changeFn(true));
   }
 
@@ -529,19 +533,26 @@ export abstract class AbstractControl {
    * When false, no events are emitted.
    */
   enable(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
+    // If parent has been marked artificially dirty we don't want to re-calculate the
+    // parent's dirtiness based on the children.
+    const skipPristineCheck = this._parentMarkedDirty(opts.onlySelf);
+
     (this as{status: string}).status = VALID;
     this._forEachChild(
         (control: AbstractControl) => { control.enable({...opts, onlySelf: true}); });
     this.updateValueAndValidity({onlySelf: true, emitEvent: opts.emitEvent});
 
-    this._updateAncestors(opts);
+    this._updateAncestors({...opts, skipPristineCheck});
     this._onDisabledChange.forEach((changeFn) => changeFn(false));
   }
 
-  private _updateAncestors(opts: {onlySelf?: boolean, emitEvent?: boolean}) {
+  private _updateAncestors(
+      opts: {onlySelf?: boolean, emitEvent?: boolean, skipPristineCheck?: boolean}) {
     if (this._parent && !opts.onlySelf) {
       this._parent.updateValueAndValidity(opts);
-      this._parent._updatePristine();
+      if (!opts.skipPristineCheck) {
+        this._parent._updatePristine();
+      }
       this._parent._updateTouched();
     }
   }
@@ -851,6 +862,16 @@ export abstract class AbstractControl {
     if (isOptionsObj(opts) && (opts as AbstractControlOptions).updateOn != null) {
       this._updateOn = (opts as AbstractControlOptions).updateOn !;
     }
+  }
+
+  /**
+   * Check to see if parent has been marked artificially dirty.
+   *
+   * @internal
+   */
+  private _parentMarkedDirty(onlySelf?: boolean): boolean {
+    const parentDirty = this._parent && this._parent.dirty;
+    return !onlySelf && parentDirty && !this._parent._anyControlsDirty();
   }
 }
 
