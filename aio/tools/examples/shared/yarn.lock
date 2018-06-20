@@ -240,45 +240,33 @@
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.7.0.tgz#9a06f4f137ee84d7df0460c1fdb1135ffa6c50fd"
 
-"@types/angular-animate@^1.5.5":
-  version "1.5.8"
-  resolved "https://registry.yarnpkg.com/@types/angular-animate/-/angular-animate-1.5.8.tgz#578e058ee0ca5539e1795421a91ae2f52581dc8f"
+"@types/angular-animate@^1.5.10":
+  version "1.5.10"
+  resolved "https://registry.yarnpkg.com/@types/angular-animate/-/angular-animate-1.5.10.tgz#b94b45358c61163f1478768e8b081c76439c515f"
   dependencies:
     "@types/angular" "*"
 
-"@types/angular-cookies@^1.4.2":
-  version "1.4.5"
-  resolved "https://registry.yarnpkg.com/@types/angular-cookies/-/angular-cookies-1.4.5.tgz#f5ccf5f42a7b9f4d13e77afb8722034ea9f40bd3"
+"@types/angular-mocks@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@types/angular-mocks/-/angular-mocks-1.6.0.tgz#bd32f55b678c239880d2d0d9a3a79b5cad45547e"
   dependencies:
     "@types/angular" "*"
 
-"@types/angular-mocks@^1.5.5":
-  version "1.5.11"
-  resolved "https://registry.yarnpkg.com/@types/angular-mocks/-/angular-mocks-1.5.11.tgz#d5bbefbf742f2196071bda0fe051878b6f4fd72c"
-  dependencies:
-    "@types/angular" "*"
-
-"@types/angular-resource@^1.5.6":
+"@types/angular-resource@^1.5.14":
   version "1.5.14"
   resolved "https://registry.yarnpkg.com/@types/angular-resource/-/angular-resource-1.5.14.tgz#902f34e8c98f708ae99493c6d416b39b4a22d9fe"
   dependencies:
     "@types/angular" "*"
 
-"@types/angular-route@^1.3.2":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@types/angular-route/-/angular-route-1.3.4.tgz#10d3f7eb313fb8a4b832041f9401869803dcd4df"
+"@types/angular-route@^1.3.5":
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/@types/angular-route/-/angular-route-1.3.5.tgz#78b8e0b069d5efe55ec7072461f4e2f6ae20767b"
   dependencies:
     "@types/angular" "*"
 
-"@types/angular-sanitize@^1.3.3":
-  version "1.3.6"
-  resolved "https://registry.yarnpkg.com/@types/angular-sanitize/-/angular-sanitize-1.3.6.tgz#fec2bd040d38708e46f02e66fba5199e8a64b22e"
-  dependencies:
-    "@types/angular" "*"
-
-"@types/angular@*", "@types/angular@^1.5.16":
-  version "1.6.36"
-  resolved "https://registry.yarnpkg.com/@types/angular/-/angular-1.6.36.tgz#15e73d632274b5655a391470844863548c7755f4"
+"@types/angular@*", "@types/angular@^1.6.47":
+  version "1.6.47"
+  resolved "https://registry.yarnpkg.com/@types/angular/-/angular-1.6.47.tgz#f7a31279a02c0892ed9aa76aae2da1b17791bacd"
 
 "@types/body-parser@*":
   version "1.16.7"
@@ -314,6 +302,10 @@
   resolved "https://registry.yarnpkg.com/@types/jasminewd2/-/jasminewd2-2.0.3.tgz#0d2886b0cbdae4c0eeba55e30792f584bf040a95"
   dependencies:
     "@types/jasmine" "*"
+
+"@types/jquery@^3.3.4":
+  version "3.3.4"
+  resolved "https://registry.yarnpkg.com/@types/jquery/-/jquery-3.3.4.tgz#f1850fb9a70041a14ace4f81a7ed782db8548317"
 
 "@types/mime@*":
   version "2.0.0"
