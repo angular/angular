@@ -229,7 +229,7 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
 export function createComponent(
     name: string, template: ComponentTemplate<any>, directives: DirectiveTypesOrFactory = [],
     pipes: PipeTypesOrFactory = [],
-    queryInstructions: ComponentTemplate<any>| null = null): ComponentType<any> {
+    viewQuery: ComponentTemplate<any>| null = null): ComponentType<any> {
   return class Component {
     value: any;
     static ngComponentDef = defineComponent({
@@ -237,7 +237,7 @@ export function createComponent(
       selectors: [[name]],
       factory: () => new Component,
       template: template,
-      queryInstructions: queryInstructions,
+      viewQuery: viewQuery,
       features: [PublicFeature],
       directives: directives,
       pipes: pipes

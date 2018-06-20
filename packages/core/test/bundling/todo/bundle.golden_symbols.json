@@ -267,6 +267,9 @@
     "name": "createTextNode"
   },
   {
+    "name": "createViewQuery"
+  },
+  {
     "name": "defineComponent"
   },
   {
@@ -441,12 +444,6 @@
     "name": "namespaceHTML"
   },
   {
-    "name": "queryCreateInstructions"
-  },
-  {
-    "name": "queryUpdateInstructions"
-  },
-  {
     "name": "queueComponentIndexForCheck"
   },
   {
@@ -553,6 +550,9 @@
   },
   {
     "name": "tickRootContext"
+  },
+  {
+    "name": "updateViewQuery"
   },
   {
     "name": "viewAttached"

@@ -58,8 +58,7 @@ describe('queries', () => {
             $r3$.ɵEe(2, 'div', $e1_attrs$);
           }
         },
-        queryInstructions: function ViewQueryComponent_Query_Instructions(
-            rf: $RenderFlags$, ctx: $ViewQueryComponent$) {
+        viewQuery: function ViewQueryComponent_Query(rf: $RenderFlags$, ctx: $ViewQueryComponent$) {
           if (rf & 1) {
             $r3$.ɵQ(0, SomeDirective, false);
             $r3$.ɵQ(1, SomeDirective, false);

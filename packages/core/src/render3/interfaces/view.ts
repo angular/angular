@@ -10,7 +10,7 @@ import {Injector} from '../../di/injector';
 import {Sanitizer} from '../../sanitization/security';
 
 import {LContainer} from './container';
-import {ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDef, PipeDefList} from './definition';
+import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDef, PipeDefList} from './definition';
 import {LElementNode, LViewNode, TNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
@@ -203,7 +203,7 @@ export interface TView {
   /**
    * A function containing query-related instructions.
    */
-  queryInstructions: ComponentTemplate<{}>|null;
+  viewQuery: ComponentQuery<{}>|null;
 
   /**
    * Pointer to the `TNode` that represents the root of the view.

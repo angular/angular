@@ -23,7 +23,7 @@ import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNode
 import {assertNodeType} from './node_assert';
 import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode, getLViewChild} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDefInternal, ComponentTemplate, DirectiveDefInternal, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
+import {ComponentDefInternal, ComponentTemplate, ComponentQuery, DirectiveDefInternal, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {ViewRef} from './view_ref';
@@ -808,7 +808,7 @@ function saveResolvedLocalsInData(): void {
  */
 function getOrCreateTView(
     template: ComponentTemplate<any>, directives: DirectiveDefListOrFactory | null,
-    pipes: PipeDefListOrFactory | null, queryInstructions: ComponentTemplate<any>| null): TView {
+    pipes: PipeDefListOrFactory | null, viewQuery: ComponentQuery<any>| null): TView {
   // TODO(misko): reading `ngPrivateData` here is problematic for two reasons
   // 1. It is a megamorphic call on each invocation.
   // 2. For nested embedded views (ngFor inside ngFor) the template instance is per
@@ -817,8 +817,7 @@ function getOrCreateTView(
   // and not on embedded templates.
 
   return template.ngPrivateData ||
-      (template.ngPrivateData =
-           createTView(-1, template, directives, pipes, queryInstructions) as never);
+      (template.ngPrivateData = createTView(-1, template, directives, pipes, viewQuery) as never);
 }
 
 /**
@@ -831,12 +830,12 @@ function getOrCreateTView(
 export function createTView(
     viewIndex: number, template: ComponentTemplate<any>| null,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
-    queryInstructions: ComponentTemplate<any>| null): TView {
+    viewQuery: ComponentQuery<any>| null): TView {
   ngDevMode && ngDevMode.tView++;
   return {
     id: viewIndex,
     template: template,
-    queryInstructions: queryInstructions,
+    viewQuery: viewQuery,
     node: null !,
     data: HEADER_FILLER.slice(),  // Fill in to match HEADER_OFFSET in LViewData
     childIndex: -1,               // Children set in addToViewTree(), if any
@@ -939,8 +938,7 @@ export function hostElement(
   const node = createLNode(
       0, TNodeType.Element, rNode, null, null,
       createLViewData(
-          renderer,
-          getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs, def.queryInstructions),
+          renderer, getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs, def.viewQuery),
           null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer));
 
   if (firstTemplatePass) {
@@ -1421,8 +1419,7 @@ export function directiveCreate<T>(
 
 function addComponentLogic<T>(
     directiveIndex: number, instance: T, def: ComponentDefInternal<T>): void {
-  const tView =
-      getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs, def.queryInstructions);
+  const tView = getOrCreateTView(def.template, def.directiveDefs, def.pipeDefs, def.viewQuery);
 
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.
@@ -2205,30 +2202,29 @@ export function detectChangesInternal<T>(
   const oldView = enterView(hostView, hostNode);
   const hostTView = hostView[TVIEW];
   const template = hostTView.template !;
-  const queryInstructions = hostTView.queryInstructions;
+  const viewQuery = hostTView.viewQuery;
 
   try {
     namespaceHTML();
-    queryCreateInstructions(queryInstructions, hostView[FLAGS], component);
+    createViewQuery(viewQuery, hostView[FLAGS], component);
     template(getRenderFlags(hostView), component);
     refreshView();
-    queryUpdateInstructions(queryInstructions, component);
+    updateViewQuery(viewQuery, component);
   } finally {
     leaveView(oldView);
   }
 }
 
-function queryCreateInstructions<T>(
-    queryInstructions: ComponentTemplate<{}>| null, flags: LViewFlags, component: T): void {
-  if (queryInstructions && (flags & LViewFlags.CreationMode)) {
-    queryInstructions(RenderFlags.Create, component);
+function createViewQuery<T>(
+    viewQuery: ComponentQuery<{}>| null, flags: LViewFlags, component: T): void {
+  if (viewQuery && (flags & LViewFlags.CreationMode)) {
+    viewQuery(RenderFlags.Create, component);
   }
 }
 
-function queryUpdateInstructions<T>(
-    queryInstructions: ComponentTemplate<{}>| null, component: T): void {
-  if (queryInstructions) {
-    queryInstructions(RenderFlags.Update, component);
+function updateViewQuery<T>(viewQuery: ComponentQuery<{}>| null, component: T): void {
+  if (viewQuery) {
+    viewQuery(RenderFlags.Update, component);
   }
 }
 

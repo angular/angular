@@ -955,7 +955,7 @@ describe('query', () => {
                 elementProperty(1, 'ngForOf', bind(ctx.value));
               }
             },
-            queryInstructions: function(rf: RenderFlags, ctx: Cmpt) {
+            viewQuery: function(rf: RenderFlags, ctx: Cmpt) {
               let tmp: any;
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -1135,7 +1135,7 @@ describe('query', () => {
                  }
 
                },
-               queryInstructions: (rf: RenderFlags, cmpt: Cmpt) => {
+               viewQuery: (rf: RenderFlags, cmpt: Cmpt) => {
                  let tmp: any;
                  if (rf & RenderFlags.Create) {
                    query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -1201,7 +1201,7 @@ describe('query', () => {
               }
             },
             directives: () => [NgTemplateOutlet],
-            queryInstructions: (rf: RenderFlags, myApp: MyApp) => {
+            viewQuery: (rf: RenderFlags, myApp: MyApp) => {
               let tmp: any;
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], true, QUERY_READ_FROM_NODE);

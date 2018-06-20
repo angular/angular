@@ -120,6 +120,9 @@
     "name": "createTextNode"
   },
   {
+    "name": "createViewQuery"
+  },
+  {
     "name": "defineComponent"
   },
   {
@@ -189,12 +192,6 @@
     "name": "locateHostElement"
   },
   {
-    "name": "queryCreateInstructions"
-  },
-  {
-    "name": "queryUpdateInstructions"
-  },
-  {
     "name": "refreshChildComponents"
   },
   {
@@ -226,6 +223,9 @@
   },
   {
     "name": "text"
+  },
+  {
+    "name": "updateViewQuery"
   },
   {
     "name": "viewAttached"
