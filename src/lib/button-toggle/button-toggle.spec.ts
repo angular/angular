@@ -93,7 +93,7 @@ describe('MatButtonToggle with forms', () => {
       buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MatButtonToggle));
       buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
       buttonToggleLabels = buttonToggleDebugElements.map(
-        debugEl => debugEl.query(By.css('label')).nativeElement);
+        debugEl => debugEl.query(By.css('button')).nativeElement);
 
       fixture.detectChanges();
     }));
@@ -244,7 +244,7 @@ describe('MatButtonToggle without forms', () => {
       buttonToggleNativeElements = buttonToggleDebugElements
         .map(debugEl => debugEl.nativeElement);
 
-      buttonToggleLabelElements = fixture.debugElement.queryAll(By.css('label'))
+      buttonToggleLabelElements = fixture.debugElement.queryAll(By.css('button'))
         .map(debugEl => debugEl.nativeElement);
 
       buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
@@ -339,7 +339,7 @@ describe('MatButtonToggle without forms', () => {
       buttonToggleLabelElements[0].click();
       fixture.detectChanges();
       tick();
-      expect(changeSpy).toHaveBeenCalled();
+      expect(changeSpy).toHaveBeenCalledTimes(1);
 
       buttonToggleLabelElements[0].click();
       fixture.detectChanges();
@@ -447,7 +447,7 @@ describe('MatButtonToggle without forms', () => {
       buttonToggleDebugElements = fixture.debugElement.queryAll(By.directive(MatButtonToggle));
       buttonToggleNativeElements = buttonToggleDebugElements
         .map(debugEl => debugEl.nativeElement);
-      buttonToggleLabelElements = fixture.debugElement.queryAll(By.css('label'))
+      buttonToggleLabelElements = fixture.debugElement.queryAll(By.css('button'))
         .map(debugEl => debugEl.nativeElement);
       buttonToggleInstances = buttonToggleDebugElements.map(debugEl => debugEl.componentInstance);
     }));
@@ -463,7 +463,7 @@ describe('MatButtonToggle without forms', () => {
     it('should check a button toggle when clicked', () => {
       expect(buttonToggleInstances.every(buttonToggle => !buttonToggle.checked)).toBe(true);
 
-      let nativeCheckboxLabel = buttonToggleDebugElements[0].query(By.css('label')).nativeElement;
+      let nativeCheckboxLabel = buttonToggleDebugElements[0].query(By.css('button')).nativeElement;
 
       nativeCheckboxLabel.click();
 
@@ -487,9 +487,9 @@ describe('MatButtonToggle without forms', () => {
     });
 
     it('should check a button toggle upon interaction with underlying native checkbox', () => {
-      let nativeCheckboxInput = buttonToggleDebugElements[0].query(By.css('input')).nativeElement;
+      let nativeCheckboxButton = buttonToggleDebugElements[0].query(By.css('button')).nativeElement;
 
-      nativeCheckboxInput.click();
+      nativeCheckboxButton.click();
       fixture.detectChanges();
 
       expect(groupInstance.value).toEqual(['eggs']);
@@ -562,6 +562,7 @@ describe('MatButtonToggle without forms', () => {
     let buttonToggleNativeElement: HTMLElement;
     let buttonToggleLabelElement: HTMLLabelElement;
     let buttonToggleInstance: MatButtonToggle;
+    let buttonToggleButtonElement: HTMLButtonElement;
 
     beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(StandaloneButtonToggle);
@@ -569,8 +570,11 @@ describe('MatButtonToggle without forms', () => {
 
       buttonToggleDebugElement = fixture.debugElement.query(By.directive(MatButtonToggle));
       buttonToggleNativeElement = buttonToggleDebugElement.nativeElement;
-      buttonToggleLabelElement = fixture.debugElement.query(By.css('label')).nativeElement;
+      buttonToggleLabelElement = fixture.debugElement
+          .query(By.css('.mat-button-toggle-label-content')).nativeElement;
       buttonToggleInstance = buttonToggleDebugElement.componentInstance;
+      buttonToggleButtonElement =
+          buttonToggleNativeElement.querySelector('button')! as HTMLButtonElement;
     }));
 
     it('should toggle when clicked', fakeAsync(() => {
@@ -609,19 +613,30 @@ describe('MatButtonToggle without forms', () => {
     }));
 
     it('should focus on underlying input element when focus() is called', () => {
-      let nativeRadioInput = buttonToggleDebugElement.query(By.css('input')).nativeElement;
-      expect(document.activeElement).not.toBe(nativeRadioInput);
+      let nativeButton = buttonToggleDebugElement.query(By.css('button')).nativeElement;
+      expect(document.activeElement).not.toBe(nativeButton);
 
       buttonToggleInstance.focus();
       fixture.detectChanges();
 
-      expect(document.activeElement).toBe(nativeRadioInput);
+      expect(document.activeElement).toBe(nativeButton);
     });
 
     it('should not assign a name to the underlying input if one is not passed in', () => {
-      expect(buttonToggleNativeElement.querySelector('input')!.getAttribute('name')).toBeFalsy();
+      expect(buttonToggleButtonElement.getAttribute('name')).toBeFalsy();
     });
 
+    it('should have correct aria-pressed attribute', () => {
+      expect(buttonToggleButtonElement.getAttribute('aria-pressed'))
+          .toBe('false');
+
+      buttonToggleLabelElement.click();
+
+      fixture.detectChanges();
+
+      expect(buttonToggleButtonElement.getAttribute('aria-pressed'))
+        .toBe('true');
+    });
   });
 
   describe('aria-label handling ', () => {
@@ -629,46 +644,46 @@ describe('MatButtonToggle without forms', () => {
       let fixture = TestBed.createComponent(StandaloneButtonToggle);
       let checkboxDebugElement = fixture.debugElement.query(By.directive(MatButtonToggle));
       let checkboxNativeElement = checkboxDebugElement.nativeElement;
-      let inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+      let buttonElement = checkboxNativeElement.querySelector('button') as HTMLButtonElement;
 
       fixture.detectChanges();
-      expect(inputElement.hasAttribute('aria-label')).toBe(false);
+      expect(buttonElement.hasAttribute('aria-label')).toBe(false);
     });
 
     it('should use the provided aria-label', () => {
       let fixture = TestBed.createComponent(ButtonToggleWithAriaLabel);
       let checkboxDebugElement = fixture.debugElement.query(By.directive(MatButtonToggle));
       let checkboxNativeElement = checkboxDebugElement.nativeElement;
-      let inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+      let buttonElement = checkboxNativeElement.querySelector('button') as HTMLButtonElement;
 
       fixture.detectChanges();
-      expect(inputElement.getAttribute('aria-label')).toBe('Super effective');
+      expect(buttonElement.getAttribute('aria-label')).toBe('Super effective');
     });
   });
 
   describe('with provided aria-labelledby ', () => {
     let checkboxDebugElement: DebugElement;
     let checkboxNativeElement: HTMLElement;
-    let inputElement: HTMLInputElement;
+    let buttonElement: HTMLButtonElement;
 
     it('should use the provided aria-labelledby', () => {
       let fixture = TestBed.createComponent(ButtonToggleWithAriaLabelledby);
       checkboxDebugElement = fixture.debugElement.query(By.directive(MatButtonToggle));
       checkboxNativeElement = checkboxDebugElement.nativeElement;
-      inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+      buttonElement = checkboxNativeElement.querySelector('button') as HTMLButtonElement;
 
       fixture.detectChanges();
-      expect(inputElement.getAttribute('aria-labelledby')).toBe('some-id');
+      expect(buttonElement.getAttribute('aria-labelledby')).toBe('some-id');
     });
 
     it('should not assign aria-labelledby if none is provided', () => {
       let fixture = TestBed.createComponent(StandaloneButtonToggle);
       checkboxDebugElement = fixture.debugElement.query(By.directive(MatButtonToggle));
       checkboxNativeElement = checkboxDebugElement.nativeElement;
-      inputElement = checkboxNativeElement.querySelector('input') as HTMLInputElement;
+      buttonElement = checkboxNativeElement.querySelector('button') as HTMLButtonElement;
 
       fixture.detectChanges();
-      expect(inputElement.getAttribute('aria-labelledby')).toBe(null);
+      expect(buttonElement.getAttribute('aria-labelledby')).toBe(null);
     });
   });
 

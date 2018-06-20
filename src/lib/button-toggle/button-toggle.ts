@@ -82,7 +82,7 @@ export class MatButtonToggleChange {
   ],
   inputs: ['disabled'],
   host: {
-    '[attr.role]': 'multiple ? "group" : "radiogroup"',
+    'role': 'group',
     'class': 'mat-button-toggle-group',
     '[class.mat-button-toggle-vertical]': 'vertical'
   },
@@ -353,13 +353,13 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   /** Type of the button toggle. Either 'radio' or 'checkbox'. */
   _type: ToggleType;
 
-  @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
+  @ViewChild('button') _buttonElement: ElementRef<HTMLButtonElement>;
 
   /** The parent button toggle group (exclusive selection). Optional. */
   buttonToggleGroup: MatButtonToggleGroup;
 
-  /** Unique ID for the underlying `input` element. */
-  get inputId(): string { return `${this.id}-input`; }
+  /** Unique ID for the underlying `button` element. */
+  get buttonId(): string { return `${this.id}-button`; }
 
   /** The unique ID for this button toggle. */
   @Input() id: string;
@@ -432,33 +432,25 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
 
   /** Focuses the button. */
   focus(): void {
-    this._inputElement.nativeElement.focus();
+    this._buttonElement.nativeElement.focus();
   }
 
-  /** Checks the button toggle due to an interaction with the underlying native input. */
-  _onInputChange(event: Event) {
+  /** Checks the button toggle due to an interaction with the underlying native button. */
+  _onButtonClick(event: Event) {
     event.stopPropagation();
 
-    this._checked = this._isSingleSelector ? true : !this._checked;
+    const newChecked = this._isSingleSelector ? true : !this._checked;
 
-    if (this.buttonToggleGroup) {
-      this.buttonToggleGroup._syncButtonToggle(this, this._checked, true);
-      this.buttonToggleGroup._onTouched();
+    if (newChecked !== this._checked) {
+      this._checked = newChecked;
+      if (this.buttonToggleGroup) {
+        this.buttonToggleGroup._syncButtonToggle(this, this._checked, true);
+        this.buttonToggleGroup._onTouched();
+      }
+
+      // Emit a change event when the native button does.
+      this.change.emit(new MatButtonToggleChange(this, this.value));
     }
-
-    // Emit a change event when the native input does.
-    this.change.emit(new MatButtonToggleChange(this, this.value));
-  }
-
-  _onInputClick(event: Event) {
-    // We have to stop propagation for click events on the visual hidden input element.
-    // By default, when a user clicks on a label element, a generated click event will be
-    // dispatched on the associated input element. Since we are using a label element as our
-    // root container, the click event on the `slide-toggle` will be executed twice.
-    // The real click event will bubble up, and the generated click event also tries to bubble up.
-    // This will lead to multiple click events.
-    // Preventing bubbling for the second event will solve that issue.
-    event.stopPropagation();
   }
 
   /**

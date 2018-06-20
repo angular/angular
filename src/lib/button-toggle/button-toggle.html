@@ -1,22 +1,19 @@
-<label [attr.for]="inputId" class="mat-button-toggle-label" #label>
-  <input #input class="mat-button-toggle-input cdk-visually-hidden"
-         [type]="_type"
-         [id]="inputId"
-         [checked]="checked"
-         [disabled]="disabled || null"
-         [attr.name]="name"
-         [attr.aria-label]="ariaLabel"
-         [attr.aria-labelledby]="ariaLabelledby"
-         (change)="_onInputChange($event)"
-         (click)="_onInputClick($event)">
-
+<button #button class="mat-button-toggle-button"
+        type="button"
+        [id]="buttonId"
+        [attr.aria-pressed]="checked"
+        [disabled]="disabled || null"
+        [attr.name]="name || null"
+        [attr.aria-label]="ariaLabel"
+        [attr.aria-labelledby]="ariaLabelledby"
+        (click)="_onButtonClick($event)">
   <div class="mat-button-toggle-label-content">
     <ng-content></ng-content>
   </div>
-</label>
-<div class="mat-button-toggle-focus-overlay"></div>
+</button>
 
+<div class="mat-button-toggle-focus-overlay"></div>
 <div class="mat-button-toggle-ripple" matRipple
-     [matRippleTrigger]="label"
+     [matRippleTrigger]="button"
      [matRippleDisabled]="this.disableRipple || this.disabled">
 </div>
