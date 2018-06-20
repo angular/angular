@@ -6,6 +6,7 @@ import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/f
 import {defaultRippleAnimationConfig} from '@angular/material/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {TestGestureConfig} from '../slider/test-gesture-config';
+import {MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS} from './slide-toggle-config';
 import {MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule} from './index';
 
 describe('MatSlideToggle without forms', () => {
@@ -352,6 +353,96 @@ describe('MatSlideToggle without forms', () => {
 
       expect(slideToggle.tabIndex)
         .toBe(5, 'Expected tabIndex property to have been set based on the native attribute');
+    }));
+  });
+
+  describe('custom action configuration', () => {
+    it('should not change value on click when click action is noop', fakeAsync(() => {
+      TestBed
+        .resetTestingModule()
+        .configureTestingModule({
+          imports: [MatSlideToggleModule],
+          declarations: [SlideToggleBasic],
+          providers: [
+            {
+              provide: HAMMER_GESTURE_CONFIG,
+              useFactory: () => gestureConfig = new TestGestureConfig()
+            },
+            {provide: MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS, useValue: {disableToggleValue: true}},
+          ]
+        });
+      const fixture = TestBed.createComponent(SlideToggleBasic);
+      const testComponent = fixture.debugElement.componentInstance;
+      const slideToggleDebug = fixture.debugElement.query(By.css('mat-slide-toggle'));
+
+      const slideToggle = slideToggleDebug.componentInstance;
+      const inputElement = fixture.debugElement.query(By.css('input')).nativeElement;
+      const labelElement = fixture.debugElement.query(By.css('label')).nativeElement;
+
+      expect(testComponent.toggleTriggered).toBe(0);
+      expect(testComponent.dragTriggered).toBe(0);
+      expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
+
+      labelElement.click();
+      fixture.detectChanges();
+
+      expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
+      expect(testComponent.toggleTriggered).toBe(1, 'Expect toggle once');
+      expect(testComponent.dragTriggered).toBe(0);
+
+      inputElement.click();
+      fixture.detectChanges();
+
+      expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
+      expect(testComponent.toggleTriggered).toBe(2, 'Expect toggle twice');
+      expect(testComponent.dragTriggered).toBe(0);
+    }));
+
+    it('should not change value on dragging when drag action is noop', fakeAsync(() => {
+      TestBed
+        .resetTestingModule()
+        .configureTestingModule({
+          imports: [MatSlideToggleModule],
+          declarations: [SlideToggleBasic],
+          providers: [
+            {
+              provide: HAMMER_GESTURE_CONFIG,
+              useFactory: () => gestureConfig = new TestGestureConfig()
+            },
+            {provide: MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS, useValue: {disableDragValue: true}},
+          ]
+        });
+      const fixture = TestBed.createComponent(SlideToggleBasic);
+      const testComponent = fixture.debugElement.componentInstance;
+      const slideToggleDebug = fixture.debugElement.query(By.css('mat-slide-toggle'));
+      const thumbContainerDebug = slideToggleDebug
+        .query(By.css('.mat-slide-toggle-thumb-container'));
+
+      const slideThumbContainer = thumbContainerDebug.nativeElement;
+      const slideToggle = slideToggleDebug.componentInstance;
+
+      expect(testComponent.toggleTriggered).toBe(0);
+      expect(testComponent.dragTriggered).toBe(0);
+      expect(slideToggle.checked).toBe(false);
+
+      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
+
+      expect(slideThumbContainer.classList).toContain('mat-dragging');
+
+      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
+        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
+      });
+
+      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
+
+      // Flush the timeout for the slide ending.
+      tick();
+
+      expect(slideToggle.checked).toBe(false, 'Expect slide toggle value not changed');
+      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
+      expect(testComponent.lastEvent).toBeUndefined();
+      expect(testComponent.toggleTriggered).toBe(0);
+      expect(testComponent.dragTriggered).toBe(1, 'Expect drag once');
     }));
   });
 
@@ -849,6 +940,8 @@ describe('MatSlideToggle with forms', () => {
                      [tabIndex]="slideTabindex"
                      [labelPosition]="labelPosition"
                      [disableRipple]="disableRipple"
+                     (toggleChange)="onSlideToggleChange()"
+                     (dragChange)="onSlideDragChange()"
                      (change)="onSlideChange($event)"
                      (click)="onSlideClick($event)">
       <span>Test Slide Toggle</span>
@@ -867,9 +960,13 @@ class SlideToggleBasic {
   slideTabindex: number;
   lastEvent: MatSlideToggleChange;
   labelPosition: string;
+  toggleTriggered: number = 0;
+  dragTriggered: number = 0;
 
   onSlideClick: (event?: Event) => void = () => {};
   onSlideChange = (event: MatSlideToggleChange) => this.lastEvent = event;
+  onSlideToggleChange = () => this.toggleTriggered++;
+  onSlideDragChange = () => this.dragTriggered++;
 }
 
 @Component({

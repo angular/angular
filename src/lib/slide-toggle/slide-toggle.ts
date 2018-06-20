@@ -42,6 +42,10 @@ import {
   RippleRef,
 } from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {
+  MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS,
+  MatSlideToggleDefaultOptions
+} from './slide-toggle-config';
 
 // Increasing integer for generating unique ids for slide-toggle components.
 let nextUniqueId = 0;
@@ -153,6 +157,21 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   @Output() readonly change: EventEmitter<MatSlideToggleChange> =
       new EventEmitter<MatSlideToggleChange>();
 
+  /**
+   * An event will be dispatched each time the slide-toggle input is toggled.
+   * This event always fire when user toggle the slide toggle, but does not mean the slide toggle's
+   * value is changed. The event does not fire when user drag to change the slide toggle value.
+   */
+  @Output() readonly toggleChange: EventEmitter<void> = new EventEmitter<void>();
+
+  /**
+   * An event will be dispatched each time the slide-toggle is dragged.
+   * This event always fire when user drag the slide toggle to make a change that greater than 50%.
+   * It does not mean the slide toggle's value is changed. The event does not fire when user toggle
+   * the slide toggle to change the slide toggle's value.
+   */
+  @Output() readonly dragChange: EventEmitter<void> = new EventEmitter<void>();
+
   /** Returns the unique id for the visual hidden input. */
   get inputId(): string { return `${this.id || this._uniqueId}-input`; }
 
@@ -172,8 +191,9 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
               private _changeDetectorRef: ChangeDetectorRef,
               @Attribute('tabindex') tabIndex: string,
               private _ngZone: NgZone,
+              @Inject(MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS)
+                  public defaults: MatSlideToggleDefaultOptions,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
-
     super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
   }
@@ -195,10 +215,15 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
     // emit its event object to the component's `change` output.
     event.stopPropagation();
 
+    if (!this._dragging) {
+      this.toggleChange.emit();
+    }
     // Releasing the pointer over the `<label>` element while dragging triggers another
     // click event on the `<label>` element. This means that the checked state of the underlying
-    // input changed unintentionally and needs to be changed back.
-    if (this._dragging) {
+    // input changed unintentionally and needs to be changed back. Or when the slide toggle's config
+    // disabled toggle change event by setting `disableToggleValue: true`, the slide toggle's value
+    // does not change, and the checked state of the underlying input needs to be changed back.
+    if (this._dragging || this.defaults.disableToggleValue) {
       this._inputElement.nativeElement.checked = this.checked;
       return;
     }
@@ -316,8 +341,11 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
       const newCheckedValue = this._dragPercentage > 50;
 
       if (newCheckedValue !== this.checked) {
-        this.checked = newCheckedValue;
-        this._emitChangeEvent();
+        this.dragChange.emit();
+        if (!this.defaults.disableDragValue) {
+          this.checked = newCheckedValue;
+          this._emitChangeEvent();
+        }
       }
 
       // The drag should be stopped outside of the current event handler, otherwise the
