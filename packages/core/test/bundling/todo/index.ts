@@ -11,7 +11,7 @@ import 'reflect-metadata';
 import {CommonModule, NgForOf, NgIf} from '@angular/common';
 import {Component, Injectable, IterableDiffers, NgModule, defineInjector, ɵNgOnChangesFeature as NgOnChangesFeature, ɵdefineDirective as defineDirective, ɵdirectiveInject as directiveInject, ɵinjectTemplateRef as injectTemplateRef, ɵinjectViewContainerRef as injectViewContainerRef, ɵrenderComponent as renderComponent} from '@angular/core';
 
-export class Todo {
+class Todo {
   editing: boolean;
 
   // TODO(issue/24571): remove '!'.
@@ -26,7 +26,7 @@ export class Todo {
 }
 
 @Injectable({providedIn: 'root'})
-export class TodoStore {
+class TodoStore {
   todos: Array<Todo> = [
     new Todo('Demonstrate Components'),
     new Todo('Demonstrate Structural Directives', true),
@@ -109,7 +109,7 @@ export class TodoStore {
   // TODO(misko): switch over to OnPush
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ToDoAppComponent {
+class ToDoAppComponent {
   newTodoText = '';
 
   constructor(public todoStore: TodoStore) {}
@@ -149,7 +149,7 @@ export class ToDoAppComponent {
 }
 
 @NgModule({declarations: [ToDoAppComponent], imports: [CommonModule]})
-export class ToDoAppModule {
+class ToDoAppModule {
 }
 
 // TODO(misko): create cleaner way to publish component into global location for tests.
