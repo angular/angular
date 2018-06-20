@@ -58,7 +58,7 @@ export class AttrAst implements TemplateAst {
   visit(visitor: TemplateAstVisitor, context: any): any { return visitor.visitAttr(this, context); }
 }
 
-export enum PropertyBindingType {
+export const enum PropertyBindingType {
   // A normal binding to a property (e.g. `[property]="expression"`).
   Property,
   // A binding to an element attribute (e.g. `[attr.name]="expression"`).
