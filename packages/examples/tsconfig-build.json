@@ -11,7 +11,7 @@
       "rxjs/*": ["../../node_modules/rxjs/*"]
     },
     "outDir": "../../dist/examples",
-    "types": ["jasmine", "node", "angularjs", "systemjs"]
+    "types": ["jasmine", "node", "angular", "systemjs"]
   },
 
   "include": [
