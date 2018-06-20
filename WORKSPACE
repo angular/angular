@@ -59,9 +59,9 @@ http_archive(
 # ts_library rules in the devkit repository.
 http_archive(
     name = "angular_devkit",
-    url = "https://github.com/angular/devkit/archive/v0.3.1.zip",
-    strip_prefix = "devkit-0.3.1",
-    sha256 = "31d4b597fe9336650acf13df053c1c84dcbe9c29c6a833bcac3819cd3fd8cad3",
+    url = "https://github.com/angular/angular-cli/archive/v6.1.0-rc.0.zip",
+    strip_prefix = "angular-cli-6.1.0-rc.0",
+    sha256 = "8cf320ea58c321e103f39087376feea502f20eaf79c61a4fdb05c7286c8684fd",
 )
 
 http_archive(
