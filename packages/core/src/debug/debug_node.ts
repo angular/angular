@@ -8,6 +8,7 @@
 
 import {Injector} from '../di';
 import {DebugContext} from '../view/index';
+import {DebugElementInterface} from './interfaces';
 
 export class EventListener {
   constructor(public name: string, public callback: Function) {}
@@ -19,11 +20,11 @@ export class EventListener {
 export class DebugNode {
   nativeNode: any;
   listeners: EventListener[];
-  parent: DebugElement|null;
+  parent: DebugElementInterface|null;
 
   constructor(nativeNode: any, parent: DebugNode|null, private _debugContext: DebugContext) {
     this.nativeNode = nativeNode;
-    if (parent && parent instanceof DebugElement) {
+    if (parent && isDebugElement(parent)) {
       parent.addChild(this);
     } else {
       this.parent = null;
@@ -42,131 +43,15 @@ export class DebugNode {
   get providerTokens(): any[] { return this._debugContext.providerTokens; }
 }
 
-/**
- * @experimental All debugging apis are currently experimental.
- */
-export class DebugElement extends DebugNode {
-  name: string;
-  properties: {[key: string]: any};
-  attributes: {[key: string]: string | null};
-  classes: {[key: string]: boolean};
-  styles: {[key: string]: string | null};
-  childNodes: DebugNode[];
-  nativeElement: any;
 
-  constructor(nativeNode: any, parent: any, _debugContext: DebugContext) {
-    super(nativeNode, parent, _debugContext);
-    this.properties = {};
-    this.attributes = {};
-    this.classes = {};
-    this.styles = {};
-    this.childNodes = [];
-    this.nativeElement = nativeNode;
-  }
-
-  addChild(child: DebugNode) {
-    if (child) {
-      this.childNodes.push(child);
-      child.parent = this;
-    }
-  }
-
-  removeChild(child: DebugNode) {
-    const childIndex = this.childNodes.indexOf(child);
-    if (childIndex !== -1) {
-      child.parent = null;
-      this.childNodes.splice(childIndex, 1);
-    }
-  }
-
-  insertChildrenAfter(child: DebugNode, newChildren: DebugNode[]) {
-    const siblingIndex = this.childNodes.indexOf(child);
-    if (siblingIndex !== -1) {
-      this.childNodes.splice(siblingIndex + 1, 0, ...newChildren);
-      newChildren.forEach(c => {
-        if (c.parent) {
-          c.parent.removeChild(c);
-        }
-        c.parent = this;
-      });
-    }
-  }
-
-  insertBefore(refChild: DebugNode, newChild: DebugNode): void {
-    const refIndex = this.childNodes.indexOf(refChild);
-    if (refIndex === -1) {
-      this.addChild(newChild);
-    } else {
-      if (newChild.parent) {
-        newChild.parent.removeChild(newChild);
-      }
-      newChild.parent = this;
-      this.childNodes.splice(refIndex, 0, newChild);
-    }
-  }
-
-  query(predicate: Predicate<DebugElement>): DebugElement {
-    const results = this.queryAll(predicate);
-    return results[0] || null;
-  }
-
-  queryAll(predicate: Predicate<DebugElement>): DebugElement[] {
-    const matches: DebugElement[] = [];
-    _queryElementChildren(this, predicate, matches);
-    return matches;
-  }
-
-  queryAllNodes(predicate: Predicate<DebugNode>): DebugNode[] {
-    const matches: DebugNode[] = [];
-    _queryNodeChildren(this, predicate, matches);
-    return matches;
-  }
-
-  get children(): DebugElement[] {
-    return this.childNodes.filter((node) => node instanceof DebugElement) as DebugElement[];
-  }
-
-  triggerEventHandler(eventName: string, eventObj: any) {
-    this.listeners.forEach((listener) => {
-      if (listener.name == eventName) {
-        listener.callback(eventObj);
-      }
-    });
-  }
-}
 
 /**
  * @experimental
  */
-export function asNativeElements(debugEls: DebugElement[]): any {
+export function asNativeElements(debugEls: DebugElementInterface[]): any {
   return debugEls.map((el) => el.nativeElement);
 }
 
-function _queryElementChildren(
-    element: DebugElement, predicate: Predicate<DebugElement>, matches: DebugElement[]) {
-  element.childNodes.forEach(node => {
-    if (node instanceof DebugElement) {
-      if (predicate(node)) {
-        matches.push(node);
-      }
-      _queryElementChildren(node, predicate, matches);
-    }
-  });
-}
-
-function _queryNodeChildren(
-    parentNode: DebugNode, predicate: Predicate<DebugNode>, matches: DebugNode[]) {
-  if (parentNode instanceof DebugElement) {
-    parentNode.childNodes.forEach(node => {
-      if (predicate(node)) {
-        matches.push(node);
-      }
-      if (node instanceof DebugElement) {
-        _queryNodeChildren(node, predicate, matches);
-      }
-    });
-  }
-}
 
 // Need to keep the nodes in a global Map so that multiple angular apps are supported.
 const _nativeNodeToDebugNode = new Map<any, DebugNode>();
@@ -197,3 +82,9 @@ export function removeDebugNodeFromIndex(node: DebugNode) {
  * @experimental All debugging apis are currently experimental.
  */
 export interface Predicate<T> { (value: T): boolean; }
+
+export {DebugElement} from './debug_element';
+
+function isDebugElement(node: any): node is DebugElementInterface {
+  return node.childNodes !== undefined;
+}

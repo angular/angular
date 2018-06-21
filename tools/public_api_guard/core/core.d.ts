@@ -50,7 +50,7 @@ export declare class ApplicationRef {
 }
 
 /** @experimental */
-export declare function asNativeElements(debugEls: DebugElement[]): any;
+export declare function asNativeElements(debugEls: DebugElementInterface[]): any;
 
 /** @experimental */
 export declare function assertPlatform(requiredToken: any): PlatformRef;
@@ -185,11 +185,11 @@ export declare function createPlatformFactory(parentPlatformFactory: ((extraProv
 export declare const CUSTOM_ELEMENTS_SCHEMA: SchemaMetadata;
 
 /** @experimental */
-export declare class DebugElement extends DebugNode {
+export declare class DebugElement extends DebugNode implements DebugElementInterface {
     attributes: {
         [key: string]: string | null;
     };
-    childNodes: DebugNode[];
+    childNodes: DebuggableNode[];
     readonly children: DebugElement[];
     classes: {
         [key: string]: boolean;
@@ -220,7 +220,7 @@ export declare class DebugNode {
     readonly injector: Injector;
     listeners: EventListener[];
     nativeNode: any;
-    parent: DebugElement | null;
+    parent: DebugElementInterface | null;
     readonly providerTokens: any[];
     readonly references: {
         [key: string]: any;
