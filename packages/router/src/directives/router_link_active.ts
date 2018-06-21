@@ -98,7 +98,6 @@ export class RouterLinkActive implements OnChanges,
     });
   }
 
-
   ngAfterContentInit(): void {
     this.links.changes.subscribe(_ => this.update());
     this.linksWithHrefs.changes.subscribe(_ => this.update());
@@ -132,8 +131,8 @@ export class RouterLinkActive implements OnChanges,
   }
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
-    return (link: RouterLink | RouterLinkWithHref) =>
-               router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
+    return (link: RouterLink | RouterLinkWithHref) => link.isReachable &&
+        router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
   }
 
   private hasActiveLinks(): boolean {

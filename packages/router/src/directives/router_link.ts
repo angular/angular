@@ -100,6 +100,7 @@ export class RouterLink {
   @Input() replaceUrl: boolean;
   private commands: any[] = [];
   private preserve: boolean;
+  private reachable: boolean;
 
   constructor(
       private router: Router, private route: ActivatedRoute,
@@ -111,9 +112,11 @@ export class RouterLink {
 
   @Input()
   set routerLink(commands: any[]|string) {
-    if (commands != null) {
+    if (commands !== null && commands !== undefined && commands !== []) {
+      this.reachable = true;
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
+      this.reachable = false;
       this.commands = [];
     }
   }
@@ -149,6 +152,8 @@ export class RouterLink {
       preserveFragment: attrBoolValue(this.preserveFragment),
     });
   }
+
+  get isReachable(): boolean { return this.reachable; }
 }
 
 /**
@@ -174,7 +179,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   private commands: any[] = [];
   private subscription: Subscription;
   private preserve: boolean;
-
+  private reachable: boolean = true;
   // the url displayed on the anchor element.
   @HostBinding() href: string;
 
@@ -190,9 +195,11 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
   @Input()
   set routerLink(commands: any[]|string) {
-    if (commands != null) {
+    if (commands !== null && commands !== undefined && commands !== []) {
+      this.reachable = true;
       this.commands = Array.isArray(commands) ? commands : [commands];
     } else {
+      this.reachable = false;
       this.commands = [];
     }
   }
@@ -240,6 +247,8 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       preserveFragment: attrBoolValue(this.preserveFragment),
     });
   }
+
+  get isReachable(): boolean { return this.reachable; }
 }
 
 function attrBoolValue(s: any): boolean {
