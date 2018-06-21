@@ -8,8 +8,9 @@
 
 import * as ts from 'typescript';
 
+import {Parameter} from '../../host';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
-import {Parameter, reflectConstructorParameters} from '../src/reflector';
+import {TypeScriptReflectionHost} from '../src/reflector';
 
 describe('reflector', () => {
   describe('ctor params', () => {
@@ -26,9 +27,10 @@ describe('reflector', () => {
       }]);
       const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
       const checker = program.getTypeChecker();
-      const args = reflectConstructorParameters(clazz, checker) !;
+      const host = new TypeScriptReflectionHost(checker);
+      const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(1);
-      expectArgument(args[0], 'bar', 'Bar');
+      expectParameter(args[0], 'bar', 'Bar');
     });
 
     it('should reflect a decorated argument', () => {
@@ -54,9 +56,10 @@ describe('reflector', () => {
       ]);
       const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
       const checker = program.getTypeChecker();
-      const args = reflectConstructorParameters(clazz, checker) !;
+      const host = new TypeScriptReflectionHost(checker);
+      const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(1);
-      expectArgument(args[0], 'bar', 'Bar', 'dec', './dec');
+      expectParameter(args[0], 'bar', 'Bar', 'dec', './dec');
     });
 
     it('should reflect a decorated argument with a call', () => {
@@ -82,9 +85,10 @@ describe('reflector', () => {
       ]);
       const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
       const checker = program.getTypeChecker();
-      const args = reflectConstructorParameters(clazz, checker) !;
+      const host = new TypeScriptReflectionHost(checker);
+      const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(1);
-      expectArgument(args[0], 'bar', 'Bar', 'dec', './dec');
+      expectParameter(args[0], 'bar', 'Bar', 'dec', './dec');
     });
 
     it('should reflect a decorated argument with an indirection', () => {
@@ -109,26 +113,31 @@ describe('reflector', () => {
       ]);
       const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
       const checker = program.getTypeChecker();
-      const args = reflectConstructorParameters(clazz, checker) !;
+      const host = new TypeScriptReflectionHost(checker);
+      const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(2);
-      expectArgument(args[0], 'bar', 'Bar');
-      expectArgument(args[1], 'otherBar', 'star.Bar');
+      expectParameter(args[0], 'bar', 'Bar');
+      expectParameter(args[1], 'otherBar', 'star.Bar');
     });
   });
 });
 
-function expectArgument(
-    arg: Parameter, name: string, type?: string, decorator?: string, decoratorFrom?: string): void {
-  expect(argExpressionToString(arg.name)).toEqual(name);
+function expectParameter(
+    param: Parameter, name: string, type?: string, decorator?: string,
+    decoratorFrom?: string): void {
+  expect(param.name !).toEqual(name);
   if (type === undefined) {
-    expect(arg.typeValueExpr).toBeNull();
+    expect(param.type).toBeNull();
   } else {
-    expect(arg.typeValueExpr).not.toBeNull();
-    expect(argExpressionToString(arg.typeValueExpr !)).toEqual(type);
+    expect(param.type).not.toBeNull();
+    expect(argExpressionToString(param.type !)).toEqual(type);
   }
   if (decorator !== undefined) {
-    expect(arg.decorators.length).toBeGreaterThan(0);
-    expect(arg.decorators.some(dec => dec.name === decorator && dec.from === decoratorFrom))
+    expect(param.decorators).not.toBeNull();
+    expect(param.decorators !.length).toBeGreaterThan(0);
+    expect(param.decorators !.some(
+               dec => dec.name === decorator && dec.import !== null &&
+                   dec.import.from === decoratorFrom))
         .toBe(true);
   }
 }

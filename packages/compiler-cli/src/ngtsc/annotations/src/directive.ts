@@ -9,25 +9,27 @@
 import {ConstantPool, R3DirectiveMetadata, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator, staticallyResolve} from '../../metadata';
-import {DecoratedNode, getDecoratedClassElements, reflectNonStaticField, reflectObjectLiteral} from '../../metadata/src/reflector';
+import {ClassMember, ClassMemberKind, Decorator, Import, ReflectionHost} from '../../host';
+import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {filterToMembersWithDecorator} from '../../metadata/src/reflector';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies} from './util';
+import {getConstructorDependencies, isAngularCore} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
 export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMetadata> {
-  constructor(private checker: ts.TypeChecker, private scopeRegistry: SelectorScopeRegistry) {}
+  constructor(
+      private checker: ts.TypeChecker, private reflector: ReflectionHost,
+      private scopeRegistry: SelectorScopeRegistry) {}
 
   detect(decorators: Decorator[]): Decorator|undefined {
-    return decorators.find(
-        decorator => decorator.name === 'Directive' && decorator.from === '@angular/core');
+    return decorators.find(decorator => decorator.name === 'Directive' && isAngularCore(decorator));
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3DirectiveMetadata> {
-    const analysis = extractDirectiveMetadata(node, decorator, this.checker);
+    const analysis = extractDirectiveMetadata(node, decorator, this.checker, this.reflector);
 
     // If the directive has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this directive appears in an `@NgModule` scope, its selector can be determined.
@@ -54,8 +56,11 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
  * Helper function to extract metadata from a `Directive` or `Component`.
  */
 export function extractDirectiveMetadata(
-    clazz: ts.ClassDeclaration, decorator: Decorator, checker: ts.TypeChecker): R3DirectiveMetadata|
-    undefined {
+    clazz: ts.ClassDeclaration, decorator: Decorator, checker: ts.TypeChecker,
+    reflector: ReflectionHost): R3DirectiveMetadata|undefined {
+  if (decorator.args === null || decorator.args.length !== 1) {
+    throw new Error(`Incorrect number of arguments to @${decorator.name} decorator`);
+  }
   const meta = decorator.args[0];
   if (!ts.isObjectLiteralExpression(meta)) {
     throw new Error(`Decorator argument must be literal.`);
@@ -67,20 +72,24 @@ export function extractDirectiveMetadata(
     return undefined;
   }
 
+  const members = reflector.getMembersOfClass(clazz);
+
   // Precompute a list of ts.ClassElements that have decorators. This includes things like @Input,
   // @Output, @HostBinding, etc.
-  const decoratedElements = getDecoratedClassElements(clazz, checker);
+  const decoratedElements =
+      members.filter(member => !member.isStatic && member.decorators !== null);
 
-  // Construct the map of inputs both from the @Directive/@Component decorator, and the decorated
+  // Construct the map of inputs both from the @Directive/@Component
+  // decorator, and the decorated
   // fields.
   const inputsFromMeta = parseFieldToPropertyMapping(directive, 'inputs', checker);
   const inputsFromFields = parseDecoratedFields(
-      findDecoratedFields(decoratedElements, '@angular/core', 'Input'), checker);
+      filterToMembersWithDecorator(decoratedElements, 'Input', '@angular/core'), checker);
 
   // And outputs.
   const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', checker);
   const outputsFromFields = parseDecoratedFields(
-      findDecoratedFields(decoratedElements, '@angular/core', 'Output'), checker);
+      filterToMembersWithDecorator(decoratedElements, '@angular/core', 'Output'), checker);
 
   // Parse the selector.
   let selector = '';
@@ -93,11 +102,13 @@ export function extractDirectiveMetadata(
   }
 
   // Determine if `ngOnChanges` is a lifecycle hook defined on the component.
-  const usesOnChanges = reflectNonStaticField(clazz, 'ngOnChanges') !== null;
+  const usesOnChanges = members.find(
+                            member => member.isStatic && member.kind === ClassMemberKind.Method &&
+                                member.name === 'ngOnChanges') !== undefined;
 
   return {
     name: clazz.name !.text,
-    deps: getConstructorDependencies(clazz, checker),
+    deps: getConstructorDependencies(clazz, reflector),
     host: {
       attributes: {},
       listeners: {},
@@ -121,35 +132,6 @@ function assertIsStringArray(value: any[]): value is string[] {
     }
   }
   return true;
-}
-
-type DecoratedProperty = DecoratedNode<ts.PropertyDeclaration|ts.AccessorDeclaration>;
-
-/**
- * Find all fields in the array of `DecoratedNode`s that have a decorator of the given type.
- */
-function findDecoratedFields(
-    elements: DecoratedNode<ts.ClassElement>[], decoratorModule: string,
-    decoratorName: string): DecoratedProperty[] {
-  return elements
-      .map(entry => {
-        const element = entry.element;
-        // Only consider properties and accessors. Filter out everything else.
-        if (!ts.isPropertyDeclaration(element) && !ts.isAccessor(element)) {
-          return null;
-        }
-
-        // Extract the array of matching decorators (there could be more than one).
-        const decorators = entry.decorators.filter(
-            decorator => decorator.name === decoratorName && decorator.from === decoratorModule);
-        if (decorators.length === 0) {
-          // No matching decorators, don't include this element.
-          return null;
-        }
-        return {element, decorators};
-      })
-      // Filter out nulls.
-      .filter(entry => entry !== null) as DecoratedProperty[];
 }
 
 /**
@@ -185,14 +167,15 @@ function parseFieldToPropertyMapping(
  * object.
  */
 function parseDecoratedFields(
-    fields: DecoratedProperty[], checker: ts.TypeChecker): {[field: string]: string} {
+    fields: {member: ClassMember, decorators: Decorator[]}[],
+    checker: ts.TypeChecker): {[field: string]: string} {
   return fields.reduce(
       (results, field) => {
-        const fieldName = (field.element.name as ts.Identifier).text;
+        const fieldName = field.member.name;
         field.decorators.forEach(decorator => {
           // The decorator either doesn't have an argument (@Input()) in which case the property
           // name is used, or it has one argument (@Output('named')).
-          if (decorator.args.length === 0) {
+          if (decorator.args == null || decorator.args.length === 0) {
             results[fieldName] = fieldName;
           } else if (decorator.args.length === 1) {
             const property = staticallyResolve(decorator.args[0], checker);

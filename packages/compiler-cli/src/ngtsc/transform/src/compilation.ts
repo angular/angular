@@ -9,7 +9,8 @@
 import {Expression, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator, reflectDecorator} from '../../metadata';
+import {Decorator, ReflectionHost} from '../../host';
+import {reflectNameOfDeclaration} from '../../metadata/src/reflector';
 
 import {AnalysisOutput, CompileResult, DecoratorHandler} from './api';
 import {DtsFileTransformer} from './declaration';
@@ -24,7 +25,7 @@ import {ImportManager, translateType} from './translator';
 interface EmitFieldOperation<T> {
   adapter: DecoratorHandler<T>;
   analysis: AnalysisOutput<T>;
-  decorator: ts.Decorator;
+  decorator: Decorator;
 }
 
 /**
@@ -38,59 +39,63 @@ export class IvyCompilation {
    * Tracks classes which have been analyzed and found to have an Ivy decorator, and the
    * information recorded about them for later compilation.
    */
-  private analysis = new Map<ts.ClassDeclaration, EmitFieldOperation<any>>();
+  private analysis = new Map<ts.Declaration, EmitFieldOperation<any>>();
 
   /**
    * Tracks the `DtsFileTransformer`s for each TS file that needs .d.ts transformations.
    */
   private dtsMap = new Map<string, DtsFileTransformer>();
 
-  constructor(private handlers: DecoratorHandler<any>[], private checker: ts.TypeChecker) {}
+  constructor(
+      private handlers: DecoratorHandler<any>[], private checker: ts.TypeChecker,
+      private reflector: ReflectionHost) {}
 
   /**
    * Analyze a source file and produce diagnostics for it (if any).
    */
   analyze(sf: ts.SourceFile): ts.Diagnostic[] {
     const diagnostics: ts.Diagnostic[] = [];
-    const visit = (node: ts.Node) => {
-      // Process nodes recursively, and look for class declarations with decorators.
-      if (ts.isClassDeclaration(node) && node.decorators !== undefined) {
-        // The first step is to reflect the decorators, which will identify decorators
-        // that are imported from another module.
-        const decorators =
-            node.decorators.map(decorator => reflectDecorator(decorator, this.checker))
-                .filter(decorator => decorator !== null) as Decorator[];
 
-        // Look through the DecoratorHandlers to see if any are relevant.
-        this.handlers.forEach(adapter => {
-          // An adapter is relevant if it matches one of the decorators on the class.
-          const decorator = adapter.detect(decorators);
-          if (decorator === undefined) {
-            return;
-          }
-
-          // Check for multiple decorators on the same node. Technically speaking this
-          // could be supported, but right now it's an error.
-          if (this.analysis.has(node)) {
-            throw new Error('TODO.Diagnostic: Class has multiple Angular decorators.');
-          }
-
-          // Run analysis on the decorator. This will produce either diagnostics, an
-          // analysis result, or both.
-          const analysis = adapter.analyze(node, decorator);
-          if (analysis.diagnostics !== undefined) {
-            diagnostics.push(...analysis.diagnostics);
-          }
-          if (analysis.analysis !== undefined) {
-            this.analysis.set(node, {
-              adapter,
-              analysis: analysis.analysis,
-              decorator: decorator.node,
-            });
-          }
-        });
+    const analyzeClass = (node: ts.Declaration): void => {
+      // The first step is to reflect the decorators.
+      const decorators = this.reflector.getDecoratorsOfDeclaration(node);
+      if (decorators === null) {
+        return;
       }
+      // Look through the DecoratorHandlers to see if any are relevant.
+      this.handlers.forEach(adapter => {
+        // An adapter is relevant if it matches one of the decorators on the class.
+        const decorator = adapter.detect(decorators);
+        if (decorator === undefined) {
+          return;
+        }
 
+        // Check for multiple decorators on the same node. Technically speaking this
+        // could be supported, but right now it's an error.
+        if (this.analysis.has(node)) {
+          throw new Error('TODO.Diagnostic: Class has multiple Angular decorators.');
+        }
+
+        // Run analysis on the decorator. This will produce either diagnostics, an
+        // analysis result, or both.
+        const analysis = adapter.analyze(node, decorator);
+        if (analysis.diagnostics !== undefined) {
+          diagnostics.push(...analysis.diagnostics);
+        }
+        if (analysis.analysis !== undefined) {
+          this.analysis.set(node, {
+            adapter,
+            analysis: analysis.analysis, decorator,
+          });
+        }
+      });
+    };
+
+    const visit = (node: ts.Node): void => {
+      // Process nodes recursively, and look for class declarations with decorators.
+      if (ts.isClassDeclaration(node)) {
+        analyzeClass(node);
+      }
       ts.forEachChild(node, visit);
     };
 
@@ -102,9 +107,9 @@ export class IvyCompilation {
    * Perform a compilation operation on the given class declaration and return instructions to an
    * AST transformer if any are available.
    */
-  compileIvyFieldFor(node: ts.ClassDeclaration): CompileResult|undefined {
+  compileIvyFieldFor(node: ts.Declaration): CompileResult|undefined {
     // Look to see whether the original node was analyzed. If not, there's nothing to do.
-    const original = ts.getOriginalNode(node) as ts.ClassDeclaration;
+    const original = ts.getOriginalNode(node) as ts.Declaration;
     if (!this.analysis.has(original)) {
       return undefined;
     }
@@ -117,7 +122,7 @@ export class IvyCompilation {
     // which will allow the .d.ts to be transformed later.
     const fileName = node.getSourceFile().fileName;
     const dtsTransformer = this.getDtsTransformer(fileName);
-    dtsTransformer.recordStaticField(node.name !.text, res);
+    dtsTransformer.recordStaticField(reflectNameOfDeclaration(node) !, res);
 
     // Return the instruction to the transformer so the field will be added.
     return res;
@@ -126,8 +131,8 @@ export class IvyCompilation {
   /**
    * Lookup the `ts.Decorator` which triggered transformation of a particular class declaration.
    */
-  ivyDecoratorFor(node: ts.ClassDeclaration): ts.Decorator|undefined {
-    const original = ts.getOriginalNode(node) as ts.ClassDeclaration;
+  ivyDecoratorFor(node: ts.Declaration): Decorator|undefined {
+    const original = ts.getOriginalNode(node) as ts.Declaration;
     if (!this.analysis.has(original)) {
       return undefined;
     }
