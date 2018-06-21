@@ -195,7 +195,7 @@
     "name": "refreshChildComponents"
   },
   {
-    "name": "refreshDynamicChildren"
+    "name": "refreshDynamicEmbeddedViews"
   },
   {
     "name": "refreshView"
