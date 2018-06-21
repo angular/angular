@@ -60,7 +60,7 @@ export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNo
  * @param node The node whose next node in the LNode tree must be found.
  * @return LNode|null The next sibling in the LNode tree.
  */
-export function getNextLNodeWithProjection(node: LNode): LNode|null {
+function getNextLNodeWithProjection(node: LNode): LNode|null {
   const pNextOrParent = node.pNextOrParent;
 
   if (pNextOrParent) {
@@ -316,7 +316,7 @@ export function insertView(
   // If the container's renderParent is null, we know that it is a root node of its own parent view
   // and we should wait until that parent processes its nodes (otherwise, we will insert this view's
   // nodes twice - once now and once when its parent inserts its views).
-  if (container.data[RENDER_PARENT] !== null && !container.detached) {
+  if (container.data[RENDER_PARENT] !== null && !container.tNode.detached) {
     // Find the node to insert in front of
     const beforeNode =
         index + 1 < views.length ? (getChildLNode(views[index + 1]) !).native : container.native;
@@ -346,7 +346,7 @@ export function detachView(container: LContainerNode, removeIndex: number): LVie
     views[removeIndex - 1].data[NEXT] = viewNode.data[NEXT] as LViewData;
   }
   views.splice(removeIndex, 1);
-  if (!container.detached) {
+  if (!container.tNode.detached) {
     addRemoveViewFromContainer(container, viewNode, false);
   }
   // Notify query that view has been removed

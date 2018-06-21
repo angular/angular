@@ -70,9 +70,6 @@ export {
   text as T,
   textBinding as t,
 
-  i18nMapping as iM,
-  i18nApply as iA,
-
   reserveSlots as rS,
 
   embeddedViewStart as V,
@@ -83,6 +80,8 @@ export {
 } from './instructions';
 
 export {
+  i18nApply as iA,
+  i18nMapping as iM,
   i18nInterpolation as iI,
   i18nInterpolationV as iIV,
   i18nExpMapping as iEM,
@@ -107,7 +106,6 @@ export {
 
 export {
   QueryList,
-
   query as Q,
   queryRefresh as qR,
 } from './query';
@@ -145,5 +143,5 @@ export {
   getHostElement,
   getRenderedText,
   renderComponent,
-  whenRendered
+  whenRendered,
 };

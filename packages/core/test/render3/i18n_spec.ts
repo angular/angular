@@ -9,8 +9,8 @@
 import {NgForOfContext} from '@angular/common';
 import {Component} from '../../src/core';
 import {defineComponent} from '../../src/render3/definition';
-import {i18nExpMapping, i18nInterpolation} from '../../src/render3/i18n';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, i18nApply, i18nMapping, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {i18nApply, i18nExpMapping, i18nInterpolation, i18nInterpolationV, i18nMapping} from '../../src/render3/i18n';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
@@ -690,9 +690,8 @@ describe('Runtime i18n', () => {
           .toEqual(
               '<ul><li><span>valeur: 1!</span><span>valeur: 2!</span></li><li><span>valeur: 1!</span><span>valeur: 2!</span></li></ul>');
 
-      // TODO(ocombe): there's a bug with embedded containers, uncomment once it has been fixed
       // Remove the last item
-      /*fixture.component.items.length = 1;
+      fixture.component.items.length = 1;
       fixture.update();
       expect(fixture.html).toEqual('<ul><li><span>valeur: 1!</span></li></ul>');
 
@@ -705,11 +704,10 @@ describe('Runtime i18n', () => {
       fixture.component.items.push('two');
       fixture.update();
       expect(fixture.html)
-        .toEqual(
-          '<ul><li><span>valeur: one!</span><span>valeur: two!</span></li></ul>');*/
+          .toEqual(
+              '<ul><li><span>valeur: one!</span><span>valeur: two!</span></li><li><span>valeur: one!</span><span>valeur: two!</span></li></ul>');
     });
 
-    // TODO(ocombe): make this work once PR #24346 has landed
     it('should be able to move template directives around', () => {
       const MSG_DIV_SECTION_1 = `{$p_0}début{$c_p}{$p_1}valeur: {$exp_1}{$c_p}fin`;
       // The indexes are based on each template function
@@ -1151,5 +1149,42 @@ describe('Runtime i18n', () => {
       const fixture = new ComponentFixture(Parent);
       expect(fixture.html).toEqual('<child><span title="keepMe">Contenu</span></child>');
     });
+  });
+
+  it('i18nInterpolation should return the same value as i18nInterpolationV', () => {
+    const MSG_DIV_SECTION_1 = `start {$exp_2} middle {$exp_1} end`;
+    const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {exp_1: 0, exp_2: 1});
+    let interpolation;
+    let interpolationV;
+
+    class MyApp {
+      exp1: any = '1';
+      exp2: any = '2';
+
+      static ngComponentDef = defineComponent({
+        type: MyApp,
+        factory: () => new MyApp(),
+        selectors: [['my-app']],
+        // Initial template:
+        // <div i18n i18n-title title="{{exp1}}{{exp2}}"></div>
+        template: (rf: RenderFlags, ctx: MyApp) => {
+          if (rf & RenderFlags.Create) {
+            elementStart(0, 'div');
+            // Start of translated section 1
+            // End of translated section 1
+            elementEnd();
+          }
+          if (rf & RenderFlags.Update) {
+            interpolation = i18nInterpolation(i18n_1, 2, ctx.exp1, ctx.exp2);
+            interpolationV = i18nInterpolationV(i18n_1, [ctx.exp1, ctx.exp2]);
+            elementProperty(0, 'title', interpolation);
+          }
+        }
+      });
+    }
+
+    const fixture = new ComponentFixture(MyApp);
+    expect(interpolation).toBeDefined();
+    expect(interpolation).toEqual(interpolationV);
   });
 });
