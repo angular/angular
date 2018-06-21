@@ -152,7 +152,7 @@ Install `source-map-explorer`:
 Build your app for production _including the source maps_
 
 <code-example language="none" class="code-shell">
-  ng build --prod --sourcemaps
+  ng build --prod --source-map
 </code-example>
 
 List the generated bundles in the `dist/` folder.
