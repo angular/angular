@@ -234,15 +234,16 @@ export function leaveView(newView: LViewData, creationOnly?: boolean): void {
 
 /**
  * Refreshes the view, executing the following steps in that order:
- * triggers init hooks, refreshes dynamic children, triggers content hooks, sets host bindings,
+ * triggers init hooks, refreshes dynamic embedded views, triggers content hooks, sets host
+ * bindings,
  * refreshes child components.
  * Note: view hooks are triggered later when leaving the view.
- * */
+ */
 function refreshView() {
   if (!checkNoChangesMode) {
     executeInitHooks(viewData, tView, creationMode);
   }
-  refreshDynamicChildren();
+  refreshDynamicEmbeddedViews(viewData);
   if (!checkNoChangesMode) {
     executeHooks(directives !, tView.contentHooks, tView.contentCheckHooks, creationMode);
   }
@@ -1679,8 +1680,12 @@ export function containerRefreshEnd(): void {
   }
 }
 
-function refreshDynamicChildren() {
-  for (let current = getLViewChild(viewData); current !== null; current = current[NEXT]) {
+/**
+ * Goes over dynamic embedded views (ones created through ViewContainerRef APIs) and refreshes them
+ * by executing an associated template function.
+ */
+function refreshDynamicEmbeddedViews(lViewData: LViewData) {
+  for (let current = getLViewChild(lViewData); current !== null; current = current[NEXT]) {
     // Note: current can be an LViewData or an LContainer instance, but here we are only interested
     // in LContainer. We can tell it's an LContainer because its length is less than the LViewData
     // header.
