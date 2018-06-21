@@ -41,7 +41,7 @@ export type I18nInstruction = number | string;
  * value will be concatenated into the final translation.
  */
 export type I18nExpInstruction = number | string;
-/** Mapping of placeholder names to their absolute index in the current view. */
+/** Mapping of placeholder names to their absolute indexes in their templates. */
 export type PlaceholderMap = {
   [name: string]: number
 };
@@ -50,7 +50,7 @@ const i18nTagRegex = /\{\$([^}]+)\}/g;
 /**
  * Takes a translation string, the initial list of placeholders (elements and expressions) and the
  * indexes of their corresponding expression nodes to return a list of instructions for each
- * template.
+ * template function.
  *
  * Because embedded templates have different indexes for each placeholder, each parameter (except
  * the translation) is an array, where each value corresponds to a different template, by order of
