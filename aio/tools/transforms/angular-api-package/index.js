@@ -33,6 +33,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .processor(require('./processors/simplifyMemberAnchors'))
   .processor(require('./processors/computeStability'))
   .processor(require('./processors/removeInjectableConstructors'))
+  .processor(require('./processors/processPackages'))
 
   /**
    * These are the API doc types that will be rendered to actual files.
@@ -40,7 +41,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
    * more Angular specific API types, such as decorators and directives.
    */
   .factory(function API_DOC_TYPES_TO_RENDER(EXPORT_DOC_TYPES) {
-    return EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe', 'module']);
+    return EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe', 'package']);
   })
 
   /**
@@ -58,8 +59,10 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     return API_DOC_TYPES_TO_RENDER.concat(API_CONTAINED_DOC_TYPES);
   })
 
+  .factory(require('./readers/package-content'))
+
   // Where do we get the source files?
-  .config(function(readTypeScriptModules, readFilesProcessor, collectExamples, tsParser) {
+  .config(function(readTypeScriptModules, readFilesProcessor, collectExamples, tsParser, packageContentFileReader) {
 
     // Tell TypeScript how to load modules that start with with `@angular`
     tsParser.options.paths = { '@angular/*': [API_SOURCE_PATH + '/*'] };
@@ -102,12 +105,19 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'upgrade/static/index.ts',
     ];
 
+    readFilesProcessor.fileReaders.push(packageContentFileReader);
+
     // API Examples
     readFilesProcessor.sourceFiles = [
       {
         basePath: API_SOURCE_PATH,
         include: API_SOURCE_PATH + '/examples/**/*',
         fileReader: 'exampleFileReader'
+      },
+      {
+        basePath: API_SOURCE_PATH,
+        include: API_SOURCE_PATH + '/**/PACKAGE.md',
+        fileReader: 'packageContentFileReader'
       }
     ];
     collectExamples.exampleFolders.push('examples');
@@ -123,7 +133,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .config(function(computeStability, splitDescription, addNotYetDocumentedProperty, API_DOC_TYPES_TO_RENDER, API_DOC_TYPES) {
     computeStability.docTypes = API_DOC_TYPES_TO_RENDER;
     // Only split the description on the API docs
-    splitDescription.docTypes = API_DOC_TYPES;
+    splitDescription.docTypes = API_DOC_TYPES.concat(['package-content']);
     addNotYetDocumentedProperty.docTypes = API_DOC_TYPES;
   })
 
@@ -180,7 +190,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     generateApiListDoc.outputFolder = API_SEGMENT;
 
     computePathsProcessor.pathTemplates.push({
-      docTypes: ['module'],
+      docTypes: ['package'],
       getPath: function computeModulePath(doc) {
         doc.moduleFolder = `${API_SEGMENT}/${doc.id.replace(/\/index$/, '')}`;
         return doc.moduleFolder;
