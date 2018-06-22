@@ -14,14 +14,14 @@ describe('angular-api-package: computeApiBreadCrumbs processor', () => {
   });
 
   it('should attach a breadCrumbs property to each of the API_DOC_TYPES_TO_RENDER docs', () => {
-    const API_DOC_TYPES_TO_RENDER = ['class', 'interface', 'module'];
+    const API_DOC_TYPES_TO_RENDER = ['class', 'interface', 'package'];
     const processor = processorFactory(API_DOC_TYPES_TO_RENDER);
 
     const docs = [
       { docType: 'class', name: 'ClassA', path: 'module-1/class-a', moduleDoc: { id: 'moduleOne', path: 'module-1' } },
       { docType: 'interface', name: 'InterfaceB', path: 'module-2/interface-b', moduleDoc: { id: 'moduleTwo', path: 'module-2' } },
       { docType: 'guide', name: 'Guide One', path: 'guide/guide-1' },
-      { docType: 'module', name: 'testing', id: 'http/testing', path: 'http/testing' },
+      { docType: 'package', name: 'testing', id: 'http/testing', path: 'http/testing' },
     ];
     processor.$process(docs);
 

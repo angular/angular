@@ -1,0 +1,140 @@
+const testPackage = require('../../helpers/test-package');
+const processorFactory = require('./processPackages');
+const Dgeni = require('dgeni');
+
+describe('processPackages processor', () => {
+
+  it('should be available on the injector', () => {
+    const dgeni = new Dgeni([testPackage('angular-api-package')]);
+    const injector = dgeni.configureInjector();
+    const processor = injector.get('processPackages');
+    expect(processor.$process).toBeDefined();
+    expect(processor.$runAfter).toEqual(['extractDecoratedClassesProcessor']);
+    expect(processor.$runBefore).toEqual(['computing-ids']);
+  });
+
+  it('should filter out any `package-content` docs from the collection', () => {
+    const docs = [
+      { fileInfo: { filePath: 'some/a' }, docType: 'a', id: 'a' },
+      { fileInfo: { filePath: 'some/x' }, docType: 'package-content', id: 'x' },
+      { fileInfo: { filePath: 'some/b' }, docType: 'b', id: 'b' },
+      { fileInfo: { filePath: 'some/y' }, docType: 'package-content', id: 'y' },
+      { fileInfo: { filePath: 'some/z' }, docType: 'package-content', id: 'z' },
+    ];
+    const processor = processorFactory();
+    const newDocs = processor.$process(docs);
+    expect(newDocs).toEqual([
+      { fileInfo: { filePath: 'some/a' }, docType: 'a', id: 'a' },
+      { fileInfo: { filePath: 'some/b' }, docType: 'b', id: 'b' },
+    ]);
+  });
+
+
+  it('should change `module` docs to `package` docs', () => {
+    const processor = processorFactory();
+    const docs = [
+      { fileInfo: { filePath: 'some/a' }, docType: 'module', id: 'a' },
+      { fileInfo: { filePath: 'some/b' }, docType: 'module', id: 'b' },
+      { docType: 'other', id: 'c' },
+    ];
+    const newDocs = processor.$process(docs);
+    expect(newDocs).toEqual([
+      { fileInfo: { filePath: 'some/a' }, docType: 'package', id: 'a' },
+      { fileInfo: { filePath: 'some/b' }, docType: 'package', id: 'b' },
+      { docType: 'other', id: 'c' },
+    ]);
+  });
+
+  it('should attach the relevant package contents to the package doc', () => {
+    const docs = [
+      {
+        fileInfo: { filePath: 'some/package-1/index' },
+        docType: 'module',
+        id: 'package-1',
+        someProp: 'foo',
+      },
+      {
+        fileInfo: { filePath: 'some/package-1/PACKAGE.md' },
+        docType: 'package-content',
+        id: 'package-1/PACKAGE.md',
+        shortDescription: 'some short description',
+        description: 'some description',
+        see: [ 'a', 'b' ],
+      },
+      {
+        fileInfo: { filePath: 'some/package-2/index' },
+        docType: 'module',
+        id: 'package-2',
+      },
+    ];
+    const processor = processorFactory();
+    const newDocs = processor.$process(docs);
+    expect(newDocs).toEqual([
+      {
+        fileInfo: { filePath: 'some/package-1/PACKAGE.md' },
+        docType: 'package',
+        id: 'package-1',
+        someProp: 'foo',
+        shortDescription: 'some short description',
+        description: 'some description',
+        see: [ 'a', 'b' ],
+      },
+      {
+        fileInfo: { filePath: 'some/package-2/index' },
+        docType: 'package',
+        id: 'package-2'
+      },
+    ]);
+  });
+
+  it('should partition the exports of packages into groups', () => {
+    const docs = [
+      {
+        fileInfo: { filePath: 'some/x' },
+        docType: 'module',
+        id: 'x',
+        exports: [
+          { docType: 'directive', id: 'directive-1' },
+          { docType: 'function', id: 'function-1' },
+          { docType: 'directive', id: 'directive-2' },
+          { docType: 'decorator', id: 'decorator-1' },
+          { docType: 'class', id: 'class-1' },
+          { docType: 'type-alias', id: 'type-alias-1' },
+          { docType: 'class', id: 'class-2' },
+          { docType: 'pipe', id: 'pipe-1' },
+          { docType: 'const', id: 'const-1' },
+          { docType: 'const', id: 'const-2' },
+          { docType: 'enum', id: 'enum-1' },
+          { docType: 'interface', id: 'interface-1' },
+          { docType: 'interface', id: 'interface-2' },
+        ]
+      },
+    ];
+    const processor = processorFactory();
+    const newDocs = processor.$process(docs);
+
+    expect(newDocs[0].decorators).toEqual([
+      { docType: 'decorator', id: 'decorator-1' },
+    ]);
+    expect(newDocs[0].functions).toEqual([
+      { docType: 'function', id: 'function-1' },
+    ]);
+    expect(newDocs[0].structures).toEqual([
+      { docType: 'enum', id: 'enum-1' },
+      { docType: 'interface', id: 'interface-1' },
+      { docType: 'interface', id: 'interface-2' },
+    ]);
+    expect(newDocs[0].directives).toEqual([
+      { docType: 'directive', id: 'directive-1' },
+      { docType: 'directive', id: 'directive-2' },
+    ]);
+    expect(newDocs[0].pipes).toEqual([
+      { docType: 'pipe', id: 'pipe-1' },
+    ]);
+    expect(newDocs[0].types).toEqual([
+      { docType: 'type-alias', id: 'type-alias-1' },
+      { docType: 'const', id: 'const-1' },
+      { docType: 'const', id: 'const-2' },
+    ]);
+  });
+});

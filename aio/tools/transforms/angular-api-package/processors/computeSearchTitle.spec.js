@@ -31,7 +31,7 @@ describe('computeSearchTitle processor', () => {
       { docType: 'pipe', name: 'MyPipe', pipeOptions: { name: 'myPipe' } },
       { docType: 'directive', name: 'MyDirective', directiveOptions: {} },
       { docType: 'decorator', name: 'MyDecorator' },
-      { docType: 'module', name: 'myModule', id: 'some/myModule' },
+      { docType: 'package', name: 'myPackage', id: 'some/myPackage' },
       { docType: 'var', name: 'myVar' },
       { docType: 'let', name: 'myLet' },
       { docType: 'const', name: 'myConst' },
@@ -45,7 +45,7 @@ describe('computeSearchTitle processor', () => {
     expect(docs[4].searchTitle).toBeUndefined();
     expect(docs[5].searchTitle).toBeUndefined();
     expect(docs[6].searchTitle).toBeUndefined();
-    expect(docs[7].searchTitle).toEqual('some/myModule package');
+    expect(docs[7].searchTitle).toEqual('some/myPackage package');
     expect(docs[8].searchTitle).toBeUndefined();
     expect(docs[9].searchTitle).toBeUndefined();
     expect(docs[10].searchTitle).toBeUndefined();
