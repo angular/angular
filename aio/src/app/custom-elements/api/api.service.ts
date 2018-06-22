@@ -19,6 +19,7 @@ export interface ApiItem {
 }
 
 export interface ApiSection {
+  path: string;
   name: string;
   title: string;
   items: ApiItem[];
