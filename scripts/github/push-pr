@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+set -u -e -o pipefail
+
+BASEDIR=$(dirname "$0")
+
+PR_NUMBER=0
+
+GUESS_PR_NUMBER=`git branch | grep '* pr/' | cut -d '/' -f2`
+re='^[0-9]+$'
+if [[ $GUESS_PR_NUMBER =~ $re ]] ; then
+    PR_NUMBER=$GUESS_PR_NUMBER
+    echo Assumping PR \#${PR_NUMBER}
+fi
+
+FORCE=
+while [[ $# -gt 0 ]]
+do
+  key="$1"
+
+  case $key in
+      --force)
+      FORCE=-f
+      shift # past argument
+      ;;
+      *)    # unknown option
+      PR_NUMBER="$1" # save it in an array for later
+      shift # past argument
+      ;;
+  esac
+done
+
+if [ "$PR_NUMBER" -eq 0 ]; then
+  echo "Push the current HEAD into a PR#"
+  echo
+  echo "$0 PR_NUMBER [--force]"
+  echo
+  echo    --force    Continues even if PR status is not green.
+  exit 0
+fi
+
+
+# Fetch the userame:branchname for the PR
+HEAD_LABEL=`curl -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER | node $BASEDIR/utils/json_extract.js head.label`
+IFS=':' read -r -a array <<< "$HEAD_LABEL"
+USER="${array[0]}"
+USER_GIT_URL="git@github.com:$USER/angular.git"
+BRANCH="${array[1]}"
+
+PUSH_CMD="git push $FORCE $USER_GIT_URL HEAD:$BRANCH";
+echo ">>> $PUSH_CMD"
+$PUSH_CMD

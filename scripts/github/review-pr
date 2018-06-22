@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set -u -e -o pipefail
+
+BASEDIR=$(dirname "$0")
+
+if [ $# -eq 0 ]; then
+    echo "Bring github PR onto your local repo for review and edit"
+    echo
+    echo "$0 PR_NUMBER"
+    echo
+    exit 0
+fi
+
+PR_NUMBER="$1"
+
+GHCURL="curl"
+PULL_JSON=`$GHCURL -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER`
+PR_SHA_COUNT=`node $BASEDIR/utils/json_extract.js commits <<< """$PULL_JSON"""`
+
+## reset the state of the current repo to a know state so that following commands don't collide.
+git checkout master --force
+
+## Ensure the branch does not exist. 
+git rev-parse --verify --quiet pr/${PR_NUMBER} && git branch -D pr/${PR_NUMBER}
+
+echo Fetching pull request \#${PR_NUMBER} with ${PR_SHA_COUNT} SHA\(s\) into branch range: pr/${PR_NUMBER}_base..pr/${PR_NUMBER}_top
+git fetch -f \
+    git@github.com:angular/angular.git \
+    pull/${PR_NUMBER}/head:pr/${PR_NUMBER}_top \
+
+git branch -f \
+    pr/${PR_NUMBER}_base pr/${PR_NUMBER}_top~${PR_SHA_COUNT}
+
+echo ======================================================================================
+git log --oneline --color pr/${PR_NUMBER}_base..pr/${PR_NUMBER}_top
+echo ======================================================================================
+
+# Reset the HEAD so that we can see changed files for review
+git co -b pr/${PR_NUMBER} pr/${PR_NUMBER}_top 
+git reset pr/${PR_NUMBER}_base
+
+
