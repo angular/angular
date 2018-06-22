@@ -1,52 +1,55 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-set -u -e -o pipefail
+const shell = require('shelljs');
+shell.config.fatal = true;
+const util = require('./utils/git_util');
 
-BASEDIR=$(dirname "$0")
+if (require.main === module) {
+  main(process.argv.splice(2)).then(
+    (v) => process.exitCode = v ? 0 : 1, 
+    (e) => console.error(process.exitCode = 1, e) 
+  );
+}
 
-PR_NUMBER=0
+async function main(args) {
+  let forceWithLease = '';
+  let prNumber = 0;
+  let printHelp = false;
 
-GUESS_PR_NUMBER=`git branch | grep '* pr/' | cut -d '/' -f2`
-re='^[0-9]+$'
-if [[ $GUESS_PR_NUMBER =~ $re ]] ; then
-    PR_NUMBER=$GUESS_PR_NUMBER
-    echo Assuming PR \#${PR_NUMBER}
-fi
+  args.forEach((arg) => {
+      if (prNumber == 0 && arg > 0) {
+          prNumber = arg;
+      } else if (arg == '--help') {
+          printHelp = true;
+      } else if (arg == '--force-with-lease') {
+          forceWithLease = ' --force-with-lease';
+      } else {
+          shell.echo('Unexpected argument: ', arg);
+      }
+  });
 
-FORCE=
-while [[ $# -gt 0 ]]
-do
-  key="$1"
+  if (!prNumber) {
+    const branch = util.getCurrentBranch();
+    const maybePr = branch.split('/')[1];
+    if (maybePr > 0) {
+      prNumber = maybePr;
+    }
+  }
 
-  case $key in
-      --force)
-      FORCE=-f
-      shift # past argument
-      ;;
-      *)    # unknown option
-      PR_NUMBER="$1" # save it in an array for later
-      shift # past argument
-      ;;
-  esac
-done
+  if (!prNumber || printHelp) {
+    shell.echo(`Push the current HEAD into an existing pull request.`);
+    shell.echo(``);
+    shell.echo(`${process.argv[1]} [PR_NUMBER] [--force-with-lease]`);
+    shell.echo(``);
+    shell.echo(`    --force-with-lease    Continues even \if change can\'t be fast-forwarded.`);
+    shell.echo(`    [PR_NUMBER]           If not present the script guesses the PR from the branch name.`);
+    return 1;
+  }
 
-if [ "$PR_NUMBER" -eq 0 ]; then
-  echo "Push the current HEAD into an existing pull request."
-  echo
-  echo "$0 PR_NUMBER [--force]"
-  echo
-  echo    --force    Continues even if PR status is not green.
-  exit 0
-fi
+  const prInfo = await util.githubPrInfo(prNumber);
+  const prPushCmd = `git push${forceWithLease} ${prInfo.repository.gitUrl} HEAD:${prInfo.branch}`;
+  shell.echo(`>>> ${prPushCmd}`);
+  shell.exec(prPushCmd);
 
-
-# Fetch the userame:branchname for the PR
-HEAD_LABEL=`curl -s https://api.github.com/repos/angular/angular/pulls/$PR_NUMBER | node $BASEDIR/utils/json_extract.js head.label`
-IFS=':' read -r -a array <<< "$HEAD_LABEL"
-USER="${array[0]}"
-USER_GIT_URL="git@github.com:$USER/angular.git"
-BRANCH="${array[1]}"
-
-PUSH_CMD="git push $FORCE $USER_GIT_URL HEAD:$BRANCH";
-echo ">>> $PUSH_CMD"
-$PUSH_CMD
+  return 0;
+ }

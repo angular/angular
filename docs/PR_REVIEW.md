@@ -75,7 +75,7 @@ Example of a local edit.
 echo "# here is a change" >> docs/PR_REVIEW.md
 ```
 
-### 4. Creating a SHA from local Edit
+### 4. Creating a Commit From Local Edits
 
 Since the HEAD has been reset to `pr/24623_base` so that changes show up in `git status` we have to do reverse the reset to only see our local changes.
 To do that reset the `HEAD` to `pr/24623_top`.
