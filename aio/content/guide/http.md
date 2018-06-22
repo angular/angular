@@ -213,20 +213,35 @@ easier and safer to consume:
   title="app/config/config.component.ts (showConfig v.2)" linenums="false">
 </code-example>
 
+<!--
 ### Reading the full response
+-->
+## 전체 서버 응답 확인하기
 
+<!--
 The response body doesn't return all the data you may need. Sometimes servers return special headers or status codes to indicate certain conditions that are important to the application workflow. 
+-->
+응답으로 받은 데이터만으로는 충분하지 않을 수 있습니다. 어떤 경우에는 헤더에 있는 정보나 HTTP 상태 코드를 확인해서 애플리케이션의 동작을 제어해야 하는 경우도 있습니다.
 
+<!--
 Tell `HttpClient` that you want the full response with the `observe` option:
+-->
+이 때 `HttpClient`가 서버에서 가져오는 데이터 전체를 확인하려면 `observe` 옵션을 사용합니다:
 
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="getConfigResponse" linenums="false">
 </code-example>
 
+<!--
 Now `HttpClient.get()` returns an `Observable` of typed `HttpResponse` rather than just the JSON data.
+-->
+그러면 `HttpClient.get()` 메소드는 지정된 타입의 JSON 데이터 대신 `HttpResponse` 타입 객체를 `Observable`로 전달합니다.
 
+<!--
 The component's `showConfigResponse()` method displays the response headers as well as the configuration:
+-->
+그리고 컴포넌트에서 `showConfigResponse()` 메소드를 다음처럼 작성하면 HTTP 통신에서 받은 응답의 헤더를 확인할 수 있습니다:
 
 <code-example 
   path="http/src/app/config/config.component.ts"
@@ -235,13 +250,25 @@ The component's `showConfigResponse()` method displays the response headers as w
   linenums="false">
 </code-example>
 
+<!--
 As you can see, the response object has a `body` property of the correct type.
+-->
+이 때 `HttpResponse` 객체의 `body` 프로퍼티는 이전에 지정했던 타입과 같습니다.
 
+<!--
 ## Error handling
+-->
+## 에러 처리
 
+<!--
 What happens if the request fails on the server, or if a poor network connection prevents it from even reaching the server? `HttpClient` will return an _error_ object instead of a successful response.
+-->
+서버에 문제가 있어서 HTTP 요청이 실패하거나, 네트워크 연결이 끊어져서 서버에 접근할 수 없다면 어떻게 될까요? 이런 오류가 발생하면 `HttpClient`는 정상적인 응답 대신 _에러_ 객체를 반환합니다.
 
+<!--
 You _could_ handle in the component by adding a second callback to the `.subscribe()`:
+-->
+그리고 이 에러 객체는 `.subscribe()` 함수에 지정하는 두 번째 콜백 함수로 처리할 수 있습니다.
 
 <code-example 
   path="http/src/app/config/config.component.ts"
@@ -250,25 +277,51 @@ You _could_ handle in the component by adding a second callback to the `.subscri
   linenums="false">
 </code-example>
 
+<!--
 It's certainly a good idea to give the user some kind of feedback when data access fails.
 But displaying the raw error object returned by `HttpClient` is far from the best way to do it.
+-->
+데이터 통신이 실패하면 사용자에게 어떤 방식으로든 알리는 것이 좋습니다.
+하지만 이 때 `HttpClient`에서 받은 에러 객체를 그대로 노출하는 것이 최선은 아닙니다.
 
 {@a error-details}
+<!--
 ### Getting error details
+-->
+### 에러 분석하기
 
+<!--
 Detecting that an error occurred is one thing.
 Interpreting that error and composing a user-friendly response is a bit more involved.
+-->
+에러가 발생한 것을 확인하는 것만으로는 에러 처리를 했다고 할 수 없습니다.
+이 에러는 사용자가 알아볼 수 있는 형태로 변형되어야 합니다.
 
+<!--
 Two types of errors can occur. The server backend might reject the request, returning an HTTP response with a status code such as 404 or 500. These are error _responses_.
+-->
+에러는 두 가지 이유로 발생할 수 있습니다. 하나는 서버에서 요청을 거부하거나, HTTP 응답 코드를 404나 500으로 보낸 경우입니다. 이런 경우를 _에러 응답(error response)_ 이라고 합니다.
 
+<!--
 Or something could go wrong on the client-side such as a network error that prevents the request from completing successfully or an exception thrown in an RxJS operator. These errors produce JavaScript `ErrorEvent` objects.
+-->
+또 다른 경우는 클라이언트에서 발생하는 네트워크 에러 때문에 요청이 완료되지 못했거나, RxJS 연산자에서 예외가 발생해서 발생하는 에러가 있습니다. 이런 에러는 JavaScript `ErrorEvent` 객체를 생성합니다.
 
+<!--
 The `HttpClient` captures both kinds of errors in its `HttpErrorResponse` and you can inspect that response to figure out what really happened.
+-->
+`HttpClient`는 두 종류의 에러를 모두 `HttpErrorResponse` 타입으로 받을 수 있으며, 이 객체를 확인하면 HTTP 요청이 어떤 이유로 잘못되었는지 확인할 수 있습니다.
 
+<!--
 Error inspection, interpretation, and resolution is something you want to do in the _service_, 
 not in the _component_.  
+-->
+에러를 분석하고 변환한 후에 해결하는 것은 _서비스_ 안에서 해야 합니다. _컴포넌트_ 가 아닙니다.
 
+<!--
 You might first devise an error handler like this one:
+-->
+에러 처리 프로토타입은 다음과 같이 작성할 수 있습니다:
 
 <code-example 
   path="http/src/app/config/config.service.ts"
@@ -276,12 +329,19 @@ You might first devise an error handler like this one:
   title="app/config/config.service.ts (handleError)" linenums="false">
 </code-example>
 
+<!--
 Notice that this handler returns an RxJS [`ErrorObservable`](#rxjs) with a user-friendly error message.
 Consumers of the service expect service methods to return an `Observable` of some kind,
 even a "bad" one.
+-->
+이 함수는 사용자에게 표시할 메시지를 RxJS [`ErrorObservable`](#rxjs) 타입으로 반환합니다.
+그래서 이 서비스에서 에러를 반환하더라도 서비스를 사용하는 쪽에서는 결국 `Observable`을 받을 수 있게 됩니다.
 
+<!--
 Now you take the `Observables` returned by the `HttpClient` methods
 and _pipe them through_ to the error handler.
+-->
+이제 컴포넌트에서 `HttpClient`의 결과를 받을 때 _파이프를 사용하면_ 에러를 처리할 수 있습니다.
 
 <code-example 
   path="http/src/app/config/config.service.ts"
@@ -291,14 +351,25 @@ and _pipe them through_ to the error handler.
 
 ### `retry()`
 
+<!--
 Sometimes the error is transient and will go away automatically if you try again.
 For example, network interruptions are common in mobile scenarios, and trying again
 may produce a successful result.
+-->
+어떤 경우에는 에러를 일시적인 것으로 판단하고 자동으로 재시도해야 하는 경우가 있습니다.
+특히 모바일 디바이스인 경우에는 연결이 잠시 끊어지는 경우가 자주 발생하며, 실패한 요청을 다시 보냈을 때 바로 성공하는 경우도 자주 있습니다.
 
+<!--
 The [RxJS library](#rxjs) offers several _retry_ operators that are worth exploring.
 The simplest is called `retry()` and it automatically re-subscribes to a failed `Observable` a specified number of times. _Re-subscribing_ to the result of an `HttpClient` method call has the effect of reissuing the HTTP request.
+-->
+[RxJS library](#rxjs)에서 이런 경우에 활용할 수 있는 _재시도_ 연산자를 여러가지로 제공합니다.
+그 중 가장 간단한 것은 `retry()` 연산자이며, 이 연산자는 `Observable`이 실패했을 때 지정된 횟수만큼 자동으로 다시 구독합니다. 그리고 이 구독이 다시 시작되면 HTTP 요청이 다시 실행됩니다.
 
+<!--
 _Pipe_ it onto the `HttpClient` method result just before the error handler.
+-->
+에러 처리 파이프는 다음과 같이 작성합니다:
 
 <code-example 
   path="http/src/app/config/config.service.ts"

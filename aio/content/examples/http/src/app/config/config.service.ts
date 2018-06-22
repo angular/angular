@@ -34,8 +34,8 @@ export class ConfigService {
   // #enddocregion getConfig_1, getConfig_2, getConfig_3
     return this.http.get<Config>(this.configUrl)
       .pipe(
-        retry(3), // retry a failed request up to 3 times
-        catchError(this.handleError) // then handle the error
+        retry(3), // HTTP 요청이 실패하면 3번 더 시도합니다.
+        catchError(this.handleError) // 재시도한 후에도 발생한 에러를 처리합니다.
       );
   }
   // #enddocregion getConfig
@@ -48,7 +48,7 @@ export class ConfigService {
 
   getConfig_2() {
     // #docregion getConfig_2
-    // now returns an Observable of Config
+    // 이제 HTTP 요청 결과는 Config 타입의 Observable로 반환합니다.
     return this.http.get<Config>(this.configUrl);
   }
   // #enddocregion getConfig_2
@@ -72,16 +72,16 @@ export class ConfigService {
   // #docregion handleError
   private handleError(error: HttpErrorResponse) {
     if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
+      // 클라이언트나 네트워크 문제로 발생한 에러.
       console.error('An error occurred:', error.error.message);
     } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong,
+      // 백엔드에서 실패한 것으로 보낸 에러.
+      // 요청으로 받은 에러 객체를 확인하면 원인을 확인할 수 있습니다.
       console.error(
         `Backend returned code ${error.status}, ` +
         `body was: ${error.error}`);
     }
-    // return an observable with a user-facing error message
+    // 사용자가 이해할 수 있는 에러 메시지를 반환합니다.
     return throwError(
       'Something bad happened; please try again later.');
   };
