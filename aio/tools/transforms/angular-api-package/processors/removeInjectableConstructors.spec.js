@@ -9,11 +9,11 @@ describe('removeInjectableConstructors processor', () => {
     const injector = dgeni.configureInjector();
     const processor = injector.get('removeInjectableConstructors');
     expect(processor.$process).toBeDefined();
-    expect(processor.$runAfter).toEqual(['processing-docs']);
+    expect(processor.$runAfter).toEqual(['processing-docs', 'splitDescription']);
     expect(processor.$runBefore).toEqual(['docs-processed']);
   });
 
-  it('should remove undocumented constructors from docs that have an "Injectable" decorator on it', () => {
+  it('should remove undocumented constructors from docs that have an "Injectable" decorator on them', () => {
     const processor = processorFactory();
     const docs = [
       { constructorDoc: {} },
