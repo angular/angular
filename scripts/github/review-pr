@@ -37,7 +37,6 @@ git log --oneline --color pr/${PR_NUMBER}_base..pr/${PR_NUMBER}_top
 echo ======================================================================================
 
 # Reset the HEAD so that we can see changed files for review
-git co -b pr/${PR_NUMBER} pr/${PR_NUMBER}_top 
+git checkout --force -b pr/${PR_NUMBER} pr/${PR_NUMBER}_top 
 git reset pr/${PR_NUMBER}_base
-
-
+git status

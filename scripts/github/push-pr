@@ -10,7 +10,7 @@ GUESS_PR_NUMBER=`git branch | grep '* pr/' | cut -d '/' -f2`
 re='^[0-9]+$'
 if [[ $GUESS_PR_NUMBER =~ $re ]] ; then
     PR_NUMBER=$GUESS_PR_NUMBER
-    echo Assumping PR \#${PR_NUMBER}
+    echo Assuming PR \#${PR_NUMBER}
 fi
 
 FORCE=
