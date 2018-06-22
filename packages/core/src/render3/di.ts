@@ -19,16 +19,16 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_Vie
 import {Type} from '../type';
 
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
-import {addToViewTree, assertPreviousIsParent, createLContainer, createLNodeObject, createTNode, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
+import {addToViewTree, assertPreviousIsParent, createEmbeddedViewNode, createLContainer, createLNodeObject, createTNode, getDirectiveInstance, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
 import {VIEWS} from './interfaces/container';
-import {ComponentTemplate, DirectiveDefInternal} from './interfaces/definition';
+import {ComponentTemplate, DirectiveDefInternal, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {AttributeMarker, LContainerNode, LElementNode, LNode, LViewNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {LQueries, QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
 import {DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {appendChild, detachView, getParentLNode, insertView, removeView} from './node_manipulation';
+import {addRemoveViewFromContainer, appendChild, detachView, getChildLNode, getParentLNode, insertView, removeView} from './node_manipulation';
 import {notImplemented, stringify} from './util';
 import {EmbeddedViewRef, ViewRef} from './view_ref';
 
@@ -631,8 +631,11 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
 
   createEmbeddedView<C>(templateRef: viewEngine_TemplateRef<C>, context?: C, index?: number):
       viewEngine_EmbeddedViewRef<C> {
-    const viewRef = templateRef.createEmbeddedView(context || <any>{});
-    this.insert(viewRef, index);
+    const adjustedIdx = this._adjustIndex(index);
+    const viewRef = (templateRef as TemplateRef<C>)
+                        .createEmbeddedView(context || <any>{}, this._lContainerNode, adjustedIdx);
+    (viewRef as EmbeddedViewRef<any>).attachToViewContainerRef(this);
+    this._viewRefs.splice(adjustedIdx, 0, viewRef);
     return viewRef;
   }
 
@@ -650,11 +653,15 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     const lViewNode = (viewRef as EmbeddedViewRef<any>)._lViewNode;
     const adjustedIdx = this._adjustIndex(index);
 
-    (viewRef as EmbeddedViewRef<any>).attachToViewContainerRef(this);
-
-    insertView(this._lContainerNode, lViewNode, adjustedIdx);
     lViewNode.dynamicParent = this._lContainerNode;
+    insertView(this._lContainerNode, lViewNode, adjustedIdx);
+    const views = this._lContainerNode.data[VIEWS];
+    const beforeNode = adjustedIdx + 1 < views.length ?
+        (getChildLNode(views[adjustedIdx + 1]) !).native :
+        this._lContainerNode.native;
+    addRemoveViewFromContainer(this._lContainerNode, lViewNode, true, beforeNode);
 
+    (viewRef as EmbeddedViewRef<any>).attachToViewContainerRef(this);
     this._viewRefs.splice(adjustedIdx, 0, viewRef);
 
     return viewRef;
@@ -724,9 +731,14 @@ class TemplateRef<T> implements viewEngine_TemplateRef<T> {
     this.elementRef = elementRef;
   }
 
-  createEmbeddedView(context: T): viewEngine_EmbeddedViewRef<T> {
-    const viewNode =
-        renderEmbeddedTemplate(null, this._tView, context, this._renderer, this._queries);
+  createEmbeddedView(context: T, containerNode?: LContainerNode, index?: number):
+      viewEngine_EmbeddedViewRef<T> {
+    const viewNode = createEmbeddedViewNode(this._tView, context, this._renderer, this._queries);
+    if (containerNode) {
+      viewNode.dynamicParent = containerNode;
+      insertView(containerNode, viewNode, index !);
+    }
+    renderEmbeddedTemplate(viewNode, this._tView, context, RenderFlags.Create);
     return new EmbeddedViewRef(viewNode, this._tView.template !as ComponentTemplate<T>, context);
   }
 }
