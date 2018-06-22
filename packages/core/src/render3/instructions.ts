@@ -6,19 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import './ng_dev_mode';
+
 import {Sanitizer} from '../sanitization/security';
+
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {LInjector} from './interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, PropertyAliases, PropertyAliasValue, TAttributes, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType,} from './interfaces/node';
 import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {BINDING_INDEX, CLEANUP, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TVIEW, TView,} from './interfaces/view';
-import './ng_dev_mode';
-import {assertNodeType} from './node_assert';
-import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeChild, removeView} from './node_manipulation';
+import {BINDING_INDEX, CLEANUP, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+
+import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
+import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
+import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode, getLViewChild} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {ComponentDefInternal, ComponentTemplate, ComponentQuery, DirectiveDefInternal, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
@@ -464,6 +467,30 @@ export function renderTemplate<T>(
 }
 
 /**
+ * Used for creating the LViewNode of a dynamic embedded view,
+ * either through ViewContainerRef.createEmbeddedView() or TemplateRef.createEmbeddedView().
+ * Such lViewNode will then be renderer with renderEmbeddedTemplate() (see below).
+ */
+export function createEmbeddedViewNode<T>(
+    tView: TView, context: T, renderer: Renderer3, queries?: LQueries | null): LViewNode {
+  const _isParent = isParent;
+  const _previousOrParentNode = previousOrParentNode;
+  isParent = true;
+  previousOrParentNode = null !;
+
+  const lView =
+      createLViewData(renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer());
+  if (queries) {
+    lView[QUERIES] = queries.createView();
+  }
+  const viewNode = createLNode(-1, TNodeType.View, null, null, null, lView);
+
+  isParent = _isParent;
+  previousOrParentNode = _previousOrParentNode;
+  return viewNode;
+}
+
+/**
  * Used for rendering embedded views (e.g. dynamically created views)
  *
  * Dynamically created views must store/retrieve their TViews differently from component views
@@ -474,27 +501,14 @@ export function renderTemplate<T>(
  * TView for dynamically created views on their host TNode, which only has one instance.
  */
 export function renderEmbeddedTemplate<T>(
-    viewNode: LViewNode | null, tView: TView, context: T, renderer: Renderer3,
-    queries?: LQueries | null): LViewNode {
+    viewNode: LViewNode, tView: TView, context: T, rf: RenderFlags): LViewNode {
   const _isParent = isParent;
   const _previousOrParentNode = previousOrParentNode;
   let oldView: LViewData;
-  let rf: RenderFlags = RenderFlags.Update;
   try {
     isParent = true;
     previousOrParentNode = null !;
 
-    if (viewNode == null) {
-      const lView =
-          createLViewData(renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer());
-
-      if (queries) {
-        lView[QUERIES] = queries.createView();
-      }
-
-      viewNode = createLNode(-1, TNodeType.View, null, null, null, lView);
-      rf = RenderFlags.Create;
-    }
     oldView = enterView(viewNode.data, viewNode);
     namespaceHTML();
     tView.template !(rf, context);
@@ -1575,14 +1589,19 @@ function generateInitialInputs(
 export function createLContainer(
     parentLNode: LNode, currentView: LViewData, isForViewContainerRef?: boolean): LContainer {
   ngDevMode && assertDefined(parentLNode, 'containers should have a parent');
+  let renderParent = canInsertNativeNode(parentLNode, currentView) ?
+      parentLNode as LElementNode | LViewNode :
+      null;
+  if (renderParent && renderParent.tNode.type === TNodeType.View) {
+    renderParent = getParentLNode(renderParent as LViewNode) !.data[RENDER_PARENT];
+  }
   return [
     isForViewContainerRef ? null : 0,  // active index
     currentView,                       // parent
     null,                              // next
     null,                              // queries
     [],                                // views
-    canInsertNativeNode(parentLNode, currentView) ? parentLNode as LElementNode :
-                                                    null  // renderParent
+    renderParent as LElementNode
   ];
 }
 
@@ -1697,7 +1716,7 @@ function refreshDynamicEmbeddedViews(lViewData: LViewData) {
         const dynamicViewData = lViewNode.data;
         ngDevMode && assertDefined(dynamicViewData[TVIEW], 'TView must be allocated');
         renderEmbeddedTemplate(
-            lViewNode, dynamicViewData[TVIEW], dynamicViewData[CONTEXT] !, renderer);
+            lViewNode, dynamicViewData[TVIEW], dynamicViewData[CONTEXT] !, RenderFlags.Update);
       }
     }
   }
@@ -1764,6 +1783,17 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
     enterView(
         newView, viewNode = createLNode(viewBlockId, TNodeType.View, null, null, null, newView));
   }
+  const containerNode = getParentLNode(viewNode) as LContainerNode;
+  if (containerNode) {
+    ngDevMode && assertNodeType(viewNode, TNodeType.View);
+    ngDevMode && assertNodeType(containerNode, TNodeType.Container);
+    const lContainer = containerNode.data;
+    if (creationMode) {
+      // it is a new view, insert it into collection of views for a given container
+      insertView(containerNode, viewNode, lContainer[ACTIVE_INDEX] !);
+    }
+    lContainer[ACTIVE_INDEX] !++;
+  }
   return getRenderFlags(viewNode.data);
 }
 
@@ -1794,22 +1824,17 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
 export function embeddedViewEnd(): void {
   refreshView();
   isParent = false;
-  const viewNode = previousOrParentNode = viewData[HOST_NODE] as LViewNode;
-  const containerNode = getParentLNode(previousOrParentNode) as LContainerNode;
-  if (containerNode) {
-    ngDevMode && assertNodeType(viewNode, TNodeType.View);
-    ngDevMode && assertNodeType(containerNode, TNodeType.Container);
-    const lContainer = containerNode.data;
-
-    if (creationMode) {
+  previousOrParentNode = viewData[HOST_NODE] as LViewNode;
+  if (creationMode) {
+    const containerNode = getParentLNode(previousOrParentNode) as LContainerNode;
+    if (containerNode) {
+      ngDevMode && assertNodeType(previousOrParentNode, TNodeType.View);
+      ngDevMode && assertNodeType(containerNode, TNodeType.Container);
       // When projected nodes are going to be inserted, the renderParent of the dynamic container
       // used by the ViewContainerRef must be set.
-      setRenderParentInProjectedNodes(lContainer[RENDER_PARENT], viewNode);
-      // it is a new view, insert it into collection of views for a given container
-      insertView(containerNode, viewNode, lContainer[ACTIVE_INDEX] !);
+      setRenderParentInProjectedNodes(
+          containerNode.data[RENDER_PARENT], previousOrParentNode as LViewNode);
     }
-
-    lContainer[ACTIVE_INDEX] !++;
   }
   leaveView(viewData[PARENT] !);
   ngDevMode && assertEqual(isParent, false, 'isParent');
@@ -2002,7 +2027,7 @@ export function projection(
 
   const currentParent = getParentLNode(node);
   if (canInsertNativeNode(currentParent, viewData)) {
-    ngDevMode && assertNodeType(currentParent, TNodeType.Element);
+    ngDevMode && assertNodeOfPossibleTypes(currentParent, TNodeType.Element, TNodeType.View);
     // process each node in the list of projected nodes:
     let nodeToProject: LNode|null = node.data.head;
     const lastNodeToProject = node.data.tail;

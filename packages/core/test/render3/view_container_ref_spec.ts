@@ -261,6 +261,11 @@ describe('ViewContainerRef', () => {
 
              insertTpl(ctx: {}) { this._vcRef.createEmbeddedView(this._tplRef, ctx); }
 
+             insertTpl2(ctx: {}) {
+               const viewRef = this._tplRef.createEmbeddedView(ctx);
+               this._vcRef.insert(viewRef);
+             }
+
              remove(index?: number) { this._vcRef.remove(index); }
            }
 
@@ -327,7 +332,7 @@ describe('ViewContainerRef', () => {
            fixture.update();
            expect(fixture.html).toEqual('before|A|after');
 
-           directiveInstance !.insertTpl({});
+           directiveInstance !.insertTpl2({});
            expect(fixture.html).toEqual('before|AA|after');
 
            fixture.component.condition = true;
