@@ -447,10 +447,9 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
         this.buttonToggleGroup._syncButtonToggle(this, this._checked, true);
         this.buttonToggleGroup._onTouched();
       }
-
-      // Emit a change event when the native button does.
-      this.change.emit(new MatButtonToggleChange(this, this.value));
     }
+    // Emit a change event when it's the single selector
+    this.change.emit(new MatButtonToggleChange(this, this.value));
   }
 
   /**

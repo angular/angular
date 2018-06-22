@@ -345,9 +345,8 @@ describe('MatButtonToggle without forms', () => {
       fixture.detectChanges();
       tick();
 
-      // The default browser behavior is to not emit a change event, when the value was set
-      // to false. That's because the current input type is set to `radio`
-      expect(changeSpy).toHaveBeenCalledTimes(1);
+      // Always emit change event when button toggle is clicked
+      expect(changeSpy).toHaveBeenCalledTimes(2);
     }));
 
     it('should emit a change event from the button toggle group', fakeAsync(() => {
