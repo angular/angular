@@ -313,16 +313,6 @@ export function insertView(
     lView[QUERIES] !.insertView(index);
   }
 
-  // If the container's renderParent is null, we know that it is a root node of its own parent view
-  // and we should wait until that parent processes its nodes (otherwise, we will insert this view's
-  // nodes twice - once now and once when its parent inserts its views).
-  if (container.data[RENDER_PARENT] !== null && !container.tNode.detached) {
-    // Find the node to insert in front of
-    const beforeNode =
-        index + 1 < views.length ? (getChildLNode(views[index + 1]) !).native : container.native;
-    addRemoveViewFromContainer(container, viewNode, true, beforeNode);
-  }
-
   // Sets the attached flag
   viewNode.data[FLAGS] |= LViewFlags.Attached;
 
@@ -495,7 +485,10 @@ function executePipeOnDestroys(viewData: LViewData): void {
  *      => don't add as the parent component will project if needed.
  *    - `currentView` !== the parent `view` => The element is in the template (vs the content),
  *      add it
- * - View element => delay insertion, will be done on `viewEnd()`
+ * - View element => Yes, but only if its parent container is defined and it has a render parent.
+ * Otherwise the insertion is delayed.
+ * - Projection element => No
+ * - Container element => No
  *
  * @param parent The parent in which to insert the child
  * @param currentView The LView being processed
@@ -503,9 +496,13 @@ function executePipeOnDestroys(viewData: LViewData): void {
  */
 export function canInsertNativeNode(parent: LNode, currentView: LViewData): boolean {
   const parentIsElement = parent.tNode.type === TNodeType.Element;
+  const parentIsView = parent.tNode.type === TNodeType.View;
+  const grandParentContainer = parentIsView ? getParentLNode(parent) as LContainerNode : null;
 
-  return parentIsElement &&
-      (parent.view !== currentView || parent.data === null /* Regular Element. */);
+  return (parent.tNode.type & TNodeType.ViewOrElement) === TNodeType.ViewOrElement &&
+      !(parentIsElement && parent.view === currentView && parent.data !== null) &&
+      !(parentIsView &&
+        (grandParentContainer == null || grandParentContainer.data[RENDER_PARENT] == null));
 }
 
 /**
@@ -520,10 +517,21 @@ export function canInsertNativeNode(parent: LNode, currentView: LViewData): bool
  */
 export function appendChild(parent: LNode, child: RNode | null, currentView: LViewData): boolean {
   if (child !== null && canInsertNativeNode(parent, currentView)) {
-    // We only add the element if not in View or not projected.
     const renderer = currentView[RENDERER];
-    isProceduralRenderer(renderer) ? renderer.appendChild(parent.native !as RElement, child) :
-                                     parent.native !.appendChild(child);
+    if (parent.tNode.type === TNodeType.View) {
+      const container = getParentLNode(parent) as LContainerNode;
+      const renderParent = container.data[RENDER_PARENT];
+      const views = container.data[VIEWS];
+      const index = views.indexOf(parent as LViewNode);
+      const beforeNode =
+          index + 1 < views.length ? (getChildLNode(views[index + 1]) !).native : container.native;
+      isProceduralRenderer(renderer) ?
+          renderer.insertBefore(renderParent !.native, child, beforeNode) :
+          renderParent !.native.insertBefore(child, beforeNode, true);
+    } else {
+      isProceduralRenderer(renderer) ? renderer.appendChild(parent.native !as RElement, child) :
+                                       parent.native !.appendChild(child);
+    }
     return true;
   }
   return false;
