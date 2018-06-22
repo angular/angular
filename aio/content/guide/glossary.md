@@ -114,19 +114,23 @@ The following class types can be declared:
 
 A [decorator](guide/glossary#decorator) statement immediately before a field in a class definition that declares the type of that field. Some examples are `@Input` and `@Output`. 
 
+{@a cli}
+
 ## CLI
 
-The [Angular CLI](https://cli.angular.io/) is a command-line tool that can create a project, add files, and perform a variety of ongoing development tasks such as testing, bundling, and deployment.
+The [Angular CLI](https://cli.angular.io/) is a command-line tool for managing the Angular development cycle. Use it to create the initial filesystem scaffolding for a [workspace](guide/glossary#workspace) or [project](guide/glossary#project), and to run [schematics](guide/glossary#schematic) that add and modify code for initial generic versions of various elements. The tool supports all stages of the development cycle, including building, testing, bundling, and deployment.
 
-Learn more in the [Getting Started](guide/quickstart) guide. 
+* To begin using the CLI for a new project, see [Getting Started](guide/quickstart) guide.
+* To learn more about the full capabilities of the CLI, see the [Angular CLI documentation].(https://github.com/angular/angular-cli/wiki).
 
 {@a component}
 
 ## Component
 
-A class with the `@Component` [decorator](guide/glossary#decorator) that associates it with a companion [template](guide/glossary#template). 
+A class with the `@Component` [decorator](guide/glossary#decorator) that associates it with a companion [template](guide/glossary#template). Together, the component and template define a [view](guide/glossary#view).
 
-A component is a special type of [directive](guide/glossary#directive) that represents a [view](guide/glossary#view).The `@Component` decorator extends the `@Directive` decorator with template-oriented features. 
+A component is a special type of [directive](guide/glossary#directive).
+The `@Component` decorator extends the `@Directive` decorator with template-oriented features. 
 
 An Angular component class is responsible for exposing data and handling most of the view's display and user-interaction logic through [data binding](guide/glossary#data-binding).
 
@@ -208,7 +212,8 @@ See [Class decorator](guide/glossary#class-decorator), [Class field decorator](g
 
 A design pattern and mechanism for creating and delivering parts of an application (dependencies) to other parts of an application that require them.
 
-In Angular, dependencies are typically services, but can also be values, such as strings or functions. An [injector](guide/glossary#injector) for an app (created automatically during bootstrap) creates dependencies when needed, using a registered [provider](guide/glossary#provider) of the service or value. Different providers can provide different implementations of the same service. 
+In Angular, dependencies are typically services, but can also be values, such as strings or functions.
+An [injector](guide/glossary#injector) for an app (created automatically during bootstrap) instantiates dependencies when needed, using a configured [provider](guide/glossary#provider) of the service or value.
 
 Learn more in the [Dependency Injection](guide/dependency-injection) guide.
 
@@ -280,7 +285,7 @@ Compare [Custom element](guide/glossary#custom-element).
 
 ## Entry point
 
-A JavaScript ID that makes parts of an NPM package available for import by other code. 
+A JavaScript symbol that makes parts of an npm package available for import by other code. 
 The Angular [scoped packages](guide/glossary#scoped-package) each have an entry point named `index`.
 
 Within Angular, use [NgModules](guide/glossary#ngmodule) to achieve the same result.
@@ -310,7 +315,17 @@ Both a [service](guide/glossary#service) and a [component](guide/glossary#compon
 
 An object in the Angular [dependency-injection system](guide/glossary#dependency-injection)
 that can find a named dependency in its cache or create a dependency
-with a registered [provider](guide/glossary#provider). Injectors are created for NgModules automatically as part of the bootstrap process, and inherited through the component hierarchy.
+using a configured [provider](guide/glossary#provider). 
+Injectors are created for NgModules automatically as part of the bootstrap process
+and are inherited through the component hierarchy.
+
+* An injector provides a singleton instance of a dependency, and can inject this same instance in multiple components.
+
+* A hierarchy of injectors at the NgModule and component level can provide different instances of a dependency to their own components and child components.
+
+* You can configure injectors with different providers that can provide different implementations of the same dependency.
+
+Learn more about the injector hierarchy in the [Dependency Injection guide](guide/hierarchical-dependency-injection).
 
 
 ## Input
@@ -373,6 +388,17 @@ Lazy loading speeds up application load time by splitting the application into m
 For example, dependencies can be lazy-loaded as needed&emdash;as opposed to "eager-loaded" modules that are required by the root module, and are thus loaded on launch. 
 Similarly, the [router](guide/glossary#router) can load child views only when the parent view is activated, and you can build custom elements that can be loaded into an Angular app when needed.
 
+{@a library}
+
+## Library
+
+In Angular, a [project](guide/glossary#project) that provides functionality that can be included in other Angular apps. A library is not a complete Angular app, and it cannot run independently. 
+
+* Library developers can use the [CLI](guide/glossary#cli) to `generate` scaffolding for a new library in an existing [workspace](guide/glossary#workspace), and can publish a library as an `npm` package. 
+
+* App developers can use the [CLI](guide/glossary#cli) to `add` a published library for use with an app in the same [workspace](guide/glossary#workspace). 
+
+
 ## Lifecycle hook
 
 An interface that allows you to tap into the lifecycle of [directives](guide/glossary#directive) and [components](guide/glossary#component) as they are created, updated, and destroyed.
@@ -402,7 +428,7 @@ In general, a module collects a block of code dedicated to a single purpose. Ang
 
 In JavaScript (ECMAScript), each file is a module and all objects defined in the file belong to that module. Objects can exported, making them public, and public objects can be imported for use by other modules.
 
-Angular ships as a collection of JavaScript modules, or libraries. Each Angular library name begins with the `@angular` prefix. Install them with the NPM package manager and import parts of them with JavaScript `import` declarations.
+Angular ships as a collection of JavaScript modules, or libraries. Each Angular library name begins with the `@angular` prefix. Install them with the npm package manager and import parts of them with JavaScript `import` declarations.
 
 Compare the Angular [NgModule](guide/glossary#ngmodule).
 
@@ -470,8 +496,13 @@ To learn more, see the [pipes](guide/pipes) page.
 
 ## Polyfill
 
-An [NPM package](guide/npm-packages) that plugs gaps in a browser's JavaScript implementation. See the [Browser Support](guide/browser-support) guide for polyfills that support particular functionality for particular platforms. 
+An [npm package](guide/npm-packages) that plugs gaps in a browser's JavaScript implementation. See the [Browser Support](guide/browser-support) guide for polyfills that support particular functionality for particular platforms. 
 
+{@a project}
+
+## Project
+
+In Angular, a folder within a [workspace](guide/glossary#workspace) that contains one or more Angular apps or [libraries](guide/glossary#library). 
 
 ## Provider
 
@@ -531,9 +562,24 @@ For more information, see the [Routing & Navigation](guide/router) page.
 
 {@a S}
 
+{@a schematic}
+
+## Schematic
+
+A scaffolding library that defines how to generate or transform a programming project by creating, modifying, refactoring, or moving files and code. 
+
+The Angular [CLI](guide/glossary#cli) uses schematics to generate and modify [Angular projects](guide/glossary#project) and parts of projects.
+
+* Angular provides a set of schematics for use with the CLI. 
+For details, see [Angular CLI documentation].(https://github.com/angular/angular-cli/wiki).
+
+* Library developers can create schematics that enable the CLI to generate their published libraries.
+For more information, see https://www.npmjs.com/package/@angular-devkit/schematics. 
+
+
 ## Scoped package
 
-A way to group related NPM packages. 
+A way to group related npm packages. 
 NgModules are delivered within *scoped packages* whose names begin with the Angular *scope name* `@angular`. For example, `@angular/core`, `@angular/common`, `@angular/http`, and `@angular/router`.
 
 Import a scoped package in the same way that you import a normal package. 
@@ -677,6 +723,12 @@ The view hierarchy does not imply a component hierarchy. Views that are embedded
 
 See [Custom element](guide/glossary#custom-element)
 
+{@a workspace}
+
+## Workspace
+
+In Angular, a folder that contains a [project](guide/glossary#project).
+The [CLI](guide/glossary#cli) `new` command creates a workspace to contain apps and libraries, and other commands must be executed from within a workspace folder. 
 
 {@a X}
 
