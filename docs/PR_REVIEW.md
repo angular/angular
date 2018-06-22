@@ -2,12 +2,13 @@
 
 ## Tools
 
-A better way to do code review of the PR is to do it in your IDE.
-Here are two scripts which allow you to perform the review and changes.
+A better way to do a code-review of a PR is to do it in your IDE.
+Here are two scripts which allow you to perform the review and create local changes which can be appended to the PR.
 
 ### 1. Loading PR
 
-Run this command to load the changes into your current repository
+Run this command to load the changes into your local repository where your IDE is running.
+
 ```
 $ ./scripts/github/review-pr 24623
 ```
@@ -33,7 +34,7 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 ```
 
-Note that the script created `pr/24623_top` and `pr/24623_base` branches which denote where the PR starts and ands.
+Note that the script created `pr/24623_top` and `pr/24623_base` branches which denote where the PR start and end SHA.
 
 ```
 cef93a51b (pr/24623_top) ci: scripts to review PRs locally
@@ -65,8 +66,9 @@ When all files are staged the review is done.
 
 ### 3. Creating Edits
 
-At any point in time you can edit any line in the repository.
-The idea is to create edits and push them to the PR since it is often easier to make minor changes than request the PR author to change and repush.
+At any point you can edit any line in the repository.
+The idea is to create edits locally and push them to the PR later.
+This is useful because it is often times easier to make minor changes locally than to request the PR author to change and repush through a comment (often times the comment is larger than the change.)
 
 Example of a local edit.
 ```
@@ -75,7 +77,7 @@ echo "# here is a change" >> docs/PR_REVIEW.md
 
 ### 4. Creating a SHA from local Edit
 
-Since the HEAD has been reset to `pr/24623_base` so that changes show up in `git status` we have to do reverse to only see local changes.
+Since the HEAD has been reset to `pr/24623_base` so that changes show up in `git status` we have to do reverse the reset to only see our local changes.
 To do that reset the `HEAD` to `pr/24623_top`.
 
 ```
@@ -118,7 +120,7 @@ $ git commit --all --fixup HEAD
  1 file changed, 1 insertion(+), 1 deletion(-)
 ```
 
-You can verify that the `fixup!` commit was created.
+You can verify that the `fixup!` commit with your local modifications was created.
 ```
 $ git log --oneline
 45ae87ce4 (HEAD -> pr/24623) fixup! ci: scripts to review PRs locally
@@ -128,6 +130,7 @@ cef93a51b (pr/24623_top) ci: scripts to review PRs locally
 ### 5. Pushing local edits pack to the PR
 
 The last step is to push your local changes back into the PR. 
+Use `./scripts/github/push-pr` script for that.
 
 ```
 $ ./scripts/github/push-pr
@@ -146,4 +149,5 @@ To github.com:mhevery/angular.git
 NOTE: Notice that we did not have to specify the PR number since the script can guess it from the branch name.
 
 If you visit https://github.com/angular/angular/pull/24623/commits you will see that your `fixup!` commit has been added to the PR.
+This greatly simplifies the work for many minor changes to the PR. 
 

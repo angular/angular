@@ -31,7 +31,7 @@ do
 done
 
 if [ "$PR_NUMBER" -eq 0 ]; then
-  echo "Push the current HEAD into a PR#"
+  echo "Push the current HEAD into an existing pull request."
   echo
   echo "$0 PR_NUMBER [--force]"
   echo

@@ -5,7 +5,7 @@ set -u -e -o pipefail
 BASEDIR=$(dirname "$0")
 
 if [ $# -eq 0 ]; then
-    echo "Bring github PR onto your local repo for review and edit"
+    echo "Bring github pull request onto your local repo for review and edit"
     echo
     echo "$0 PR_NUMBER"
     echo
