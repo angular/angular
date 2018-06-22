@@ -82,6 +82,9 @@
       {"type": 301, "source": "/api/upgrade/:package/index/:api-*", "destination": "/api/upgrade/:package/:api"},
       {"type": 301, "source": "/api/upgrade/:package/:api-*", "destination": "/api/upgrade/:package/:api"},
 
+      // URL to tutorial introduction page (index.md) now points to toh-pt0
+      {"type": 301, "source": "/tutorial", "destination": "/tutorial/toh-pt0"},
+
       // URLs that use the old scheme before we moved the docs to the angular/angular repo
       {"type": 301, "source": "/docs/*/latest", "destination": "/docs"},
       {"type": 301, "source": "/docs/*/latest/api/", "destination": "/api"},
