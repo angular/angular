@@ -1,15 +1,26 @@
 # HttpClient
 
+<!--
 Most front-end applications communicate with backend services over the HTTP protocol. Modern browsers support two different APIs for making HTTP requests: the `XMLHttpRequest` interface and the `fetch()` API.
+-->
+프론트엔드 애플리케이션은 대부분 HTTP 프로토콜을 사용해서 백엔드 서비스와 통신을 합니다. 그리고 최신 브라우저들은 이 HTTP 요청을 처리하는 API를 두 종류로 제공하는데, 하나는 `XMLHttpRequest` 인터페이스이고 다른 하나는 `fetch()` API 입니다.
 
+<!--
 The `HttpClient` in `@angular/common/http` offers a simplified client HTTP API for Angular applications
 that rests on the `XMLHttpRequest` interface exposed by browsers.
 Additional benefits of `HttpClient` include testability features, typed request and response objects, request and response interception, `Observable` apis, and streamlined error handling.
+-->
+`@angular/common/http` 라이브러리에서 제공하는 `HttpClient`는 Angular 애플리케이션에서 HTTP 요청을 간단하게 보낼 수 있도록 API를 제공하는데, 이 때 브라우저의 `XMLHttpRequest` 인터페이스를 활용합니다.
+그리고 `XMLHttpRequest` 기능 외에 테스트 지원 기능, HTTP 요청과 응답에 대한 객체 정보, HTTP 요청과 응답을 가로채는 인터셉트 기능, `Observable` API, 스트림라인 에러 처리 로직을 추가로 제공합니다.
 
+<!--
 You can run the <live-example></live-example> that accompanies this guide.
+-->
+이 문서에서 다루는 예제는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 The sample app does not require a data server.
 It relies on the 
 [Angular _in-memory-web-api_](https://github.com/angular/in-memory-web-api/blob/master/README.md),
@@ -17,13 +28,26 @@ which replaces the _HttpClient_ module's `HttpBackend`.
 The replacement service simulates the behavior of a REST-like backend.
 
 Look at the `AppModule` _imports_ to see how it is configured.
+-->
+이 문서에서 다루는 예제는 데이터 서버가 따로 필요하지 않습니다.
+이 문서의 예제는 _HttpClient_ 모듈에서 제공하는 `HttpBackend`를 활용해서, 데이터 서버 대신 [Angular _인 메모리 웹 API(in-memory-web-api)_](https://github.com/angular/in-memory-web-api/blob/master/README.md)를 사용할 것입니다.
+이 방식은 REST API 백엔드의 동작을 대신하기에 충분합니다.
+
+이 서비스 설정은 `AppModule` 파일에서 하며, 이 문서에서는 따로 설명하지 않습니다.
 
 </div>
 
+<!--
 ## Setup
+-->
+## 환경설정
 
+<!--
 Before you can use the `HttpClient`, you need to import the Angular `HttpClientModule`. 
 Most apps do so in the root `AppModule`.
+-->
+`HttpClient`를 사용하기 전에, `HttpClientModule`을 로드해야 합니다.
+특별한 경우가 아니라면 이 모듈은 `AppModule`에서 불러옵니다.
 
 <code-example 
   path="http/src/app/app.module.ts"
@@ -31,8 +55,11 @@ Most apps do so in the root `AppModule`.
   title="app/app.module.ts (excerpt)" linenums="false">
 </code-example>
 
+<!--
 Having imported `HttpClientModule` into the `AppModule`, you can inject the `HttpClient`
 into an application class as shown in the following `ConfigService` example.
+-->
+`AppModule`에 `HttpClientModule`을 불러오고 나면 애플리케이션 클레스에 `HttpClient`를 의존성으로 주입할 수 있습니다. 예를 들어 `ConfigService`에서 사용한다면 다음과 같이 작성합니다.
 
 <code-example 
   path="http/src/app/config/config.service.ts"
@@ -40,18 +67,28 @@ into an application class as shown in the following `ConfigService` example.
   title="app/config/config.service.ts (excerpt)" linenums="false">
 </code-example>
 
+<!--
 ## Getting JSON data
+-->
+## JSON 데이터 받기
 
+<!--
 Applications often request JSON data from the server. 
 For example, the app might need a configuration file on the server, `config.json`, 
 that specifies resource URLs.
+-->
+애플리케이션은 서버에서 JSON 데이터를 받는 경우가 자주 있습니다.
+예를 들어 다음과 같은 애플리케이션 설정 파일을 서버에서 `config.json` 파일로 받아온다고 합시다.
 
 <code-example 
   path="http/src/assets/config.json"
   title="assets/config.json" linenums="false">
 </code-example>
 
+<!--
 The `ConfigService` fetches this file with a `get()` method on `HttpClient`.
+-->
+그러면 `HttpClient` 객체의 `get()` 메소드를 `ConfigService`에 다음과 같이 연결합니다.
 
 <code-example 
   path="http/src/app/config/config.service.ts"
@@ -59,8 +96,11 @@ The `ConfigService` fetches this file with a `get()` method on `HttpClient`.
   title="app/config/config.service.ts (getConfig v.1)" linenums="false">
 </code-example>
 
+<!--
 A component, such as `ConfigComponent`, injects the `ConfigService` and calls
 the `getConfig` service method.
+-->
+그리고 `ConfigComponent`와 같은 컴포넌트에서 `ConfigService`를 주입받아서 `getConfig()` 메소드를 실행하면, 서버에서 가져온 설정 파일의 내용을 확인할 수 있습니다.
 
 <code-example 
   path="http/src/app/config/config.component.ts"
@@ -68,50 +108,92 @@ the `getConfig` service method.
   title="app/config/config.component.ts (showConfig v.1)" linenums="false">
 </code-example>
 
+<!--
 Because the service method returns an `Observable` of configuration data,
 the component **subscribes** to the method's return value.
 The subscription callback copies the data fields into the component's `config` object,
 which is data-bound in the component template for display.
+-->
+서비스에 정의한 메소드는 데이터를 `Observable` 객체로 반환하기 때문에, 컴포넌트에서는 이 메소드를 구독해야 반환값을 확인할 수 있습니다.
+컴포넌트의 구독 함수에서는 이렇게 가져온 데이터로 컴포넌트의 `config` 객체를 설정하기 때문에, 템플릿에서 이 객체의 데이터를 확인할 수 있습니다.
 
+<!--
 ### Why write a service
+-->
+### 왜 서비스를 한 번 거치나요?
 
+<!--
 This example is so simple that it is tempting to write the `Http.get()` inside the
 component itself and skip the service.
+-->
+이렇게 살펴본 예제는 아주 간단하기 때문에, 서비스를 생략하고 컴포넌트에 `HttpClient`를 주입하고 바로 `get()` 메소드를 사용하는 것이 낫지 않을까 하는 생각이 들 수도 있습니다.
 
+<!--
 However, data access rarely stays this simple.
 You typically post-process the data, add error handling, and maybe some retry logic to
 cope with intermittent connectivity.
+-->
+하지만 서버에서 데이터를 가져오는 과정은 이렇게 간단하지 않습니다.
+일반적으로 데이터를 가져오면 가공해야 하고, 에러를 처리해야 하며, 연결이 실패한 경우에는 재시도하는 로직도 필요합니다.
 
+<!--
 The component quickly becomes cluttered with data access minutia.
 The component becomes harder to understand, harder to test, and the data access logic can't be re-used or standardized.
+-->
+그러면 데이터를 처리하는 로직만으로도 컴포넌트는 빠르게 복잡해질 것입니다.
+컴포넌트 코드는 점점 이해하기 힘들어 질 것이고, 테스트하기도 어려워지며, 데이터를 가져오는 로직은 재활용하기도 어려워집니다.
 
+<!--
 That's why it is a best practice to separate presentation of data from data access by
 encapsulating data access in a separate service and delegating to that service in
 the component, even in simple cases like this one.
+-->
+그래서 서버에서 가져온 데이터를 처리하는 로직은 서비스에 작성해서 컴포넌트와 분리하고, 컴포넌트에서는 이 데이터를 받아서 활용하는 로직만 작성하는 것이 좋습니다.
 
+<!--
 ### Type-checking the response
+-->
+### 응답으로 받은 객체에 타입 지정하기
 
+<!--
 The subscribe callback above requires bracket notation to extract the data values.
+-->
+데이터의 타입을 확실하게 지정하기 위해 구독 함수에 다음과 같이 타입을 지정해 봅시다.
 
 <code-example 
   path="http/src/app/config/config.component.ts"
   region="v1_callback" linenums="false">
 </code-example>
 
+<!--
 You can't write `data.heroesUrl` because TypeScript correctly complains that the `data` object from the service does not have a `heroesUrl` property. 
+-->
+하지만 지금은 `data.heroesUrl`과 같이 사용할 수 없습니다. 왜냐하면 서비스에서 받은 `data` 객체에 `heroesUrl` 프로퍼티가 있는지 TypeScript가 알 수 없기 때문입니다.
 
+<!--
 The `HttpClient.get()` method parsed the JSON server response into the anonymous `Object` type. It doesn't know what the shape of that object is.
+-->
+`HttpClient.get()` 메소드는 서버에서 받은 JSON 데이터를 그냥 `Object` 타입으로 변환합니다. 이 객체에 어떤 데이터가 있는지는 알지 못합니다.
 
+<!--
 You can tell `HttpClient` the type of the response to make consuming the output easier and more obvious.
+-->
+이 때 `HttpClient`가 가져올 데이터의 타입을 지정할 수 있습니다. 서버에서 받아온 데이터의 타입을 명확하게 지정하면 이 데이터를 활용하기도 편해집니다.
 
+<!--
 First, define an interface with the correct shape:
+-->
+먼저, 데이터를 표현하는 인터페이스를 다음과 같이 정의합니다:
 
 <code-example 
   path="http/src/app/config/config.service.ts"
   region="config-interface" linenums="false">
 </code-example>
 
+<!--
 Then, specify that interface as the `HttpClient.get()` call's type parameter in the service:
+-->
+그리고 `HttpClient.get()` 함수를 호출할 때, 데이터 타입을 지정합니다:
 
 <code-example 
   path="http/src/app/config/config.service.ts"
@@ -119,8 +201,11 @@ Then, specify that interface as the `HttpClient.get()` call's type parameter in 
   title="app/config/config.service.ts (getConfig v.2)" linenums="false">
 </code-example>
 
+<!--
 The callback in the updated component method receives a typed data object, which is
 easier and safer to consume:
+-->
+이제 컴포넌트에서는 정확한 타입을 지정할 수 있고, 이 객체를 활용하기도 더 쉬워집니다:
 
 <code-example 
   path="http/src/app/config/config.component.ts"
