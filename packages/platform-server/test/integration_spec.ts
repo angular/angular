@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AnimationBuilder, animate, style, transition, trigger} from '@angular/animations';
+import {AnimationBuilder, animate, state, style, transition, trigger} from '@angular/animations';
 import {APP_BASE_HREF, PlatformLocation, isPlatformServer} from '@angular/common';
 import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {HttpClientTestingModule, HttpTestingController} from '@angular/common/http/testing';
@@ -136,12 +136,21 @@ class SVGServerModule {
 
 @Component({
   selector: 'app',
-  template: '<div @myAnimation>{{text}}</div>',
+  template: `<div [@myAnimation]="state">{{text}}</div>`,
   animations: [trigger(
       'myAnimation',
-      [transition('void => *', [style({'opacity': '0'}), animate(500, style({'opacity': '1'}))])])],
+      [
+        state('void', style({'opacity': '0'})),
+        state('active', style({
+                'opacity': '1',                       // simple supported property
+                'font-weight': 'bold',                // property with dashed name
+                'transform': 'translate3d(0, 0, 0)',  // not natively supported by Domino
+              })),
+        transition('void => *', [animate('0ms')]),
+      ], )]
 })
 class MyAnimationApp {
+  state = 'active';
   constructor(private builder: AnimationBuilder) {}
 
   text = 'Works!';
@@ -524,6 +533,8 @@ class HiddenModule {
         // PlatformConfig takes in a parsed document so that it can be cached across requests.
         doc = '<html><head></head><body><app></app></body></html>';
         called = false;
+        (global as any)['window'] = undefined;
+        (global as any)['document'] = undefined;
       });
       afterEach(() => { expect(called).toBe(true); });
 
@@ -576,6 +587,9 @@ class HiddenModule {
            renderModule(AnimationServerModule, {document: doc}).then(output => {
              expect(output).toContain('Works!');
              expect(output).toContain('ng-trigger-myAnimation');
+             expect(output).toContain('opacity:1;');
+             expect(output).toContain('transform:translate3d(0, 0, 0);');
+             expect(output).toContain('font-weight:bold;');
              called = true;
            });
          }));
