@@ -53,6 +53,11 @@ export declare class InjectSetupWrapper {
     inject(tokens: any[], fn: Function): () => any;
 }
 
+export declare function jasmineAwait(fn: () => Promise<any>): (done: {
+    (): void;
+    fail: (message?: Error | string) => void;
+}) => void;
+
 /** @experimental */
 export declare type MetadataOverride<T> = {
     add?: Partial<T>;
