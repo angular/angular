@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {compileComponentDecorator, compileDirective} from './render3/jit/directive';
+import {compileComponent, compileDirective} from './render3/jit/directive';
 import {compileInjectable} from './render3/jit/injectable';
 import {compileNgModule} from './render3/jit/module';
 
 export const ivyEnabled = true;
-export const R3_COMPILE_COMPONENT = compileComponentDecorator;
+export const R3_COMPILE_COMPONENT = compileComponent;
 export const R3_COMPILE_DIRECTIVE = compileDirective;
 export const R3_COMPILE_INJECTABLE = compileInjectable;
 export const R3_COMPILE_NGMODULE = compileNgModule;
