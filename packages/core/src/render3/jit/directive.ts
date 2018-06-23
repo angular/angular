@@ -9,15 +9,15 @@
 import {ConstantPool, R3DirectiveMetadata, WrappedNodeExpr, compileComponentFromMetadata as compileR3Component, compileDirectiveFromMetadata as compileR3Directive, jitExpression, makeBindingParser, parseHostBindings, parseTemplate} from '@angular/compiler';
 
 import {Component, Directive, HostBinding, HostListener, Input, Output} from '../../metadata/directives';
+import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
 import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
 import {Type} from '../../type';
+import {stringify} from '../../util';
 
 import {angularCoreEnv} from './environment';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from './fields';
 import {patchComponentDefWithScope} from './module';
 import {getReflect, reflectDependencies} from './util';
-
-let _pendingPromises: Promise<void>[] = [];
 
 type StringMap = {
   [key: string]: string
@@ -29,30 +29,39 @@ type StringMap = {
  *
  * Compilation may be asynchronous (due to the need to resolve URLs for the component template or
  * other resources, for example). In the event that compilation is not immediate, `compileComponent`
- * will return a `Promise` which will resolve when compilation completes and the component becomes
- * usable.
+ * will enqueue resource resolution into a global queue and will fail to return the `ngComponentDef`
+ * until the global queue has been resolved with a call to `resolveComponentResources`.
  */
-export function compileComponent(type: Type<any>, metadata: Component): Promise<void>|null {
-  // TODO(alxhub): implement ResourceLoader support for template compilation.
-  if (!metadata.template) {
-    throw new Error('templateUrl not yet supported');
-  }
-  const templateStr = metadata.template;
-
+export function compileComponent(type: Type<any>, metadata: Component): void {
   let def: any = null;
+  // Metadata may have resources which need to be resolved.
+  maybeQueueResolutionOfComponentResources(metadata);
   Object.defineProperty(type, NG_COMPONENT_DEF, {
     get: () => {
       if (def === null) {
+        if (componentNeedsResolution(metadata)) {
+          const error = [`Component '${stringify(type)}' is not resolved:`];
+          if (metadata.templateUrl) {
+            error.push(` - templateUrl: ${stringify(metadata.templateUrl)}`);
+          }
+          if (metadata.styleUrls && metadata.styleUrls.length) {
+            error.push(` - styleUrls: ${JSON.stringify(metadata.styleUrls)}`);
+          }
+          error.push(`Did you run and wait for 'resolveComponentResources()'?`);
+          throw new Error(error.join('\n'));
+        }
         // The ConstantPool is a requirement of the JIT'er.
         const constantPool = new ConstantPool();
 
         // Parse the template and check for errors.
-        const template = parseTemplate(templateStr, `ng://${type.name}/template.html`, {
-          preserveWhitespaces: metadata.preserveWhitespaces || false,
-        });
+        const template =
+            parseTemplate(metadata.template !, `ng://${stringify(type)}/template.html`, {
+              preserveWhitespaces: metadata.preserveWhitespaces || false,
+            });
         if (template.errors !== undefined) {
           const errors = template.errors.map(err => err.toString()).join(', ');
-          throw new Error(`Errors during JIT compilation of template for ${type.name}: ${errors}`);
+          throw new Error(
+              `Errors during JIT compilation of template for ${stringify(type)}: ${errors}`);
         }
 
         // Compile the component metadata, including template, into an expression.
@@ -81,8 +90,6 @@ export function compileComponent(type: Type<any>, metadata: Component): Promise<
       return def;
     },
   });
-
-  return null;
 }
 
 function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
@@ -97,7 +104,7 @@ function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
  * In the event that compilation is not immediate, `compileDirective` will return a `Promise` which
  * will resolve when compilation completes and the directive becomes usable.
  */
-export function compileDirective(type: Type<any>, directive: Directive): Promise<void>|null {
+export function compileDirective(type: Type<any>, directive: Directive): void {
   let def: any = null;
   Object.defineProperty(type, NG_DIRECTIVE_DEF, {
     get: () => {
@@ -111,31 +118,8 @@ export function compileDirective(type: Type<any>, directive: Directive): Promise
       return def;
     },
   });
-  return null;
 }
 
-/**
- * A wrapper around `compileComponent` which is intended to be used for the `@Component` decorator.
- *
- * This wrapper keeps track of the `Promise` returned by `compileComponent` and will cause
- * `awaitCurrentlyCompilingComponents` to wait on the compilation to be finished.
- */
-export function compileComponentDecorator(type: Type<any>, metadata: Component): void {
-  const res = compileComponent(type, metadata);
-  if (res !== null) {
-    _pendingPromises.push(res);
-  }
-}
-
-/**
- * Returns a promise which will await the compilation of any `@Component`s which have been defined
- * since the last time `awaitCurrentlyCompilingComponents` was called.
- */
-export function awaitCurrentlyCompilingComponents(): Promise<void> {
-  const res = Promise.all(_pendingPromises).then(() => undefined);
-  _pendingPromises = [];
-  return res;
-}
 
 /**
  * Extract the `R3DirectiveMetadata` for a particular directive (either a `Directive` or a
