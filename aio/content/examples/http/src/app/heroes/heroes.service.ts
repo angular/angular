@@ -59,7 +59,7 @@ export class HeroesService {
   //////// Save methods //////////
 
   // #docregion addHero
-  /** POST: add a new hero to the database */
+  /** POST: DB에 새로운 히어로를 추가합니다. */
   addHero (hero: Hero): Observable<Hero> {
     return this.http.post<Hero>(this.heroesUrl, hero, httpOptions)
       .pipe(

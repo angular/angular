@@ -13,12 +13,11 @@ export class DownloaderService {
 
   // #docregion getTextFile
   getTextFile(filename: string) {
-    // The Observable returned by get() is of type Observable<string>
-    // because a text response was specified.
-    // There's no need to pass a <string> type parameter to get().
+    // 반환 형식을 지정하면 get() 함수가 반환하는 타입을 Observable<string>으로 변경할 수 있습니다.
+    // 이 때 get() 함수에 제네릭으로 <string> 타입을 지정할 필요는 없습니다.
     return this.http.get(filename, {responseType: 'text'})
       .pipe(
-        tap( // Log the result or error
+        tap( // HTTP 응답이나 에러를 로그로 출력합니다.
           data => this.log(filename, data),
           error => this.logError(filename, error)
         )

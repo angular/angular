@@ -378,19 +378,36 @@ _Pipe_ it onto the `HttpClient` method result just before the error handler.
 </code-example>
 
 {@a rxjs}
+<!--
 ## Observables and operators
+-->
+## 옵저버블과 연산자
 
+<!--
 The previous sections of this guide referred to RxJS `Observables` and operators such as `catchError` and `retry`.
 You will encounter more RxJS artifacts as you continue below.
+-->
+이전 문단에서 설명한 것처럼, Angular 애플리케이션에서 HTTP 요청을 보내거나 데이터를 받아서 처리할 때 RxJS가 제공하는 `Observable`과 연산자를 활용할 수 있습니다.
+RxJS에서 제공하는 기능을 좀 더 알아봅시다.
 
+<!--
 [RxJS](http://reactivex.io/rxjs/) is a library for composing asynchronous and callback-based code
 in a _functional, reactive style_.
 Many Angular APIs, including `HttpClient`, produce and consume RxJS `Observables`. 
+-->
+[RxJS](http://reactivex.io/rxjs/)는 비동기 로직과 콜백 코드를 _반응형(reactive)_ 스타일로 구현할 때 사용하는 라이브러리 입니다.
+Angular는 `HttpClient`외에도 많은 곳에서 RxJS의 `Observable`을 사용합니다.
 
+<!--
 RxJS itself is out-of-scope for this guide. You will find many learning resources on the web.
 While you can get by with a minimum of RxJS knowledge, you'll want to grow your RxJS skills over time in order to use `HttpClient` effectively.
+-->
+RxJS 자체는 이 문서에서 설명하려는 범위가 아닙니다. RxJS 사용방법은 웹에서 쉽게 찾아볼 수 있으며, 이 문서에서는 `HttpClient`를 효율적으로 사용할 수 있을 정도로만 RxJS를 알아봅시다.
 
+<!--
 If you're following along with these code snippets, note that you must import the RxJS observable and operator symbols that appear in those snippets. These `ConfigService` imports are typical.
+-->
+예제 코드를 작성할 때는 RxJS를 사용하는 코드에 RxJS 옵저버블과 연산자 심볼을 로드해야 합니다. 예를 들어 `ConfigService`라면 다음과 같이 작성합니다.
 
 <code-example 
   path="http/src/app/config/config.service.ts"
@@ -398,12 +415,18 @@ If you're following along with these code snippets, note that you must import th
   title="app/config/config.service.ts (RxJS imports)" linenums="false">
 </code-example>
 
+<!--
 ## Requesting non-JSON data
+-->
+## JSON 형식이 아닌 데이터 요청하기
 
+<!--
 Not all APIs return JSON data. In this next example,
 a `DownloaderService` method reads a text file from the server
 and logs the file contents, before returning those contents to the caller
 as an `Observable<string>`. 
+-->
+모든 API가 JSON 데이터를 반환하는 것은 아닙니다. 이번에 살펴볼 `DownloaderService`에 정의된 메소드는 서버에서 받아온 텍스트 파일의 내용을 로그에 출력하고 `Observable<string>` 타입으로 반환합니다.
 
 <code-example 
   path="http/src/app/downloader/downloader.service.ts"
@@ -411,11 +434,20 @@ as an `Observable<string>`.
   title="app/downloader/downloader.service.ts (getTextFile)" linenums="false">
 </code-example>
 
+<!--
 `HttpClient.get()` returns a string rather than the default JSON because of the `responseType` option.
+-->
+이제 `HttpClient.get()` 메소드는 `responseType`을 지정했기 때문에 JSON 타입 대신 문자열 타입을 반환합니다.
 
+<!--
 The RxJS `tap` operator (as in "wiretap") lets the code inspect good and error values passing through the observable without disturbing them. 
+-->
+그리고 이 때 옵저버블이 실행되는 흐름을 방해하지 않으면서 코드를 실행할 때 RxJS `tap` 연산자를 사용합니다.
 
+<!--
 A `download()` method in the `DownloaderComponent` initiates the request by subscribing to the service method.
+-->
+서비스의 코드는 `DownloaderComponent`에 정의된 `download()` 메소드에서 구독을 시작할 때 실행되며, 이 때 HTTP 요청도 시작됩니다.
 
 <code-example 
   path="http/src/app/downloader/downloader.component.ts"
@@ -423,24 +455,47 @@ A `download()` method in the `DownloaderComponent` initiates the request by subs
   title="app/downloader/downloader.component.ts (download)" linenums="false">
 </code-example>
 
+<!--
 ## Sending data to the server
+-->
+## 서버에 데이터 보내기
 
+<!--
 In addition to fetching data from the server, `HttpClient` supports mutating requests, that is, sending data to the server with other HTTP methods such as PUT, POST, and DELETE.
+-->
+`HttpClient`로 서버에 데이터를 요청할 때 사용하는 HTTP 메소드가 PUT이나 POST, DELETE라면 서버로 추가 데이터를 보낼 수 있습니다.
 
+<!--
 The sample app for this guide includes a simplified version of the "Tour of Heroes" example
 that fetches heroes and enables users to add, delete, and update them.
+-->
+이번 문단에서는 "히어로들의 여행" 튜토리얼에서 히어로의 목록을 가져오고 추가, 삭제, 수정했던 예제를 간단하게 다시 구현해 봅니다.
 
+<!--
 The following sections excerpt methods of the sample's `HeroesService`.
+-->
+예제에서 다루는 코드는 `HeroesService`만 해당됩니다.
 
+<!--
 ### Adding headers
+-->
+### 헤더 추가하기
 
+<!--
 Many servers require extra headers for save operations.
 For example, they may require a "Content-Type" header to explicitly declare 
 the MIME type of the request body.
 Or perhaps the server requires an authorization token.
+-->
+데이터를 저장하는 HTTP 요청이라면 헤더에 추가 내용을 보내야 하는 경우가 많습니다.
+보내는 데이터의 MIME 타입이 어떤 것인지 지정하는 "Content-Type" 헤더도 이 중 하나입니다.
+아니면 클라이언트의 인증 정보에 대한 헤더를 요청할 수도 있습니다.
 
+<!--
 The `HeroesService` defines such headers in an `httpOptions` object that will be passed
 to every `HttpClient` save method.
+-->
+`HeroesService`가 저장과 관련된 HTTP 요청에 사용할 옵션을 `httpOptions` 객체로 정의합시다. 이 옵션에 헤더를 지정하려면 다음과 같이 작성합니다.
 
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
@@ -448,10 +503,16 @@ to every `HttpClient` save method.
   title="app/heroes/heroes.service.ts (httpOptions)" linenums="false">
 </code-example>
 
+<!--
 ### Making a POST request
+-->
+### POST 요청 보내기
 
+<!--
 Apps often POST data to a server. They POST when submitting a form. 
 In the following example, the `HeroesService` posts when adding a hero to the database.
+-->
+데이터는 POST 방식으로 보낼 수도 있습니다. 일반적으로 POST 메소드는 폼을 제출할 때도 사용하며, 우리가 살펴보고 있는 `HeroesService`에서는 히어로를 DB에 추가할 때 사용합니다.
 
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
@@ -459,19 +520,34 @@ In the following example, the `HeroesService` posts when adding a hero to the da
   title="app/heroes/heroes.service.ts (addHero)" linenums="false">
 </code-example>
 
+<!--
 The `HttpClient.post()` method is similar to `get()` in that it has a type parameter
 (you're expecting the server to return the new hero)
 and it takes a resource URL.
+-->
+`HttpClient.post()` 메소드는 `get()`메소드와 비슷합니다. 서버로부터 받아올 데이터의 타입을 제네릭으로 지정하고, 첫번째 인자로 서버 API의 URL을 받는 것도 같습니다.
 
+<!--
 It takes two more parameters:
 
 1. `hero` - the data to POST in the body of the request.
 1. `httpOptions` - the method options which, in this case, [specify required headers](#adding-headers).
+-->
+여기에 인자를 두 개 더 추가합니다.
 
+1. `hero` - POST 메소드일 때 요청으로 보낼 body 데이터를 지정합니다.
+1. `httpOptions` - HTTP 요청에 대한 옵션을 지정합니다. [헤더 추가하기](#헤더-추가하기)에서 지정한 옵션입니다.
+
+<!--
 Of course it catches errors in much the same manner [described above](#error-details).
+-->
+그리고 에러를 처리하는 방식도 [위에서 설명한 내용](#error-details)과 같습니다.
 
+<!--
 The `HeroesComponent` initiates the actual POST operation by subscribing to 
 the `Observable` returned by this service method.
+-->
+이제 `HeroesComponent`가 옵저버블을 구독하면 POST 요청이 발생하며, 서버의 응답으로 받은 내용은 `Observable` 타입으로 전달됩니다.
 
 <code-example 
   path="http/src/app/heroes/heroes.component.ts"
@@ -479,8 +555,11 @@ the `Observable` returned by this service method.
   title="app/heroes/heroes.component.ts (addHero)" linenums="false">
 </code-example>
 
+<!--
 When the server responds successfully with the newly added hero, the component adds
 that hero to the displayed `heroes` list.
+-->
+그러면 새로운 히어로가 정상적으로 추가되었다는 것을 컴포넌트가 알게 되고, `heroes` 배열에 이 히어로를 추가해서 새로운 목록으로 화면에 표시할 수 있습니다.
 
 ### Making a DELETE request
 
@@ -574,7 +653,12 @@ We have discussed the basic HTTP functionality in `@angular/common/http`, but so
 Other aspects of an outgoing request can be configured via the options object
 passed as the last argument to the `HttpClient` method.
 
+<!--
 You [saw earlier](#adding-headers) that the `HeroesService` sets the default headers by
+passing an options object (`httpOptions`) to its save methods.
+You can do more.
+-->
+You [saw earlier](#헤더-추가하기) that the `HeroesService` sets the default headers by
 passing an options object (`httpOptions`) to its save methods.
 You can do more.
 
