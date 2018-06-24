@@ -559,12 +559,18 @@ the `Observable` returned by this service method.
 When the server responds successfully with the newly added hero, the component adds
 that hero to the displayed `heroes` list.
 -->
-그러면 새로운 히어로가 정상적으로 추가되었다는 것을 컴포넌트가 알게 되고, `heroes` 배열에 이 히어로를 추가해서 새로운 목록으로 화면에 표시할 수 있습니다.
+그러면 새로운 히어로가 정상적으로 추가되었다는 것을 컴포넌트가 알 수 있고, `heroes` 배열에 이 히어로를 추가해서 새로운 목록으로 화면에 표시할 수 있습니다.
 
+<!--
 ### Making a DELETE request
+-->
+### DELETE 요청 보내기
 
+<!--
 This application deletes a hero with the `HttpClient.delete` method by passing the hero's id
 in the request URL.
+-->
+이 서비스는 히어로를 삭제할 때 `HttpClient.delete` 메소드를 활용하며, 삭제하려는 히어로의 ID는 url에 포함시켜 보냅니다.
 
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
@@ -572,8 +578,11 @@ in the request URL.
   title="app/heroes/heroes.service.ts (deleteHero)" linenums="false">
 </code-example>
 
+<!--
 The `HeroesComponent` initiates the actual DELETE operation by subscribing to 
 the `Observable` returned by this service method.
+-->
+이 메소드도 `HeroesComponent`가 구독할 때 실행되기 시작하며, 메소드가 실행되면서 DELETE 요청도 시작됩니다. 그리고 메소드 실행결과는 `Observable` 타입으로 반환됩니다.
 
 <code-example 
   path="http/src/app/heroes/heroes.component.ts"
@@ -581,11 +590,17 @@ the `Observable` returned by this service method.
   title="app/heroes/heroes.component.ts (deleteHero)" linenums="false">
 </code-example>
 
+<!--
 The component isn't expecting a result from the delete operation, so it subscribes without a callback. Even though you are not using the result, you still have to subscribe. Calling the `subscribe()` method _executes_ the observable, which is what initiates the DELETE request. 
+-->
+컴포넌트는 삭제 동작의 결과값을 활용하지 않기 때문에 콜백함수 없이 구독을 시작했습니다. 옵저버블 구독은 이렇게 옵저버를 지정하지 않으면서 시작할 수도 있습니다. `subscribe()` 메소드가 실행되면 옵저버블이 실행되고, DELETE 요청도 시작됩니다.
 
 <div class="alert is-important">
 
+<!--
 You must call _subscribe()_ or nothing happens. Just calling `HeroesService.deleteHero()` **does not initiate the DELETE request.**
+-->
+옵저버블은 _subscribe()_ 함수를 실행해야 시작됩니다. `HeroesService.deleteHero()`를 호출하는 것만으로는 **DELETE 요청이 시작되지 않습니다.**
 
 </div>
 
@@ -596,30 +611,54 @@ You must call _subscribe()_ or nothing happens. Just calling `HeroesService.dele
 </code-example>
 
 {@a always-subscribe}
+<!--
 **Always _subscribe_!**
+-->
+**_subscribe()_ 가 꼭 있어야 합니다!**
 
+<!--
 An `HttpClient` method does not begin its HTTP request until you call `subscribe()` on the observable returned by that method. This is true for _all_ `HttpClient` _methods_.
+-->
+`HttpClient`에서 제공하는 모든 메소드는 `subscribe()` 없이 HTTP 요청이 시작되지 않습니다.
 
 <div class="alert is-helpful">
 
+<!--
 The [`AsyncPipe`](api/common/AsyncPipe) subscribes (and unsubscribes) for you automatically.
+-->
+템플릿에서 [`AsyncPipe`](api/common/AsyncPipe)를 사용하면 옵저버블을 자동으로 구독하고 해지합니다.
 
 </div>
 
+<!--
 All observables returned from `HttpClient` methods are _cold_ by design.
 Execution of the HTTP request is _deferred_, allowing you to extend the
 observable with additional operations such as  `tap` and `catchError` before anything actually happens.
+-->
+`HttpClient` 메소드가 반환하는 옵저버블은 모두 _콜드 옵저버블(cold observable)_ 입니다.
+옵저버블을 구독하는 객체가 없으면 HTTP 요청이 시작되지 않으며, `tap`이나 `catchError`와 같은 RxJS 연산자를 연결해도 구독 전에는 아무것도 실행되지 않습니다.
 
+<!--
 Calling `subscribe(...)` triggers execution of the observable and causes
 `HttpClient` to compose and send the HTTP request to the server.
+-->
+그리고 `subscribe(...)`를 실행해야 옵저버블이 시작되고 HTTP 요청도 발생합니다.
 
+<!--
 You can think of these observables as _blueprints_ for actual HTTP requests.
+-->
+옵저버블은 실제 HTTP 요청을 표현한다고 이해할 수도 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 In fact, each `subscribe()` initiates a separate, independent execution of the observable.
 Subscribing twice results in two HTTP requests.
+-->
+`subscribe()` 함수는 실행될 때마다 새로운 옵저버블을 구성합니다.
+그래서 이 함수가 두 번 실행되면 HTTP 요청도 두 번 발생합니다.
 
+<!--
 ```javascript
 const req = http.get<Heroes>('/api/heroes');
 // 0 requests made - .subscribe() not called.
@@ -628,12 +667,28 @@ req.subscribe();
 req.subscribe();
 // 2 requests made.
 ```
+-->
+```javascript
+const req = http.get<Heroes>('/api/heroes');
+// 요청 횟수 0 - .subscribe() 는 아직 실행되지 않았습니다.
+req.subscribe();
+// 요청 횟수 1
+req.subscribe();
+// 요청 횟수 2
+```
 </div>
 
+<!--
 ### Making a PUT request
+-->
+### PUT 요청 보내기
 
+<!--
 An app will send a PUT request to completely replace a resource with updated data.
 The following `HeroesService` example is just like the POST example.
+-->
+데이터를 교체하는 경우라면 PUT 메소드를 활용할 수 있습니다.
+`HeroesService` 에서 PUT 메소드를 사용하는 코드는 POST에서 살펴봤던 것과 비슷합니다.
 
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
@@ -641,56 +696,95 @@ The following `HeroesService` example is just like the POST example.
   title="app/heroes/heroes.service.ts (updateHero)" linenums="false">
 </code-example>
 
+<!--
 For the reasons [explained above](#always-subscribe), the caller (`HeroesComponent.update()` in this case) must `subscribe()` to the observable returned from the `HttpClient.put()`
 in order to initiate the request.
+-->
+[위에서 설명했던 것처럼](#always-subscribe), 이 메소드도 옵저버블의 `subscribe()`가 실행되어야 HTTP 요청이 시작됩니다.
 
+<!--
 ## Advanced usage
+-->
+## 더 활용하기
 
+<!--
 We have discussed the basic HTTP functionality in `@angular/common/http`, but sometimes you need to do more than make simple requests and get data back.
+-->
+지금까지 `@angular/common/http`에서 제공하는 기본 HTTP 기능을 살펴봤습니다. 이제부터는 HttpClient를 실제 상황에 맞게 좀 더 활용하는 방법에 대해 알아봅시다.
 
+<!--
 ### Configuring the request
+-->
+### HTTP 요청 설정하기
 
+<!--
 Other aspects of an outgoing request can be configured via the options object
 passed as the last argument to the `HttpClient` method.
+-->
+HTTP 요청을 보낼 때 활용하는 `HttpClient` 메소드에 마지막 인자를 지정하면 요청에 대한 옵션을 지정할 수 있습니다.
 
 <!--
 You [saw earlier](#adding-headers) that the `HeroesService` sets the default headers by
 passing an options object (`httpOptions`) to its save methods.
 You can do more.
 -->
-You [saw earlier](#헤더-추가하기) that the `HeroesService` sets the default headers by
-passing an options object (`httpOptions`) to its save methods.
-You can do more.
+[이미 이전에 봤던 것처럼](#헤더-추가하기) `HeroesService`는 `httpOptions` 객체를 사용해서 헤더를 지정하고 있습니다.
+헤더 외에 다른 옵션을 더 지정해 봅시다.
 
+<!--
 #### Update headers
+-->
+#### 헤더 수정하기
 
+<!--
 You can't directly modify the existing headers within the previous options
 object because instances of the `HttpHeaders` class are immutable.
+-->
+이전에 헤어를 지정하면서 만든 Httpheaders 객체의 프로퍼티는 직접 수정할 수 없습니다. 왜냐하면 `HttpHeaders` 클래스는 이뮤터블(immutable)이기 때문입니다.
 
+<!--
 Use the `set()` method instead. 
 It returns a clone of the current instance with the new changes applied.
+-->
+대신 `set()` 메소드를 활용합니다. 이 메소드를 실행하면 새로운 값이 적용된 인스턴스를 반환합니다.
 
+<!--
 Here's how you might update the authorization header (after the old token expired) 
 before making the next request.
+-->
+이전에 발급받은 인증 토큰이 만료되었다고 가정하고, 새로운 요청을 위해 헤더의 `Authorization` 필드를 수정하는 코드는 다음과 같이 작성합니다.
 
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
   region="update-headers" linenums="false">
 </code-example>
 
+<!--
 #### URL Parameters
+-->
+#### URL 인자
 
+<!--
 Adding URL search parameters works a similar way.
 Here is a `searchHeroes` method that queries for heroes whose names contain the search term.
+-->
+URL을 활용하면 검색어와 같은 인자를 추가로 전달할 수 있습니다.
+다음 살펴보는 `searchHeroes` 메소드는 입력된 단어가 이름에 포함된 히어로를 찾는 함수입니다.
 
 <code-example 
   path="http/src/app/heroes/heroes.service.ts"
   region="searchHeroes" linenums="false">
 </code-example>
 
+<!--
 If there is a search term, the code constructs an options object with an HTML URL-encoded search parameter. If the term were "foo", the GET request URL would be `api/heroes/?name=foo`.
+-->
+이 함수가 인자를 받으면 HTML URL 방식으로 인코딩 된 객체를 생성합니다. 만약 "foo"라는 인자가 전달되면, 이 인자를 포함해서 요청하는 GET 주소는 `api/heroes/?name=foo`가 될 것입니다.
 
+<!--
 The `HttpParams` are immutable so you'll have to use the `set()` method to update the options.
+-->
+`HttpParams`도 이뮤터블 클래스이기 때문에, 값을 수정하려면 `set()` 메소드를 사용해야 합니다.
 
 ### Debouncing requests
 

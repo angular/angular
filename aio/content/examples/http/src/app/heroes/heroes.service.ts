@@ -41,11 +41,11 @@ export class HeroesService {
   }
 
     // #docregion searchHeroes
-  /* GET heroes whose name contains search term */
+  /* 입력된 단어가 포함된 히어로 목록을 GET 방식으로 요청합니다. */
   searchHeroes(term: string): Observable<Hero[]> {
     term = term.trim();
 
-    // Add safe, URL encoded search parameter if there is a search term
+    // 전달된 인자로 HttpParams 객체를 생성합니다.
     const options = term ?
      { params: new HttpParams().set('name', term) } : {};
 
@@ -69,7 +69,7 @@ export class HeroesService {
   // #enddocregion addHero
 
   // #docregion deleteHero
-  /** DELETE: delete the hero from the server */
+  /** DELETE: DB에서 히어로를 삭제합니다. */
   deleteHero (id: number): Observable<{}> {
     const url = `${this.heroesUrl}/${id}`; // DELETE api/heroes/42
     return this.http.delete(url, httpOptions)
@@ -80,7 +80,7 @@ export class HeroesService {
   // #enddocregion deleteHero
 
   // #docregion updateHero
-  /** PUT: update the hero on the server. Returns the updated hero upon success. */
+  /** PUT: DB 데이터를 수정합니다. HTTP 요청이 성공하면 새로운 히어로 데이터를 반환합니다. */
   updateHero (hero: Hero): Observable<Hero> {
     // #enddocregion updateHero
     // #docregion update-headers

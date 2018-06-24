@@ -44,7 +44,7 @@ export class HeroesComponent implements OnInit {
     // #enddocregion delete-hero-subscribe
     /*
     // #docregion delete-hero-no-subscribe
-    // oops ... subscribe() is missing so nothing happens
+    // subscribe()가 없으면 아무것도 시작되지 않습니다.
     this.heroesService.deleteHero(hero.id);
     // #enddocregion delete-hero-no-subscribe
     */
