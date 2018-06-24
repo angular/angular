@@ -127,7 +127,7 @@ $ git log --oneline
 cef93a51b (pr/24623_top) ci: scripts to review PRs locally
 ```
 
-### 5. Pushing local edits pack to the PR
+### 5. Pushing local edits back to the PR
 
 The last step is to push your local changes back into the PR. 
 Use `./scripts/github/push-pr` script for that.
