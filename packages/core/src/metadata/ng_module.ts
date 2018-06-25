@@ -199,6 +199,9 @@ export interface NgModule {
 }
 
 /**
+ * Decorator that marks the following class as an NgModule, and supplies
+ * configuration metadata for it.
+ *
  * @Annotation
  */
 export const NgModule: NgModuleDecorator = makeDecorator(
@@ -215,8 +218,3 @@ export const NgModule: NgModuleDecorator = makeDecorator(
         imports: imports,
       });
     });
-    /**
-     * Decorator that marks the following class as an NgModule, and supplies
-     * configuration metadata for it.
-     */
-    (type: Type<any>, meta: NgModule) => (R3_COMPILE_NGMODULE || preR3NgModuleCompile)(type, meta));

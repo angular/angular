@@ -469,10 +469,8 @@ export interface Directive {
 /**
  * Type of the Component metadata.
  */
-export const Directive: DirectiveDecorator = makeDecorator(
-    'Directive', (dir: Directive = {}) => dir, undefined, undefined,
-    (type: Type<any>, meta: Directive) => (R3_COMPILE_DIRECTIVE || (() => {}))(type, meta));
-
+export const Directive: DirectiveDecorator =
+    makeDecorator('Directive', (dir: Directive = {}) => dir);
 /**
  * Component decorator interface
  *
