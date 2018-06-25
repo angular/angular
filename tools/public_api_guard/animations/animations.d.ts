@@ -28,7 +28,6 @@ export interface AnimationAnimateRefMetadata extends AnimationMetadata {
     options: AnimationOptions | null;
 }
 
-/** @experimental */
 export declare abstract class AnimationBuilder {
     abstract build(animation: AnimationMetadata | AnimationMetadata[]): AnimationFactory;
 }
@@ -44,7 +43,6 @@ export interface AnimationEvent {
     triggerName: string;
 }
 
-/** @experimental */
 export declare abstract class AnimationFactory {
     abstract create(element: any, options?: AnimationOptions): AnimationPlayer;
 }
@@ -85,7 +83,6 @@ export declare interface AnimationOptions {
     };
 }
 
-/** @experimental */
 export interface AnimationPlayer {
     beforeDestroy?: () => any;
     parentPlayer: AnimationPlayer | null;
@@ -174,7 +171,6 @@ export declare function group(steps: AnimationMetadata[], options?: AnimationOpt
 
 export declare function keyframes(steps: AnimationStyleMetadata[]): AnimationKeyframesSequenceMetadata;
 
-/** @experimental */
 export declare class NoopAnimationPlayer implements AnimationPlayer {
     parentPlayer: AnimationPlayer | null;
     readonly totalTime: number;
