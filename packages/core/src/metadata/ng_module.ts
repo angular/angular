@@ -199,6 +199,9 @@ export interface NgModule {
 }
 
 /**
+ * Decorator that marks the following class as an NgModule, and supplies
+ * configuration metadata for it.
+ *
  * @Annotation
  */
 export const NgModule: NgModuleDecorator = makeDecorator(
