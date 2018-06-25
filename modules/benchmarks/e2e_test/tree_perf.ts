@@ -24,7 +24,7 @@ describe('tree benchmark perf', () => {
   Benchmarks.forEach(benchmark => {
     describe(benchmark.id, () => {
       // This is actually a destroyOnly benchmark
-      it('should work for createOnly', (done) => {
+      it('should work for createOnly', (done: any) => {
         runTreeBenchmark({
           id: 'createOnly',
           benchmark,
@@ -33,7 +33,7 @@ describe('tree benchmark perf', () => {
         }).then(done, done.fail);
       });
 
-      it('should work for createOnlyForReal', (done) => {
+      it('should work for createOnlyForReal', (done: any) => {
         runTreeBenchmark({
           id: 'createOnlyForReal',
           benchmark,
@@ -42,7 +42,7 @@ describe('tree benchmark perf', () => {
         }).then(done, done.fail);
       });
 
-      it('should work for createDestroy', (done) => {
+      it('should work for createDestroy', (done: any) => {
         runTreeBenchmark({
           id: 'createDestroy',
           benchmark,
@@ -53,13 +53,13 @@ describe('tree benchmark perf', () => {
         }).then(done, done.fail);
       });
 
-      it('should work for update', (done) => {
+      it('should work for update', (done: any) => {
         runTreeBenchmark({id: 'update', benchmark, work: () => $(CreateBtn).click()})
             .then(done, done.fail);
       });
 
       if (benchmark.buttons.indexOf(DetectChangesBtn) !== -1) {
-        it('should work for detectChanges', (done) => {
+        it('should work for detectChanges', (done: any) => {
           runTreeBenchmark({
             id: 'detectChanges',
             benchmark,
