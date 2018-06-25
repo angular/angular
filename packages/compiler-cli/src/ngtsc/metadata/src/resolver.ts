@@ -460,7 +460,7 @@ class StaticInterpreter {
       }
     } else if (Array.isArray(lhs)) {
       if (rhs === 'length') {
-        return rhs.length;
+        return lhs.length;
       }
       if (typeof rhs !== 'number' || !Number.isInteger(rhs)) {
         return DYNAMIC_VALUE;
