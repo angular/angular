@@ -6,7 +6,7 @@ const util = require('./utils/git_util');
 
 if (require.main === module) {
   main(process.argv.splice(2)).then(
-    (v) => process.exitCode = v ? 0 : 1, 
+    (v) => process.exitCode = v, 
     (e) => console.error(process.exitCode = 1, e)
   );
 }
@@ -42,7 +42,7 @@ async function main(args) {
     shell.exec(`git branch -D pr/${prNumber}`);
   }
 
-  shell.echo(`Fetching pull request \#${prNumber} with ${prNumber} SHA\(s\) into branch range: pr/${prNumber}_base..pr/${prNumber}_top`);
+  shell.echo(`Fetching pull request #${prNumber} with ${prNumber} SHA(s) into branch range: pr/${prNumber}_base..pr/${prNumber}_top`);
   shell.exec(`git fetch -f git@github.com:angular/angular.git pull/${prNumber}/head:pr/${prNumber}_top`);
 
   shell.exec(`git branch -f pr/${prNumber}_base pr/${prNumber}_top~${prShaCount}`);

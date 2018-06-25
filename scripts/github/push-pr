@@ -6,7 +6,7 @@ const util = require('./utils/git_util');
 
 if (require.main === module) {
   main(process.argv.splice(2)).then(
-    (v) => process.exitCode = v ? 0 : 1, 
+    (v) => process.exitCode, 
     (e) => console.error(process.exitCode = 1, e) 
   );
 }
@@ -17,21 +17,22 @@ async function main(args) {
   let printHelp = false;
 
   args.forEach((arg) => {
-      if (prNumber == 0 && arg > 0) {
-          prNumber = arg;
-      } else if (arg == '--help') {
-          printHelp = true;
-      } else if (arg == '--force-with-lease') {
-          forceWithLease = ' --force-with-lease';
-      } else {
-          shell.echo('Unexpected argument: ', arg);
-      }
+    if (prNumber == 0 && arg > 0) {
+      prNumber = arg;
+    } else if (arg == '--help') {
+      printHelp = true;
+    } else if (arg == '--force-with-lease') {
+      forceWithLease = ' --force-with-lease';
+    } else {
+      shell.echo('Unexpected argument: ', arg);
+    }
   });
 
   if (!prNumber) {
     const branch = util.getCurrentBranch();
     const maybePr = branch.split('/')[1];
     if (maybePr > 0) {
+      shell.echo(`PR number not specified. Defaulting to #${maybePr}.`);
       prNumber = maybePr;
     }
   }

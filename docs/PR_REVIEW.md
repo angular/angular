@@ -34,7 +34,7 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 ```
 
-Note that the script created `pr/24623_top` and `pr/24623_base` branches which denote where the PR start and end SHA.
+Note that the script created `pr/24623_top` and `pr/24623_base` branches which denote SHAs where the PR start and end.
 
 ```
 cef93a51b (pr/24623_top) ci: scripts to review PRs locally
@@ -60,7 +60,7 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 ```
 
-Use your IDE to review the untractked files as needed.
+Use your IDE to review the untracked files as needed.
 A good trick is to use your IDE to stage the files which were already reviewed.
 When all files are staged the review is done.
 
@@ -77,7 +77,7 @@ echo "# here is a change" >> docs/PR_REVIEW.md
 
 ### 4. Creating a Commit From Local Edits
 
-Since the HEAD has been reset to `pr/24623_base` so that changes show up in `git status` we have to do reverse the reset to only see our local changes.
+Since the HEAD has been reset to `pr/24623_base` so that changes show up in `git status` we have to reverse the reset to only see our local changes.
 To do that reset the `HEAD` to `pr/24623_top`.
 
 ```
@@ -113,6 +113,8 @@ existing text
 
 Next step is to turn your local changes into a `fixup!` commit.
 Run `git commit --all --fixup HEAD` to create a `fixup!` commit.
+
+NOTE: If you added new files they must be added using `git add .` or they will not be picked up by the `git commit --all` flag.
 
 ```
 $ git commit --all --fixup HEAD
