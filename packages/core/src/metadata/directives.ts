@@ -342,9 +342,12 @@ export interface Directive {
    * View queries are set before the `ngAfterViewInit` callback is called.
    *
    * @usageNotes
+   *
    * ### Example
    *
-   * The followoing example (shows what??)
+   * The following example shows how queries are defined
+   * and when their results are available in lifecycle hooks:
+   *
    * ```
    * @Component({
    *   selector: 'someDir',
@@ -467,7 +470,7 @@ export interface Directive {
 }
 
 /**
- * Type of the Component metadata.
+ * Type of the Directive metadata.
  */
 export const Directive: DirectiveDecorator =
     makeDecorator('Directive', (dir: Directive = {}) => dir);
