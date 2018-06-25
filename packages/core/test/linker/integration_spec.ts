@@ -939,7 +939,8 @@ function declareTests({useJit}: {useJit: boolean}) {
         @Directive({selector: '[host-listener]', host: {'(click)': 'doIt(id, unknownProp)'}})
         class DirectiveWithHostListener {
           id = 'one';
-          receivedArgs: any[];
+          // TODO(issue/24571): remove '!'.
+          receivedArgs !: any[];
 
           doIt(...args: any[]) { this.receivedArgs = args; }
         }
@@ -1956,12 +1957,14 @@ class MyDir {
 
 @Directive({selector: '[title]', inputs: ['title']})
 class DirectiveWithTitle {
-  title: string;
+  // TODO(issue/24571): remove '!'.
+  title !: string;
 }
 
 @Directive({selector: '[title]', inputs: ['title'], host: {'[title]': 'title'}})
 class DirectiveWithTitleAndHostProperty {
-  title: string;
+  // TODO(issue/24571): remove '!'.
+  title !: string;
 }
 
 @Component({selector: 'event-cmp', template: '<div (click)="noop()"></div>'})
@@ -2032,7 +2035,8 @@ class PushCmpWithHostEvent {
 })
 class PushCmpWithAsyncPipe {
   numberOfChecks: number = 0;
-  resolve: (result: any) => void;
+  // TODO(issue/24571): remove '!'.
+  resolve !: (result: any) => void;
   promise: Promise<any>;
 
   constructor() {
@@ -2218,7 +2222,8 @@ class DirectiveListeningDomEventNoPrevent {
 
 @Directive({selector: '[id]', inputs: ['id']})
 class IdDir {
-  id: string;
+  // TODO(issue/24571): remove '!'.
+  id !: string;
 }
 
 @Directive({selector: '[customEvent]'})
@@ -2281,7 +2286,8 @@ class ToolbarViewContainer {
   template: 'TOOLBAR(<div *ngFor="let  part of query" [toolbarVc]="part"></div>)',
 })
 class ToolbarComponent {
-  @ContentChildren(ToolbarPart) query: QueryList<ToolbarPart>;
+  // TODO(issue/24571): remove '!'.
+  @ContentChildren(ToolbarPart) query !: QueryList<ToolbarPart>;
   ctxProp: string = 'hello world';
 
   constructor() {}
@@ -2481,10 +2487,12 @@ class ComponentWithTemplate {
 class DirectiveWithPropDecorators {
   target: any;
 
-  @Input('elProp') dirProp: string;
+  // TODO(issue/24571): remove '!'.
+  @Input('elProp') dirProp !: string;
   @Output('elEvent') event = new EventEmitter();
 
-  @HostBinding('attr.my-attr') myAttr: string;
+  // TODO(issue/24571): remove '!'.
+  @HostBinding('attr.my-attr') myAttr !: string;
   @HostListener('click', ['$event.target'])
   onClick(target: any) { this.target = target; }
 

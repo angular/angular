@@ -24,10 +24,12 @@ export interface viewEngine_ChangeDetectorRef_interface extends viewEngine_Chang
 
 export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_InternalViewRef,
     viewEngine_ChangeDetectorRef_interface {
-  private _appRef: ApplicationRef|null;
+  // TODO(issue/24571): remove '!'.
+  private _appRef !: ApplicationRef | null;
 
   context: T;
-  rootNodes: any[];
+  // TODO(issue/24571): remove '!'.
+  rootNodes !: any[];
 
   constructor(protected _view: LViewData, context: T|null) { this.context = context !; }
 

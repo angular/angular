@@ -44,8 +44,10 @@ describe('queries', () => {
     `
     })
     class ViewQueryComponent {
-      @ViewChild(SomeDirective) someDir: SomeDirective;
-      @ViewChildren(SomeDirective) someDirList: QueryList<SomeDirective>;
+      // TODO(issue/24571): remove '!'.
+      @ViewChild(SomeDirective) someDir !: SomeDirective;
+      // TODO(issue/24571): remove '!'.
+      @ViewChildren(SomeDirective) someDirList !: QueryList<SomeDirective>;
 
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
@@ -97,8 +99,10 @@ describe('queries', () => {
       `
     })
     class ContentQueryComponent {
-      @ContentChild(SomeDirective) someDir: SomeDirective;
-      @ContentChildren(SomeDirective) someDirList: QueryList<SomeDirective>;
+      // TODO(issue/24571): remove '!'.
+      @ContentChild(SomeDirective) someDir !: SomeDirective;
+      // TODO(issue/24571): remove '!'.
+      @ContentChildren(SomeDirective) someDirList !: QueryList<SomeDirective>;
 
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({

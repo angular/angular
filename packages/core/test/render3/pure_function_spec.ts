@@ -15,7 +15,8 @@ describe('array literals', () => {
   let myComp: MyComp;
 
   class MyComp {
-    names: string[];
+    // TODO(issue/24571): remove '!'.
+    names !: string[];
 
     static ngComponentDef = defineComponent({
       type: MyComp,
@@ -68,8 +69,10 @@ describe('array literals', () => {
     let manyPropComp: ManyPropComp;
 
     class ManyPropComp {
-      names1: string[];
-      names2: string[];
+      // TODO(issue/24571): remove '!'.
+      names1 !: string[];
+      // TODO(issue/24571): remove '!'.
+      names2 !: string[];
 
       static ngComponentDef = defineComponent({
         type: ManyPropComp,
@@ -331,7 +334,8 @@ describe('object literals', () => {
   let objectComp: ObjectComp;
 
   class ObjectComp {
-    config: {[key: string]: any};
+    // TODO(issue/24571): remove '!'.
+    config !: {[key: string]: any};
 
     static ngComponentDef = defineComponent({
       type: ObjectComp,

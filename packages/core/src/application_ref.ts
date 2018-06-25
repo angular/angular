@@ -383,7 +383,8 @@ export class ApplicationRef {
   /**
    * Returns an Observable that indicates when the application is stable or unstable.
    */
-  public readonly isStable: Observable<boolean>;
+  // TODO(issue/24571): remove '!'.
+  public readonly isStable !: Observable<boolean>;
 
   /** @internal */
   constructor(

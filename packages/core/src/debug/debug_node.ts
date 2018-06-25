@@ -19,7 +19,8 @@ export class EventListener {
 export class DebugNode {
   nativeNode: any;
   listeners: EventListener[];
-  parent: DebugElement|null;
+  // TODO(issue/24571): remove '!'.
+  parent !: DebugElement | null;
 
   constructor(nativeNode: any, parent: DebugNode|null, private _debugContext: DebugContext) {
     this.nativeNode = nativeNode;
@@ -46,7 +47,8 @@ export class DebugNode {
  * @experimental All debugging apis are currently experimental.
  */
 export class DebugElement extends DebugNode {
-  name: string;
+  // TODO(issue/24571): remove '!'.
+  name !: string;
   properties: {[key: string]: any};
   attributes: {[key: string]: string | null};
   classes: {[key: string]: boolean};

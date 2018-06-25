@@ -76,7 +76,8 @@ describe('exports', () => {
     }
 
     class MyDir {
-      myDir: MyComponent;
+      // TODO(issue/24571): remove '!'.
+      myDir !: MyComponent;
       constructor() { myDir = this; }
       static ngDirectiveDef = defineDirective({
         type: MyDir,
@@ -242,7 +243,8 @@ describe('exports', () => {
       }
 
       class MyDir {
-        myDir: MyComponent;
+        // TODO(issue/24571): remove '!'.
+        myDir !: MyComponent;
 
         constructor() { myDir = this; }
 

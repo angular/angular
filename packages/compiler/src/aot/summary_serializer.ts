@@ -421,7 +421,8 @@ class ForJitSerializer {
 }
 
 class FromJsonDeserializer extends ValueTransformer {
-  private symbols: StaticSymbol[];
+  // TODO(issue/24571): remove '!'.
+  private symbols !: StaticSymbol[];
 
   constructor(
       private symbolCache: StaticSymbolCache,

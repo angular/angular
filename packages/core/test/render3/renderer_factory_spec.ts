@@ -136,7 +136,8 @@ describe('animation renderer factory', () => {
   }
 
   class SomeComponentWithAnimation {
-    exp: string;
+    // TODO(issue/24571): remove '!'.
+    exp !: string;
     callback(event: AnimationEvent) {
       eventLogs.push(`${event.fromState ? event.fromState : event.toState} - ${event.phaseName}`);
     }

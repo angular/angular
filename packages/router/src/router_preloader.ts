@@ -72,7 +72,8 @@ export class NoPreloading implements PreloadingStrategy {
 @Injectable()
 export class RouterPreloader implements OnDestroy {
   private loader: RouterConfigLoader;
-  private subscription: Subscription;
+  // TODO(issue/24571): remove '!'.
+  private subscription !: Subscription;
 
   constructor(
       private router: Router, moduleLoader: NgModuleFactoryLoader, compiler: Compiler,
