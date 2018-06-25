@@ -4,7 +4,6 @@
     "!**/*.d.ts",
     "!**/*.js",
     "!**/*.[0-9].*",
-    "!**/app-old/**/*.*",
 
     "!src/app/app.component.1.ts",
     "!src/app/hero-list.component.1.html",

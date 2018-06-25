@@ -64,7 +64,7 @@ export class ProfileEditorComponent implements OnInit {
 // #docregion get-alias-control
 
   getAliasControl() {
-    return this.fb.control(['']);
+    return this.fb.control('');
   }
 // #enddocregion get-alias-control
 // #docregion add-alias

@@ -53,7 +53,7 @@ export class ProfileEditorComponent {
   }
 
   getAliasControl() {
-    return this.fb.control(['']);
+    return this.fb.control('');
   }
 
   addAlias() {
