@@ -60,11 +60,29 @@ The process of `HeroService` injection looks something like this:
 
 ### Providing services
 
-You must register at least one *provider* of any service you are going to use. You can register providers in modules or in components.
+You must register at least one *provider* of any service you are going to use. A service can register providers itself, making it available everywhere, or you can register providers with specific modules or components. You register providers in the metadata of the service (in the `@Injectable` decorator), or in the `@NgModule` or `@Component` metadata 
 
-* When you add providers to the [root module](guide/architecture-modules), the same instance of a service is available to all components in your app.
+* By default, the Angular CLI command `ng generate service` registers a provider with the root injector for your service by including provider metadata in the `@Injectable` decorator. The tutorial uses this method to register the provider of  HeroService class definition:
 
-<code-example path="architecture/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (module providers)" region="providers"></code-example>
+``` 
+@Injectable({
+  providedIn: 'root',
+})
+``` 
+
+ When you provide the service at the root level, Angular creates a single, shared instance of HeroService and injects into any class that asks for it. Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all. 
+
+* When you register a provider with a [specific NgModule](guide/architecture-modules), the same instance of a service is available to all components in that NgModule. To register at this level, use the `providers` property of the `@NgModule` decorator:
+
+``` 
+@NgModule({
+  providers: [
+   BackendService,
+   Logger
+ ],
+ ...
+})
+``` 
 
 * When you register a provider at the component level, you get a new instance of the
 service with each new instance of that component. At the component level, register a service provider in the `providers` property of the `@Component` metadata:
