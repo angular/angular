@@ -39,7 +39,7 @@ class TextFormatter {
              <button (click)="addHero.emit()">Add Hero</button>`,
 })
 class Ng2HeroesComponent {
-  @Input() heroes: Hero[];
+  @Input() heroes !: Hero[];
   @Output() addHero = new EventEmitter();
   @Output() removeHero = new EventEmitter();
 }
@@ -77,9 +77,7 @@ class HeroesService {
 class Ng1HeroComponentWrapper extends UpgradeComponent {
   // The names of the input and output properties here must match the names of the
   // `<` and `&` bindings in the AngularJS component that is being wrapped
-  // TODO(issue/24571): remove '!'.
   @Input() hero !: Hero;
-  // TODO(issue/24571): remove '!'.
   @Output() onRemove !: EventEmitter<void>;
   constructor(@Inject(ElementRef) elementRef: ElementRef, @Inject(Injector) injector: Injector) {
     // We must pass the name of the directive as used by AngularJS to the super
