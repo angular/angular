@@ -19,13 +19,12 @@ import {BrowserXhr, HttpXhrBackend, XhrFactory} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
 
 /**
- * An injectable `HttpHandler` that applies multiple interceptors
+ * An `HttpHandler` that applies a bunch of `HttpInterceptor`s
  * to a request before passing it to the given `HttpBackend`.
  *
  * The interceptors are loaded lazily from the injector, to allow
  * interceptors to themselves inject classes depending indirectly
  * on `HttpInterceptingHandler` itself.
- * @see `HttpInterceptor`
  */
 @Injectable()
 export class HttpInterceptingHandler implements HttpHandler {
@@ -44,23 +43,6 @@ export class HttpInterceptingHandler implements HttpHandler {
 }
 
 /**
- * Constructs an `HttpHandler` that applies interceptors
- * to a request before passing it to the given `HttpBackend`.
- *
- * Use as a factory function within `HttpClientModule`.
- *
- *
- */
-export function interceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null = []): HttpHandler {
-  if (!interceptors) {
-    return backend;
-  }
-  return interceptors.reduceRight(
-      (next, interceptor) => new HttpInterceptorHandler(next, interceptor), backend);
-}
-
-/**
  * Factory function that determines where to store JSONP callbacks.
  *
  * Ordinarily JSONP callbacks are stored on the `window` object, but this may not exist
@@ -76,14 +58,14 @@ export function jsonpCallbackContext(): Object {
 }
 
 /**
- * An NgModule that adds XSRF protection support to outgoing requests.
+ * `NgModule` which adds XSRF protection support to outgoing requests.
  *
- * For a server that supports a cookie-based XSRF protection system,
- * use directly to configure XSRF protection with the correct
+ * Provided the server supports a cookie-based XSRF protection system, this
+ * module can be used directly to configure XSRF protection with the correct
  * cookie and header names.
  *
- * If no names are supplied, the default cookie name is `XSRF-TOKEN`
- * and the default header name is `X-XSRF-TOKEN`.
+ * If no such names are provided, the default is to use `X-XSRF-TOKEN` for
+ * the header name and `XSRF-TOKEN` for the cookie name.
  *
  *
  */
@@ -110,12 +92,8 @@ export class HttpClientXsrfModule {
   }
 
   /**
-   * Configure XSRF protection.
-   * @param options An object that can specify either or both
-   * cookie name or header name.
-   * - Cookie name default is `XSRF-TOKEN`.
-   * - Header name default is `X-XSRF-TOKEN`.
-   *
+   * Configure XSRF protection to use the given cookie name or header name,
+   * or the default names (as described above) if not provided.
    */
   static withOptions(options: {
     cookieName?: string,
@@ -132,7 +110,7 @@ export class HttpClientXsrfModule {
 }
 
 /**
- * An NgModule that provides the `HttpClient` and associated services.
+ * `NgModule` which provides the `HttpClient` and associated services.
  *
  * Interceptors can be added to the chain behind `HttpClient` by binding them
  * to the multiprovider for `HTTP_INTERCEPTORS`.
@@ -140,18 +118,12 @@ export class HttpClientXsrfModule {
  *
  */
 @NgModule({
-  /**
-   * Optional configuration for XSRF protection.
-   */
   imports: [
     HttpClientXsrfModule.withOptions({
       cookieName: 'XSRF-TOKEN',
       headerName: 'X-XSRF-TOKEN',
     }),
   ],
-  /**
-   * The module provides `HttpClient` itself, and supporting services.
-   */
   providers: [
     HttpClient,
     {provide: HttpHandler, useClass: HttpInterceptingHandler},
@@ -165,7 +137,7 @@ export class HttpClientModule {
 }
 
 /**
- * An NgModule that enables JSONP support in `HttpClient`.
+ * `NgModule` which enables JSONP support in `HttpClient`.
  *
  * Without this module, Jsonp requests will reach the backend
  * with method JSONP, where they'll be rejected.
