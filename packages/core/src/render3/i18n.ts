@@ -8,6 +8,7 @@
 
 import {assertEqual, assertLessThan} from './assert';
 import {NO_CHANGE, bindingUpdated, createLNode, getPreviousOrParentNode, getRenderer, getViewData, load} from './instructions';
+import {RENDER_PARENT} from './interfaces/container';
 import {LContainerNode, LElementNode, LNode, TNodeType} from './interfaces/node';
 import {BINDING_INDEX} from './interfaces/view';
 import {appendChild, createTextNode, getParentLNode, removeChild} from './node_manipulation';
@@ -320,6 +321,7 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         if (removedNode.tNode.type === TNodeType.Container && removedNode.dynamicLContainerNode) {
           removeChild(parentNode, removedNode.dynamicLContainerNode.native || null, viewData);
           removedNode.dynamicLContainerNode.tNode.detached = true;
+          removedNode.dynamicLContainerNode.data[RENDER_PARENT] = null;
         }
         break;
     }
