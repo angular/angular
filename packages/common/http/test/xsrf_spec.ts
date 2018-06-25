@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {HttpHandler} from '../src/backend';
 import {HttpHeaders} from '../src/headers';
 import {HttpRequest} from '../src/request';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor} from '../src/xsrf';
