@@ -114,6 +114,11 @@ export class Identifiers {
     moduleName: CORE,
   };
 
+  static InjectorDef: o.ExternalReference = {
+    name: 'InjectorDef',
+    moduleName: CORE,
+  };
+
   static defineInjector: o.ExternalReference = {
     name: 'defineInjector',
     moduleName: CORE,

@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import 'reflect-metadata';
+
+import {InjectorDef, defineInjectable} from '@angular/core/src/di/defs';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {inject, setCurrentInjector} from '@angular/core/src/di/injector';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
@@ -138,6 +141,31 @@ ivyEnabled && describe('render3 jit', () => {
     expect(moduleDef).toBeDefined();
     expect(moduleDef.declarations.length).toBe(1);
     expect(moduleDef.declarations[0]).toBe(Cmp);
+  });
+
+  it('compiles a module to an ngInjectorDef with the providers', () => {
+    class Token {
+      static ngInjectableDef = defineInjectable({
+        providedIn: 'root',
+        factory: () => 'default',
+      });
+    }
+
+    @NgModule({
+      providers: [{provide: Token, useValue: 'test'}],
+    })
+    class Module {
+      constructor(public token: Token) {}
+    }
+
+    const injectorDef: InjectorDef<Module> = (Module as any).ngInjectorDef;
+    const instance = injectorDef.factory();
+
+    // Since the instance was created outside of an injector using the module, the
+    // injection will use the default provider, not the provider from the module.
+    expect(instance.token).toBe('default');
+
+    expect(injectorDef.providers).toEqual([{provide: Token, useValue: 'test'}]);
   });
 
   it('patches a module onto the component', () => {

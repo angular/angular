@@ -35,10 +35,3 @@ jasmine_node_test(
         ":ivy_node_lib",
     ],
 )
-
-ts_web_test_suite(
-    name = "ivy_web",
-    deps = [
-        ":ivy_lib",
-    ],
-)

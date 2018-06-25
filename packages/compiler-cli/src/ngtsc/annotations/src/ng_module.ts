@@ -6,29 +6,36 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, R3DirectiveMetadata, R3NgModuleMetadata, WrappedNodeExpr, compileNgModule, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {ConstantPool, Expression, LiteralArrayExpr, R3DirectiveMetadata, R3InjectorMetadata, R3NgModuleMetadata, WrappedNodeExpr, compileInjector, compileNgModule, makeBindingParser, parseTemplate} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {Decorator} from '../../host';
+import {Decorator, ReflectionHost} from '../../host';
 import {Reference, ResolvedValue, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {isAngularCore, referenceToExpression} from './util';
+import {getConstructorDependencies, isAngularCore, referenceToExpression} from './util';
+
+export interface NgModuleAnalysis {
+  ngModuleDef: R3NgModuleMetadata;
+  ngInjectorDef: R3InjectorMetadata;
+}
 
 /**
  * Compiles @NgModule annotations to ngModuleDef fields.
  *
  * TODO(alxhub): handle injector side of things as well.
  */
-export class NgModuleDecoratorHandler implements DecoratorHandler<R3NgModuleMetadata> {
-  constructor(private checker: ts.TypeChecker, private scopeRegistry: SelectorScopeRegistry) {}
+export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalysis> {
+  constructor(
+      private checker: ts.TypeChecker, private reflector: ReflectionHost,
+      private scopeRegistry: SelectorScopeRegistry) {}
 
   detect(decorators: Decorator[]): Decorator|undefined {
     return decorators.find(decorator => decorator.name === 'NgModule' && isAngularCore(decorator));
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3NgModuleMetadata> {
+  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<NgModuleAnalysis> {
     if (decorator.args === null || decorator.args.length !== 1) {
       throw new Error(`Incorrect number of arguments to @NgModule decorator`);
     }
@@ -66,26 +73,51 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<R3NgModuleMeta
 
     const context = node.getSourceFile();
 
+    const ngModuleDef: R3NgModuleMetadata = {
+      type: new WrappedNodeExpr(node.name !),
+      bootstrap: [],
+      declarations: declarations.map(decl => referenceToExpression(decl, context)),
+      exports: exports.map(exp => referenceToExpression(exp, context)),
+      imports: imports.map(imp => referenceToExpression(imp, context)),
+      emitInline: false,
+    };
+
+    const providers: Expression = ngModule.has('providers') ?
+        new WrappedNodeExpr(ngModule.get('providers') !) :
+        new LiteralArrayExpr([]);
+
+    const ngInjectorDef: R3InjectorMetadata = {
+      name: node.name !.text,
+      type: new WrappedNodeExpr(node.name !),
+      deps: getConstructorDependencies(node, this.reflector), providers,
+      imports: new LiteralArrayExpr(
+          [...imports, ...exports].map(imp => referenceToExpression(imp, context))),
+    };
+
     return {
       analysis: {
-        type: new WrappedNodeExpr(node.name !),
-        bootstrap: [],
-        declarations: declarations.map(decl => referenceToExpression(decl, context)),
-        exports: exports.map(exp => referenceToExpression(exp, context)),
-        imports: imports.map(imp => referenceToExpression(imp, context)),
-        emitInline: false,
+          ngModuleDef, ngInjectorDef,
       },
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3NgModuleMetadata): CompileResult {
-    const res = compileNgModule(analysis);
-    return {
-      field: 'ngModuleDef',
-      initializer: res.expression,
-      statements: [],
-      type: res.type,
-    };
+  compile(node: ts.ClassDeclaration, analysis: NgModuleAnalysis): CompileResult[] {
+    const ngInjectorDef = compileInjector(analysis.ngInjectorDef);
+    const ngModuleDef = compileNgModule(analysis.ngModuleDef);
+    return [
+      {
+        name: 'ngModuleDef',
+        initializer: ngModuleDef.expression,
+        statements: [],
+        type: ngModuleDef.type,
+      },
+      {
+        name: 'ngInjectorDef',
+        initializer: ngInjectorDef.expression,
+        statements: [],
+        type: ngInjectorDef.type,
+      },
+    ];
   }
 }
 
