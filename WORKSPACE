@@ -6,9 +6,18 @@ workspace(name = "angular")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.10.0.zip",
-    strip_prefix = "rules_nodejs-0.10.0",
-    sha256 = "2f77623311da8b5009b1c7eade12de8e15fa3cd2adf9dfcc9f87cb2082b2211f",
+    url = "https://github.com/gregmagolan/rules_nodejs/archive/08740c1e4b551377c7ca025428e0b81a28e7f3df.zip",
+    strip_prefix = "rules_nodejs-08740c1e4b551377c7ca025428e0b81a28e7f3df",
+    sha256 = "81cc5e0fb0aaf089308a7847cdb86fd8c3048c0a8e4d49c6ffa7710c36faf134",
+)
+
+http_archive(
+    name = "bazel_gazelle",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/bazel-gazelle/releases/download/0.12.0/bazel-gazelle-0.12.0.tar.gz",
+        "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.12.0/bazel-gazelle-0.12.0.tar.gz",
+    ],
+    sha256 = "ddedc7aaeb61f2654d7d7d4fd7940052ea992ccdb031b8f9797ed143ac7e8d43",
 )
 
 http_archive(
@@ -72,6 +81,22 @@ http_archive(
 )
 
 #
+# Point Bazel to WORKSPACEs that live in subdirectories
+#
+
+local_repository(
+    name = "rxjs",
+    path = "node_modules/rxjs/src",
+)
+
+# Point to the integration test workspace just so that Bazel doesn't descend into it
+# when expanding the //... pattern
+local_repository(
+    name = "bazel_integration_test",
+    path = "integration/bazel",
+)
+
+#
 # Load and install our dependencies downloaded above.
 #
 
@@ -97,21 +122,9 @@ load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
 
 ts_setup_workspace()
 
-#
-# Point Bazel to WORKSPACEs that live in subdirectories
-#
+load("@angular//:index.bzl", "ng_setup_workspace")
 
-local_repository(
-    name = "rxjs",
-    path = "node_modules/rxjs/src",
-)
-
-# Point to the integration test workspace just so that Bazel doesn't descend into it
-# when expanding the //... pattern
-local_repository(
-    name = "bazel_integration_test",
-    path = "integration/bazel",
-)
+ng_setup_workspace()
 
 #
 # Ask Bazel to manage these toolchain dependencies for us.
