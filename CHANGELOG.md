@@ -20,10 +20,6 @@
 
 
 
-<a name="6.0.5"></a>
-## [6.0.5](https://github.com/angular/angular/compare/6.0.4...6.0.5) (2018-06-13)
-
-
 <a name="6.1.0-beta.1"></a>
 # [6.1.0-beta.1](https://github.com/angular/angular/compare/6.1.0-beta.0...6.1.0-beta.1) (2018-06-13)
 
