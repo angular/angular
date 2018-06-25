@@ -18,11 +18,11 @@ import {Component, Directive, EventEmitter} from '@angular/core';
   `
 })
 export class BankAccountComponent {
-  bankName: string;
-  id: string;
+  bankName: string|null = null;
+  id: string|null = null;
 
   // this property is not bound, and won't be automatically updated by Angular
-  normalizedBankName: string;
+  normalizedBankName: string|null = null;
 }
 
 @Component({
