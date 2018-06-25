@@ -14,7 +14,8 @@ try {
   // when loading the script.
   // This can be fixed using the --preserve-symlinks-main flag which
   // is introduced in node 10.2.0
-  console.warn("Running postinstall-patches.js script in an external repository requires --preserve-symlinks-main node flag introduced in node 10.2.0")
+  console.warn(
+      'Running postinstall-patches.js script in an external repository requires --preserve-symlinks-main node flag introduced in node 10.2.0');
   process.exit(0);
 }
 

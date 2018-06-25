@@ -3,12 +3,12 @@
 
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "6.0.0-rc.5"
+  version "6.1.0-beta.2"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/bazel@file:../../dist/packages-dist/bazel":
-  version "6.0.0-rc.5"
+  version "6.1.0-beta.2"
   dependencies:
     "@bazel/typescript" "^0.15.0"
     "@types/node" "6.0.84"
@@ -17,12 +17,12 @@
     shelljs "0.7.8"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "6.0.0-rc.5"
+  version "6.1.0-beta.2"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "6.0.0-rc.5"
+  version "6.1.0-beta.2"
   dependencies:
     chokidar "^1.4.2"
     minimist "^1.2.0"
@@ -30,22 +30,22 @@
     tsickle "^0.29.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "6.0.0-rc.5"
+  version "6.1.0-beta.2"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "6.0.0-rc.5"
+  version "6.1.0-beta.2"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "6.0.0-rc.5"
+  version "6.1.0-beta.2"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "6.0.0-rc.5"
+  version "6.1.0-beta.2"
   dependencies:
     tslib "^1.9.0"
 
@@ -1528,6 +1528,10 @@ tsickle@^0.29.0:
     mkdirp "^0.5.1"
     source-map "^0.6.0"
     source-map-support "^0.5.0"
+
+tslib@^1.8.1:
+  version "1.9.3"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
 
 tslib@^1.9.0:
   version "1.9.2"
