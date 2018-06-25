@@ -33,9 +33,12 @@ nodejs_binary(
         "@build_bazel_rules_typescript//internal:worker_protocol.proto",
     ],
     entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js",
+    # @//:node_modules should be first so that typescript is always picked up
+    # from @//:node_modules to prevent version skew in the build that can
+    # lead to failures
     node_modules_list = [
-        "@build_bazel_rules_typescript_tsc_wrapped_deps//:node_modules",
         "@//:node_modules",
+        "@build_bazel_rules_typescript_tsc_wrapped_deps//:node_modules",
     ],
     visibility = ["//visibility:public"],
 )
