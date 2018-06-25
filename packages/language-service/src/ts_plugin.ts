@@ -63,6 +63,14 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
                tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2, p3, p4)));
   }
 
+  function tryFilenameFiveCall<T, P1, P2, P3, P4, P5>(
+      m: (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) =>
+          T): (fileName: string, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) => T {
+    return (fileName, p1, p2, p3, p4, p5) =>
+               tryCall(fileName, () => <T>(m.call(ls, fileName, p1, p2, p3, p4, p5)));
+  }
+
+
   function typescriptOnly(ls: ts.LanguageService): ts.LanguageService {
     const languageService: ts.LanguageService = {
       cleanupSemanticCache: () => ls.cleanupSemanticCache(),
@@ -74,7 +82,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getEncodedSyntacticClassifications: tryFilenameOneCall(ls.getEncodedSyntacticClassifications),
       getEncodedSemanticClassifications: tryFilenameOneCall(ls.getEncodedSemanticClassifications),
       getCompletionsAtPosition: tryFilenameTwoCall(ls.getCompletionsAtPosition),
-      getCompletionEntryDetails: tryFilenameFourCall(ls.getCompletionEntryDetails),
+      getCompletionEntryDetails: tryFilenameFiveCall(ls.getCompletionEntryDetails),
       getCompletionEntrySymbol: tryFilenameThreeCall(ls.getCompletionEntrySymbol),
       getQuickInfoAtPosition: tryFilenameOneCall(ls.getQuickInfoAtPosition),
       getNameOrDottedNameSpan: tryFilenameTwoCall(ls.getNameOrDottedNameSpan),
@@ -106,22 +114,28 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getDocCommentTemplateAtPosition: tryFilenameOneCall(ls.getDocCommentTemplateAtPosition),
       isValidBraceCompletionAtPosition: tryFilenameTwoCall(ls.isValidBraceCompletionAtPosition),
       getSpanOfEnclosingComment: tryFilenameTwoCall(ls.getSpanOfEnclosingComment),
-      getCodeFixesAtPosition: tryFilenameFourCall(ls.getCodeFixesAtPosition),
+      getCodeFixesAtPosition: tryFilenameFiveCall(ls.getCodeFixesAtPosition),
       applyCodeActionCommand:
           <any>((action: any) => tryCall(undefined, () => ls.applyCodeActionCommand(action))),
       getEmitOutput: tryFilenameCall(ls.getEmitOutput),
       getProgram: () => ls.getProgram(),
       dispose: () => ls.dispose(),
-      getApplicableRefactors: tryFilenameOneCall(ls.getApplicableRefactors),
-      getEditsForRefactor: tryFilenameFourCall(ls.getEditsForRefactor),
+      getApplicableRefactors: tryFilenameTwoCall(ls.getApplicableRefactors),
+      getEditsForRefactor: tryFilenameFiveCall(ls.getEditsForRefactor),
       getDefinitionAndBoundSpan: tryFilenameOneCall(ls.getDefinitionAndBoundSpan),
       getCombinedCodeFix:
-          (scope: ts.CombinedCodeFixScope, fixId: {}, formatOptions: ts.FormatCodeSettings) =>
-              tryCall(undefined, () => ls.getCombinedCodeFix(scope, fixId, formatOptions)),
+          (scope: ts.CombinedCodeFixScope, fixId: {}, formatOptions: ts.FormatCodeSettings,
+           preferences: ts.UserPreferences) =>
+              tryCall(
+                  undefined, () => ls.getCombinedCodeFix(scope, fixId, formatOptions, preferences)),
       // TODO(kyliau): dummy implementation to compile with ts 2.8, create real one
       getSuggestionDiagnostics: (fileName: string) => [],
       // TODO(kyliau): dummy implementation to compile with ts 2.8, create real one
       organizeImports: (scope: ts.CombinedCodeFixScope, formatOptions: ts.FormatCodeSettings) => [],
+      // TODO: dummy implementation to compile with ts 2.9, create a real one
+      getEditsForFileRename:
+          (oldFilePath: string, newFilePath: string, formatOptions: ts.FormatCodeSettings,
+           preferences: ts.UserPreferences | undefined) => []
     } as ts.LanguageService;
     return languageService;
   }

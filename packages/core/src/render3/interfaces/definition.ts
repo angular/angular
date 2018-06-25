@@ -84,7 +84,7 @@ export interface DirectiveDef<T, Selector extends string> {
   type: Type<T>;
 
   /** Function that makes a directive public to the DI system. */
-  diPublic: ((def: DirectiveDef<any, string>) => void)|null;
+  diPublic: ((def: DirectiveDef<T, string>) => void)|null;
 
   /** The selectors that will be used to match nodes to this directive. */
   selectors: CssSelectorList;
@@ -94,7 +94,7 @@ export interface DirectiveDef<T, Selector extends string> {
    * are their aliases if any, or their original unminified property names
    * (as in `@Input('alias') propertyName: any;`).
    */
-  readonly inputs: {[P in keyof T]: P};
+  readonly inputs: {[P in keyof T]: string};
 
   /**
    * @deprecated This is only here because `NgOnChanges` incorrectly uses declared name instead of

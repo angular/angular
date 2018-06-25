@@ -974,7 +974,7 @@ describe('Collector', () => {
     });
   });
 
-  describe('regerssion', () => {
+  describe('regeression', () => {
     it('should be able to collect a short-hand property value', () => {
       const metadata = collectSource(`
         const children = { f1: 1 };
