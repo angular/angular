@@ -1516,7 +1516,7 @@ export declare enum HttpEventType {
     ResponseHeader = 2,
     DownloadProgress = 3,
     Response = 4,
-    User = 5,
+    User = 5
 }
 
 export declare abstract class HttpHandler {

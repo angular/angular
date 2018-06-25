@@ -1525,7 +1525,7 @@ export function baseDirectiveCreate<T>(
  * @param tNode The static data for this node
  */
 function setInputsFromAttrs<T>(
-    directiveIndex: number, instance: T, inputs: {[key: string]: string}, tNode: TNode): void {
+    directiveIndex: number, instance: T, inputs: {[P in keyof T]: string;}, tNode: TNode): void {
   let initialInputData = tNode.initialInputs as InitialInputData | undefined;
   if (initialInputData === undefined || directiveIndex >= initialInputData.length) {
     initialInputData = generateInitialInputs(directiveIndex, inputs, tNode);

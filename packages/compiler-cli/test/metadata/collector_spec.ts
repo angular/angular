@@ -974,7 +974,7 @@ describe('Collector', () => {
     });
   });
 
-  describe('regerssion', () => {
+  describe('regression', () => {
     it('should be able to collect a short-hand property value', () => {
       const metadata = collectSource(`
         const children = { f1: 1 };
@@ -1040,37 +1040,6 @@ describe('Collector', () => {
           .not.toBeUndefined('typeGuard was not collected');
     });
 
-    it('should be able to collect an invalid access expression', () => {
-      const source = createSource(`
-        import {Component} from '@angular/core';
-
-        const value = [];
-        @Component({
-          provider: [{provide: 'some token', useValue: value[]}]
-        })
-        export class MyComponent {}
-      `);
-      const metadata = collector.getMetadata(source) !;
-      expect(metadata.metadata.MyComponent).toEqual({
-        __symbolic: 'class',
-        decorators: [{
-          __symbolic: 'call',
-          expression: {
-            __symbolic: 'reference',
-            module: '@angular/core',
-            name: 'Component',
-            line: 4,
-            character: 9
-          },
-          arguments: [{
-            __symbolic: 'error',
-            message: 'Expression form not supported',
-            line: 5,
-            character: 55
-          }]
-        }]
-      });
-    });
   });
 
   describe('references', () => {

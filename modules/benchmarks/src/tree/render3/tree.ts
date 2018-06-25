@@ -7,7 +7,6 @@
  */
 
 import {ɵC as C, ɵE as E, ɵRenderFlags as RenderFlags, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵsn as sn, ɵt as t, ɵv as v} from '@angular/core';
-import {ComponentDefInternal} from '@angular/core/src/render3/interfaces/definition';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
 
@@ -35,7 +34,7 @@ export class TreeComponent {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
-  static ngComponentDef: ComponentDefInternal<TreeComponent> = defineComponent({
+  static ngComponentDef = defineComponent({
     type: TreeComponent,
     selectors: [['tree']],
     template: function(rf: RenderFlags, ctx: TreeComponent) {
@@ -95,7 +94,7 @@ export class TreeFunction {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
-  static ngComponentDef: ComponentDefInternal<TreeFunction> = defineComponent({
+  static ngComponentDef = defineComponent({
     type: TreeFunction,
     selectors: [['tree']],
     template: function(rf: RenderFlags, ctx: TreeFunction) {

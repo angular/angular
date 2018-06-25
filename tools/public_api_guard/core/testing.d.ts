@@ -78,12 +78,12 @@ export declare class TestBed implements Injector {
     }): void;
     configureTestingModule(moduleDef: TestModuleMetadata): void;
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
-    deprecatedOverrideProvider(token: any, provider: {
-        useValue: any;
-    }): void;
     /** @deprecated */ deprecatedOverrideProvider(token: any, provider: {
         useFactory: Function;
         deps: any[];
+    }): void;
+    deprecatedOverrideProvider(token: any, provider: {
+        useValue: any;
     }): void;
     execute(tokens: any[], fn: Function, context?: any): any;
     get(token: any, notFoundValue?: any): any;
@@ -123,11 +123,11 @@ export declare class TestBed implements Injector {
     static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): typeof TestBed;
     static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): typeof TestBed;
     static overrideProvider(token: any, provider: {
-        useFactory: Function;
-        deps: any[];
+        useValue: any;
     }): typeof TestBed;
     static overrideProvider(token: any, provider: {
-        useValue: any;
+        useFactory: Function;
+        deps: any[];
     }): typeof TestBed;
     static overrideTemplate(component: Type<any>, template: string): typeof TestBed;
     static overrideTemplateUsingTestingModule(component: Type<any>, template: string): typeof TestBed;

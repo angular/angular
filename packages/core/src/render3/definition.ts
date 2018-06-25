@@ -209,7 +209,7 @@ export function defineComponent<T>(componentDefinition: {
   const type = componentDefinition.type;
   const pipeTypes = componentDefinition.pipes !;
   const directiveTypes = componentDefinition.directives !;
-  const declaredInputs: {[P in keyof T]: P} = {} as any;
+  const declaredInputs: {[key: string]: string} = {} as any;
   const def: ComponentDefInternal<any> = {
     type: type,
     diPublic: null,
