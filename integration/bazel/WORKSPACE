@@ -39,6 +39,20 @@ http_archive(
 )
 
 #
+# Point Bazel to WORKSPACEs that live in subdirectories
+#
+
+local_repository(
+    name = "angular",
+    path = "node_modules/@angular/bazel",
+)
+
+local_repository(
+    name = "rxjs",
+    path = "node_modules/rxjs/src",
+)
+
+#
 # Load and install our dependencies downloaded above.
 #
 
@@ -67,24 +81,6 @@ ts_setup_workspace()
 load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
 
 sass_repositories()
-
-#
-# Point Bazel to WORKSPACEs that live in subdirectories
-#
-
-local_repository(
-    name = "angular",
-    path = "node_modules/@angular/bazel",
-)
-
-local_repository(
-    name = "rxjs",
-    path = "node_modules/rxjs/src",
-)
-
-#
-# Load and install our dependencies from local repositories
-#
 
 load("@angular//:index.bzl", "ng_setup_workspace")
 
