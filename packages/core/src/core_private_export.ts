@@ -28,5 +28,5 @@ export {_sanitizeUrl as ɵ_sanitizeUrl} from './sanitization/url_sanitizer';
 export {global as ɵglobal, looseIdentical as ɵlooseIdentical, stringify as ɵstringify} from './util';
 export {makeDecorator as ɵmakeDecorator} from './util/decorators';
 export {isObservable as ɵisObservable, isPromise as ɵisPromise} from './util/lang';
-export {clearOverrides as ɵclearOverrides, overrideComponentView as ɵoverrideComponentView, overrideProvider as ɵoverrideProvider} from './view/index';
+export {clearOverrides as ɵclearOverrides, initServicesIfNeeded as ɵinitServicesIfNeeded, overrideComponentView as ɵoverrideComponentView, overrideProvider as ɵoverrideProvider} from './view/index';
 export {NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR as ɵNOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR} from './view/provider';

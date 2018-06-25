@@ -22,6 +22,10 @@ npm_package(
         # We don't actually import anything in the locale code so we can
         # null out the require reference passed into the module.
         "factory\(require, exports\)": "factory(null, exports)",
+
+        # Workaround for `.d.ts`` containing `/// <amd-module .../>`
+        # which are generated in TypeScript v2.9, but not before.
+        "/// <amd-module name=.*/>": "",
     },
     deps = [":locales"],
 )
