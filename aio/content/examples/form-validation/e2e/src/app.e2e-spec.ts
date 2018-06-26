@@ -16,6 +16,7 @@ describe('Form Validation Tests', function () {
 
     tests('Template-Driven Form');
     bobTests();
+    crossValidationTests();
   });
 
   describe('Reactive form', () => {
@@ -25,6 +26,7 @@ describe('Form Validation Tests', function () {
 
     tests('Reactive Form');
     bobTests();
+    crossValidationTests();
   });
 });
 
@@ -42,7 +44,8 @@ let page: {
   powerOption: ElementFinder,
   errorMessages: ElementArrayFinder,
   heroFormButtons: ElementArrayFinder,
-  heroSubmitted: ElementFinder
+  heroSubmitted: ElementFinder,
+  crossValidationErrorMessage: ElementFinder,
 };
 
 function getPage(sectionTag: string) {
@@ -59,7 +62,8 @@ function getPage(sectionTag: string) {
     powerOption: section.element(by.css('#power option')),
     errorMessages: section.all(by.css('div.alert')),
     heroFormButtons: buttons,
-    heroSubmitted: section.element(by.css('.submitted-message'))
+    heroSubmitted: section.element(by.css('.submitted-message')),
+    crossValidationErrorMessage: section.element(by.css('.cross-validation-error-message')),
   };
 }
 
@@ -170,5 +174,31 @@ function bobTests() {
     page.nameInput.clear();
     page.nameInput.sendKeys(testName);
     expectFormIsValid();
+  });
+}
+
+function crossValidationTests() {
+  const emsg = 'Name cannot match alter ego.';
+
+  it(`should produce "${emsg}" error after setting name and alter ego to the same value`, function () {
+    page.nameInput.clear();
+    page.nameInput.sendKeys('Batman');
+
+    page.alterEgoInput.clear();
+    page.alterEgoInput.sendKeys('Batman');
+
+    expectFormIsInvalid();
+    expect(page.crossValidationErrorMessage.getText()).toBe(emsg);
+  });
+
+  it('should be ok again with different values', function () {
+    page.nameInput.clear();
+    page.nameInput.sendKeys('Batman');
+
+    page.alterEgoInput.clear();
+    page.alterEgoInput.sendKeys('Superman');
+
+    expectFormIsValid();
+    expect(page.crossValidationErrorMessage.isPresent()).toBe(false);
   });
 }
