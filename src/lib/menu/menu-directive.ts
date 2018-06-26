@@ -385,5 +385,15 @@ export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnI
   _onAnimationDone(event: AnimationEvent) {
     this._animationDone.next(event);
     this._isAnimating = false;
+
+    // Scroll the content element to the top once the animation is done. This is necessary, because
+    // we move focus to the first item while it's still being animated, which can throw the browser
+    // off when it determines the scroll position. Alternatively we can move focus when the
+    // animation is done, however moving focus asynchronously will interrupt screen readers
+    // which are in the process of reading out the menu already. We take the `element` from
+    // the `event` since we can't use a `ViewChild` to access the pane.
+    if (event.toState === 'enter' && this._keyManager.activeItemIndex === 0) {
+      event.element.scrollTop = 0;
+    }
   }
 }
