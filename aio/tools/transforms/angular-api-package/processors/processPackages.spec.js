@@ -39,9 +39,9 @@ describe('processPackages processor', () => {
     ];
     const newDocs = processor.$process(docs);
     expect(newDocs).toEqual([
-      { fileInfo: { filePath: 'some/a' }, docType: 'package', id: 'a' },
-      { fileInfo: { filePath: 'some/b' }, docType: 'package', id: 'b' },
-      { docType: 'other', id: 'c' },
+      jasmine.objectContaining({ docType: 'package', id: 'a' }),
+      jasmine.objectContaining({ docType: 'package', id: 'b' }),
+      jasmine.objectContaining({ docType: 'other', id: 'c' }),
     ]);
   });
 
@@ -69,22 +69,62 @@ describe('processPackages processor', () => {
     ];
     const processor = processorFactory();
     const newDocs = processor.$process(docs);
-    expect(newDocs).toEqual([
+
+    const package1 = jasmine.objectContaining({
+      fileInfo: { filePath: 'some/package-1/PACKAGE.md' },
+      docType: 'package',
+      name: '@angular/package-1',
+      id: 'package-1',
+      someProp: 'foo',
+      shortDescription: 'some short description',
+      description: 'some description',
+      see: [ 'a', 'b' ],
+      isPrimaryPackage: true,
+    });
+
+    const package2 = jasmine.objectContaining({
+      fileInfo: { filePath: 'some/package-2/index' },
+      docType: 'package',
+      name: '@angular/package-2',
+      id: 'package-2',
+      isPrimaryPackage: true,
+    });
+
+    expect(newDocs).toEqual([package1, package2]);
+  });
+
+  it('should compute primary and second package info', () => {
+    const docs = [
       {
-        fileInfo: { filePath: 'some/package-1/PACKAGE.md' },
-        docType: 'package',
+        fileInfo: { filePath: 'some/package-1/index' },
+        docType: 'module',
         id: 'package-1',
-        someProp: 'foo',
-        shortDescription: 'some short description',
-        description: 'some description',
-        see: [ 'a', 'b' ],
       },
       {
-        fileInfo: { filePath: 'some/package-2/index' },
-        docType: 'package',
-        id: 'package-2'
+        fileInfo: { filePath: 'some/package-1/sub-1index' },
+        docType: 'module',
+        id: 'package-1/sub-1',
       },
-    ]);
+      {
+        fileInfo: { filePath: 'some/package-1/sub-2index' },
+        docType: 'module',
+        id: 'package-1/sub-2',
+      },
+    ];
+    const processor = processorFactory();
+    const newDocs = processor.$process(docs);
+
+    expect(newDocs[0].isPrimaryPackage).toBe(true);
+    expect(newDocs[1].isPrimaryPackage).toBe(false);
+    expect(newDocs[2].isPrimaryPackage).toBe(false);
+
+    expect(newDocs[0].packageInfo.primary).toBe(newDocs[0]);
+    expect(newDocs[1].packageInfo.primary).toBe(newDocs[0]);
+    expect(newDocs[2].packageInfo.primary).toBe(newDocs[0]);
+
+    expect(newDocs[0].packageInfo.secondary).toEqual([newDocs[1], newDocs[2]]);
+    expect(newDocs[1].packageInfo.secondary).toEqual([newDocs[1], newDocs[2]]);
+    expect(newDocs[2].packageInfo.secondary).toEqual([newDocs[1], newDocs[2]]);
   });
 
   it('should partition the exports of packages into groups', () => {
