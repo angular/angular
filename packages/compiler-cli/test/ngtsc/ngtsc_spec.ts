@@ -147,6 +147,27 @@ describe('ngtsc behavioral tests', () => {
     expect(dtsContents).toContain('static ngComponentDef: i0.ComponentDef<TestCmp, \'test-cmp\'>');
   });
 
+  it('should compile Components without errors', () => {
+    writeConfig();
+    write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          selector: 'test-cmp',
+          templateUrl: './dir/test.html',
+        })
+        export class TestCmp {}
+    `);
+    write('dir/test.html', '<p>Hello World</p>');
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    expect(jsContents).toContain('Hello World');
+  });
+
   it('should compile NgModules without errors', () => {
     writeConfig();
     write('test.ts', `

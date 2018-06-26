@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export {ResourceLoader} from './src/api';
 export {ComponentDecoratorHandler} from './src/component';
 export {DirectiveDecoratorHandler} from './src/directive';
 export {InjectableDecoratorHandler} from './src/injectable';
