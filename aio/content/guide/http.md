@@ -786,14 +786,26 @@ The `HttpParams` are immutable so you'll have to use the `set()` method to updat
 -->
 `HttpParams`도 이뮤터블 클래스이기 때문에, 값을 수정하려면 `set()` 메소드를 사용해야 합니다.
 
+<!--
 ### Debouncing requests
+-->
+### 연속된 요청 처리하기 (debouncing request)
 
+<!--
 The sample includes an _npm package search_ feature.
+-->
+이번에는 _npm 패키지를 검색하는 기능_ 을 구현해 봅시다.
 
+<!--
 When the user enters a name in a search-box, the `PackageSearchComponent` sends
 a search request for a package with that name to the NPM web API.
+-->
+사용자가 `PackageSearchComponent`에 있는 검색 필드에 텍스트를 입력하면, 이 값을 NPM 웹 API로 보내서 해당 패키지가 있는지 검색하려고 합니다.
 
+<!--
 Here's a pertinent excerpt from the template:
+-->
+먼저, 템플릿은 이렇게 구성합니다:
 
 <code-example 
   path="http/src/app/package-search/package-search.component.html"
@@ -801,11 +813,19 @@ Here's a pertinent excerpt from the template:
   title="app/package-search/package-search.component.html (search)">
 </code-example>
 
+<!--
 The `(keyup)` event binding sends every keystroke to the component's `search()` method.
+-->
+그러면 `(keyup)` 이벤트가 바인딩 되었기 떄문에, 키 입력이 발생할 때마다 컴포넌트의 `search()` 메소드가 실행됩니다.
 
+<!---
 Sending a request for every keystroke could be expensive.
 It's better to wait until the user stops typing and then send a request.
 That's easy to implement with RxJS operators, as shown in this excerpt.
+-->
+하지만 키입력이 있을 때마다 HTTP 요청을 보내는 것은 효율적이지 않습니다.
+이런 경우는 사용자가 입력을 멈추기를 기다렸다가 요청을 보내는 것이 더 좋습니다.
+이 동작은 RxJS 연산자를 활용하면 쉽게 구현할 수 있습니다.
 
 <code-example 
   path="http/src/app/package-search/package-search.component.ts"
@@ -813,78 +833,146 @@ That's easy to implement with RxJS operators, as shown in this excerpt.
   title="app/package-search/package-search.component.ts (excerpt))">
 </code-example>
 
+<!--
 The `searchText$` is the sequence of search-box values coming from the user.
 It's defined as an RxJS `Subject`, which means it is a multicasting `Observable`
 that can also produce values for itself by calling `next(value)`,
 as happens in the `search()` method.
+-->
+`searchText$`는 검색 필드에서 사용자가 입력하는 문자열을 표현합니다.
+이 프로퍼티는 RxJS `Subject` 타입으로 정의되었는데, 이 객체는 `Observable`을 상속받아 만든 객체이며, `next(값)` 메소드를 실행하면 다음 값을 직접 보낼 수 있도록 확장된 객체입니다. 이 코드에서는 `next()`가 실행될 때마다 `search()` 메소드가 실행됩니다.
 
+<!--
 Rather than forward every `searchText` value directly to the injected `PackageSearchService`,
 the code in `ngOnInit()` _pipes_ search values through three operators:
+-->
+모든 입력값을 `PackageSearchService`로 보내는 대신, 이 코드에서는 `ngOnInit()` 메소드에 _파이프_ 를 사용해서 연산자 3개를 연결합니다:
 
+<!--
 1. `debounceTime(500)` - wait for the user to stop typing (1/2 second in this case).
 1. `distinctUntilChanged()` - wait until the search text changes.
 1. `switchMap()` - send the search request to the service.
+-->
+1. `debounceTime(500)` - 사용자의 입력이 멈추는 것을 기다립니다. 이 코드의 경우는 500ms 기다립니다.
+1. `distinctUntilChanged()` - 입력 필드의 값이 실제로 변경되는 것을 기다립니다.
+1. `switchMap()` - 서비스로 요청을 보냅니다.
 
+<!--
 The code sets `packages$` to this re-composed `Observable` of search results.
 The template subscribes to `packages$` with the [AsyncPipe](api/common/AsyncPipe)
 and displays search results as they arrive.
+-->
+위 코드에서 `packages$`는 검색 결과로 받는 `Observable`을 표현합니다.
+그리고 이 프로퍼티는 템플릿에서 [AsyncPipe](api/common/AsyncPipe)를 사용해서 구독하기 때문에, 응답이 올때 자동으로 템플릿도 갱신됩니다.
 
+<!--
 A search value reaches the service only if it's a new value and the user has stopped typing.
+-->
+이렇게 작성하면 사용자가 멈췄을 때, 새로운 값일 때만 서비스로 검색어가 전달됩니다.
 
 <div class="l-sub-section">
 
+<!--
 The `withRefresh` option is explained [below](#cache-refresh).
+-->
+`withRefresh` 옵션은 [아래](#cache-refresh)에서 다시 알아봅니다.
 
 </div>
 
 #### _switchMap()_
 
+<!--
 The `switchMap()` operator has three important characteristics.
+-->
+`switchMap()` 연산자에는 중요한 특징이 3가지 있습니다.
 
+<!--
 1. It takes a function argument that returns an `Observable`.
 `PackageSearchService.search` returns an `Observable`, as other data service methods do.
+-->
+1. 이 연산자는 인자로 `Observable`을 반환하는 함수를 받습니다.
+`PackageSearchService.search` 함수도 옵저버블을 반환하기 때문에 이 코드에 사용했습니다.
 
+<!--
 2. If a previous search request is still _in-flight_ (as when the connection is poor),
 it cancels that request and sends a new one.
+-->
+2. 이전에 시작한 검색 요청이 _아직 완료되지 않았으면_ 이전 요청을 취소하고 새로운 요청을 보냅니다. 
 
+<!--
 3. It returns service responses in their original request order, even if the
 server returns them out of order. 
-
+-->
+3. 이 연산자는 연산자에 전달된 스트림 순서로 결과를 반환합니다. 서버에서 어떤 순서로 반환하는지는 관계없습니다.
 
 <div class="l-sub-section">
 
+<!--
 If you think you'll reuse this debouncing logic,
 consider moving it to a utility function or into the `PackageSearchService` itself.
+-->
+이 로직을 재활용하려면 이 로직의 위치를 컴포넌트 대신 `PackageSearchService`로 옮기는 것이 좋습니다.
 
 </div>
 
+<!--
 ### Intercepting requests and responses
+-->
+### HTTP 요청/응답 가로채기
 
+<!--
 _HTTP Interception_ is a major feature of `@angular/common/http`. 
 With interception, you declare _interceptors_ that inspect and transform HTTP requests from your application to the server.
 The same interceptors may also inspect and transform the server's responses on their way back to the application.
 Multiple interceptors form a _forward-and-backward_ chain of request/response handlers.
+-->
+_HTTP 요청과 응답을 가로채는 동작_ 은 `@angular/common/http`에서 제공하는 주요 기능 중 하나입니다.
+HTTP 요청을 가로채려면, 먼저 애플리케이션에서 서버로 보내는 HTTP 요청을 확인하고 조작할 수 있는 _인터셉터(interceptor)_ 를 정의해야 합니다.
+그리고 이렇게 구현한 인터셉터로 서버에서 애플리케이션으로 향하는 HTTP 응답도 확인하고 조작할 수 있습니다.
+인터셉터는 여러 개가 순서대로 실행되도록 체이닝할 수도 있습니다.
 
+<!--
 Interceptors can perform a variety of  _implicit_ tasks, from authentication to logging, in a routine, standard way, for every HTTP request/response. 
+-->
+인터셉터는 다양한 기능을 수행할 수 있습니다. 일반적으로는 HTTP 요청/응답에 대해 사용자 인증 정보를 확인하고 로그를 출력하기 위해 사용합니다.
 
+<!--
 Without interception, developers would have to implement these tasks _explicitly_ 
 for each `HttpClient` method call.
+-->
+만약 인터셉터를 사용하지 않는다면, 모든 `HttpClient` 메소드가 실행될 때마다 필요한 작업을 _직접_ 처리해야 합니다.
 
+<!--
 #### Write an interceptor
+-->
+#### 인터셉터 구현하기
 
+<!--
 To implement an interceptor, declare a class that implements the `intercept()` method of the `HttpInterceptor` interface.
+-->
+인터셉터를 구현하려면, `HttpInterceptor` 인터페이스를 사용하는 클래스를 정의하고 이 클래스 안에 `intercept()` 메소드를 정의하면 됩니다.
 
+<!--
  Here is a do-nothing _noop_ interceptor that simply passes the request through without touching it:
+-->
+다음 코드는 기존 HTTP 요청을 변형하지 않고 그대로 통과시키는 인터셉터 기본 코드입니다:
 <code-example 
   path="http/src/app/http-interceptors/noop-interceptor.ts"
   title="app/http-interceptors/noop-interceptor.ts"
   linenums="false">
 </code-example>
 
+<!--
 The `intercept` method transforms a request into an `Observable` that eventually returns the HTTP response. 
 In this sense, each interceptor is fully capable of handling the request entirely by itself.
+-->
+`intercept` 메소드는 `Observable` 타입으로 HTTP 요청을 받아서 HTTP 응답을 반환합니다.
+이것만 봐도, 각각의 인터셉터는 HTTP 요청에 대해 모든 것을 조작할 수 있습니다.
 
+<!--
 Most interceptors inspect the request on the way in and forward the (perhaps altered) request to the `handle()` method of the `next` object which implements the [`HttpHandler`](api/common/http/HttpHandler) interface.
+-->
+일반적으로 인터셉터는 요청을 보내거나 응답을 받는 방향을 그대로 유지하기 위해, [`HttpHandler`](api/common/http/HttpHandler) 인터페이스로 받은 `next` 인자의 `handle()` 메소드를 호출합니다.
 
 ```javascript
 export abstract class HttpHandler {
@@ -892,52 +980,100 @@ export abstract class HttpHandler {
 }
 ```
 
+<!--
 Like `intercept()`, the `handle()` method transforms an HTTP request into an `Observable` of [`HttpEvents`](#httpevents) which ultimately include the server's response. The `intercept()` method could inspect that observable and alter it before returning it to the caller.
+-->
+`intercept()`와 비슷하게, `handle()` 메소드도 HTTP 요청으로 받은 옵저버블을 [`HttpEvents`](#httpevents) 타입의 옵저버블로 변환하며, 이 타입이 서버의 최종 응답을 표현하는 타입입니다. `intercept()` 메소드는 이렇게 받은 서버의 응답을 확인할 수 있으며, HTTP 요청을 시작한 컨텍스트로 돌아가기 전까지 옵저버블의 내용을 조작할 수 있습니다.
 
+<!--
 This _no-op_ interceptor simply calls `next.handle()` with the original request and returns the observable without doing a thing.
+-->
+원래 HTTP 요청이나 응답을 조작하지 않고 그대로 통과시키려면 단순하게 `next.handle()`을 실행하면 됩니다.
 
+<!--
 #### The _next_ object
+-->
+#### _next_ 객체
 
+<!--
 The `next` object represents the next interceptor in the chain of interceptors. 
 The final `next` in the chain is the `HttpClient` backend handler that sends the request to the server and receives the server's response.
+-->
+`next` 객체는 체이팅되는 인터셉터 중 다음으로 실행될 인터셉터를 의미합니다.
+그리고 인터셉터 체인 중 마지막 인터셉터가 받는 `next` 객체는 `HttpClient` 백엔드 핸들러이며, 이 핸들러가 실제로 HTTP 요청을 보내고 서버의 응답을 첫번째로 받는 핸들러입니다.
 
-
+<!--
 Most interceptors call `next.handle()` so that the request flows through to the next interceptor and, eventually, the backend handler.
 An interceptor _could_ skip calling `next.handle()`, short-circuit the chain, and [return its own `Observable`](#caching) with an artificial server response. 
+-->
+인터셉터는 대부분 HTTP 요청이 진행되는 흐름을 그대로 유지하기 위해 `next.handle()`를 실행하며, 최종적으로는 백엔드 핸들러가 실행됩니다.
+하지만 서버의 응답을 시뮬레이션하는 경우라면 `next.handle()`을 실행하지 않고 [바로 `Observable`](#caching)을 반환하면서 인터셉터 체인을 멈출 수도 있습니다.
 
+<!--
 This is a common middleware pattern found in frameworks such as Express.js.
+-->
+이 방식은 Express.js와 같은 프레임워크에서 미들웨어 패턴으로 자주 사용하는 방식입니다.
 
+<!--
 #### Provide the interceptor
+-->
+#### 인터셉터 적용하기
 
+<!--
 The `NoopInterceptor` is a service managed by Angular's [dependency injection (DI)](guide/dependency-injection) system. 
 Like other services, you must provide the interceptor class before the app can use it.
+-->
+이렇게 정의한 `NoopInterceptor`는 Angular [의존성 주입 (DI)](guide/dependency-injection) 체계에서 관리되는 Angular 서비스 입니다.
+그래서 다른 서비스와 비슷하게, 애플리케이션에 사용하기 위해 프로바이더를 등록해야 합니다.
 
+<!--
 Because interceptors are (optional) dependencies of the `HttpClient` service, 
 you must provide them in the same injector (or a parent of the injector) that provides `HttpClient`. 
 Interceptors provided _after_ DI creates the `HttpClient` are ignored.
+-->
+인터셉터는 `HttpClient` 서비스에 의존적이기 때문에, `HttpClient`가 존재하는 인젝터나 이 인젝터의 상위 인젝터에 등록되어야 합니다.
+`HttpClient`가 이미 생성된 _이후에_ 등록되는 인터셉터는 동작하지 않습니다.
 
+<!--
 This app provides `HttpClient` in the app's root injector, as a side-effect of importing the `HttpClientModule` in `AppModule`.
 You should provide interceptors in `AppModule` as well.
+-->
+예제에서 다루는 앱은 `AppModule`에 `HttpClientModule`을 로드하고 있기 때문에 애플리케이션의 최상위 인젝터에 `HttpClient`가 로드 됩니다. 따라서, 이 경우라면 `AppModule`에 인터셉터를 등록해야 합니다.
 
+<!--
 After importing the `HTTP_INTERCEPTORS` injection token from `@angular/common/http`,
 write the `NoopInterceptor` provider like this:
+-->
+인터셉터를 등록하려면 `@angular/common/http`에서 `HTTP_INTERCEPTORS` 의존성 주입 토큰을 불러와서 다음과 같이 작성합니다:
 
 <code-example 
   path="http/src/app/http-interceptors/index.ts"
   region="noop-provider" linenums="false">
 </code-example>
 
+<!--
 Note the `multi: true` option. 
 This required setting tells Angular that `HTTP_INTERCEPTORS` is a token for a _multiprovider_ 
 that injects an array of values, rather than a single value.
+-->
+이 때 `multi: true` 옵션을 지정했습니다.
+이 옵션을 지정하면 `HTTP_INTERCEPTORS` 토큰으로 적용되는 인터셉터가 하나만 있는 것이 아니라, _여러 개_ 있다는 것을 의미합니다.
 
+<!--
 You _could_ add this provider directly to the providers array of the `AppModule`.
 However, it's rather verbose and there's a good chance that 
 you'll create more interceptors and provide them in the same way.
 You must also pay [close attention to the order](#interceptor-order) 
 in which you provide these interceptors.
+-->
+이 프로바이더 설정은 `AppModule`의 프로바이더 배열에 바로 추가할 수 있습니다.
+하지만 인터셉터가 여러개 있다면, 이 프로바이더 설정을 한 번에 묶어서 사용하는 방법도 좋습니다.
+이렇게 인터셉터 여러 개를 동시에 적용한다면, [인터셉터가 실행되는 순서](#interceptor-order)에 주의해야 합니다.
 
+<!--
 Consider creating a "barrel" file that gathers all the interceptor providers into an `httpInterceptorProviders` array, starting with this first one, the `NoopInterceptor`.
+-->
+인터셉터 프로바이더를 모두 파일 하나로 모으고, `httpInterceptorProviders` 배열로 관리해 봅시다. 먼저, 위에서 만든 `NoopInterceptor`를 다음과 같이 추가합니다.
 
 <code-example 
   path="http/src/app/http-interceptors/index.ts"
@@ -945,7 +1081,10 @@ Consider creating a "barrel" file that gathers all the interceptor providers int
   title="app/http-interceptors/index.ts" linenums="false">
 </code-example>
 
+<!--
 Then import and add it to the `AppModule` _providers array_ like this:
+-->
+그리고 `AppModule`에 작성했던 _프로바이더 배열_ 을 다음과 같이 수정합니다:
 
 <code-example 
   path="http/src/app/app.module.ts"
@@ -953,12 +1092,18 @@ Then import and add it to the `AppModule` _providers array_ like this:
   title="app/app.module.ts (interceptor providers)" linenums="false">
 </code-example>
 
+<!--
 As you create new interceptors, add them to the `httpInterceptorProviders` array and
 you won't have to revisit the `AppModule`.
+-->
+이제 새로운 인터셉터를 추가했을 때 `httpInterceptorProviders`에 등록하기만 하면, `AppModule`은 따로 수정하지 않아도 됩니다.
 
 <div class="l-sub-section">
 
+<!--
 There are many more interceptors in the complete sample code.
+-->
+이 문서의 최종 예제 코드에는 더 많은 인터셉터가 사용되었습니다.
 
 </div>
 
