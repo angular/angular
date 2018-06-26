@@ -16,7 +16,7 @@ import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {ComponentDefFeature, ComponentDefInternal, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeDef, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {ComponentDefFeature, ComponentDefInternal, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeDefInternal, PipeType, PipeTypesOrFactory} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 
@@ -255,7 +255,7 @@ export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>
   return def;
 }
 
-export function extractPipeDef(type: PipeType<any>): PipeDef<any> {
+export function extractPipeDef(type: PipeType<any>): PipeDefInternal<any> {
   const def = type.ngPipeDef;
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is not a 'PipeType'.`);
@@ -483,7 +483,7 @@ export function definePipe<T>(pipeDef: {
   /** Whether the pipe is pure. */
   pure?: boolean
 }): never {
-  return (<PipeDef<T>>{
+  return (<PipeDefInternal<T>>{
     name: pipeDef.name,
     factory: pipeDef.factory,
     pure: pipeDef.pure !== false,
