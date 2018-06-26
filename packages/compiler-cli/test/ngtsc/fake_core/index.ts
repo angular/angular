@@ -20,6 +20,7 @@ export const Component = callableClassDecorator();
 export const Directive = callableClassDecorator();
 export const Injectable = callableClassDecorator();
 export const NgModule = callableClassDecorator();
+export const Pipe = callableClassDecorator();
 
 export const Inject = callableParamDecorator();
 export const Self = callableParamDecorator();

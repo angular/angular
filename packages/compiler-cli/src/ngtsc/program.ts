@@ -154,7 +154,7 @@ export class NgtscProgram implements api.Program {
       new DirectiveDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
       new InjectableDecoratorHandler(this.reflector, this.isCore),
       new NgModuleDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
-      new PipeDecoratorHandler(this.reflector, this.isCore),
+      new PipeDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
     ];
 
     return new IvyCompilation(handlers, checker, this.reflector, this.coreImportsFrom);
