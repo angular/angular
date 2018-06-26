@@ -526,6 +526,20 @@ describe('Key managers', () => {
 
         keyManager.onKeydown(fakeKeyEvents.downArrow);
       });
+
+      it('should be able to disable wrapping', () => {
+        keyManager.withWrap();
+        keyManager.setFirstItemActive();
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
+
+        expect(keyManager.activeItemIndex).toBe(itemList.items.length - 1);
+
+        keyManager.withWrap(false);
+        keyManager.setFirstItemActive();
+        keyManager.onKeydown(fakeKeyEvents.upArrow);
+
+        expect(keyManager.activeItemIndex).toBe(0);
+      });
     });
 
     describe('skip predicate', () => {
