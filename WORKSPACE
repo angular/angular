@@ -6,9 +6,9 @@ workspace(name = "angular")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/gregmagolan/rules_nodejs/archive/08740c1e4b551377c7ca025428e0b81a28e7f3df.zip",
-    strip_prefix = "rules_nodejs-08740c1e4b551377c7ca025428e0b81a28e7f3df",
-    sha256 = "81cc5e0fb0aaf089308a7847cdb86fd8c3048c0a8e4d49c6ffa7710c36faf134",
+    url = "https://github.com/gregmagolan/rules_nodejs/archive/d450dbff75a1a6a0833a643c6ffb9731293258dd.zip",
+    strip_prefix = "rules_nodejs-d450dbff75a1a6a0833a643c6ffb9731293258dd",
+    sha256 = "9f230129c813b55289051f25e09a763a40994cb95c4bbc36484a98d8adf156b3",
 )
 
 http_archive(
