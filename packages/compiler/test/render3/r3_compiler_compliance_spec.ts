@@ -1072,7 +1072,7 @@ describe('compiler compliance', () => {
       it('should render pipes', () => {
         const MyPipeDefinition = `
             static ngPipeDef = $r3$.ɵdefinePipe(
-                {name: 'myPipe', type: MyPipe, factory: function MyPipe_Factory() { return new MyPipe(); }});
+                {name: 'myPipe', type: MyPipe, factory: function MyPipe_Factory() { return new MyPipe(); }, pure: false});
         `;
 
         const MyPurePipeDefinition = `
