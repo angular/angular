@@ -127,7 +127,7 @@ export class AriaDescriber implements OnDestroy {
     messageElement.setAttribute('id', `${CDK_DESCRIBEDBY_ID_PREFIX}-${nextId++}`);
     messageElement.appendChild(this._document.createTextNode(message)!);
 
-    if (!messagesContainer) { this._createMessagesContainer(); }
+    this._createMessagesContainer();
     messagesContainer!.appendChild(messageElement);
 
     messageRegistry.set(message, {messageElement, referenceCount: 0});
@@ -145,11 +145,23 @@ export class AriaDescriber implements OnDestroy {
 
   /** Creates the global container for all aria-describedby messages. */
   private _createMessagesContainer() {
-    messagesContainer = this._document.createElement('div');
-    messagesContainer.setAttribute('id', MESSAGES_CONTAINER_ID);
-    messagesContainer.setAttribute('aria-hidden', 'true');
-    messagesContainer.style.display = 'none';
-    this._document.body.appendChild(messagesContainer);
+    if (!messagesContainer) {
+      const preExistingContainer = this._document.getElementById(MESSAGES_CONTAINER_ID);
+
+      // When going from the server to the client, we may end up in a situation where there's
+      // already a container on the page, but we don't have a reference to it. Clear the
+      // old container so we don't get duplicates. Doing this, instead of emptying the previous
+      // container, should be slightly faster.
+      if (preExistingContainer) {
+        preExistingContainer.parentNode!.removeChild(preExistingContainer);
+      }
+
+      messagesContainer = this._document.createElement('div');
+      messagesContainer.id = MESSAGES_CONTAINER_ID;
+      messagesContainer.setAttribute('aria-hidden', 'true');
+      messagesContainer.style.display = 'none';
+      this._document.body.appendChild(messagesContainer);
+    }
   }
 
   /** Deletes the global messages container. */

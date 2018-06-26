@@ -121,6 +121,17 @@ describe('AriaDescriber', () => {
     const node: any = document.createComment('Not an element node');
     expect(() => ariaDescriber.describe(node, 'This looks like an element')).not.toThrow();
   });
+
+  it('should clear any pre-existing containers', () => {
+    const extraContainer = document.createElement('div');
+    extraContainer.id = MESSAGES_CONTAINER_ID;
+    document.body.appendChild(extraContainer);
+
+    ariaDescriber.describe(component.element1, 'Hello');
+
+    // Use `querySelectorAll` with an attribute since `getElementById` will stop at the first match.
+    expect(document.querySelectorAll(`[id='${MESSAGES_CONTAINER_ID}']`).length).toBe(1);
+  });
 });
 
 function getMessagesContainer() {
