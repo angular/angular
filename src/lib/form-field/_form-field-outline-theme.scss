@@ -104,12 +104,6 @@ $mat-form-field-outline-dedupe: 0;
       padding: $infix-padding 0 $infix-padding 0;
     }
 
-    .mat-form-field-outline {
-      // We want the bottom of the outline to start at the end of the content box, not the padding
-      // box, so we move it up by the padding amount.
-      bottom: $wrapper-padding-bottom;
-    }
-
     .mat-form-field-label {
       top: $infix-margin-top + $infix-padding;
       margin-top: $outline-appearance-label-offset;

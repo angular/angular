@@ -31,6 +31,7 @@ $mat-form-field-outline-subscript-padding:
   .mat-form-field-flex {
     padding: 0 $mat-form-field-outline-side-padding 0 $mat-form-field-outline-side-padding;
     margin-top: -$mat-form-field-outline-label-overlap;
+    position: relative;
   }
 
   .mat-form-field-prefix,
@@ -41,9 +42,10 @@ $mat-form-field-outline-subscript-padding:
   .mat-form-field-outline {
     display: flex;
     position: absolute;
-    top: 0;
+    top: $mat-form-field-outline-label-overlap;
     left: 0;
     right: 0;
+    bottom: 0;
     pointer-events: none;
   }
 
@@ -117,12 +119,12 @@ $mat-form-field-outline-subscript-padding:
   }
 
   &:not(.mat-form-field-disabled) .mat-form-field-flex:hover {
-    & ~ .mat-form-field-outline {
+    & .mat-form-field-outline {
       opacity: 0;
       transition: opacity 600ms $swift-ease-out-timing-function;
     }
 
-    & ~ .mat-form-field-outline-thick {
+    & .mat-form-field-outline-thick {
       opacity: 1;
     }
   }
