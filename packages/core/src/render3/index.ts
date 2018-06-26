@@ -12,7 +12,7 @@ import {InheritDefinitionFeature} from './features/inherit_definition_feature';
 import {NgOnChangesFeature} from './features/ng_onchanges_feature';
 import {PublicFeature} from './features/public_feature';
 import {I18nExpInstruction, I18nInstruction, i18nExpMapping, i18nInterpolation, i18nInterpolationV} from './i18n';
-import {ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
+import {ComponentDef, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
 
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
 export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
@@ -130,11 +130,13 @@ export {
 // clang-format on
 
 export {
+  ComponentDef,
   ComponentDefInternal,
   ComponentTemplate,
   ComponentType,
-  DirectiveDefInternal,
+  DirectiveDef,
   DirectiveDefFlags,
+  DirectiveDefInternal,
   DirectiveType,
   NgOnChangesFeature,
   InheritDefinitionFeature,
