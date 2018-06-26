@@ -23,7 +23,7 @@ import {addToViewTree, assertPreviousIsParent, createEmbeddedViewNode, createLCo
 import {VIEWS} from './interfaces/container';
 import {ComponentTemplate, DirectiveDefInternal, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {AttributeMarker, LContainerNode, LElementNode, LNode, LViewNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {AttributeMarker, LContainerNode, LElementNode, LNode, LViewNode, TContainerNode, TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {LQueries, QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
 import {DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
@@ -583,14 +583,14 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
       lContainerNode.queries = vcRefHost.queries.container();
     }
 
-    const hostTNode = vcRefHost.tNode;
+    const hostTNode = vcRefHost.tNode as TElementNode | TContainerNode;
     if (!hostTNode.dynamicContainerNode) {
-      hostTNode.dynamicContainerNode = createTNode(TNodeType.Container, -1, null, null, null, null);
+      hostTNode.dynamicContainerNode =
+          createTNode(TNodeType.Container, -1, null, null, hostTNode, null);
     }
 
     lContainerNode.tNode = hostTNode.dynamicContainerNode;
     vcRefHost.dynamicLContainerNode = lContainerNode;
-    lContainerNode.dynamicParent = vcRefHost;
 
     addToViewTree(vcRefHost.view, hostTNode.index as number, lContainer);
 
@@ -653,7 +653,6 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     const lViewNode = (viewRef as EmbeddedViewRef<any>)._lViewNode;
     const adjustedIdx = this._adjustIndex(index);
 
-    lViewNode.dynamicParent = this._lContainerNode;
     insertView(this._lContainerNode, lViewNode, adjustedIdx);
     const views = this._lContainerNode.data[VIEWS];
     const beforeNode = adjustedIdx + 1 < views.length ?
@@ -685,7 +684,6 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
   detach(index?: number): viewEngine_ViewRef|null {
     const adjustedIdx = this._adjustIndex(index, -1);
     const lViewNode = detachView(this._lContainerNode, adjustedIdx);
-    lViewNode.dynamicParent = null;
     return this._viewRefs.splice(adjustedIdx, 1)[0] || null;
   }
 
@@ -735,7 +733,6 @@ class TemplateRef<T> implements viewEngine_TemplateRef<T> {
       viewEngine_EmbeddedViewRef<T> {
     const viewNode = createEmbeddedViewNode(this._tView, context, this._renderer, this._queries);
     if (containerNode) {
-      viewNode.dynamicParent = containerNode;
       insertView(containerNode, viewNode, index !);
     }
     renderEmbeddedTemplate(viewNode, this._tView, context, RenderFlags.Create);
