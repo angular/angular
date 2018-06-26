@@ -243,4 +243,80 @@ describe('ngtsc behavioral tests', () => {
         .toContain('static ngModuleDef: i0.NgModuleDef<TestModule, [TestCmp], [OtherModule], []>');
     expect(dtsContents).toContain('static ngInjectorDef: i0.InjectorDef');
   });
+
+  it('should compile Pipes without errors', () => {
+    writeConfig();
+    write('test.ts', `
+        import {Pipe} from '@angular/core';
+
+        @Pipe({
+          name: 'test-pipe',
+          pure: false,
+        })
+        export class TestPipe {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    const dtsContents = getContents('test.d.ts');
+
+    expect(jsContents)
+        .toContain(
+            'TestPipe.ngPipeDef = i0.ɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
+            'factory: function TestPipe_Factory() { return new TestPipe(); }, pure: false })');
+    expect(dtsContents).toContain('static ngPipeDef: i0.ɵPipeDef<TestPipe, \'test-pipe\'>;');
+  });
+
+  it('should compile Pipes with dependencies', () => {
+    writeConfig();
+    write('test.ts', `
+        import {Pipe} from '@angular/core';
+
+        export class Dep {}
+
+        @Pipe({
+          name: 'test-pipe',
+          pure: false,
+        })
+        export class TestPipe {
+          constructor(dep: Dep) {}
+        }
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    expect(jsContents).toContain('return new TestPipe(i0.ɵdirectiveInject(Dep));');
+  });
+
+  it('should include @Pipes in @NgModule scopes', () => {
+    writeConfig();
+    write('test.ts', `
+        import {Component, NgModule, Pipe} from '@angular/core';
+
+        @Pipe({name: 'test'})
+        export class TestPipe {}
+
+        @Component({selector: 'test-cmp', template: '{{value | test}}'})
+        export class TestCmp {}
+
+        @NgModule({declarations: [TestPipe, TestCmp]})
+        export class TestModule {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    expect(jsContents).toContain('pipes: [TestPipe]');
+
+    const dtsContents = getContents('test.d.ts');
+    expect(dtsContents).toContain('i0.NgModuleDef<TestModule, [TestPipe,TestCmp], [], []>');
+  });
 });
