@@ -30,7 +30,7 @@ let upgradeCount: number = 0;
  * 3. Bootstrapping of a hybrid Angular application which contains both of the frameworks
  *    coexisting in a single application.
  *
- * ## Mental Model
+ * **Mental Model**
  *
  * When reasoning about how a hybrid application works it is useful to have a mental model which
  * describes what is happening and explains what is happening at the lowest level.
@@ -56,7 +56,7 @@ let upgradeCount: number = 0;
  * 9. The new application is running in Angular zone, and therefore it no longer needs calls to
  *    `$apply()`.
  *
- * ### Example
+ * **Example**
  *
  * ```
  * const adapter = new UpgradeAdapter(forwardRef(() => MyNg2Module), myCompilerOptions);
@@ -134,7 +134,7 @@ export class UpgradeAdapter {
    * Angular Component. The adapter will bootstrap Angular component from within the
    * AngularJS template.
    *
-   * ## Mental Model
+   * **Mental Model**
    *
    * 1. The component is instantiated by being listed in AngularJS template. This means that the
    *    host element is controlled by AngularJS, but the component's view will be controlled by
@@ -146,7 +146,7 @@ export class UpgradeAdapter {
    *    by way of the `ControlValueAccessor` interface from @angular/forms. Only components that
    *    implement this interface are eligible.
    *
-   * ## Supported Features
+   * **Supported Features**
    *
    * - Bindings:
    *   - Attribute: `<comp name="World">`
@@ -156,7 +156,7 @@ export class UpgradeAdapter {
    *   - ng-model: `<comp ng-model="name">`
    * - Content projection: yes
    *
-   * ### Example
+   * **Example**
    *
    * ```
    * const adapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
@@ -199,13 +199,13 @@ export class UpgradeAdapter {
    * directive. The adapter will bootstrap AngularJS component from within the Angular
    * template.
    *
-   * ## Mental Model
+   * **Mental Model**
    *
    * 1. The component is instantiated by being listed in Angular template. This means that the
    *    host element is controlled by Angular, but the component's view will be controlled by
    *    AngularJS.
    *
-   * ## Supported Features
+   * **Supported Features**
    *
    * - Bindings:
    *   - Attribute: `<comp name="World">`
@@ -234,7 +234,7 @@ export class UpgradeAdapter {
    *   - `transclude`: supported.
    *
    *
-   * ### Example
+   * **Example**
    *
    * ```
    * const adapter = new UpgradeAdapter(forwardRef(() => MyNg2Module));
@@ -283,7 +283,7 @@ export class UpgradeAdapter {
    * Use this instead of `angular.mock.module()` to load the upgrade module into
    * the AngularJS testing injector.
    *
-   * ### Example
+   * **Example**
    *
    * ```
    * const upgradeAdapter = new UpgradeAdapter(MyNg2Module);
@@ -339,7 +339,7 @@ export class UpgradeAdapter {
    * [`bootstrap`](https://docs.angularjs.org/api/ng/function/angular.bootstrap) method. Unlike
    * AngularJS, this bootstrap is asynchronous.
    *
-   * ### Example
+   * **Example**
    *
    * ```
    * const adapter = new UpgradeAdapter(MyNg2Module);
@@ -412,8 +412,7 @@ export class UpgradeAdapter {
   /**
    * Allows AngularJS service to be accessible from Angular.
    *
-   *
-   * ### Example
+   * Usage:
    *
    * ```
    * class Login { ... }
@@ -452,8 +451,7 @@ export class UpgradeAdapter {
   /**
    * Allows Angular service to be accessible from AngularJS.
    *
-   *
-   * ### Example
+   * Usage:
    *
    * ```
    * class Example {
@@ -481,7 +479,7 @@ export class UpgradeAdapter {
    * @param modules The AngularJS modules that this upgrade module should depend upon.
    * @returns The AngularJS upgrade module that is declared by this method
    *
-   * ### Example
+   * **Example**
    *
    * ```
    * const upgradeAdapter = new UpgradeAdapter(MyNg2Module);

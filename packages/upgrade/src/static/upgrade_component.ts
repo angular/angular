@@ -37,7 +37,7 @@ class Bindings {
  * This helper class should be used as a base class for creating Angular directives
  * that wrap AngularJS components that need to be "upgraded".
  *
- * ### Examples
+ * **Examples**
  *
  * Let's assume that you have an AngularJS component called `ng1Hero` that needs
  * to be made available in Angular templates.
