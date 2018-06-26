@@ -218,6 +218,7 @@ const apiSections: ApiSection[] = [
   {
     "name": "common",
     "title": "common",
+    "path": "api/common",
     "items": [
       {
         "name": "class_1",
@@ -256,6 +257,7 @@ const apiSections: ApiSection[] = [
   {
     "name": "core",
     "title": "core",
+    "path": "api/core",
     "items": [
       {
         "name": "class_3",
