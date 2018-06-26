@@ -1,4 +1,4 @@
-import {async, ComponentFixture, TestBed} from '@angular/core/testing';
+import {fakeAsync, ComponentFixture, TestBed} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MatDividerModule} from './divider-module';
@@ -8,12 +8,10 @@ describe('MatDivider', () => {
 
   let fixture: ComponentFixture<MatDividerTestComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatDividerModule],
-      declarations: [
-        MatDividerTestComponent
-      ],
+      declarations: [MatDividerTestComponent],
     });
 
     TestBed.compileComponents();
@@ -25,8 +23,18 @@ describe('MatDivider', () => {
     fixture.detectChanges();
 
     const divider = fixture.debugElement.query(By.css('mat-divider'));
-    expect(divider.nativeElement.className).toContain('mat-divider');
-    expect(divider.nativeElement.className).toContain('mat-divider-vertical');
+    expect(divider.nativeElement.classList).toContain('mat-divider');
+    expect(divider.nativeElement.classList).toContain('mat-divider-vertical');
+  });
+
+  it('should apply horizontal class to horizontal divider', () => {
+    fixture.componentInstance.vertical = false;
+    fixture.detectChanges();
+
+    const divider = fixture.debugElement.query(By.css('mat-divider'));
+    expect(divider.nativeElement.classList).toContain('mat-divider');
+    expect(divider.nativeElement.classList).not.toContain('mat-divider-vertical');
+    expect(divider.nativeElement.classList).toContain('mat-divider-horizontal');
   });
 
   it('should apply inset class to inset divider', () => {
@@ -34,8 +42,8 @@ describe('MatDivider', () => {
     fixture.detectChanges();
 
     const divider = fixture.debugElement.query(By.css('mat-divider'));
-    expect(divider.nativeElement.className).toContain('mat-divider');
-    expect(divider.nativeElement.className).toContain('mat-divider-inset');
+    expect(divider.nativeElement.classList).toContain('mat-divider');
+    expect(divider.nativeElement.classList).toContain('mat-divider-inset');
   });
 
   it('should apply inset and vertical classes to vertical inset divider', () => {
@@ -44,9 +52,9 @@ describe('MatDivider', () => {
     fixture.detectChanges();
 
     const divider = fixture.debugElement.query(By.css('mat-divider'));
-    expect(divider.nativeElement.className).toContain('mat-divider');
-    expect(divider.nativeElement.className).toContain('mat-divider-inset');
-    expect(divider.nativeElement.className).toContain('mat-divider-vertical');
+    expect(divider.nativeElement.classList).toContain('mat-divider');
+    expect(divider.nativeElement.classList).toContain('mat-divider-inset');
+    expect(divider.nativeElement.classList).toContain('mat-divider-vertical');
   });
 
   it('should add aria roles properly', () => {
