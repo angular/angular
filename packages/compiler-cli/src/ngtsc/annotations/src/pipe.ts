@@ -6,34 +6,76 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExpressionType, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, R3ResolvedDependencyType, WrappedNodeExpr, compileInjectable as compileIvyInjectable} from '@angular/compiler';
+import {LiteralExpr, R3PipeMetadata, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Decorator, ReflectionHost} from '../../host';
+import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
-import {isAngularCore} from './util';
+import {SelectorScopeRegistry} from './selector_scope';
+import {getConstructorDependencies, isAngularCore} from './util';
 
-export class PipeDecoratorHandler implements DecoratorHandler<string> {
-  constructor(private reflector: ReflectionHost, private isCore: boolean) {}
+export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata> {
+  constructor(
+      private checker: ts.TypeChecker, private reflector: ReflectionHost,
+      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
 
   detect(decorator: Decorator[]): Decorator|undefined {
     return decorator.find(
         decorator => decorator.name === 'Pipe' && (this.isCore || isAngularCore(decorator)));
   }
 
-  analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<string> {
+  analyze(clazz: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3PipeMetadata> {
+    if (clazz.name === undefined) {
+      throw new Error(`@Pipes must have names`);
+    }
+    const name = clazz.name.text;
+    const type = new WrappedNodeExpr(clazz.name);
+    if (decorator.args === null) {
+      throw new Error(`@Pipe must be called`);
+    }
+    const meta = decorator.args[0];
+    if (!ts.isObjectLiteralExpression(meta)) {
+      throw new Error(`Decorator argument must be literal.`);
+    }
+    const pipe = reflectObjectLiteral(meta);
+
+    if (!pipe.has('name')) {
+      throw new Error(`@Pipe decorator is missing name field`);
+    }
+    const pipeName = staticallyResolve(pipe.get('name') !, this.checker);
+    if (typeof pipeName !== 'string') {
+      throw new Error(`@Pipe.name must be a string`);
+    }
+    this.scopeRegistry.registerPipe(clazz, pipeName);
+
+    let pure = false;
+    if (pipe.has('pure')) {
+      const pureValue = staticallyResolve(pipe.get('pure') !, this.checker);
+      if (typeof pureValue !== 'boolean') {
+        throw new Error(`@Pipe.pure must be a boolean`);
+      }
+      pure = pureValue;
+    }
+
     return {
-      analysis: 'test',
+      analysis: {
+        name,
+        type,
+        pipeName,
+        deps: getConstructorDependencies(clazz, this.reflector, this.isCore), pure,
+      }
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: string): CompileResult {
+  compile(node: ts.ClassDeclaration, analysis: R3PipeMetadata): CompileResult {
+    const res = compilePipeFromMetadata(analysis);
     return {
       name: 'ngPipeDef',
-      initializer: new LiteralExpr(null),
+      initializer: res.expression,
       statements: [],
-      type: new ExpressionType(new LiteralExpr(null)),
+      type: res.type,
     };
   }
 }

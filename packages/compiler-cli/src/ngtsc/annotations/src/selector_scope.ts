@@ -107,6 +107,7 @@ export class SelectorScopeRegistry {
    * Register the selector of a component or directive with the registry.
    */
   registerSelector(node: ts.Declaration, selector: string): void {
+    console.error('register selector', selector);
     node = ts.getOriginalNode(node) as ts.Declaration;
 
     if (this._directiveToSelector.has(node)) {
@@ -118,7 +119,12 @@ export class SelectorScopeRegistry {
   /**
    * Register the name of a pipe with the registry.
    */
-  registerPipe(node: ts.Declaration, name: string): void { this._pipeToName.set(node, name); }
+  registerPipe(node: ts.Declaration, name: string): void {
+    console.error('register pipe', name);
+    node = ts.getOriginalNode(node) as ts.Declaration;
+
+    this._pipeToName.set(node, name);
+  }
 
   /**
    * Produce the compilation scope of a component, which is determined by the module that declares
@@ -153,10 +159,23 @@ export class SelectorScopeRegistry {
     // The initial value of ngModuleImportedFrom is 'null' which signifies that the NgModule
     // was not imported from a .d.ts source.
     this.lookupScopes(module !, /* ngModuleImportedFrom */ null).compilation.forEach(ref => {
-      const selector = this.lookupDirectiveSelector(ts.getOriginalNode(ref.node) as ts.Declaration);
+      const node = ts.getOriginalNode(ref.node) as ts.Declaration;
+
+      console.error('processing node', (node as ts.ClassDeclaration).name !.text);
+
+      // Either the node represents a directive or a pipe. Look for both.
+      const selector = this.lookupDirectiveSelector(node);
       // Only directives/components with selectors get added to the scope.
       if (selector != null) {
         directives.set(selector, ref);
+        console.error('is Directive with selector', selector);
+        return;
+      }
+
+      const name = this.lookupPipeName(node);
+      if (name != null) {
+        console.error('is Pipe with name', name);
+        pipes.set(name, ref);
       }
     });
 
@@ -238,8 +257,12 @@ export class SelectorScopeRegistry {
     }
   }
 
-  private lookupPipeName(node: ts.Declaration): string|undefined {
-    return this._pipeToName.get(node);
+  private lookupPipeName(node: ts.Declaration): string|null {
+    if (this._pipeToName.has(node)) {
+      return this._pipeToName.get(node) !;
+    } else {
+      return this._readNameFromCompiledClass(node);
+    }
   }
 
   /**
@@ -283,6 +306,30 @@ export class SelectorScopeRegistry {
     const def = this.reflector.getMembersOfClass(clazz).find(
         field =>
             field.isStatic && (field.name === 'ngComponentDef' || field.name === 'ngDirectiveDef'));
+    if (def === undefined) {
+      // No definition could be found.
+      return null;
+    } else if (
+        def.type === null || !ts.isTypeReferenceNode(def.type) ||
+        def.type.typeArguments === undefined || def.type.typeArguments.length !== 2) {
+      // The type metadata was the wrong shape.
+      return null;
+    }
+    const type = def.type.typeArguments[1];
+    if (!ts.isLiteralTypeNode(type) || !ts.isStringLiteral(type.literal)) {
+      // The type metadata was the wrong type.
+      return null;
+    }
+    return type.literal.text;
+  }
+
+  /**
+   * Get the selector from type metadata for a class with a precompiled ngComponentDef or
+   * ngDirectiveDef.
+   */
+  private _readNameFromCompiledClass(clazz: ts.Declaration): string|null {
+    const def = this.reflector.getMembersOfClass(clazz).find(
+        field => field.isStatic && field.name === 'ngPipeDef');
     if (def === undefined) {
       // No definition could be found.
       return null;
