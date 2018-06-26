@@ -7,12 +7,14 @@
  */
 
 import {ConstantPool, Expression, R3ComponentMetadata, R3DirectiveMetadata, WrappedNodeExpr, compileComponentFromMetadata, makeBindingParser, parseTemplate} from '@angular/compiler';
+import * as path from 'path';
 import * as ts from 'typescript';
 
 import {Decorator, ReflectionHost} from '../../host';
 import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
+import {ResourceLoader} from './api';
 import {extractDirectiveMetadata} from './directive';
 import {SelectorScopeRegistry} from './selector_scope';
 import {isAngularCore} from './util';
@@ -25,21 +27,35 @@ const EMPTY_MAP = new Map<string, Expression>();
 export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMetadata> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
-      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
+      private scopeRegistry: SelectorScopeRegistry, private isCore: boolean,
+      private resourceLoader: ResourceLoader) {}
+
+  private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
+
 
   detect(decorators: Decorator[]): Decorator|undefined {
     return decorators.find(
         decorator => decorator.name === 'Component' && (this.isCore || isAngularCore(decorator)));
   }
 
+  preanalyze(node: ts.ClassDeclaration, decorator: Decorator): Promise<void>|undefined {
+    const meta = this._resolveLiteral(decorator);
+    const component = reflectObjectLiteral(meta);
+
+    if (this.resourceLoader.preload !== undefined && component.has('templateUrl')) {
+      const templateUrl = staticallyResolve(component.get('templateUrl') !, this.checker);
+      if (typeof templateUrl !== 'string') {
+        throw new Error(`templateUrl should be a string`);
+      }
+      const url = path.posix.resolve(path.dirname(node.getSourceFile().fileName), templateUrl);
+      return this.resourceLoader.preload(url);
+    }
+    return undefined;
+  }
+
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3ComponentMetadata> {
-    if (decorator.args === null || decorator.args.length !== 1) {
-      throw new Error(`Incorrect number of arguments to @Component decorator`);
-    }
-    const meta = decorator.args[0];
-    if (!ts.isObjectLiteralExpression(meta)) {
-      throw new Error(`Decorator argument must be literal.`);
-    }
+    const meta = this._resolveLiteral(decorator);
+    this.literalCache.delete(decorator);
 
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
@@ -55,14 +71,23 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     // Next, read the `@Component`-specific fields.
     const component = reflectObjectLiteral(meta);
 
-    // Resolve and parse the template.
-    if (!component.has('template')) {
-      throw new Error(`For now, components must directly have a template.`);
-    }
-    const templateExpr = component.get('template') !;
-    const templateStr = staticallyResolve(templateExpr, this.checker);
-    if (typeof templateStr !== 'string') {
-      throw new Error(`Template must statically resolve to a string: ${node.name!.text}`);
+    let templateStr: string|null = null;
+    if (component.has('templateUrl')) {
+      const templateUrl = staticallyResolve(component.get('templateUrl') !, this.checker);
+      if (typeof templateUrl !== 'string') {
+        throw new Error(`templateUrl should be a string`);
+      }
+      const url = path.posix.resolve(path.dirname(node.getSourceFile().fileName), templateUrl);
+      templateStr = this.resourceLoader.load(url);
+    } else if (component.has('template')) {
+      const templateExpr = component.get('template') !;
+      const resolvedTemplate = staticallyResolve(templateExpr, this.checker);
+      if (typeof resolvedTemplate !== 'string') {
+        throw new Error(`Template must statically resolve to a string: ${node.name!.text}`);
+      }
+      templateStr = resolvedTemplate;
+    } else {
+      throw new Error(`Component has no template or templateUrl`);
     }
 
     let preserveWhitespaces: boolean = false;
@@ -122,5 +147,21 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
       statements: pool.statements,
       type: res.type,
     };
+  }
+
+  private _resolveLiteral(decorator: Decorator): ts.ObjectLiteralExpression {
+    if (this.literalCache.has(decorator)) {
+      return this.literalCache.get(decorator) !;
+    }
+    if (decorator.args === null || decorator.args.length !== 1) {
+      throw new Error(`Incorrect number of arguments to @Component decorator`);
+    }
+    const meta = decorator.args[0];
+    if (!ts.isObjectLiteralExpression(meta)) {
+      throw new Error(`Decorator argument must be literal.`);
+    }
+
+    this.literalCache.set(decorator, meta);
+    return meta;
   }
 }
