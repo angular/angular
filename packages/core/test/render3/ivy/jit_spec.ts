@@ -12,9 +12,9 @@ import {InjectorDef, defineInjectable} from '@angular/core/src/di/defs';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {inject, setCurrentInjector} from '@angular/core/src/di/injector';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
-import {Component, HostBinding, HostListener} from '@angular/core/src/metadata/directives';
+import {Component, HostBinding, HostListener, Pipe} from '@angular/core/src/metadata/directives';
 import {NgModule, NgModuleDefInternal} from '@angular/core/src/metadata/ng_module';
-import {ComponentDefInternal} from '@angular/core/src/render3/interfaces/definition';
+import {ComponentDefInternal, PipeDefInternal} from '@angular/core/src/render3/interfaces/definition';
 
 ivyEnabled && describe('render3 jit', () => {
   let injector: any;
@@ -211,6 +211,27 @@ ivyEnabled && describe('render3 jit', () => {
 
     expect(cmpDef.hostBindings).toBeDefined();
     expect(cmpDef.hostBindings !.length).toBe(2);
+  });
+
+  it('should compile @Pipes without errors', () => {
+    @Pipe({name: 'test-pipe', pure: false})
+    class P {
+    }
+
+    const pipeDef = (P as any).ngPipeDef as PipeDefInternal<P>;
+    expect(pipeDef.name).toBe('test-pipe');
+    expect(pipeDef.pure).toBe(false, 'pipe should not be pure');
+    expect(pipeDef.factory() instanceof P)
+        .toBe(true, 'factory() should create an instance of the pipe');
+  });
+
+  it('should default @Pipe to pure: true', () => {
+    @Pipe({name: 'test-pipe'})
+    class P {
+    }
+
+    const pipeDef = (P as any).ngPipeDef as PipeDefInternal<P>;
+    expect(pipeDef.pure).toBe(true, 'pipe should be pure');
   });
 });
 

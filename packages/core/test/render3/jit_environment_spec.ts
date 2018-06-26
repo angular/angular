@@ -16,6 +16,7 @@ const INTERFACE_EXCEPTIONS = new Set<string>([
   'DirectiveDef',
   'InjectorDef',
   'NgModuleDef',
+  'ɵPipeDef',
 ]);
 
 describe('r3 jit environment', () => {
