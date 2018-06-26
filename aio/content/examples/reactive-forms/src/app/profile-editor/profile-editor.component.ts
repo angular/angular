@@ -33,7 +33,7 @@ export class ProfileEditorComponent implements OnInit {
     }),
 // #enddocregion form-builder, required-validator
     aliases: this.fb.array([
-      this.getAliasControl()
+      this.fb.control('')
     ])
 // #docregion form-builder, required-validator
   });
@@ -61,16 +61,10 @@ export class ProfileEditorComponent implements OnInit {
     });
   }
 // #enddocregion form-builder
-// #docregion get-alias-control
-
-  getAliasControl() {
-    return this.fb.control('');
-  }
-// #enddocregion get-alias-control
 // #docregion add-alias
 
   addAlias() {
-    this.aliases.push(this.getAliasControl());
+    this.aliases.push(this.fb.control(''));
   }
 // #enddocregion add-alias
 // #docregion on-submit

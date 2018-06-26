@@ -2,14 +2,12 @@
 // #docregion form-builder
 import { Component } from '@angular/core';
 // #docregion form-builder-imports
-import {
-  FormBuilder,
+import { FormBuilder } from '@angular/forms';
 // #enddocregion form-builder-imports, form-builder
-  Validators,
-  FormArray
+// #docregion form-array-imports
+import { FormArray } from '@angular/forms';
 // #docregion form-builder-imports, form-builder
-} from '@angular/forms';
-// #enddocregion form-builder-imports
+// #enddocregion form-builder-imports, form-array-imports
 
 @Component({
   selector: 'app-profile-editor',
@@ -29,7 +27,7 @@ export class ProfileEditorComponent {
     }),
 // #enddocregion form-builder, formgroup-compare
     aliases: this.fb.array([
-      this.getAliasControl()
+      this.fb.control('')
     ])
 // #docregion form-builder, formgroup-compare
   });
@@ -52,12 +50,8 @@ export class ProfileEditorComponent {
     });
   }
 
-  getAliasControl() {
-    return this.fb.control('');
-  }
-
   addAlias() {
-    this.aliases.push(this.getAliasControl());
+    this.aliases.push(this.fb.control(''));
   }
 // #docregion form-builder
 }
