@@ -12,17 +12,28 @@ import * as ts from 'typescript';
 
 import * as api from '../transformers/api';
 
-import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, SelectorScopeRegistry} from './annotations';
+import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from './annotations';
 import {CompilerHost} from './compiler_host';
 import {TypeScriptReflectionHost} from './metadata';
+import {FileResourceLoader, HostResourceLoader} from './resource_loader';
 import {IvyCompilation, ivyTransformFactory} from './transform';
 
 export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
+  private resourceLoader: ResourceLoader;
+  private compilation: IvyCompilation|undefined = undefined;
+
+  private _coreImportsFrom: ts.SourceFile|null|undefined = undefined;
+  private _reflector: TypeScriptReflectionHost|undefined = undefined;
+  private _isCore: boolean|undefined = undefined;
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
       private host: api.CompilerHost, oldProgram?: api.Program) {
+    this.resourceLoader = host.readResource !== undefined ?
+        new HostResourceLoader(host.readResource.bind(host)) :
+        new FileResourceLoader();
+
     this.tsProgram =
         ts.createProgram(rootNames, options, host, oldProgram && oldProgram.getTsProgram());
   }
@@ -62,7 +73,16 @@ export class NgtscProgram implements api.Program {
     return [];
   }
 
-  loadNgStructureAsync(): Promise<void> { return Promise.resolve(); }
+  async loadNgStructureAsync(): Promise<void> {
+    if (this.compilation === undefined) {
+      this.compilation = this.makeCompilation();
+
+      await this.tsProgram.getSourceFiles()
+          .filter(file => !file.fileName.endsWith('.d.ts'))
+          .map(file => this.compilation !.analyzeAsync(file))
+          .filter((result): result is Promise<void> => result !== undefined);
+    }
+  }
 
   listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
     throw new Error('Method not implemented.');
@@ -88,30 +108,13 @@ export class NgtscProgram implements api.Program {
     mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback
   }): ts.EmitResult {
     const emitCallback = opts && opts.emitCallback || defaultEmitCallback;
-    const mergeEmitResultsCallback = opts && opts.mergeEmitResultsCallback || mergeEmitResults;
 
-    const checker = this.tsProgram.getTypeChecker();
-    const isCore = isAngularCorePackage(this.tsProgram);
-    const reflector = new TypeScriptReflectionHost(checker);
-    const scopeRegistry = new SelectorScopeRegistry(checker, reflector);
-
-    // Set up the IvyCompilation, which manages state for the Ivy transformer.
-    const handlers = [
-      new ComponentDecoratorHandler(checker, reflector, scopeRegistry, isCore),
-      new DirectiveDecoratorHandler(checker, reflector, scopeRegistry, isCore),
-      new InjectableDecoratorHandler(reflector, isCore),
-      new NgModuleDecoratorHandler(checker, reflector, scopeRegistry, isCore),
-      new PipeDecoratorHandler(reflector, isCore),
-    ];
-
-    const coreImportsFrom = isCore && getR3SymbolsFile(this.tsProgram) || null;
-
-    const compilation = new IvyCompilation(handlers, checker, reflector, coreImportsFrom);
-
-    // Analyze every source file in the program.
-    this.tsProgram.getSourceFiles()
-        .filter(file => !file.fileName.endsWith('.d.ts'))
-        .forEach(file => compilation.analyze(file));
+    if (this.compilation === undefined) {
+      this.compilation = this.makeCompilation();
+      this.tsProgram.getSourceFiles()
+          .filter(file => !file.fileName.endsWith('.d.ts'))
+          .forEach(file => this.compilation !.analyzeSync(file));
+    }
 
     // Since there is no .d.ts transformation API, .d.ts files are transformed during write.
     const writeFile: ts.WriteFileCallback =
@@ -120,7 +123,8 @@ export class NgtscProgram implements api.Program {
          sourceFiles: ReadonlyArray<ts.SourceFile>) => {
           if (fileName.endsWith('.d.ts')) {
             data = sourceFiles.reduce(
-                (data, sf) => compilation.transformedDtsFor(sf.fileName, data, fileName), data);
+                (data, sf) => this.compilation !.transformedDtsFor(sf.fileName, data, fileName),
+                data);
           }
           this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
         };
@@ -133,10 +137,48 @@ export class NgtscProgram implements api.Program {
       options: this.options,
       emitOnlyDtsFiles: false, writeFile,
       customTransformers: {
-        before: [ivyTransformFactory(compilation, reflector, coreImportsFrom)],
+        before: [ivyTransformFactory(this.compilation !, this.reflector, this.coreImportsFrom)],
       },
     });
     return emitResult;
+  }
+
+  private makeCompilation(): IvyCompilation {
+    const checker = this.tsProgram.getTypeChecker();
+    const scopeRegistry = new SelectorScopeRegistry(checker, this.reflector);
+
+    // Set up the IvyCompilation, which manages state for the Ivy transformer.
+    const handlers = [
+      new ComponentDecoratorHandler(
+          checker, this.reflector, scopeRegistry, this.isCore, this.resourceLoader),
+      new DirectiveDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
+      new InjectableDecoratorHandler(this.reflector, this.isCore),
+      new NgModuleDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
+      new PipeDecoratorHandler(this.reflector, this.isCore),
+    ];
+
+    return new IvyCompilation(handlers, checker, this.reflector, this.coreImportsFrom);
+  }
+
+  private get reflector(): TypeScriptReflectionHost {
+    if (this._reflector === undefined) {
+      this._reflector = new TypeScriptReflectionHost(this.tsProgram.getTypeChecker());
+    }
+    return this._reflector;
+  }
+
+  private get coreImportsFrom(): ts.SourceFile|null {
+    if (this._coreImportsFrom === undefined) {
+      this._coreImportsFrom = this.isCore && getR3SymbolsFile(this.tsProgram) || null;
+    }
+    return this._coreImportsFrom;
+  }
+
+  private get isCore(): boolean {
+    if (this._isCore === undefined) {
+      this._isCore = isAngularCorePackage(this.tsProgram);
+    }
+    return this._isCore;
   }
 }
 

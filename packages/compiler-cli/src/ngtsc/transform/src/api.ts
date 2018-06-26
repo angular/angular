@@ -26,6 +26,15 @@ export interface DecoratorHandler<A> {
    */
   detect(decorator: Decorator[]): Decorator|undefined;
 
+
+  /**
+   * Asynchronously perform pre-analysis on the decorator/class combination.
+   *
+   * `preAnalyze` is optional and is not guaranteed to be called through all compilation flows. It
+   * will only be called if asynchronicity is supported in the CompilerHost.
+   */
+  preanalyze?(node: ts.Declaration, decorator: Decorator): Promise<void>|undefined;
+
   /**
    * Perform analysis on the decorator/class combination, producing instructions for compilation
    * if successful, or an array of diagnostic messages if the analysis fails or the decorator
