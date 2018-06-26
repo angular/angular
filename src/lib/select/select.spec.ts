@@ -2580,6 +2580,18 @@ describe('MatSelect', () => {
       expect(trigger.textContent).not.toContain('None');
     }));
 
+    it('should not mark the reset option as selected ', fakeAsync(() => {
+      options[5].click();
+      fixture.detectChanges();
+      flush();
+
+      fixture.componentInstance.select.open();
+      fixture.detectChanges();
+      flush();
+
+      expect(options[5].classList).not.toContain('mat-selected');
+    }));
+
     it('should not reset when any other falsy option is selected', fakeAsync(() => {
       options[3].click();
       fixture.detectChanges();
