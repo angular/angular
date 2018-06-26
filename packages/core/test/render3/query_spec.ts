@@ -1752,5 +1752,141 @@ describe('query', () => {
       expect(viewQList.last.nativeElement.id).toBe('after');
     });
 
+    it('should report results to appropriate queries where content queries are nested', () => {
+
+      class QueryDirective {
+        fooBars: any;
+        static ngDirectiveDef = defineDirective({
+          type: QueryDirective,
+          selectors: [['', 'query', '']],
+          exportAs: 'query',
+          factory: () => {
+            // @ContentChildren('foo, bar, baz', {descendants: true}) fooBars:
+            // QueryList<ElementRef>;
+            return [
+              new QueryDirective(), query(null, ['foo', 'bar', 'baz'], true, QUERY_READ_FROM_NODE)
+            ];
+          },
+          hostBindings: function ContentQueryComponent_HostBindings(
+              dirIndex: number, elIndex: number) {
+            let tmp: any;
+            const instance = loadDirective<any[]>(dirIndex)[0];
+            queryRefresh(tmp = loadDirective<any[]>(dirIndex)[1]) &&
+                (instance.fooBars = tmp as QueryList<any>);
+          },
+        });
+      }
+
+      let outInstance: QueryDirective;
+      let inInstance: QueryDirective;
+
+      const AppComponent = createComponent(
+          'app-component',
+          /**
+           * <div query #out="query">
+           *   <span #foo></span>
+           *   <div query #in="query">
+           *     <span #bar></span>
+           *   </div>
+           *   <span #baz></span>
+           * </div>
+           */
+          function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div', [AttributeMarker.SelectOnly, 'query'], ['out', 'query']);
+              {
+                element(2, 'span', ['id', 'foo'], ['foo', '']);
+                elementStart(4, 'div', [AttributeMarker.SelectOnly, 'query'], ['in', 'query']);
+                { element(6, 'span', ['id', 'bar'], ['bar', '']); }
+                elementEnd();
+                element(8, 'span', ['id', 'baz'], ['baz', '']);
+              }
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              outInstance = (<any>load(1))[0] as QueryDirective;
+              inInstance = (<any>load(5))[0] as QueryDirective;
+            }
+          },
+          [QueryDirective]);
+
+      const fixture = new ComponentFixture(AppComponent);
+      expect(outInstance !.fooBars.length).toBe(3);
+      expect(inInstance !.fooBars.length).toBe(1);
+    });
+
+    it('should respect shallow flag on content queries when mixing deep and shallow queries',
+       () => {
+         class ShallowQueryDirective {
+           foos: any;
+           static ngDirectiveDef = defineDirective({
+             type: ShallowQueryDirective,
+             selectors: [['', 'shallow-query', '']],
+             exportAs: 'shallow-query',
+             factory: () => {
+               // @ContentChildren('foo', {descendants: false}) fooBars: QueryList<ElementRef>;
+               return [
+                 new ShallowQueryDirective(), query(null, ['foo'], false, QUERY_READ_FROM_NODE)
+               ];
+             },
+             hostBindings: function ContentQueryComponent_HostBindings(
+                 dirIndex: number, elIndex: number) {
+               let tmp: any;
+               const instance = loadDirective<any[]>(dirIndex)[0];
+               queryRefresh(tmp = loadDirective<any[]>(dirIndex)[1]) &&
+                   (instance.foos = tmp as QueryList<any>);
+             },
+           });
+         }
+
+         class DeepQueryDirective {
+           foos: any;
+           static ngDirectiveDef = defineDirective({
+             type: DeepQueryDirective,
+             selectors: [['', 'deep-query', '']],
+             exportAs: 'deep-query',
+             factory: () => {
+               // @ContentChildren('foo', {descendants: true}) fooBars: QueryList<ElementRef>;
+               return [new DeepQueryDirective(), query(null, ['foo'], true, QUERY_READ_FROM_NODE)];
+             },
+             hostBindings: function ContentQueryComponent_HostBindings(
+                 dirIndex: number, elIndex: number) {
+               let tmp: any;
+               const instance = loadDirective<any[]>(dirIndex)[0];
+               queryRefresh(tmp = loadDirective<any[]>(dirIndex)[1]) &&
+                   (instance.foos = tmp as QueryList<any>);
+             },
+           });
+         }
+
+         let shallowInstance: ShallowQueryDirective;
+         let deepInstance: DeepQueryDirective;
+
+         const AppComponent = createComponent(
+             'app-component',
+             /**
+              * <div shallow-query #shallow="shallow-query" deep-query #deep="deep-query">
+               *   <span #foo></span>
+              * </div>
+              */
+             function(rf: RenderFlags, ctx: any) {
+               if (rf & RenderFlags.Create) {
+                 elementStart(
+                     0, 'div', [AttributeMarker.SelectOnly, 'shallow-query', 'deep-query'],
+                     ['shallow', 'shallow-query', 'deep', 'deep-query']);
+                 { element(3, 'span', ['id', 'foo'], ['foo', '']); }
+                 elementEnd();
+               }
+               if (rf & RenderFlags.Update) {
+                 shallowInstance = (<any>load(1))[0] as ShallowQueryDirective;
+                 deepInstance = (<any>load(2))[0] as DeepQueryDirective;
+               }
+             },
+             [ShallowQueryDirective, DeepQueryDirective]);
+
+         const fixture = new ComponentFixture(AppComponent);
+         expect(shallowInstance !.foos.length).toBe(1);
+         expect(deepInstance !.foos.length).toBe(1);
+       });
   });
 });

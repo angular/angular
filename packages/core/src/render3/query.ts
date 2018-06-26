@@ -94,14 +94,14 @@ export class LQueries_ implements LQueries {
   track<T>(
       queryList: viewEngine_QueryList<T>, predicate: Type<T>|string[], descend?: boolean,
       read?: QueryReadType<T>|Type<T>): void {
-    // TODO(misko): This is not right. In case of inherited state, a calling track will incorrectly
-    // mutate parent.
     if (descend) {
       this.deep = createQuery(this.deep, queryList, predicate, read != null ? read : null);
     } else {
       this.shallow = createQuery(this.shallow, queryList, predicate, read != null ? read : null);
     }
   }
+
+  clone(): LQueries|null { return this.deep ? new LQueries_(this.deep) : null; }
 
   child(): LQueries|null {
     if (this.deep === null) {
