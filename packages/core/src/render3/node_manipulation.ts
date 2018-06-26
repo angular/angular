@@ -11,7 +11,7 @@ import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unuse
 import {LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {CLEANUP, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {CLEANUP, CONTAINER_INDEX, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {stringify} from './util';
 
@@ -45,9 +45,11 @@ export function getParentLNode(node: LContainerNode | LElementNode | LTextNode |
 export function getParentLNode(node: LViewNode): LContainerNode|null;
 export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null;
 export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null {
-  if (node.tNode.index === -1) {
-    // This is a dynamic container or an embedded view inside a dynamic container.
-    return node.dynamicParent;
+  if (node.tNode.index === -1 && node.tNode.type === TNodeType.View) {
+    // This is a dynamically created view inside a dynamic container.
+    // If the host index is -1, the view has not yet been inserted, so it has no parent.
+    const containerHostIndex = (node.data as LViewData)[CONTAINER_INDEX];
+    return containerHostIndex === -1 ? null : node.view[containerHostIndex].dynamicLContainerNode;
   }
   const parent = node.tNode.parent;
   return parent ? node.view[parent.index] : node.view[HOST_NODE];
@@ -293,28 +295,35 @@ export function insertView(
     container: LContainerNode, viewNode: LViewNode, index: number): LViewNode {
   const state = container.data;
   const views = state[VIEWS];
+  const lView = viewNode.data as LViewData;
 
   if (index > 0) {
     // This is a new view, we need to add it to the children.
-    views[index - 1].data[NEXT] = viewNode.data as LViewData;
+    views[index - 1].data[NEXT] = lView;
   }
 
   if (index < views.length) {
-    viewNode.data[NEXT] = views[index].data;
+    lView[NEXT] = views[index].data;
     views.splice(index, 0, viewNode);
   } else {
     views.push(viewNode);
-    viewNode.data[NEXT] = null;
+    lView[NEXT] = null;
+  }
+
+  // Dynamically inserted views need a reference to their parent container'S host so it's
+  // possible to jump from a view to its container's next when walking the node tree.
+  if (viewNode.tNode.index === -1) {
+    lView[CONTAINER_INDEX] = container.tNode.parent !.index;
+    (viewNode as{view: LViewData}).view = container.view;
   }
 
   // Notify query that a new view has been added
-  const lView = viewNode.data;
   if (lView[QUERIES]) {
     lView[QUERIES] !.insertView(index);
   }
 
   // Sets the attached flag
-  viewNode.data[FLAGS] |= LViewFlags.Attached;
+  lView[FLAGS] |= LViewFlags.Attached;
 
   return viewNode;
 }
@@ -340,10 +349,12 @@ export function detachView(container: LContainerNode, removeIndex: number): LVie
     addRemoveViewFromContainer(container, viewNode, false);
   }
   // Notify query that view has been removed
-  const removedLview = viewNode.data;
-  if (removedLview[QUERIES]) {
-    removedLview[QUERIES] !.removeView();
+  const removedLView = viewNode.data;
+  if (removedLView[QUERIES]) {
+    removedLView[QUERIES] !.removeView();
   }
+  removedLView[CONTAINER_INDEX] = -1;
+  (viewNode as{view: LViewData | null}).view = null;
   // Unsets the attached flag
   viewNode.data[FLAGS] &= ~LViewFlags.Attached;
   return viewNode;
@@ -476,14 +487,14 @@ function executePipeOnDestroys(viewData: LViewData): void {
 
 /**
  * Returns whether a native element can be inserted into the given parent.
- * 
+ *
  * There are two reasons why we may not be able to insert a element immediately.
- * - Projection: When creating a child content element of a component, we have to skip the 
+ * - Projection: When creating a child content element of a component, we have to skip the
  *   insertion because the content of a component will be projected.
  *   `<component><content>delayed due to projection</content></component>`
- * - Parent container is disconnected: This can happen when we are inserting a view into 
- *   parent container, which itself is disconnected. For example the parent container is part 
- *   of a View which has not be inserted or is mare for projection but has not been inserted 
+ * - Parent container is disconnected: This can happen when we are inserting a view into
+ *   parent container, which itself is disconnected. For example the parent container is part
+ *   of a View which has not be inserted or is mare for projection but has not been inserted
  *   into destination.
  *
 
