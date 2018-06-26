@@ -9,6 +9,7 @@ import {
   EventEmitter,
 } from '@angular/core';
 import {Direction, Directionality} from '@angular/cdk/bidi';
+import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {
   ComponentPortal,
   PortalModule,
@@ -290,6 +291,19 @@ describe('Overlay', () => {
     expect(overlayRef.hostElement).toBeFalsy('Expected overlay host not to be referenced.');
     expect(overlayRef.overlayElement).toBeFalsy('Expected overlay element not to be referenced.');
     expect(overlayRef.backdropElement).toBeFalsy('Expected backdrop element not to be referenced.');
+  }));
+
+  it('should clear the backdrop timeout if the transition finishes first', fakeAsync(() => {
+    const overlayRef = overlay.create({hasBackdrop: true});
+
+    overlayRef.attach(componentPortal);
+    overlayRef.detach();
+
+    const backdrop = overlayContainerElement.querySelector('.cdk-overlay-backdrop')!;
+    dispatchFakeEvent(backdrop, 'transitionend');
+
+    // Note: we don't `tick` or `flush` here. The assertion is that
+    // `fakeAsync` will throw if we have an unflushed timer.
   }));
 
   it('should be able to use the `Overlay` provider during app initialization', () => {
