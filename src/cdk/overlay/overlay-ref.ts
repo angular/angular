@@ -14,6 +14,7 @@ import {take} from 'rxjs/operators';
 import {OverlayKeyboardDispatcher} from './keyboard/overlay-keyboard-dispatcher';
 import {OverlayConfig} from './overlay-config';
 import {coerceCssPixelValue, coerceArray} from '@angular/cdk/coercion';
+import {OverlayReference} from './overlay-reference';
 
 
 /** An object where all of its properties cannot be written. */
@@ -25,7 +26,7 @@ export type ImmutableObject<T> = {
  * Reference to an overlay that has been created with the Overlay service.
  * Used to manipulate or dispose of said overlay.
  */
-export class OverlayRef implements PortalOutlet {
+export class OverlayRef implements PortalOutlet, OverlayReference {
   private _backdropElement: HTMLElement | null = null;
   private _backdropClick: Subject<MouseEvent> = new Subject();
   private _attachments = new Subject<void>();
