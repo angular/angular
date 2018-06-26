@@ -7,7 +7,7 @@
  */
 
 import {CommonModule, PlatformLocation, ɵPLATFORM_BROWSER_ID as PLATFORM_BROWSER_ID} from '@angular/common';
-import {APP_ID, ApplicationModule, ClassProvider, ConstructorSansProvider, ErrorHandler, ExistingProvider, FactoryProvider, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, RootRenderer, Sanitizer, SkipSelf, StaticProvider, Testability, TypeProvider, ValueProvider, createPlatformFactory, platformCore, ɵAPP_ROOT as APP_ROOT} from '@angular/core';
+import {APP_ID, ApplicationModule, ClassProvider, ConstructorSansProvider, ErrorHandler, ExistingProvider, FactoryProvider, Inject, InjectionToken, ModuleWithProviders, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, RendererFactory2, RootRenderer, Sanitizer, SkipSelf, StaticProvider, Testability, TypeProvider, ValueProvider, createPlatformFactory, platformCore, ɵAPP_ROOT as APP_ROOT, ɵConsole as Console} from '@angular/core';
 
 import {BrowserDomAdapter} from './browser/browser_adapter';
 import {BrowserPlatformLocation} from './browser/location/browser_platform_location';
@@ -21,7 +21,7 @@ import {DomRendererFactory2} from './dom/dom_renderer';
 import {DOCUMENT} from './dom/dom_tokens';
 import {DomEventsPlugin} from './dom/events/dom_events';
 import {EVENT_MANAGER_PLUGINS, EventManager, EventManagerPlugin} from './dom/events/event_manager';
-import {HAMMER_GESTURE_CONFIG, HammerGestureConfig, HammerGesturesPlugin} from './dom/events/hammer_gestures';
+import {HAMMER_GESTURE_CONFIG, HAMMER_LOADER, HammerGestureConfig, HammerGesturesPlugin} from './dom/events/hammer_gestures';
 import {KeyEventsPlugin} from './dom/events/key_events';
 import {DomSharedStylesHost, SharedStylesHost} from './dom/shared_styles_host';
 import {DomSanitizer, DomSanitizerImpl} from './security/dom_sanitization_service';
@@ -75,7 +75,7 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
     provide: EVENT_MANAGER_PLUGINS,
     useClass: HammerGesturesPlugin,
     multi: true,
-    deps: [DOCUMENT, HAMMER_GESTURE_CONFIG]
+    deps: [DOCUMENT, HAMMER_GESTURE_CONFIG, Console, [new Optional(), HAMMER_LOADER]]
   },
   {provide: HAMMER_GESTURE_CONFIG, useClass: HammerGestureConfig, deps: []},
   {
