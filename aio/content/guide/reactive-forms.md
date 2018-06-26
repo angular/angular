@@ -87,7 +87,7 @@ Reactive forms give you access to the form state and value at a point in time. E
 
 </code-example>
 
-Now the displayed text changes as you update the form control element.
+The displayed value changes as you update the form control element.
 
 Reactive forms also provide access to more information about a given control through properties and methods provided with each instance.
 
