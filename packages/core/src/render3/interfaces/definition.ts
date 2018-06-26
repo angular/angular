@@ -226,13 +226,13 @@ export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T
  *
  * See: {@link definePipe}
  */
-export interface PipeDef<T> {
+export interface PipeDef<T, S extends string> {
   /**
    * Pipe name.
    *
    * Used to resolve pipe in templates.
    */
-  name: string;
+  name: S;
 
   /**
    * Factory function used to create a new pipe instance.
@@ -250,6 +250,8 @@ export interface PipeDef<T> {
   /* The following are lifecycle hooks for this pipe */
   onDestroy: (() => void)|null;
 }
+
+export type PipeDefInternal<T> = PipeDef<T, string>;
 
 export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T, string>) => void;
 export type ComponentDefFeature = <T>(componentDef: ComponentDef<T, string>) => void;
@@ -276,12 +278,13 @@ export type DirectiveTypeList =
  */
 export type PipeDefListOrFactory = (() => PipeDefList) | PipeDefList;
 
-export type PipeDefList = PipeDef<any>[];
+export type PipeDefList = PipeDefInternal<any>[];
 
 export type PipeTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
 
 export type PipeTypeList =
-    (PipeDef<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
+    (PipeDefInternal<any>|
+     Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

@@ -131,6 +131,8 @@ export class Identifiers {
 
   static defineNgModule: o.ExternalReference = {name: 'ɵdefineNgModule', moduleName: CORE};
 
+  static PipeDef: o.ExternalReference = {name: 'ɵPipeDef', moduleName: CORE};
+
   static definePipe: o.ExternalReference = {name: 'ɵdefinePipe', moduleName: CORE};
 
   static query: o.ExternalReference = {name: 'ɵQ', moduleName: CORE};
