@@ -32,7 +32,7 @@
     "test-pwa-score": "node scripts/test-pwa-score",
     "example-e2e": "yarn example-check-local && node ./tools/examples/run-example-e2e",
     "example-lint": "tslint -c \"content/examples/tslint.json\" \"content/examples/**/*.ts\" -e \"content/examples/styleguide/**/*.avoid.ts\"",
-    "example-use-local": "node tools/ng-packages-installer overwrite ./tools/examples/shared",
+    "example-use-local": "node tools/ng-packages-installer overwrite ./tools/examples/shared --debug",
     "example-use-npm": "node tools/ng-packages-installer restore ./tools/examples/shared",
     "example-check-local": "node tools/ng-packages-installer check ./tools/examples/shared",
     "deploy-preview": "scripts/deploy-preview.sh",

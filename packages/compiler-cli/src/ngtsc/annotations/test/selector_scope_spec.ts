@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 
+import {TypeScriptReflectionHost} from '../../metadata';
 import {AbsoluteReference, ResolvedReference} from '../../metadata/src/resolver';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {NgModuleDecoratorHandler} from '../src/ng_module';
@@ -53,6 +54,7 @@ describe('SelectorScopeRegistry', () => {
       },
     ]);
     const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
     const ProgramModule =
         getDeclaration(program, 'entry.ts', 'ProgramModule', ts.isClassDeclaration);
     const ProgramCmp = getDeclaration(program, 'entry.ts', 'ProgramCmp', ts.isClassDeclaration);
@@ -61,7 +63,7 @@ describe('SelectorScopeRegistry', () => {
     expect(ProgramModule).toBeDefined();
     expect(SomeModule).toBeDefined();
 
-    const registry = new SelectorScopeRegistry(checker);
+    const registry = new SelectorScopeRegistry(checker, host);
 
     registry.registerModule(ProgramModule, {
       declarations: [new ResolvedReference(ProgramCmp, ProgramCmp.name !)],

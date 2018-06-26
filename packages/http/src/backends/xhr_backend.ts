@@ -37,7 +37,8 @@ export class XHRConnection implements Connection {
    * `XMLHttpRequest`.
    */
   response: Observable<Response>;
-  readyState: ReadyState;
+  // TODO(issue/24571): remove '!'.
+  readyState !: ReadyState;
   constructor(req: Request, browserXHR: BrowserXhr, baseResponseOptions?: ResponseOptions) {
     this.request = req;
     this.response = new Observable<Response>((responseObserver: Observer<Response>) => {

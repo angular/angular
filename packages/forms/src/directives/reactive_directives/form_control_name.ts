@@ -153,9 +153,11 @@ export class FormControlName extends NgControl implements OnChanges, OnDestroy {
   private _added = false;
   /** @internal */
   viewModel: any;
-  readonly control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  readonly control !: FormControl;
 
-  @Input('formControlName') name: string;
+  // TODO(issue/24571): remove '!'.
+  @Input('formControlName') name !: string;
 
   @Input('disabled')
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }

@@ -6,24 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, R3NgModuleMetadata, WrappedNodeExpr, compileNgModule as compileR3NgModule, jitExpression} from '@angular/compiler';
+import {Expression, R3InjectorMetadata, R3NgModuleMetadata, WrappedNodeExpr, compileInjector, compileNgModule as compileR3NgModule, jitExpression} from '@angular/compiler';
 
 import {ModuleWithProviders, NgModule, NgModuleDefInternal, NgModuleTransitiveScopes} from '../../metadata/ng_module';
 import {Type} from '../../type';
 import {ComponentDefInternal} from '../interfaces/definition';
 
 import {angularCoreEnv} from './environment';
-import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
+import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_INJECTOR_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
+import {reflectDependencies} from './util';
 
 const EMPTY_ARRAY: Type<any>[] = [];
 
 export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
   const declarations: Type<any>[] = flatten(ngModule.declarations || EMPTY_ARRAY);
 
-  let def: any = null;
+  let ngModuleDef: any = null;
   Object.defineProperty(type, NG_MODULE_DEF, {
     get: () => {
-      if (def === null) {
+      if (ngModuleDef === null) {
         const meta: R3NgModuleMetadata = {
           type: wrap(type),
           bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY).map(wrap),
@@ -35,9 +36,32 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
           emitInline: true,
         };
         const res = compileR3NgModule(meta);
-        def = jitExpression(res.expression, angularCoreEnv, `ng://${type.name}/ngModuleDef.js`);
+        ngModuleDef =
+            jitExpression(res.expression, angularCoreEnv, `ng://${type.name}/ngModuleDef.js`);
       }
-      return def;
+      return ngModuleDef;
+    },
+  });
+
+  let ngInjectorDef: any = null;
+  Object.defineProperty(type, NG_INJECTOR_DEF, {
+    get: () => {
+      if (ngInjectorDef === null) {
+        const meta: R3InjectorMetadata = {
+          name: type.name,
+          type: wrap(type),
+          deps: reflectDependencies(type),
+          providers: new WrappedNodeExpr(ngModule.providers || EMPTY_ARRAY),
+          imports: new WrappedNodeExpr([
+            ngModule.imports || EMPTY_ARRAY,
+            ngModule.exports || EMPTY_ARRAY,
+          ]),
+        };
+        const res = compileInjector(meta);
+        ngInjectorDef =
+            jitExpression(res.expression, angularCoreEnv, `ng://${type.name}/ngInjectorDef.js`);
+      }
+      return ngInjectorDef;
     },
   });
 

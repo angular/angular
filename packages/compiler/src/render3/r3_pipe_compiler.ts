@@ -37,7 +37,6 @@ export function compilePipe(
     fnOrClass: outputCtx.importExpr(pipe.type.reference), deps,
     useNew: true,
     injectFn: R3.directiveInject,
-    useOptionalParam: false,
   });
   definitionMapValues.push({key: 'factory', value: templateFactory, quoted: false});
 

@@ -23,9 +23,11 @@ export class CssKeyframesPlayer implements AnimationPlayer {
   private _onDestroyFns: Function[] = [];
 
   private _started = false;
-  private _styler: ElementAnimationStyleHandler;
+  // TODO(issue/24571): remove '!'.
+  private _styler !: ElementAnimationStyleHandler;
 
-  public parentPlayer: AnimationPlayer;
+  // TODO(issue/24571): remove '!'.
+  public parentPlayer !: AnimationPlayer;
   public readonly totalTime: number;
   public readonly easing: string;
   public currentSnapshot: {[key: string]: string} = {};

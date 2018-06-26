@@ -54,7 +54,8 @@ describe('define', () => {
         class MyDirective implements OnChanges {
           public log: Array<string|SimpleChange> = [];
           public valA: string = 'initValue';
-          public valB: string;
+          // TODO(issue/24571): remove '!'.
+          public valB !: string;
 
           ngOnChanges(changes: SimpleChanges): void {
             this.log.push('valA', changes['valA']);

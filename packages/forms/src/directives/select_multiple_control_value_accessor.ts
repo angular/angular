@@ -35,7 +35,8 @@ interface HTMLOption {
 
 /** Mock interface for HTMLCollection */
 abstract class HTMLCollection {
-  length: number;
+  // TODO(issue/24571): remove '!'.
+  length !: number;
   abstract item(_: number): HTMLOption;
 }
 
@@ -177,7 +178,8 @@ export class SelectMultipleControlValueAccessor implements ControlValueAccessor 
  */
 @Directive({selector: 'option'})
 export class NgSelectMultipleOption implements OnDestroy {
-  id: string;
+  // TODO(issue/24571): remove '!'.
+  id !: string;
   /** @internal */
   _value: any;
 

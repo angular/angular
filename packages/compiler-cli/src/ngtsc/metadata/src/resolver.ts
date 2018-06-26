@@ -88,7 +88,8 @@ export abstract class Reference {
   /**
    * Whether an `Expression` can be generated which references the node.
    */
-  readonly expressable: boolean;
+  // TODO(issue/24571): remove '!'.
+  readonly expressable !: boolean;
 
   /**
    * Generate an `Expression` representing this type, in the context of the given SourceFile.

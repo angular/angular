@@ -84,6 +84,9 @@
     "name": "RENDERER"
   },
   {
+    "name": "RENDER_PARENT"
+  },
+  {
     "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
@@ -267,6 +270,9 @@
     "name": "createTextNode"
   },
   {
+    "name": "createViewQuery"
+  },
+  {
     "name": "defineComponent"
   },
   {
@@ -331,6 +337,9 @@
   },
   {
     "name": "generatePropertyAliases"
+  },
+  {
+    "name": "getChildLNode"
   },
   {
     "name": "getCleanup"
@@ -465,7 +474,7 @@
     "name": "refreshChildComponents"
   },
   {
-    "name": "refreshDynamicChildren"
+    "name": "refreshDynamicEmbeddedViews"
   },
   {
     "name": "refreshView"
@@ -547,6 +556,9 @@
   },
   {
     "name": "tickRootContext"
+  },
+  {
+    "name": "updateViewQuery"
   },
   {
     "name": "viewAttached"

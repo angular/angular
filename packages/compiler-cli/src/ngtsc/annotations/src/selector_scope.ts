@@ -9,9 +9,12 @@
 import {Expression, ExternalExpr, ExternalReference} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {AbsoluteReference, Reference, reflectStaticField, reflectTypeEntityToDeclaration} from '../../metadata';
+import {ReflectionHost} from '../../host';
+import {AbsoluteReference, Reference, reflectTypeEntityToDeclaration} from '../../metadata';
+import {reflectIdentifierOfDeclaration, reflectNameOfDeclaration} from '../../metadata/src/reflector';
 
 import {referenceToExpression} from './util';
+
 
 
 /**
@@ -59,55 +62,55 @@ export class SelectorScopeRegistry {
   /**
    *  Map of modules declared in the current compilation unit to their (local) metadata.
    */
-  private _moduleToData = new Map<ts.ClassDeclaration, ModuleData>();
+  private _moduleToData = new Map<ts.Declaration, ModuleData>();
 
   /**
    * Map of modules to their cached `CompilationScope`s.
    */
-  private _compilationScopeCache = new Map<ts.ClassDeclaration, CompilationScope<Reference>>();
+  private _compilationScopeCache = new Map<ts.Declaration, CompilationScope<Reference>>();
 
   /**
    * Map of components/directives to their selector.
    */
-  private _directiveToSelector = new Map<ts.ClassDeclaration, string>();
+  private _directiveToSelector = new Map<ts.Declaration, string>();
 
   /**
    * Map of pipes to their name.
    */
-  private _pipeToName = new Map<ts.ClassDeclaration, string>();
+  private _pipeToName = new Map<ts.Declaration, string>();
 
   /**
    * Map of components/directives/pipes to their module.
    */
-  private _declararedTypeToModule = new Map<ts.ClassDeclaration, ts.ClassDeclaration>();
+  private _declararedTypeToModule = new Map<ts.Declaration, ts.Declaration>();
 
-  constructor(private checker: ts.TypeChecker) {}
+  constructor(private checker: ts.TypeChecker, private reflector: ReflectionHost) {}
 
   /**
    * Register a module's metadata with the registry.
    */
-  registerModule(node: ts.ClassDeclaration, data: ModuleData): void {
-    node = ts.getOriginalNode(node) as ts.ClassDeclaration;
+  registerModule(node: ts.Declaration, data: ModuleData): void {
+    node = ts.getOriginalNode(node) as ts.Declaration;
 
     if (this._moduleToData.has(node)) {
-      throw new Error(`Module already registered: ${node.name!.text}`);
+      throw new Error(`Module already registered: ${reflectNameOfDeclaration(node)}`);
     }
     this._moduleToData.set(node, data);
 
     // Register all of the module's declarations in the context map as belonging to this module.
     data.declarations.forEach(decl => {
-      this._declararedTypeToModule.set(ts.getOriginalNode(decl.node) as ts.ClassDeclaration, node);
+      this._declararedTypeToModule.set(ts.getOriginalNode(decl.node) as ts.Declaration, node);
     });
   }
 
   /**
    * Register the selector of a component or directive with the registry.
    */
-  registerSelector(node: ts.ClassDeclaration, selector: string): void {
-    node = ts.getOriginalNode(node) as ts.ClassDeclaration;
+  registerSelector(node: ts.Declaration, selector: string): void {
+    node = ts.getOriginalNode(node) as ts.Declaration;
 
     if (this._directiveToSelector.has(node)) {
-      throw new Error(`Selector already registered: ${node.name!.text} ${selector}`);
+      throw new Error(`Selector already registered: ${reflectNameOfDeclaration(node)} ${selector}`);
     }
     this._directiveToSelector.set(node, selector);
   }
@@ -115,14 +118,14 @@ export class SelectorScopeRegistry {
   /**
    * Register the name of a pipe with the registry.
    */
-  registerPipe(node: ts.ClassDeclaration, name: string): void { this._pipeToName.set(node, name); }
+  registerPipe(node: ts.Declaration, name: string): void { this._pipeToName.set(node, name); }
 
   /**
    * Produce the compilation scope of a component, which is determined by the module that declares
    * it.
    */
-  lookupCompilationScope(node: ts.ClassDeclaration): CompilationScope<Expression>|null {
-    node = ts.getOriginalNode(node) as ts.ClassDeclaration;
+  lookupCompilationScope(node: ts.Declaration): CompilationScope<Expression>|null {
+    node = ts.getOriginalNode(node) as ts.Declaration;
 
     // If the component has no associated module, then it has no compilation scope.
     if (!this._declararedTypeToModule.has(node)) {
@@ -150,8 +153,7 @@ export class SelectorScopeRegistry {
     // The initial value of ngModuleImportedFrom is 'null' which signifies that the NgModule
     // was not imported from a .d.ts source.
     this.lookupScopes(module !, /* ngModuleImportedFrom */ null).compilation.forEach(ref => {
-      const selector =
-          this.lookupDirectiveSelector(ts.getOriginalNode(ref.node) as ts.ClassDeclaration);
+      const selector = this.lookupDirectiveSelector(ts.getOriginalNode(ref.node) as ts.Declaration);
       // Only directives/components with selectors get added to the scope.
       if (selector != null) {
         directives.set(selector, ref);
@@ -174,8 +176,7 @@ export class SelectorScopeRegistry {
    * (`ngModuleImportedFrom`) then all of its declarations are exported at that same path, as well
    * as imports and exports from other modules that are relatively imported.
    */
-  private lookupScopes(node: ts.ClassDeclaration, ngModuleImportedFrom: string|null):
-      SelectorScopes {
+  private lookupScopes(node: ts.Declaration, ngModuleImportedFrom: string|null): SelectorScopes {
     let data: ModuleData|null = null;
 
     // Either this module was analyzed directly, or has a precompiled ngModuleDef.
@@ -195,7 +196,7 @@ export class SelectorScopeRegistry {
     }
 
     if (data === null) {
-      throw new Error(`Module not registered: ${node.name!.text}`);
+      throw new Error(`Module not registered: ${reflectNameOfDeclaration(node)}`);
     }
 
     return {
@@ -203,20 +204,18 @@ export class SelectorScopeRegistry {
         ...data.declarations,
         // Expand imports to the exported scope of those imports.
         ...flatten(data.imports.map(
-            ref => this.lookupScopes(ref.node as ts.ClassDeclaration, absoluteModuleName(ref))
-                       .exported)),
+            ref =>
+                this.lookupScopes(ref.node as ts.Declaration, absoluteModuleName(ref)).exported)),
         // And include the compilation scope of exported modules.
         ...flatten(
-            data.exports.filter(ref => this._moduleToData.has(ref.node as ts.ClassDeclaration))
+            data.exports.filter(ref => this._moduleToData.has(ref.node as ts.Declaration))
                 .map(
-                    ref =>
-                        this.lookupScopes(ref.node as ts.ClassDeclaration, absoluteModuleName(ref))
-                            .exported))
+                    ref => this.lookupScopes(ref.node as ts.Declaration, absoluteModuleName(ref))
+                               .exported))
       ],
       exported: flatten(data.exports.map(ref => {
-        if (this._moduleToData.has(ref.node as ts.ClassDeclaration)) {
-          return this.lookupScopes(ref.node as ts.ClassDeclaration, absoluteModuleName(ref))
-              .exported;
+        if (this._moduleToData.has(ref.node as ts.Declaration)) {
+          return this.lookupScopes(ref.node as ts.Declaration, absoluteModuleName(ref)).exported;
         } else {
           return [ref];
         }
@@ -231,7 +230,7 @@ export class SelectorScopeRegistry {
    * ngComponentDef/ngDirectiveDef. In this case, the type metadata of that definition is read
    * to determine the selector.
    */
-  private lookupDirectiveSelector(node: ts.ClassDeclaration): string|null {
+  private lookupDirectiveSelector(node: ts.Declaration): string|null {
     if (this._directiveToSelector.has(node)) {
       return this._directiveToSelector.get(node) !;
     } else {
@@ -239,7 +238,7 @@ export class SelectorScopeRegistry {
     }
   }
 
-  private lookupPipeName(node: ts.ClassDeclaration): string|undefined {
+  private lookupPipeName(node: ts.Declaration): string|undefined {
     return this._pipeToName.get(node);
   }
 
@@ -251,16 +250,17 @@ export class SelectorScopeRegistry {
    * @param ngModuleImportedFrom module specifier of the import path to assume for all declarations
    * stemming from this module.
    */
-  private _readMetadataFromCompiledClass(clazz: ts.ClassDeclaration, ngModuleImportedFrom: string):
+  private _readMetadataFromCompiledClass(clazz: ts.Declaration, ngModuleImportedFrom: string):
       ModuleData|null {
     // This operation is explicitly not memoized, as it depends on `ngModuleImportedFrom`.
     // TODO(alxhub): investigate caching of .d.ts module metadata.
-    const ngModuleDef = reflectStaticField(clazz, 'ngModuleDef');
-    if (ngModuleDef === null) {
+    const ngModuleDef = this.reflector.getMembersOfClass(clazz).find(
+        member => member.name === 'ngModuleDef' && member.isStatic);
+    if (ngModuleDef === undefined) {
       return null;
     } else if (
         // Validate that the shape of the ngModuleDef type is correct.
-        ngModuleDef.type === undefined || !ts.isTypeReferenceNode(ngModuleDef.type) ||
+        ngModuleDef.type === null || !ts.isTypeReferenceNode(ngModuleDef.type) ||
         ngModuleDef.type.typeArguments === undefined ||
         ngModuleDef.type.typeArguments.length !== 4) {
       return null;
@@ -279,14 +279,15 @@ export class SelectorScopeRegistry {
    * Get the selector from type metadata for a class with a precompiled ngComponentDef or
    * ngDirectiveDef.
    */
-  private _readSelectorFromCompiledClass(clazz: ts.ClassDeclaration): string|null {
-    const def =
-        reflectStaticField(clazz, 'ngComponentDef') || reflectStaticField(clazz, 'ngDirectiveDef');
-    if (def === null) {
+  private _readSelectorFromCompiledClass(clazz: ts.Declaration): string|null {
+    const def = this.reflector.getMembersOfClass(clazz).find(
+        field =>
+            field.isStatic && (field.name === 'ngComponentDef' || field.name === 'ngDirectiveDef'));
+    if (def === undefined) {
       // No definition could be found.
       return null;
     } else if (
-        def.type === undefined || !ts.isTypeReferenceNode(def.type) ||
+        def.type === null || !ts.isTypeReferenceNode(def.type) ||
         def.type.typeArguments === undefined || def.type.typeArguments.length !== 2) {
       // The type metadata was the wrong shape.
       return null;
@@ -317,8 +318,9 @@ export class SelectorScopeRegistry {
       const type = element.typeName;
       const {node, from} = reflectTypeEntityToDeclaration(type, this.checker);
       const moduleName = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
-      const clazz = node as ts.ClassDeclaration;
-      return new AbsoluteReference(node, clazz.name !, moduleName, clazz.name !.text);
+      const clazz = node as ts.Declaration;
+      const id = reflectIdentifierOfDeclaration(clazz);
+      return new AbsoluteReference(node, id !, moduleName, id !.text);
     });
   }
 }
@@ -331,7 +333,6 @@ function flatten<T>(array: T[][]): T[] {
 }
 
 function absoluteModuleName(ref: Reference): string|null {
-  const name = (ref.node as ts.ClassDeclaration).name !.text;
   if (!(ref instanceof AbsoluteReference)) {
     return null;
   }

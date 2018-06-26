@@ -44,8 +44,10 @@ describe('queries', () => {
     `
     })
     class ViewQueryComponent {
-      @ViewChild(SomeDirective) someDir: SomeDirective;
-      @ViewChildren(SomeDirective) someDirList: QueryList<SomeDirective>;
+      // TODO(issue/24571): remove '!'.
+      @ViewChild(SomeDirective) someDir !: SomeDirective;
+      // TODO(issue/24571): remove '!'.
+      @ViewChildren(SomeDirective) someDirList !: QueryList<SomeDirective>;
 
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
@@ -54,13 +56,17 @@ describe('queries', () => {
         factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
         template: function ViewQueryComponent_Template(
             rf: $RenderFlags$, ctx: $ViewQueryComponent$) {
-          let $tmp$: any;
+          if (rf & 1) {
+            $r3$.ɵEe(2, 'div', $e1_attrs$);
+          }
+        },
+        viewQuery: function ViewQueryComponent_Query(rf: $RenderFlags$, ctx: $ViewQueryComponent$) {
           if (rf & 1) {
             $r3$.ɵQ(0, SomeDirective, false);
             $r3$.ɵQ(1, SomeDirective, false);
-            $r3$.ɵEe(2, 'div', $e1_attrs$);
           }
           if (rf & 2) {
+            let $tmp$: any;
             $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(0)) && (ctx.someDir = $tmp$.first);
             $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(1)) &&
                 (ctx.someDirList = $tmp$ as QueryList<any>);
@@ -93,8 +99,10 @@ describe('queries', () => {
       `
     })
     class ContentQueryComponent {
-      @ContentChild(SomeDirective) someDir: SomeDirective;
-      @ContentChildren(SomeDirective) someDirList: QueryList<SomeDirective>;
+      // TODO(issue/24571): remove '!'.
+      @ContentChild(SomeDirective) someDir !: SomeDirective;
+      // TODO(issue/24571): remove '!'.
+      @ContentChildren(SomeDirective) someDirList !: QueryList<SomeDirective>;
 
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({

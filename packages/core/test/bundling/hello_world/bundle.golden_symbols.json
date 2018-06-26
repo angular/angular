@@ -57,10 +57,10 @@
     "name": "RENDERER"
   },
   {
-    "name": "ROOT_DIRECTIVE_INDICES"
+    "name": "RENDER_PARENT"
   },
   {
-    "name": "SANITIZER"
+    "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
     "name": "TVIEW"
@@ -120,6 +120,9 @@
     "name": "createTextNode"
   },
   {
+    "name": "createViewQuery"
+  },
+  {
     "name": "defineComponent"
   },
   {
@@ -153,7 +156,7 @@
     "name": "firstTemplatePass"
   },
   {
-    "name": "getCurrentSanitizer"
+    "name": "getChildLNode"
   },
   {
     "name": "getDirectiveInstance"
@@ -192,7 +195,7 @@
     "name": "refreshChildComponents"
   },
   {
-    "name": "refreshDynamicChildren"
+    "name": "refreshDynamicEmbeddedViews"
   },
   {
     "name": "refreshView"
@@ -220,6 +223,9 @@
   },
   {
     "name": "text"
+  },
+  {
+    "name": "updateViewQuery"
   },
   {
     "name": "viewAttached"

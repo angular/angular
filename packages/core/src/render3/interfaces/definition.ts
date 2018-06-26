@@ -19,6 +19,11 @@ export type ComponentTemplate<T> = {
 };
 
 /**
+ * Definition of what a query function should look like.
+ */
+export type ComponentQuery<T> = ComponentTemplate<T>;
+
+/**
  * Flags passed into template functions to determine which blocks (i.e. creation, update)
  * should be executed.
  *
@@ -153,15 +158,16 @@ export type ComponentDefInternal<T> = ComponentDef<T, string>;
 export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T, Selector> {
   /**
    * The View template of the component.
-   *
-   * NOTE: only used with component directives.
    */
   readonly template: ComponentTemplate<T>;
 
   /**
+   * Query-related instructions for a component.
+   */
+  readonly viewQuery: ComponentQuery<T>|null;
+
+  /**
    * Renderer type data of the component.
-   *
-   * NOTE: only used with component directives.
    */
   readonly rendererType: RendererType2|null;
 

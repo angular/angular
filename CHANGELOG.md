@@ -1,3 +1,29 @@
+<a name="6.1.0-beta.2"></a>
+# [6.1.0-beta.2](https://github.com/angular/angular/compare/6.1.0-beta.1...6.1.0-beta.2) (2018-06-20)
+
+
+### Bug Fixes
+
+* **compiler:** support `.` in import statements. ([#20634](https://github.com/angular/angular/issues/20634)) ([d8f7b29](https://github.com/angular/angular/commit/d8f7b29)), closes [#20363](https://github.com/angular/angular/issues/20363)
+* **core:** Injector correctly honors the @Self flag ([#24520](https://github.com/angular/angular/issues/24520)) ([ccbda9d](https://github.com/angular/angular/commit/ccbda9d))
+
+
+
+<a name="6.0.6"></a>
+## [6.0.6](https://github.com/angular/angular/compare/6.0.5...6.0.6) (2018-06-20)
+
+
+### Bug Fixes
+
+* **compiler:** support `.` in import statements. ([#20634](https://github.com/angular/angular/issues/20634)) ([e543c73](https://github.com/angular/angular/commit/e543c73)), closes [#20363](https://github.com/angular/angular/issues/20363)
+* **core:** Injector correctly honors the @Self flag ([#24520](https://github.com/angular/angular/issues/24520)) ([f5b3661](https://github.com/angular/angular/commit/f5b3661))
+
+
+
+<a name="6.0.5"></a>
+## [6.0.5](https://github.com/angular/angular/compare/6.0.4...6.0.5) (2018-06-13)
+
+
 <a name="6.1.0-beta.1"></a>
 # [6.1.0-beta.1](https://github.com/angular/angular/compare/6.1.0-beta.0...6.1.0-beta.1) (2018-06-13)
 
