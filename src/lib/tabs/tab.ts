@@ -53,10 +53,19 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
   /** Template inside the MatTab view that contains an `<ng-content>`. */
   @ViewChild(TemplateRef) _implicitContent: TemplateRef<any>;
 
-  /** The plain text label for the tab, used when there is no template label. */
+  /** Plain text label for the tab, used when there is no template label. */
   @Input('label') textLabel: string = '';
 
-  /** The portal that will be the hosted content of the tab */
+  /** Aria label for the tab. */
+  @Input('aria-label') ariaLabel: string;
+
+  /**
+   * Reference to the element that the tab is labelled by.
+   * Will be cleared if `aria-label` is set at the same time.
+   */
+  @Input('aria-labelledby') ariaLabelledby: string;
+
+  /** Portal that will be the hosted content of the tab */
   private _contentPortal: TemplatePortal | null = null;
 
   /** @docs-private */

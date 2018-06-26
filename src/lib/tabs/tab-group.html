@@ -11,6 +11,8 @@
        [attr.aria-setsize]="_tabs.length"
        [attr.aria-controls]="_getTabContentId(i)"
        [attr.aria-selected]="selectedIndex == i"
+       [attr.aria-label]="tab.ariaLabel || null"
+       [attr.aria-labelledby]="(!tab.ariaLabel && tab.ariaLabelledby) ? tab.ariaLabelledby : null"
        [class.mat-tab-label-active]="selectedIndex == i"
        [disabled]="tab.disabled"
        [matRippleDisabled]="tab.disabled || disableRipple"

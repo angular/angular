@@ -19,6 +19,7 @@ describe('MatTabGroup', () => {
         DisabledTabsTestApp,
         TabGroupWithSimpleApi,
         TemplateTabs,
+        TabGroupWithAriaInputs,
       ],
     });
 
@@ -231,6 +232,46 @@ describe('MatTabGroup', () => {
       expect(labels.every(label => label.getAttribute('aria-setsize') === '3')).toBe(true);
     });
 
+  });
+
+  describe('aria labelling', () => {
+    let fixture: ComponentFixture<TabGroupWithAriaInputs>;
+    let tab: HTMLElement;
+
+    beforeEach(fakeAsync(() => {
+      fixture = TestBed.createComponent(TabGroupWithAriaInputs);
+      fixture.detectChanges();
+      tick();
+      tab = fixture.nativeElement.querySelector('.mat-tab-label');
+    }));
+
+    it('should not set aria-label or aria-labelledby attributes if they are not passed in', () => {
+      expect(tab.hasAttribute('aria-label')).toBe(false);
+      expect(tab.hasAttribute('aria-labelledby')).toBe(false);
+    });
+
+    it('should set the aria-label attribute', () => {
+      fixture.componentInstance.ariaLabel = 'Fruit';
+      fixture.detectChanges();
+
+      expect(tab.getAttribute('aria-label')).toBe('Fruit');
+    });
+
+    it('should set the aria-labelledby attribute', () => {
+      fixture.componentInstance.ariaLabelledby = 'fruit-label';
+      fixture.detectChanges();
+
+      expect(tab.getAttribute('aria-labelledby')).toBe('fruit-label');
+    });
+
+    it('should not be able to set both an aria-label and aria-labelledby', () => {
+      fixture.componentInstance.ariaLabel = 'Fruit';
+      fixture.componentInstance.ariaLabelledby = 'fruit-label';
+      fixture.detectChanges();
+
+      expect(tab.getAttribute('aria-label')).toBe('Fruit');
+      expect(tab.hasAttribute('aria-labelledby')).toBe(false);
+    });
   });
 
   describe('disable tabs', () => {
@@ -661,3 +702,16 @@ class NestedTabs {}
   `,
  })
  class TemplateTabs {}
+
+
+ @Component({
+  template: `
+  <mat-tab-group>
+    <mat-tab [aria-label]="ariaLabel" [aria-labelledby]="ariaLabelledby"></mat-tab>
+  </mat-tab-group>
+  `
+})
+class TabGroupWithAriaInputs {
+  ariaLabel: string;
+  ariaLabelledby: string;
+}
