@@ -17,7 +17,7 @@ import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/conta
 import {LInjector} from './interfaces/injector';
 import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {BINDING_INDEX, CLEANUP, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 
 import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
@@ -303,7 +303,8 @@ export function createLViewData<T>(
     viewData && viewData[INJECTOR],                                              // injector
     renderer,                                                                    // renderer
     sanitizer || null,                                                           // sanitizer
-    null                                                                         // tail
+    null,                                                                        // tail
+    -1                                                                           // containerIndex
   ];
 }
 
@@ -325,7 +326,6 @@ export function createLNodeObject(
     tNode: null !,
     pNextOrParent: null,
     dynamicLContainerNode: null,
-    dynamicParent: null,
     pChild: null,
   };
 }
@@ -1783,14 +1783,10 @@ export function embeddedViewStart(viewBlockId: number): RenderFlags {
     enterView(
         newView, viewNode = createLNode(viewBlockId, TNodeType.View, null, null, null, newView));
   }
-  const containerNode = getParentLNode(viewNode) as LContainerNode;
-  if (containerNode) {
-    ngDevMode && assertNodeType(viewNode, TNodeType.View);
-    ngDevMode && assertNodeType(containerNode, TNodeType.Container);
-    const lContainer = containerNode.data;
+  if (container) {
     if (creationMode) {
       // it is a new view, insert it into collection of views for a given container
-      insertView(containerNode, viewNode, lContainer[ACTIVE_INDEX] !);
+      insertView(container, viewNode, lContainer[ACTIVE_INDEX] !);
     }
     lContainer[ACTIVE_INDEX] !++;
   }

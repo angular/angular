@@ -11,12 +11,12 @@ import {Sanitizer} from '../../sanitization/security';
 
 import {LContainer} from './container';
 import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDef, PipeDefList} from './definition';
-import {LElementNode, LViewNode, TNode} from './node';
+import {LContainerNode, LElementNode, LViewNode, TNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
 
 /** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 14;
+export const HEADER_OFFSET = 15;
 
 // Below are constants for LViewData indices to help us look up LViewData members
 // without having to remember the specific indices.
@@ -35,6 +35,7 @@ export const INJECTOR = 10;
 export const RENDERER = 11;
 export const SANITIZER = 12;
 export const TAIL = 13;
+export const CONTAINER_INDEX = 14;
 
 /**
  * `LViewData` stores all of the information needed to process the instructions as
@@ -122,7 +123,7 @@ export interface LViewData extends Array<any> {
    * - For embedded views, the context with which to render the template.
    * - For root view of the root component the context contains change detection data.
    * - `null` otherwise.
-  */
+   */
   [CONTEXT]: {}|RootContext|null;
 
   /** An optional Module Injector to be used as fall back after Element Injectors are consulted. */
@@ -142,6 +143,16 @@ export interface LViewData extends Array<any> {
    */
   // TODO: replace with global
   [TAIL]: LViewData|LContainer|null;
+
+  /**
+   * The index of the parent container's host node. Applicable only to embedded views that
+   * have been inserted dynamically. Will be -1 for component views and inline views.
+   *
+   * This is necessary to jump from dynamically created embedded views to their parent
+   * containers because their parent cannot be stored on the TViewNode (views may be inserted
+   * in multiple containers, so the parent cannot be shared between view instances).
+   */
+  [CONTAINER_INDEX]: number;
 }
 
 /** Flags associated with an LView (saved in LViewData[FLAGS]) */

@@ -301,7 +301,6 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         // But since this text doesn't have an index in `LViewData`, we need to create an
         // `LElementNode` with the index -1 so that it isn't saved in `LViewData`
         const textLNode = createLNode(-1, TNodeType.Element, textRNode, null, null);
-        textLNode.dynamicParent = localParentNode as LElementNode | LContainerNode;
         localPreviousNode = appendI18nNode(textLNode, localParentNode, localPreviousNode);
         break;
       case I18nInstructions.CloseNode:
