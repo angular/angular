@@ -127,9 +127,19 @@ let tView: TView;
 
 let currentQueries: LQueries|null;
 
+/**
+ * Query instructions can ask for "current queries" in 2 different cases:
+ * - when creating view queries (at the root of a component view, before any node is created - in
+ * this case currentQueries points to view queries)
+ * - when creating content queries (inb this previousOrParentNode points to a node on which we
+ * create content queries).
+ */
 export function getCurrentQueries(QueryType: {new (): LQueries}): LQueries {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return currentQueries || (currentQueries = (previousOrParentNode.queries || new QueryType()));
+  return currentQueries ||
+      (currentQueries =
+           (previousOrParentNode.queries && previousOrParentNode.queries.clone() ||
+            new QueryType()));
 }
 
 /**
