@@ -114,21 +114,25 @@ export class MatChipTrailingIcon {}
 })
 export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDestroy, CanColor,
     CanDisable, CanDisableRipple, RippleTarget {
+
+  /** Reference to the RippleRenderer for the chip. */
+  private _chipRipple: RippleRenderer;
+
+  /** Whether the ripples are globally disabled through the RippleGlobalOptions */
+  private _ripplesGloballyDisabled = false;
+
   /**
    * Ripple configuration for ripples that are launched on pointer down.
    * @docs-private
    */
   rippleConfig: RippleConfig = {};
 
-  /** Reference to the RippleRenderer for the chip. */
-  private _chipRipple: RippleRenderer;
-
   /**
    * Whether ripples are disabled on interaction
    * @docs-private
    */
   get rippleDisabled(): boolean {
-    return this.disabled || this.disableRipple;
+    return this.disabled || this.disableRipple || this._ripplesGloballyDisabled;
   }
 
   /** Whether the chip has focus. */
@@ -225,6 +229,8 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     this._chipRipple.setupTriggerEvents(_elementRef.nativeElement);
 
     if (globalOptions) {
+      this._ripplesGloballyDisabled = !!globalOptions.disabled;
+      // TODO(paul): Once the speedFactor is removed, we no longer need to copy each single option.
       this.rippleConfig = {
         speedFactor: globalOptions.baseSpeedFactor,
         animation: globalOptions.animation,

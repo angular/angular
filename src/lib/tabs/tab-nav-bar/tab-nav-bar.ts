@@ -227,6 +227,7 @@ export class MatTabLink extends _MatTabLinkMixinBase
     this.tabIndex = parseInt(tabIndex) || 0;
 
     if (globalOptions) {
+      // TODO(paul): Once the speedFactor is removed, we no longer need to copy each single option.
       this.rippleConfig = {
         terminateOnPointerUp: globalOptions.terminateOnPointerUp,
         speedFactor: globalOptions.baseSpeedFactor,
