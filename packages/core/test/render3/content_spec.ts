@@ -138,6 +138,7 @@ describe('content projection', () => {
   });
 
   it('should project content with container.', () => {
+    /** <div> <ng-content></ng-content></div> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         projectionDef(0);
@@ -146,6 +147,16 @@ describe('content projection', () => {
         elementEnd();
       }
     });
+
+    /**
+     * <child>
+     *     (
+     *      % if (value) {
+     *        content
+     *      % }
+     *     )
+     * </child>
+     */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: {value: any}) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'child');
@@ -182,12 +193,21 @@ describe('content projection', () => {
   });
 
   it('should project content with container into root', () => {
+    /** <ng-content></ng-content> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         projectionDef(0);
         projection(1, 0);
       }
     });
+
+    /**
+     * <child>
+     *    % if (value) {
+     *      content
+     *    % }
+     * </child>
+     */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: {value: any}) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'child');
@@ -222,6 +242,7 @@ describe('content projection', () => {
   });
 
   it('should project content with container and if-else.', () => {
+    /** <div><ng-content></ng-content></div> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         projectionDef(0);
@@ -230,6 +251,18 @@ describe('content projection', () => {
         elementEnd();
       }
     });
+
+    /**
+     * <child>
+     *     (
+     *       % if (value) {
+     *         content
+     *       % } else {
+     *         else
+     *       % }
+     *     )
+     * </child>
+     */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: {value: any}) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'child');
@@ -270,7 +303,7 @@ describe('content projection', () => {
     expect(toHtml(parent)).toEqual('<child><div>(else)</div></child>');
   });
 
-  it('should support projection in embedded views', () => {
+  it('should support projection into embedded views', () => {
     let childCmptInstance: any;
 
     /**
@@ -306,9 +339,7 @@ describe('content projection', () => {
       }
     });
 
-    /**
-     * <child>content</child>
-     */
+    /** <child>content</child> */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'child');
@@ -382,6 +413,72 @@ describe('content projection', () => {
        detectChanges(parent);
        expect(toHtml(parent)).toEqual('<child><div></div></child>');
      });
+
+  it('should project containers into embedded views', () => {
+    /**
+     * <div>
+     *  % if (!skipContent) {
+     *    <ng-content></ng-content>
+     *  % }
+     * </div>
+     */
+    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef(0);
+        elementStart(1, 'div');
+        { container(2); }
+        elementEnd();
+      }
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(2);
+        {
+          if (!ctx.skipContent) {
+            let rf0 = embeddedViewStart(0);
+            if (rf0 & RenderFlags.Create) {
+              projection(0, 0);
+            }
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      }
+    });
+
+    /**
+     * <child>
+     *     % if (!skipContent) {
+     *       content
+     *     % }
+     * </child>
+     */
+    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'child');
+        { container(1); }
+        elementEnd();
+      }
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(1);
+        {
+          if (!ctx.skipContent) {
+            let rf0 = embeddedViewStart(0);
+            if (rf0 & RenderFlags.Create) {
+              text(0, 'content');
+            }
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      }
+    }, [Child]);
+
+    const fixture = new ComponentFixture(Parent);
+    expect(fixture.html).toEqual('<child><div>content</div></child>');
+
+    fixture.component.skipContent = true;
+    fixture.update();
+    expect(fixture.html).toEqual('<child><div></div></child>');
+  });
 
   it('should support projection in embedded views when ng-content is a root node of an embedded view, with other nodes after',
      () => {

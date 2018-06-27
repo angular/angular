@@ -476,14 +476,14 @@ function executePipeOnDestroys(viewData: LViewData): void {
 
 /**
  * Returns whether a native element can be inserted into the given parent.
- * 
+ *
  * There are two reasons why we may not be able to insert a element immediately.
- * - Projection: When creating a child content element of a component, we have to skip the 
+ * - Projection: When creating a child content element of a component, we have to skip the
  *   insertion because the content of a component will be projected.
  *   `<component><content>delayed due to projection</content></component>`
- * - Parent container is disconnected: This can happen when we are inserting a view into 
- *   parent container, which itself is disconnected. For example the parent container is part 
- *   of a View which has not be inserted or is mare for projection but has not been inserted 
+ * - Parent container is disconnected: This can happen when we are inserting a view into
+ *   parent container, which itself is disconnected. For example the parent container is part
+ *   of a View which has not be inserted or is mare for projection but has not been inserted
  *   into destination.
  *
 
@@ -597,24 +597,24 @@ export function removeChild(parent: LNode, child: RNode | null, currentView: LVi
  * @param currentView Current LView
  */
 export function appendProjectedNode(
-    node: LElementNode | LTextNode | LContainerNode, currentParent: LElementNode,
-    currentView: LViewData): void {
+    node: LElementNode | LTextNode | LContainerNode, currentParent: LElementNode | LViewNode,
+    currentView: LViewData, renderParent: LElementNode): void {
   appendChild(currentParent, node.native, currentView);
   if (node.tNode.type === TNodeType.Container) {
-    // The node we are adding is a Container and we are adding it to Element which
+    // The node we are adding is a container and we are adding it to an element which
     // is not a component (no more re-projection).
     // Alternatively a container is projected at the root of a component's template
     // and can't be re-projected (as not content of any component).
-    // Assignee the final projection location in those cases.
+    // Assign the final projection location in those cases.
     const lContainer = (node as LContainerNode).data;
-    lContainer[RENDER_PARENT] = currentParent;
+    lContainer[RENDER_PARENT] = renderParent;
     const views = lContainer[VIEWS];
     for (let i = 0; i < views.length; i++) {
       addRemoveViewFromContainer(node as LContainerNode, views[i], true, null);
     }
   }
   if (node.dynamicLContainerNode) {
-    node.dynamicLContainerNode.data[RENDER_PARENT] = currentParent;
+    node.dynamicLContainerNode.data[RENDER_PARENT] = renderParent;
     appendChild(currentParent, node.dynamicLContainerNode.native, currentView);
   }
 }
