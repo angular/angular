@@ -22,6 +22,20 @@ export class Esm2015Renderer extends Renderer {
     imports.forEach(i => { output.appendLeft(0, `import * as ${i.as} from '${i.name}';\n`); });
   }
 
+  addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
+    if (constants === '') {
+      return;
+    }
+    const insertionPoint = file.statements.reduce((prev, stmt) => {
+      if (ts.isImportDeclaration(stmt) || ts.isImportEqualsDeclaration(stmt) ||
+          ts.isNamespaceImport(stmt)) {
+        return stmt.getEnd();
+      }
+      return prev;
+    }, 0);
+    output.appendLeft(insertionPoint, '\n' + constants + '\n');
+  }
+
   /**
    * Add the definitions to each decorated class
    */
