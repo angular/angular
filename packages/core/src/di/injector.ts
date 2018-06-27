@@ -64,10 +64,8 @@ export abstract class Injector {
 
   /**
    * Retrieves an instance from the injector based on the provided token.
-   * If not found:
-   * - Throws an error if no `notFoundValue` that is not equal to
-   * Injector.THROW_IF_NOT_FOUND is given
-   * - Returns the `notFoundValue` otherwise
+   * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+   * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
   abstract get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   /**
