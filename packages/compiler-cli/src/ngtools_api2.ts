@@ -132,7 +132,7 @@ export function createProgram(
     {rootNames, options, host, oldProgram}:
         {rootNames: string[], options: CompilerOptions, host: CompilerHost, oldProgram?: Program}):
     Program {
-  return createProgramOrig({rootNames, options, host, oldProgram: oldProgram as any});
+  return createProgramOrig({rootNames, options, host, oldProgram: oldProgram as any}) as Program;
 }
 
 // Wrapper for createCompilerHost.

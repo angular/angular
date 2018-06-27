@@ -472,7 +472,7 @@ class RendererAdapter implements RendererV1 {
 
 export function createNgModuleRef(
     moduleType: Type<any>, parent: Injector, bootstrapComponents: Type<any>[],
-    def: NgModuleDefinition): NgModuleRef<any> {
+    def: NgModuleDefinition): NgModuleRef<any> & Injector {
   return new NgModuleRef_(moduleType, parent, bootstrapComponents, def);
 }
 

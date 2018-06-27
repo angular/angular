@@ -769,7 +769,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              expect(input.value).toEqual('', 'Expected view value to reset.');
              expect(form.value).toEqual({name: null}, 'Expected form value to reset.');
              expect(fixture.componentInstance.name)
-                 .toEqual(null, 'Expected ngModel value to reset.');
+                 .toEqual(null as any, 'Expected ngModel value to reset.');
              expect(form.dirty).toBe(false, 'Expected dirty to stay false on reset.');
              expect(form.touched).toBe(false, 'Expected touched to stay false on reset.');
 
@@ -780,7 +780,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              expect(form.value)
                  .toEqual({name: null}, 'Expected form value to stay empty on submit');
              expect(fixture.componentInstance.name)
-                 .toEqual(null, 'Expected ngModel value to stay empty on submit.');
+                 .toEqual(null as any, 'Expected ngModel value to stay empty on submit.');
              expect(form.dirty).toBe(false, 'Expected dirty to stay false on submit.');
              expect(form.touched).toBe(false, 'Expected touched to stay false on submit.');
            }));
@@ -1045,7 +1045,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            expect(input.nativeElement.value).toBe('');         // view value
-           expect(fixture.componentInstance.name).toBe(null);  // ngModel value
+           expect(fixture.componentInstance.name).toBe(null as any);  // ngModel value
            expect(form.value.name).toEqual(null);              // control value
          }));
 
@@ -1845,7 +1845,7 @@ class NgModelAsyncValidation {
   selector: 'ng-model-changes-form',
   template: `
     <form>
-      <input name="async" [ngModel]="name" (ngModelChange)="log()" 
+      <input name="async" [ngModel]="name" (ngModelChange)="log()"
              [ngModelOptions]="options">
     </form>
   `
