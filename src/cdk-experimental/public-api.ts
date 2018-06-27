@@ -7,4 +7,3 @@
  */
 
 export * from './version';
-export * from '@angular/cdk-experimental/scrolling';

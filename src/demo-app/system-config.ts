@@ -63,6 +63,7 @@ System.config({
     '@angular/cdk/tree': 'dist/packages/cdk/tree/index.js',
 
     '@angular/cdk-experimental/scrolling': 'dist/packages/cdk-experimental/scrolling/index.js',
+    '@angular/cdk-experimental/dialog': 'dist/packages/cdk-experimental/dialog/index.js',
 
     '@angular/material/autocomplete': 'dist/packages/material/autocomplete/index.js',
     '@angular/material/bottom-sheet': 'dist/packages/material/bottom-sheet/index.js',
