@@ -97,6 +97,9 @@ You can control your app compilation by providing template compiler options in t
   }
 }
 ```
+### *enableResourceInlining*
+This options tell the compiler to replace the `templateUrl` and `styleUrls` property in all `@Component` decorators with inlined contents in `template` and `styles` properties.
+When enabled, the `.js` output of ngc will have no lazy-loaded `templateUrl` or `styleUrls`.
 
 ### *skipMetadataEmit*
 
@@ -236,14 +239,14 @@ Tells the compiler to generate all the possible generated files even if they are
 how `bazel` rules track file dependencies. It is not recommended to use this option outside of the `bazel`
 rules.
 
-  ### *enableIvy*
+### *enableIvy*
 
-  Tells the compiler to generate definitions using the Render3 style code generation. This option defaults to `false`.
+Tells the compiler to generate definitions using the Render3 style code generation. This option defaults to `false`.
 
-  Not all features are supported with this option enabled. It is only supported
-  for experimentation and testing of Render3 style code generation.
+Not all features are supported with this option enabled. It is only supported
+for experimentation and testing of Render3 style code generation.
 
-  *Note*: Is it not recommended to use this option as it is not yet feature complete with the Render2 code generation.
+*Note*: Is it not recommended to use this option as it is not yet feature complete with the Render2 code generation.
 
 
 ## Angular Metadata and AOT
