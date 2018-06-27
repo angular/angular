@@ -183,9 +183,12 @@ let thisArg: any;
 
     it('should allow of saving the collection', async(() => {
          const template =
-             '<ul><li *ngFor="let item of [1,2,3] as items; index as i">{{i}}/{{items.length}} - {{item}};</li></ul>';
+             '<ul><li *ngFor="let item of items as collection; index as i">{{i}}/{{collection.length}} - {{item}};</li></ul>';
          fixture = createTestComponent(template);
 
+         detectChangesAndExpectText('0/2 - 1;1/2 - 2;');
+
+         getComponent().items = [1, 2, 3];
          detectChangesAndExpectText('0/3 - 1;1/3 - 2;2/3 - 3;');
        }));
 
