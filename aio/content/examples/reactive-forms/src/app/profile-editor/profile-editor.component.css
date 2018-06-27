@@ -2,6 +2,7 @@
 :host {
   display: flex;
   flex-direction: column;
+  padding-top: 24px;
 }
 
 label {

@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion form-builder
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 // #docregion form-builder-imports, validator-imports, form-array-imports
 import {
 // #enddocregion validator-imports, form-array-imports
@@ -20,7 +20,7 @@ import {
   templateUrl: './profile-editor.component.html',
   styleUrls: ['./profile-editor.component.css']
 })
-export class ProfileEditorComponent implements OnInit {
+export class ProfileEditorComponent {
 // #docregion required-validator, aliases
   profileForm = this.fb.group({
     firstName: ['', Validators.required],
@@ -49,8 +49,6 @@ export class ProfileEditorComponent implements OnInit {
   constructor(private fb: FormBuilder) { }
 
 // #enddocregion inject-form-builder
-  ngOnInit() {
-  }
 
   updateProfile() {
     this.profileForm.patchValue({

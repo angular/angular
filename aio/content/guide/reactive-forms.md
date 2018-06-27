@@ -89,177 +89,7 @@ Reactive forms give you access to the form state and value at a point in time. E
 
 The displayed value changes as you update the form control element.
 
-Reactive forms also provide access to more information about a given control through properties and methods provided with each instance.
-
-<style>
-  td, th {vertical-align: top}
-</style>
-
-
-
-<table width="100%">
-
-  <col width="10%">
-
-  </col>
-
-  <col width="90%">
-
-  </col>
-
-  <tr>
-
-    <th>
-      Property
-    </th>
-
-    <th>
-      Description
-    </th>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>control.valueChanges</code>
-    </td>
-
-    <td>
-
-      A multicasting observable that emits the current value of the control each time it changes.
-
-    </td>
-
-  </tr>  
-
-  <tr>
-
-    <td>
-      <code>control.value</code>
-    </td>
-
-    <td>
-
-      The current value of the control.
-
-      <ul>
-        <li>For a `FormControl`, the current value.</li>
-        <li>For a `FormGroup`, the values of enabled controls as an object with a key-value pair for each member of the group.</li>
-        <li>For a `FormArray`, the values of enabled controls as an array.</li>
-      </ul>
-
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>control.statusChanges</code>
-    </td>
-
-    <td>
-
-      A multicasting observable that emits the status value of the control every time the validity of the control is recalculated. Possible values: `VALID`,
-       `INVALID`, `PENDING`, or `DISABLED`.
-    </td>
-
-  </tr>  
-
-  <tr>
-
-    <td>
-      <code>control.status</code>
-    </td>
-
-    <td>
-
-
-      The current validity of a `FormControl`.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>control.pristine</code>
-    </td>
-
-    <td>
-
-
-      This value is `true` if the user has _not_ changed the value in the UI.
-      Its opposite is `control.dirty`.
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>control.untouched</code>
-    </td>
-
-    <td>
-
-
-      This value is `true` if the control user has not yet entered the HTML control
-       and triggered its blur event. Its opposite is `control.touched`.
-
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>control.patchValue()</code>
-    </td>
-
-    <td>
-
-      Method that patches the value of the form control. By default, it propagates changes to its parent control
-      and emits `valueChanges` and `statusChanges` events.
-
-    </td>
-
-  </tr>  
-
-  <tr>
-
-    <td>
-      <code>control.setValue()</code>
-    </td>
-
-    <td>
-
-      Method that set the value of the form control. By default, it propagates changes to its parent control
-      and emits `valueChanges` and `statusChanges` events.
-
-    </td>
-
-  </tr>
-
-  <tr>
-
-    <td>
-      <code>control.reset()</code>
-    </td>
-
-    <td>
-
-      Method that resets the control to an initial value if provided or null, marks it `pristine` and `untouched`.
-
-    </td>
-
-  </tr>
-
-</table>
-
-
-These properties and methods of the underlying `AbstractControl` can be used to control form state and determine when to display messages when handling validation. That will be [discussed later](#simple-form-validation) in the guide.
+Reactive forms also provide access to more information about a given control through properties and methods provided with each instance. These properties and methods of the underlying [AbstractControl](api/forms/AbstractControl) are used to control form state and determine when to display messages when handling validation. That will be [discussed later](#simple-form-validation) in the guide.
 
 Read about other `FormControl` properties and methods in the
 [Reactive Forms API](#reactive-forms-api) section.
@@ -472,7 +302,7 @@ Form validation is necessary when receiving user input through forms. This guide
 
 ### Add a validator function
 
-Reactive forms include a set of validator functions out of the box for common use cases. These functions are provided the control to validate against and return and error object or null based on the validation check. To show a simple validation, import the `Validators` symbol from the `@angular/forms` package.
+Reactive forms include a set of validator functions out of the box for common use cases. These functions are provided the control to validate against and return an error object or null based on the validation check. To show a simple validation, import the `Validators` symbol from the `@angular/forms` package.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="validator-imports" title="src/app/profile-editor/profile-editor.component.ts (import)">
 
@@ -516,7 +346,7 @@ For more on form validation, visit the [Form Validation](guide/form-validation) 
 
 ## Advanced usage with Form Arrays
 
-A `FormArray` is an alternative to a `FormGroup` that allows you to manage any number of unnamed controls. As with `FormGroup`s, you can dynamically insert and remove controls from a `FormArray`, and its value and validation status is from its child controls. However, you don't need to define a slot for each control by name, so this is a great option if you don't know the number of child values in advance. Add an array of aliases to the `ProfileEditor` form component.
+A `FormArray` is an alternative to a `FormGroup` that allows you to manage any number of unnamed controls. As with `FormGroup`s, you can dynamically insert and remove controls from a `FormArray`, and its value and validation status is calculated from its child controls. However, you don't need to define a slot for each control by name, so this is a great option if you don't know the number of child values in advance. Add an array of aliases to the `ProfileEditor` form component.
 
 ### Import the `FormArray`
 
