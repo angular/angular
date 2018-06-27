@@ -118,6 +118,9 @@ const globalRippleConfig: RippleGlobalOptions = {
 };
 ```
 
+**Note**: Ripples will also have no animation if the `NoopAnimationsModule` is being used. This
+also means that the durations in the `animation` configuration won't be taken into account.
+
 ### Animation behavior
 
 There are two different animation behaviors for the fade-out of ripples shown in the Material
