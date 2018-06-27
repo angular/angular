@@ -2,7 +2,7 @@ export declare function animate(timings: string | number, styles?: AnimationStyl
 
 export declare function animateChild(options?: AnimateChildOptions | null): AnimationAnimateChildMetadata;
 
-export interface AnimateChildOptions extends AnimationOptions {
+export declare interface AnimateChildOptions extends AnimationOptions {
     duration?: number | string;
 }
 
@@ -75,10 +75,10 @@ export declare const enum AnimationMetadataType {
     AnimateChild = 9,
     AnimateRef = 10,
     Query = 11,
-    Stagger = 12,
+    Stagger = 12
 }
 
-export interface AnimationOptions {
+export declare interface AnimationOptions {
     delay?: number | string;
     params?: {
         [name: string]: any;
@@ -102,7 +102,7 @@ export interface AnimationPlayer {
     play(): void;
     reset(): void;
     restart(): void;
-    setPosition(p: any): void;
+    setPosition(p: any /** TODO #9100 */): void;
 }
 
 export interface AnimationQueryMetadata extends AnimationMetadata {
@@ -111,7 +111,7 @@ export interface AnimationQueryMetadata extends AnimationMetadata {
     selector: string;
 }
 
-export interface AnimationQueryOptions extends AnimationOptions {
+export declare interface AnimationQueryOptions extends AnimationOptions {
     limit?: number;
     optional?: boolean;
 }

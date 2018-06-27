@@ -64,7 +64,7 @@ export declare abstract class AbstractControl {
 }
 
 export declare abstract class AbstractControlDirective {
-    readonly abstract control: AbstractControl | null;
+    abstract readonly control: AbstractControl | null;
     readonly dirty: boolean | null;
     readonly disabled: boolean | null;
     readonly enabled: boolean | null;
