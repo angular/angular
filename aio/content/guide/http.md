@@ -1107,46 +1107,97 @@ There are many more interceptors in the complete sample code.
 
 </div>
 
+<!--
 #### Interceptor order
+-->
+#### 인터셉터 실행 순서
 
+<!--
 Angular applies interceptors in the order that you provide them.
 If you provide interceptors _A_, then _B_, then _C_,  requests will flow in _A->B->C_ and
 responses will flow out _C->B->A_.
+-->
+인터셉터는 등록한 순서대로 적용됩니다.
+그래서 인터셉터 _A_, _B_, _C_ 순서대로 지정하면, HTTP 요청이 _A->B->C_ 순서로 처리되고 HTTP 응답은 _C->B->A_ 순서로 처리됩니다.
 
+<!--
 You cannot change the order or remove interceptors later.
 If you need to enable and disable an interceptor dynamically, you'll have to build that capability into the interceptor itself.
+-->
+인터셉터를 등록한 이후에 실행 순서를 변경하거나 특정 인터셉터를 건너뛸 수는 없습니다.
+인터셉터를 적용할지 건너뛰어야 할지 지정하려면 인터셉터 안에 동적으로 로직을 작성해야 합니다.
 
 #### _HttpEvents_
 
+<!--
 You may have expected the `intercept()` and `handle()` methods to return observables of `HttpResponse<any>` as most `HttpClient` methods do.
+-->
+`intercept()`나 `handle()` 메소드는 `HttpClient`에서 제공하는 다른 메소드들처럼 `HttpResponse<any>` 타입의 옵저버블을 반환할 것이라고 생각할 수 있습니다.
 
+<!--
 Instead they return observables of `HttpEvent<any>`.
+-->
+하지만 이 예상과 다르게, 인터셉터에서 사용하는 함수들은 `HttpEvent<any>` 타입의 옵저버블을 반환합니다.
 
+<!--
 That's because interceptors work at a lower level than those `HttpClient` methods. A single HTTP request can generate multiple _events_, including upload and download progress events. The `HttpResponse` class itself is actually an event, whose type is `HttpEventType.HttpResponseEvent`.
+-->
+반환형식이 다른 이유는 인터셉터가 `HttpClient`에서 제공하는 메소드들보다 더 낮은 레벨에서 동작하기 때문입니다. HTTP 요청이 한 번 실행되는 동안 _이벤트_ 는 여러번 발생할 수 있는데, 업로드 진행률이나 다운로드 진행률에 대한 이벤트도 이런 이벤트에 포함됩니다. `HttpResponse` 클래스도 이런 이벤트 중 하나를 의미하며, 실제로도 `HttpEventType.HttpResponseEvent`으로 정의되어 있습니다.
 
+<!--
 Many interceptors are only concerned with the outgoing request and simply return the event stream from `next.handle()` without modifying it.
+-->
+한 인터셉터에서 그 단계에서 필요한 로직을 끝내고 나면 마지막으로 대부분 `next.handle()` 함수를 실행합니다.
 
+<!--
 But interceptors that examine and modify the response from `next.handle()` 
 will see all of these events. 
 Your interceptor should return _every event untouched_ unless it has a _compelling reason to do otherwise_.
+-->
+하지만 `next.handle()` 에서 처리되는 내용을 이벤트로 간주하고 이 내용을 직접 확인하고 조작할 수도 있습니다.
+물론 _특별한 이유가 없다면_ HTTP 요청을 보내고 응답으로 받는 흐름을 유지하기 위해 _기존 흐름을 유지하는 것_ 이 좋습니다.
 
+<!--
 #### Immutability
+-->
+#### 불변성 (Immutability)
 
+<!--
 Although interceptors are capable of mutating requests and responses,
 the `HttpRequest` and `HttpResponse` instance properties are `readonly`,
 rendering them largely immutable.
+-->
+인터셉터는 HTTP 요청과 응답을 조작할 수 있지만, `HttpRequest`와 `HttpResponse` 인스턴스의 프로퍼티들은 대부분 `readonly`로 지정되어 있으며, 이 프로퍼티 자체는 모두 이뮤터블입니다.
 
+<!--
 They are immutable for a good reason: the app may retry a request several times before it succeeds, which means that the interceptor chain may re-process the same request multiple times.
 If an interceptor could modify the original request object, the re-tried operation would start from the modified request rather than the original. Immutability ensures that interceptors see the same request for each try.
+-->
+프로퍼티들이 이뮤터블로 지정된 이유가 있습니다. 애플리케이션에서 보내는 HTTP 요청은 성공하기까지 몇차례 재시도될 수 있는데, 이 말은 동일한 HTTP 요청과 인터셉터 체이닝이 몇차례 반복된다는 것을 의미합니다.
+만약 인터셉터가 처음 요청된 객체를 바꿔버린다면, 재시도했을 때 보내는 요청은 처음과 달라진다는 말이 됩니다. HTTP 요청이 재시도 되더라도 같은 조건에서 실행되기 위해 인터셉터에 전달되는 객체는 불변성이 보장되어야 합니다.
 
+<!--
 TypeScript will prevent you from setting `HttpRequest` readonly properties. 
+-->
+그래서 다음과 같이 읽기 전용으로 지정된 `HttpRequest`의 프로퍼티로 변경하는 것은 TypeScript에서도 유효하지 않습니다.
 
+<!--
 ```javascript
   // Typescript disallows the following assignment because req.url is readonly
   req.url = req.url.replace('http://', 'https://');
 ```
+-->
+```javascript
+  // req.url은 읽기 전용 프로퍼티이기 때문에 다음과 같은 문법은 TypeScript에서 유효하지 않습니다.
+  req.url = req.url.replace('http://', 'https://');
+```
+
+<!--
 To alter the request, clone it first and modify the clone before passing it to `next.handle()`. 
 You can clone and modify the request in a single step as in this example.
+-->
+그래서 요청으로 보내는 객체를 수정하려면, 이 객체의 인스턴스를 복사한 후에 `next.handle()` 메소드로 전달해야 합니다.
+위에서 실패한 문법은 다음과 같이 수정할 수 있습니다.
 
 <code-example 
   path="http/src/app/http-interceptors/ensure-https-interceptor.ts"
@@ -1154,7 +1205,10 @@ You can clone and modify the request in a single step as in this example.
   title="app/http-interceptors/ensure-https-interceptor.ts (excerpt)" linenums="false">
 </code-example>
 
+<!--
 The `clone()` method's hash argument allows you to mutate specific properties of the request while copying the others.
+-->
+`clone()` 메소드를 사용하면 특정 프로퍼티의 값을 원하는 값으로 수정한 인스턴스를 생성할 수 있고, 다음 실행되는 핸들러에 새로운 인스턴스를 전달할 수 있습니다.
 
 ##### The request body
 
