@@ -8,10 +8,10 @@ const packageFolder = path.resolve(__dirname);
 
 class PackageJsonCustomizer {
   constructor() {
-    this.dependenciesPackageJson = require(path.join(examplesPath, '/shared/package.json'));
-    this.scriptsPackageJson = require(path.join(examplesPath, '/shared/boilerplate/systemjs/package.json'));
-    this.basePackageJson = require(`${packageFolder}/base.json`);
-    this.templatePackageJson = fs.readFileSync(`${packageFolder}/package.json`).toString();
+    this.dependenciesPackageJson = this.readJson(path.join(examplesPath, '/shared/package.json'));
+    this.scriptsPackageJson = this.readJson(path.join(examplesPath, '/shared/boilerplate/systemjs/package.json'));
+    this.basePackageJson = this.readJson(`${packageFolder}/base.json`);
+    this.templatePackageJson = this.readJson(`${packageFolder}/package.json`, false);
   }
 
   generate(type = 'systemjs') {
@@ -51,6 +51,12 @@ class PackageJsonCustomizer {
         }
     }
     return result;
+  }
+
+  readJson(jsonFile, parse = true) {
+    const contents = fs.readFileSync(jsonFile).toString();
+
+    return parse ? JSON.parse(contents) : contents;
   }
 }
 
