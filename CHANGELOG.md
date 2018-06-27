@@ -1,3 +1,14 @@
+<a name="6.0.7"></a>
+## [6.0.7](https://github.com/angular/angular/compare/6.0.6...6.0.7) (2018-06-27)
+
+
+### Bug Fixes
+
+* **animations:** set animations styles properly on platform-server ([#24624](https://github.com/angular/angular/issues/24624)) ([0b356d4](https://github.com/angular/angular/commit/0b356d4))
+* **common:** use correct ICU plural for locale mk ([#24659](https://github.com/angular/angular/issues/24659)) ([64a8584](https://github.com/angular/angular/commit/64a8584))
+
+
+
 <a name="6.1.0-beta.2"></a>
 # [6.1.0-beta.2](https://github.com/angular/angular/compare/6.1.0-beta.1...6.1.0-beta.2) (2018-06-20)
 
@@ -6,7 +17,6 @@
 
 * **compiler:** support `.` in import statements. ([#20634](https://github.com/angular/angular/issues/20634)) ([d8f7b29](https://github.com/angular/angular/commit/d8f7b29)), closes [#20363](https://github.com/angular/angular/issues/20363)
 * **core:** Injector correctly honors the @Self flag ([#24520](https://github.com/angular/angular/issues/24520)) ([ccbda9d](https://github.com/angular/angular/commit/ccbda9d))
-
 
 
 <a name="6.0.6"></a>
