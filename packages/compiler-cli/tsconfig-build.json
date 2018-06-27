@@ -29,6 +29,7 @@
     "src/main.ts",
     "src/extract_i18n.ts",
     "src/language_services.ts",
+    "src/ngcc.ts",
     "../../node_modules/@types/node/index.d.ts",
     "../../node_modules/@types/jasmine/index.d.ts",
     "../../node_modules/zone.js/dist/zone.js.d.ts"

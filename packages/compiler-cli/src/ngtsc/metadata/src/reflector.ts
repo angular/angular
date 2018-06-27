@@ -74,34 +74,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
   getImportOfIdentifier(id: ts.Identifier): Import|null {
     const symbol = this.checker.getSymbolAtLocation(id);
-
-    if (symbol === undefined || symbol.declarations === undefined ||
-        symbol.declarations.length !== 1) {
-      return null;
-    }
-
-    // Ignore decorators that are defined locally (not imported).
-    const decl: ts.Declaration = symbol.declarations[0];
-    if (!ts.isImportSpecifier(decl)) {
-      return null;
-    }
-
-    // Walk back from the specifier to find the declaration, which carries the module specifier.
-    const importDecl = decl.parent !.parent !.parent !;
-
-    // The module specifier is guaranteed to be a string literal, so this should always pass.
-    if (!ts.isStringLiteral(importDecl.moduleSpecifier)) {
-      // Not allowed to happen in TypeScript ASTs.
-      return null;
-    }
-
-    // Read the module specifier.
-    const from = importDecl.moduleSpecifier.text;
-
-    // Compute the name by which the decorator was exported, not imported.
-    const name = (decl.propertyName !== undefined ? decl.propertyName : decl.name).text;
-
-    return {from, name};
+    return getImportOfSymbol(symbol);
   }
 
   isClass(node: ts.Node): node is ts.Declaration { return ts.isClassDeclaration(node); }
@@ -173,6 +146,36 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       type: node.type || null, name, nameNode, decorators, initializer, isStatic,
     };
   }
+}
+
+export function getImportOfSymbol(symbol: ts.Symbol|undefined): Import|null {
+  if (symbol === undefined || symbol.declarations === undefined ||
+      symbol.declarations.length !== 1) {
+    return null;
+  }
+
+  // Ignore decorators that are defined locally (not imported).
+  const decl: ts.Declaration = symbol.declarations[0];
+  if (!ts.isImportSpecifier(decl)) {
+    return null;
+  }
+
+  // Walk back from the specifier to find the declaration, which carries the module specifier.
+  const importDecl = decl.parent !.parent !.parent !;
+
+  // The module specifier is guaranteed to be a string literal, so this should always pass.
+  if (!ts.isStringLiteral(importDecl.moduleSpecifier)) {
+    // Not allowed to happen in TypeScript ASTs.
+    return null;
+  }
+
+  // Read the module specifier.
+  const from = importDecl.moduleSpecifier.text;
+
+  // Compute the name by which the decorator was exported, not imported.
+  const name = (decl.propertyName !== undefined ? decl.propertyName : decl.name).text;
+
+  return {from, name};
 }
 
 export function reflectNameOfDeclaration(decl: ts.Declaration): string|null {

@@ -25,6 +25,7 @@ ts_library(
     tsconfig = ":tsconfig",
     deps = [
         "//packages/compiler",
+        "//packages/compiler-cli/src/ngcc",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/transform",
