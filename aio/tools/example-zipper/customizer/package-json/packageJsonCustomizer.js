@@ -54,7 +54,7 @@ class PackageJsonCustomizer {
   }
 
   readJson(jsonFile, parse = true) {
-    const contents = fs.readFileSync(jsonFile).toString();
+    const contents = fs.readFileSync(jsonFile, 'utf8');
 
     return parse ? JSON.parse(contents) : contents;
   }
