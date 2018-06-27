@@ -5,11 +5,14 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {ConstantPool} from '@angular/compiler';
 import * as fs from 'fs';
 import * as ts from 'typescript';
+
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from '../../ngtsc/annotations';
 import {Decorator} from '../../ngtsc/host';
 import {CompileResult, DecoratorHandler} from '../../ngtsc/transform';
+
 import {NgccReflectionHost} from './host/ngcc_host';
 import {ParsedClass} from './parsing/parsed_class';
 import {ParsedFile} from './parsing/parsed_file';
@@ -25,6 +28,7 @@ export interface AnalyzedClass<T = any> extends ParsedClass {
 export interface AnalyzedFile {
   analyzedClasses: AnalyzedClass[];
   sourceFile: ts.SourceFile;
+  constantPool: ConstantPool;
 }
 
 export interface MatchingHandler<T> {
@@ -59,17 +63,19 @@ export class Analyzer {
    * @param file The file to be analysed for decorated classes.
    */
   analyzeFile(file: ParsedFile): AnalyzedFile {
+    const constantPool = new ConstantPool();
     const analyzedClasses =
-        file.decoratedClasses.map(clazz => this.analyzeClass(file.sourceFile, clazz))
+        file.decoratedClasses.map(clazz => this.analyzeClass(file.sourceFile, constantPool, clazz))
             .filter(isDefined);
 
     return {
       analyzedClasses,
-      sourceFile: file.sourceFile,
+      sourceFile: file.sourceFile, constantPool,
     };
   }
 
-  protected analyzeClass(file: ts.SourceFile, clazz: ParsedClass): AnalyzedClass|undefined {
+  protected analyzeClass(file: ts.SourceFile, pool: ConstantPool, clazz: ParsedClass): AnalyzedClass
+      |undefined {
     const matchingHandlers =
         this.handlers.map(handler => ({handler, decorator: handler.detect(clazz.decorators)}))
             .filter(isMatchingHandler);
@@ -84,7 +90,7 @@ export class Analyzer {
 
     const {handler, decorator} = matchingHandlers[0];
     const {analysis, diagnostics} = handler.analyze(clazz.declaration, decorator);
-    let compilation = handler.compile(clazz.declaration, analysis);
+    let compilation = handler.compile(clazz.declaration, analysis, pool);
     if (!Array.isArray(compilation)) {
       compilation = [compilation];
     }

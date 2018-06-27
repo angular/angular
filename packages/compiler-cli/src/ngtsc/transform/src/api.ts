@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, Statement, Type} from '@angular/compiler';
+import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Decorator} from '../../host';
+
 
 /**
  * Provides the interface between a decorator compiler from @angular/compiler and the Typescript
@@ -46,7 +47,8 @@ export interface DecoratorHandler<A> {
    * Generate a description of the field which should be added to the class, including any
    * initialization code to be generated.
    */
-  compile(node: ts.Declaration, analysis: A): CompileResult|CompileResult[];
+  compile(node: ts.Declaration, analysis: A, constantPool: ConstantPool): CompileResult
+      |CompileResult[];
 }
 
 /**

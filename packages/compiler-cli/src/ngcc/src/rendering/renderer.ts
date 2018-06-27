@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {commentRegex, mapFileCommentRegex, fromJSON, fromSource, fromMapFileSource, fromObject, generateMapFileComment, removeComments, removeMapFileComments, SourceMapConverter} from 'convert-source-map';
 import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
-import {Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
+import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
 import {AnalyzedClass, AnalyzedFile} from '../analyzer';
 import {Decorator} from '../../../ngtsc/host';
 import {ImportManager, translateStatement} from '../../../ngtsc/transform';
@@ -79,6 +79,10 @@ export abstract class Renderer {
       this.trackDecorators(clazz.decorators, decoratorsToRemove);
     });
 
+    this.addConstants(
+        outputText, renderConstantPool(file.sourceFile, file.constantPool, importManager),
+        file.sourceFile);
+
     this.addImports(outputText, importManager.getAllImports(file.sourceFile.fileName, null));
     // QUESTION: do we need to remove contructor param metadata and property decorators?
     this.removeDecorators(outputText, decoratorsToRemove);
@@ -86,6 +90,8 @@ export abstract class Renderer {
     return this.renderSourceAndMap(file, input, outputText, targetPath);
   }
 
+  protected abstract addConstants(output: MagicString, constants: string, file: ts.SourceFile):
+      void;
   protected abstract addImports(output: MagicString, imports: {name: string, as: string}[]): void;
   protected abstract addDefinitions(
       output: MagicString, analyzedClass: AnalyzedClass, definitions: string): void;
@@ -205,6 +211,17 @@ export function mergeSourceMaps(
   mergedMapGenerator.applySourceMap(oldMapConsumer);
   const merged = fromJSON(mergedMapGenerator.toString());
   return merged;
+}
+
+/**
+ * Render the constant pool as source code for the given class.
+ */
+export function renderConstantPool(
+    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: ImportManager): string {
+  const printer = ts.createPrinter();
+  return constantPool.statements.map(stmt => translateStatement(stmt, imports))
+      .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
+      .join('\n');
 }
 
 /**
