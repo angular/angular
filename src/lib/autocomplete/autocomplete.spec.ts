@@ -522,6 +522,15 @@ describe('MatAutocomplete', () => {
     expect(boundingBox.getAttribute('dir')).toEqual('ltr');
   });
 
+  it('should be able to set a custom value for the `autocomplete` attribute', () => {
+    const fixture = createComponent(AutocompleteWithNativeAutocompleteAttribute);
+    const input = fixture.nativeElement.querySelector('input');
+
+    fixture.detectChanges();
+
+    expect(input.getAttribute('autocomplete')).toBe('changed');
+  });
+
   describe('forms integration', () => {
     let fixture: ComponentFixture<SimpleAutocomplete>;
     let input: HTMLInputElement;
@@ -2376,4 +2385,15 @@ class AutocompleteWithDifferentOrigin {
   @ViewChild(MatAutocompleteTrigger) trigger: MatAutocompleteTrigger;
   selectedValue: string;
   values = ['one', 'two', 'three'];
+}
+
+
+@Component({
+  template: `
+    <input autocomplete="changed" [(ngModel)]="value" [matAutocomplete]="auto"/>
+    <mat-autocomplete #auto="matAutocomplete"></mat-autocomplete>
+  `
+})
+class AutocompleteWithNativeAutocompleteAttribute {
+  value: string;
 }

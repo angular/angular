@@ -98,7 +98,7 @@ export function getMatAutocompleteMissingPanelError(): Error {
 @Directive({
   selector: `input[matAutocomplete], textarea[matAutocomplete]`,
   host: {
-    'autocomplete': 'off',
+    '[attr.autocomplete]': 'autocompleteAttribute',
     '[attr.role]': 'autocompleteDisabled ? null : "combobox"',
     '[attr.aria-autocomplete]': 'autocompleteDisabled ? null : "list"',
     '[attr.aria-activedescendant]': 'activeOption?.id',
@@ -152,6 +152,12 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
    * Defaults to the autocomplete trigger element.
    */
   @Input('matAutocompleteConnectedTo') connectedTo: MatAutocompleteOrigin;
+
+  /**
+   * `autocomplete` attribute to be set on the input element.
+   * @docs-private
+   */
+  @Input('autocomplete') autocompleteAttribute: string = 'off';
 
   /**
    * Whether the autocomplete is disabled. When disabled, the element will
