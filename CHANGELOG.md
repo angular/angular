@@ -1,3 +1,13 @@
+<a name="6.0.7"></a>
+## [6.0.7](https://github.com/angular/angular/compare/6.0.6...6.0.7) (2018-06-27)
+
+
+### Bug Fixes
+
+* **animations:** set animations styles properly on platform-server ([#24624](https://github.com/angular/angular/issues/24624)) ([0b356d4](https://github.com/angular/angular/commit/0b356d4))
+* **common:** use correct ICU plural for locale mk ([#24659](https://github.com/angular/angular/issues/24659)) ([64a8584](https://github.com/angular/angular/commit/64a8584))
+
+
 <a name="6.0.6"></a>
 ## [6.0.6](https://github.com/angular/angular/compare/6.0.5...6.0.6) (2018-06-20)
 
