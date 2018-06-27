@@ -15,6 +15,7 @@
     "@nguniversal/module-map-ngfactory-loader"
   ],
   "devDependencies": [
+    "@angular-devkit/build-angular",
     "@angular/cli",
     "@types/jasminewd2",
     "jasmine-spec-reporter",

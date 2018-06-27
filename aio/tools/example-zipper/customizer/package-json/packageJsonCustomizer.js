@@ -1,6 +1,7 @@
 'use strict';
 
 const path = require('canonical-path');
+const fs = require('fs');
 
 const examplesPath = path.resolve(__dirname, '../../../examples');
 const packageFolder = path.resolve(__dirname);
@@ -10,10 +11,11 @@ class PackageJsonCustomizer {
     this.dependenciesPackageJson = require(path.join(examplesPath, '/shared/package.json'));
     this.scriptsPackageJson = require(path.join(examplesPath, '/shared/boilerplate/systemjs/package.json'));
     this.basePackageJson = require(`${packageFolder}/base.json`);
+    this.templatePackageJson = fs.readFileSync(`${packageFolder}/package.json`).toString();
   }
 
   generate(type = 'systemjs') {
-    let packageJson = require(`${packageFolder}/package.json`);
+    let packageJson = JSON.parse(this.templatePackageJson);
     let rules = require(`${packageFolder}/${type}.json`);
 
     this._mergeJSON(rules, this.basePackageJson);
@@ -39,8 +41,8 @@ class PackageJsonCustomizer {
     return JSON.stringify(packageJson, null, 2);
   }
 
-  _mergeJSON(json1,json2) {
-    var result = json1 ;
+  _mergeJSON(json1, json2) {
+    var result = json1;
     for (var prop in json2)
     {
         if (json2.hasOwnProperty(prop))
