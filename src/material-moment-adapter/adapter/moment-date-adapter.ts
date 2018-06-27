@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, Optional} from '@angular/core';
+import {Inject, Injectable, Optional, InjectionToken} from '@angular/core';
 import {DateAdapter, MAT_DATE_LOCALE} from '@angular/material';
 // Depending on whether rollup is used, moment needs to be imported differently.
 // Since Moment.js doesn't have a default export, we normally need to import using the `* as`
@@ -18,6 +18,31 @@ import * as _moment from 'moment';
 import {default as _rollupMoment, Moment} from 'moment';
 
 const moment = _rollupMoment || _moment;
+
+/** Configurable options for {@see MomentDateAdapter}. */
+export interface MatMomentDateAdapterOptions {
+  /**
+   * Turns the use of utc dates on or off.
+   * Changing this will change how Angular Material components like DatePicker output dates.
+   * {@default false}
+   */
+  useUtc: boolean;
+}
+
+/** InjectionToken for moment date adapter to configure options. */
+export const MAT_MOMENT_DATE_ADAPTER_OPTIONS = new InjectionToken<MatMomentDateAdapterOptions>(
+  'MAT_MOMENT_DATE_ADAPTER_OPTIONS', {
+    providedIn: 'root',
+    factory: MAT_MOMENT_DATE_ADAPTER_OPTIONS_FACTORY
+});
+
+
+/** @docs-private */
+export function MAT_MOMENT_DATE_ADAPTER_OPTIONS_FACTORY(): MatMomentDateAdapterOptions {
+  return {
+    useUtc: false
+  };
+}
 
 
 /** Creates an array and fills it with values. */
@@ -48,7 +73,10 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
     narrowDaysOfWeek: string[]
   };
 
-  constructor(@Optional() @Inject(MAT_DATE_LOCALE) dateLocale: string) {
+  constructor(@Optional() @Inject(MAT_DATE_LOCALE) dateLocale: string,
+    @Optional() @Inject(MAT_MOMENT_DATE_ADAPTER_OPTIONS)
+    private options?: MatMomentDateAdapterOptions) {
+
     super();
     this.setLocale(dateLocale || moment.locale());
   }
@@ -130,7 +158,12 @@ export class MomentDateAdapter extends DateAdapter<Moment> {
       throw Error(`Invalid date "${date}". Date has to be greater than 0.`);
     }
 
-    let result = moment({year, month, date}).locale(this.locale);
+    let result;
+    if (this.options && this.options.useUtc) {
+      result = moment.utc({ year, month, date }).locale(this.locale);
+    } else {
+      result = moment({ year, month, date }).locale(this.locale);
+    }
 
     // If the result isn't valid, the date must have been out of bounds for this month.
     if (!result.isValid()) {
