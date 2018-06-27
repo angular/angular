@@ -3,9 +3,7 @@ import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {Component, Input, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {animationFrameScheduler, Subject} from 'rxjs';
-import {ScrollingModule} from './scrolling-module';
-import {CdkVirtualForOf} from './virtual-for-of';
-import {CdkVirtualScrollViewport} from './virtual-scroll-viewport';
+import {CdkVirtualScrollViewport, CdkVirtualForOf, ScrollingModule} from './index';
 
 
 describe('CdkVirtualScrollViewport', () => {

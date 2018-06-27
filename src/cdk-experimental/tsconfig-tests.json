@@ -19,7 +19,8 @@
     "emitDecoratorMetadata": true
   },
   "include": [
-    "**/*.spec.ts",
-    "index.ts"
+    // Include the index.ts for each secondary entry-point
+    "./*/index.ts",
+    "**/*.spec.ts"
   ]
 }
