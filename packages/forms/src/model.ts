@@ -872,9 +872,8 @@ export class FormControl extends AbstractControl {
   /**
   * Creates a new `FormControl` instance.
   *
-  * @param formState Initializes the control with an initial state value,
-  * or with an object that defines the initial value, status, and options
-  * for handling updates and validation.
+  * @param formState Initializes the control with an initial value,
+  * or an object that defines the initial value and disabled state.
   *
   * @param validatorOrOpts A synchronous validator function, or an array of
   * such functions, or an `AbstractControlOptions` object that contains validation functions
@@ -955,9 +954,8 @@ export class FormControl extends AbstractControl {
    * Resets the form control, marking it `pristine` and `untouched`, and setting
    * the value to null.
    *
-   * @param formState Initializes the control with an initial state value,
-   * or with an object that defines the initial value, status, and options
-   * for handling updates and validation.
+   * @param formState Resets the control with an initial value,
+   * or an object that defines the initial value and disabled state.
    *
    * @param options Configuration options that determine how the control propagates changes
    * and emits events after the value changes.
@@ -1311,9 +1309,8 @@ export class FormGroup extends AbstractControl {
    * is a standalone value or a form state object with both a value and a disabled
    * status.
    *
-   * @param value Initializes the control with an initial state value,
-   * or with an object that defines the initial value, status,
-   * and options for handling updates and validation.
+   * @param formState Resets the control with an initial value,
+   * or an object that defines the initial value and disabled state.
    *
    * @param options Configuration options that determine how the control propagates changes
    * and emits events when the group is reset.
