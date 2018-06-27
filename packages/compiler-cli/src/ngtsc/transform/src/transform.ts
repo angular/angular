@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {WrappedNodeExpr} from '@angular/compiler';
+import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Decorator, ReflectionHost} from '../../host';
@@ -32,7 +32,8 @@ export function ivyTransformFactory(
 class IvyVisitor extends Visitor {
   constructor(
       private compilation: IvyCompilation, private reflector: ReflectionHost,
-      private importManager: ImportManager, private isCore: boolean) {
+      private importManager: ImportManager, private isCore: boolean,
+      private constantPool: ConstantPool) {
     super();
   }
 
@@ -40,7 +41,7 @@ class IvyVisitor extends Visitor {
       VisitListEntryResult<ts.Statement, ts.ClassDeclaration> {
     // Determine if this class has an Ivy field that needs to be added, and compile the field
     // to an expression if so.
-    const res = this.compilation.compileIvyFieldFor(node);
+    const res = this.compilation.compileIvyFieldFor(node, this.constantPool);
 
     if (res !== undefined) {
       // There is at least one field to add.
@@ -189,24 +190,35 @@ class IvyVisitor extends Visitor {
 function transformIvySourceFile(
     compilation: IvyCompilation, context: ts.TransformationContext, reflector: ReflectionHost,
     coreImportsFrom: ts.SourceFile | null, file: ts.SourceFile): ts.SourceFile {
+  const constantPool = new ConstantPool();
   const importManager = new ImportManager(coreImportsFrom !== null);
 
   // Recursively scan through the AST and perform any updates requested by the IvyCompilation.
-  const sf = visit(
-      file, new IvyVisitor(compilation, reflector, importManager, coreImportsFrom !== null),
-      context);
+  const visitor =
+      new IvyVisitor(compilation, reflector, importManager, coreImportsFrom !== null, constantPool);
+  const sf = visit(file, visitor, context);
+
+  // Generate the constant statements first, as they may involve adding additional imports
+  // to the ImportManager.
+  const constants = constantPool.statements.map(stmt => translateStatement(stmt, importManager));
 
   // Generate the import statements to prepend.
-  const imports = importManager.getAllImports(file.fileName, coreImportsFrom).map(i => {
+  const addedImports = importManager.getAllImports(file.fileName, coreImportsFrom).map(i => {
     return ts.createImportDeclaration(
         undefined, undefined,
         ts.createImportClause(undefined, ts.createNamespaceImport(ts.createIdentifier(i.as))),
         ts.createLiteral(i.name));
   });
 
+  // Filter out the existing imports and the source file body. All new statements
+  // will be inserted between them.
+  const existingImports = sf.statements.filter(stmt => isImportStatement(stmt));
+  const body = sf.statements.filter(stmt => !isImportStatement(stmt));
+
   // Prepend imports if needed.
-  if (imports.length > 0) {
-    sf.statements = ts.createNodeArray([...imports, ...sf.statements]);
+  if (addedImports.length > 0) {
+    sf.statements =
+        ts.createNodeArray([...existingImports, ...addedImports, ...constants, ...body]);
   }
   return sf;
 }
@@ -226,4 +238,9 @@ function maybeFilterDecorator(
 
 function isFromAngularCore(decorator: Decorator): boolean {
   return decorator.import !== null && decorator.import.from === '@angular/core';
+}
+
+function isImportStatement(stmt: ts.Statement): boolean {
+  return ts.isImportDeclaration(stmt) || ts.isImportEqualsDeclaration(stmt) ||
+      ts.isNamespaceImport(stmt);
 }

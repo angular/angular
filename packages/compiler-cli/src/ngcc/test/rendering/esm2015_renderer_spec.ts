@@ -56,6 +56,36 @@ A.decorators = [
   });
 
 
+  describe('addConstants', () => {
+    it('should insert the given constants after imports in the source file', () => {
+      const PROGRAM = {
+        name: 'some/file.js',
+        contents: `
+/* A copyright notice */
+import {Directive} from '@angular/core';
+export class A {}
+A.decorators = [
+  { type: Directive, args: [{ selector: '[a]' }] },
+  { type: Other }
+];
+// Some other content`
+      };
+      const {renderer, program} = setup(PROGRAM);
+      const file = program.getSourceFile('some/file.js');
+      if (file === undefined) {
+        throw new Error(`Could not find source file`);
+      }
+      const output = new MagicString(PROGRAM.contents);
+      renderer.addConstants(output, 'const x = 3;', file);
+      expect(output.toString()).toContain(`
+import {Directive} from '@angular/core';
+const x = 3;
+
+export class A {}`);
+    });
+  });
+
+
   describe('addDefinitions', () => {
     it('should insert the definitions directly after the class declaration', () => {
       const PROGRAM = {

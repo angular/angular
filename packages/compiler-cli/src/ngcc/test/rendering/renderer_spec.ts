@@ -20,6 +20,9 @@ class TestRenderer extends Renderer {
   addImports(output: MagicString, imports: {name: string, as: string}[]) {
     output.prepend('\n// ADD IMPORTS\n');
   }
+  addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
+    output.prepend('\n// ADD CONSTANTS\n');
+  }
   addDefinitions(output: MagicString, analyzedClass: AnalyzedClass, definitions: string) {
     output.prepend('\n// ADD DEFINITIONS\n');
   }
@@ -65,7 +68,8 @@ describe('Renderer', () => {
     ]
   });
   const RENDERED_CONTENTS =
-      `\n// REMOVE DECORATORS\n\n// ADD IMPORTS\n\n// ADD DEFINITIONS\n` + INPUT_PROGRAM.contents;
+      `\n// REMOVE DECORATORS\n\n// ADD IMPORTS\n\n// ADD CONSTANTS\n\n// ADD DEFINITIONS\n` +
+      INPUT_PROGRAM.contents;
   const OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
     'file': '/output_file.js',
@@ -74,14 +78,14 @@ describe('Renderer', () => {
       'import { Directive } from \'@angular/core\';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: \'[a]\' }] }\n];\n'
     ],
     'names': [],
-    'mappings': ';;;;;;AAAA;;;;;;;;;'
+    'mappings': ';;;;;;;;AAAA;;;;;;;;;'
   });
 
   const MERGED_OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
     'sources': ['/file.ts'],
     'names': [],
-    'mappings': ';;;;;;AAAA',
+    'mappings': ';;;;;;;;AAAA',
     'file': '/output_file.js',
     'sourcesContent': [
       'import { Directive } from \'@angular/core\';\nexport class A {\n    foo(x: string): string {\n        return x;\n    }\n    static decorators = [\n        { type: Directive, args: [{ selector: \'[a]\' }] }\n    ];\n}'
