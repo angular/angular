@@ -207,6 +207,8 @@ describe('MatCheckbox', () => {
 
       expect(checkboxInstance.checked).toBe(false);
       expect(checkboxInstance.indeterminate).toBe(false);
+
+      flush();
     }));
 
     it('should add and remove disabled state', () => {
@@ -526,6 +528,19 @@ describe('MatCheckbox', () => {
       it('should not initially have any transition classes', () => {
         expect(checkboxNativeElement).not.toMatch(/^mat\-checkbox\-anim/g);
       });
+
+      it('should not have transition classes when animation ends', fakeAsync(() => {
+        testComponent.isIndeterminate = true;
+        fixture.detectChanges();
+
+        expect(checkboxNativeElement.classList)
+          .toContain('mat-checkbox-anim-unchecked-indeterminate');
+
+        flush();
+
+        expect(checkboxNativeElement.classList)
+          .not.toContain('mat-checkbox-anim-unchecked-indeterminate');
+      }));
     });
 
     describe(`when MAT_CHECKBOX_CLICK_ACTION is 'check'`, () => {

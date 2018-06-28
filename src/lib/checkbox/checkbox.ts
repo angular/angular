@@ -19,6 +19,7 @@ import {
   forwardRef,
   Inject,
   Input,
+  NgZone,
   OnDestroy,
   Optional,
   Output,
@@ -184,6 +185,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   constructor(elementRef: ElementRef,
               private _changeDetectorRef: ChangeDetectorRef,
               private _focusMonitor: FocusMonitor,
+              private _ngZone: NgZone,
               @Attribute('tabindex') tabIndex: string,
               @Optional() @Inject(MAT_CHECKBOX_CLICK_ACTION)
                   private _clickAction: MatCheckboxClickAction,
@@ -307,6 +309,15 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
 
     if (this._currentAnimationClass.length > 0) {
       element.classList.add(this._currentAnimationClass);
+
+      // Remove the animation class to avoid animation when the checkbox is moved between containers
+      const animationClass = this._currentAnimationClass;
+
+      this._ngZone.runOutsideAngular(() => {
+        setTimeout(() => {
+          element.classList.remove(animationClass);
+        }, 1000);
+      });
     }
   }
 
