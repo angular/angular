@@ -29,9 +29,6 @@ export function getNextLNode(node: LNode): LNode|null {
 
 /** Retrieves the first child of a given node */
 export function getChildLNode(node: LNode): LNode|null {
-  if (node.pChild) {
-    return node.pChild;
-  }
   if (node.tNode.child) {
     const viewData = node.tNode.type === TNodeType.View ? node.data as LViewData : node.view;
     return viewData[node.tNode.child.index];

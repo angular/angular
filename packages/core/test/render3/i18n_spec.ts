@@ -518,7 +518,7 @@ describe('Runtime i18n', () => {
 
           // Translated to:
           // <ul i18n>
-          //   <li *ngFor="let item of items">valeur: {{item}}</li>
+          //   <li *ngFor="let item of items">valeur: {{item}}!</li>
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
