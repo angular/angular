@@ -1,4 +1,4 @@
-import {chain, noop, Rule, Tree, SchematicContext} from '@angular-devkit/schematics';
+import {chain, noop, Rule, Tree, SchematicContext, SchematicsException} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {addModuleImportToRootModule, getStylesPath} from '../utils/ast';
 import {InsertChange} from '../utils/devkit-utils/change';
@@ -8,6 +8,7 @@ import {angularVersion, materialVersion} from '../utils/lib-versions';
 import {addPackageToPackageJson} from '../utils/package';
 import {Schema} from './schema';
 import {addThemeToAppStyles} from './theming';
+import * as parse5 from 'parse5';
 
 
 /**
@@ -17,6 +18,10 @@ import {addThemeToAppStyles} from './theming';
  *  - Adds Browser Animation to app.momdule
  */
 export default function(options: Schema): Rule {
+  if (!parse5) {
+    throw new SchematicsException('parse5 depedency not found! Please install parse5 from npm to continue.');
+  }
+
   return chain([
     options && options.skipPackageJson ? noop() : addMaterialToPackageJson(),
     addThemeToAppStyles(options),

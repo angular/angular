@@ -41,6 +41,9 @@
     "tslib": "^1.9.0",
     "zone.js": "^0.8.26"
   },
+  "optionalDependencies": {
+    "parse5": "^5.0.0"
+  },
   "devDependencies": {
     "@angular-devkit/core": "^0.5.12",
     "@angular-devkit/schematics": "^0.5.12",
