@@ -23,6 +23,10 @@
   {% include 'interface.template.html' %}
 {% endmacro %}
 
+{% macro typeAlias(alias) -%}
+  {% include 'type-alias.template.html' %}
+{% endmacro %}
+
 <div class="docs-api">
   <h2>
     API reference for Angular {$ doc.packageDisplayName $} {$ doc.displayName $}
@@ -72,6 +76,16 @@
     </h3>
     {% for item in doc.additionalInterfaces %}
       {$ interface(item) $}
+    {% endfor %}
+  {%- endif -%}
+
+  {%- if doc.additionalTypeAliases.length -%}
+    <h3 id="additional_type_aliases" class="docs-header-link docs-api-h3">
+      <span header-link="additional_type_aliases"></span>
+      Additional type aliases
+    </h3>
+    {% for item in doc.additionalTypeAliases %}
+      {$ typeAlias(item) $}
     {% endfor %}
   {%- endif -%}
 </div>

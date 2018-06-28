@@ -1,7 +1,8 @@
 import {DocCollection, Document, Processor} from 'dgeni';
 import {InterfaceExportDoc} from 'dgeni-packages/typescript/api-doc-types/InterfaceExportDoc';
-import * as path from 'path';
+import {TypeAliasExportDoc} from 'dgeni-packages/typescript/api-doc-types/TypeAliasExportDoc';
 import {CategorizedClassDoc} from '../common/dgeni-definitions';
+import * as path from 'path';
 
 /** Component group data structure. */
 export class ComponentGroup {
@@ -41,6 +42,9 @@ export class ComponentGroup {
 
   /** Additional interfaces that belong to the component group. */
   additionalInterfaces: InterfaceExportDoc[] = [];
+
+  /** Additional type aliases that belong to the component group. */
+  additionalTypeAliases: TypeAliasExportDoc[] = [];
 
   /** NgModule that defines the current component group. */
   ngModule: CategorizedClassDoc | null = null;
@@ -93,10 +97,12 @@ export class ComponentGrouper implements Processor {
         group.services.push(doc);
       } else if (doc.isNgModule) {
         group.ngModule = doc;
-      } else if (doc.docType == 'class') {
+      } else if (doc.docType === 'class') {
         group.additionalClasses.push(doc);
-      } else if (doc.docType == 'interface') {
+      } else if (doc.docType === 'interface') {
         group.additionalInterfaces.push(doc);
+      } else if (doc.docType === 'type-alias') {
+        group.additionalTypeAliases.push(doc);
       }
     });
 

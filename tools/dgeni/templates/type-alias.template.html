@@ -1,0 +1,15 @@
+{% import "macros.html" as macros %}
+
+<h4 id="{$ alias.name $}" class="docs-header-link docs-api-h4 docs-api-type-alias-name">
+  <span header-link="{$ alias.name $}"></span>
+  <code>{$ alias.name $}</code>
+</h4>
+
+{%- if alias.description -%}
+  <p class="docs-api-type-alias-description">{$ alias.description | marked | safe $}</p>
+{%- endif -%}
+
+<p class="docs-api-type-alias-value">
+  <span class="docs-api-type-alias-value-label">Type:</span>
+  <code class="docs-api-type-alias-value">{$ alias.typeDefinition $}</code>
+</p>
