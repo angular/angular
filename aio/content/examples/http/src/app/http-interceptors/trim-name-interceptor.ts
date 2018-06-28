@@ -13,11 +13,11 @@ export class TrimNameInterceptor implements HttpInterceptor {
       return next.handle(req);
     }
     // #docregion excerpt
-    // copy the body and trim whitespace from the name property
+    // HTTP 바디를 복사하면서 name 필드의 공백을 제거합니다.
     const newBody = { ...body, name: body.name.trim() };
-    // clone request and set its body
+    // HTTP 요청 객체의 인스턴스를 복제하면서 새로운 바디를 적용합니다.
     const newReq = req.clone({ body: newBody });
-    // send the cloned request to the next handler.
+    // 수정한 HTTP 요청을 다음 핸들러에 전달합니다.
     return next.handle(newReq);
     // #enddocregion excerpt
   }

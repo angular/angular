@@ -1068,7 +1068,7 @@ in which you provide these interceptors.
 -->
 이 프로바이더 설정은 `AppModule`의 프로바이더 배열에 바로 추가할 수 있습니다.
 하지만 인터셉터가 여러개 있다면, 이 프로바이더 설정을 한 번에 묶어서 사용하는 방법도 좋습니다.
-이렇게 인터셉터 여러 개를 동시에 적용한다면, [인터셉터가 실행되는 순서](#interceptor-order)에 주의해야 합니다.
+이렇게 인터셉터 여러 개를 동시에 적용한다면, [인터셉터가 실행되는 순서](#인터셉터-실행-순서)에 주의해야 합니다.
 
 <!--
 Consider creating a "barrel" file that gathers all the interceptor providers into an `httpInterceptorProviders` array, starting with this first one, the `NoopInterceptor`.
@@ -1160,6 +1160,7 @@ Your interceptor should return _every event untouched_ unless it has a _compelli
 <!--
 #### Immutability
 -->
+{@a 불변성}
 #### 불변성 (Immutability)
 
 <!--
@@ -1210,17 +1211,32 @@ The `clone()` method's hash argument allows you to mutate specific properties of
 -->
 `clone()` 메소드를 사용하면 특정 프로퍼티의 값을 원하는 값으로 수정한 인스턴스를 생성할 수 있고, 다음 실행되는 핸들러에 새로운 인스턴스를 전달할 수 있습니다.
 
+<!--
 ##### The request body
+-->
+#### HTTP 요청 바디
 
+<!--
 The `readonly` assignment guard can't prevent deep updates and, in particular, 
 it can't prevent you from modifying a property of a request body object.
+-->
+`readonly`로 지정된 프로퍼티 값은 직접 수정할 수 없습니다. 그래서 다음과 같이 HTTP 요청 바디를 직접 수정하는 구문도 유효하지 않습니다.
 
+<!--
 ```javascript
   req.body.name = req.body.name.trim(); // bad idea!
 ```
+-->
+```javascript
+  req.body.name = req.body.name.trim(); // 오류가 발생합니다!
+```
 
+<!--
 If you must mutate the request body, copy it first, change the copy, 
 `clone()` the request, and set the clone's body with the new body, as in the following example.
+-->
+그래서 HTTP 바디를 수정하려면, 이 인스턴스를 수정해서 복제한 인스턴스를 사용해야 합니다.
+이 때 `clone()` 메소드를 다음과 같이 사용합니다.
 
 <code-example 
   path="http/src/app/http-interceptors/trim-name-interceptor.ts"
@@ -1228,54 +1244,99 @@ If you must mutate the request body, copy it first, change the copy,
   title="app/http-interceptors/trim-name-interceptor.ts (excerpt)" linenums="false">
 </code-example>
 
+<!--
 ##### Clearing the request body
+-->
+##### HTTP 요청 바디 비우기
 
+<!--
 Sometimes you need to clear the request body rather than replace it.
 If you set the cloned request body to `undefined`, Angular assumes you intend to leave the body as is.
 That is not what you want.
 If you set the cloned request body to `null`, Angular knows you intend to clear the request body.
+-->
+어떤 경우에는 HTTP 요청 바디를 수정하지 않고 모두 비우는 로직이 필요할 수도 있습니다.
+하지만 이전처럼 HTTP 요청을 복제하면서 바디의 내용을 `undefined`로 설정하면, Angular는 바디를 수정하지 않습니다.
+원하던 것은 이게 아니죠.
+이 때 HTTP 요청을 복제할 때 `undefined` 대신 `null`을 지정하면 Angular가 HTTP 요청 바디를 모두 비웁니다.
 
+<!--
 ```javascript
   newReq = req.clone({ ... }); // body not mentioned => preserve original body
   newReq = req.clone({ body: undefined }); // preserve original body
   newReq = req.clone({ body: null }); // clear the body
 ```
+-->
+```javascript
+  newReq = req.clone({ ... }); // 바디는 언급되지 않았습니다 => 기존 바디를 유지합니다.
+  newReq = req.clone({ body: undefined }); // 기존 바디가 유지됩니다.
+  newReq = req.clone({ body: null }); // 바디를 모두 비웁니다.
+```
 
+<!--
 #### Set default headers
+-->
+#### 기본 헤더 설정하기
 
+<!--
 Apps often use an interceptor to set default headers on outgoing requests. 
+-->
+인터셉터는 애플리케이션에서 보내는 HTTP 요청에 기본 헤더를 설정하는 용도로도 자주 사용합니다.
 
+<!--
 The sample app has an `AuthService` that produces an authorization token.
 Here is its `AuthInterceptor` that injects that service to get the token and
 adds an authorization header with that token to every outgoing request:
+-->
+이번에 다루는 앱에는 인증 토큰을 생성하는 `AuthService`가 있습니다.
+그리고 `AuthInterceptor`는 이 서비스를 주입받아 토큰을 받아오고, 애플리케이션에서 보내는 모든 HTTP 요청에 인증 헤더를 추가합니다:
 
 <code-example 
   path="http/src/app/http-interceptors/auth-interceptor.ts"
   title="app/http-interceptors/auth-interceptor.ts">
 </code-example>
 
+<!--
 The practice of cloning a request to set new headers is so common that 
 there's a `setHeaders` shortcut for it:
+-->
+이 때 헤더를 설정하기 위해 HTTP 요청을 복제하는 것은 자주 사용되는 로직이기 때문에, `setHeaders` 옵션을 사용할 수도 있습니다.
 
 <code-example 
   path="http/src/app/http-interceptors/auth-interceptor.ts"
   region="set-header-shortcut">
 </code-example>
 
+<!--
 An interceptor that alters headers can be used for a number of different operations, including:
 
 * Authentication/authorization
 * Caching behavior; for example, `If-Modified-Since`
 * XSRF protection
+-->
+인터셉터가 헤더를 수정하는 동작은 다음과 같은 경우에도 다양하게 적용할 수 있습니다:
 
+* 인증 발급/확인
+* `If-Modified-Since`을 활용한 캐싱
+* XSRF 보안
+
+<!--
 #### Logging
+-->
+#### 로그
 
+<!--
 Because interceptors can process the request and response _together_, they can do things like time and log 
 an entire HTTP operation. 
+-->
+인터셉터는 HTTP 요청과 응답에 _모두_ 관여하기 때문에, HTTP 응답 시간이나 HTTP 동작에 대한 내용을 모두 확인할 수 있습니다.
 
+<!--
 Consider the following `LoggingInterceptor`, which captures the time of the request,
 the time of the response, and logs the outcome with the elapsed time
 with the injected `MessageService`.
+-->
+HTTP 요청이 발생한 시간과 응답이 도착한 시간을 확인하고, 최종 HTTP 통신에 걸린 시간을 `MessageService`로 출력하는 인터셉터를 구현해 봅시다. 이 인터셉터는 `LoggingInterceptor`라는 이름으로 구현합니다.
 
 <code-example 
   path="http/src/app/http-interceptors/logging-interceptor.ts"
@@ -1283,20 +1344,38 @@ with the injected `MessageService`.
   title="app/http-interceptors/logging-interceptor.ts)">
 </code-example>
 
+<!--
 The RxJS `tap` operator captures whether the request succeed or failed.
 The RxJS `finalize` operator is called when the response observable either errors or completes (which it must),
 and reports the outcome to the `MessageService`.
+-->
+RxJS가 제공하는 `tap` 연산자와 `finalize`는 HTTP 요청이 성공하거나 실패하는 것에 관계없이 모든 응답에 대해 실행됩니다.
+이 코드에서는 `finalize`가 실행될 때 `MessageService`로 로그를 보냅니다.
 
+<!--
 Neither `tap` nor `finalize` touch the values of the observable stream returned to the caller.
+-->
+`tap` 연산자와 `finalize` 연산자 모두 옵저버블의 값을 확인하기만 하고, 옵저버블의 내용은 변경하지 않습니다.
 
+<!--
 #### Caching
+-->
+#### 캐싱
 
+<!--
 Interceptors can handle requests by themselves, without forwarding to `next.handle()`.
 
 For example, you might decide to cache certain requests and responses to improve performance.
 You can delegate caching to an interceptor without disturbing your existing data services. 
 
 The `CachingInterceptor` demonstrates this approach.
+-->
+인터셉터는 `next.handle()`을 사용하지 않고 그 단계에서 바로 응답을 보낼 수도 있습니다.
+
+이 동작은 HTTP 요청에 대한 성능을 향상시키기 위해 특정 요청을 캐싱하는 용도로 사용할 수 있습니다.
+그러면 기존에 있던 서비스 로직을 수정하지 않고도 인터셉터에 캐싱 기능을 구현할 수 있습니다.
+
+`CachingInterceptor`는 다음과 같이 구현합니다.
 
 <code-example 
   path="http/src/app/http-interceptors/caching-interceptor.ts"
@@ -1304,16 +1383,29 @@ The `CachingInterceptor` demonstrates this approach.
   title="app/http-interceptors/caching-interceptor.ts)" linenums="false">
 </code-example>
 
+<!--
 The `isCachable()` function determines if the request is cachable.
 In this sample, only GET requests to the npm package search api are cachable.
+-->
+`isCachable()` 함수는 이 요청이 캐싱 대상인지 판단합니다.
+이 예제에서는 npm 패키지를 GET 방식으로 검색하는 요청이 캐싱 대상입니다.
 
+<!--
 If the request is not cachable, the interceptor simply forwards the request 
 to the next handler in the chain.
+-->
+HTTP 요청이 캐싱 대상이 아니면, 인터셉터는 이 요청을 다음 핸들러로 그냥 통과시킵니다.
 
+<!--
 If a cachable request is found in the cache, the interceptor returns an `of()` _observable_ with
 the cached response, by-passing the `next` handler (and all other interceptors downstream).
+-->
+그리고 HTTP 요청이 캐싱 대상이고 이 응답이 캐싱되어 있으면, 인터셉터가 `of()` 연산자를 사용해서 캐싱된 응답을 바로 반환하면서 `next` 핸들러를 실행하지 않습니다.
 
+<!--
 If a cachable request is not in cache, the code calls `sendRequest`.
+-->
+캐싱 대상인 HTTP 요청이 캐싱되어 있지 않으면 `sendRequest` 함수를 실행해서 HTTP 요청을 보냅니다.
 
 {@a send-request}
 <code-example 
@@ -1321,63 +1413,109 @@ If a cachable request is not in cache, the code calls `sendRequest`.
   region="send-request">
 </code-example>
 
+<!--
 The `sendRequest` function creates a [request clone](#immutability) without headers
 because the npm api forbids them.
+-->
+npm에서 제공하는 API는 헤더를 사용하지 않기 때문에 `sendRequest` 함수에서 [HTTP 요청을 복제한 인스턴스](#불변성)를 생성할 때 헤더를 모두 비웁니다.
 
+<!--
 It forwards that request to `next.handle()` which ultimately calls the server and
 returns the server's response.
+-->
+그리고 `next.handle()`을 실행하면 서버로 HTTP 요청을 보고 응답을 받습니다.
 
+<!--
 Note how `sendRequest` _intercepts the response_ on its way back to the application.
 It _pipes_ the response through the `tap()` operator,
 whose callback adds the response to the cache.
+-->
+`sendRequest`가 응답을 어떻게 반환하는지 확인해 보세요.
+이 함수는 서버에서 받은 응답을 체이닝하는데, 이 때 `tap()` 연산자를 사용해서 서버의 응답을 캐싱합니다.
 
+<!--
 The original response continues untouched back up through the chain of interceptors
 to the application caller. 
+-->
+서버에서 받은 원래 응답은 수정되지 않은 채로 HTTP 요청을 시작한 컨텍스트로 반환됩니다.
 
+<!--
 Data services, such as `PackageSearchService`, are unaware that 
 some of their `HttpClient` requests actually return cached responses.
+-->
+이 예제에서는 `PackageSearchService`가 서버의 응답을 받으며, 이 때 받은 응답이 실제 HTTP 요청으로 받은 것인지 캐싱된 것을 받은 것인지는 신경쓰지 않아도 됩니다.
 
 {@a cache-refresh}
+<!--
 #### Return a multi-valued _Observable_
+-->
+#### 옵저버블 여러번 활용하기
 
+<!--
 The `HttpClient.get()` method normally returns an _observable_ 
 that either emits the data or an error. 
 Some folks describe it as a "_one and done_" observable.
+-->
+`HttpClient.get()` 메소드는 일반적으로 서버에서 받은 데이터나 에러를 _옵저버블_ 하나로 반환합니다.
+그래서 이 옵저버블은 "_한 번 사용하면 끝나는_" 옵저버블이라고도 합니다.
 
+<!--
 But an interceptor can change this to an _observable_ that emits more than once.
+-->
+인터셉터는 이 옵저버블을 여러번 활용할 수도 있습니다.
 
+<!--
 A revised version of the `CachingInterceptor` optionally returns an _observable_ that
 immediately emits the cached response, sends the request to the NPM web API anyway,
 and emits again later with the updated search results.
+-->
+이번에는 캐싱된 서버 응답을 한 번 반환하고 끝내는 대신, NPM 웹 API로 요청을 한 번 더 보내고 이렇게 받은 서버의 응답을 다시 한 번 보내는 방식으로 `CachingInterceptor`를 수정해 봅시다.
 
 <code-example 
   path="http/src/app/http-interceptors/caching-interceptor.ts"
   region="intercept-refresh">
 </code-example>
 
+<!--
 The _cache-then-refresh_ option is triggered by the presence of a **custom `x-refresh` header**.
+-->
+이 때 업데이트 방식으로 동작하는지는 **`x-refresh`라는 커스텀 헤더**로 설정합니다.
 
 <div class="l-sub-section">
 
+<!--
 A checkbox on the `PackageSearchComponent` toggles a `withRefresh` flag,
 which is one of the arguments to `PackageSearchService.search()`.
 That `search()` method creates the custom `x-refresh` header
 and adds it to the request before calling `HttpClient.get()`.
+-->
+그리고 `PackageSearchComponent` 컴포넌트에는 `withRefresh` 플래그와 연결된 체크박스를 추가합니다. 이 체크박스의 값이 true이면 `PackageSearchService.search()`에서 `HttpClient.get()` 함수를 실행하기 전에 `x-refresh` 헤더를 추가합니다.
 
 </div>
 
+<!--
 The revised `CachingInterceptor` sets up a server request 
 whether there's a cached value or not, 
 using the same `sendRequest()` method described [above](#send-request).
 The `results$` observable will make the request when subscribed.
+-->
+이렇게 수정한 `CachingInterceptor`는 캐싱된 서버 응답이 있는 것과 관계없이 `sendRequest()` 메소드로 서버 요청을 보냅니다.
+그리고 서버에서 받은 응답은 `results$` 옵저버블로 처리합니다.
 
+<!--
 If there's no cached value, the interceptor returns `results$`.
+-->
+캐싱된 서버 응답이 없으면 인터셉터는 `results$`를 바로 반환합니다.
 
+<!--
 If there is a cached value, the code _pipes_ the cached response onto
 `results$`, producing a recomposed observable that emits twice,
 the cached response first (and immediately), followed later
 by the response from the server.
 Subscribers see a sequence of _two_ responses.
+-->
+그리고 캐싱된 서버 응답이 있는 경우에는 캐싱된 서버 응답을 _파이프_ 로 연결해서 `results$`와 합치는데, 이 때 캐싱된 서버 응답이 즉시 반환되고, 서버에서 응답이 왔을 때 추가 응답이 다음으로 반환됩니다.
+HTTP 요청을 시작한 쪽에서는 서버 응답을 _두 번_ 받게 됩니다.
 
 ### Listening to progress events
 
