@@ -18,6 +18,7 @@ export {APP_ROOT as ɵAPP_ROOT} from './di/scope';
 export {ivyEnabled as ɵivyEnabled} from './ivy_switch';
 export {ComponentFactory as ɵComponentFactory} from './linker/component_factory';
 export {CodegenComponentFactoryResolver as ɵCodegenComponentFactoryResolver} from './linker/component_factory_resolver';
+export {resolveComponentResources as ɵresolveComponentResources} from './metadata/resource_loading';
 export {ReflectionCapabilities as ɵReflectionCapabilities} from './reflection/reflection_capabilities';
 export {GetterFn as ɵGetterFn, MethodFn as ɵMethodFn, SetterFn as ɵSetterFn} from './reflection/types';
 export {DirectRenderer as ɵDirectRenderer, RenderDebugInfo as ɵRenderDebugInfo} from './render/api';
