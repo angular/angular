@@ -63,8 +63,10 @@ rendered data (such as expand/collapse) should be propagated through the table's
 
 The `TreeControl` controls the expand/collapse state of tree nodes. Users can expand/collapse a tree
 node recursively through tree control. For nested tree node, `getChildren` function need to pass to
-the `NestedTreeControl` to make it work recursively. For flattened tree node, `getLevel` and
-`isExpandable` functions need to pass to the `FlatTreeControl` to make it work recursively.
+the `NestedTreeControl` to make it work recursively. The `getChildren` function may return an 
+observable of children for a given node, or an array of children. 
+For flattened tree node, `getLevel` and `isExpandable` functions need to pass to the 
+`FlatTreeControl` to make it work recursively.
 
 ### Toggle
 

@@ -13,7 +13,6 @@ import {
   MatTreeFlattener,
   MatTreeNestedDataSource
 } from '@angular/material/tree';
-import {Observable, of as ofObservable} from 'rxjs';
 import {FileDatabase, FileFlatNode, FileNode} from './file-database';
 
 
@@ -69,7 +68,7 @@ export class TreeDemo {
 
   isExpandable = (node: FileFlatNode) => { return node.expandable; };
 
-  getChildren = (node: FileNode): Observable<FileNode[]> => { return ofObservable(node.children); };
+  getChildren = (node: FileNode): FileNode[] => { return node.children; };
 
   hasChild = (_: number, _nodeData: FileFlatNode) => { return _nodeData.expandable; };
 

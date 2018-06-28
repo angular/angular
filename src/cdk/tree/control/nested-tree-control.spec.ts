@@ -91,6 +91,95 @@ describe('CdkNestedTreeControl', () => {
       expect(treeControl.expansionModel.selected.length)
         .toBe(totalNumber, `Expect ${totalNumber} expanded nodes`);
     });
+
+    describe('with children array', () => {
+      let getStaticChildren = (node: TestData) => node.children;
+
+      beforeEach(() => {
+        treeControl = new NestedTreeControl<TestData>(getStaticChildren);
+      });
+
+      it('should be able to expand and collapse dataNodes', () => {
+        const nodes = generateData(10, 4);
+        const node = nodes[1];
+        const sixthNode = nodes[5];
+        treeControl.dataNodes = nodes;
+
+        treeControl.expand(node);
+
+
+        expect(treeControl.isExpanded(node)).toBeTruthy('Expect second node to be expanded');
+        expect(treeControl.expansionModel.selected)
+          .toContain(node, 'Expect second node in expansionModel');
+        expect(treeControl.expansionModel.selected.length)
+          .toBe(1, 'Expect only second node in expansionModel');
+
+        treeControl.toggle(sixthNode);
+
+        expect(treeControl.isExpanded(node)).toBeTruthy('Expect second node to stay expanded');
+        expect(treeControl.expansionModel.selected)
+          .toContain(sixthNode, 'Expect sixth node in expansionModel');
+        expect(treeControl.expansionModel.selected)
+          .toContain(node, 'Expect second node in expansionModel');
+        expect(treeControl.expansionModel.selected.length)
+          .toBe(2, 'Expect two dataNodes in expansionModel');
+
+        treeControl.collapse(node);
+
+        expect(treeControl.isExpanded(node)).toBeFalsy('Expect second node to be collapsed');
+        expect(treeControl.expansionModel.selected.length)
+          .toBe(1, 'Expect one node in expansionModel');
+        expect(treeControl.isExpanded(sixthNode)).toBeTruthy('Expect sixth node to stay expanded');
+        expect(treeControl.expansionModel.selected)
+          .toContain(sixthNode, 'Expect sixth node in expansionModel');
+      });
+
+      it('should toggle descendants correctly', () => {
+        const numNodes = 10;
+        const numChildren = 4;
+        const numGrandChildren = 2;
+        const nodes = generateData(numNodes, numChildren, numGrandChildren);
+        treeControl.dataNodes = nodes;
+
+        treeControl.expandDescendants(nodes[1]);
+
+        const expandedNodesNum = 1 + numChildren + numChildren * numGrandChildren;
+        expect(treeControl.expansionModel.selected.length)
+          .toBe(expandedNodesNum, `Expect expanded ${expandedNodesNum} nodes`);
+
+        expect(treeControl.isExpanded(nodes[1])).toBeTruthy('Expect second node to be expanded');
+        for (let i = 0; i < numChildren; i++) {
+
+          expect(treeControl.isExpanded(nodes[1].children[i]))
+            .toBeTruthy(`Expect second node's children to be expanded`);
+          for (let j = 0; j < numGrandChildren; j++) {
+            expect(treeControl.isExpanded(nodes[1].children[i].children[j]))
+              .toBeTruthy(`Expect second node grand children to be expanded`);
+          }
+        }
+      });
+
+      it('should be able to expand/collapse all the dataNodes', () => {
+        const numNodes = 10;
+        const numChildren = 4;
+        const numGrandChildren = 2;
+        const nodes = generateData(numNodes, numChildren, numGrandChildren);
+        treeControl.dataNodes = nodes;
+
+        treeControl.expandDescendants(nodes[1]);
+
+        treeControl.collapseAll();
+
+        expect(treeControl.expansionModel.selected.length).toBe(0, `Expect no expanded nodes`);
+
+        treeControl.expandAll();
+
+        const totalNumber = numNodes + (numNodes * numChildren)
+          + (numNodes * numChildren * numGrandChildren);
+        expect(treeControl.expansionModel.selected.length)
+          .toBe(totalNumber, `Expect ${totalNumber} expanded nodes`);
+      });
+    });
   });
 });
 

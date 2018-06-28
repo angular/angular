@@ -478,6 +478,33 @@ describe('CdkTree', () => {
       });
     });
 
+    describe('with static children', () => {
+      let fixture: ComponentFixture<StaticNestedCdkTreeApp>;
+      let component: StaticNestedCdkTreeApp;
+
+      beforeEach(() => {
+      configureCdkTreeTestingModule([StaticNestedCdkTreeApp]);
+      fixture = TestBed.createComponent(StaticNestedCdkTreeApp);
+
+      component = fixture.componentInstance;
+      dataSource = component.dataSource as FakeDataSource;
+      tree = component.tree;
+      treeElement = fixture.nativeElement.querySelector('cdk-tree');
+
+      fixture.detectChanges();
+    });
+
+    it('with the right data', () => {
+      expectNestedTreeToMatch(treeElement,
+        [`topping_1 - cheese_1 + base_1`],
+        [`topping_2 - cheese_2 + base_2`],
+        [_, `topping_4 - cheese_4 + base_4`],
+        [_, _, `topping_5 - cheese_5 + base_5`],
+        [_, _, `topping_6 - cheese_6 + base_6`],
+        [`topping_3 - cheese_3 + base_3`]);
+    });
+  });
+
     describe('with when node', () => {
       let fixture: ComponentFixture<WhenNodeNestedCdkTreeApp>;
       let component: WhenNodeNestedCdkTreeApp;
@@ -1071,6 +1098,36 @@ class NestedCdkTreeApp {
   dataSource: FakeDataSource | null = new FakeDataSource(this.treeControl);
 
   @ViewChild(CdkTree) tree: CdkTree<TestData>;
+}
+
+@Component({
+  template: `
+    <cdk-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="customNodeClass">
+                     {{node.pizzaTopping}} - {{node.pizzaCheese}} + {{node.pizzaBase}}
+         <ng-template cdkTreeNodeOutlet></ng-template>
+      </cdk-nested-tree-node>
+    </cdk-tree>
+  `
+})
+class StaticNestedCdkTreeApp {
+  getChildren = (node: TestData) => node.children;
+
+  treeControl: TreeControl<TestData> = new NestedTreeControl(this.getChildren);
+
+  dataSource: FakeDataSource;
+
+  @ViewChild(CdkTree) tree: CdkTree<TestData>;
+
+  constructor() {
+    const dataSource = new FakeDataSource(this.treeControl);
+    const data = dataSource.data;
+    const child = dataSource.addChild(data[1], false);
+    dataSource.addChild(child, false);
+    dataSource.addChild(child, false);
+
+    this.dataSource = dataSource;
+  }
 }
 
 @Component({

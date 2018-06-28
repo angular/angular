@@ -1,7 +1,7 @@
 import {NestedTreeControl} from '@angular/cdk/tree';
 import {Component, Injectable} from '@angular/core';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
-import {BehaviorSubject, of as observableOf} from 'rxjs';
+import {BehaviorSubject} from 'rxjs';
 
 /**
  * Json node data with nested structure. Each node has a filename and a value or a list of children
@@ -125,5 +125,5 @@ export class TreeNestedOverviewExample {
 
   hasNestedChild = (_: number, nodeData: FileNode) => !nodeData.type;
 
-  private _getChildren = (node: FileNode) => observableOf(node.children);
+  private _getChildren = (node: FileNode) => node.children;
 }

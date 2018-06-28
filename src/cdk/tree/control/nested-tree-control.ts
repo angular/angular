@@ -13,7 +13,7 @@ import {BaseTreeControl} from './base-tree-control';
 export class NestedTreeControl<T> extends BaseTreeControl<T> {
 
   /** Construct with nested tree function getChildren. */
-  constructor(public getChildren: (dataNode: T) => Observable<T[]>) {
+  constructor(public getChildren: (dataNode: T) => (Observable<T[]> | T[])) {
     super();
   }
 
@@ -41,10 +41,13 @@ export class NestedTreeControl<T> extends BaseTreeControl<T> {
   /** A helper function to get descendants recursively. */
   protected _getDescendants(descendants: T[], dataNode: T): void {
     descendants.push(dataNode);
-    this.getChildren(dataNode).pipe(take(1)).subscribe(children => {
-      if (children && children.length > 0) {
+    const childrenNodes = this.getChildren(dataNode);
+    if (Array.isArray(childrenNodes)) {
+      childrenNodes.forEach((child: T) => this._getDescendants(descendants, child));
+    } else if (childrenNodes instanceof Observable) {
+      childrenNodes.pipe(take(1)).subscribe(children => {
         children.forEach((child: T) => this._getDescendants(descendants, child));
-      }
-    });
+      });
+    }
   }
 }

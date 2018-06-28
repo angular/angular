@@ -40,7 +40,6 @@ import {
   getTreeNoValidDataSourceError
 } from './tree-errors';
 
-
 /**
  * CDK tree component that connects with a data source to retrieve data of type `T` and renders
  * dataNodes with hierarchy. Updates the dataNodes when new data is provided by the data source.
@@ -338,17 +337,24 @@ export class CdkTreeNode<T>  implements FocusableOption, OnDestroy {
     this._elementRef.nativeElement.focus();
   }
 
-  private _setRoleFromData(): void {
+  protected _setRoleFromData(): void {
     if (this._tree.treeControl.isExpandable) {
       this.role = this._tree.treeControl.isExpandable(this._data) ? 'group' : 'treeitem';
     } else {
       if (!this._tree.treeControl.getChildren) {
         throw getTreeControlFunctionsMissingError();
       }
-      this._tree.treeControl.getChildren(this._data).pipe(takeUntil(this._destroyed))
-        .subscribe(children => {
-          this.role = children && children.length ? 'group' : 'treeitem';
-        });
+      const childrenNodes = this._tree.treeControl.getChildren(this._data);
+      if (Array.isArray(childrenNodes)) {
+        this._setRoleFromChildren(childrenNodes as T[]);
+      } else if (childrenNodes instanceof Observable) {
+        childrenNodes.pipe(takeUntil(this._destroyed))
+            .subscribe(children => this._setRoleFromChildren(children));
+      }
     }
+  }
+
+  protected _setRoleFromChildren(children: T[]) {
+    this.role = children && children.length ? 'group' : 'treeitem';
   }
 }
