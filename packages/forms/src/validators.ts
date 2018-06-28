@@ -18,11 +18,17 @@ function isEmptyInputValue(value: any): boolean {
 }
 
 /**
- * Providers for validators to be used for `FormControl`s in a form.
+ * @description
+ * An `InjectionToken` for registering additional synchronous validators used with `AbstractControl`s.
  *
- * Provide this using `multi: true` to add validators.
- *
- * ### Example
+ * @see `NG_ASYNC_VALIDATORS`
+ * 
+ * @usageNotes
+ * 
+ * ### Providing a custom validator
+ * 
+ * The following example registers a custom validator directive. Adding the validator to the 
+ * existing collection of validators requires the `multi: true` option.
  *
  * ```typescript
  * @Directive({
@@ -31,24 +37,20 @@ function isEmptyInputValue(value: any): boolean {
  * })
  * class CustomValidatorDirective implements Validator {
  *   validate(control: AbstractControl): ValidationErrors | null {
- *     return {"custom": true};
+ *     return { 'custom': true };
  *   }
  * }
  * ```
- *
  *
  */
 export const NG_VALIDATORS = new InjectionToken<Array<Validator|Function>>('NgValidators');
 
 /**
- * Providers for asynchronous validators to be used for `FormControl`s
- * in a form.
+ * @description
+ * An `InjectionToken` for registering additional asynchronous validators used with `AbstractControl`s.
  *
- * Provide this using `multi: true` to add validators.
- *
- * See `NG_VALIDATORS` for more details.
- *
- *
+ * @see `NG_VALIDATORS`
+ * 
  */
 export const NG_ASYNC_VALIDATORS =
     new InjectionToken<Array<Validator|Function>>('NgAsyncValidators');
@@ -57,24 +59,33 @@ const EMAIL_REGEXP =
     /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/;
 
 /**
+ * @description
  * Provides a set of validators used by form controls.
  *
  * A validator is a function that processes a `FormControl` or collection of
- * controls and returns a map of errors. A null map means that validation has passed.
- *
- * ### Example
- *
- * ```typescript
- * var loginControl = new FormControl("", Validators.required)
- * ```
- *
+ * controls and returns an object of errors. A null map means that validation has passed.
+ * 
+ * @see [Form Validation](/guide/form-validation)
  *
  */
 export class Validators {
   /**
-   * Validator that requires controls to have a value greater than a number.
-   *`min()` exists only as a function, not as a directive. For example,
-   * `control = new FormControl('', Validators.min(3));`.
+   * @description
+   * Validator that requires controls to have a value greater than the provided number. The
+   * validator
+   * exists only as a function and not as a directive.
+   *
+   * @usageNotes
+   *
+   * ### Validate against a minimum of 3
+   *
+   * ```typescript
+   * const control = new FormControl('', Validators.min(3));
+   * ```
+   *
+   * @returns A validator function that returns an object of errors that contains the
+   * `min` property defined with an object that contains the `min` and `actual` values
+   * if the validation check fails, otherwise `null`.
    */
   static min(min: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -89,9 +100,21 @@ export class Validators {
   }
 
   /**
-   * Validator that requires controls to have a value less than a number.
-   * `max()` exists only as a function, not as a directive. For example,
-   * `control = new FormControl('', Validators.max(15));`.
+   * @description
+   * Validator that requires controls to have a value less than the provided number. The validator
+   * exists only as a function and not as a directive.
+   *
+   * @usageNotes
+   *
+   * ### Validate against a maximum of 15
+   *
+   * ```typescript
+   * const control = new FormControl('', Validators.max(15));
+   * ```
+   *
+   * @returns A validator function that returns an object that contains the
+   * `max` property defined with an object that contains `max` and `actual` values
+   * if the validation check fails, otherwise `null`.
    */
   static max(max: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -106,21 +129,59 @@ export class Validators {
   }
 
   /**
-   * Validator that requires controls to have a non-empty value.
+   * @description
+   * Validator that requires the control have a non-empty value.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field is non-empty
+   *
+   * ```typescript
+   * const control = new FormControl('', Validators.required);
+   * ```
+   *
+   * @returns An object that contains the `required` property
+   * set to `true` if the validation check fails, otherwise `null`.
+   *
    */
   static required(control: AbstractControl): ValidationErrors|null {
     return isEmptyInputValue(control.value) ? {'required': true} : null;
   }
 
   /**
-   * Validator that requires control value to be true.
+   * @description
+   * Validator that requires the control value be true.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field value is true
+   *
+   * ```typescript
+   * const control = new FormControl('', Validators.requiredTrue);
+   * ```
+   *
+   * @returns an object that contains the `required` property
+   * set to `true` if the validation check fails, otherwise `null`.
    */
   static requiredTrue(control: AbstractControl): ValidationErrors|null {
     return control.value === true ? null : {'required': true};
   }
 
   /**
-   * Validator that performs email validation.
+   * @description
+   * Validator that requires the control value pass an email validation test.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field matches a valid email pattern
+   *
+   * ```typescript
+   * const control = new FormControl('', Validators.email);
+   * ```
+   *
+   * @returns An object that contains the `email` property
+   * set to `true` if the validation check fails, otherwise `null`.
+   *
    */
   static email(control: AbstractControl): ValidationErrors|null {
     if (isEmptyInputValue(control.value)) {
@@ -130,7 +191,27 @@ export class Validators {
   }
 
   /**
-   * Validator that requires controls to have a value of a minimum length.
+   * @description
+   * Validator that requires the control be greater than the provided minimum length. The validator
+   * is also provided as a `minlength` directive which is used in combination with the
+   * HTML5 `minlength` attribute.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field has a minimum of 3 characters
+   *
+   * ```typescript
+   * const control = new FormControl('', Validators.minLength(3));
+   * ```
+   *
+   * ```html
+   * <input minlength="5">
+   * ```
+   *
+   * @returns A validator function that returns an object containing the
+   * `minlength` property defined with an object containing the `requireLength` and `actualLength`
+   * values.
+   * values if the validation check fails, otherwise `null`.
    */
   static minLength(minLength: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -145,7 +226,27 @@ export class Validators {
   }
 
   /**
-   * Validator that requires controls to have a value of a maximum length.
+   * @description
+   * Validator that requires the controls be less than the provided maximum length. The validator
+   * is also provided as a `maxlength` directive which is used in combination with the
+   * HTML5 `minlength` attribute.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field has maximum of 5 characters
+   *
+   * ```typescript
+   * const control = new FormControl('', Validators.maxLength(5));
+   * ```
+   *
+   * ```html
+   * <input maxlength="5">
+   * ```
+   *
+   * @returns A validator function that returns an object containing the
+   * `minlength` property defined with an object containing the `requireLength` and `actualLength`
+   * values.
+   * values if the validation check fails, otherwise `null`.
    */
   static maxLength(maxLength: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -157,7 +258,27 @@ export class Validators {
   }
 
   /**
-   * Validator that requires a control to match a regex to its value.
+   * @description
+   * Validator that requires a control value to match a regex pattern. The validator
+   * is also provided as a `pattern` directive which is used in combination with the
+   * HTML5 `pattern` attribute.
+   *
+   * @usageNotes
+   *
+   * ### Validate that the field only contains letters or spaces
+   *
+   * ```typescript
+   * const control = new FormControl('', Validators.pattern('[a-zA-Z ]*'));
+   * ```
+   *
+   * ```html
+   * <input pattern="[a-zA-Z ]*">
+   * ```
+   *
+   * @returns A validator function that returns an object containing the
+   * `pattern` property defined with an object containing the `requiredPattern` and `actualValue`
+   * values.
+   * values if the validation check fails, otherwise `null`.
    */
   static pattern(pattern: string|RegExp): ValidatorFn {
     if (!pattern) return Validators.nullValidator;
@@ -188,13 +309,18 @@ export class Validators {
   }
 
   /**
-   * No-op validator.
+   * @description
+   * Validator that performs no operation.
    */
   static nullValidator(c: AbstractControl): ValidationErrors|null { return null; }
 
   /**
+   * @description
    * Compose multiple validators into a single function that returns the union
-   * of the individual error maps.
+   * of the individual error maps for the provided control.
+   *
+   * @returns A validator function that returns an object containing the
+   * merged error objects of the validators if the validation check fails, otherwise `null`.
    */
   static compose(validators: null): null;
   static compose(validators: (ValidatorFn|null|undefined)[]): ValidatorFn|null;
@@ -208,6 +334,14 @@ export class Validators {
     };
   }
 
+  /**
+   * @description
+   * Compose multiple async validators into a single function that returns the union
+   * of the individual error objects for the provided control.
+   *
+   * @returns A validator function that returns an object containing the
+   * merged error objects of the async validators if the validation check fails, otherwise `null`.
+  */
   static composeAsync(validators: (AsyncValidatorFn|null)[]): AsyncValidatorFn|null {
     if (!validators) return null;
     const presentValidators: AsyncValidatorFn[] = validators.filter(isPresent) as any;
