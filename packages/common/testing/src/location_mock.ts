@@ -84,6 +84,8 @@ export class SpyLocation implements Location {
     this._subject.emit({'url': url, 'pop': false});
   }
 
+  goExternal(url: string): void { this.urlChanges.push(url); }
+
   replaceState(path: string, query: string = '', state: any = null) {
     path = this.prepareExternalUrl(path);
 

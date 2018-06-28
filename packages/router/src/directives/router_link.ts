@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LocationStrategy} from '@angular/common';
+import {Location, LocationStrategy} from '@angular/common';
 import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, isDevMode} from '@angular/core';
 import {Subscription} from 'rxjs';
 
@@ -15,6 +15,7 @@ import {Event, NavigationEnd} from '../events';
 import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
+
 
 
 /**
@@ -132,7 +133,8 @@ export class RouterLink {
 
   constructor(
       private router: Router, private route: ActivatedRoute,
-      @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef) {
+      @Attribute('tabindex') tabIndex: string, renderer: Renderer2, el: ElementRef,
+      private location: Location) {
     if (tabIndex == null) {
       renderer.setAttribute(el.nativeElement, 'tabindex', '0');
     }
@@ -160,6 +162,12 @@ export class RouterLink {
 
   @HostListener('click')
   onClick(): boolean {
+    if (isExternalUrl(this.commands)) {
+      const url = externalUrlFromCommands(this.router, this.commands, this.urlTree);
+      this.location.goExternal(url);
+      return true;
+    }
+
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
@@ -169,7 +177,10 @@ export class RouterLink {
   }
 
   get urlTree(): UrlTree {
-    return this.router.createUrlTree(this.commands, {
+    const commands =
+        isExternalUrl(this.commands) ? ['/', ...this.commands.slice(1)] : this.commands;
+
+    return this.router.createUrlTree(commands, {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
@@ -219,7 +230,8 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
   constructor(
       private router: Router, private route: ActivatedRoute,
-      private locationStrategy: LocationStrategy) {
+      private locationStrategy: LocationStrategy,
+      private location: Location) {
     this.subscription = router.events.subscribe((s: Event) => {
       if (s instanceof NavigationEnd) {
         this.updateTargetUrlAndHref();
@@ -257,6 +269,11 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
       return true;
     }
 
+    if (isExternalUrl(this.commands)) {
+      this.location.goExternal(this.href);
+      return false;
+    }
+
     const extras = {
       skipLocationChange: attrBoolValue(this.skipLocationChange),
       replaceUrl: attrBoolValue(this.replaceUrl),
@@ -267,11 +284,18 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   }
 
   private updateTargetUrlAndHref(): void {
-    this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
+    if (isExternalUrl(this.commands)) {
+      this.href = externalUrlFromCommands(this.router, this.commands, this.urlTree);
+    } else {
+      this.href = this.locationStrategy.prepareExternalUrl(this.router.serializeUrl(this.urlTree));
+    }
   }
 
   get urlTree(): UrlTree {
-    return this.router.createUrlTree(this.commands, {
+    const commands =
+        isExternalUrl(this.commands) ? ['/', ...this.commands.slice(1)] : this.commands;
+
+    return this.router.createUrlTree(commands, {
       relativeTo: this.route,
       queryParams: this.queryParams,
       fragment: this.fragment,
@@ -284,4 +308,14 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
 
 function attrBoolValue(s: any): boolean {
   return s === '' || !!s;
+}
+
+function isExternalUrl(commands: string[]): boolean {
+  return commands.length > 0 && Location.isExternalUrl(commands[0]);
+}
+
+function externalUrlFromCommands(router: Router, commands: string[], urlTree: UrlTree): string {
+  const path = router.serializeUrl(urlTree);
+  const url = Location.joinWithSlash(commands[0], path);
+  return Location.stripTrailingSlash(url);
 }

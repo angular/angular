@@ -9,6 +9,7 @@
 import {Inject, Injectable, InjectionToken, ɵɵinject} from '@angular/core';
 import {getDOM} from '../dom_adapter';
 import {DOCUMENT} from '../dom_tokens';
+import {Location as NgLocation} from '@angular/common';
 
 /**
  * This class should not be used directly by an application developer. Instead, use
@@ -136,7 +137,9 @@ export class BrowserPlatformLocation extends PlatformLocation {
   set pathname(newPath: string) { this.location.pathname = newPath; }
 
   pushState(state: any, title: string, url: string): void {
-    if (supportsState()) {
+    if (NgLocation.isExternalUrl(url)) {
+      this.location.href = url;
+    } else if (supportsState()) {
       this._history.pushState(state, title, url);
     } else {
       this.location.hash = url;
@@ -144,7 +147,9 @@ export class BrowserPlatformLocation extends PlatformLocation {
   }
 
   replaceState(state: any, title: string, url: string): void {
-    if (supportsState()) {
+    if (NgLocation.isExternalUrl(url)) {
+      this.location.href = url;
+    } else if (supportsState()) {
       this._history.replaceState(state, title, url);
     } else {
       this.location.hash = url;

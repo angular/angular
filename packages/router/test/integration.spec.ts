@@ -2067,6 +2067,54 @@ describe('Integration', () => {
          const native = fixture.nativeElement.querySelector('area');
          expect(native.getAttribute('href')).toEqual('/home');
        }));
+
+    it('should allow using external links',
+       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+         const fixture = createRoot(router, ExternalLinkCmp);
+         const link = fixture.nativeElement.querySelector('a');
+         const button = fixture.nativeElement.querySelector('button');
+         expect(link.getAttribute('href')).toEqual('https://example.com');
+
+         link.click();
+         button.click();
+         tick();
+
+         expect(location.urlChanges).toEqual([
+           'replace: /', 'https://example.com', 'https://example.com'
+         ]);
+       })));
+
+    it('should allow using external links with query parameters and fragment',
+       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+         const fixture = createRoot(router, ExternalLinkWithQueryParamsAndFragmentCmp);
+         const link = fixture.nativeElement.querySelector('a');
+         const button = fixture.nativeElement.querySelector('button');
+         expect(link.getAttribute('href')).toEqual('https://example.com?q=1#f');
+
+         link.click();
+         button.click();
+         tick();
+
+         expect(location.urlChanges).toEqual([
+           'replace: /', 'https://example.com?q=1#f', 'https://example.com?q=1#f'
+         ]);
+       })));
+
+    it('should allow using external links from multiple commands with query parameters and fragment',
+       fakeAsync(inject([Router, Location], (router: Router, location: SpyLocation) => {
+         const fixture = createRoot(router, ExternalMultiPartLinkWithQueryParamsAndFragmentCmp);
+         const link = fixture.nativeElement.querySelector('a');
+         const button = fixture.nativeElement.querySelector('button');
+         expect(link.getAttribute('href')).toEqual('https://example.com/foo/bar?q=1&w=2#f');
+
+         link.click();
+         button.click();
+         tick();
+
+         expect(location.urlChanges).toEqual([
+           'replace: /', 'https://example.com/foo/bar?q=1&w=2#f', 'https://example.com/foo/bar?q=1&w=2#f'
+         ]);
+       })));
   });
 
   describe('redirects', () => {
@@ -4956,6 +5004,35 @@ class LinkWithQueryParamsAndFragment {
 class LinkWithState {
 }
 
+@Component({
+  selector: 'link-cmp',
+  template: `<a routerLink="https://example.com">link</a>
+    <button routerLink="https://example.com">link</button>
+  `
+})
+class ExternalLinkCmp {
+}
+
+@Component({
+  selector: 'link-cmp',
+  template:
+      `<a [routerLink]="['https://example.com']" [queryParams]="{q: '1'}" fragment="f">link</a>
+    <button [routerLink]="['https://example.com']" [queryParams]="{q: '1'}" fragment="f">link</button>
+  `
+})
+class ExternalLinkWithQueryParamsAndFragmentCmp {
+}
+
+@Component({
+  selector: 'link-cmp',
+  template:
+      `<a [routerLink]="['https://example.com', 'foo', 'bar']" [queryParams]="{q: '1', w: 2}" fragment="f">link</a>
+    <button [routerLink]="['https://example.com', 'foo', 'bar']" [queryParams]="{q: '1', w: 2}" fragment="f">link</button>
+  `
+})
+class ExternalMultiPartLinkWithQueryParamsAndFragmentCmp {
+}
+
 @Component({selector: 'simple-cmp', template: `simple`})
 class SimpleCmp {
 }
@@ -5156,6 +5233,9 @@ class LazyComponent {
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
     LinkWithState,
+    ExternalLinkCmp,
+    ExternalLinkWithQueryParamsAndFragmentCmp,
+    ExternalMultiPartLinkWithQueryParamsAndFragmentCmp,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
@@ -5186,6 +5266,9 @@ class LazyComponent {
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
     LinkWithState,
+    ExternalLinkCmp,
+    ExternalLinkWithQueryParamsAndFragmentCmp,
+    ExternalMultiPartLinkWithQueryParamsAndFragmentCmp,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,
@@ -5218,6 +5301,9 @@ class LazyComponent {
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
     LinkWithState,
+    ExternalLinkCmp,
+    ExternalLinkWithQueryParamsAndFragmentCmp,
+    ExternalMultiPartLinkWithQueryParamsAndFragmentCmp,
     CollectParamsCmp,
     QueryParamsAndFragmentCmp,
     StringLinkButtonCmp,

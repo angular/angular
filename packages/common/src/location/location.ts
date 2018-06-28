@@ -156,6 +156,8 @@ export class Location {
         this.prepareExternalUrl(path + normalizeQueryParams(query)), state);
   }
 
+  goExternal(url: string): void { this._platformLocation.pushState({}, '', url); }
+
   /**
    * Changes the browser's URL to a normalized version of the given URL, and replaces
    * the top item on the platform's history stack.
@@ -208,6 +210,10 @@ export class Location {
       onNext: (value: PopStateEvent) => void, onThrow?: ((exception: any) => void)|null,
       onReturn?: (() => void)|null): SubscriptionLike {
     return this._subject.subscribe({next: onNext, error: onThrow, complete: onReturn});
+  }
+
+  public static isExternalUrl(url: string): boolean {
+    return url.indexOf('http://') === 0 || url.indexOf('https://') === 0;
   }
 
   /**
