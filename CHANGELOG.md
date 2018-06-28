@@ -1,3 +1,7 @@
+<a name="6.1.0-beta.3"></a>
+# [6.1.0-beta.3](https://github.com/angular/angular/compare/6.1.0-beta.2...6.1.0-beta.3) (2018-06-28)
+
+
 <a name="6.0.7"></a>
 ## [6.0.7](https://github.com/angular/angular/compare/6.0.6...6.0.7) (2018-06-27)
 
