@@ -74,7 +74,6 @@ export const _MatIconMixinBase = mixinColor(MatIconBase);
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, CanColor {
-
   /**
    * Whether the icon should be inlined, automatically sizing the icon to match the font size of
    * the element the icon is contained in.
@@ -199,10 +198,16 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
     const layoutElement: HTMLElement = this._elementRef.nativeElement;
     const childCount = layoutElement.childNodes.length;
 
-    // Remove existing child nodes and add the new SVG element. Note that we can't
-    // use innerHTML, because IE will throw if the element has a data binding.
+    // Remove existing non-element child nodes and SVGs, and add the new SVG element. Note that
+    // we can't use innerHTML, because IE will throw if the element has a data binding.
     for (let i = 0; i < childCount; i++) {
-      layoutElement.removeChild(layoutElement.childNodes[i]);
+      const child = layoutElement.childNodes[i];
+
+      // 1 corresponds to Node.ELEMENT_NODE. We remove all non-element nodes in order to get rid
+      // of any loose text nodes, as well as any SVG elements in order to remove any old icons.
+      if (child.nodeType !== 1 || child.nodeName.toLowerCase() === 'svg') {
+        layoutElement.removeChild(child);
+      }
     }
   }
 
