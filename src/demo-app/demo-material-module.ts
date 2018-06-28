@@ -8,6 +8,7 @@
 
 import {ScrollingModule} from '@angular/cdk-experimental/scrolling';
 import {DialogModule} from '@angular/cdk-experimental/dialog';
+import {DragDropModule} from '@angular/cdk-experimental/drag-drop';
 import {A11yModule} from '@angular/cdk/a11y';
 import {CdkAccordionModule} from '@angular/cdk/accordion';
 import {BidiModule} from '@angular/cdk/bidi';
@@ -112,6 +113,7 @@ import {
     PortalModule,
     ScrollingModule,
     DialogModule,
+    DragDropModule,
   ]
 })
 export class DemoMaterialModule {}

@@ -1,0 +1,8 @@
+$cdk-z-index-drag-preview: 1000;
+
+.cdk-drag-preview {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: $cdk-z-index-drag-preview;
+}

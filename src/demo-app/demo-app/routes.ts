@@ -55,6 +55,7 @@ import {PaginatorDemo} from '../paginator/paginator-demo';
 
 import {ExamplesPage} from '../examples-page/examples-page';
 import {TableDemo} from '../table/table-demo';
+import {DragAndDropDemo} from '../drag-drop/drag-drop-demo';
 
 export const DEMO_APP_ROUTES: Routes = [
   {path: '', component: DemoApp, children: [
@@ -71,6 +72,7 @@ export const DEMO_APP_ROUTES: Routes = [
     {path: 'datepicker', component: DatepickerDemo},
     {path: 'dialog', component: DialogDemo},
     {path: 'drawer', component: DrawerDemo},
+    {path: 'drag-drop', component: DragAndDropDemo},
     {path: 'expansion', component: ExpansionDemo},
     {path: 'focus-origin', component: FocusOriginDemo},
     {path: 'gestures', component: GesturesDemo},

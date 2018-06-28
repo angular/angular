@@ -41,7 +41,8 @@ export function createTouchEvent(type: string, pageX = 0, pageY = 0) {
   // Most of the browsers don't have a "initTouchEvent" method that can be used to define
   // the touch details.
   Object.defineProperties(event, {
-    touches: {value: [touchDetails]}
+    touches: {value: [touchDetails]},
+    targetTouches: {value: [touchDetails]}
   });
 
   return event;

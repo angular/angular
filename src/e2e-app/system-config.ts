@@ -54,6 +54,7 @@ System.config({
 
     '@angular/cdk-experimental/scrolling': 'dist/bundles/cdk-experimental-scrolling.umd.js',
     '@angular/cdk-experimental/dialog': 'dist/bundles/cdk-experimental-dialog.umd.js',
+    '@angular/cdk-experimental/drag-drop': 'dist/bundles/cdk-experimental-drag-drop.umd.js',
 
     '@angular/material/autocomplete': 'dist/bundles/material-autocomplete.umd.js',
     '@angular/material/bottom-sheet': 'dist/bundles/material-bottom-sheet.umd.js',

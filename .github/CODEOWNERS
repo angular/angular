@@ -87,6 +87,7 @@
 /src/cdk-experimental/**                           @jelbourn
 /src/cdk-experimental/dialog/**                    @jelbourn @josephperrott @crisbeto
 /src/cdk-experimental/scrolling/**                 @mmalerba
+/src/cdk-experimental/drag-drop/**                 @crisbeto
 
 # Docs examples & guides
 /guides/**                                         @amcdnl @jelbourn
@@ -110,6 +111,7 @@
 /src/demo-app/demo-app/**                          @jelbourn
 /src/demo-app/dialog/**                            @jelbourn @crisbeto
 /src/demo-app/drawer/**                            @mmalerba
+/src/demo-app/drag-drop/**                         @crisbeto
 /src/demo-app/example/**                           @andrewseguin
 /src/demo-app/examples-page/**                     @andrewseguin
 /src/demo-app/expansion/**                         @josephperrott

@@ -1,0 +1,38 @@
+<div class="list">
+  <h2>To do</h2>
+  <cdk-drop
+    #one
+    (cdkDragDropped)="drop($event)"
+    [data]="todo"
+    [connectedTo]="[two]">
+    <div *ngFor="let item of todo" cdkDrag>
+      {{item}}
+      <mat-icon cdkDragHandle svgIcon="dnd-move"></mat-icon>
+    </div>
+  </cdk-drop>
+</div>
+
+<div class="list">
+  <h2>Done</h2>
+  <cdk-drop
+    #two
+    (cdkDragDropped)="drop($event)"
+    [data]="done"
+    [connectedTo]="[one]">
+    <div *ngFor="let item of done" cdkDrag>
+      {{item}}
+      <mat-icon cdkDragHandle svgIcon="dnd-move"></mat-icon>
+    </div>
+  </cdk-drop>
+</div>
+
+<div class="list">
+  <h2>Data</h2>
+  <pre>{{todo.join(', ')}}</pre>
+  <pre>{{done.join(', ')}}</pre>
+</div>
+
+<div class="list">
+  <h2>Free dragging</h2>
+  <div cdkDrag class="free-draggable">Drag me around</div>
+</div>

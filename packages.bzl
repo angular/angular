@@ -24,6 +24,7 @@ CDK_TARGETS = ["//src/cdk"] + ["//src/cdk/%s" % p for p in CDK_PACKAGES]
 CDK_EXPERIMENTAL_PACKAGES = [
   "dialog",
   "scrolling",
+  "drag-drop",
 ]
 
 CDK_EXPERIMENTAL_TARGETS = ["//src/cdk-experimental"] + [

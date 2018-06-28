@@ -63,6 +63,7 @@ import {TypographyDemo} from '../typography/typography-demo';
 import {VirtualScrollDemo} from '../virtual-scroll/virtual-scroll-demo';
 import {DemoApp, Home} from './demo-app';
 import {DEMO_APP_ROUTES} from './routes';
+import {DragAndDropDemo} from '../drag-drop/drag-drop-demo';
 
 @NgModule({
   imports: [
@@ -96,6 +97,7 @@ import {DEMO_APP_ROUTES} from './routes';
     DialogDemo,
     DrawerDemo,
     ExampleBottomSheet,
+    DragAndDropDemo,
     ExpansionDemo,
     FocusOriginDemo,
     GesturesDemo,
