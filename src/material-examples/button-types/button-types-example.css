@@ -3,3 +3,8 @@
   align-items: center;
   justify-content: space-around;
 }
+
+.example-button-row button,
+.example-button-row a {
+  margin-right: 8px;
+}

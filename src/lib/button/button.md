@@ -38,5 +38,5 @@ default. The `<button>` element should be used for any interaction that _perform
 current page_. The `<a>` element should be used for any interaction that _navigates to another
 view_.
 
-Buttons or links containing only icons (such as `mat-fab`, `mat-mini-fab`, and `mat-icon-button`) should
-be given a meaningful label via `aria-label` or `aria-labelledby`.
+Buttons or links containing only icons (such as `mat-fab`, `mat-mini-fab`, and `mat-icon-button`)
+should be given a meaningful label via `aria-label` or `aria-labelledby`.
