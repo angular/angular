@@ -13,14 +13,15 @@ import {Decorator, ReflectionHost} from '../../host';
 import {Reference} from '../../metadata';
 
 export function getConstructorDependencies(
-    clazz: ts.ClassDeclaration, reflector: ReflectionHost): R3DependencyMetadata[] {
+    clazz: ts.ClassDeclaration, reflector: ReflectionHost,
+    isCore: boolean): R3DependencyMetadata[] {
   const useType: R3DependencyMetadata[] = [];
   const ctorParams = reflector.getConstructorParameters(clazz) || [];
   ctorParams.forEach((param, idx) => {
     let tokenExpr = param.type;
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
-    (param.decorators || []).filter(isAngularCore).forEach(dec => {
+    (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
       if (dec.name === 'Inject') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new Error(`Unexpected number of arguments to @Inject().`);
