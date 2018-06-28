@@ -15,8 +15,10 @@ import {FormBuilder} from './form_builder';
 
 
 /**
- * The ng module for forms.
+ * @description
+ * An `NgModule` that registers the directives and providers for template-driven forms.
  *
+ * @see [Forms Guide](/guide/forms)
  */
 @NgModule({
   declarations: TEMPLATE_DRIVEN_DIRECTIVES,
@@ -27,8 +29,11 @@ export class FormsModule {
 }
 
 /**
- * The ng module for reactive forms.
+ * @description
+ * An `NgModule` that registers the directives and providers for reactive forms.
  *
+ * @see [Reactive Forms Guide](/guide/reactive-forms)
+ * 
  */
 @NgModule({
   declarations: [REACTIVE_DRIVEN_DIRECTIVES],
@@ -36,6 +41,13 @@ export class FormsModule {
   exports: [InternalFormsSharedModule, REACTIVE_DRIVEN_DIRECTIVES]
 })
 export class ReactiveFormsModule {
+  /**
+   * @description
+   * Provides options for configuring the reactive forms module.
+   *
+   * @param opts An object of configuration options `warnOnNgModelWithFormControl` Configures when
+   * to emit a warning when an `ngModel binding is used with reactive form directives.
+   */
   static withConfig(opts: {
     /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never' | 'once' | 'always'
   }): ModuleWithProviders<ReactiveFormsModule> {
