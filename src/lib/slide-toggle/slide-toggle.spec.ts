@@ -50,7 +50,6 @@ describe('MatSlideToggle without forms', () => {
     let labelElement: HTMLLabelElement;
     let inputElement: HTMLInputElement;
 
-    // This initialization is async() because it needs to wait for ngModel to set the initial value.
     beforeEach(fakeAsync(() => {
       fixture = TestBed.createComponent(SlideToggleBasic);
 
@@ -252,14 +251,17 @@ describe('MatSlideToggle without forms', () => {
       expect(testComponent.lastEvent.checked).toBe(true);
     }));
 
-    it('should support subscription on the change observable', () => {
-      slideToggle.change.subscribe((event: MatSlideToggleChange) => {
-        expect(event.checked).toBe(true);
-      });
+    it('should support subscription on the change observable', fakeAsync(() => {
+      const spy = jasmine.createSpy('change spy');
+      const subscription = slideToggle.change.subscribe(spy);
 
-      slideToggle.toggle();
+      labelElement.click();
       fixture.detectChanges();
-    });
+      tick();
+
+      expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({checked: true}));
+      subscription.unsubscribe();
+    }));
 
     it('should show a ripple when focused by a keyboard action', fakeAsync(() => {
       expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length)
@@ -830,6 +832,18 @@ describe('MatSlideToggle with forms', () => {
 
       expect(modelInstance.pristine).toBe(true);
     }));
+
+    it('should set the model value when toggling via the `toggle` method', fakeAsync(() => {
+      expect(testComponent.modelValue).toBe(false);
+
+      fixture.debugElement.query(By.directive(MatSlideToggle)).componentInstance.toggle();
+      fixture.detectChanges();
+      flushMicrotasks();
+
+      fixture.detectChanges();
+      expect(testComponent.modelValue).toBe(true);
+    }));
+
   });
 
   describe('with a FormControl', () => {

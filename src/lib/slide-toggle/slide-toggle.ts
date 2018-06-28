@@ -277,6 +277,7 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   /** Toggles the checked state of the slide-toggle. */
   toggle(): void {
     this.checked = !this.checked;
+    this.onChange(this.checked);
   }
 
   /** Function is called whenever the focus changes for the input element. */
