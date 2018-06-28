@@ -436,9 +436,7 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   }
 
   /** Checks the button toggle due to an interaction with the underlying native button. */
-  _onButtonClick(event: Event) {
-    event.stopPropagation();
-
+  _onButtonClick() {
     const newChecked = this._isSingleSelector ? true : !this._checked;
 
     if (newChecked !== this._checked) {
