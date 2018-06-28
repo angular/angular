@@ -515,6 +515,11 @@
               "tooltip": "Incrementally upgrade an AngularJS application to Angular."
             },
             {
+              "url": "guide/upgrade-performance",
+              "title": "Upgrading for Performance",
+              "tooltip": "Upgrade from AngularJS to Angular in a more flexible way."
+            },
+            {
               "url": "guide/ajs-quick-reference",
               "title": "AngularJS-Angular Concepts",
               "tooltip": "Learn how AngularJS concepts and techniques map to Angular."

@@ -42,12 +42,12 @@ class Bindings {
  * Let's assume that you have an AngularJS component called `ng1Hero` that needs
  * to be made available in Angular templates.
  *
- * {@example upgrade/static/ts/module.ts region="ng1-hero"}
+ * {@example upgrade/static/ts/full/module.ts region="ng1-hero"}
  *
  * We must create a `Directive` that will make this AngularJS component
  * available inside Angular templates.
  *
- * {@example upgrade/static/ts/module.ts region="ng1-hero-wrapper"}
+ * {@example upgrade/static/ts/full/module.ts region="ng1-hero-wrapper"}
  *
  * In this example you can see that we must derive from the `UpgradeComponent`
  * base class but also provide an {@link Directive `@Directive`} decorator. This is
@@ -95,16 +95,11 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
    * Instead you should derive a new class from this one and call the super constructor
    * from the base class.
    *
-   * {@example upgrade/static/ts/module.ts region="ng1-hero-wrapper" }
+   * {@example upgrade/static/ts/full/module.ts region="ng1-hero-wrapper" }
    *
    * * The `name` parameter should be the name of the AngularJS directive.
    * * The `elementRef` and `injector` parameters should be acquired from Angular by dependency
    *   injection into the base class constructor.
-   *
-   * Note that we must manually implement lifecycle hooks that call through to the super class.
-   * This is because, at the moment, the AoT compiler is not able to tell that the
-   * `UpgradeComponent`
-   * already implements them and so does not wire up calls to them at runtime.
    */
   constructor(private name: string, private elementRef: ElementRef, private injector: Injector) {
     this.helper = new UpgradeHelper(injector, name, elementRef);

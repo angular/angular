@@ -14,7 +14,7 @@ import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, TemplateFixture} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent} from './render_util';
 
 describe('ViewContainerRef', () => {
   let directiveInstance: DirectiveWithVCRef|null;
@@ -101,14 +101,8 @@ describe('ViewContainerRef', () => {
       });
 
       it('should work on components', () => {
-        class HeaderComponent {
-          static ngComponentDef = defineComponent({
-            type: HeaderComponent,
-            selectors: [['header-cmp']],
-            factory: () => new HeaderComponent(),
-            template: (rf: RenderFlags, cmp: HeaderComponent) => {}
-          });
-        }
+        const HeaderComponent =
+            createComponent('header-cmp', function(rf: RenderFlags, ctx: any) {});
 
         function createTemplate() {
           container(0, embeddedTemplate);
@@ -137,6 +131,38 @@ describe('ViewContainerRef', () => {
 
         expect(() => { createView('Z', -1); }).toThrow();
         expect(() => { createView('Z', 5); }).toThrow();
+      });
+
+      it('should work with multiple instances with vcrefs', () => {
+        let firstDir: DirectiveWithVCRef;
+        let secondDir: DirectiveWithVCRef;
+
+        function createTemplate() {
+          container(0, embeddedTemplate);
+          elementStart(1, 'div', ['vcref', '']);
+          elementEnd();
+          elementStart(2, 'div', ['vcref', '']);
+          elementEnd();
+
+          // for testing only:
+          firstDir = loadDirective(0);
+          secondDir = loadDirective(1);
+        }
+
+        function update() {
+          // Hack until we can create local refs to templates
+          const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+          elementProperty(1, 'tplRef', bind(tplRef));
+          elementProperty(2, 'tplRef', bind(tplRef));
+        }
+
+        const fixture = new TemplateFixture(createTemplate, update, [DirectiveWithVCRef]);
+        expect(fixture.html).toEqual('<div vcref=""></div><div vcref=""></div>');
+
+        firstDir !.vcref.createEmbeddedView(firstDir !.tplRef, {name: 'A'});
+        secondDir !.vcref.createEmbeddedView(secondDir !.tplRef, {name: 'B'});
+        fixture.update();
+        expect(fixture.html).toEqual('<div vcref=""></div>A<div vcref=""></div>B');
       });
 
       it('should work on containers', () => {
@@ -277,7 +303,7 @@ describe('ViewContainerRef', () => {
 
            /**
             * before|
-            * <ng-template directive>A<ng-template>
+            * <ng-template testDir>A<ng-template>
             * % if (condition) {
             *  B
             * % }
