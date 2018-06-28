@@ -25,7 +25,7 @@ npm_package(
 
         # Workaround for `.d.ts`` containing `/// <amd-module .../>`
         # which are generated in TypeScript v2.9, but not before.
-        "/// <amd-module name=.*/>": ""
+        "/// <amd-module name=.*/>": "",
     },
     deps = [":locales"],
 )
