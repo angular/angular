@@ -608,24 +608,24 @@ export function removeChild(parent: LNode, child: RNode | null, currentView: LVi
  * @param currentView Current LView
  */
 export function appendProjectedNode(
-    node: LElementNode | LTextNode | LContainerNode, currentParent: LElementNode,
-    currentView: LViewData): void {
+    node: LElementNode | LTextNode | LContainerNode, currentParent: LElementNode | LViewNode,
+    currentView: LViewData, renderParent: LElementNode): void {
   appendChild(currentParent, node.native, currentView);
   if (node.tNode.type === TNodeType.Container) {
-    // The node we are adding is a Container and we are adding it to Element which
+    // The node we are adding is a container and we are adding it to an element which
     // is not a component (no more re-projection).
     // Alternatively a container is projected at the root of a component's template
     // and can't be re-projected (as not content of any component).
-    // Assignee the final projection location in those cases.
+    // Assign the final projection location in those cases.
     const lContainer = (node as LContainerNode).data;
-    lContainer[RENDER_PARENT] = currentParent;
+    lContainer[RENDER_PARENT] = renderParent;
     const views = lContainer[VIEWS];
     for (let i = 0; i < views.length; i++) {
       addRemoveViewFromContainer(node as LContainerNode, views[i], true, null);
     }
   }
   if (node.dynamicLContainerNode) {
-    node.dynamicLContainerNode.data[RENDER_PARENT] = currentParent;
+    node.dynamicLContainerNode.data[RENDER_PARENT] = renderParent;
     appendChild(currentParent, node.dynamicLContainerNode.native, currentView);
   }
 }
