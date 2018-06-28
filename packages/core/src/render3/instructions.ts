@@ -335,8 +335,7 @@ export function createLNodeObject(
     queries: queries,
     tNode: null !,
     pNextOrParent: null,
-    dynamicLContainerNode: null,
-    pChild: null,
+    dynamicLContainerNode: null
   };
 }
 
@@ -440,7 +439,7 @@ export function createLNode(
 /**
  * Resets the application state.
  */
-function resetApplicationState() {
+export function resetApplicationState() {
   isParent = false;
   previousOrParentNode = null !;
 }
@@ -1894,16 +1893,7 @@ export function projectionDef(
   }
 
   const componentNode: LElementNode = findComponentHost(viewData);
-  let isProjectingI18nNodes = false;
-  let componentChild: LNode|null;
-  // for i18n translations we use pChild to point to the next child
-  // TODO(kara): Remove when removing LNodes
-  if (componentNode.pChild) {
-    isProjectingI18nNodes = true;
-    componentChild = componentNode.pChild;
-  } else {
-    componentChild = getChildLNode(componentNode);
-  }
+  let componentChild = getChildLNode(componentNode);
 
   while (componentChild !== null) {
     // execute selector matching logic if and only if:
@@ -1916,11 +1906,7 @@ export function projectionDef(
       distributedNodes[0].push(componentChild);
     }
 
-    if (isProjectingI18nNodes) {
-      componentChild = componentChild.pNextOrParent;
-    } else {
-      componentChild = getNextLNode(componentChild);
-    }
+    componentChild = getNextLNode(componentChild);
   }
 
   ngDevMode && assertDataNext(index + HEADER_OFFSET);

@@ -7,10 +7,10 @@
  */
 
 import {assertEqual, assertLessThan} from './assert';
-import {NO_CHANGE, bindingUpdated, createLNode, getPreviousOrParentNode, getRenderer, getViewData, load} from './instructions';
+import {NO_CHANGE, bindingUpdated, createLNode, getPreviousOrParentNode, getRenderer, getViewData, load, resetApplicationState} from './instructions';
 import {RENDER_PARENT} from './interfaces/container';
 import {LContainerNode, LElementNode, LNode, TNodeType} from './interfaces/node';
-import {BINDING_INDEX} from './interfaces/view';
+import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
 import {appendChild, createTextNode, getParentLNode, removeChild} from './node_manipulation';
 import {stringify} from './util';
 
@@ -240,10 +240,16 @@ function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
 
   appendChild(parentNode, node.native || null, viewData);
 
-  if (previousNode === parentNode && parentNode.pChild === null) {
-    parentNode.pChild = node;
-  } else {
-    previousNode.pNextOrParent = node;
+  // On first pass, re-organize node tree to put this node in the correct position.
+  if (node.view[TVIEW].firstTemplatePass) {
+    node.tNode.next = null;
+    if (previousNode === parentNode && node.tNode !== parentNode.tNode.child) {
+      node.tNode.next = parentNode.tNode.child;
+      parentNode.tNode.child = node.tNode;
+    } else if (previousNode !== parentNode && node.tNode !== previousNode.tNode.next) {
+      node.tNode.next = previousNode.tNode.next;
+      previousNode.tNode.next = node.tNode;
+    }
   }
 
   // Template containers also have a comment node for the `ViewContainerRef` that should be moved
@@ -278,6 +284,7 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
   const renderer = getRenderer();
   let localParentNode: LNode = getParentLNode(load(startIndex)) || getPreviousOrParentNode();
   let localPreviousNode: LNode = localParentNode;
+  resetApplicationState();  // We don't want to add to the tree with the wrong previous node
 
   for (let i = 0; i < instructions.length; i++) {
     const instruction = instructions[i] as number;
@@ -298,10 +305,12 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         const value = instructions[++i];
         const textRNode = createTextNode(value, renderer);
         // If we were to only create a `RNode` then projections won't move the text.
-        // But since this text doesn't have an index in `LViewData`, we need to create an
-        // `LElementNode` with the index -1 so that it isn't saved in `LViewData`
-        const textLNode = createLNode(-1, TNodeType.Element, textRNode, null, null);
+        // Create text node at the current end of viewData. Must subtract header offset because
+        // createLNode takes a raw index (not adjusted by header offset).
+        const textLNode =
+            createLNode(viewData.length - HEADER_OFFSET, TNodeType.Element, textRNode, null, null);
         localPreviousNode = appendI18nNode(textLNode, localParentNode, localPreviousNode);
+        resetApplicationState();
         break;
       case I18nInstructions.CloseNode:
         localPreviousNode = localParentNode;
