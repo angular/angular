@@ -137,8 +137,8 @@ export function awaitCurrentlyCompilingComponents(): Promise<void> {
   return res;
 }
 
-function isUsingInheritance(type: Type<any>): boolean {
-  return Object.getPrototypeOf(type) !== Object.prototype;
+export function extendsDirectlyFromObject(type: Type<any>): boolean {
+  return Object.getPrototypeOf(type.prototype) === Object.prototype;
 }
 
 /**
@@ -180,7 +180,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
       usesOnChanges: type.prototype.ngOnChanges !== undefined,
     },
     typeSourceSpan: null !,
-    usesInheritance: isUsingInheritance(type),
+    usesInheritance: !extendsDirectlyFromObject(type),
   };
 }
 
