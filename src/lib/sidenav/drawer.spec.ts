@@ -564,7 +564,7 @@ describe('MatDrawerContainer', () => {
     fixture.detectChanges();
     tick();
 
-    expect(parseInt(contentElement.style.marginLeft)).toBeLessThan(initialMargin);
+    expect(contentElement.style.marginLeft).toBe('');
   }));
 
   it('should recalculate the margin if the drawer mode is changed', fakeAsync(() => {
@@ -584,7 +584,7 @@ describe('MatDrawerContainer', () => {
     fixture.componentInstance.mode = 'over';
     fixture.detectChanges();
 
-    expect(parseInt(contentElement.style.marginLeft)).toBeLessThan(initialMargin);
+    expect(contentElement.style.marginLeft).toBe('');
   }));
 
   it('should recalculate the margin if the direction has changed', fakeAsync(() => {
@@ -604,7 +604,7 @@ describe('MatDrawerContainer', () => {
     fixture.componentInstance.direction = 'rtl';
     fixture.detectChanges();
 
-    expect(parseInt(contentElement.style.marginLeft)).toBe(0);
+    expect(contentElement.style.marginLeft).toBe('');
     expect(parseInt(contentElement.style.marginRight)).toBe(margin);
   }));
 
@@ -648,6 +648,32 @@ describe('MatDrawerContainer', () => {
       fixture.detectChanges();
 
       expect(parseInt(contentEl.style.marginLeft)).toBeGreaterThan(initialMargin);
+      discardPeriodicTasks();
+    }));
+
+  it('should not set a style property if it would be zero', fakeAsync(() => {
+      const fixture = TestBed.createComponent(AutosizeDrawer);
+      fixture.detectChanges();
+
+      const content = fixture.debugElement.nativeElement.querySelector('.mat-drawer-content');
+      expect(content.style.marginLeft).toBe('', 'Margin should be omitted when drawer is closed');
+
+      // Open the drawer and resolve the open animation.
+      fixture.componentInstance.drawer.open();
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      expect(content.style.marginLeft).not.toBe('', 'Margin should be present when drawer is open');
+
+      // Close the drawer and resolve the close animation.
+      fixture.componentInstance.drawer.close();
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      expect(content.style.marginLeft).toBe('', 'Margin should be removed after drawer close.');
+
       discardPeriodicTasks();
     }));
 

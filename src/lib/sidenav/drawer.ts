@@ -703,7 +703,13 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
     }
 
     if (left !== this._contentMargins.left || right !== this._contentMargins.right) {
-      this._contentMargins = {left, right};
+      this._contentMargins = {
+        // If either `right` or `left` is zero, don't set a style to the element. This
+        // allows users to specify a custom size via CSS class in SSR scenarios where the
+        // measured widths will always be zero.
+        left: left || null,
+        right: right || null,
+      };
 
       // Pull back into the NgZone since in some cases we could be outside. We need to be careful
       // to do it only when something changed, otherwise we can end up hitting the zone too often.
