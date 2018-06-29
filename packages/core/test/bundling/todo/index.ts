@@ -8,8 +8,8 @@
 
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
-import {CommonModule, NgForOf, NgIf} from '@angular/common';
-import {Component, Injectable, IterableDiffers, NgModule, defineInjector, ɵNgOnChangesFeature as NgOnChangesFeature, ɵdefineDirective as defineDirective, ɵdirectiveInject as directiveInject, ɵinjectTemplateRef as injectTemplateRef, ɵinjectViewContainerRef as injectViewContainerRef, ɵrenderComponent as renderComponent} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {Component, Injectable, NgModule, ɵrenderComponent as renderComponent} from '@angular/core';
 
 class Todo {
   editing: boolean;
@@ -63,32 +63,32 @@ class TodoStore {
   <section class="todoapp">
     <header class="header">
       <h1>todos</h1>
-      <input class="new-todo" placeholder="What needs to be done?" autofocus="" 
-             [value]="newTodoText" 
+      <input class="new-todo" placeholder="What needs to be done?" autofocus=""
+             [value]="newTodoText"
              (keyup)="$event.code == 'Enter' ? addTodo() : newTodoText = $event.target.value">
     </header>
     <section *ngIf="todoStore.todos.length > 0" class="main">
-      <input *ngIf="todoStore.todos.length" 
-             #toggleall class="toggle-all" type="checkbox" 
-             [checked]="todoStore.allCompleted()" 
+      <input *ngIf="todoStore.todos.length"
+             #toggleall class="toggle-all" type="checkbox"
+             [checked]="todoStore.allCompleted()"
              (click)="todoStore.setAllTo(toggleall.checked)">
       <ul class="todo-list">
-        <li *ngFor="let todo of todoStore.todos" 
-            [class.completed]="todo.completed" 
+        <li *ngFor="let todo of todoStore.todos"
+            [class.completed]="todo.completed"
             [class.editing]="todo.editing">
           <div class="view">
-            <input class="toggle" type="checkbox" 
-                   (click)="toggleCompletion(todo)" 
+            <input class="toggle" type="checkbox"
+                   (click)="toggleCompletion(todo)"
                    [checked]="todo.completed">
             <label (dblclick)="editTodo(todo)">{{todo.title}}</label>
             <button class="destroy" (click)="remove(todo)"></button>
           </div>
-          <input *ngIf="todo.editing" 
+          <input *ngIf="todo.editing"
                  class="edit" #editedtodo
-                 [value]="todo.title" 
+                 [value]="todo.title"
                  (blur)="stopEditing(todo, editedtodo.value)"
-                 (keyup)="todo.title = $event.target.value" 
-                 (keyup)="$event.code == 'Enter' && updateEditingTodo(todo, editedtodo.value)" 
+                 (keyup)="todo.title = $event.target.value"
+                 (keyup)="$event.code == 'Enter' && updateEditingTodo(todo, editedtodo.value)"
                  (keyup)="$event.code == 'Escape' && cancelEditingTodo(todo)">
         </li>
       </ul>
@@ -98,8 +98,8 @@ class TodoStore {
         <strong>{{todoStore.getRemaining().length}}</strong>
         {{todoStore.getRemaining().length == 1 ? 'item' : 'items'}} left
       </span>
-      <button *ngIf="todoStore.getCompleted().length > 0" 
-              class="clear-completed" 
+      <button *ngIf="todoStore.getCompleted().length > 0"
+              class="clear-completed"
               (click)="removeCompleted()">
         Clear completed
       </button>

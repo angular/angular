@@ -61,14 +61,47 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * A map of input names.
    *
-   * The format is in: `{[actualPropertyName: string]:string}`.
+   * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
    *
-   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+   * Given:
+   * ```
+   * class MyComponent {
+   *   @Input()
+   *   publicInput1: string;
    *
-   * This allows the render to re-construct the minified and non-minified names
+   *   @Input('publicInput2')
+   *   declaredInput2: string;
+   * }
+   * ```
+   *
+   * is described as:
+   * ```
+   * {
+   *   publicInput1: 'publicInput1',
+   *   declaredInput2: ['declaredInput2', 'publicInput2'],
+   * }
+   * ```
+   *
+   * Which the minifier may translate to:
+   * ```
+   * {
+   *   minifiedPublicInput1: 'publicInput1',
+   *   minifiedDeclaredInput2: [ 'publicInput2', 'declaredInput2'],
+   * }
+   * ```
+   *
+   * This allows the render to re-construct the minified, public, and declared names
    * of properties.
+   *
+   * NOTE:
+   *  - Because declared and public name are usually same we only generate the array
+   *    `['declared', 'public']` format when they differ.
+   *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
+   *    inconsistent behavior in that it uses declared names rather than minified or public. For
+   *    this reason `NgOnChanges` will be deprecated and removed in future version and this
+   *    API will be simplified to be consistent with `output`.
    */
-  inputs?: {[P in keyof T]?: string};
+  inputs?: {[P in keyof T]?: string | [string, string]};
 
   /**
    * A map of output names.
@@ -176,6 +209,7 @@ export function defineComponent<T>(componentDefinition: {
   const type = componentDefinition.type;
   const pipeTypes = componentDefinition.pipes !;
   const directiveTypes = componentDefinition.directives !;
+  const declaredInputs: {[P in keyof T]: P} = {} as any;
   const def: ComponentDefInternal<any> = {
     type: type,
     diPublic: null,
@@ -183,7 +217,8 @@ export function defineComponent<T>(componentDefinition: {
     template: componentDefinition.template || null !,
     hostBindings: componentDefinition.hostBindings || null,
     attributes: componentDefinition.attributes || null,
-    inputs: invertObject(componentDefinition.inputs),
+    inputs: invertObject(componentDefinition.inputs, declaredInputs),
+    declaredInputs: declaredInputs,
     outputs: invertObject(componentDefinition.outputs),
     rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
     exportAs: componentDefinition.exportAs || null,
@@ -204,6 +239,7 @@ export function defineComponent<T>(componentDefinition: {
         null,
     selectors: componentDefinition.selectors,
     viewQuery: componentDefinition.viewQuery || null,
+    features: componentDefinition.features || null,
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
@@ -239,115 +275,72 @@ export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T, any, a
   return res as never;
 }
 
-const PRIVATE_PREFIX = '__ngOnChanges_';
-
-type OnChangesExpando = OnChanges & {
-  __ngOnChanges_: SimpleChanges|null|undefined;
-  [key: string]: any;
-};
-
-/**
- * Creates an NgOnChangesFeature function for a component's features list.
- *
- * It accepts an optional map of minified input property names to original property names,
- * if any input properties have a public alias.
- *
- * The NgOnChangesFeature function that is returned decorates a component with support for
- * the ngOnChanges lifecycle hook, so it should be included in any component that implements
- * that hook.
- *
- * Example usage:
- *
- * ```
- * static ngComponentDef = defineComponent({
- *   ...
- *   inputs: {name: 'publicName'},
- *   features: [NgOnChangesFeature({name: 'name'})]
- * });
- * ```
- *
- * @param inputPropertyNames Map of input property names, if they are aliased
- * @returns DirectiveDefFeature
- */
-export function NgOnChangesFeature(inputPropertyNames?: {[key: string]: string}):
-    DirectiveDefFeature {
-  return function(definition: DirectiveDefInternal<any>): void {
-    const inputs = definition.inputs;
-    const proto = definition.type.prototype;
-    for (let pubKey in inputs) {
-      const minKey = inputs[pubKey];
-      const propertyName = inputPropertyNames && inputPropertyNames[minKey] || pubKey;
-      const privateMinKey = PRIVATE_PREFIX + minKey;
-      const originalProperty = Object.getOwnPropertyDescriptor(proto, minKey);
-      const getter = originalProperty && originalProperty.get;
-      const setter = originalProperty && originalProperty.set;
-      // create a getter and setter for property
-      Object.defineProperty(proto, minKey, {
-        get: getter ||
-            (setter ? undefined : function(this: OnChangesExpando) { return this[privateMinKey]; }),
-        set: function(this: OnChangesExpando, value: any) {
-          let simpleChanges = this[PRIVATE_PREFIX];
-          if (!simpleChanges) {
-            // Place where we will store SimpleChanges if there is a change
-            Object.defineProperty(
-                this, PRIVATE_PREFIX, {value: simpleChanges = {}, writable: true});
-          }
-          const isFirstChange = !this.hasOwnProperty(privateMinKey);
-          const currentChange: SimpleChange|undefined = simpleChanges[propertyName];
-          if (currentChange) {
-            currentChange.currentValue = value;
-          } else {
-            simpleChanges[propertyName] =
-                new SimpleChange(this[privateMinKey], value, isFirstChange);
-          }
-          if (isFirstChange) {
-            // Create a place where the actual value will be stored and make it non-enumerable
-            Object.defineProperty(this, privateMinKey, {value, writable: true});
-          } else {
-            this[privateMinKey] = value;
-          }
-          setter && setter.call(this, value);
-        }
-      });
-    }
-
-    // If an onInit hook is defined, it will need to wrap the ngOnChanges call
-    // so the call order is changes-init-check in creation mode. In subsequent
-    // change detection runs, only the check wrapper will be called.
-    if (definition.onInit != null) {
-      definition.onInit = onChangesWrapper(definition.onInit);
-    }
-
-    definition.doCheck = onChangesWrapper(definition.doCheck);
-  };
-
-  function onChangesWrapper(delegateHook: (() => void) | null) {
-    return function(this: OnChangesExpando) {
-      let simpleChanges = this[PRIVATE_PREFIX];
-      if (simpleChanges != null) {
-        this.ngOnChanges(simpleChanges);
-        this[PRIVATE_PREFIX] = null;
-      }
-      delegateHook && delegateHook.apply(this);
-    };
-  }
-}
-
-
-export function PublicFeature<T>(definition: DirectiveDefInternal<T>) {
-  definition.diPublic = diPublic;
-}
-
 const EMPTY = {};
 
-/** Swaps the keys and values of an object. */
-function invertObject(obj: any): any {
+/**
+ * Inverts an inputs or outputs lookup such that the keys, which were the
+ * minified keys, are part of the values, and the values are parsed so that
+ * the publicName of the property is the new key
+ *
+ * e.g. for
+ *
+ * ```
+ * class Comp {
+ *   @Input()
+ *   propName1: string;
+ *
+ *   @Input('publicName')
+ *   propName2: number;
+ * }
+ * ```
+ *
+ * will be serialized as
+ *
+ * ```
+ * {
+ *   a0: 'propName1',
+ *   b1: ['publicName', 'propName2'],
+ * }
+ * ```
+ *
+ * becomes
+ *
+ * ```
+ * {
+ *  'propName1': 'a0',
+ *  'publicName': 'b1'
+ * }
+ * ```
+ *
+ * Optionally the function can take `secondary` which will result in:
+ *
+ * ```
+ * {
+ *  'propName1': 'a0',
+ *  'propName2': 'b1'
+ * }
+ * ```
+ *
+
+ */
+function invertObject(obj: any, secondary?: any): any {
   if (obj == null) return EMPTY;
-  const newObj: any = {};
-  for (let minifiedKey in obj) {
-    newObj[obj[minifiedKey]] = minifiedKey;
+  const newLookup: any = {};
+  for (const minifiedKey in obj) {
+    if (obj.hasOwnProperty(minifiedKey)) {
+      let publicName = obj[minifiedKey];
+      let declaredName = publicName;
+      if (Array.isArray(publicName)) {
+        declaredName = publicName[1];
+        publicName = publicName[0];
+      }
+      newLookup[publicName] = minifiedKey;
+      if (secondary) {
+        (secondary[declaredName] = minifiedKey);
+      }
+    }
   }
-  return newObj;
+  return newLookup;
 }
 
 /**
@@ -389,14 +382,47 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   /**
    * A map of input names.
    *
-   * The format is in: `{[actualPropertyName: string]:string}`.
+   * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
    *
-   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+   * Given:
+   * ```
+   * class MyComponent {
+   *   @Input()
+   *   publicInput1: string;
    *
-   * This allows the render to re-construct the minified and non-minified names
+   *   @Input('publicInput2')
+   *   declaredInput2: string;
+   * }
+   * ```
+   *
+   * is described as:
+   * ```
+   * {
+   *   publicInput1: 'publicInput1',
+   *   declaredInput2: ['declaredInput2', 'publicInput2'],
+   * }
+   * ```
+   *
+   * Which the minifier may translate to:
+   * ```
+   * {
+   *   minifiedPublicInput1: 'publicInput1',
+   *   minifiedDeclaredInput2: [ 'publicInput2', 'declaredInput2'],
+   * }
+   * ```
+   *
+   * This allows the render to re-construct the minified, public, and declared names
    * of properties.
+   *
+   * NOTE:
+   *  - Because declared and public name are usually same we only generate the array
+   *    `['declared', 'public']` format when they differ.
+   *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
+   *    inconsistent behavior in that it uses declared names rather than minified or public. For
+   *    this reason `NgOnChanges` will be deprecated and removed in future version and this
+   *    API will be simplified to be consistent with `output`.
    */
-  inputs?: {[P in keyof T]?: string};
+  inputs?: {[P in keyof T]?: string | [string, string]};
 
   /**
    * A map of output names.
@@ -413,7 +439,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   /**
    * A list of optional features to apply.
    *
-   * See: {@link NgOnChangesFeature}, {@link PublicFeature}
+   * See: {@link NgOnChangesFeature}, {@link PublicFeature}, {@link InheritDefinitionFeature}
    */
   features?: DirectiveDefFeature[];
 
