@@ -212,6 +212,19 @@ describe('FocusMonitor', () => {
 
     expect(buttonElement.classList.length).toBe(0, 'button should not have any focus classes');
   }));
+
+  it('should pass focus options to the native focus method', fakeAsync(() => {
+    spyOn(buttonElement, 'focus');
+
+    focusMonitor.focusVia(buttonElement, 'program', {preventScroll: true});
+    fixture.detectChanges();
+    tick();
+
+    expect(buttonElement.focus).toHaveBeenCalledWith(jasmine.objectContaining({
+      preventScroll: true
+    }));
+  }));
+
 });
 
 
