@@ -2112,9 +2112,38 @@ describe('Integration', () => {
          tick();
 
          expect(location.urlChanges).toEqual([
-           'replace: /', 'https://example.com/foo/bar?q=1&w=2#f', 'https://example.com/foo/bar?q=1&w=2#f'
+           'replace: /', 'https://example.com/foo/bar?q=1&w=2#f',
+           'https://example.com/foo/bar?q=1&w=2#f'
          ]);
        })));
+
+    it('should allow using external links with query parameters, fragment and merge strategy',
+       fakeAsync(() => {
+         TestBed.configureTestingModule({declarations: [ExternalLinkWithPreserveStrategyCmp]});
+         const router: Router = TestBed.get(Router);
+         const location: SpyLocation = TestBed.get(Location);
+         const fixture = createRoot(router, ExternalLinkWithPreserveStrategyCmp);
+
+         const link = fixture.nativeElement.querySelector('a');
+         const button = fixture.nativeElement.querySelector('button');
+
+         router.resetConfig([{path: 'home', component: SimpleCmp}]);
+         expect(link.getAttribute('href')).toEqual('https://example.com?q=1&w=2#f');
+
+         router.navigateByUrl('/home?a=123');
+         advance(fixture);
+
+         expect(link.getAttribute('href')).toEqual('https://example.com?a=123&q=1&w=2#f');
+
+         link.click();
+         button.click();
+         tick();
+
+         expect(location.urlChanges).toEqual([
+           'replace: /', '/home?a=123', 'https://example.com?a=123&q=1&w=2#f',
+           'https://example.com?a=123&q=1&w=2#f'
+         ]);
+       }));
   });
 
   describe('redirects', () => {
@@ -5031,6 +5060,16 @@ class ExternalLinkWithQueryParamsAndFragmentCmp {
   `
 })
 class ExternalMultiPartLinkWithQueryParamsAndFragmentCmp {
+}
+
+@Component({
+  selector: 'link-cmp',
+  template: `<router-outlet></router-outlet>
+    <a [routerLink]="['https://example.com']" [queryParams]="{q: '1', w: 2}" fragment="f" queryParamsHandling="merge">link</a>
+    <button [routerLink]="['https://example.com']" [queryParams]="{q: '1', w: 2}" fragment="f" queryParamsHandling="merge">link</button>
+  `
+})
+class ExternalLinkWithPreserveStrategyCmp {
 }
 
 @Component({selector: 'simple-cmp', template: `simple`})
