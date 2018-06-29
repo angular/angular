@@ -256,7 +256,11 @@ class ShadowDomRenderer extends DefaultDomRenderer2 {
       eventManager: EventManager, private sharedStylesHost: DomSharedStylesHost,
       private hostEl: any, private component: RendererType2) {
     super(eventManager);
-    this.shadowRoot = (hostEl as any).createShadowRoot();
+    if (component.encapsulation === ViewEncapsulation.ShadowDom) {
+      this.shadowRoot = (hostEl as any).attachShadow({mode: 'open'});
+    } else {
+      this.shadowRoot = (hostEl as any).createShadowRoot();
+    }
     this.sharedStylesHost.addHost(this.shadowRoot);
     const styles = flattenStyles(component.id, component.styles, []);
     for (let i = 0; i < styles.length; i++) {

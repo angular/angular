@@ -23,6 +23,7 @@ export enum ViewEncapsulation {
    */
   Emulated = 0,
   /**
+   * @deprecated use {ViewEncapsulation.ShadowDom}
    * Use the native encapsulation mechanism of the renderer.
    *
    * For the DOM this means using [Shadow DOM](https://w3c.github.io/webcomponents/spec/shadow/) and
@@ -32,5 +33,13 @@ export enum ViewEncapsulation {
   /**
    * Don't provide any template or style encapsulation.
    */
-  None = 2
+  None = 2,
+
+  /**
+   * Use Shadow DOM to encapsulate styles.
+   *
+   * For the DOM this means using [Shadow DOM](https://w3c.github.io/webcomponents/spec/shadow/) and
+   * creating a ShadowRoot for Component's Host Element.
+   */
+  ShadowDom = 3
 }
