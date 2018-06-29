@@ -62,7 +62,7 @@ export class MatBottomSheetRef<T = any, R = any> {
     if (!containerInstance.bottomSheetConfig.disableClose) {
       merge(
         _overlayRef.backdropClick(),
-        _overlayRef._keydownEvents.pipe(filter(event => event.keyCode === ESCAPE))
+        _overlayRef.keydownEvents().pipe(filter(event => event.keyCode === ESCAPE))
       ).subscribe(() => this.dismiss());
     }
   }

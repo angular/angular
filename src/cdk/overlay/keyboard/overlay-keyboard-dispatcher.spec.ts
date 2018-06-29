@@ -53,7 +53,7 @@ describe('OverlayKeyboardDispatcher', () => {
     const overlayOne = overlay.create();
     const overlayTwo = overlay.create();
     const overlayOneSpy = jasmine.createSpy('overlayOne keyboard event spy');
-    const overlayTwoSpy = jasmine.createSpy('overlayOne keyboard event spy');
+    const overlayTwoSpy = jasmine.createSpy('overlayTwo keyboard event spy');
 
     overlayOne.keydownEvents().subscribe(overlayOneSpy);
     overlayTwo.keydownEvents().subscribe(overlayTwoSpy);
@@ -141,6 +141,20 @@ describe('OverlayKeyboardDispatcher', () => {
 
     overlayRef.dispose();
     expect(body.removeEventListener).toHaveBeenCalledWith('keydown', jasmine.any(Function), true);
+  });
+
+  it('should skip overlays that do not have keydown event subscriptions', () => {
+    const overlayOne = overlay.create();
+    const overlayTwo = overlay.create();
+    const overlayOneSpy = jasmine.createSpy('overlayOne keyboard event spy');
+
+    overlayOne.keydownEvents().subscribe(overlayOneSpy);
+    keyboardDispatcher.add(overlayOne);
+    keyboardDispatcher.add(overlayTwo);
+
+    dispatchKeyboardEvent(document.body, 'keydown', ESCAPE);
+
+    expect(overlayOneSpy).toHaveBeenCalled();
   });
 
 });
