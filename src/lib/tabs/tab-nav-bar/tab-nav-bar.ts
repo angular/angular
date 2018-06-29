@@ -189,6 +189,9 @@ export class MatTabLink extends _MatTabLinkMixinBase
   /** Reference to the RippleRenderer for the tab-link. */
   protected _tabLinkRipple: RippleRenderer;
 
+  /** Whether the ripples are globally disabled through the RippleGlobalOptions */
+  private _ripplesGloballyDisabled = false;
+
   /** Whether the link is active. */
   @Input()
   get active(): boolean { return this._isActive; }
@@ -210,7 +213,8 @@ export class MatTabLink extends _MatTabLinkMixinBase
    * @docs-private
    */
   get rippleDisabled(): boolean {
-    return this.disabled || this.disableRipple || this._tabNavBar.disableRipple;
+    return this.disabled || this.disableRipple || this._tabNavBar.disableRipple ||
+      this._ripplesGloballyDisabled;
   }
 
   constructor(private _tabNavBar: MatTabNav,
@@ -227,6 +231,7 @@ export class MatTabLink extends _MatTabLinkMixinBase
     this.tabIndex = parseInt(tabIndex) || 0;
 
     if (globalOptions) {
+      this._ripplesGloballyDisabled = !!globalOptions.disabled;
       // TODO(paul): Once the speedFactor is removed, we no longer need to copy each single option.
       this.rippleConfig = {
         terminateOnPointerUp: globalOptions.terminateOnPointerUp,

@@ -89,7 +89,7 @@ function setFileResult(database: Database, prNumber: string, fileName: string, r
 
 /** Sets the full diff result for the current Pull Request that runs inside of Travis. */
 function setPullRequestResult(database: Database, prNumber: string, result: boolean) {
-  return getPullRequestRef(database, prNumber).child('result').child(pullRequestSha).set(result);
+  return getPullRequestRef(database, prNumber).child('result').child(pullRequestSha!).set(result);
 }
 
 /** Returns the Firebase Reference that contains all data related to the specified PR. */
