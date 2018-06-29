@@ -95,10 +95,11 @@ function assertDefaultProjectConfig(project: Project) {
 /** Gets whether the Angular CLI project is using the default build configuration. */
 function isProjectUsingDefaultConfig(project: Project) {
   const defaultBuilder = '@angular-devkit/build-angular:browser';
+  const defaultTestBuilder = '@angular-devkit/build-angular:karma';
 
   return project.architect &&
       project.architect['build'] &&
       project.architect['build']['builder'] === defaultBuilder &&
       project.architect['test'] &&
-      project.architect['build']['builder'] === defaultBuilder;
+      project.architect['test']['builder'] === defaultTestBuilder;
 }
