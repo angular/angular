@@ -132,6 +132,12 @@ function resolveTypeList(resolvedList: ResolvedValue, name: string): Reference[]
   }
 
   resolvedList.forEach((entry, idx) => {
+    // Unwrap ModuleWithProviders for modules that are locally declared (and thus static resolution
+    // was able to descend into the function and return an object literal, a Map).
+    if (entry instanceof Map && entry.has('ngModule')) {
+      entry = entry.get('ngModule') !;
+    }
+
     if (Array.isArray(entry)) {
       // Recurse into nested arrays.
       refList.push(...resolveTypeList(entry, name));
@@ -144,7 +150,7 @@ function resolveTypeList(resolvedList: ResolvedValue, name: string): Reference[]
       refList.push(entry);
     } else {
       // TODO(alxhub): expand ModuleWithProviders.
-      throw new Error(`Value at position ${idx} in ${name} array is not a reference`);
+      throw new Error(`Value at position ${idx} in ${name} array is not a reference: ${entry}`);
     }
   });
 
