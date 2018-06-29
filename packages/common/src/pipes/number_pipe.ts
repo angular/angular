@@ -25,9 +25,13 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * The behavior differs from that of the JavaScript Math.round() function.
  * 
  * For example, in the following case, the pipe rounds down, where the Math.round() function rounds up:
+ *
  * -2.5 | number:'1.0-0'
+ *
  * > -3
+ *
  * Math.round(-2.5):
+ *
  * > -2
  * 
  * @see `formatNumber()`
