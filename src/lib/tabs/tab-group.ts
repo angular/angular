@@ -200,6 +200,16 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
     // Subscribe to changes in the amount of tabs, in order to be
     // able to re-render the content as new tabs are added or removed.
     this._tabsSubscription = this._tabs.changes.subscribe(() => {
+      const tabs = this._tabs.toArray();
+
+      // Maintain the previously-selected tab if a new tab is added or removed.
+      for (let i = 0; i < tabs.length; i++) {
+        if (tabs[i].isActive) {
+          this._indexToSelect = i;
+          break;
+        }
+      }
+
       this._subscribeToTabLabels();
       this._changeDetectorRef.markForCheck();
     });
