@@ -29,6 +29,9 @@
   "dependencies": {
     "tslib": "^1.7.1"
   },
+  "optionalDependencies": {
+    "parse5": "^5.0.0"
+  },
   "schematics": "./schematics/collection.json",
   "ng-update": {
     "migrations": "./schematics/migration.json",

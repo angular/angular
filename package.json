@@ -41,9 +41,6 @@
     "tslib": "^1.9.0",
     "zone.js": "^0.8.26"
   },
-  "optionalDependencies": {
-    "parse5": "^5.0.0"
-  },
   "devDependencies": {
     "@angular-devkit/core": "^0.5.12",
     "@angular-devkit/schematics": "^0.5.12",
@@ -119,6 +116,7 @@
     "minimist": "^1.2.0",
     "moment": "^2.18.1",
     "node-sass": "^4.5.3",
+    "parse5": "^5.0.0",
     "protractor": "^5.2.0",
     "request": "^2.83.0",
     "resolve-bin": "^0.4.0",
