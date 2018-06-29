@@ -279,8 +279,13 @@ and difficult to mock with spies.
 
 The `HttpClientTestingModule` can make these testing scenarios more manageable.
 
+<!--
 While the _code sample_ accompanying this guide demonstrates `HttpClientTestingModule`,
 this page defers to the [Http guide](guide/http#testing-http-requests),
+which covers testing with the `HttpClientTestingModule` in detail.
+-->
+While the _code sample_ accompanying this guide demonstrates `HttpClientTestingModule`,
+this page defers to the [Http guide](guide/http#http-요청-테스트하기),
 which covers testing with the `HttpClientTestingModule` in detail.
 
 <div class="alert is-helpful">

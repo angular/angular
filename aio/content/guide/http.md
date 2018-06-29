@@ -1666,35 +1666,58 @@ The `@angular/common/http/testing` library makes
 setting up such mocking straightforward.
 -->
 다른 외부 의존성 객체와 마찬가지로, HTTP 요청을 테스트하려면 외부 서버의 동작을 흉내내는 HTTP 백엔드의 목업이 필요합니다.
-이 목업은 `@angular/common/http/testing` 라이브러리르 활용해서 구성할 수 있습니다.
+이 목업은 `@angular/common/http/testing` 라이브러리를 활용해서 구성할 수 있습니다.
 
+<!--
 ### Mocking philosophy
+-->
+### 목업 라이브러리 활용 방법
 
+<!--
 Angular's HTTP testing library is designed for a pattern of testing wherein 
 the the app executes code and makes requests first.
+-->
+Angular의 HTTP 테스팅 라이브러리를 활용하면 목업으로 만든 애플리케이션이 실행 환경에서 HTTP 코드가 동작하는지 확인할 수 있으며, HTTP 요청도 실제로 발생합니다.
 
+<!--
 Then a test expects that certain requests have or have not been made, 
 performs assertions against those requests, 
 and finally provide responses by "flushing" each expected request.
- 
+-->
+각 테스트 케이스에서는 특정 요청이 발생해야 하는지, 발생하지 않아야 하는지 검사할 수 있으며, 검사를 끝내고 난 후에는 이 요청들을 모두 비워야(flushing) 합니다.
+
+<!--
 At the end, tests may verify that the app has made no unexpected requests.
+-->
+그리고 나면 마지막으로 의도하지 않은 요청이 발생했는지 검사합니다.
 
 <div class="alert is-helpful">
 
+<!--
 You can run <live-example stackblitz="specs">these sample tests</live-example> 
 in a live coding environment.
 
 The tests described in this guide are in `src/testing/http-client.spec.ts`.
 There are also tests of an application data service that call `HttpClient` in
 `src/app/heroes/heroes.service.spec.ts`.
+-->
+이 문단에서 다루는 내용은 <live-example stackblitz="specs">샘플 테스트</live-example>를 직접 실행해서 결과를 확인할 수 있습니다.
+
+이 테스트들은 `src/testing/http-client.spec.ts` 파일에 작성되어 있으며, `HttpClient`를 사용하는 서비스를 테스트하는 코드는 `src/app/heroes/heroes.service.spec.ts` 파일에 작성되어 잇습니다.
 
 </div>
 
+<!--
 ### Setup
+-->
+### 환경설정
 
+<!--
 To begin testing calls to `HttpClient`, 
 import the `HttpClientTestingModule` and the mocking controller, `HttpTestingController`,
 along with the other symbols your tests require.
+-->
+`HttpClient`를 테스트하려면 먼저 테스트용 모듈인 `HttpClientTestingModule`과 목업 환경을 구성하는 `HttpTestingController`를 로드해야 합니다.
 
 <code-example 
   path="http/src/testing/http-client.spec.ts"
@@ -1702,8 +1725,11 @@ along with the other symbols your tests require.
   title="app/testing/http-client.spec.ts (imports)" linenums="false">
 </code-example>
 
+<!--
 Then add the `HttpClientTestingModule` to the `TestBed` and continue with
 the setup of the _service-under-test_.
+-->
+그리고 나면 `TestBed`에 `HttpClientTestingModule`를 추가하면서 테스트 환경을 구성합니다.
 
 <code-example 
   path="http/src/testing/http-client.spec.ts"
@@ -1711,14 +1737,26 @@ the setup of the _service-under-test_.
   title="app/testing/http-client.spec.ts(setup)" linenums="false">
 </code-example>
 
+<!--
 Now requests made in the course of your tests will hit the testing backend instead of the normal backend.
+-->
+이제 테스트 케이스에서 HTTP 요청이 발생하면 실제 백엔드가 아니라 테스팅 백엔드로 전달됩니다.
 
+<!--
 This setup also calls `TestBed.get()` to inject the `HttpClient` service and the mocking controller
 so they can be referenced during the tests.
+-->
+이 코드에서는 `HttpClient` 서비스와 목업 컨트롤러를 테스트 케이스마다 동적으로 주입하기 위해 `TestBed.get()`을 사용했습니다.
 
+<!--
 ### Expecting and answering requests
+-->
+### 요청 확인하기, 요청에 응답하기
 
+<!--
 Now you can write a test that expects a GET Request to occur and provides a mock response. 
+-->
+이제 GET 요청이 발생하는지 확인하고 목업 응답을 보내는 테스트 케이스를 작성해 봅시다.
 
 <code-example 
   path="http/src/testing/http-client.spec.ts"
@@ -1726,7 +1764,10 @@ Now you can write a test that expects a GET Request to occur and provides a mock
   title="app/testing/http-client.spec.ts(httpClient.get)" linenums="false">
 </code-example>
 
+<!--
 The last step, verifying that no requests remain outstanding, is common enough for you to move it into an `afterEach()` step:
+-->
+모든 응답이 처리되었는지 마지막으로 검사하는 로직은 `afterEach()`로 옮겨도 됩니다:
 
 <code-example 
   path="http/src/testing/http-client.spec.ts"
@@ -1734,10 +1775,17 @@ The last step, verifying that no requests remain outstanding, is common enough f
   linenums="false">
 </code-example>
 
+<!--
 #### Custom request expectations
+-->
+#### HTTP 요청 객체 검사하기
 
+<!--
 If matching by URL isn't sufficient, it's possible to implement your own matching function. 
 For example, you could look for an outgoing request that has an authorization header:
+-->
+지정된 URL로 HTTP 요청이 왔는지 검사하는 것만으로는 충분하지 않다면, 검사 로직을 직접 작성할 수도 있습니다.
+예를 들어 HTTP 요청 헤더에 인증 토큰이 있는지 검사하는 로직은 다음과 같이 구현할 수 있습니다:
 
 <code-example 
   path="http/src/testing/http-client.spec.ts"
@@ -1745,15 +1793,26 @@ For example, you could look for an outgoing request that has an authorization he
   linenums="false">
 </code-example>
 
+<!--
 As with the previous `expectOne()`, 
 the test will fail if 0 or 2+ requests satisfy this predicate.
+-->
+그러면 이전에 살펴본 `expectOne()`과 마찬가지로, HTTP 요청이 발생하지 않거나 2번 이상 발생한 경우에도 마찬가지로 에러를 발생시킵니다.
 
+<!--
 #### Handling more than one request
+-->
+#### 여러번 요청되는 HTTP 테스트하기
 
+<!--
 If you need to respond to duplicate requests in your test, use the `match()` API instead of `expectOne()`.
 It takes the same arguments but returns an array of matching requests. 
 Once returned, these requests are removed from future matching and 
 you are responsible for flushing and verifying them.
+-->
+테스트 케이스가 실행되는 중에 HTTP 요청이 같은 주소로 여러번 발생한다면, `expectOne()` 대신 `match()` API를 사용할 수도 있습니다.
+이 함수는 `expectOne()`를 사용하는 방법과 같지만, 주소와 매칭되는 HTTP 요청을 배열로 반환합니다.
+그러면 이 배열을 한 번에 테스트할 수도 있고, 배열의 항목을 각각 테스트할 수도 있습니다.
 
 <code-example 
   path="http/src/testing/http-client.spec.ts"
@@ -1761,19 +1820,38 @@ you are responsible for flushing and verifying them.
   linenums="false">
 </code-example>
 
+<!--
 ### Testing for errors
+-->
+### 에러 테스트하기
 
+<!--
 You should test the app's defenses against HTTP requests that fail.
+-->
+HTTP 요청이 실패한 경우에 애플리케이션의 방어 로직이 제대로 동작하는지도 테스트해야 합니다.
 
+<!--
 Call `request.flush()` with an error message, as seen in the following example.
+-->
+이 때 `request.flush()`에 에러 객체를 보내면 HTTP 통신에 실패한 상황을 테스트할 수 있습니다.
 
+<!--
 <code-example 
   path="http/src/testing/http-client.spec.ts"
   region="network-error"
   linenums="false">
 </code-example>
+-->
+<code-example 
+  path="http/src/testing/http-client.spec.ts"
+  region="404"
+  linenums="false">
+</code-example>
 
+<!--
 Alternatively, you can call `request.error()` with an `ErrorEvent`.
+-->
+그리고 이 방식은 `ErrorEvent` 객체를 `request.error()` 함수에 전달하는 방식으로도 구현할 수 있습니다.
 
 <code-example
   path="http/src/testing/http-client.spec.ts"
