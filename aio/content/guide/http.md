@@ -1007,7 +1007,7 @@ Most interceptors call `next.handle()` so that the request flows through to the 
 An interceptor _could_ skip calling `next.handle()`, short-circuit the chain, and [return its own `Observable`](#caching) with an artificial server response. 
 -->
 인터셉터는 대부분 HTTP 요청이 진행되는 흐름을 그대로 유지하기 위해 `next.handle()`를 실행하며, 최종적으로는 백엔드 핸들러가 실행됩니다.
-하지만 서버의 응답을 시뮬레이션하는 경우라면 `next.handle()`을 실행하지 않고 [바로 `Observable`](#caching)을 반환하면서 인터셉터 체인을 멈출 수도 있습니다.
+하지만 서버의 응답을 시뮬레이션하는 경우라면 `next.handle()`을 실행하지 않고 [바로 `Observable`](#캐싱)을 반환하면서 인터셉터 체인을 멈출 수도 있습니다.
 
 <!--
 This is a common middleware pattern found in frameworks such as Express.js.
@@ -1517,14 +1517,25 @@ Subscribers see a sequence of _two_ responses.
 그리고 캐싱된 서버 응답이 있는 경우에는 캐싱된 서버 응답을 _파이프_ 로 연결해서 `results$`와 합치는데, 이 때 캐싱된 서버 응답이 즉시 반환되고, 서버에서 응답이 왔을 때 추가 응답이 다음으로 반환됩니다.
 HTTP 요청을 시작한 쪽에서는 서버 응답을 _두 번_ 받게 됩니다.
 
+<!--
 ### Listening to progress events
+-->
+### 진행률 이벤트 확인하기
 
+<!--
 Sometimes applications transfer large amounts of data and those transfers can take a long time.
 File uploads are a typical example. 
 Give the users a better experience by providing feedback on the progress of such transfers.
+-->
+애플리케이션이 대용량 데이터를 보내거나 받는 경우에는 HTTP 통신 시간이 오래 걸릴 수 있으며,
+파일을 업로드하는 경우에 흔히 발생하는 현상입니다.
+이 때 사용자에게 진행상황에 대한 정보를 알려주면 더 나은 UX를 제공할 수 있습니다.
 
+<!--
 To make a request with progress events enabled, you can create an instance of `HttpRequest` 
 with the `reportProgress` option set true to enable tracking of progress events.
+-->
+요청을 보내면서 진행률 이벤트를 활성화 하려면 `HttpRequest` 인스턴스를 생성할 때 `reportProgress` 옵션을 `true`로 설정하면 됩니다.
 
 <code-example 
   path="http/src/app/uploader/uploader.service.ts"
@@ -1534,12 +1545,18 @@ with the `reportProgress` option set true to enable tracking of progress events.
 
 <div class="alert is-important">
 
+<!--
 Every progress event triggers change detection, so only turn them on if you truly intend to report progress in the UI.
+-->
+진행률 이벤트가 발생할 때마다 변화 감지 싸이클이 동작하기 때문에, 실제로 UI에서 활용할 필요가 있을 때만 이 옵션을 사용하세요.
 
 </div>
 
+<!--
 Next, pass this request object to the `HttpClient.request()` method, which
 returns an `Observable` of `HttpEvents`, the same events processed by interceptors:
+-->
+그리고 이 인스턴스를 `HttpClient.request()` 메소드로 전달합니다. 그러면 `HttpEvents` 타입의 `Observable`이 반환되며, 인터셉터를 사용하는 것과 비슷한 방식으로 처리하면 됩니다:
 
 <code-example 
   path="http/src/app/uploader/uploader.service.ts"
@@ -1547,7 +1564,10 @@ returns an `Observable` of `HttpEvents`, the same events processed by intercepto
   title="app/uploader/uploader.service.ts (upload body)" linenums="false">
 </code-example>
 
+<!--
 The `getEventMessage` method interprets each type of `HttpEvent` in the event stream.
+-->
+이 코드에서 사용한 `getEventMessage` 메소드는 이벤트 스트림에서 발생한 `HttpEvent`를 처리합니다.
 
 <code-example 
   path="http/src/app/uploader/uploader.service.ts"
@@ -1557,39 +1577,76 @@ The `getEventMessage` method interprets each type of `HttpEvent` in the event st
 
 <div class="alert is-helpful">
 
+<!--
 The sample app for this guide doesn't have a server that accepts uploaded files.
 The `UploadInterceptor` in `app/http-interceptors/upload-interceptor.ts` 
 intercepts and short-circuits upload requests
 by returning an observable of simulated events.
+-->
+예제에서 다룬 앱은 업로드한 파일을 처리하는 실제 서버가 없습니다.
+그래서 `app/http-interceptors/upload-interceptor.ts`에 정의한 `UploadInterceptor`가 이 요청을 가로채서 서버가 동작하는 것을 흉내냅니다.
 
 </div>
 
+<!--
 ## Security: XSRF Protection
+-->
+## 보안 : XSRF 방어
 
+<!--
 [Cross-Site Request Forgery (XSRF)](https://en.wikipedia.org/wiki/Cross-site_request_forgery) is an attack technique by which the attacker can trick an authenticated user into unknowingly executing actions on your website. `HttpClient` supports a [common mechanism](https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-Header_Token) used to prevent XSRF attacks. When performing HTTP requests, an interceptor reads a token from a cookie, by default `XSRF-TOKEN`, and sets it as an HTTP header, `X-XSRF-TOKEN`. Since only code that runs on your domain could read the cookie, the backend can be certain that the HTTP request came from your client application and not an attacker.
+-->
+[사이트간 요청 위조 (Cross-Site Request Forgery (XSRF))](https://en.wikipedia.org/wiki/Cross-site_request_forgery)는 인증받지 않은 사용자가 웹사이트를 공격하는 방법 중 하나입니다.
+Angular에서 제공하는 `HttpClient`는 [XSRF 공격을 방어하는 기능](https://en.wikipedia.org/wiki/Cross-site_request_forgery#Cookie-to-Header_Token)을 탑재하고 있습니다.
+그래서 HTTP 요청이 발생했을 때 쿠키에서 토큰을 읽는 인터셉터가 자동으로 동작하며, `XSRF-TOKEN`으로 설정된 HTTP 헤더를 `X-XSRF-TOKEN`으로 변경합니다.
+결국 현재 도메인에 유효한 쿠키만 읽을 수 있으며, 백엔드가 HTTP 요청을 좀 더 안전하게 처리할 수 있습니다.
 
+<!--
 By default, an interceptor sends this cookie on all mutating requests (POST, etc.)
 to relative URLs but not on GET/HEAD requests or
 on requests with an absolute URL.
+-->
+기본적으로 이 인터셉터는 상대주소로 요청되는 모든 요청에 적용되며, 절대 주소로 요청되는 GET/HEAD 요청에는 적용되지 않습니다.
 
+<!--
 To take advantage of this, your server needs to set a token in a JavaScript readable session cookie called `XSRF-TOKEN` on either the page load or the first GET request. On subsequent requests the server can verify that the cookie matches the `X-XSRF-TOKEN` HTTP header, and therefore be sure that only code running on your domain could have sent the request. The token must be unique for each user and must be verifiable by the server; this prevents the client from making up its own tokens. Set the token to a digest of your site's authentication
 cookie with a salt for added security.
+-->
+그래서 모든 요청에 사이트간 위조된 요청을 방어하려면, 페이지가 로드되거나 처음 발생하는 GET 요청에 대해서 쿠키에 `XSRF-TOKEN`이 있는지 확인해야 합니다.
+그리고 이후에 발생한 요청의 헤더에 `X-XSRF-TOKEN`이 있으면 요청이 유효한 것으로 판단하며, 유효한 도메인에서 제대로 보내진 요청이라는 것으로 최종 판단할 수 있습니다.
+이 때 사용하는 토큰은 사용자마다 달라야 하며, 서버에서 반드시 인증되어야 합니다.
+그래야 클라이언트에서 토큰을 위조하는 것도 방어할 수 있습니다.
+서버에서 토큰을 생성할 때 인증키를 활용하면 좀 더 확실합니다.
 
+<!--
 In order to prevent collisions in environments where multiple Angular apps share the same domain or subdomain, give each application a unique cookie name.
+-->
+만약 도메인과 서브 도메인을 공유하면서 서로 다른 환경으로 Angular 애플리케이션을 사용하면 충돌이 발생할 수도 있습니다. 각각의 환경에 유일한 쿠키 이름을 사용하세요.
 
 <div class="alert is-important">
 
+<!--
 *Note that `HttpClient` supports only the client half of the XSRF protection scheme.* 
 Your backend service must be configured to set the cookie for your page, and to verify that 
 the header is present on all eligible requests. 
 If not, Angular's default protection will be ineffective.
+-->
+*`HttpClient`에서 제공하는 XSRF 방어 동작은 클라이언트에만 적용되는 내용입니다.*
+백엔드에서도 페이지에 쿠키를 설정해야 하며, 클라이언트에서 발생하는 모든 요청이 유효한지 확인해야 합니다.
+백엔드에서 이 과정을 처리하지 않으면 Angular가 제공하는 기본 방어 로직도 제대로 동작하지 않을 수 있습니다.
 
 </div>
 
+<!--
 ### Configuring custom cookie/header names
+-->
+### 커스텀 쿠키/헤더 이름 지정하기
 
+<!--
 If your backend service uses different names for the XSRF token cookie or header, 
 use `HttpClientXsrfModule.withOptions()` to override the defaults.
+-->
+백엔드에서 XSRF 토큰 쿠키나 헤더를 다른 이름으로 사용하고 있다면 `HttpClientXsrfModule.withOptions()` 를 사용해서 이름을 변경할 수 있습니다.
 
 <code-example 
   path="http/src/app/app.module.ts"
@@ -1597,12 +1654,19 @@ use `HttpClientXsrfModule.withOptions()` to override the defaults.
   linenums="false">
 </code-example>
 
+<!--
 ## Testing HTTP requests
+-->
+## HTTP 요청 테스트하기
 
+<!--
 Like any external dependency, the HTTP backend needs to be mocked
 so your tests can simulate interaction with a remote server. 
 The `@angular/common/http/testing` library makes 
 setting up such mocking straightforward.
+-->
+다른 외부 의존성 객체와 마찬가지로, HTTP 요청을 테스트하려면 외부 서버의 동작을 흉내내는 HTTP 백엔드의 목업이 필요합니다.
+이 목업은 `@angular/common/http/testing` 라이브러리르 활용해서 구성할 수 있습니다.
 
 ### Mocking philosophy
 

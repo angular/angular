@@ -42,26 +42,27 @@ export class UploaderService {
     // #enddocregion upload-request
 
     // #docregion upload-body
-    // The `HttpClient.request` API produces a raw event stream
-    // which includes start (sent), progress, and response events.
+    // `HttpClient.request` API는 `HttpClient`에서 제공하는 다른 메소드보다
+    // 더 낮은 레벨의 이벤트 스트림을 생성합니다.
+    // 이 이벤트 스트림은 요청 시작, 진행률, 응답 이벤트를 전달됩니다.
     return this.http.request(req).pipe(
       map(event => this.getEventMessage(event, file)),
       tap(message => this.showProgress(message)),
-      last(), // return last (completed) message to caller
+      last(), // 최종 메시지는 실행한 컨텍스트로 반환합니다.
       catchError(this.handleError(file))
     );
     // #enddocregion upload-body
   }
 
   // #docregion getEventMessage
-  /** Return distinct message for sent, upload progress, & response events */
+  /** 요청 시작, 업로드 진행률, 응답 이벤트를 사용자가 확인할 수 있는 메시지로 변환합니다. */
   private getEventMessage(event: HttpEvent<any>, file: File) {
     switch (event.type) {
       case HttpEventType.Sent:
         return `Uploading file "${file.name}" of size ${file.size}.`;
 
       case HttpEventType.UploadProgress:
-        // Compute and show the % done:
+        // 진행률을 % 형식으로 변환합니다.
         const percentDone = Math.round(100 * event.loaded / event.total);
         return `File "${file.name}" is ${percentDone}% uploaded.`;
 
