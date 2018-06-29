@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// #docregion Component
+// #docregion Component, disabled-control
 import {Component, Inject} from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
+// #enddocregion disabled-control
 
 @Component({
   selector: 'example-app',
@@ -41,14 +42,14 @@ export class FormBuilderComp {
 }
 // #enddocregion
 
-/**
 // #docregion disabled-control
-import { FormBuilder, FormControl } from '@angular/forms';
-
-// #enddocregion disabled-control
- */
-// #docregion disabled-control
-export class DisabledFormControlComp {
+@Component({
+  selector: 'app-disabled-form-control',
+  template: `
+    <input [formControl]="control" placeholder="First">
+  `
+})
+export class DisabledFormControlComponent {
   control: FormControl;
 
   constructor(@Inject(FormBuilder) fb: FormBuilder) {
