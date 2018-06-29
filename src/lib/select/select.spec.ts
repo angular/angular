@@ -282,6 +282,28 @@ describe('MatSelect', () => {
               'Expected value from second option to have been set on the model.');
         }));
 
+        it('should resume focus from selected item after selecting via click', fakeAsync(() => {
+          const formControl = fixture.componentInstance.control;
+          const options = fixture.componentInstance.options.toArray();
+
+          expect(formControl.value).toBeFalsy('Expected no initial value.');
+
+          fixture.componentInstance.select.open();
+          fixture.detectChanges();
+          flush();
+
+          (overlayContainerElement.querySelectorAll('mat-option')[3] as HTMLElement).click();
+          fixture.detectChanges();
+          flush();
+
+          expect(formControl.value).toBe(options[3].value);
+
+          dispatchKeyboardEvent(select, 'keydown', DOWN_ARROW);
+          fixture.detectChanges();
+
+          expect(formControl.value).toBe(options[4].value);
+        }));
+
         it('should select options via LEFT/RIGHT arrow keys on a closed select', fakeAsync(() => {
           const formControl = fixture.componentInstance.control;
           const options = fixture.componentInstance.options.toArray();

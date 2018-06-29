@@ -892,12 +892,14 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     } else {
       option.selected ? this._selectionModel.select(option) : this._selectionModel.deselect(option);
 
+      if (isUserInput) {
+        this._keyManager.setActiveItem(option);
+      }
+
       if (this.multiple) {
         this._sortValues();
 
         if (isUserInput) {
-          this._keyManager.setActiveItem(option);
-
           // In case the user selected the option with their mouse, we
           // want to restore focus back to the trigger, in order to
           // prevent the select keyboard controls from clashing with
