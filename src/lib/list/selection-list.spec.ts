@@ -13,6 +13,7 @@ import {
   ViewChildren,
 } from '@angular/core';
 import {async, ComponentFixture, fakeAsync, TestBed, tick, flush} from '@angular/core/testing';
+import {MatRipple} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {
   MatListModule,
@@ -626,6 +627,23 @@ describe('MatSelectionList without forms', () => {
 
       expect(selectList.selected.length).toBe(0);
     });
+
+    it('should update state of options if list state has changed', () => {
+      // To verify that the template of the list options has been re-rendered after the disabled
+      // property of the selection list has been updated, the ripple directive can be used.
+      // Inspecting the host classes of the options doesn't work because those update as part
+      // of the parent template (of the selection-list).
+      const listOptionRipple = listOption[2].query(By.directive(MatRipple)).injector.get(MatRipple);
+
+      expect(listOptionRipple.disabled)
+        .toBe(true, 'Expected ripples of list option to be disabled');
+
+      fixture.componentInstance.disabled = false;
+      fixture.detectChanges();
+
+      expect(listOptionRipple.disabled)
+        .toBe(false, 'Expected ripples of list option to be enabled');
+    });
   });
 
   describe('with checkbox position after', () => {
@@ -977,7 +995,7 @@ class SelectionListWithCheckboxPositionAfter {
 }
 
 @Component({template: `
-  <mat-selection-list id="selection-list-3" [disabled]=true>
+  <mat-selection-list id="selection-list-3" [disabled]="disabled">
     <mat-list-option checkboxPosition="after">
       Inbox (disabled selection-option)
     </mat-list-option>
@@ -992,6 +1010,7 @@ class SelectionListWithCheckboxPositionAfter {
     </mat-list-option>
   </mat-selection-list>`})
 class SelectionListWithListDisabled {
+  disabled: boolean = true;
 }
 
 @Component({template: `
