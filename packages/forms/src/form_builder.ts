@@ -47,9 +47,8 @@ export class FormBuilder {
    * @description
    * Construct a new `FormControl` instance.
    *
-   * @param formState Initializes the control with an initial state value,
-   * or with an object that defines the initial value, status, and options
-   * for handling updates and validation.
+   * @param formState Initializes the control with an initial value,
+   * or a boxed value that defines the initial value and disabled state.
    *
    * @param validator A synchronous validator function, or an array of synchronous validator
    * functions.
