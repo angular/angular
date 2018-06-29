@@ -9,6 +9,7 @@ import {
   SPACE,
   TAB,
   UP_ARROW,
+  A,
 } from '@angular/cdk/keycodes';
 import {OverlayContainer} from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
@@ -3900,6 +3901,96 @@ describe('MatSelect', () => {
 
       expect(testInstance.control.value).toEqual([null, 'pizza-1', null]);
     }));
+
+    it('should select all options when pressing ctrl + a', () => {
+      const selectElement = fixture.nativeElement.querySelector('mat-select');
+      const options = fixture.componentInstance.options.toArray();
+
+      expect(testInstance.control.value).toBeFalsy();
+      expect(options.every(option => option.selected)).toBe(false);
+
+      fixture.componentInstance.select.open();
+      fixture.detectChanges();
+
+      const event = createKeyboardEvent('keydown', A, selectElement);
+      Object.defineProperty(event, 'ctrlKey', {get: () => true});
+      dispatchEvent(selectElement, event);
+      fixture.detectChanges();
+
+      expect(options.every(option => option.selected)).toBe(true);
+      expect(testInstance.control.value).toEqual([
+        'steak-0',
+        'pizza-1',
+        'tacos-2',
+        'sandwich-3',
+        'chips-4',
+        'eggs-5',
+        'pasta-6',
+        'sushi-7'
+      ]);
+    });
+
+    it('should select all options when pressing ctrl + a when some options are selected', () => {
+      const selectElement = fixture.nativeElement.querySelector('mat-select');
+      const options = fixture.componentInstance.options.toArray();
+
+      options[0].select();
+      fixture.detectChanges();
+
+      expect(testInstance.control.value).toEqual(['steak-0']);
+      expect(options.some(option => option.selected)).toBe(true);
+
+      fixture.componentInstance.select.open();
+      fixture.detectChanges();
+
+      const event = createKeyboardEvent('keydown', A, selectElement);
+      Object.defineProperty(event, 'ctrlKey', {get: () => true});
+      dispatchEvent(selectElement, event);
+      fixture.detectChanges();
+
+      expect(options.every(option => option.selected)).toBe(true);
+      expect(testInstance.control.value).toEqual([
+        'steak-0',
+        'pizza-1',
+        'tacos-2',
+        'sandwich-3',
+        'chips-4',
+        'eggs-5',
+        'pasta-6',
+        'sushi-7'
+      ]);
+    });
+
+    it('should deselect all options with ctrl + a if all options are selected', () => {
+      const selectElement = fixture.nativeElement.querySelector('mat-select');
+      const options = fixture.componentInstance.options.toArray();
+
+      options.forEach(option => option.select());
+      fixture.detectChanges();
+
+      expect(testInstance.control.value).toEqual([
+        'steak-0',
+        'pizza-1',
+        'tacos-2',
+        'sandwich-3',
+        'chips-4',
+        'eggs-5',
+        'pasta-6',
+        'sushi-7'
+      ]);
+      expect(options.every(option => option.selected)).toBe(true);
+
+      fixture.componentInstance.select.open();
+      fixture.detectChanges();
+
+      const event = createKeyboardEvent('keydown', A, selectElement);
+      Object.defineProperty(event, 'ctrlKey', {get: () => true});
+      dispatchEvent(selectElement, event);
+      fixture.detectChanges();
+
+      expect(options.some(option => option.selected)).toBe(false);
+      expect(testInstance.control.value).toEqual([]);
+    });
 
   });
 });

@@ -19,6 +19,7 @@ import {
   RIGHT_ARROW,
   SPACE,
   UP_ARROW,
+  A,
 } from '@angular/cdk/keycodes';
 import {
   CdkConnectedOverlay,
@@ -705,6 +706,10 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     } else if ((keyCode === ENTER || keyCode === SPACE) && manager.activeItem) {
       event.preventDefault();
       manager.activeItem._selectViaInteraction();
+    } else if (this._multiple && keyCode === A && event.ctrlKey) {
+      event.preventDefault();
+      const hasDeselectedOptions = this.options.some(option => !option.selected);
+      this.options.forEach(option => hasDeselectedOptions ? option.select() : option.deselect());
     } else {
       const previouslyFocusedIndex = manager.activeItemIndex;
 
