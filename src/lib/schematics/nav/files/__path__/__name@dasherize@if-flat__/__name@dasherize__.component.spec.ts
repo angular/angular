@@ -1,6 +1,6 @@
 
 import { fakeAsync, ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { <%= classify(name) %>Component } from './<%= dasherize(name) %>.component';
 
 describe('<%= classify(name) %>Component', () => {
@@ -9,7 +9,8 @@ describe('<%= classify(name) %>Component', () => {
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ <%= classify(name) %>Component ]
+      imports: [MatSidenavModule],
+      declarations: [<%= classify(name) %>Component]
     })
     .compileComponents();
 
