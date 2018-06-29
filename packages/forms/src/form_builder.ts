@@ -48,12 +48,22 @@ export class FormBuilder {
    * Construct a new `FormControl` instance.
    *
    * @param formState Initializes the control with an initial value,
-   * or a boxed value that defines the initial value and disabled state.
+   * or an object that defines the initial value and disabled state.
    *
    * @param validator A synchronous validator function, or an array of synchronous validator
    * functions.
    *
    * @param asyncValidator A single async validator or array of async validator functions
+   *
+   * @usageNotes
+   *
+   * ### Initial a control as disabled
+   *
+   * The following example returns a control with an initial value in a disabled state.
+   *
+   * <code-example path="forms/ts/formBuilder/form_builder_example.ts"
+   *   linenums="false" region="disabled-control">
+   * </code-example>
    *
    */
   control(

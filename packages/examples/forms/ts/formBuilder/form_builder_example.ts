@@ -8,7 +8,7 @@
 
 // #docregion Component
 import {Component, Inject} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 
 @Component({
   selector: 'example-app',
@@ -40,3 +40,19 @@ export class FormBuilderComp {
   }
 }
 // #enddocregion
+
+/**
+// #docregion disabled-control
+import { FormBuilder, FormControl } from '@angular/forms';
+
+// #enddocregion disabled-control
+ */
+// #docregion disabled-control
+export class DisabledFormControlComp {
+  control: FormControl;
+
+  constructor(@Inject(FormBuilder) fb: FormBuilder) {
+    this.control = fb.control({value: 'my val', disabled: true});
+  }
+}
+// #enddocregion disabled-control
