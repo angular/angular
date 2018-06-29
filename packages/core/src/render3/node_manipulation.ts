@@ -618,7 +618,7 @@ export function appendProjectedNode(
     lContainer[RENDER_PARENT] = renderParent;
     const views = lContainer[VIEWS];
     for (let i = 0; i < views.length; i++) {
-      addRemoveViewFromContainer(node as LContainerNode, views[i], true, null);
+      addRemoveViewFromContainer(node as LContainerNode, views[i], true, node.native);
     }
   }
   if (node.dynamicLContainerNode) {

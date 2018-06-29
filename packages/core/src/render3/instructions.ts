@@ -1920,7 +1920,7 @@ export function projectionDef(
  * @param appendedFirst First node of the linked list to append.
  * @param appendedLast Last node of the linked list to append.
  */
-function appendToProjectionNode(
+function addToProjectionList(
     projectionNode: LProjectionNode,
     appendedFirst: LElementNode | LTextNode | LContainerNode | null,
     appendedLast: LElementNode | LTextNode | LContainerNode | null) {
@@ -1965,36 +1965,33 @@ export function projection(
   const distributedNodes = loadInternal(localIndex, componentLView) as Array<LNode[]>;
   const nodesForSelector = distributedNodes[selectorIndex];
 
-  // build the linked list of projected nodes:
+  const currentParent = getParentLNode(node);
+  const canInsert = canInsertNativeNode(currentParent, viewData);
+  const renderParent = currentParent.tNode.type === TNodeType.View ?
+      (getParentLNode(currentParent) as LContainerNode).data[RENDER_PARENT] ! :
+      currentParent as LElementNode;
+
   for (let i = 0; i < nodesForSelector.length; i++) {
     const nodeToProject = nodesForSelector[i];
+    let head = nodeToProject as LTextNode | LElementNode | LContainerNode | null;
+    let tail = nodeToProject as LTextNode | LElementNode | LContainerNode | null;
+
     if (nodeToProject.tNode.type === TNodeType.Projection) {
-      // Reprojecting a projection -> append the list of previously projected nodes
       const previouslyProjected = (nodeToProject as LProjectionNode).data;
-      appendToProjectionNode(node, previouslyProjected.head, previouslyProjected.tail);
-    } else {
-      // Projecting a single node
-      appendToProjectionNode(
-          node, nodeToProject as LTextNode | LElementNode | LContainerNode,
-          nodeToProject as LTextNode | LElementNode | LContainerNode);
+      head = previouslyProjected.head;
+      tail = previouslyProjected.tail;
     }
-  }
 
-  const currentParent = getParentLNode(node);
-  if (canInsertNativeNode(currentParent, viewData)) {
-    ngDevMode && assertNodeOfPossibleTypes(currentParent, TNodeType.Element, TNodeType.View);
-    // process each node in the list of projected nodes:
-    let nodeToProject: LNode|null = node.data.head;
-    const lastNodeToProject = node.data.tail;
-    const renderParent = currentParent.tNode.type === TNodeType.View ?
-        (getParentLNode(currentParent) as LContainerNode).data[RENDER_PARENT] ! :
-        currentParent as LElementNode;
+    addToProjectionList(node, head, tail);
 
-    while (nodeToProject) {
-      appendProjectedNode(
-          nodeToProject as LTextNode | LElementNode | LContainerNode, currentParent, viewData,
-          renderParent);
-      nodeToProject = nodeToProject === lastNodeToProject ? null : nodeToProject.pNextOrParent;
+    if (canInsert) {
+      let currentNode: LNode|null = head;
+      while (currentNode) {
+        appendProjectedNode(
+            currentNode as LTextNode | LElementNode | LContainerNode, currentParent, viewData,
+            renderParent);
+        currentNode = currentNode === tail ? null : currentNode.pNextOrParent;
+      }
     }
   }
 }
