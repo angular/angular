@@ -1606,6 +1606,39 @@ describe('MatAutocomplete', () => {
       subscription!.unsubscribe();
     }));
 
+    it('should reposition the panel when the amount of options changes', fakeAsync(() => {
+      let formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
+      let inputReference = formField.querySelector('.mat-form-field-flex');
+      let input = inputReference.querySelector('input');
+
+      formField.style.bottom = '100px';
+      formField.style.position = 'fixed';
+
+      typeInElement('Cali', input);
+      fixture.detectChanges();
+      tick();
+      zone.simulateZoneExit();
+      fixture.detectChanges();
+
+      const inputBottom = inputReference.getBoundingClientRect().bottom;
+      const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
+      const panelTop = panel.getBoundingClientRect().top;
+
+      expect(Math.floor(inputBottom)).toBe(Math.floor(panelTop),
+          `Expected panel top to match input bottom when there is only one option.`);
+
+      typeInElement('', input);
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      const inputTop = inputReference.getBoundingClientRect().top;
+      const panelBottom = panel.getBoundingClientRect().bottom;
+
+      expect(Math.floor(inputTop)).toBe(Math.floor(panelBottom),
+          `Expected panel switch to the above position if the options no longer fit.`);
+    }));
+
   });
 
   describe('panel closing', () => {

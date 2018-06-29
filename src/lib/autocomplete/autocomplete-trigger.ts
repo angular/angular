@@ -453,6 +453,11 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
         switchMap(() => {
           this._resetActiveItem();
           this.autocomplete._setVisibility();
+
+          if (this.panelOpen) {
+            this._overlayRef!.updatePosition();
+          }
+
           return this.panelClosingActions;
         }),
         // when the first closing event occurs...
