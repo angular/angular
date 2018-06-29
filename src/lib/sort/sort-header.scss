@@ -38,6 +38,10 @@ $mat-sort-header-arrow-hint-opacity: 0.38;
   position: relative;
   display: flex;
 
+  // Start off at 0 since the arrow may become visible while parent are animating.
+  // This will be overwritten when the arrow animations kick in. See #11819.
+  opacity: 0;
+
   &,
   [dir='rtl'] .mat-sort-header-position-before & {
     margin: 0 0 0 $mat-sort-header-arrow-margin;

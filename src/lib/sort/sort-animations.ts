@@ -54,11 +54,11 @@ export const matSortAnimations: {
   arrowOpacity: trigger('arrowOpacity', [
     state('desc-to-active, asc-to-active, active', style({opacity: 1})),
     state('desc-to-hint, asc-to-hint, hint', style({opacity: .54})),
-    state('hint-to-desc, active-to-desc, desc, hint-to-asc, active-to-asc, asc',
+    state('hint-to-desc, active-to-desc, desc, hint-to-asc, active-to-asc, asc, void',
         style({opacity: 0})),
     // Transition between all states except for immediate transitions
-    transition('* => asc, * => desc, * => active, * => hint', animate('0ms')),
-    transition('* <=> *', animate(SORT_ANIMATION_TRANSITION))
+    transition('* => asc, * => desc, * => active, * => hint, * => void', animate('0ms')),
+    transition('* <=> *', animate(SORT_ANIMATION_TRANSITION)),
   ]),
 
   /**
