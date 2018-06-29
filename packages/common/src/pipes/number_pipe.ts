@@ -19,13 +19,25 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * formatted according to locale rules that determine group sizing and
  * separator, decimal-point character, and other locale-specific
  * configurations.
- *
+ * 
+ * If no parameters are specified the function rounds off to the nearest value, using this
+ * [rounding method](https://en.wikibooks.org/wiki/Arithmetic/Rounding).
+ * The behavior differs from that of the JavaScript Math.round() function.
+ * 
+ * For example, in the following case, the pipe rounds down, where the Math.round() function rounds up:
+ * -2.5 | number:'1.0-0'
+ * > -3
+ * Math.round(-2.5):
+ * > -2
+ * 
  * @see `formatNumber()`
  *
  * @usageNotes
  * The following code shows how the pipe transforms numbers
  * into text strings, according to various format specifications,
  * where the caller's default locale is `en-US`.
+ *
+ * ### Example
  *
  * <code-example path="common/pipes/ts/number_pipe.ts" region='NumberPipe'></code-example>
  *
