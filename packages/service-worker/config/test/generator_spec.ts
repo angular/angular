@@ -24,6 +24,7 @@ import {MockFilesystem} from '../testing/mock';
           test: true,
         },
         index: '/index.html',
+        requestOptions: {credentials: 'omit'},
         assetGroups: [{
           name: 'test',
           resources: {
@@ -117,9 +118,7 @@ import {MockFilesystem} from '../testing/mock';
         '/index.html': 'This is a test',
       });
       const gen = new Generator(fs, '/test');
-      const res = gen.process({
-        index: '/index.html',
-      });
+      const res = gen.process({index: '/index.html', requestOptions: {credentials: 'omit'}});
       res.then(config => {
            expect(config).toEqual({
              configVersion: 1,

@@ -23,6 +23,7 @@ export type Duration = string;
  */
 export interface Config {
   appData?: {};
+  requestOptions: RequestInit;
   index: string;
   assetGroups?: AssetGroup[];
   dataGroups?: DataGroup[];

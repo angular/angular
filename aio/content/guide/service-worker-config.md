@@ -43,6 +43,10 @@ The `SwUpdate` service includes that data in the update notifications. Many apps
 
 Specifies the file that serves as the index page to satisfy navigation requests. Usually this is `/index.html`.
 
+## `requestOptions`
+
+Specifies the fetch request options [@RequestInit](https://github.com/Microsoft/TypeScript/blob/master/lib/lib.dom.d.ts)
+
 ## `assetGroups`
 
 *Assets* are resources that are part of the app version that update along with the app. They can include resources loaded from the page's origin as well as third-party resources loaded from CDNs and other external URLs. As not all such external URLs may be known at build time, URL patterns can be matched.
