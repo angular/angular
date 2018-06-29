@@ -76,13 +76,17 @@ class SampleTokenExtractor {
     it('does not re-parse if document.cookie has not changed', () => {
       expect(extractor.getToken()).toEqual('test');
       expect(extractor.getToken()).toEqual('test');
-      expect(extractor.parseCount).toEqual(1);
+      expect(getParseCount(extractor)).toEqual(1);
     });
     it('re-parses if document.cookie changes', () => {
       expect(extractor.getToken()).toEqual('test');
       document['cookie'] = 'XSRF-TOKEN=blah';
       expect(extractor.getToken()).toEqual('blah');
-      expect(extractor.parseCount).toEqual(2);
+      expect(getParseCount(extractor)).toEqual(2);
     });
   });
+}
+
+function getParseCount(extractor: HttpXsrfCookieExtractor): number {
+  return (extractor as any).parseCount;
 }
