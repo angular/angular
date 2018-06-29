@@ -270,6 +270,20 @@ describe('GlobalPositonStrategy', () => {
       expect(elementStyle.height).toBe('300px');
     });
 
+  it('should center the element in RTL', () => {
+      attachOverlay({
+          direction: 'rtl',
+          positionStrategy: overlay.position()
+              .global()
+              .centerHorizontally()
+              .centerVertically()
+      });
+
+      const parentStyle = (overlayRef.overlayElement.parentNode as HTMLElement).style;
+      expect(parentStyle.justifyContent).toBe('center');
+      expect(parentStyle.alignItems).toBe('center');
+  });
+
   it('should invert `justify-content` when using `left` in RTL', () => {
     attachOverlay({
       positionStrategy: overlay.position().global().left('0'),
