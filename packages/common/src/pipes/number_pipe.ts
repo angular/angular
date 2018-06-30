@@ -23,16 +23,14 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  * If no parameters are specified the function rounds off to the nearest value, using this
  * [rounding method](https://en.wikibooks.org/wiki/Arithmetic/Rounding).
  * The behavior differs from that of the JavaScript Math.round() function.
- * 
  * For example, in the following case, the pipe rounds down, where the Math.round() function rounds up:
- *
+ * 
+ * ```html
  * -2.5 | number:'1.0-0'
- *
  * > -3
- *
- * Math.round(-2.5):
- *
+ * Math.round(-2.5)
  * > -2
+ * ```
  * 
  * @see `formatNumber()`
  *
