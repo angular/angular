@@ -8,8 +8,7 @@
 
 import {NgIf} from '@angular/common';
 import {ComponentFactory, ComponentFactoryResolver, ComponentRef, ErrorHandler, Injector, NgModuleRef, RendererFactory2, RootRenderer, Sanitizer, TemplateRef, ViewContainerRef, ɵArgumentType as ArgumentType, ɵBindingFlags as BindingFlags, ɵNodeFlags as NodeFlags, ɵViewDefinition as ViewDefinition, ɵViewFlags as ViewFlags, ɵand as anchorDef, ɵccf as createComponentFactory, ɵdid as directiveDef, ɵeld as elementDef, ɵinitServicesIfNeeded as initServicesIfNeeded, ɵted as textDef, ɵvid as viewDef} from '@angular/core';
-import {ɵDomRendererFactory2 as DomRendererFactory2} from '@angular/platform-browser';
-import {SafeStyle, ɵDomSanitizerImpl as DomSanitizerImpl} from '@angular/platform-browser';
+import {SafeStyle, ɵDomRendererFactory2 as DomRendererFactory2, ɵDomSanitizerImpl as DomSanitizerImpl} from '@angular/platform-browser';
 
 import {TreeNode, emptyTree} from '../util';
 
