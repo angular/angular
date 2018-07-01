@@ -1,25 +1,44 @@
+<!--
 # Routing & Navigation
+-->
+# 라우팅 & 네비게이션
 
+<!--
 The Angular **`Router`** enables navigation from one [view](guide/glossary#view) to the next
 as users perform application tasks.
+-->
+Angular가 제공하는 **라우터(`Router)`**를 사용하면 사용자의 동작에 반응하며 [뷰](guide/glossary#view)를 전환할 수 있습니다.
 
+<!--
 This guide covers the router's primary features, illustrating them through the evolution
 of a small application that you can <live-example>run live in the browser</live-example>.
+-->
+이 문서는 라우터의 작은 애플리케이션을 확장해 가면서 라우터의 사용방법에 대해 알아봅니다.
+이 문서에서 다루는 예제는 <live-example></live-example>에서 직접 확인하거나 다운받아 실행할 수 있습니다.
 
 <!-- style for all tables on this page -->
 <style>
   td, th {vertical-align: top}
 </style>
 
-
+<!--
 ## Overview
+-->
+## 개요
 
+<!--
 The browser is a familiar model of application navigation:
 
 * Enter a URL in the address bar and the browser navigates to a corresponding page.
 * Click links on the page and the browser navigates to a new page.
 * Click the browser's back and forward buttons and the browser navigates
   backward and forward through the history of pages you've seen.
+-->
+브라우저의 네비게이션 정책은 다음과 같이 활용할 수 있습니다.
+
+* 주소표시줄에 URL을 입력하면 특정 페이지로 이동할 수 있습니다.
+* 페이지에 있는 링크를 클릭하면 새로운 페이지로 이동할 수 있습니다.
+* 브라우저의 뒤로 가기/앞으로 가기 버튼을 누르면 사용자가 방문한 페이지 히스토리에 따라 뒤로/앞으로 페이지를 이동합니다.
 
 The Angular `Router` ("the router") borrows from this model.
 It can interpret a browser URL as an instruction to navigate to a client-generated view.
