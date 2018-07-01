@@ -77,7 +77,7 @@ Applications often request JSON data from the server.
 For example, the app might need a configuration file on the server, `config.json`, 
 that specifies resource URLs.
 -->
-애플리케이션은 서버에서 JSON 데이터를 받는 경우가 자주 있습니다.
+서버에서 받는 데이터는 JSON 형식인 경우가 많습니다.
 예를 들어 다음과 같은 애플리케이션 설정 파일을 서버에서 `config.json` 파일로 받아온다고 합시다.
 
 <code-example 
@@ -88,7 +88,7 @@ that specifies resource URLs.
 <!--
 The `ConfigService` fetches this file with a `get()` method on `HttpClient`.
 -->
-그러면 `HttpClient` 객체의 `get()` 메소드를 `ConfigService`에 다음과 같이 연결합니다.
+그러면 `ConfigService`에서 `HttpClient` 서비스의 `get()` 메소드를 사용해서 이 파일을 받아올 수 있습니다.
 
 <code-example 
   path="http/src/app/config/config.service.ts"
@@ -193,7 +193,7 @@ First, define an interface with the correct shape:
 <!--
 Then, specify that interface as the `HttpClient.get()` call's type parameter in the service:
 -->
-그리고 `HttpClient.get()` 함수를 호출할 때, 데이터 타입을 지정합니다:
+그리고 `HttpClient.get()` 함수를 실행할 때, 데이터 타입을 지정합니다:
 
 <code-example 
   path="http/src/app/config/config.service.ts"
@@ -221,7 +221,7 @@ easier and safer to consume:
 <!--
 The response body doesn't return all the data you may need. Sometimes servers return special headers or status codes to indicate certain conditions that are important to the application workflow. 
 -->
-응답으로 받은 데이터만으로는 충분하지 않을 수 있습니다. 어떤 경우에는 헤더에 있는 정보나 HTTP 상태 코드를 확인해서 애플리케이션의 동작을 제어해야 하는 경우도 있습니다.
+응답으로 받은 데이터만으로는 충분하지 않은 경우가 있습니다. 어떤 경우에는 헤더에 있는 정보나 HTTP 상태 코드를 확인해서 애플리케이션의 동작을 제어해야 하는 경우도 있습니다.
 
 <!--
 Tell `HttpClient` that you want the full response with the `observe` option:
@@ -402,7 +402,7 @@ Angular는 `HttpClient`외에도 많은 곳에서 RxJS의 `Observable`을 사용
 RxJS itself is out-of-scope for this guide. You will find many learning resources on the web.
 While you can get by with a minimum of RxJS knowledge, you'll want to grow your RxJS skills over time in order to use `HttpClient` effectively.
 -->
-RxJS 자체는 이 문서에서 설명하려는 범위가 아닙니다. RxJS 사용방법은 웹에서 쉽게 찾아볼 수 있으며, 이 문서에서는 `HttpClient`를 효율적으로 사용할 수 있을 정도로만 RxJS를 알아봅시다.
+RxJS 자체는 이 문서에서 다루는 범위가 아닙니다. RxJS 사용방법은 웹에서 쉽게 찾아볼 수 있으며, 이 문서에서는 `HttpClient`를 효율적으로 사용할 수 있을 정도로만 RxJS를 알아봅시다.
 
 <!--
 If you're following along with these code snippets, note that you must import the RxJS observable and operator symbols that appear in those snippets. These `ConfigService` imports are typical.
@@ -463,7 +463,7 @@ A `download()` method in the `DownloaderComponent` initiates the request by subs
 <!--
 In addition to fetching data from the server, `HttpClient` supports mutating requests, that is, sending data to the server with other HTTP methods such as PUT, POST, and DELETE.
 -->
-`HttpClient`로 서버에 데이터를 요청할 때 사용하는 HTTP 메소드가 PUT이나 POST, DELETE라면 서버로 추가 데이터를 보낼 수 있습니다.
+`HttpClient`로 서버에 데이터를 요청할 때 사용하는 HTTP 메소드가 PUT, POST, DELETE라면 서버로 추가 데이터를 보낼 수 있습니다.
 
 <!--
 The sample app for this guide includes a simplified version of the "Tour of Heroes" example
