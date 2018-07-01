@@ -14,15 +14,13 @@ export interface ApiItem {
   docType: string;
   stability: string;
   securityRisk: boolean;
-
-  show?: boolean;
 }
 
 export interface ApiSection {
   path: string;
   name: string;
   title: string;
-  items: ApiItem[];
+  items: ApiItem[]|null;
 }
 
 @Injectable()
