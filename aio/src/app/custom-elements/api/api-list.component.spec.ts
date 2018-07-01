@@ -36,17 +36,12 @@ describe('ApiListComponent', () => {
    */
   function expectFilteredResult(label: string, itemTest: (item: ApiItem) => boolean) {
     component.filteredSections.subscribe(filtered => {
-      let badItem: ApiItem|undefined;
+      filtered = filtered.filter(section => section.items);
       expect(filtered.length).toBeGreaterThan(0, 'expected something');
-      expect(filtered.every(section => section.items.every(
-          item => {
-            const ok = item.show === itemTest(item);
-            if (!ok) { badItem = item; }
-            return ok;
-          }
-      ))).toBe(true, `${label} fail: ${JSON.stringify(badItem, null, 2)}`);
+      expect(filtered.every(section => section.items!.every(itemTest))).toBe(true, label);
     });
   }
+
 
   describe('#filteredSections', () => {
 
@@ -65,34 +60,45 @@ describe('ApiListComponent', () => {
       expectFilteredResult('query: class', item => /class/.test(item.name));
     });
 
-    it('item.show should be true for every item in section when query matches section name', () => {
+    it('items should be an array for every item in section when query matches section name', () => {
       component.setQuery('core');
       component.filteredSections.subscribe(filtered => {
+        filtered = filtered.filter(section => Array.isArray(section.items));
         expect(filtered.length).toBe(1, 'only one section');
         expect(filtered[0].name).toBe('core');
-        expect(filtered[0].items.every(item => !!item.show)).toBe(true, 'all core items shown');
+        expect(filtered[0].items).toEqual(sections.find(section => section.name === 'core')!.items);
       });
     });
 
-    it('item.show should be true for items with selected status', () => {
-      component.setStatus({value: 'stable', title: 'Stable'});
-      expectFilteredResult('status: stable', item => item.stability === 'stable');
+    describe('section.items', () => {
+      it('should null if there are no matching items and the section itself does not match', () => {
+        component.setQuery('core');
+        component.filteredSections.subscribe(filtered => {
+          const commonSection = filtered.find(section => section.name === 'common')!;
+          expect(commonSection.items).toBe(null);
+        });
+      });
+
+      it('should be visible if they have the selected stability status', () => {
+        component.setStatus({value: 'stable', title: 'Stable'});
+        expectFilteredResult('status: stable', item => item.stability === 'stable');
+      });
+
+      it('should be visible if they have the selected security status', () => {
+        component.setStatus({value: 'security-risk', title: 'Security Risk'});
+        expectFilteredResult('status: security-risk', item => item.securityRisk);
+      });
+
+      it('should be visible if they match the selected API type', () => {
+        component.setType({value: 'class', title: 'Class'});
+        expectFilteredResult('type: class', item => item.docType === 'class');
+      });
     });
 
-    it('item.show should be true for items with "security-risk" status when selected', () => {
-      component.setStatus({value: 'security-risk', title: 'Security Risk'});
-      expectFilteredResult('status: security-risk', item => item.securityRisk);
-    });
-
-    it('item.show should be true for items of selected type', () => {
-      component.setType({value: 'class', title: 'Class'});
-      expectFilteredResult('type: class', item => item.docType === 'class');
-    });
-
-    it('should have no sections and no items when no match', () => {
+    it('should have no sections and no items visible when there is no match', () => {
       component.setQuery('fizbuzz');
       component.filteredSections.subscribe(filtered => {
-        expect(filtered.length).toBe(0, 'expected no sections');
+        expect(filtered.some(section => !!section.items)).toBeFalsy();
       });
     });
   });
@@ -108,9 +114,11 @@ describe('ApiListComponent', () => {
       fixture.detectChanges();
 
       component.filteredSections.subscribe(filtered => {
+        filtered = filtered.filter(s => s.items);
+        console.log(filtered);
         expect(filtered.length).toBe(1, 'sections');
         expect(filtered[0].name).toBe(section, 'section name');
-        const items = filtered[0].items.filter(i => i.show);
+        const items = filtered[0].items!;
         expect(items.length).toBe(1, 'items');
 
         const item = items[0];
