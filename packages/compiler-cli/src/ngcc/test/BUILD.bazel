@@ -11,6 +11,7 @@ ts_library(
     ]),
     deps = [
         "//packages/compiler-cli/src/ngcc",
+        "//packages/compiler-cli/src/ngtsc/host",
         "//packages/compiler-cli/src/ngtsc/testing",
     ],
 )

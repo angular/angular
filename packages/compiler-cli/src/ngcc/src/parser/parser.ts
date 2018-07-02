@@ -36,11 +36,11 @@ export class DecoratedClass {
  * on disk and that directory can contain one or more package formats - e.g. fesm2015, UMD, etc.
  *
  * Each of these formats exposes one or more entry points, which are source files that need to be
- * parsed to identity the decorated classes that need to be analyzed and compiled by one or more
- * `DecoratorHandler` objects.
+ * parsed to identify the decorated exported classes that need to be analyzed and compiled by one or
+ * more `DecoratorHandler` objects.
  *
  * Each entry point to a package is identified by a `SourceFile` that can be passed to the
- * `getDecoratedClasses()` method.
+ * `getDecoratedExportedClasses()` method.
  */
 export interface PackageParser {
   /**
