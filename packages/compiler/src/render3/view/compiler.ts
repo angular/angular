@@ -88,9 +88,14 @@ export function compileDirectiveFromMetadata(
     bindingParser: BindingParser): R3DirectiveDef {
   const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
+
+  // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
+  // string literal, which must be on one line.
+  const selectorForType = (meta.selector || '').replace(/\n/g, '');
+
   const type = new o.ExpressionType(o.importExpr(
       R3.DirectiveDef,
-      [new o.ExpressionType(meta.type), new o.ExpressionType(o.literal(meta.selector || ''))]));
+      [new o.ExpressionType(meta.type), new o.ExpressionType(o.literal(selectorForType))]));
   return {expression, type};
 }
 
@@ -157,10 +162,14 @@ export function compileComponentFromMetadata(
     definitionMap.set('pipes', o.literalArr(Array.from(pipesUsed)));
   }
 
+  // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
+  // string literal, which must be on one line.
+  const selectorForType = (meta.selector || '').replace(/\n/g, '');
+
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
   const type = new o.ExpressionType(o.importExpr(
       R3.ComponentDef,
-      [new o.ExpressionType(meta.type), new o.ExpressionType(o.literal(meta.selector || ''))]));
+      [new o.ExpressionType(meta.type), new o.ExpressionType(o.literal(selectorForType))]));
 
   return {expression, type};
 }
