@@ -37,10 +37,13 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<NgModuleAnalysis> {
-    if (decorator.args === null || decorator.args.length !== 1) {
+    if (decorator.args === null || decorator.args.length > 1) {
       throw new Error(`Incorrect number of arguments to @NgModule decorator`);
     }
-    const meta = decorator.args[0];
+
+    // @NgModule can be invoked without arguments. In case it is, pretend as if a blank object
+    // literal was specified. This simplifies the code below.
+    const meta = decorator.args.length === 1 ? decorator.args[0] : ts.createObjectLiteral([]);
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new Error(`Decorator argument must be literal.`);
     }
