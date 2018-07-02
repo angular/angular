@@ -1034,7 +1034,7 @@ Call `request.flush()` with an error message, as seen in the following example.
 
 <code-example 
   path="http/src/testing/http-client.spec.ts"
-  region="network-error"
+  region="404"
   linenums="false">
 </code-example>
 
