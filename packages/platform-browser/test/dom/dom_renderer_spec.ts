@@ -20,7 +20,8 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
     beforeEach(() => {
       TestBed.configureTestingModule({
         declarations: [
-          TestCmp, SomeApp, CmpEncapsulationEmulated, CmpEncapsulationNative, CmpEncapsulationNone
+          TestCmp, SomeApp, CmpEncapsulationEmulated, CmpEncapsulationNative, CmpEncapsulationNone,
+          CmpEncapsulationNative
         ]
       });
       renderer = TestBed.createComponent(TestCmp).componentInstance.renderer;
@@ -133,6 +134,15 @@ class CmpEncapsulationEmulated {
   encapsulation: ViewEncapsulation.None
 })
 class CmpEncapsulationNone {
+}
+
+@Component({
+  selector: 'cmp-shadow',
+  template: `<div class="shadow"></div><cmp-emulated></cmp-emulated><cmp-none></cmp-none>`,
+  styles: [`.native { color: red; }`],
+  encapsulation: ViewEncapsulation.ShadowDom
+})
+class CmpEncapsulationShadow {
 }
 
 @Component({
