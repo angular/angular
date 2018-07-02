@@ -271,11 +271,11 @@ describe('Collector', () => {
     expect(casesAny).toBeTruthy();
     const ctorData = casesAny.members !['__ctor__'];
     expect(ctorData).toEqual(
-        [{__symbolic: 'constructor', parameters: [{__symbolic: 'reference', name: 'any'}]}]);
+        [{__symbolic: 'constructor', parameters: [{__symbolic: 'reference', name: 'any'}]}] as any);
   });
 
   it('should record annotations on set and get declarations', () => {
-    const propertyData = (line: number) => ({
+    const propertyData = (line: number): any => ({
       name: [{
         __symbolic: 'property',
         decorators: [{
@@ -318,7 +318,7 @@ describe('Collector', () => {
           }]
         }]
       }
-    });
+    } as any);
   });
 
   it('should report errors for destructured imports', () => {
@@ -764,7 +764,7 @@ describe('Collector', () => {
         }]],
         parameters: [{__symbolic: 'reference', name: 'any'}]
       }]
-    });
+    } as any);
   });
 
   describe('with interpolations', () => {
@@ -868,7 +868,7 @@ describe('Collector', () => {
           {__symbolic: 'reference', module: './foo', name: 'Foo', line: 3, character: 24}
         ]
       }]
-    });
+    } as any);
   });
 
   it('should treat exported class expressions as a class', () => {

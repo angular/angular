@@ -36,7 +36,7 @@ describe('ngc_wrapped', () => {
     `);
 
     // expect no error
-    expect(runOneBuild()).toBe(true);
+    expect(runOneBuild()).toBe(true as any);
 
     shouldExist('bazel-bin/some_project/index.js');
 

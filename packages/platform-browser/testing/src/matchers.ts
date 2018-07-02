@@ -15,7 +15,7 @@ import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 /**
  * Jasmine matchers that check Angular specific conditions.
  */
-export interface NgMatchers extends jasmine.Matchers {
+export interface NgMatchers<T = any> extends jasmine.Matchers<T> {
   /**
    * Expect the value to be a `Promise`.
    *

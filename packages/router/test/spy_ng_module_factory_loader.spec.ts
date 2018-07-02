@@ -29,7 +29,7 @@ describe('SpyNgModuleFactoryLoader', () => {
     const r = new SpyNgModuleFactoryLoader(<any>compiler);
     r.stubbedModules = {'one': 'someModule'};
 
-    expect(r.load('one')).toBe(expected);
+    expect(r.load('one')).toBe(expected as any);
   });
 
   it('should return a rejected promise when given an invalid path', fakeAsync(() => {

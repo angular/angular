@@ -170,14 +170,14 @@ describe('elementProperty', () => {
       expect(renderToHtml(Template, ctx, deps))
           .toEqual(`<button mybutton="" otherdir="">Click me</button>`);
       expect(button !.disabled).toEqual(true);
-      expect(otherDir !.id).toEqual(0);
+      expect(otherDir !.id).toEqual(0 as any);
 
       ctx.isDisabled = false;
       ctx.id = 1;
       expect(renderToHtml(Template, ctx, deps))
           .toEqual(`<button mybutton="" otherdir="">Click me</button>`);
       expect(button !.disabled).toEqual(false);
-      expect(otherDir !.id).toEqual(1);
+      expect(otherDir !.id).toEqual(1 as any);
     });
 
     it('should support mixed element properties and input properties', () => {
@@ -289,14 +289,14 @@ describe('elementProperty', () => {
       let counter = 0;
       const ctx: any = {id: 1, onClick: () => counter++};
       expect(renderToHtml(Template, ctx, deps)).toEqual(`<button otherdir="">Click me</button>`);
-      expect(otherDir !.id).toEqual(1);
+      expect(otherDir !.id).toEqual(1 as any);
 
       otherDir !.clickStream.next();
       expect(counter).toEqual(1);
 
       ctx.id = 2;
       renderToHtml(Template, ctx, deps);
-      expect(otherDir !.id).toEqual(2);
+      expect(otherDir !.id).toEqual(2 as any);
     });
 
     it('should support unrelated element properties at same index in if-else block', () => {
@@ -349,13 +349,13 @@ describe('elementProperty', () => {
 
       expect(renderToHtml(Template, {condition: true, id1: 'one', id2: 'two', id3: 'three'}, deps))
           .toEqual(`<button iddir="">Click me</button><button id="two">Click me too</button>`);
-      expect(idDir !.idNumber).toEqual('one');
+      expect(idDir !.idNumber).toEqual('one' as any);
 
       expect(
           renderToHtml(Template, {condition: false, id1: 'four', id2: 'two', id3: 'three'}, deps))
           .toEqual(`<button iddir="">Click me</button><button otherdir="">Click me too</button>`);
-      expect(idDir !.idNumber).toEqual('four');
-      expect(otherDir !.id).toEqual('three');
+      expect(idDir !.idNumber).toEqual('four' as any);
+      expect(otherDir !.id).toEqual('three' as any);
     });
 
   });

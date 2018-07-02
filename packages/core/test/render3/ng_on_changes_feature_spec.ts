@@ -291,7 +291,7 @@ describe('NgOnChangesFeature', () => {
     myDir.valA = 'third';
     (MyDirective.ngDirectiveDef as DirectiveDefInternal<MyDirective>).doCheck !.call(myDir);
     const changeA2 = new SimpleChange('first', 'third', false);
-    expect(myDir.log).toEqual(['valA', changeA2, 'valB', undefined]);
+    expect(myDir.log).toEqual(['valA', changeA2, 'valB', undefined] as any);
   });
 
   it('should not create a getter when only a setter is originally defined', () => {

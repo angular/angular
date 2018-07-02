@@ -375,7 +375,7 @@ describe('ng program', () => {
       program.emit();
       const factory =
           fs.readFileSync(path.resolve(testSupport.basePath, 'built/src/main.ngfactory.js'));
-      expect(factory).toContain('Hello world!');
+      expect(factory).toContain('Hello world!' as any);
       done();
     });
   });
@@ -679,7 +679,7 @@ describe('ng program', () => {
 
       const lazyNgFactory =
           fs.readFileSync(path.resolve(testSupport.basePath, 'built/src/lazy/lazy.ngfactory.js'));
-      expect(lazyNgFactory).toContain('import * as i1 from "./lazy";');
+      expect(lazyNgFactory).toContain('import * as i1 from "./lazy";' as any);
     });
 
     it('should list lazyRoutes given an entryRoute recursively', () => {
@@ -739,7 +739,7 @@ describe('ng program', () => {
               {name: undefined, filePath: path.resolve(testSupport.basePath, 'src/child.ts')},
           route: './child'
         },
-      ]);
+      ] as any);
     });
 
     it('should list lazyRoutes from imported modules', () => {

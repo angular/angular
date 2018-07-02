@@ -20,7 +20,10 @@ import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing'
     let resourceLoader: MockResourceLoader;
 
     beforeEach(() => {
+      const NativeFunction = Function;
       jitSpy = spyOn(ɵglobal, 'Function').and.callThrough();
+      // Work around for: https://github.com/jasmine/jasmine/issues/1573
+      Function.prototype.apply = Function.constructor.prototype.apply;
       resourceLoader = new MockResourceLoader();
       TestBed.configureCompiler({providers: [{provide: ResourceLoader, useValue: resourceLoader}]});
     });
