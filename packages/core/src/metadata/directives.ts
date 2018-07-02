@@ -19,37 +19,18 @@ import {ViewEncapsulation} from './view';
  */
 export interface DirectiveDecorator {
   /**
-   * Marks a class as an Angular directive and collects directive configuration
-   * metadata.
-   *
-   * Directive decorator allows you to mark a class as an Angular directive and provide additional
-   * metadata that determines how the directive should be processed, instantiated and used at
+   * Marks a class as an Angular directive. You can define your own
+   * directives to attach custom behavior to elements in the DOM.
+   * The options provide configuration metadata that determines
+   * how the directive should be processed, instantiated and used at
    * runtime.
    *
-   * Directives allow you to attach behavior to elements in the DOM..
+   * Directive classes, like component classes, can implement
+   * [life-cycle hoooks](guide/lifecycle-hooks) to influence their configuration and behavior.
    *
-   * A directive must belong to an NgModule in order for it to be usable
-   * by another directive, component, or application. To specify that a directive is a member of an
-   * NgModule,
-   * you should list it in the `declarations` field of that NgModule.
-   *
-   * In addition to the metadata configuration specified via the Directive decorator,
-   * directives can control their runtime behavior by implementing various Life-Cycle hooks.
-   *
-   * **Metadata Properties:**
-   *
-   * * **exportAs** - name under which the component instance is exported in a template. Can be
-   * given a single name or a comma-delimited list of names.
-   * * **host** - map of class property to host element bindings for events, properties and
-   * attributes
-   * * **inputs** - list of class property names to data-bind as component inputs
-   * * **outputs** - list of class property names that expose output events that others can
-   * subscribe to
-   * * **providers** - list of providers available to this component and its children
-   * * **queries** -  configure queries that can be injected into the component
-   * * **selector** - css selector that identifies this component in a template
    *
    * @usageNotes
+   * To define a directive, mark the class with the decorator and provide metadata.
    *
    * ```
    * import {Directive} from '@angular/core';
@@ -58,7 +39,25 @@ export interface DirectiveDecorator {
    *   selector: 'my-directive',
    * })
    * export class MyDirective {
+   * ...
    * }
+   * ```
+   *
+   * ### Declaring directives
+   *
+   * Directives are [declarables](guide/glossary#declarable).
+   * Like component and pipes, they must be declared by an NgModule
+   * in order to be usable in an app.
+   *
+   * A directive must belong to exactly one NgModule. Do not re-declare
+   * a directive imported from another module.
+   * List the directive class in the `declarations` field of an NgModule.
+   *
+   * ```
+   * declarations: [
+   *  AppComponent,
+   *  MyDirective
+   * ],
    * ```
    *
    * @Annotation
@@ -75,10 +74,7 @@ export interface Directive {
   /**
    * The CSS selector that triggers the instantiation of a directive.
    *
-   * Angular only allows directives to trigger on CSS selectors that do not cross element
-   * boundaries.
-   *
-   * `selector` may be declared as one of the following:
+   * Declare as one of the following:
    *
    * - `element-name`: select by element name.
    * - `.class`: select by class name.
@@ -87,12 +83,10 @@ export interface Directive {
    * - `:not(sub_selector)`: select only if the element does not match the `sub_selector`.
    * - `selector1, selector2`: select if either `selector1` or `selector2` matches.
    *
-   * @usageNotes
-   * ### Example
-   *
-   * Suppose we have a directive with an `input[type=text]` selector.
-   *
-   * And the following HTML:
+   * Angular only allows directives to trigger on CSS selectors that do not cross element
+   * boundaries. For example, consider a directive with an `input[type=text]` selector.
+   * For the following HTML, the directive is instantiated only on the
+   * `<input type="text">` element.
    *
    * ```html
    * <form>
@@ -101,8 +95,6 @@ export interface Directive {
    * <form>
    * ```
    *
-   * The directive would only be instantiated on the `<input type="text">` element.
-   *
    */
   selector?: string;
 
@@ -110,7 +102,6 @@ export interface Directive {
    * Enumerates the set of data-bound input properties for a directive
    *
    * Angular automatically updates input properties during change detection.
-   *
    * The `inputs` property defines a set of `directiveProperty` to `bindingProperty`
    * configuration:
    *
@@ -118,8 +109,8 @@ export interface Directive {
    * - `bindingProperty` specifies the DOM property where the value is read from.
    *
    * When `bindingProperty` is not provided, it is assumed to be equal to `directiveProperty`.
-   *
    * @usageNotes
+   *
    * ### Example
    *
    * The following example creates a component with two data-bound properties.
@@ -154,6 +145,7 @@ export interface Directive {
    * - `bindingProperty` specifies the DOM property the event handler is attached to.
    *
    * @usageNotes
+   *
    * ### Example
    *
    * ```typescript
@@ -175,138 +167,8 @@ export interface Directive {
   outputs?: string[];
 
   /**
-   * Specify the events, actions, properties and attributes related to the host element.
-   *
-   * @usageNotes
-   * The key corresponds to the name of the event, property or attribute on the host to
-   * bind. The value is formatted differently depending upon the type of the binding.
-   *
-   * ### Host Listeners
-   *
-   * Specifies which DOM events a directive listens to via a set of `(event)` to `method`
-   * key-value pairs:
-   *
-   * - `event`: the DOM event that the directive listens to.
-   * - `statement`: the statement to execute when the event occurs.
-   * If the evaluation of the statement returns `false`, then `preventDefault`is applied on the DOM
-   * event.
-   *
-   * To listen to global events, a target must be added to the event name.
-   * The target can be `window`, `document` or `body`.
-   *
-   * When writing a directive event binding, you can also refer to the $event local variable.
-   *
-   * The following example declares a directive that attaches a click listener to the button and
-   * counts clicks.
-   *
-   * ```typescript
-   * @Directive({
-   *   selector: 'button[counting]',
-   *   host: {
-   *     '(click)': 'onClick($event.target)'
-   *   }
-   * })
-   * class CountClicks {
-   *   numberOfClicks = 0;
-   *
-   *   onClick(btn) {
-   *     console.log("button", btn, "number of clicks:", this.numberOfClicks++);
-   *   }
-   * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   template: `<button counting>Increment</button>`
-   * })
-   * class App {}
-   * ```
-   * See [live demo](http://plnkr.co/edit/DlA5KU?p=preview)
-   *
-   * ### Host Property Bindings
-   *
-   * Specifies which DOM properties a directive updates.
-   *
-   * Angular automatically checks host property bindings during change detection.
-   * If a binding changes, it will update the host element of the directive.
-   *
-   * The following example creates a directive that sets the `valid` and `invalid` classes
-   * on the DOM element that has ngModel directive on it.
-   *
-   * ```typescript
-   * @Directive({
-   *   selector: '[ngModel]',
-   *   host: {
-   *     '[class.valid]': 'valid',
-   *     '[class.invalid]': 'invalid'
-   *   }
-   * })
-   * class NgModelStatus {
-   *   constructor(public control:NgModel) {}
-   *   get valid { return this.control.valid; }
-   *   get invalid { return this.control.invalid; }
-   * }
-   *
-   * @Component({
-   *   selector: 'app',
-   *   template: `<input [(ngModel)]="prop">`
-   * })
-   * class App {
-   *   prop;
-   * }
-   * ```
-   * See [live demo](http://plnkr.co/edit/gNg0ED?p=preview).
-   *
-   * ### Attributes
-   *
-   * Specifies static attributes that should be propagated to a host element.
-   *
-   * In this example using `my-button` directive (ex.: `<div my-button></div>`) on a host element
-   * (here: `<div>` ) will ensure that this element will get the "button" role.
-   *
-   * ```typescript
-   * @Directive({
-   *   selector: '[my-button]',
-   *   host: {
-   *     'role': 'button'
-   *   }
-   * })
-   * class MyButton {
-   * }
-   * ```
-   * Attaching the `my-button` directive to the host `<div>` element
-   * ensures that this element gets the "button" role.
-   *
-   * ```html
-   * <div my-button></div>
-   * ```
-   *
-   * @usageNotes
-   * ### Simple Example
-   *
-   * The following simple example shows how a class is injected,
-   * using a provider specified in the directive metadata:
-   *
-   * ```
-   * class Greeter {
-   *    greet(name:string) {
-   *      return 'Hello ' + name + '!';
-   *    }
-   * }
-   *
-   * @Directive({
-   *   selector: 'greet',
-   *   providers: [
-   *     Greeter
-   *   ]
-   * })
-   * class HelloWorld {
-   *   greeter:Greeter;
-   *
-   *   constructor(greeter:Greeter) {
-   *     this.greeter = greeter;
-   *   }
-   * }
-   * ```
+   * A set of injection tokens that allow the DI system to
+   * provide a dependency to this directive or component.
    */
   providers?: Provider[];
 
@@ -314,6 +176,7 @@ export interface Directive {
    * Defines the name that can be used in the template to assign this directive to a variable.
    *
    * @usageNotes
+   *
    * ### Simple Example
    *
    * ```
@@ -330,7 +193,6 @@ export interface Directive {
    * })
    * class MainComponent {
    * }
-   *
    * ```
    */
   exportAs?: string;
@@ -456,7 +318,9 @@ export interface Directive {
   host?: {[key: string]: string};
 
   /**
-   * See the `Component` decorator.
+   * Configures the [injector](guide/glossary#injector) of this
+   * directive or component with a [token](guide/glossary#di-token)
+   * that maps to a [provider](guide/glossary#provider) of a dependency.
    */
   providers?: Provider[];
 
