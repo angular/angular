@@ -489,7 +489,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Generate element input bindings
     allOtherInputs.forEach((input: t.BoundAttribute) => {
       if (input.type === BindingType.Animation) {
-        this._unsupported('animations');
+        console.error('warning: animation bindings not yet supported');
+        return;
       }
 
       const convertedBinding = this.convertPropertyBinding(implicit, input.value);
