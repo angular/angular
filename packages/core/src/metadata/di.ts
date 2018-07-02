@@ -309,11 +309,10 @@ export const ViewChildren: ViewChildrenDecorator = makePropDecorator(
 export interface ViewChildDecorator {
   /**
    * @description
-   * Configures a view query.
-   *
-   * You can use ViewChild to get the first element or the directive matching the selector from the
-   * view DOM. If the view DOM changes, and a new child matches the selector,
-   * the property will be updated.
+   * Property decorator that configures a view query.
+   * The change detector looks for the first element or the directive matching the selector
+   * in the view DOM. If the view DOM changes, and a new child matches the selector,
+   * the property is updated.
    *
    * View queries are set before the `ngAfterViewInit` callback is called.
    *

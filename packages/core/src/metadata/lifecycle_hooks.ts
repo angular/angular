@@ -10,138 +10,225 @@ import {SimpleChange} from '../change_detection/change_detection_util';
 
 
 /**
- * A `changes` object whose keys are property names and
- * values are instances of {@link SimpleChange}. See {@link OnChanges}
+ * Defines an object that associates properties with
+ * instances of `SimpleChange`.
+ *
+ * @see `OnChanges`
  *
  */
 export interface SimpleChanges { [propName: string]: SimpleChange; }
 
 /**
+ * @description
+ * A lifecycle hook that is called when any data-bound property of a directive changes.
+ * Define an `ngOnChanges()` method to handle the changes.
+ *
+ * @see `DoCheck`
+ * @see `OnInit`
+ * @see [Lifecycle Hooks](guide/lifecycle-hooks#onchanges) guide
+ *
  * @usageNotes
+ * The following snippet shows how a component can implement this interface to
+ * define an on-changes handler for an input property.
+ *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='OnChanges'}
  *
- * @description
- * Lifecycle hook that is called when any data-bound property of a directive changes.
- *
- * `ngOnChanges` is called right after the data-bound properties have been checked and before view
- * and content children are checked if at least one of them has changed.
- * The `changes` parameter contains the changed properties.
- *
- * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#onchanges).
- *
- *
  */
-export interface OnChanges { ngOnChanges(changes: SimpleChanges): void; }
+export interface OnChanges {
+  /**
+   * A callback method that is invoked immediately after the
+   * default change detector has checked data-bound properties
+   * if at least one has changed, and before the view and content
+   * children are checked.
+   * @param changes The changed properties.
+   */
+  ngOnChanges(changes: SimpleChanges): void;
+}
 
 /**
+ * @description
+ * A lifecycle hook that is called after Angular has initialized
+ * all data-bound properties of a directive.
+ * Define an `ngOnInit()` method to handle any additional initialization tasks.
+ *
+ * @see `AfterContentInit`
+ * @see [Lifecycle Hooks](guide/lifecycle-hooks#onchanges) guide
+ *
  * @usageNotes
+ * The following snippet shows how a component can implement this interface to
+ * define its own initialization method.
+ *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='OnInit'}
  *
- * @description
- * Lifecycle hook that is called after data-bound properties of a directive are
- * initialized.
- *
- * `ngOnInit` is called right after the directive's data-bound properties have been checked for the
- * first time, and before any of its children have been checked. It is invoked only once when the
- * directive is instantiated.
- *
- * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks).
- *
  *
  */
-export interface OnInit { ngOnInit(): void; }
+export interface OnInit {
+  /**
+   * A callback method that is invoked immediately after the
+   * default change detector has checked the directive's
+   * data-bound properties for the first time,
+   * and before any of the view or content children have been checked.
+   * It is invoked only once when the directive is instantiated.
+   */
+  ngOnInit(): void;
+}
 
 /**
+ * A lifecycle hook that invokes a custom change-detection function for a directive,
+ * in addition to the check performed by the default change-detector.
+ * 
+ * The default change-detection algorithm looks for differences by comparing
+ * bound-property values by reference across change detection runs. You can use this
+ * hook to check for and respond to changes by some other means.
+ *
+ * When the default change detector detects changes, it invokes `ngOnChanges()` if supplied,
+ * regardless of whether you perform additional change detection.
+ * Typically, you should not use both `DoCheck` and `OnChanges` to respond to
+ * changes on the same input. 
+ * 
+ * @see `OnChanges`
+ * @see [Lifecycle Hooks](guide/lifecycle-hooks#onchanges) guide
+ *
  * @usageNotes
+ * The following snippet shows how a component can implement this interface
+ * to invoke it own change-detection cycle.  
+ *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='DoCheck'}
  *
- * @description
- * Lifecycle hook that is called when Angular dirty checks a directive.
- *
- * `ngDoCheck` gets called to check the changes in the directives in addition to the default
- * algorithm. The default change detection algorithm looks for differences by comparing
- * bound-property values by reference across change detection runs.
- *
- * Note that a directive typically should not use both `DoCheck` and {@link OnChanges} to respond to
- * changes on the same input, as `ngOnChanges` will continue to be called when the default change
- * detector detects changes.
- *
- * See {@link KeyValueDiffers} and {@link IterableDiffers} for implementing custom dirty checking
- * for collections.
- *
- * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#docheck).
- *
- *
  */
-export interface DoCheck { ngDoCheck(): void; }
+export interface DoCheck {
+  /**
+     * A callback method that performs change-detection, invoked
+     * after the default change-detector runs.
+     * @see `KeyValueDiffers` and `IterableDiffers` for implementing
+     * custom change checking for collections.
+     * 
+     */
+  ngDoCheck(): void;
+}
 
 /**
+ * A lifecycle hook that is called when a directive, pipe, or service is destroyed.
+ * Use for any custom cleanup that needs to occur when the
+ * instance is destroyed.
+ * @see [Lifecycle Hooks](guide/lifecycle-hooks#onchanges) guide
+ *
  * @usageNotes
+ * The following snippet shows how a component can implement this interface
+ * to define it own custom clean-up method.
+ *  
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='OnDestroy'}
  *
- * @description
- * Lifecycle hook that is called when a directive, pipe or service is destroyed.
- *
- * `ngOnDestroy` callback is typically used for any custom cleanup that needs to occur when the
- * instance is destroyed.
- *
- * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks).
- *
- *
  */
-export interface OnDestroy { ngOnDestroy(): void; }
+export interface OnDestroy {
+  /**
+   * A callback method that performs custom clean-up, invoked immediately
+   * after a directive, pipe, or service instance is destroyed.
+   */
+  ngOnDestroy(): void;
+}
 
 /**
+ * @description
+ * A lifecycle hook that is called after Angular has fully initialized
+ * all content of a directive.
+ * Define an `ngAfterContentInit()` method to handle any additional initialization tasks.
+ *
+ * @see `OnInit`
+ * @see `AfterViewInit`
+ * @see [Lifecycle Hooks](guide/lifecycle-hooks#onchanges) guide
  *
  * @usageNotes
+ * The following snippet shows how a component can implement this interface to
+ * define its own content initialization method.
+ *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterContentInit'}
  *
- * @description
- * Lifecycle hook that is called after a directive's content has been fully
- * initialized.
- *
- * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#aftercontent).
- *
  *
  */
-export interface AfterContentInit { ngAfterContentInit(): void; }
+export interface AfterContentInit {
+  /**
+   * A callback method that is invoked immediately after
+   * Angular has completed initialization of all of the directive's
+   * content.
+   * It is invoked only once when the directive is instantiated.
+   */
+  ngAfterContentInit(): void;
+}
 
 /**
+ * @description
+ * A lifecycle hook that is called after the default change detector has
+ * completed checking all content of a directive.
+ *
+ * @see `AfterViewChecked`
+ * @see [Lifecycle Hooks](guide/lifecycle-hooks#onchanges) guide
+ *
  * @usageNotes
+ * The following snippet shows how a component can implement this interface to
+ * define its own after-check functionality.
+ *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterContentChecked'}
  *
- * @description
- * Lifecycle hook that is called after every check of a directive's content.
- *
- * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#aftercontent).
- *
  *
  */
-export interface AfterContentChecked { ngAfterContentChecked(): void; }
+export interface AfterContentChecked {
+  /**
+   * A callback method that is invoked immediately after the
+   * default change detector has completed checking all of the directive's
+   * content.
+   */
+  ngAfterContentChecked(): void;
+}
 
 /**
+ * @description
+ * A lifecycle hook that is called after Angular has fully initialized
+ * a component's view.
+ * Define an `ngAfterViewInit()` method to handle any additional initialization tasks.
+ *
+ * @see `OnInit`
+ * @see `AfterContentInit`
+ * @see [Lifecycle Hooks](guide/lifecycle-hooks#onchanges) guide
+ *
  * @usageNotes
+ * The following snippet shows how a component can implement this interface to
+ * define its own view initialization method.
+ *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterViewInit'}
  *
- * @description
- * Lifecycle hook that is called after a component's view has been fully
- * initialized.
- *
- * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#afterview).
- *
  *
  */
-export interface AfterViewInit { ngAfterViewInit(): void; }
+export interface AfterViewInit {
+  /**
+   * A callback method that is invoked immediately after
+   * Angular has completed initialization of a component's view.
+   * It is invoked only once when the view is instantiated.
+   *
+   */
+  ngAfterViewInit(): void;
+}
 
 /**
+ * @description
+ * A lifecycle hook that is called after the default change detector has
+ * completed checking a component's view for changes.
+ *
+ * @see `AfterContentChecked`
+ * @see [Lifecycle Hooks](guide/lifecycle-hooks#onchanges) guide
+ *
  * @usageNotes
+ * The following snippet shows how a component can implement this interface to
+ * define its own after-check functionality.
+ *
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='AfterViewChecked'}
  *
- * @description
- * Lifecycle hook that is called after every check of a component's view.
- *
- * See ["Lifecycle Hooks Guide"](guide/lifecycle-hooks#afterview).
- *
- *
  */
-export interface AfterViewChecked { ngAfterViewChecked(): void; }
+export interface AfterViewChecked {
+  /**
+   * A callback method that is invoked immediately after the
+   * default change detector has completed one change-check cycle
+   * for a component's view.
+   */
+  ngAfterViewChecked(): void;
+}
