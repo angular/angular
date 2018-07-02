@@ -250,7 +250,7 @@ export class Validators {
    * ```typescript
    * const control = new FormControl('Angular', Validators.maxLength(5));
    *
-   * console.log(control.errors); // {maxlength: {requiredLength: 15, actualLength: 16}}
+   * console.log(control.errors); // {maxlength: {requiredLength: 5, actualLength: 7}}
    * ```
    *
    * ```html
