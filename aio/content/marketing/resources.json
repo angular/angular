@@ -317,7 +317,7 @@
             "url": "http://www.primefaces.org/primeng/"
           },
           "a3b": {
-            "desc": "One of the first major UI frameworks to support Angular",
+            "desc": "A professional grade library of Angular UI components written in TypeScript that includes our Data Grid, TreeView, Charts, Editors, DropDowns, DatePickers, and many more. Features include support for AOT compilation, Tree Shaking for high-performance, localization, and accessibility.",
             "logo": "",
             "rev": true,
             "title": "Kendo UI",
