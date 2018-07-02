@@ -74,8 +74,8 @@ export function findAllPackageJsonFiles(rootDirectory: string) {
   //                them and filtering out the results later) makes a noticeable difference.
   const paths = Array.from(find(rootDirectory));
   return paths.filter(path =>
-    /package\.json$/.test(path) &&
-    !/node_modules\//.test(path.slice(rootDirectory.length)));
+    /\/package\.json$/.test(path) &&
+    !/(?:^|\/)node_modules\//.test(path.slice(rootDirectory.length)));
 }
 
 /**

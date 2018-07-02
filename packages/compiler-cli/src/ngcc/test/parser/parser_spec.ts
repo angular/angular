@@ -23,7 +23,7 @@ function createMockFileSystem() {
         'package.json': '{ "fesm2015": "../fesm2015/http.js", "fesm5": "../fesm5/http.js" }',
         'testing': {
           'package.json': '{ "fesm2015": "../../fesm2015/http/testing.js", "fesm5": "../../fesm5/http/testing.js" }',
-        }
+        },
       },
       'testing': {
         'package.json': '{ "fesm2015": "../fesm2015/testing.js", "fesm5": "../fesm5/testing.js" }',
@@ -31,10 +31,30 @@ function createMockFileSystem() {
       'node_modules': {
         'tslib': {
           'package.json': '{ }',
-        }
-      }
+          'node_modules': {
+            'other-lib': {
+              'package.json': '{ }',
+            },
+          },
+        },
+      },
     },
-    '/node_modules/@angular/other': {}
+    '/node_modules/@angular/other': {
+      'not-package.json': '{ "fesm2015": "./fesm2015/other.js" }',
+      'package.jsonot': '{ "fesm5": "./fesm5/other.js" }',
+    },
+    '/node_modules/@angular/other2': {
+      'node_modules_not': {
+        'lib1': {
+          'package.json': '{ }',
+        },
+      },
+      'not_node_modules': {
+        'lib2': {
+          'package.json': '{ }',
+        },
+      },
+    },
   });
 }
 
@@ -46,7 +66,7 @@ describe('findAllPackageJsonFiles()', () => {
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
-  it('should find the package.json files below the specified directory', () => {
+  it('should find the `package.json` files below the specified directory', () => {
     const paths = findAllPackageJsonFiles('/node_modules/@angular/common');
     expect(paths.sort()).toEqual([
       '/node_modules/@angular/common/http/package.json',
@@ -56,9 +76,23 @@ describe('findAllPackageJsonFiles()', () => {
     ]);
   });
 
-  it('should not find package.json files under node_modules', () => {
+  it('should not find `package.json` files under `node_modules/`', () => {
     const paths = findAllPackageJsonFiles('/node_modules/@angular/common');
     expect(paths).not.toContain('/node_modules/@angular/common/node_modules/tslib/package.json');
+    expect(paths).not.toContain('/node_modules/@angular/common/node_modules/tslib/node_modules/other-lib/package.json');
+  });
+
+  it('should exactly match the name of `package.json` files', () => {
+    const paths = findAllPackageJsonFiles('/node_modules/@angular/other');
+    expect(paths).toEqual([]);
+  });
+
+  it('should exactly match the name of `node_modules/` directory', () => {
+    const paths = findAllPackageJsonFiles('/node_modules/@angular/other2');
+    expect(paths).toEqual([
+      '/node_modules/@angular/other2/node_modules_not/lib1/package.json',
+      '/node_modules/@angular/other2/not_node_modules/lib2/package.json',
+    ]);
   });
 });
 
