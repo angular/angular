@@ -34,12 +34,13 @@ The browser is a familiar model of application navigation:
 * Click the browser's back and forward buttons and the browser navigates
   backward and forward through the history of pages you've seen.
 -->
-브라우저의 네비게이션 정책은 다음과 같이 활용할 수 있습니다.
+브라우저가 제공하는 네비게이션 모델은 이렇습니다.
 
 * 주소표시줄에 URL을 입력하면 특정 페이지로 이동할 수 있습니다.
 * 페이지에 있는 링크를 클릭하면 새로운 페이지로 이동할 수 있습니다.
 * 브라우저의 뒤로 가기/앞으로 가기 버튼을 누르면 사용자가 방문한 페이지 히스토리에 따라 뒤로/앞으로 페이지를 이동합니다.
 
+<!--
 The Angular `Router` ("the router") borrows from this model.
 It can interpret a browser URL as an instruction to navigate to a client-generated view.
 It can pass optional parameters along to the supporting view component that help it decide what specific content to present.
@@ -48,29 +49,46 @@ the appropriate application view when the user clicks a link.
 You can navigate imperatively when the user clicks a button, selects from a drop box,
 or in response to some other stimulus from any source. And the router logs activity
 in the browser's history journal so the back and forward buttons work as well.
+-->
+Angular가 제공하는 `Router`도 이 모델을 따릅니다.
+브라우저가 접근한 URL에 해당하는 뷰를 생성해서 사용자가 볼 수 있도록 표시할 수 있으며, 이 때 표시되는 뷰 컴포넌트에 추가 정보를 제공하기 위해 라우팅 변수를 사용할 수도 있습니다.
+그리고 라우터를 사용해서 페이지를 이동하는 것을 사용자가 링크를 클릭했을 때 페이지를 이동하는 것과 동일하게 처리합니다.
+그래서 이 특징을 활용하면 사용자가 버튼을 클릭했을 때, 드롭 박스에서 항목을 선택했을 때, 비동기 소스로부터 어떤 이벤트를 받았을 때 등 다양한 방식으로 활용할 수 있습니다.
+라우터는 브라우저의 히스토리 기록도 지원하기 때문에, 라우터로 이동한 기록은 브라우저의 뒤로 가기/앞으로 가기 버튼으로 이동할 수도 있습니다.
 
 {@a basics}
 
 
+<!--
 ## The Basics
+-->
+## 라우터 기본
 
+<!--
 This guide proceeds in phases, marked by milestones, starting from a simple two-pager
 and building toward a modular, multi-view design with child routes.
 
 An introduction to a few core router concepts will help orient you to the details that follow.
+-->
+이 문서에서는 단순하게 페이지를 전환하는 라우터부터, 모듈로 구성하는 라우터, 자식 라우터를 활용한 멀티 뷰 디자인 구현 방법에 대해 차례로 알아봅니다.
 
+먼저, 라우터의 기본 개념부터 알아봅시다.
 
 {@a basics-base-href}
 
 
 ### *&lt;base href>*
 
+<!--
 Most routing applications should add a `<base>` element to the `index.html` as the first child in the  `<head>` tag
 to tell the router how to compose navigation URLs.
 
 If the `app` folder is the application root, as it is for the sample application,
 set the `href` value *exactly* as shown here.
+-->
+라우터를 사용하는 애플리케이션은 `index.html`파일의 `<head>` 태그 가장 처음에 라우터가 이동하는 URL의 기준점을 지정해야 하며, 이 때 `<base>` 엘리먼트를 사용합니다.
 
+만약 Angular CLI로 생성한 프로젝트이고, `app` 폴더가 애플리케이션 최상위 폴더라면 이 엘리먼트는 다음과 같이 지정되어 있을 것입니다.
 
 <code-example path="router/src/index.html" linenums="false" title="src/index.html (base-href)" region="base-href">
 
@@ -80,13 +98,19 @@ set the `href` value *exactly* as shown here.
 
 {@a basics-router-imports}
 
-
+<!--
 ### Router imports
+-->
+### 라우터 로드하기
 
+<!--
 The Angular Router is an optional service that presents a particular component view for a given URL.
 It is not part of the Angular core. It is in its own library package, `@angular/router`.
 Import what you need from it as you would from any other Angular package.
-
+-->
+라우터는 URL과 컴포넌트를 연결하는 서비스이며, Angular 애플리케이션을 구현하면서 꼭 사용해야하는 서비스는 아닙니다.
+그래서 라우터는 Angular 코어에서는 제외되었으며, `@angular/router`라는 라이브러리 패키지로 따로 제공됩니다.
+라우터를 사용하려면 다른 Angular 패키지와 마찬가지로 다음과 같이 로드합니다.
 
 <code-example path="router/src/app/app.module.1.ts" linenums="false" title="src/app/app.module.ts (import)" region="import-router">
 
@@ -97,9 +121,10 @@ Import what you need from it as you would from any other Angular package.
 <div class="l-sub-section">
 
 
-
+<!--
 You'll learn about more options in the [details below](#browser-url-styles).
-
+-->
+라우터 옵션에 대해서는 [아래](#browser-url-styles)에서 자세하게 다룹니다.
 
 </div>
 
@@ -107,9 +132,12 @@ You'll learn about more options in the [details below](#browser-url-styles).
 
 {@a basics-config}
 
-
+<!--
 ### Configuration
+-->
+### 라우터 설정
 
+<!--
 A routed Angular application has one singleton instance of the *`Router`* service.
 When the browser's URL changes, that router looks for a corresponding `Route`
 from which it can determine the component to display.
@@ -117,7 +145,12 @@ from which it can determine the component to display.
 A router has no routes until you configure it.
 The following example creates four route definitions, configures the router via the `RouterModule.forRoot` method,
 and adds the result to the `AppModule`'s `imports` array.
+-->
+라우터를 사용하는 Angular 애플리케이션이라면 단일한 *`Router`* 서비스 인스턴스를 갖습니다.
+브라우저의 URL이 변경되면 라우터가 이 변경사항과 관련된 라우팅 규칙(routes)을 찾아서 어떤 컴포넌트를 표시해야 하는지 판단합니다.
 
+라우팅 규칙은 개발자가 설정하기 전까지는 아무것도 없습니다.
+다음 예제는 라우팅 규칙을 각각 다른 4가지 방식으로 정의한 예제 코드이며, 이 라우팅 규칙은 라우터 모듈의 `RouterModule.forRoot` 메소드를 사용해서 `AppModule`의 `imports` 배열에 등록되었습니다.
 
 <code-example path="router/src/app/app.module.0.ts" linenums="false" title="src/app/app.module.ts (excerpt)">
 
@@ -127,24 +160,41 @@ and adds the result to the `AppModule`'s `imports` array.
 
 {@a example-config}
 
-
+<!--
 The `appRoutes` array of *routes* describes how to navigate.
 Pass it to the `RouterModule.forRoot` method in the module `imports` to configure the router.
+-->
+`appRoutes` 배열에는 네비게이션을 수행하는 *라우팅 규칙(routes)*을 정의합니다.
+이렇게 지정하는 라우팅 규칙은 `RouterModule.forRoot` 메소드의 인자로 지정되어 모듈의 `imports` 항목에 등록됩니다.
 
+<!--
 Each `Route` maps a URL `path` to a component.
 There are _no leading slashes_ in the _path_.
 The router parses and builds the final URL for you,
 allowing you to use both relative and absolute paths when navigating between application views.
+-->
+각각의 라우팅 규칙은 URL `path`와 컴포넌트를 맵핑합니다.
+이 때 _path_ 가 _슬래시(`/`)_ 로 시작하면 안되며, 이렇게 지정된 경로는 상대주소와 절대주소 모두 동작할 수 있도록 라우터가 파싱해서 등록합니다.
 
+<!--
 The `:id` in the second route is a token for a route parameter. In a URL such as `/hero/42`, "42"
 is the value of the `id` parameter. The corresponding `HeroDetailComponent`
 will use that value to find and present the hero whose `id` is 42.
 You'll learn more about route parameters later in this guide.
+-->
+두 번째 라우팅 규칙에 사용된 `:id`는 라우팅 변수에 사용하는 토큰이며, 이 코드의 경우에는 `/hero/42` 경로로 접속했을 때 "42"가 `id` 변수의 값에 할당됩니다.
+그러면 이 경로와 연결된 `HeroDetailComponent`에서 `id`가 42인 히어로를 찾고 화면에 표시하는 용도로 사용할 수 있습니다.
+라우팅 변수에 대한 내용은 이 문서의 후반부에 자세하게 알아봅니다.
 
+<!--
 The `data` property in the third route is a place to store arbitrary data associated with
 this specific route. The data property is accessible within each activated route. Use it to store
 items such as page titles, breadcrumb text, and other read-only, _static_ data.
 You'll use the [resolve guard](#resolve-guard) to retrieve _dynamic_ data later in the guide.
+-->
+세 번째 라우팅 규칙에 사용된 `data` 프로퍼티는 라우팅 규칙에 데이터를 전달할 때 사용하는 프로퍼티입니다.
+이렇게 전달한 데이터 프로퍼티는 라우터를 통해 참조할 수 있으며, 페이지 제목이나 breadcrumb 텍스트, 읽기 전용 데이터, 정적 데이터를 저장하는 용도로 활용할 수 있습니다.
+그리고 [라우터 가드(resolve guard)](#resolve-guard)를 사용해서 _동적_ 데이터를 전달하는 방법은 이 문서의 후반부에 다룹니다.
 
 The **empty path** in the fourth route represents the default path for the application,
 the place to go when the path in the URL is empty, as it typically is at the start.
