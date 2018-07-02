@@ -10,7 +10,10 @@ import * as fs from 'fs';
 
 import {ResourceLoader} from './annotations';
 
-export class ApiResourceLoader implements ResourceLoader {
+/**
+ * `ResourceLoader` which delegates to a `CompilerHost` resource loading method.
+ */
+export class HostResourceLoader implements ResourceLoader {
   private cache = new Map<string, string>();
   private fetching = new Set<string>();
 
@@ -41,13 +44,16 @@ export class ApiResourceLoader implements ResourceLoader {
 
     const result = this.host(url);
     if (typeof result !== 'string') {
-      throw new Error(`ApiResourceLoader: host(${url}) returned a Promise`);
+      throw new Error(`HostResourceLoader: host(${url}) returned a Promise`);
     }
     this.cache.set(url, result);
     return result;
   }
 }
 
+/**
+ * `ResourceLoader` which directly uses the filesystem to resolve resources synchronously.
+ */
 export class FileResourceLoader implements ResourceLoader {
   load(url: string): string { return fs.readFileSync(url, 'utf8'); }
 }

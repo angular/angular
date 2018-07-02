@@ -15,7 +15,7 @@ import * as api from '../transformers/api';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from './annotations';
 import {CompilerHost} from './compiler_host';
 import {TypeScriptReflectionHost} from './metadata';
-import {ApiResourceLoader, FileResourceLoader} from './resource_loader';
+import {FileResourceLoader, HostResourceLoader} from './resource_loader';
 import {IvyCompilation, ivyTransformFactory} from './transform';
 
 export class NgtscProgram implements api.Program {
@@ -31,7 +31,7 @@ export class NgtscProgram implements api.Program {
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
       private host: api.CompilerHost, oldProgram?: api.Program) {
     this.resourceLoader = host.readResource !== undefined ?
-        new ApiResourceLoader(host.readResource.bind(host)) :
+        new HostResourceLoader(host.readResource.bind(host)) :
         new FileResourceLoader();
 
     this.tsProgram =
