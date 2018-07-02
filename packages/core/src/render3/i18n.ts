@@ -9,7 +9,7 @@
 import {assertEqual, assertLessThan} from './assert';
 import {NO_CHANGE, bindingUpdated, createLNode, getPreviousOrParentNode, getRenderer, getViewData, load, resetApplicationState} from './instructions';
 import {RENDER_PARENT} from './interfaces/container';
-import {LContainerNode, LElementNode, LNode, TNodeType} from './interfaces/node';
+import {LContainerNode, LElementNode, LNode, TContainerNode, TNodeType} from './interfaces/node';
 import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
 import {appendChild, createTextNode, getParentLNode, removeChild} from './node_manipulation';
 import {stringify} from './util';
@@ -241,7 +241,8 @@ function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
   appendChild(parentNode, node.native || null, viewData);
 
   // On first pass, re-organize node tree to put this node in the correct position.
-  if (node.view[TVIEW].firstTemplatePass) {
+  const firstTemplatePass = node.view[TVIEW].firstTemplatePass;
+  if (firstTemplatePass) {
     node.tNode.next = null;
     if (previousNode === parentNode && node.tNode !== parentNode.tNode.child) {
       node.tNode.next = parentNode.tNode.child;
@@ -257,7 +258,10 @@ function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
     // (node.native as RComment).textContent = 'test';
     // console.log(node.native);
     appendChild(parentNode, node.dynamicLContainerNode.native || null, viewData);
-    node.pNextOrParent = node.dynamicLContainerNode;
+    if (firstTemplatePass) {
+      node.tNode.dynamicContainerNode = node.dynamicLContainerNode.tNode;
+      node.dynamicLContainerNode.tNode.parent = node.tNode as TContainerNode;
+    }
     return node.dynamicLContainerNode;
   }
 
