@@ -10,6 +10,7 @@ import {Expression, WrappedNodeExpr, compilePipeFromMetadata, jitExpression} fro
 
 import {Pipe} from '../../metadata/directives';
 import {Type} from '../../type';
+import {stringify} from '../util';
 
 import {angularCoreEnv} from './environment';
 import {NG_PIPE_DEF} from './fields';
@@ -20,7 +21,7 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
   Object.defineProperty(type, NG_PIPE_DEF, {
     get: () => {
       if (def === null) {
-        const sourceMapUrl = `ng://${type && type.name}/ngPipeDef.js`;
+        const sourceMapUrl = `ng://${stringify(type)}/ngPipeDef.js`;
 
         const name = type.name;
         const res = compilePipeFromMetadata({
