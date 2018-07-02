@@ -71,7 +71,8 @@ const EMAIL_REGEXP =
 export class Validators {
   /**
    * @description
-   * Validator that requires the control's value to be greater than or equal to the provided number. The
+   * Validator that requires the control's value to be greater than or equal to the provided number.
+   * The
    * validator exists only as a function and not as a directive.
    *
    * @usageNotes
@@ -80,13 +81,13 @@ export class Validators {
    *
    * ```typescript
    * const control = new FormControl(2, Validators.min(3));
-   * 
+   *
    * console.log(control.errors); // {min: {min: 3, actual: 2}}
    * ```
    *
    * @returns A validator function that returns an error map with the
    * `min` property if the validation check fails, otherwise `null`.
-   * 
+   *
    */
   static min(min: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -102,7 +103,8 @@ export class Validators {
 
   /**
    * @description
-   * Validator that requires the control's value to be less than or equal to the provided number. The validator
+   * Validator that requires the control's value to be less than or equal to the provided number.
+   * The validator
    * exists only as a function and not as a directive.
    *
    * @usageNotes
@@ -111,13 +113,13 @@ export class Validators {
    *
    * ```typescript
    * const control = new FormControl(16, Validators.max(15));
-   * 
+   *
    * console.log(control.errors); // {max: {max: 15, actual: 16}}
    * ```
    *
    * @returns A validator function that returns an error map with the
    * `max` property if the validation check fails, otherwise `null`.
-   * 
+   *
    */
   static max(max: number): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -141,11 +143,11 @@ export class Validators {
    *
    * ```typescript
    * const control = new FormControl('', Validators.required);
-   * 
+   *
    * console.log(control.errors); // {required: true}
    * ```
    *
-   * @returns An error map with the `required` property 
+   * @returns An error map with the `required` property
    * if the validation check fails, otherwise `null`.
    *
    */
@@ -164,7 +166,7 @@ export class Validators {
    *
    * ```typescript
    * const control = new FormControl('', Validators.requiredTrue);
-   * 
+   *
    * console.log(control.errors); // {required: true}
    * ```
    *
@@ -185,11 +187,11 @@ export class Validators {
    *
    * ```typescript
    * const control = new FormControl('bad@', Validators.email);
-   * 
+   *
    * console.log(control.errors); // {email: true}
    * ```
    *
-   * @returns An error map with the `email` property 
+   * @returns An error map with the `email` property
    * if the validation check fails, otherwise `null`.
    *
    */
@@ -202,7 +204,7 @@ export class Validators {
 
   /**
    * @description
-   * Validator that requires the length of the control's value to be greater than or equal 
+   * Validator that requires the length of the control's value to be greater than or equal
    * to the provided minimum length. This validator is also provided by default if you use the
    * the HTML5 `minlength` attribute.
    *
@@ -212,7 +214,7 @@ export class Validators {
    *
    * ```typescript
    * const control = new FormControl('ng', Validators.minLength(3));
-   * 
+   *
    * console.log(control.errors); // {minlength: {requiredLength: 3, actualLength: 2}}
    * ```
    *
@@ -237,7 +239,7 @@ export class Validators {
 
   /**
    * @description
-   * Validator that requires the length of the control's value to be less than or equal 
+   * Validator that requires the length of the control's value to be less than or equal
    * to the provided maximum length. This validator is also provided by default if you use the
    * the HTML5 `maxlength` attribute.
    *
@@ -247,7 +249,7 @@ export class Validators {
    *
    * ```typescript
    * const control = new FormControl('Angular', Validators.maxLength(5));
-   * 
+   *
    * console.log(control.errors); // {maxlength: {requiredLength: 15, actualLength: 16}}
    * ```
    *
@@ -269,7 +271,8 @@ export class Validators {
 
   /**
    * @description
-   * Validator that requires the control's value to match a regex pattern. This validator is also provided 
+   * Validator that requires the control's value to match a regex pattern. This validator is also
+   * provided
    * by default if you use the HTML5 `pattern` attribute.
    *
    * @usageNotes
@@ -278,7 +281,7 @@ export class Validators {
    *
    * ```typescript
    * const control = new FormControl('1', Validators.pattern('[a-zA-Z ]*'));
-   * 
+   *
    * console.log(control.errors); // {pattern: {requiredPattern: '^[a-zA-Z ]*$', actualValue: '1'}}
    * ```
    *
