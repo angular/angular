@@ -70,11 +70,12 @@ export interface PackageParser {
  * @param rootDirectory the directory in which we should search.
  */
 export function findAllPackageJsonFiles(rootDirectory: string) {
+  // TODO(gkalpak): Investigate whether skipping `node_modules/` directories (instead of traversing
+  //                them and filtering out the results later) makes a noticeable difference.
   const paths = Array.from(find(rootDirectory));
-  return paths.filter(path => {
-      const relativePath = path.slice(rootDirectory.length);
-      return /package\.json$/.test(relativePath) && !/node_modules\//.test(relativePath);
-    });
+  return paths.filter(path =>
+    /package\.json$/.test(path) &&
+    !/node_modules\//.test(path.slice(rootDirectory.length)));
 }
 
 /**
