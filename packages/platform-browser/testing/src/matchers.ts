@@ -96,19 +96,12 @@ const _global = <any>(typeof window === 'undefined' ? global : window);
  */
 export const expect: (actual: any) => NgMatchers = <any>_global.expect;
 
-/**
- * Jasmine matching utilities. These are added in the a more recent version of
- * the Jasmine typedefs than what we are using:
- * https://github.com/DefinitelyTyped/DefinitelyTyped/pull/20771
- */
-declare global{namespace jasmine{const matchersUtil: MatchersUtil;}}
 
 // Some Map polyfills don't polyfill Map.toString correctly, which
 // gives us bad error messages in tests.
 // The only way to do this in Jasmine is to monkey patch a method
 // to the object :-(
-(Map as any)
-    .prototype['jasmineToString'] = function() {
+(Map as any).prototype['jasmineToString'] = function() {
   const m = this;
   if (!m) {
     return '' + m;
