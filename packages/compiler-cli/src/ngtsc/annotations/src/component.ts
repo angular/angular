@@ -107,8 +107,6 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);
     }
 
-    console.error('compiling component', node.name !.text);
-
     // If the component has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this component appears in an `@NgModule` scope, its selector can be determined.
     if (directiveMetadata.selector !== null) {

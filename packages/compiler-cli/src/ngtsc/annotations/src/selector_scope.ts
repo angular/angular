@@ -107,7 +107,6 @@ export class SelectorScopeRegistry {
    * Register the selector of a component or directive with the registry.
    */
   registerSelector(node: ts.Declaration, selector: string): void {
-    console.error('register selector', selector);
     node = ts.getOriginalNode(node) as ts.Declaration;
 
     if (this._directiveToSelector.has(node)) {
@@ -120,7 +119,6 @@ export class SelectorScopeRegistry {
    * Register the name of a pipe with the registry.
    */
   registerPipe(node: ts.Declaration, name: string): void {
-    console.error('register pipe', name);
     node = ts.getOriginalNode(node) as ts.Declaration;
 
     this._pipeToName.set(node, name);
@@ -161,20 +159,16 @@ export class SelectorScopeRegistry {
     this.lookupScopes(module !, /* ngModuleImportedFrom */ null).compilation.forEach(ref => {
       const node = ts.getOriginalNode(ref.node) as ts.Declaration;
 
-      console.error('processing node', (node as ts.ClassDeclaration).name !.text);
-
       // Either the node represents a directive or a pipe. Look for both.
       const selector = this.lookupDirectiveSelector(node);
       // Only directives/components with selectors get added to the scope.
       if (selector != null) {
         directives.set(selector, ref);
-        console.error('is Directive with selector', selector);
         return;
       }
 
       const name = this.lookupPipeName(node);
       if (name != null) {
-        console.error('is Pipe with name', name);
         pipes.set(name, ref);
       }
     });
