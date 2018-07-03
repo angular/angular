@@ -96,7 +96,7 @@ Now edit the generated `src/app/highlight.directive.ts` to look as follows:
 
 The `import` statement specifies an additional `ElementRef` symbol from the Angular `core` library:
 
-You use the `ElementRef`in the directive's constructor
+You use the `ElementRef` in the directive's constructor
 to [inject](guide/dependency-injection) a reference to the host DOM element, 
 the element to which you applied `appHighlight`.
 
