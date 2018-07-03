@@ -167,6 +167,10 @@ import {first, map} from 'rxjs/operators';
 
       it('should not error on valid email',
          () => expect(Validators.email(new FormControl('test@gmail.com'))).toBeNull());
+
+      it('should not allow an email address without a domain', () => {
+        expect(Validators.email(new FormControl('test@gmail'))).toEqual({ 'email': true });
+      });
     });
 
     describe('minLength', () => {
