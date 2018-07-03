@@ -196,51 +196,86 @@ You'll use the [resolve guard](#resolve-guard) to retrieve _dynamic_ data later 
 이렇게 전달한 데이터 프로퍼티는 라우터를 통해 참조할 수 있으며, 페이지 제목이나 breadcrumb 텍스트, 읽기 전용 데이터, 정적 데이터를 저장하는 용도로 활용할 수 있습니다.
 그리고 [라우터 가드(resolve guard)](#resolve-guard)를 사용해서 _동적_ 데이터를 전달하는 방법은 이 문서의 후반부에 다룹니다.
 
+<!--
 The **empty path** in the fourth route represents the default path for the application,
 the place to go when the path in the URL is empty, as it typically is at the start.
 This default route redirects to the route for the `/heroes` URL and, therefore, will display the `HeroesListComponent`.
+-->
+네 번째 라우팅 규칙에 사용된 **빈 경로**는 하위 URL 주소가 없을 떄 사용되는 애플리케이션의 기본 주소이며, 보통 애플리케이션의 시작 주소로 사용합니다.
+이 예제에서는 빈 주소로 접속했을 때 `/heroes` URL로 리다이렉트 하며, 이 동작으로 인해 `HeroesListComponent`가 화면에 표시될 것입니다.
 
+<!--
 The `**` path in the last route is a **wildcard**. The router will select this route
 if the requested URL doesn't match any paths for routes defined earlier in the configuration.
 This is useful for displaying a "404 - Not Found" page or redirecting to another route.
+-->
+마지막 라우팅 규칙에 사용된 `**`는 **와일드카드(wildcard)**입니다.
+이 라우팅 규칙은 사용자가 요청한 URL에 해당하는 규칙이 없을 때 적용되며, 이 방식을 사용하면 "404 - Not Found" 페이지를 표시하거나 다른 주소로 라우팅하는 용도로 활용할 수 있습니다.
 
+<!--
 **The order of the routes in the configuration matters** and this is by design. The router uses a **first-match wins**
 strategy when matching routes, so more specific routes should be placed above less specific routes.
 In the configuration above, routes with a static path are listed first, followed by an empty path route,
 that matches the default route.
 The wildcard route comes last because it matches _every URL_ and should be selected _only_ if no other routes are matched first.
+-->
+Angular 라우터의 **라우팅 규칙은 선언된 순서대로 적용되도록** 디자인되었습니다.
+그래서 사용자가 요청한 URL이 라우팅 규칙 여러개와 매칭되더라도 **첫번째 매칭된 항목이 우선**되기 때문에, 일반적인 라우팅 규칙보다 세부적인 라우팅 규칙이 먼저 정의되어야 합니다.
+이 코드에서 설정한 것을 보면, 고정된 주소로 지정된 URL이 처음 매칭되며, 라우팅 변수를 사용한 라우팅 규칙이 그 다음으로 매칭되고, 빈 주소에 해당하는 라우팅 규칙, 기본 라우팅 규칙이 순서대로 매칭됩니다.
+와일드카드 라우팅 규칙은 _모든 URL_ 에 매칭되기 때문에 이 규칙은 가장 마지막에 정의되어야 합니다.
 
+<!--
 If you need to see what events are happening during the navigation lifecycle, there is the **enableTracing** option as part of the router's default configuration. This outputs each router event that took place during each navigation lifecycle to the browser console. This should only be used for _debugging_ purposes. You set the `enableTracing: true` option in the object passed as the second argument to the `RouterModule.forRoot()` method.
+-->
+네비게이션 라이프싸이클이 실행되는 동안 어떤 이벤트가 발생하는지 확인하려면, 라우터를 설정할 떄 **enableTracing** 옵션을 사용할 수도 있습니다.
+이 옵션이 설정되면 각 네비게이션 라이프싸이클이 실행될 때마다 브라우저에 로그가 출력됩니다.
+이 옵션은 _디버깅_ 하는 용도로만 사용해야 하며, `RouterModule.forRoot()` 메소드의 두 번째 인자로 `enableTracing: true` 를 지정하면 됩니다.
 
 {@a basics-router-outlet}
 
-
+<!--
 ### Router outlet
+-->
+### 라우팅 영역 (Router outlet)
 
+<!--
 Given this configuration, when the browser URL for this application becomes `/heroes`,
 the router matches that URL to the route path `/heroes` and displays the `HeroListComponent`
 _after_ a `RouterOutlet` that you've placed in the host view's HTML.
-
+-->
+이렇게 라우터를 설정하고 브라우저에서 세부 URL 없이 애플리케이션을 실행하면, 라우터가 접속 주소를 `/heroes`로 바뀌고 이 주소에 맞는 `HeroListComponent`를 표시하는데, 이 때 컴포넌트는 호스트 뷰의 HTML에 선언된 `RouterOutlet` _뒤에_ 추가됩니다.
 
 <code-example language="html">
   &lt;router-outlet>&lt;/router-outlet>
-  &lt;!-- Routed views go here -->
+  <!--
+  &lt;!-- Routed views go here --&gt;
+  -->
+  &lt;!-- 라우팅 되는 뷰가 표시되는 영역 -->
 
 </code-example>
 
 
-
 {@a basics-router-links}
 
-
+<!--
 ### Router links
+-->
+### 라우터 링크
 
+<!--
 Now you have routes configured and a place to render them, but
 how do you navigate? The URL could arrive directly from the browser address bar.
 But most of the time you navigate as a result of some user action such as the click of
 an anchor tag.
+-->
+이제 라우터도 설정했고 주소에 연결된 컴포넌트가 어디에 표시되는지도 알았습니다. 그런데 이 주소들을 어떻게 이동할 수 있을까요?
+물론 브라우저 주소 표시줄에 원하는 주소를 바로 입력해서 이동할 수도 있습니다.
+하지만 대부분의 경우는 사용자가 앵커 태그를 클릭하는 것과 같은 사용자 동작에 의해 네비게이션이 이루어지는 것이 더 자연스럽습니다.
 
+<!--
 Consider the following template:
+-->
+다음과 같은 템플릿을 봅시다:
 
 
 <code-example path="router/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
@@ -248,17 +283,29 @@ Consider the following template:
 </code-example>
 
 
-
+<!--
 The `RouterLink` directives on the anchor tags give the router control over those elements.
 The navigation paths are fixed, so you can assign a string to the `routerLink` (a "one-time" binding).
+-->
+앵커 태그에 사용된 `RouterLink` 디렉티브는 이 앵커 태그의 동작을 라우터에게 위임합니다.
+그래서 고정된 주소로 이동하는 경우라면 `routerLink`에 문자열을 할당해도 됩니다. (한 번만 바인딩하는 문법입니다.)
 
+<!--
 Had the navigation path been more dynamic, you could have bound to a template expression that
 returned an array of route link parameters (the _link parameters array_).
 The router resolves that array into a complete URL.
+-->
+그리고 네비게이션 경로가 동적으로 할당되는 경우라면, 라우터 링크 변수를 템플릿 표현식으로 바인딩할 수도 있습니다.
+이 때 라우터 링크 변수는 배열로 지정하며, 이 배열은 라우터가 완전한 URL로 변환해서 적용합니다.
 
+<!--
 The **`RouterLinkActive`** directive on each anchor tag helps visually distinguish the anchor for the currently selected "active" route.
 The router adds the `active` CSS class to the element when the associated *RouterLink* becomes active.
 You can add this directive to the anchor or to its parent element.
+-->
+**`RouterLinkActive`** 디렉티브는 현재 "활성화된" 라우팅에 시각적인 효과를 표시하는 용도로 사용할 수 있습니다.
+이 디렉티브는 관련된 *RouterLink*가 활성화될 때 `active` CSS 클래스를 추가하는 단순한 동작을 수행하며,
+앵커 태그나 앵커 태그의 부모 엘리먼트에 지정할 수 있습니다.
 
 
 {@a basics-router-state}
