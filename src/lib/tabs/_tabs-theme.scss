@@ -83,9 +83,11 @@
 }
 
 @mixin _mat-tab-label-focus($tab-focus-color) {
-  .mat-tab-label:not(.mat-tab-disabled):focus,
-  .mat-tab-link:not(.mat-tab-disabled):focus {
-    background-color: mat-color($tab-focus-color, lighter, 0.3);
+  .mat-tab-label,
+  .mat-tab-link {
+    &.cdk-focused:not(.cdk-mouse-focused):not(.mat-tab-disabled) {
+      background-color: mat-color($tab-focus-color, lighter, 0.3);
+    }
   }
 }
 

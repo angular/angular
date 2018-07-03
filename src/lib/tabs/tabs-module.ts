@@ -20,6 +20,7 @@ import {MatTabHeader} from './tab-header';
 import {MatTabLabel} from './tab-label';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
 import {MatTabLink, MatTabNav} from './tab-nav-bar/tab-nav-bar';
+import {A11yModule} from '@angular/cdk/a11y';
 
 
 @NgModule({
@@ -29,6 +30,7 @@ import {MatTabLink, MatTabNav} from './tab-nav-bar/tab-nav-bar';
     PortalModule,
     MatRippleModule,
     ObserversModule,
+    A11yModule,
   ],
   // Don't export all components because some are only to be used internally.
   exports: [
