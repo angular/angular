@@ -237,8 +237,9 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     return ts.createPropertyAccess(ast.receiver.visitExpression(this, context), ast.name);
   }
 
-  visitReadKeyExpr(ast: ReadKeyExpr, context: any): never {
-    throw new Error('Method not implemented.');
+  visitReadKeyExpr(ast: ReadKeyExpr, context: any): ts.ElementAccessExpression {
+    return ts.createElementAccess(
+        ast.receiver.visitExpression(this, context), ast.index.visitExpression(this, context));
   }
 
   visitLiteralArrayExpr(ast: LiteralArrayExpr, context: any): ts.ArrayLiteralExpression {
