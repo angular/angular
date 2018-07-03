@@ -1654,7 +1654,7 @@ class StandaloneNgModel {
 })
 class NgModelForm {
   // TODO(issue/24571): remove '!'.
-  name !: string|null;
+  name !: string | null;
   // TODO(issue/24571): remove '!'.
   event !: Event;
   options = {};

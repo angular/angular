@@ -15,7 +15,7 @@ describe('testability example', () => {
   describe('using task tracking', () => {
     const URL = '/core/testability/ts/whenStable/';
 
-    it('times out with a list of tasks', (done) => {
+    it('times out with a list of tasks', (done: DoneFn) => {
       browser.get(URL);
       browser.ignoreSynchronization = true;
 

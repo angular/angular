@@ -351,8 +351,7 @@ describe('elementProperty', () => {
           .toEqual(`<button iddir="">Click me</button><button id="two">Click me too</button>`);
       expect(idDir !.idNumber).toEqual('one');
 
-      expect(
-          renderToHtml(Template, {condition: false, id1: 'four', id2: 'two', id3: 3}, deps))
+      expect(renderToHtml(Template, {condition: false, id1: 'four', id2: 'two', id3: 3}, deps))
           .toEqual(`<button iddir="">Click me</button><button otherdir="">Click me too</button>`);
       expect(idDir !.idNumber).toEqual('four');
       expect(otherDir !.id).toEqual(3);

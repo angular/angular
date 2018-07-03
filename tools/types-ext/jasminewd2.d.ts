@@ -8,21 +8,14 @@
 
 /**
  * Extended typings for `jasminewd2`.
+ *
  * The currently used `jasminewd2` version (v2.1.0), supports passing a `done` callback to a spec,
- * but the latest typings do not reflect that.
- * Here, we overwrite the relevant function signatures to add a `done` callback.
+ * but the latest typings on [DefinitelyTyped][1] do not reflect that.
+ * Overwrite the relevant function signatures to add a `done` callback.
+ *
+ * [1]:
+ * https://github.com/DefinitelyTyped/DefinitelyTyped/blob/566e0394859fdc1dc893658ccec6b06372d56a91/types/jasminewd2/index.d.ts#L9-L15
  */
-declare global {
-  namespace jasmine {
-  // `jasmine` typings do not export `DoneFn`. Re-implement in order to use below.
-  interface DoneFn extends Function {
-    (): void;
-    fail: (message?: Error|string) => void;
-  }
-  }
-}
-
-// Overwrite signatures to add a `done` callback.
 declare function it(
     expectation: string, assertion?: (done: DoneFn) => Promise<void>, timeout?: number): void;
     declare function fit(

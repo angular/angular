@@ -9,12 +9,12 @@
 import {Location} from '@angular/common';
 import {TestBed, inject} from '@angular/core/testing';
 
-import {ResolveData} from '../src/config';
+import {Routes} from '../src/config';
 import {ChildActivationStart} from '../src/events';
 import {PreActivation} from '../src/pre_activation';
 import {Router} from '../src/router';
 import {ChildrenOutletContexts} from '../src/router_outlet_context';
-import {ActivatedRouteSnapshot, RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
+import {RouterStateSnapshot, createEmptyStateSnapshot} from '../src/router_state';
 import {DefaultUrlSerializer} from '../src/url_tree';
 import {TreeNode} from '../src/utils/tree';
 import {RouterTestingModule} from '../testing/src/router_testing_module';
@@ -30,14 +30,17 @@ describe('Router', () => {
 
     it('should copy config to avoid mutations of user-provided objects', () => {
       const r: Router = TestBed.get(Router);
-      const configs = [{
+      const configs: Routes = [{
         path: 'a',
         component: TestComponent,
         children: [{path: 'b', component: TestComponent}, {path: 'c', component: TestComponent}]
       }];
+      const children = configs[0].children !;
+
       r.resetConfig(configs);
 
-      let rConfigs = r.config;
+      const rConfigs = r.config;
+      const rChildren = rConfigs[0].children !;
 
       // routes array and shallow copy
       expect(configs).not.toBe(rConfigs);
@@ -46,11 +49,11 @@ describe('Router', () => {
       expect(configs[0].component).toBe(rConfigs[0].component);
 
       // children should be new array and routes shallow copied
-      expect(configs[0].children).not.toBe(rConfigs[0].children);
-      expect(configs[0].children[0]).not.toBe(rConfigs[0].children ![0]);
-      expect(configs[0].children[0].path).toBe(rConfigs[0].children ![0].path);
-      expect(configs[0].children[1]).not.toBe(rConfigs[0].children ![1]);
-      expect(configs[0].children[1].path).toBe(rConfigs[0].children ![1].path);
+      expect(children).not.toBe(rChildren);
+      expect(children[0]).not.toBe(rChildren[0]);
+      expect(children[0].path).toBe(rChildren[0].path);
+      expect(children[1]).not.toBe(rChildren[1]);
+      expect(children[1].path).toBe(rChildren[1].path);
     });
   });
 

@@ -10,7 +10,7 @@ import {ElementFinder, by} from 'protractor';
 
 declare global {
   namespace jasmine {
-  interface Matchers {
+  interface Matchers<T> {
     toBeAHero(): Promise<void>;
     toHaveName(exectedName: string): Promise<void>;
   }
