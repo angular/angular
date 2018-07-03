@@ -326,7 +326,7 @@ describe('compiler (unbundled Angular)', () => {
     expect(genSource.startsWith(genFilePreamble)).toBe(true);
   });
 
-  fit('should be able to use animation macro methods', () => {
+  it('should be able to use animation macro methods', () => {
     const FILES = {
       app: {
         'app.ts': `
