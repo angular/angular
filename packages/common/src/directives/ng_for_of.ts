@@ -176,7 +176,7 @@ export class NgForOf<T> implements DoCheck, OnChanges {
       const viewRef = <EmbeddedViewRef<NgForOfContext<T>>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
-      viewRef.context.ngForOf = this._ngForOf;
+      viewRef.context.ngForOf = this.ngForOf;
     }
 
     changes.forEachIdentityChange((record: any) => {
