@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
-import {R3_COMPILE_COMPONENT, R3_COMPILE_DIRECTIVE} from '../ivy_switch';
+import {R3_COMPILE_COMPONENT, R3_COMPILE_DIRECTIVE, R3_COMPILE_PIPE} from '../ivy_switch';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
 import {ViewEncapsulation} from './view';
@@ -810,7 +810,9 @@ export interface Pipe {
  *
  * @Annotation
  */
-export const Pipe: PipeDecorator = makeDecorator('Pipe', (p: Pipe) => ({pure: true, ...p}));
+export const Pipe: PipeDecorator = makeDecorator(
+    'Pipe', (p: Pipe) => ({pure: true, ...p}), undefined, undefined,
+    (type: Type<any>, meta: Pipe) => (R3_COMPILE_PIPE || (() => {}))(type, meta));
 
 
 /**

@@ -10,7 +10,7 @@ import {Injector} from '../../di/injector';
 import {Sanitizer} from '../../sanitization/security';
 
 import {LContainer} from './container';
-import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDef, PipeDefList} from './definition';
+import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDefInternal, PipeDefList} from './definition';
 import {LContainerNode, LElementNode, LViewNode, TNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
@@ -456,7 +456,7 @@ export type HookData = (number | (() => void))[];
  * as its pipe instance in the data array. Any nodes that do not have static
  * data store a null value in tData to avoid a sparse array.
  */
-export type TData = (TNode | PipeDef<any>| null)[];
+export type TData = (TNode | PipeDefInternal<any>| null)[];
 
 /** Type for TView.currentMatches */
 export type CurrentMatchesList = [DirectiveDefInternal<any>, (string | number | null)];

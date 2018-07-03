@@ -15,7 +15,7 @@ import {ConstantPool} from '../../src/constant_pool';
 import * as html from '../../src/ml_parser/ast';
 import {removeWhitespaces} from '../../src/ml_parser/html_whitespaces';
 import * as o from '../../src/output/output_ast';
-import {compilePipe} from '../../src/render3/r3_pipe_compiler';
+import {compilePipeFromRender2} from '../../src/render3/r3_pipe_compiler';
 import {htmlAstToRender3Ast} from '../../src/render3/r3_template_transform';
 import {compileComponentFromRender2, compileDirectiveFromRender2} from '../../src/render3/view/compiler';
 import {BindingParser} from '../../src/template_parser/binding_parser';
@@ -320,7 +320,7 @@ export function compile(
           } else if (resolver.isPipe(pipeOrDirective)) {
             const metadata = resolver.getPipeMetadata(pipeOrDirective);
             if (metadata) {
-              compilePipe(outputCtx, metadata, reflector);
+              compilePipeFromRender2(outputCtx, metadata, reflector);
             }
           }
         }
