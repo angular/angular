@@ -1963,12 +1963,9 @@ export function projectionDef(
     // execute selector matching logic if and only if:
     // - there are selectors defined
     // - a node has a tag name / attributes that can be matched
-    if (selectors) {
-      const matchedIdx = matchingSelectorIndex(componentChild.tNode, selectors, textSelectors !);
-      distributedNodes[matchedIdx].push(componentChild);
-    } else {
-      distributedNodes[0].push(componentChild);
-    }
+    const bucketIndex =
+        selectors ? matchingSelectorIndex(componentChild.tNode, selectors, textSelectors !) : 0;
+    distributedNodes[bucketIndex].push(componentChild);
 
     componentChild = getNextLNode(componentChild);
   }
@@ -2031,8 +2028,10 @@ export function projection(
 
   const currentParent = getParentLNode(node);
   const canInsert = canInsertNativeNode(currentParent, viewData);
+  let grandparent: LContainerNode;
   const renderParent = currentParent.tNode.type === TNodeType.View ?
-      (getParentLNode(currentParent) as LContainerNode).data[RENDER_PARENT] ! :
+      (grandparent = getParentLNode(currentParent) as LContainerNode) &&
+          grandparent.data[RENDER_PARENT] ! :
       currentParent as LElementNode;
 
   for (let i = 0; i < nodesForSelector.length; i++) {
