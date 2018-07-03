@@ -60,6 +60,7 @@ var specFiles: any =
                        '@angular/examples/**',
                        '@angular/platform-browser/**',
                        '@angular/platform-browser-dynamic/**',
+                       '@angular/compiler/test/aot/**',
                        '@angular/core/test/bundling/**',
                        '@angular/core/test/zone/**',
                        '@angular/core/test/render3/**',
