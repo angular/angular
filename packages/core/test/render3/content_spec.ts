@@ -706,6 +706,171 @@ describe('content projection', () => {
        expect(toHtml(parent)).toEqual('<child><div></div></child>');
      });
 
+  it('should project into dynamic views (with createEmbeddedView)', () => {
+    class NgIf {
+      constructor(public vcr: ViewContainerRef, public template: TemplateRef<any>) {}
+
+      @Input()
+      set ngIf(value: boolean) {
+        value ? this.vcr.createEmbeddedView(this.template) : this.vcr.clear();
+      }
+
+      static ngDirectiveDef = defineDirective({
+        type: NgIf,
+        selectors: [['', 'ngIf', '']],
+        inputs: {'ngIf': 'ngIf'},
+        factory: () => new NgIf(injectViewContainerRef(), injectTemplateRef())
+      });
+    }
+
+    /**
+     * Before-
+     * <ng-template [ngIf]="showing">
+     *     <ng-content></ng-content>
+     * </ng-template>
+     * -After
+     */
+    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef(0);
+        text(1, 'Before-');
+        container(2, IfTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        text(3, '-After');
+      }
+      if (rf & RenderFlags.Update) {
+        elementProperty(2, 'ngIf', bind(ctx.showing));
+      }
+
+      function IfTemplate(rf1: RenderFlags, ctx1: any) {
+        if (rf1 & RenderFlags.Create) {
+          projectionDef(0);
+          projection(1, 0);
+        }
+      }
+    }, [NgIf]);
+
+    let child: {showing: boolean};
+    /**
+     * <child>
+     *     <div>A</div>
+     *     Some text
+     * </child>
+     */
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'child');
+        {
+          elementStart(1, 'div');
+          { text(2, 'A'); }
+          elementEnd();
+          text(3, 'Some text');
+        }
+        elementEnd();
+
+        // testing
+        child = loadDirective(0);
+      }
+    }, [Child]);
+
+    const fixture = new ComponentFixture(App);
+    child !.showing = true;
+    fixture.update();
+    expect(fixture.html).toEqual('<child>Before-<div>A</div>Some text-After</child>');
+
+    child !.showing = false;
+    fixture.update();
+    expect(fixture.html).toEqual('<child>Before--After</child>');
+
+    child !.showing = true;
+    fixture.update();
+    expect(fixture.html).toEqual('<child>Before-<div>A</div>Some text-After</child>');
+  });
+
+  it('should project into dynamic views (with insertion)', () => {
+    class NgIf {
+      constructor(public vcr: ViewContainerRef, public template: TemplateRef<any>) {}
+
+      @Input()
+      set ngIf(value: boolean) {
+        if (value) {
+          const viewRef = this.template.createEmbeddedView({});
+          this.vcr.insert(viewRef);
+        } else {
+          this.vcr.clear();
+        }
+      }
+
+      static ngDirectiveDef = defineDirective({
+        type: NgIf,
+        selectors: [['', 'ngIf', '']],
+        inputs: {'ngIf': 'ngIf'},
+        factory: () => new NgIf(injectViewContainerRef(), injectTemplateRef())
+      });
+    }
+
+    /**
+     * Before-
+     * <ng-template [ngIf]="showing">
+     *     <ng-content></ng-content>
+     * </ng-template>
+     * -After
+     */
+    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef(0);
+        text(1, 'Before-');
+        container(2, IfTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        text(3, '-After');
+      }
+      if (rf & RenderFlags.Update) {
+        elementProperty(2, 'ngIf', bind(ctx.showing));
+      }
+
+      function IfTemplate(rf1: RenderFlags, ctx1: any) {
+        if (rf1 & RenderFlags.Create) {
+          projectionDef(0);
+          projection(1, 0);
+        }
+      }
+    }, [NgIf]);
+
+    let child: {showing: boolean};
+    /**
+     * <child>
+     *     <div>A</div>
+     *     Some text
+     * </child>
+     */
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'child');
+        {
+          elementStart(1, 'div');
+          { text(2, 'A'); }
+          elementEnd();
+          text(3, 'Some text');
+        }
+        elementEnd();
+
+        // testing
+        child = loadDirective(0);
+      }
+    }, [Child]);
+
+    const fixture = new ComponentFixture(App);
+    child !.showing = true;
+    fixture.update();
+    expect(fixture.html).toEqual('<child>Before-<div>A</div>Some text-After</child>');
+
+    child !.showing = false;
+    fixture.update();
+    expect(fixture.html).toEqual('<child>Before--After</child>');
+
+    child !.showing = true;
+    fixture.update();
+    expect(fixture.html).toEqual('<child>Before-<div>A</div>Some text-After</child>');
+  });
+
   it('should project nodes into the last ng-content', () => {
     /**
      * <div><ng-content></ng-content></div>
