@@ -512,7 +512,7 @@ describe('TypeScriptNodeEmitter', () => {
           originalColumn: 26,
           name: null
         }
-      ]);
+      ] as any);
     });
 
     it('should produce a mapping per range instead of a mapping per node', () => {

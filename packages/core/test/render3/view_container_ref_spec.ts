@@ -482,7 +482,7 @@ describe('ViewContainerRef', () => {
 
         expect(() => { directiveInstance !.vcref.detach(-1); }).toThrow();
         expect(() => { directiveInstance !.vcref.detach(42); }).toThrow();
-        expect(ngDevMode).toHaveProperties({rendererDestroyNode: 0});
+        expect(ngDevMode).toHaveProperties({ rendererDestroyNode: 0 } as any);
       });
 
 
@@ -501,7 +501,7 @@ describe('ViewContainerRef', () => {
         fixture.update();
         expect(fixture.html).toEqual('<p vcref=""></p>ABCD');
         expect(viewE.destroyed).toBeFalsy();
-        expect(ngDevMode).toHaveProperties({rendererDestroyNode: 0});
+        expect(ngDevMode).toHaveProperties({ rendererDestroyNode: 0 } as any);
       });
     });
 
@@ -529,7 +529,7 @@ describe('ViewContainerRef', () => {
 
         expect(() => { directiveInstance !.vcref.remove(-1); }).toThrow();
         expect(() => { directiveInstance !.vcref.remove(42); }).toThrow();
-        expect(ngDevMode).toHaveProperties({rendererDestroyNode: 2});
+        expect(ngDevMode).toHaveProperties({ rendererDestroyNode: 2 });
       });
 
       it('should remove the last embedded view when no index is specified', () => {
@@ -547,7 +547,7 @@ describe('ViewContainerRef', () => {
         fixture.update();
         expect(fixture.html).toEqual('<p vcref=""></p>ABCD');
         expect(viewE.destroyed).toBeTruthy();
-        expect(ngDevMode).toHaveProperties({rendererDestroyNode: 1});
+        expect(ngDevMode).toHaveProperties({ rendererDestroyNode: 1 });
       });
 
       it('should throw when trying to insert a removed or destroyed view', () => {

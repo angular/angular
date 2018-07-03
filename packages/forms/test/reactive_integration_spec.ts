@@ -207,7 +207,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.detectChanges();
 
         emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
-        expect(emailInput).toBe(null);
+        expect(emailInput).toBe(null as any);
       });
 
       it('should strip array controls that are not found', () => {
@@ -1416,7 +1416,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.detectChanges();
 
           expect(values).toEqual(
-              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
+              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'] as any,
               'Expected valueChanges and statusChanges to update on submit.');
 
           sub.unsubscribe();
@@ -1451,13 +1451,13 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
           expect(values).toEqual(
-              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
+              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'] as any,
               'Expected valueChanges and statusChanges on submit if value changed.');
 
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
           expect(values).toEqual(
-              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
+              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'] as any,
               'Expected valueChanges and statusChanges not to fire again if value unchanged.');
 
           input.value = 'Bess';
@@ -1465,7 +1465,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.detectChanges();
 
           expect(values).toEqual(
-              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'],
+              ['Nancy', 'VALID', {login: 'Nancy'}, 'VALID'] as any,
               'Expected valueChanges and statusChanges not to fire on input after submit.');
 
           dispatchEvent(form, 'submit');
@@ -1475,7 +1475,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
               [
                 'Nancy', 'VALID', {login: 'Nancy'}, 'VALID', 'Bess', 'VALID', {login: 'Bess'},
                 'VALID'
-              ],
+              ] as any,
               'Expected valueChanges and statusChanges to fire again on submit if value changed.');
 
           sub.unsubscribe();

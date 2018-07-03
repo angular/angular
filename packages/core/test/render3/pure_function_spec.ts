@@ -16,7 +16,7 @@ describe('array literals', () => {
 
   class MyComp {
     // TODO(issue/24571): remove '!'.
-    names !: string[];
+    names !: (string | {})[];
 
     static ngComponentDef = defineComponent({
       type: MyComp,

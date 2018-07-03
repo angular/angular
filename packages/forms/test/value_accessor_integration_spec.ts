@@ -342,7 +342,7 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
              dispatchEvent(select.nativeElement, 'change');
              fixture.detectChanges();
              tick();
-             expect(comp.selectedCity).toEqual(null);
+             expect(comp.selectedCity).toEqual(null as any);
            }));
 
         it('should throw an error when compareWith is not a function', () => {

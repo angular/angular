@@ -103,83 +103,92 @@ import * as core from '@angular/core';
     });
 
     it('const enums should be equal', () => {
-      expect(compilerCore.NodeFlags.None).toBe(core.ɵNodeFlags.None);
-      expect(compilerCore.NodeFlags.TypeElement).toBe(core.ɵNodeFlags.TypeElement);
-      expect(compilerCore.NodeFlags.TypeText).toBe(core.ɵNodeFlags.TypeText);
-      expect(compilerCore.NodeFlags.ProjectedTemplate).toBe(core.ɵNodeFlags.ProjectedTemplate);
-      expect(compilerCore.NodeFlags.CatRenderNode).toBe(core.ɵNodeFlags.CatRenderNode);
-      expect(compilerCore.NodeFlags.TypeNgContent).toBe(core.ɵNodeFlags.TypeNgContent);
-      expect(compilerCore.NodeFlags.TypePipe).toBe(core.ɵNodeFlags.TypePipe);
-      expect(compilerCore.NodeFlags.TypePureArray).toBe(core.ɵNodeFlags.TypePureArray);
-      expect(compilerCore.NodeFlags.TypePureObject).toBe(core.ɵNodeFlags.TypePureObject);
-      expect(compilerCore.NodeFlags.TypePurePipe).toBe(core.ɵNodeFlags.TypePurePipe);
-      expect(compilerCore.NodeFlags.CatPureExpression).toBe(core.ɵNodeFlags.CatPureExpression);
-      expect(compilerCore.NodeFlags.TypeValueProvider).toBe(core.ɵNodeFlags.TypeValueProvider);
-      expect(compilerCore.NodeFlags.TypeClassProvider).toBe(core.ɵNodeFlags.TypeClassProvider);
-      expect(compilerCore.NodeFlags.TypeFactoryProvider).toBe(core.ɵNodeFlags.TypeFactoryProvider);
+      expect(compilerCore.NodeFlags.None).toBe(core.ɵNodeFlags.None as any);
+      expect(compilerCore.NodeFlags.TypeElement).toBe(core.ɵNodeFlags.TypeElement as any);
+      expect(compilerCore.NodeFlags.TypeText).toBe(core.ɵNodeFlags.TypeText as any);
+      expect(compilerCore.NodeFlags.ProjectedTemplate)
+          .toBe(core.ɵNodeFlags.ProjectedTemplate as any);
+      expect(compilerCore.NodeFlags.CatRenderNode).toBe(core.ɵNodeFlags.CatRenderNode as any);
+      expect(compilerCore.NodeFlags.TypeNgContent).toBe(core.ɵNodeFlags.TypeNgContent as any);
+      expect(compilerCore.NodeFlags.TypePipe).toBe(core.ɵNodeFlags.TypePipe as any);
+      expect(compilerCore.NodeFlags.TypePureArray).toBe(core.ɵNodeFlags.TypePureArray as any);
+      expect(compilerCore.NodeFlags.TypePureObject).toBe(core.ɵNodeFlags.TypePureObject as any);
+      expect(compilerCore.NodeFlags.TypePurePipe).toBe(core.ɵNodeFlags.TypePurePipe as any);
+      expect(compilerCore.NodeFlags.CatPureExpression)
+          .toBe(core.ɵNodeFlags.CatPureExpression as any);
+      expect(compilerCore.NodeFlags.TypeValueProvider)
+          .toBe(core.ɵNodeFlags.TypeValueProvider as any);
+      expect(compilerCore.NodeFlags.TypeClassProvider)
+          .toBe(core.ɵNodeFlags.TypeClassProvider as any);
+      expect(compilerCore.NodeFlags.TypeFactoryProvider)
+          .toBe(core.ɵNodeFlags.TypeFactoryProvider as any);
       expect(compilerCore.NodeFlags.TypeUseExistingProvider)
-          .toBe(core.ɵNodeFlags.TypeUseExistingProvider);
-      expect(compilerCore.NodeFlags.LazyProvider).toBe(core.ɵNodeFlags.LazyProvider);
-      expect(compilerCore.NodeFlags.PrivateProvider).toBe(core.ɵNodeFlags.PrivateProvider);
-      expect(compilerCore.NodeFlags.TypeDirective).toBe(core.ɵNodeFlags.TypeDirective);
-      expect(compilerCore.NodeFlags.Component).toBe(core.ɵNodeFlags.Component);
+          .toBe(core.ɵNodeFlags.TypeUseExistingProvider as any);
+      expect(compilerCore.NodeFlags.LazyProvider).toBe(core.ɵNodeFlags.LazyProvider as any);
+      expect(compilerCore.NodeFlags.PrivateProvider).toBe(core.ɵNodeFlags.PrivateProvider as any);
+      expect(compilerCore.NodeFlags.TypeDirective).toBe(core.ɵNodeFlags.TypeDirective as any);
+      expect(compilerCore.NodeFlags.Component).toBe(core.ɵNodeFlags.Component as any);
       expect(compilerCore.NodeFlags.CatProviderNoDirective)
-          .toBe(core.ɵNodeFlags.CatProviderNoDirective);
-      expect(compilerCore.NodeFlags.CatProvider).toBe(core.ɵNodeFlags.CatProvider);
-      expect(compilerCore.NodeFlags.OnInit).toBe(core.ɵNodeFlags.OnInit);
-      expect(compilerCore.NodeFlags.OnDestroy).toBe(core.ɵNodeFlags.OnDestroy);
-      expect(compilerCore.NodeFlags.DoCheck).toBe(core.ɵNodeFlags.DoCheck);
-      expect(compilerCore.NodeFlags.OnChanges).toBe(core.ɵNodeFlags.OnChanges);
-      expect(compilerCore.NodeFlags.AfterContentInit).toBe(core.ɵNodeFlags.AfterContentInit);
-      expect(compilerCore.NodeFlags.AfterContentChecked).toBe(core.ɵNodeFlags.AfterContentChecked);
-      expect(compilerCore.NodeFlags.AfterViewInit).toBe(core.ɵNodeFlags.AfterViewInit);
-      expect(compilerCore.NodeFlags.AfterViewChecked).toBe(core.ɵNodeFlags.AfterViewChecked);
-      expect(compilerCore.NodeFlags.EmbeddedViews).toBe(core.ɵNodeFlags.EmbeddedViews);
-      expect(compilerCore.NodeFlags.ComponentView).toBe(core.ɵNodeFlags.ComponentView);
-      expect(compilerCore.NodeFlags.TypeContentQuery).toBe(core.ɵNodeFlags.TypeContentQuery);
-      expect(compilerCore.NodeFlags.TypeViewQuery).toBe(core.ɵNodeFlags.TypeViewQuery);
-      expect(compilerCore.NodeFlags.StaticQuery).toBe(core.ɵNodeFlags.StaticQuery);
-      expect(compilerCore.NodeFlags.DynamicQuery).toBe(core.ɵNodeFlags.DynamicQuery);
-      expect(compilerCore.NodeFlags.CatQuery).toBe(core.ɵNodeFlags.CatQuery);
-      expect(compilerCore.NodeFlags.Types).toBe(core.ɵNodeFlags.Types);
+          .toBe(core.ɵNodeFlags.CatProviderNoDirective as any);
+      expect(compilerCore.NodeFlags.CatProvider).toBe(core.ɵNodeFlags.CatProvider as any);
+      expect(compilerCore.NodeFlags.OnInit).toBe(core.ɵNodeFlags.OnInit as any);
+      expect(compilerCore.NodeFlags.OnDestroy).toBe(core.ɵNodeFlags.OnDestroy as any);
+      expect(compilerCore.NodeFlags.DoCheck).toBe(core.ɵNodeFlags.DoCheck as any);
+      expect(compilerCore.NodeFlags.OnChanges).toBe(core.ɵNodeFlags.OnChanges as any);
+      expect(compilerCore.NodeFlags.AfterContentInit).toBe(core.ɵNodeFlags.AfterContentInit as any);
+      expect(compilerCore.NodeFlags.AfterContentChecked)
+          .toBe(core.ɵNodeFlags.AfterContentChecked as any);
+      expect(compilerCore.NodeFlags.AfterViewInit).toBe(core.ɵNodeFlags.AfterViewInit as any);
+      expect(compilerCore.NodeFlags.AfterViewChecked).toBe(core.ɵNodeFlags.AfterViewChecked as any);
+      expect(compilerCore.NodeFlags.EmbeddedViews).toBe(core.ɵNodeFlags.EmbeddedViews as any);
+      expect(compilerCore.NodeFlags.ComponentView).toBe(core.ɵNodeFlags.ComponentView as any);
+      expect(compilerCore.NodeFlags.TypeContentQuery).toBe(core.ɵNodeFlags.TypeContentQuery as any);
+      expect(compilerCore.NodeFlags.TypeViewQuery).toBe(core.ɵNodeFlags.TypeViewQuery as any);
+      expect(compilerCore.NodeFlags.StaticQuery).toBe(core.ɵNodeFlags.StaticQuery as any);
+      expect(compilerCore.NodeFlags.DynamicQuery).toBe(core.ɵNodeFlags.DynamicQuery as any);
+      expect(compilerCore.NodeFlags.CatQuery).toBe(core.ɵNodeFlags.CatQuery as any);
+      expect(compilerCore.NodeFlags.Types).toBe(core.ɵNodeFlags.Types as any);
 
-      expect(compilerCore.DepFlags.None).toBe(core.ɵDepFlags.None);
-      expect(compilerCore.DepFlags.SkipSelf).toBe(core.ɵDepFlags.SkipSelf);
-      expect(compilerCore.DepFlags.Optional).toBe(core.ɵDepFlags.Optional);
-      expect(compilerCore.DepFlags.Value).toBe(core.ɵDepFlags.Value);
+      expect(compilerCore.DepFlags.None).toBe(core.ɵDepFlags.None as any);
+      expect(compilerCore.DepFlags.SkipSelf).toBe(core.ɵDepFlags.SkipSelf as any);
+      expect(compilerCore.DepFlags.Optional).toBe(core.ɵDepFlags.Optional as any);
+      expect(compilerCore.DepFlags.Value).toBe(core.ɵDepFlags.Value as any);
 
-      expect(compilerCore.InjectFlags.Default).toBe(core.InjectFlags.Default);
-      expect(compilerCore.InjectFlags.SkipSelf).toBe(core.InjectFlags.SkipSelf);
-      expect(compilerCore.InjectFlags.Self).toBe(core.InjectFlags.Self);
+      expect(compilerCore.InjectFlags.Default).toBe(core.InjectFlags.Default as any);
+      expect(compilerCore.InjectFlags.SkipSelf).toBe(core.InjectFlags.SkipSelf as any);
+      expect(compilerCore.InjectFlags.Self).toBe(core.InjectFlags.Self as any);
 
-      expect(compilerCore.ArgumentType.Inline).toBe(core.ɵArgumentType.Inline);
-      expect(compilerCore.ArgumentType.Dynamic).toBe(core.ɵArgumentType.Dynamic);
+      expect(compilerCore.ArgumentType.Inline).toBe(core.ɵArgumentType.Inline as any);
+      expect(compilerCore.ArgumentType.Dynamic).toBe(core.ɵArgumentType.Dynamic as any);
 
       expect(compilerCore.BindingFlags.TypeElementAttribute)
-          .toBe(core.ɵBindingFlags.TypeElementAttribute);
-      expect(compilerCore.BindingFlags.TypeElementClass).toBe(core.ɵBindingFlags.TypeElementClass);
-      expect(compilerCore.BindingFlags.TypeElementStyle).toBe(core.ɵBindingFlags.TypeElementStyle);
-      expect(compilerCore.BindingFlags.TypeProperty).toBe(core.ɵBindingFlags.TypeProperty);
+          .toBe(core.ɵBindingFlags.TypeElementAttribute as any);
+      expect(compilerCore.BindingFlags.TypeElementClass)
+          .toBe(core.ɵBindingFlags.TypeElementClass as any);
+      expect(compilerCore.BindingFlags.TypeElementStyle)
+          .toBe(core.ɵBindingFlags.TypeElementStyle as any);
+      expect(compilerCore.BindingFlags.TypeProperty).toBe(core.ɵBindingFlags.TypeProperty as any);
       expect(compilerCore.BindingFlags.SyntheticProperty)
-          .toBe(core.ɵBindingFlags.SyntheticProperty);
+          .toBe(core.ɵBindingFlags.SyntheticProperty as any);
       expect(compilerCore.BindingFlags.SyntheticHostProperty)
-          .toBe(core.ɵBindingFlags.SyntheticHostProperty);
+          .toBe(core.ɵBindingFlags.SyntheticHostProperty as any);
       expect(compilerCore.BindingFlags.CatSyntheticProperty)
-          .toBe(core.ɵBindingFlags.CatSyntheticProperty);
-      expect(compilerCore.BindingFlags.Types).toBe(core.ɵBindingFlags.Types);
+          .toBe(core.ɵBindingFlags.CatSyntheticProperty as any);
+      expect(compilerCore.BindingFlags.Types).toBe(core.ɵBindingFlags.Types as any);
 
-      expect(compilerCore.QueryBindingType.First).toBe(core.ɵQueryBindingType.First);
-      expect(compilerCore.QueryBindingType.All).toBe(core.ɵQueryBindingType.All);
+      expect(compilerCore.QueryBindingType.First).toBe(core.ɵQueryBindingType.First as any);
+      expect(compilerCore.QueryBindingType.All).toBe(core.ɵQueryBindingType.All as any);
 
-      expect(compilerCore.QueryValueType.ElementRef).toBe(core.ɵQueryValueType.ElementRef);
-      expect(compilerCore.QueryValueType.RenderElement).toBe(core.ɵQueryValueType.RenderElement);
-      expect(compilerCore.QueryValueType.TemplateRef).toBe(core.ɵQueryValueType.TemplateRef);
+      expect(compilerCore.QueryValueType.ElementRef).toBe(core.ɵQueryValueType.ElementRef as any);
+      expect(compilerCore.QueryValueType.RenderElement)
+          .toBe(core.ɵQueryValueType.RenderElement as any);
+      expect(compilerCore.QueryValueType.TemplateRef).toBe(core.ɵQueryValueType.TemplateRef as any);
       expect(compilerCore.QueryValueType.ViewContainerRef)
-          .toBe(core.ɵQueryValueType.ViewContainerRef);
-      expect(compilerCore.QueryValueType.Provider).toBe(core.ɵQueryValueType.Provider);
+          .toBe(core.ɵQueryValueType.ViewContainerRef as any);
+      expect(compilerCore.QueryValueType.Provider).toBe(core.ɵQueryValueType.Provider as any);
 
-      expect(compilerCore.ViewFlags.None).toBe(core.ɵViewFlags.None);
-      expect(compilerCore.ViewFlags.OnPush).toBe(core.ɵViewFlags.OnPush);
+      expect(compilerCore.ViewFlags.None).toBe(core.ɵViewFlags.None as any);
+      expect(compilerCore.ViewFlags.OnPush).toBe(core.ɵViewFlags.OnPush as any);
     });
   });
 }

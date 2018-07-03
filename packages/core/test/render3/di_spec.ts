@@ -1216,7 +1216,7 @@ describe('di', () => {
 
       const fixture = new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
-      expect(nonExist).toEqual(undefined);
+      expect(nonExist).toEqual(undefined !);
     });
 
     // https://stackblitz.com/edit/angular-8ytqkp?file=src%2Fapp%2Fapp.component.ts
@@ -1234,7 +1234,7 @@ describe('di', () => {
 
       const fixture = new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
-      expect(nonExist).toEqual(undefined);
+      expect(nonExist).toEqual(undefined !);
     });
 
     it('should not accidentally inject attributes representing bindings and outputs', () => {
@@ -1253,7 +1253,7 @@ describe('di', () => {
 
       const fixture = new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
-      expect(nonExist).toEqual(undefined);
+      expect(nonExist).toEqual(undefined !);
     });
   });
 
@@ -1416,7 +1416,7 @@ describe('di', () => {
         (parent.tNode as{parent: any}).parent = undefined;
 
         const injector = getOrCreateNodeInjector();
-        expect(injector).not.toBe(null);
+        expect(injector).not.toBe(null !);
       } finally {
         leaveView(oldView);
       }

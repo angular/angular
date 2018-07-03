@@ -25,7 +25,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
             ['text', '<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm', 'd|e',
             ''
           ],
-        ]);
+        ] as any);
       });
 
       it('should extract from attributes', () => {
@@ -35,7 +35,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
             .toEqual([
               [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], 'm1', 'd1', ''],
               [['single child'], 'm2', 'd2', ''],
-            ]);
+            ] as any);
       });
 
       it('should extract from attributes with id', () => {
@@ -48,7 +48,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
                 'i1'
               ],
               [['single child'], 'm2', 'd2', 'i2'],
-            ]);
+            ] as any);
       });
 
       it('should extract from attributes without meaning and with id', () => {
@@ -58,7 +58,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
             .toEqual([
               [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', 'd1', 'i1'],
               [['single child'], '', 'd2', 'i2'],
-            ]);
+            ] as any);
       });
 
       it('should extract from attributes with id only', () => {
@@ -68,7 +68,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
             .toEqual([
               [['<ph tag name="START_TAG_SPAN">nested</ph name="CLOSE_TAG_SPAN">'], '', '', 'i1'],
               [['single child'], '', '', 'i2'],
-            ]);
+            ] as any);
       });
 
 
@@ -85,7 +85,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
               ],
               [['title'], '', '', ''],
               [['desc'], '', '', ''],
-            ]);
+            ] as any);
       });
 
       it('should not create a message for empty elements',
@@ -94,7 +94,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
       it('should ignore implicit elements in translatable elements', () => {
         expect(extract('<div i18n="m|d"><p></p></div>', ['p'])).toEqual([
           [['<ph tag name="START_PARAGRAPH"></ph name="CLOSE_PARAGRAPH">'], 'm', 'd', '']
-        ]);
+        ] as any);
       });
     });
 
@@ -109,13 +109,13 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
               [['message1'], 'meaning1', 'desc1', ''], [['message2'], '', 'desc2', ''],
               [['message3'], '', '', ''], [['message4'], 'meaning4', 'desc4', 'id4'],
               [['message5'], '', '', 'id5']
-            ]);
+            ] as any);
       });
 
       it('should ignore implicit elements in blocks', () => {
         expect(extract('<!-- i18n:m|d --><p></p><!-- /i18n -->', ['p'])).toEqual([
           [['<ph tag name="START_PARAGRAPH"></ph name="CLOSE_PARAGRAPH">'], 'm', 'd', '']
-        ]);
+        ] as any);
       });
 
 
@@ -140,14 +140,14 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
                 ],
                 '', '', ''
               ],
-            ]);
+            ] as any);
       });
 
       it('should ignore other comments', () => {
         expect(extract(`<!-- i18n: meaning1|desc1@@id1 --><!-- other -->message1<!-- /i18n -->`))
             .toEqual([
               [['message1'], 'meaning1', 'desc1', 'id1'],
-            ]);
+            ] as any);
       });
 
       it('should not create a message for empty blocks',
@@ -159,12 +159,12 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
         // single message when ICU is the only children
         expect(extract('<div i18n="m|d">{count, plural, =0 {text}}</div>')).toEqual([
           [['{count, plural, =0 {[text]}}'], 'm', 'd', ''],
-        ]);
+        ] as any);
 
         // single message when ICU is the only (implicit) children
         expect(extract('<div>{count, plural, =0 {text}}</div>', ['div'])).toEqual([
           [['{count, plural, =0 {[text]}}'], '', '', ''],
-        ]);
+        ] as any);
 
         // one message for the element content and one message for the ICU
         expect(extract('<div i18n="m|d@@i">before{count, plural, =0 {text}}after</div>')).toEqual([
@@ -173,14 +173,14 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
             'i'
           ],
           [['{count, plural, =0 {[text]}}'], '', '', ''],
-        ]);
+        ] as any);
       });
 
       it('should extract ICU messages from translatable block', () => {
         // single message when ICU is the only children
         expect(extract('<!-- i18n:m|d -->{count, plural, =0 {text}}<!-- /i18n -->')).toEqual([
           [['{count, plural, =0 {[text]}}'], 'm', 'd', ''],
-        ]);
+        ] as any);
 
         // one message for the block content and one message for the ICU
         expect(extract('<!-- i18n:m|d -->before{count, plural, =0 {text}}after<!-- /i18n -->'))
@@ -190,7 +190,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
                 ['before', '<ph icu name="ICU">{count, plural, =0 {[text]}}</ph>', 'after'], 'm',
                 'd', ''
               ],
-            ]);
+            ] as any);
       });
 
       it('should not extract ICU messages outside of i18n sections',
@@ -200,7 +200,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
         expect(extract('<div i18n="m|d">{count, plural, =0 { {sex, select, male {m}} }}</div>'))
             .toEqual([
               [['{count, plural, =0 {[{sex, select, male {[m]}},  ]}}'], 'm', 'd', ''],
-            ]);
+            ] as any);
       });
 
       it('should ignore implicit elements in non translatable ICU messages', () => {
@@ -213,7 +213,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
                 '{count, plural, =0 {[{sex, select, male {[<ph tag name="START_PARAGRAPH">ignore</ph name="CLOSE_PARAGRAPH">]}},  ]}}'
               ],
               'm', 'd', 'i'
-            ]]);
+            ]] as any);
       });
 
       it('should ignore implicit elements in non translatable ICU messages', () => {
@@ -226,7 +226,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
       it('should extract from attributes outside of translatable sections', () => {
         expect(extract('<div i18n-title="m|d@@i" title="msg"></div>')).toEqual([
           [['msg'], 'm', 'd', 'i'],
-        ]);
+        ] as any);
       });
 
       it('should extract from attributes in translatable elements', () => {
@@ -237,7 +237,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
             '', '', ''
           ],
           [['msg'], 'm', 'd', 'i'],
-        ]);
+        ] as any);
       });
 
       it('should extract from attributes in translatable blocks', () => {
@@ -249,7 +249,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
                  ' name="CLOSE_BOLD_TEXT"></ph name="CLOSE_PARAGRAPH">'],
                 '', '', ''
               ],
-            ]);
+            ] as any);
       });
 
       it('should extract from attributes in translatable ICUs', () => {
@@ -264,14 +264,14 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
                 ],
                 '', '', ''
               ],
-            ]);
+            ] as any);
       });
 
       it('should extract from attributes in non translatable ICUs', () => {
         expect(extract('{count, plural, =0 {<p><b i18n-title="m|d" title="msg"></b></p>}}'))
             .toEqual([
               [['msg'], 'm', 'd', ''],
-            ]);
+            ] as any);
       });
 
       it('should not create a message for empty attributes',
@@ -282,7 +282,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
       it('should extract from implicit elements', () => {
         expect(extract('<b>bold</b><i>italic</i>', ['b'])).toEqual([
           [['bold'], '', '', ''],
-        ]);
+        ] as any);
       });
 
       it('should allow nested implicit elements', () => {
@@ -304,7 +304,7 @@ import {serializeNodes as serializeHtmlNodes} from '../ml_parser/ast_serializer_
         expect(extract('<b title="bb">bold</b><i title="ii">italic</i>', [], {'b': ['title']}))
             .toEqual([
               [['bb'], '', '', ''],
-            ]);
+            ] as any);
       });
     });
 

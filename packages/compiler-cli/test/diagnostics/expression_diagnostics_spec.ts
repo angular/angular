@@ -82,7 +82,7 @@ describe('expression diagnostics', () => {
       const diagnostics = getTemplateExpressionDiagnostics(info);
       if (diagnostics && diagnostics.length) {
         const messages = diagnostics.map(d => d.message).join('\n  ');
-        expect(messages).toContain(expected);
+        expect(messages).toContain(expected as any);
       } else {
         throw new Error(`Expected an error containing "${expected} in template "${template}"`);
       }

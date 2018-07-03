@@ -290,7 +290,7 @@ import {CssLexer, CssLexerMode, CssToken, CssTokenType, cssScannerError, getRawM
           capturedMessage = getRawMessage(e);
         }
 
-        expect(capturedMessage).toEqual(null);
+        expect(capturedMessage).toEqual(null as any);
       });
     });
 

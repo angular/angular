@@ -37,7 +37,7 @@ describe('Router', () => {
       }];
       r.resetConfig(configs);
 
-      let rConfigs = r.config;
+      let rConfigs: any = r.config;
 
       // routes array and shallow copy
       expect(configs).not.toBe(rConfigs);

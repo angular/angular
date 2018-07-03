@@ -95,7 +95,7 @@ function asyncValidator(expected: any, timeout = 0) {
           const customAccessor = new SpyValueAccessor();
           const checkboxAccessor = new CheckboxControlValueAccessor(null !, null !);
           expect(selectValueAccessor(dir, <any>[defaultAccessor, customAccessor, checkboxAccessor]))
-              .toEqual(customAccessor);
+              .toEqual(customAccessor as any);
         });
 
         it('should return custom accessor when provided with select multiple', () => {
@@ -103,7 +103,7 @@ function asyncValidator(expected: any, timeout = 0) {
           const selectMultipleAccessor = new SelectMultipleControlValueAccessor(null !, null !);
           expect(selectValueAccessor(
                      dir, <any>[defaultAccessor, customAccessor, selectMultipleAccessor]))
-              .toEqual(customAccessor);
+              .toEqual(customAccessor as any);
         });
 
         it('should throw when more than one custom accessor is provided', () => {
