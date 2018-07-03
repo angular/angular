@@ -127,9 +127,9 @@ The [Angular CLI](https://cli.angular.io/) is a command-line tool for managing t
 
 ## Component
 
-A class with the `@Component` [decorator](guide/glossary#decorator) that associates it with a companion [template](guide/glossary#template). 
+A class with the `@Component` [decorator](guide/glossary#decorator) that associates it with a companion [template](guide/glossary#template). Together, the component and template define a [view](guide/glossary#view).
 
-A component is a special type of [directive](guide/glossary#directive) that represents a [view](guide/glossary#view).
+A component is a special type of [directive](guide/glossary#directive).
 The `@Component` decorator extends the `@Directive` decorator with template-oriented features. 
 
 An Angular component class is responsible for exposing data and handling most of the view's display and user-interaction logic through [data binding](guide/glossary#data-binding).
@@ -213,7 +213,7 @@ See [Class decorator](guide/glossary#class-decorator), [Class field decorator](g
 A design pattern and mechanism for creating and delivering parts of an application (dependencies) to other parts of an application that require them.
 
 In Angular, dependencies are typically services, but can also be values, such as strings or functions.
-An [injector](guide/glossary#injector) for an app (created automatically during bootstrap) creates dependencies when needed, using a configured [provider](guide/glossary#provider) of the service or value.
+An [injector](guide/glossary#injector) for an app (created automatically during bootstrap) instantiates dependencies when needed, using a configured [provider](guide/glossary#provider) of the service or value.
 
 Learn more in the [Dependency Injection](guide/dependency-injection) guide.
 
@@ -285,7 +285,7 @@ Compare [Custom element](guide/glossary#custom-element).
 
 ## Entry point
 
-A JavaScript ID that makes parts of an npm package available for import by other code. 
+A JavaScript symbol that makes parts of an npm package available for import by other code. 
 The Angular [scoped packages](guide/glossary#scoped-package) each have an entry point named `index`.
 
 Within Angular, use [NgModules](guide/glossary#ngmodule) to achieve the same result.
@@ -319,7 +319,7 @@ using a configured [provider](guide/glossary#provider).
 Injectors are created for NgModules automatically as part of the bootstrap process
 and are inherited through the component hierarchy.
 
-* An injector provides a singleton instance of a dependency, which it can inject in multiple components.
+* An injector provides a singleton instance of a dependency, and can inject this same instance in multiple components.
 
 * A hierarchy of injectors at the NgModule and component level can provide different instances of a dependency to their own components and child components.
 
@@ -394,7 +394,7 @@ Similarly, the [router](guide/glossary#router) can load child views only when th
 
 In Angular, a [project](guide/glossary#project) that provides functionality that can be included in other Angular apps. A library is not a complete Angular app, and it cannot run independently. 
 
-* Library developers can use the [CLI](guide/glossary#cli) to `generate` a new generic library in an existing [workspace](guide/glossary#workspace), and can publish a library as an `npm` package. 
+* Library developers can use the [CLI](guide/glossary#cli) to `generate` scaffolding for a new library in an existing [workspace](guide/glossary#workspace), and can publish a library as an `npm` package. 
 
 * App developers can use the [CLI](guide/glossary#cli) to `add` a published library for use with an app in the same [workspace](guide/glossary#workspace). 
 
@@ -727,7 +727,7 @@ See [Custom element](guide/glossary#custom-element)
 
 ## Workspace
 
-In Angular, a folder that contains a set of related [projects](guide/glossary#project).
+In Angular, a folder that contains a [project](guide/glossary#project).
 The [CLI](guide/glossary#cli) `new` command creates a workspace to contain apps and libraries, and other commands must be executed from within a workspace folder. 
 
 {@a X}
