@@ -97,8 +97,8 @@ export class MatListSubheaderCssMatStyler {}
   host: {
     'class': 'mat-list-item',
     // @deletion-target 7.0.0 Remove `mat-list-item-avatar` in favor of `mat-list-item-with-avatar`.
-    '[class.mat-list-item-avatar]': '_avatar',
-    '[class.mat-list-item-with-avatar]': '_avatar',
+    '[class.mat-list-item-avatar]': '_avatar || _icon',
+    '[class.mat-list-item-with-avatar]': '_avatar || _icon',
     '(focus)': '_handleFocus()',
     '(blur)': '_handleBlur()',
   },
@@ -113,6 +113,7 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
 
   @ContentChildren(MatLine) _lines: QueryList<MatLine>;
   @ContentChild(MatListAvatarCssMatStyler) _avatar: MatListAvatarCssMatStyler;
+  @ContentChild(MatListIconCssMatStyler) _icon: MatListIconCssMatStyler;
 
   constructor(private _element: ElementRef,
               @Optional() private _navList: MatNavList) {

@@ -119,6 +119,20 @@
       <mat-list-option value="strawberries">Strawberries</mat-list-option>
     </mat-selection-list>
 
+    <mat-selection-list>
+      <h3 mat-subheader>Dogs</h3>
+
+      <mat-list-option checkboxPosition="before">
+        <img matListAvatar src="https://material.angular.io/assets/img/examples/shiba1.jpg">
+        <span matLine>Shiba Inu</span>
+      </mat-list-option>
+
+      <mat-list-option checkboxPosition="after">
+        <img matListAvatar src="https://material.angular.io/assets/img/examples/shiba2.jpg">
+        <span matLine>Other Shiba Inu</span>
+      </mat-list-option>
+    </mat-selection-list>
+
     <p>Selected: {{selectedOptions | json}}</p>
     <p>Change Event Count {{changeEventCount}}</p>
     <p>Model Change Event Count {{modelChangeEventCount}}</p>

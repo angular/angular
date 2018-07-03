@@ -102,27 +102,36 @@ $mat-list-item-inset-divider-offset: 72px;
     padding: 0;
   }
 
-  // There can be a secondary item (e.g. avatar-icon, checkbox) at the start of the
-  // list-item. This means that there should be a padding for the mat-list-text on the start-side.
-  .mat-list-item-content .mat-list-text:not(:nth-child(2)) {
-    padding-right: 0;
-    padding-left: $mat-list-side-padding;
-
-    [dir='rtl'] & {
-      padding-right: $mat-list-side-padding;
-      padding-left: 0;
-    }
-  }
-
-  // Reversed content is mainly used by the MatSelectionList for displaying the checkbox at the
-  // end of the list option. Since there is a secondary item (checkbox) at the end of the
-  // option, there needs to be a padding for the mat-list-text on the end-side.
-  .mat-list-item-content-reverse .mat-list-text:not(:nth-child(2)) {
-    padding-left: 0;
-    padding-right: $mat-list-side-padding;
-
-    [dir='rtl'] & {
+  &.mat-list-item-with-avatar,
+  &.mat-list-option {
+    .mat-list-item-content .mat-list-text {
       padding-right: 0;
+      padding-left: $mat-list-side-padding;
+
+      [dir='rtl'] & {
+        padding-right: $mat-list-side-padding;
+        padding-left: 0;
+      }
+    }
+
+    // Reversed content is mainly used by the MatSelectionList for displaying the checkbox at the
+    // end of the list option. Since there is a secondary item (checkbox) at the end of the
+    // option, there needs to be a padding for the mat-list-text on the end-side.
+    .mat-list-item-content-reverse .mat-list-text {
+      padding-left: 0;
+      padding-right: $mat-list-side-padding;
+
+      [dir='rtl'] & {
+        padding-right: 0;
+        padding-left: $mat-list-side-padding;
+      }
+    }
+   }
+
+  &.mat-list-item-with-avatar.mat-list-option {
+    .mat-list-item-content-reverse .mat-list-text,
+    .mat-list-item-content .mat-list-text {
+      padding-right: $mat-list-side-padding;
       padding-left: $mat-list-side-padding;
     }
   }
