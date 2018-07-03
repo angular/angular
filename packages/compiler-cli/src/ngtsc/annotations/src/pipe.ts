@@ -50,7 +50,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata> {
     }
     this.scopeRegistry.registerPipe(clazz, pipeName);
 
-    let pure = false;
+    let pure = true;
     if (pipe.has('pure')) {
       const pureValue = staticallyResolve(pipe.get('pure') !, this.checker);
       if (typeof pureValue !== 'boolean') {
