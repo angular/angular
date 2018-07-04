@@ -320,7 +320,7 @@ After the end of each successful navigation lifecycle, the router builds a tree 
 that make up the current state of the router. You can access the current `RouterState` from anywhere in the
 application using the `Router` service and the `routerState` property.
 -->
-각각의 네비게이션 라이프싸이클이 끝나면 라우터는 현재 라우터 스테이트에 대를 표현하는 `ActivatedRoute` 트리를 객체 형타입으로 생성합니다. 그러면 애플리케이션에서 이 라우터 스테이트를 활용하는 로직을 작성할 수 있습니다.
+각각의 네비게이션 라이프싸이클이 끝나면 라우터는 현재 라우터 스테이트를 표현하는 `ActivatedRoute` 트리를 객체 타입으로 생성합니다. 그러면 애플리케이션에서 이 라우터 스테이트를 활용하는 로직을 작성할 수 있습니다.
 
 <!--
 Each `ActivatedRoute` in the `RouterState` provides methods to traverse up and down the route tree
@@ -330,8 +330,10 @@ to get information from parent, child and sibling routes.
 
 {@a activated-route}
 
-
+<!--
 ### Activated route
+-->
+#### 활성화된 라우터 (Activated route)
 
 The route path and parameters are available through an injected router service called the
 [ActivatedRoute](api/router/ActivatedRoute).
