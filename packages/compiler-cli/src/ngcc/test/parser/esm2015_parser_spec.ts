@@ -41,8 +41,10 @@ describe('Esm2015PackageParser', () => {
       const host = new Esm2015ReflectionHost(program.getTypeChecker());
       const parser = new Esm2015PackageParser(program, host);
 
-      const decoratedClasses = parser.getDecoratedExportedClasses(program.getSourceFile(BASIC_FILE.name)!);
+      const parsedFiles = parser.parseEntryPoint(program.getSourceFile(BASIC_FILE.name)!);
 
+      expect(parsedFiles.length).toEqual(1);
+      const decoratedClasses = parsedFiles[0].decoratedClasses;
       expect(decoratedClasses.length).toEqual(1);
       const decoratedClass = decoratedClasses[0];
       expect(decoratedClass.name).toEqual('A');

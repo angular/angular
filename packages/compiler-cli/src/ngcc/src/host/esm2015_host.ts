@@ -24,7 +24,7 @@ const CONSTRUCTOR_PARAMS = 'ctorParameters' as ts.__String;
  * class SomeDirective {
  * }
  * SomeDirective.decorators = [
- *     { type: Directive, args: [{ selector: '[someDirective]' },] }
+ *   { type: Directive, args: [{ selector: '[someDirective]' },] }
  * ];
  * SomeDirective.ctorParameters = () => [
  *   { type: ViewContainerRef, },
@@ -41,7 +41,7 @@ const CONSTRUCTOR_PARAMS = 'ctorParameters' as ts.__String;
  * * Members are decorated if there is a matching key on a static property
  *   called `propDecorators`.
  * * Constructor parameters decorators are found on an object returned from
- *   a static method called `ctrParameters`.
+ *   a static method called `ctorParameters`.
  */
 export class Esm2015ReflectionHost implements NgccReflectionHost {
   constructor(protected checker: ts.TypeChecker) {}
@@ -111,10 +111,6 @@ export class Esm2015ReflectionHost implements NgccReflectionHost {
     return getImportOfSymbol(symbol);
   }
 
-  isClass(node: ts.Node): node is ts.Declaration {
-    return ts.isClassDeclaration(node);
-  }
-
   /**
    * Member decorators are declared as static properties of the class in ES2015:
    *
@@ -143,14 +139,16 @@ export class Esm2015ReflectionHost implements NgccReflectionHost {
   }
 
   protected getDecorators(decoratorsArray: ts.Expression) {
-    if (decoratorsArray && ts.isArrayLiteralExpression(decoratorsArray)) {
-      const decorators: Decorator[] = [];
+    const decorators: Decorator[] = [];
+
+    if (ts.isArrayLiteralExpression(decoratorsArray)) {
 
       // Add each decorator that is imported from `@angular/core` into the `decorators` array
       decoratorsArray.elements.forEach(node => {
 
         // If the decorator is not an object literal expression then we are not interested
-        if(ts.isObjectLiteralExpression(node)) {
+        if (ts.isObjectLiteralExpression(node)) {
+
           // We are only interested in objects of the form: `{ type: DecoratorType, args: [...] }`
           const decorator = reflectObjectLiteral(node);
 
@@ -167,10 +165,9 @@ export class Esm2015ReflectionHost implements NgccReflectionHost {
           }
         }
       });
-
-      return decorators;
     }
-    return [];
+
+    return decorators;
   }
 
   protected getClassSymbol(declaration: ts.Declaration) {
@@ -187,7 +184,7 @@ export class Esm2015ReflectionHost implements NgccReflectionHost {
  * Find the declarations of the constructor parameters of a class identified by its symbol.
  */
 function getConstructorParameters(classSymbol: ts.Symbol) {
-  const constructorSymbol = classSymbol.members && classSymbol.members.get(CONSTRUCTOR)!;
+  const constructorSymbol = classSymbol.members && classSymbol.members.get(CONSTRUCTOR);
   if (constructorSymbol) {
     // For some reason the constructor does not have a `valueDeclaration` ?!?
     const constructor = constructorSymbol.declarations && constructorSymbol.declarations[0] as ts.ConstructorDeclaration;

@@ -13,7 +13,8 @@
     "reflect-metadata": "^0.1.2",
     "minimist": "^1.2.0",
     "tsickle": "^0.30.0",
-    "chokidar": "^1.4.2"
+    "chokidar": "^1.4.2",
+    "magic-string": "^0.25.0"
   },
   "peerDependencies": {
     "typescript": ">=2.7.2 <2.10",

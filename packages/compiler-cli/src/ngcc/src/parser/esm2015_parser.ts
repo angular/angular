@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 import { NgccReflectionHost } from '../host/ngcc_host';
-import { DecoratedClass, PackageParser } from './parser';
+import { DecoratedClass, PackageParser, ParsedFile } from './parser';
 
 export class Esm2015PackageParser implements PackageParser {
 
@@ -18,8 +18,9 @@ export class Esm2015PackageParser implements PackageParser {
     protected program: ts.Program,
     protected host: NgccReflectionHost) {}
 
-  getDecoratedExportedClasses(entryPoint: ts.SourceFile): DecoratedClass[] {
+  parseEntryPoint(entryPoint: ts.SourceFile): ParsedFile[] {
     const moduleSymbol = this.checker.getSymbolAtLocation(entryPoint);
+    const map = new Map<ts.SourceFile, ParsedFile>();
     if (moduleSymbol) {
 
       const exportClasses = this.checker.getExportsOfModule(moduleSymbol)
@@ -27,19 +28,26 @@ export class Esm2015PackageParser implements PackageParser {
         .filter(exportSymbol => exportSymbol.flags & ts.SymbolFlags.Class);
 
       const classDeclarations = exportClasses
-        .map(exportSymbol => exportSymbol.valueDeclaration) as ts.Declaration[];
+        .map(exportSymbol => exportSymbol.valueDeclaration as ts.ClassDeclaration);
+
 
       const decoratedClasses = classDeclarations
-        .map((declaration: ts.ClassDeclaration) => {
+        .map(declaration => {
           const decorators = this.host.getDecoratorsOfDeclaration(declaration);
           if (decorators) {
-            return new DecoratedClass(declaration.name!.getText(), declaration, decorators);
+            return new DecoratedClass(declaration.name!.text, declaration, decorators);
           }
         })
         .filter(decoratedClass => decoratedClass) as DecoratedClass[];
 
-      return decoratedClasses;
+      decoratedClasses.forEach(clazz => {
+        const file = clazz.declaration.getSourceFile();
+        if (!map.has(file)) {
+          map.set(file, new ParsedFile(file));
+        }
+        map.get(file)!.decoratedClasses.push(clazz);
+      });
     }
-    return [];
+    return Array.from(map.values());
   }
 }

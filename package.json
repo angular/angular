@@ -95,6 +95,7 @@
     "karma-sauce-launcher": "^1.2.0",
     "karma-sourcemap-loader": "^0.3.7",
     "madge": "0.5.0",
+    "magic-string": "^0.25.0",
     "minimist": "1.2.0",
     "mutation-observer": "^1.0.3",
     "node-uuid": "1.4.8",

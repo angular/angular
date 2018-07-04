@@ -31,6 +31,11 @@ export class DecoratedClass {
   ) {}
 }
 
+export class ParsedFile {
+  public decoratedClasses: DecoratedClass[] = [];
+  constructor(public sourceFile: ts.SourceFile) { }
+}
+
 /**
  * This interface represents a class that can parse a package. A Package is stored in a directory
  * on disk and that directory can contain one or more package formats - e.g. fesm2015, UMD, etc.
@@ -44,8 +49,9 @@ export class DecoratedClass {
  */
 export interface PackageParser {
   /**
-   * Parse a source file and identify all the declarations that represent exported classes,
-   * which are also decorated.
+   * Parse a program via a specified entry point to identify all the declarations that represent
+   * exported classes, which are also decorated, and noting which source file will need to be
+   * transformed.
    *
    * Identifying classes can be different depending upon the format of the source file.
    *
@@ -57,11 +63,16 @@ export interface PackageParser {
    * - UMD have similar declarations to ES5 files but the whole thing is wrapped in IIFE module wrapper
    *   function.
    *
-   * @param entryPoint The file containing classes to parse.
-   * @returns An array of `DecoratedClass` objects that represent the classes that were found when
-   * parsing the source file.
+   * The actual file which needs to be transformed also depends upon the package format.
+   *
+   * - Flat file packages have all the classes in a single file.
+   * - Other packages may re-export classes from other non-entry point files.
+   * - Some formats may contain multiple "modules" in a single file.
+   *
+   * @param entryPoint The the entry point file for identifying classes to process.
+   * @returns An collection of parsed files that hold the decorated classes and import information.
    */
-  getDecoratedExportedClasses(entryPoint: ts.SourceFile): DecoratedClass[];
+   parseEntryPoint(entryPoint: ts.SourceFile): ParsedFile[];
 }
 
 /**
