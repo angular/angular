@@ -871,9 +871,9 @@ describe('compiler compliance', () => {
           factory: function SimpleComponent_Factory() { return new SimpleComponent(); },
           template: function SimpleComponent_Template(rf: IDENT, ctx: IDENT) {
             if (rf & 1) {
-              $r3$.ɵpD(0);
-              $r3$.ɵE(1, 'div');
-              $r3$.ɵP(2, 0);
+              $r3$.ɵpD();
+              $r3$.ɵE(0, 'div');
+              $r3$.ɵP(1);
               $r3$.ɵe();
             }
           }
@@ -891,12 +891,12 @@ describe('compiler compliance', () => {
           factory: function ComplexComponent_Factory() { return new ComplexComponent(); },
           template: function ComplexComponent_Template(rf: IDENT, ctx: IDENT) {
             if (rf & 1) {
-              $r3$.ɵpD(0, $c1$, $c2$);
-              $r3$.ɵE(1, 'div', $c3$);
-              $r3$.ɵP(2, 0, 1);
+              $r3$.ɵpD($c1$, $c2$);
+              $r3$.ɵE(0, 'div', $c3$);
+              $r3$.ɵP(1, 1);
               $r3$.ɵe();
-              $r3$.ɵE(3, 'div', $c4$);
-              $r3$.ɵP(4, 0, 2);
+              $r3$.ɵE(2, 'div', $c4$);
+              $r3$.ɵP(3, 2);
               $r3$.ɵe();
             }
           }
@@ -1022,9 +1022,9 @@ describe('compiler compliance', () => {
             template: function ContentQueryComponent_Template(
                 rf: $RenderFlags$, ctx: $ContentQueryComponent$) {
               if (rf & 1) {
-                $r3$.ɵpD(0);
-                $r3$.ɵE(1, 'div');
-                $r3$.ɵP(2, 0);
+                $r3$.ɵpD();
+                $r3$.ɵE(0, 'div');
+                $r3$.ɵP(1);
                 $r3$.ɵe();
               }
             }
