@@ -9,10 +9,10 @@
     "name": "EMPTY_ARRAY$1"
   },
   {
-    "name": "GET_PROPERTY_NAME$1"
+    "name": "GET_PROPERTY_NAME"
   },
   {
-    "name": "INJECTOR$1"
+    "name": "INJECTOR"
   },
   {
     "name": "Inject"
@@ -51,7 +51,7 @@
     "name": "THROW_IF_NOT_FOUND"
   },
   {
-    "name": "USE_VALUE$1"
+    "name": "USE_VALUE"
   },
   {
     "name": "_THROW_IF_NOT_FOUND"
