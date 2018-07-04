@@ -10,7 +10,6 @@ import {StylingContext} from '../styling';
 
 import {LContainer} from './container';
 import {LInjector} from './injector';
-import {LProjection} from './projection';
 import {LQueries} from './query';
 import {RComment, RElement, RText} from './renderer';
 import {LViewData, TView} from './view';
@@ -36,11 +35,14 @@ export const enum TNodeFlags {
   /** The number of directives on this node is encoded on the least significant bits */
   DirectiveCountMask = 0b00000000000000000000111111111111,
 
-  /** Then this bit is set when the node is a component */
-  isComponent = 0b1000000000000,
+  /** This bit is set if the node is a component */
+  isComponent = 0b00000000000000000001000000000000,
+
+  /** This bit is set if the node has been projected */
+  isProjected = 0b00000000000000000010000000000000,
 
   /** The index of the first directive on this node is encoded on the most significant bits  */
-  DirectiveStartingIndexShift = 13,
+  DirectiveStartingIndexShift = 14,
 }
 
 /**
@@ -74,7 +76,7 @@ export interface LNode {
    * If LContainerNode, then `data` contains LContainer.
    * If LProjectionNode, then `data` contains LProjection.
    */
-  readonly data: LViewData|LContainer|LProjection|null;
+  readonly data: LViewData|LContainer|null;
 
 
   /**
@@ -93,14 +95,6 @@ export interface LNode {
    * If present the node creation/updates are reported to the `LQueries`.
    */
   queries: LQueries|null;
-
-  /**
-   * If this node is projected, pointer to the next node in the same projection parent
-   * (which is a container, an element, or a text node), or to the parent projection node
-   * if this is the last node in the projection.
-   * If this node is not projected, this field is null.
-   */
-  pNextOrParent: LNode|null;
 
   /**
    * Pointer to the corresponding TNode object, which stores static
@@ -156,7 +150,7 @@ export interface LContainerNode extends LNode {
 
 export interface LProjectionNode extends LNode {
   readonly native: null;
-  readonly data: LProjection;
+  readonly data: null;
   dynamicLContainerNode: null;
 }
 
@@ -345,6 +339,43 @@ export interface TNode {
   detached: boolean|null;
 
   stylingTemplate: StylingContext|null;
+  /**
+   * List of projected TNodes for a given component host element OR index into the said nodes.
+   *
+   * For easier discussion assume this example:
+   * `<parent>`'s view definition:
+   * ```
+   * <child id="c1">content1</child>
+   * <child id="c2"><span>content2</span></child>
+   * ```
+   * `<child>`'s view definition:
+   * ```
+   * <ng-content id="cont1"></ng-content>
+   * ```
+   *
+   * If `Array.isArray(projection)` then `TNode` is a host element:
+   * - `projection` stores the content nodes which are to be projected.
+   *    - The nodes represent categories defined by the selector: For example:
+   *      `<ng-content/><ng-content select="abc"/>` would represent the heads for `<ng-content/>`
+   *      and `<ng-content select="abc"/>` respectively.
+   *    - The nodes we store in `projection` are heads only, we used `.next` to get their
+   *      siblings.
+   *    - The nodes `.next` is sorted/rewritten as part of the projection setup.
+   *    - `projection` size is equal to the number of projections `<ng-content>`. The size of
+   *      `c1` will be `1` because `<child>` has only one `<ng-content>`.
+   * - we store `projection` with the host (`c1`, `c2`) rather than the `<ng-content>` (`cont1`)
+   *   because the same component (`<child>`) can be used in multiple locations (`c1`, `c2`) and as
+   *   a result have different set of nodes to project.
+   * - without `projection` it would be difficult to efficiently traverse nodes to be projected.
+   *
+   * If `typeof projection == 'number'` then `TNode` is a `<ng-content>` element:
+   * - `projection` is an index of the host's `projection`Nodes.
+   *   - This would return the first head node to project:
+   *     `getHost(currentTNode).projection[currentTNode.projection]`.
+   * - When projecting nodes the parent node retrieved may be a `<ng-content>` node, in which case
+   *   the process is recursive in nature (not implementation).
+   */
+  projection: (TNode|null)[]|number|null;
 }
 
 /** Static data for an LElementNode  */
@@ -359,6 +390,13 @@ export interface TElementNode extends TNode {
    */
   parent: TElementNode|null;
   tViews: null;
+
+  /**
+   * If this is a component TNode with projection, this will be an array of projected
+   * TNodes (see TNode.projection for more info). If it's a regular element node or a
+   * component without projection, it will be null.
+   */
+  projection: (TNode|null)[]|null;
 }
 
 /** Static data for an LTextNode  */
@@ -373,6 +411,7 @@ export interface TTextNode extends TNode {
    */
   parent: TElementNode|null;
   tViews: null;
+  projection: null;
 }
 
 /** Static data for an LContainerNode */
@@ -394,6 +433,7 @@ export interface TContainerNode extends TNode {
    */
   parent: TElementNode|null;
   tViews: TView|TView[]|null;
+  projection: null;
 }
 
 /** Static data for an LViewNode  */
@@ -403,6 +443,7 @@ export interface TViewNode extends TNode {
   child: TElementNode|TTextNode|TContainerNode|TProjectionNode|null;
   parent: TContainerNode|null;
   tViews: null;
+  projection: null;
 }
 
 /** Static data for an LProjectionNode  */
@@ -416,6 +457,9 @@ export interface TProjectionNode extends TNode {
    */
   parent: TElementNode|null;
   tViews: null;
+
+  /** Index of the projection node. (See TNode.projection for more info.) */
+  projection: number;
 }
 
 /**

@@ -971,9 +971,9 @@ describe('Runtime i18n', () => {
           factory: () => new Child(),
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
-              projectionDef(0);
-              elementStart(1, 'p');
-              { projection(2, 0); }
+              projectionDef();
+              elementStart(0, 'p');
+              { projection(1); }
               elementEnd();
             }
           }
@@ -1063,9 +1063,9 @@ describe('Runtime i18n', () => {
           factory: () => new Child(),
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
-              projectionDef(0);
-              elementStart(1, 'p');
-              { projection(2, 0); }
+              projectionDef();
+              elementStart(0, 'p');
+              { projection(1); }
               elementEnd();
             }
           }
@@ -1145,9 +1145,9 @@ describe('Runtime i18n', () => {
           factory: () => new GrandChild(),
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
-              projectionDef(0);
-              elementStart(1, 'div');
-              { projection(2, 0); }
+              projectionDef();
+              elementStart(0, 'div');
+              { projection(1); }
               elementEnd();
             }
           }
@@ -1164,9 +1164,9 @@ describe('Runtime i18n', () => {
           factory: () => new Child(),
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
-              projectionDef(0);
-              elementStart(1, 'grand-child');
-              { projection(2, 0); }
+              projectionDef();
+              elementStart(0, 'grand-child');
+              { projection(1); }
               elementEnd();
             }
           }
@@ -1224,8 +1224,8 @@ describe('Runtime i18n', () => {
           factory: () => new Child(),
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
-              projectionDef(0, [[['span']]], ['span']);
-              projection(1, 0, 1);
+              projectionDef([[['span']]], ['span']);
+              projection(0, 1);
             }
           }
         });

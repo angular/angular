@@ -671,9 +671,9 @@ describe('ViewContainerRef', () => {
           factory: () => new Child(),
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
-              projectionDef(0);
-              elementStart(1, 'div');
-              { projection(2, 0); }
+              projectionDef();
+              elementStart(0, 'div');
+              { projection(1); }
               elementEnd();
             }
           }
@@ -742,17 +742,17 @@ describe('ViewContainerRef', () => {
           factory: () => new ChildWithView(),
           template: (rf: RenderFlags, cmp: ChildWithView) => {
             if (rf & RenderFlags.Create) {
-              projectionDef(0);
-              text(1, 'Before (inside)-');
-              container(2);
-              text(3, 'After (inside)');
+              projectionDef();
+              text(0, 'Before (inside)-');
+              container(1);
+              text(2, 'After (inside)');
             }
             if (rf & RenderFlags.Update) {
-              containerRefreshStart(2);
+              containerRefreshStart(1);
               if (cmp.show) {
                 let rf0 = embeddedViewStart(0);
                 if (rf0 & RenderFlags.Create) {
-                  projection(0, 0);
+                  projection(0);
                 }
                 embeddedViewEnd();
               }
@@ -827,12 +827,12 @@ describe('ViewContainerRef', () => {
           factory: () => new ChildWithSelector(),
           template: (rf: RenderFlags, cmp: ChildWithSelector) => {
             if (rf & RenderFlags.Create) {
-              projectionDef(0, [[['header']]], ['header']);
-              elementStart(1, 'first');
-              { projection(2, 0, 1); }
+              projectionDef([[['header']]], ['header']);
+              elementStart(0, 'first');
+              { projection(1, 1); }
               elementEnd();
-              elementStart(3, 'second');
-              { projection(4, 0); }
+              elementStart(2, 'second');
+              { projection(3); }
               elementEnd();
             }
           },
