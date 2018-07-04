@@ -310,15 +310,23 @@ You can add this directive to the anchor or to its parent element.
 
 {@a basics-router-state}
 
-
+<!--
 ### Router state
+-->
+### 라우팅 스테이트
 
+<!--
 After the end of each successful navigation lifecycle, the router builds a tree of `ActivatedRoute` objects
 that make up the current state of the router. You can access the current `RouterState` from anywhere in the
 application using the `Router` service and the `routerState` property.
+-->
+각각의 네비게이션 라이프싸이클이 끝나면 라우터는 현재 라우터 스테이트에 대를 표현하는 `ActivatedRoute` 트리를 객체 형타입으로 생성합니다. 그러면 애플리케이션에서 이 라우터 스테이트를 활용하는 로직을 작성할 수 있습니다.
 
+<!--
 Each `ActivatedRoute` in the `RouterState` provides methods to traverse up and down the route tree
 to get information from parent, child and sibling routes.
+-->
+`RouteState`에서 제공하는 `ActivatedRoute`는 라우트 트리에 따라 구성되며, 부모 라우터와 자식 라우터, 이웃 라우터에 대한 정보도 참조할 수 있습니다.
 
 {@a activated-route}
 
