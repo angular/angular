@@ -7,7 +7,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import { mainNgcc } from './ngcc';
+import { mainNgcc } from './src/main';
 
 // CLI entry point
 if (require.main === module) {

@@ -5,7 +5,7 @@
   "main": "index.js",
   "typings": "index.d.ts",
   "bin": {
-    "ivy-ngcc": "./src/main-ngcc.js",
+    "ivy-ngcc": "./src/ngcc/main-ngcc.js",
     "ngc": "./src/main.js",
     "ng-xi18n": "./src/extract_i18n.js"
   },

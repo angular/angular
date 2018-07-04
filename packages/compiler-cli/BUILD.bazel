@@ -25,7 +25,6 @@ ts_library(
     tsconfig = ":tsconfig",
     deps = [
         "//packages/compiler",
-        "//packages/compiler-cli/src/ngcc",
         "//packages/compiler-cli/src/ngtsc/annotations",
         "//packages/compiler-cli/src/ngtsc/metadata",
         "//packages/compiler-cli/src/ngtsc/transform",
@@ -41,5 +40,8 @@ npm_package(
         "ivy-jit",
         "release-with-framework",
     ],
-    deps = [":compiler-cli"],
+    deps = [
+        ":compiler-cli",
+        "//packages/compiler-cli/src/ngcc",
+    ],
 )
