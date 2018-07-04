@@ -10,7 +10,6 @@ import {StylingContext} from '../styling';
 
 import {LContainer} from './container';
 import {LInjector} from './injector';
-import {LProjection} from './projection';
 import {LQueries} from './query';
 import {RComment, RElement, RText} from './renderer';
 import {LViewData, TView} from './view';
@@ -74,7 +73,7 @@ export interface LNode {
    * If LContainerNode, then `data` contains LContainer.
    * If LProjectionNode, then `data` contains LProjection.
    */
-  readonly data: LViewData|LContainer|LProjection|null;
+  readonly data: LViewData|LContainer|null;
 
 
   /**
@@ -93,14 +92,6 @@ export interface LNode {
    * If present the node creation/updates are reported to the `LQueries`.
    */
   queries: LQueries|null;
-
-  /**
-   * If this node is projected, pointer to the next node in the same projection parent
-   * (which is a container, an element, or a text node), or to the parent projection node
-   * if this is the last node in the projection.
-   * If this node is not projected, this field is null.
-   */
-  pNextOrParent: LNode|null;
 
   /**
    * Pointer to the corresponding TNode object, which stores static
@@ -156,7 +147,7 @@ export interface LContainerNode extends LNode {
 
 export interface LProjectionNode extends LNode {
   readonly native: null;
-  readonly data: LProjection;
+  readonly data: null;
   dynamicLContainerNode: null;
 }
 
@@ -345,6 +336,38 @@ export interface TNode {
   detached: boolean|null;
 
   stylingTemplate: StylingContext|null;
+  /**
+   * If this is the host TNode for a component with content projection, projection data
+   * for that component is saved here as an array. Specifically, the head TNode of each projection
+   * list is stored here according to selector index. Otherwise, this is null.
+   *
+   * e.g. If there are two projection targets inside the component, there will be two projection
+   * lists represented in the array (saving only the head TNode of the list). i.e. [TNode, TNode]
+   *
+   * This data used to be stored on LProjectionNode, but cannot be moved to TProjectionNode because
+   * the projected nodes will change every time the component is used (and TProjectionNodes will
+   * be shared between all instances of the component). Component host nodes will change for every
+   * usage of the component, so we can safely store the projection data here.
+   */
+  pData: (TNode|null)[]|null;
+
+  /**
+   * For projected nodes, we need to traverse from the projected node back to its parent projection
+   * target (so we can iterate to projection target's next). This is the index that the parent
+   * projection target is stored in the projection def.
+   *
+   * If this is not a projected node, it will be -1.
+   */
+  pTargetIndex: number;
+
+  /**
+   * For projection nodes that are being re-projected, we need to traverse from the projection node
+   * to its projected node list so we can append or detach them. This is the index that the head
+   * of the projection list is stored in pData.
+   *
+   * If this is not a projection node, it will be -1.
+   */
+  pListIndex: number;
 }
 
 /** Static data for an LElementNode  */
@@ -373,6 +396,7 @@ export interface TTextNode extends TNode {
    */
   parent: TElementNode|null;
   tViews: null;
+  pData: null;
 }
 
 /** Static data for an LContainerNode */
@@ -394,6 +418,7 @@ export interface TContainerNode extends TNode {
    */
   parent: TElementNode|null;
   tViews: TView|TView[]|null;
+  pData: null;
 }
 
 /** Static data for an LViewNode  */
@@ -403,6 +428,7 @@ export interface TViewNode extends TNode {
   child: TElementNode|TTextNode|TContainerNode|TProjectionNode|null;
   parent: TContainerNode|null;
   tViews: null;
+  pData: null;
 }
 
 /** Static data for an LProjectionNode  */

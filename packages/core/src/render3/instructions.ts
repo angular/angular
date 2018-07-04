@@ -14,17 +14,16 @@ import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotE
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
+import {ComponentDefInternal, ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
+import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
+import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
-
-import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode, getLViewChild} from './node_manipulation';
+import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, getProjectionNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDefInternal, ComponentTemplate, ComponentQuery, DirectiveDefInternal, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
-import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {isDifferent, stringify} from './util';
 import {ViewRef} from './view_ref';
 import {StylingContext, allocStylingContext, createStylingContextTemplate, updateStyleMap as updateElementStyleMap, updateStyleProp as updateElementStyleProp, renderStyles as renderElementStyles} from './styling';
@@ -335,7 +334,6 @@ export function createLNodeObject(
     data: state,
     queries: queries,
     tNode: null !,
-    pNextOrParent: null,
     dynamicLContainerNode: null
   };
 }
@@ -363,11 +361,11 @@ export function createLNode(
     attrs: TAttributes | null, lContainer: LContainer): LContainerNode;
 export function createLNode(
     index: number, type: TNodeType.Projection, native: null, name: null, attrs: TAttributes | null,
-    lProjection: LProjection): LProjectionNode;
+    lProjection: null): LProjectionNode;
 export function createLNode(
     index: number, type: TNodeType, native: RText | RElement | RComment | null, name: string | null,
-    attrs: TAttributes | null, state?: null | LViewData | LContainer | LProjection): LElementNode&
-    LTextNode&LViewNode&LContainerNode&LProjectionNode {
+    attrs: TAttributes | null, state?: null | LViewData | LContainer): LElementNode&LTextNode&
+    LViewNode&LContainerNode&LProjectionNode {
   const parent = isParent ? previousOrParentNode :
                             previousOrParentNode && getParentLNode(previousOrParentNode) !as LNode;
   // Parents cannot cross component boundaries because components will be used in multiple places,
@@ -1189,7 +1187,10 @@ export function createTNode(
     parent: parent,
     dynamicContainerNode: null,
     detached: null,
-    stylingTemplate: null
+    stylingTemplate: null,
+    pData: null,
+    pTargetIndex: -1,
+    pListIndex: -1
   };
 }
 
@@ -1950,56 +1951,35 @@ export function viewAttached(view: LViewData): boolean {
  */
 export function projectionDef(
     index: number, selectors?: CssSelectorList[], textSelectors?: string[]): void {
-  const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
-  const distributedNodes = new Array<LNode[]>(noOfNodeBuckets);
-  for (let i = 0; i < noOfNodeBuckets; i++) {
-    distributedNodes[i] = [];
-  }
-
   const componentNode: LElementNode = findComponentHost(viewData);
-  let componentChild = getChildLNode(componentNode);
+  // Initialize an empty array here so projection nodes can be added later. It's necessary
+  // to save them to traverse from a projected node to parent projection node.
+  store(index, []);
 
-  while (componentChild !== null) {
-    // execute selector matching logic if and only if:
-    // - there are selectors defined
-    // - a node has a tag name / attributes that can be matched
-    const bucketIndex =
-        selectors ? matchingSelectorIndex(componentChild.tNode, selectors, textSelectors !) : 0;
-    distributedNodes[bucketIndex].push(componentChild);
+  if (!componentNode.tNode.pData) {
+    const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
+    const pData: (TNode | null)[] = componentNode.tNode.pData =
+        new Array(noOfNodeBuckets).fill(null);
+    const tails: (TNode | null)[] = new Array(noOfNodeBuckets).fill(null);
 
-    componentChild = getNextLNode(componentChild);
+    let componentChild = getChildLNode(componentNode);
+
+    while (componentChild !== null) {
+      const bucketIndex = componentChild.tNode.pTargetIndex =
+          selectors ? matchingSelectorIndex(componentChild.tNode, selectors, textSelectors !) : 0;
+      const nextNode = getNextLNode(componentChild);
+
+      if (tails[bucketIndex]) {
+        tails[bucketIndex] !.next = componentChild.tNode;
+      } else {
+        pData[bucketIndex] = componentChild.tNode;
+        componentChild.tNode.next = null;
+      }
+      tails[bucketIndex] = componentChild.tNode;
+
+      componentChild = nextNode;
+    }
   }
-
-  ngDevMode && assertDataNext(index + HEADER_OFFSET);
-  store(index, distributedNodes);
-}
-
-/**
- * Updates the linked list of a projection node, by appending another linked list.
- *
- * @param projectionNode Projection node whose projected nodes linked list has to be updated
- * @param appendedFirst First node of the linked list to append.
- * @param appendedLast Last node of the linked list to append.
- */
-function addToProjectionList(
-    projectionNode: LProjectionNode,
-    appendedFirst: LElementNode | LTextNode | LContainerNode | null,
-    appendedLast: LElementNode | LTextNode | LContainerNode | null) {
-  ngDevMode && assertEqual(
-                   !!appendedFirst, !!appendedLast,
-                   'appendedFirst can be null if and only if appendedLast is also null');
-  if (!appendedLast) {
-    // nothing to append
-    return;
-  }
-  const projectionNodeData = projectionNode.data;
-  if (projectionNodeData.tail) {
-    projectionNodeData.tail.pNextOrParent = appendedFirst;
-  } else {
-    projectionNodeData.head = appendedFirst;
-  }
-  projectionNodeData.tail = appendedLast;
-  appendedLast.pNextOrParent = projectionNode;
 }
 
 /**
@@ -2014,70 +1994,57 @@ function addToProjectionList(
  */
 export function projection(
     nodeIndex: number, localIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
-  const node = createLNode(
-      nodeIndex, TNodeType.Projection, null, null, attrs || null, {head: null, tail: null});
+  const node = createLNode(nodeIndex, TNodeType.Projection, null, null, attrs || null, null);
+
+  // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
+  const componentNode = findComponentHost(viewData);
+  // Save the LProjectionNode in the projection def
+  (componentNode.data as LViewData)[localIndex + HEADER_OFFSET][selectorIndex] = node;
+  if (node.tNode.pListIndex === -1) node.tNode.pListIndex = selectorIndex;
 
   // `<ng-content>` has no content
   isParent = false;
 
   // re-distribution of projectable nodes is memorized on a component's view level
-  const componentNode = findComponentHost(viewData);
-  const componentLView = componentNode.data as LViewData;
-  const distributedNodes = loadInternal(localIndex, componentLView) as Array<LNode[]>;
-  const nodesForSelector = distributedNodes[selectorIndex];
-
-  const currentParent = getParentLNode(node);
-  const canInsert = canInsertNativeNode(currentParent, viewData);
+  const parent = getParentLNode(node);
   let grandparent: LContainerNode;
-  const renderParent = currentParent.tNode.type === TNodeType.View ?
-      (grandparent = getParentLNode(currentParent) as LContainerNode) &&
+  const renderParent = parent.tNode.type === TNodeType.View ?
+      (grandparent = getParentLNode(parent) as LContainerNode) &&
           grandparent.data[RENDER_PARENT] ! :
-      currentParent as LElementNode;
+      parent as LElementNode;
 
-  for (let i = 0; i < nodesForSelector.length; i++) {
-    const nodeToProject = nodesForSelector[i];
-    let head = nodeToProject as LTextNode | LElementNode | LContainerNode | null;
-    let tail = nodeToProject as LTextNode | LElementNode | LContainerNode | null;
+  if (canInsertNativeNode(parent, viewData)) {
+    let nodeToProject = componentNode.tNode.pData ![selectorIndex];
+    let projectedView = componentNode.view;
 
-    if (nodeToProject.tNode.type === TNodeType.Projection) {
-      const previouslyProjected = (nodeToProject as LProjectionNode).data;
-      head = previouslyProjected.head;
-      tail = previouslyProjected.tail;
-    }
+    while (nodeToProject) {
+      if (nodeToProject.type === TNodeType.Projection) {
+        // This node is re-projected, so we must go up the tree to get its projected nodes.
+        const currentComponentHost = findComponentHost(projectedView);
+        const firstProjectedNode = currentComponentHost.tNode.pData ![nodeToProject.pListIndex];
 
-    addToProjectionList(node, head, tail);
-
-    if (canInsert) {
-      let currentNode: LNode|null = head;
-      while (currentNode) {
+        if (firstProjectedNode) {
+          nodeToProject = firstProjectedNode;
+          projectedView = currentComponentHost.view;
+          continue;
+        }
+      } else {
+        const lNode = projectedView[nodeToProject.index];
         appendProjectedNode(
-            currentNode as LTextNode | LElementNode | LContainerNode, currentParent, viewData,
-            renderParent);
-        currentNode = currentNode === tail ? null : currentNode.pNextOrParent;
+            lNode as LTextNode | LElementNode | LContainerNode, parent, viewData, renderParent);
       }
+
+      // If we are finished with a list of re-projected nodes, we need to get
+      // back to the root projection node that was re-projected.
+      if (nodeToProject.next === null && projectedView !== componentNode.view) {
+        const componentLNode = projectedView[nodeToProject.parent !.index];
+        // move down into the view of the component we're projecting right now
+        projectedView = componentLNode.data;
+        nodeToProject = getProjectionNode(nodeToProject, componentLNode).tNode;
+      }
+      nodeToProject = nodeToProject.next;
     }
   }
-}
-
-/**
- * Given a current view, finds the nearest component's host (LElement).
- *
- * @param lViewData LViewData for which we want a host element node
- * @returns The host node
- */
-function findComponentHost(lViewData: LViewData): LElementNode {
-  let viewRootLNode = lViewData[HOST_NODE];
-
-  while (viewRootLNode.tNode.type === TNodeType.View) {
-    ngDevMode && assertDefined(lViewData[PARENT], 'lViewData.parent');
-    lViewData = lViewData[PARENT] !;
-    viewRootLNode = lViewData[HOST_NODE];
-  }
-
-  ngDevMode && assertNodeType(viewRootLNode, TNodeType.Element);
-  ngDevMode && assertDefined(viewRootLNode.data, 'node.data');
-
-  return viewRootLNode as LElementNode;
 }
 
 /**

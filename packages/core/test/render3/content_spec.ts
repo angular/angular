@@ -8,6 +8,9 @@
 
 import {SelectorFlags} from '@angular/core/src/render3/interfaces/projection';
 
+import {Input, TemplateRef, ViewContainerRef, ViewRef} from '../../src/core';
+import {defineDirective} from '../../src/render3/definition';
+import {injectTemplateRef, injectViewContainerRef} from '../../src/render3/di';
 import {AttributeMarker, detectChanges} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, projection, projectionDef, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
@@ -64,6 +67,40 @@ describe('content projection', () => {
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child>content</child>');
+  });
+
+  it('should project content with siblings', () => {
+    /** <ng-content></ng-content> */
+    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef(0);
+        projection(1, 0);
+      }
+    });
+
+    /**
+     * <child>
+     *  before
+     *  <div>content</div>
+     *  after
+     * </child>
+     */
+    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'child');
+        {
+          text(1, 'before');
+          elementStart(2, 'div');
+          { text(3, 'content'); }
+          elementEnd();
+          text(4, 'after');
+        }
+        elementEnd();
+      }
+    }, [Child]);
+
+    const parent = renderComponent(Parent);
+    expect(toHtml(parent)).toEqual('<child>before<div>content</div>after</child>');
   });
 
   it('should re-project content when root.', () => {
@@ -198,7 +235,7 @@ describe('content projection', () => {
             '<child><div><projected-comp><p><div>Some content</div>Other content</p></projected-comp></div></child>');
   });
 
-  it('should project content with container.', () => {
+  it('should project containers', () => {
     /** <div> <ng-content></ng-content></div> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
@@ -247,13 +284,15 @@ describe('content projection', () => {
     expect(toHtml(parent)).toEqual('<child><div>()</div></child>');
     parent.value = true;
     detectChanges(parent);
+
     expect(toHtml(parent)).toEqual('<child><div>(content)</div></child>');
     parent.value = false;
     detectChanges(parent);
+
     expect(toHtml(parent)).toEqual('<child><div>()</div></child>');
   });
 
-  it('should project content with container into root', () => {
+  it('should project containers into root', () => {
     /** <ng-content></ng-content> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
@@ -302,7 +341,7 @@ describe('content projection', () => {
     expect(toHtml(parent)).toEqual('<child></child>');
   });
 
-  it('should project content with container and if-else.', () => {
+  it('should project containers with if-else.', () => {
     /** <div><ng-content></ng-content></div> */
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
@@ -400,27 +439,90 @@ describe('content projection', () => {
       }
     });
 
-    /** <child>content</child> */
+    /**
+     * <child>
+     *   <div>text</div>
+     *   content
+     * </child>
+     */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'child');
         {
-          childCmptInstance = loadDirective(0);
-          text(1, 'content');
+          elementStart(1, 'div');
+          { text(2, 'text'); }
+          elementEnd();
+          text(3, 'content');
         }
         elementEnd();
+
+        // testing
+        childCmptInstance = loadDirective(0);
       }
     }, [Child]);
 
     const parent = renderComponent(Parent);
-    expect(toHtml(parent)).toEqual('<child><div><span>content</span></div></child>');
+    expect(toHtml(parent)).toEqual('<child><div><span><div>text</div>content</span></div></child>');
 
     childCmptInstance.skipContent = true;
     detectChanges(parent);
     expect(toHtml(parent)).toEqual('<child><div></div></child>');
   });
 
-  it('should support projection in embedded views when ng-content is a root node of an embedded view',
+  it('should support projection into embedded views when no projected nodes', () => {
+    let childCmptInstance: any;
+
+    /**
+     * <div>
+     *  % if (!skipContent) {
+   *      <ng-content></ng-content>
+   *      text
+     *  % }
+     * </div>
+     */
+    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef(0);
+        elementStart(1, 'div');
+        { container(2); }
+        elementEnd();
+      }
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(2);
+        {
+          if (!ctx.skipContent) {
+            let rf0 = embeddedViewStart(0);
+            if (rf0 & RenderFlags.Create) {
+              projection(0, 0);
+              text(1, 'text');
+            }
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+      }
+    });
+
+    /** <child></child> */
+    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'child');
+        elementEnd();
+
+        // testing
+        childCmptInstance = loadDirective(0);
+      }
+    }, [Child]);
+
+    const parent = renderComponent(Parent);
+    expect(toHtml(parent)).toEqual('<child><div>text</div></child>');
+
+    childCmptInstance.skipContent = true;
+    detectChanges(parent);
+    expect(toHtml(parent)).toEqual('<child><div></div></child>');
+  });
+
+  it('should support projection into embedded views when ng-content is a root node of an embedded view',
      () => {
        let childCmptInstance: any;
 
@@ -648,8 +750,7 @@ describe('content projection', () => {
         .toEqual('<parent><child><div>Before text-After text</div></child></parent>');
   });
 
-
-  it('should support projection in embedded views when ng-content is a root node of an embedded view, with other nodes after',
+  it('should support projection into embedded views when ng-content is a root node of an embedded view, with other nodes after',
      () => {
        let childCmptInstance: any;
 
@@ -990,20 +1091,24 @@ describe('content projection', () => {
     const AppComp = createComponent('app-comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'projection-comp');
-        elementStart(1, 'div');
-        text(2, 'A');
-        elementEnd();
-        elementStart(3, 'p');
-        text(4, '123');
-        elementEnd();
+        {
+          elementStart(1, 'div');
+          { text(2, 'A'); }
+          elementEnd();
+          elementStart(3, 'p');
+          { text(4, '123'); }
+          elementEnd();
+        }
         elementEnd();
         elementStart(5, 'projection-comp');
-        elementStart(6, 'div');
-        text(7, 'B');
-        elementEnd();
-        elementStart(8, 'p');
-        text(9, '456');
-        elementEnd();
+        {
+          elementStart(6, 'div');
+          { text(7, 'B'); }
+          elementEnd();
+          elementStart(8, 'p');
+          { text(9, '456'); }
+          elementEnd();
+        }
         elementEnd();
       }
     }, [ProjectionComp]);
@@ -1012,7 +1117,8 @@ describe('content projection', () => {
     fixture.update();
     expect(fixture.html)
         .toEqual(
-            '<projection-comp>Before<div>A</div><p>123</p>After</projection-comp><projection-comp>Before<div>B</div><p>456</p>After</projection-comp>');
+            '<projection-comp>Before<div>A</div><p>123</p>After</projection-comp>' +
+            '<projection-comp>Before<div>B</div><p>456</p>After</projection-comp>');
   });
 
   it('should re-project with multiple instances of a component with projection', () => {
@@ -1045,21 +1151,25 @@ describe('content projection', () => {
       if (rf & RenderFlags.Create) {
         projectionDef(0);
         elementStart(1, 'projection-comp');
-        elementStart(2, 'div');
-        text(3, 'A');
-        elementEnd();
-        projection(4, 0);
-        elementStart(5, 'p');
-        text(6, '123');
-        elementEnd();
+        {
+          elementStart(2, 'div');
+          { text(3, 'A'); }
+          elementEnd();
+          projection(4, 0);
+          elementStart(5, 'p');
+          { text(6, '123'); }
+          elementEnd();
+        }
         elementEnd();
         elementStart(7, 'projection-comp');
-        elementStart(8, 'div');
-        text(9, 'B');
-        elementEnd();
-        elementStart(10, 'p');
-        text(11, '456');
-        elementEnd();
+        {
+          elementStart(8, 'div');
+          { text(9, 'B'); }
+          elementEnd();
+          elementStart(10, 'p');
+          { text(11, '456'); }
+          elementEnd();
+        }
         elementEnd();
       }
     }, [ProjectionComp]);
@@ -1075,10 +1185,10 @@ describe('content projection', () => {
     const AppComp = createComponent('app-comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'parent-comp');
-        text(1, '**ABC**');
+        { text(1, '**ABC**'); }
         elementEnd();
         elementStart(2, 'parent-comp');
-        text(3, '**DEF**');
+        { text(3, '**DEF**'); }
         elementEnd();
       }
     }, [ProjectionParent]);
@@ -1087,7 +1197,12 @@ describe('content projection', () => {
     fixture.update();
     expect(fixture.html)
         .toEqual(
-            '<parent-comp><projection-comp>Before<div>A</div>**ABC**<p>123</p>After</projection-comp><projection-comp>Before<div>B</div><p>456</p>After</projection-comp></parent-comp><parent-comp><projection-comp>Before<div>A</div>**DEF**<p>123</p>After</projection-comp><projection-comp>Before<div>B</div><p>456</p>After</projection-comp></parent-comp>');
+            '<parent-comp>' +
+            '<projection-comp>Before<div>A</div>**ABC**<p>123</p>After</projection-comp>' +
+            '<projection-comp>Before<div>B</div><p>456</p>After</projection-comp></parent-comp>' +
+            '<parent-comp>' +
+            '<projection-comp>Before<div>A</div>**DEF**<p>123</p>After</projection-comp>' +
+            '<projection-comp>Before<div>B</div><p>456</p>After</projection-comp></parent-comp>');
   });
 
   describe('with selectors', () => {

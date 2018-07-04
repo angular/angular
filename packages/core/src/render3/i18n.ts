@@ -9,7 +9,7 @@
 import {assertEqual, assertLessThan} from './assert';
 import {NO_CHANGE, bindingUpdated, createLNode, getPreviousOrParentNode, getRenderer, getViewData, load, resetApplicationState} from './instructions';
 import {RENDER_PARENT} from './interfaces/container';
-import {LContainerNode, LElementNode, LNode, TContainerNode, TNodeType} from './interfaces/node';
+import {LContainerNode, LElementNode, LNode, TContainerNode, TElementNode, TNodeType} from './interfaces/node';
 import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
 import {appendChild, createTextNode, getParentLNode, removeChild} from './node_manipulation';
 import {stringify} from './util';
@@ -243,14 +243,17 @@ function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
   // On first pass, re-organize node tree to put this node in the correct position.
   const firstTemplatePass = node.view[TVIEW].firstTemplatePass;
   if (firstTemplatePass) {
-    node.tNode.next = null;
     if (previousNode === parentNode && node.tNode !== parentNode.tNode.child) {
       node.tNode.next = parentNode.tNode.child;
       parentNode.tNode.child = node.tNode;
     } else if (previousNode !== parentNode && node.tNode !== previousNode.tNode.next) {
       node.tNode.next = previousNode.tNode.next;
       previousNode.tNode.next = node.tNode;
+    } else {
+      node.tNode.next = null;
     }
+
+    if (parentNode.view === node.view) node.tNode.parent = parentNode.tNode as TElementNode;
   }
 
   // Template containers also have a comment node for the `ViewContainerRef` that should be moved
