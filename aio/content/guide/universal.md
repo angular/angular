@@ -241,7 +241,7 @@ even when the Universal web server is capable of handling those requests.
 You'll have to change the services to make requests with absolute URLs when running on the server
 and with relative URLs when running in the browser.
 
-One solution is to provide the server's runtime origin under the Angular [`APP_BASE_REF` token](api/common/APP_BASE_HREF),
+One solution is to provide the server's runtime origin under the Angular [`APP_BASE_HREF` token](api/common/APP_BASE_HREF),
 inject it into the service, and prepend the origin to the request URL.
 
 Start by changing the `HeroService` constructor to take a second `origin` parameter that is optionally injected via the `APP_BASE_HREF` token.
@@ -288,14 +288,14 @@ This is also the place to register providers that are specific to running your a
 
 ### App server entry point
 
-The `Angular CLI` uses the `AppServerModule` to build the server-side bundle. 
+The Angular CLI uses the `AppServerModule` to build the server-side bundle. 
 
 Create a `main.server.ts` file in the `src/` directory that exports the `AppServerModule`:
 
 <code-example path="universal/src/main.server.ts" title="src/main.server.ts">
 </code-example>
 
-The `main.server.ts` will be referenced later to add a `server` target to the `Angular CLI` configuration.
+The `main.server.ts` will be referenced later to add a `server` target to the Angular CLI configuration.
 
 {@a web-server}
 
@@ -359,7 +359,7 @@ which then forwards it to the client in the HTTP response.
 
 <div class="l-sub-section">
 
-  This wrappers are very useful to hide the complexity of the `renderModuleFactory`. There are more wrappers for different backend technologies
+  These wrappers are very useful to hide the complexity of the `renderModuleFactory`. There are more wrappers for different backend technologies
   at the [Universal repository](https://github.com/angular/universal).
 
 </div>
@@ -369,24 +369,21 @@ which then forwards it to the client in the HTTP response.
 The web server must distinguish _app page requests_ from other kinds of requests.
 
 It's not as simple as intercepting a request to the root address `/`.
-The browser could ask for one of the application routes such as `/dashboard`, `/heroes`, or `/detail:12`.
-In fact, if the app were _only_ rendered by the server, _every_ app link clicked would arrive at the server
+The browser could ask for one of the application routes such as `/dashboard`, `/heroes`, or `/detail/12`.
+In fact, if the app was _only_ rendered by the server, _every_ app link clicked would arrive at the server
 as a navigation URL intended for the router.
 
 Fortunately, application routes have something in common: their URLs lack file extensions.
 
 Data requests also lack extensions but they're easy to recognize because they always begin with `/api`.
-
 All static asset requests have a file extension (e.g., `main.js` or `/node_modules/zone.js/dist/zone.js`).
-
 So we can easily recognize the three types of requests and handle them differently.
 
-1. data request -  request URL that begins `/api`
-2. app navigation - request URL with no file extension
-3. static asset - all other requests.
+1. **Data request:** request URL that begins `/api`
+2. **App navigation:** request URL with no file extension
+3. **Static asset:** all other requests.
 
 An Express server is a pipeline of middleware that filters and processes URL requests one after the other.
-
 You configure the Express server pipeline with calls to `app.get()` like this one for data requests.
 
 <code-example path="universal/server.ts" title="server.ts (data URL)" region="data-request" linenums="false">
@@ -396,9 +393,9 @@ You configure the Express server pipeline with calls to `app.get()` like this on
 
 This sample server doesn't handle data requests.
 
-The tutorial's "in-memory web api" module, a demo and development tool, intercepts all HTTP calls and
+The tutorial's "in-memory web API" module, a demo and development tool, intercepts all HTTP calls and
 simulates the behavior of a remote data server.
-In practice, you would remove that module and register your web api middleware on the server here.
+In practice, you would remove that module and register your web API middleware on the server here.
 
 </div>
 
@@ -454,13 +451,13 @@ This config extends from the root's `tsconfig.json` file. Certain settings are n
 * The `module` property must be **commonjs** which can be required into our server application.
 
 * The `angularCompilerOptions` section guides the AOT compiler:
-  * `entryModule` - the root module of the server application, expressed as `path/to/file#ClassName`.
+  * `entryModule`: the root module of the server application, expressed as `path/to/file#ClassName`.
 
 {@a universal-webpack-configuration}
 
 ### Universal Webpack configuration
 
-Universal applications doesn't need any extra Webpack configuration, the CLI takes care of that for you,
+Universal applications don't need any extra Webpack configuration, the CLI takes care of that for you,
 but since the server is a typescript application, you will use Webpack to transpile it.
 
 Create a `webpack.server.config.js` file in the project root directory with the following code.
@@ -477,7 +474,7 @@ Create a `webpack.server.config.js` file in the project root directory with the 
 The CLI provides builders for different types of __targets__. Commonly known targets such as `build` and `serve` already exist in the `angular.json` configuration. To target a server-side build, add a `server` target to the `architect` configuration object.
 
 * The `outputPath` tells where the resulting build will be created.
-* The `main` provides the main entry point to the previously created `main.server.ts`
+* The `main` provides the main entry point to the previously created `main.server.ts`.
 * The `tsConfig` uses the `tsconfig.server.json` as configuration for the TypeScript and AOT compilation.
 
 ```
@@ -523,7 +520,7 @@ npm run build:ssr
 </code-example>
 
 The Angular CLI compiles and bundles the universal app into two different folders, `browser` and `server`.
-Webpack transpiles the `server.ts` file into Javascript.
+Webpack transpiles the `server.ts` file into JavaScript.
 
 {@a serve}
 
@@ -543,13 +540,13 @@ Node server listening on http://localhost:4000
 ## Universal in action
 
 Open a browser to http://localhost:4000/.
-You should see the familiar Tour of Heroes dashboard page.
+You should see the familiar _Tour of Heroes_ dashboard page.
 
-Navigation via `routerLinks` works correctly.
+Navigation via `routerLink` works correctly.
 You can go from the Dashboard to the Heroes page and back.
-You can click on a hero on the Dashboard page to display its Details page.
+You can also click on a hero on the Dashboard page to display its Details page.
 
-But clicks, mouse-moves, and keyboard entries are inert.
+However, clicks, mouse-moves and keyboard entries are inert:
 
 * Clicking a hero on the Heroes page does nothing.
 * You can't add or delete a hero.
@@ -571,9 +568,11 @@ better appreciate the launch-speed advantage of a universal app running on a low
 
 Open the Chrome Dev Tools and go to the Network tab.
 Find the [Network Throttling](https://developers.google.com/web/tools/chrome-devtools/network-performance/reference#throttling) dropdown on the far right of the menu bar.
-
 Try one of the "3G" speeds.
 The server-rendered app still launches quickly but the full client app may take seconds to load.
+
+<img src="generated/images/guide/universal/chrome-throttling.png" alt="Network Throttling in Chrome" class="left">
+
 
 {@a summary}
 ## Summary
