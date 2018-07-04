@@ -146,7 +146,7 @@ A router has no routes until you configure it.
 The following example creates four route definitions, configures the router via the `RouterModule.forRoot` method,
 and adds the result to the `AppModule`'s `imports` array.
 -->
-라우터를 사용하는 Angular 애플리케이션이라면 단일한 *`Router`* 서비스 인스턴스를 갖습니다.
+라우터를 사용하는 Angular 애플리케이션이라면 *`Router`* 서비스 인스턴스가 싱글턴으로 존재합니다.
 브라우저의 URL이 변경되면 라우터가 이 변경사항과 관련된 라우팅 규칙(routes)을 찾아서 어떤 컴포넌트를 표시해야 하는지 판단합니다.
 
 라우팅 규칙은 개발자가 설정하기 전까지는 아무것도 없습니다.
@@ -219,7 +219,7 @@ In the configuration above, routes with a static path are listed first, followed
 that matches the default route.
 The wildcard route comes last because it matches _every URL_ and should be selected _only_ if no other routes are matched first.
 -->
-Angular 라우터의 **라우팅 규칙은 선언된 순서대로 적용되도록** 디자인되었습니다.
+Angular 라우터의 **라우팅 규칙은 선언된 순서대로 적용되도록** 설계되었습니다.
 그래서 사용자가 요청한 URL이 라우팅 규칙 여러개와 매칭되더라도 **첫번째 매칭된 항목이 우선**되기 때문에, 일반적인 라우팅 규칙보다 세부적인 라우팅 규칙이 먼저 정의되어야 합니다.
 이 코드에서 설정한 것을 보면, 고정된 주소로 지정된 URL이 처음 매칭되며, 라우팅 변수를 사용한 라우팅 규칙이 그 다음으로 매칭되고, 빈 주소에 해당하는 라우팅 규칙, 기본 라우팅 규칙이 순서대로 매칭됩니다.
 와일드카드 라우팅 규칙은 _모든 URL_ 에 매칭되기 때문에 이 규칙은 가장 마지막에 정의되어야 합니다.
@@ -313,14 +313,14 @@ You can add this directive to the anchor or to its parent element.
 <!--
 ### Router state
 -->
-### 라우팅 스테이트
+### 라우터 스테이트
 
 <!--
 After the end of each successful navigation lifecycle, the router builds a tree of `ActivatedRoute` objects
 that make up the current state of the router. You can access the current `RouterState` from anywhere in the
 application using the `Router` service and the `routerState` property.
 -->
-각각의 네비게이션 라이프싸이클이 끝나면 라우터는 현재 라우터 스테이트를 표현하는 `ActivatedRoute` 트리를 객체 타입으로 생성합니다. 그러면 애플리케이션에서 이 라우터 스테이트를 활용하는 로직을 작성할 수 있습니다.
+각각의 네비게이션 라이프싸이클이 끝나면 라우터는 현재 라우터 스테이트를 표현하는 `ActivatedRoute` 트리를 객체 타입으로 생성합니다. 그러면 애플리케이션에서 이 라우터 스테이트를 활용해서 로직을 작성할 수 있습니다.
 
 <!--
 Each `ActivatedRoute` in the `RouterState` provides methods to traverse up and down the route tree
@@ -333,20 +333,29 @@ to get information from parent, child and sibling routes.
 <!--
 ### Activated route
 -->
-#### 활성화된 라우터 (Activated route)
+### 활성화된 라우팅 규칙 (Activated route)
 
+<!--
 The route path and parameters are available through an injected router service called the
 [ActivatedRoute](api/router/ActivatedRoute).
 It has a great deal of useful information including:
+-->
+라우팅 주소와 라우팅 인자는 [ActivatedRoute](api/router/ActivatedRoute)라는 라우터 서비스 내부 객체를 사용해서 참조할 수 있습니다.
+이 객체에서는 다음과 같은 프로퍼티를 많이 활용하게 될 것입니다:
 
 <table>
   <tr>
     <th>
+      <!--
       Property
+      -->
+      프로퍼티
     </th>
-
     <th>
+      <!--
       Description
+      -->
+      설명
     </th>
   </tr>
 
@@ -356,7 +365,10 @@ It has a great deal of useful information including:
     </td>
     <td>
 
+    <!--
     An `Observable` of the route path(s), represented as an array of strings for each part of the route path.
+    -->
+    라우팅 경로를 `Observable` 타입으로 표현합니다. 이 프로퍼티를 참조하면 라우팅 경로를 구성하는 각 문자열을 배열 형태로 확인할 수 있습니다.
 
     </td>
   </tr>
@@ -367,7 +379,10 @@ It has a great deal of useful information including:
     </td>
     <td>
 
+    <!--
     An `Observable` that contains the `data` object provided for the route. Also contains any resolved values from the [resolve guard](#resolve-guard).
+    -->
+    라우팅 규칙에 `data` 객체가 지정되었을 때 이 데이터를 `Observable` 타입으로 표현합니다. 이 객체에는 [라우터 가드](#resolve-guard)에서 처리된 내용이 포함될 수도 있습니다.
 
     </td>
   </tr>
@@ -378,7 +393,10 @@ It has a great deal of useful information including:
     </td>
     <td>
 
+    <!--
     An `Observable` that contains a [map](api/router/ParamMap) of the required and [optional parameters](#optional-route-parameters) specific to the route. The map supports retrieving single and multiple values from the same parameter.
+    -->
+    라우팅 규칙에 정의된 [라우팅 변수](#optional-route-parameters)를 [map](api/router/ParamMap) 타입의 `Observable`로 표현합니다. 맵을 사용하면 라우팅 규칙에 포함된 라우팅 인자를 한 번에 여러개 가져올 수도 있습니다.
 
     </td>
   </tr>
@@ -389,8 +407,12 @@ It has a great deal of useful information including:
     </td>
     <td>
 
+      <!--
     An `Observable` that contains a [map](api/router/ParamMap) of the [query parameters](#query-parameters) available to all routes.
     The map supports retrieving single and multiple values from the query parameter.
+    -->
+    라우팅 규칙에서 접근할 수 있는 모든 [쿼리 변수](#query-parameters)를 [map](api/router/ParamMap) 타입의 `Observable`로 표현합니다.
+    맵을 사용하면 라우팅 규칙에 포함된 쿼리 변수를 한 번에 여러개 가져올 수도 있습니다.
 
     </td>
   </tr>
@@ -401,7 +423,10 @@ It has a great deal of useful information including:
     </td>
     <td>
 
+    <!--
     An `Observable` of the URL [fragment](#fragment) available to all routes.
+    -->
+    모든 라우팅 규칙에 포함된 URL [조각](#fragment)을 `Observable` 형태로 표현합니다.
 
     </td>
   </tr>
@@ -412,7 +437,10 @@ It has a great deal of useful information including:
     </td>
     <td>
 
+    <!--
     The name of the `RouterOutlet` used to render the route. For an unnamed outlet, the outlet name is _primary_.
+    -->
+    라우팅 영역으로 사용되는 `RouterOutlet`을 지정할 때 사용합니다. 라우팅 영역에 이름을 지정하지 않으면 _primary_ 가 기본 이름으로 지정됩니다.
 
     </td>
   </tr>
