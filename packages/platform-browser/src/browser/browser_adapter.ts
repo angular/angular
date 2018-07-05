@@ -18,7 +18,7 @@ const _attrToPropMap = {
   'innerHtml': 'innerHTML',
   'readonly': 'readOnly',
   'tabindex': 'tabIndex',
-  'novalidate: 'noValidate',
+  'novalidate': 'noValidate',
   'formnovalidate': 'formNoValidate'
 };
 
