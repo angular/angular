@@ -5,7 +5,7 @@ import 'rxjs/add/operator/finally';
 
 import { HttpClient } from '@angular/common/http';
 import { OnInit } from '@angular/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable } from 'rxjs';
 
 import { Hero } from '../shared/hero.model';
 
