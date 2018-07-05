@@ -1312,13 +1312,36 @@ export function elementClass<T>(index: number, value: T | NO_CHANGE): void {
  *   values that are passed in here will be applied to the element (if matched).
  */
 export function elementStyling<T>(index: number, styles?: (string | number)[] | null): void {
-  const lElement: LElementNode = load(index - 1);
-  const tNode = lElement.tNode;
-  const template = tNode.stylingTemplate || createStylingContextTemplate(styles);
-  viewData[index + HEADER_OFFSET] = allocStylingContext(template);
+  const tNode = load<LElementNode>(index - 1).tNode;
+  if (!tNode.stylingTemplate) {
+    // initialize the styling template.
+    tNode.stylingTemplate = createStylingContextTemplate(styles);
+  }
   if (styles && styles.length) {
     elementStylingApply(index);
   }
+}
+
+/**
+ * Retrieve the `StylingContext` at a given index.
+ *
+ * This method lazily creates the `StylingContext`. This is because in most cases
+ * we have styling without any bindings. Creating `StylingContext` eagerly would mean that
+ * every style declaration such as `<div style="color: 'red' ">` would result `StyleContext`
+ * which would create unnecessary memory pressure.
+ *
+ * @param index Index of the style allocation. See: `elementStyling`.
+ */
+function getStylingContext(index: number): StylingContext {
+  let stylingContext = load<StylingContext>(index);
+  if (!stylingContext) {
+    const lElement: LElementNode = load(index - 1);
+    const tNode = lElement.tNode;
+    ngDevMode &&
+        assertDefined(tNode.stylingTemplate, 'getStylingContext() called before elementStyling()');
+    stylingContext = viewData[index + HEADER_OFFSET] = allocStylingContext(tNode.stylingTemplate !);
+  }
+  return stylingContext;
 }
 
 /**
@@ -1336,9 +1359,7 @@ export function elementStyling<T>(index: number, styles?: (string | number)[] | 
  *        index.)
  */
 export function elementStylingApply<T>(index: number): void {
-  const stylingContext: StylingContext = viewData[index + HEADER_OFFSET] !;
-  const lElement: LElementNode = load(index - 1);
-  renderElementStyles(lElement, stylingContext, renderer);
+  renderElementStyles(load<LElementNode>(index - 1), getStylingContext(index), renderer);
 }
 
 /**
@@ -1370,7 +1391,6 @@ export function elementStyleProp<T>(
 export function elementStyleProp<T>(
     index: number, styleIndex: number, value: T | null,
     suffixOrSanitizer?: string | SanitizerFn): void {
-  const stylingContext: StylingContext = viewData[index + HEADER_OFFSET] !;
   let valueToAdd: string|null = null;
   if (value) {
     valueToAdd =
@@ -1379,7 +1399,7 @@ export function elementStyleProp<T>(
       valueToAdd = valueToAdd + suffixOrSanitizer;
     }
   }
-  updateElementStyleProp(stylingContext, styleIndex, valueToAdd);
+  updateElementStyleProp(getStylingContext(index), styleIndex, valueToAdd);
 }
 
 /**
@@ -1401,8 +1421,7 @@ export function elementStyleProp<T>(
  *   are their corresponding values to set. If value is null, then the style is removed.
  */
 export function elementStyle<T>(index: number, value: {[styleName: string]: any} | null): void {
-  const stylingContext: StylingContext = viewData[index + HEADER_OFFSET] !;
-  updateElementStyleMap(stylingContext, value);
+  updateElementStyleMap(getStylingContext(index), value);
 }
 
 //////////////////////////

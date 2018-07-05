@@ -95,8 +95,8 @@ describe('styling', () => {
            if (rf & RenderFlags.Create) {
              elementStart(0, 'span');
              elementStyling(1, [
-               'width', 'height', 'opacity', 0, 'width', '100px', 'height', '100px', 'opacity',
-               '0.5'
+               'width', 'height', 'opacity',  //
+               0, 'width', '100px', 'height', '100px', 'opacity', '0.5'
              ]);
              elementEnd();
            }

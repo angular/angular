@@ -356,7 +356,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     for (let i = 0; i < styleInputs.length; i++) {
       const input = styleInputs[i];
-      const isMapBasedStyleBinding = i == 0 && input.name == 'style';
+      const isMapBasedStyleBinding = i === 0 && input.name === 'style';
       if (!isMapBasedStyleBinding && !stylesIndexMap.hasOwnProperty(input.name)) {
         stylesIndexMap[input.name] = currStyleIndex++;
       }

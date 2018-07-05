@@ -28,46 +28,61 @@ import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces
  * There are three types of styling types stored in this context:
  *   initial: any styles that are passed in once the context is created
  *            (these are stored in the first cell of the array and the first
- *             value of this array is always `null` even if no inital styles exist)
+ *             value of this array is always `null` even if no initial styles exist.
+ *             the `null` value is there so that any new styles have a parent to point
+ *             to. This way we can always assume that there is a parent.)
  *
- *   single: any styles that are updated using `updateStyleProp`
+ *   single: any styles that are updated using `updateStyleProp` (fixed set)
  *
- *   multi: any styles that are updated using `updateStyleMap`
+ *   multi: any styles that are updated using `updateStyleMap` (dynamic set)
  *
  * Note that context is only used to collect style information. Only when `renderStyles`
  * is called is when the styling payload will be rendered (or built as a key/value map).
  *
  * When the context is created, depending on what initial styles are passed in, the context itself
- * will be pre-filled with slots based on the itial style properties. Say for example we have a
+ * will be pre-filled with slots based on the initial style properties. Say for example we have a
  * series of initial styles that look like so:
  *
  *   style="width:100px; height:200px;"
  *
  * Then the initial state of the context (once initialized) will look like so:
  *
+ * ```
  * context = [
- *   [null, '100px', '200px'],
+ *   [null, '100px', '200px'],  // property names are not needed since they have already been
+ * written to DOM.
  *
  *   configMasterVal,
  *
+ *   // 2
  *   'width',
- *   configValA,
+ *   pointers(1, 8);  // Point to static `width`: `100px` and multi `width`.
  *   null,
  *
+ *   // 5
  *   'height',
- *   configValB,
+ *   pointers(2, 11); // Point to static `height`: `200px` and multi `height`.
  *   null,
  *
+ *   // 8
  *   'width',
- *   configValC,
+ *   pointers(1, 2);  // Point to static `width`: `100px` and single `width`.
  *   null,
  *
+ *   // 11
  *   'height',
- *   configValD,
+ *   pointers(2, 5);  // Point to static `height`: `200px` and single `height`.
  *   null,
  * ]
  *
- * The values are duplicated yes and they are done so to set space aside for both multi ([style])
+ * function pointers(staticIndex: number, dynamicIndex: number) {
+ *   // combine the two indices into a single word.
+ *   return (staticIndex << StylingFlags.BitCountSize) |
+ *     (dynamicIndex << (StylingIndex.BitCountSize + StylingFlags.BitCountSize));
+ * }
+ * ```
+ *
+ * The values are duplicated so that space is set aside for both multi ([style])
  * and single ([style.prop]) values. The respective config values (configValA, configValB, etc...)
  * are a combination of the StylingFlags with two index values: the `initialIndex` (which points to
  * the index location of the style value in the initial styles array in slot 0) and the
@@ -214,20 +229,18 @@ export function createStylingContextTemplate(
     const indexForMulti = i * StylingIndex.Size + multiStart;
     const indexForSingle = i * StylingIndex.Size + singleStart;
 
-    writeFlag(
-        context, indexForSingle, flagCombine(StylingFlags.None, indexForInitial, indexForMulti));
-    writeProp(context, indexForSingle, prop);
-    writeValue(context, indexForSingle, null);
+    setFlag(context, indexForSingle, pointers(StylingFlags.None, indexForInitial, indexForMulti));
+    setProp(context, indexForSingle, prop);
+    setValue(context, indexForSingle, null);
 
-    writeFlag(
-        context, indexForMulti, flagCombine(StylingFlags.Dirty, indexForInitial, indexForSingle));
-    writeProp(context, indexForMulti, prop);
-    writeValue(context, indexForMulti, null);
+    setFlag(context, indexForMulti, pointers(StylingFlags.Dirty, indexForInitial, indexForSingle));
+    setProp(context, indexForMulti, prop);
+    setValue(context, indexForMulti, null);
   }
 
-  // there is no initial value flag for the master index since it doesn't reference an inital style
+  // there is no initial value flag for the master index since it doesn't reference an initial style
   // value
-  writeFlag(context, StylingIndex.MasterFlagPosition, flagCombine(0, 0, multiStart));
+  setFlag(context, StylingIndex.MasterFlagPosition, pointers(0, 0, multiStart));
   setContextDirty(context, initialStyles.length > 1);
 
   return context;
@@ -247,7 +260,7 @@ const EMPTY_ARR: any[] = [];
  */
 export function updateStyleMap(context: StylingContext, styles: {[key: string]: any} | null): void {
   const propsToApply = styles ? Object.keys(styles) : EMPTY_ARR;
-  const multiStartIndex = readMultiStartIndex(context);
+  const multiStartIndex = getMultiStartIndex(context);
 
   let dirty = false;
   let ctxIndex = multiStartIndex;
@@ -257,16 +270,16 @@ export function updateStyleMap(context: StylingContext, styles: {[key: string]: 
   // styles differ with respect to the context. Later if the context/styles are
   // off-balance then they will be dealt in another loop after this one
   while (ctxIndex < context.length && propIndex < propsToApply.length) {
-    const flag = readFlag(context, ctxIndex);
-    const prop = readProp(context, ctxIndex);
-    const value = readValue(context, ctxIndex);
+    const flag = getPointers(context, ctxIndex);
+    const prop = getProp(context, ctxIndex);
+    const value = getValue(context, ctxIndex);
 
     const newProp = propsToApply[propIndex];
     const newValue = styles ![newProp];
     if (prop === newProp) {
       if (value !== newValue) {
-        writeValue(context, ctxIndex, newValue);
-        const initialValue = readInitialValue(context, flag);
+        setValue(context, ctxIndex, newValue);
+        const initialValue = getInitialValue(context, flag);
 
         // there is no point in setting this to dirty if the previously
         // rendered value was being referenced by the initial style (or null)
@@ -281,24 +294,13 @@ export function updateStyleMap(context: StylingContext, styles: {[key: string]: 
         // it was found at a later point ... just swap the values
         swapMultiContextEntries(context, ctxIndex, indexOfEntry);
         if (value !== newValue) {
-          writeValue(context, ctxIndex, newValue);
+          setValue(context, ctxIndex, newValue);
           dirty = true;
         }
       } else {
         // we only care to do this if the insertion is in the middle
         const doShift = ctxIndex < context.length;
-
-        // prop does not exist in the list, add it in
-        context.splice(ctxIndex, 0, 0, newProp, newValue);
-
-        if (doShift) {
-          // because the value was inserted midway into the array then we
-          // need to update all the shifted multi values' single value
-          // pointers to point to the newly shifted location
-          updateSinglePointerValues(context, ctxIndex + StylingIndex.Size);
-        }
-
-        setDirty(context, ctxIndex, true);
+        insertNewMultiProperty(context, ctxIndex, newProp, newValue);
         dirty = true;
       }
     }
@@ -314,7 +316,7 @@ export function updateStyleMap(context: StylingContext, styles: {[key: string]: 
     const value = context[ctxIndex + StylingIndex.ValueOffset];
     if (value !== null) {
       setDirty(context, ctxIndex, true);
-      writeValue(context, ctxIndex, null);
+      setValue(context, ctxIndex, null);
       dirty = true;
     }
     ctxIndex += StylingIndex.Size;
@@ -353,17 +355,17 @@ export function updateStyleMap(context: StylingContext, styles: {[key: string]: 
 export function updateStyleProp(
     context: StylingContext, index: number, value: string | null): void {
   const singleIndex = StylingIndex.SingleStylesStartPosition + index * StylingIndex.Size;
-  const currValue = readValue(context, singleIndex);
-  const currFlag = readFlag(context, singleIndex);
+  const currValue = getValue(context, singleIndex);
+  const currFlag = getPointers(context, singleIndex);
 
   // didn't change ... nothing to make a note of
   if (currValue !== value) {
     // the value will always get updated (even if the dirty flag is skipped)
-    writeValue(context, singleIndex, value);
-    const indexForMulti = readMultiOrSingleIndex(currFlag);
+    setValue(context, singleIndex, value);
+    const indexForMulti = getMultiOrSingleIndex(currFlag);
 
     // if the value is the same in the multi-area then there's no point in re-assembling
-    const valueForMulti = readValue(context, indexForMulti);
+    const valueForMulti = getValue(context, indexForMulti);
     if (!valueForMulti || valueForMulti !== value) {
       let multiDirty = false;
       let singleDirty = true;
@@ -402,14 +404,14 @@ export function renderStyles(
     styleStore?: {[key: string]: any}) {
   if (isContextDirty(context)) {
     const native = lElement.native;
-    const multiStartIndex = readMultiStartIndex(context);
+    const multiStartIndex = getMultiStartIndex(context);
     for (let i = StylingIndex.SingleStylesStartPosition; i < context.length;
          i += StylingIndex.Size) {
       // there is no point in rendering styles that have not changed on screen
       if (isDirty(context, i)) {
-        const prop = readProp(context, i);
-        const value = readValue(context, i);
-        const flag = readFlag(context, i);
+        const prop = getProp(context, i);
+        const value = getValue(context, i);
+        const flag = getPointers(context, i);
         const isInSingleRegion = i < multiStartIndex;
 
         let styleToApply: string|null = value;
@@ -419,15 +421,15 @@ export function renderStyles(
         // should now defer to a multi value and use that (if set).
         if (isInSingleRegion && styleToApply == null) {
           // single values ALWAYS have a reference to a multi index
-          const multiIndex = readMultiOrSingleIndex(flag);
-          styleToApply = readValue(context, multiIndex);
+          const multiIndex = getMultiOrSingleIndex(flag);
+          styleToApply = getValue(context, multiIndex);
         }
 
         // STYLE DEFER CASE 2: Use the initial value if all else fails (is null)
         // the initial value will always be a string or null,
         // therefore we can safely adopt it incase there's nothing else
         if (styleToApply == null) {
-          styleToApply = readInitialValue(context, flag);
+          styleToApply = getInitialValue(context, flag);
         }
 
         setStyle(native, prop, styleToApply, renderer, styleStore);
@@ -485,55 +487,55 @@ function isDirty(context: StylingContext, index: number): boolean {
   return ((context[adjustedIndex] as number) & StylingFlags.Dirty) == StylingFlags.Dirty;
 }
 
-function flagCombine(configFlag: number, staticIndex: number, dynamicIndex: number) {
+function pointers(configFlag: number, staticIndex: number, dynamicIndex: number) {
   return (configFlag & StylingFlags.Dirty) | (staticIndex << StylingFlags.BitCountSize) |
       (dynamicIndex << (StylingIndex.BitCountSize + StylingFlags.BitCountSize));
 }
 
-function readInitialValue(context: StylingContext, flag: number): string|null {
-  const index = readInitialIndex(flag);
+function getInitialValue(context: StylingContext, flag: number): string|null {
+  const index = getInitialIndex(flag);
   return context[StylingIndex.InitialStylesPosition][index] as null | string;
 }
 
-function readInitialIndex(flag: number): number {
+function getInitialIndex(flag: number): number {
   return (flag >> StylingFlags.BitCountSize) & StylingIndex.BitMask;
 }
 
-function readMultiOrSingleIndex(flag: number): number {
+function getMultiOrSingleIndex(flag: number): number {
   const index =
       (flag >> (StylingIndex.BitCountSize + StylingFlags.BitCountSize)) & StylingIndex.BitMask;
   return index >= StylingIndex.SingleStylesStartPosition ? index : -1;
 }
 
-function readMultiStartIndex(context: StylingContext): number {
-  return readMultiOrSingleIndex(context[StylingIndex.MasterFlagPosition]) as number;
+function getMultiStartIndex(context: StylingContext): number {
+  return getMultiOrSingleIndex(context[StylingIndex.MasterFlagPosition]) as number;
 }
 
-function writeProp(context: StylingContext, index: number, prop: string) {
+function setProp(context: StylingContext, index: number, prop: string) {
   context[index + StylingIndex.PropertyOffset] = prop;
 }
 
-function writeValue(context: StylingContext, index: number, value: string | null) {
+function setValue(context: StylingContext, index: number, value: string | null) {
   context[index + StylingIndex.ValueOffset] = value;
 }
 
-function writeFlag(context: StylingContext, index: number, flag: number) {
+function setFlag(context: StylingContext, index: number, flag: number) {
   const adjustedIndex =
       index === StylingIndex.MasterFlagPosition ? index : (index + StylingIndex.FlagsOffset);
   context[adjustedIndex] = flag;
 }
 
-function readFlag(context: StylingContext, index: number): number {
+function getPointers(context: StylingContext, index: number): number {
   const adjustedIndex =
       index === StylingIndex.MasterFlagPosition ? index : (index + StylingIndex.FlagsOffset);
   return context[adjustedIndex] as number;
 }
 
-function readValue(context: StylingContext, index: number): string|null {
+function getValue(context: StylingContext, index: number): string|null {
   return context[index + StylingIndex.ValueOffset] as string | null;
 }
 
-function readProp(context: StylingContext, index: number): string {
+function getProp(context: StylingContext, index: number): string {
   return context[index + StylingIndex.PropertyOffset] as string;
 }
 
@@ -558,47 +560,62 @@ function findEntryPositionByProp(
 }
 
 function swapMultiContextEntries(context: StylingContext, indexA: number, indexB: number) {
-  const tmpValue = readValue(context, indexA);
-  const tmpProp = readProp(context, indexA);
-  const tmpFlag = readFlag(context, indexA);
+  const tmpValue = getValue(context, indexA);
+  const tmpProp = getProp(context, indexA);
+  const tmpFlag = getPointers(context, indexA);
 
   let flagA = tmpFlag;
-  let flagB = readFlag(context, indexB);
+  let flagB = getPointers(context, indexB);
 
-  const singleIndexA = readMultiOrSingleIndex(flagA);
+  const singleIndexA = getMultiOrSingleIndex(flagA);
   if (singleIndexA >= 0) {
-    const _flag = readFlag(context, singleIndexA);
-    const _initial = readInitialIndex(_flag);
-    writeFlag(context, singleIndexA, flagCombine(_flag, _initial, indexB));
+    const _flag = getPointers(context, singleIndexA);
+    const _initial = getInitialIndex(_flag);
+    setFlag(context, singleIndexA, pointers(_flag, _initial, indexB));
   }
 
-  const singleIndexB = readMultiOrSingleIndex(flagB);
+  const singleIndexB = getMultiOrSingleIndex(flagB);
   if (singleIndexB >= 0) {
-    const _flag = readFlag(context, singleIndexB);
-    const _initial = readInitialIndex(_flag);
-    writeFlag(context, singleIndexB, flagCombine(_flag, _initial, indexA));
+    const _flag = getPointers(context, singleIndexB);
+    const _initial = getInitialIndex(_flag);
+    setFlag(context, singleIndexB, pointers(_flag, _initial, indexA));
   }
 
-  writeValue(context, indexA, readValue(context, indexB));
-  writeProp(context, indexA, readProp(context, indexB));
-  writeFlag(context, indexA, readFlag(context, indexB));
+  setValue(context, indexA, getValue(context, indexB));
+  setProp(context, indexA, getProp(context, indexB));
+  setFlag(context, indexA, getPointers(context, indexB));
 
-  writeValue(context, indexB, tmpValue);
-  writeProp(context, indexB, tmpProp);
-  writeFlag(context, indexB, tmpFlag);
+  setValue(context, indexB, tmpValue);
+  setProp(context, indexB, tmpProp);
+  setFlag(context, indexB, tmpFlag);
 }
 
 function updateSinglePointerValues(context: StylingContext, indexStartPosition: number) {
   for (let i = indexStartPosition; i < context.length; i += StylingIndex.Size) {
-    const multiFlag = readFlag(context, i);
-    const singleIndex = readMultiOrSingleIndex(multiFlag);
+    const multiFlag = getPointers(context, i);
+    const singleIndex = getMultiOrSingleIndex(multiFlag);
     if (singleIndex > 0) {
-      const singleFlag = readFlag(context, singleIndex);
-      const initialIndexForSingle = readInitialIndex(singleFlag);
-      const updatedFlag = flagCombine(
+      const singleFlag = getPointers(context, singleIndex);
+      const initialIndexForSingle = getInitialIndex(singleFlag);
+      const updatedFlag = pointers(
           isDirty(context, singleIndex) ? StylingFlags.Dirty : StylingFlags.None,
           initialIndexForSingle, i);
-      writeFlag(context, singleIndex, updatedFlag);
+      setFlag(context, singleIndex, updatedFlag);
     }
+  }
+}
+
+function insertNewMultiProperty(
+    context: StylingContext, index: number, name: string, value: string): void {
+  const doShift = index < context.length;
+
+  // prop does not exist in the list, add it in
+  context.splice(index, 0, StylingFlags.Dirty, name, value);
+
+  if (doShift) {
+    // because the value was inserted midway into the array then we
+    // need to update all the shifted multi values' single value
+    // pointers to point to the newly shifted location
+    updateSinglePointerValues(context, index + StylingIndex.Size);
   }
 }
