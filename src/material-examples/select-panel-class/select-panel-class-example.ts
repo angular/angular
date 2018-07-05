@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, ViewEncapsulation} from '@angular/core';
 import {FormControl} from '@angular/forms';
 
 /**
@@ -8,6 +8,9 @@ import {FormControl} from '@angular/forms';
   selector: 'select-panel-class-example',
   templateUrl: 'select-panel-class-example.html',
   styleUrls: ['select-panel-class-example.css'],
+  // Encapsulation has to be disabled in order for the
+  // component style to apply to the select panel.
+  encapsulation: ViewEncapsulation.None,
 })
 export class SelectPanelClassExample {
   panelColor = new FormControl('red');
