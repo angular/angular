@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AsyncTestCompleter, describe, expect, iit, inject, it} from '@angular/core/testing/src/testing_internal';
+import {AsyncTestCompleter, describe, expect, fit, inject, it} from '@angular/core/testing/src/testing_internal';
 
 import {ChromeDriverExtension, Injector, Options, WebDriverAdapter, WebDriverExtension} from '../../index';
 import {TraceEventFactory} from '../trace_event_factory';
