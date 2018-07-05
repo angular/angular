@@ -15,7 +15,7 @@ import {ɵgetDOM as getDOM} from '@angular/platform-browser';
 /**
  * Jasmine matchers that check Angular specific conditions.
  */
-export interface NgMatchers extends jasmine.Matchers<any> {
+export interface NgMatchers<T = any> extends jasmine.Matchers<T> {
   /**
    * Expect the value to be a `Promise`.
    *
@@ -82,7 +82,7 @@ export interface NgMatchers extends jasmine.Matchers<any> {
   /**
    * Invert the matchers.
    */
-  not: NgMatchers;
+  not: NgMatchers<T>;
 }
 
 const _global = <any>(typeof window === 'undefined' ? global : window);
@@ -94,7 +94,7 @@ const _global = <any>(typeof window === 'undefined' ? global : window);
  *
  * {@example testing/ts/matchers.ts region='toHaveText'}
  */
-export const expect: (actual: any) => NgMatchers = <any>_global.expect;
+export const expect: <T = any>(actual: T) => NgMatchers<T> = _global.expect;
 
 
 // Some Map polyfills don't polyfill Map.toString correctly, which

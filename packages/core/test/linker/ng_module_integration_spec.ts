@@ -33,37 +33,27 @@ class TurboEngine extends Engine {}
 const CARS = new InjectionToken<Car[]>('Cars');
 @Injectable()
 class Car {
-  engine: Engine;
-  constructor(engine: Engine) { this.engine = engine; }
+  constructor(public engine: Engine) {}
 }
 
 @Injectable()
 class CarWithOptionalEngine {
-  engine: Engine;
-  constructor(@Optional() engine: Engine) { this.engine = engine; }
+  constructor(@Optional() public engine: Engine) {}
 }
 
 @Injectable()
 class CarWithDashboard {
-  engine: Engine;
-  dashboard: Dashboard;
-  constructor(engine: Engine, dashboard: Dashboard) {
-    this.engine = engine;
-    this.dashboard = dashboard;
-  }
+  constructor(public engine: Engine, public dashboard: Dashboard) {}
 }
 
 @Injectable()
 class SportsCar extends Car {
-  // TODO(issue/24571): remove '!'.
-  engine !: Engine;
   constructor(engine: Engine) { super(engine); }
 }
 
 @Injectable()
 class CarWithInject {
-  engine: Engine;
-  constructor(@Inject(TurboEngine) engine: Engine) { this.engine = engine; }
+  constructor(@Inject(TurboEngine) public engine: Engine) {}
 }
 
 @Injectable()
@@ -747,7 +737,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const injector = createInjector([CarWithOptionalEngine]);
 
         const car = injector.get(CarWithOptionalEngine);
-        expect(car.engine).toEqual(null);
+        expect(car.engine).toBeNull();
       });
 
       it('should flatten passed-in providers', () => {

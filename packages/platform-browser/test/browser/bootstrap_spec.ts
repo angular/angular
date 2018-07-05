@@ -212,9 +212,10 @@ function bootstrap(
          bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
            CustomModule
          ]).then(null, (e: Error) => {
-           expect(e.message).toContain(`StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: 
-  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: 
-    NullInjectorError: No provider for IDontExist!`);
+           expect(e.message).toContain(
+               'StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: \n' +
+               '  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: \n' +
+               '    NullInjectorError: No provider for IDontExist!');
            async.done();
            return null;
          });
@@ -255,7 +256,7 @@ function bootstrap(
 
     it('should create an injector promise', () => {
       const refPromise = bootstrap(HelloRootCmp, testProviders);
-      expect(refPromise).not.toBe(null);
+      expect(refPromise).toEqual(jasmine.any(Promise));
     });
 
     it('should set platform name to browser',
