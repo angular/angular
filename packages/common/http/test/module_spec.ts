@@ -67,23 +67,22 @@ class ReentrantInterceptor implements HttpInterceptor {
         ],
       });
     });
-    it('initializes HttpClient properly', (done: DoneFn) => {
+    it('initializes HttpClient properly', done => {
       injector.get(HttpClient).get('/test', {responseType: 'text'}).subscribe(value => {
         expect(value).toBe('ok!');
         done();
       });
       injector.get(HttpTestingController).expectOne('/test').flush('ok!');
     });
-    it('intercepts outbound responses in the order in which interceptors were bound',
-       (done: DoneFn) => {
-         injector.get(HttpClient)
-             .get('/test', {observe: 'response', responseType: 'text'})
-             .subscribe(value => done());
-         const req = injector.get(HttpTestingController).expectOne('/test') as TestRequest;
-         expect(req.request.headers.get('Intercepted')).toEqual('A,B');
-         req.flush('ok!');
-       });
-    it('intercepts inbound responses in the right (reverse binding) order', (done: DoneFn) => {
+    it('intercepts outbound responses in the order in which interceptors were bound', done => {
+      injector.get(HttpClient)
+          .get('/test', {observe: 'response', responseType: 'text'})
+          .subscribe(value => done());
+      const req = injector.get(HttpTestingController).expectOne('/test') as TestRequest;
+      expect(req.request.headers.get('Intercepted')).toEqual('A,B');
+      req.flush('ok!');
+    });
+    it('intercepts inbound responses in the right (reverse binding) order', done => {
       injector.get(HttpClient)
           .get('/test', {observe: 'response', responseType: 'text'})
           .subscribe(value => {
@@ -92,7 +91,7 @@ class ReentrantInterceptor implements HttpInterceptor {
           });
       injector.get(HttpTestingController).expectOne('/test').flush('ok!');
     });
-    it('allows interceptors to inject HttpClient', (done: DoneFn) => {
+    it('allows interceptors to inject HttpClient', done => {
       TestBed.resetTestingModule();
       injector = TestBed.configureTestingModule({
         imports: [HttpClientTestingModule],

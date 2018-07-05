@@ -12,7 +12,7 @@ import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, iit, inject, it} from '@angular/core/testing/src/testing_internal';
+import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, fit, inject, it} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
