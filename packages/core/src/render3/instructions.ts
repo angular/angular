@@ -1317,6 +1317,8 @@ export function elementStyling<T>(index: number, styles?: (string | number)[] | 
     // initialize the styling template.
     tNode.stylingTemplate = createStylingContextTemplate(styles);
   }
+  // Allocate space but leave null for lazy creation.
+  viewData[index + HEADER_OFFSET] = null;
   if (styles && styles.length) {
     elementStylingApply(index);
   }
