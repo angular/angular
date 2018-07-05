@@ -199,9 +199,6 @@ const INVALID_CTOR_DECORATORS_FILE = {
       constructor() {
       }
     }
-    NotObjectLiteral.ctorParameters = () => [
-      { type: 'ParamType', decorators: [{ type: NoParametersDecorator },] },
-    ];
 
     const NotArrowFunctionDecorator = {};
     class NotArrowFunction {
