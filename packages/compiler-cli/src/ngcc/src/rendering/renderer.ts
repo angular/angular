@@ -6,7 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {AnalyzedFile} from '../analyzer';
+import {Renderer} from './renderer';
+
+export interface RenderedFile {
+  file: AnalyzedFile;
+  content: string;
+  map: string;
+}
 
 export interface Renderer {
-  renderFile(file: AnalyzedFile): string;
+  renderFile(file: AnalyzedFile): RenderedFile;
 }

@@ -24,7 +24,7 @@ export class Esm2015PackageParser implements PackageParser {
     if (moduleSymbol) {
 
       const exportClasses = this.checker.getExportsOfModule(moduleSymbol)
-        .map(exportSymbol => this.checker.getAliasedSymbol(exportSymbol))
+        .map(exportSymbol => ts.SymbolFlags.Alias & exportSymbol.flags ? this.checker.getAliasedSymbol(exportSymbol) : exportSymbol)
         .filter(exportSymbol => exportSymbol.flags & ts.SymbolFlags.Class);
 
       const classDeclarations = exportClasses

@@ -10,8 +10,14 @@ import MagicString from 'magic-string';
 import {AnalyzedClass, AnalyzedFile} from '../analyzer';
 import {Renderer} from './renderer';
 
+export interface RenderedFile {
+  file: AnalyzedFile;
+  content: string;
+  map: string;
+}
+
 export class Esm2015Renderer implements Renderer {
-  renderFile(file: AnalyzedFile): string {
+  renderFile(file: AnalyzedFile): RenderedFile {
     const output = new MagicString(file.sourceFile.text);
     const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
     addImports(output, file);
@@ -20,7 +26,16 @@ export class Esm2015Renderer implements Renderer {
       trackDecorators(analyzedClass, decoratorsToRemove);
     });
     removeDecorators(output, decoratorsToRemove);
-    return output.toString();
+    const map = output.generateMap({
+      source: file.sourceFile.fileName,
+      file: `${file.sourceFile.fileName}.map`,
+      includeContent: true
+    });
+    return {
+      file,
+      content: output.toString(),
+      map: map.toString()
+    };
   }
 }
 
@@ -60,7 +75,7 @@ function removeDecorators(output: MagicString, decoratorsToRemove: Map<ts.Node, 
   decoratorsToRemove.forEach((nodesToRemove, containerNode) => {
     const children = containerNode.getChildren().filter(node => !ts.isToken(node));
     if (children.length === nodesToRemove.length) {
-      output.remove(containerNode.parent!.getFullStart(), containerNode.parent!.getEnd());
+      output.remove(containerNode.parent!.getFullStart(), containerNode.parent!.getEnd() + 1 /* include semi-colon */);
     } else {
       nodesToRemove.forEach(node => {
         output.remove(node.getFullStart(), node.getEnd());

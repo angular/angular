@@ -52,7 +52,11 @@ export function mainNgcc(args: string[]): number {
       const renderer = new Esm2015Renderer();
       const output = renderer.renderFile(analyzedFile);
 
-      if (analyzedFile.sourceFile.fileName.endsWith('testing.js')) console.log(output);
+      // Dump the output for the `testing.js` files as an example
+      if (analyzedFile.sourceFile.fileName.endsWith('testing.js')) {
+        console.log(output.content);
+        console.log(output.map);
+      }
     });
   });
   return 0;
