@@ -45,15 +45,11 @@ export function mainNgcc(args: string[]): number {
 
       dumpAnalysis(analyzedFile);
 
-      console.log('Conmpiled definitions');
-      console.log(analyzedFile.imports);
-      console.log(analyzedFile.analyzedClasses.map(c => c.renderedDefinition));
-
       const renderer = new Esm2015Renderer();
       const output = renderer.renderFile(analyzedFile);
 
       // Dump the output for the `testing.js` files as an example
-      if (analyzedFile.sourceFile.fileName.endsWith('testing.js')) {
+      if (output.file.sourceFile.fileName.endsWith('testing.js')) {
         console.log(output.content);
         console.log(output.map);
       }

@@ -7,11 +7,9 @@
  */
 import * as fs from 'fs';
 import * as ts from 'typescript';
-import {WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from '../../ngtsc/annotations';
 import {Decorator} from '../../ngtsc/host';
 import {CompileResult, DecoratorHandler} from '../../ngtsc/transform';
-import {ImportManager, translateStatement} from '../../ngtsc/transform/src/translator';
 import {NgccReflectionHost} from './host/ngcc_host';
 import {DecoratedClass, ParsedFile} from './parser/parser';
 
@@ -21,12 +19,10 @@ export interface AnalyzedClass {
   analysis: any;
   diagnostics?: ts.Diagnostic[];
   compilation: CompileResult[];
-  renderedDefinition: string;
 }
 
 export interface AnalyzedFile {
   analyzedClasses: AnalyzedClass[];
-  imports: {name: string, as: string}[];
   sourceFile: ts.SourceFile;
 }
 
@@ -56,22 +52,23 @@ export class Analyzer {
 
   constructor(private typeChecker: ts.TypeChecker, private host: NgccReflectionHost) {}
 
+  /**
+   * Analyize a parsed file to generate the information about decorated classes that
+   * should be converted to use ivy definitions.
+   * @param file The file to be analysed for decorated classes.
+   */
   analyzeFile(file: ParsedFile): AnalyzedFile {
-    const importManager = new ImportManager(false);
     const analyzedClasses = file.decoratedClasses
-      .map(clazz => this.analyzeClass(file.sourceFile, clazz, importManager))
+      .map(clazz => this.analyzeClass(file.sourceFile, clazz))
       .filter(analysis => !!analysis) as AnalyzedClass[];
-
-    const imports = importManager.getAllImports(file.sourceFile.fileName, null);
 
     return {
       analyzedClasses,
-      imports,
       sourceFile: file.sourceFile,
     };
   }
 
-  analyzeClass(file: ts.SourceFile, clazz: DecoratedClass, importManager: ImportManager): AnalyzedClass|undefined {
+  protected analyzeClass(file: ts.SourceFile, clazz: DecoratedClass): AnalyzedClass|undefined {
     const matchingHandlers = this.handlers
       .map(handler => ({ handler, decorator: handler.detect(clazz.decorators) }))
       .filter((matchingHandler): matchingHandler is MatchingHandler<any> => !!matchingHandler.decorator);
@@ -89,32 +86,8 @@ export class Analyzer {
       if (!Array.isArray(compilation)) {
         compilation = [compilation];
       }
-      const renderedDefinition = this.renderDefinitions(file, clazz, compilation, importManager);
-
-      return { clazz, handler, analysis, diagnostics, compilation, renderedDefinition };
+      return { clazz, handler, analysis, diagnostics, compilation };
     }
   }
 
-  protected renderDefinitions(sourceFile: ts.SourceFile, clazz: DecoratedClass, compilation: CompileResult[], imports: ImportManager): string {
-    const printer = ts.createPrinter();
-    const name = (clazz.declaration as ts.NamedDeclaration).name!;
-    const definition = compilation.map(c => c.statements
-      .map(statement => translateStatement(statement, imports))
-      .concat(translateStatement(createAssignmentStatement(name, c), imports))
-      .map(statement => printer.printNode(ts.EmitHint.Unspecified, statement, sourceFile))
-      .join('\n')
-    ).join('\n');
-    return definition;
-  }
-}
-
-
-/**
- * Create an Angular AST statement node that contains the assignment of the
- * compiled decorator to be applied to the class.
- * @param analyzedClass The info about the class whose statement we want to create.
- */
-function createAssignmentStatement(name: ts.DeclarationName, compilation: CompileResult) {
-  const receiver = new WrappedNodeExpr(name);
-  return new WritePropExpr(receiver, compilation.name, compilation.initializer).toStmt();
 }
