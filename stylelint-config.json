@@ -49,6 +49,7 @@
     "shorthand-property-no-redundant-values": true,
 
     "property-case": "lower",
+    "no-duplicate-at-import-rules": true,
 
     "declaration-block-no-duplicate-properties": [true, {
       "ignore": ["consecutive-duplicates-with-different-values"]
