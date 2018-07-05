@@ -659,7 +659,7 @@ class TestComp {
         TestBed.configureTestingModule({declarations: [OptionallyNeedsDirective]});
         const el = createComponent('<div optionallyNeedsDirective></div>');
         const d = el.children[0].injector.get(OptionallyNeedsDirective);
-        expect(d.dependency).toEqual(null);
+        expect(d.dependency).toBeNull();
       });
 
       it('should instantiate directives that depends on the host component', () => {

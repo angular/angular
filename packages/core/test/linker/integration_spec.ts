@@ -343,7 +343,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const fixture = TestBed.createComponent(MyComp);
 
         const tc = fixture.debugElement.children[0];
-        expect(tc.injector.get(EventDir)).not.toBe(null);
+        expect(tc.injector.get(EventDir)).not.toBeNull();
       });
 
       it('should read directives metadata from their binding token', () => {
@@ -1237,7 +1237,7 @@ function declareTests({useJit}: {useJit: boolean}) {
         const needsAttribute = tc.injector.get(NeedsAttribute);
         expect(needsAttribute.typeAttribute).toEqual('text');
         expect(needsAttribute.staticAttribute).toEqual('');
-        expect(needsAttribute.fooAttribute).toEqual(null);
+        expect(needsAttribute.fooAttribute).toBeNull();
       });
 
       it('should support custom interpolation', () => {
