@@ -23,7 +23,7 @@
     "baseUrl": ".",
     "paths": {
       "@angular/material/*": ["../../dist/packages/material/*"],
-      "@angular/material": ["../../dist/packages/material/public-api"],
+      "@angular/material": ["../../dist/packages/material"],
       "@angular/material-moment-adapter": ["../../dist/packages/material-moment-adapter"],
       "@angular/cdk/*": ["../../dist/packages/cdk/*"]
     }

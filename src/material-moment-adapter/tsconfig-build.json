@@ -23,7 +23,7 @@
     "types": [],
     "paths": {
       "@angular/material/*": ["../../dist/packages/material/*"],
-      "@angular/material": ["../../dist/packages/material/public-api"],
+      "@angular/material": ["../../dist/packages/material"],
       "@angular/cdk/*": ["../../dist/packages/cdk/*"]
     }
   },
