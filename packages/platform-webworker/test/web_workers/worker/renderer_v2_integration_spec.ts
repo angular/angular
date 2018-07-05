@@ -98,7 +98,7 @@ let lastCreatedRenderer: Renderer2;
                  .createComponent(MyComp2);
 
          const checkSetters = (componentRef: ComponentRef<any>, workerEl: any) => {
-           expect(lastCreatedRenderer).not.toEqual(null);
+           expect(lastCreatedRenderer).not.toBeNull();
 
            const el = getRenderElement(workerEl);
            lastCreatedRenderer.setProperty(workerEl, 'tabIndex', 1);

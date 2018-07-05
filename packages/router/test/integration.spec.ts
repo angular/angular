@@ -187,8 +187,6 @@ describe('Integration', () => {
     });
 
     describe('should advance the parent route after deactivating its children', () => {
-      let log: string[] = [];
-
       @Component({template: '<router-outlet></router-outlet>'})
       class Parent {
         constructor(route: ActivatedRoute) {
@@ -214,10 +212,7 @@ describe('Integration', () => {
       class TestModule {
       }
 
-      beforeEach(() => {
-        log = [];
-        TestBed.configureTestingModule({imports: [TestModule]});
-      });
+      beforeEach(() => TestBed.configureTestingModule({imports: [TestModule]}));
 
       it('should work',
          fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -874,8 +869,8 @@ describe('Integration', () => {
      })));
 
   it('should dispatch NavigationError after the url has been reset back', fakeAsync(() => {
-       const router = TestBed.get(Router);
-       const location = TestBed.get(Location);
+       const router: Router = TestBed.get(Router);
+       const location: SpyLocation = TestBed.get(Location);
        const fixture = createRoot(router, RootCmp);
 
        router.resetConfig(
@@ -884,9 +879,9 @@ describe('Integration', () => {
        router.navigateByUrl('/simple');
        advance(fixture);
 
-       let routerUrlBeforeEmittingError;
-       let locationUrlBeforeEmittingError;
-       router.events.forEach((e: any) => {
+       let routerUrlBeforeEmittingError = '';
+       let locationUrlBeforeEmittingError = '';
+       router.events.forEach(e => {
          if (e instanceof NavigationError) {
            routerUrlBeforeEmittingError = router.url;
            locationUrlBeforeEmittingError = location.path();
@@ -965,8 +960,8 @@ describe('Integration', () => {
        TestBed.configureTestingModule(
            {providers: [{provide: 'returnsFalse', useValue: () => false}]});
 
-       const router = TestBed.get(Router);
-       const location = TestBed.get(Location);
+       const router: Router = TestBed.get(Router);
+       const location: SpyLocation = TestBed.get(Location);
 
        const fixture = createRoot(router, RootCmp);
 
@@ -978,18 +973,19 @@ describe('Integration', () => {
        router.navigateByUrl('/simple');
        advance(fixture);
 
-       let routerUrlBeforeEmittingError;
-       let locationUrlBeforeEmittingError;
-       router.events.forEach((e: any) => {
+       let routerUrlBeforeEmittingError = '';
+       let locationUrlBeforeEmittingError = '';
+       router.events.forEach(e => {
          if (e instanceof NavigationCancel) {
            routerUrlBeforeEmittingError = router.url;
            locationUrlBeforeEmittingError = location.path();
          }
        });
 
-       (<any>location).simulateHashChange('/throwing');
+       location.simulateHashChange('/throwing');
        advance(fixture);
 
+       expect(routerUrlBeforeEmittingError).toEqual('/simple');
        expect(locationUrlBeforeEmittingError).toEqual('/simple');
      }));
 
