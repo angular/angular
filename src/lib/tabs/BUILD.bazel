@@ -21,7 +21,6 @@ ng_module(
     "//src/cdk/observers",
     "//src/cdk/portal",
     "//src/cdk/scrolling",
-    "//src/cdk/a11y",
     "@rxjs",
   ],
   tsconfig = "//src/lib:tsconfig-build.json",
