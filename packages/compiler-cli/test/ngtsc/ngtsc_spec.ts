@@ -270,6 +270,31 @@ describe('ngtsc behavioral tests', () => {
     expect(dtsContents).toContain('static ngPipeDef: i0.ɵPipeDef<TestPipe, \'test-pipe\'>;');
   });
 
+  it('should compile pure Pipes without errors', () => {
+    writeConfig();
+    write('test.ts', `
+        import {Pipe} from '@angular/core';
+
+        @Pipe({
+          name: 'test-pipe',
+        })
+        export class TestPipe {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    const dtsContents = getContents('test.d.ts');
+
+    expect(jsContents)
+        .toContain(
+            'TestPipe.ngPipeDef = i0.ɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
+            'factory: function TestPipe_Factory() { return new TestPipe(); }, pure: true })');
+    expect(dtsContents).toContain('static ngPipeDef: i0.ɵPipeDef<TestPipe, \'test-pipe\'>;');
+  });
+
   it('should compile Pipes with dependencies', () => {
     writeConfig();
     write('test.ts', `
