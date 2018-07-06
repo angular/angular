@@ -46,6 +46,7 @@ export declare class ApplicationRef {
     attachView(viewRef: ViewRef): void;
     bootstrap<C>(componentOrFactory: ComponentFactory<C> | Type<C>, rootSelectorOrNode?: string | any): ComponentRef<C>;
     detachView(viewRef: ViewRef): void;
+    isTicking(): boolean;
     tick(): void;
 }
 

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ComponentFactory, ComponentRef, Injector, NgModuleRef, SimpleChange, SimpleChanges, Type} from '@angular/core';
+import {ComponentFactory, ComponentRef, Injector, NgModuleRef, NgZone, SimpleChange, SimpleChanges, Type} from '@angular/core';
 import {fakeAsync, tick} from '@angular/core/testing';
 import {Subject} from 'rxjs';
 
@@ -20,21 +20,40 @@ describe('ComponentFactoryNgElementStrategy', () => {
   let injector: any;
   let componentRef: any;
   let applicationRef: any;
+  let factoryResolver: any;
+  let ngZone: any;
+  let isTicking = false;
 
   beforeEach(() => {
     factory = new FakeComponentFactory();
     componentRef = factory.componentRef;
 
-    applicationRef = jasmine.createSpyObj('applicationRef', ['attachView']);
+    applicationRef = jasmine.createSpyObj('applicationRef', ['attachView', 'isTicking']);
+    applicationRef.isTicking.and.callFake(() => {
+      const r = isTicking;
+      isTicking = false;
+      return r;
+    });
+    ngZone = jasmine.createSpyObj('ngZone', ['run']);
+    ngZone.run.and.callFake((fn: any) => { return fn(); });
 
+    injector = jasmine.createSpyObj('injector', ['get']);
+    injector.get.and.callFake(function(identify: any) {
+      const name = identify && identify.name;
+      if (name === 'ApplicationRef') {
+        return applicationRef;
+      } else if (name === 'NgZone') {
+        return ngZone;
+      } else if (name === 'ComponentFactoryResolver') {
+        return factoryResolver;
+      }
+    });
     strategy = new ComponentNgElementStrategy(factory, injector);
   });
 
   it('should create a new strategy from the factory', () => {
-    const factoryResolver = jasmine.createSpyObj('factoryResolver', ['resolveComponentFactory']);
+    factoryResolver = jasmine.createSpyObj('factoryResolver', ['resolveComponentFactory']);
     factoryResolver.resolveComponentFactory.and.returnValue(factory);
-    injector = jasmine.createSpyObj('injector', ['get']);
-    injector.get.and.returnValue(factoryResolver);
 
     const strategyFactory = new ComponentNgElementStrategyFactory(FakeComponent, injector);
     expect(strategyFactory.create(injector)).toBeTruthy();
@@ -44,7 +63,6 @@ describe('ComponentFactoryNgElementStrategy', () => {
     beforeEach(() => {
       // Set up an initial value to make sure it is passed to the component
       strategy.setInputValue('fooFoo', 'fooFoo-1');
-      injector.get.and.returnValue(applicationRef);
       strategy.connect(document.createElement('div'));
     });
 
@@ -119,6 +137,45 @@ describe('ComponentFactoryNgElementStrategy', () => {
          strategy.setInputValue('fooFoo', 'fooFoo-1');
          tick(16);  // scheduler waits 16ms if RAF is unavailable
          expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(2);
+       }));
+
+    it('should not run detect changes in ngZone if is already inAngularZone', fakeAsync(() => {
+         // Connect detected changes automatically
+         expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
+         // Simulate we are setInputValue inside of ngZone
+         const spy = spyOn(NgZone, 'isInAngularZone');
+         spy.and.callFake(function() { return true; });
+         strategy.setInputValue('fooFoo', 'fooFoo-1');
+         ngZone.run.calls.reset();
+         expect(ngZone.run).not.toHaveBeenCalled();
+         ngZone.run.and.callFake(() => {});
+         tick(16);  // scheduler waits 16ms if RAF is unavailable
+         expect(ngZone.run).not.toHaveBeenCalled();
+       }));
+
+    it('should detect changes in ngZone', fakeAsync(() => {
+         // Connect detected changes automatically
+         expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
+         // Simulates we setInputValue outside of ngZone
+         const spy = spyOn(NgZone, 'isInAngularZone');
+         spy.and.callFake(function() { return false; });
+         strategy.setInputValue('fooFoo', 'fooFoo-1');
+
+         // Rest ngZone spy
+         ngZone.run.calls.reset();
+         ngZone.run.and.callFake(() => {});
+         tick(16);  // scheduler waits 16ms if RAF is unavailable
+         expect(ngZone.run).toHaveBeenCalled();
+       }));
+
+    it('should not detect changes when ticking', fakeAsync(() => {
+         isTicking = true;
+         // Connect detected changes automatically
+         expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
+
+         strategy.setInputValue('fooFoo', 'fooFoo-1');
+         tick(16);  // scheduler waits 16ms if RAF is unavailable
+         expect(componentRef.changeDetectorRef.detectChanges).toHaveBeenCalledTimes(1);
        }));
 
     it('should detect changes once for multiple input changes', fakeAsync(() => {
