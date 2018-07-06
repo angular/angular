@@ -3492,9 +3492,9 @@ karma-chrome-launcher@0.2.0:
     fs-access "^1.0.0"
     which "^1.0.9"
 
-karma-jasmine@0.3.6:
-  version "0.3.6"
-  resolved "https://registry.yarnpkg.com/karma-jasmine/-/karma-jasmine-0.3.6.tgz#ddcc34413ac0405aa34ce29ff472e957420b857a"
+karma-jasmine@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/karma-jasmine/-/karma-jasmine-1.1.2.tgz#394f2b25ffb4a644b9ada6f22d443e2fd08886c3"
 
 karma-sauce-launcher@0.3.0:
   version "0.3.0"

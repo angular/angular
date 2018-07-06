@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var browserProvidersConf = require('./browser-providers.conf.js');
-var internalAngularReporter = require('./tools/karma/reporter.js');
+const browserProvidersConf = require('./browser-providers.conf');
+const {generateSeed} = require('./tools/jasmine-seed-generator');
+const internalAngularReporter = require('./tools/karma/reporter');
 
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
@@ -15,6 +16,13 @@ module.exports = function(config) {
   config.set({
 
     frameworks: ['jasmine'],
+
+    client: {
+      jasmine: {
+        random: true,
+        seed: generateSeed('karma-js.conf'),
+      },
+    },
 
     files: [
       // Sources and specs.

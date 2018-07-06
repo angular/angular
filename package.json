@@ -91,7 +91,7 @@
     "karma": "0.13.20",
     "karma-browserstack-launcher": "0.1.9",
     "karma-chrome-launcher": "0.2.0",
-    "karma-jasmine": "0.3.6",
+    "karma-jasmine": "^1.1.2",
     "karma-sauce-launcher": "0.3.0",
     "karma-sourcemap-loader": "0.3.6",
     "madge": "0.5.0",
