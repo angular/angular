@@ -30,12 +30,13 @@ export class Esm2015Renderer extends Renderer {
     output.appendLeft(insertionPoint, '\n' + definitions);
   }
 
-// Remove static decorator properties from classes
-removeDecorators(output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>): void {
+  // Remove static decorator properties from classes
+  removeDecorators(output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>): void {
     decoratorsToRemove.forEach((nodesToRemove, containerNode) => {
       const children = containerNode.getChildren().filter(node => !ts.isToken(node));
       if (children.length === nodesToRemove.length) {
-        output.remove(containerNode.parent!.getFullStart(), containerNode.parent!.getEnd() + 1 /* include semi-colon */);
+        // TODO check this works for different decorator types
+        output.remove(containerNode.parent!.getFullStart(), containerNode.parent!.getEnd() + 1 /* TODO: this is hard-coded for the semi-colon! */);
       } else {
         nodesToRemove.forEach(node => {
           output.remove(node.getFullStart(), node.getEnd());
