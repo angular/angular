@@ -28,7 +28,7 @@ export abstract class Renderer {
     file.analyzedClasses.forEach(clazz => {
       const renderedDefinition = renderDefinitions(file.sourceFile, clazz, importManager);
       this.addDefinitions(output, clazz, renderedDefinition);
-      this.trackDecorators(clazz.clazz.decorators, decoratorsToRemove);
+      this.trackDecorators(clazz.decorators, decoratorsToRemove);
     });
 
     this.addImports(output, importManager.getAllImports(file.sourceFile.fileName, null));
@@ -75,7 +75,7 @@ export abstract class Renderer {
  */
 function renderDefinitions(sourceFile: ts.SourceFile, analyzedClass: AnalyzedClass, imports: ImportManager): string {
   const printer = ts.createPrinter();
-  const name = (analyzedClass.clazz.declaration as ts.NamedDeclaration).name!;
+  const name = (analyzedClass.declaration as ts.NamedDeclaration).name!;
   const definitions = analyzedClass.compilation.map(c => c.statements
     .map(statement => translateStatement(statement, imports))
     .concat(translateStatement(createAssignmentStatement(name, c.name, c.initializer), imports))

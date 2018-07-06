@@ -81,7 +81,7 @@ function dumpAnalysis(file: AnalyzedFile) {
   console.log(file.sourceFile.fileName);
   console.log('***** Analyzed classes: *****');
   file.analyzedClasses.forEach(analyzedClass => {
-    console.log(`- ${analyzedClass.clazz.name}`);
+    console.log(`- ${analyzedClass.name}`);
     console.log(inspect(analyzedClass, false, 1, true).split('\n').map(line => `    ${line}`).join('\n'));
   });
 }

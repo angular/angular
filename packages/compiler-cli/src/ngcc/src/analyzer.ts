@@ -14,8 +14,7 @@ import {NgccReflectionHost} from './host/ngcc_host';
 import {ParsedClass} from './parser/parsed_class';
 import {ParsedFile} from './parser/parsed_file';
 
-export interface AnalyzedClass<T = any> {
-  clazz: ParsedClass;
+export interface AnalyzedClass<T = any> extends ParsedClass {
   handler: DecoratorHandler<T>;
   analysis: any;
   diagnostics?: ts.Diagnostic[];
@@ -87,7 +86,7 @@ export class Analyzer {
       if (!Array.isArray(compilation)) {
         compilation = [compilation];
       }
-      return { clazz, handler, analysis, diagnostics, compilation };
+      return { ...clazz, handler, analysis, diagnostics, compilation };
     }
   }
 

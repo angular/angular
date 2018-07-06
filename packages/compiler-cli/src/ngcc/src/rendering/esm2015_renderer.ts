@@ -49,5 +49,5 @@ export class Esm2015Renderer extends Renderer {
 
 // Find the position where the new definition should be inserted
 function getEndPositionOfClass(analyzedClass: AnalyzedClass) {
-  return analyzedClass.clazz.declaration.getEnd();
+  return analyzedClass.declaration.getEnd();
 }
