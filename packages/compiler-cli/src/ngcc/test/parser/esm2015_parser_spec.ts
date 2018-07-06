@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 import { makeProgram } from '../helpers/utils';
 import { Esm2015ReflectionHost } from '../../src/host/esm2015_host';
-import { Esm2015PackageParser } from '../../src/parsing/esm2015_parser';
+import { Esm2015FileParser } from '../../src/parsing/esm2015_parser';
 
 const BASIC_FILE = {
   name: '/primary.js',
@@ -39,7 +39,7 @@ describe('Esm2015PackageParser', () => {
     it('should return an array of object for each class that is exported and decorated', () => {
       const program = makeProgram(BASIC_FILE);
       const host = new Esm2015ReflectionHost(program.getTypeChecker());
-      const parser = new Esm2015PackageParser(program, host);
+      const parser = new Esm2015FileParser(program, host);
 
       const parsedFiles = parser.parseFile(program.getSourceFile(BASIC_FILE.name)!);
 

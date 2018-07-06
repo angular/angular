@@ -12,7 +12,7 @@ import { ParsedClass} from './parsed_class';
 import { ParsedFile } from './parsed_file';
 import { FileParser } from './file_parser';
 
-export class Esm2015PackageParser implements FileParser {
+export class Esm2015FileParser implements FileParser {
 
   checker = this.program.getTypeChecker();
 
@@ -20,8 +20,8 @@ export class Esm2015PackageParser implements FileParser {
     protected program: ts.Program,
     protected host: NgccReflectionHost) {}
 
-  parseFile(entryPoint: ts.SourceFile): ParsedFile[] {
-    const moduleSymbol = this.checker.getSymbolAtLocation(entryPoint);
+  parseFile(file: ts.SourceFile): ParsedFile[] {
+    const moduleSymbol = this.checker.getSymbolAtLocation(file);
     const map = new Map<ts.SourceFile, ParsedFile>();
     if (moduleSymbol) {
 
