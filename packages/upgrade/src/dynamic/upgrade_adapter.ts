@@ -571,7 +571,7 @@ export class UpgradeAdapter {
               };
               // At this point we have ng1 injector and we have prepared
               // ng1 components to be upgraded, we now can bootstrap ng2.
-              @NgModule(ngModule)
+              @NgModule({jit: true, ...ngModule})
               class DynamicNgUpgradeModule {
                 constructor() {}
                 ngDoBootstrap() {}
