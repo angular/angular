@@ -25,7 +25,8 @@ function testLStaticData(tagName: string, attrs: TAttributes | null): TNode {
     child: null,
     parent: null,
     dynamicContainerNode: null,
-    detached: null
+    detached: null,
+    stylingTemplate: null
   };
 }
 

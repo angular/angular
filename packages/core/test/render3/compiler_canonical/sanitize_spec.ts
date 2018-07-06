@@ -43,15 +43,18 @@ describe('compiler sanitization', () => {
         factory: function MyComponent_Factory() { return new MyComponent(); },
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵEe(0, 'div');
-            $r3$.ɵEe(1, 'img');
+            $r3$.ɵE(0, 'div');
+            $r3$.ɵs(1, ['background-image']);
+            $r3$.ɵe();
+            $r3$.ɵEe(2, 'img');
           }
           if (rf & 2) {
             $r3$.ɵp(0, 'innerHTML', $r3$.ɵb(ctx.innerHTML), $r3$.ɵsanitizeHtml);
             $r3$.ɵp(0, 'hidden', $r3$.ɵb(ctx.hidden));
-            $r3$.ɵsn(1, 'background-image', $r3$.ɵb(ctx.style), $r3$.ɵsanitizeStyle);
-            $r3$.ɵp(1, 'src', $r3$.ɵb(ctx.url), $r3$.ɵsanitizeUrl);
-            $r3$.ɵa(1, 'srcset', $r3$.ɵb(ctx.url), $r3$.ɵsanitizeUrl);
+            $r3$.ɵsp(1, 0, ctx.style, $r3$.ɵsanitizeStyle);
+            $r3$.ɵsa(1);
+            $r3$.ɵp(2, 'src', $r3$.ɵb(ctx.url), $r3$.ɵsanitizeUrl);
+            $r3$.ɵa(2, 'srcset', $r3$.ɵb(ctx.url), $r3$.ɵsanitizeUrl);
           }
         }
       });

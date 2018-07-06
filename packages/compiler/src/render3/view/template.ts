@@ -30,6 +30,7 @@ import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
+import {parseStyle} from './styling';
 import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, getQueryPredicate, invalid, mapToExpression, noop, temporaryAllocator, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
@@ -40,8 +41,6 @@ function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefin
       return R3.elementAttribute;
     case BindingType.Class:
       return R3.elementClassNamed;
-    case BindingType.Style:
-      return R3.elementStyleNamed;
     default:
       return undefined;
   }
@@ -51,8 +50,7 @@ function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefin
 // code (where this map is used) deals with DOM element property values
 // (like elm.propName) and not component bindining properties (like [propName]).
 const SPECIAL_CASED_PROPERTIES_INSTRUCTION_MAP: {[index: string]: o.ExternalReference} = {
-  'className': R3.elementClass,
-  'style': R3.elementStyle
+  'className': R3.elementClass
 };
 
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
@@ -316,18 +314,69 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Add the attributes
     const i18nMessages: o.Statement[] = [];
     const attributes: o.Expression[] = [];
+    const initialStyleDeclarations: o.Expression[] = [];
 
-    Object.getOwnPropertyNames(outputAttrs).forEach(name => {
-      const value = outputAttrs[name];
-      attributes.push(o.literal(name));
-      if (attrI18nMetas.hasOwnProperty(name)) {
-        const meta = parseI18nMeta(attrI18nMetas[name]);
-        const variable = this.constantPool.getTranslation(value, meta);
-        attributes.push(variable);
+    const styleInputs: t.BoundAttribute[] = [];
+    const allOtherInputs: t.BoundAttribute[] = [];
+
+    element.inputs.forEach((input: t.BoundAttribute) => {
+      // [attr.style] should not be treated as a styling-based
+      // binding since it is intended to write directly to the attr
+      // and therefore will skip all style resolution that is present
+      // with style="", [style]="" and [style.prop]="" assignments
+      if (input.name == 'style' && input.type == BindingType.Property) {
+        // this should always go first in the compilation (for [style])
+        styleInputs.splice(0, 0, input);
+      } else if (input.type == BindingType.Style) {
+        styleInputs.push(input);
       } else {
-        attributes.push(o.literal(value));
+        allOtherInputs.push(input);
       }
     });
+
+    let currStyleIndex = 0;
+    let staticStylesMap: {[key: string]: any}|null = null;
+    const stylesIndexMap: {[key: string]: number} = {};
+    Object.getOwnPropertyNames(outputAttrs).forEach(name => {
+      const value = outputAttrs[name];
+      if (name == 'style') {
+        staticStylesMap = parseStyle(value);
+        Object.keys(staticStylesMap).forEach(prop => { stylesIndexMap[prop] = currStyleIndex++; });
+      } else {
+        attributes.push(o.literal(name));
+        if (attrI18nMetas.hasOwnProperty(name)) {
+          const meta = parseI18nMeta(attrI18nMetas[name]);
+          const variable = this.constantPool.getTranslation(value, meta);
+          attributes.push(variable);
+        } else {
+          attributes.push(o.literal(value));
+        }
+      }
+    });
+
+    for (let i = 0; i < styleInputs.length; i++) {
+      const input = styleInputs[i];
+      const isMapBasedStyleBinding = i === 0 && input.name === 'style';
+      if (!isMapBasedStyleBinding && !stylesIndexMap.hasOwnProperty(input.name)) {
+        stylesIndexMap[input.name] = currStyleIndex++;
+      }
+    }
+
+    // this will build the instructions so that they fall into the following syntax
+    // => [prop1, prop2, prop3, 0, prop1, value1, prop2, value2]
+    Object.keys(stylesIndexMap).forEach(prop => {
+      initialStyleDeclarations.push(o.literal(prop));
+    });
+
+    if (staticStylesMap) {
+      initialStyleDeclarations.push(o.literal(core.InitialStylingFlags.INITIAL_STYLES));
+
+      Object.keys(staticStylesMap).forEach(prop => {
+        initialStyleDeclarations.push(o.literal(prop));
+        const value = staticStylesMap ![prop];
+        initialStyleDeclarations.push(o.literal(value));
+      });
+    }
 
     const attrArg: o.Expression = attributes.length > 0 ?
         this.constantPool.getConstLiteral(o.literalArr(attributes), true) :
@@ -365,11 +414,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.addNamespaceInstruction(currentNamespace, element);
     }
 
-    const isEmptyElement = element.children.length === 0 && element.outputs.length === 0;
-
     const implicit = o.variable(CONTEXT_NAME);
 
-    if (isEmptyElement) {
+    const elementStyleIndex =
+        (initialStyleDeclarations.length || styleInputs.length) ? this.allocateDataSlot() : 0;
+    const createSelfClosingInstruction =
+        elementStyleIndex === 0 && element.children.length === 0 && element.outputs.length === 0;
+
+    if (createSelfClosingInstruction) {
       this.instruction(
           this._creationCode, element.sourceSpan, R3.element, ...trimTrailingNulls(parameters));
     } else {
@@ -380,6 +432,20 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.instruction(
           this._creationCode, element.sourceSpan, R3.elementStart,
           ...trimTrailingNulls(parameters));
+
+      // initial styling for static style="..." attributes
+      if (elementStyleIndex > 0) {
+        let paramsList: (o.Expression)[] = [o.literal(elementStyleIndex)];
+        if (initialStyleDeclarations.length) {
+          // the template compiler handles initial styling (e.g. style="foo") values
+          // in a special command called `elementStyle` so that the initial styles
+          // can be processed during runtime. These initial styles values are bound to
+          // a constant because the inital style values do not change (since they're static).
+          paramsList.push(
+              this.constantPool.getConstLiteral(o.literalArr(initialStyleDeclarations), true));
+        }
+        this._creationCode.push(o.importExpr(R3.elementStyling).callFn(paramsList).toStmt());
+      }
 
       // Generate Listeners (outputs)
       element.outputs.forEach((outputAst: t.BoundEvent) => {
@@ -404,11 +470,33 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       });
     }
 
+    if (styleInputs.length && elementStyleIndex > 0) {
+      const indexLiteral = o.literal(elementStyleIndex);
+      styleInputs.forEach((input, i) => {
+        const isMapBasedStyleBinding = i == 0 && input.name == 'style';
+        const convertedBinding = this.convertPropertyBinding(implicit, input.value, true);
+        if (isMapBasedStyleBinding) {
+          this.instruction(
+              this._bindingCode, input.sourceSpan, R3.elementStyle, indexLiteral, convertedBinding);
+        } else {
+          const key = input.name;
+          let styleIndex: number = stylesIndexMap[key] !;
+          this.instruction(
+              this._bindingCode, input.sourceSpan, R3.elementStyleProp, indexLiteral,
+              o.literal(styleIndex), convertedBinding);
+        }
+      });
+
+      const spanEnd = styleInputs[styleInputs.length - 1].sourceSpan;
+      this.instruction(this._bindingCode, spanEnd, R3.elementStylingApply, indexLiteral);
+    }
+
     // Generate element input bindings
-    element.inputs.forEach((input: t.BoundAttribute) => {
+    allOtherInputs.forEach((input: t.BoundAttribute) => {
       if (input.type === BindingType.Animation) {
         this._unsupported('animations');
       }
+
       const convertedBinding = this.convertPropertyBinding(implicit, input.value);
       const specialInstruction = SPECIAL_CASED_PROPERTIES_INSTRUCTION_MAP[input.name];
       if (specialInstruction) {
@@ -442,7 +530,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       t.visitAll(this, element.children);
     }
 
-    if (!isEmptyElement) {
+    if (!createSelfClosingInstruction) {
       // Finish element construction mode.
       this.instruction(
           this._creationCode, element.endSourceSpan || element.sourceSpan, R3.elementEnd);
@@ -568,7 +656,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     statements.push(o.importExpr(reference, null, span).callFn(params, span).toStmt());
   }
 
-  private convertPropertyBinding(implicit: o.Expression, value: AST): o.Expression {
+  private convertPropertyBinding(implicit: o.Expression, value: AST, skipBindFn?: boolean):
+      o.Expression {
     const pipesConvertedValue = value.visit(this._valueConverter);
     if (pipesConvertedValue instanceof Interpolation) {
       const convertedPropertyBinding = convertPropertyBinding(
@@ -581,7 +670,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           this, implicit, pipesConvertedValue, this.bindingContext(), BindingForm.TrySimple,
           () => error('Unexpected interpolation'));
       this._bindingCode.push(...convertedPropertyBinding.stmts);
-      return o.importExpr(R3.bind).callFn([convertedPropertyBinding.currValExpr]);
+      const valExpr = convertedPropertyBinding.currValExpr;
+      return skipBindFn ? valExpr : o.importExpr(R3.bind).callFn([valExpr]);
     }
   }
 }

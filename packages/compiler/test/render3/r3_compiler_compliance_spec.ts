@@ -321,15 +321,23 @@ describe('compiler compliance', () => {
 
       const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
       const template = `
-        template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
-          if (rf & 1) {
-            $r3$.ɵEe(0, 'div');
-          }
-          if (rf & 2) {
-            $r3$.ɵkn(0, 'error', $r3$.ɵb(ctx.error));
-            $r3$.ɵsn(0, 'background-color', $r3$.ɵb(ctx.color));
-          }
-        }
+        const _c0 = ['background-color'];
+        class MyComponent {
+          static ngComponentDef = i0.ɵdefineComponent({type:MyComponent,selectors:[['my-component']],
+              factory:function MyComponent_Factory(){
+                return new MyComponent();
+              },template:function MyComponent_Template(rf:number,ctx:any){
+                if (rf & 1) {
+                  $r3$.ɵE(0, 'div');
+                  $r3$.ɵs(1, _c0);
+                  $r3$.ɵe();
+                }
+                if (rf & 2) {
+                  $r3$.ɵsp(1, 0, ctx.color);
+                  $r3$.ɵsa(1);
+                  $r3$.ɵkn(0, 'error', $r3$.ɵb(ctx.error));
+                }
+              }
       `;
 
 
