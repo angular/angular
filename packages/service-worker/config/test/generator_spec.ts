@@ -11,7 +11,7 @@ import {MockFilesystem} from '../testing/mock';
 
 {
   describe('Generator', () => {
-    it('generates a correct config', (done: DoneFn) => {
+    it('generates a correct config', done => {
       const fs = new MockFilesystem({
         '/index.html': 'This is a test',
         '/test.txt': 'Another test',
@@ -112,7 +112,7 @@ import {MockFilesystem} from '../testing/mock';
           .catch(err => done.fail(err));
     });
 
-    it('uses default `navigationUrls` if not provided', (done: DoneFn) => {
+    it('uses default `navigationUrls` if not provided', done => {
       const fs = new MockFilesystem({
         '/index.html': 'This is a test',
       });

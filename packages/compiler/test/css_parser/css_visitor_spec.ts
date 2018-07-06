@@ -170,21 +170,22 @@ function _getCaptureAst(capture: any[], index = 0): CssAst {
       expect(captures.length).toEqual(3);
 
       const rule1 = <CssSelectorRuleAst>_getCaptureAst(captures, 0);
-      expect(rule1).toEqual(ast.rules[0]);
+      expect(rule1).toEqual(ast.rules[0] as CssSelectorRuleAst);
 
       const firstSelector = rule1.selectors[0];
       const firstSimpleSelector = firstSelector.selectorParts[0];
       _assertTokens(firstSimpleSelector.tokens, ['.', 'rule1']);
 
       const rule2 = <CssSelectorRuleAst>_getCaptureAst(captures, 1);
-      expect(rule2).toEqual(ast.rules[1]);
+      expect(rule2).toEqual(ast.rules[1] as CssSelectorRuleAst);
 
       const secondSelector = rule2.selectors[0];
       const secondSimpleSelector = secondSelector.selectorParts[0];
       _assertTokens(secondSimpleSelector.tokens, ['.', 'rule2']);
 
       const rule3 = <CssSelectorRuleAst>_getCaptureAst(captures, 2);
-      expect(rule3).toEqual((<CssMediaQueryRuleAst>ast.rules[2]).block.entries[0]);
+      expect(rule3).toEqual(
+          (ast.rules[2] as CssSelectorRuleAst).block.entries[0] as CssSelectorRuleAst);
 
       const thirdSelector = rule3.selectors[0];
       const thirdSimpleSelector = thirdSelector.selectorParts[0];

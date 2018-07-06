@@ -22,22 +22,50 @@ const ng1Versions = [
 export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
   return (specSuite: () => void) => ng1Versions.forEach(({label, files}) => {
     describe(`[AngularJS v${label}]`, () => {
+      // Problem:
+      // As soon as `angular-mocks.js` is loaded, it runs `beforeEach` and `afterEach` to register
+      // setup/tear down callbacks. Jasmine 2.9+ does not allow `beforeEach`/`afterEach` to be
+      // nested inside a `beforeAll` call (only inside `describe`).
+      // Hacky work-around:
+      // Patch the affected jasmine methods while loading `angular-mocks.js` (inside `beforeAll`) to
+      // capture the registered callbacks. Also, inside the `describe` call register a callback with
+      // each affected method that runs all captured callbacks.
+      // (Note: Currently, async callbacks are not supported, but that should be OK, since
+      // `angular-mocks.js` does not use them.)
+      const methodsToPatch = ['beforeAll', 'beforeEach', 'afterEach', 'afterAll'];
+      const methodCallbacks = methodsToPatch.reduce<{[name: string]: any[]}>(
+          (aggr, method) => ({...aggr, [method]: []}), {});
+      const win = window as any;
+
+      function patchJasmineMethods(): () => void {
+        const originalMethods: {[name: string]: any} = {};
+
+        methodsToPatch.forEach(method => {
+          originalMethods[method] = win[method];
+          win[method] = (cb: any) => methodCallbacks[method].push(cb);
+        });
+
+        return () => methodsToPatch.forEach(method => win[method] = originalMethods[method]);
+      }
+
       beforeAll(done => {
         // Load AngularJS before running tests.
         files
             .reduce(
                 (prev, file) => prev.then(() => new Promise<void>((resolve, reject) => {
+                                            const restoreMethods = patchJasmineMethods();
                                             const script = document.createElement('script');
                                             script.src = `base/angular/node_modules/${file}`;
                                             script.onerror = reject;
                                             script.onload = () => {
                                               document.body.removeChild(script);
+                                              restoreMethods();
                                               resolve();
                                             };
                                             document.body.appendChild(script);
                                           })),
                 Promise.resolve())
-            .then(() => setNg1((window as any).angular))
+            .then(() => setNg1(win.angular))
             .then(done, done.fail);
       });
 
@@ -45,12 +73,17 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
         // In these tests we are loading different versions of AngularJS on the same window.
         // AngularJS leaves an "expandoId" property on `document`, which can trick subsequent
         // `window.angular` instances into believing an app is already bootstrapped.
-        (window as any).angular.element(document).removeData();
+        win.angular.element(document).removeData();
 
         // Remove AngularJS to leave a clean state for subsequent tests.
         setNg1(undefined);
-        delete (window as any).angular;
+        delete win.angular;
       });
+
+      methodsToPatch.forEach(method => win[method](function() {
+                               // Run the captured callbacks. (Async callbacks not supported.)
+                               methodCallbacks[method].forEach(cb => cb.call(this));
+                             }));
 
       specSuite();
     });

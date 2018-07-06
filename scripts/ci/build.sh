@@ -60,5 +60,6 @@ travisFoldEnd "tsc tools"
 travisFoldStart "tsc all"
   node dist/tools/@angular/compiler-cli/src/main -p packages/tsconfig-metadata.json
   $(npm bin)/tsc -p packages
+  $(npm bin)/tsc -p packages/examples
   $(npm bin)/tsc -p modules
 travisFoldEnd "tsc all"

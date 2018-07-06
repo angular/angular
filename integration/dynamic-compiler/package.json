@@ -18,8 +18,9 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
+    "@types/jasminewd2": "file:../../node_modules/@types/jasminewd2",
     "concurrently": "3.4.0",
     "lite-server": "2.2.2",
     "protractor": "file:../../node_modules/protractor",
