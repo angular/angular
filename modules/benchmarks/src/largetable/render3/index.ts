@@ -26,3 +26,5 @@ export function main() {
         profile(() => createDom(component), () => destroyDom(component), 'create'));
   }
 }
+
+main();
