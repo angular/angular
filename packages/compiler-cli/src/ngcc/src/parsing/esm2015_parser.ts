@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import { NgccReflectionHost } from '../host/ngcc_host';
 import { ParsedClass} from './parsed_class';
 import { ParsedFile } from './parsed_file';
-import { FileParser } from './parser';
+import { FileParser } from './file_parser';
 
 export class Esm2015PackageParser implements FileParser {
 

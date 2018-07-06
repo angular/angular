@@ -14,10 +14,10 @@ import * as ts from 'typescript';
 
 import {AnalyzedFile, Analyzer} from './analyzer';
 import {Esm2015ReflectionHost} from './host/esm2015_host';
-import {Esm2015PackageParser} from './parser/esm2015_parser';
+import {Esm2015PackageParser} from './parsing/esm2015_parser';
 import {Esm2015Renderer} from './rendering/esm2015_renderer';
-import {getEntryPoints} from './parser/utils';
-import {ParsedFile} from './parser/parsed_file';
+import {getEntryPoints} from './parsing/utils';
+import {ParsedFile} from './parsing/parsed_file';
 
 export function mainNgcc(args: string[]): number {
   const packagePath = resolve(args[0]);

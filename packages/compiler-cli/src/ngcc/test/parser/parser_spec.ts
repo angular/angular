@@ -7,7 +7,7 @@
  */
 
 import * as mockFs from 'mock-fs';
-import { findAllPackageJsonFiles, getEntryPoints } from '../../src/parser/parser';
+import { findAllPackageJsonFiles, getEntryPoints } from '../../src/parsing/file_parser';
 
 function createMockFileSystem() {
   mockFs({

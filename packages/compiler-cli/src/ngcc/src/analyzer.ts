@@ -11,8 +11,8 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {Decorator} from '../../ngtsc/host';
 import {CompileResult, DecoratorHandler} from '../../ngtsc/transform';
 import {NgccReflectionHost} from './host/ngcc_host';
-import {ParsedClass} from './parser/parsed_class';
-import {ParsedFile} from './parser/parsed_file';
+import {ParsedClass} from './parsing/parsed_class';
+import {ParsedFile} from './parsing/parsed_file';
 
 export interface AnalyzedClass<T = any> extends ParsedClass {
   handler: DecoratorHandler<T>;

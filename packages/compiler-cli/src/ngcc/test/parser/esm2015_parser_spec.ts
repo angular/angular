@@ -9,7 +9,7 @@
 import * as ts from 'typescript';
 import { makeProgram } from '../helpers/utils';
 import { Esm2015ReflectionHost } from '../../src/host/esm2015_host';
-import { Esm2015PackageParser } from '../../src/parser/esm2015_parser';
+import { Esm2015PackageParser } from '../../src/parsing/esm2015_parser';
 
 const BASIC_FILE = {
   name: '/primary.js',
