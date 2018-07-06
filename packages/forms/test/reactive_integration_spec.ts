@@ -8,7 +8,7 @@
 
 import {Component, Directive, Input, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
@@ -1625,14 +1625,17 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
     });
 
     describe('ngModel interactions', () => {
+      let warnSpy: jasmine.Spy;
+
+      beforeEach(() => {
+        // Reset `_ngModelWarningSentOnce` on `FormControlDirective` and `FormControlName` types.
+        (FormControlDirective as any)._ngModelWarningSentOnce = false;
+        (FormControlName as any)._ngModelWarningSentOnce = false;
+
+        warnSpy = spyOn(console, 'warn');
+      });
 
       describe('deprecation warnings', () => {
-        let warnSpy: any;
-
-        beforeEach(() => {
-          warnSpy = jasmine.createSpy('warn');
-          console.warn = warnSpy;
-        });
 
         it('should warn once by default when using ngModel with formControlName', fakeAsync(() => {
              const fixture = initTest(FormGroupNgModel);
