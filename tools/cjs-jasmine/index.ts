@@ -20,6 +20,7 @@ require('zone.js/dist/sync-test.js');
 require('zone.js/dist/async-test.js');
 require('zone.js/dist/fake-async-test.js');
 require('reflect-metadata/Reflect');
+const {generateSeed} = require('../../../tools/jasmine-seed-generator');
 
 // Let TypeScript know this is a module
 export {};
@@ -37,8 +38,10 @@ require('zone.js/dist/jasmine-patch.js');
 // Config the test runner
 jrunner.jasmine.DEFAULT_TIMEOUT_INTERVAL = 100;
 jrunner.loadConfig({
+  random: true,
   spec_dir: '',
 });
+jrunner.seed(generateSeed('cjs-jasmine/index'));
 jrunner.configureDefaultReporter({showColors: process.argv.indexOf('--no-color') === -1});
 jrunner.onComplete((passed: boolean) => process.exit(passed ? 0 : 1));
 
