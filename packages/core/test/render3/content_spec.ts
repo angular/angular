@@ -475,8 +475,8 @@ describe('content projection', () => {
     /**
      * <div>
      *  % if (!skipContent) {
-   *      <ng-content></ng-content>
-   *      text
+     *      <ng-content></ng-content>
+     *      text
      *  % }
      * </div>
      */

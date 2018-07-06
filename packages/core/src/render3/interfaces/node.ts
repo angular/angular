@@ -347,9 +347,9 @@ export interface TNode {
    * lists represented in the array (saving only the head TNode of the list). i.e. [TNode, TNode]
    *
    * This data cannot be stored in projection target TNodes (e.g. <ng-content> TNodes) because the
-   * projected nodes will change every time the component is used (and TProjectionNodes will be shared
-   * between all instances of the component). Component host nodes will change for every usage of
-   * the component, so we can safely store the projection data on component hosts.
+   * projected nodes will change every time the component is used (and TProjectionNodes will be
+   * shared between all instances of the component). Component host nodes will change for every
+   * usage of the component, so we can safely store the projection data on component hosts.
    *
    * Example:
    *
@@ -366,7 +366,8 @@ export interface TNode {
    *
    * In the case above, projection data would be stored on each component host node. In other words,
    * the TNode for the first <comp> would have a pData array with the TNode for <div>ABC</div> and
-   * the TNode for the second <comp> would have its own pData array with the TNode for <div>DEF</div>.
+   * the TNode for the second <comp> would have its own pData array with the TNode for
+   * <div>DEF</div>.
    *
    *  If we didn't have this, we wouldn't be able to jump from a projection target node (ng-content)
    *  up to the nodes it should be projecting in order to append or detach them.
@@ -375,7 +376,8 @@ export interface TNode {
 
   /**
    * For projected nodes, this is the index that the parent projection target LNode is stored in the
-   * projection def (projected node -> ng-content). For nodes that aren't projected, this will be -1.
+   * projection def (projected node -> ng-content). For nodes that aren't projected, this will be
+   * -1.
    *
    * If we didn't have this index, it wouldn't be possible to detach embedded views that contain
    * <ng-content> tags. In those cases, we traverse the node tree to detach the native element
@@ -398,17 +400,18 @@ export interface TNode {
    *     <div>DEF</div>
    *  % }
    *
-   *  When `showing` is false, we walk the node tree to remove that embedded view. The first node in the
-   *  view is a projection target (the ng-content tag), so to remove the view properly, we need to remove
-   *  any nodes projected into it (i.e. the <div>ABC</div> in the parent view). Once we're done removing
-   *  the <div>ABC</div>, we need a way to jump from that projected node to the original projection target
-   *  (the ng-content tag), so we can remove its "next", the <div>DEF</div>.
+   *  When `showing` is false, we walk the node tree to remove that embedded view. The first node in
+   * the view is a projection target (the ng-content tag), so to remove the view properly, we need
+   * to remove any nodes projected into it (i.e. the <div>ABC</div> in the parent view). Once we're
+   * done removing the <div>ABC</div>, we need a way to jump from that projected node to the
+   * original projection target (the ng-content tag), so we can remove its "next", the
+   * <div>DEF</div>.
    */
   pTargetIndex: number;
 
   /**
-   * For projection target nodes, the index of their list of projected nodes in the component's pData.
-   * For other types of nodes, this will be -1.
+   * For projection target nodes, the index of their list of projected nodes in the component's
+   * pData. For other types of nodes, this will be -1.
    *
    * If we didn't have pListIndex, we wouldn't be able to traverse from a projection target node
    * (ng-content) to its list of projected nodes so we can append or detach them. This is necessary

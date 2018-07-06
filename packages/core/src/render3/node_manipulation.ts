@@ -37,8 +37,7 @@ export function getChildLNode(node: LNode): LNode|null {
   return null;
 }
 
-/** Given a projected node and the component it's projected into, returns the root projection node.
- */
+/** Given a projected node and the comp it's projected into, returns the projection node. */
 export function getProjectionNode(
     projectedNode: TNode, componentLNode: LElementNode): LProjectionNode {
   return componentLNode.data ![HEADER_OFFSET][projectedNode.pTargetIndex];

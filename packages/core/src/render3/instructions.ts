@@ -1960,22 +1960,22 @@ export function projectionDef(
     const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
     const pData: (TNode | null)[] = componentNode.tNode.pData =
         new Array(noOfNodeBuckets).fill(null);
-    const tails: (TNode | null)[] = new Array(noOfNodeBuckets).fill(null);
+    const tails: (TNode | null)[] = pData.slice();
 
-    let componentChild = getChildLNode(componentNode);
+    let componentChild = componentNode.tNode.child;
 
     while (componentChild !== null) {
-      const bucketIndex = componentChild.tNode.pTargetIndex =
-          selectors ? matchingSelectorIndex(componentChild.tNode, selectors, textSelectors !) : 0;
-      const nextNode = getNextLNode(componentChild);
+      const bucketIndex = componentChild.pTargetIndex =
+          selectors ? matchingSelectorIndex(componentChild, selectors, textSelectors !) : 0;
+      const nextNode = componentChild.next;
 
       if (tails[bucketIndex]) {
-        tails[bucketIndex] !.next = componentChild.tNode;
+        tails[bucketIndex] !.next = componentChild;
       } else {
-        pData[bucketIndex] = componentChild.tNode;
-        componentChild.tNode.next = null;
+        pData[bucketIndex] = componentChild;
+        componentChild.next = null;
       }
-      tails[bucketIndex] = componentChild.tNode;
+      tails[bucketIndex] = componentChild;
 
       componentChild = nextNode;
     }
