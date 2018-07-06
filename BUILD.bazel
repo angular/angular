@@ -35,6 +35,9 @@ node_modules_filegroup(
         "@types",
         "@webcomponents/custom-elements",
     ],
+    patterns = [
+        "node_modules/protractor/**",
+    ],
 )
 
 filegroup(

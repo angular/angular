@@ -1,3 +1,5 @@
+package(default_visibility = ["//visibility:public"])
+
 load("@angular//:index.bzl", "ng_module")
 
 # Allow targets under sub-packages to reference the tsconfig.json file
@@ -46,15 +48,11 @@ genrule(
 
 nodejs_binary(
     name = "prodserver",
-    args = [
-        "./src",
-        "-p",
-        "5432",
-    ],
     data = [
         "index.html",
         ":bundle",
         ":zone.js",
     ],
     entry_point = "http-server/bin/http-server",
+    templated_args = ["src"],
 )
