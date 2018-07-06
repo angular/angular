@@ -522,18 +522,30 @@ Use `queryParamMap` instead.
 
 </div>
 
+<!--
 ### Router events
+-->
+### 라우터 이벤트
 
+<!--
 During each navigation, the `Router` emits navigation events through the `Router.events` property. These events range from when the navigation starts and ends to many points in between. The full list of navigation events is displayed in the table below.
+-->
+`Router`는 네비게이션이 동작할 때마다 `Router.events` 프로퍼티를 통해 네비게이션 이벤트를 보냅니다. 이 이벤트는 네비게이션이 시작할 때부터 끝날때까지 각 단계를 표현합니다.
 
 <table>
   <tr>
     <th>
+      <!--
       Router Event
+      -->
+      라우터 이벤트
     </th>
 
     <th>
+      <!--
       Description
+      -->
+      설명
     </th>
   </tr>
 
@@ -543,7 +555,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/NavigationStart) triggered when navigation starts.
+      -->
+      네비게이션 동작을 시작할 때 발생하는 [이벤트](api/router/NavigationStart)입니다.
 
     </td>
   </tr>
@@ -554,7 +569,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/RoutesRecognized) triggered when the Router parses the URL and the routes are recognized.
+      -->
+      라우터가 URL을 파싱하고 해당하는 라우팅 규칙을 찾았을 때 발생하는 [이벤트](api/router/RoutesRecognized)입니다.
 
     </td>
   </tr>
@@ -565,8 +583,11 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/RouteConfigLoadStart) triggered before the `Router`
       [lazy loads](#asynchronous-routing) a route configuration.
+      -->
+      [지연 로딩](#asynchronous-routing)되는 라우팅 규칙을 확인했을 때 발생하는 [이벤트](api/router/RouteConfigLoadStart)입니다.
 
     </td>
   </tr>
@@ -577,7 +598,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/RouteConfigLoadEnd) triggered after a route has been lazy loaded.
+      -->
+      지연 로딩되는 라우팅 규칙이 로드된 후에 발생하는 [이벤트](api/router/RouteConfigLoadEnd)입니다.
 
     </td>
   </tr>
@@ -588,7 +612,10 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/NavigationEnd) triggered when navigation ends successfully.
+      -->
+      네비게이션 동작이 성공적으로 끝났을 때 발생하는 [이벤트](api/router/NavigationEnd)입니다.
 
     </td>
   </tr>
@@ -599,8 +626,12 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/NavigationCancel) triggered when navigation is canceled.
       This is due to a [Route Guard](#guards) returning false during navigation.
+      -->
+      네비게이션 동작이 중간에 취소되었을 때 발생하는 [이벤트](api/router/NavigationCancel)입니다.
+      이 이벤트는 [라우터 가드](#guards)가 `false` 값을 반환하는 경우에 발생합니다.
 
     </td>
   </tr>
@@ -611,14 +642,19 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
+      <!--
       An [event](api/router/NavigationError) triggered when navigation fails due to an unexpected error.
+      -->
+      네비게이션 동작 중에 에러가 발생해서 네비게이션이 실패했을 때 발생하는 [이벤트](api/router/NavigationError)입니다.
 
     </td>
   </tr>
 </table>
 
+<!--
 These events are logged to the console when the `enableTracing` option is enabled also. Since the events are provided as an `Observable`, you can `filter()` for events of interest and `subscribe()` to them to make decisions based on the sequence of events in the navigation process.
-
+-->
+`enableTracing` 옵션을 지정하면 네비게이션 이벤트가 발생할 때마다 콘솔에 로그를 출력합니다. 그리고 이벤트는 `Observable`로 전달되기 때문에, `filter()` 연산자를 활용해서 원하는 이벤트에만 반응할 수 있으며, `subscribe()`를 사용헤서 네비게이션 각 단계에 필요한 로직을 작성할 수도 있습니다.
 
 {@a basics-summary}
 
