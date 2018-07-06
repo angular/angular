@@ -451,7 +451,10 @@ It has a great deal of useful information including:
     </td>
     <td>
 
+    <!--
     The route configuration used for the route that contains the origin path.
+    -->
+    현재 사용된 라우팅 규칙의 설정을 표현합니다. 이 객체에는 URL 주소에 대한 정보도 포함됩니다.
 
     </td>
   </tr>
@@ -462,7 +465,10 @@ It has a great deal of useful information including:
     </td>
     <td>
 
+    <!--
     The route's parent `ActivatedRoute` when this route is a [child route](#child-routing-component).
+    -->
+    현재 라우팅된 것이 [자식 라우팅 규칙](#child-routing-component)에 해당하면, 이 라우팅 규칙의 부모 `ActivatedRoute`를 표현합니다.
 
     </td>
   </tr>
@@ -473,7 +479,10 @@ It has a great deal of useful information including:
     </td>
     <td>
 
+    <!--
     Contains the first `ActivatedRoute` in the list of this route's child routes.
+    -->
+    현재 라우팅 규칙의 자식 라우팅 규칙 중 첫 번째 `ActivatedRoute`를 표현합니다.
 
     </td>
   </tr>
@@ -484,7 +493,10 @@ It has a great deal of useful information including:
     </td>
     <td>
 
+    <!--
     Contains all the [child routes](#child-routing-component) activated under the current route.
+    -->
+    현재 활성화된 라우팅 규칙에 있는 모든 [자식 라우팅 규칙](#child-routing-component)을 표현합니다.
 
     </td>
   </tr>
@@ -492,12 +504,21 @@ It has a great deal of useful information including:
 
 <div class="l-sub-section">
 
+<!--
 Two older properties are still available. They are less capable than their replacements, discouraged, and may be deprecated in a future Angular version.
+-->
+예전에 사용하던 두 가지 프로퍼티도 아직 사용할 수 있습니다. 다음 프로퍼티들은 좀 더 많은 기능을 갖도록 변경되었으며, 이후 Angular 버전에서는 사라질 수도 있습니다.
 
+<!--
 **`params`**&mdash;An `Observable` that contains the required and [optional parameters](#optional-route-parameters) specific to the route. Use `paramMap` instead.
+-->
+**`params`**&mdash;라우팅 규칙에 [라우팅 변수](#optional-route-parameters)가 있는 경우에, 이 라우팅 변수의 값을 `Observable`로 표현합니다. 이 프로퍼티는 `paramMap`으로 대체되었습니다.
 
+<!--
 **`queryParams`**&mdash;An `Observable` that contains the [query parameters](#query-parameters) available to all routes.
 Use `queryParamMap` instead.
+-->
+**`queryParams`**&mdash;모든 라우팅 규칙에 있는 [쿼리 변수](#query-parameters)를 `Observable`로 표현합니다. 이 프로퍼티는 `queryParamMap`으로 대체되었습니다.
 
 </div>
 
