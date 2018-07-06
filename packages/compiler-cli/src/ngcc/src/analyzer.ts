@@ -11,11 +11,12 @@ import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecorato
 import {Decorator} from '../../ngtsc/host';
 import {CompileResult, DecoratorHandler} from '../../ngtsc/transform';
 import {NgccReflectionHost} from './host/ngcc_host';
-import {DecoratedClass, ParsedFile} from './parser/parser';
+import {ParsedClass} from './parser/parsed_class';
+import {ParsedFile} from './parser/parsed_file';
 
-export interface AnalyzedClass {
-  clazz: DecoratedClass;
-  handler: DecoratorHandler<any>;
+export interface AnalyzedClass<T = any> {
+  clazz: ParsedClass;
+  handler: DecoratorHandler<T>;
   analysis: any;
   diagnostics?: ts.Diagnostic[];
   compilation: CompileResult[];
@@ -68,7 +69,7 @@ export class Analyzer {
     };
   }
 
-  protected analyzeClass(file: ts.SourceFile, clazz: DecoratedClass): AnalyzedClass|undefined {
+  protected analyzeClass(file: ts.SourceFile, clazz: ParsedClass): AnalyzedClass|undefined {
     const matchingHandlers = this.handlers
       .map(handler => ({ handler, decorator: handler.detect(clazz.decorators) }))
       .filter((matchingHandler): matchingHandler is MatchingHandler<any> => !!matchingHandler.decorator);

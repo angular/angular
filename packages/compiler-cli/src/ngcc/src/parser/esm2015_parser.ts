@@ -8,9 +8,11 @@
 
 import * as ts from 'typescript';
 import { NgccReflectionHost } from '../host/ngcc_host';
-import { DecoratedClass, PackageParser, ParsedFile } from './parser';
+import { ParsedClass} from './parsed_class';
+import { ParsedFile } from './parsed_file';
+import { FileParser } from './parser';
 
-export class Esm2015PackageParser implements PackageParser {
+export class Esm2015PackageParser implements FileParser {
 
   checker = this.program.getTypeChecker();
 
@@ -18,7 +20,7 @@ export class Esm2015PackageParser implements PackageParser {
     protected program: ts.Program,
     protected host: NgccReflectionHost) {}
 
-  parseEntryPoint(entryPoint: ts.SourceFile): ParsedFile[] {
+  parseFile(entryPoint: ts.SourceFile): ParsedFile[] {
     const moduleSymbol = this.checker.getSymbolAtLocation(entryPoint);
     const map = new Map<ts.SourceFile, ParsedFile>();
     if (moduleSymbol) {
@@ -35,10 +37,10 @@ export class Esm2015PackageParser implements PackageParser {
         .map(declaration => {
           const decorators = this.host.getDecoratorsOfDeclaration(declaration);
           if (decorators) {
-            return new DecoratedClass(declaration.name!.text, declaration, decorators);
+            return new ParsedClass(declaration.name!.text, declaration, decorators);
           }
         })
-        .filter(decoratedClass => decoratedClass) as DecoratedClass[];
+        .filter(decoratedClass => decoratedClass) as ParsedClass[];
 
       decoratedClasses.forEach(clazz => {
         const file = clazz.declaration.getSourceFile();

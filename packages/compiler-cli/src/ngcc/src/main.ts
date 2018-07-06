@@ -16,7 +16,8 @@ import {AnalyzedFile, Analyzer} from './analyzer';
 import {Esm2015ReflectionHost} from './host/esm2015_host';
 import {Esm2015PackageParser} from './parser/esm2015_parser';
 import {Esm2015Renderer} from './rendering/esm2015_renderer';
-import {getEntryPoints, ParsedFile} from './parser/parser';
+import {getEntryPoints} from './parser/utils';
+import {ParsedFile} from './parser/parsed_file';
 
 export function mainNgcc(args: string[]): number {
   const packagePath = resolve(args[0]);
@@ -35,7 +36,7 @@ export function mainNgcc(args: string[]): number {
     const reflectionHost = new Esm2015ReflectionHost(typeChecker);
     const parser = new Esm2015PackageParser(packageProgram, reflectionHost);
 
-    const parsedFiles = parser.parseEntryPoint(entryPointFile);
+    const parsedFiles = parser.parseFile(entryPointFile);
     parsedFiles.forEach(parsedFile => {
 
       dumpParsedFile(parsedFile);
