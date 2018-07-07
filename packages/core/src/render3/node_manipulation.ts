@@ -75,7 +75,7 @@ const enum WalkLNodeTreeAction {
  * one found, or on all of them.
  *
  * @param startingNode the node from which the walk is started.
- * @param rootNode the root node considered.
+ * @param rootNode the root node considered. This prevents walking past that node.
  * @param action identifies the action to be performed on the LElement nodes.
  * @param renderer the current renderer.
  * @param renderParentNode Optional the render parent node to be set in all LContainerNodes found,
@@ -90,14 +90,15 @@ function walkLNodeTree(
   while (node) {
     let nextNode: LNode|null = null;
     const parent = renderParentNode ? renderParentNode.native : null;
-    if (node.tNode.type === TNodeType.Element) {
+    const nodeType = node.tNode.type;
+    if (nodeType === TNodeType.Element) {
       // Execute the action
       executeNodeAction(action, renderer, parent, node.native !, beforeNode);
       if (node.dynamicLContainerNode) {
         executeNodeAction(
             action, renderer, parent, node.dynamicLContainerNode.native !, beforeNode);
       }
-    } else if (node.tNode.type === TNodeType.Container) {
+    } else if (nodeType === TNodeType.Container) {
       executeNodeAction(action, renderer, parent, node.native !, beforeNode);
       const lContainerNode: LContainerNode = (node as LContainerNode);
       const childContainerData: LContainer = lContainerNode.dynamicLContainerNode ?
@@ -115,7 +116,7 @@ function walkLNodeTree(
             lContainerNode.dynamicLContainerNode.native :
             lContainerNode.native;
       }
-    } else if (node.tNode.type === TNodeType.Projection) {
+    } else if (nodeType === TNodeType.Projection) {
       const componentHost = findComponentHost(node.view);
       const head = componentHost.tNode.projection ![node.tNode.pListIndex];
 
@@ -125,7 +126,7 @@ function walkLNodeTree(
       nextNode = getChildLNode(node as LViewNode);
     }
 
-    if (nextNode == null) {
+    if (nextNode === null) {
       nextNode = getNextLNode(node);
 
       // this last node was projected, we need to get back down to its projection node
@@ -142,13 +143,13 @@ function walkLNodeTree(
        */
       while (node && !nextNode) {
         node = getParentLNode(node);
-        if (node === rootNode) return null;
+        if (node === null || node === rootNode) return null;
 
         // When exiting a container, the beforeNode must be restored to the previous value
-        if (node && !node.tNode.next && node.tNode.type === TNodeType.Container) {
+        if (!node.tNode.next && nodeType === TNodeType.Container) {
           beforeNode = node.native;
         }
-        nextNode = node && getNextLNode(node);
+        nextNode = getNextLNode(node);
       }
     }
     node = nextNode;
