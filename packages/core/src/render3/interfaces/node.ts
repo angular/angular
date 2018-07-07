@@ -337,112 +337,50 @@ export interface TNode {
 
   stylingTemplate: StylingContext|null;
   /**
-   * List of projected TNodes for a given component host.
+   * List of projected TNodes for a given component host element OR index into the said nodes.
    *
-   * If this is the host TNode for a component with content projection, all projection data
-   * for that component *usage* is saved here as an array. Specifically, the head TNode of each
-   * projection list is stored here according to selector index. Otherwise, this is null.
+   * For easier discussion assume this example:
+   * `<parent>`'s view definition:
+   * ```
+   * <child id="c1">content1</child>
+   * <child id="c2"><span>content2</span></child>
+   * ```
+   * `<child>`'s view definition:
+   * ```
+   * <ng-content id="cont1"></ng-content>
+   * ```
    *
-   * e.g. If there are two projection targets inside the component, there will be two projection
-   * lists represented in the array (saving only the head TNode of the list). i.e. [TNode, TNode]
+   * If `Array.isArray(projection)` then `TNode` is a host element:
+   * - `projection` stores the content nodes which are to be projected.
+   *    - The nodes represent categories defined by the selector: For example:
+   *      `<ng-content/><ng-content select="abc"/>` would represent the heads for `<ng-content/>`
+   *      and `<ng-content select="abc"/>` respectively.
+   *    - The nodes we store in `projection` are heads only, we used `.next` to get their
+   *      siblings.
+   *    - The nodes `.next` is sorted/rewritten as part of the projection setup.
+   *    - `projection` size is equal to the number of projections `<ng-content>`. The size of
+   *      `c1` will be `1` because `<child>` has only one `<ng-content>`.
+   * - we store `projection` with the host (`c1`, `c2`) rather than the `<ng-content>` (`cont1`)
+   *   because the same component (`<child>`) can be used in multiple locations (`c1`, `c2`) and as
+   *   a result have different set of nodes to project.
+   * - without `projection` it would be difficult to efficiently traverse nodes to be projected.
    *
-   * This data cannot be stored in projection target TNodes (e.g. <ng-content> TNodes) because the
-   * projected nodes will change every time the component is used (and TProjectionNodes will be
-   * shared between all instances of the component). Component host nodes will change for every
-   * usage of the component, so we can safely store the projection data on component hosts.
-   *
-   * Example:
-   *
-   * app template:
-   * <comp>                <!-- comp usage #1 -->
-   *    <div>ABC</div>         <!-- projected node -->
-   * </comp>
-   * <comp>                 <!-- comp usage #2 -->
-   *     <div>DEF</div>        <!-- projected node -->
-   * </comp>
-   *
-   * comp template:
-   * <ng-content></ng-content>   <!-- projection target node -->
-   *
-   * In the case above, projection data would be stored on each component host node. In other words,
-   * the TNode for the first <comp> would have a pData array with the TNode for <div>ABC</div> and
-   * the TNode for the second <comp> would have its own pData array with the TNode for
-   * <div>DEF</div>.
-   *
-   *  If we didn't have this, we wouldn't be able to jump from a projection target node (ng-content)
-   *  up to the nodes it should be projecting in order to append or detach them.
+   * If `typeof projection == 'number'` then `TNode` is a `<ng-content>` element:
+   * - `projection` is an index of the host's `projection`Nodes.
+   *   - This would return the first head node to project:
+   *     `getHost(currentTNode).projection[currentTNode.projection]`.
+   * - When projecting nodes the parent node retrieved may be a `<ng-content>` node, in which case
+   *   the process is recursive in nature (not implementation).
    */
-  pData: (TNode|null)[]|null;
+  projection: (TNode|null)[]|null;
 
   /**
-   * For projected nodes, this is the index that the parent projection target LNode is stored in the
-   * projection def (projected node -> ng-content). For nodes that aren't projected, this will be
-   * -1.
-   *
-   * If we didn't have this index, it wouldn't be possible to detach embedded views that contain
-   * <ng-content> tags. In those cases, we traverse the node tree to detach the native element
-   * for each node. When an <ng-content> tag is reached, we have to traverse up to the parent view
-   * to detach the nodes projected into that target. Once we're done, we have to traverse back
-   * down to the original <ng-content> tag, so we can detach its "next" in the node tree.
-   * To do this, each projected node knows its 'pTargetIndex', or the index of its parent
-   * projection target in the projection def. Using this, we can jump back to the correct projection
-   * node and continue traversing the tree.
-   *
-   * Example:
-   *
-   * <comp>
-   *     <div>ABC</div>              <!-- projected node -->
-   * </comp>
-   *
-   * comp template:
-   *  % if (showing) {
-   *     <ng-content></ng-content>     <!-- projection target -->
-   *     <div>DEF</div>
-   *  % }
-   *
-   *  When `showing` is false, we walk the node tree to remove that embedded view. The first node in
-   * the view is a projection target (the ng-content tag), so to remove the view properly, we need
-   * to remove any nodes projected into it (i.e. the <div>ABC</div> in the parent view). Once we're
-   * done removing the <div>ABC</div>, we need a way to jump from that projected node to the
-   * original projection target (the ng-content tag), so we can remove its "next", the
-   * <div>DEF</div>.
+   * Will be replaced by stack.
    */
   pTargetIndex: number;
 
   /**
-   * For projection target nodes, the index of their list of projected nodes in the component's
-   * pData. For other types of nodes, this will be -1.
-   *
-   * If we didn't have pListIndex, we wouldn't be able to traverse from a projection target node
-   * (ng-content) to its list of projected nodes so we can append or detach them. This is necessary
-   * when appending re-projected nodes.
-   *
-   * Example:
-   *
-   * app template:
-   * <child>
-   *    <span>span</span>               <!-- projected node -->
-   *    <div>ABC</div>                  <!-- projected node -->
-   * </child>
-   *
-   * child template:
-   * <ng-content select="span"></ng-content>
-   * <grand-child>
-   *    <ng-content></ng-content>       <!-- re-projected target node -->
-   * </grand-child>
-   *
-   * grand-child template:
-   * <ng-content></ng-content>           <!-- projection target node -->
-   *
-   * In the above case, when evaluating the grand-child template, we would try to find the
-   * right nodes to project to the grand-child's projection target node. We would start by
-   * looking at the child of the grand-child component host, which also happens to be an
-   * <ng-content> tag. This means that we've hit a "re-projected target node". We need a way
-   * to get from this re-projected target up to the actual nodes we're re-projecting (e.g.
-   * <div>ABC</div>). We can't just look at the child of the <child> component host because
-   * there are multiple projection targets inside child. However, we've already collected
-   * pData for the child component, so we just need to know the index of the correct projection
-   * list inside pData - `pListIndex`.
+   * To be merged with `projection`
    */
   pListIndex: number;
 }
@@ -473,7 +411,7 @@ export interface TTextNode extends TNode {
    */
   parent: TElementNode|null;
   tViews: null;
-  pData: null;
+  projection: null;
 }
 
 /** Static data for an LContainerNode */
@@ -495,7 +433,7 @@ export interface TContainerNode extends TNode {
    */
   parent: TElementNode|null;
   tViews: TView|TView[]|null;
-  pData: null;
+  projection: null;
 }
 
 /** Static data for an LViewNode  */
@@ -505,7 +443,7 @@ export interface TViewNode extends TNode {
   child: TElementNode|TTextNode|TContainerNode|TProjectionNode|null;
   parent: TContainerNode|null;
   tViews: null;
-  pData: null;
+  projection: null;
 }
 
 /** Static data for an LProjectionNode  */

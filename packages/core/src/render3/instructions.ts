@@ -1188,7 +1188,7 @@ export function createTNode(
     dynamicContainerNode: null,
     detached: null,
     stylingTemplate: null,
-    pData: null,
+    projection: null,
     pTargetIndex: -1,
     pListIndex: -1
   };
@@ -1956,9 +1956,9 @@ export function projectionDef(
   // to save them to traverse from a projected node to parent projection node.
   store(index, []);
 
-  if (!componentNode.tNode.pData) {
+  if (!componentNode.tNode.projection) {
     const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
-    const pData: (TNode | null)[] = componentNode.tNode.pData =
+    const pData: (TNode | null)[] = componentNode.tNode.projection =
         new Array(noOfNodeBuckets).fill(null);
     const tails: (TNode | null)[] = pData.slice();
 
@@ -2014,14 +2014,15 @@ export function projection(
       parent as LElementNode;
 
   if (canInsertNativeNode(parent, viewData)) {
-    let nodeToProject = componentNode.tNode.pData ![selectorIndex];
+    let nodeToProject = componentNode.tNode.projection ![selectorIndex];
     let projectedView = componentNode.view;
 
     while (nodeToProject) {
       if (nodeToProject.type === TNodeType.Projection) {
         // This node is re-projected, so we must go up the tree to get its projected nodes.
         const currentComponentHost = findComponentHost(projectedView);
-        const firstProjectedNode = currentComponentHost.tNode.pData ![nodeToProject.pListIndex];
+        const firstProjectedNode =
+            currentComponentHost.tNode.projection ![nodeToProject.pListIndex];
 
         if (firstProjectedNode) {
           nodeToProject = firstProjectedNode;

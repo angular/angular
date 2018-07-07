@@ -117,7 +117,7 @@ function walkLNodeTree(
       }
     } else if (node.tNode.type === TNodeType.Projection) {
       const componentHost = findComponentHost(node.view);
-      const head = componentHost.tNode.pData ![node.tNode.pListIndex];
+      const head = componentHost.tNode.projection ![node.tNode.pListIndex];
 
       nextNode = head ? (componentHost.data as LViewData)[PARENT] ![head.index] : null;
     } else {
