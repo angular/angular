@@ -372,17 +372,12 @@ export interface TNode {
    * - When projecting nodes the parent node retrieved may be a `<ng-content>` node, in which case
    *   the process is recursive in nature (not implementation).
    */
-  projection: (TNode|null)[]|null;
+  projection: (TNode|null)[]|number|null;
 
   /**
    * Will be replaced by stack.
    */
   pTargetIndex: number;
-
-  /**
-   * To be merged with `projection`
-   */
-  pListIndex: number;
 }
 
 /** Static data for an LElementNode  */
@@ -397,6 +392,13 @@ export interface TElementNode extends TNode {
    */
   parent: TElementNode|null;
   tViews: null;
+
+  /**
+   * If this is a component TNode with projection, this will be an array of projected
+   * TNodes (see TNode.projection for more info). If it's a regular element node or a
+   * component without projection, it will be null.
+   */
+  projection: (TNode|null)[]|null;
 }
 
 /** Static data for an LTextNode  */
@@ -457,6 +459,9 @@ export interface TProjectionNode extends TNode {
    */
   parent: TElementNode|null;
   tViews: null;
+
+  /** Index of the projection node. (See TNode.projection for more info.) */
+  projection: number;
 }
 
 /**

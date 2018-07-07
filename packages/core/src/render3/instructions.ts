@@ -24,9 +24,10 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, CurrentMatchesList, DI
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, getProjectionNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
+import {StylingContext, allocStylingContext, createStylingContextTemplate, renderStyles as renderElementStyles, updateStyleMap as updateElementStyleMap, updateStyleProp as updateElementStyleProp} from './styling';
 import {isDifferent, stringify} from './util';
 import {ViewRef} from './view_ref';
-import {StylingContext, allocStylingContext, createStylingContextTemplate, updateStyleMap as updateElementStyleMap, updateStyleProp as updateElementStyleProp, renderStyles as renderElementStyles} from './styling';
+
 
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
@@ -1189,8 +1190,7 @@ export function createTNode(
     detached: null,
     stylingTemplate: null,
     projection: null,
-    pTargetIndex: -1,
-    pListIndex: -1
+    pTargetIndex: -1
   };
 }
 
@@ -2000,7 +2000,7 @@ export function projection(
   const componentNode = findComponentHost(viewData);
   // Save the LProjectionNode in the projection def
   (componentNode.data as LViewData)[localIndex + HEADER_OFFSET][selectorIndex] = node;
-  if (node.tNode.pListIndex === -1) node.tNode.pListIndex = selectorIndex;
+  if (node.tNode.projection === null) node.tNode.projection = selectorIndex;
 
   // `<ng-content>` has no content
   isParent = false;
@@ -2014,15 +2014,15 @@ export function projection(
       parent as LElementNode;
 
   if (canInsertNativeNode(parent, viewData)) {
-    let nodeToProject = componentNode.tNode.projection ![selectorIndex];
+    let nodeToProject = (componentNode.tNode.projection as(TNode | null)[])[selectorIndex];
     let projectedView = componentNode.view;
 
     while (nodeToProject) {
       if (nodeToProject.type === TNodeType.Projection) {
         // This node is re-projected, so we must go up the tree to get its projected nodes.
         const currentComponentHost = findComponentHost(projectedView);
-        const firstProjectedNode =
-            currentComponentHost.tNode.projection ![nodeToProject.pListIndex];
+        const firstProjectedNode = (currentComponentHost.tNode.projection as(
+            TNode | null)[])[nodeToProject.projection as number];
 
         if (firstProjectedNode) {
           nodeToProject = firstProjectedNode;
