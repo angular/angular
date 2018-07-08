@@ -283,7 +283,7 @@ export interface LibrarySummary {
 export interface LazyRoute {
   route: string;
   module: {name: string, filePath: string};
-  referencedModule: {name: string, filePath: string};
+  referencedModule: {name?: string, filePath: string};
 }
 
 export interface Program {

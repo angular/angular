@@ -20,6 +20,7 @@ node_modules_filegroup(
         "bytebuffer",
         "hammerjs",
         "jasmine",
+        "magic-string",
         "minimist",
         "protobufjs",
         "reflect-metadata",

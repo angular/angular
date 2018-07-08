@@ -142,8 +142,10 @@ function resolveTypeList(resolvedList: ResolvedValue, name: string): Reference[]
         throw new Error(`Value at position ${idx} in ${name} array is not a class declaration`);
       }
       refList.push(entry);
-    } else {
+    } else if (entry instanceof Map) {
       // TODO(alxhub): expand ModuleWithProviders.
+      console.warn('ignoring `ModuleWithProviders');
+    } else {
       throw new Error(`Value at position ${idx} in ${name} array is not a reference`);
     }
   });
