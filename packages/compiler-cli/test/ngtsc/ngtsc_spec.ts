@@ -119,8 +119,8 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('Service.ngInjectableDef =');
     expect(jsContents).not.toContain('__decorate');
     const dtsContents = getContents('test.d.ts');
-    expect(dtsContents).toContain('static ngInjectableDef: i0.InjectableDef<Dep>;');
-    expect(dtsContents).toContain('static ngInjectableDef: i0.InjectableDef<Service>;');
+    expect(dtsContents).toContain('static ngInjectableDef: ɵ0.InjectableDef<Dep>;');
+    expect(dtsContents).toContain('static ngInjectableDef: ɵ0.InjectableDef<Service>;');
   });
 
   it('should compile Components without errors', () => {
@@ -140,11 +140,11 @@ describe('ngtsc behavioral tests', () => {
     expect(exitCode).toBe(0);
 
     const jsContents = getContents('test.js');
-    expect(jsContents).toContain('TestCmp.ngComponentDef = i0.ɵdefineComponent');
+    expect(jsContents).toContain('TestCmp.ngComponentDef = ɵ0.ɵdefineComponent');
     expect(jsContents).not.toContain('__decorate');
 
     const dtsContents = getContents('test.d.ts');
-    expect(dtsContents).toContain('static ngComponentDef: i0.ComponentDef<TestCmp, \'test-cmp\'>');
+    expect(dtsContents).toContain('static ngComponentDef: ɵ0.ComponentDef<TestCmp, \'test-cmp\'>');
   });
 
   it('should compile Components without errors', () => {
@@ -192,13 +192,13 @@ describe('ngtsc behavioral tests', () => {
     const jsContents = getContents('test.js');
     expect(jsContents)
         .toContain(
-            'i0.ɵdefineNgModule({ type: TestModule, bootstrap: [], ' +
+            'ɵ0.ɵdefineNgModule({ type: TestModule, bootstrap: [], ' +
             'declarations: [TestCmp], imports: [], exports: [] })');
 
     const dtsContents = getContents('test.d.ts');
-    expect(dtsContents).toContain('static ngComponentDef: i0.ComponentDef<TestCmp, \'test-cmp\'>');
+    expect(dtsContents).toContain('static ngComponentDef: ɵ0.ComponentDef<TestCmp, \'test-cmp\'>');
     expect(dtsContents)
-        .toContain('static ngModuleDef: i0.NgModuleDef<TestModule, [TestCmp], [], []>');
+        .toContain('static ngModuleDef: ɵ0.NgModuleDef<TestModule, [TestCmp], [], []>');
     expect(dtsContents).not.toContain('__decorate');
   });
 
@@ -231,17 +231,17 @@ describe('ngtsc behavioral tests', () => {
     expect(exitCode).toBe(0);
 
     const jsContents = getContents('test.js');
-    expect(jsContents).toContain('i0.ɵdefineNgModule({ type: TestModule,');
+    expect(jsContents).toContain('ɵ0.ɵdefineNgModule({ type: TestModule,');
     expect(jsContents)
         .toContain(
-            `TestModule.ngInjectorDef = i0.defineInjector({ factory: ` +
+            `TestModule.ngInjectorDef = ɵ0.defineInjector({ factory: ` +
             `function TestModule_Factory() { return new TestModule(); }, providers: [{ provide: ` +
             `Token, useValue: 'test' }], imports: [OtherModule] });`);
 
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents)
-        .toContain('static ngModuleDef: i0.NgModuleDef<TestModule, [TestCmp], [OtherModule], []>');
-    expect(dtsContents).toContain('static ngInjectorDef: i0.InjectorDef');
+        .toContain('static ngModuleDef: ɵ0.NgModuleDef<TestModule, [TestCmp], [OtherModule], []>');
+    expect(dtsContents).toContain('static ngInjectorDef: ɵ0.InjectorDef');
   });
 
   it('should compile Pipes without errors', () => {
@@ -265,9 +265,9 @@ describe('ngtsc behavioral tests', () => {
 
     expect(jsContents)
         .toContain(
-            'TestPipe.ngPipeDef = i0.ɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
+            'TestPipe.ngPipeDef = ɵ0.ɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
             'factory: function TestPipe_Factory() { return new TestPipe(); }, pure: false })');
-    expect(dtsContents).toContain('static ngPipeDef: i0.ɵPipeDef<TestPipe, \'test-pipe\'>;');
+    expect(dtsContents).toContain('static ngPipeDef: ɵ0.ɵPipeDef<TestPipe, \'test-pipe\'>;');
   });
 
   it('should compile pure Pipes without errors', () => {
@@ -290,9 +290,9 @@ describe('ngtsc behavioral tests', () => {
 
     expect(jsContents)
         .toContain(
-            'TestPipe.ngPipeDef = i0.ɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
+            'TestPipe.ngPipeDef = ɵ0.ɵdefinePipe({ name: "test-pipe", type: TestPipe, ' +
             'factory: function TestPipe_Factory() { return new TestPipe(); }, pure: true })');
-    expect(dtsContents).toContain('static ngPipeDef: i0.ɵPipeDef<TestPipe, \'test-pipe\'>;');
+    expect(dtsContents).toContain('static ngPipeDef: ɵ0.ɵPipeDef<TestPipe, \'test-pipe\'>;');
   });
 
   it('should compile Pipes with dependencies', () => {
@@ -316,7 +316,7 @@ describe('ngtsc behavioral tests', () => {
     expect(exitCode).toBe(0);
 
     const jsContents = getContents('test.js');
-    expect(jsContents).toContain('return new TestPipe(i0.ɵdirectiveInject(Dep));');
+    expect(jsContents).toContain('return new TestPipe(ɵ0.ɵdirectiveInject(Dep));');
   });
 
   it('should include @Pipes in @NgModule scopes', () => {
@@ -342,6 +342,6 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('pipes: [TestPipe]');
 
     const dtsContents = getContents('test.d.ts');
-    expect(dtsContents).toContain('i0.NgModuleDef<TestModule, [TestPipe,TestCmp], [], []>');
+    expect(dtsContents).toContain('ɵ0.NgModuleDef<TestModule, [TestPipe,TestCmp], [], []>');
   });
 });
