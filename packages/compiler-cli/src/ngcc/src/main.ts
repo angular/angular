@@ -12,6 +12,8 @@ import {relative, resolve} from 'path';
 import {inspect} from 'util';
 import * as ts from 'typescript';
 
+import {PackageTransformer} from './transforming/package_transformer';
+
 import {AnalyzedFile, Analyzer} from './analyzer';
 import {Esm2015ReflectionHost} from './host/esm2015_host';
 import {Esm2015FileParser} from './parsing/esm2015_parser';
@@ -21,41 +23,44 @@ import {ParsedFile} from './parsing/parsed_file';
 
 export function mainNgcc(args: string[]): number {
   const packagePath = resolve(args[0]);
-  const entryPointPaths = getEntryPoints(packagePath, 'fesm2015');
 
-  console.log('Entry points', entryPointPaths);
-  entryPointPaths.forEach(entryPointPath => {
+  const transformer = new PackageTransformer();
+  transformer.transform(packagePath, 'fesm2015');
+  // const entryPointPaths = getEntryPoints(packagePath, 'fesm2015');
 
-    console.log('Processing', relative(packagePath, entryPointPath));
-    const options: ts.CompilerOptions = { allowJs: true, rootDir: entryPointPath };
-    const host = ts.createCompilerHost(options);
-    const packageProgram = ts.createProgram([entryPointPath], options, host);
-    const entryPointFile = packageProgram.getSourceFile(entryPointPath)!;
-    const typeChecker = packageProgram.getTypeChecker();
+  // console.log('Entry points', entryPointPaths);
+  // entryPointPaths.forEach(entryPointPath => {
 
-    const reflectionHost = new Esm2015ReflectionHost(typeChecker);
-    const parser = new Esm2015FileParser(packageProgram, reflectionHost);
+  //   console.log('Processing', relative(packagePath, entryPointPath));
+  //   const options: ts.CompilerOptions = { allowJs: true, rootDir: entryPointPath };
+  //   const host = ts.createCompilerHost(options);
+  //   const packageProgram = ts.createProgram([entryPointPath], options, host);
+  //   const entryPointFile = packageProgram.getSourceFile(entryPointPath)!;
+  //   const typeChecker = packageProgram.getTypeChecker();
 
-    const parsedFiles = parser.parseFile(entryPointFile);
-    parsedFiles.forEach(parsedFile => {
+  //   const reflectionHost = new Esm2015ReflectionHost(typeChecker);
+  //   const parser = new Esm2015FileParser(packageProgram, reflectionHost);
 
-      dumpParsedFile(parsedFile);
+  //   const parsedFiles = parser.parseFile(entryPointFile);
+  //   parsedFiles.forEach(parsedFile => {
 
-      const analyzer = new Analyzer(typeChecker, reflectionHost);
-      const analyzedFile = analyzer.analyzeFile(parsedFile);
+  //     dumpParsedFile(parsedFile);
 
-      dumpAnalysis(analyzedFile);
+  //     const analyzer = new Analyzer(typeChecker, reflectionHost);
+  //     const analyzedFile = analyzer.analyzeFile(parsedFile);
 
-      const renderer = new Esm2015Renderer();
-      const output = renderer.renderFile(analyzedFile);
+  //     dumpAnalysis(analyzedFile);
 
-      // Dump the output for the `testing.js` files as an example
-      if (output.file.sourceFile.fileName.endsWith('testing.js')) {
-        console.log(output.content);
-        console.log(output.map);
-      }
-    });
-  });
+  //     const renderer = new Esm2015Renderer();
+  //     const output = renderer.renderFile(analyzedFile);
+
+  //     // Dump the output for the `testing.js` files as an example
+  //     if (output.file.sourceFile.fileName.endsWith('testing.js')) {
+  //       console.log(output.content);
+  //       console.log(output.map);
+  //     }
+  //   });
+  // });
   return 0;
 }
 

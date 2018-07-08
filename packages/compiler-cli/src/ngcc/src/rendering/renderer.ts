@@ -12,14 +12,20 @@ import {AnalyzedClass, AnalyzedFile} from '../analyzer';
 import { Decorator } from '../../../ngtsc/host';
 import {ImportManager, translateStatement} from '../../../ngtsc/transform/src/translator';
 
-export interface RenderedFile {
+
+export interface RenderResult {
   file: AnalyzedFile;
-  content: string;
-  map: string;
+  source: FileInfo;
+  map: FileInfo;
+}
+
+export interface FileInfo {
+  path: string;
+  contents: string;
 }
 
 export abstract class Renderer {
-  renderFile(file: AnalyzedFile): RenderedFile {
+  renderFile(file: AnalyzedFile, targetPath: string): RenderResult {
     const importManager = new ImportManager(false);
 
     const output = new MagicString(file.sourceFile.text);
@@ -34,16 +40,17 @@ export abstract class Renderer {
     this.addImports(output, importManager.getAllImports(file.sourceFile.fileName, null));
     this.removeDecorators(output, decoratorsToRemove);
 
+    const mapPath = `${targetPath}.map`;
     const map = output.generateMap({
       source: file.sourceFile.fileName,
-      file: `${file.sourceFile.fileName}.map`,
-      includeContent: true
+      file: mapPath,
+      // includeContent: true
     });
 
     return {
       file,
-      content: output.toString(),
-      map: map.toString()
+      source: { path: targetPath, contents: output.toString() },
+      map: { path: mapPath, contents: map.toString() }
     };
   }
 

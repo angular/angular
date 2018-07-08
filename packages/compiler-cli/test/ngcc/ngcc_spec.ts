@@ -8,6 +8,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import {cat, find} from 'shelljs';
 
 import {mainNgcc} from '../../src/ngcc/src/main';
 
@@ -76,6 +77,11 @@ describe('ngcc behavioral tests', () => {
     console.error(nodeModulesPath);
     const commonPath = path.join(nodeModulesPath, '@angular/common');
     const exitCode = mainNgcc([commonPath]);
+
+    console.log(find('node_modules_ngtsc').filter(p => p.endsWith('.js') || p.endsWith('map')));
+
+    console.log(cat('node_modules_ngtsc/@angular/common/fesm2015/common.js').stdout);
+    console.log(cat('node_modules_ngtsc/@angular/common/fesm2015/common.js.map').stdout);
 
     expect(exitCode).toBe(0);
   });

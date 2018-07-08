@@ -19,6 +19,8 @@ export interface RenderedFile {
 export class Esm2015Renderer extends Renderer {
   // Add the imports at the top of the file
   addImports(output: MagicString, imports: { name: string; as: string; }[]): void {
+    // QUESTION: Should we move the imports to after any initial comment in the file?
+    // Currently the imports get inserted at the very top of the file.
     imports.forEach(i => {
       output.appendLeft(0, `import * as ${i.as} from '${i.name}';\n`);
     });
