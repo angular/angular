@@ -658,25 +658,40 @@ These events are logged to the console when the `enableTracing` option is enable
 
 {@a basics-summary}
 
-
+<!--
 ### Summary
+-->
+### 용어 정리
 
+<!--
 The application has a configured router.
 The shell component has a `RouterOutlet` where it can display views produced by the router.
 It has `RouterLink`s that users can click to navigate via the router.
+-->
+애플리케이션은 라우터를 설정해서 사용할 수 있으며, 라우터가 뷰를 표시하는 영역은 컴포넌트에 `RouterOutlet`을 추가해서 지정할 수 있습니다.
+그리고 사용자가 라우터를 통해 네비게이션을 시작하려면 `RouterLink`를 사용하면 됩니다.
 
+<!--
 Here are the key `Router` terms and their meanings:
+-->
+`Router`에서 사용하는 용어와 의미는 다음과 같이 정리할 수 있습니다:
 
 <table>
 
   <tr>
 
     <th>
+      <!--
       Router Part
+      -->
+      용어
     </th>
 
     <th>
+      <!-
       Meaning
+      -->
+      의미
     </th>
 
   </tr>
@@ -688,8 +703,13 @@ Here are the key `Router` terms and their meanings:
     </td>
 
     <td>
+      <!--
       Displays the application component for the active URL.
       Manages navigation from one component to the next.
+      -->
+      주소에 해당하는 애플리케이션 컴포넌트를 화면에 표시하는 서비스입니다.
+      주소가 변경될 때마다 표시하는 컴포넌트도 변경합니다.
+
     </td>
 
   </tr>
@@ -701,8 +721,11 @@ Here are the key `Router` terms and their meanings:
     </td>
 
     <td>
+      <!--
       A separate NgModule that provides the necessary service providers
       and directives for navigating through application views.
+      -->
+      네비게이션 동작에 필요한 서비스 프로바이더나 디렉티브를 제공하는 NgModule입니다.
     </td>
 
   </tr>
@@ -710,11 +733,14 @@ Here are the key `Router` terms and their meanings:
   <tr>
 
     <td>
-      <code>Routes</code>
+      전체 라우팅 규칙 (<code>Routes</code>)
     </td>
 
     <td>
+      <!--
       Defines an array of Routes, each mapping a URL path to a component.
+      -->
+      URL과 컴포넌트가 매칭되는 라우팅 규칙을 정의하는 배열입니다.
     </td>
 
   </tr>
@@ -722,12 +748,17 @@ Here are the key `Router` terms and their meanings:
   <tr>
 
     <td>
-      <code>Route</code>
+      라우팅 규칙 (<code>Route</code>)
     </td>
 
     <td>
+      <!--
       Defines how the router should navigate to a component based on a URL pattern.
       Most routes consist of a path and a component type.
+      -->
+      라우터가 네비게이션하면서 표시할 컴포넌트를 매칭하는 URL 패턴을 지정합니다.
+      라우팅 규칙은 URL 주소와 컴포넌트 타입으로 구성됩니다.
+
     </td>
 
   </tr>
