@@ -770,7 +770,10 @@ Here are the key `Router` terms and their meanings:
     </td>
 
     <td>
+      <!--
       The directive (<code>&lt;router-outlet></code>) that marks where the router displays a view.
+      -->
+      라우터가 표시하는 뷰 영역의 위치를 지정하는 디렉티브입니다. <code>&lt;router-outlet></code>와 같이 사용합니다.
     </td>
 
   </tr>
@@ -782,9 +785,12 @@ Here are the key `Router` terms and their meanings:
     </td>
 
     <td>
+      <!--
       The directive for binding a clickable HTML element to
       a route. Clicking an element with a <code>routerLink</code> directive
       that is bound to a <i>string</i> or a <i>link parameters array</i> triggers a navigation.
+      -->
+      클릭할 수 있는 HTML 엘리먼트를 라우터와 연결하는 디렉티브입니다. <code>routerLink</code>가 사용된 엘리먼트를 클릭하면, 이 디렉티브에 바인딩된 <i>문자열</i>이나 <i>링크 변수 배열</i>을 사용해서 네비게이션을 시작합니다.
     </td>
 
   </tr>
@@ -796,8 +802,11 @@ Here are the key `Router` terms and their meanings:
     </td>
 
     <td>
+      <!--
       The directive for adding/removing classes from an HTML element when an associated
       <code>routerLink</code> contained on or inside the element becomes active/inactive.
+      -->
+      <code>routerLink</code>가 지정된 HTML 엘리먼트에 활성/비활성 클래스를 지정할 때 사용하는 디렉티브입니다. 이 디렉티브를 활용하면 스타일 지정을 좀 더 편하게 할 수 있습니다.
     </td>
 
   </tr>
@@ -809,8 +818,11 @@ Here are the key `Router` terms and their meanings:
     </td>
 
     <td>
+      <!--
       A service that is provided to each route component that contains route specific
       information such as route parameters, static data, resolve data, global query params, and the global fragment.
+      -->
+      현재 라우팅 서비스에 사용된 변수, 정적 데이터, 전역 쿼리 변수, URL 등 라우터와 관련된 정보를 제공하는 서비스입니다
     </td>
 
   </tr>
@@ -822,8 +834,11 @@ Here are the key `Router` terms and their meanings:
     </td>
 
     <td>
+      <!--
       The current state of the router including a tree of the currently activated
       routes together with convenience methods for traversing the route tree.
+      -->
+      현재 활성화된 라우터를 포함해서 상위 라우팅 트리에 대한 정보를 제공합니다.
     </td>
 
   </tr>
@@ -831,13 +846,20 @@ Here are the key `Router` terms and their meanings:
   <tr>
 
     <td>
+      <!--
       <b><i>Link parameters array</i></b>
+      -->
+      <b><i>링크 변수 배열</i></b>
     </td>
 
     <td>
+      <!--
       An array that the router interprets as a routing instruction.
       You can bind that array to a <code>RouterLink</code> or pass the array as an argument to
       the <code>Router.navigate</code> method.
+      -->
+      라우팅 동작에 사용할 때 라우터가 처리하는 배열입니다.
+      이 배열은 <code>RouterLink</code>에 바인딩하거나, <code>Router.navigate</code> 메소드의 인자로 전달하는 방식으로 사용할 수 있습니다.
     </td>
 
   </tr>
@@ -845,11 +867,17 @@ Here are the key `Router` terms and their meanings:
   <tr>
 
     <td>
+      <!--
       <b><i>Routing component</i></b>
+      -->
+      <b><i>라우팅 컴포넌트</i></b>
     </td>
 
     <td>
+      <!--
       An Angular component with a <code>RouterOutlet</code> that displays views based on router navigations.
+      -->
+      라우터 네비게이션 동작에 의해 <code>RouterOutlet</code>에 표시되는 Angular 컴포넌트를 의미합니다.
     </td>
 
   </tr>
