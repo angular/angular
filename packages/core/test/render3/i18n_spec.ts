@@ -9,8 +9,8 @@
 import {NgForOfContext} from '@angular/common';
 import {Component} from '../../src/core';
 import {defineComponent} from '../../src/render3/definition';
-import {i18nApply, i18nExpMapping, i18nInterpolation, i18nInterpolationV, i18nMapping} from '../../src/render3/i18n';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {I18nExpInstruction, I18nInstruction, i18nApply, i18nExpMapping, i18nInterpolation, i18nInterpolationV, i18nMapping} from '../../src/render3/i18n';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
@@ -21,8 +21,7 @@ describe('Runtime i18n', () => {
     // Open tag placeholders are never re-used (closing tag placeholders can be).
     const MSG_DIV_SECTION_1 =
         `{$START_C}trad 1{$END_C}{$START_A}trad 2{$START_B}trad 3{$END_B}{$END_A}`;
-    const i18n_1 =
-        i18nMapping(MSG_DIV_SECTION_1, [{START_A: 1, START_B: 2, START_REMOVE_ME: 3, START_C: 4}]);
+    let i18n_1: I18nInstruction[][];
     // Initial template:
     // <div i18n>
     //  <a>
@@ -41,20 +40,22 @@ describe('Runtime i18n', () => {
     //  </a>
     // </div>
     function createTemplate() {
+      if (!i18n_1) {
+        i18n_1 = i18nMapping(
+            MSG_DIV_SECTION_1, [{'START_A': 1, 'START_B': 2, 'START_REMOVE_ME': 3, 'START_C': 4}]);
+      }
+
       elementStart(0, 'div');
       {  // Start of translated section 1
         // - i18n sections do not contain any text() instruction
         elementStart(1, 'a');  // START_A
         {
-          elementStart(2, 'b');  // START_B
-          elementEnd();
-          elementStart(3, 'remove-me');  // START_REMOVE_ME
-          elementEnd();
+          element(2, 'b');          // START_B
+          element(3, 'remove-me');  // START_REMOVE_ME
         }
         elementEnd();
-        elementStart(4, 'c');  // START_C
-        elementEnd();
-      }  // End of translated section 1
+        element(4, 'c');  // START_C
+      }                   // End of translated section 1
       elementEnd();
       i18nApply(1, i18n_1[0]);
     }
@@ -65,7 +66,7 @@ describe('Runtime i18n', () => {
 
   it('should support expressions', () => {
     const MSG_DIV_SECTION_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    const i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{EXP_1: 1, EXP_2: 2}]);
+    let i18n_1: I18nInstruction[][];
 
     class MyApp {
       exp1 = '1';
@@ -86,6 +87,10 @@ describe('Runtime i18n', () => {
         // </div>
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
+            if (!i18n_1) {
+              i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 1, 'EXP_2': 2}]);
+            }
+
             elementStart(0, 'div');
             {
               // Start of translated section 1
@@ -121,7 +126,7 @@ describe('Runtime i18n', () => {
 
   it('should support expressions on removed nodes', () => {
     const MSG_DIV_SECTION_1 = `message`;
-    const i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{EXP_1: 1}]);
+    let i18n_1: I18nInstruction[][];
 
     class MyApp {
       exp1 = '1';
@@ -141,6 +146,10 @@ describe('Runtime i18n', () => {
         // </div>
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
+            if (!i18n_1) {
+              i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 1}]);
+            }
+
             elementStart(0, 'div');
             {
               // Start of translated section 1
@@ -172,7 +181,7 @@ describe('Runtime i18n', () => {
 
   it('should support expressions in attributes', () => {
     const MSG_DIV_SECTION_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {EXP_1: 0, EXP_2: 1});
+    const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1});
 
     class MyApp {
       exp1: any = '1';
@@ -189,10 +198,7 @@ describe('Runtime i18n', () => {
         // <div i18n i18n-title title="start {{exp2}} middle {{exp1}} end"></div>
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div');
-            // Start of translated section 1
-            // End of translated section 1
-            elementEnd();
+            element(0, 'div');  // translated section 1
           }
           if (rf & RenderFlags.Update) {
             elementProperty(0, 'title', i18nInterpolation(i18n_1, 2, ctx.exp1, ctx.exp2));
@@ -218,11 +224,8 @@ describe('Runtime i18n', () => {
   it('should support both html elements, expressions and expressions in attributes', () => {
     const MSG_DIV_SECTION_1 = `{$EXP_1} {$START_P}trad {$EXP_2}{$END_P}`;
     const MSG_ATTR_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    const i18n_1 = i18nMapping(
-        MSG_DIV_SECTION_1,
-        [{START_REMOVE_ME_1: 2, START_REMOVE_ME_2: 3, START_REMOVE_ME_3: 4, START_P: 5}],
-        [{EXP_1: 1, EXP_2: 6, EXP_3: 7}]);
-    const i18n_2 = i18nExpMapping(MSG_ATTR_1, {EXP_1: 0, EXP_2: 1});
+    let i18n_1: I18nInstruction[][];
+    let i18n_2: I18nExpInstruction[];
 
     class MyApp {
       exp1 = '1';
@@ -255,16 +258,28 @@ describe('Runtime i18n', () => {
         // </div>
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
+            if (!i18n_1) {
+              i18n_1 = i18nMapping(
+                  MSG_DIV_SECTION_1, [{
+                    'START_REMOVE_ME_1': 2,
+                    'START_REMOVE_ME_2': 3,
+                    'START_REMOVE_ME_3': 4,
+                    'START_P': 5
+                  }],
+                  [{'EXP_1': 1, 'EXP_2': 6, 'EXP_3': 7}]);
+            }
+            if (!i18n_2) {
+              i18n_2 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0, 'EXP_2': 1});
+            }
+
             elementStart(0, 'div');
             {
               // Start of translated section 1
               text(1);                         // EXP_1
               elementStart(2, 'remove-me-1');  // START_REMOVE_ME_1
               {
-                elementStart(3, 'remove-me-2');  // START_REMOVE_ME_2
-                elementEnd();
-                elementStart(4, 'remove-me-3');  // START_REMOVE_ME_3
-                elementEnd();
+                element(3, 'remove-me-2');  // START_REMOVE_ME_2
+                element(4, 'remove-me-3');  // START_REMOVE_ME_3
               }
               elementEnd();
               elementStart(5, 'p');  // START_P
@@ -305,9 +320,9 @@ describe('Runtime i18n', () => {
     const MSG_DIV_SECTION_1 = `trad {$EXP_1}`;
     const MSG_DIV_SECTION_2 = `{$START_C}trad{$END_C}`;
     const MSG_ATTR_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    const i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{EXP_1: 2}]);
-    const i18n_2 = i18nMapping(MSG_DIV_SECTION_2, [{START_C: 5}]);
-    const i18n_3 = i18nExpMapping(MSG_ATTR_1, {EXP_1: 0, EXP_2: 1});
+    let i18n_1: I18nInstruction[][];
+    let i18n_2: I18nInstruction[][];
+    let i18n_3: I18nExpInstruction[];
 
     class MyApp {
       exp1 = '1';
@@ -340,6 +355,16 @@ describe('Runtime i18n', () => {
         // </div>
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
+            if (!i18n_1) {
+              i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 2}]);
+            }
+            if (!i18n_2) {
+              i18n_2 = i18nMapping(MSG_DIV_SECTION_2, [{'START_C': 5}]);
+            }
+            if (!i18n_3) {
+              i18n_3 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0, 'EXP_2': 1});
+            }
+
             elementStart(0, 'div');
             {
               elementStart(1, 'a');
@@ -353,8 +378,7 @@ describe('Runtime i18n', () => {
               elementStart(4, 'b');
               {
                 // Start of translated section 2
-                elementStart(5, 'c');  // START_C
-                elementEnd();
+                element(5, 'c');  // START_C
                 // End of translated section 2
               }
               elementEnd();
@@ -393,7 +417,7 @@ describe('Runtime i18n', () => {
     it('should support containers', () => {
       const MSG_DIV_SECTION_1 = `valeur: {$EXP_1}`;
       // The indexes are based on the main template function
-      const i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{EXP_1: 0}]);
+      let i18n_1: I18nInstruction[][];
 
       class MyApp {
         exp1 = '1';
@@ -417,6 +441,10 @@ describe('Runtime i18n', () => {
           // ) after
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
+              if (!i18n_1) {
+                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 0}]);
+              }
+
               text(0, 'before (');
               container(1);
               text(2, ') after');
@@ -456,7 +484,7 @@ describe('Runtime i18n', () => {
       // its children are not the only children of their parent, some nodes which are not
       // translated might also be the children of the same parent.
       // This is why we need to pass the `lastChildIndex` to `i18nMapping`
-      const i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{START_B: 2, START_C: 3}], null, null, 4);
+      let i18n_1: I18nInstruction[][];
       // Initial template:
       // <div i18n>
       //  <a></a>
@@ -476,20 +504,20 @@ describe('Runtime i18n', () => {
       //  <d></d>
       // </div>
       function createTemplate() {
+        if (!i18n_1) {
+          i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{'START_B': 2, 'START_C': 3}], null, null, 4);
+        }
+
         elementStart(0, 'div');
         {
-          elementStart(1, 'a');
-          elementEnd();
+          element(1, 'a');
           {
             // Start of translated section 1
-            elementStart(2, 'b');  // START_B
-            elementEnd();
-            elementStart(3, 'c');  // START_C
-            elementEnd();
+            element(2, 'b');  // START_B
+            element(3, 'c');  // START_C
             // End of translated section 1
           }
-          elementStart(4, 'd');
-          elementEnd();
+          element(4, 'd');
         }
         elementEnd();
         i18nApply(2, i18n_1[0]);
@@ -502,8 +530,7 @@ describe('Runtime i18n', () => {
     it('should support embedded templates', () => {
       const MSG_DIV_SECTION_1 = `{$START_LI}valeur: {$EXP_1}!{$END_LI}`;
       // The indexes are based on each template function
-      const i18n_1 = i18nMapping(
-          MSG_DIV_SECTION_1, [{START_LI: 1}, {START_LI: 0}], [null, {EXP_1: 1}], ['START_LI']);
+      let i18n_1: I18nInstruction[][];
       class MyApp {
         items: string[] = ['1', '2'];
 
@@ -522,6 +549,12 @@ describe('Runtime i18n', () => {
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
+              if (!i18n_1) {
+                i18n_1 = i18nMapping(
+                    MSG_DIV_SECTION_1, [{'START_LI': 1}, {'START_LI': 0}], [null, {'EXP_1': 1}],
+                    ['START_LI']);
+              }
+
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
@@ -581,9 +614,7 @@ describe('Runtime i18n', () => {
       const MSG_DIV_SECTION_1 =
           `{$START_LI_0}valeur: {$EXP_1}!{$END_LI_0}{$START_LI_1}valeur bis: {$EXP_2}!{$END_LI_1}`;
       // The indexes are based on each template function
-      const i18n_1 = i18nMapping(
-          MSG_DIV_SECTION_1, [null, {START_LI_0: 0}, {START_LI_1: 0}],
-          [{START_LI_0: 1, START_LI_1: 2}, {EXP_1: 1}, {EXP_2: 1}], ['START_LI_0', 'START_LI_1']);
+      let i18n_1: I18nInstruction[][];
       class MyApp {
         items: string[] = ['1', '2'];
 
@@ -604,6 +635,13 @@ describe('Runtime i18n', () => {
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
+              if (!i18n_1) {
+                i18n_1 = i18nMapping(
+                    MSG_DIV_SECTION_1,
+                    [{'START_LI_0': 1, 'START_LI_1': 2}, {'START_LI_0': 0}, {'START_LI_1': 0}],
+                    [null, {'EXP_1': 1}, {'EXP_2': 1}], ['START_LI_0', 'START_LI_1']);
+              }
+
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
@@ -685,9 +723,7 @@ describe('Runtime i18n', () => {
     it('should support nested embedded templates', () => {
       const MSG_DIV_SECTION_1 = `{$START_LI}{$START_SPAN}valeur: {$EXP_1}!{$END_SPAN}{$END_LI}`;
       // The indexes are based on each template function
-      const i18n_1 = i18nMapping(
-          MSG_DIV_SECTION_1, [null, {START_LI: 0}, {START_SPAN: 0}],
-          [{START_LI: 1}, {START_SPAN: 1}, {EXP_1: 1}], ['START_LI', 'START_SPAN']);
+      let i18n_1: I18nInstruction[][];
       class MyApp {
         items: string[] = ['1', '2'];
 
@@ -710,6 +746,13 @@ describe('Runtime i18n', () => {
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
+              if (!i18n_1) {
+                i18n_1 = i18nMapping(
+                    MSG_DIV_SECTION_1,
+                    [{'START_LI': 1}, {'START_LI': 0, 'START_SPAN': 1}, {'START_SPAN': 0}],
+                    [null, null, {'EXP_1': 1}], ['START_LI', 'START_SPAN']);
+              }
+
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
@@ -792,9 +835,7 @@ describe('Runtime i18n', () => {
       const MSG_DIV_SECTION_1 =
           `{$START_LI_0}début{$END_LI_0}{$START_LI_1}valeur: {$EXP_1}{$END_LI_1}fin`;
       // The indexes are based on each template function
-      const i18n_1 = i18nMapping(
-          MSG_DIV_SECTION_1, [{START_LI_0: 1, START_LI_2: 3}, {START_LI_1: 0}],
-          [{START_LI_1: 2}, {EXP_1: 1}], ['START_LI_1']);
+      let i18n_1: I18nInstruction[][];
 
       class MyApp {
         items: string[] = ['first', 'second'];
@@ -818,11 +859,17 @@ describe('Runtime i18n', () => {
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
+              if (!i18n_1) {
+                i18n_1 = i18nMapping(
+                    MSG_DIV_SECTION_1,
+                    [{'START_LI_0': 1, 'START_LI_1': 2, 'START_LI_2': 3}, {'START_LI_1': 0}],
+                    [null, {'EXP_1': 1}], ['START_LI_1']);
+              }
+
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                elementStart(1, 'li');  // START_LI_0
-                elementEnd();
+                element(1, 'li');                                 // START_LI_0
                 container(2, liTemplate, null, ['ngForOf', '']);  // START_LI_1
                 elementStart(3, 'li');                            // START_LI_2
                 { text(4, 'delete me'); }
@@ -859,7 +906,7 @@ describe('Runtime i18n', () => {
       expect(fixture.html)
           .toEqual('<ul><li>début</li><li>valeur: first</li><li>valeur: second</li>fin</ul>');
 
-      // // Change detection cycle, no model changes
+      // Change detection cycle, no model changes
       fixture.update();
       expect(fixture.html)
           .toEqual('<ul><li>début</li><li>valeur: first</li><li>valeur: second</li>fin</ul>');
@@ -884,8 +931,7 @@ describe('Runtime i18n', () => {
     it('should be able to remove containers', () => {
       const MSG_DIV_SECTION_1 = `loop`;
       // The indexes are based on each template function
-      const i18n_1 = i18nMapping(
-          MSG_DIV_SECTION_1, [{START_LI: 1}, {START_LI: 0}], [null, {EXP_1: 1}], ['START_LI']);
+      let i18n_1: I18nInstruction[][];
 
       class MyApp {
         items: string[] = ['first', 'second'];
@@ -905,6 +951,12 @@ describe('Runtime i18n', () => {
           // </ul>
           template: (rf: RenderFlags, myApp: MyApp) => {
             if (rf & RenderFlags.Create) {
+              if (!i18n_1) {
+                i18n_1 = i18nMapping(
+                    MSG_DIV_SECTION_1, [{'START_LI': 1}, {'START_LI': 0}], [null, {'EXP_1': 1}],
+                    ['START_LI']);
+              }
+
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
@@ -982,17 +1034,9 @@ describe('Runtime i18n', () => {
 
       const MSG_DIV_SECTION_1 =
           `{$START_CHILD}Je suis projeté depuis {$START_B}{$EXP_1}{$END_B}{$END_CHILD}`;
-      const i18n_1 = i18nMapping(
-          MSG_DIV_SECTION_1, [{
-            START_CHILD: 1,
-            START_B: 2,
-            START_REMOVE_ME_1: 4,
-            START_REMOVE_ME_2: 5,
-            START_REMOVE_ME_3: 6
-          }],
-          [{EXP_1: 3}]);
+      let i18n_1: I18nInstruction[][];
       const MSG_ATTR_1 = `Enfant de {$EXP_1}`;
-      const i18n_2 = i18nExpMapping(MSG_ATTR_1, {EXP_1: 0});
+      let i18n_2: I18nExpInstruction[];
 
       @Component({
         selector: 'parent',
@@ -1017,6 +1061,21 @@ describe('Runtime i18n', () => {
           factory: () => new Parent(),
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
+              if (!i18n_1) {
+                i18n_1 = i18nMapping(
+                    MSG_DIV_SECTION_1, [{
+                      'START_CHILD': 1,
+                      'START_B': 2,
+                      'START_REMOVE_ME_1': 4,
+                      'START_REMOVE_ME_2': 5,
+                      'START_REMOVE_ME_3': 6
+                    }],
+                    [{'EXP_1': 3}]);
+              }
+              if (!i18n_2) {
+                i18n_2 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0});
+              }
+
               elementStart(0, 'div');
               {
                 // Start of translated section 1
@@ -1024,17 +1083,14 @@ describe('Runtime i18n', () => {
                 {
                   elementStart(2, 'b');  // START_B
                   {
-                    text(3);                         // EXP_1
-                    elementStart(4, 'remove-me-1');  // START_REMOVE_ME_1
-                    elementEnd();
+                    text(3);                    // EXP_1
+                    element(4, 'remove-me-1');  // START_REMOVE_ME_1
                   }
                   elementEnd();
-                  elementStart(5, 'remove-me-2');  // START_REMOVE_ME_2
-                  elementEnd();
+                  element(5, 'remove-me-2');  // START_REMOVE_ME_2
                 }
                 elementEnd();
-                elementStart(6, 'remove-me-3');  // START_REMOVE_ME_3
-                elementEnd();
+                element(6, 'remove-me-3');  // START_REMOVE_ME_3
                 // End of translated section 1
               }
               elementEnd();
@@ -1073,9 +1129,9 @@ describe('Runtime i18n', () => {
       }
 
       const MSG_DIV_SECTION_1 = `Je suis projeté depuis {$EXP_1}`;
-      const i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{EXP_1: 4}]);
+      let i18n_1: I18nInstruction[][];
       const MSG_ATTR_1 = `Enfant de {$EXP_1}`;
-      const i18n_2 = i18nExpMapping(MSG_ATTR_1, {EXP_1: 0});
+      let i18n_2: I18nExpInstruction[];
 
       @Component({
         selector: 'parent',
@@ -1101,12 +1157,18 @@ describe('Runtime i18n', () => {
           factory: () => new Parent(),
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
+              if (!i18n_1) {
+                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, null, [{'EXP_1': 4}]);
+              }
+              if (!i18n_2) {
+                i18n_2 = i18nExpMapping(MSG_ATTR_1, {'EXP_1': 0});
+              }
+
               elementStart(0, 'div');
               {
                 elementStart(1, 'child');
                 {
-                  elementStart(2, 'any');
-                  elementEnd();
+                  element(2, 'any');
                   elementStart(3, 'b');
                   {
                     // Start of translated section 1
@@ -1114,8 +1176,7 @@ describe('Runtime i18n', () => {
                     // End of translated section 1
                   }
                   elementEnd();
-                  elementStart(5, 'any');
-                  elementEnd();
+                  element(5, 'any');
                 }
                 elementEnd();
               }
@@ -1174,7 +1235,7 @@ describe('Runtime i18n', () => {
       }
 
       const MSG_DIV_SECTION_1 = `{$START_B}Bonjour{$END_B} Monde!`;
-      const i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{START_B: 1}]);
+      let i18n_1: I18nInstruction[][];
 
       @Component({
         selector: 'parent',
@@ -1191,11 +1252,14 @@ describe('Runtime i18n', () => {
           factory: () => new Parent(),
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
+              if (!i18n_1) {
+                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{'START_B': 1}]);
+              }
+
               elementStart(0, 'child');
               {
                 // Start of translated section 1
-                elementStart(1, 'b');  // START_B
-                elementEnd();
+                element(1, 'b');  // START_B
                 // End of translated section 1
               }
               elementEnd();
@@ -1232,7 +1296,7 @@ describe('Runtime i18n', () => {
       }
 
       const MSG_DIV_SECTION_1 = `{$START_SPAN_0}Contenu{$END_SPAN_0}`;
-      const i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{START_SPAN_0: 1, START_SPAN_1: 2}]);
+      let i18n_1: I18nInstruction[][];
 
       @Component({
         selector: 'parent',
@@ -1253,13 +1317,15 @@ describe('Runtime i18n', () => {
           factory: () => new Parent(),
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
+              if (!i18n_1) {
+                i18n_1 = i18nMapping(MSG_DIV_SECTION_1, [{'START_SPAN_0': 1, 'START_SPAN_1': 2}]);
+              }
+
               elementStart(0, 'child');
               {
                 // Start of translated section 1
-                elementStart(1, 'span', ['title', 'keepMe']);  // START_SPAN_0
-                elementEnd();
-                elementStart(2, 'span', ['title', 'deleteMe']);  // START_SPAN_1
-                elementEnd();
+                element(1, 'span', ['title', 'keepMe']);    // START_SPAN_0
+                element(2, 'span', ['title', 'deleteMe']);  // START_SPAN_1
                 // End of translated section 1
               }
               elementEnd();
@@ -1276,7 +1342,7 @@ describe('Runtime i18n', () => {
 
   it('i18nInterpolation should return the same value as i18nInterpolationV', () => {
     const MSG_DIV_SECTION_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {EXP_1: 0, EXP_2: 1});
+    const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1});
     let interpolation;
     let interpolationV;
 
@@ -1295,10 +1361,7 @@ describe('Runtime i18n', () => {
         // <div i18n i18n-title title="start {{exp2}} middle {{exp1}} end"></div>
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div');
-            // Start of translated section 1
-            // End of translated section 1
-            elementEnd();
+            element(0, 'div');  // translated section 1
           }
           if (rf & RenderFlags.Update) {
             interpolation = i18nInterpolation(i18n_1, 2, ctx.exp1, ctx.exp2);
