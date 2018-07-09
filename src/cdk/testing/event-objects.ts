@@ -11,7 +11,7 @@ export function createMouseEvent(type: string, x = 0, y = 0) {
   const event = document.createEvent('MouseEvent');
 
   event.initMouseEvent(type,
-    false, /* canBubble */
+    true, /* canBubble */
     false, /* cancelable */
     window, /* view */
     0, /* detail */

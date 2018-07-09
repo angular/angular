@@ -20,6 +20,8 @@ import {
   EventEmitter,
   ViewContainerRef,
   EmbeddedViewRef,
+  ContentChildren,
+  QueryList,
 } from '@angular/core';
 import {CdkDragHandle} from './drag-handle';
 import {DOCUMENT} from '@angular/platform-browser';
@@ -42,6 +44,8 @@ const activeEventOptions = supportsPassiveEventListeners() ? {passive: false} : 
   exportAs: 'cdkDrag',
   host: {
     'class': 'cdk-drag',
+    '(mousedown)': '_startDragging($event)',
+    '(touchstart)': '_startDragging($event)',
   }
 })
 export class CdkDrag implements AfterContentInit, OnDestroy {
@@ -88,8 +92,8 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
   /** Cached scroll position on the page when the element was picked up. */
   private _scrollPosition: {top: number, left: number};
 
-  /** Element that can be used to drag the draggable item. */
-  @ContentChild(CdkDragHandle) _handle: CdkDragHandle;
+  /** Elements that can be used to drag the draggable item. */
+  @ContentChildren(CdkDragHandle) _handles: QueryList<CdkDragHandle>;
 
   /** Element that will be used as a template to create the draggable item's preview. */
   @ContentChild(CdkDragPreview) _previewTemplate: CdkDragPreview;
@@ -135,11 +139,6 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
   }
 
   ngAfterContentInit() {
-    // TODO: doesn't handle (pun intended) the handle being destroyed
-    const dragElement = (this._handle ? this._handle.element : this.element).nativeElement;
-    dragElement.addEventListener('mousedown', this._pointerDown);
-    dragElement.addEventListener('touchstart', this._pointerDown);
-
     // WebKit won't preventDefault on a dynamically-added `touchmove` listener, which means that
     // we need to add one ahead of time. See https://bugs.webkit.org/show_bug.cgi?id=184250.
     // TODO: move into a central registry.
@@ -162,8 +161,27 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
     }
   }
 
+  /** Starts the dragging sequence. */
+  _startDragging(event: MouseEvent | TouchEvent) {
+    // Delegate the event based on whether it started from a handle or the element itself.
+    if (this._handles.length) {
+      const targetHandle = this._handles.find(handle => {
+        const element = handle.element.nativeElement;
+        const target = event.target;
+        return !!target && (target === element || element.contains(target as HTMLElement));
+      });
+
+      if (targetHandle) {
+        this._pointerDown(targetHandle.element, event);
+      }
+    } else {
+      this._pointerDown(this.element, event);
+    }
+  }
+
   /** Handler for when the pointer is pressed down on the element or the handle. */
-  private _pointerDown = (event: MouseEvent | TouchEvent) => {
+  private _pointerDown = (referenceElement: ElementRef<HTMLElement>,
+                          event: MouseEvent | TouchEvent) => {
     if (this._isDragging) {
       return;
     }
@@ -175,7 +193,7 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
     // If we have a custom preview template, the element won't be visible anyway so we avoid the
     // extra `getBoundingClientRect` calls and just move the preview next to the cursor.
     this._pickupPositionInElement = this._previewTemplate ? {x: 0, y: 0} :
-        this._getPointerPositionInElement(event);
+        this._getPointerPositionInElement(referenceElement, event);
     this._pickupPositionOnPage = this._getPointerPositionOnPage(event);
     this._registerMoveListeners(event);
 
@@ -371,11 +389,13 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
 
   /**
    * Figures out the coordinates at which an element was picked up.
+   * @param referenceElement Element that initiated the dragging.
    * @param event Event that initiated the dragging.
    */
-  private _getPointerPositionInElement(event: MouseEvent | TouchEvent): Point {
+  private _getPointerPositionInElement(referenceElement: ElementRef<HTMLElement>,
+                                       event: MouseEvent | TouchEvent): Point {
     const elementRect = this.element.nativeElement.getBoundingClientRect();
-    const handleElement = this._handle ? this._handle.element.nativeElement : null;
+    const handleElement = referenceElement === this.element ? null : referenceElement.nativeElement;
     const referenceRect = handleElement ? handleElement.getBoundingClientRect() : elementRect;
     const x = this._isTouchEvent(event) ?
         event.targetTouches[0].pageX - referenceRect.left - this._scrollPosition.left :

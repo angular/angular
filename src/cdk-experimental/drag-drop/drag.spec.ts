@@ -6,6 +6,7 @@ import {
   ViewChildren,
   QueryList,
   AfterViewInit,
+  ViewEncapsulation,
 } from '@angular/core';
 import {TestBed, ComponentFixture, fakeAsync, flush} from '@angular/core/testing';
 import {DragDropModule} from './drag-drop-module';
@@ -14,6 +15,7 @@ import {CdkDrag} from './drag';
 import {CdkDragDrop} from './drag-events';
 import {moveItemInArray, transferArrayItem} from './drag-utils';
 import {CdkDrop} from './drop';
+import {CdkDragHandle} from './drag-handle';
 
 const ITEM_HEIGHT = 25;
 
@@ -209,6 +211,37 @@ describe('CdkDrag', () => {
       dragElementViaMouse(fixture, handle, 50, 100);
       expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
     }));
+
+    it('should be able to use a handle that was added after init', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggableWithDelayedHandle);
+
+      fixture.detectChanges();
+      fixture.componentInstance.showHandle = true;
+      fixture.detectChanges();
+
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const handle = fixture.componentInstance.handleElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, handle, 50, 100);
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+    }));
+
+    it('should be able to use more than one handle to drag the element', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggableWithMultipleHandles);
+      fixture.detectChanges();
+
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+      const handles = fixture.componentInstance.handles.map(handle => handle.element.nativeElement);
+
+      expect(dragElement.style.transform).toBeFalsy();
+      dragElementViaMouse(fixture, handles[1], 50, 100);
+      expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+
+      dragElementViaMouse(fixture, handles[0], 100, 200);
+      expect(dragElement.style.transform).toBe('translate3d(150px, 300px, 0px)');
+    }));
+
   });
 
   describe('in a drop container', () => {
@@ -463,9 +496,48 @@ export class StandaloneDraggable {
 export class StandaloneDraggableWithHandle {
   @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
   @ViewChild('handleElement') handleElement: ElementRef<HTMLElement>;
-  @ViewChild(CdkDrag) dragInstance: CdkDrag;
 }
 
+@Component({
+  template: `
+    <div #dragElement cdkDrag
+      style="width: 100px; height: 100px; background: red; position: relative">
+      <div
+        #handleElement
+        *ngIf="showHandle"
+        cdkDragHandle style="width: 10px; height: 10px; background: green;"></div>
+    </div>
+  `
+})
+export class StandaloneDraggableWithDelayedHandle {
+  @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
+  @ViewChild('handleElement') handleElement: ElementRef<HTMLElement>;
+  showHandle = false;
+}
+
+@Component({
+  encapsulation: ViewEncapsulation.None,
+  styles: [`
+    .cdk-drag-handle {
+      position: absolute;
+      top: 0;
+      background: green;
+      width: 10px;
+      height: 10px;
+    }
+  `],
+  template: `
+    <div #dragElement cdkDrag
+      style="width: 100px; height: 100px; background: red; position: relative">
+      <div cdkDragHandle style="left: 0;"></div>
+      <div cdkDragHandle style="right: 0;"></div>
+    </div>
+  `
+})
+export class StandaloneDraggableWithMultipleHandles {
+  @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
+  @ViewChildren(CdkDragHandle) handles: QueryList<CdkDragHandle>;
+}
 
 @Component({
   template: `
