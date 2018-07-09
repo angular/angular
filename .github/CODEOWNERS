@@ -533,6 +533,8 @@
 /aio/content/examples/interpolation/**                          @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/template-syntax/**                        @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/images/guide/template-syntax/**                    @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+/aio/content/examples/binding-syntax/**                         @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
+
 
 /aio/content/guide/pipes.md                                     @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
 /aio/content/examples/pipes/**                                  @angular/fw-core @angular/framework-global-approvers @angular/framework-global-approvers-for-docs-only-changes
