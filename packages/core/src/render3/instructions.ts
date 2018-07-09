@@ -1948,12 +1948,8 @@ export function viewAttached(view: LViewData): boolean {
  * @param selectors A collection of parsed CSS selectors
  * @param rawSelectors A collection of CSS selectors in the raw, un-parsed form
  */
-export function projectionDef(
-    index: number, selectors?: CssSelectorList[], textSelectors?: string[]): void {
+export function projectionDef(selectors?: CssSelectorList[], textSelectors?: string[]): void {
   const componentNode: LElementNode = findComponentHost(viewData);
-  // Initialize an empty array here so projection nodes can be added later. It's necessary
-  // to save them to traverse from a projected node to parent projection node.
-  store(index, []);
 
   if (!componentNode.tNode.projection) {
     const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
@@ -1995,19 +1991,14 @@ const projectionNodeStack: LProjectionNode[] = [];
  * to the projectionDef instruction.
  *
  * @param nodeIndex
- * @param localIndex - index under which distribution of projected nodes was memorized
  * @param selectorIndex:
  *        - 0 when the selector is `*` (or unspecified as this is the default value),
  *        - 1 based index of the selector from the {@link projectionDef}
  */
-export function projection(
-    nodeIndex: number, localIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
+export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
   const node = createLNode(nodeIndex, TNodeType.Projection, null, null, attrs || null, null);
 
   // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
-  const componentNode = findComponentHost(viewData);
-  // Save the LProjectionNode in the projection def
-  (componentNode.data as LViewData)[localIndex + HEADER_OFFSET][selectorIndex] = node;
   if (node.tNode.projection === null) node.tNode.projection = selectorIndex;
 
   // `<ng-content>` has no content
@@ -2015,16 +2006,17 @@ export function projection(
 
   // re-distribution of projectable nodes is stored on a component's view level
   const parent = getParentLNode(node);
-  let grandparent: LContainerNode;
-  const renderParent = parent.tNode.type === TNodeType.View ?
-      (grandparent = getParentLNode(parent) as LContainerNode) &&
-          grandparent.data[RENDER_PARENT] ! :
-      parent as LElementNode;
 
   if (canInsertNativeNode(parent, viewData)) {
+    const componentNode = findComponentHost(viewData);
     let nodeToProject = (componentNode.tNode.projection as(TNode | null)[])[selectorIndex];
     let projectedView = componentNode.view;
     let projectionNodeIndex = -1;
+    let grandparent: LContainerNode;
+    const renderParent = parent.tNode.type === TNodeType.View ?
+        (grandparent = getParentLNode(parent) as LContainerNode) &&
+            grandparent.data[RENDER_PARENT] ! :
+        parent as LElementNode;
 
     while (nodeToProject) {
       if (nodeToProject.type === TNodeType.Projection) {

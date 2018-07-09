@@ -33,9 +33,9 @@ describe('lifecycles', () => {
 
     let Comp = createOnInitComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'div');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'div');
+        { projection(1); }
         elementEnd();
       }
     });
@@ -500,27 +500,27 @@ describe('lifecycles', () => {
 
     let Comp = createAfterContentInitComp('comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        projection(1, 0);
+        projectionDef();
+        projection(0);
       }
     });
 
     let Parent = createAfterContentInitComp('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'comp');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'comp');
+        { projection(1); }
         elementEnd();
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(1, 'val', bind(ctx.val));
+        elementProperty(0, 'val', bind(ctx.val));
       }
     }, [Comp]);
 
     let ProjectedComp = createAfterContentInitComp('projected', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        projection(1, 0);
+        projectionDef();
+        projection(0);
       }
     });
 
@@ -893,9 +893,9 @@ describe('lifecycles', () => {
 
     let Comp = createAfterViewInitComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'div');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'div');
+        { projection(1); }
         elementEnd();
       }
     });
@@ -1356,8 +1356,8 @@ describe('lifecycles', () => {
 
     let Comp = createOnDestroyComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        projection(1, 0);
+        projectionDef();
+        projection(0);
       }
     });
     let Parent = createOnDestroyComponent('parent', getParentTemplate('comp'), [Comp]);
@@ -1893,9 +1893,9 @@ describe('lifecycles', () => {
 
     const Comp = createOnChangesComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'div');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'div');
+        { projection(1); }
         elementEnd();
       }
     });
@@ -2444,13 +2444,13 @@ describe('lifecycles', () => {
       /** <ng-content></ng-content><view [val]="val"></view> */
       const Parent = createAllHooksComponent('parent', (rf: RenderFlags, ctx: any) => {
         if (rf & RenderFlags.Create) {
-          projectionDef(0);
-          projection(1, 0);
-          elementStart(2, 'view');
+          projectionDef();
+          projection(0);
+          elementStart(1, 'view');
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(2, 'val', bind(ctx.val));
+          elementProperty(1, 'val', bind(ctx.val));
         }
       }, [View]);
 

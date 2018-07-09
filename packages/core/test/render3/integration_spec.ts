@@ -502,19 +502,19 @@ describe('render3 integration test', () => {
         template: function ChildComponentTemplate(
             rf: RenderFlags, ctx: {beforeTree: Tree, afterTree: Tree}) {
           if (rf & RenderFlags.Create) {
-            projectionDef(0);
-            container(1);
-            projection(2, 0);
-            container(3);
+            projectionDef();
+            container(0);
+            projection(1);
+            container(2);
           }
-          containerRefreshStart(1);
+          containerRefreshStart(0);
           {
             const rf0 = embeddedViewStart(0);
             { showTree(rf0, {tree: ctx.beforeTree}); }
             embeddedViewEnd();
           }
           containerRefreshEnd();
-          containerRefreshStart(3);
+          containerRefreshStart(2);
           {
             const rf0 = embeddedViewStart(0);
             { showTree(rf0, {tree: ctx.afterTree}); }

@@ -947,8 +947,8 @@ describe('di', () => {
         factory: () => comp = new MyComp(injectChangeDetectorRef()),
         template: function(rf: RenderFlags, ctx: MyComp) {
           if (rf & RenderFlags.Create) {
-            projectionDef(0);
-            projection(1, 0);
+            projectionDef();
+            projection(0);
           }
         }
       });
