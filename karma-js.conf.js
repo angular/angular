@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var browserProvidersConf = require('./browser-providers.conf.js');
-var internalAngularReporter = require('./tools/karma/reporter.js');
+const browserProvidersConf = require('./browser-providers.conf');
+const {generateSeed} = require('./tools/jasmine-seed-generator');
 
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
@@ -85,7 +85,6 @@ module.exports = function(config) {
       'karma-sauce-launcher',
       'karma-chrome-launcher',
       'karma-sourcemap-loader',
-      internalAngularReporter,
     ],
 
     preprocessors: {
@@ -102,7 +101,7 @@ module.exports = function(config) {
       '/base/angular/': '/base/',
     },
 
-    reporters: ['internal-angular'],
+    reporters: ['dots'],
     sauceLabs: {
       testName: 'Angular2',
       retryLimit: 3,
