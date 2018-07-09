@@ -510,8 +510,8 @@ export declare class ModuleWithComponentFactories<T> {
     constructor(ngModuleFactory: NgModuleFactory<T>, componentFactories: ComponentFactory<any>[]);
 }
 
-export interface ModuleWithProviders {
-    ngModule: Type<any>;
+export interface ModuleWithProviders<T = any> {
+    ngModule: Type<T>;
     providers?: Provider[];
 }
 

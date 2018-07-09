@@ -458,7 +458,7 @@ export declare class RadioControlValueAccessor implements ControlValueAccessor, 
 
 export declare class ReactiveFormsModule {
     static withConfig(opts: { warnOnNgModelWithFormControl: 'never' | 'once' | 'always';
-    }): ModuleWithProviders;
+    }): ModuleWithProviders<ReactiveFormsModule>;
 }
 
 export declare class RequiredValidator implements Validator {

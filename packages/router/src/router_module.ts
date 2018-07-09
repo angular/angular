@@ -155,7 +155,7 @@ export class RouterModule {
    * * `paramsInheritanceStrategy` defines how the router merges params, data and resolved data
    * from parent to child routes.
    */
-  static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
+  static forRoot(routes: Routes, config?: ExtraOptions): ModuleWithProviders<RouterModule> {
     return {
       ngModule: RouterModule,
       providers: [
@@ -193,7 +193,7 @@ export class RouterModule {
   /**
    * Creates a module with all the router directives and a provider registering routes.
    */
-  static forChild(routes: Routes): ModuleWithProviders {
+  static forChild(routes: Routes): ModuleWithProviders<RouterModule> {
     return {ngModule: RouterModule, providers: [provideRoutes(routes)]};
   }
 }

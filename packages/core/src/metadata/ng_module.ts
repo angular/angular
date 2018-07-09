@@ -73,10 +73,11 @@ export interface NgModuleDef<T, Declarations, Imports, Exports> {
 /**
  * A wrapper around an NgModule that associates it with the providers.
  *
- *
+ * @param T the module type. In Ivy applications, this must be explicitly
+ * provided.
  */
-export interface ModuleWithProviders {
-  ngModule: Type<any>;
+export interface ModuleWithProviders<T = any> {
+  ngModule: Type<T>;
   providers?: Provider[];
 }
 

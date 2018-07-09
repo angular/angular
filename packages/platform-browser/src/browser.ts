@@ -112,7 +112,7 @@ export class BrowserModule {
    *
    * @experimental
    */
-  static withServerTransition(params: {appId: string}): ModuleWithProviders {
+  static withServerTransition(params: {appId: string}): ModuleWithProviders<BrowserModule> {
     return {
       ngModule: BrowserModule,
       providers: [
