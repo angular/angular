@@ -126,6 +126,12 @@ import {of } from 'rxjs';
 
         expect(g.dirty).toEqual(true);
       });
+
+      it('should be true after form is marked as dirty', () => {
+        g.markAsDirty();
+
+        expect(с.dirty).toEqual(true);
+      });
     });
 
 
@@ -143,6 +149,12 @@ import {of } from 'rxjs';
         c.markAsTouched();
 
         expect(g.touched).toEqual(true);
+      });
+
+      it('should be true after group is marked as touched', () => {
+        g.markAsTouched();
+
+        expect(c.touched).toEqual(true);
       });
     });
 

@@ -348,8 +348,11 @@ export abstract class AbstractControl {
   markAsTouched(opts: {onlySelf?: boolean} = {}): void {
     (this as{touched: boolean}).touched = true;
 
+    this._forEachChild(
+      (control: AbstractControl) => { control.markAsUntouched({onlySelf: true}); });
+
     if (this._parent && !opts.onlySelf) {
-      this._parent.markAsTouched(opts);
+      this._parent._updateTouched(opts);
     }
   }
 
@@ -388,8 +391,10 @@ export abstract class AbstractControl {
   markAsDirty(opts: {onlySelf?: boolean} = {}): void {
     (this as{pristine: boolean}).pristine = false;
 
+    this._forEachChild((control: AbstractControl) => { control.markAsDirty({onlySelf: true}); });
+
     if (this._parent && !opts.onlySelf) {
-      this._parent.markAsDirty(opts);
+      this._parent._updatePristine(opts);
     }
   }
 
