@@ -249,4 +249,7 @@ describe('ngtsc metadata', () => {
                'obj.fn("test")'))
         .toEqual('test');
   });
+
+  it('template expressions work',
+     () => { expect(evaluate('const a = 2, b = 4;', '`1${a}3${b}5`')).toEqual('12345'); });
 });
