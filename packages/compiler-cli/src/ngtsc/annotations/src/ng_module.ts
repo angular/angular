@@ -14,7 +14,7 @@ import {Reference, ResolvedValue, reflectObjectLiteral, staticallyResolve} from 
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore, referenceToExpression} from './util';
+import {getConstructorDependencies, isAngularCore, referenceToExpression, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
@@ -43,7 +43,9 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     // @NgModule can be invoked without arguments. In case it is, pretend as if a blank object
     // literal was specified. This simplifies the code below.
-    const meta = decorator.args.length === 1 ? decorator.args[0] : ts.createObjectLiteral([]);
+    const meta = decorator.args.length === 1 ? unwrapExpression(decorator.args[0]) :
+                                               ts.createObjectLiteral([]);
+
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new Error(`Decorator argument must be literal.`);
     }

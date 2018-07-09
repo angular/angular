@@ -15,7 +15,7 @@ import {filterToMembersWithDecorator} from '../../metadata/src/reflector';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore} from './util';
+import {getConstructorDependencies, isAngularCore, unwrapExpression} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
@@ -63,7 +63,7 @@ export function extractDirectiveMetadata(
   if (decorator.args === null || decorator.args.length !== 1) {
     throw new Error(`Incorrect number of arguments to @${decorator.name} decorator`);
   }
-  const meta = decorator.args[0];
+  const meta = unwrapExpression(decorator.args[0]);
   if (!ts.isObjectLiteralExpression(meta)) {
     throw new Error(`Decorator argument must be literal.`);
   }
