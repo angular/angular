@@ -70,7 +70,7 @@ const enum WalkLNodeTreeAction {
  *
  * This is deliberately created outside of walkLNodeTree to avoid allocating
  * a new array each time the function is called. Instead the array will be
- * re-used by each invocation.
+ * re-used by each invocation. This works because the function is not reentrant.
  */
 const projectionNodeStack: LProjectionNode[] = [];
 
