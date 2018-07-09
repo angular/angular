@@ -87,3 +87,16 @@ export function referenceToExpression(ref: Reference, context: ts.SourceFile): E
 export function isAngularCore(decorator: Decorator): boolean {
   return decorator.import !== null && decorator.import.from === '@angular/core';
 }
+
+/**
+ * Unwrap a `ts.Expression`, removing outer type-casts or parentheses until the expression is in its
+ * lowest level form.
+ *
+ * For example, the expression "(foo as Type)" unwraps to "foo".
+ */
+export function unwrapExpression(node: ts.Expression): ts.Expression {
+  while (ts.isAsExpression(node) || ts.isParenthesizedExpression(node)) {
+    node = node.expression;
+  }
+  return node;
+}

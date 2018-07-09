@@ -14,7 +14,7 @@ import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore} from './util';
+import {getConstructorDependencies, isAngularCore, unwrapExpression} from './util';
 
 export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata> {
   constructor(
@@ -35,7 +35,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata> {
     if (decorator.args === null) {
       throw new Error(`@Pipe must be called`);
     }
-    const meta = decorator.args[0];
+    const meta = unwrapExpression(decorator.args[0]);
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new Error(`Decorator argument must be literal.`);
     }
