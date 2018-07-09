@@ -345,7 +345,7 @@ describe('ngtsc behavioral tests', () => {
     expect(dtsContents).toContain('i0.ɵNgModuleDef<TestModule, [TestPipe,TestCmp], [], []>');
   });
 
-  it('should unwrap a ModuleWithProviders functoin if a generic type is provided for it', () => {
+  it('should unwrap a ModuleWithProviders function if a generic type is provided for it', () => {
     writeConfig();
     write(`test.ts`, `
         import {NgModule} from '@angular/core';
