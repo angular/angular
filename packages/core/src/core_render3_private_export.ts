@@ -23,6 +23,7 @@ export {
   injectChangeDetectorRef as ɵinjectChangeDetectorRef,
   injectAttribute as ɵinjectAttribute,
   PublicFeature as ɵPublicFeature,
+  InheritDefinitionFeature as ɵInheritDefinitionFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,
   NgModuleDef as ɵNgModuleDef,
   NgModuleType as ɵNgModuleType,
