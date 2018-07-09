@@ -17,7 +17,7 @@ import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 import {ResourceLoader} from './api';
 import {extractDirectiveMetadata} from './directive';
 import {SelectorScopeRegistry} from './selector_scope';
-import {isAngularCore} from './util';
+import {isAngularCore, unwrapExpression} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 
@@ -156,7 +156,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     if (decorator.args === null || decorator.args.length !== 1) {
       throw new Error(`Incorrect number of arguments to @Component decorator`);
     }
-    const meta = decorator.args[0];
+    const meta = unwrapExpression(decorator.args[0]);
+
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new Error(`Decorator argument must be literal.`);
     }
