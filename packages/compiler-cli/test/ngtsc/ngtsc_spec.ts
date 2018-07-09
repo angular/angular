@@ -344,4 +344,30 @@ describe('ngtsc behavioral tests', () => {
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents).toContain('i0.ɵNgModuleDef<TestModule, [TestPipe,TestCmp], [], []>');
   });
+
+  it('should unwrap a ModuleWithProviders functoin if a generic type is provided for it', () => {
+    writeConfig();
+    write(`test.ts`, `
+        import {NgModule} from '@angular/core';
+        import {RouterModule} from 'router';
+
+        @NgModule({imports: [RouterModule.forRoot()]})
+        export class TestModule {}
+    `);
+
+    write('node_modules/router/index.d.ts', `
+        import {ModuleWithProviders} from '@angular/core';
+
+        declare class RouterModule {
+          static forRoot(): ModuleWithProviders<RouterModule>;
+        }
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+    const dtsContents = getContents('test.d.ts');
+    expect(dtsContents).toContain(`import * as i1 from 'router';`);
+    expect(dtsContents).toContain('i0.ɵNgModuleDef<TestModule, [], [i1.RouterModule], []>');
+  });
 });

@@ -107,6 +107,8 @@ export abstract class Reference {
  * referenceable.
  */
 export class NodeReference extends Reference {
+  constructor(node: ts.Node, readonly moduleName: string|null) { super(node); }
+
   toExpression(context: ts.SourceFile): null { return null; }
 }
 
@@ -177,11 +179,22 @@ export class AbsoluteReference extends Reference {
  *
  * @param node the expression to statically resolve if possible
  * @param checker a `ts.TypeChecker` used to understand the expression
+ * @param foreignFunctionResolver a function which will be used whenever a "foreign function" is
+ * encountered. A foreign function is a function which has no body - usually the result of calling
+ * a function declared in another library's .d.ts file. In these cases, the foreignFunctionResolver
+ * will be called with the function's declaration, and can optionally return a `ts.Expression`
+ * (possibly extracted from the foreign function's type signature) which will be used as the result
+ * of the call.
  * @returns a `ResolvedValue` representing the resolved value
  */
-export function staticallyResolve(node: ts.Expression, checker: ts.TypeChecker): ResolvedValue {
-  return new StaticInterpreter(checker).visit(
-      node, {absoluteModuleName: null, scope: new Map<ts.ParameterDeclaration, ResolvedValue>()});
+export function staticallyResolve(
+    node: ts.Expression, checker: ts.TypeChecker,
+    foreignFunctionResolver?: (node: ts.FunctionDeclaration | ts.MethodDeclaration) =>
+        ts.Expression | null): ResolvedValue {
+  return new StaticInterpreter(checker).visit(node, {
+    absoluteModuleName: null,
+    scope: new Map<ts.ParameterDeclaration, ResolvedValue>(), foreignFunctionResolver,
+  });
 }
 
 interface BinaryOperatorDef {
@@ -226,6 +239,7 @@ const UNARY_OPERATORS = new Map<ts.SyntaxKind, (a: any) => any>([
 interface Context {
   absoluteModuleName: string|null;
   scope: Scope;
+  foreignFunctionResolver?(node: ts.FunctionDeclaration|ts.MethodDeclaration): ts.Expression|null;
 }
 
 class StaticInterpreter {
@@ -472,6 +486,10 @@ class StaticInterpreter {
     } else if (lhs instanceof Reference) {
       const ref = lhs.node;
       if (ts.isClassDeclaration(ref)) {
+        let absoluteModuleName = context.absoluteModuleName;
+        if (lhs instanceof NodeReference || lhs instanceof AbsoluteReference) {
+          absoluteModuleName = lhs.moduleName || absoluteModuleName;
+        }
         let value: ResolvedValue = undefined;
         const member =
             ref.members.filter(member => isStatic(member))
@@ -482,7 +500,7 @@ class StaticInterpreter {
           if (ts.isPropertyDeclaration(member) && member.initializer !== undefined) {
             value = this.visitExpression(member.initializer, context);
           } else if (ts.isMethodDeclaration(member)) {
-            value = new NodeReference(member);
+            value = new NodeReference(member, absoluteModuleName);
           }
         }
         return value;
@@ -495,13 +513,35 @@ class StaticInterpreter {
     const lhs = this.visitExpression(node.expression, context);
     if (!(lhs instanceof Reference)) {
       throw new Error(`attempting to call something that is not a function: ${lhs}`);
-    } else if (!isFunctionOrMethodDeclaration(lhs.node) || !lhs.node.body) {
+    } else if (!isFunctionOrMethodDeclaration(lhs.node)) {
       throw new Error(
           `calling something that is not a function declaration? ${ts.SyntaxKind[lhs.node.kind]}`);
     }
 
     const fn = lhs.node;
-    const body = fn.body as ts.Block;
+
+    // If the function is foreign (declared through a d.ts file), attempt to resolve it with the
+    // foreignFunctionResolver, if one is specified.
+    if (fn.body === undefined) {
+      let expr: ts.Expression|null = null;
+      if (context.foreignFunctionResolver) {
+        expr = context.foreignFunctionResolver(fn);
+      }
+      if (expr === null) {
+        throw new Error(`could not resolve foreign function declaration`);
+      }
+
+      // If the function is declared in a different file, resolve the foreign function expression
+      // using the absolute module name of that file (if any).
+      let absoluteModuleName: string|null = context.absoluteModuleName;
+      if (lhs instanceof NodeReference || lhs instanceof AbsoluteReference) {
+        absoluteModuleName = lhs.moduleName || absoluteModuleName;
+      }
+
+      return this.visitExpression(expr, {...context, absoluteModuleName});
+    }
+
+    const body = fn.body;
     if (body.statements.length !== 1 || !ts.isReturnStatement(body.statements[0])) {
       throw new Error('Function body must have a single return statement only.');
     }
