@@ -64,12 +64,16 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     }
     let imports: Reference[] = [];
     if (ngModule.has('imports')) {
-      const importsMeta = staticallyResolve(ngModule.get('imports') !, this.checker);
+      const importsMeta = staticallyResolve(
+          ngModule.get('imports') !, this.checker,
+          node => this._extractModuleFromModuleWithProvidersFn(node));
       imports = resolveTypeList(importsMeta, 'imports');
     }
     let exports: Reference[] = [];
     if (ngModule.has('exports')) {
-      const exportsMeta = staticallyResolve(ngModule.get('exports') !, this.checker);
+      const exportsMeta = staticallyResolve(
+          ngModule.get('exports') !, this.checker,
+          node => this._extractModuleFromModuleWithProvidersFn(node));
       exports = resolveTypeList(exportsMeta, 'exports');
     }
 
@@ -124,6 +128,46 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         type: ngInjectorDef.type,
       },
     ];
+  }
+
+  /**
+   * Given a `FunctionDeclaration` or `MethodDeclaration`, check if it is typed as a
+   * `ModuleWithProviders` and return an expression referencing the module if available.
+   */
+  private _extractModuleFromModuleWithProvidersFn(node: ts.FunctionDeclaration|
+                                                  ts.MethodDeclaration): ts.Expression|null {
+    const type = node.type;
+    // Examine the type of the function to see if it's a ModuleWithProviders reference.
+    if (type === undefined || !ts.isTypeReferenceNode(type) || !ts.isIdentifier(type.typeName)) {
+      return null;
+    }
+
+    // Look at the type itself to see where it comes from.
+    const id = this.reflector.getImportOfIdentifier(type.typeName);
+
+    // If it's not named ModuleWithProviders, bail.
+    if (id === null || id.name !== 'ModuleWithProviders') {
+      return null;
+    }
+
+    // If it's not from @angular/core, bail.
+    if (!this.isCore && id.from !== '@angular/core') {
+      return null;
+    }
+
+    // If there's no type parameter specified, bail.
+    if (type.typeArguments === undefined || type.typeArguments.length !== 1) {
+      return null;
+    }
+
+    const arg = type.typeArguments[0];
+
+    // If the argument isn't an Identifier, bail.
+    if (!ts.isTypeReferenceNode(arg) || !ts.isIdentifier(arg.typeName)) {
+      return null;
+    }
+
+    return arg.typeName;
   }
 }
 

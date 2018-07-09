@@ -26,3 +26,4 @@ export const Inject = callableParamDecorator();
 export const Self = callableParamDecorator();
 export const SkipSelf = callableParamDecorator();
 export const Optional = callableParamDecorator();
+export type ModuleWithProviders<T> = any;
