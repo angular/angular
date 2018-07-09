@@ -258,6 +258,8 @@ class StaticInterpreter {
       return node.text;
     } else if (ts.isNoSubstitutionTemplateLiteral(node)) {
       return node.text;
+    } else if (ts.isTemplateExpression(node)) {
+      return this.visitTemplateExpression(node, context);
     } else if (ts.isNumericLiteral(node)) {
       return parseFloat(node.text);
     } else if (ts.isObjectLiteralExpression(node)) {
@@ -360,6 +362,22 @@ class StaticInterpreter {
       return DYNAMIC_VALUE;
     }
     return this.visitSymbol(symbol, context);
+  }
+
+  private visitTemplateExpression(node: ts.TemplateExpression, context: Context): ResolvedValue {
+    const pieces: string[] = [node.head.text];
+    for (let i = 0; i < node.templateSpans.length; i++) {
+      const span = node.templateSpans[i];
+      const value = this.visit(span.expression, context);
+      if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean' ||
+          value == null) {
+        pieces.push(`${value}`);
+      } else {
+        return DYNAMIC_VALUE;
+      }
+      pieces.push(span.literal.text);
+    }
+    return pieces.join('');
   }
 
   private visitSymbol(symbol: ts.Symbol, context: Context): ResolvedValue {
