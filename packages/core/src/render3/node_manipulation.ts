@@ -9,7 +9,7 @@
 import {assertDefined} from './assert';
 import {callHooks} from './hooks';
 import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
-import {LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNode, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
@@ -35,12 +35,6 @@ export function getChildLNode(node: LNode): LNode|null {
     return viewData[node.tNode.child.index];
   }
   return null;
-}
-
-/** Given a projected node and the comp it's projected into, returns the projection node. */
-export function getProjectionNode(
-    projectedNode: TNode, componentLNode: LElementNode): LProjectionNode {
-  return componentLNode.data ![HEADER_OFFSET][projectedNode.pTargetIndex];
 }
 
 /** Retrieves the parent LNode of a given node. */
@@ -70,6 +64,16 @@ const enum WalkLNodeTreeAction {
   Destroy = 2,
 }
 
+
+/**
+ * Stack used to keep track of projection nodes in walkLNodeTree.
+ *
+ * This is deliberately created outside of walkLNodeTree to avoid allocating
+ * a new array each time the function is called. Instead the array will be
+ * re-used by each invocation.
+ */
+const projectionNodeStack: LProjectionNode[] = [];
+
 /**
  * Walks a tree of LNodes, applying a transformation on the LElement nodes, either only on the first
  * one found, or on all of them.
@@ -87,6 +91,7 @@ function walkLNodeTree(
     startingNode: LNode | null, rootNode: LNode, action: WalkLNodeTreeAction, renderer: Renderer3,
     renderParentNode?: LElementNode | null, beforeNode?: RNode | null) {
   let node: LNode|null = startingNode;
+  let projectionNodeIndex = -1;
   while (node) {
     let nextNode: LNode|null = null;
     const parent = renderParentNode ? renderParentNode.native : null;
@@ -121,6 +126,8 @@ function walkLNodeTree(
       const head =
           (componentHost.tNode.projection as(TNode | null)[])[node.tNode.projection as number];
 
+      projectionNodeStack[++projectionNodeIndex] = node as LProjectionNode;
+
       nextNode = head ? (componentHost.data as LViewData)[PARENT] ![head.index] : null;
     } else {
       // Otherwise look at the first child
@@ -131,9 +138,8 @@ function walkLNodeTree(
       nextNode = getNextLNode(node);
 
       // this last node was projected, we need to get back down to its projection node
-      if (nextNode === null && node.tNode.pTargetIndex !== -1) {
-        const componentParent = getParentLNode(node) as LElementNode;
-        nextNode = getNextLNode(getProjectionNode(node.tNode, componentParent));
+      if (nextNode === null && (node.tNode.flags & TNodeFlags.isProjected)) {
+        nextNode = getNextLNode(projectionNodeStack[projectionNodeIndex--] as LNode);
       }
       /**
        * Find the next node in the LNode tree, taking into account the place where a node is

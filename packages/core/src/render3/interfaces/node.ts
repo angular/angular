@@ -35,11 +35,14 @@ export const enum TNodeFlags {
   /** The number of directives on this node is encoded on the least significant bits */
   DirectiveCountMask = 0b00000000000000000000111111111111,
 
-  /** Then this bit is set when the node is a component */
-  isComponent = 0b1000000000000,
+  /** This bit is set if the node is a component */
+  isComponent = 0b00000000000000000001000000000000,
+
+  /** This bit is set if the node has been projected */
+  isProjected = 0b00000000000000000010000000000000,
 
   /** The index of the first directive on this node is encoded on the most significant bits  */
-  DirectiveStartingIndexShift = 13,
+  DirectiveStartingIndexShift = 14,
 }
 
 /**
@@ -373,11 +376,6 @@ export interface TNode {
    *   the process is recursive in nature (not implementation).
    */
   projection: (TNode|null)[]|number|null;
-
-  /**
-   * Will be replaced by stack.
-   */
-  pTargetIndex: number;
 }
 
 /** Static data for an LElementNode  */

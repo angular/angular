@@ -489,9 +489,6 @@
     "name": "getPreviousOrParentNode"
   },
   {
-    "name": "getProjectionNode"
-  },
-  {
     "name": "getRenderFlags"
   },
   {
@@ -607,6 +604,9 @@
   },
   {
     "name": "notImplemented"
+  },
+  {
+    "name": "projectionNodeStack"
   },
   {
     "name": "queueComponentIndexForCheck"

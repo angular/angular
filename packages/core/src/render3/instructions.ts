@@ -22,7 +22,7 @@ import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, getProjectionNode, insertView, removeView} from './node_manipulation';
+import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {StylingContext, allocStylingContext, createStylingContextTemplate, renderStyles as renderElementStyles, updateStyleMap as updateElementStyleMap, updateStyleProp as updateElementStyleProp} from './styling';
 import {isDifferent, stringify} from './util';
@@ -1189,8 +1189,7 @@ export function createTNode(
     dynamicContainerNode: null,
     detached: null,
     stylingTemplate: null,
-    projection: null,
-    pTargetIndex: -1
+    projection: null
   };
 }
 
@@ -1965,7 +1964,7 @@ export function projectionDef(
     let componentChild = componentNode.tNode.child;
 
     while (componentChild !== null) {
-      const bucketIndex = componentChild.pTargetIndex =
+      const bucketIndex =
           selectors ? matchingSelectorIndex(componentChild, selectors, textSelectors !) : 0;
       const nextNode = componentChild.next;
 
@@ -1981,6 +1980,15 @@ export function projectionDef(
     }
   }
 }
+
+/**
+ * Stack used to keep track of projection nodes in projection() instruction.
+ *
+ * This is deliberately created outside of projection() to avoid allocating
+ * a new array each time the function is called. Instead the array will be
+ * re-used by each invocation.
+ */
+const projectionNodeStack: LProjectionNode[] = [];
 
 /**
  * Inserts previously re-distributed projected nodes. This instruction must be preceded by a call
@@ -2005,7 +2013,7 @@ export function projection(
   // `<ng-content>` has no content
   isParent = false;
 
-  // re-distribution of projectable nodes is memorized on a component's view level
+  // re-distribution of projectable nodes is stored on a component's view level
   const parent = getParentLNode(node);
   let grandparent: LContainerNode;
   const renderParent = parent.tNode.type === TNodeType.View ?
@@ -2016,6 +2024,7 @@ export function projection(
   if (canInsertNativeNode(parent, viewData)) {
     let nodeToProject = (componentNode.tNode.projection as(TNode | null)[])[selectorIndex];
     let projectedView = componentNode.view;
+    let projectionNodeIndex = -1;
 
     while (nodeToProject) {
       if (nodeToProject.type === TNodeType.Projection) {
@@ -2025,12 +2034,14 @@ export function projection(
             TNode | null)[])[nodeToProject.projection as number];
 
         if (firstProjectedNode) {
+          projectionNodeStack[++projectionNodeIndex] = projectedView[nodeToProject.index];
           nodeToProject = firstProjectedNode;
           projectedView = currentComponentHost.view;
           continue;
         }
       } else {
         const lNode = projectedView[nodeToProject.index];
+        lNode.tNode.flags |= TNodeFlags.isProjected;
         appendProjectedNode(
             lNode as LTextNode | LElementNode | LContainerNode, parent, viewData, renderParent);
       }
@@ -2038,10 +2049,10 @@ export function projection(
       // If we are finished with a list of re-projected nodes, we need to get
       // back to the root projection node that was re-projected.
       if (nodeToProject.next === null && projectedView !== componentNode.view) {
-        const componentLNode = projectedView[nodeToProject.parent !.index];
         // move down into the view of the component we're projecting right now
-        projectedView = componentLNode.data;
-        nodeToProject = getProjectionNode(nodeToProject, componentLNode).tNode;
+        const lNode = projectionNodeStack[projectionNodeIndex--];
+        nodeToProject = lNode.tNode;
+        projectedView = lNode.view;
       }
       nodeToProject = nodeToProject.next;
     }
