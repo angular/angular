@@ -10,8 +10,7 @@ import {ConstantPool, R3DirectiveMetadata, WrappedNodeExpr, compileDirectiveFrom
 import * as ts from 'typescript';
 
 import {ClassMember, ClassMemberKind, Decorator, Import, ReflectionHost} from '../../host';
-import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
-import {filterToMembersWithDecorator} from '../../metadata/src/reflector';
+import {filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
