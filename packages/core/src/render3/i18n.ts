@@ -9,7 +9,7 @@
 import {assertEqual, assertLessThan} from './assert';
 import {NO_CHANGE, bindingUpdated, createLNode, getPreviousOrParentNode, getRenderer, getViewData, load, resetApplicationState} from './instructions';
 import {RENDER_PARENT} from './interfaces/container';
-import {LContainerNode, LElementNode, LNode, TContainerNode, TElementNode, TNodeType} from './interfaces/node';
+import {LContainerNode, LNode, TContainerNode, TElementNode, TNodeType} from './interfaces/node';
 import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
 import {appendChild, createTextNode, getParentLNode, removeChild} from './node_manipulation';
 import {stringify} from './util';
@@ -22,8 +22,10 @@ export const enum I18nInstructions {
   Text = 1 << 29,
   Element = 2 << 29,
   Expression = 3 << 29,
-  CloseNode = 4 << 29,
-  RemoveNode = 5 << 29,
+  TemplateRoot = 4 << 29,
+  Any = 5 << 29,
+  CloseNode = 6 << 29,
+  RemoveNode = 7 << 29,
   /** Used to decode the number encoded with the instruction. */
   IndexMask = (1 << 29) - 1,
   /** Used to test the type of instruction. */
@@ -46,7 +48,7 @@ export type I18nExpInstruction = number | string;
 export type PlaceholderMap = {
   [name: string]: number
 };
-const i18nTagRegex = /\{\$([^}]+)\}/g;
+const i18nTagRegex = /{\$([^}]+)}/g;
 
 /**
  * Takes a translation string, the initial list of placeholders (elements and expressions) and the
@@ -62,8 +64,8 @@ const i18nTagRegex = /\{\$([^}]+)\}/g;
  * their indexes.
  * @param expressions An array containing, for each template, the maps of expression placeholders
  * and their indexes.
- * @param tmplContainers An array of template container placeholders whose content should be ignored
- * when generating the instructions for their parent template.
+ * @param templateRoots An array of template roots whose content should be ignored when
+ * generating the instructions for their parent template.
  * @param lastChildIndex The index of the last child of the i18n node. Used when the i18n block is
  * an ng-container.
  *
@@ -71,13 +73,13 @@ const i18nTagRegex = /\{\$([^}]+)\}/g;
  */
 export function i18nMapping(
     translation: string, elements: (PlaceholderMap | null)[] | null,
-    expressions?: (PlaceholderMap | null)[] | null, tmplContainers?: string[] | null,
+    expressions?: (PlaceholderMap | null)[] | null, templateRoots?: string[] | null,
     lastChildIndex?: number | null): I18nInstruction[][] {
   const translationParts = translation.split(i18nTagRegex);
   const instructions: I18nInstruction[][] = [];
 
   generateMappingInstructions(
-      0, translationParts, instructions, elements, expressions, tmplContainers, lastChildIndex);
+      0, translationParts, instructions, elements, expressions, templateRoots, lastChildIndex);
 
   return instructions;
 }
@@ -96,8 +98,8 @@ export function i18nMapping(
  * their indexes.
  * @param expressions An array containing, for each template, the maps of expression placeholders
  * and their indexes.
- * @param tmplContainers An array of template container placeholders whose content should be ignored
- * when generating the instructions for their parent template.
+ * @param templateRoots An array of template roots whose content should be ignored when
+ * generating the instructions for their parent template.
  * @param lastChildIndex The index of the last child of the i18n node. Used when the i18n block is
  * an ng-container.
  * @returns the current index in `translationParts`
@@ -105,12 +107,16 @@ export function i18nMapping(
 function generateMappingInstructions(
     index: number, translationParts: string[], instructions: I18nInstruction[][],
     elements: (PlaceholderMap | null)[] | null, expressions?: (PlaceholderMap | null)[] | null,
-    tmplContainers?: string[] | null, lastChildIndex?: number | null): number {
+    templateRoots?: string[] | null, lastChildIndex?: number | null): number {
   const tmplIndex = instructions.length;
   const tmplInstructions: I18nInstruction[] = [];
-  const phVisited = [];
+  const phVisited: string[] = [];
   let openedTagCount = 0;
   let maxIndex = 0;
+  let currentElements: PlaceholderMap|null =
+      elements && elements[tmplIndex] ? elements[tmplIndex] : null;
+  let currentExpressions: PlaceholderMap|null =
+      expressions && expressions[tmplIndex] ? expressions[tmplIndex] : null;
 
   instructions.push(tmplInstructions);
 
@@ -120,22 +126,27 @@ function generateMappingInstructions(
     // Odd indexes are placeholders
     if (index & 1) {
       let phIndex;
-
-      if (elements && elements[tmplIndex] &&
-          typeof(phIndex = elements[tmplIndex] ![value]) !== 'undefined') {
+      if (currentElements && currentElements[value] !== undefined) {
+        phIndex = currentElements[value];
         // The placeholder represents a DOM element
         // Add an instruction to move the element
-        tmplInstructions.push(phIndex | I18nInstructions.Element);
+        const isTemplateRoot = templateRoots && templateRoots[tmplIndex] === value;
+        if (isTemplateRoot) {
+          // This is a template root, it has no closing tag, not treating it as an element
+          tmplInstructions.push(phIndex | I18nInstructions.TemplateRoot);
+        } else {
+          tmplInstructions.push(phIndex | I18nInstructions.Element);
+          openedTagCount++;
+        }
         phVisited.push(value);
-        openedTagCount++;
-      } else if (
-          expressions && expressions[tmplIndex] &&
-          typeof(phIndex = expressions[tmplIndex] ![value]) !== 'undefined') {
+      } else if (currentExpressions && currentExpressions[value] !== undefined) {
+        phIndex = currentExpressions[value];
         // The placeholder represents an expression
         // Add an instruction to move the expression
         tmplInstructions.push(phIndex | I18nInstructions.Expression);
         phVisited.push(value);
-      } else {  // It is a closing tag
+      } else {
+        // It is a closing tag
         tmplInstructions.push(I18nInstructions.CloseNode);
 
         if (tmplIndex > 0) {
@@ -148,14 +159,14 @@ function generateMappingInstructions(
         }
       }
 
-      if (typeof phIndex !== 'undefined' && phIndex > maxIndex) {
+      if (phIndex !== undefined && phIndex > maxIndex) {
         maxIndex = phIndex;
       }
 
-      if (tmplContainers && tmplContainers.indexOf(value) !== -1 &&
-          tmplContainers.indexOf(value) >= tmplIndex) {
+      if (templateRoots && templateRoots.indexOf(value) !== -1 &&
+          templateRoots.indexOf(value) >= tmplIndex) {
         index = generateMappingInstructions(
-            index, translationParts, instructions, elements, expressions, tmplContainers,
+            index, translationParts, instructions, elements, expressions, templateRoots,
             lastChildIndex);
       }
 
@@ -165,7 +176,7 @@ function generateMappingInstructions(
     }
   }
 
-  // Check if some elements from the template are missing from the translation
+  // Add instructions to remove elements that are not used in the translation
   if (elements) {
     const tmplElements = elements[tmplIndex];
 
@@ -188,7 +199,7 @@ function generateMappingInstructions(
     }
   }
 
-  // Check if some expressions from the template are missing from the translation
+  // Add instructions to remove expressions that are not used in the translation
   if (expressions) {
     const tmplExpressions = expressions[tmplIndex];
 
@@ -222,9 +233,7 @@ function generateMappingInstructions(
       if (ngDevMode) {
         assertLessThan(i.toString(2).length, 28, `Index ${i} is too big and will overflow`);
       }
-      // We consider those additional placeholders as expressions because we don't care about
-      // their children, all we need to do is to append them
-      tmplInstructions.push(i | I18nInstructions.Expression);
+      tmplInstructions.push(i | I18nInstructions.Any);
     }
   }
 
@@ -258,8 +267,6 @@ function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
 
   // Template containers also have a comment node for the `ViewContainerRef` that should be moved
   if (node.tNode.type === TNodeType.Container && node.dynamicLContainerNode) {
-    // (node.native as RComment).textContent = 'test';
-    // console.log(node.native);
     appendChild(parentNode, node.dynamicLContainerNode.native || null, viewData);
     if (firstTemplatePass) {
       node.tNode.dynamicContainerNode = node.dynamicLContainerNode.tNode;
@@ -302,8 +309,10 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         localParentNode = element;
         break;
       case I18nInstructions.Expression:
-        const expr: LNode = load(instruction & I18nInstructions.IndexMask);
-        localPreviousNode = appendI18nNode(expr, localParentNode, localPreviousNode);
+      case I18nInstructions.TemplateRoot:
+      case I18nInstructions.Any:
+        const node: LNode = load(instruction & I18nInstructions.IndexMask);
+        localPreviousNode = appendI18nNode(node, localParentNode, localPreviousNode);
         break;
       case I18nInstructions.Text:
         if (ngDevMode) {
