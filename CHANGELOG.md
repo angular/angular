@@ -1,5 +1,24 @@
+<a name="6.3.3"></a>
+## [6.3.3 chrome-tarantula](https://github.com/angular/material2/compare/6.3.2...6.3.3) (2018-07-09)
+
+
+### Highlights
+
+* In the next minor version we will remove the beta versions of Angular 6 as valid dependency
+  versions. This is a change that we intended to make when moving out of beta but was accidentally
+  overlooked. Please note that versions prior to beta.8 don't work properly even today, as they do
+  not have all of the changes we depend on related to tree-shakeable providers.
+* We have added a cdk-experimental package for drag & drop. It's not ready for prime time yet, but
+  if you're feeling adventurous and want to give it a spin, feel free!
+
+
+### Bug Fixes
+
+* **tabs:** don't show focus indication for mouse focus ([#11194](https://github.com/angular/material2/issues/11194)) ([1a83bc0](https://github.com/angular/material2/commit/1a83bc0)), closes [#11184](https://github.com/angular/material2/issues/11184)
+
+
 <a name="6.3.2"></a>
-## [6.3.2](https://github.com/angular/material2/compare/6.3.0...6.3.2) (2018-07-02)
+## [6.3.2 ruby-robot](https://github.com/angular/material2/compare/6.3.0...6.3.2) (2018-07-02)
 
 
 ### Bug Fixes
