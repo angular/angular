@@ -28,6 +28,7 @@ import {supportsPassiveEventListeners} from '@angular/cdk/platform';
 import {CdkDragStart, CdkDragEnd, CdkDragExit, CdkDragEnter, CdkDragDrop} from './drag-events';
 import {CdkDragPreview} from './drag-preview';
 import {CdkDragPlaceholder} from './drag-placeholder';
+import {ViewportRuler} from '@angular/cdk/overlay';
 
 /** Event options that can be used to bind an active event. */
 const activeEventOptions = supportsPassiveEventListeners() ? {passive: false} : false;
@@ -84,6 +85,9 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
   /** Drop container in which the CdkDrag resided when dragging began. */
   private _initialContainer: CdkDropContainer;
 
+  /** Cached scroll position on the page when the element was picked up. */
+  private _scrollPosition: {top: number, left: number};
+
   /** Element that can be used to drag the draggable item. */
   @ContentChild(CdkDragHandle) _handle: CdkDragHandle;
 
@@ -117,7 +121,8 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
     @Inject(CDK_DROP_CONTAINER) @Optional() @SkipSelf() public dropContainer: CdkDropContainer,
     @Inject(DOCUMENT) document: any,
     private _ngZone: NgZone,
-    private _viewContainerRef: ViewContainerRef) {
+    private _viewContainerRef: ViewContainerRef,
+    private _viewportRuler: ViewportRuler) {
       this._document = document;
     }
 
@@ -135,7 +140,7 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
     dragElement.addEventListener('mousedown', this._pointerDown);
     dragElement.addEventListener('touchstart', this._pointerDown);
 
-    // Webkit won't preventDefault on a dynamically-added `touchmove` listener, which means that
+    // WebKit won't preventDefault on a dynamically-added `touchmove` listener, which means that
     // we need to add one ahead of time. See https://bugs.webkit.org/show_bug.cgi?id=184250.
     // TODO: move into a central registry.
     this._ngZone.runOutsideAngular(() => {
@@ -165,6 +170,7 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
 
     this._isDragging = true;
     this._initialContainer = this.dropContainer;
+    this._scrollPosition = this._viewportRuler.getViewportScrollPosition();
 
     // If we have a custom preview template, the element won't be visible anyway so we avoid the
     // extra `getBoundingClientRect` calls and just move the preview next to the cursor.
@@ -371,10 +377,12 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
     const elementRect = this.element.nativeElement.getBoundingClientRect();
     const handleElement = this._handle ? this._handle.element.nativeElement : null;
     const referenceRect = handleElement ? handleElement.getBoundingClientRect() : elementRect;
-    const x = this._isTouchEvent(event) ? event.targetTouches[0].pageX - referenceRect.left :
-                                          event.offsetX;
-    const y = this._isTouchEvent(event) ? event.targetTouches[0].pageY - referenceRect.top :
-                                          event.offsetY;
+    const x = this._isTouchEvent(event) ?
+        event.targetTouches[0].pageX - referenceRect.left - this._scrollPosition.left :
+        event.offsetX;
+    const y = this._isTouchEvent(event) ?
+        event.targetTouches[0].pageY - referenceRect.top - this._scrollPosition.top :
+        event.offsetY;
 
     return {
       x: referenceRect.left - elementRect.left + x,
@@ -456,8 +464,12 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
 
   /** Determines the point of the page that was touched by the user. */
   private _getPointerPositionOnPage(event: MouseEvent | TouchEvent): Point {
-    return this._isTouchEvent(event) ? {x: event.touches[0].pageX, y: event.touches[0].pageY} :
-                                       {x: event.pageX, y: event.pageY};
+    const point = this._isTouchEvent(event) ? event.touches[0] : event;
+
+    return {
+      x: point.pageX - this._scrollPosition.left,
+      y: point.pageY - this._scrollPosition.top
+    };
   }
 
   /** Listener used to prevent `touchmove` events while the element is being dragged. */

@@ -12,6 +12,7 @@ ng_module(
   deps = [
     "@rxjs",
     "//src/cdk/platform",
+    "//src/cdk/overlay",
   ],
   tsconfig = "//src/cdk-experimental:tsconfig-build.json",
 )

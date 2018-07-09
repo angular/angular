@@ -39,6 +39,21 @@ describe('CdkDrag', () => {
         expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
       }));
 
+      it('should drag an element freely to a particular position when the page is scrolled',
+        fakeAsync(() => {
+          const fixture = createComponent(StandaloneDraggable);
+          fixture.detectChanges();
+
+          const cleanup = makePageScrollable();
+          const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+          scrollTo(0, 500);
+          expect(dragElement.style.transform).toBeFalsy();
+          dragElementViaMouse(fixture, dragElement, 50, 100);
+          expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+          cleanup();
+        }));
+
       it('should continue dragging the element from where it was left off', fakeAsync(() => {
         const fixture = createComponent(StandaloneDraggable);
         fixture.detectChanges();
@@ -52,6 +67,26 @@ describe('CdkDrag', () => {
         dragElementViaMouse(fixture, dragElement, 100, 200);
         expect(dragElement.style.transform).toBe('translate3d(150px, 300px, 0px)');
       }));
+
+      it('should continue dragging from where it was left off when the page is scrolled',
+        fakeAsync(() => {
+          const fixture = createComponent(StandaloneDraggable);
+          fixture.detectChanges();
+
+          const dragElement = fixture.componentInstance.dragElement.nativeElement;
+          const cleanup = makePageScrollable();
+
+          scrollTo(0, 500);
+          expect(dragElement.style.transform).toBeFalsy();
+
+          dragElementViaMouse(fixture, dragElement, 50, 100);
+          expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+
+          dragElementViaMouse(fixture, dragElement, 100, 200);
+          expect(dragElement.style.transform).toBe('translate3d(150px, 300px, 0px)');
+
+          cleanup();
+        }));
     });
 
     describe('touch dragging', () => {
@@ -64,6 +99,21 @@ describe('CdkDrag', () => {
         dragElementViaTouch(fixture, dragElement, 50, 100);
         expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
       }));
+
+      it('should drag an element freely to a particular position when the page is scrolled',
+        fakeAsync(() => {
+          const fixture = createComponent(StandaloneDraggable);
+          fixture.detectChanges();
+
+          const dragElement = fixture.componentInstance.dragElement.nativeElement;
+          const cleanup = makePageScrollable();
+
+          scrollTo(0, 500);
+          expect(dragElement.style.transform).toBeFalsy();
+          dragElementViaTouch(fixture, dragElement, 50, 100);
+          expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+          cleanup();
+        }));
 
       it('should continue dragging the element from where it was left off', fakeAsync(() => {
         const fixture = createComponent(StandaloneDraggable);
@@ -78,6 +128,26 @@ describe('CdkDrag', () => {
         dragElementViaTouch(fixture, dragElement, 100, 200);
         expect(dragElement.style.transform).toBe('translate3d(150px, 300px, 0px)');
       }));
+
+      it('should continue dragging from where it was left off when the page is scrolled',
+        fakeAsync(() => {
+          const fixture = createComponent(StandaloneDraggable);
+          fixture.detectChanges();
+
+          const dragElement = fixture.componentInstance.dragElement.nativeElement;
+          const cleanup = makePageScrollable();
+
+          scrollTo(0, 500);
+          expect(dragElement.style.transform).toBeFalsy();
+
+          dragElementViaTouch(fixture, dragElement, 50, 100);
+          expect(dragElement.style.transform).toBe('translate3d(50px, 100px, 0px)');
+
+          dragElementViaTouch(fixture, dragElement, 100, 200);
+          expect(dragElement.style.transform).toBe('translate3d(150px, 300px, 0px)');
+
+          cleanup();
+        }));
 
       it('should prevent the default `touchmove` action on the page while dragging',
         fakeAsync(() => {
@@ -257,58 +327,36 @@ describe('CdkDrag', () => {
     it('should move the placeholder as an item is being sorted down', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
-
-      const items = fixture.componentInstance.dragItems.toArray();
-      const draggedItem = items[0].element.nativeElement;
-      const {top, left} = draggedItem.getBoundingClientRect();
-
-      dispatchMouseEvent(draggedItem, 'mousedown', left, top);
-      fixture.detectChanges();
-
-      const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
-
-      // Drag over each item one-by-one going downwards.
-      for (let i = 0; i < items.length; i++) {
-        const elementRect = items[i].element.nativeElement.getBoundingClientRect();
-
-        // Add a few pixels to the top offset so we get some overlap.
-        dispatchMouseEvent(document, 'mousemove', elementRect.left, elementRect.top + 5);
-        fixture.detectChanges();
-        expect(getElementIndex(placeholder)).toBe(i);
-      }
-
-      dispatchMouseEvent(document, 'mouseup');
-      fixture.detectChanges();
-      flush();
+      assertDownwardSorting(fixture);
     }));
+
+    it('should move the placeholder as an item is being sorted down on a scrolled page',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.detectChanges();
+        const cleanup = makePageScrollable();
+
+        scrollTo(0, 500);
+        assertDownwardSorting(fixture);
+        cleanup();
+      }));
 
     it('should move the placeholder as an item is being sorted up', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
-
-      const items = fixture.componentInstance.dragItems.toArray();
-      const draggedItem = items[items.length - 1].element.nativeElement;
-      const {top, left} = draggedItem.getBoundingClientRect();
-
-      dispatchMouseEvent(draggedItem, 'mousedown', left, top);
-      fixture.detectChanges();
-
-      const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
-
-      // Drag over each item one-by-one going upwards.
-      for (let i = items.length - 1; i > -1; i--) {
-        const elementRect = items[i].element.nativeElement.getBoundingClientRect();
-
-        // Remove a few pixels from the bottom offset so we get some overlap.
-        dispatchMouseEvent(document, 'mousemove', elementRect.left, elementRect.bottom - 5);
-        fixture.detectChanges();
-        expect(getElementIndex(placeholder)).toBe(Math.min(i + 1, items.length - 1));
-      }
-
-      dispatchMouseEvent(document, 'mouseup');
-      fixture.detectChanges();
-      flush();
+      assertUpwardSorting(fixture);
     }));
+
+    it('should move the placeholder as an item is being sorted up on a scrolled page',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.detectChanges();
+        const cleanup = makePageScrollable();
+
+        scrollTo(0, 500);
+        assertUpwardSorting(fixture);
+        cleanup();
+      }));
 
     it('should clean up the preview element if the item is destroyed mid-drag', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
@@ -579,4 +627,78 @@ function dragElementViaTouch(fixture: ComponentFixture<any>,
 /** Gets the index of a DOM element inside its parent. */
 function getElementIndex(element: HTMLElement) {
   return element.parentElement ? Array.from(element.parentElement.children).indexOf(element) : -1;
+}
+
+/**
+ * Adds a large element to the page in order to make it scrollable.
+ * @returns Function that should be used to clean up after the test is done.
+ */
+function makePageScrollable() {
+  const veryTallElement = document.createElement('div');
+  veryTallElement.style.width = '100%';
+  veryTallElement.style.height = '2000px';
+  document.body.appendChild(veryTallElement);
+
+  return () => {
+    scrollTo(0, 0);
+    veryTallElement.parentNode!.removeChild(veryTallElement);
+  };
+}
+
+/**
+ * Asserts that sorting an element down works correctly.
+ * @param fixture Fixture against which to run the assertions.
+ */
+function assertDownwardSorting(fixture: ComponentFixture<DraggableInDropZone>) {
+  const items = fixture.componentInstance.dragItems.toArray();
+  const draggedItem = items[0].element.nativeElement;
+  const {top, left} = draggedItem.getBoundingClientRect();
+
+  dispatchMouseEvent(draggedItem, 'mousedown', left, top);
+  fixture.detectChanges();
+
+  const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+
+  // Drag over each item one-by-one going downwards.
+  for (let i = 0; i < items.length; i++) {
+    const elementRect = items[i].element.nativeElement.getBoundingClientRect();
+
+    // Add a few pixels to the top offset so we get some overlap.
+    dispatchMouseEvent(document, 'mousemove', elementRect.left, elementRect.top + 5);
+    fixture.detectChanges();
+    expect(getElementIndex(placeholder)).toBe(i);
+  }
+
+  dispatchMouseEvent(document, 'mouseup');
+  fixture.detectChanges();
+  flush();
+}
+
+/**
+ * Asserts that sorting an element up works correctly.
+ * @param fixture Fixture against which to run the assertions.
+ */
+function assertUpwardSorting(fixture: ComponentFixture<DraggableInDropZone>) {
+  const items = fixture.componentInstance.dragItems.toArray();
+  const draggedItem = items[items.length - 1].element.nativeElement;
+  const {top, left} = draggedItem.getBoundingClientRect();
+
+  dispatchMouseEvent(draggedItem, 'mousedown', left, top);
+  fixture.detectChanges();
+
+  const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+
+  // Drag over each item one-by-one going upwards.
+  for (let i = items.length - 1; i > -1; i--) {
+    const elementRect = items[i].element.nativeElement.getBoundingClientRect();
+
+    // Remove a few pixels from the bottom offset so we get some overlap.
+    dispatchMouseEvent(document, 'mousemove', elementRect.left, elementRect.bottom - 5);
+    fixture.detectChanges();
+    expect(getElementIndex(placeholder)).toBe(Math.min(i + 1, items.length - 1));
+  }
+
+  dispatchMouseEvent(document, 'mouseup');
+  fixture.detectChanges();
+  flush();
 }
