@@ -22,7 +22,6 @@ import {CdkDrag} from './drag';
 import {CdkDragExit, CdkDragEnter, CdkDragDrop} from './drag-events';
 import {CDK_DROP_CONTAINER} from './drop-container';
 
-
 /** Container that wraps a set of draggable items. */
 @Component({
   moduleId: module.id,
@@ -52,6 +51,9 @@ export class CdkDrop<T = any> {
 
   /** Arbitrary data to attach to all events emitted by this container. */
   @Input() data: T;
+
+  /** Direction in which the list is oriented. */
+  @Input() orientation: 'horizontal' | 'vertical' = 'vertical';
 
   /** Emits when the user drops an item inside the container. */
   @Output() dropped = new EventEmitter<CdkDragDrop<T, any>>();
@@ -132,13 +134,19 @@ export class CdkDrop<T = any> {
   /**
    * Sorts an item inside the container based on its position.
    * @param item Item to be sorted.
+   * @param xOffset Position of the item along the X axis.
    * @param yOffset Position of the item along the Y axis.
    */
-  _sortItem(item: CdkDrag, yOffset: number): void {
-    // TODO: only covers Y axis sorting.
+  _sortItem(item: CdkDrag, xOffset: number, yOffset: number): void {
     const siblings = this._positionCache.items;
     const newPosition = siblings.find(({drag, clientRect}) => {
-      return drag !== item && yOffset > clientRect.top && yOffset < clientRect.bottom;
+      if (drag === item) {
+        return false;
+      }
+
+      return this.orientation === 'horizontal' ?
+          xOffset > clientRect.left && xOffset < clientRect.right :
+          yOffset > clientRect.top && yOffset < clientRect.bottom;
     });
 
     if (!newPosition && siblings.length > 0) {

@@ -23,8 +23,9 @@ import {
   ContentChildren,
   QueryList,
 } from '@angular/core';
-import {CdkDragHandle} from './drag-handle';
 import {DOCUMENT} from '@angular/platform-browser';
+import {Directionality} from '@angular/cdk/bidi';
+import {CdkDragHandle} from './drag-handle';
 import {CdkDropContainer, CDK_DROP_CONTAINER} from './drop-container';
 import {supportsPassiveEventListeners} from '@angular/cdk/platform';
 import {CdkDragStart, CdkDragEnd, CdkDragExit, CdkDragEnter, CdkDragDrop} from './drag-events';
@@ -126,7 +127,8 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
     @Inject(DOCUMENT) document: any,
     private _ngZone: NgZone,
     private _viewContainerRef: ViewContainerRef,
-    private _viewportRuler: ViewportRuler) {
+    private _viewportRuler: ViewportRuler,
+    @Optional() private _dir: Directionality) {
       this._document = document;
     }
 
@@ -302,7 +304,7 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
       });
     }
 
-    this.dropContainer._sortItem(this, y);
+    this.dropContainer._sortItem(this, x, y);
     this._setTransform(this._preview,
                        x - this._pickupPositionInElement.x,
                        y - this._pickupPositionInElement.y);
@@ -333,6 +335,8 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
     }
 
     preview.classList.add('cdk-drag-preview');
+    preview.setAttribute('dir', this._dir ? this._dir.value : 'ltr');
+
     return preview;
   }
 

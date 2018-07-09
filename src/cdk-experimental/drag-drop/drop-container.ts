@@ -14,6 +14,9 @@ export interface CdkDropContainer<T = any> {
   /** Arbitrary data to attach to all events emitted by this container. */
   data: T;
 
+  /** Direction in which the list is oriented. */
+  orientation: 'horizontal' | 'vertical';
+
   /** Starts dragging an item. */
   start(): void;
 
@@ -42,7 +45,7 @@ export interface CdkDropContainer<T = any> {
    * @param item Item whose index should be determined.
    */
   getItemIndex(item: CdkDrag): number;
-  _sortItem(item: CdkDrag, yOffset: number): void;
+  _sortItem(item: CdkDrag, xOffset: number, yOffset: number): void;
   _draggables: QueryList<CdkDrag>;
   _getSiblingContainerFromPosition(x: number, y: number): CdkDropContainer | null;
 }

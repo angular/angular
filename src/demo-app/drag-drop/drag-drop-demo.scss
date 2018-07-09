@@ -5,12 +5,28 @@
   display: inline-block;
   margin-right: 25px;
   vertical-align: top;
+
+  [dir='rtl'] & {
+    margin-right: 0;
+    margin-left: 25px;
+  }
+
+  &.horizontal {
+    width: 1000px;
+    margin-right: 0;
+    margin-left: 0;
+  }
 }
 
 .cdk-drop {
   border: solid 1px #ccc;
   min-height: 60px;
   display: block;
+
+  .horizontal & {
+    display: flex;
+    flex-direction: row;
+  }
 }
 
 .cdk-drag {
@@ -22,12 +38,24 @@
   justify-content: space-between;
   box-sizing: border-box;
 
-  .cdk-drop &:last-child {
-    border: none;
-  }
-
   .cdk-drop-dragging & {
     transition: transform 500ms ease;
+  }
+
+  .horizontal & {
+    border: none;
+    border-right: solid 1px #ccc;
+    flex-grow: 1;
+    flex-basis: 0;
+
+    [dir='rtl'] & {
+      border-right: none;
+      border-left: solid 1px #ccc;
+    }
+  }
+
+  .cdk-drop &:last-child {
+    border: none;
   }
 }
 

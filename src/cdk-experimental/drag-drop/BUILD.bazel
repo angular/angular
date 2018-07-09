@@ -13,6 +13,7 @@ ng_module(
     "@rxjs",
     "//src/cdk/platform",
     "//src/cdk/overlay",
+    "//src/cdk/bidi",
   ],
   tsconfig = "//src/cdk-experimental:tsconfig-build.json",
 )
@@ -25,6 +26,7 @@ ts_library(
   deps = [
     ":drag-drop",
     "//src/cdk/testing",
+    "//src/cdk/bidi",
   ],
   tsconfig = "//src/cdk-experimental:tsconfig-build.json",
 )
