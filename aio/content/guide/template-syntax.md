@@ -305,18 +305,21 @@ you're ready to learn about the varieties of data binding syntax beyond interpol
 
 {@a binding-syntax}
 
-## Binding syntax: An overview
+## Binding syntax: an overview
 
-Data binding is a mechanism for coordinating what users see, with application data values.
+Data-binding is a mechanism for coordinating what users see, specifically
+with application data values.
 While you could push values to and pull values from HTML,
-the application is easier to write, read, and maintain if you turn these chores over to a binding framework.
-You simply declare bindings between binding sources and target HTML elements and let the framework do the work.
+the application is easier to write, read, and maintain if you turn these tasks over to a binding framework.
+You simply declare bindings between binding sources, target HTML elements, and let the framework do the rest.
 
-Angular provides many kinds of data binding.
-This guide covers most of them, after a high-level view of Angular data binding and its syntax.
+For a demonstration of the syntax and code snippets in this section, see the <live-example name="binding-syntax">binding syntax example</live-example>.
 
-Binding types can be grouped into three categories distinguished by the direction of data flow:
-from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _view-to-source-to-view_:
+Angular provides many kinds of data-binding. Binding types can be grouped into three categories distinguished by the direction of data flow:
+
+* From the _source-to-view_
+* From _view-to-source_
+* Two-way sequence: _view-to-source-to-view_
 
 <style>
   td, th {vertical-align: top}
@@ -331,19 +334,23 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
   </col>
   <tr>
     <th>
-      Data direction
+      Type
     </th>
     <th>
       Syntax
     </th>
     <th>
-      Type
+      Category
     </th>
 
   </tr>
   <tr>
-    <td>
-      One-way<br>from data source<br>to view target
+     <td>
+      Interpolation<br>
+      Property<br>
+      Attribute<br>
+      Class<br>
+      Style
     </td>
     <td>
 
@@ -354,16 +361,13 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
       </code-example>
 
     </td>
+
     <td>
-      Interpolation<br>
-      Property<br>
-      Attribute<br>
-      Class<br>
-      Style
+      One-way<br>from data source<br>to view target
     </td>
     <tr>
       <td>
-        One-way<br>from view target<br>to data source
+        Event
       </td>
       <td>
         <code-example>
@@ -371,8 +375,9 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
           on-target="statement"
         </code-example>
       </td>
+
       <td>
-        Event
+        One-way<br>from view target<br>to data source
       </td>
     </tr>
     <tr>
@@ -392,118 +397,138 @@ from the _source-to-view_, from _view-to-source_, and in the two-way sequence: _
   </tr>
 </table>
 
-Binding types other than interpolation have a **target name** to the left of the equal sign,
-either surrounded by punctuation (`[]`, `()`) or preceded by a prefix (`bind-`, `on-`, `bindon-`).
+Binding types other than interpolation have a **target name** to the left of the equal sign, either surrounded by punctuation, `[]` or `()`,
+or preceded by a prefix: `bind-`, `on-`, `bindon-`.
 
-The target name is the name of a _property_. It may look like the name of an _attribute_ but it never is.
-To appreciate the difference, you must develop a new way to think about template HTML.
+The *target* of a binding is the property or event inside the binding punctuation: `[]`, `()` or `[()]`.
 
-### A new mental model
+Every public member of a **source** directive is automatically available for binding.
+You don't have to do anything special to access a directive member in a template expression or statement.
 
-With all the power of data binding and the ability to extend the HTML vocabulary
-with custom markup, it is tempting to think of template HTML as *HTML Plus*.
 
-It really *is* HTML Plus.
-But it's also significantly different than the HTML you're used to.
-It requires a new mental model.
+## Data-binding and HTML
 
 In the normal course of HTML development, you create a visual structure with HTML elements, and
 you modify those elements by setting element attributes with string constants.
 
-<code-example path="template-syntax/src/app/app.component.html" region="img+button" header="src/app/app.component.html" linenums="false">
+```html
+<div class="special">Plain old HTML</div>
+<img src="images/item.png">
+<button disabled>Save</button>
+```
+
+With data-binding, you can control things like the state of a button:
+
+<code-example path="binding-syntax/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-You still create a structure and initialize attribute values this way in Angular templates.
+Notice that the binding is to the `disabled` property of the button's DOM element,
+**not** the attribute. This applies to data-binding in general. Data-binding works with *properties* of DOM elements, components, and directives, not HTML *attributes*.
 
-Then you learn to create new elements with components that encapsulate HTML
-and drop them into templates as if they were native HTML elements.
 
-<code-example path="template-syntax/src/app/app.component.html" region="hero-detail-1" header="src/app/app.component.html" linenums="false">
-</code-example>
+## HTML attribute vs. DOM property
 
-That's HTML Plus.
+The distinction between an HTML attribute and a DOM property is key to understanding
+how Angular binding works. **Attributes are defined by HTML. Properties are accessed from DOM, or the Document Object Model, nodes.**
 
-Then you learn about data binding. The first binding you meet might look like this:
+* A few HTML attributes have 1:1 mapping to properties; for example, `id`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="disabled-button-1" header="src/app/app.component.html" linenums="false">
-</code-example>
+* Some HTML attributes don't have corresponding properties; for example, `aria-*`.
 
-You'll get to that peculiar bracket notation in a moment. Looking beyond it,
-your intuition suggests that you're binding to the button's `disabled` attribute and setting
-it to the current value of the component's `isUnchanged` property.
+* Some DOM properties don't have corresponding attributes; for example, `textContent`.
 
-Your intuition is incorrect! Your everyday HTML mental model is misleading.
-In fact, once you start data binding, you are no longer working with HTML *attributes*. You aren't setting attributes.
-You are setting the *properties* of DOM elements, components, and directives.
+This general rule can help you build a mental model of attributes and DOM properties:
+**attributes initialize DOM properties and then they are done.
+Property values can change; attribute values can't.**
 
 <div class="alert is-helpful">
 
-### HTML attribute vs. DOM property
+There is, of course, an exception to this rule because attributes can be changed by `setAttribute()`, which will re-initialize corresponding DOM properties again.
 
-The distinction between an HTML attribute and a DOM property is crucial to understanding how Angular binding works.
+</div>
 
-**Attributes are defined by HTML. Properties are defined by the DOM (Document Object Model).**
-
-* A few HTML attributes have 1:1 mapping to properties. `id` is one example.
-
-* Some HTML attributes don't have corresponding properties. `colspan` is one example.
-
-* Some DOM properties don't have corresponding attributes. `textContent` is one example.
-
-* Many HTML attributes appear to map to properties ... but not in the way you might think!
-
-That last category is confusing until you grasp this general rule:
-
-**Attributes *initialize* DOM properties and then they are done.
-Property values can change; attribute values can't.**
-
-For example, when the browser renders `<input type="text" value="Bob">`, it creates a
-corresponding DOM node with a `value` property *initialized* to "Bob".
-
-When the user enters "Sally" into the input box, the DOM element `value` *property* becomes "Sally".
-But the HTML `value` *attribute* remains unchanged as you discover if you ask the input element
-about that attribute: `input.getAttribute('value')` returns "Bob".
-
-The HTML attribute `value` specifies the *initial* value; the DOM `value` property is the *current* value.
-
-The `disabled` attribute is another peculiar example. A button's `disabled` *property* is
-`false` by default so the button is enabled.
-When you add the `disabled` *attribute*, its presence alone initializes the  button's `disabled` *property* to `true`
-so the button is disabled.
-
-Adding and removing the `disabled` *attribute* disables and enables the button. The value of the *attribute* is irrelevant,
-which is why you cannot enable a button by writing `<button disabled="false">Still Disabled</button>`.
-
-Setting the button's `disabled` *property*  (say, with an Angular binding) disables or enables the button.
-The value of the *property* matters.
+Comparing the [`<td>` attributes](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/td)
+ attributes to the [`<td>` properties](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement)
+ provides a helpful
+example for differentiation. In particular, you can navigate from the attributes
+page to the properties via "DOM interface" link, and navigate the inheritance
+hierarchy up to `HTMLTableCellElement`.
 
 **The HTML attribute and the DOM property are not the same thing, even when they have the same name.**
 
+For more information, see the [MDN Interfaces documentation](https://developer.mozilla.org/en-US/docs/Web/API#Interfaces) which has API docs for all the standard DOM elements and their properties.
+
+
+
+
+### Example 1: an `<input>`
+
+When the browser renders `<input type="text" value="Sarah">`, it creates a
+corresponding DOM node with a `value` property initialized to "Sarah".
+
+```html
+<input type="text" value="Sarah">
+```
+
+When the user enters "Sally" into the `<input>`, the DOM element `value` *property* becomes "Sally".
+However, if you look at the HTML attribute `value` using `input.getAttribute('value')`, you can see that the *attribute* remains unchanged&mdash;it returns "Sarah".
+
+The HTML attribute `value` specifies the *initial* value; the DOM `value` property is the *current* value.
+
+To see attributes versus DOM properties in a functioning app, see the <live-example name="binding-syntax"></live-example> especially for binding syntax.
+
+### Example 2: a disabled button
+
+The `disabled` attribute is another example. A button's `disabled`
+*property* is `false` by default so the button is enabled.
+
+When you add the `disabled` *attribute*, its presence alone
+initializes the button's `disabled` *property* to `true`
+so the button is disabled.
+
+```html
+<button disabled>Test Button</button>
+```
+
+Adding and removing the `disabled` *attribute* disables and
+enables the button.
+However, the value of the *attribute* is irrelevant,
+which is why you cannot enable a button by writing `<button disabled="false">Still Disabled</button>`.
+
+To control the state of the button, set the `disabled` *property*,
+
+<div class="alert is-helpful">
+
+**Note:** Though you could technically set the `[attr.disabled]` attribute binding, the values are different in that the property binding requires to a boolean value, while its corresponding attribute binding relies on whether the value is `null` or not. Consider the following:
+
+```html
+<input [disabled]="condition ? true : false">
+<input [attr.disabled]="condition ? 'disabled' : null">
+```
+
+Generally, use property binding over attribute binding as it is more intuitive (being a boolean value), has a shorter syntax, and is more performant.
+
 </div>
 
-This fact bears repeating:
+**The HTML attribute and the DOM property are different things, even when they have the same name.**
+
 **Template binding works with *properties* and *events*, not *attributes*.**
 
-<div class="callout is-helpful">
+To see the `disabled` button example in a functioning app, see the <live-example name="binding-syntax"></live-example> especially for binding syntax. This example shows you how to toggle the disabled property from the component.
 
-<header>
-  A world without attributes
-</header>
 
-In the world of Angular, the only role of attributes is to initialize element and directive state.
-When you write a data binding, you're dealing exclusively with properties and events of the target object.
-HTML attributes effectively disappear.
+### Angular and attributes
 
-</div>
+In Angular, the only role of attributes is to initialize element and directive state.
+When you write a data-binding, you're dealing exclusively with properties and events of the target object.
 
-With this model firmly in mind, read on to learn about binding targets.
 
-### Binding targets
+## Binding targets
 
-The **target of a data binding** is something in the DOM.
-Depending on the binding type, the target can be an
-(element | component | directive) property, an
-(element | component | directive) event, or (rarely) an attribute name.
+The **target of a data-binding** is something in the DOM.
+Depending on the binding type, the target can be a
+property (element, component, or directive), an
+event (element, component, or directive), or sometimes an attribute name.
 The following table summarizes:
 
 <style>
@@ -538,8 +563,10 @@ The following table summarizes:
       Directive&nbsp;property
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code>src</code>, <code>hero</code>, and <code>ngClass</code> in the following:
+      <code-example path="template-syntax/src/app/app.component.html" region="property-binding-syntax-1" linenums="false">
       </code-example>
+      <!-- For more information, see [Property Binding](guide/property-binding). -->
     </td>
   </tr>
   <tr>
@@ -552,8 +579,11 @@ The following table summarizes:
       Directive&nbsp;event
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code>click</code>, <code>deleteRequest</code>, and <code>myClick</code> in the following:
+      <code-example path="template-syntax/src/app/app.component.html" region="event-binding-syntax-1" linenums="false">
       </code-example>
+      <!-- KW--Why don't these links work in the table? -->
+      <!-- <div>For more information, see [Event Binding](guide/event-binding).</div> -->
     </td>
   </tr>
   <tr>
@@ -564,7 +594,7 @@ The following table summarizes:
       Event and property
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="2-way-binding-syntax-1" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -577,7 +607,7 @@ The following table summarizes:
       (the&nbsp;exception)
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="attribute-binding-syntax-1" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -589,7 +619,7 @@ The following table summarizes:
       <code>class</code> property
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="class-binding-syntax-1" linenums="false">
       </code-example>
     </td>
   </tr>
@@ -601,13 +631,13 @@ The following table summarizes:
       <code>style</code> property
     </td>
     <td>
-      <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1" header="src/app/app.component.html" linenums="false">
+      <code-example path="template-syntax/src/app/app.component.html" region="style-binding-syntax-1" linenums="false">
       </code-example>
     </td>
   </tr>
 </table>
 
-With this broad view in mind, you're ready to look at binding types in detail.
+<!-- end of binding syntax -->
 
 <hr/>
 
