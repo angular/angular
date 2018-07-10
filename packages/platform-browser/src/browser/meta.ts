@@ -34,7 +34,7 @@ export type MetaDefinition = {
  *
  * @experimental
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class Meta {
   private _dom: DomAdapter;
   constructor(@Inject(DOCUMENT) private _doc: any) { this._dom = getDOM(); }

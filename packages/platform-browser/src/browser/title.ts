@@ -22,7 +22,7 @@ import {DOCUMENT} from '../dom/dom_tokens';
  *
  * @experimental
  */
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class Title {
   constructor(@Inject(DOCUMENT) private _doc: any) {}
   /**
