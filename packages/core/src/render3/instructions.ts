@@ -8,6 +8,7 @@
 
 import './ng_dev_mode';
 
+import {QueryList} from '../linker';
 import {Sanitizer} from '../sanitization/security';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
@@ -20,13 +21,14 @@ import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LEleme
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {StylingContext, allocStylingContext, createStylingContextTemplate, renderStyles as renderElementStyles, updateStyleMap as updateElementStyleMap, updateStyleProp as updateElementStyleProp} from './styling';
 import {isDifferent, stringify} from './util';
 import {ViewRef} from './view_ref';
+
 
 
 /**
@@ -266,8 +268,10 @@ function refreshView() {
   tView.firstTemplatePass = firstTemplatePass = false;
 
   setHostBindings(tView.hostBindings);
+  refreshContentQueries(tView);
   refreshChildComponents(tView.components);
 }
+
 
 /** Sets the host bindings for the current view. */
 export function setHostBindings(bindings: number[] | null): void {
@@ -277,6 +281,18 @@ export function setHostBindings(bindings: number[] | null): void {
       const dirIndex = bindings[i];
       const def = defs[dirIndex] as DirectiveDefInternal<any>;
       def.hostBindings && def.hostBindings(dirIndex, bindings[i + 1]);
+    }
+  }
+}
+
+/** Refreshes content queries for all directives in the given view. */
+function refreshContentQueries(tView: TView): void {
+  if (tView.contentQueries != null) {
+    for (let i = 0; i < tView.contentQueries.length; i += 2) {
+      const directiveDefIdx = tView.contentQueries[i];
+      const directiveDef = tView.directives ![directiveDefIdx];
+
+      directiveDef.contentQueriesRefresh !(directiveDefIdx, tView.contentQueries[i + 1]);
     }
   }
 }
@@ -315,7 +331,8 @@ export function createLViewData<T>(
     renderer,                                                                    // renderer
     sanitizer || null,                                                           // sanitizer
     null,                                                                        // tail
-    -1                                                                           // containerIndex
+    -1,                                                                          // containerIndex
+    null,                                                                        // contentQueries
   ];
 }
 
@@ -882,6 +899,7 @@ export function createTView(
     pipeDestroyHooks: null,
     cleanup: null,
     hostBindings: null,
+    contentQueries: null,
     components: null,
     directiveRegistry: typeof directives === 'function' ? directives() : directives,
     pipeRegistry: typeof pipes === 'function' ? pipes() : pipes,
@@ -1472,7 +1490,7 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
 //////////////////////////
 
 /**
- * Create a directive.
+ * Create a directive and their associated content queries.
  *
  * NOTE: directives can be created in order other than the index order. They can also
  *       be retrieved before they are created in which case the value will be null.
@@ -1481,28 +1499,32 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
  * @param directiveDef DirectiveDef object which contains information about the template.
  */
 export function directiveCreate<T>(
-    index: number, directive: T,
+    directiveDefIdx: number, directive: T,
     directiveDef: DirectiveDefInternal<T>| ComponentDefInternal<T>): T {
-  const instance = baseDirectiveCreate(index, directive, directiveDef);
+  const instance = baseDirectiveCreate(directiveDefIdx, directive, directiveDef);
 
   ngDevMode && assertDefined(previousOrParentNode.tNode, 'previousOrParentNode.tNode');
   const tNode = previousOrParentNode.tNode;
 
   const isComponent = (directiveDef as ComponentDefInternal<T>).template;
   if (isComponent) {
-    addComponentLogic(index, directive, directiveDef as ComponentDefInternal<T>);
+    addComponentLogic(directiveDefIdx, directive, directiveDef as ComponentDefInternal<T>);
   }
 
   if (firstTemplatePass) {
     // Init hooks are queued now so ngOnInit is called in host components before
     // any projected components.
-    queueInitHooks(index, directiveDef.onInit, directiveDef.doCheck, tView);
+    queueInitHooks(directiveDefIdx, directiveDef.onInit, directiveDef.doCheck, tView);
 
-    if (directiveDef.hostBindings) queueHostBindingForCheck(index);
+    if (directiveDef.hostBindings) queueHostBindingForCheck(directiveDefIdx);
   }
 
   if (tNode && tNode.attrs) {
-    setInputsFromAttrs(index, instance, directiveDef.inputs, tNode);
+    setInputsFromAttrs(directiveDefIdx, instance, directiveDef.inputs, tNode);
+  }
+
+  if (directiveDef.contentQueries) {
+    directiveDef.contentQueries();
   }
 
   return instance;
@@ -1918,7 +1940,7 @@ export function componentRefresh<T>(directiveIndex: number, adjustedElementIndex
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
     ngDevMode && assertDataInRange(directiveIndex, directives !);
-    detectChangesInternal(hostView, element, getDirectiveInstance(directives ![directiveIndex]));
+    detectChangesInternal(hostView, element, directives ![directiveIndex]);
   }
 }
 
@@ -2537,6 +2559,15 @@ export function loadDirective<T>(index: number): T {
   return directives ![index];
 }
 
+export function loadQueryList<T>(queryListIdx: number): QueryList<T> {
+  ngDevMode && assertDefined(
+                   viewData[CONTENT_QUERIES],
+                   'Content QueryList array should be defined if reading a query.');
+  ngDevMode && assertDataInRange(queryListIdx, viewData[CONTENT_QUERIES] !);
+
+  return viewData[CONTENT_QUERIES] ![queryListIdx];
+}
+
 /** Gets the current binding value and increments the binding index. */
 export function consumeBinding(): any {
   ngDevMode && assertDataInRange(viewData[BINDING_INDEX]);
@@ -2586,10 +2617,22 @@ export function getTView(): TView {
   return tView;
 }
 
-export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {
-  // Directives with content queries store an array in directives[directiveIndex]
-  // with the instance as the first index
-  return Array.isArray(instanceOrArray) ? instanceOrArray[0] : instanceOrArray;
+/**
+ * Registers a QueryList, associated with a content query, for later refresh (part of a view
+ * refresh).
+ */
+export function registerContentQuery<Q>(queryList: QueryList<Q>): void {
+  const savedContentQueriesLength =
+      (viewData[CONTENT_QUERIES] || (viewData[CONTENT_QUERIES] = [])).push(queryList);
+  if (firstTemplatePass) {
+    const currentDirectiveIndex = directives !.length - 1;
+    const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
+    const lastSavedDirectiveIndex =
+        tView.contentQueries.length ? tView.contentQueries[tView.contentQueries.length - 2] : -1;
+    if (currentDirectiveIndex !== lastSavedDirectiveIndex) {
+      tViewContentQueries.push(currentDirectiveIndex, savedContentQueriesLength - 1);
+    }
+  }
 }
 
 export function assertPreviousIsParent() {
