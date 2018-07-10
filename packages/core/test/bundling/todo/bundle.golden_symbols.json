@@ -21,6 +21,9 @@
     "name": "CONTAINER_INDEX"
   },
   {
+    "name": "CONTENT_QUERIES"
+  },
+  {
     "name": "CONTEXT"
   },
   {
@@ -447,9 +450,6 @@
     "name": "getCurrentSanitizer"
   },
   {
-    "name": "getDirectiveInstance"
-  },
-  {
     "name": "getLViewChild"
   },
   {
@@ -615,6 +615,9 @@
     "name": "queueContentHooks"
   },
   {
+    "name": "queueContentQueryRefresh"
+  },
+  {
     "name": "queueDestroyHooks"
   },
   {
@@ -631,6 +634,9 @@
   },
   {
     "name": "refreshChildComponents"
+  },
+  {
+    "name": "refreshContentQueries"
   },
   {
     "name": "refreshDynamicEmbeddedViews"
