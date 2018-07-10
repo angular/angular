@@ -236,7 +236,7 @@ describe('ngtsc behavioral tests', () => {
         .toContain(
             `TestModule.ngInjectorDef = i0.defineInjector({ factory: ` +
             `function TestModule_Factory() { return new TestModule(); }, providers: [{ provide: ` +
-            `Token, useValue: 'test' }], imports: [OtherModule] });`);
+            `Token, useValue: 'test' }], imports: [[OtherModule]] });`);
 
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents)
@@ -366,6 +366,10 @@ describe('ngtsc behavioral tests', () => {
     const exitCode = main(['-p', basePath], errorSpy);
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    expect(jsContents).toContain('imports: [[RouterModule.forRoot()]]');
+
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents).toContain(`import * as i1 from 'router';`);
     expect(dtsContents).toContain('i0.ɵNgModuleDef<TestModule, [], [i1.RouterModule], []>');
