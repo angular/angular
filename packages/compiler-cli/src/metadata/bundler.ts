@@ -72,7 +72,7 @@ export interface BundledModule {
 }
 
 export interface MetadataBundlerHost {
-  getMetadataFor(moduleName: string): ModuleMetadata|undefined;
+  getMetadataFor(moduleName: string, containingFile: string): ModuleMetadata|undefined;
 }
 
 type StaticsMetadata = {
@@ -136,7 +136,7 @@ export class MetadataBundler {
     if (!result) {
       if (moduleName.startsWith('.')) {
         const fullModuleName = resolveModule(moduleName, this.root);
-        result = this.host.getMetadataFor(fullModuleName);
+        result = this.host.getMetadataFor(fullModuleName, this.root);
       }
       this.metadataCache.set(moduleName, result);
     }
@@ -598,11 +598,27 @@ export class MetadataBundler {
 export class CompilerHostAdapter implements MetadataBundlerHost {
   private collector = new MetadataCollector();
 
-  constructor(private host: ts.CompilerHost, private cache: MetadataCache|null) {}
+  constructor(
+      private host: ts.CompilerHost, private cache: MetadataCache|null,
+      private options: ts.CompilerOptions) {}
 
-  getMetadataFor(fileName: string): ModuleMetadata|undefined {
-    if (!this.host.fileExists(fileName + '.ts')) return undefined;
-    const sourceFile = this.host.getSourceFile(fileName + '.ts', ts.ScriptTarget.Latest);
+  getMetadataFor(fileName: string, containingFile: string): ModuleMetadata|undefined {
+    const {resolvedModule} =
+        ts.resolveModuleName(fileName, containingFile, this.options, this.host);
+
+    let sourceFile: ts.SourceFile|undefined;
+    if (resolvedModule) {
+      let {resolvedFileName} = resolvedModule;
+      if (resolvedModule.extension !== '.ts') {
+        resolvedFileName = resolvedFileName.replace(/(\.d\.ts|\.js)$/, '.ts');
+      }
+      sourceFile = this.host.getSourceFile(resolvedFileName, ts.ScriptTarget.Latest);
+    } else {
+      // If typescript is unable to resolve the file, fallback on old behavior
+      if (!this.host.fileExists(fileName + '.ts')) return undefined;
+      sourceFile = this.host.getSourceFile(fileName + '.ts', ts.ScriptTarget.Latest);
+    }
+
     // If there is a metadata cache, use it to get the metadata for this source file. Otherwise,
     // fall back on the locally created MetadataCollector.
     if (!sourceFile) {
