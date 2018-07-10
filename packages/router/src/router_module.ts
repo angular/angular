@@ -405,6 +405,18 @@ export interface ExtraOptions {
    * */
   malformedUriErrorHandler?:
       (error: URIError, urlSerializer: UrlSerializer, url: string) => UrlTree;
+
+  /**
+   * Defines when the router updates the browser URL. The default behavior is to update after
+   * successful navigation. However, some applications may prefer a mode where the URL gets
+   * updated at the beginning of navigation. The most common use case would be updating the
+   * URL early so if navigation fails, you can show an error message with the URL that failed.
+   * Available options are:
+   *
+   * - `'deferred'`, the default, updates the browser URL after navigation has finished.
+   * - `'eager'`, updates browser URL at the beginning of navigation.
+   */
+  urlUpdateStrategy?: 'deferred'|'eager';
 }
 
 export function setupRouter(
@@ -447,6 +459,10 @@ export function setupRouter(
 
   if (opts.paramsInheritanceStrategy) {
     router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
+  }
+
+  if (opts.urlUpdateStrategy) {
+    router.urlUpdateStrategy = opts.urlUpdateStrategy;
   }
 
   return router;

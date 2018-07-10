@@ -469,6 +469,31 @@ describe('Integration', () => {
        expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
      })));
 
+  it('should eagerly update the URL with urlUpdateStrategy="eagar"',
+     fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+       const fixture = TestBed.createComponent(RootCmp);
+       advance(fixture);
+
+       router.resetConfig([{path: 'team/:id', component: TeamCmp}]);
+
+       router.navigateByUrl('/team/22');
+       advance(fixture);
+       expect(location.path()).toEqual('/team/22');
+
+       expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
+
+       router.urlUpdateStrategy = 'eager';
+       (router as any).hooks.beforePreactivation = () => {
+         expect(location.path()).toEqual('/team/33');
+         expect(fixture.nativeElement).toHaveText('team 22 [ , right:  ]');
+         return of (null);
+       };
+       router.navigateByUrl('/team/33');
+
+       advance(fixture);
+       expect(fixture.nativeElement).toHaveText('team 33 [ , right:  ]');
+     })));
+
   it('should navigate back and forward',
      fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
        const fixture = createRoot(router, RootCmp);
@@ -868,93 +893,99 @@ describe('Integration', () => {
        ]);
      })));
 
-  it('should dispatch NavigationError after the url has been reset back', fakeAsync(() => {
-       const router: Router = TestBed.get(Router);
-       const location: SpyLocation = TestBed.get(Location);
-       const fixture = createRoot(router, RootCmp);
+  // Errors should behave the same for both deferred and eager URL update strategies
+  ['deferred', 'eager'].forEach((strat: any) => {
+    it('should dispatch NavigationError after the url has been reset back', fakeAsync(() => {
+         const router: Router = TestBed.get(Router);
+         const location: SpyLocation = TestBed.get(Location);
+         const fixture = createRoot(router, RootCmp);
 
-       router.resetConfig(
-           [{path: 'simple', component: SimpleCmp}, {path: 'throwing', component: ThrowingCmp}]);
+         router.resetConfig(
+             [{path: 'simple', component: SimpleCmp}, {path: 'throwing', component: ThrowingCmp}]);
+         router.urlUpdateStrategy = strat;
 
-       router.navigateByUrl('/simple');
-       advance(fixture);
+         router.navigateByUrl('/simple');
+         advance(fixture);
 
-       let routerUrlBeforeEmittingError = '';
-       let locationUrlBeforeEmittingError = '';
-       router.events.forEach(e => {
-         if (e instanceof NavigationError) {
-           routerUrlBeforeEmittingError = router.url;
-           locationUrlBeforeEmittingError = location.path();
-         }
-       });
+         let routerUrlBeforeEmittingError = '';
+         let locationUrlBeforeEmittingError = '';
+         router.events.forEach(e => {
+           if (e instanceof NavigationError) {
+             routerUrlBeforeEmittingError = router.url;
+             locationUrlBeforeEmittingError = location.path();
+           }
+         });
 
-       router.navigateByUrl('/throwing').catch(() => null);
-       advance(fixture);
+         router.navigateByUrl('/throwing').catch(() => null);
+         advance(fixture);
 
-       expect(routerUrlBeforeEmittingError).toEqual('/simple');
-       expect(locationUrlBeforeEmittingError).toEqual('/simple');
-     }));
+         expect(routerUrlBeforeEmittingError).toEqual('/simple');
+         expect(locationUrlBeforeEmittingError).toEqual('/simple');
+       }));
 
-  it('should reset the url with the right state when navigation errors', fakeAsync(() => {
-       const router: Router = TestBed.get(Router);
-       const location: SpyLocation = TestBed.get(Location);
-       const fixture = createRoot(router, RootCmp);
+    it('should reset the url with the right state when navigation errors', fakeAsync(() => {
+         const router: Router = TestBed.get(Router);
+         const location: SpyLocation = TestBed.get(Location);
+         const fixture = createRoot(router, RootCmp);
 
-       router.resetConfig([
-         {path: 'simple1', component: SimpleCmp}, {path: 'simple2', component: SimpleCmp},
-         {path: 'throwing', component: ThrowingCmp}
-       ]);
+         router.resetConfig([
+           {path: 'simple1', component: SimpleCmp}, {path: 'simple2', component: SimpleCmp},
+           {path: 'throwing', component: ThrowingCmp}
+         ]);
+         router.urlUpdateStrategy = strat;
 
+         let event: NavigationStart;
+         router.events.subscribe(e => {
+           if (e instanceof NavigationStart) {
+             event = e;
+           }
+         });
 
-       let event: NavigationStart;
-       router.events.subscribe(e => {
-         if (e instanceof NavigationStart) {
-           event = e;
-         }
-       });
+         router.navigateByUrl('/simple1');
+         advance(fixture);
+         const simple1NavStart = event !;
 
-       router.navigateByUrl('/simple1');
-       advance(fixture);
-       const simple1NavStart = event !;
+         router.navigateByUrl('/throwing').catch(() => null);
+         advance(fixture);
 
-       router.navigateByUrl('/throwing').catch(() => null);
-       advance(fixture);
+         router.navigateByUrl('/simple2');
+         advance(fixture);
 
-       router.navigateByUrl('/simple2');
-       advance(fixture);
+         location.back();
+         tick();
 
-       location.back();
-       tick();
+         expect(event !.restoredState !.navigationId).toEqual(simple1NavStart.id);
+       }));
 
-       expect(event !.restoredState !.navigationId).toEqual(simple1NavStart.id);
-     }));
+    it('should not trigger another navigation when resetting the url back due to a NavigationError',
+       fakeAsync(() => {
+         const router = TestBed.get(Router);
+         router.onSameUrlNavigation = 'reload';
 
-  it('should not trigger another navigation when resetting the url back due to a NavigationError',
-     fakeAsync(() => {
-       const router = TestBed.get(Router);
-       router.onSameUrlNavigation = 'reload';
+         const fixture = createRoot(router, RootCmp);
 
-       const fixture = createRoot(router, RootCmp);
+         router.resetConfig(
+             [{path: 'simple', component: SimpleCmp}, {path: 'throwing', component: ThrowingCmp}]);
+         router.urlUpdateStrategy = strat;
 
-       router.resetConfig(
-           [{path: 'simple', component: SimpleCmp}, {path: 'throwing', component: ThrowingCmp}]);
+         const events: any[] = [];
+         router.events.forEach((e: any) => {
+           if (e instanceof NavigationStart) {
+             events.push(e.url);
+           }
+         });
 
-       const events: any[] = [];
-       router.events.forEach((e: any) => {
-         if (e instanceof NavigationStart) {
-           events.push(e.url);
-         }
-       });
+         router.navigateByUrl('/simple');
+         advance(fixture);
 
-       router.navigateByUrl('/simple');
-       advance(fixture);
+         router.navigateByUrl('/throwing').catch(() => null);
+         advance(fixture);
 
-       router.navigateByUrl('/throwing').catch(() => null);
-       advance(fixture);
+         // we do not trigger another navigation to /simple
+         expect(events).toEqual(['/simple', '/throwing']);
+       }));
 
-       // we do not trigger another navigation to /simple
-       expect(events).toEqual(['/simple', '/throwing']);
-     }));
+  });
 
   it('should dispatch NavigationCancel after the url has been reset back', fakeAsync(() => {
        TestBed.configureTestingModule(
