@@ -3,7 +3,7 @@ import {By} from '@angular/platform-browser';
 import {ComponentFixture, TestBed, async, inject} from '@angular/core/testing';
 import {Directionality} from '@angular/cdk/bidi';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
-import {ESCAPE} from '@angular/cdk/keycodes';
+import {ESCAPE, A} from '@angular/cdk/keycodes';
 import {CdkConnectedOverlay, OverlayModule, CdkOverlayOrigin} from './index';
 import {OverlayContainer} from './overlay-container';
 import {
@@ -447,6 +447,18 @@ describe('Overlay directives', () => {
       expect(fixture.componentInstance.detachHandler).toHaveBeenCalled();
     });
 
+    it('should emit the keydown events from the overlay', () => {
+      expect(fixture.componentInstance.keydownHandler).not.toHaveBeenCalled();
+
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      const event = dispatchKeyboardEvent(document.body, 'keydown', A);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.keydownHandler).toHaveBeenCalledWith(event);
+    });
+
   });
 
 });
@@ -474,6 +486,7 @@ describe('Overlay directives', () => {
             (positionChange)="positionChangeHandler($event)"
             (attach)="attachHandler()"
             (detach)="detachHandler()"
+            (overlayKeydown)="keydownHandler($event)"
             [cdkConnectedOverlayMinWidth]="minWidth"
             [cdkConnectedOverlayMinHeight]="minHeight"
             [cdkConnectedOverlayPositions]="positionOverrides">
@@ -499,7 +512,8 @@ class ConnectedOverlayDirectiveTest {
   growAfterOpen: boolean;
   push: boolean;
   backdropClickHandler = jasmine.createSpy('backdropClick handler');
-  positionChangeHandler = jasmine.createSpy('positionChangeHandler');
+  positionChangeHandler = jasmine.createSpy('positionChange handler');
+  keydownHandler = jasmine.createSpy('keydown handler');
   positionOverrides: ConnectionPositionPair[];
   attachHandler = jasmine.createSpy('attachHandler').and.callFake(() => {
     this.attachResult =

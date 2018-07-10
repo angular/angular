@@ -205,6 +205,9 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   /** Event emitted when the overlay has been detached. */
   @Output() detach = new EventEmitter<void>();
 
+  /** Emits when there are keyboard events that are targeted at the overlay. */
+  @Output() overlayKeydown = new EventEmitter<KeyboardEvent>();
+
   // TODO(jelbourn): inputs for size, scroll behavior, animation, etc.
 
   constructor(
@@ -335,6 +338,8 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       this._createOverlay();
 
       this._overlayRef!.keydownEvents().subscribe((event: KeyboardEvent) => {
+        this.overlayKeydown.next(event);
+
         if (event.keyCode === ESCAPE) {
           this._detachOverlay();
         }
