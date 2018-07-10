@@ -89,8 +89,6 @@ export const BROWSER_MODULE_PROVIDERS: StaticProvider[] = [
   {provide: Testability, useClass: Testability, deps: [NgZone]},
   {provide: EventManager, useClass: EventManager, deps: [EVENT_MANAGER_PLUGINS, NgZone]},
   ELEMENT_PROBE_PROVIDERS,
-  {provide: Meta, useClass: Meta, deps: [DOCUMENT]},
-  {provide: Title, useClass: Title, deps: [DOCUMENT]},
 ];
 
 /**
