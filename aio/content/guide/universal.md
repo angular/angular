@@ -212,7 +212,7 @@ You can get runtime information about the current platform and the `appId` by in
 
 ### Build Destination
 
-A Universal app is distributed in two parts: the server-side code that serves up the initial application, and the client-side code that's loaded in dynamically. 
+A Universal app is distributed in two parts: the server-side code that serves up the initial application, and the client-side code that's loaded in dynamically.
 
 The Angular CLI outputs the client-side code in the `dist` directory by default, so you modify the `outputPath` for the __build__ target in the `angular.json` to keep the client-side build outputs separate from the server-side code. The client-side build output will be served by the Express server.
 
@@ -223,7 +223,7 @@ The Angular CLI outputs the client-side code in the `dist` directory by default,
   "options": {
     "outputPath": "dist/browser",
     ...
-  } 
+  }
 }
 ...
 ```
@@ -235,13 +235,13 @@ The Angular CLI outputs the client-side code in the `dist` directory by default,
 The tutorial's `HeroService` and `HeroSearchService` delegate to the Angular `HttpClient` module to fetch application data.
 These services send requests to _relative_ URLs such as `api/heroes`.
 
-In a Universal app, HTTP URLs must be _absolute_, for example, `https://my-server.com/api/heroes` 
+In a Universal app, HTTP URLs must be _absolute_, for example, `https://my-server.com/api/heroes`
 even when the Universal web server is capable of handling those requests.
 
 You'll have to change the services to make requests with absolute URLs when running on the server
 and with relative URLs when running in the browser.
 
-One solution is to provide the server's runtime origin under the Angular [`APP_BASE_REF` token](api/common/APP_BASE_HREF),
+One solution is to provide the server's runtime origin under the Angular [`APP_BASE_HREF` token](api/common/APP_BASE_HREF),
 inject it into the service, and prepend the origin to the request URL.
 
 Start by changing the `HeroService` constructor to take a second `origin` parameter that is optionally injected via the `APP_BASE_HREF` token.
@@ -288,7 +288,7 @@ This is also the place to register providers that are specific to running your a
 
 ### App server entry point
 
-The `Angular CLI` uses the `AppServerModule` to build the server-side bundle. 
+The `Angular CLI` uses the `AppServerModule` to build the server-side bundle.
 
 Create a `main.server.ts` file in the `src/` directory that exports the `AppServerModule`:
 
