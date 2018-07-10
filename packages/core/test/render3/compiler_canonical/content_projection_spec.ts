@@ -27,9 +27,9 @@ describe('content projection', () => {
         factory: () => new SimpleComponent(),
         template: function(rf: $RenderFlags$, ctx: $SimpleComponent$) {
           if (rf & 1) {
-            $r3$.ɵpD(0);
-            $r3$.ɵEe(1, 'div');
-            $r3$.ɵP(2, 0);
+            $r3$.ɵpD();
+            $r3$.ɵEe(0, 'div');
+            $r3$.ɵP(1);
           }
         }
       });
@@ -56,11 +56,11 @@ describe('content projection', () => {
         factory: () => new ComplexComponent(),
         template: function(rf: $RenderFlags$, ctx: $ComplexComponent$) {
           if (rf & 1) {
-            $r3$.ɵpD(0, $pD_0P$, $pD_0R$);
-            $r3$.ɵEe(1, 'div', ['id', 'first']);
-            $r3$.ɵP(2, 0, 1);
-            $r3$.ɵEe(3, 'div', ['id', 'second']);
-            $r3$.ɵP(4, 0, 2);
+            $r3$.ɵpD($pD_0P$, $pD_0R$);
+            $r3$.ɵEe(0, 'div', ['id', 'first']);
+            $r3$.ɵP(1, 1);
+            $r3$.ɵEe(2, 'div', ['id', 'second']);
+            $r3$.ɵP(3, 2);
           }
         }
       });

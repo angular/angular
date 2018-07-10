@@ -124,9 +124,9 @@ describe('queries', () => {
         template: function ContentQueryComponent_Template(
             rf: $number$, ctx: $ContentQueryComponent$) {
           if (rf & 1) {
-            $r3$.ɵpD(0);
-            $r3$.ɵE(1, 'div');
-            $r3$.ɵP(2, 0);
+            $r3$.ɵpD();
+            $r3$.ɵE(0, 'div');
+            $r3$.ɵP(1);
             $r3$.ɵe();
           }
         }

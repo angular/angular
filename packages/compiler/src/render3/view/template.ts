@@ -62,7 +62,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private _bindingCode: o.Statement[] = [];
   private _postfixCode: o.Statement[] = [];
   private _temporary = temporaryAllocator(this._prefixCode, TEMPORARY_NAME);
-  private _projectionDefinitionIndex = -1;
   private _valueConverter: ValueConverter;
   private _unsupported = unsupported;
   private _bindingScope: BindingScope;
@@ -121,8 +120,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Output a `ProjectionDef` instruction when some `<ng-content>` are present
     if (hasNgContent) {
-      this._projectionDefinitionIndex = this.allocateDataSlot();
-      const parameters: o.Expression[] = [o.literal(this._projectionDefinitionIndex)];
+      const parameters: o.Expression[] = [];
 
       // Only selectors with a non-default value are generated
       if (ngContentSelectors.length > 1) {
@@ -217,10 +215,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   visitContent(ngContent: t.Content) {
     const slot = this.allocateDataSlot();
     const selectorIndex = ngContent.selectorIndex;
-    const parameters: o.Expression[] = [
-      o.literal(slot),
-      o.literal(this._projectionDefinitionIndex),
-    ];
+    const parameters: o.Expression[] = [o.literal(slot)];
 
     const attributeAsList: string[] = [];
 

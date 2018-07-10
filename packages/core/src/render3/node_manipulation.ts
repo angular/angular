@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {assertDefined} from './assert';
 import {callHooks} from './hooks';
 import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
-import {LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
@@ -24,7 +25,7 @@ export function getNextLNode(node: LNode): LNode|null {
     const viewData = node.data as LViewData;
     return viewData[NEXT] ? (viewData[NEXT] as LViewData)[HOST_NODE] : null;
   }
-  return node.tNode.next ? node.view[node.tNode.next !.index] : null;
+  return node.tNode.next ? node.view[node.tNode.next.index] : null;
 }
 
 /** Retrieves the first child of a given node */
@@ -52,27 +53,6 @@ export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNo
   return parent ? node.view[parent.index] : node.view[HOST_NODE];
 }
 
-/**
- * Get the next node in the LNode tree, taking into account the place where a node is
- * projected (in the shadow DOM) rather than where it comes from (in the light DOM).
- *
- * @param node The node whose next node in the LNode tree must be found.
- * @return LNode|null The next sibling in the LNode tree.
- */
-function getNextLNodeWithProjection(node: LNode): LNode|null {
-  const pNextOrParent = node.pNextOrParent;
-
-  if (pNextOrParent) {
-    // The node is projected
-    const isLastProjectedNode = pNextOrParent.tNode.type === TNodeType.Projection;
-    // returns pNextOrParent if we are not at the end of the list, null otherwise
-    return isLastProjectedNode ? null : pNextOrParent;
-  }
-
-  // returns node.next because the the node is not projected
-  return getNextLNode(node);
-}
-
 const enum WalkLNodeTreeAction {
   /** node insert in the native environment */
   Insert = 0,
@@ -84,12 +64,22 @@ const enum WalkLNodeTreeAction {
   Destroy = 2,
 }
 
+
+/**
+ * Stack used to keep track of projection nodes in walkLNodeTree.
+ *
+ * This is deliberately created outside of walkLNodeTree to avoid allocating
+ * a new array each time the function is called. Instead the array will be
+ * re-used by each invocation. This works because the function is not reentrant.
+ */
+const projectionNodeStack: LProjectionNode[] = [];
+
 /**
  * Walks a tree of LNodes, applying a transformation on the LElement nodes, either only on the first
  * one found, or on all of them.
  *
  * @param startingNode the node from which the walk is started.
- * @param rootNode the root node considered.
+ * @param rootNode the root node considered. This prevents walking past that node.
  * @param action identifies the action to be performed on the LElement nodes.
  * @param renderer the current renderer.
  * @param renderParentNode Optional the render parent node to be set in all LContainerNodes found,
@@ -101,18 +91,19 @@ function walkLNodeTree(
     startingNode: LNode | null, rootNode: LNode, action: WalkLNodeTreeAction, renderer: Renderer3,
     renderParentNode?: LElementNode | null, beforeNode?: RNode | null) {
   let node: LNode|null = startingNode;
+  let projectionNodeIndex = -1;
   while (node) {
     let nextNode: LNode|null = null;
     const parent = renderParentNode ? renderParentNode.native : null;
-    if (node.tNode.type === TNodeType.Element) {
+    const nodeType = node.tNode.type;
+    if (nodeType === TNodeType.Element) {
       // Execute the action
       executeNodeAction(action, renderer, parent, node.native !, beforeNode);
       if (node.dynamicLContainerNode) {
         executeNodeAction(
             action, renderer, parent, node.dynamicLContainerNode.native !, beforeNode);
       }
-      nextNode = getNextLNode(node);
-    } else if (node.tNode.type === TNodeType.Container) {
+    } else if (nodeType === TNodeType.Container) {
       executeNodeAction(action, renderer, parent, node.native !, beforeNode);
       const lContainerNode: LContainerNode = (node as LContainerNode);
       const childContainerData: LContainer = lContainerNode.dynamicLContainerNode ?
@@ -130,15 +121,26 @@ function walkLNodeTree(
             lContainerNode.dynamicLContainerNode.native :
             lContainerNode.native;
       }
-    } else if (node.tNode.type === TNodeType.Projection) {
-      // For Projection look at the first projected node
-      nextNode = (node as LProjectionNode).data.head;
+    } else if (nodeType === TNodeType.Projection) {
+      const componentHost = findComponentHost(node.view);
+      const head =
+          (componentHost.tNode.projection as(TNode | null)[])[node.tNode.projection as number];
+
+      projectionNodeStack[++projectionNodeIndex] = node as LProjectionNode;
+
+      nextNode = head ? (componentHost.data as LViewData)[PARENT] ![head.index] : null;
     } else {
       // Otherwise look at the first child
       nextNode = getChildLNode(node as LViewNode);
     }
 
-    if (nextNode == null) {
+    if (nextNode === null) {
+      nextNode = getNextLNode(node);
+
+      // this last node was projected, we need to get back down to its projection node
+      if (nextNode === null && (node.tNode.flags & TNodeFlags.isProjected)) {
+        nextNode = getNextLNode(projectionNodeStack[projectionNodeIndex--] as LNode);
+      }
       /**
        * Find the next node in the LNode tree, taking into account the place where a node is
        * projected (in the shadow DOM) rather than where it comes from (in the light DOM).
@@ -146,27 +148,41 @@ function walkLNodeTree(
        * If there is no sibling node, then it goes to the next sibling of the parent node...
        * until it reaches rootNode (at which point null is returned).
        */
-      let currentNode: LNode|null = node;
-      node = getNextLNodeWithProjection(currentNode);
-      while (currentNode && !node) {
-        // if node.pNextOrParent is not null here, it is not the next node
-        // (because, at this point, nextNode is null, so it is the parent)
-        currentNode = currentNode.pNextOrParent || getParentLNode(currentNode);
-        if (currentNode === rootNode) {
-          return null;
+      while (node && !nextNode) {
+        node = getParentLNode(node);
+        if (node === null || node === rootNode) return null;
+
+        // When exiting a container, the beforeNode must be restored to the previous value
+        if (!node.tNode.next && nodeType === TNodeType.Container) {
+          beforeNode = node.native;
         }
-        // When the walker exits a container, the beforeNode has to be restored to the previous
-        // value.
-        if (currentNode && !currentNode.pNextOrParent &&
-            currentNode.tNode.type === TNodeType.Container) {
-          beforeNode = currentNode.native;
-        }
-        node = currentNode && getNextLNodeWithProjection(currentNode);
+        nextNode = getNextLNode(node);
       }
-    } else {
-      node = nextNode;
     }
+    node = nextNode;
   }
+}
+
+
+/**
+ * Given a current view, finds the nearest component's host (LElement).
+ *
+ * @param lViewData LViewData for which we want a host element node
+ * @returns The host node
+ */
+export function findComponentHost(lViewData: LViewData): LElementNode {
+  let viewRootLNode = lViewData[HOST_NODE];
+
+  while (viewRootLNode.tNode.type === TNodeType.View) {
+    ngDevMode && assertDefined(lViewData[PARENT], 'lViewData.parent');
+    lViewData = lViewData[PARENT] !;
+    viewRootLNode = lViewData[HOST_NODE];
+  }
+
+  ngDevMode && assertNodeType(viewRootLNode, TNodeType.Element);
+  ngDevMode && assertDefined(viewRootLNode.data, 'node.data');
+
+  return viewRootLNode as LElementNode;
 }
 
 /**

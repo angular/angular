@@ -423,6 +423,9 @@
     "name": "findAttrIndexInNode"
   },
   {
+    "name": "findComponentHost"
+  },
+  {
     "name": "findDirectiveMatches"
   },
   {
@@ -451,9 +454,6 @@
   },
   {
     "name": "getNextLNode"
-  },
-  {
-    "name": "getNextLNodeWithProjection"
   },
   {
     "name": "getOrCreateContainerRef"
@@ -604,6 +604,9 @@
   },
   {
     "name": "notImplemented"
+  },
+  {
+    "name": "projectionNodeStack"
   },
   {
     "name": "queueComponentIndexForCheck"
