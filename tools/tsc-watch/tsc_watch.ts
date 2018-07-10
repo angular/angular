@@ -10,6 +10,7 @@
 import {spawn} from 'child_process';
 import {platform} from 'os';
 import {normalize} from 'path';
+import {resolve} from 'url';
 
 enum State {
   idle,

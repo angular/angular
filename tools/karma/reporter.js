@@ -6,90 +6,62 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-'use strict';
+var SourceMapConsumer = require('source-map').SourceMapConsumer;
+var DotsReporter = require('karma/lib/reporters/dots_color');
 
-const DotsColorReporter = require('karma/lib/reporters/dots_color');
-const {SourceMapConsumer} = require('source-map');
-const {resolve} = require('url');
+var createErrorFormatter = function(basePath, emitter, SourceMapConsumer) {
+  var lastServedFiles = [];
+  emitter.on('file_list_modified', function(files) { lastServedFiles = files.served; });
+  function findFile(path) { return lastServedFiles.filter(_ => _.path === path)[0]; }
 
-// Based on `karma/lib/reporter.js` (v2.0.4):
-// https://github.com/karma-runner/karma/blob/v2.0.4/lib/reporter.js
-function createErrorFormatter(config, emitter, SourceMapConsumer) {
-  const basePath = config.basePath;
-  const urlRoot = (config.urlRoot === '/') ? '' : (config.urlRoot || '');
-  const urlRegexp = new RegExp(
-      '(?:https?:\\/\\/' + config.hostname + '(?:\\:' + config.port + ')?' +
-          ')?\\/?' + urlRoot + '\\/?' +
-          '(base/|absolute)' +  // prefix, including slash for base/ to create relative paths.
+  var URL_REGEXP = new RegExp(
+      '(?:https?:\\/\\/[^\\/]*)?\\/?' +
+          '(base|absolute)' +               // prefix
           '((?:[A-z]\\:)?[^\\?\\s\\:]*)' +  // path
           '(\\?\\w*)?' +                    // sha
           '(\\:(\\d+))?' +                  // line
           '(\\:(\\d+))?' +                  // column
           '',
       'g');
-  const sourceMapConsumerCache = new WeakMap();
-  let lastServedFiles = [];
 
-  // Helpers
-  const findFile = path => lastServedFiles.find(f => f.path === path);
-  const formatPathMapping = (path, line, column) =>
-      path + (line ? `:${line}` : '') + (column ? `:${column}` : '');
-  const isString = input => typeof input === 'string';
-  const getSourceMapConsumer = sourceMap => {
-    if (!sourceMapConsumerCache.has(sourceMap)) {
-      sourceMapConsumerCache.set(sourceMap, new SourceMapConsumer(sourceMap));
-    }
-    return sourceMapConsumerCache.get(sourceMap);
-  };
+  return function(msg, indentation) {
+    msg = (msg || '').replace(URL_REGEXP, function(_, prefix, path, __, ___, line, ____, column) {
+      if (prefix === 'base') {
+        path = basePath + path;
+      }
+      line = parseInt(line || '0', 10);
+      column = parseInt(column || '0', 10);
 
-  emitter.on('file_list_modified', files => lastServedFiles = files.served);
-
-  return (input, indentation) => {
-    if (!isString(indentation)) indentation = '';
-    if (!input) input = '';
-    if (isString(input.message)) input = input.message;
-    if (!isString(input)) input = JSON.stringify(input, null, indentation);
-
-    let msg = input.replace(urlRegexp, (_, prefix, path, __, ___, line, ____, column) => {
-      const normalizedPath = (prefix === 'base/') ? `${basePath}/${path}` : path;
-      const file = findFile(normalizedPath);
-
-      if (file && file.sourceMap && line) {
-        line = +line;
-        column = +column || 0;
-        const bias =
-            column ? SourceMapConsumer.GREATEST_LOWER_BOUND : SourceMapConsumer.LEAST_UPPER_BOUND;
-
+      var file = findFile(path);
+      if (file && file.sourceMap) {
         try {
-          const original =
-              getSourceMapConsumer(file.sourceMap).originalPositionFor({line, column, bias});
-          return formatPathMapping(
-              `${resolve(path, original.source)}`, original.line, original.column);
+          var original = new SourceMapConsumer(file.sourceMap)
+                             .originalPositionFor({line: line, column: column});
+          return process.cwd() + '/modules/' + original.source + ':' + original.line + ':' +
+              original.column;
         } catch (e) {
-          console.warn(`SourceMap position not found for trace: ${input}`);
+          console.warn('SourceMap position not found for trace: %s', msg);
         }
       }
-
-      return formatPathMapping(path, line, column) || prefix;
+      return path + ':' + line + ':' + column;
     });
 
-    // Indent every line.
+    // indent every line
     if (indentation) {
-      msg = indentation + msg.replace(/\n/g, `\n${indentation}`);
+      msg = indentation + msg.replace(/\n/g, '\n' + indentation);
     }
-
-    return config.formatError ? config.formatError(msg) : `${msg}\n`;
+    return msg + '\n';
   };
-}
+};
 
+
+var InternalAngularReporter = function(config, emitter) {
+  var formatter = createErrorFormatter(config.basePath, emitter, SourceMapConsumer);
+  DotsReporter.call(this, formatter, false, config.colors);
+};
 
 InternalAngularReporter.$inject = ['config', 'emitter'];
-function InternalAngularReporter(config, emitter) {
-  var formatter = createErrorFormatter(config, emitter, SourceMapConsumer);
-  DotsColorReporter.call(this, formatter, false, config.colors, config.browserConsoleLogOptions);
-}
-
 
 module.exports = {
-  'reporter:internal-angular': ['type', InternalAngularReporter],
+  'reporter:internal-angular': ['type', InternalAngularReporter]
 };

@@ -7,9 +7,10 @@
  */
 
 /* tslint:disable:no-console  */
-import {existsSync, mkdirSync} from 'fs';
+import {spawn} from 'child_process';
+import {existsSync, mkdirSync, writeFileSync} from 'fs';
 
-import {TscWatch} from './tsc_watch';
+import {TSC, TscWatch, reportError} from './tsc_watch';
 
 export * from './tsc_watch';
 import 'reflect-metadata';
