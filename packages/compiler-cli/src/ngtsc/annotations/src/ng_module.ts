@@ -96,12 +96,19 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         new WrappedNodeExpr(ngModule.get('providers') !) :
         new LiteralArrayExpr([]);
 
+    const injectorImports: WrappedNodeExpr<ts.Expression>[] = [];
+    if (ngModule.has('imports')) {
+      injectorImports.push(new WrappedNodeExpr(ngModule.get('imports') !));
+    }
+    if (ngModule.has('exports')) {
+      injectorImports.push(new WrappedNodeExpr(ngModule.get('exports') !));
+    }
+
     const ngInjectorDef: R3InjectorMetadata = {
       name: node.name !.text,
       type: new WrappedNodeExpr(node.name !),
       deps: getConstructorDependencies(node, this.reflector, this.isCore), providers,
-      imports: new LiteralArrayExpr(
-          [...imports, ...exports].map(imp => referenceToExpression(imp, context))),
+      imports: new LiteralArrayExpr(injectorImports),
     };
 
     return {
