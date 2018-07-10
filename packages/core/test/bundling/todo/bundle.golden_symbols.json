@@ -447,9 +447,6 @@
     "name": "getCurrentSanitizer"
   },
   {
-    "name": "getDirectiveInstance"
-  },
-  {
     "name": "getLViewChild"
   },
   {
@@ -631,6 +628,9 @@
   },
   {
     "name": "refreshChildComponents"
+  },
+  {
+    "name": "refreshContentQueries"
   },
   {
     "name": "refreshDynamicEmbeddedViews"

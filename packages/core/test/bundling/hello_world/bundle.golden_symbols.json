@@ -159,9 +159,6 @@
     "name": "getChildLNode"
   },
   {
-    "name": "getDirectiveInstance"
-  },
-  {
     "name": "getLViewChild"
   },
   {
@@ -196,6 +193,9 @@
   },
   {
     "name": "refreshChildComponents"
+  },
+  {
+    "name": "refreshContentQueries"
   },
   {
     "name": "refreshDynamicEmbeddedViews"
