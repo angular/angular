@@ -77,8 +77,7 @@ export class FormBuilder {
    * Construct a new `FormArray` instance.
    *
    * @param controlsConfig An array of child controls. The key for each child control is its index
-   * in
-   * the array.
+   * in the array.
    *
    * @param validator A synchronous validator function, or an array of synchronous validator
    * functions.
