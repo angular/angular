@@ -106,6 +106,11 @@ export enum R3ResolvedDependencyType {
    * The dependency is for `ViewContainerRef`.
    */
   ViewContainerRef = 5,
+
+  /**
+   * The dependency is for `ChangeDetectorRef`.
+   */
+  ChangeDetectorRef = 6,
 }
 
 /**
@@ -182,7 +187,7 @@ function compileInjectDependency(
       }
 
       // Build up the arguments to the injectFn call.
-      const injectArgs = [dep.token];
+      const injectArgs = [token];
       // If this dependency is optional or otherwise has non-default flags, then additional
       // parameters describing how to inject the dependency must be passed to the inject function
       // that's being used.
@@ -200,6 +205,8 @@ function compileInjectDependency(
       return o.importExpr(R3.injectTemplateRef).callFn([]);
     case R3ResolvedDependencyType.ViewContainerRef:
       return o.importExpr(R3.injectViewContainerRef).callFn([]);
+    case R3ResolvedDependencyType.ChangeDetectorRef:
+      return o.importExpr(R3.injectChangeDetectorRef).callFn([]);
     default:
       return unsupported(
           `Unknown R3ResolvedDependencyType: ${R3ResolvedDependencyType[dep.resolved]}`);
