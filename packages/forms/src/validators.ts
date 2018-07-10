@@ -72,8 +72,7 @@ export class Validators {
   /**
    * @description
    * Validator that requires the control's value to be greater than or equal to the provided number.
-   * The
-   * validator exists only as a function and not as a directive.
+   * The validator exists only as a function and not as a directive.
    *
    * @usageNotes
    *
@@ -104,8 +103,7 @@ export class Validators {
   /**
    * @description
    * Validator that requires the control's value to be less than or equal to the provided number.
-   * The validator
-   * exists only as a function and not as a directive.
+   * The validator exists only as a function and not as a directive.
    *
    * @usageNotes
    *
