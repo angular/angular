@@ -286,6 +286,18 @@ export class Router {
   paramsInheritanceStrategy: 'emptyOnly'|'always' = 'emptyOnly';
 
   /**
+   * Defines when the router updates the browser URL. The default behavior is to update after
+   * successful navigation. However, some applications may prefer a mode where the URL gets
+   * updated at the beginning of navigation. The most common use case would be updating the
+   * URL early so if navigation fails, you can show an error message with the URL that failed.
+   * Available options are:
+   *
+   * - `'deferred'`, the default, updates the browser URL after navigation has finished.
+   * - `'eager'`, updates browser URL at the beginning of navigation.
+   */
+  urlUpdateStrategy: 'deferred'|'eager' = 'deferred';
+
+  /**
    * Creates the router service.
    */
   // TODO: vsavkin make internal after the final is out.
@@ -610,6 +622,9 @@ export class Router {
 
     if ((this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
         this.urlHandlingStrategy.shouldProcessUrl(rawUrl)) {
+      if (this.urlUpdateStrategy === 'eager' && !extras.skipLocationChange) {
+        this.setBrowserUrl(rawUrl, !!extras.replaceUrl, id);
+      }
       (this.events as Subject<Event>)
           .next(new NavigationStart(id, this.serializeUrl(url), source, state));
       Promise.resolve()
@@ -791,13 +806,8 @@ export class Router {
 
           (this as{routerState: RouterState}).routerState = state;
 
-          if (!skipLocationChange) {
-            const path = this.urlSerializer.serialize(this.rawUrlTree);
-            if (this.location.isCurrentPathEqualTo(path) || replaceUrl) {
-              this.location.replaceState(path, '', {navigationId: id});
-            } else {
-              this.location.go(path, '', {navigationId: id});
-            }
+          if (this.urlUpdateStrategy === 'deferred' && !skipLocationChange) {
+            this.setBrowserUrl(this.rawUrlTree, replaceUrl, id);
           }
 
           new ActivateRoutes(
@@ -841,6 +851,15 @@ export class Router {
                 }
               }
             });
+  }
+
+  private setBrowserUrl(url: UrlTree, replaceUrl: boolean, id: number) {
+    const path = this.urlSerializer.serialize(url);
+    if (this.location.isCurrentPathEqualTo(path) || replaceUrl) {
+      this.location.replaceState(path, '', {navigationId: id});
+    } else {
+      this.location.go(path, '', {navigationId: id});
+    }
   }
 
   private resetStateAndUrl(storedState: RouterState, storedUrl: UrlTree, rawUrl: UrlTree): void {
