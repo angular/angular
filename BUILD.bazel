@@ -14,36 +14,19 @@ alias(
     actual = "@nodejs//:yarn",
 )
 
-node_modules_filegroup(
+alias(
     name = "node_modules",
-    packages = [
-        "bytebuffer",
-        "hammerjs",
-        "jasmine",
-        "minimist",
-        "protobufjs",
-        "reflect-metadata",
-        "source-map-support",
-        "tsickle",
-        "tslib",
-        "tsutils",
-        "typescript",
-        "zone.js",
-        "@angular-devkit/core",
-        "@angular-devkit/schematics",
-        "@types",
-        "@webcomponents/custom-elements",
-    ],
+    actual = "@angular_deps//:node_modules",
 )
 
 filegroup(
     name = "web_test_bootstrap_scripts",
     # do not sort
     srcs = [
-        "//:node_modules/reflect-metadata/Reflect.js",
-        "//:node_modules/zone.js/dist/zone.js",
-        "//:node_modules/zone.js/dist/zone-testing.js",
-        "//:node_modules/zone.js/dist/task-tracking.js",
+        "@angular_deps//:node_modules/reflect-metadata/Reflect.js",
+        "@angular_deps//:node_modules/zone.js/dist/zone.js",
+        "@angular_deps//:node_modules/zone.js/dist/zone-testing.js",
+        "@angular_deps//:node_modules/zone.js/dist/task-tracking.js",
         "//:test-events.js",
     ],
 )
@@ -51,9 +34,9 @@ filegroup(
 filegroup(
     name = "angularjs_scripts",
     srcs = [
-        "//:node_modules/angular-1.5/angular.js",
-        "//:node_modules/angular-mocks-1.5/angular-mocks.js",
-        "//:node_modules/angular-mocks/angular-mocks.js",
-        "//:node_modules/angular/angular.js",
+        "@angular_deps//:node_modules/angular-1.5/angular.js",
+        "@angular_deps//:node_modules/angular-mocks-1.5/angular-mocks.js",
+        "@angular_deps//:node_modules/angular-mocks/angular-mocks.js",
+        "@angular_deps//:node_modules/angular/angular.js",
     ],
 )

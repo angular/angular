@@ -55,7 +55,7 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
                 (prev, file) => prev.then(() => new Promise<void>((resolve, reject) => {
                                             const restoreMethods = patchJasmineMethods();
                                             const script = document.createElement('script');
-                                            script.src = `base/angular/node_modules/${file}`;
+                                            script.src = `base/angular_deps/node_modules/${file}`;
                                             script.onerror = reject;
                                             script.onload = () => {
                                               document.body.removeChild(script);
