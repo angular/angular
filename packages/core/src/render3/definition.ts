@@ -123,10 +123,10 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * Function to create instances of content queries associated with a given directive.
    */
-  contentQueries?: (() => void) | null;
+  contentQueries?: (() => void);
 
   /** Refreshes content queries associated with directives in a given view */
-  contentQueriesRefresh?: ((directiveIndex: number, queryIndex: number) => void) | null;
+  contentQueriesRefresh?: ((directiveIndex: number, queryIndex: number) => void);
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -461,10 +461,10 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   /**
    * Function to create instances of content queries associated with a given directive.
    */
-  contentQueries?: (() => void) | null;
+  contentQueries?: (() => void);
 
   /** Refreshes content queries associated with directives in a given view */
-  contentQueriesRefresh?: ((directiveIndex: number, queryIndex: number) => void) | null;
+  contentQueriesRefresh?: ((directiveIndex: number, queryIndex: number) => void);
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.

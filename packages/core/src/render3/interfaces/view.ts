@@ -161,7 +161,6 @@ export interface LViewData extends Array<any> {
    * filled-in as part of a directive creation process and is later used to retrieve a QueryList to
    * be refreshed.
    */
-  // TODO: flatten into LViewData[]
   [CONTENT_QUERIES]: QueryList<any>[]|null;
 }
 

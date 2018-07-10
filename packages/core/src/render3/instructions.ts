@@ -331,7 +331,7 @@ export function createLViewData<T>(
     sanitizer || null,                                                           // sanitizer
     null,                                                                        // tail
     -1,                                                                          // containerIndex
-    null                                                                         // contentQueries
+    null,                                                                        // contentQueries
   ];
 }
 
