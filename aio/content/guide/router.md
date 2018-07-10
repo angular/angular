@@ -937,31 +937,50 @@ The full source for the final version of the app can be seen and downloaded from
 -->
 이 문서에서 다루는 예제 코드의 최종 버전은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
-
+<!--
 ### The sample application in action
+-->
+### 예제 애플리케이션의 용도
 
+<!--
 Imagine an application that helps the _Hero Employment Agency_ run its business.
 Heroes need work and the agency finds crises for them to solve.
+-->
+이 문서에서 만드는 예제 애플리케이션은 _히어로 관리 회사_ 에서 업무용으로 사용한다고 생각해 봅시다.
+히어로는 일자리가 필요하기 때문에 회사에서는 히어로가 해결해야 할 문제를 찾아야 합니다.
 
+<!--
 The application has three main feature areas:
 
 1. A *Crisis Center* for maintaining the list of crises for assignment to heroes.
 1. A *Heroes* area for maintaining the list of heroes employed by the agency.
 1. An *Admin* area to manage the list of crises and heroes.
+-->
+그래서 이 애플리케이션은 3가지 기능을 중심으로 개발합니다:
+1. 히어로에게 할당하는 문제들을 관리하는 *문제 관리 센터* 기능
+1. 회사가 고용하는 히어로를 관리하는 *히어로 목록* 기능
+1. 히어로와 문제를 관리하는 *관리자* 기능
 
+<!--
 Try it by clicking on this <live-example title="Hero Employment Agency Live Example">live example link</live-example>.
+-->
+<live-example title="Hero Employment Agency Live Example">예제 애플리케이션</live-example>을 클릭해서 동작을 확인해 보세요.
 
+<!--
 Once the app warms up, you'll see a row of navigation buttons
 and the *Heroes* view with its list of heroes.
-
+-->
+애플리케이션을 실행하고 나면 내비게이션에 사용되는 버튼들을 확인할 수 있으며, 히어로의 목록을 표시하는 뷰가 화면에 표시됩니다.
 
 <figure>
   <img src='generated/images/guide/router/hero-list.png' alt="Hero List">
 </figure>
 
 
-
+<!--
 Select one hero and the app takes you to a hero editing screen.
+-->
+이 중에 히어로를 한 명 선택하면 히어로의 정보를 수정할 수 있는 화면으로 이동합니다.
 
 <figure>
   <img src='generated/images/guide/router/hero-detail.png' alt="Crisis Center Detail">
