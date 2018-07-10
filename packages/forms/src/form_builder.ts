@@ -57,7 +57,7 @@ export class FormBuilder {
    *
    * @usageNotes
    *
-   * ### Initial a control as disabled
+   * ### Initialize a control as disabled
    *
    * The following example returns a control with an initial value in a disabled state.
    *
@@ -76,7 +76,8 @@ export class FormBuilder {
    * @description
    * Construct a new `FormArray` instance.
    *
-   * @param controlsConfig A array of child controls. The key for each child control is its index in
+   * @param controlsConfig An array of child controls. The key for each child control is its index
+   * in
    * the array.
    *
    * @param validator A synchronous validator function, or an array of synchronous validator

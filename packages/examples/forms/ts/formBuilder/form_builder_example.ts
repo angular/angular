@@ -52,7 +52,7 @@ export class FormBuilderComp {
 export class DisabledFormControlComponent {
   control: FormControl;
 
-  constructor(@Inject(FormBuilder) fb: FormBuilder) {
+  constructor(private fb: FormBuilder) {
     this.control = fb.control({value: 'my val', disabled: true});
   }
 }
