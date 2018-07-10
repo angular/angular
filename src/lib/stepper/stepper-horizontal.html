@@ -9,6 +9,8 @@
                      [attr.aria-setsize]="_steps.length"
                      [attr.aria-controls]="_getStepContentId(i)"
                      [attr.aria-selected]="selectedIndex == i"
+                     [attr.aria-label]="step.ariaLabel || null"
+                     [attr.aria-labelledby]="(!step.ariaLabel && step.ariaLabelledby) ? step.ariaLabelledby : null"
                      [index]="i"
                      [state]="_getIndicatorType(i)"
                      [label]="step.stepLabel || step.label"
