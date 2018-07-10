@@ -231,9 +231,9 @@ export class R3Injector {
       def = ngModule.ngInjectorDef;
     }
 
-    // If no definition was found, throw.
+    // If no definition was found, it might be from exports. Remove it.
     if (def == null) {
-      throw new Error(`Type ${stringify(defType)} is missing an ngInjectorDef definition.`);
+      return;
     }
 
     // Check for circular dependencies.
@@ -333,7 +333,12 @@ export class R3Injector {
 function injectableDefRecord(token: Type<any>| InjectionToken<any>): Record<any> {
   const def = (token as InjectableType<any>).ngInjectableDef as InjectableDef<any>;
   if (def === undefined) {
-    throw new Error(`Type ${stringify(token)} is missing an ngInjectableDef definition.`);
+    if (token instanceof InjectionToken) {
+      throw new Error(`Token ${stringify(token)} is missing an ngInjectableDef definition.`);
+    }
+    // TODO(alxhub): there should probably be a strict mode which throws here instead of assuming a
+    // no-args constructor.
+    return makeRecord(() => new (token as Type<any>)());
   }
   return makeRecord(def.factory);
 }
