@@ -22,8 +22,15 @@ export const Injectable = callableClassDecorator();
 export const NgModule = callableClassDecorator();
 export const Pipe = callableClassDecorator();
 
+export const Attribute = callableParamDecorator();
 export const Inject = callableParamDecorator();
 export const Self = callableParamDecorator();
 export const SkipSelf = callableParamDecorator();
 export const Optional = callableParamDecorator();
 export type ModuleWithProviders<T> = any;
+
+export class ChangeDetectorRef {}
+export class ElementRef {}
+export class Injector {}
+export class TemplateRef {}
+export class ViewContainerRef {}

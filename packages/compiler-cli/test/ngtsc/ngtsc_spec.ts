@@ -370,4 +370,42 @@ describe('ngtsc behavioral tests', () => {
     expect(dtsContents).toContain(`import * as i1 from 'router';`);
     expect(dtsContents).toContain('i0.ɵNgModuleDef<TestModule, [], [i1.RouterModule], []>');
   });
+
+  it('should inject special types according to the metadata', () => {
+    writeConfig();
+    write(`test.ts`, `
+        import {
+          Attribute,
+          ChangeDetectorRef,
+          Component,
+          ElementRef,
+          Injector,
+          TemplateRef,
+          ViewContainerRef,
+        } from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: 'Test',
+        })
+        class FooCmp {
+          constructor(
+            @Attribute("test") attr: string,
+            cdr: ChangeDetectorRef,
+            er: ElementRef,
+            i: Injector,
+            tr: TemplateRef,
+            vcr: ViewContainerRef,
+          ) {}
+        }
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+    const jsContents = getContents('test.js');
+    expect(jsContents)
+        .toContain(
+            `factory: function FooCmp_Factory() { return new FooCmp(i0.ɵinjectAttribute("test"), i0.ɵinjectChangeDetectorRef(), i0.ɵinjectElementRef(), i0.ɵdirectiveInject(i0.INJECTOR), i0.ɵinjectTemplateRef(), i0.ɵinjectViewContainerRef()); }`);
+  });
 });
