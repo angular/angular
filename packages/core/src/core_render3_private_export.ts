@@ -29,6 +29,7 @@ export {
   NgModuleType as ɵNgModuleType,
   CssSelectorList as ɵCssSelectorList,
   markDirty as ɵmarkDirty,
+  NgModuleFactory as ɵNgModuleFactory,
   NC as ɵNC,
   C as ɵC,
   E as ɵE,
