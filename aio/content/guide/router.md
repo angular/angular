@@ -889,12 +889,19 @@ Here are the key `Router` terms and their meanings:
 
 {@a sample-app-intro}
 
-
+<!--
 ## The sample application
+-->
+## 예제 애플리케이션
 
+<!--
 This guide describes development of a multi-page routed sample application.
 Along the way, it highlights design decisions and describes key features of the router such as:
+-->
+이 문서에서는 라우터로 페이지를 전환하는 애플리케이션을 예제로 만들어 봅니다.
+그리고 이 애플리케이션을 만드는 동안 다음과 같은 내용에 대해 알아볼 것입니다:
 
+<!--
 * Organizing the application features into modules.
 * Navigating to a component (*Heroes* link to "Heroes List").
 * Including a route parameter (passing the Hero `id` while routing to the "Hero Detail").
@@ -905,12 +912,30 @@ Along the way, it highlights design decisions and describes key features of the 
 * The `Resolve` guard (pre-fetching route data).
 * Lazy loading feature modules.
 * The `CanLoad` guard (check before loading feature module assets).
+-->
+* 애플리케이션을 모듈 단위로 구성하는 방법
+* 네비게이션하면서 컴포넌트를 화면에 표시하는 방법
+* 라우팅 변수 사용하기 ("히어로 상세정보" 페이지로 이동할 때 히어로의 `id`를 라우터로 전달해 봅니다.)
+* 자식 라우팅 규칙
+* `CanActivate` 가드 (라우팅을 허용할지 판단합니다.)
+* `CanActivateChild` 가드 (자식 라우팅을 허용할지 판단합니다.)
+* `CanDeactivate` 가드 (저장되지 않은 변경사항을 폐기할지 사용자에게 물어봅니다.)
+* `Resolve` 가드 (라우팅 데이터를 미리 받아옵니다.)
+* 기능모듈 지연로딩하기
+* `CanLoad` 가드 (기능모듈이 로딩되었는지 확인합니다.)
 
+<!--
 The guide proceeds as a sequence of milestones as if you were building the app step-by-step.
 But, it is not a tutorial and it glosses over details of Angular application construction
 that are more thoroughly covered elsewhere in the documentation.
+-->
+이 문서는 실제 애플리케이션을 구현하는 것처럼 한 단계씩 순서대로 진행합니다.
+하지만 이 문서에서 설명하는 내용은 이 문서에만 한정된 것이 아니고, 애플리케이션의 기본 구조부터 다른 문서에서 언급하는 Angular의 기능들도 함께 살펴봅니다.
 
+<!--
 The full source for the final version of the app can be seen and downloaded from the <live-example></live-example>.
+-->
+이 문서에서 다루는 예제 코드의 최종 버전은 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
 
 ### The sample application in action
