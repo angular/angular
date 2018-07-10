@@ -717,6 +717,9 @@
     "name": "GOOG_GET_MSG"
   },
   {
+    "name": "GenericBrowserDomAdapter"
+  },
+  {
     "name": "HOST_ATTR"
   },
   {

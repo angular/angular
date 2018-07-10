@@ -3,6 +3,9 @@
     "name": "APP_ROOT"
   },
   {
+    "name": "AnonymousSubject"
+  },
+  {
     "name": "CIRCULAR$1"
   },
   {
@@ -30,6 +33,12 @@
     "name": "NullInjector"
   },
   {
+    "name": "ObjectUnsubscribedError"
+  },
+  {
+    "name": "Observable"
+  },
+  {
     "name": "Optional"
   },
   {
@@ -37,6 +46,9 @@
   },
   {
     "name": "R3Injector"
+  },
+  {
+    "name": "SafeSubscriber"
   },
   {
     "name": "ScopedService"
@@ -48,13 +60,49 @@
     "name": "SkipSelf"
   },
   {
+    "name": "Subject"
+  },
+  {
+    "name": "SubjectSubscriber"
+  },
+  {
+    "name": "SubjectSubscription"
+  },
+  {
+    "name": "Subscriber"
+  },
+  {
+    "name": "Subscription"
+  },
+  {
     "name": "THROW_IF_NOT_FOUND"
   },
   {
     "name": "USE_VALUE"
   },
   {
+    "name": "UnsubscriptionError"
+  },
+  {
     "name": "_THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "__extends"
+  },
+  {
+    "name": "__extends$1"
+  },
+  {
+    "name": "__extends$2"
+  },
+  {
+    "name": "__extends$3"
+  },
+  {
+    "name": "__extends$4"
+  },
+  {
+    "name": "__extends$5"
   },
   {
     "name": "__read"
@@ -64,6 +112,12 @@
   },
   {
     "name": "_currentInjector"
+  },
+  {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
+    "name": "config"
   },
   {
     "name": "couldBeInjectableType"
@@ -81,6 +135,18 @@
     "name": "defineInjector"
   },
   {
+    "name": "empty"
+  },
+  {
+    "name": "errorObject"
+  },
+  {
+    "name": "extendStatics"
+  },
+  {
+    "name": "flattenUnsubscriptionErrors"
+  },
+  {
     "name": "forwardRef"
   },
   {
@@ -90,10 +156,16 @@
     "name": "getNullInjector"
   },
   {
+    "name": "getPromiseCtor"
+  },
+  {
     "name": "hasDeps"
   },
   {
     "name": "hasOnDestroy"
+  },
+  {
+    "name": "hostReportError"
   },
   {
     "name": "inject"
@@ -105,10 +177,22 @@
     "name": "injectableDefRecord"
   },
   {
+    "name": "isArray"
+  },
+  {
     "name": "isExistingProvider"
   },
   {
     "name": "isFactoryProvider"
+  },
+  {
+    "name": "isFunction"
+  },
+  {
+    "name": "isObject"
+  },
+  {
+    "name": "isTrustedSubscriber"
   },
   {
     "name": "isTypeProvider"
@@ -126,15 +210,36 @@
     "name": "makeRecord"
   },
   {
+    "name": "noop"
+  },
+  {
+    "name": "observable"
+  },
+  {
+    "name": "pipeFromArray"
+  },
+  {
     "name": "providerToRecord"
   },
   {
     "name": "resolveForwardRef"
   },
   {
+    "name": "rxSubscriber"
+  },
+  {
     "name": "setCurrentInjector"
   },
   {
     "name": "stringify"
+  },
+  {
+    "name": "toSubscriber"
+  },
+  {
+    "name": "tryCatch"
+  },
+  {
+    "name": "tryCatcher"
   }
 ]
