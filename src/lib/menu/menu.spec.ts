@@ -1,4 +1,4 @@
-import {ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {
@@ -176,7 +176,9 @@ describe('MatMenu', () => {
     dispatchFakeEvent(triggerEl, 'mousedown');
     triggerEl.click();
     fixture.detectChanges();
-    tick();
+
+    // Flush due to the additional tick that is necessary for the FocusMonitor.
+    flush();
 
     expect(overlayContainerElement.querySelector('.mat-menu-panel')!.scrollTop).toBe(0);
   }));
@@ -398,7 +400,9 @@ describe('MatMenu', () => {
 
       dispatchKeyboardEvent(panel, 'keydown', DOWN_ARROW);
       fixture.detectChanges();
-      tick();
+
+      // Flush due to the additional tick that is necessary for the FocusMonitor.
+      flush();
 
       // We skip to the third item, because the second one is disabled.
       expect(items[2].classList).toContain('cdk-focused');
@@ -495,7 +499,9 @@ describe('MatMenu', () => {
       fixture.detectChanges();
       tick(500);
       zone!.simulateZoneExit();
-      tick();
+
+      // Flush due to the additional tick that is necessary for the FocusMonitor.
+      flush();
 
       const item = document.querySelector('.mat-menu-panel [mat-menu-item]')!;
 

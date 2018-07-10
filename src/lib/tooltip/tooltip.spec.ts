@@ -2,6 +2,7 @@ import {
   async,
   ComponentFixture,
   fakeAsync,
+  flush,
   flushMicrotasks,
   inject,
   TestBed,
@@ -575,7 +576,8 @@ describe('MatTooltip', () => {
         fixture.detectChanges();
       }).not.toThrow();
 
-      tick(0);
+      // Flush due to the additional tick that is necessary for the FocusMonitor.
+      flush();
     }));
 
     it('should not show the tooltip on progammatic focus', fakeAsync(() => {

@@ -54,7 +54,7 @@ describe('FocusMonitor', () => {
     dispatchKeyboardEvent(document, 'keydown', TAB);
     buttonElement.focus();
     fixture.detectChanges();
-    tick();
+    flush();
 
     expect(buttonElement.classList.length)
         .toBe(2, 'button should have exactly 2 focus classes');
@@ -70,7 +70,7 @@ describe('FocusMonitor', () => {
     dispatchMouseEvent(buttonElement, 'mousedown');
     buttonElement.focus();
     fixture.detectChanges();
-    tick();
+    flush();
 
     expect(buttonElement.classList.length)
         .toBe(2, 'button should have exactly 2 focus classes');
@@ -114,7 +114,7 @@ describe('FocusMonitor', () => {
 
   it('focusVia keyboard should simulate keyboard focus', fakeAsync(() => {
     focusMonitor.focusVia(buttonElement, 'keyboard');
-    tick();
+    flush();
 
     expect(buttonElement.classList.length)
         .toBe(2, 'button should have exactly 2 focus classes');
@@ -128,7 +128,7 @@ describe('FocusMonitor', () => {
   it('focusVia mouse should simulate mouse focus', fakeAsync(() => {
     focusMonitor.focusVia(buttonElement, 'mouse');
     fixture.detectChanges();
-    tick();
+    flush();
 
     expect(buttonElement.classList.length)
         .toBe(2, 'button should have exactly 2 focus classes');
@@ -142,7 +142,7 @@ describe('FocusMonitor', () => {
   it('focusVia mouse should simulate mouse focus', fakeAsync(() => {
     focusMonitor.focusVia(buttonElement, 'touch');
     fixture.detectChanges();
-    tick();
+    flush();
 
     expect(buttonElement.classList.length)
         .toBe(2, 'button should have exactly 2 focus classes');
@@ -156,7 +156,7 @@ describe('FocusMonitor', () => {
   it('focusVia program should simulate programmatic focus', fakeAsync(() => {
     focusMonitor.focusVia(buttonElement, 'program');
     fixture.detectChanges();
-    tick();
+    flush();
 
     expect(buttonElement.classList.length)
         .toBe(2, 'button should have exactly 2 focus classes');
@@ -218,13 +218,27 @@ describe('FocusMonitor', () => {
 
     focusMonitor.focusVia(buttonElement, 'program', {preventScroll: true});
     fixture.detectChanges();
-    tick();
+    flush();
 
     expect(buttonElement.focus).toHaveBeenCalledWith(jasmine.objectContaining({
       preventScroll: true
     }));
   }));
 
+  it('should not clear the focus origin too early in the current event loop', fakeAsync(() => {
+    dispatchKeyboardEvent(document, 'keydown', TAB);
+
+    // Simulate the behavior of Firefox 57 where the focus event sometimes happens *one* tick later.
+    tick();
+
+    buttonElement.focus();
+
+    // Since the timeout doesn't clear the focus origin too early as with the `0ms` timeout, the
+    // focus origin should be reported properly.
+    expect(changeHandler).toHaveBeenCalledWith('keyboard');
+
+    flush();
+  }));
 });
 
 
@@ -263,7 +277,7 @@ describe('cdkMonitorFocus', () => {
       dispatchKeyboardEvent(document, 'keydown', TAB);
       buttonElement.focus();
       fixture.detectChanges();
-      tick();
+      flush();
 
       expect(buttonElement.classList.length)
           .toBe(2, 'button should have exactly 2 focus classes');
@@ -279,7 +293,7 @@ describe('cdkMonitorFocus', () => {
       dispatchMouseEvent(buttonElement, 'mousedown');
       buttonElement.focus();
       fixture.detectChanges();
-      tick();
+      flush();
 
       expect(buttonElement.classList.length)
           .toBe(2, 'button should have exactly 2 focus classes');

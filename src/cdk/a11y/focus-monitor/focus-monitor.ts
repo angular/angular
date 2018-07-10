@@ -185,7 +185,7 @@ export class FocusMonitor implements OnDestroy {
     };
 
     // When the touchstart event fires the focus event is not yet in the event queue. This means
-    // we can't rely on the trick used above (setting timeout of 0ms). Instead we wait 650ms to
+    // we can't rely on the trick used above (setting timeout of 1ms). Instead we wait 650ms to
     // see if a focus happens.
     let documentTouchstartListener = (event: TouchEvent) => {
       if (this._touchTimeoutId != null) {
@@ -258,7 +258,10 @@ export class FocusMonitor implements OnDestroy {
   private _setOriginForCurrentEventQueue(origin: FocusOrigin): void {
     this._ngZone.runOutsideAngular(() => {
       this._origin = origin;
-      this._originTimeoutId = setTimeout(() => this._origin = null);
+      // Sometimes the focus origin won't be valid in Firefox because Firefox seems to focus *one*
+      // tick after the interaction event fired. To ensure the focus origin is always correct,
+      // the focus origin will be determined at the beginning of the next tick.
+      this._originTimeoutId = setTimeout(() => this._origin = null, 1);
     });
   }
 
