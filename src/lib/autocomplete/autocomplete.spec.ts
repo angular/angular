@@ -531,6 +531,16 @@ describe('MatAutocomplete', () => {
     expect(input.getAttribute('autocomplete')).toBe('changed');
   });
 
+  it('should not throw when typing in an element with a null and disabled autocomplete', () => {
+    const fixture = createComponent(InputWithoutAutocompleteAndDisabled);
+    fixture.detectChanges();
+
+    expect(() => {
+      dispatchKeyboardEvent(fixture.nativeElement.querySelector('input'), 'keydown', SPACE);
+      fixture.detectChanges();
+    }).not.toThrow();
+  });
+
   describe('forms integration', () => {
     let fixture: ComponentFixture<SimpleAutocomplete>;
     let input: HTMLInputElement;
@@ -2464,7 +2474,6 @@ class AutocompleteWithDifferentOrigin {
   values = ['one', 'two', 'three'];
 }
 
-
 @Component({
   template: `
     <input autocomplete="changed" [(ngModel)]="value" [matAutocomplete]="auto"/>
@@ -2473,4 +2482,10 @@ class AutocompleteWithDifferentOrigin {
 })
 class AutocompleteWithNativeAutocompleteAttribute {
   value: string;
+}
+
+@Component({
+  template: '<input [matAutocomplete]="null" matAutocompleteDisabled>'
+})
+class InputWithoutAutocompleteAndDisabled {
 }

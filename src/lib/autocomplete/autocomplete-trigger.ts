@@ -334,7 +334,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
       this.activeOption._selectViaInteraction();
       this._resetActiveItem();
       event.preventDefault();
-    } else {
+    } else if (this.autocomplete) {
       const prevActiveItem = this.autocomplete._keyManager.activeItem;
       const isArrowKey = keyCode === UP_ARROW || keyCode === DOWN_ARROW;
 
