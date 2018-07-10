@@ -11,7 +11,7 @@ A _component_ controls a patch of screen called a *view*. For example, individua
 You define a component's application logic&mdash;what it does to support the view&mdash;inside a class.
 The class interacts with the view through an API of properties and methods.
 
-For example, the `HeroListComponent` has a `heroes` property that holds an array of heroes. It also has a `selectHero()` method that sets a `selectedHero` property when the user clicks to choose a hero from that list. The component acquires the heroes from a service, which is a TypeScript [parameter property[(http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) on the constructor. The service is provided to the component through the dependency injection system.
+For example, the `HeroListComponent` has a `heroes` property that holds an array of heroes. It also has a `selectHero()` method that sets a `selectedHero` property when the user clicks to choose a hero from that list. The component acquires the heroes from a service, which is a TypeScript [parameter property](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) on the constructor. The service is provided to the component through the dependency injection system.
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (class)" region="class"></code-example>
 
