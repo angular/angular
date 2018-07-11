@@ -40,7 +40,7 @@ Angular inserts an instance of the `HeroListComponent` view between those tags.
 
 * `templateUrl`: The module-relative address of this component's HTML template. Alternatively, you can provide the HTML template inline, as the value of the `template` property. This template defines the component's _host view_.
 
-* `providers`: An array of **dependency injection providers** for services that the component requires. In the example, this tells Angular how provide the `HeroService` instance that the component's constructor uses to get the list of heroes to display.  
+* `providers`: An array of **dependency injection providers** for services that the component requires. In the example, this tells Angular how to provide the `HeroService` instance that the component's constructor uses to get the list of heroes to display.  
 
 <hr/>
 
