@@ -40,11 +40,24 @@ describe('Elements Schematics', () => {
     skipTests: false,
   };
 
+  // tslint:disable-next-line:no-any
+  const secondAppOptions: any = {
+    name: 'foo',
+    inlineStyle: false,
+    inlineTemplate: false,
+    routing: false,
+    style: 'css',
+    skipTests: false,
+  };
+
   beforeEach((done) => {
     schematicRunner.runExternalSchematicAsync('@schematics/angular', 'workspace', workspaceOptions)
         .pipe(concatMap(
             (tree) => schematicRunner.runExternalSchematicAsync(
-                '@schematics/angular', 'application', appOptions, tree)))
+                '@schematics/angular', 'application', appOptions, tree)),
+            (tree) => schematicRunner.runExternalSchematicAsync(
+                '@schematics/angular', 'application', secondAppOptions, tree))
+        )
         .subscribe((tree: UnitTestTree) => appTree = tree, done.fail, done);
   });
 
@@ -57,10 +70,8 @@ describe('Elements Schematics', () => {
   });
 
   it('should run the ng-add schematic on a second project', () => {
-    appOptions.name = 'foo';
-    schematicRunner.runExternalSchematic('@schematics/angular', 'application', appOptions, appTree);
-    const secondAppOptions: ElementsOptions = {project: 'foo', skipPackageJson: false};
-    const tree = schematicRunner.runSchematic('ng-add', secondAppOptions, appTree);
+    const fooOptions: ElementsOptions = {project: 'foo', skipPackageJson: false};
+    const tree = schematicRunner.runSchematic('ng-add', fooOptions, appTree);
     const configText = tree.readContent('/angular.json');
     const config = JSON.parse(configText);
     const firstAppScripts = config.projects.elements.architect.build.options.scripts;
