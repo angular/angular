@@ -40,28 +40,12 @@ describe('Elements Schematics', () => {
     skipTests: false,
   };
 
-  // tslint:disable-next-line:no-any
-  const secondAppOptions: any = {
-    name: 'foo',
-    inlineStyle: false,
-    inlineTemplate: false,
-    routing: false,
-    style: 'css',
-    skipTests: false,
-  };
-
-  beforeEach(done => {
-    schematicRunner
-      .runExternalSchematicAsync('@schematics/angular', 'workspace', workspaceOptions)
-      .pipe(
-        concatMap(tree =>
-          schematicRunner.runExternalSchematicAsync('@schematics/angular', 'application', appOptions, tree)
-        ),
-        concatMap(tree =>
-          schematicRunner.runExternalSchematicAsync('@schematics/angular', 'application', secondAppOptions, tree)
-        )
-      )
-      .subscribe((tree: UnitTestTree) => (appTree = tree), done.fail, done);
+  beforeEach((done) => {
+    schematicRunner.runExternalSchematicAsync('@schematics/angular', 'workspace', workspaceOptions)
+        .pipe(concatMap(
+            (tree) => schematicRunner.runExternalSchematicAsync(
+                '@schematics/angular', 'application', appOptions, tree)))
+        .subscribe((tree: UnitTestTree) => appTree = tree, done.fail, done);
   });
 
   it('should run the ng-add schematic', () => {
@@ -70,16 +54,5 @@ describe('Elements Schematics', () => {
     const config = JSON.parse(configText);
     const scripts = config.projects.elements.architect.build.options.scripts;
     expect(scripts[0].input).toEqual(polyfillPath);
-  });
-
-  it('should run the ng-add schematic on a second project', () => {
-    const fooOptions: ElementsOptions = {project: 'foo', skipPackageJson: false};
-    const tree = schematicRunner.runSchematic('ng-add', fooOptions, appTree);
-    const configText = tree.readContent('/angular.json');
-    const config = JSON.parse(configText);
-    const firstAppScripts = config.projects.elements.architect.build.options.scripts;
-    const secondAppScripts = config.projects.foo.architect.build.options.scripts;
-    expect(firstAppScripts).toEqual([]);
-    expect(secondAppScripts[0].input).toEqual(polyfillPath);
   });
 });
