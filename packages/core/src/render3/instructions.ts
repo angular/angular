@@ -768,15 +768,6 @@ function queueHostBindingForCheck(dirIndex: number): void {
    ])).push(dirIndex, viewData.length - 1 - HEADER_OFFSET);
 }
 
-/** Stores index of directive and starting index of content queries so we can refresh those queries
- * during view refresh.
- */
-function queueContentQueryRefresh(dirIndex: number, queriesStartIdx: number) {
-  ngDevMode &&
-      assertEqual(firstTemplatePass, true, 'Should only be called in first template pass.');
-  (tView.contentQueries || (tView.contentQueries = [])).push(dirIndex, queriesStartIdx);
-}
-
 /** Sets the context for a ChangeDetectorRef to the given instance. */
 export function initChangeDetectorIfExisting(
     injector: LInjector | null, instance: any, view: LViewData): void {
@@ -1533,12 +1524,7 @@ export function directiveCreate<T>(
   }
 
   if (directiveDef.contentQueries) {
-    const contentQueriesStartIdx =
-        viewData[CONTENT_QUERIES] ? viewData[CONTENT_QUERIES] !.length : 0;
     directiveDef.contentQueries();
-    if (firstTemplatePass) {
-      queueContentQueryRefresh(directiveDefIdx, contentQueriesStartIdx);
-    }
   }
 
   return instance;
@@ -2636,7 +2622,17 @@ export function getTView(): TView {
  * refresh).
  */
 export function registerContentQuery<Q>(queryList: QueryList<Q>): void {
-  (viewData[CONTENT_QUERIES] || (viewData[CONTENT_QUERIES] = [])).push(queryList);
+  const savedContentQueriesLength =
+      (viewData[CONTENT_QUERIES] || (viewData[CONTENT_QUERIES] = [])).push(queryList);
+  if (firstTemplatePass) {
+    const currentDirectiveIndex = directives !.length - 1;
+    const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
+    const lastSavedDirectiveIndex =
+        tView.contentQueries.length ? tView.contentQueries[tView.contentQueries.length - 2] : -1;
+    if (currentDirectiveIndex !== lastSavedDirectiveIndex) {
+      tViewContentQueries.push(currentDirectiveIndex, savedContentQueriesLength - 1);
+    }
+  }
 }
 
 export function assertPreviousIsParent() {

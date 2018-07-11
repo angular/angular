@@ -21,9 +21,6 @@
     "name": "CONTAINER_INDEX"
   },
   {
-    "name": "CONTENT_QUERIES"
-  },
-  {
     "name": "CONTEXT"
   },
   {
@@ -613,9 +610,6 @@
   },
   {
     "name": "queueContentHooks"
-  },
-  {
-    "name": "queueContentQueryRefresh"
   },
   {
     "name": "queueDestroyHooks"
