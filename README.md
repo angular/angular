@@ -26,13 +26,13 @@ and which pieces are blocked) and make a comment.
 Also see our [`help wanted`](https://github.com/angular/material2/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
 label.
 
-High level stuff planned for Q2 2018 (April - June):
-* Implementing cdk virtual-scroll
-* Implementing cdk drag-and-drop
+High level stuff planned for Q3 2018 (July - September):
+* Finishing cdk virtual-scroll
+* Finishing cdk drag-and-drop
+* New cdk/collections selection directives
 * Ongoing migration to bazel
-* Table feature improvements
 * Improve docs for cdk
-* Accessibility improvements for select, autocomplete, button-toggle, and chips.
+* Bug fixes and code health improvements, especially around accessibility.
 
 
 #### Available features
@@ -47,7 +47,7 @@ High level stuff planned for Q2 2018 (April - June):
 | cards            |                                                        |   [Docs][2]  |
 | checkbox         |                                                        |   [Docs][3]  |
 | chips            |                                                        |   [Docs][26] |
-| data-table       |                           More features coming in 2018 |   [Docs][28] |
+| data-table       |                                                        |   [Docs][28] |
 | datepicker       |                                                        |   [Docs][25] |
 | dialog           |                                                        |   [Docs][22] |
 | divider          |                                                        |   [Docs][35] |
@@ -85,8 +85,7 @@ High level stuff planned for Q2 2018 (April - June):
 
 | Feature          | Status                              | Docs         | Issue          |
 |------------------|-------------------------------------|--------------|----------------|
-| sticky-header    |        In-progress, planned Q2 2018 |           -  |   [#474][0474] |
-| virtual-repeat   |        Prototyping, planned Q2 2018 |           -  |   [#823][0823] |
+| virtual-repeat   |        In-progress, planned Q3 2018 |           -  |   [#823][0823] |
 | fab speed-dial   |            Not started, not planned |           -  |   [#860][0860] |
 | fab toolbar      |            Not started, not planned |           -  |              - |
 | bottom-nav       |            Not started, not planned |           -  |   [#408][0408] |
