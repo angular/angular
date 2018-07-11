@@ -1,19 +1,15 @@
 // #docplaster
 // #docregion form-builder
 import { Component } from '@angular/core';
-// #docregion form-builder-imports, validator-imports, form-array-imports
-import {
-// #enddocregion validator-imports, form-array-imports
-  FormBuilder,
-// #enddocregion form-builder-imports, form-builder
+// #docregion form-builder-imports
+import { FormBuilder } from '@angular/forms';
+// #enddocregion form-builder-imports
 // #docregion validator-imports
-  Validators,
+import { Validators } from '@angular/forms';
 // #enddocregion validator-imports
 // #docregion form-array-imports
-  FormArray
-// #docregion form-builder-imports, form-builder, validator-imports
-} from '@angular/forms';
-// #enddocregion form-builder-imports, validator-imports, form-array-imports
+import { FormArray } from '@angular/forms';
+// #enddocregion form-array-imports
 
 @Component({
   selector: 'app-profile-editor',
