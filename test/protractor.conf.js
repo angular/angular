@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 
 // Load ts-node to be able to execute TypeScript files with protractor.

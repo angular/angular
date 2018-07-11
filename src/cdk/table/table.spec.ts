@@ -726,8 +726,16 @@ describe('CdkTable', () => {
           return;
         }
 
-        expect(element.style[d])
-            .toBe(directions[d], `Expected direction ${d} to be ${directions[d]}`);
+        const expectationMessage = `Expected direction ${d} to be ${directions[d]}`;
+
+        // If the direction contains `px`, we parse the number to be able to avoid deviations
+        // caused by individual browsers.
+        if (directions[d].includes('px')) {
+          expect(Math.round(parseInt(element.style[d])))
+            .toBe(Math.round(parseInt(directions[d])), expectationMessage);
+        } else {
+          expect(element.style[d]).toBe(directions[d], expectationMessage);
+        }
       });
     }
 

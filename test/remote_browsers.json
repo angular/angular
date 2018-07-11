@@ -90,6 +90,12 @@
     "platform": "OS X 10.10",
     "version": "9.1"
   },
+  "SL_IOS11": {
+    "base": "SauceLabs",
+    "browserName": "iphone",
+    "platform": "Mac 10.12",
+    "version": "11.2"
+  },
   "SL_IE9": {
     "base": "SauceLabs",
     "browserName": "internet explorer",
@@ -112,7 +118,7 @@
     "base": "SauceLabs",
     "browserName": "microsoftedge",
     "platform": "Windows 10",
-    "version": "14"
+    "version": "17"
   },
   "SL_ANDROID4.1": {
     "base": "SauceLabs",
@@ -186,6 +192,7 @@
     "device": "iPhone 5S",
     "os": "ios",
     "os_version": "7.0",
+    "real_mobile": true,
     "resolution": "1024x768"
   },
   "BS_IOS8": {
@@ -193,6 +200,7 @@
     "device": "iPhone 6",
     "os": "ios",
     "os_version": "8.3",
+    "real_mobile": true,
     "resolution": "1024x768"
   },
   "BS_IOS9": {
@@ -200,13 +208,22 @@
     "device": "iPhone 6S",
     "os": "ios",
     "os_version": "9.0",
+    "real_mobile": true,
     "resolution": "1024x768"
   },
   "BS_IOS10": {
     "base": "BrowserStack",
     "device": "iPhone 7",
     "os": "ios",
+    "real_mobile": true,
     "os_version": "10.0"
+  },
+  "BS_IOS11": {
+    "base": "BrowserStack",
+    "device": "iPhone 8",
+    "os": "ios",
+    "os_version": "11.0",
+    "real_mobile": true
   },
   "BS_IE9": {
     "base": "BrowserStack",
@@ -231,7 +248,8 @@
   },
   "BS_EDGE": {
     "base": "BrowserStack",
-    "browser": "edge",
+    "browser": "Edge",
+    "browser_version": "17.0",
     "os": "Windows",
     "os_version": "10"
   },
@@ -239,36 +257,42 @@
     "base": "BrowserStack",
     "device": "Nokia Lumia 930",
     "os": "winphone",
+    "real_mobile": true,
     "os_version": "8.1"
   },
   "BS_ANDROID5": {
     "base": "BrowserStack",
     "device": "Google Nexus 5",
     "os": "android",
+    "real_mobile": true,
     "os_version": "5.0"
   },
   "BS_ANDROID4.4": {
     "base": "BrowserStack",
     "device": "HTC One M8",
     "os": "android",
+    "real_mobile": true,
     "os_version": "4.4"
   },
   "BS_ANDROID4.3": {
     "base": "BrowserStack",
     "device": "Samsung Galaxy S4",
     "os": "android",
+    "real_mobile": true,
     "os_version": "4.3"
   },
   "BS_ANDROID4.2": {
     "base": "BrowserStack",
     "device": "Google Nexus 4",
     "os": "android",
+    "real_mobile": true,
     "os_version": "4.2"
   },
   "BS_ANDROID4.1": {
     "base": "BrowserStack",
     "device": "Google Nexus 7",
     "os": "android",
+    "real_mobile": true,
     "os_version": "4.1"
   }
 }

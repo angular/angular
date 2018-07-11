@@ -3361,8 +3361,14 @@ describe('MatSelect', () => {
         fixture.componentInstance.heightBelow = 400;
         fixture.detectChanges();
 
-        // Scroll the select into view
-        setScrollTop(1700);
+        // Space that is needed in order to show the menu below the trigger.
+        // 256 (height of the menu overlay) - 45 (estimated height of the trigger)
+        const requiredSpaceBelow = 256 - 45;
+
+        // Scroll the select into view. Make sure that there is enough space for the menu
+        // to open below the trigger (depending on the screen resolution)
+        setScrollTop(2000 - requiredSpaceBelow);
+
 
         // In the iOS simulator (BrowserStack & SauceLabs), adding the content to the
         // body causes karma's iframe for the test to stretch to fit that content once we attempt to
@@ -3389,8 +3395,15 @@ describe('MatSelect', () => {
         fixture.detectChanges();
         flush();
 
-        // Scroll the select into view
-        setScrollTop(1700);
+        // Space that is needed in order to show the menu below the trigger.
+        // 256 (height of the menu overlay) - 45 (estimated height of the trigger)
+        // Even though there might be less options displayed below the trigger because the
+        // selected option is the fourth item, we want to make sure we have enough space here.
+        const requiredSpaceBelow = 256 - 45;
+
+        // Scroll the select into view. Make sure that there is enough space for the menu
+        // to open below the trigger (depending on the screen resolution)
+        setScrollTop(2000 - requiredSpaceBelow);
 
         // In the iOS simulator (BrowserStack & SauceLabs), adding the content to the
         // body causes karma's iframe for the test to stretch to fit that content once we attempt

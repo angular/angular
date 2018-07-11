@@ -2,7 +2,7 @@
 
 set -e -o pipefail
 
-TUNNEL_FILE="sc-4.4.10-linux.tar.gz"
+TUNNEL_FILE="sc-4.4.12-linux.tar.gz"
 TUNNEL_URL="https://saucelabs.com/downloads/${TUNNEL_FILE}"
 TUNNEL_DIR="/tmp/saucelabs-connect"
 

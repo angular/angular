@@ -5,7 +5,7 @@ module.exports = (config) => {
 
   config.set({
     basePath: path.join(__dirname, '..'),
-    frameworks: ['sharding', 'jasmine'],
+    frameworks: ['jasmine'],
     plugins: [
       require('karma-jasmine'),
       require('karma-browserstack-launcher'),
@@ -14,27 +14,25 @@ module.exports = (config) => {
       require('karma-firefox-launcher'),
       require('karma-sourcemap-loader'),
       require('karma-coverage'),
-      require('karma-spec-reporter'),
-      require('karma-sharding'),
     ],
     files: [
-      {pattern: 'node_modules/core-js/client/core.js', included: true, watched: false},
+      {pattern: 'node_modules/core-js/client/core.min.js', included: true, watched: false},
       {pattern: 'node_modules/tslib/tslib.js', included: true, watched: false},
-      {pattern: 'node_modules/systemjs/dist/system.src.js', included: true, watched: false},
-      {pattern: 'node_modules/zone.js/dist/zone.js', included: true, watched: false},
-      {pattern: 'node_modules/zone.js/dist/proxy.js', included: true, watched: false},
+      {pattern: 'node_modules/systemjs/dist/system.js', included: true, watched: false},
+      {pattern: 'node_modules/zone.js/dist/zone.min.js', included: true, watched: false},
+      {pattern: 'node_modules/zone.js/dist/proxy.min.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/sync-test.js', included: true, watched: false},
-      {pattern: 'node_modules/zone.js/dist/jasmine-patch.js', included: true, watched: false},
+      {pattern: 'node_modules/zone.js/dist/jasmine-patch.min.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/async-test.js', included: true, watched: false},
       {pattern: 'node_modules/zone.js/dist/fake-async-test.js', included: true, watched: false},
       {pattern: 'node_modules/hammerjs/hammer.min.js', included: true, watched: false},
-      {pattern: 'node_modules/hammerjs/hammer.min.js.map', included: false, watched: false},
       {pattern: 'node_modules/moment/min/moment-with-locales.min.js', included: true, watched: false},
 
       // Include all Angular dependencies
       {pattern: 'node_modules/@angular/**/*', included: false, watched: false},
       {pattern: 'node_modules/rxjs/**/*', included: false, watched: false},
 
+      {pattern: 'test/karma-system-config.js', included: true, watched: false},
       {pattern: 'test/karma-test-shim.js', included: true, watched: false},
 
       // Include a Material theme in the test suite.
@@ -60,15 +58,8 @@ module.exports = (config) => {
       subdir: '.'
     },
 
-    // TODO(josephperrott): Determine how to properly disable extra output on ci.
-    specReporter: {
-      maxLogLines: Infinity, // Log out the entire stack trace on errors and failures.
-      suppressSkipped: true,
-      showSpecTiming: true,
-    },
-
     sauceLabs: {
-      testName: 'material2',
+      testName: 'Angular Material Unit Tests',
       startConnect: false,
       recordVideo: false,
       recordScreenshots: false,
@@ -78,11 +69,10 @@ module.exports = (config) => {
     },
 
     browserStack: {
-      project: 'material2',
+      project: 'Angular Material Unit Tests',
       startTunnel: false,
-      retryLimit: 1,
+      retryLimit: 3,
       timeout: 1800,
-      pollingTimeout: 20000,
       video: false,
     },
 
@@ -90,9 +80,12 @@ module.exports = (config) => {
     browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 300000,
     captureTimeout: 180000,
-    browsers: ['ChromeHeadlessLocal'],
 
+    browsers: ['ChromeHeadlessLocal'],
     singleRun: false,
+
+    // Try Websocket for a faster transmission first. Fallback to polling if necessary.
+    transports: ['websocket', 'polling'],
 
     browserConsoleLogOptions: {
       terminal: true,
@@ -104,7 +97,7 @@ module.exports = (config) => {
         // TODO(jelbourn): re-enable random test order once we can de-flake existing issues.
         random: false
       }
-    }
+    },
   });
 
   if (process.env['TRAVIS']) {
@@ -115,8 +108,6 @@ module.exports = (config) => {
 
       config.preprocessors['dist/packages/**/!(*+(.|-)spec).js'] = ['coverage'];
       config.reporters.push('coverage');
-      // Hide passed tests from logs while on travis.
-      config.specReporter.suppressPassed = true;
     }
 
     // The MODE variable is the indicator of what row in the test matrix we're running.
@@ -135,7 +126,12 @@ module.exports = (config) => {
       throw new Error(`Platform "${platform}" unknown, but Travis specified. Exiting.`);
     }
 
-    // Set the browser list to be the same browser 3 times, to shard tests into three instances.
-    config.browsers = (new Array(3)).fill(platformMap[platform][target.toLowerCase()][0]);
+    if (platform !== 'travis') {
+      // To guarantee a better stability for tests running on external browsers, we disable
+      // concurrency. Stability is compared to speed more important.
+      config.concurrency = 1;
+    }
+
+    config.browsers = platformMap[platform][target.toLowerCase()];
   }
 };
