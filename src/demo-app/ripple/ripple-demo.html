@@ -1,4 +1,3 @@
-<!-- Use <mat-card>? -->
 <div class="demo-ripple">
   <section>
     <mat-checkbox [(ngModel)]="disableButtonRipples">Disable button ripples</mat-checkbox>
@@ -12,48 +11,7 @@
     </button>
   </section>
 
-  <section>
-    <div class="demo-ripple-checkbox-option"><mat-checkbox [(ngModel)]="centered">Centered</mat-checkbox></div>
-    <div class="demo-ripple-checkbox-option"><mat-checkbox [(ngModel)]="unbounded">Unbounded</mat-checkbox></div>
-    <div class="demo-ripple-checkbox-option"><mat-checkbox [(ngModel)]="disabled">Disabled</mat-checkbox></div>
-    <div class="demo-ripple-checkbox-option"><mat-checkbox [(ngModel)]="rounded">Rounded container (flaky in Firefox)</mat-checkbox></div>
-  </section>
-  <section>
-    Speed
-    <mat-radio-group [(ngModel)]="rippleSpeed">
-      <mat-radio-button name="demo-ripple-options" value="0.4">Slow</mat-radio-button>
-      <mat-radio-button name="demo-ripple-options" value="1">Normal</mat-radio-button>
-      <mat-radio-button name="demo-ripple-options" value="2">Fast</mat-radio-button>
-    </mat-radio-group>
-  </section>
-  <section>
-    <mat-form-field>
-      <mat-label>Ripple radius</mat-label>
-      <input matInput aria-label="radius" [(ngModel)]="radius">
-    </mat-form-field>
-    <mat-form-field>
-      <mat-label>Ripple color</mat-label>
-      <input matInput aria-label="color" [(ngModel)]="rippleColor">
-    </mat-form-field>
-  </section>
-  <section>
-    <button mat-raised-button (click)="launchRipple()" disableRipple>Launch Ripple</button>
-    <button mat-raised-button (click)="launchRipple(true)" disableRipple>Launch Ripple (Persistent)</button>
-    <button mat-raised-button (click)="launchRipple(true, true)" disableRipple>Launch Ripple (No Animation)</button>
-    <button mat-raised-button (click)="fadeOutAll()" disableRipple>Fade Out All</button>
-  </section>
-  <section>
-    <div class="demo-ripple-container"
-        [class.demo-ripple-disabled]="disabled"
-        [class.demo-ripple-rounded]="rounded"
-        mat-ripple
-        [matRippleCentered]="centered"
-        [matRippleDisabled]="disabled"
-        [matRippleUnbounded]="unbounded"
-        [matRippleRadius]="radius"
-        [matRippleColor]="rippleColor"
-        [matRippleSpeedFactor]="rippleSpeed">
-      Click me
-    </div>
-  </section>
+  <hr>
+
+  <material-example id="ripple-overview"></material-example>
 </div>
