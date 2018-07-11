@@ -9,6 +9,7 @@
 import {defineInjectable, defineInjector,} from '../../di/defs';
 import {inject} from '../../di/injector';
 import * as r3 from '../index';
+import * as sanitization from '../../sanitization/sanitization';
 
 
 /**
@@ -88,4 +89,11 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵt': r3.t,
   'ɵV': r3.V,
   'ɵv': r3.v,
+
+  'ɵzh': sanitization.sanitizeHtml,
+  'ɵzs': sanitization.sanitizeStyle,
+  'ɵzss': sanitization.defaultStyleSanitizer,
+  'ɵzr': sanitization.sanitizeResourceUrl,
+  'ɵzc': sanitization.sanitizeScript,
+  'ɵzu': sanitization.sanitizeUrl
 };

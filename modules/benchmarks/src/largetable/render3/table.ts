@@ -48,12 +48,12 @@ export class LargeTableComponent {
                     {
                       if (rf2 & RenderFlags.Create) {
                         E(0, 'td');
-                        s(c0);
+                        s(null, c0);
                         { T(1); }
                         e();
                       }
                       if (rf2 & RenderFlags.Update) {
-                        sp(0, 0, cell.row % 2 ? '' : 'grey');
+                        sp(0, 0, null, cell.row % 2 ? '' : 'grey');
                         t(1, b(cell.value));
                       }
                     }

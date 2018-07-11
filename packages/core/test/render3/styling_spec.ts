@@ -10,6 +10,8 @@ import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/def
 import {LElementNode} from '../../src/render3/interfaces/node';
 import {Renderer3} from '../../src/render3/interfaces/renderer';
 import {StylingContext, StylingFlags, StylingIndex, allocStylingContext, createStylingContextTemplate, isContextDirty, renderStyling as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '../../src/render3/styling';
+import {defaultStyleSanitizer} from '../../src/sanitization/sanitization';
+import {StyleSanitizeFn} from '../../src/sanitization/style_sanitizer';
 
 import {renderToHtml} from './render_util';
 
@@ -18,9 +20,9 @@ describe('styling', () => {
   beforeEach(() => { element = {} as any; });
 
   function initContext(
-      styles?: (number | string)[] | null,
-      classes?: (string | number | boolean)[] | null): StylingContext {
-    return allocStylingContext(element, createStylingContextTemplate(styles, classes));
+      styles?: (number | string)[] | null, classes?: (string | number | boolean)[] | null,
+      sanitizer?: StyleSanitizeFn | null): StylingContext {
+    return allocStylingContext(element, createStylingContextTemplate(classes, styles, sanitizer));
   }
 
   function renderStyles(context: StylingContext, renderer?: Renderer3) {
@@ -55,14 +57,23 @@ describe('styling', () => {
   }
 
   function updateClasses(context: StylingContext, classes: string | {[key: string]: any} | null) {
-    updateStylingMap(context, null, classes);
+    updateStylingMap(context, classes, null);
   }
 
-  function cleanStyle(a: number = 0, b: number = 0): number { return _clean(a, b, false); }
+  function updateStyles(context: StylingContext, styles: {[key: string]: any} | null) {
+    updateStylingMap(context, null, styles);
+  }
+
+  function cleanStyle(a: number = 0, b: number = 0): number { return _clean(a, b, false, false); }
+
+  function cleanStyleWithSanitization(a: number = 0, b: number = 0): number {
+    return _clean(a, b, false, true);
+  }
 
   function cleanClass(a: number, b: number) { return _clean(a, b, true); }
 
-  function _clean(a: number = 0, b: number = 0, isClassBased: boolean): number {
+  function _clean(
+      a: number = 0, b: number = 0, isClassBased: boolean, sanitizable?: boolean): number {
     let num = 0;
     if (a) {
       num |= a << StylingFlags.BitCountSize;
@@ -73,15 +84,23 @@ describe('styling', () => {
     if (isClassBased) {
       num |= StylingFlags.Class;
     }
+    if (sanitizable) {
+      num |= StylingFlags.Sanitize;
+    }
     return num;
   }
 
-  function _dirty(a: number = 0, b: number = 0, isClassBased: boolean): number {
-    return _clean(a, b, isClassBased) | StylingFlags.Dirty;
+  function _dirty(
+      a: number = 0, b: number = 0, isClassBased: boolean, sanitizable?: boolean): number {
+    return _clean(a, b, isClassBased, sanitizable) | StylingFlags.Dirty;
   }
 
   function dirtyStyle(a: number = 0, b: number = 0): number {
     return _dirty(a, b, false) | StylingFlags.Dirty;
+  }
+
+  function dirtyStyleWithSanitization(a: number = 0, b: number = 0): number {
+    return _dirty(a, b, false, true);
   }
 
   function dirtyClass(a: number, b: number) { return _dirty(a, b, true); }
@@ -90,7 +109,7 @@ describe('styling', () => {
     describe('createStylingContextTemplate', () => {
       it('should initialize empty template', () => {
         const template = initContext();
-        expect(template).toEqual([element, [null], cleanStyle(0, 5), 0, null]);
+        expect(template).toEqual([element, null, [null], cleanStyle(0, 6), 0, null]);
       });
 
       it('should initialize static styles', () => {
@@ -98,28 +117,29 @@ describe('styling', () => {
             initContext([InitialStylingFlags.VALUES_MODE, 'color', 'red', 'width', '10px']);
         expect(template).toEqual([
           element,
+          null,
           [null, 'red', '10px'],
-          dirtyStyle(0, 11),  //
+          dirtyStyle(0, 12),  //
           0,
           null,
 
-          // #5
-          cleanStyle(1, 11),
+          // #6
+          cleanStyle(1, 12),
           'color',
           null,
 
-          // #8
-          cleanStyle(2, 14),
+          // #9
+          cleanStyle(2, 15),
           'width',
           null,
 
-          // #11
-          dirtyStyle(1, 5),
+          // #12
+          dirtyStyle(1, 6),
           'color',
           null,
 
-          // #14
-          dirtyStyle(2, 8),
+          // #15
+          dirtyStyle(2, 9),
           'width',
           null,
         ]);
@@ -132,7 +152,7 @@ describe('styling', () => {
            function Template(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
                elementStart(0, 'span');
-               elementStyling([
+               elementStyling([], [
                  'width', 'height', 'opacity',  //
                  InitialStylingFlags.VALUES_MODE, 'width', '100px', 'height', '100px', 'opacity',
                  '0.5'
@@ -160,30 +180,30 @@ describe('styling', () => {
       it('should build a list of multiple styling values', () => {
         const getStyles = trackStylesFactory();
         const stylingContext = initContext();
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
-        updateStylingMap(stylingContext, {height: '200px'});
+        updateStyles(stylingContext, {height: '200px'});
         expect(getStyles(stylingContext)).toEqual({width: null, height: '200px'});
       });
 
       it('should evaluate the delta between style changes when rendering occurs', () => {
         const stylingContext =
             initContext(['width', 'height', InitialStylingFlags.VALUES_MODE, 'width', '100px']);
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           height: '200px',
         });
         expect(renderStyles(stylingContext)).toEqual({width: '100px', height: '200px'});
         expect(renderStyles(stylingContext)).toEqual({});
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
         expect(renderStyles(stylingContext)).toEqual({height: '100px'});
         updateStyleProp(stylingContext, 1, '100px');
         expect(renderStyles(stylingContext)).toEqual({});
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
@@ -193,7 +213,7 @@ describe('styling', () => {
       it('should update individual values on a set of styles', () => {
         const getStyles = trackStylesFactory();
         const stylingContext = initContext(['width', 'height']);
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
@@ -205,7 +225,7 @@ describe('styling', () => {
         const stylingContext = initContext();
         expect(isContextDirty(stylingContext)).toBeFalsy();
 
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
@@ -213,13 +233,13 @@ describe('styling', () => {
 
         setContextDirty(stylingContext, false);
 
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
         expect(isContextDirty(stylingContext)).toBeFalsy();
 
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '200px',
           height: '100px',
         });
@@ -228,7 +248,7 @@ describe('styling', () => {
 
       it('should only mark itself as updated when any single properties have been applied', () => {
         const stylingContext = initContext(['height']);
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
@@ -258,7 +278,7 @@ describe('styling', () => {
           opacity: '0',
         });
 
-        updateStylingMap(stylingContext, {width: '200px', height: '200px'});
+        updateStyles(stylingContext, {width: '200px', height: '200px'});
 
         expect(getStyles(stylingContext)).toEqual({
           width: '200px',
@@ -282,7 +302,7 @@ describe('styling', () => {
           opacity: '0',
         });
 
-        updateStylingMap(stylingContext, {});
+        updateStyles(stylingContext, {});
 
         expect(getStyles(stylingContext)).toEqual({
           width: '100px',
@@ -295,68 +315,70 @@ describe('styling', () => {
         const stylingContext = initContext(['width', 'height']);
         const getStyles = trackStylesFactory();
 
-        updateStylingMap(stylingContext, {width: '100px', height: '100px'});
+        updateStyles(stylingContext, {width: '100px', height: '100px'});
 
         expect(stylingContext).toEqual([
           element,
+          null,
           [null],
-          dirtyStyle(0, 11),  //
+          dirtyStyle(0, 12),  //
           2,
           null,
 
-          // #5
-          cleanStyle(0, 11),
+          // #6
+          cleanStyle(0, 12),
           'width',
           null,
 
-          // #8
-          cleanStyle(0, 14),
+          // #9
+          cleanStyle(0, 15),
           'height',
           null,
 
-          // #11
-          dirtyStyle(0, 5),
+          // #12
+          dirtyStyle(0, 6),
           'width',
           '100px',
 
-          // #14
-          dirtyStyle(0, 8),
+          // #15
+          dirtyStyle(0, 9),
           'height',
           '100px',
         ]);
 
         getStyles(stylingContext);
-        updateStylingMap(stylingContext, {width: '200px', opacity: '0'});
+        updateStyles(stylingContext, {width: '200px', opacity: '0'});
 
         expect(stylingContext).toEqual([
           element,
+          null,
           [null],
-          dirtyStyle(0, 11),  //
+          dirtyStyle(0, 12),  //
           2,
           null,
 
-          // #5
-          cleanStyle(0, 11),
+          // #6
+          cleanStyle(0, 12),
           'width',
           null,
 
-          // #8
-          cleanStyle(0, 17),
+          // #9
+          cleanStyle(0, 18),
           'height',
           null,
 
-          // #11
-          dirtyStyle(0, 5),
+          // #12
+          dirtyStyle(0, 6),
           'width',
           '200px',
 
-          // #14
+          // #15
           dirtyStyle(),
           'opacity',
           '0',
 
-          // #17
-          dirtyStyle(0, 8),
+          // #18
+          dirtyStyle(0, 9),
           'height',
           null,
         ]);
@@ -364,69 +386,71 @@ describe('styling', () => {
         getStyles(stylingContext);
         expect(stylingContext).toEqual([
           element,
+          null,
           [null],
-          cleanStyle(0, 11),  //
+          cleanStyle(0, 12),  //
           2,
           null,
 
-          // #5
-          cleanStyle(0, 11),
+          // #6
+          cleanStyle(0, 12),
           'width',
           null,
 
-          // #8
-          cleanStyle(0, 17),
+          // #9
+          cleanStyle(0, 18),
           'height',
           null,
 
-          // #11
-          cleanStyle(0, 5),
+          // #12
+          cleanStyle(0, 6),
           'width',
           '200px',
 
-          // #14
+          // #15
           cleanStyle(),
           'opacity',
           '0',
 
-          // #17
-          cleanStyle(0, 8),
+          // #18
+          cleanStyle(0, 9),
           'height',
           null,
         ]);
 
-        updateStylingMap(stylingContext, {width: null});
+        updateStyles(stylingContext, {width: null});
         updateStyleProp(stylingContext, 0, '300px');
 
         expect(stylingContext).toEqual([
           element,
+          null,
           [null],
-          dirtyStyle(0, 11),  //
+          dirtyStyle(0, 12),  //
           2,
           null,
 
-          // #5
-          dirtyStyle(0, 11),
+          // #6
+          dirtyStyle(0, 12),
           'width',
           '300px',
 
-          // #8
-          cleanStyle(0, 17),
+          // #9
+          cleanStyle(0, 18),
           'height',
           null,
 
-          // #11
-          cleanStyle(0, 5),
+          // #12
+          cleanStyle(0, 6),
           'width',
           null,
 
-          // #14
+          // #15
           dirtyStyle(),
           'opacity',
           null,
 
-          // #17
-          cleanStyle(0, 8),
+          // #18
+          cleanStyle(0, 9),
           'height',
           null,
         ]);
@@ -436,33 +460,34 @@ describe('styling', () => {
         updateStyleProp(stylingContext, 0, null);
         expect(stylingContext).toEqual([
           element,
+          null,
           [null],
-          dirtyStyle(0, 11),  //
+          dirtyStyle(0, 12),  //
           2,
           null,
 
-          // #5
-          dirtyStyle(0, 11),
+          // #6
+          dirtyStyle(0, 12),
           'width',
           null,
 
-          // #8
-          cleanStyle(0, 17),
+          // #9
+          cleanStyle(0, 18),
           'height',
           null,
 
-          // #11
-          cleanStyle(0, 5),
+          // #12
+          cleanStyle(0, 6),
           'width',
           null,
 
-          // #14
+          // #15
           cleanStyle(),
           'opacity',
           null,
 
-          // #17
-          cleanStyle(0, 8),
+          // #18
+          cleanStyle(0, 9),
           'height',
           null,
         ]);
@@ -473,116 +498,119 @@ describe('styling', () => {
            const stylingContext = initContext(['lineHeight']);
            const getStyles = trackStylesFactory();
 
-           updateStylingMap(stylingContext, {width: '100px', height: '100px', opacity: '0.5'});
+           updateStyles(stylingContext, {width: '100px', height: '100px', opacity: '0.5'});
 
            expect(stylingContext).toEqual([
              element,
+             null,
              [null],
-             dirtyStyle(0, 8),  //
+             dirtyStyle(0, 9),  //
              1,
              null,
 
-             // #5
-             cleanStyle(0, 17),
+             // #6
+             cleanStyle(0, 18),
              'lineHeight',
              null,
 
-             // #8
+             // #9
              dirtyStyle(),
              'width',
              '100px',
 
-             // #11
+             // #12
              dirtyStyle(),
              'height',
              '100px',
 
-             // #14
+             // #15
              dirtyStyle(),
              'opacity',
              '0.5',
 
-             // #17
-             cleanStyle(0, 5),
+             // #18
+             cleanStyle(0, 6),
              'lineHeight',
              null,
            ]);
 
            getStyles(stylingContext);
 
-           updateStylingMap(stylingContext, {});
+           updateStyles(stylingContext, {});
            expect(stylingContext).toEqual([
              element,
+             null,
              [null],
-             dirtyStyle(0, 8),  //
+             dirtyStyle(0, 9),  //
              1,
              null,
 
-             // #5
-             cleanStyle(0, 17),
+             // #6
+             cleanStyle(0, 18),
              'lineHeight',
              null,
 
-             // #8
+             // #9
              dirtyStyle(),
              'width',
              null,
 
-             // #11
+             // #12
              dirtyStyle(),
              'height',
              null,
 
-             // #14
+             // #15
              dirtyStyle(),
              'opacity',
              null,
 
-             // #17
-             cleanStyle(0, 5),
+             // #18
+             cleanStyle(0, 6),
              'lineHeight',
              null,
            ]);
 
            getStyles(stylingContext);
-           updateStylingMap(stylingContext, {
+           updateStyles(stylingContext, {
              borderWidth: '5px',
            });
 
            expect(stylingContext).toEqual([
              element,
+             null,
              [null],
-             dirtyStyle(0, 8),  //
+             dirtyStyle(0, 9),  //
              1,
              null,
 
-             // #5
-             cleanStyle(0, 20),
+             // #6
+             cleanStyle(0, 21),
              'lineHeight',
              null,
 
-             // #8
+             // #9
              dirtyStyle(),
              'borderWidth',
              '5px',
 
-             // #11
+             // #12
              cleanStyle(),
              'width',
              null,
 
-             // #14
+             // #15
              cleanStyle(),
              'height',
              null,
 
-             // #17
+             // #18
              cleanStyle(),
              'opacity',
              null,
 
-             // #20
-             cleanStyle(0, 5),
+             // #21
+             cleanStyle(0, 6),
              'lineHeight',
              null,
            ]);
@@ -591,83 +619,85 @@ describe('styling', () => {
 
            expect(stylingContext).toEqual([
              element,
+             null,
              [null],
-             dirtyStyle(0, 8),  //
+             dirtyStyle(0, 9),  //
              1,
              null,
 
-             // #5
-             dirtyStyle(0, 20),
+             // #6
+             dirtyStyle(0, 21),
              'lineHeight',
              '200px',
 
-             // #8
+             // #9
              dirtyStyle(),
              'borderWidth',
              '5px',
 
-             // #11
+             // #12
              cleanStyle(),
              'width',
              null,
 
-             // #14
+             // #15
              cleanStyle(),
              'height',
              null,
 
-             // #17
+             // #18
              cleanStyle(),
              'opacity',
              null,
 
-             // #20
-             cleanStyle(0, 5),
+             // #21
+             cleanStyle(0, 6),
              'lineHeight',
              null,
            ]);
 
-           updateStylingMap(stylingContext, {borderWidth: '15px', borderColor: 'red'});
+           updateStyles(stylingContext, {borderWidth: '15px', borderColor: 'red'});
 
            expect(stylingContext).toEqual([
              element,
+             null,
              [null],
-             dirtyStyle(0, 8),  //
+             dirtyStyle(0, 9),  //
              1,
              null,
 
-             // #5
-             dirtyStyle(0, 23),
+             // #6
+             dirtyStyle(0, 24),
              'lineHeight',
              '200px',
 
-             // #8
+             // #9
              dirtyStyle(),
              'borderWidth',
              '15px',
 
-             // #11
+             // #12
              dirtyStyle(),
              'borderColor',
              'red',
 
-             // #14
+             // #15
              cleanStyle(),
              'width',
              null,
 
-             // #17
+             // #18
              cleanStyle(),
              'height',
              null,
 
-             // #20
+             // #21
              cleanStyle(),
              'opacity',
              null,
 
-             // #23
-             cleanStyle(0, 5),
+             // #24
+             cleanStyle(0, 6),
              'lineHeight',
              null,
            ]);
@@ -677,7 +707,7 @@ describe('styling', () => {
         const getStyles = trackStylesFactory();
         const stylingContext = initContext(['height']);
 
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
         });
 
@@ -685,23 +715,24 @@ describe('styling', () => {
 
         expect(stylingContext).toEqual([
           element,
+          null,
           [null],
-          dirtyStyle(0, 8),  //
+          dirtyStyle(0, 9),  //
           1,
           null,
 
-          // #5
-          dirtyStyle(0, 11),
+          // #6
+          dirtyStyle(0, 12),
           'height',
           '200px',
 
-          // #5
+          // #6
           dirtyStyle(),
           'width',
           '100px',
 
-          // #11
-          cleanStyle(0, 5),
+          // #12
+          cleanStyle(0, 6),
           'height',
           null,
         ]);
@@ -710,27 +741,140 @@ describe('styling', () => {
 
         expect(stylingContext).toEqual([
           element,
+          null,
           [null],
-          cleanStyle(0, 8),  //
+          cleanStyle(0, 9),  //
           1,
           null,
 
-          // #5
-          cleanStyle(0, 11),
+          // #6
+          cleanStyle(0, 12),
           'height',
           '200px',
 
-          // #5
+          // #6
           cleanStyle(),
           'width',
           '100px',
 
-          // #11
-          cleanStyle(0, 5),
+          // #12
+          cleanStyle(0, 6),
           'height',
           null,
         ]);
       });
+
+      it('should mark styles that may contain url values as being sanitizable (when a sanitizer is passed in)',
+         () => {
+           const getStyles = trackStylesFactory();
+           const initialStyles = ['border-image', 'border-width'];
+           const styleSanitizer = defaultStyleSanitizer;
+           const stylingContext = initContext(initialStyles, null, styleSanitizer);
+
+           updateStyleProp(stylingContext, 0, 'url(foo.jpg)');
+           updateStyleProp(stylingContext, 1, '100px');
+
+           expect(stylingContext).toEqual([
+             element,
+             styleSanitizer,
+             [null],
+             dirtyStyle(0, 12),  //
+             2,
+             null,
+
+             // #6
+             dirtyStyleWithSanitization(0, 12),
+             'border-image',
+             'url(foo.jpg)',
+
+             // #9
+             dirtyStyle(0, 15),
+             'border-width',
+             '100px',
+
+             // #12
+             cleanStyleWithSanitization(0, 6),
+             'border-image',
+             null,
+
+             // #15
+             cleanStyle(0, 9),
+             'border-width',
+             null,
+           ]);
+
+           updateStyles(stylingContext, {'background-image': 'unsafe'});
+
+           expect(stylingContext).toEqual([
+             element,
+             styleSanitizer,
+             [null],
+             dirtyStyle(0, 12),  //
+             2,
+             null,
+
+             // #6
+             dirtyStyleWithSanitization(0, 15),
+             'border-image',
+             'url(foo.jpg)',
+
+             // #9
+             dirtyStyle(0, 18),
+             'border-width',
+             '100px',
+
+             // #12
+             dirtyStyleWithSanitization(0, 0),
+             'background-image',
+             'unsafe',
+
+             // #15
+             cleanStyleWithSanitization(0, 6),
+             'border-image',
+             null,
+
+             // #18
+             cleanStyle(0, 9),
+             'border-width',
+             null,
+           ]);
+
+           getStyles(stylingContext);
+
+           expect(stylingContext).toEqual([
+             element,
+             styleSanitizer,
+             [null],
+             cleanStyle(0, 12),  //
+             2,
+             null,
+
+             // #6
+             cleanStyleWithSanitization(0, 15),
+             'border-image',
+             'url(foo.jpg)',
+
+             // #9
+             cleanStyle(0, 18),
+             'border-width',
+             '100px',
+
+             // #12
+             cleanStyleWithSanitization(0, 0),
+             'background-image',
+             'unsafe',
+
+             // #15
+             cleanStyleWithSanitization(0, 6),
+             'border-image',
+             null,
+
+             // #18
+             cleanStyle(0, 9),
+             'border-width',
+             null,
+           ]);
+         });
     });
   });
 
@@ -739,20 +883,20 @@ describe('styling', () => {
       const template =
           initContext(null, [InitialStylingFlags.VALUES_MODE, 'one', true, 'two', true]);
       expect(template).toEqual([
-        element, [null, true, true], dirtyStyle(0, 11),  //
+        element, null, [null, true, true], dirtyStyle(0, 12),  //
         0, null,
 
-        // #5
-        cleanClass(1, 11), 'one', null,
+        // #6
+        cleanClass(1, 12), 'one', null,
 
-        // #8
-        cleanClass(2, 14), 'two', null,
+        // #9
+        cleanClass(2, 15), 'two', null,
 
-        // #11
-        dirtyClass(1, 5), 'one', null,
+        // #12
+        dirtyClass(1, 6), 'one', null,
 
-        // #14
-        dirtyClass(2, 8), 'two', null
+        // #15
+        dirtyClass(2, 9), 'two', null
       ]);
     });
 
@@ -787,10 +931,10 @@ describe('styling', () => {
          const stylingContext = initContext(null, ['guy']);
          expect(getClasses(stylingContext)).toEqual({});
 
-         updateStylingMap(stylingContext, null, 'foo bar guy');
+         updateStylingMap(stylingContext, 'foo bar guy');
          expect(getClasses(stylingContext)).toEqual({'foo': true, 'bar': true, 'guy': true});
 
-         updateStylingMap(stylingContext, null, 'foo man');
+         updateStylingMap(stylingContext, 'foo man');
          updateClassProp(stylingContext, 0, true);
          expect(getClasses(stylingContext))
              .toEqual({'foo': true, 'man': true, 'bar': false, 'guy': true});
@@ -803,109 +947,111 @@ describe('styling', () => {
       const stylingContext = initContext(initialStyles, initialClasses);
       expect(stylingContext).toEqual([
         element,
+        null,
         [null, '100px', true],
-        dirtyStyle(0, 17),  //
+        dirtyStyle(0, 18),  //
         2,
         null,
 
-        // #5
-        cleanStyle(1, 17),
+        // #6
+        cleanStyle(1, 18),
         'width',
         null,
 
-        // #8
-        cleanStyle(0, 20),
+        // #9
+        cleanStyle(0, 21),
         'height',
         null,
 
-        // #11
-        cleanClass(2, 23),
+        // #12
+        cleanClass(2, 24),
         'wide',
         null,
 
-        // #14
-        cleanClass(0, 26),
+        // #15
+        cleanClass(0, 27),
         'tall',
         null,
 
-        // #17
-        dirtyStyle(1, 5),
+        // #18
+        dirtyStyle(1, 6),
         'width',
         null,
 
-        // #20
-        cleanStyle(0, 8),
+        // #21
+        cleanStyle(0, 9),
         'height',
         null,
 
-        // #23
-        dirtyClass(2, 11),
+        // #24
+        dirtyClass(2, 12),
         'wide',
         null,
 
-        // #26
-        cleanClass(0, 14),
+        // #27
+        cleanClass(0, 15),
         'tall',
         null,
       ]);
 
       expect(getStylesAndClasses(stylingContext)).toEqual([{width: '100px'}, {wide: true}]);
 
-      updateStylingMap(stylingContext, {width: '200px', opacity: '0.5'}, 'tall round');
+      updateStylingMap(stylingContext, 'tall round', {width: '200px', opacity: '0.5'});
       expect(stylingContext).toEqual([
         element,
+        null,
         [null, '100px', true],
-        dirtyStyle(0, 17),  //
+        dirtyStyle(0, 18),  //
         2,
         'tall round',
 
-        // #5
-        cleanStyle(1, 17),
+        // #6
+        cleanStyle(1, 18),
         'width',
         null,
 
-        // #8
-        cleanStyle(0, 32),
+        // #9
+        cleanStyle(0, 33),
         'height',
         null,
 
-        // #11
-        cleanClass(2, 29),
+        // #12
+        cleanClass(2, 30),
         'wide',
         null,
 
-        // #14
-        cleanClass(0, 23),
+        // #15
+        cleanClass(0, 24),
         'tall',
         null,
 
-        // #17
-        dirtyStyle(1, 5),
+        // #18
+        dirtyStyle(1, 6),
         'width',
         '200px',
 
-        // #20
+        // #21
         dirtyStyle(0, 0),
         'opacity',
         '0.5',
 
-        // #23
-        dirtyClass(0, 14),
+        // #24
+        dirtyClass(0, 15),
         'tall',
         true,
 
-        // #26
+        // #27
         dirtyClass(0, 0),
         'round',
         true,
 
-        // #29
-        cleanClass(2, 11),
+        // #30
+        cleanClass(2, 12),
         'wide',
         null,
 
-        // #32
-        cleanStyle(0, 8),
+        // #33
+        cleanStyle(0, 9),
         'height',
         null,
       ]);
@@ -914,63 +1060,64 @@ describe('styling', () => {
         {width: '200px', opacity: '0.5'}, {tall: true, round: true, wide: true}
       ]);
 
-      updateStylingMap(stylingContext, {width: '500px'}, {tall: true, wide: true});
+      updateStylingMap(stylingContext, {tall: true, wide: true}, {width: '500px'});
       updateStyleProp(stylingContext, 0, '300px');
 
       expect(stylingContext).toEqual([
         element,
+        null,
         [null, '100px', true],
-        dirtyStyle(0, 17),  //
+        dirtyStyle(0, 18),  //
         2,
         null,
 
-        // #5
-        dirtyStyle(1, 17),
+        // #6
+        dirtyStyle(1, 18),
         'width',
         '300px',
 
-        // #8
-        cleanStyle(0, 32),
+        // #9
+        cleanStyle(0, 33),
         'height',
         null,
 
-        // #11
-        cleanClass(2, 23),
+        // #12
+        cleanClass(2, 24),
         'wide',
         null,
 
-        // #14
-        cleanClass(0, 20),
+        // #15
+        cleanClass(0, 21),
         'tall',
         null,
 
-        // #17
-        cleanStyle(1, 5),
+        // #18
+        cleanStyle(1, 6),
         'width',
         '500px',
 
-        // #20
-        cleanClass(0, 14),
+        // #21
+        cleanClass(0, 15),
         'tall',
         true,
 
-        // #23
-        cleanClass(2, 11),
+        // #24
+        cleanClass(2, 12),
         'wide',
         true,
 
-        // #26
+        // #27
         dirtyClass(0, 0),
         'round',
         null,
 
-        // #29
+        // #30
         dirtyStyle(0, 0),
         'opacity',
         null,
 
-        // #32
-        cleanStyle(0, 8),
+        // #33
+        cleanStyle(0, 9),
         'height',
         null,
       ]);
