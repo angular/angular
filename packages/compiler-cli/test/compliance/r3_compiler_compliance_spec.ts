@@ -53,7 +53,7 @@ describe('compiler compliance', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵE(0, "div", $c1$);
-            $r3$.ɵs(null, $c2$);
+            $r3$.ɵs($c2$);
             $r3$.ɵNS();
             $r3$.ɵE(1, "svg");
             $r3$.ɵEe(2, "circle", $c3$);
@@ -103,7 +103,7 @@ describe('compiler compliance', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵE(0, "div", $c1$);
-            $r3$.ɵs(null, $c2$);
+            $r3$.ɵs($c2$);
             $r3$.ɵNM();
             $r3$.ɵE(1, "math");
             $r3$.ɵEe(2, "infinity");
@@ -153,7 +153,7 @@ describe('compiler compliance', () => {
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
             $r3$.ɵE(0, "div", $c1$);
-            $r3$.ɵs(null, $c2$);
+            $r3$.ɵs($c2$);
             $r3$.ɵT(1, "Hello ");
             $r3$.ɵE(2, "b");
             $r3$.ɵT(3, "World");
@@ -329,8 +329,8 @@ describe('compiler compliance', () => {
 
       const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
       const template = `
-        const _c0 = ["background-color"];
-        const _c1 = ["error"];
+        const _c0 = ["error"];
+        const _c1 = ["background-color"];
         …
         MyComponent.ngComponentDef = i0.ɵdefineComponent({type:MyComponent,selectors:[["my-component"]],
             factory:function MyComponent_Factory(){

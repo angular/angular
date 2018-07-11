@@ -154,4 +154,12 @@ export class Identifiers {
 
   // Reserve slots for pure functions
   static reserveSlots: o.ExternalReference = {name: 'ɵrS', moduleName: CORE};
+
+  // sanitization-related functions
+  static sanitizeHtml: o.ExternalReference = {name: 'ɵzh', moduleName: CORE};
+  static sanitizeStyle: o.ExternalReference = {name: 'ɵzs', moduleName: CORE};
+  static defaultStyleSanitizer: o.ExternalReference = {name: 'ɵzss', moduleName: CORE};
+  static sanitizeResourceUrl: o.ExternalReference = {name: 'ɵzr', moduleName: CORE};
+  static sanitizeScript: o.ExternalReference = {name: 'ɵzc', moduleName: CORE};
+  static sanitizeUrl: o.ExternalReference = {name: 'ɵzu', moduleName: CORE};
 }
