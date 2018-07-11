@@ -425,21 +425,15 @@ describe('recognize', () => {
       });
 
       it('should set url segment and index properly when nested empty-path segments', () => {
-        const url = tree('a/b') as any;
+        const url = tree('a') as any;
         recognize(
             RootComponent, [{
               path: 'a',
-              children: [{
-                path: 'b',
-                component: ComponentB,
-                children: [{
-                  path: '',
-                  component: ComponentC,
-                  children: [{path: '', component: ComponentD}]
-                }]
-              }]
+              children: [
+                {path: '', component: ComponentB, children: [{path: '', component: ComponentC}]}
+              ]
             }],
-            url, 'a/b')
+            url, 'a')
             .forEach((s: any) => {
               expect(s.root._urlSegment).toBe(url.root);
               expect(s.root._lastPathIndex).toBe(-1);
@@ -450,17 +444,52 @@ describe('recognize', () => {
 
               const b = s.firstChild(a) !;
               expect(b._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
-              expect(b._lastPathIndex).toBe(1);
+              expect(b._lastPathIndex).toBe(0);
 
               const c = s.firstChild(b) !;
               expect(c._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
-              expect(c._lastPathIndex).toBe(1);
-
-              const d = s.firstChild(c) !;
-              expect(d._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
-              expect(d._lastPathIndex).toBe(1);
+              expect(c._lastPathIndex).toBe(0);
             });
       });
+
+      it('should set url segment and index properly with the "corrected" option for nested empty-path segments',
+         () => {
+           const url = tree('a/b') as any;
+           recognize(
+               RootComponent, [{
+                 path: 'a',
+                 children: [{
+                   path: 'b',
+                   component: ComponentB,
+                   children: [{
+                     path: '',
+                     component: ComponentC,
+                     children: [{path: '', component: ComponentD}]
+                   }]
+                 }]
+               }],
+               url, 'a/b', 'emptyOnly', 'corrected')
+               .forEach((s: any) => {
+                 expect(s.root._urlSegment).toBe(url.root);
+                 expect(s.root._lastPathIndex).toBe(-1);
+
+                 const a = s.firstChild(s.root) !;
+                 expect(a._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+                 expect(a._lastPathIndex).toBe(0);
+
+                 const b = s.firstChild(a) !;
+                 expect(b._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+                 expect(b._lastPathIndex).toBe(1);
+
+                 const c = s.firstChild(b) !;
+                 expect(c._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+                 expect(c._lastPathIndex).toBe(1);
+
+                 const d = s.firstChild(c) !;
+                 expect(d._urlSegment).toBe(url.root.children[PRIMARY_OUTLET]);
+                 expect(d._lastPathIndex).toBe(1);
+               });
+         });
 
       it('should set url segment and index properly when nested empty-path segments (2)', () => {
         const url = tree('');
