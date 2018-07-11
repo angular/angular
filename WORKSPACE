@@ -58,7 +58,7 @@ http_archive(
 # Even better, things like aspects will visit the entire graph including
 # ts_library rules in the devkit repository.
 http_archive(
-    name = "angular_devkit",
+    name = "angular_cli",
     url = "https://github.com/angular/angular-cli/archive/v6.1.0-rc.0.zip",
     strip_prefix = "angular-cli-6.1.0-rc.0",
     sha256 = "8cf320ea58c321e103f39087376feea502f20eaf79c61a4fdb05c7286c8684fd",
