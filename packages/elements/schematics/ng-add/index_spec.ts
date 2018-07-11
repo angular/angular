@@ -50,15 +50,18 @@ describe('Elements Schematics', () => {
     skipTests: false,
   };
 
-  beforeEach((done) => {
-    schematicRunner.runExternalSchematicAsync('@schematics/angular', 'workspace', workspaceOptions)
-        .pipe(concatMap(
-            (tree) => schematicRunner.runExternalSchematicAsync(
-                '@schematics/angular', 'application', appOptions, tree)),
-            (tree) => schematicRunner.runExternalSchematicAsync(
-                '@schematics/angular', 'application', secondAppOptions, tree))
+  beforeEach(done => {
+    schematicRunner
+      .runExternalSchematicAsync('@schematics/angular', 'workspace', workspaceOptions)
+      .pipe(
+        concatMap(tree =>
+          schematicRunner.runExternalSchematicAsync('@schematics/angular', 'application', appOptions, tree)
+        ),
+        concatMap(tree =>
+          schematicRunner.runExternalSchematicAsync('@schematics/angular', 'application', secondAppOptions, tree)
         )
-        .subscribe((tree: UnitTestTree) => appTree = tree, done.fail, done);
+      )
+      .subscribe((tree: UnitTestTree) => (appTree = tree), done.fail, done);
   });
 
   it('should run the ng-add schematic', () => {
