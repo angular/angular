@@ -152,7 +152,9 @@ export class BaseAnimationRenderer implements Renderer2 {
     this.engine.onRemove(this.namespaceId, oldChild, this.delegate);
   }
 
-  selectRootElement(selectorOrNode: any) { return this.delegate.selectRootElement(selectorOrNode); }
+  selectRootElement(selectorOrNode: any, preserveContent?: boolean) {
+    return this.delegate.selectRootElement(selectorOrNode, preserveContent);
+  }
 
   parentNode(node: any) { return this.delegate.parentNode(node); }
 

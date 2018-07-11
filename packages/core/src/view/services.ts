@@ -773,9 +773,9 @@ export class DebugRenderer2 implements Renderer2 {
     this.delegate.removeChild(parent, oldChild);
   }
 
-  selectRootElement(selectorOrNode: string|any): any {
-    const el = this.delegate.selectRootElement(selectorOrNode);
-    const debugCtx = this.debugContext;
+  selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any {
+    const el = this.delegate.selectRootElement(selectorOrNode, preserveContent);
+    const debugCtx = getCurrentDebugContext();
     if (debugCtx) {
       indexDebugNode(new DebugElement(el, null, debugCtx));
     }
