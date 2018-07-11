@@ -19,7 +19,7 @@ const polyfillPath = 'node_modules/document-register-element/build/document-regi
 describe('Elements Schematics', () => {
   const schematicRunner = new SchematicTestRunner(
       '@angular/elements', path.join(__dirname, '../test-collection.json'), );
-  const defaultOptions: ElementsOptions = {project: 'bar', skipPackageJson: false};
+  const defaultOptions: ElementsOptions = {project: 'elements', skipPackageJson: false};
 
   let appTree: UnitTestTree;
 
@@ -54,5 +54,18 @@ describe('Elements Schematics', () => {
     const config = JSON.parse(configText);
     const scripts = config.projects.elements.architect.build.options.scripts;
     expect(scripts[0].input).toEqual(polyfillPath);
+  });
+  
+  it('should run the ng-add schematic on a second project', () => {
+    appOptions.name = 'foo';
+    schematicRunner.runExternalSchematic('@schematics/angular', 'application', appOptions, appTree);
+    const secondAppOptions: ElementsOptions = { project: 'foo', skipPackageJson: false };
+    const tree = schematicRunner.runSchematic('ng-add', secondAppOptions, appTree);
+    const configText = tree.readContent('/angular.json');
+    const config = JSON.parse(configText);
+    const firstAppScripts = config.projects.elements.architect.build.options.scripts;
+    const secondAppScripts = config.projects.foo.architect.build.options.scripts;
+    expect(firstAppScripts).toEqual([]);
+    expect(secondAppScripts[0].input).toEqual(polyfillPath);
   });
 });
