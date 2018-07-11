@@ -403,6 +403,20 @@ describe('MatTabGroup', () => {
       expect(component._tabs.toArray()[1].isActive).toBe(true);
     });
 
+    it('should not fire `selectedTabChange` when the amount of tabs changes', fakeAsync(() => {
+      fixture.detectChanges();
+      fixture.componentInstance.selectedIndex = 1;
+      fixture.detectChanges();
+
+      // Add a new tab at the beginning.
+      spyOn(fixture.componentInstance, 'handleSelection');
+      fixture.componentInstance.tabs.unshift({label: 'New tab', content: 'at the start'});
+      fixture.detectChanges();
+      tick();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.handleSelection).not.toHaveBeenCalled();
+    }));
 
   });
 

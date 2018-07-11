@@ -205,7 +205,10 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
       // Maintain the previously-selected tab if a new tab is added or removed.
       for (let i = 0; i < tabs.length; i++) {
         if (tabs[i].isActive) {
-          this._indexToSelect = i;
+          // Assign both to the `_indexToSelect` and `_selectedIndex` so we don't fire a changed
+          // event, otherwise the consumer may end up in an infinite loop in some edge cases like
+          // adding a tab within the `selectedIndexChange` event.
+          this._indexToSelect = this._selectedIndex = i;
           break;
         }
       }
