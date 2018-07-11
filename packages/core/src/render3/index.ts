@@ -51,14 +51,13 @@ export {
 
   element as Ee,
   elementAttribute as a,
-  elementClass as k,
-  elementClassNamed as kn,
+  elementClassProp as cp,
   elementEnd as e,
   elementProperty as p,
   elementStart as E,
 
   elementStyling as s,
-  elementStyle as sm,
+  elementStylingMap as sm,
   elementStyleProp as sp,
   elementStylingApply as sa,
 
