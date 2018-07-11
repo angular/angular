@@ -319,6 +319,10 @@ describe('Format date', () => {
       expect(formatDate(3000, 'm:ss.S', 'en')).toEqual('0:03.0');
       expect(formatDate(3000, 'm:ss.SS', 'en')).toEqual('0:03.00');
       expect(formatDate(3000, 'm:ss.SSS', 'en')).toEqual('0:03.000');
+      expect(formatDate(3001, 'm:ss', 'en')).toEqual('0:03');
+      expect(formatDate(3001, 'm:ss.S', 'en')).toEqual('0:03.0');
+      expect(formatDate(3001, 'm:ss.SS', 'en')).toEqual('0:03.00');
+      expect(formatDate(3001, 'm:ss.SSS', 'en')).toEqual('0:03.001');
     });
   });
 });
