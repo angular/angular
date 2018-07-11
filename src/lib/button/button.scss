@@ -22,6 +22,16 @@
   opacity: 1;
 }
 
+// Disable the hover styles on non-hover devices. Since this is more of a progressive
+// enhancement and not all desktop browsers support this kind of media query, we can't
+// use something like `@media (hover)`.
+@media (hover: none) {
+  .mat-button:hover .mat-button-focus-overlay,
+  .mat-stroked-button:hover .mat-button-focus-overlay {
+    opacity: 0;
+  }
+}
+
 .mat-raised-button {
   @include mat-raised-button;
 }
