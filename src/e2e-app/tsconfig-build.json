@@ -42,7 +42,6 @@
   ],
   "angularCompilerOptions": {
     "skipMetadataEmit": true,
-    // TODO: disabled for now due to @angular/forms
-    "fullTemplateTypeCheck": false
+    "fullTemplateTypeCheck": true
   }
 }

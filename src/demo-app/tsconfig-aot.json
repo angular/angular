@@ -33,7 +33,6 @@
   ],
   "angularCompilerOptions": {
     "skipTemplateCodegen": false,
-    // TODO: disabled for now due to @angular/forms
-    "fullTemplateTypeCheck": false
+    "fullTemplateTypeCheck": true
   }
 }

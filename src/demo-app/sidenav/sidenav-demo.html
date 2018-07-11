@@ -9,7 +9,7 @@
                  [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
       Start Side Sidenav
       <br>
-      <button mat-button (click)="start.close('mouse')">Close</button>
+      <button mat-button (click)="start.close()">Close</button>
       <br>
       <button mat-button (click)="end.open('keyboard')">Open End Side</button>
       <br>
@@ -24,7 +24,7 @@
                  [fixedInViewport]="fixed" [fixedTopGap]="fixedTop" [fixedBottomGap]="fixedBottom">
       End Side Sidenav
       <br>
-      <button mat-button (click)="end.close('mouse')">Close</button>
+      <button mat-button (click)="end.close()">Close</button>
       <div class="demo-filler-content" *ngFor="let c of fillerContent">Filler Content</div>
     </mat-sidenav>
 
