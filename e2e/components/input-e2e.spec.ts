@@ -1,12 +1,4 @@
 import {browser, by, element} from 'protractor';
-import {screenshot} from '../screenshot';
-
-
-function blurAndScreenshot(msg: string) {
-  browser.executeScript(`document.activeElement && document.activeElement.blur();`);
-  screenshot(msg);
-}
-
 
 describe('input', () => {
   describe('text input', () => {
@@ -67,7 +59,6 @@ describe('input', () => {
     it('should resize correctly', () => {
       let input = element(by.id('autosize-text-area'));
       input.sendKeys('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-      blurAndScreenshot('autosize multiple rows');
     });
 
     it('should enfore max rows', () => {
@@ -77,7 +68,6 @@ describe('input', () => {
           'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
           'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' +
           'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
-      blurAndScreenshot('autosize more than max rows');
     });
   });
 });

@@ -19,9 +19,7 @@ echo ""
 echo "Starting the deployment script. Running mode: ${DEPLOY_MODE}"
 echo ""
 
-if [[ "${DEPLOY_MODE}" == "screenshot-tool" ]]; then
-  retryCall ${DEPLOY_RETRIES} ./scripts/deploy/deploy-screenshot-tool.sh
-elif [[ "${DEPLOY_MODE}" == "dashboard" ]]; then
+if [[ "${DEPLOY_MODE}" == "dashboard" ]]; then
   retryCall ${DEPLOY_RETRIES} ./scripts/deploy/deploy-dashboard.sh
 elif [[ "${DEPLOY_MODE}" == "build-artifacts" ]]; then
   retryCall ${DEPLOY_RETRIES} ./scripts/deploy/publish-build-artifacts.sh

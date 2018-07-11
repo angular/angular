@@ -1,6 +1,4 @@
 import {browser, by, element, Key, ExpectedConditions} from 'protractor';
-import {screenshot} from '../screenshot';
-
 
 describe('checkbox', () => {
 
@@ -11,7 +9,6 @@ describe('checkbox', () => {
       let checkboxEl = element(by.id('test-checkbox'));
       let inputEl = element(by.css('input[id=test-checkbox-input]'));
 
-      screenshot('start');
       checkboxEl.click();
 
       expect(inputEl.getAttribute('checked'))
@@ -19,7 +16,6 @@ describe('checkbox', () => {
 
       await browser.wait(ExpectedConditions.not(
         ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
-      screenshot('checked');
 
       checkboxEl.click();
 
@@ -28,7 +24,6 @@ describe('checkbox', () => {
 
       await browser.wait(ExpectedConditions.not(
         ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
-      screenshot('unchecked');
     });
 
     it('should toggle the checkbox when pressing space', () => {

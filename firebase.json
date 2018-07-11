@@ -1,7 +1,4 @@
 {
-  "functions": {
-    "source": "tools/screenshot-test/functions"
-  },
   "hosting": {
     "public": "dist/packages/demo-app",
     "rewrites": [

@@ -4,14 +4,12 @@ import {
 import {expectFocusOn, expectToExist} from '../util/asserts';
 import {pressKeys} from '../util/actions';
 import {Key} from 'selenium-webdriver';
-import {screenshot} from '../screenshot';
 
 describe('stepper', () => {
   beforeEach(() => browser.get('/stepper'));
 
   it('should render a stepper', () => {
     expectToExist('mat-horizontal-stepper');
-    screenshot('mat-horizontal-stepper');
   });
 
   describe('basic behavior', () => {
@@ -22,7 +20,6 @@ describe('stepper', () => {
       expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText())
           .toBe('1\nFill out your name');
 
-      screenshot('start');
       nextButton.get(0).click();
 
       expect(await element(by.css('mat-step-header[aria-selected="true"]')).getText())
@@ -30,7 +27,6 @@ describe('stepper', () => {
 
       await browser.wait(ExpectedConditions.not(
           ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
-      screenshot('click next');
 
       previousButton.get(0).click();
 
@@ -39,7 +35,6 @@ describe('stepper', () => {
 
       await browser.wait(ExpectedConditions.not(
           ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
-      screenshot('click back');
     });
 
     it('should change focus with keyboard interaction', () => {

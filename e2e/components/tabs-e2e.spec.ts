@@ -8,8 +8,6 @@ import {
   ExpectedConditions
 } from 'protractor';
 import {pressKeys} from '../util/index';
-import {screenshot} from '../screenshot';
-
 
 describe('tabs', () => {
   describe('basic behavior', () => {
@@ -31,7 +29,6 @@ describe('tabs', () => {
 
       await browser.wait(ExpectedConditions.not(
         ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
-      screenshot('click1');
 
       tabLabels.get(0).click();
       expect(await getLabelActiveStates(tabLabels)).toEqual([true, false, false]);
@@ -39,7 +36,6 @@ describe('tabs', () => {
 
       await browser.wait(ExpectedConditions.not(
         ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
-      screenshot('click0');
     });
 
     it('should change focus with keyboard interaction', async () => {

@@ -1,6 +1,0 @@
-<mat-toolbar color="primary">
-  <div *ngIf="user">{{user.email}}</div>
-  <button mat-button (click)="signIntoGithub()" *ngIf="!user">Sign In with Github</button>
-  <button mat-button (click)="signOutFromGithub()" *ngIf="user">Sign out</button>
-</mat-toolbar>
-

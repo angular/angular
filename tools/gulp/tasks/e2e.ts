@@ -26,8 +26,7 @@ const assetsGlob = join(appDir, '**/*.+(html|css|json|ts)');
 task('e2e', sequenceTask(
   [':test:protractor:setup', 'serve:e2eapp'],
   ':test:protractor',
-  ':serve:e2eapp:stop',
-  'screenshots',
+  ':serve:e2eapp:stop'
 ));
 
 /**

@@ -1,5 +1,4 @@
 import {browser, by, element} from 'protractor';
-import {screenshot} from '../screenshot';
 
 describe('expansion', () => {
 
@@ -7,12 +6,10 @@ describe('expansion', () => {
 
   it('should show an accordion', async () => {
     expect(element(by.css('.mat-accordion'))).toBeDefined();
-    screenshot();
   });
 
   it('should show two panels', async () => {
     expect(await element.all(by.css('.mat-expansion-panel')).count()).toBe(2);
-    screenshot();
   });
 
   it('should hide contents of the expansion panel on click', async () => {

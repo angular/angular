@@ -1,6 +1,4 @@
 import {browser, by, element, ExpectedConditions} from 'protractor';
-import {screenshot} from '../screenshot';
-
 
 describe('button', () => {
   describe('disabling behavior', () => {
@@ -12,7 +10,6 @@ describe('button', () => {
 
       await browser.wait(ExpectedConditions.not(
         ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
-      screenshot('clicked once');
 
       element(by.id('disable-toggle')).click();
       element(by.id('test-button')).click();
@@ -20,7 +17,6 @@ describe('button', () => {
 
       await browser.wait(ExpectedConditions.not(
         ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
-      screenshot('click disabled');
     });
   });
 });

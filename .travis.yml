@@ -40,8 +40,6 @@ jobs:
       if: type = push
     - env: "DEPLOY_MODE=docs-content"
       if: type = push
-    - env: "DEPLOY_MODE=screenshot-tool"
-      if: type = cron
     - env: "DEPLOY_MODE=dashboard"
       if: type = cron
     # Closure Compiler CI check is temporarily disabled until a new version of

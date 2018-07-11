@@ -4,7 +4,6 @@
 /dist
 /tmp
 /deploy
-/screenshots
 /bazel-out
 
 # Example module file will be auto-generated.
