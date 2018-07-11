@@ -502,7 +502,7 @@ An [npm package](guide/npm-packages) that plugs gaps in a browser's JavaScript i
 
 ## Project
 
-In Angular, a folder within a [workspace](guide/glossary#workspace) that contains one or more Angular apps or [libraries](guide/glossary#library). 
+In Angular, a folder within a [workspace](guide/glossary#workspace) that contains an Angular app or [library](guide/glossary#library). A workspace can contain multiple projects. All apps in a workspace can use libraries in the same workspace.
 
 ## Provider
 
@@ -727,8 +727,8 @@ See [Custom element](guide/glossary#custom-element)
 
 ## Workspace
 
-In Angular, a folder that contains a [project](guide/glossary#project).
-The [CLI](guide/glossary#cli) `new` command creates a workspace to contain apps and libraries, and other commands must be executed from within a workspace folder. 
+In Angular, a folder that contains [projects](guide/glossary#project) (that is, apps and libraries).
+The [CLI](guide/glossary#cli) `new` command creates a workspace to contain projects. Commands such as `add` and `generate`, that create or operate on apps and libraries, must be executed from within a workspace folder. 
 
 {@a X}
 
