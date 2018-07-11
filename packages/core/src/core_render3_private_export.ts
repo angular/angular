@@ -102,14 +102,16 @@ export {
 } from './render3/index';
 export {NgModuleDef as ɵNgModuleDef} from './metadata/ng_module';
 export {
-  bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
-  bypassSanitizationTrustStyle as ɵbypassSanitizationTrustStyle,
-  bypassSanitizationTrustScript as ɵbypassSanitizationTrustScript,
-  bypassSanitizationTrustUrl as ɵbypassSanitizationTrustUrl,
-  bypassSanitizationTrustResourceUrl as ɵbypassSanitizationTrustResourceUrl,
   sanitizeHtml as ɵsanitizeHtml,
   sanitizeStyle as ɵsanitizeStyle,
   sanitizeUrl as ɵsanitizeUrl,
   sanitizeResourceUrl as ɵsanitizeResourceUrl,
 } from './sanitization/sanitization';
+export {
+  bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
+  bypassSanitizationTrustStyle as ɵbypassSanitizationTrustStyle,
+  bypassSanitizationTrustScript as ɵbypassSanitizationTrustScript,
+  bypassSanitizationTrustUrl as ɵbypassSanitizationTrustUrl,
+  bypassSanitizationTrustResourceUrl as ɵbypassSanitizationTrustResourceUrl,
+} from './sanitization/bypass';
 // clang-format on
