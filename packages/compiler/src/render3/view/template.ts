@@ -368,10 +368,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     });
 
+    let hasMapBasedStyling = false;
     for (let i = 0; i < styleInputs.length; i++) {
       const input = styleInputs[i];
       const isMapBasedStyleBinding = i === 0 && input.name === 'style';
-      if (!isMapBasedStyleBinding && !stylesIndexMap.hasOwnProperty(input.name)) {
+      if (isMapBasedStyleBinding) {
+        hasMapBasedStyling = true;
+      } else if (!stylesIndexMap.hasOwnProperty(input.name)) {
         stylesIndexMap[input.name] = currStyleIndex++;
       }
     }
@@ -384,9 +387,16 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     }
 
+    // in the event that a [style] binding is used then sanitization will
+    // always be imported because it is not possible to know ahead of time
+    // whether style bindings will use or not use any sanitizable properties
+    // that isStyleSanitizable() will detect
+    let useDefaultStyleSanitizer = hasMapBasedStyling;
+
     // this will build the instructions so that they fall into the following syntax
     // => [prop1, prop2, prop3, 0, prop1, value1, prop2, value2]
     Object.keys(stylesIndexMap).forEach(prop => {
+      useDefaultStyleSanitizer = useDefaultStyleSanitizer || isStyleSanitizable(prop);
       initialStyleDeclarations.push(o.literal(prop));
     });
 
@@ -480,7 +490,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           // a constant because the inital style values do not change (since they're static).
           paramsList.push(
               this.constantPool.getConstLiteral(o.literalArr(initialStyleDeclarations), true));
-        } else if (initialClassDeclarations.length) {
+        } else if (initialClassDeclarations.length || useDefaultStyleSanitizer) {
           // no point in having an extra `null` value unless there are follow-up params
           paramsList.push(o.NULL_EXPR);
         }
@@ -492,6 +502,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           // a constant because the inital class values do not change (since they're static).
           paramsList.push(
               this.constantPool.getConstLiteral(o.literalArr(initialClassDeclarations), true));
+        } else if (useDefaultStyleSanitizer) {
+          // no point in having an extra `null` value unless there are follow-up params
+          paramsList.push(o.NULL_EXPR);
+        }
+
+        if (useDefaultStyleSanitizer) {
+          paramsList.push(o.importExpr(R3.getStyleSanitizer));
         }
 
         this._creationCode.push(o.importExpr(R3.elementStyling).callFn(paramsList).toStmt());
@@ -551,11 +568,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         for (i; i < styleInputs.length; i++) {
           const input = styleInputs[i];
           const convertedBinding = this.convertPropertyBinding(implicit, input.value, true);
+          const params = [convertedBinding];
+          const sanitizationRef = resolveSanitizationFn(input, input.securityContext);
+          if (sanitizationRef) {
+            params.push(sanitizationRef);
+          }
+
           const key = input.name;
           const styleIndex: number = stylesIndexMap[key] !;
           this.instruction(
               this._bindingCode, input.sourceSpan, R3.elementStyleProp, indexLiteral,
-              o.literal(styleIndex), convertedBinding);
+              o.literal(styleIndex), ...params);
         }
 
         lastInputCommand = styleInputs[styleInputs.length - 1];
@@ -566,11 +589,17 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         for (i; i < classInputs.length; i++) {
           const input = classInputs[i];
           const convertedBinding = this.convertPropertyBinding(implicit, input.value, true);
+          const params = [convertedBinding];
+          const sanitizationRef = resolveSanitizationFn(input, input.securityContext);
+          if (sanitizationRef) {
+            params.push(sanitizationRef);
+          }
+
           const key = input.name;
           const classIndex: number = classesIndexMap[key] !;
           this.instruction(
               this._bindingCode, input.sourceSpan, R3.elementClassProp, indexLiteral,
-              o.literal(classIndex), convertedBinding);
+              o.literal(classIndex), ...params);
         }
 
         lastInputCommand = classInputs[classInputs.length - 1];
@@ -588,12 +617,19 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
 
       const convertedBinding = this.convertPropertyBinding(implicit, input.value);
+
       const instruction = mapBindingToInstruction(input.type);
       if (instruction) {
+        const params = [convertedBinding];
+        const sanitizationRef = resolveSanitizationFn(input, input.securityContext);
+        if (sanitizationRef) {
+          params.push(sanitizationRef);
+        }
+
         // TODO(chuckj): runtime: security context?
         this.instruction(
             this._bindingCode, input.sourceSpan, instruction, o.literal(elementIndex),
-            o.literal(input.name), convertedBinding);
+            o.literal(input.name), ...params);
       } else {
         this._unsupported(`binding type ${input.type}`);
       }
@@ -1060,4 +1096,37 @@ export function makeBindingParser(): BindingParser {
 
 function isClassBinding(input: t.BoundAttribute): boolean {
   return input.name == 'className' || input.name == 'class';
+}
+
+function resolveSanitizationFn(input: t.BoundAttribute, context: core.SecurityContext) {
+  switch (context) {
+    case core.SecurityContext.HTML:
+      return o.importExpr(R3.sanitizeHtml);
+    case core.SecurityContext.SCRIPT:
+      return o.importExpr(R3.sanitizeScript);
+    case core.SecurityContext.STYLE:
+      // the compiler does not fill in an instruction for [style.prop?] binding
+      // values because the style algorithm knows internally what props are subject
+      // to sanitization (only [attr.style] values are explicitly sanitized)
+      return input.type === BindingType.Attribute ? o.importExpr(R3.sanitizeStyle) : null;
+    case core.SecurityContext.URL:
+      return o.importExpr(R3.sanitizeUrl);
+    case core.SecurityContext.RESOURCE_URL:
+      return o.importExpr(R3.sanitizeResourceUrl);
+    default:
+      return null;
+  }
+}
+
+function isStyleSanitizable(prop: string): boolean {
+  switch (prop) {
+    case 'background-image':
+    case 'background':
+    case 'border-image':
+    case 'filter':
+    case 'list-style':
+    case 'list-style-image':
+      return true;
+  }
+  return false;
 }

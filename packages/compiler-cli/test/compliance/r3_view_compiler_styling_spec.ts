@@ -43,7 +43,7 @@ describe('compiler compliance: styling', () => {
           template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵE(0, "div");
-              $r3$.ɵs();
+              $r3$.ɵs((null as any), (null as any), $r3$.ɵzss);
               $r3$.ɵe();
             }
             if (rf & 2) {
@@ -96,7 +96,7 @@ describe('compiler compliance: styling', () => {
               template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵE(0, "div");
-                  $r3$.ɵs(_c0);
+                  $r3$.ɵs(_c0, (null as any), $r3$.ɵzss);
                   $r3$.ɵe();
                 }
                 if (rf & 2) {
@@ -104,7 +104,56 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵsp(0, 1, $ctx$.myWidth);
                   $r3$.ɵsp(0, 2, $ctx$.myHeight);
                   $r3$.ɵsa(0);
-                  $r3$.ɵa(0, "style", $r3$.ɵb("border-width: 10px"));
+                  $r3$.ɵa(0, "style", $r3$.ɵb('border-width: 10px'), $r3$.ɵzs);
+                }
+              }
+            });
+        `;
+
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+
+    it('should assign a sanitizer instance to the element style allocation instruction if any url-based properties are detected',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: 'my-component',
+                  template: \`<div [style.background-image]="myImage">\`
+                })
+                export class MyComponent {
+                  myImage = 'url(foo.jpg)';
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+           }
+         };
+
+         const template = `
+          const _c0 = ['background-image'];
+          class MyComponent {
+            static ngComponentDef = i0.ɵdefineComponent({
+              type: MyComponent,
+              selectors:[['my-component']],
+              factory:function MyComponent_Factory(){
+                return new MyComponent();
+              },
+              template: function MyComponent_Template(rf: $RenderFlags$, $ctx$: $MyComponent$) {
+                if (rf & 1) {
+                  $r3$.ɵE(0, 'div');
+                  $r3$.ɵs(_c0, (null as any), $r3$.ɵzss);
+                  $r3$.ɵe();
+                }
+                if (rf & 2) {
+                  $r3$.ɵsp(0, 0, $ctx$.myImage);
+                  $r3$.ɵsa(0);
+>>>>>>> feat(ivy): bridge compile instructions to include sanitization helpers:packages/compiler/test/render3/r3_view_compiler_styling_spec.ts
                 }
               }
             });
@@ -251,7 +300,7 @@ describe('compiler compliance: styling', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵa(0, "class", $r3$.ɵb("round"));
-                  $r3$.ɵa(0, "style", $r3$.ɵb("height:100px"));
+                  $r3$.ɵa(0, "style", $r3$.ɵb('height:100px'), $r3$.ɵzs);
                 }
               }
             });

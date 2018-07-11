@@ -25,7 +25,7 @@ import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, Curre
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {StylingContext, StylingIndex, allocStylingContext, createStylingContextTemplate, renderStyling as renderElementStyles, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling';
+import {StyleSanitizeFn, StylingContext, allocStylingContext, createStylingContextTemplate, renderStyling as renderElementStyles, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling';
 import {assertDataInRangeInternal, isDifferent, loadElementInternal, loadInternal, stringify} from './util';
 import {ViewRef} from './view_ref';
 
@@ -1304,12 +1304,14 @@ export function elementClassProp<T>(
  */
 export function elementStyling<T>(
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
-    classDeclarations?: (string | boolean | InitialStylingFlags)[] | null): void {
+    classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
+    styleSanitizer?: StyleSanitizeFn | null): void {
   const lElement = currentElementNode !;
   const tNode = lElement.tNode;
   if (!tNode.stylingTemplate) {
     // initialize the styling template.
-    tNode.stylingTemplate = createStylingContextTemplate(styleDeclarations, classDeclarations);
+    tNode.stylingTemplate =
+        createStylingContextTemplate(styleDeclarations, classDeclarations, styleSanitizer);
   }
   if (styleDeclarations && styleDeclarations.length ||
       classDeclarations && classDeclarations.length) {
@@ -1377,22 +1379,23 @@ export function elementStylingApply<T>(index: number): void {
  *        renaming as part of minification.
  * @param value New value to write (null to remove).
  * @param suffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param sanitizer An optional function used to transform the value typically used for
- *        sanitization.
+ *        Note that when a suffix is provided then the underlying sanitizer will
+ *        be ignored.
  */
 export function elementStyleProp<T>(
-    index: number, styleIndex: number, value: T | null, suffix?: string): void;
-export function elementStyleProp<T>(
-    index: number, styleIndex: number, value: T | null, sanitizer?: SanitizerFn): void;
-export function elementStyleProp<T>(
-    index: number, styleIndex: number, value: T | null,
-    suffixOrSanitizer?: string | SanitizerFn): void {
+    index: number, styleIndex: number, value: T | null, suffix?: string): void {
   let valueToAdd: string|null = null;
   if (value) {
-    valueToAdd =
-        typeof suffixOrSanitizer == 'function' ? suffixOrSanitizer(value) : stringify(value);
-    if (typeof suffixOrSanitizer == 'string') {
-      valueToAdd = valueToAdd + suffixOrSanitizer;
+    if (suffix) {
+      // when a suffix is applied then it will bypass
+      // sanitization entirely (b/c a new string is created)
+      valueToAdd = stringify(value) + suffix;
+    } else {
+      // sanitization happens by dealing with a String value
+      // this means that the string value will be passed through
+      // into the style rendering later (which is where the value
+      // will be sanitized before it is applied)
+      valueToAdd = value as any as string;
     }
   }
   updateElementStyleProp(getStylingContext(index), styleIndex, valueToAdd);
