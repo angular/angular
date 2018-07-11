@@ -147,7 +147,7 @@ export class FocusMonitor implements OnDestroy {
    * Focuses the element via the specified focus origin.
    * @param element Element to focus.
    * @param origin Focus origin.
-   * @param focusOption Options that can be used to configure the focus behavior.
+   * @param options Options that can be used to configure the focus behavior.
    */
   focusVia(element: HTMLElement, origin: FocusOrigin, options?: FocusOptions): void {
     this._setOriginForCurrentEventQueue(origin);
