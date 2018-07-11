@@ -196,12 +196,12 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
 
   private _clearSvgElement() {
     const layoutElement: HTMLElement = this._elementRef.nativeElement;
-    const childCount = layoutElement.childNodes.length;
+    let childCount = layoutElement.childNodes.length;
 
     // Remove existing non-element child nodes and SVGs, and add the new SVG element. Note that
     // we can't use innerHTML, because IE will throw if the element has a data binding.
-    for (let i = 0; i < childCount; i++) {
-      const child = layoutElement.childNodes[i];
+    while (childCount--) {
+      const child = layoutElement.childNodes[childCount];
 
       // 1 corresponds to Node.ELEMENT_NODE. We remove all non-element nodes in order to get rid
       // of any loose text nodes, as well as any SVG elements in order to remove any old icons.
