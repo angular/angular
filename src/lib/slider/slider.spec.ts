@@ -1386,6 +1386,38 @@ describe('MatSlider', () => {
     });
   });
 
+  describe('slider with a two-way binding', () => {
+    let fixture: ComponentFixture<SliderWithTwoWayBinding>;
+    let testComponent: SliderWithTwoWayBinding;
+    let sliderNativeElement: HTMLElement;
+
+    beforeEach(() => {
+      fixture = createComponent(SliderWithTwoWayBinding);
+      fixture.detectChanges();
+
+      testComponent = fixture.componentInstance;
+      let sliderDebugElement = fixture.debugElement.query(By.directive(MatSlider));
+      sliderNativeElement = sliderDebugElement.nativeElement;
+    });
+
+    it('should sync the value binding in both directions', () => {
+      expect(testComponent.value).toBe(0);
+      expect(testComponent.slider.value).toBe(0);
+
+      dispatchClickEventSequence(sliderNativeElement, 0.1);
+      fixture.detectChanges();
+
+      expect(testComponent.value).toBe(10);
+      expect(testComponent.slider.value).toBe(10);
+
+      testComponent.value = 20;
+      fixture.detectChanges();
+
+      expect(testComponent.value).toBe(20);
+      expect(testComponent.slider.value).toBe(20);
+    });
+  });
+
 });
 
 // Disable animations and make the slider an even 100px (+ 8px padding on either side)
@@ -1550,6 +1582,15 @@ class SliderWithTabIndexBinding {
 })
 class SliderWithNativeTabindexAttr {
   tabIndex: number;
+}
+
+@Component({
+  template: '<mat-slider [(value)]="value"></mat-slider>',
+  styles: [styles],
+})
+class SliderWithTwoWayBinding {
+  @ViewChild(MatSlider) slider: MatSlider;
+  value = 0;
 }
 
 /**

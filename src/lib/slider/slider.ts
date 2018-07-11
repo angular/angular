@@ -262,6 +262,13 @@ export class MatSlider extends _MatSliderMixinBase
   /** Event emitted when the slider thumb moves. */
   @Output() readonly input: EventEmitter<MatSliderChange> = new EventEmitter<MatSliderChange>();
 
+  /**
+   * Emits when the raw value of the slider changes. This is here primarily
+   * to facilitate the two-way binding for the `value` input.
+   * @docs-private
+   */
+  @Output() readonly valueChange: EventEmitter<number | null> = new EventEmitter<number | null>();
+
   /** The value to be used for display purposes. */
   get displayValue(): string | number {
     if (this.displayWith) {
@@ -666,6 +673,7 @@ export class MatSlider extends _MatSliderMixinBase
   /** Emits a change event if the current value is different from the last emitted value. */
   private _emitChangeEvent() {
     this._controlValueAccessorChangeFn(this.value);
+    this.valueChange.emit(this.value);
     this.change.emit(this._createChangeEvent());
   }
 
