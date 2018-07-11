@@ -14,7 +14,7 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary")
 
 nodejs_binary(
     name = "rollup_with_build_optimizer",
-    data = ["@angular_devkit//packages/angular_devkit/build_optimizer:lib"],
+    data = ["@angular_cli//packages/angular_devkit/build_optimizer:lib"],
     # Since our rule extends the one in rules_nodejs, we use the same runtime
     # dependency @build_bazel_rules_nodejs_rollup_deps. We don't need any
     # additional npm dependencies when we run rollup or uglify.

@@ -24,7 +24,7 @@ load(":esm5.bzl", "esm5_outputs_aspect", "flatten_esm5", "esm5_root_dir")
 PACKAGES=["packages/core/src", "packages/common/src", "packages/compiler/src", "external/rxjs"]
 PLUGIN_CONFIG="{sideEffectFreeModules: [\n%s]}" % ",\n".join(
     ["        '.esm5/{0}'".format(p) for p in PACKAGES])
-BO_ROLLUP="angular_devkit/packages/angular_devkit/build_optimizer/src/build-optimizer/rollup-plugin.js"
+BO_ROLLUP="angular_cli/packages/angular_devkit/build_optimizer/src/build-optimizer/rollup-plugin.js"
 BO_PLUGIN="require('%s').default(%s)" % (BO_ROLLUP, PLUGIN_CONFIG)
 
 def _use_plain_rollup(ctx):
