@@ -25,6 +25,15 @@
     }
   }
 
+  // Disable the hover on touch devices since it can appear like it is stuck. We can't use
+  // `@media (hover)` above, because the desktop support browser support isn't great.
+  @media (hover: none) {
+    .mat-expansion-panel:not(.mat-expanded):not([aria-disabled='true'])
+      .mat-expansion-panel-header:hover {
+      background: mat-color($background, card);
+    }
+  }
+
   .mat-expansion-panel-header-title {
     color: mat-color($foreground, text);
   }
