@@ -1,5 +1,11 @@
+html, body {
+  width: 100%;
+  height: 100%;
+}
+
 body {
   font-family: Roboto, 'Helvetica Neue', sans-serif;
+  margin: 0;
 
   // Helps fonts on OSX looks more consistent with other systems
   // Isn't currently in button styles due to performance concerns
@@ -10,6 +16,7 @@ body {
 
   .mat-sidenav {
     min-width: 15vw;
+    position: fixed;
 
     .mat-button {
       width: 100%;
@@ -47,4 +54,9 @@ body {
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+}
+
+.demo-container {
+  min-width: 100%;
+  min-height: 100%;
 }
