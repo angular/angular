@@ -192,6 +192,9 @@
     "name": "namespaceHTML"
   },
   {
+    "name": "readElementValue"
+  },
+  {
     "name": "refreshChildComponents"
   },
   {

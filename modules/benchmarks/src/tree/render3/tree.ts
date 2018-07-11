@@ -41,16 +41,16 @@ export class TreeComponent {
     template: function(rf: RenderFlags, ctx: TreeComponent) {
       if (rf & RenderFlags.Create) {
         E(0, 'span');
-        s(1, c0);
-        { T(2); }
+        s(c0);
+        { T(1); }
         e();
+        C(2);
         C(3);
-        C(4);
       }
       if (rf & RenderFlags.Update) {
-        sp(1, 0, ctx.data.depth % 2 ? '' : 'grey');
-        t(2, i1(' ', ctx.data.value, ' '));
-        cR(3);
+        sp(0, 0, ctx.data.depth % 2 ? '' : 'grey');
+        t(1, i1(' ', ctx.data.value, ' '));
+        cR(2);
         {
           if (ctx.data.left != null) {
             let rf0 = V(0);
@@ -67,7 +67,7 @@ export class TreeComponent {
           }
         }
         cr();
-        cR(4);
+        cR(3);
         {
           if (ctx.data.right != null) {
             let rf0 = V(0);
@@ -114,18 +114,18 @@ export function TreeTpl(rf: RenderFlags, ctx: TreeNode) {
     E(0, 'tree');
     {
       E(1, 'span');
-      s(2, c1);
-      { T(3); }
+      s(c1);
+      { T(2); }
       e();
+      C(3);
       C(4);
-      C(5);
     }
     e();
   }
   if (rf & RenderFlags.Update) {
-    sp(2, 0, ctx.depth % 2 ? '' : 'grey');
-    t(3, i1(' ', ctx.value, ' '));
-    cR(4);
+    sp(1, 0, ctx.depth % 2 ? '' : 'grey');
+    t(2, i1(' ', ctx.value, ' '));
+    cR(3);
     {
       if (ctx.left != null) {
         let rf0 = V(0);
@@ -134,7 +134,7 @@ export function TreeTpl(rf: RenderFlags, ctx: TreeNode) {
       }
     }
     cr();
-    cR(5);
+    cR(4);
     {
       if (ctx.right != null) {
         let rf0 = V(0);

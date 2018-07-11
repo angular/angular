@@ -7,8 +7,9 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, text, textBinding} from '../../src/render3/instructions';
-import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, load, text, textBinding} from '../../src/render3/instructions';
+import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
+
 import {ComponentFixture, createComponent, renderToHtml} from './render_util';
 
 describe('exports', () => {
@@ -212,13 +213,15 @@ describe('exports', () => {
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
+          elementStyling(null, [InitialStylingFlags.VALUES_MODE, 'red', true]);
           elementEnd();
           elementStart(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
           elementEnd();
         }
         const tmp = load(2) as any;
         if (rf & RenderFlags.Update) {
-          elementClassNamed(0, 'red', bind(tmp.checked));
+          elementClassProp(0, 0, tmp.checked);
+          elementStylingApply(0);
         }
       }
 

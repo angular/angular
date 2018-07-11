@@ -40,18 +40,11 @@ function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefin
     case BindingType.Attribute:
       return R3.elementAttribute;
     case BindingType.Class:
-      return R3.elementClassNamed;
+      return R3.elementClassProp;
     default:
       return undefined;
   }
 }
-
-// `className` is used below instead of `class` because the interception
-// code (where this map is used) deals with DOM element property values
-// (like elm.propName) and not component bindining properties (like [propName]).
-const SPECIAL_CASED_PROPERTIES_INSTRUCTION_MAP: {[index: string]: o.ExternalReference} = {
-  'className': R3.elementClass
-};
 
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
   private _dataIndex = 0;
@@ -310,33 +303,59 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const i18nMessages: o.Statement[] = [];
     const attributes: o.Expression[] = [];
     const initialStyleDeclarations: o.Expression[] = [];
+    const initialClassDeclarations: o.Expression[] = [];
 
     const styleInputs: t.BoundAttribute[] = [];
+    const classInputs: t.BoundAttribute[] = [];
     const allOtherInputs: t.BoundAttribute[] = [];
 
     element.inputs.forEach((input: t.BoundAttribute) => {
-      // [attr.style] should not be treated as a styling-based
-      // binding since it is intended to write directly to the attr
-      // and therefore will skip all style resolution that is present
-      // with style="", [style]="" and [style.prop]="" assignments
-      if (input.name == 'style' && input.type == BindingType.Property) {
-        // this should always go first in the compilation (for [style])
-        styleInputs.splice(0, 0, input);
-      } else if (input.type == BindingType.Style) {
-        styleInputs.push(input);
-      } else {
-        allOtherInputs.push(input);
+      switch (input.type) {
+        // [attr.style] or [attr.class] should not be treated as styling-based
+        // bindings since they are intended to be written directly to the attr
+        // and therefore will skip all style/class resolution that is present
+        // with style="", [style]="" and [style.prop]="", class="",
+        // [class.prop]="". [class]="" assignments
+        case BindingType.Property:
+          if (input.name == 'style') {
+            // this should always go first in the compilation (for [style])
+            styleInputs.splice(0, 0, input);
+          } else if (isClassBinding(input)) {
+            // this should always go first in the compilation (for [class])
+            classInputs.splice(0, 0, input);
+          } else {
+            allOtherInputs.push(input);
+          }
+          break;
+        case BindingType.Style:
+          styleInputs.push(input);
+          break;
+        case BindingType.Class:
+          classInputs.push(input);
+          break;
+        default:
+          allOtherInputs.push(input);
+          break;
       }
     });
 
     let currStyleIndex = 0;
+    let currClassIndex = 0;
     let staticStylesMap: {[key: string]: any}|null = null;
+    let staticClassesMap: {[key: string]: boolean}|null = null;
     const stylesIndexMap: {[key: string]: number} = {};
+    const classesIndexMap: {[key: string]: number} = {};
     Object.getOwnPropertyNames(outputAttrs).forEach(name => {
       const value = outputAttrs[name];
       if (name == 'style') {
         staticStylesMap = parseStyle(value);
         Object.keys(staticStylesMap).forEach(prop => { stylesIndexMap[prop] = currStyleIndex++; });
+      } else if (name == 'class') {
+        staticClassesMap = {};
+        value.split(/\s+/g).forEach(className => {
+          classesIndexMap[className] = currClassIndex++;
+          staticClassesMap ![className] = true;
+        });
       } else {
         attributes.push(o.literal(name));
         if (attrI18nMetas.hasOwnProperty(name)) {
@@ -357,6 +376,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
     }
 
+    for (let i = 0; i < classInputs.length; i++) {
+      const input = classInputs[i];
+      const isMapBasedClassBinding = i === 0 && isClassBinding(input);
+      if (!isMapBasedClassBinding && !stylesIndexMap.hasOwnProperty(input.name)) {
+        classesIndexMap[input.name] = currClassIndex++;
+      }
+    }
+
     // this will build the instructions so that they fall into the following syntax
     // => [prop1, prop2, prop3, 0, prop1, value1, prop2, value2]
     Object.keys(stylesIndexMap).forEach(prop => {
@@ -364,7 +391,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     });
 
     if (staticStylesMap) {
-      initialStyleDeclarations.push(o.literal(core.InitialStylingFlags.INITIAL_STYLES));
+      initialStyleDeclarations.push(o.literal(core.InitialStylingFlags.VALUES_MODE));
 
       Object.keys(staticStylesMap).forEach(prop => {
         initialStyleDeclarations.push(o.literal(prop));
@@ -372,6 +399,22 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         initialStyleDeclarations.push(o.literal(value));
       });
     }
+
+    Object.keys(classesIndexMap).forEach(prop => {
+      initialClassDeclarations.push(o.literal(prop));
+    });
+
+    if (staticClassesMap) {
+      initialClassDeclarations.push(o.literal(core.InitialStylingFlags.VALUES_MODE));
+
+      Object.keys(staticClassesMap).forEach(className => {
+        initialClassDeclarations.push(o.literal(className));
+        initialClassDeclarations.push(o.literal(true));
+      });
+    }
+
+    const hasStylingInstructions = initialStyleDeclarations.length || styleInputs.length ||
+        initialClassDeclarations.length || classInputs.length;
 
     const attrArg: o.Expression = attributes.length > 0 ?
         this.constantPool.getConstLiteral(o.literalArr(attributes), true) :
@@ -411,10 +454,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const implicit = o.variable(CONTEXT_NAME);
 
-    const elementStyleIndex =
-        (initialStyleDeclarations.length || styleInputs.length) ? this.allocateDataSlot() : 0;
     const createSelfClosingInstruction =
-        elementStyleIndex === 0 && element.children.length === 0 && element.outputs.length === 0;
+        !hasStylingInstructions && element.children.length === 0 && element.outputs.length === 0;
 
     if (createSelfClosingInstruction) {
       this.instruction(
@@ -429,16 +470,30 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           ...trimTrailingNulls(parameters));
 
       // initial styling for static style="..." attributes
-      if (elementStyleIndex > 0) {
-        let paramsList: (o.Expression)[] = [o.literal(elementStyleIndex)];
+      if (hasStylingInstructions) {
+        const paramsList: (o.Expression)[] = [];
+
         if (initialStyleDeclarations.length) {
-          // the template compiler handles initial styling (e.g. style="foo") values
+          // the template compiler handles initial style (e.g. style="foo") values
           // in a special command called `elementStyle` so that the initial styles
           // can be processed during runtime. These initial styles values are bound to
           // a constant because the inital style values do not change (since they're static).
           paramsList.push(
               this.constantPool.getConstLiteral(o.literalArr(initialStyleDeclarations), true));
+        } else if (initialClassDeclarations.length) {
+          // no point in having an extra `null` value unless there are follow-up params
+          paramsList.push(o.NULL_EXPR);
         }
+
+        if (initialClassDeclarations.length) {
+          // the template compiler handles initial class styling (e.g. class="foo") values
+          // in a special command called `elementClass` so that the initial class
+          // can be processed during runtime. These initial class values are bound to
+          // a constant because the inital class values do not change (since they're static).
+          paramsList.push(
+              this.constantPool.getConstLiteral(o.literalArr(initialClassDeclarations), true));
+        }
+
         this._creationCode.push(o.importExpr(R3.elementStyling).callFn(paramsList).toStmt());
       }
 
@@ -465,25 +520,64 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       });
     }
 
-    if (styleInputs.length && elementStyleIndex > 0) {
-      const indexLiteral = o.literal(elementStyleIndex);
-      styleInputs.forEach((input, i) => {
-        const isMapBasedStyleBinding = i == 0 && input.name == 'style';
-        const convertedBinding = this.convertPropertyBinding(implicit, input.value, true);
-        if (isMapBasedStyleBinding) {
-          this.instruction(
-              this._bindingCode, input.sourceSpan, R3.elementStyle, indexLiteral, convertedBinding);
-        } else {
+    if ((styleInputs.length || classInputs.length) && hasStylingInstructions) {
+      const indexLiteral = o.literal(elementIndex);
+
+      const firstStyle = styleInputs[0];
+      const mapBasedStyleInput = firstStyle && firstStyle.name == 'style' ? firstStyle : null;
+
+      const firstClass = classInputs[0];
+      const mapBasedClassInput = firstClass && isClassBinding(firstClass) ? firstClass : null;
+
+      const stylingInput = mapBasedStyleInput || mapBasedClassInput;
+      if (stylingInput) {
+        const params: o.Expression[] = [];
+        if (mapBasedStyleInput) {
+          params.push(this.convertPropertyBinding(implicit, mapBasedStyleInput.value, true));
+        } else if (mapBasedClassInput) {
+          params.push(o.NULL_EXPR);
+        }
+        if (mapBasedClassInput) {
+          params.push(this.convertPropertyBinding(implicit, mapBasedClassInput.value, true));
+        }
+        this.instruction(
+            this._bindingCode, stylingInput.sourceSpan, R3.elementStylingMap, indexLiteral,
+            ...params);
+      }
+
+      let lastInputCommand: t.BoundAttribute|null = null;
+      if (styleInputs.length) {
+        let i = mapBasedStyleInput ? 1 : 0;
+        for (i; i < styleInputs.length; i++) {
+          const input = styleInputs[i];
+          const convertedBinding = this.convertPropertyBinding(implicit, input.value, true);
           const key = input.name;
-          let styleIndex: number = stylesIndexMap[key] !;
+          const styleIndex: number = stylesIndexMap[key] !;
           this.instruction(
               this._bindingCode, input.sourceSpan, R3.elementStyleProp, indexLiteral,
               o.literal(styleIndex), convertedBinding);
         }
-      });
 
-      const spanEnd = styleInputs[styleInputs.length - 1].sourceSpan;
-      this.instruction(this._bindingCode, spanEnd, R3.elementStylingApply, indexLiteral);
+        lastInputCommand = styleInputs[styleInputs.length - 1];
+      }
+
+      if (classInputs.length) {
+        let i = mapBasedClassInput ? 1 : 0;
+        for (i; i < classInputs.length; i++) {
+          const input = classInputs[i];
+          const convertedBinding = this.convertPropertyBinding(implicit, input.value, true);
+          const key = input.name;
+          const classIndex: number = classesIndexMap[key] !;
+          this.instruction(
+              this._bindingCode, input.sourceSpan, R3.elementClassProp, indexLiteral,
+              o.literal(classIndex), convertedBinding);
+        }
+
+        lastInputCommand = classInputs[classInputs.length - 1];
+      }
+
+      this.instruction(
+          this._bindingCode, lastInputCommand !.sourceSpan, R3.elementStylingApply, indexLiteral);
     }
 
     // Generate element input bindings
@@ -494,18 +588,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       }
 
       const convertedBinding = this.convertPropertyBinding(implicit, input.value);
-      const specialInstruction = SPECIAL_CASED_PROPERTIES_INSTRUCTION_MAP[input.name];
-      if (specialInstruction) {
-        // special case for [style] and [class] bindings since they are not handled as
-        // standard properties within this implementation. Instead they are
-        // handed off to special cased instruction handlers which will then
-        // delegate them as animation sequences (or input bindings for dirs/cmps)
-        this.instruction(
-            this._bindingCode, input.sourceSpan, specialInstruction, o.literal(elementIndex),
-            convertedBinding);
-        return;
-      }
-
       const instruction = mapBindingToInstruction(input.type);
       if (instruction) {
         // TODO(chuckj): runtime: security context?
@@ -974,4 +1056,8 @@ export function makeBindingParser(): BindingParser {
   return new BindingParser(
       new Parser(new Lexer()), DEFAULT_INTERPOLATION_CONFIG, new DomElementSchemaRegistry(), null,
       []);
+}
+
+function isClassBinding(input: t.BoundAttribute): boolean {
+  return input.name == 'className' || input.name == 'class';
 }

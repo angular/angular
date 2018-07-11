@@ -63,6 +63,7 @@ export function assertComponentType(
     msg: string =
         'Type passed in is not ComponentType, it does not have \'ngComponentDef\' property.') {
   if (!actual.ngComponentDef) {
+    debugger;
     throwError(msg);
   }
 }
