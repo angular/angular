@@ -41,6 +41,7 @@ $mat-list-item-inset-divider-offset: 72px;
   // being `inline` by default.
   display: block;
   height: $base-height;
+  -webkit-tap-highlight-color: transparent;
 
   .mat-list-item-content {
     display: flex;

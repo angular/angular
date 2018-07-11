@@ -18,6 +18,7 @@
   text-decoration: none;  // Removes anchor underline styling
   position: relative;
   overflow: hidden;  // Keeps the ripple from extending outside the element bounds
+  -webkit-tap-highlight-color: transparent;
 
   [mat-stretch-tabs] & {
     flex-basis: 0;

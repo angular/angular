@@ -13,6 +13,7 @@
   max-width: 100%;
   box-sizing: border-box;
   align-items: center;
+  -webkit-tap-highlight-color: transparent;
 
   &[aria-disabled='true'] {
     @include user-select(none);

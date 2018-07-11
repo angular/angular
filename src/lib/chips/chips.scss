@@ -24,6 +24,7 @@ $mat-chip-remove-size: 18px;
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .mat-standard-chip {
