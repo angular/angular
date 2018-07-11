@@ -1,9 +1,8 @@
 
-// #docregion
 import { ApplicationRef, ComponentFactoryResolver, Injectable, Injector } from '@angular/core';
-
+import { NgElement, WithProperties } from '@angular/elements';
 import { PopupComponent } from './popup.component';
-import { NgElementConstructor } from '../elements-dist';
+
 
 @Injectable()
 export class PopupService {
@@ -40,7 +39,7 @@ export class PopupService {
   // This uses the new custom-element method to add the popup to the DOM.
   showAsElement(message: string) {
     // Create element
-    const popupEl = document.createElement('popup-element');
+    const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
 
     // Listen to the close event
     popupEl.addEventListener('closed', () => document.body.removeChild(popupEl));
