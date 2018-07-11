@@ -39,7 +39,7 @@ module.exports = (config) => {
       {pattern: 'dist/packages/**/core/theming/prebuilt/indigo-pink.css', included: true, watched: true},
 
       // Includes all package tests and source files into karma. Those files will be watched.
-      // This pattern also matches all all sourcemap files and TypeScript files for debugging.
+      // This pattern also matches all sourcemap files and TypeScript files for debugging.
       {pattern: 'dist/packages/**/*', included: false, watched: true},
     ],
 
