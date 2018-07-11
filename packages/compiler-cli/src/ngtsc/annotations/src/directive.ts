@@ -80,17 +80,19 @@ export function extractDirectiveMetadata(
   const decoratedElements =
       members.filter(member => !member.isStatic && member.decorators !== null);
 
+  const coreModule = isCore ? undefined : '@angular/core';
+
   // Construct the map of inputs both from the @Directive/@Component
   // decorator, and the decorated
   // fields.
   const inputsFromMeta = parseFieldToPropertyMapping(directive, 'inputs', checker);
   const inputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, 'Input', '@angular/core'), checker);
+      filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), checker);
 
   // And outputs.
   const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', checker);
   const outputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, '@angular/core', 'Output'), checker);
+      filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), checker);
 
   // Parse the selector.
   let selector = '';
