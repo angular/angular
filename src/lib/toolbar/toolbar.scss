@@ -2,10 +2,14 @@
 @import '../../cdk/a11y/a11y';
 
 $mat-toolbar-height-desktop: 64px !default;
+$mat-toolbar-height-mobile: 56px !default;
+$mat-toolbar-row-padding: 16px !default;
+
+/** @deprecated @deletion-target 8.0.0 */
 $mat-toolbar-height-mobile-portrait: 56px !default;
+/** @deprecated @deletion-target 8.0.0 */
 $mat-toolbar-height-mobile-landscape: 48px !default;
 
-$mat-toolbar-row-padding: 16px !default;
 
 
 @mixin mat-toolbar-height($height) {
@@ -49,10 +53,9 @@ $mat-toolbar-row-padding: 16px !default;
 // Set the default height for the toolbar.
 @include mat-toolbar-height($mat-toolbar-height-desktop);
 
-// As per specs, mobile devices will use a different height for toolbars than for desktop.
-// The height for mobile landscape devices has been ignored since relying on `@media orientation`
-// is causing issues on devices with a soft-keyboard.
-// See: https://material.io/guidelines/layout/structure.html#structure-app-bar
+// As per specs, toolbars should have a different height in mobile devices. This has been
+// specified in the old guidelines and is still observable in the new specifications by looking at
+// the spec images. See: https://material.io/design/components/app-bars-top.html#anatomy
 @media ($mat-xsmall) {
-  @include mat-toolbar-height($mat-toolbar-height-mobile-portrait);
+  @include mat-toolbar-height($mat-toolbar-height-mobile);
 }
