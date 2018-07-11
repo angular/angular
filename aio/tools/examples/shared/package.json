@@ -22,6 +22,7 @@
     "@angular/common": "^6.0.0",
     "@angular/compiler": "^6.0.0",
     "@angular/core": "^6.0.0",
+    "@angular/elements": "^6.0.0",
     "@angular/forms": "^6.0.0",
     "@angular/http": "^6.0.0",
     "@angular/platform-browser": "^6.0.0",
