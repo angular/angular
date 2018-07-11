@@ -31,6 +31,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="translucent">
 
+  <!-- Imports custom elements polyfill for iOS 9.3.5 Safari -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/custom-elements/1.1.2/custom-elements.min.js"></script>
+
   <script>
     // Dynamically, pre-emptively, add `noindex`, which will be removed when the doc is ready and valid
     tag = document.createElement('meta'); tag.name = 'robots'; tag.content = 'noindex';
@@ -50,7 +53,7 @@
   </script>
   <!-- End Google Analytics -->
 
-  <script>
+  <!-- <script>
     // Report fatal errors to Google Analytics
     window.onerror = function() {
       ga('send', 'exception', {exDescription: formatError.apply(null, arguments), exFatal: true});
@@ -80,7 +83,7 @@
         return (msg + '\n' + stack).substr(0, 150);
       }
     };
-  </script>
+  </script> -->
 
   <script nomodule src="generated/ie-polyfills.min.js"></script>
 
