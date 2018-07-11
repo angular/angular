@@ -1,6 +1,5 @@
-// #docregion
 import { Component, Injector } from '@angular/core';
-import { createNgElementConstructor } from '../elements-dist';
+import { createCustomElement } from '@angular/elements';
 import { PopupService } from './popup.service';
 import { PopupComponent } from './popup.component';
 
@@ -15,7 +14,7 @@ import { PopupComponent } from './popup.component';
 export class AppComponent {
   constructor(injector: Injector, public popup: PopupService) {
     // Convert `PopupComponent` to a custom element.
-    const PopupElement = createNgElementConstructor(PopupComponent, {injector});
+    const PopupElement = createCustomElement(PopupComponent, {injector});
     // Register the custom element with the browser.
     customElements.define('popup-element', PopupElement);
   }
