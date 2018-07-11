@@ -1,3 +1,13 @@
+<a name="6.0.9"></a>
+## [6.0.9](https://github.com/angular/angular/compare/6.0.8...6.0.9) (2018-07-11)
+
+
+### Bug Fixes
+
+* **common:** format fractional seconds ([#24844](https://github.com/angular/angular/issues/24844)) ([3c93d07](https://github.com/angular/angular/commit/3c93d07)), closes [#24831](https://github.com/angular/angular/issues/24831)
+
+
+
 <a name="6.0.8"></a>
 ## [6.0.8](https://github.com/angular/angular/compare/6.0.7...6.0.8) (2018-07-11)
 
