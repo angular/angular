@@ -193,20 +193,9 @@ function padNumber(
   return neg + strNum;
 }
 
-/**
- * Trim a fractional part to `digits` number of digits.
- * Right pads with "0" to fit the requested number of digits if needed.
- *
- * @param num The fractional part value
- * @param digits The width of the output
- */
-function trimRPadFractional(num: number, digits: number): string {
-  let strNum = String(num);
-  // Add padding at the end
-  while (strNum.length < digits) {
-    strNum = strNum + 0;
-  }
-  return strNum.substr(0, digits);
+function formatFractionalSeconds(milliseconds: number, digits: number): string {
+  const strMs = padNumber(milliseconds, 3);
+  return strMs.substr(0, digits);
 }
 
 /**
@@ -226,7 +215,7 @@ function dateGetter(
         part = 12;
       }
     } else if (name === DateType.FractionalSeconds) {
-      return trimRPadFractional(part, size);
+      return formatFractionalSeconds(part, size);
     }
 
     const localeMinus = getLocaleNumberSymbol(locale, NumberSymbol.MinusSign);
