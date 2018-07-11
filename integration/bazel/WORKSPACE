@@ -12,15 +12,6 @@ http_archive(
 )
 
 http_archive(
-    name = "bazel_gazelle",
-    urls = [
-        "https://mirror.bazel.build/github.com/bazelbuild/bazel-gazelle/releases/download/0.12.0/bazel-gazelle-0.12.0.tar.gz",
-        "https://github.com/bazelbuild/bazel-gazelle/releases/download/0.12.0/bazel-gazelle-0.12.0.tar.gz",
-    ],
-    sha256 = "ddedc7aaeb61f2654d7d7d4fd7940052ea992ccdb031b8f9797ed143ac7e8d43",
-)
-
-http_archive(
     name = "io_bazel_rules_webtesting",
     url = "https://github.com/bazelbuild/rules_webtesting/archive/8fd9ce0fd9254bde251da0bc373d6cd08e811434.zip",
     strip_prefix = "rules_webtesting-8fd9ce0fd9254bde251da0bc373d6cd08e811434",
