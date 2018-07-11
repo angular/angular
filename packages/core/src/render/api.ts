@@ -268,7 +268,7 @@ export abstract class Renderer2 {
    * @param selectorOrNode The DOM element.
    * @returns The root element.
    */
-  abstract selectRootElement(selectorOrNode: string|any): any;
+  abstract selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any;
   /**
    * Implement this callback to get the parent of a given node
    * in the host element's DOM.
