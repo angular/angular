@@ -55,11 +55,11 @@ describe('Elements Schematics', () => {
     const scripts = config.projects.elements.architect.build.options.scripts;
     expect(scripts[0].input).toEqual(polyfillPath);
   });
-  
+
   it('should run the ng-add schematic on a second project', () => {
     appOptions.name = 'foo';
     schematicRunner.runExternalSchematic('@schematics/angular', 'application', appOptions, appTree);
-    const secondAppOptions: ElementsOptions = { project: 'foo', skipPackageJson: false };
+    const secondAppOptions: ElementsOptions = {project: 'foo', skipPackageJson: false};
     const tree = schematicRunner.runSchematic('ng-add', secondAppOptions, appTree);
     const configText = tree.readContent('/angular.json');
     const config = JSON.parse(configText);
