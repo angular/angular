@@ -9,7 +9,8 @@
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassNamed, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
@@ -747,12 +748,12 @@ describe('render3 integration test', () => {
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
-            elementStyling(1, ['border-color']);
+            elementStyling(['border-color']);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
-            elementStyleProp(1, 0, ctx);
-            elementStylingApply(1);
+            elementStyleProp(0, 0, ctx);
+            elementStylingApply(0);
           }
         }
 
@@ -766,12 +767,12 @@ describe('render3 integration test', () => {
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
-            elementStyling(1, ['font-size']);
+            elementStyling(['font-size']);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
-            elementStyleProp(1, 0, ctx, 'px');
-            elementStylingApply(1);
+            elementStyleProp(0, 0, ctx, 'px');
+            elementStylingApply(0);
           }
         }
 
@@ -787,10 +788,12 @@ describe('render3 integration test', () => {
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
+            elementStyling(null, ['active']);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
-            elementClassNamed(0, 'active', bind(ctx));
+            elementClassProp(0, 0, ctx);
+            elementStylingApply(0);
           }
         }
 
@@ -809,11 +812,14 @@ describe('render3 integration test', () => {
       it('should work correctly with existing static classes', () => {
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'span', ['class', 'existing']);
+            elementStart(0, 'span');
+            elementStyling(
+                null, ['existing', 'active', InitialStylingFlags.VALUES_MODE, 'existing', true]);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
-            elementClassNamed(0, 'active', bind(ctx));
+            elementClassProp(0, 1, ctx);
+            elementStylingApply(0);
           }
         }
 

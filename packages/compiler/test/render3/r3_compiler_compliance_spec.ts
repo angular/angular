@@ -6,8 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {InitialStylingFlags} from '../../src/core';
 import {MockDirectory, setup} from '../aot/test_util';
+
 import {compile, expectEmit} from './mock_compile';
+
 
 /* These tests are codified version of the tests in compiler_canonical_spec.ts. Every
   * test in compiler_canonical_spec.ts should have a corresponding test here.
@@ -44,15 +47,17 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ['class', 'my-app', 'title', 'Hello'];
-        const $c2$ = ['cx', '20', 'cy', '30', 'r', '50'];
+        const $c1$ = ['title', 'Hello'];
+        const $c2$ = ['my-app', ${InitialStylingFlags.VALUES_MODE}, 'my-app', true];
+        const $c3$ = ['cx', '20', 'cy', '30', 'r', '50'];
         …
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
             $r3$.ɵE(0, 'div', $c1$);
+            $r3$.ɵs((null as any), $c2$);
             $r3$.ɵNS();
             $r3$.ɵE(1, 'svg');
-            $r3$.ɵEe(2, 'circle', $c2$);
+            $r3$.ɵEe(2, 'circle', $c3$);
             $r3$.ɵe();
             $r3$.ɵNH();
             $r3$.ɵE(3, 'p');
@@ -93,11 +98,13 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ['class', 'my-app', 'title', 'Hello'];
+        const $c1$ = ['title', 'Hello'];
+        const $c2$ = ['my-app', ${InitialStylingFlags.VALUES_MODE}, 'my-app', true];
         …
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
             $r3$.ɵE(0, 'div', $c1$);
+            $r3$.ɵs((null as any), $c2$);
             $r3$.ɵNM();
             $r3$.ɵE(1, 'math');
             $r3$.ɵEe(2, 'infinity');
@@ -141,11 +148,13 @@ describe('compiler compliance', () => {
 
       // The template should look like this (where IDENT is a wild card for an identifier):
       const template = `
-        const $c1$ = ['class', 'my-app', 'title', 'Hello'];
+        const $c1$ = ['title', 'Hello'];
+        const $c2$ = ['my-app', ${InitialStylingFlags.VALUES_MODE}, 'my-app', true];
         …
         template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
           if (rf & 1) {
             $r3$.ɵE(0, 'div', $c1$);
+            $r3$.ɵs((null as any), $c2$);
             $r3$.ɵT(1, 'Hello ');
             $r3$.ɵE(2, 'b');
             $r3$.ɵT(3, 'World');
@@ -322,6 +331,7 @@ describe('compiler compliance', () => {
       const factory = 'factory: function MyComponent_Factory() { return new MyComponent(); }';
       const template = `
         const _c0 = ['background-color'];
+        const _c1 = ['error'];
         class MyComponent {
           static ngComponentDef = i0.ɵdefineComponent({type:MyComponent,selectors:[['my-component']],
               factory:function MyComponent_Factory(){
@@ -329,13 +339,13 @@ describe('compiler compliance', () => {
               },template:function MyComponent_Template(rf:number,ctx:any){
                 if (rf & 1) {
                   $r3$.ɵE(0, 'div');
-                  $r3$.ɵs(1, _c0);
+                  $r3$.ɵs(_c0, _c1);
                   $r3$.ɵe();
                 }
                 if (rf & 2) {
-                  $r3$.ɵsp(1, 0, ctx.color);
-                  $r3$.ɵsa(1);
-                  $r3$.ɵkn(0, 'error', $r3$.ɵb(ctx.error));
+                  $r3$.ɵsp(0, 0, ctx.color);
+                  $r3$.ɵcp(0, 0, ctx.error);
+                  $r3$.ɵsa(0);
                 }
               }
       `;
