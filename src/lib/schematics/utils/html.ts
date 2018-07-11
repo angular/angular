@@ -11,7 +11,7 @@ import {Project} from './devkit-utils/config';
  */
 export function getHeadTag(host: Tree, src: string) {
   const document = parse5.parse(src,
-    {locationInfo: true}) as parse5.AST.Default.Document;
+    {sourceCodeLocationInfo: true}) as parse5.AST.Default.Document;
 
   let head;
   const visit = (nodes: parse5.AST.Default.Node[]) => {
@@ -34,7 +34,7 @@ export function getHeadTag(host: Tree, src: string) {
   }
 
   return {
-    position: head.__location.startTag.endOffset
+    position: head.sourceCodeLocation.startTag.endOffset
   };
 }
 
