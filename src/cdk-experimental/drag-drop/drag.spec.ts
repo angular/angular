@@ -9,7 +9,7 @@ import {
   Provider,
   ViewEncapsulation,
 } from '@angular/core';
-import {TestBed, ComponentFixture, fakeAsync, flush} from '@angular/core/testing';
+import {TestBed, ComponentFixture, fakeAsync, flush, tick} from '@angular/core/testing';
 import {DragDropModule} from './drag-drop-module';
 import {dispatchMouseEvent, dispatchTouchEvent} from '@angular/cdk/testing';
 import {Directionality} from '@angular/cdk/bidi';
@@ -401,6 +401,36 @@ describe('CdkDrag', () => {
 
       expect(document.querySelector('.cdk-drag-preview')!.getAttribute('dir'))
           .toBe('rtl', 'Expected preview element to inherit the directionality.');
+    }));
+
+    it('should remove the preview if its `transitionend` event timed out', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      dispatchMouseEvent(item, 'mousedown');
+      fixture.detectChanges();
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+
+      // Add a duration since the tests won't include one.
+      preview.style.transitionDuration = '500ms';
+
+      // Move somewhere so the draggable doesn't exit immediately.
+      dispatchTouchEvent(document, 'mousemove', 50, 50);
+      fixture.detectChanges();
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      tick(250);
+
+      expect(preview.parentNode)
+          .toBeTruthy('Expected preview to be in the DOM mid-way through the transition');
+
+      tick(500);
+
+      expect(preview.parentNode)
+          .toBeFalsy('Expected preview to be removed from the DOM if the transition timed out');
     }));
 
     it('should create a placeholder element while the item is dragged', fakeAsync(() => {

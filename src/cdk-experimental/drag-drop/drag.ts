@@ -436,21 +436,26 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
     // we need to trigger a style recalculation in order for the `cdk-drag-animating` class to
     // apply its style, we take advantage of the available info to figure out whether we need to
     // bind the event in the first place.
-    const duration = getComputedStyle(this._preview).getPropertyValue('transition-duration');
+    const duration = this._getTransitionDurationInMs(this._preview);
 
-    if (parseFloat(duration) === 0) {
+    if (duration === 0) {
       return Promise.resolve();
     }
 
     return this._ngZone.runOutsideAngular(() => {
       return new Promise(resolve => {
-        const handler = (event: Event) => {
-          if (event.target === this._preview) {
+        const handler = (event: TransitionEvent) => {
+          if (!event || event.target === this._preview) {
             this._preview.removeEventListener('transitionend', handler);
             resolve();
+            clearTimeout(timeout);
           }
         };
 
+        // If a transition is short enough, the browser might not fire the `transitionend` event.
+        // Since we know how long it's supposed to take, add a timeout with a 50% buffer that'll
+        // fire if the transition hasn't completed when it was supposed to.
+        const timeout = setTimeout(handler, duration * 1.5);
         this._preview.addEventListener('transitionend', handler);
       });
     });
@@ -550,6 +555,15 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
           activeEventOptions);
       this._document.addEventListener(isTouchEvent ? 'touchend' : 'mouseup', this._pointerUp);
     });
+  }
+
+  /** Gets the `transition-duration` of an element in milliseconds. */
+  private _getTransitionDurationInMs(element: HTMLElement): number {
+    const rawDuration = getComputedStyle(element).getPropertyValue('transition-duration');
+
+    // Some browsers will return it in seconds, whereas others will return milliseconds.
+    const multiplier = rawDuration.toLowerCase().indexOf('ms') > -1 ? 1 : 1000;
+    return parseFloat(rawDuration) * multiplier;
   }
 }
 
