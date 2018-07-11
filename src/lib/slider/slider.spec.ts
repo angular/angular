@@ -93,21 +93,21 @@ describe('MatSlider', () => {
     });
 
     it('should update the track fill on click', () => {
-      expect(trackFillElement.style.transform).toContain('scaleX(0)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0, 1, 1)');
 
       dispatchClickEventSequence(sliderNativeElement, 0.39);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toContain('scaleX(0.39)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0.39, 1, 1)');
     });
 
     it('should update the track fill on slide', () => {
-      expect(trackFillElement.style.transform).toContain('scaleX(0)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0, 1, 1)');
 
       dispatchSlideEventSequence(sliderNativeElement, 0, 0.86, gestureConfig);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toContain('scaleX(0.86)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0.86, 1, 1)');
     });
 
     it('should add and remove the mat-slider-sliding class when sliding', () => {
@@ -330,7 +330,7 @@ describe('MatSlider', () => {
       fixture.detectChanges();
 
       // The closest snap is halfway on the slider.
-      expect(trackFillElement.style.transform).toContain('scaleX(0.5)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0.5, 1, 1)');
     });
 
     it('should snap the fill to the nearest value on slide', () => {
@@ -338,7 +338,7 @@ describe('MatSlider', () => {
       fixture.detectChanges();
 
       // The closest snap is at the halfway point on the slider.
-      expect(trackFillElement.style.transform).toContain('scaleX(0.5)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0.5, 1, 1)');
     });
 
     it('should adjust fill and ticks on mouse enter when min changes', () => {
@@ -348,7 +348,7 @@ describe('MatSlider', () => {
       dispatchMouseenterEvent(sliderNativeElement);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toContain('scaleX(0.75)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0.75, 1, 1)');
       expect(ticksElement.style.backgroundSize).toBe('75% 2px');
       // Make sure it cuts off the last half tick interval.
       expect(ticksElement.style.transform).toContain('translateX(37.5%)');
@@ -365,7 +365,7 @@ describe('MatSlider', () => {
       dispatchMouseenterEvent(sliderNativeElement);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toContain('scaleX(0.5)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0.5, 1, 1)');
       expect(ticksElement.style.backgroundSize).toBe('50% 2px');
       // Make sure it cuts off the last half tick interval.
       expect(ticksElement.style.transform).toContain('translateX(25%)');
@@ -440,7 +440,7 @@ describe('MatSlider', () => {
       fixture.detectChanges();
 
       // The closest step is at 75% of the slider.
-      expect(trackFillElement.style.transform).toContain('scaleX(0.75)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0.75, 1, 1)');
     });
 
     it('should set the correct step value on slide', () => {
@@ -455,7 +455,7 @@ describe('MatSlider', () => {
       fixture.detectChanges();
 
       // The closest snap is at the end of the slider.
-      expect(trackFillElement.style.transform).toContain('scaleX(1)');
+      expect(trackFillElement.style.transform).toContain('scale3d(1, 1, 1)');
     });
 
     it('should round the value inside the label based on the provided step', () => {
@@ -671,7 +671,7 @@ describe('MatSlider', () => {
 
     it('should initialize based on bound value', () => {
       expect(sliderInstance.value).toBe(50);
-      expect(trackFillElement.style.transform).toContain('scaleX(0.5)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0.5, 1, 1)');
     });
 
     it('should update when bound value changes', () => {
@@ -679,7 +679,7 @@ describe('MatSlider', () => {
       fixture.detectChanges();
 
       expect(sliderInstance.value).toBe(75);
-      expect(trackFillElement.style.transform).toContain('scaleX(0.75)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0.75, 1, 1)');
     });
   });
 
@@ -707,7 +707,7 @@ describe('MatSlider', () => {
     });
 
     it('should set the fill to the min value', () => {
-      expect(trackFillElement.style.transform).toContain('scaleX(0)');
+      expect(trackFillElement.style.transform).toContain('scale3d(0, 1, 1)');
     });
   });
 
@@ -735,7 +735,7 @@ describe('MatSlider', () => {
     });
 
     it('should set the fill to the max value', () => {
-      expect(trackFillElement.style.transform).toContain('scaleX(1)');
+      expect(trackFillElement.style.transform).toContain('scale3d(1, 1, 1)');
     });
   });
 
@@ -1173,24 +1173,24 @@ describe('MatSlider', () => {
     });
 
     it('should update the track fill on click', () => {
-      expect(trackFillElement.style.transform).toContain('scaleY(0)');
+      expect(trackFillElement.style.transform).toContain('scale3d(1, 0, 1)');
 
       dispatchClickEventSequence(sliderNativeElement, 0.39);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toContain('scaleY(0.61)');
+      expect(trackFillElement.style.transform).toContain('scale3d(1, 0.61, 1)');
     });
 
     it('should update the track fill on click in inverted mode', () => {
       testComponent.invert = true;
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toContain('scaleY(0)');
+      expect(trackFillElement.style.transform).toContain('scale3d(1, 0, 1)');
 
       dispatchClickEventSequence(sliderNativeElement, 0.39);
       fixture.detectChanges();
 
-      expect(trackFillElement.style.transform).toContain('scaleY(0.39)');
+      expect(trackFillElement.style.transform).toContain('scale3d(1, 0.39, 1)');
     });
 
     it('should have aria-orientation vertical', () => {

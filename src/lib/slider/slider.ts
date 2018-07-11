@@ -339,19 +339,25 @@ export class MatSlider extends _MatSliderMixinBase
 
   /** CSS styles for the track background element. */
   get _trackBackgroundStyles(): { [key: string]: string } {
-    let axis = this.vertical ? 'Y' : 'X';
-    let sign = this._invertMouseCoords ? '-' : '';
+    const axis = this.vertical ? 'Y' : 'X';
+    const scale = this.vertical ? `1, ${1 - this.percent}, 1` : `${1 - this.percent}, 1, 1`;
+    const sign = this._invertMouseCoords ? '-' : '';
+
     return {
-      'transform': `translate${axis}(${sign}${this._thumbGap}px) scale${axis}(${1 - this.percent})`
+      // scale3d avoids some rendering issues in Chrome. See #12071.
+      transform: `translate${axis}(${sign}${this._thumbGap}px) scale3d(${scale})`
     };
   }
 
   /** CSS styles for the track fill element. */
   get _trackFillStyles(): { [key: string]: string } {
-    let axis = this.vertical ? 'Y' : 'X';
-    let sign = this._invertMouseCoords ? '' : '-';
+    const axis = this.vertical ? 'Y' : 'X';
+    const scale = this.vertical ? `1, ${this.percent}, 1` : `${this.percent}, 1, 1`;
+    const sign = this._invertMouseCoords ? '' : '-';
+
     return {
-      'transform': `translate${axis}(${sign}${this._thumbGap}px) scale${axis}(${this.percent})`
+      // scale3d avoids some rendering issues in Chrome. See #12071.
+      transform: `translate${axis}(${sign}${this._thumbGap}px) scale3d(${scale})`
     };
   }
 
