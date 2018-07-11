@@ -65,7 +65,7 @@ set to something like `new Date(2017, MM, dd)` when the calendar was opened (the
 irrelevant in this case).
 
 Notice that the emitted value does not affect the current value in the connected `<input>`, which
-is only bound to the selection made in the `month` view. So if the end user closes the calendar 
+is only bound to the selection made in the `month` view. So if the end user closes the calendar
 after choosing a year in `multi-view` mode (by pressing the `ESC` key, for example), the selected
 year, emitted by `yearSelected` output, will not cause any change in the value of the date in the
 associated `<input>`.
@@ -330,8 +330,9 @@ export class MyApp {}
 
 ### Accessibility
 
-The `MatDatepickerInput` directive adds `aria-haspopup` attribute to the native input element, and it
-triggers a calendar dialog with `role="dialog"`.
+The `MatDatepickerInput` and `MatDatepickerToggle` directives add the `aria-haspopup` attribute to
+the native input and toggle button elements respectively, and they trigger a calendar dialog with
+`role="dialog"`.
 
 `MatDatepickerIntl` includes strings that are used for `aria-label`s. The datepicker input
 should have a placeholder or be given a meaningful label via `aria-label`, `aria-labelledby` or

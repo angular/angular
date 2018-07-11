@@ -1,5 +1,10 @@
-<button mat-icon-button type="button" [attr.aria-label]="_intl.openCalendarLabel"
-        [disabled]="disabled" (click)="_open($event)">
+<button
+  mat-icon-button
+  type="button"
+  aria-haspopup="true"
+  [attr.aria-label]="_intl.openCalendarLabel"
+  [disabled]="disabled"
+  (click)="_open($event)">
 
   <svg
     *ngIf="!_customIcon"

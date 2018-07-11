@@ -426,6 +426,7 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
     });
 
     this._popupRef = this._overlay.create(overlayConfig);
+    this._popupRef.overlayElement.setAttribute('role', 'dialog');
 
     merge(
       this._popupRef.backdropClick(),
