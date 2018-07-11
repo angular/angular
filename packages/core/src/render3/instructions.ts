@@ -21,13 +21,14 @@ import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LEleme
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, CONTENT_QUERIES, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {StylingContext, allocStylingContext, createStylingContextTemplate, renderStyles as renderElementStyles, updateStyleMap as updateElementStyleMap, updateStyleProp as updateElementStyleProp} from './styling';
 import {isDifferent, stringify} from './util';
 import {ViewRef} from './view_ref';
+
 
 
 /**
@@ -291,7 +292,7 @@ function refreshContentQueries(tView: TView): void {
       const directiveDefIdx = tView.contentQueries[i];
       const directiveDef = tView.directives ![directiveDefIdx];
 
-      directiveDef.contentQueriesRefresh !(tView.contentQueries[i], tView.contentQueries[i + 1]);
+      directiveDef.contentQueriesRefresh !(directiveDefIdx, tView.contentQueries[i + 1]);
     }
   }
 }
