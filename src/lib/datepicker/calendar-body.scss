@@ -68,7 +68,7 @@ $mat-calendar-body-cell-content-size: 100% - $mat-calendar-body-cell-content-mar
 
 
 @include cdk-high-contrast {
-  .mat-datepicker-popup,
+  .mat-datepicker-popup:not(:empty),
   .mat-calendar-body-selected {
     outline: solid 1px;
   }
