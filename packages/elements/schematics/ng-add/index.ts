@@ -59,7 +59,7 @@ function addScript(options: Schema) {
       const angularJsonFile = host.read('angular.json');
       if (angularJsonFile) {
         const json = JSON.parse(angularJsonFile.toString('utf-8'));
-        const project = Object.keys(json['projects'])[0] || options.project;
+        const project = options.project || Object.keys(json['projects'])[0];
         const scripts = json['projects'][project]['architect']['build']['options']['scripts'];
         scripts.push({input: script});
         host.overwrite('angular.json', JSON.stringify(json, null, 2));
