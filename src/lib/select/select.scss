@@ -112,6 +112,10 @@ $mat-select-placeholder-arrow-space: 2 * ($mat-select-arrow-size + $mat-select-a
   .mat-form-field-hide-placeholder & {
     color: transparent;
 
+    // Overwrite browser specific CSS properties that can overwrite the `color` property.
+    // Some developers seem to use this approach to easily overwrite the placeholder / label color.
+    -webkit-text-fill-color: transparent;
+
     // Remove the transition to prevent the placeholder
     // from overlapping when the label comes back down.
     transition: none;

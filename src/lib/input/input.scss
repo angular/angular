@@ -75,6 +75,11 @@
       // input color in IE, if the consumer overrides it with a higher specificity.
       color: transparent !important;
 
+      // Overwrite browser specific CSS properties that can overwrite the `color` property.
+      // Some developers seem to use this approach to easily overwrite the placeholder and
+      // label color. See: https://github.com/angular/material2/issues/12074
+      -webkit-text-fill-color: transparent;
+
       // Remove the transition to prevent the placeholder
       // from overlapping when the label comes back down.
       transition: none;
