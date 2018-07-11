@@ -10,7 +10,7 @@
     "types": ["jasmine"],
     "paths": {
       "@angular/material/*": ["./*"],
-      "@angular/cdk/*": ["../../dist/packages/cdk/*/public-api"]
+      "@angular/cdk/*": ["../../dist/packages/cdk/*"]
     }
   },
   "angularCompilerOptions": {
@@ -24,6 +24,6 @@
     "index.ts"
   ],
   "exclude": [
-    "**/schematics/**/*.ts",
-  ],
+    "**/schematics/**/*.ts"
+  ]
 }

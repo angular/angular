@@ -60,8 +60,11 @@ export function createPackageBuildTasks(buildPackage: BuildPackage, preBuildTask
   ));
 
   task(`${taskName}:build-no-bundles`, sequenceTask(
+    // Build assets before building the ESM output. Since we compile with NGC, the compiler
+    // tries to resolve all required assets.
+    `${taskName}:assets`,
     // Build the ESM output that includes all test files. Also build assets for the package.
-    [`${taskName}:build:esm:tests`, `${taskName}:assets`],
+    `${taskName}:build:esm:tests`,
     // Inline assets into ESM output.
     `${taskName}:assets:inline`
   ));
