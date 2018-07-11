@@ -1,10 +1,12 @@
 import {TestBed, async, ComponentFixture} from '@angular/core/testing';
 import {Component} from '@angular/core';
 import {By} from '@angular/platform-browser';
+import {Location} from '@angular/common';
 import {MatProgressBarModule} from './index';
 
 
 describe('MatProgressBar', () => {
+  let fakePath = '/fake-path';
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
@@ -13,6 +15,10 @@ describe('MatProgressBar', () => {
         BasicProgressBar,
         BufferProgressBar,
       ],
+      providers: [{
+        provide: Location,
+        useValue: {path: () => fakePath}
+      }]
     });
 
     TestBed.compileComponents();
@@ -86,6 +92,11 @@ describe('MatProgressBar', () => {
       progressComponent.bufferValue = 60;
       expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0.6)'});
       expect(progressComponent._bufferTransform()).toEqual({transform: 'scaleX(0.6)'});
+    });
+
+    it('should prefix SVG references with the current path', () => {
+      const rect = fixture.debugElement.query(By.css('rect')).nativeElement;
+      expect(rect.getAttribute('fill')).toMatch(/^url\(\/fake-path#.*\)$/);
     });
 
     it('should not be able to tab into the underlying SVG element', () => {

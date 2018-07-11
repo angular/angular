@@ -14,6 +14,7 @@ import {
   Optional,
   ViewEncapsulation
 } from '@angular/core';
+import {Location} from '@angular/common';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {CanColor, mixinColor} from '@angular/material/core';
 
@@ -54,11 +55,21 @@ let progressbarId = 0;
   encapsulation: ViewEncapsulation.None,
 })
 export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor {
-
+  /**
+   * Current page path. Used to prefix SVG references which
+   * won't work on Safari unless they're prefixed with the path.
+   */
+  _currentPath: string;
 
   constructor(public _elementRef: ElementRef,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+              /**
+               * @deprecated `location` parameter to be made required.
+               * @deletion-target 8.0.0
+               */
+              @Optional() location?: Location) {
     super(_elementRef);
+    this._currentPath = location ? location.path() : '';
   }
 
   /** Value of the progress bar. Defaults to zero. Mirrored to aria-valuenow. */
