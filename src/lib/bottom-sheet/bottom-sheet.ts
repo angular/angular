@@ -10,6 +10,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {Overlay, OverlayConfig, OverlayRef} from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType, PortalInjector, TemplatePortal} from '@angular/cdk/portal';
 import {ComponentRef, Injectable, Injector, Optional, SkipSelf, TemplateRef} from '@angular/core';
+import {Location} from '@angular/common';
 import {of as observableOf} from 'rxjs';
 import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetConfig} from './bottom-sheet-config';
 import {MatBottomSheetContainer} from './bottom-sheet-container';
@@ -41,7 +42,8 @@ export class MatBottomSheet {
   constructor(
       private _overlay: Overlay,
       private _injector: Injector,
-      @Optional() @SkipSelf() private _parentBottomSheet: MatBottomSheet) {}
+      @Optional() @SkipSelf() private _parentBottomSheet: MatBottomSheet,
+      @Optional() private _location?: Location) {}
 
   open<T, D = any, R = any>(component: ComponentType<T>,
                    config?: MatBottomSheetConfig<D>): MatBottomSheetRef<T, R>;
@@ -54,7 +56,7 @@ export class MatBottomSheet {
     const _config = _applyConfigDefaults(config);
     const overlayRef = this._createOverlay(_config);
     const container = this._attachContainer(overlayRef, _config);
-    const ref = new MatBottomSheetRef<T, R>(container, overlayRef);
+    const ref = new MatBottomSheetRef<T, R>(container, overlayRef, this._location);
 
     if (componentOrTemplateRef instanceof TemplateRef) {
       container.attachTemplatePortal(new TemplatePortal<T>(componentOrTemplateRef, null!, {

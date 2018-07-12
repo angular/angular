@@ -21,6 +21,8 @@ import {
   TestBed,
   tick,
 } from '@angular/core/testing';
+import {Location} from '@angular/common';
+import {SpyLocation} from '@angular/common/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {MatBottomSheet} from './bottom-sheet';
 import {MAT_BOTTOM_SHEET_DATA, MatBottomSheetConfig} from './bottom-sheet-config';
@@ -36,19 +38,24 @@ describe('MatBottomSheet', () => {
 
   let testViewContainerRef: ViewContainerRef;
   let viewContainerFixture: ComponentFixture<ComponentWithChildViewContainer>;
+  let mockLocation: SpyLocation;
 
   beforeEach(fakeAsync(() => {
     TestBed
-      .configureTestingModule({imports: [MatBottomSheetModule, BottomSheetTestModule]})
+      .configureTestingModule({
+        imports: [MatBottomSheetModule, BottomSheetTestModule],
+        providers: [{provide: Location, useClass: SpyLocation}]
+      })
       .compileComponents();
   }));
 
-  beforeEach(inject([MatBottomSheet, OverlayContainer, ViewportRuler],
-    (bs: MatBottomSheet, oc: OverlayContainer, vr: ViewportRuler) => {
+  beforeEach(inject([MatBottomSheet, OverlayContainer, ViewportRuler, Location],
+    (bs: MatBottomSheet, oc: OverlayContainer, vr: ViewportRuler, l: Location) => {
       bottomSheet = bs;
       overlayContainer = oc;
       viewportRuler = vr;
       overlayContainerElement = oc.getContainerElement();
+      mockLocation = l as SpyLocation;
     }));
 
   afterEach(() => {
@@ -347,6 +354,42 @@ describe('MatBottomSheet', () => {
     flush();
 
     expect(spy).toHaveBeenCalledWith(1337);
+  }));
+
+  it('should close the bottom sheet when going forwards/backwards in history', fakeAsync(() => {
+    bottomSheet.open(PizzaMsg);
+
+    expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
+
+    mockLocation.simulateUrlPop('');
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeFalsy();
+  }));
+
+  it('should close the bottom sheet when the location hash changes', fakeAsync(() => {
+    bottomSheet.open(PizzaMsg);
+
+    expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
+
+    mockLocation.simulateHashChange('');
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeFalsy();
+  }));
+
+  it('should allow the consumer to disable closing a bottom sheet on navigation', fakeAsync(() => {
+    bottomSheet.open(PizzaMsg, {closeOnNavigation: false});
+
+    expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
+
+    mockLocation.simulateUrlPop('');
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.querySelector('mat-bottom-sheet-container')).toBeTruthy();
   }));
 
   describe('passing in data', () => {
