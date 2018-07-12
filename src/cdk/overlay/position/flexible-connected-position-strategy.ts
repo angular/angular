@@ -21,6 +21,7 @@ import {OverlayReference} from '../overlay-reference';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
 import {coerceCssPixelValue} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
+import {OverlayContainer} from '../overlay-container';
 
 // TODO: refactor clipping detection into a separate thing (part of scrolling module)
 // TODO: doesn't handle both flexible width and height when it has to scroll along both axis.
@@ -131,8 +132,9 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     connectedTo: ElementRef | HTMLElement,
     private _viewportRuler: ViewportRuler,
     private _document: Document,
-    // @deletion-target 7.0.0 `_platform` parameter to be made required.
-    private _platform?: Platform) {
+    // @deletion-target 7.0.0 `_platform` and `_overlayContainer` parameters to be made required.
+    private _platform?: Platform,
+    private _overlayContainer?: OverlayContainer) {
     this.setOrigin(connectedTo);
   }
 
@@ -169,6 +171,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    */
   apply(): void {
     // We shouldn't do anything if the strategy was disposed or we're on the server.
+    // @deletion-target 7.0.0 Remove `_platform` null check once it's guaranteed to be defined.
     if (this._isDisposed || (this._platform && !this._platform.isBrowser)) {
       return;
     }
@@ -838,6 +841,18 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     if (this._isPushed) {
       overlayPoint = this._pushOverlayOnScreen(overlayPoint, this._overlayRect);
     }
+
+    // @deletion-target 7.0.0 Currently the `_overlayContainer` is optional in order to avoid a
+    // breaking change. The null check here can be removed once the `_overlayContainer` becomes
+    // a required parameter.
+    let virtualKeyboardOffset = this._overlayContainer ?
+        this._overlayContainer.getContainerElement().getBoundingClientRect().top : 0;
+
+    // Normally this would be zero, however when the overlay is attached to an input (e.g. in an
+    // autocomplete), mobile browsers will shift everything in order to put the input in the middle
+    // of the screen and to make space for the virtual keyboard. We need to account for this offset,
+    // otherwise our positioning will be thrown off.
+    overlayPoint.y -= virtualKeyboardOffset;
 
     // We want to set either `top` or `bottom` based on whether the overlay wants to appear
     // above or below the origin and the direction in which the element will expand.

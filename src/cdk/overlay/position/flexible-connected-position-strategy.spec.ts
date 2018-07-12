@@ -118,6 +118,39 @@ describe('FlexibleConnectedPositionStrategy', () => {
     document.body.removeChild(origin);
   });
 
+  it('should for the virtual keyboard offset when positioning the overlay', () => {
+    const originElement = createPositionedBlockElement();
+    document.body.appendChild(originElement);
+
+    // Position the element so it would have enough space to fit.
+    originElement.style.top = '200px';
+    originElement.style.left = '70px';
+
+    // Pull the element up ourselves to simulate what a mobile
+    // browser would do when the virtual keyboard is being shown.
+    overlayContainer.getContainerElement().style.top = '-100px';
+
+    attachOverlay({
+      positionStrategy: overlay.position()
+        .flexibleConnectedTo(originElement)
+        .withFlexibleDimensions(false)
+        .withPush(false)
+        .withPositions([{
+          originX: 'start',
+          originY: 'bottom',
+          overlayX: 'start',
+          overlayY: 'top'
+        }])
+    });
+
+    const originRect = originElement.getBoundingClientRect();
+    const overlayRect = overlayRef.overlayElement.getBoundingClientRect();
+
+    expect(Math.floor(overlayRect.top)).toBe(Math.floor(originRect.bottom));
+
+    document.body.removeChild(originElement);
+  });
+
   describe('without flexible dimensions and pushing', () => {
     const ORIGIN_HEIGHT = DEFAULT_HEIGHT;
     const ORIGIN_WIDTH = DEFAULT_WIDTH;
