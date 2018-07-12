@@ -125,11 +125,6 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   border-radius: 50%;
 
   @include mat-elevation(1);
-
-  @include cdk-high-contrast {
-    background: #fff;
-    border: solid 1px #000;
-  }
 }
 
 // Horizontal bar for the slide-toggle.
@@ -145,10 +140,6 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   flex-shrink: 0;
 
   border-radius: $mat-slide-toggle-bar-border-radius;
-
-  @include cdk-high-contrast {
-    background: #fff;
-  }
 }
 
 // The slide toggle shows a visually hidden input inside of the component, which is used
@@ -180,4 +171,29 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   width: $mat-slide-toggle-ripple-radius * 2;
   z-index: 1;
   pointer-events: none;
+}
+
+/** Custom styling to make the slide-toggle usable in high contrast mode. */
+@include cdk-high-contrast() {
+  .mat-slide-toggle-thumb {
+    background: #fff;
+    border: 1px solid #000;
+
+    .mat-slide-toggle.mat-checked & {
+      background: #000;
+      border: 1px solid #fff;
+    }
+  }
+
+  .mat-slide-toggle-bar {
+    background: #fff;
+  }
+}
+
+// Since the bar with a white background will be placed on a white background, we need to a black
+// border in order to make sure that the bar is visible.
+@include cdk-high-contrast(black-on-white) {
+  .mat-slide-toggle-bar {
+    border: 1px solid #000;
+  }
 }
