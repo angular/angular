@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockDirectory, setup} from '../aot/test_util';
+import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 describe('r3_view_compiler', () => {
@@ -114,9 +114,9 @@ describe('r3_view_compiler', () => {
         }
       };
 
-      const bV_call = `$r3$.ɵiV([' ',ctx.list[0],' ',ctx.list[1],' ',ctx.list[2],' ',ctx.list[3],
-        ' ',ctx.list[4],' ',ctx.list[5],' ',ctx.list[6],' ',ctx.list[7],' ',ctx.list[8],
-        ' '])`;
+      const bV_call = `$r3$.ɵiV([" ",ctx.list[0]," ",ctx.list[1]," ",ctx.list[2]," ",ctx.list[3],
+        " ",ctx.list[4]," ",ctx.list[5]," ",ctx.list[6]," ",ctx.list[7]," ",ctx.list[8],
+        " "])`;
       const result = compile(files, angularFiles);
       expectEmit(result.source, bV_call, 'Incorrect bV call');
     });

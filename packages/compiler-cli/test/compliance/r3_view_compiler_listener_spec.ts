@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockDirectory, setup} from '../aot/test_util';
+import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 /* These tests are codified version of the tests in compiler_canonical_spec.ts. Every
@@ -41,10 +41,10 @@ describe('compiler compliance: listen()', () => {
 
     // The template should look like this (where IDENT is a wild card for an identifier):
     const template = `
-        template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
+        template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'div');
-            $r3$.ɵL('click', function MyComponent_Template_div_click_listener($event: $any$) {
+            $r3$.ɵE(0, "div");
+            $r3$.ɵL("click", function MyComponent_Template_div_click_listener($event) {
               ctx.onClick($event);
               return (1 == 2);
             });

@@ -7,7 +7,7 @@
  */
 
 
-import {MockDirectory, setup} from '../aot/test_util';
+import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 describe('mock_compiler', () => {
@@ -47,9 +47,6 @@ describe('mock_compiler', () => {
       // result.source contains just the emitted factory declarations regardless of the original
       // module.
       expect(result.source).toContain('Hello');
-
-      // The output context is also returned if the actual output ast is needed.
-      expect(result.outputContext.statements.length).toBeGreaterThan(0);
     });
   });
 
@@ -143,7 +140,7 @@ describe('mock_compiler', () => {
     expectEmit(
         result.source, `
     // TODO: this comment should not be taken into account
-    $r3$.ɵT(0, 'Hello!');
+    $r3$.ɵT(0, "Hello!");
     // TODO: this comment should not be taken into account
     `,
         'todo comments should be ignored');
