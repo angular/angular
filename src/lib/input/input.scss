@@ -1,7 +1,6 @@
 @import '../core/style/variables';
 @import '../core/style/vendor-prefixes';
 
-
 // The Input element proper.
 .mat-input-element {
   // Font needs to be inherited, because by default <input> has a system font.
@@ -39,8 +38,17 @@
   }
 
   // Remove IE's default clear and reveal icons.
-  &::-ms-clear, &::-ms-reveal {
+  &::-ms-clear,
+  &::-ms-reveal {
     display: none;
+  }
+
+  // Also clear Safari's autofill icons. Note that this can't be in the
+  // same selector as the IE ones, otherwise Safari will ignore it.
+  &::-webkit-contacts-auto-fill-button,
+  &::-webkit-caps-lock-indicator,
+  &::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
   }
 
   // Fixes an issue on iOS where the following input types will collapse to 1px,
