@@ -15,6 +15,8 @@ import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@ang
 import * as path from 'path';
 import * as ts from 'typescript';
 
+import {ClassMemberKind, ReflectionHost} from '../../host';
+
 const TS_DTS_EXTENSION = /(\.d)?\.ts$/;
 
 /**
@@ -188,10 +190,10 @@ export class AbsoluteReference extends Reference {
  * @returns a `ResolvedValue` representing the resolved value
  */
 export function staticallyResolve(
-    node: ts.Expression, checker: ts.TypeChecker,
+    node: ts.Expression, host: ReflectionHost, checker: ts.TypeChecker,
     foreignFunctionResolver?: (node: ts.FunctionDeclaration | ts.MethodDeclaration) =>
         ts.Expression | null): ResolvedValue {
-  return new StaticInterpreter(checker).visit(node, {
+  return new StaticInterpreter(host, checker).visit(node, {
     absoluteModuleName: null,
     scope: new Map<ts.ParameterDeclaration, ResolvedValue>(), foreignFunctionResolver,
   });
@@ -243,7 +245,7 @@ interface Context {
 }
 
 class StaticInterpreter {
-  constructor(private checker: ts.TypeChecker) {}
+  constructor(private host: ReflectionHost, private checker: ts.TypeChecker) {}
 
   visit(node: ts.Expression, context: Context): ResolvedValue {
     return this.visitExpression(node, context);
@@ -286,7 +288,7 @@ class StaticInterpreter {
       return this.visitExpression(node.expression, context);
     } else if (ts.isNonNullExpression(node)) {
       return this.visitExpression(node.expression, context);
-    } else if (ts.isClassDeclaration(node)) {
+    } else if (isPossibleClassDeclaration(node) && this.host.isClass(node)) {
       return this.visitDeclaration(node, context);
     } else {
       return DYNAMIC_VALUE;
@@ -356,14 +358,6 @@ class StaticInterpreter {
     return map;
   }
 
-  private visitIdentifier(node: ts.Identifier, context: Context): ResolvedValue {
-    let symbol: ts.Symbol|undefined = this.checker.getSymbolAtLocation(node);
-    if (symbol === undefined) {
-      return DYNAMIC_VALUE;
-    }
-    return this.visitSymbol(symbol, context);
-  }
-
   private visitTemplateExpression(node: ts.TemplateExpression, context: Context): ResolvedValue {
     const pieces: string[] = [node.head.text];
     for (let i = 0; i < node.templateSpans.length; i++) {
@@ -380,48 +374,19 @@ class StaticInterpreter {
     return pieces.join('');
   }
 
-  private visitSymbol(symbol: ts.Symbol, context: Context): ResolvedValue {
-    let absoluteModuleName = context.absoluteModuleName;
-    if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
-      for (let i = 0; i < symbol.declarations.length; i++) {
-        const decl = symbol.declarations[i];
-        if (ts.isImportSpecifier(decl) && decl.parent !== undefined &&
-            decl.parent.parent !== undefined && decl.parent.parent.parent !== undefined) {
-          const importDecl = decl.parent.parent.parent;
-          if (ts.isStringLiteral(importDecl.moduleSpecifier)) {
-            const moduleSpecifier = importDecl.moduleSpecifier.text;
-            if (!moduleSpecifier.startsWith('.')) {
-              absoluteModuleName = moduleSpecifier;
-            }
-          }
-        }
-      }
-    }
-
-    const newContext = {...context, absoluteModuleName};
-
-    while (symbol.flags & ts.SymbolFlags.Alias) {
-      symbol = this.checker.getAliasedSymbol(symbol);
-    }
-
-    if (symbol.declarations === undefined) {
+  private visitIdentifier(node: ts.Identifier, context: Context): ResolvedValue {
+    const decl = this.host.getDeclarationOfIdentifier(node);
+    if (decl === null) {
       return DYNAMIC_VALUE;
     }
-
-    if (symbol.valueDeclaration !== undefined) {
-      return this.visitDeclaration(symbol.valueDeclaration, newContext);
-    }
-
-    return symbol.declarations.reduce<ResolvedValue>((prev, decl) => {
-      if (!(isDynamicValue(prev) || prev instanceof Reference)) {
-        return prev;
-      }
-      return this.visitDeclaration(decl, newContext);
-    }, DYNAMIC_VALUE);
+    return this.visitDeclaration(
+        decl.node, {...context, absoluteModuleName: decl.viaModule || context.absoluteModuleName});
   }
 
   private visitDeclaration(node: ts.Declaration, context: Context): ResolvedValue {
-    if (ts.isVariableDeclaration(node)) {
+    if (this.host.isClass(node)) {
+      return this.getReference(node, context);
+    } else if (ts.isVariableDeclaration(node)) {
       if (!node.initializer) {
         return undefined;
       }
@@ -471,14 +436,18 @@ class StaticInterpreter {
   }
 
   private visitSourceFile(node: ts.SourceFile, context: Context): ResolvedValue {
-    const map = new Map<string, ResolvedValue>();
-    const symbol = this.checker.getSymbolAtLocation(node);
-    if (symbol === undefined) {
+    const declarations = this.host.getExportsOfModule(node);
+    if (declarations === null) {
       return DYNAMIC_VALUE;
     }
-    const exports = this.checker.getExportsOfModule(symbol);
-    exports.forEach(symbol => map.set(symbol.name, this.visitSymbol(symbol, context)));
-
+    const map = new Map<string, ResolvedValue>();
+    declarations.forEach((decl, name) => {
+      const value = this.visitDeclaration(decl.node, {
+        ...context,
+        absoluteModuleName: decl.viaModule || context.absoluteModuleName,
+      });
+      map.set(name, value);
+    });
     return map;
   }
 
@@ -503,22 +472,21 @@ class StaticInterpreter {
       return lhs[rhs];
     } else if (lhs instanceof Reference) {
       const ref = lhs.node;
-      if (ts.isClassDeclaration(ref)) {
+      if (isPossibleClassDeclaration(ref) && this.host.isClass(ref)) {
         let absoluteModuleName = context.absoluteModuleName;
         if (lhs instanceof NodeReference || lhs instanceof AbsoluteReference) {
           absoluteModuleName = lhs.moduleName || absoluteModuleName;
         }
         let value: ResolvedValue = undefined;
-        const member =
-            ref.members.filter(member => isStatic(member))
-                .find(
-                    member => member.name !== undefined &&
-                        this.stringNameFromPropertyName(member.name, context) === strIndex);
+        const member = this.host.getMembersOfClass(ref).find(
+            member => member.isStatic && member.name === strIndex);
         if (member !== undefined) {
-          if (ts.isPropertyDeclaration(member) && member.initializer !== undefined) {
-            value = this.visitExpression(member.initializer, context);
-          } else if (ts.isMethodDeclaration(member)) {
-            value = new NodeReference(member, absoluteModuleName);
+          if (member.value !== null) {
+            value = this.visitExpression(member.value, context);
+          } else if (member.implementation !== null) {
+            value = new NodeReference(member.implementation, absoluteModuleName);
+          } else {
+            value = new NodeReference(member.node, absoluteModuleName);
           }
         }
         return value;
@@ -657,11 +625,6 @@ class StaticInterpreter {
   }
 }
 
-function isStatic(element: ts.ClassElement): boolean {
-  return element.modifiers !== undefined &&
-      element.modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword);
-}
-
 function isFunctionOrMethodDeclaration(node: ts.Node): node is ts.FunctionDeclaration|
     ts.MethodDeclaration {
   return ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node);
@@ -690,4 +653,8 @@ function identifierOfDeclaration(decl: ts.Declaration): ts.Identifier|undefined 
   } else {
     return undefined;
   }
+}
+
+function isPossibleClassDeclaration(node: ts.Node): node is ts.Declaration {
+  return ts.isClassDeclaration(node) || ts.isVariableDeclaration(node);
 }

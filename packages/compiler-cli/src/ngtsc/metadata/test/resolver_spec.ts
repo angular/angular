@@ -9,6 +9,7 @@
 import {ExternalExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {TypeScriptReflectionHost} from '..';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {Reference, ResolvedValue, staticallyResolve} from '../src/resolver';
 
@@ -30,7 +31,8 @@ function makeExpression(
 
 function evaluate<T extends ResolvedValue>(code: string, expr: string): T {
   const {expression, checker} = makeExpression(code, expr);
-  return staticallyResolve(expression, checker) as T;
+  const host = new TypeScriptReflectionHost(checker);
+  return staticallyResolve(expression, host, checker) as T;
 }
 
 describe('ngtsc metadata', () => {
@@ -52,8 +54,9 @@ describe('ngtsc metadata', () => {
       }
     ]);
     const decl = getDeclaration(program, 'entry.ts', 'X', ts.isVariableDeclaration);
+    const host = new TypeScriptReflectionHost(program.getTypeChecker());
 
-    const value = staticallyResolve(decl.initializer !, program.getTypeChecker());
+    const value = staticallyResolve(decl.initializer !, host, program.getTypeChecker());
     expect(value).toEqual('test');
   });
 
@@ -132,9 +135,10 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    const resolved = staticallyResolve(expr, checker);
+    const resolved = staticallyResolve(expr, host, checker);
     if (!(resolved instanceof Reference)) {
       return fail('Expected expression to resolve to a reference');
     }
@@ -160,9 +164,10 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    const resolved = staticallyResolve(expr, checker);
+    const resolved = staticallyResolve(expr, host, checker);
     if (!(resolved instanceof Reference)) {
       return fail('Expected expression to resolve to a reference');
     }
@@ -188,9 +193,10 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    expect(staticallyResolve(expr, checker)).toEqual('test');
+    expect(staticallyResolve(expr, host, checker)).toEqual('test');
   });
 
   it('reads values from named exports', () => {
@@ -205,9 +211,10 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    expect(staticallyResolve(expr, checker)).toEqual('test');
+    expect(staticallyResolve(expr, host, checker)).toEqual('test');
   });
 
   it('chain of re-exports works', () => {
@@ -222,9 +229,10 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    expect(staticallyResolve(expr, checker)).toEqual('test');
+    expect(staticallyResolve(expr, host, checker)).toEqual('test');
   });
 
   it('map spread works', () => {

@@ -90,19 +90,21 @@ export function extractDirectiveMetadata(
   // Construct the map of inputs both from the @Directive/@Component
   // decorator, and the decorated
   // fields.
-  const inputsFromMeta = parseFieldToPropertyMapping(directive, 'inputs', checker);
+  const inputsFromMeta = parseFieldToPropertyMapping(directive, 'inputs', reflector, checker);
   const inputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), checker);
+      filterToMembersWithDecorator(decoratedElements, 'Input', coreModule), reflector, checker);
 
   // And outputs.
-  const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', checker);
+  const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', reflector, checker);
   const outputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), checker);
+      filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), reflector, checker);
   // Construct the list of queries.
   const contentChildFromFields = queriesFromFields(
-      filterToMembersWithDecorator(decoratedElements, 'ContentChild', coreModule), checker);
+      filterToMembersWithDecorator(decoratedElements, 'ContentChild', coreModule), reflector,
+      checker);
   const contentChildrenFromFields = queriesFromFields(
-      filterToMembersWithDecorator(decoratedElements, 'ContentChildren', coreModule), checker);
+      filterToMembersWithDecorator(decoratedElements, 'ContentChildren', coreModule), reflector,
+      checker);
 
   const queries = [...contentChildFromFields, ...contentChildrenFromFields];
 
@@ -115,14 +117,14 @@ export function extractDirectiveMetadata(
   // Parse the selector.
   let selector = '';
   if (directive.has('selector')) {
-    const resolved = staticallyResolve(directive.get('selector') !, checker);
+    const resolved = staticallyResolve(directive.get('selector') !, reflector, checker);
     if (typeof resolved !== 'string') {
       throw new Error(`Selector must be a string`);
     }
     selector = resolved;
   }
 
-  const host = extractHostBindings(directive, decoratedElements, checker, coreModule);
+  const host = extractHostBindings(directive, decoratedElements, reflector, checker, coreModule);
 
   // Determine if `ngOnChanges` is a lifecycle hook defined on the component.
   const usesOnChanges = members.find(
@@ -148,12 +150,12 @@ export function extractDirectiveMetadata(
 
 export function extractQueryMetadata(
     name: string, args: ReadonlyArray<ts.Expression>, propertyName: string,
-    checker: ts.TypeChecker): R3QueryMetadata {
+    reflector: ReflectionHost, checker: ts.TypeChecker): R3QueryMetadata {
   if (args.length === 0) {
     throw new Error(`@${name} must have arguments`);
   }
   const first = name === 'ViewChild' || name === 'ContentChild';
-  const arg = staticallyResolve(args[0], checker);
+  const arg = staticallyResolve(args[0], reflector, checker);
 
   // Extract the predicate
   let predicate: Expression|string[]|null = null;
@@ -182,7 +184,7 @@ export function extractQueryMetadata(
     }
 
     if (options.has('descendants')) {
-      const descendantsValue = staticallyResolve(options.get('descendants') !, checker);
+      const descendantsValue = staticallyResolve(options.get('descendants') !, reflector, checker);
       if (typeof descendantsValue !== 'boolean') {
         throw new Error(`@${name} options.descendants must be a boolean`);
       }
@@ -220,7 +222,8 @@ export function extractQueriesFromDecorator(
       throw new Error(`query metadata must be an instance of a query type`);
     }
 
-    const query = extractQueryMetadata(type.name, queryExpr.arguments || [], propertyName, checker);
+    const query = extractQueryMetadata(
+        type.name, queryExpr.arguments || [], propertyName, reflector, checker);
     if (type.name.startsWith('Content')) {
       content.push(query);
     } else {
@@ -248,14 +251,14 @@ function isStringArrayOrDie(value: any, name: string): value is string[] {
  * correctly shaped metadata object.
  */
 function parseFieldToPropertyMapping(
-    directive: Map<string, ts.Expression>, field: string,
+    directive: Map<string, ts.Expression>, field: string, reflector: ReflectionHost,
     checker: ts.TypeChecker): {[field: string]: string} {
   if (!directive.has(field)) {
     return EMPTY_OBJECT;
   }
 
   // Resolve the field of interest from the directive metadata to a string[].
-  const metaValues = staticallyResolve(directive.get(field) !, checker);
+  const metaValues = staticallyResolve(directive.get(field) !, reflector, checker);
   if (!isStringArrayOrDie(metaValues, field)) {
     throw new Error(`Failed to resolve @Directive.${field}`);
   }
@@ -276,7 +279,7 @@ function parseFieldToPropertyMapping(
  * object.
  */
 function parseDecoratedFields(
-    fields: {member: ClassMember, decorators: Decorator[]}[],
+    fields: {member: ClassMember, decorators: Decorator[]}[], reflector: ReflectionHost,
     checker: ts.TypeChecker): {[field: string]: string} {
   return fields.reduce(
       (results, field) => {
@@ -287,7 +290,7 @@ function parseDecoratedFields(
           if (decorator.args == null || decorator.args.length === 0) {
             results[fieldName] = fieldName;
           } else if (decorator.args.length === 1) {
-            const property = staticallyResolve(decorator.args[0], checker);
+            const property = staticallyResolve(decorator.args[0], reflector, checker);
             if (typeof property !== 'string') {
               throw new Error(`Decorator argument must resolve to a string`);
             }
@@ -304,7 +307,7 @@ function parseDecoratedFields(
 }
 
 export function queriesFromFields(
-    fields: {member: ClassMember, decorators: Decorator[]}[],
+    fields: {member: ClassMember, decorators: Decorator[]}[], reflector: ReflectionHost,
     checker: ts.TypeChecker): R3QueryMetadata[] {
   return fields.map(({member, decorators}) => {
     if (decorators.length !== 1) {
@@ -313,7 +316,8 @@ export function queriesFromFields(
       throw new Error(`Query decorator must go on a property-type member`);
     }
     const decorator = decorators[0];
-    return extractQueryMetadata(decorator.name, decorator.args || [], member.name, checker);
+    return extractQueryMetadata(
+        decorator.name, decorator.args || [], member.name, reflector, checker);
   });
 }
 
@@ -327,15 +331,15 @@ type StringMap = {
 };
 
 function extractHostBindings(
-    metadata: Map<string, ts.Expression>, members: ClassMember[], checker: ts.TypeChecker,
-    coreModule: string | undefined): {
+    metadata: Map<string, ts.Expression>, members: ClassMember[], reflector: ReflectionHost,
+    checker: ts.TypeChecker, coreModule: string | undefined): {
   attributes: StringMap,
   listeners: StringMap,
   properties: StringMap,
 } {
   let hostMetadata: StringMap = {};
   if (metadata.has('host')) {
-    const hostMetaMap = staticallyResolve(metadata.get('host') !, checker);
+    const hostMetaMap = staticallyResolve(metadata.get('host') !, reflector, checker);
     if (!(hostMetaMap instanceof Map)) {
       throw new Error(`Decorator host metadata must be an object`);
     }
@@ -358,7 +362,7 @@ function extractHostBindings(
               throw new Error(`@HostBinding() can have at most one argument`);
             }
 
-            const resolved = staticallyResolve(decorator.args[0], checker);
+            const resolved = staticallyResolve(decorator.args[0], reflector, checker);
             if (typeof resolved !== 'string') {
               throw new Error(`@HostBinding()'s argument must be a string`);
             }
@@ -380,7 +384,7 @@ function extractHostBindings(
               throw new Error(`@HostListener() can have at most two arguments`);
             }
 
-            const resolved = staticallyResolve(decorator.args[0], checker);
+            const resolved = staticallyResolve(decorator.args[0], reflector, checker);
             if (typeof resolved !== 'string') {
               throw new Error(`@HostListener()'s event name argument must be a string`);
             }
@@ -388,7 +392,7 @@ function extractHostBindings(
             eventName = resolved;
 
             if (decorator.args.length === 2) {
-              const resolvedArgs = staticallyResolve(decorator.args[1], checker);
+              const resolvedArgs = staticallyResolve(decorator.args[1], reflector, checker);
               if (!isStringArrayOrDie(resolvedArgs, '@HostListener.args')) {
                 throw new Error(`@HostListener second argument must be a string array`);
               }
