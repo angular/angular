@@ -127,9 +127,9 @@ export function extractDirectiveMetadata(
   const host = extractHostBindings(directive, decoratedElements, reflector, checker, coreModule);
 
   // Determine if `ngOnChanges` is a lifecycle hook defined on the component.
-  const usesOnChanges = members.find(
-                            member => member.isStatic && member.kind === ClassMemberKind.Method &&
-                                member.name === 'ngOnChanges') !== undefined;
+  const usesOnChanges = members.some(
+      member => !member.isStatic && member.kind === ClassMemberKind.Method &&
+          member.name === 'ngOnChanges');
 
   // Detect if the component inherits from another class
   const usesInheritance = clazz.heritageClauses !== undefined &&
