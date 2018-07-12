@@ -11,7 +11,6 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
-  DoCheck,
   ElementRef,
   Inject,
   Input,
@@ -48,7 +47,7 @@ function rangesEqual(r1: ListRange, r2: ListRange): boolean {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CdkVirtualScrollViewport implements DoCheck, OnInit, OnDestroy {
+export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
   /** Emits when the viewport is detached from a CdkVirtualForOf. */
   private _detachedSubject = new Subject<void>();
 
@@ -102,37 +101,33 @@ export class CdkVirtualScrollViewport implements DoCheck, OnInit, OnDestroy {
   /** Observable that emits when the viewport is destroyed. */
   private _destroyed = new Subject<void>();
 
+  /** Whether there is a pending change detection cycle. */
+  private _isChangeDetectionPending = false;
+
+  /** A list of functions to run after the next change detection cycle. */
+  private _runAfterChangeDetection: Function[] = [];
+
   constructor(public elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef,
               private _ngZone: NgZone, private _sanitizer: DomSanitizer,
               @Inject(VIRTUAL_SCROLL_STRATEGY) private _scrollStrategy: VirtualScrollStrategy) {}
 
   ngOnInit() {
     // It's still too early to measure the viewport at this point. Deferring with a promise allows
-    // the Viewport to be rendered with the correct size before we measure.
-    Promise.resolve().then(() => {
+    // the Viewport to be rendered with the correct size before we measure. We run this outside the
+    // zone to avoid causing more change detection cycles. We handle the change detection loop
+    // ourselves instead.
+    this._ngZone.runOutsideAngular(() => Promise.resolve().then(() => {
       this._measureViewportSize();
       this._scrollStrategy.attach(this);
 
-      this._ngZone.runOutsideAngular(() => {
-        fromEvent(this.elementRef.nativeElement, 'scroll')
-            // Sample the scroll stream at every animation frame. This way if there are multiple
-            // scroll events in the same frame we only need to recheck our layout once.
-            .pipe(sampleTime(0, animationFrameScheduler), takeUntil(this._destroyed))
-            .subscribe(() => this._scrollStrategy.onContentScrolled());
-      });
-    });
-  }
+      fromEvent(this.elementRef.nativeElement, 'scroll')
+          // Sample the scroll stream at every animation frame. This way if there are multiple
+          // scroll events in the same frame we only need to recheck our layout once.
+          .pipe(sampleTime(0, animationFrameScheduler), takeUntil(this._destroyed))
+          .subscribe(() => this._scrollStrategy.onContentScrolled());
 
-  ngDoCheck() {
-    // In order to batch setting the scroll offset together with other DOM writes, we wait until a
-    // change detection cycle to actually apply it.
-    if (this._pendingScrollOffset != null) {
-      if (this.orientation === 'horizontal') {
-        this.elementRef.nativeElement.scrollLeft = this._pendingScrollOffset;
-      } else {
-        this.elementRef.nativeElement.scrollTop = this._pendingScrollOffset;
-      }
-    }
+      this._markChangeDetectionNeeded();
+    }));
   }
 
   ngOnDestroy() {
@@ -151,16 +146,19 @@ export class CdkVirtualScrollViewport implements DoCheck, OnInit, OnDestroy {
     if (this._forOf) {
       throw Error('CdkVirtualScrollViewport is already attached.');
     }
-    this._forOf = forOf;
 
     // Subscribe to the data stream of the CdkVirtualForOf to keep track of when the data length
-    // changes.
-    this._forOf.dataStream.pipe(takeUntil(this._detachedSubject)).subscribe(data => {
-      const len = data.length;
-      if (len !== this._dataLength) {
-        this._dataLength = len;
-        this._scrollStrategy.onDataLengthChanged();
-      }
+    // changes. Run outside the zone to avoid triggering change detection, since we're managing the
+    // change detection loop ourselves.
+    this._ngZone.runOutsideAngular(() => {
+      this._forOf = forOf;
+      this._forOf.dataStream.pipe(takeUntil(this._detachedSubject)).subscribe(data => {
+        const newLength = data.length;
+        if (newLength !== this._dataLength) {
+          this._dataLength = newLength;
+          this._scrollStrategy.onDataLengthChanged();
+        }
+      });
     });
   }
 
@@ -190,40 +188,22 @@ export class CdkVirtualScrollViewport implements DoCheck, OnInit, OnDestroy {
     return this._renderedRange;
   }
 
-  // TODO(mmalebra): Consider calling `detectChanges()` directly rather than the methods below.
-
   /**
    * Sets the total size of all content (in pixels), including content that is not currently
    * rendered.
    */
   setTotalContentSize(size: number) {
     if (this._totalContentSize !== size) {
-      // Re-enter the Angular zone so we can mark for change detection.
-      this._ngZone.run(() => {
-        this._totalContentSize = size;
-        this._changeDetectorRef.markForCheck();
-      });
+      this._totalContentSize = size;
+      this._markChangeDetectionNeeded();
     }
   }
 
   /** Sets the currently rendered range of indices. */
   setRenderedRange(range: ListRange) {
     if (!rangesEqual(this._renderedRange, range)) {
-      // Re-enter the Angular zone so we can mark for change detection.
-      this._ngZone.run(() => {
-        this._renderedRangeSubject.next(this._renderedRange = range);
-        this._changeDetectorRef.markForCheck();
-      });
-      // Queue this up in a `Promise.resolve()` so that if the user makes a series of calls
-      // like:
-      //
-      // viewport.setRenderedRange(...);
-      // viewport.setTotalContentSize(...);
-      // viewport.setRenderedContentOffset(...);
-      //
-      // The call to `onContentRendered` will happen after all of the updates have been applied.
-      this._ngZone.runOutsideAngular(() => this._ngZone.onStable.pipe(take(1)).subscribe(
-          () => Promise.resolve().then(() => this._scrollStrategy.onContentRendered())));
+      this._renderedRangeSubject.next(this._renderedRange = range);
+      this._markChangeDetectionNeeded(() => this._scrollStrategy.onContentRendered());
     }
   }
 
@@ -250,25 +230,18 @@ export class CdkVirtualScrollViewport implements DoCheck, OnInit, OnDestroy {
       this._renderedContentOffsetNeedsRewrite = true;
     }
     if (this._rawRenderedContentTransform != transform) {
-      // Re-enter the Angular zone so we can mark for change detection.
-      this._ngZone.run(() => {
-        // We know this value is safe because we parse `offset` with `Number()` before passing it
-        // into the string.
-        this._rawRenderedContentTransform = transform;
-        this._renderedContentTransform = this._sanitizer.bypassSecurityTrustStyle(transform);
-        this._changeDetectorRef.markForCheck();
-
-        // If the rendered content offset was specified as an offset to the end of the content,
-        // rewrite it as an offset to the start of the content.
-        this._ngZone.onStable.pipe(take(1)).subscribe(() => {
-          if (this._renderedContentOffsetNeedsRewrite) {
-            this._renderedContentOffset -= this.measureRenderedContentSize();
-            this._renderedContentOffsetNeedsRewrite = false;
-            this.setRenderedContentOffset(this._renderedContentOffset);
-          } else {
-            this._scrollStrategy.onRenderedOffsetChanged();
-          }
-        });
+      // We know this value is safe because we parse `offset` with `Number()` before passing it
+      // into the string.
+      this._rawRenderedContentTransform = transform;
+      this._renderedContentTransform = this._sanitizer.bypassSecurityTrustStyle(transform);
+      this._markChangeDetectionNeeded(() => {
+        if (this._renderedContentOffsetNeedsRewrite) {
+          this._renderedContentOffset -= this.measureRenderedContentSize();
+          this._renderedContentOffsetNeedsRewrite = false;
+          this.setRenderedContentOffset(this._renderedContentOffset);
+        } else {
+          this._scrollStrategy.onRenderedOffsetChanged();
+        }
       });
     }
   }
@@ -277,10 +250,8 @@ export class CdkVirtualScrollViewport implements DoCheck, OnInit, OnDestroy {
   setScrollOffset(offset: number) {
     // Rather than setting the offset immediately, we batch it up to be applied along with other DOM
     // writes during the next change detection cycle.
-    this._ngZone.run(() => {
-      this._pendingScrollOffset = offset;
-      this._changeDetectorRef.markForCheck();
-    });
+    this._pendingScrollOffset = offset;
+    this._markChangeDetectionNeeded();
   }
 
   /** Gets the current scroll offset of the viewport (in pixels). */
@@ -318,5 +289,46 @@ export class CdkVirtualScrollViewport implements DoCheck, OnInit, OnDestroy {
     const viewportEl = this.elementRef.nativeElement;
     this._viewportSize = this.orientation === 'horizontal' ?
         viewportEl.clientWidth : viewportEl.clientHeight;
+  }
+
+  /** Queue up change detection to run. */
+  private _markChangeDetectionNeeded(runAfter?: Function) {
+    if (runAfter) {
+      this._runAfterChangeDetection.push(runAfter);
+    }
+
+    // Use a Promise to batch together calls to `_doChangeDetection`. This way if we set a bunch of
+    // properties sequentially we only have to run `_doChangeDetection` once at the end.
+    if (!this._isChangeDetectionPending) {
+      this._isChangeDetectionPending = true;
+      this._ngZone.runOutsideAngular(() => Promise.resolve().then(() => {
+        if (this._ngZone.isStable) {
+           this._doChangeDetection();
+        } else {
+          this._ngZone.onStable.pipe(take(1)).subscribe(() => this._doChangeDetection());
+        }
+      }));
+    }
+  }
+
+  /** Run change detection. */
+  private _doChangeDetection() {
+    this._isChangeDetectionPending = false;
+
+    // Apply changes to Angular bindings.
+    this._ngZone.run(() => this._changeDetectorRef.detectChanges());
+    // Apply the pending scroll offset separately, since it can't be set up as an Angular binding.
+    if (this._pendingScrollOffset != null) {
+      if (this.orientation === 'horizontal') {
+        this.elementRef.nativeElement.scrollLeft = this._pendingScrollOffset;
+      } else {
+        this.elementRef.nativeElement.scrollTop = this._pendingScrollOffset;
+      }
+    }
+
+    for (let fn of this._runAfterChangeDetection) {
+      fn();
+    }
+    this._runAfterChangeDetection = [];
   }
 }
