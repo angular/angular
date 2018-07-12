@@ -164,12 +164,16 @@ export class OverlayRef implements PortalOutlet, OverlayReference {
       this._config.scrollStrategy.disable();
     }
 
+    if (this._config.panelClass) {
+      this._toggleClasses(this._pane, this._config.panelClass, false);
+    }
+
     const detachmentResult = this._portalOutlet.detach();
 
     // Only emit after everything is detached.
     this._detachments.next();
 
-    // Remove this overlay from keyboard dispatcher tracking
+    // Remove this overlay from keyboard dispatcher tracking.
     this._keyboardDispatcher.remove(this);
 
     return detachmentResult;

@@ -628,6 +628,26 @@ describe('Overlay', () => {
       expect(pane.classList).toContain('custom-class-one');
       expect(pane.classList).toContain('custom-class-two');
     });
+
+    it('should remove the custom panel class when the overlay is detached', () => {
+      const config = new OverlayConfig({panelClass: 'custom-panel-class'});
+      const overlayRef = overlay.create(config);
+
+      overlayRef.attach(componentPortal);
+      viewContainerFixture.detectChanges();
+
+      const pane = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+      expect(pane.classList).toContain('custom-panel-class');
+
+      overlayRef.detach();
+      viewContainerFixture.detectChanges();
+      expect(pane.classList).not.toContain('custom-panel-class');
+
+      overlayRef.attach(componentPortal);
+      viewContainerFixture.detectChanges();
+      expect(pane.classList).toContain('custom-panel-class');
+    });
+
   });
 
   describe('scroll strategy', () => {
