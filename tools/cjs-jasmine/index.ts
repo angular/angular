@@ -58,6 +58,7 @@ const specFiles =
             '@angular/_testing_init/**',
             '@angular/compiler/test/aot/**',
             '@angular/compiler/test/render3/**',
+            '@angular/compiler-cli/test/compliance/**',
             '@angular/core/test/bundling/**',
             '@angular/core/test/fake_async_spec.*',
             '@angular/core/test/render3/**',
