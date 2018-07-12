@@ -9,6 +9,7 @@
 import {Component, ComponentFactoryResolver, EventEmitter, Injector, Input, NgModule, Output, ViewEncapsulation, destroyPlatform} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {Subject} from 'rxjs';
 
 import {NgElement, NgElementConstructor, createCustomElement} from '../src/create-custom-element';
@@ -18,8 +19,8 @@ type WithFooBar = {
   fooFoo: string,
   barBar: string
 };
-
-if (typeof customElements !== 'undefined') {
+// we only run these tests in browsers that support Shadom DOM slots natively
+if (browserDetection.supportsCustomElements && browserDetection.supportsShadowDom) {
   describe('slots', () => {
     let testContainer: HTMLDivElement;
 
