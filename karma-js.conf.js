@@ -73,6 +73,7 @@ module.exports = function(config) {
       'dist/all/@angular/benchpress/**',
       'dist/all/@angular/compiler-cli/**',
       'dist/all/@angular/compiler-cli/src/ngtsc/**',
+      'dist/all/@angular/compiler-cli/test/compliance/**',
       'dist/all/@angular/compiler-cli/test/ngtsc/**',
       'dist/all/@angular/compiler/test/aot/**',
       'dist/all/@angular/compiler/test/render3/**',

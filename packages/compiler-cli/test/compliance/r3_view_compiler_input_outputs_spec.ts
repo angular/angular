@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockDirectory, setup} from '../aot/test_util';
+import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 describe('compiler compliance: listen()', () => {
@@ -52,29 +52,29 @@ describe('compiler compliance: listen()', () => {
     };
 
     const componentDef = `
-      static ngComponentDef = IDENT.ɵdefineComponent({
+      MyComponent.ngComponentDef = IDENT.ɵdefineComponent({
           …
           inputs:{
-            componentInput: 'componentInput',
-            originalComponentInput: 'renamedComponentInput'
+            componentInput: "componentInput",
+            originalComponentInput: "renamedComponentInput"
           },
           outputs: {
-            componentOutput: 'componentOutput',
-            originalComponentOutput: 'renamedComponentOutput'
+            componentOutput: "componentOutput",
+            originalComponentOutput: "renamedComponentOutput"
           }
           …
         });`;
 
     const directiveDef = `
-      static ngDirectiveDef = IDENT.ɵdefineDirective({
+      MyDirective.ngDirectiveDef = IDENT.ɵdefineDirective({
         …
         inputs:{
-          directiveInput: 'directiveInput',
-          originalDirectiveInput: 'renamedDirectiveInput'
+          directiveInput: "directiveInput",
+          originalDirectiveInput: "renamedDirectiveInput"
         },
         outputs: {
-          directiveOutput: 'directiveOutput',
-          originalDirectiveOutput: 'renamedDirectiveOutput'
+          directiveOutput: "directiveOutput",
+          originalDirectiveOutput: "renamedDirectiveOutput"
         }
         …
       });`;
