@@ -24,10 +24,18 @@ $mat-tab-animation-duration: 500ms !default;
     &:not(.mat-tab-disabled) {
       opacity: 1;
     }
+
+    @include cdk-high-contrast {
+      outline: dotted 2px;
+    }
   }
 
   &.mat-tab-disabled {
     cursor: default;
+
+    @include cdk-high-contrast {
+      opacity: 0.5;
+    }
   }
 
   .mat-tab-label-content {
@@ -35,6 +43,10 @@ $mat-tab-animation-duration: 500ms !default;
     justify-content: center;
     align-items: center;
     white-space: nowrap;
+  }
+
+  @include cdk-high-contrast {
+    opacity: 1;
   }
 }
 
