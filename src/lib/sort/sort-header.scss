@@ -1,3 +1,5 @@
+@import '../../cdk/a11y/a11y';
+
 $mat-sort-header-arrow-margin: 6px;
 $mat-sort-header-arrow-container-size: 12px;
 $mat-sort-header-arrow-stem-size: 10px;
@@ -60,6 +62,11 @@ $mat-sort-header-arrow-hint-opacity: 0.38;
   margin: auto;
   display: flex;
   align-items: center;
+
+  @include cdk-high-contrast {
+    width: 0;
+    border-left: solid $mat-sort-header-arrow-thickness;
+  }
 }
 
 .mat-sort-header-indicator {
@@ -78,6 +85,13 @@ $mat-sort-header-arrow-hint-opacity: 0.38;
   width: $mat-sort-header-arrow-thickness;
   background: currentColor;
   transform: rotate(45deg);
+
+  @include cdk-high-contrast {
+    width: 0;
+    height: 0;
+    border-top: solid $mat-sort-header-arrow-thickness;
+    border-left: solid $mat-sort-header-arrow-thickness;
+  }
 }
 
 .mat-sort-header-pointer-left,
@@ -87,6 +101,13 @@ $mat-sort-header-arrow-hint-opacity: 0.38;
   height: $mat-sort-header-arrow-thickness;
   position: absolute;
   top: 0;
+
+  @include cdk-high-contrast {
+    width: 0;
+    height: 0;
+    border-left: solid $mat-sort-header-arrow-pointer-length;
+    border-top: solid $mat-sort-header-arrow-thickness;
+  }
 }
 
 .mat-sort-header-pointer-left {
