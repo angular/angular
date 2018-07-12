@@ -17,6 +17,7 @@ import {
   ViewEncapsulation,
   Optional,
   Inject,
+  Input,
 } from '@angular/core';
 import {
   CanColor,
@@ -149,7 +150,10 @@ export class MatButton extends _MatButtonMixinBase
              a[mat-mini-fab], a[mat-stroked-button], a[mat-flat-button]`,
   exportAs: 'matButton, matAnchor',
   host: {
-    '[attr.tabindex]': 'disabled ? -1 : 0',
+    // Note that we ignore the user-specified tabindex when it's disabled for
+    // consistency with the `mat-button` applied on native buttons where even
+    // though they have an index, they're not tabbable.
+    '[attr.tabindex]': 'disabled ? -1 : (tabIndex || 0)',
     '[attr.disabled]': 'disabled || null',
     '[attr.aria-disabled]': 'disabled.toString()',
     '(click)': '_haltDisabledEvents($event)',
@@ -162,6 +166,8 @@ export class MatButton extends _MatButtonMixinBase
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatAnchor extends MatButton {
+  /** Tabindex of the button. */
+  @Input() tabIndex: number;
 
   constructor(
     platform: Platform,

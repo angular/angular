@@ -182,6 +182,24 @@ describe('MatButton', () => {
       expect(buttonDebugElement.nativeElement.getAttribute('disabled'))
         .toBeNull('Expect no disabled');
     });
+
+    it('should be able to set a custom tabindex', () => {
+      let fixture = TestBed.createComponent(TestApp);
+      let testComponent = fixture.debugElement.componentInstance;
+      let buttonElement = fixture.debugElement.query(By.css('a')).nativeElement;
+
+      fixture.componentInstance.tabIndex = 3;
+      fixture.detectChanges();
+
+      expect(buttonElement.getAttribute('tabIndex'))
+          .toBe('3', 'Expected custom tabindex to be set');
+
+      testComponent.isDisabled = true;
+      fixture.detectChanges();
+
+      expect(buttonElement.getAttribute('tabIndex'))
+          .toBe('-1', 'Expected custom tabindex to be overwritten when disabled.');
+    });
   });
 
   // Ripple tests.
@@ -244,11 +262,12 @@ describe('MatButton', () => {
 @Component({
   selector: 'test-app',
   template: `
-    <button mat-button type="button" (click)="increment()"
+    <button [tabIndex]="tabIndex" mat-button type="button" (click)="increment()"
       [disabled]="isDisabled" [color]="buttonColor" [disableRipple]="rippleDisabled">
       Go
     </button>
-    <a href="http://www.google.com" mat-button [disabled]="isDisabled" [color]="buttonColor">
+    <a [tabIndex]="tabIndex" href="http://www.google.com" mat-button [disabled]="isDisabled"
+      [color]="buttonColor">
       Link
     </a>
     <button mat-fab>Fab Button</button>
@@ -260,6 +279,7 @@ class TestApp {
   isDisabled: boolean = false;
   rippleDisabled: boolean = false;
   buttonColor: ThemePalette;
+  tabIndex: number;
 
   increment() {
     this.clickCount++;
