@@ -10,7 +10,7 @@ import {
 } from '@angular/cdk/testing';
 import {Component, NgZone} from '@angular/core';
 import {ComponentFixture, TestBed, async, inject} from '@angular/core/testing';
-import {DEC, FEB, JAN, MatNativeDateModule, NOV} from '@angular/material/core';
+import {DEC, FEB, JAN, MatNativeDateModule, NOV, JUL} from '@angular/material/core';
 import {By} from '@angular/platform-browser';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {MatCalendar} from './calendar';
@@ -32,6 +32,7 @@ describe('MatCalendar', () => {
         StandardCalendar,
         CalendarWithMinMax,
         CalendarWithDateFilter,
+        CalendarWithSelectableMinDate,
       ],
       providers: [
         MatDatepickerIntl,
@@ -399,6 +400,37 @@ describe('MatCalendar', () => {
 
       expect(calendarInstance.multiYearView._init).toHaveBeenCalled();
     });
+
+    it('should update the minDate in the child view if it changed after an interaction', () => {
+      fixture.destroy();
+
+      const dynamicFixture = TestBed.createComponent(CalendarWithSelectableMinDate);
+      dynamicFixture.detectChanges();
+
+      const calendarDebugElement = dynamicFixture.debugElement.query(By.directive(MatCalendar));
+      const disabledClass = 'mat-calendar-body-disabled';
+      calendarElement = calendarDebugElement.nativeElement;
+      calendarInstance = calendarDebugElement.componentInstance;
+
+      let cells = Array.from(calendarElement.querySelectorAll('.mat-calendar-body-cell'));
+
+      expect(cells.slice(0, 9).every(c => c.classList.contains(disabledClass)))
+          .toBe(true, 'Expected dates up to the 10th to be disabled.');
+
+      expect(cells.slice(9).every(c => c.classList.contains(disabledClass)))
+          .toBe(false, 'Expected dates after the 10th to be enabled.');
+
+      (cells[14] as HTMLElement).click();
+      dynamicFixture.detectChanges();
+      cells = Array.from(calendarElement.querySelectorAll('.mat-calendar-body-cell'));
+
+      expect(cells.slice(0, 14).every(c => c.classList.contains(disabledClass)))
+          .toBe(true, 'Expected dates up to the 14th to be disabled.');
+
+      expect(cells.slice(14).every(c => c.classList.contains(disabledClass)))
+          .toBe(false, 'Expected dates after the 14th to be enabled.');
+    });
+
   });
 
   describe('calendar with date filter', () => {
@@ -519,5 +551,30 @@ class CalendarWithDateFilter {
 
   dateFilter (date: Date) {
     return !(date.getDate() % 2) && date.getMonth() !== NOV;
+  }
+}
+
+
+@Component({
+  template: `
+    <mat-calendar
+      [startAt]="startAt"
+      (selectedChange)="select($event)"
+      [selected]="selected"
+      [minDate]="selected">
+    </mat-calendar>
+  `
+})
+class CalendarWithSelectableMinDate {
+  startAt = new Date(2018, JUL, 0);
+  selected: Date;
+  minDate: Date;
+
+  constructor() {
+    this.select(new Date(2018, JUL, 10));
+  }
+
+  select(value: Date) {
+    this.minDate = this.selected = value;
   }
 }
