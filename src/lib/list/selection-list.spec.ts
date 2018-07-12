@@ -840,16 +840,33 @@ describe('MatSelectionList with forms', () => {
   describe('and formControl', () => {
     let fixture: ComponentFixture<SelectionListWithFormControl>;
     let listOptions: MatListOption[];
+    let selectionList: MatSelectionList;
 
     beforeEach(() => {
       fixture = TestBed.createComponent(SelectionListWithFormControl);
       fixture.detectChanges();
 
+      selectionList = fixture.debugElement.query(By.directive(MatSelectionList)).componentInstance;
       listOptions = fixture.debugElement.queryAll(By.directive(MatListOption))
         .map(optionDebugEl => optionDebugEl.componentInstance);
     });
 
     it('should be able to disable options from the control', () => {
+      expect(selectionList.disabled)
+        .toBe(false, 'Expected the selection list to be enabled.');
+      expect(listOptions.every(option => !option.disabled))
+        .toBe(true, 'Expected every list option to be enabled.');
+
+      fixture.componentInstance.formControl.disable();
+      fixture.detectChanges();
+
+      expect(selectionList.disabled)
+        .toBe(true, 'Expected the selection list to be disabled.');
+      expect(listOptions.every(option => option.disabled))
+        .toBe(true, 'Expected every list option to be disabled.');
+    });
+
+    it('should be able to update the disabled property after form control disabling', () => {
       expect(listOptions.every(option => !option.disabled))
         .toBe(true, 'Expected every list option to be enabled.');
 
@@ -858,6 +875,16 @@ describe('MatSelectionList with forms', () => {
 
       expect(listOptions.every(option => option.disabled))
         .toBe(true, 'Expected every list option to be disabled.');
+
+      // Previously the selection list has been disabled through FormControl#disable. Now we
+      // want to verify that we can still change the disabled state through updating the disabled
+      // property. Calling FormControl#disable should not lock the disabled property.
+      // See: https://github.com/angular/material2/issues/12107
+      selectionList.disabled = false;
+      fixture.detectChanges();
+
+      expect(listOptions.every(option => !option.disabled))
+        .toBe(true, 'Expected every list option to be enabled.');
     });
 
     it('should be able to set the value through the form control', () => {

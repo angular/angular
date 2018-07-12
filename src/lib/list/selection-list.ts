@@ -461,9 +461,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
   /** Implemented as a part of ControlValueAccessor. */
   setDisabledState(isDisabled: boolean): void {
-    if (this.options) {
-      this.options.forEach(option => option.disabled = isDisabled);
-    }
+    this.disabled = isDisabled;
   }
 
   /** Implemented as part of ControlValueAccessor. */
