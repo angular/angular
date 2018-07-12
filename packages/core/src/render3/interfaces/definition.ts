@@ -122,6 +122,14 @@ export interface DirectiveDef<T, Selector extends string> {
    */
   factory(): T|[T];
 
+  /**
+   * Function to create instances of content queries associated with a given directive.
+   */
+  contentQueries: (() => void)|null;
+
+  /** Refreshes content queries associated with directives in a given view */
+  contentQueriesRefresh: ((directiveIndex: number, queryIndex: number) => void)|null;
+
   /** Refreshes host bindings on the associated directive. */
   hostBindings: ((directiveIndex: number, elementIndex: number) => void)|null;
 

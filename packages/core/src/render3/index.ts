@@ -116,6 +116,11 @@ export {
   query as Q,
   queryRefresh as qR,
 } from './query';
+export  {
+  registerContentQuery as Qr,
+  loadQueryList as ql,
+} from './instructions';
+
 export {
   pureFunction0 as f0,
   pureFunction1 as f1,

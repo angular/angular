@@ -12,7 +12,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {EventEmitter} from '../..';
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, loadQueryList, registerContentQuery} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
 
@@ -1684,6 +1684,48 @@ describe('query', () => {
 
   describe('content', () => {
 
+    it('should support content queries for directives', () => {
+      let withContentInstance: WithContentDirective;
+
+      class WithContentDirective {
+        // @ContentChildren('foo') foos;
+        // TODO(issue/24571): remove '!'.
+        foos !: QueryList<ElementRef>;
+
+        static ngComponentDef = defineDirective({
+          type: WithContentDirective,
+          selectors: [['', 'with-content', '']],
+          factory: () => new WithContentDirective(),
+          contentQueries:
+              () => { registerContentQuery(query(null, ['foo'], true, QUERY_READ_FROM_NODE)); },
+          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+            let tmp: any;
+            withContentInstance = loadDirective<WithContentDirective>(dirIndex);
+            queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
+                (withContentInstance.foos = tmp);
+          }
+        });
+      }
+
+      /**
+       * <div with-content>
+       *   <span #foo></span>
+       * </div>
+       * class Cmpt {
+       * }
+       */
+      const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div', [AttributeMarker.SelectOnly, 'with-content']);
+          { element(1, 'span', null, ['foo', '']); }
+          elementEnd();
+        }
+      }, [WithContentDirective]);
+
+      const fixture = new ComponentFixture(AppComponent);
+      expect(withContentInstance !.foos.length).toBe(1);
+    });
+
     // https://stackblitz.com/edit/angular-wlenwd?file=src%2Fapp%2Fapp.component.ts
     it('should support view and content queries matching the same element', () => {
       let withContentComponentInstance: WithContentComponent;
@@ -1696,18 +1738,17 @@ describe('query', () => {
         static ngComponentDef = defineComponent({
           type: WithContentComponent,
           selectors: [['with-content']],
-          factory: () => {
-            return [new WithContentComponent(), query(null, ['foo'], true, QUERY_READ_FROM_NODE)];
-          },
+          factory: () => new WithContentComponent(),
+          contentQueries:
+              () => { registerContentQuery(query(null, ['foo'], true, QUERY_READ_FROM_NODE)); },
           template: (rf: RenderFlags, ctx: WithContentComponent) => {
             // intentionally left empty, don't need anything for this test
           },
-          hostBindings: function ContentQueryComponent_HostBindings(
-              dirIndex: number, elIndex: number) {
+          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
             let tmp: any;
-            withContentComponentInstance = loadDirective<any[]>(dirIndex)[0];
-            queryRefresh(tmp = loadDirective<any[]>(dirIndex)[1]) &&
-                (withContentComponentInstance.foos = tmp as QueryList<any>);
+            withContentComponentInstance = loadDirective<WithContentComponent>(dirIndex);
+            queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
+                (withContentComponentInstance.foos = tmp);
           },
         });
       }
@@ -1760,19 +1801,17 @@ describe('query', () => {
           type: QueryDirective,
           selectors: [['', 'query', '']],
           exportAs: 'query',
-          factory: () => {
+          factory: () => new QueryDirective(),
+          contentQueries: () => {
             // @ContentChildren('foo, bar, baz', {descendants: true}) fooBars:
             // QueryList<ElementRef>;
-            return [
-              new QueryDirective(), query(null, ['foo', 'bar', 'baz'], true, QUERY_READ_FROM_NODE)
-            ];
+            registerContentQuery(query(null, ['foo', 'bar', 'baz'], true, QUERY_READ_FROM_NODE));
           },
-          hostBindings: function ContentQueryComponent_HostBindings(
-              dirIndex: number, elIndex: number) {
+          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
             let tmp: any;
-            const instance = loadDirective<any[]>(dirIndex)[0];
-            queryRefresh(tmp = loadDirective<any[]>(dirIndex)[1]) &&
-                (instance.fooBars = tmp as QueryList<any>);
+            const instance = loadDirective<QueryDirective>(dirIndex);
+            queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
+                (instance.fooBars = tmp);
           },
         });
       }
@@ -1804,8 +1843,8 @@ describe('query', () => {
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
-              outInstance = (<any>load(1))[0] as QueryDirective;
-              inInstance = (<any>load(5))[0] as QueryDirective;
+              outInstance = load<QueryDirective>(1);
+              inInstance = load<QueryDirective>(5);
             }
           },
           [QueryDirective]);
@@ -1823,18 +1862,16 @@ describe('query', () => {
              type: ShallowQueryDirective,
              selectors: [['', 'shallow-query', '']],
              exportAs: 'shallow-query',
-             factory: () => {
-               // @ContentChildren('foo', {descendants: false}) fooBars: QueryList<ElementRef>;
-               return [
-                 new ShallowQueryDirective(), query(null, ['foo'], false, QUERY_READ_FROM_NODE)
-               ];
+             factory: () => new ShallowQueryDirective(),
+             contentQueries: () => {
+               // @ContentChildren('foo', {descendants: false}) foos: QueryList<ElementRef>;
+               registerContentQuery(query(null, ['foo'], false, QUERY_READ_FROM_NODE));
              },
-             hostBindings: function ContentQueryComponent_HostBindings(
-                 dirIndex: number, elIndex: number) {
+             contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
                let tmp: any;
-               const instance = loadDirective<any[]>(dirIndex)[0];
-               queryRefresh(tmp = loadDirective<any[]>(dirIndex)[1]) &&
-                   (instance.foos = tmp as QueryList<any>);
+               const instance = loadDirective<ShallowQueryDirective>(dirIndex);
+               queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
+                   (instance.foos = tmp);
              },
            });
          }
@@ -1845,16 +1882,16 @@ describe('query', () => {
              type: DeepQueryDirective,
              selectors: [['', 'deep-query', '']],
              exportAs: 'deep-query',
-             factory: () => {
-               // @ContentChildren('foo', {descendants: true}) fooBars: QueryList<ElementRef>;
-               return [new DeepQueryDirective(), query(null, ['foo'], true, QUERY_READ_FROM_NODE)];
+             factory: () => new DeepQueryDirective(),
+             contentQueries: () => {
+               // @ContentChildren('foo', {descendants: false}) foos: QueryList<ElementRef>;
+               registerContentQuery(query(null, ['foo'], true, QUERY_READ_FROM_NODE));
              },
-             hostBindings: function ContentQueryComponent_HostBindings(
-                 dirIndex: number, elIndex: number) {
+             contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
                let tmp: any;
-               const instance = loadDirective<any[]>(dirIndex)[0];
-               queryRefresh(tmp = loadDirective<any[]>(dirIndex)[1]) &&
-                   (instance.foos = tmp as QueryList<any>);
+               const instance = loadDirective<DeepQueryDirective>(dirIndex);
+               queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
+                   (instance.foos = tmp);
              },
            });
          }
@@ -1878,8 +1915,8 @@ describe('query', () => {
                  elementEnd();
                }
                if (rf & RenderFlags.Update) {
-                 shallowInstance = (<any>load(1))[0] as ShallowQueryDirective;
-                 deepInstance = (<any>load(2))[0] as DeepQueryDirective;
+                 shallowInstance = load<ShallowQueryDirective>(1);
+                 deepInstance = load<DeepQueryDirective>(2);
                }
              },
              [ShallowQueryDirective, DeepQueryDirective]);

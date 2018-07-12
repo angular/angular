@@ -48,7 +48,7 @@ export function defineComponent<T>(componentDefinition: {
   /**
    * Factory method used to create an instance of directive.
    */
-  factory: () => T | ({0: T} & any[]); /* trying to say T | [T, ...any] */
+  factory: () => T;
 
   /**
    * Static attributes to set on host element.
@@ -119,6 +119,14 @@ export function defineComponent<T>(componentDefinition: {
    * Function executed by the parent template to allow child directive to apply host bindings.
    */
   hostBindings?: (directiveIndex: number, elementIndex: number) => void;
+
+  /**
+   * Function to create instances of content queries associated with a given directive.
+   */
+  contentQueries?: (() => void);
+
+  /** Refreshes content queries associated with directives in a given view */
+  contentQueriesRefresh?: ((directiveIndex: number, queryIndex: number) => void);
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
@@ -216,6 +224,8 @@ export function defineComponent<T>(componentDefinition: {
     factory: componentDefinition.factory,
     template: componentDefinition.template || null !,
     hostBindings: componentDefinition.hostBindings || null,
+    contentQueries: componentDefinition.contentQueries || null,
+    contentQueriesRefresh: componentDefinition.contentQueriesRefresh || null,
     attributes: componentDefinition.attributes || null,
     inputs: invertObject(componentDefinition.inputs, declaredInputs),
     declaredInputs: declaredInputs,
@@ -447,6 +457,14 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
    * Function executed by the parent template to allow child directive to apply host bindings.
    */
   hostBindings?: (directiveIndex: number, elementIndex: number) => void;
+
+  /**
+   * Function to create instances of content queries associated with a given directive.
+   */
+  contentQueries?: (() => void);
+
+  /** Refreshes content queries associated with directives in a given view */
+  contentQueriesRefresh?: ((directiveIndex: number, queryIndex: number) => void);
 
   /**
    * Defines the name that can be used in the template to assign this directive to a variable.
