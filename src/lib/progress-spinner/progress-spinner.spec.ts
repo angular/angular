@@ -83,6 +83,24 @@ describe('MatProgressSpinner', () => {
     expect(progressElement.componentInstance.value).toBe(75);
   });
 
+  it('should use different `circle` elements depending on the mode', () => {
+    const fixture = TestBed.createComponent(ProgressSpinnerWithValueAndBoundMode);
+
+    fixture.componentInstance.mode = 'determinate';
+    fixture.detectChanges();
+
+    const determinateCircle = fixture.nativeElement.querySelector('circle');
+
+    fixture.componentInstance.mode = 'indeterminate';
+    fixture.detectChanges();
+
+    const indeterminateCircle = fixture.nativeElement.querySelector('circle');
+
+    expect(determinateCircle).toBeTruthy();
+    expect(indeterminateCircle).toBeTruthy();
+    expect(determinateCircle).not.toBe(indeterminateCircle);
+  });
+
   it('should clamp the value of the progress between 0 and 100', () => {
     let fixture = TestBed.createComponent(BasicProgressSpinner);
     fixture.detectChanges();
@@ -138,11 +156,12 @@ describe('MatProgressSpinner', () => {
 
   it('should allow a custom stroke width', () => {
     const fixture = TestBed.createComponent(ProgressSpinnerCustomStrokeWidth);
-    const circleElement = fixture.nativeElement.querySelector('circle');
-    const svgElement = fixture.nativeElement.querySelector('svg');
 
     fixture.componentInstance.strokeWidth = 40;
     fixture.detectChanges();
+
+    const circleElement = fixture.nativeElement.querySelector('circle');
+    const svgElement = fixture.nativeElement.querySelector('svg');
 
     expect(parseInt(circleElement.style.strokeWidth)).toBe(40, 'Expected the custom stroke ' +
       'width to be applied to the circle element as a percentage of the element size.');

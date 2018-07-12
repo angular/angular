@@ -10,13 +10,31 @@
   [style.height.px]="diameter"
   [attr.viewBox]="_viewBox"
   preserveAspectRatio="xMidYMid meet"
-  focusable="false">
+  focusable="false"
+  [ngSwitch]="mode === 'indeterminate'">
 
+  <!--
+    Technically we can reuse the same `circle` element, however Safari has an issue that breaks
+    the SVG rendering in determinate mode, after switching between indeterminate and determinate.
+    Using a different element avoids the issue. An alternative to this is adding `display: none`
+    for a split second and then removing it when switching between modes, but it's hard to know
+    for how long to hide the element and it can cause the UI to blink.
+  -->
   <circle
+    *ngSwitchCase="true"
     cx="50%"
     cy="50%"
     [attr.r]="_circleRadius"
     [style.animation-name]="'mat-progress-spinner-stroke-rotate-' + diameter"
+    [style.stroke-dashoffset.px]="_strokeDashOffset"
+    [style.stroke-dasharray.px]="_strokeCircumference"
+    [style.stroke-width.%]="_circleStrokeWidth"></circle>
+
+  <circle
+    *ngSwitchCase="false"
+    cx="50%"
+    cy="50%"
+    [attr.r]="_circleRadius"
     [style.stroke-dashoffset.px]="_strokeDashOffset"
     [style.stroke-dasharray.px]="_strokeCircumference"
     [style.stroke-width.%]="_circleStrokeWidth"></circle>
