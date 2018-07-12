@@ -1,5 +1,9 @@
 package(default_visibility = ["//visibility:public"])
 
+exports_files([
+    "protractor.conf.js",
+])
+
 filegroup(
     name = "node_modules",
     srcs = glob(
