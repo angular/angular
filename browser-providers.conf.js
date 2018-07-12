@@ -46,7 +46,7 @@ var customLaunchers = {
   'SL_CHROME': {base: 'SauceLabs', browserName: 'chrome', version: '67'},
   'SL_CHROMEBETA': {base: 'SauceLabs', browserName: 'chrome', version: 'beta'},
   'SL_CHROMEDEV': {base: 'SauceLabs', browserName: 'chrome', version: 'dev'},
-  'SL_FIREFOX': {base: 'SauceLabs', browserName: 'firefox', version: '54'},
+  'SL_FIREFOX': {base: 'SauceLabs', browserName: 'firefox', version: '61'},
   'SL_FIREFOXBETA':
       {base: 'SauceLabs', platform: 'Windows 10', browserName: 'firefox', version: 'beta'},
   'SL_FIREFOXDEV':
