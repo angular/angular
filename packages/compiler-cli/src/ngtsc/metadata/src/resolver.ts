@@ -100,6 +100,8 @@ export abstract class Reference {
    * import if needed.
    */
   abstract toExpression(context: ts.SourceFile): Expression|null;
+
+  abstract withIdentifier(identifier: ts.Identifier): Reference;
 }
 
 /**
@@ -112,6 +114,8 @@ export class NodeReference extends Reference {
   constructor(node: ts.Node, readonly moduleName: string|null) { super(node); }
 
   toExpression(context: ts.SourceFile): null { return null; }
+
+  withIdentifier(identifier: ts.Identifier): NodeReference { return this; }
 }
 
 /**
@@ -125,7 +129,7 @@ export class ResolvedReference extends Reference {
   readonly expressable = true;
 
   toExpression(context: ts.SourceFile): Expression {
-    if (ts.getOriginalNode(context) === ts.getOriginalNode(this.node).getSourceFile()) {
+    if (ts.getOriginalNode(context) === ts.getOriginalNode(this.identifier).getSourceFile()) {
       return new WrappedNodeExpr(this.identifier);
     } else {
       // Relative import from context -> this.node.getSourceFile().
@@ -150,6 +154,10 @@ export class ResolvedReference extends Reference {
       }
     }
   }
+
+  withIdentifier(identifier: ts.Identifier): ResolvedReference {
+    return new ResolvedReference(this.node, identifier);
+  }
 }
 
 /**
@@ -168,11 +176,15 @@ export class AbsoluteReference extends Reference {
   readonly expressable = true;
 
   toExpression(context: ts.SourceFile): Expression {
-    if (ts.getOriginalNode(context) === ts.getOriginalNode(this.node.getSourceFile())) {
+    if (ts.getOriginalNode(context) === ts.getOriginalNode(this.identifier).getSourceFile()) {
       return new WrappedNodeExpr(this.identifier);
     } else {
       return new ExternalExpr(new ExternalReference(this.moduleName, this.symbolName));
     }
+  }
+
+  withIdentifier(identifier: ts.Identifier): AbsoluteReference {
+    return new AbsoluteReference(this.node, identifier, this.moduleName, this.symbolName);
   }
 }
 
@@ -379,8 +391,13 @@ class StaticInterpreter {
     if (decl === null) {
       return DYNAMIC_VALUE;
     }
-    return this.visitDeclaration(
+    const result = this.visitDeclaration(
         decl.node, {...context, absoluteModuleName: decl.viaModule || context.absoluteModuleName});
+    if (result instanceof Reference) {
+      return result.withIdentifier(node);
+    } else {
+      return result;
+    }
   }
 
   private visitDeclaration(node: ts.Declaration, context: Context): ResolvedValue {
