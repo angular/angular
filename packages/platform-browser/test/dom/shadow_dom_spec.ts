@@ -9,14 +9,11 @@
 import {Component, EventEmitter, Injector, Input, NgModule, Output, Renderer2, ViewEncapsulation, destroyPlatform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {BrowserModule} from '@angular/platform-browser';
+import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
-function supportsShadowDOMV1() {
-  const testEl = document.createElement('div');
-  return (typeof customElements !== 'undefined') && (typeof testEl.attachShadow !== 'undefined');
-}
 
-if (supportsShadowDOMV1()) {
+if (browserDetection.supportsShadowDom) {
   describe('ShadowDOM Support', () => {
 
     let testContainer: HTMLDivElement;
