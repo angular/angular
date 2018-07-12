@@ -27,20 +27,6 @@
     border-color: mat-color($foreground, secondary-text);
   }
 
-  .mat-radio-disabled .mat-radio-outer-circle {
-    border-color: mat-color($foreground, disabled);
-  }
-
-  .mat-radio-disabled {
-    .mat-radio-ripple .mat-ripple-element, .mat-radio-inner-circle {
-      background-color: mat-color($foreground, disabled);
-    }
-
-    .mat-radio-label-content {
-      color: mat-color($foreground, disabled);
-    }
-  }
-
   .mat-radio-button {
     &.mat-primary {
       @include _mat-radio-color($primary);
@@ -52,6 +38,25 @@
 
     &.mat-warn {
       @include _mat-radio-color($warn);
+    }
+
+    // This needs extra specificity, because the classes above are combined
+    // (e.g. `.mat-radio-button.mat-accent`) which increases their specificity a lot.
+    // TODO: consider making the selectors into descendants (`.mat-primary .mat-radio-button`).
+    &.mat-radio-disabled {
+      &.mat-radio-checked .mat-radio-outer-circle,
+      .mat-radio-outer-circle {
+        border-color: mat-color($foreground, disabled);
+      }
+
+      .mat-radio-ripple .mat-ripple-element,
+      .mat-radio-inner-circle {
+        background-color: mat-color($foreground, disabled);
+      }
+
+      .mat-radio-label-content {
+        color: mat-color($foreground, disabled);
+      }
     }
   }
 }
