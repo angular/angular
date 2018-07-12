@@ -29,6 +29,7 @@ ng_package(
     packages = ["//packages/common/locales:package"],
     tags = [
         "ivy-jit",
+        "ivy-local",
         "release-with-framework",
     ],
     deps = [

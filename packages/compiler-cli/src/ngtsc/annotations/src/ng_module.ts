@@ -37,10 +37,13 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<NgModuleAnalysis> {
-    if (decorator.args === null || decorator.args.length !== 1) {
+    if (decorator.args === null || decorator.args.length > 1) {
       throw new Error(`Incorrect number of arguments to @NgModule decorator`);
     }
-    const meta = decorator.args[0];
+
+    // @NgModule can be invoked without arguments. In case it is, pretend as if a blank object
+    // literal was specified. This simplifies the code below.
+    const meta = decorator.args.length === 1 ? decorator.args[0] : ts.createObjectLiteral([]);
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new Error(`Decorator argument must be literal.`);
     }
@@ -132,6 +135,12 @@ function resolveTypeList(resolvedList: ResolvedValue, name: string): Reference[]
   }
 
   resolvedList.forEach((entry, idx) => {
+    // Unwrap ModuleWithProviders for modules that are locally declared (and thus static resolution
+    // was able to descend into the function and return an object literal, a Map).
+    if (entry instanceof Map && entry.has('ngModule')) {
+      entry = entry.get('ngModule') !;
+    }
+
     if (Array.isArray(entry)) {
       // Recurse into nested arrays.
       refList.push(...resolveTypeList(entry, name));
@@ -144,7 +153,7 @@ function resolveTypeList(resolvedList: ResolvedValue, name: string): Reference[]
       refList.push(entry);
     } else {
       // TODO(alxhub): expand ModuleWithProviders.
-      throw new Error(`Value at position ${idx} in ${name} array is not a reference`);
+      throw new Error(`Value at position ${idx} in ${name} array is not a reference: ${entry}`);
     }
   });
 

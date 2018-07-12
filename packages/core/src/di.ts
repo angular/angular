@@ -13,7 +13,7 @@
  */
 
 export * from './di/metadata';
-export {InjectableType, InjectorType, defineInjectable, defineInjector} from './di/defs';
+export {InjectableType, InjectorDef, InjectorType, defineInjectable, defineInjector} from './di/defs';
 export {forwardRef, resolveForwardRef, ForwardRefFn} from './di/forward_ref';
 export {Injectable, InjectableDecorator, InjectableProvider} from './di/injectable';
 export {inject, InjectFlags, INJECTOR, Injector} from './di/injector';

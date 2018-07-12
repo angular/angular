@@ -408,6 +408,12 @@ export declare abstract class Injector {
 /** @experimental */
 export declare const INJECTOR: InjectionToken<Injector>;
 
+export interface InjectorDef<T> {
+    factory: () => T;
+    imports: (InjectorType<any> | InjectorTypeWithProviders<any>)[];
+    providers: (Type<any> | ValueProvider | ExistingProvider | FactoryProvider | ConstructorProvider | StaticClassProvider | ClassProvider | any[])[];
+}
+
 /** @experimental */
 export interface InjectorType<T> extends Type<T> {
     ngInjectorDef: never;

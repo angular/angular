@@ -59,7 +59,7 @@ export class DtsFileTransformer {
 
     const imports = this.imports.getAllImports(tsPath, this.coreImportsFrom);
     if (imports.length !== 0) {
-      dts = imports.map(i => `import * as ${i.as} from '${i.name}';\n`).join() + dts;
+      dts = imports.map(i => `import * as ${i.as} from '${i.name}';\n`).join('') + dts;
     }
 
     return dts;

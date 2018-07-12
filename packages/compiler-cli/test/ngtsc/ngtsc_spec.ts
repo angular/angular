@@ -144,7 +144,7 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).not.toContain('__decorate');
 
     const dtsContents = getContents('test.d.ts');
-    expect(dtsContents).toContain('static ngComponentDef: i0.ComponentDef<TestCmp, \'test-cmp\'>');
+    expect(dtsContents).toContain('static ngComponentDef: i0.ɵComponentDef<TestCmp, \'test-cmp\'>');
   });
 
   it('should compile Components without errors', () => {
@@ -196,9 +196,9 @@ describe('ngtsc behavioral tests', () => {
             'declarations: [TestCmp], imports: [], exports: [] })');
 
     const dtsContents = getContents('test.d.ts');
-    expect(dtsContents).toContain('static ngComponentDef: i0.ComponentDef<TestCmp, \'test-cmp\'>');
+    expect(dtsContents).toContain('static ngComponentDef: i0.ɵComponentDef<TestCmp, \'test-cmp\'>');
     expect(dtsContents)
-        .toContain('static ngModuleDef: i0.NgModuleDef<TestModule, [TestCmp], [], []>');
+        .toContain('static ngModuleDef: i0.ɵNgModuleDef<TestModule, [TestCmp], [], []>');
     expect(dtsContents).not.toContain('__decorate');
   });
 
@@ -240,8 +240,8 @@ describe('ngtsc behavioral tests', () => {
 
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents)
-        .toContain('static ngModuleDef: i0.NgModuleDef<TestModule, [TestCmp], [OtherModule], []>');
-    expect(dtsContents).toContain('static ngInjectorDef: i0.InjectorDef');
+        .toContain('static ngModuleDef: i0.ɵNgModuleDef<TestModule, [TestCmp], [OtherModule], []>');
+    expect(dtsContents).toContain('static ngInjectorDef: i0.ɵInjectorDef');
   });
 
   it('should compile Pipes without errors', () => {
@@ -342,6 +342,6 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('pipes: [TestPipe]');
 
     const dtsContents = getContents('test.d.ts');
-    expect(dtsContents).toContain('i0.NgModuleDef<TestModule, [TestPipe,TestCmp], [], []>');
+    expect(dtsContents).toContain('i0.ɵNgModuleDef<TestModule, [TestPipe,TestCmp], [], []>');
   });
 });

@@ -104,7 +104,7 @@ export class Identifiers {
   static defineComponent: o.ExternalReference = {name: 'ɵdefineComponent', moduleName: CORE};
 
   static ComponentDef: o.ExternalReference = {
-    name: 'ComponentDef',
+    name: 'ɵComponentDef',
     moduleName: CORE,
   };
 
@@ -114,12 +114,12 @@ export class Identifiers {
   };
 
   static DirectiveDef: o.ExternalReference = {
-    name: 'DirectiveDef',
+    name: 'ɵDirectiveDef',
     moduleName: CORE,
   };
 
   static InjectorDef: o.ExternalReference = {
-    name: 'InjectorDef',
+    name: 'ɵInjectorDef',
     moduleName: CORE,
   };
 
@@ -129,7 +129,7 @@ export class Identifiers {
   };
 
   static NgModuleDef: o.ExternalReference = {
-    name: 'NgModuleDef',
+    name: 'ɵNgModuleDef',
     moduleName: CORE,
   };
 

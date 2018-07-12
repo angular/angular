@@ -28,6 +28,7 @@ ng_package(
     entry_point = "packages/platform-browser/index.js",
     tags = [
         "ivy-jit",
+        "ivy-local",
         "release-with-framework",
     ],
     deps = [

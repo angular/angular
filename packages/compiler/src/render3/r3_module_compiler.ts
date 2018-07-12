@@ -107,7 +107,8 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
     providers: meta.providers,
     imports: meta.imports,
   })]);
-  const type = new o.ExpressionType(o.importExpr(R3.InjectorDef));
+  const type =
+      new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type)]));
   return {expression, type};
 }
 
