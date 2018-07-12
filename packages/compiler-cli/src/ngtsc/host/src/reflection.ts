@@ -83,10 +83,57 @@ export interface ClassMember {
   nameNode: ts.Identifier|null;
 
   /**
-   * TypeScript `ts.Expression` which initializes this member, if the member is a property, or
-   * `null` otherwise.
+   * TypeScript `ts.Expression` which represents the value of the member.
+   *
+   * If the member is a property, this will be the property initializer if there is one, or null
+   * otherwise.
    */
-  initializer: ts.Expression|null;
+  value: ts.Expression|null;
+
+  /**
+   * TypeScript `ts.Declaration` which represents the declaration of the member.
+   *
+   * In TypeScript code this is identical to the node, but in downleveled code this should always be
+   * the Declaration which actually represents the member's runtime value.
+   *
+   * For example, the TS code:
+   *
+   * ```
+   * class Clazz {
+   *   static get property(): string {
+   *     return 'value';
+   *   }
+   * }
+   * ```
+   *
+   * Downlevels to:
+   *
+   * ```
+   * var Clazz = (function () {
+   *   function Clazz() {
+   *   }
+   *   Object.defineProperty(Clazz, "property", {
+   *       get: function () {
+   *           return 'value';
+   *       },
+   *       enumerable: true,
+   *       configurable: true
+   *   });
+   *   return Clazz;
+   * }());
+   * ```
+   *
+   * In this example, for the property "property", the node would be the entire
+   * Object.defineProperty ExpressionStatement, but the declaration would be this
+   * FunctionDeclaration:
+   *
+   * ```
+   * function () {
+   *   return 'value';
+   * },
+   * ```
+   */
+  declaration: ts.Declaration;
 
   /**
    * Whether the member is static or not.
@@ -149,6 +196,24 @@ export interface Import {
    * This could either be an absolute module name (@angular/core for example) or a relative path.
    */
   from: string;
+}
+
+/**
+ * The declaration of a symbol, along with information about how it was imported into the
+ * application.
+ */
+export interface Declaration {
+  /**
+   * TypeScript reference to the declaration itself.
+   */
+  node: ts.Declaration;
+
+  /**
+   * The absolute module path from which the symbol was imported into the application, if the symbol
+   * was imported via an absolute module (even through a chain of re-exports). If the symbol is part
+   * of the application and was not imported from an absolute path, this will be `null`.
+   */
+  viaModule: string|null;
 }
 
 /**
@@ -220,4 +285,57 @@ export interface ReflectionHost {
    * `null` if the identifier doesn't resolve to an import but instead is locally defined.
    */
   getImportOfIdentifier(id: ts.Identifier): Import|null;
+
+  /**
+   * Trace an identifier to its declaration, if possible.
+   *
+   * This method attempts to resolve the declaration of the given identifier, tracing back through
+   * imports and re-exports until the original declaration statement is found. A `Declaration`
+   * object is returned if the original declaration is found, or `null` is returned otherwise.
+   *
+   * If the declaration is in a different module, and that module is imported via an absolute path,
+   * this method also returns the absolute path of the imported module. For example, if the code is:
+   *
+   * ```
+   * import {RouterModule} from '@angular/core';
+   *
+   * export const ROUTES = RouterModule.forRoot([...]);
+   * ```
+   *
+   * and if `getDeclarationOfIdentifier` is called on `RouterModule` in the `ROUTES` expression,
+   * then it would trace `RouterModule` via its import from `@angular/core`, and note that the
+   * definition was imported from `@angular/core` into the application where it was referenced.
+   *
+   * If the definition is re-exported several times from different absolute module names, only
+   * the first one (the one by which the application refers to the module) is returned.
+   *
+   * This module name is returned in the `viaModule` field of the `Declaration`. If The declaration
+   * is relative to the application itself and there was no import through an absolute path, then
+   * `viaModule` is `null`.
+   *
+   * @param id a TypeScript `ts.Identifier` to trace back to a declaration.
+   *
+   * @returns metadata about the `Declaration` if the original declaration is found, or `null`
+   * otherwise.
+   */
+  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null;
+
+  /**
+   * Collect the declarations exported from a module by name.
+   *
+   * Iterates over the exports of a module (including re-exports) and returns a map of export
+   * name to its `Declaration`. If an exported value is itself re-exported from another module,
+   * the `Declaration`'s `viaModule` will reflect that.
+   *
+   * @param node a TypeScript `ts.Node` representing the module (for example a `ts.SourceFile`) for
+   * which to collect exports.
+   *
+   * @returns a map of `Declaration`s for the module's exports, by name.
+   */
+  getExportsOfModule(module: ts.Node): Map<string, Declaration>|null;
+
+  /**
+   * Check whether the given declaration node actually represents a class.
+   */
+  isClass(node: ts.Declaration): boolean;
 }

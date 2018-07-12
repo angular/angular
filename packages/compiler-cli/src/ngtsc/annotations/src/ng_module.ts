@@ -57,17 +57,20 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     // Extract the module declarations, imports, and exports.
     let declarations: Reference[] = [];
     if (ngModule.has('declarations')) {
-      const declarationMeta = staticallyResolve(ngModule.get('declarations') !, this.checker);
+      const declarationMeta =
+          staticallyResolve(ngModule.get('declarations') !, this.reflector, this.checker);
       declarations = resolveTypeList(declarationMeta, 'declarations');
     }
     let imports: Reference[] = [];
     if (ngModule.has('imports')) {
-      const importsMeta = staticallyResolve(ngModule.get('imports') !, this.checker);
+      const importsMeta =
+          staticallyResolve(ngModule.get('imports') !, this.reflector, this.checker);
       imports = resolveTypeList(importsMeta, 'imports');
     }
     let exports: Reference[] = [];
     if (ngModule.has('exports')) {
-      const exportsMeta = staticallyResolve(ngModule.get('exports') !, this.checker);
+      const exportsMeta =
+          staticallyResolve(ngModule.get('exports') !, this.reflector, this.checker);
       exports = resolveTypeList(exportsMeta, 'exports');
     }
 

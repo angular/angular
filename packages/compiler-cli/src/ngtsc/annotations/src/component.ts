@@ -43,7 +43,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     const component = reflectObjectLiteral(meta);
 
     if (this.resourceLoader.preload !== undefined && component.has('templateUrl')) {
-      const templateUrl = staticallyResolve(component.get('templateUrl') !, this.checker);
+      const templateUrl =
+          staticallyResolve(component.get('templateUrl') !, this.reflector, this.checker);
       if (typeof templateUrl !== 'string') {
         throw new Error(`templateUrl should be a string`);
       }
@@ -73,7 +74,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
 
     let templateStr: string|null = null;
     if (component.has('templateUrl')) {
-      const templateUrl = staticallyResolve(component.get('templateUrl') !, this.checker);
+      const templateUrl =
+          staticallyResolve(component.get('templateUrl') !, this.reflector, this.checker);
       if (typeof templateUrl !== 'string') {
         throw new Error(`templateUrl should be a string`);
       }
@@ -81,7 +83,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
       templateStr = this.resourceLoader.load(url);
     } else if (component.has('template')) {
       const templateExpr = component.get('template') !;
-      const resolvedTemplate = staticallyResolve(templateExpr, this.checker);
+      const resolvedTemplate = staticallyResolve(templateExpr, this.reflector, this.checker);
       if (typeof resolvedTemplate !== 'string') {
         throw new Error(`Template must statically resolve to a string: ${node.name!.text}`);
       }
@@ -92,7 +94,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
 
     let preserveWhitespaces: boolean = false;
     if (component.has('preserveWhitespaces')) {
-      const value = staticallyResolve(component.get('preserveWhitespaces') !, this.checker);
+      const value =
+          staticallyResolve(component.get('preserveWhitespaces') !, this.reflector, this.checker);
       if (typeof value !== 'boolean') {
         throw new Error(`preserveWhitespaces must resolve to a boolean if present`);
       }
