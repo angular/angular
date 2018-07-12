@@ -940,7 +940,7 @@ The full source for the final version of the app can be seen and downloaded from
 <!--
 ### The sample application in action
 -->
-### 예제 애플리케이션의 용도
+### 개요
 
 <!--
 Imagine an application that helps the _Hero Employment Agency_ run its business.
@@ -987,14 +987,22 @@ Select one hero and the app takes you to a hero editing screen.
 </figure>
 
 
-
+<!--
 Alter the name.
 Click the "Back" button and the app returns to the heroes list which displays the changed hero name.
 Notice that the name change took effect immediately.
+-->
+히어로의 이름을 변경해 봅시다.
+그리고 "Back" 버튼을 누르면 히어로의 이름이 수정된 채로 화면에 표시됩니다.
+이 때 히어로의 이름은 "Back" 버튼을 눌렀을 때 수정된 값이 반영된 것입니다.
 
+<!--
 Had you clicked the browser's back button instead of the "Back" button,
 the app would have returned you to the heroes list as well.
 Angular app navigation updates the browser history as normal web navigation does.
+-->
+"Back" 버튼 대신 브라우저의 "뒤로 가기" 버튼을 클릭해도 히어로의 목록은 동일하게 처리됩니다.
+일반적인 페이지 이동과 마찬가지로, Angular 애플리케이션의 네비게이션도 브라우저 히스토리를 활용합니다.
 
 Now click the *Crisis Center* link for a list of ongoing crises.
 
