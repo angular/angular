@@ -7,7 +7,7 @@
   <div class="mat-select-value" [ngSwitch]="empty">
     <span class="mat-select-placeholder" *ngSwitchCase="true">{{placeholder || '\u00A0'}}</span>
     <span class="mat-select-value-text" *ngSwitchCase="false" [ngSwitch]="!!customTrigger">
-      <span *ngSwitchDefault>{{triggerValue}}</span>
+      <span *ngSwitchDefault>{{triggerValue || '\u00A0'}}</span>
       <ng-content select="mat-select-trigger" *ngSwitchCase="true"></ng-content>
     </span>
   </div>
