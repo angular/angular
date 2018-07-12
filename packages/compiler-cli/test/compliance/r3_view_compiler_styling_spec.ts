@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InitialStylingFlags} from '../../src/core';
-import {MockDirectory, setup} from '../aot/test_util';
+import {InitialStylingFlags} from '@angular/compiler/src/core';
+import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
 
 import {compile, expectEmit} from './mock_compile';
 
@@ -40,9 +40,9 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-          template: function MyComponent_Template(rf: $RenderFlags$, $ctx$: $MyComponent$) {
+          template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
+              $r3$.ɵE(0, "div");
               $r3$.ɵs();
               $r3$.ɵe();
             }
@@ -85,17 +85,17 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const _c0 = ['opacity','width','height',${InitialStylingFlags.VALUES_MODE},'opacity','1'];
-          class MyComponent {
-            static ngComponentDef = i0.ɵdefineComponent({
+          const _c0 = ["opacity","width","height",${InitialStylingFlags.VALUES_MODE},"opacity","1"];
+          …
+          MyComponent.ngComponentDef = i0.ɵdefineComponent({
               type: MyComponent,
-              selectors:[['my-component']],
+              selectors:[["my-component"]],
               factory:function MyComponent_Factory(){
                 return new MyComponent();
               },
-              template: function MyComponent_Template(rf: $RenderFlags$, $ctx$: $MyComponent$) {
+              template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
-                  $r3$.ɵE(0, 'div');
+                  $r3$.ɵE(0, "div");
                   $r3$.ɵs(_c0);
                   $r3$.ɵe();
                 }
@@ -104,7 +104,7 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵsp(0, 1, $ctx$.myWidth);
                   $r3$.ɵsp(0, 2, $ctx$.myHeight);
                   $r3$.ɵsa(0);
-                  $r3$.ɵa(0, 'style', $r3$.ɵb('border-width: 10px'));
+                  $r3$.ɵa(0, "style", $r3$.ɵb("border-width: 10px"));
                 }
               }
             });
@@ -137,14 +137,14 @@ describe('compiler compliance: styling', () => {
       };
 
       const template = `
-          template: function MyComponent_Template(rf: $RenderFlags$, $ctx$: $MyComponent$) {
+          template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
+              $r3$.ɵE(0, "div");
               $r3$.ɵs();
               $r3$.ɵe();
             }
             if (rf & 2) {
-              $r3$.ɵsm(0,(null as any),$ctx$.myClassExp);
+              $r3$.ɵsm(0,null,$ctx$.myClassExp);
               $r3$.ɵsa(0);
             }
           }
@@ -182,26 +182,26 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const _c0 = ['grape','apple','orange',${InitialStylingFlags.VALUES_MODE},'grape',true];
-          class MyComponent {
-            static ngComponentDef = i0.ɵdefineComponent({
+          const _c0 = ["grape","apple","orange",${InitialStylingFlags.VALUES_MODE},"grape",true];
+          …
+          MyComponent.ngComponentDef = i0.ɵdefineComponent({
               type: MyComponent,
-              selectors:[['my-component']],
+              selectors:[["my-component"]],
               factory:function MyComponent_Factory(){
                 return new MyComponent();
               },
-              template: function MyComponent_Template(rf: $RenderFlags$, $ctx$: $MyComponent$) {
+              template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
-                  $r3$.ɵE(0, 'div');
-                  $r3$.ɵs((null as any), _c0);
+                  $r3$.ɵE(0, "div");
+                  $r3$.ɵs(null, _c0);
                   $r3$.ɵe();
                 }
                 if (rf & 2) {
-                  $r3$.ɵsm(0, (null as any), $ctx$.myClassExp);
+                  $r3$.ɵsm(0, null, $ctx$.myClassExp);
                   $r3$.ɵcp(0, 1, $ctx$.yesToApple);
                   $r3$.ɵcp(0, 2, $ctx$.yesToOrange);
                   $r3$.ɵsa(0);
-                  $r3$.ɵa(0, 'class', $r3$.ɵb('banana'));
+                  $r3$.ɵa(0, "class", $r3$.ɵb("banana"));
                 }
               }
             });
@@ -234,24 +234,24 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const _c0 = ['width',${InitialStylingFlags.VALUES_MODE},'width','100px'];
-          const _c1 = ['foo',${InitialStylingFlags.VALUES_MODE},'foo',true];
-          class MyComponent {
-            static ngComponentDef = i0.ɵdefineComponent({
+          const _c0 = ["width",${InitialStylingFlags.VALUES_MODE},"width","100px"];
+          const _c1 = ["foo",${InitialStylingFlags.VALUES_MODE},"foo",true];
+          …
+          MyComponent.ngComponentDef = i0.ɵdefineComponent({
               type: MyComponent,
-              selectors:[['my-component']],
+              selectors:[["my-component"]],
               factory:function MyComponent_Factory(){
                 return new MyComponent();
               },
-              template: function MyComponent_Template(rf: $RenderFlags$, $ctx$: $MyComponent$) {
+              template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
-                  $r3$.ɵE(0, 'div');
+                  $r3$.ɵE(0, "div");
                   $r3$.ɵs(_c0, _c1);
                   $r3$.ɵe();
                 }
                 if (rf & 2) {
-                  $r3$.ɵa(0, 'class', $r3$.ɵb('round'));
-                  $r3$.ɵa(0, 'style', $r3$.ɵb('height:100px'));
+                  $r3$.ɵa(0, "class", $r3$.ɵb("round"));
+                  $r3$.ɵa(0, "style", $r3$.ɵb("height:100px"));
                 }
               }
             });
