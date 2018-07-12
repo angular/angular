@@ -8,7 +8,7 @@ Everything in this folder is part of the documentation project. This includes
 
 ## Developer tasks
 
-We use `yarn` to manage the dependencies and to run build tasks.
+We use [Yarn](https://yarnpkg.com) to manage the dependencies and to run build tasks.
 You should run all these tasks from the `angular/aio` folder.
 Here are the most important tasks you might need to use:
 
