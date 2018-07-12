@@ -87,8 +87,7 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
       });
     });
 
-    // other browsers don't support shadow dom
-    if (browserDetection.isChromeDesktop) {
+    if (browserDetection.supportsDeprecatedShadowDomV0) {
       it('should allow to style components with emulated encapsulation and no encapsulation inside of components with shadow DOM',
          () => {
            const fixture = TestBed.createComponent(SomeApp);
