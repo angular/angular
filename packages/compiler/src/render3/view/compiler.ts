@@ -20,11 +20,12 @@ import {ParseSourceSpan, typeSourceSpan} from '../../parse_util';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {OutputContext, error} from '../../util';
-
 import * as t from '../r3_ast';
 import {R3DependencyMetadata, R3ResolvedDependencyType, compileFactoryFunction, dependenciesFromGlobalMetadata} from '../r3_factory';
 import {Identifiers as R3} from '../r3_identifiers';
 import {Render3ParseResult} from '../r3_template_transform';
+import {typeWithParameters} from '../util';
+
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {BindingScope, TemplateDefinitionBuilder} from './template';
 import {CONTEXT_NAME, DefinitionMap, ID_SEPARATOR, MEANING_SEPARATOR, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator, unsupported} from './util';
@@ -93,9 +94,10 @@ export function compileDirectiveFromMetadata(
   // string literal, which must be on one line.
   const selectorForType = (meta.selector || '').replace(/\n/g, '');
 
-  const type = new o.ExpressionType(o.importExpr(
-      R3.DirectiveDef,
-      [new o.ExpressionType(meta.type), new o.ExpressionType(o.literal(selectorForType))]));
+  const type = new o.ExpressionType(o.importExpr(R3.DirectiveDef, [
+    typeWithParameters(meta.type, meta.typeArgumentCount),
+    new o.ExpressionType(o.literal(selectorForType))
+  ]));
   return {expression, type};
 }
 
@@ -167,9 +169,10 @@ export function compileComponentFromMetadata(
   const selectorForType = (meta.selector || '').replace(/\n/g, '');
 
   const expression = o.importExpr(R3.defineComponent).callFn([definitionMap.toLiteralMap()]);
-  const type = new o.ExpressionType(o.importExpr(
-      R3.ComponentDef,
-      [new o.ExpressionType(meta.type), new o.ExpressionType(o.literal(selectorForType))]));
+  const type = new o.ExpressionType(o.importExpr(R3.ComponentDef, [
+    typeWithParameters(meta.type, meta.typeArgumentCount),
+    new o.ExpressionType(o.literal(selectorForType))
+  ]));
 
   return {expression, type};
 }
@@ -252,6 +255,7 @@ function directiveMetadataFromGlobalMetadata(
   return {
     name,
     type: outputCtx.importExpr(directive.type.reference),
+    typeArgumentCount: 0,
     typeSourceSpan:
         typeSourceSpan(directive.isComponent ? 'Component' : 'Directive', directive.type),
     selector: directive.selector,
