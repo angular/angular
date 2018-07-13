@@ -8,6 +8,9 @@
 
 // Determine if we run under bazel
 const isBazel = !!process.env.RUNFILES;
+// isBazel needed while 'scripts/ci/test-e2e.sh test.e2e.protractor-e2e' is run
+// on Travis
+// TODO: port remaining protractor e2e tests to bazel protractor_web_test_suite rule
 
 // Make sure that the command line is read as the first thing
 // as this could exit node if the help script should be printed.
