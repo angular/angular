@@ -27,4 +27,9 @@ sed('-i', '(\'response\' in xhr)', '(\'response\' in (xhr as any))',
     'node_modules/rxjs/src/observable/dom/AjaxObservable.ts');
 */
 
+log('\n# patch: remove BUILD files from nested rxjs dependencies')
+log('    workaround for https://github.com/angular/angular/issues/24930')
+rm('-f', 'node_modules/@*/*/node_modules/rxjs/src/BUILD.bazel')
+rm('-f', 'node_modules/@*/*/node_modules/rxjs/src/*/BUILD.bazel')
+
 log('===== finished running the postinstall-patches.js script =====');

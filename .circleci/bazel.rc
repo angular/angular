@@ -24,6 +24,9 @@ build --experimental_remote_spawn_cache --remote_rest_cache=http://localhost:764
 # Prevent unstable environment variables from tainting cache keys
 build --experimental_strict_action_env
 
+# Create an awesome profile we can load in chrome://tracing
+build --experimental_generate_json_trace_profile
+
 # Save downloaded repositories such as the go toolchain
 # This directory can then be included in the CircleCI cache
 # It should save time running the first build
