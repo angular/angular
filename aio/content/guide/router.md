@@ -1004,37 +1004,54 @@ Angular app navigation updates the browser history as normal web navigation does
 "Back" 버튼 대신 브라우저의 "뒤로 가기" 버튼을 클릭해도 히어로의 목록은 동일하게 처리됩니다.
 일반적인 페이지 이동과 마찬가지로, Angular 애플리케이션의 네비게이션도 브라우저 히스토리를 활용합니다.
 
+<!--
 Now click the *Crisis Center* link for a list of ongoing crises.
-
+-->
+그리고 *재난 관리 센터* 링크를 클릭하면 재난 목록이 화면에 표시됩니다.
 
 <figure>
   <img src='generated/images/guide/router/crisis-center-list.png' alt="Crisis Center List">
 </figure>
 
 
-
+<!--
 Select a crisis and the application takes you to a crisis editing screen.
 The _Crisis Detail_ appears in a child view on the same page, beneath the list.
+-->
+이 화면에서 재난 목록 중 하나를 선택하면 재난 정보를 수정할 수 있는 화면으로 이동합니다.
+이 떄 _재난 상세정보_ 화면은 같은 페이지에 자식 뷰로 표시됩니다.
 
+<!--
 Alter the name of a crisis.
 Notice that the corresponding name in the crisis list does _not_ change.
-
+-->
+재난의 이름을 수정해 봅시다.
+이 떄 목록에 표시된 재난의 이름이 바로 변경되지는 _않습니다._
 
 <figure>
   <img src='generated/images/guide/router/crisis-center-detail.png' alt="Crisis Center Detail">
 </figure>
 
 
-
+<!--
 Unlike *Hero Detail*, which updates as you type,
 *Crisis Detail* changes are temporary until you either save or discard them by pressing the "Save" or "Cancel" buttons.
 Both buttons navigate back to the *Crisis Center* and its list of crises.
+-->
+*히어로 상세정보* 화면에서는 사용자가 입력한 내용이 바로 반영되었지만, *재난 상세정보* 화면에서는 "Save" 버튼을 눌러서 저장하거나 "Cancel" 버튼을 눌러서 수정사항을 반영하지 않는 방식으로 동작합니다.
+두 버튼은 모두 *재난 관리 센터* 화면으로 이동합니다.
 
+<!--
 ***Do not click either button yet***.
 Click the browser back button or the "Heroes" link instead.
+-->
+***하지만 이 버튼은 아직 클릭하지 마세요***.
+지금은 브라우저의 뒤로가기 버튼이나 "Heroes" 링크를 클릭해야 합니다.
 
+<!--
 Up pops a dialog box.
-
+-->
+그러면 다음과 같은 대화상자가 표시됩니다.
 
 <figure>
   <img src='generated/images/guide/router/confirm-dialog.png' alt="Confirm Dialog">
