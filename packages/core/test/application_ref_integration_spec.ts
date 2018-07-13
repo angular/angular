@@ -86,10 +86,9 @@ describe('ApplicationRef bootstrap', () => {
   providers: APPLICATION_MODULE_PROVIDERS
 });
 
-export function defineNgModule({bootstrap}: {bootstrap?: Type<any>[]}): NgModuleDef {
-  return {
-    bootstrap: bootstrap || [],
-  };
+export function defineNgModule({bootstrap}: {bootstrap?: Type<any>[]}):
+    NgModuleDef<any, any, any, any> {
+  return ({ bootstrap: bootstrap || [], } as any);
 }
 
 /////////////////////////////////////////////////////////
