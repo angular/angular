@@ -143,6 +143,7 @@ export function extractDirectiveMetadata(
     inputs: {...inputsFromMeta, ...inputsFromFields},
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, selector,
     type: new WrappedNodeExpr(clazz.name !),
+    typeArgumentCount: (clazz.typeParameters || []).length,
     typeSourceSpan: null !, usesInheritance,
   };
   return {decoratedElements, decorator: directive, metadata};
