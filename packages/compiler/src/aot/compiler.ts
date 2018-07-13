@@ -318,10 +318,12 @@ export class AotCompiler {
       });
       compMetas.forEach(compMeta => {
         const html = compMeta.template !.template !;
+        // Template URL points to either an HTML or TS file depending on whether
+        // the file is used with `templateUrl:` or `template:`, respectively.
+        const templateUrl = compMeta.template !.templateUrl !;
         const interpolationConfig =
             InterpolationConfig.fromArray(compMeta.template !.interpolation);
-        errors.push(
-            ...messageBundle.updateFromTemplate(html, file.fileName, interpolationConfig) !);
+        errors.push(...messageBundle.updateFromTemplate(html, templateUrl, interpolationConfig) !);
       });
     });
 
