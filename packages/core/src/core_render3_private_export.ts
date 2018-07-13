@@ -25,7 +25,6 @@ export {
   PublicFeature as ɵPublicFeature,
   InheritDefinitionFeature as ɵInheritDefinitionFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,
-  NgModuleDef as ɵNgModuleDef,
   NgModuleType as ɵNgModuleType,
   CssSelectorList as ɵCssSelectorList,
   markDirty as ɵmarkDirty,
@@ -100,6 +99,7 @@ export {
   I18nInstruction as ɵI18nInstruction,
   I18nExpInstruction as ɵI18nExpInstruction,
 } from './render3/index';
+export {NgModuleDef as ɵNgModuleDef} from './metadata/ng_module';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
   bypassSanitizationTrustStyle as ɵbypassSanitizationTrustStyle,

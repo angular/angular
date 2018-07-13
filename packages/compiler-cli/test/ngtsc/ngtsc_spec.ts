@@ -119,8 +119,8 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('Service.ngInjectableDef =');
     expect(jsContents).not.toContain('__decorate');
     const dtsContents = getContents('test.d.ts');
-    expect(dtsContents).toContain('static ngInjectableDef: i0.InjectableDef<Dep>;');
-    expect(dtsContents).toContain('static ngInjectableDef: i0.InjectableDef<Service>;');
+    expect(dtsContents).toContain('static ngInjectableDef: i0.ɵInjectableDef<Dep>;');
+    expect(dtsContents).toContain('static ngInjectableDef: i0.ɵInjectableDef<Service>;');
   });
 
   it('should compile Components without errors', () => {
