@@ -698,6 +698,13 @@
             "title": "Thoughtram",
             "url": "http://thoughtram.io/"
           },
+          "strbrw": {
+            "desc": "Angular and RxJS trainings, Code Reviews and consultancy. We help software engineers all over the world to create better web-applications...",
+            "logo": "",
+            "rev": true,
+            "title": "StrongBrew",
+            "url": "https://strongbrew.io/"
+          },
           "jsru": {
             "desc": "Complete Angular online course. Constantly updating. Real-time webinars with immediate feedback from the teacher.",
             "logo": "https://learn.javascript.ru/img/sitetoolbar__logo_ru.svg",
