@@ -1,21 +1,20 @@
-# Upgrading from AngularJS to Angular
+# ngUpgrade
 
-_Angular_ is the name for the Angular of today and tomorrow.<br />
-_AngularJS_ is the name for all 1.x versions of Angular.
+<div class="alert is-helpful">
 
-AngularJS apps are great.
-Always consider the business case before moving to Angular.
-An important part of that case is the time and effort to get there.
+  _Angular_ is the name for the Angular of today and tomorrow.<br />
+  _AngularJS_ is the name for all 1.x versions of Angular.
+
+</div>
+
 This guide describes the built-in tools for efficiently migrating AngularJS projects over to the
-Angular platform, a piece at a time.
+Angular platform using ngUpgrade.
 
-Some applications will be easier to upgrade than others, and there are
-many ways to make it easier for yourself. It is possible to
-prepare and align AngularJS applications with Angular even before beginning
-the upgrade process. These preparation steps are all about making the code
-more decoupled, more maintainable, and better aligned with modern development
-tools. That means in addition to making the upgrade easier,
-you will also improve the existing AngularJS applications.
+It is necessary to prepare and align AngularJS applications with Angular 
+even before beginning the upgrade process. These preparation steps are all 
+about making the code more decoupled, more maintainable, and better aligned
+with modern development tools. That means in addition to making the upgrade 
+easier, you will also improve the existing AngularJS applications.
 
 One of the keys to a successful upgrade is to do it incrementally,
 by running the two frameworks side by side in the same application, and
@@ -23,15 +22,28 @@ porting AngularJS components to Angular one by one. This makes it possible
 to upgrade even large and complex applications without disrupting other
 business, because the work can be done collaboratively and spread over
 a period of time. The `upgrade` module in Angular has been designed to
-make incremental upgrading seamless.
+-make incremental upgrading seamless. 
 
-## Preparation
+{@a preparation}
 
-There are many ways to structure AngularJS applications. When you begin
-to upgrade these applications to Angular, some will turn out to be
-much more easy to work with than others. There are a few key techniques
-and patterns that you can apply to future proof apps even before you
-begin the migration.
+## Preparation for ngUpgrade
+
+There are six key steps for preparing your app for ngUpgrade from AngularJS to Angular that fall under three categories. 
+
+[Follow the AngularJS Style Guide](#follow-the-angular-styleguide)
+
+1. [Rule of 1](#rule-of-1)
+2. [Folders-By-Feature](#folders-by-feature)
+    
+[Build Process](#build-process)
+
+3. [Using a Module Loader](#using-a-module-loader)
+4. [Using a Package Manager](#using-a-package-manager)
+     
+[Architectural Changes](#architectural-changes)
+
+5. [Migrating to TypeScript](#migrating-to-typescript)
+6. [Using Component Directives](#using-component-directives)
 
 {@a follow-the-angular-styleguide}
 
@@ -53,16 +65,23 @@ aligned with Angular*.
 There are a few rules in particular that will make it much easier to do
 *an incremental upgrade* using the Angular `upgrade/static` module:
 
-* The [Rule of 1](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#single-responsibility)
-  states that there should be one component per file. This not only makes
-  components easy to navigate and find, but will also allow us to migrate
-  them between languages and frameworks one at a time. In this example application,
-  each controller, component, service, and filter is in its own source file.
+{@a rule-of-1} 
 
-* The [Folders-by-Feature Structure](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#folders-by-feature-structure)
-  and [Modularity](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#modularity)
-  rules define similar principles on a higher level of abstraction: Different parts of the
-  application should reside in different directories and NgModules.
+#### Rule of 1
+
+The [Rule of 1](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#single-responsibility)
+states that there should be one component per file. This not only makes
+components easy to navigate and find, but will also allow us to migrate
+them between languages and frameworks one at a time. In this example application,
+each controller, component, service, and filter is in its own source file.
+
+{@a folders-by-feature} 
+
+#### Folders-By-Feature Structure
+The [Folders-by-Feature Structure](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#folders-by-feature-structure)
+and [Modularity](https://github.com/johnpapa/angular-styleguide/blob/master/a1/README.md#modularity)
+rules define similar principles on a higher level of abstraction. Different parts of the
+application should reside in different directories and NgModules.
 
 When an application is laid out feature per feature in this way, it can also be
 migrated one feature at a time. For applications that don't already look like
@@ -70,8 +89,13 @@ this, applying the rules in the AngularJS style guide is a highly recommended
 preparation step. And this is not just for the sake of the upgrade - it is just
 solid advice in general!
 
-### Using a Module Loader
+{@a build-process} 
 
+### Build Process
+
+{@a using-a-module-loader} 
+
+#### Using a Module Loader
 When you break application code down into one component per file, you often end
 up with a project structure with a large number of relatively small files. This is
 a much neater way to organize things than a small number of large files, but it
@@ -91,12 +115,25 @@ in the correct order.
 When moving applications into production, module loaders also make it easier
 to package them all up into production bundles with batteries included.
 
-### Migrating to TypeScript
+{@a using-a-package-manager} 
 
-If part of the Angular upgrade plan is to also take TypeScript into use, it makes
+#### Using a Package Manager
+A package manager eases finding, installing, maintaining, and uninstalling software for your application. It will maintain dependencies to ensure that all requirements for that package are installed and maintained. 
+
+Make sure you are using either [npm](https://www.npmjs.com/) or [Yarn](https://yarnpkg.com/en/) as your package manager instead of Bower or anything else. 
+
+When you initialize a project with either package manager, a package.json file will be created that tells the package manager information about your package. Fields you see in a package.json file are **name, version, description, main, repository, author, license.** You can have additional fields like scripts, files, bin, dependencies, devDependencies, and many more. 
+
+{@a architectural-changes} 
+
+### Architectural Changes
+
+{@a migrating-to-typescript} 
+
+#### Migrating to TypeScript
+Since you will switching to Typescript for the Angular upgrade, it makes 
 sense to bring in the TypeScript compiler even before the upgrade itself begins.
-This means there's one less thing to learn and think about during the actual upgrade.
-It also means you can start using TypeScript features in your AngularJS code.
+This means you can start using TypeScript features in your AngularJS code.
 
 Since TypeScript is a superset of ECMAScript 2015, which in turn is a superset
 of ECMAScript 5, "switching" to TypeScript doesn't necessarily require anything
@@ -120,31 +157,43 @@ Additional steps like the following can give us much more bang for the buck:
   closer to becoming Angular service and component classes, which will make
   life easier after the upgrade.
 
-### Using Component Directives
+{@a using-component-directives}
 
-In Angular, components are the main primitive from which user interfaces
-are built. You define the different portions of the UI as components and
-compose them into a full user experience.
+#### Using Component Directives
 
-You can also do this in AngularJS, using *component directives*. These are
-directives that define their own templates, controllers, and input/output bindings -
-the same things that Angular components define. Applications built with
-component directives are much easier to migrate to Angular than applications
-built with lower-level features like `ng-controller`,  `ng-include`, and scope
-inheritance.
+In AngularJS version 1.5, the [component directive](https://docs.angularjs.org/guide/component) was introduced to bridge the gap between AngularJS [directives](https://docs.angularjs.org/guide/directive) and Angular version 2.0+ [components](https://angular.io/guide/displaying-data). 
 
-To be Angular compatible, an AngularJS component directive should configure
-these attributes:
+Component directives (also known as AngularJS components) are a shorthand for registering a special type of directive, which represents a self-contained UI component in your application. Applications built with component directives are much easier to migrate to Angular than applications built with lower-level features like `ng-controller`,  `ng-include`, and scope inheritance. To prepare for ngUpgrade, you will begin using AngularJS component directives to help transition to Angular components.
 
-* `restrict: 'E'`. Components are usually used as elements.
-* `scope: {}` - an isolate scope. In Angular, components are always isolated
-  from their surroundings, and you should do this in AngularJS too.
-* `bindToController: {}`. Component inputs and outputs should be bound
-  to the controller instead of using the `$scope`.
+**.component()** helper was introduced to reduce the required boilerplate for creating component directives (which are directives that have certain properties). It takes two arguments, the name of the component (as a string) and the component config object (Note that, unlike the .directive() method, this method does not take a factory function). 
+
+```
+.component(name, options);
+```
+
+
+
+Here is a comparison to show the transitions happening between AngularJS directives to Angular components.
+
+|  AngularJS v1.4-   |  AngularJS v1.5+   |  Angular v2.0+    |
+|:-----------------:|:-----------------:|:-----------------:|
+|  Directive        |Component Directive|      Component    |
+| are markers on a DOM element (i.e. attribute, element name, or CSS class) that tell AngularJS's HTML compiler to manipulate the DOM element and its children.  | are directives that define their own templates, controllers, and input/output bindings - the same things that Angular components define. | the main primitive from which user interfaces are built. You define the different portions of the UI as components and compose them into a full user experience. |
+
+#### Do's and Don'ts 
+Within component directives, there are some Do's and Don't you should follow to be be able to create a component directive. All of the following guidelines fall within the definition of component directives.
+
+The following attributes are prerequisites that **should** be followed for a directive to be considered a component directive:
+
+* `restrict: 'E'`. This is a prerequisite for a directive to be a component directive and is the only option when using .component(). 
+  * The default for AngularJS general directives is `restrict: 'AE'` (which means match both attributes or element names).
+  * The .component() helper creates a directive with `restrict: 'E'` under the hood and does not support using a different value. (If you want to use a different value, you have to use the .directive() helper, not the .component() helper.)
+* `scope: {}`. Components are always isolated (i.e. scope: {}).
+* `bindToController: {}`. Component inputs and outputs should be bound to the controller instead of using the `$scope`.
 * `controller` and `controllerAs`. Components have their own controllers.
 * `template` or `templateUrl`. Components have their own templates.
 
-Component directives may also use the following attributes:
+Component directives **may** also use the following attributes:
 
 * `transclude: true/{}`, if the component needs to transclude content from elsewhere.
 * `require`, if the component needs to communicate with some parent component's
@@ -153,11 +202,8 @@ Component directives may also use the following attributes:
 Component directives **should not** use the following attributes:
 
 * `compile`. This will not be supported in Angular.
-* `replace: true`. Angular never replaces a component element with the
-  component template. This attribute is also deprecated in AngularJS.
-* `priority` and `terminal`. While AngularJS components may use these,
-  they are not used in Angular and it is better not to write code
-  that relies on them.
+* `replace: true`. Angular never replaces a component element with the component template. This attribute is also deprecated in AngularJS.
+* `priority` and `terminal`. While AngularJS components may use these, they are not used in Angular and it is better not to write code that relies on them.
 
 An AngularJS component directive that is fully aligned with the Angular
 architecture may look something like this:
@@ -183,6 +229,8 @@ Controller lifecycle hook methods `$onInit()`, `$onDestroy()`, and `$onChanges()
 are another convenient feature that AngularJS 1.5 introduces. They all have nearly
 exact [equivalents in Angular](guide/lifecycle-hooks), so organizing component lifecycle
 logic around them will ease the eventual Angular upgrade process.
+
+{@a upgrade}
 
 ## Upgrading with ngUpgrade
 
@@ -829,6 +877,8 @@ After this, the service is injectable anywhere in AngularJS code:
 <code-example path="upgrade-module/src/app/a-to-ajs-providers/hero-detail.component.ts" title="hero-detail.component.ts">
 </code-example>
 
+{@a aot}
+
 ## Using Ahead-of-time compilation with hybrid apps
 
 You can take advantage of Ahead-of-time (AOT) compilation on hybrid apps just like on any other
@@ -848,6 +898,8 @@ bootstrap the hybrid app:
 </code-example>
 
 And that's all you need do to get the full benefit of AOT for Angular apps!
+
+{@a phonecat}
 
 ## PhoneCat Upgrade Tutorial
 
@@ -1711,7 +1763,7 @@ When you're done, this is what it should look like:
 That is the last you'll see of AngularJS! It has served us well but now
 it's time to say goodbye.
 
-## Appendix: Upgrading PhoneCat Tests
+## Upgrading PhoneCat Tests
 
 Tests can not only be retained through an upgrade process, but they can also be
 used as a valuable safety measure when ensuring that the application does not
