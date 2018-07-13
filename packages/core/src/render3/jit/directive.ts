@@ -155,6 +155,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
   return {
     name: type.name,
     type: new WrappedNodeExpr(type),
+    typeArgumentCount: 0,
     selector: metadata.selector !,
     deps: reflectDependencies(type), host,
     inputs: {...inputsFromMetadata, ...inputsFromType},

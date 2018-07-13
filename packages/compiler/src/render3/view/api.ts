@@ -26,6 +26,11 @@ export interface R3DirectiveMetadata {
   type: o.Expression;
 
   /**
+   * Number of generic type parameters of the type itself.
+   */
+  typeArgumentCount: number;
+
+  /**
    * A source span for the directive type.
    */
   typeSourceSpan: ParseSourceSpan;
