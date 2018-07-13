@@ -305,8 +305,14 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     }
   }
 
-  visitExpressionType(type: ExpressionType, context: Context): any {
-    return type.value.visitExpression(this, context);
+  visitExpressionType(type: ExpressionType, context: Context): string {
+    const exprStr = type.value.visitExpression(this, context);
+    if (type.typeParams !== null) {
+      const typeSegments = type.typeParams.map(param => param.visitType(this, context));
+      return `${exprStr}<${typeSegments.join(',')}>`;
+    } else {
+      return exprStr;
+    }
   }
 
   visitArrayType(type: ArrayType, context: Context): string {

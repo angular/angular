@@ -47,7 +47,11 @@ export class BuiltinType extends Type {
 }
 
 export class ExpressionType extends Type {
-  constructor(public value: Expression, modifiers: TypeModifier[]|null = null) { super(modifiers); }
+  constructor(
+      public value: Expression, modifiers: TypeModifier[]|null = null,
+      public typeParams: Type[]|null = null) {
+    super(modifiers);
+  }
   visitType(visitor: TypeVisitor, context: any): any {
     return visitor.visitExpressionType(this, context);
   }
@@ -1240,6 +1244,9 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   visitBuiltinType(type: BuiltinType, context: any): any { return this.visitType(type, context); }
   visitExpressionType(type: ExpressionType, context: any): any {
     type.value.visitExpression(this, context);
+    if (type.typeParams !== null) {
+      type.typeParams.forEach(param => this.visitType(param, context));
+    }
     return this.visitType(type, context);
   }
   visitArrayType(type: ArrayType, context: any): any { return this.visitType(type, context); }
@@ -1496,8 +1503,9 @@ export function importType(
 }
 
 export function expressionType(
-    expr: Expression, typeModifiers: TypeModifier[] | null = null): ExpressionType {
-  return new ExpressionType(expr, typeModifiers);
+    expr: Expression, typeModifiers: TypeModifier[] | null = null,
+    typeParams: Type[] | null = null): ExpressionType {
+  return new ExpressionType(expr, typeModifiers, typeParams);
 }
 
 export function typeofExpr(expr: Expression) {

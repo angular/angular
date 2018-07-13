@@ -361,6 +361,11 @@ class _TsEmitterVisitor extends AbstractEmitterVisitor implements o.TypeVisitor 
 
   visitExpressionType(ast: o.ExpressionType, ctx: EmitterVisitorContext): any {
     ast.value.visitExpression(this, ctx);
+    if (ast.typeParams !== null) {
+      ctx.print(null, '<');
+      this.visitAllObjects(type => this.visitType(type, ctx), ast.typeParams, ctx, ',');
+      ctx.print(null, '>');
+    }
     return null;
   }
 
