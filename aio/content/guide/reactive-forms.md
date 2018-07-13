@@ -6,14 +6,9 @@ _Reactive forms_ provide a model-driven approach to handling form inputs whose v
 
 {@a toc}
 
-Try the <live-example title="Reactive Forms (final) in Stackblitz">Reactive Forms live-example</live-example>.
+Try the <live-example title="Reactive Forms in Stackblitz">Reactive Forms live-example</live-example>.
 
 {@a intro}
-
-## Prerequisites
-
-Familiarity with the basic [Tutorial](tutorial) and [Architecture Overview](guide/architecture) sections.
-
 
 ## Introduction to reactive forms
 
@@ -21,7 +16,7 @@ Reactive forms use an explicit and immutable approach to managing the state of a
 
 Reactive forms also allow for easier testing because you have an assurance that your data is consistent and predictable when requested. Consumers outside your templates have access to the same streams, where they can manipulate and transform that data safely.
 
-Reactive forms differ from template-driven forms in distinct ways. Template-driven forms are less explicit because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. Reactive forms trade mutability for predictability with synchronous access to the data model, and take advantage of observable streams. See the [Appendix](#appendix) for detailed comparisons between the two paradigms.
+Reactive forms differ from template-driven forms in distinct ways. Reactive forms provide more predictability with synchronous access to the data model, immutability with observable operators and change tracking through observable streams. If you prefer direct access to modify data in your template, template-driven forms are less explicit because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. See the [Appendix](#appendix) for detailed comparisons between the two paradigms.
 
 ## Getting started
 
@@ -37,7 +32,7 @@ To use reactive forms, import the `ReactiveFormsModule` from the `@angular/forms
 
 ### Step 2 - Import and create a new form control 
 
-Generate a component for the control. This is where you will register a single form control.
+Generate a component for the control. The steps following show you how to register a single form control.
 
 <code-example language="sh" class="code-shell">
 
@@ -45,7 +40,7 @@ Generate a component for the control. This is where you will register a single f
 
 </code-example>
 
-The `FormControl` is the most basic building block when using reactive forms. Import the `FormControl` class into your component and create an instance of a new form control as a class property. To start, use the `name` property to store the form control. 
+The `FormControl` is the most basic building block when using reactive forms. Import the `FormControl` class into your component and create an instance of a new form control as a class property. To create an instance of the `FormControl`, create the `name` property in component class to store the `FormControl` instance and assign it a new instance of the `FormControl`. 
 
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="create-control" title="src/app/name-editor/name-editor.component.ts">
 
@@ -71,7 +66,7 @@ Using the template binding syntax, the form control is now registered to the `na
 
 ### Display the component
 
-Update the `AppComponent` template with the `NameEditor` component containing the form you just created. 
+The `FormControl` assigned to `name` is displayed once the component is added to a template. 
 
 <code-example path="reactive-forms/src/app/app.component.1.html" region="app-name-editor" linenums="false" title="src/app/app.component.html (name editor)">
 
@@ -84,14 +79,16 @@ Update the `AppComponent` template with the `NameEditor` component containing th
 ## Managing control values
 
 Reactive forms give you access to the form control state and value at a point in time. You can also display or manipulate 
-the current state or value through the component class or template. The following examples below show you how to display the 
+the current state or value through the component class or template. The following examples below display the 
 value of a `FormControl` and change it.
 
 {@a display-value}
 
 ### Display the control’s value
 
-Every `FormControl` provides its current value as an observable through the `valueChanges` property. You can subscribe immediately, retrieve, or listen to changes in the form’s value in the template using the `AsyncPipe` or in the component class using the `subscribe()` method. The `value` property also gives you a snapshot of the current value. Display the current value using interpolation in the template as shown in the following example.
+Every `FormControl` provides its current value as an observable through the `valueChanges` property. You can subscribe immediately, retrieve, or listen to changes in the form’s value in the template using the `AsyncPipe` or in the component class using the `subscribe()` method. The `value` property also gives you a snapshot of the current value. 
+
+Display the current value using interpolation in the template as shown in the following example.
 
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="display-value" linenums="false" title="src/app/name-editor/name-editor.component.html (control value)">
 
@@ -99,16 +96,15 @@ Every `FormControl` provides its current value as an observable through the `val
 
 The displayed value changes as you update the form control element.
 
-Reactive forms also provide access to more information about a given control through properties and methods provided with each instance. These properties and methods of the underlying [AbstractControl](api/forms/AbstractControl) are used to control form state and determine when to display messages when handling validation. That will be [discussed later](#simple-form-validation) in the guide.
+Reactive forms also provide access to more information about a given control through properties and methods provided with each instance. These properties and methods of the underlying [AbstractControl](api/forms/AbstractControl) are used to control form state and determine when to display messages when handling validation. For more information, see [Simple Form Validation](#simple-form-validation) later in this guide.
 
-Read about other `FormControl` properties and methods in the
-[Reactive Forms API](#reactive-forms-api) section.
+Read about other `FormControl` properties and methods in the [Reactive Forms API](#reactive-forms-api) section.
 
 ### Replace the form control value
 
 Reactive forms have methods to control the values programmatically as well as declaratively, which gives you the flexibility to update the control’s value without user interaction. The `FormControl` provides a `setValue()` method which updates the value of the form control and validates the structure of the value provided against the control’s structure. For example, when retrieving form data from a backend API or service, you would use the `setValue()` method to update the control to its new value, replacing the old value entirely. 
 
-The form control allows you to enter text manually if you choose. This example adds a method to the component class to update the value of the control to _Nancy_ using the `setValue()` method.
+The form control allows you to enter text manually if you choose. The following example adds a method to the component class to update the value of the control to _Nancy_ using the `setValue()` method.
 
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="update-value" title="src/app/name-editor/name-editor.component.ts (update value)">
 
@@ -134,7 +130,7 @@ Because the form model is the source of truth for the control, when you click th
 
 ## Grouping form controls
 
-Just as a `FormControl` instance gives you control over a single input field, a `FormGroup` tracks the form state of a group of `FormControl` instances. Each control in `FormGroup` is tracked by name when creating the `FormGroup`. The following examples shows how to manage multiple `FormControl` instances in a single group.
+Just as a `FormControl` instance gives you control over a single input field, a `FormGroup` tracks the form state of a group of `FormControl` instances. Each control in `FormGroup` is tracked by name when creating the `FormGroup`. The following example shows how to manage multiple `FormControl` instances in a single group.
 
 Generate a `ProfileEditor` component and import the `FormGroup` and `FormControl` classes from the `@angular/forms` package.
 
@@ -150,7 +146,9 @@ Generate a `ProfileEditor` component and import the `FormGroup` and `FormControl
 
 ### Create a `FormGroup`
 
-To create a new instance of a `FormGroup`, create a property in the component class named `profileForm` and set the property to a new instance of a `FormGroup`. To initialize the `FormGroup`, provide the constructor with an object of controls with their respective names. For the profile form, add two `FormControl` instances with the name `firstName` and `lastName`.
+To create a new instance of a `FormGroup`, create a property in the component class named `profileForm` and set the property to a new instance of a `FormGroup`. To initialize the `FormGroup`, provide the constructor with an object of controls with their respective names. 
+
+For the profile form, add two `FormControl` instances with the name `firstName` and `lastName`.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup" title="src/app/profile-editor/profile-editor.component.ts (form group)">
 
@@ -166,23 +164,27 @@ The `FormGroup` also tracks the status and changes of each of its controls, so i
 
 </code-example>
 
-Note that ust as the `FormGroup` contains a group of controls, the _profileForm_ `FormGroup` is bound to the `form` element with the `FormGroup` directive, creating a communication layer between the model and the form containing the inputs. The `formControlName` input provided by the `FormControlName` directive binds each individual input to the form control defined in the `FormGroup`. The form controls communicate with their respective elements, and communicate changes to the `FormGroup`, which provides a source of truth for the model value.
+Note that just as the `FormGroup` contains a group of controls, the _profileForm_ `FormGroup` is bound to the `form` element with the `FormGroup` directive, creating a communication layer between the model and the form containing the inputs. The `formControlName` input provided by the `FormControlName` directive binds each individual input to the form control defined in the `FormGroup`. The form controls communicate with their respective elements, and communicate changes to the `FormGroup`, which provides a source of truth for the model value.
 
 ### Save form data
 
-The `ProfileEditor` component takes input from the user, but in a real scenario you want to capture the form value for further processing outside the component. The `FormGroup` directive listens for the `submit` event emitted by the `form` element and emits an `ngSubmit` event that you can bind to a callback function. Add the `ngSubmit` event listener to the `form` tag with the `onSubmit()` callback method.
+The `ProfileEditor` component takes input from the user, but in a real scenario you want to capture the form value for further processing outside the component. The `FormGroup` directive listens for the `submit` event emitted by the `form` element and emits an `ngSubmit` event that you can bind to a callback function. 
+
+Add an `ngSubmit` event listener to the `form` tag with the `onSubmit()` callback method.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="ng-submit" linenums="false" title="src/app/profile-editor/profile-editor.component.html (submit event)">
 
 </code-example>
 
-Next, add the `onSubmit()` method in the `ProfileEditor` component class to capture the current value of the `profileForm`. To keep the form encapsulated, to provide the form value outside the component, you would use an `EventEmitter`. For the following example code, use `console.warn` to log to the browser console.
+The `onSubmit()` method in the `ProfileEditor` component captures the current value of the `profileForm`. To keep the form encapsulated, to provide the form value outside the component, you would use an `EventEmitter`. The following example uses `console.warn` to log to the browser console.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="on-submit" title="src/app/profile-editor/profile-editor.component.ts (submit method)">
 
 </code-example>
 
-The `submit` event is emitted by the `form` tag using the native DOM event. You trigger the event by clicking a button with `submit` type. This allows the user to use the enter key to trigger submission after filling out the form. Add a `button` to the bottom of the form to trigger the form submission. 
+The `submit` event is emitted by the `form` tag using the native DOM event. You trigger the event by clicking a button with `submit` type. This allows the user to use the enter key to trigger submission after filling out the form. 
+
+Add a `button` to the bottom of the form to trigger the form submission.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="submit-button" linenums="false" title="src/app/profile-editor/profile-editor.component.html (submit button)">
 
@@ -196,7 +198,7 @@ The `submit` event is emitted by the `form` tag using the native DOM event. You 
 
 ### Display the component
 
-Update the `AppComponent` template, adding the `ProileEditor` component that contains the form.
+The `ProileEditor` component that contains the form is displayed when added to a component template.
 
 <code-example path="reactive-forms/src/app/app.component.1.html" region="app-profile-editor" linenums="false" title="src/app/app.component.html (profile editor)">
 
@@ -214,19 +216,19 @@ When building complex forms, managing the different areas of information is easi
 
 ### Create a nested group
 
-An address is a good example of information that can be grouped together. A `FormGroup` is composed of `FormControl` instances, but can also use a `FormGroup` as a part of the model. This makes composing complex form models easier to maintain and logically group together. 
-
-The following example separates the `profileForm` into a set of top level `FormControl` instances, and a nested `address` `FormGroup`. Update the `ProfileEditor` component to create a `FormGroup` named `address` with a few controls for capturing the address information.
+An address is a good example of information that can be grouped together. A `FormGroup` is composed of `AbstractControl` instances to form its part of the model. This makes composing complex form models easier to maintain and logically group together. To create a nested group in the `profileForm`, add a nested `address` `FormGroup`.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="nested-formgroup" linenums="false" title="src/app/profile-editor/profile-editor.component.ts (nested form group)">
 
 </code-example>
 
-In addition to the `firstName` and `lastName` controls, you have grouped the `street`, `city`, `state` and `zip` controls into an `address` group. Even though the `address` `FormGroup` is a child of the overall `profileForm` `FormGroup`, the same rules still apply with value and status changes. Changes in status and value from the nested form group will propagate up to the parent form group, maintaining consistency with the overall model.
+In addition to the `firstName` and `lastName` controls, the `street`, `city`, `state` and `zip` controls are combined into an `address` group. Even though the `address` `FormGroup` is a child of the overall `profileForm` `FormGroup`, the same rules still apply with value and status changes. Changes in status and value from the nested form group will propagate up to the parent form group, maintaining consistency with the overall model.
 
 ### Group the nested form in the template
 
-Following the same practice as before, after updating the model in the component class, you update the template with the `FormGroup`s and their input elements. Add the `address` form group below the `firstName` and `lastName` fields in the `ProfileEditor` template.
+After you update the model in the component class, update the template to connect the `FormGroup` instance and its input elements.
+
+Add the `address` form group containing the `firstName` and `lastName` fields to the `ProfileEditor` template.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroupname" linenums="false" title="src/app/profile-editor/profile-editor.component.html (template nested form group)">
 
@@ -253,7 +255,7 @@ of replacing its entire value. This section covers how to update specific parts 
 
 With a single control, you used the `setValue()` method to set the new value for an individual control. The `setValue()` method is more strict about adhering to the structure of the `FormControl` or `FormGroup` and replaces the entire value for the control. The `patchValue()` method is more forgiving, and only replaces the properties defined in the object against the form model because you’re only providing partial updates. The strict checks in `setValue()` help catch errors in the nesting of complex forms, while `patchValue()` will fail silently in those cases.
 
-In the `ProfileEditorComponent`, add a method named `updateProfile` with the following example below to update the first name and street address for the user.
+In the `ProfileEditorComponent`, the `updateProfile` methodwith the following example below to update the first name and street address for the user.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="patch-value" title="src/app/profile-editor/profile-editor.component.ts (patch value)">
 
@@ -265,11 +267,11 @@ Simulate an update by adding a button to the template to update the user profile
 
 </code-example>
 
-When the button is clicked, the `profileForm` model is updated with just the `firstName` and `street` being modified. You’ll notice that the `street` is provided in an object inside the `address` property. This is necessary, since the `patchValue` value applies the update against the model structure. `PatchValue()` only updates properties that the form model defines.
+When the button is clicked, the `profileForm` model is updated with just the `firstName` and `street` being modified. Notice that the `street` is provided in an object inside the `address` property. This is necessary, since the `patchValue` value applies the update against the model structure. `PatchValue()` only updates properties that the form model defines.
 
 ## Use the `FormBuilder`
 
-Creating multiple form control instances manually can become very repetitive when dealing with multiple forms. The `FormBuilder` service provides convenience methods to handle generating controls. Underneath the `FormBuilder`, it is creating and returning the instances in the same manner, but with much less work. The following section shows you how to refactor the `ProfileEditor` component to use the `FormBuilder` instead of creating each `FormControl` and `FormGroup` by hand.
+Creating multiple form control instances manually can become very repetitive when dealing with multiple forms. The `FormBuilder` service provides convenience methods to handle generating controls. Underneath the `FormBuilder`, it is creating and returning the instances in the same manner, but with much less work. The following section refactors the `ProfileEditor` component to use the `FormBuilder` instead of creating each `FormControl` and `FormGroup` by hand.
 
 ### Import the `FormBuilder` class
 
@@ -281,7 +283,7 @@ To use the `FormBuilder` service, import its class from the `@angular/forms` pac
 
 ### Inject the `FormBuilder` service
 
-The FormBuilder is an injectable service that is provided with the `ReactiveFormsModule`. You inject this dependency by adding to the component constructor.
+The FormBuilder is an injectable service that is provided with the `ReactiveFormsModule`. Inject this dependency by adding it to the component constructor.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="inject-form-builder" title="src/app/profile-editor/profile-editor.component.ts (constructor)">
 
@@ -289,7 +291,9 @@ The FormBuilder is an injectable service that is provided with the `ReactiveForm
 
 ### Use the `FormBuilder` methods
 
-The `FormBuilder` service has three methods: `control()`, `group()`, and `array()`. These methods are factory methods for generating form controls in your component class including a `FormControl`, `FormGroup` and `FormArray` respectively. Replace the creation of the `profileForm` by using the `group` method to create the controls.
+The `FormBuilder` service has three methods: `control()`, `group()`, and `array()`. These methods are factory methods for generating form controls in your component class including a `FormControl`, `FormGroup` and `FormArray` respectively. 
+
+Replace the creation of the `profileForm` by using the `group` method to create the controls.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-builder" title="src/app/profile-editor/profile-editor.component.ts (form builder)">
 
@@ -319,7 +323,7 @@ Compare the two paths to achieve the same result.
 
 ## Simple form validation
 
-Form validation is necessary when receiving user input through forms. This section covers adding a single validator to a form control. Form validation is covered more extensively in the [Form Validation](guide/form-validation) guide.
+Form validation is necessary when receiving user input through forms. This section covers adding a single validator to a form control and displaying the overall form status. Form validation is covered more extensively in the [Form Validation](guide/form-validation) guide.
 
 ### Add a validator function
 
@@ -353,7 +357,9 @@ There are a set of built-in HTML5 attributes including `required`, `minlength`, 
 
 ### Display form status
 
-Now that you’ve added a required field to the form control, its initial status is invalid and the status of the parent `FormGroup` becomes invalid. Display the current status of the `profileForm`.
+Now that you’ve added a required field to the form control, its initial status is invalid. This invalid status propagates to the parent `FormGroup`, making its status invalid. You have access to the current status of the `FormGroup` through the `status` property on the instance.
+
+Display the current status of the `profileForm` using interpolation.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" linenums="false" title="src/app/profile-editor/profile-editor.component.html (display status)">
 
@@ -369,9 +375,7 @@ For more on form validation, visit the [Form Validation](guide/form-validation) 
 
 ## Advanced usage with form arrays
 
-A `FormArray` is an alternative to a `FormGroup` that allows you to manage any number of unnamed controls. As with `FormGroup` instances, you can dynamically insert and remove controls from a `FormArray`, and its value and validation status is calculated from its child controls. However, you don't need to define a slot for each control by name, so this is a great option if you don't know the number of child values in advance. The following example shows you how to manage _aliases_ in the `ProfileEditor`.
-
-Add an array of aliases to the `ProfileEditor` form component.
+A `FormArray` is an alternative to a `FormGroup` that allows you to manage any number of unnamed controls. As with `FormGroup` instances, you can dynamically insert and remove controls from a `FormArray`, and its value and validation status is calculated from its child controls. However, you don't need to define a slot for each control by name, so this is a great option if you don't know the number of child values in advance. The following example shows you how to manage an array of _aliases_ in the `ProfileEditor`.
 
 ### Import the `FormArray`
 
@@ -389,6 +393,8 @@ You can initialize a `FormArray` with any number of controls, from zero to many,
 
 </code-example>
 
+The _aliases_ control in the `FormGroup` is now populated with a single control until more are added dynamically.
+
 ### Access the `FormArray` control
 
 Since a `FormArray` represents an undefined number of controls in array, accessing the control through a getter provides convenience and reusability. Define a getter class property to retrieve the aliases `FormArray` control from the parent `FormGroup`.
@@ -397,35 +403,43 @@ Since a `FormArray` represents an undefined number of controls in array, accessi
 
 </code-example>
 
+The getter provides easy access to the aliases `FormArray` instead of repeating the `profileForm.get()` method to get the instance.
+
 <div class="alert is-helpful">
 
 *Note*: Since the returned control is of type `AbstractControl`, you provide an explicit type to access the `FormArray` specific syntax for the methods.
 
 </div>
 
-Also define a method to dynamically insert an alias control into the aliases `FormArray`. The `FormArray.push()` method inserts the control as a new item in the array. In the template, you will iterate over the array of controls to display them.
+Define a method to dynamically insert an alias control into the aliases `FormArray`. The `FormArray.push()` method inserts the control as a new item in the array.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="add-alias" title="src/app/profile-editor/profile-editor.component.ts (add alias)">
 
 </code-example>
 
+In the template, the controls are iterated over to display each control as a separate input field.
+
 ### Display the form array in the template
 
-After you define the aliases `FormArray` in your model, you must add it to the template for user input. Similar to the `formGroupName` input provided by the `FormGroupNameDirective`, a `formArrayName` binds communication from the `FormArray` to the template with the `FormArrayNameDirective`. Add the template HTML below after the closing `formGroupName` `<div>` element.
+After you define the aliases `FormArray` in your model, you must add it to the template for user input. Similar to the `formGroupName` input provided by the `FormGroupNameDirective`, a `formArrayName` binds communication from the `FormArray` to the template with the `FormArrayNameDirective`. 
+
+Add the template HTML below after the closing `formGroupName` `<div>` element.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" linenums="false" title="src/app/profile-editor/profile-editor.component.html (aliases form array template)">
 
 </code-example>
 
-The `*ngFor` directive is used to iterate over the `FormControl`s provided by the aliases `FormArray`. Since `FormArray` elements are unnamed, you assign the _index_ to the `i` variable and pass it to each control to bind the to the `formControlName` input. This allows you to track each individual control when calculating the status and value of the root control.
+The `*ngFor` directive iterates over each `FormControl` provided by the aliases `FormArray`. Because `FormArray` elements are unnamed, you assign the _index_ to the `i` variable and pass it to each control to bind the to the `formControlName` input. 
 
 <figure>
   <img src="generated/images/guide/reactive-forms/profile-editor-4.png" alt="Profile Editor Aliases">
 </figure>
 
+Each time a new `alias` is added, the `FormArray` is provided its control based on the index. This allows you to track each individual control when calculating the status and value of the root control.
+
 #### Add an Alias
 
-Once you refresh the form, you see one `Alias` field. Click the `Add Alias` button and another field appears. You can also validate the array of aliases reported by the form model displayed by the `Form Value` at the bottom of the template. 
+Initially, the form only contains one `Alias` field. Click the `Add Alias` button and another field appears. You can also validate the array of aliases reported by the form model displayed by the `Form Value` at the bottom of the template.
 
 <div class="alert is-helpful">
 
