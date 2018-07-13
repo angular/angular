@@ -1057,23 +1057,40 @@ Up pops a dialog box.
   <img src='generated/images/guide/router/confirm-dialog.png' alt="Confirm Dialog">
 </figure>
 
-
-
+<!--
 You can say "OK" and lose your changes or click "Cancel" and continue editing.
+-->
+이 화면에서 "OK" 버튼을 누르면 변경한 내용을 반영하지 않고, "Cancel" 버튼을 누르면 편집을 계속할 수 있습니다.
 
+<!--
 Behind this behavior is the router's `CanDeactivate` guard.
 The guard gives you a chance to clean-up or ask the user's permission before navigating away from the current view.
+-->
+이 동작은 라우터의 `CanDeactivate` 가드를 사용해서 구현한 것입니다. 이 가드는 현재 화면을 벗어나는 네비게이션이 시작될 때 사용자에게 정말 라우팅을 수행할 것인지 한 번 더 물어보는 용도로 사용할 수 있습니다.
 
+<!--
 The `Admin` and `Login` buttons illustrate other router capabilities to be covered later in the guide.
 This short introduction will do for now.
+-->
+`Admin` 버튼과 `Login` 버튼은 이후에 설명할 내용이 적용되는 버튼입니다.
+애플리케이션 소개를 간단하게 하기 위해 이 부분은 지금 설명하지 않겠습니다.
 
+<!--
 Proceed to the first application milestone.
+-->
+이제 애플리케이션 개발을 시작해 봅시다.
 
 {@a getting-started}
 
+<!--
 ## Milestone 1: Getting started with the router
+-->
+## 1단계 : 라우터 적용하기
 
+<!--
 Begin with a simple version of the app that navigates between two empty views.
+-->
+처음에는 두 화면을 전환하도록 간단한 네비게이션을 구현해 봅시다.
 
 <figure>
   <img src='generated/images/guide/router/router-1-anim.gif' alt="App in action">
@@ -1083,42 +1100,57 @@ Begin with a simple version of the app that navigates between two empty views.
 
 {@a base-href}
 
-
+<!--
 ### Set the *&lt;base href>*
+-->
+### *&lt;base href>* 지정하기
 
+<!--
 The router uses the browser's
 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>
 for navigation. Thanks to `pushState`, you can make in-app URL paths look the way you want them to
 look, e.g. `localhost:3000/crisis-center`. The in-app URLs can be indistinguishable from server URLs.
+-->
+라우터는 네비게이션 동작을 실행할 떄 브라우저의 <a href="https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries" title="HTML5 browser history push-state">history.pushState</a>를 사용하며, 이 함수 덕분에 애플리케이션에서 `localhost:3000/crisis-center`과 같이 알아보기 편한 URL을 사용할 수 있습니다.
+애플리케이션에서 사용하는 URL과 서버에서 제공하는 URL은 사용자가 구별할 수 없습니다.
 
+<!--
 Modern HTML5 browsers were the first to support `pushState` which is why many people refer to these URLs as
 "HTML5 style" URLs.
-
+-->
+많은 사람들은 URL을 이렇게 "HTML5 스타일"로 표현하는 것을 선호했기 때문에, 최신 HTML5 표준을 지원하는 브라우저는 `pushState`를 지원하는 것부터 시작했습니다.
 
 <div class="l-sub-section">
 
 
-
+<!--
 HTML5 style navigation is the router default.
 In the [LocationStrategy and browser URL styles](#browser-url-styles) Appendix,
 learn why HTML5 style is preferred, how to adjust its behavior, and how to switch to the
 older hash (#) style, if necessary.
-
+-->
+따로 변경하지 않으면 라우터는 HTML5 스타일의 URL로 동작합니다. 부록에 있는 [LocationStrategy과 브라우저 URL 스타일](#browser-url-styles) 부분을 참고하면 사람들이 왜 HTML5 스타일을 선호하는지, 이 방식의 URL은 어떻게 조작할 수 있는지, 예전에 사용하던 해시(#) 스타일은 어떻게 개선될 수 있는지 확인할 수 있습니다.
 
 </div>
 
 
-
+<!--
 You must **add a
 <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; element</a>**
 to the app's `index.html` for `pushState` routing to work.
 The browser uses the `<base href>` value to prefix *relative* URLs when referencing
 CSS files, scripts, and images.
+-->
+라우터가 사용하는 `pushState`를 제대로 동작하려면 애플리케이션의 `index.html` 파일에 **<a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base" title="base href">&lt;base href&gt; 엘리먼트</a>**를 지정해야 합니다.
+브라우저는 `<base href>`에 지정된 값에 *상대적인* 주소로 URL을 처리하고, CSS 파일이나 스크립트 파일, 이미지 파일을 불러옵니다.
 
+<!--
 Add the `<base>` element just after the  `<head>` tag.
 If the `app` folder is the application root, as it is for this application,
 set the `href` value in **`index.html`** *exactly* as shown here.
-
+-->
+`<base>` 엘리먼트는 `<head>` 태그 바로 뒤에 추가합니다.
+만약 `app` 폴더가 애플리케이션 루트라면 `href` 값은 다음과 같이 지정하면 됩니다.
 
 <code-example path="router/src/index.html" linenums="false" title="src/index.html (base-href)" region="base-href">
 
@@ -1131,14 +1163,18 @@ set the `href` value in **`index.html`** *exactly* as shown here.
 
 
 <header>
+  <!--
   Live example note
+  -->
+  라이브 예제를 실행할 때
 </header>
 
 
-
+<!--
 A live coding environment like Stackblitz sets the application base address dynamically so you can't specify a fixed address.
 That's why the example code replaces the `<base href...>` with a script that writes the `<base>` tag on the fly.
-
+-->
+Stackblitz와 같은 라이브 코딩 환경은 그 환경에 맞는 애플리케이션 기본 주소를 자동으로 설정합니다. 그래서 `<base href...>` 엘리먼트는 `index.html` 파일에 직접 추가하지 말고 다음과 같이 동적으로 지정해야 합니다.
 
 <code-example language="html">
   &lt;script>document.write('&lt;base href="' + document.location + '" />');&lt;/script>
@@ -1146,9 +1182,10 @@ That's why the example code replaces the `<base href...>` with a script that wri
 </code-example>
 
 
-
+<!--
 You only need this trick for the live example, not production code.
-
+-->
+이 코드는 라이브 예제를 실행할 때만 필요합니다. 로컬 개발환경이나 배포용 코드에는 필요없습니다.
 
 </div>
 
