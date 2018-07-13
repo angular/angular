@@ -33,7 +33,7 @@ describe('addSelectorsAsAliases processor', () => {
       { docType: 'directive', name: 'NgModel', aliases: ['NgModel'], directiveOptions: { selector: '\'[ngModel]:not([formControlName]):not([formControl])\'' } },
       { docType: 'component', name: 'MyComponent', aliases: ['MyComponent'], componentOptions: { selector: '\'my-component\'' } },
       { docType: 'decorator', name: 'MyDecorator', aliases: ['MyDecorator'] },
-      { docType: 'module', name: 'myModule', aliases: ['myModule'], id: 'some/myModule' },
+      { docType: 'package', name: 'myPackage', aliases: ['myPackage'], id: 'some/myPackage' },
       { docType: 'var', name: 'myVar', aliases: ['myVar'] },
       { docType: 'let', name: 'myLet', aliases: ['myLet'] },
       { docType: 'const', name: 'myConst', aliases: ['myConst'] },
