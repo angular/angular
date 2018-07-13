@@ -43,8 +43,9 @@ const EXPECTED_XMB = `<?xml version="1.0" encoding="UTF-8" ?>
 <!ELEMENT ex (#PCDATA)>
 ]>
 <messagebundle>
-  <msg id="8136548302122759730" desc="desc" meaning="meaning"><source>src/module.ts:1</source>translate me</msg>
-  <msg id="3492007542396725315"><source>src/module.ts:2</source>Welcome</msg>
+  <msg id="8136548302122759730" desc="desc" meaning="meaning"><source>src/basic.html:1</source><source>src/comp2.ts:1</source><source>src/basic.html:1</source>translate me</msg>
+  <msg id="9038505069473852515"><source>src/basic.html:3,4</source><source>src/comp2.ts:3,4</source><source>src/comp2.ts:2,3</source><source>src/basic.html:3,4</source>
+    Welcome</msg>
 </messagebundle>
 `;
 
@@ -55,17 +56,38 @@ const EXPECTED_XLIFF = `<?xml version="1.0" encoding="UTF-8" ?>
       <trans-unit id="76e1eccb1b772fa9f294ef9c146ea6d0efa8a2d4" datatype="html">
         <source>translate me</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/module.ts</context>
+          <context context-type="sourcefile">src/basic.html</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/comp2.ts</context>
+          <context context-type="linenumber">1</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/basic.html</context>
           <context context-type="linenumber">1</context>
         </context-group>
         <note priority="1" from="description">desc</note>
         <note priority="1" from="meaning">meaning</note>
       </trans-unit>
-      <trans-unit id="65cc4ab3b4c438e07c89be2b677d08369fb62da2" datatype="html">
-        <source>Welcome</source>
+      <trans-unit id="085a5ecc40cc87451d216725b2befd50866de18a" datatype="html">
+        <source>
+    Welcome</source>
         <context-group purpose="location">
-          <context context-type="sourcefile">src/module.ts</context>
+          <context context-type="sourcefile">src/basic.html</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/comp2.ts</context>
+          <context context-type="linenumber">3</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/comp2.ts</context>
           <context context-type="linenumber">2</context>
+        </context-group>
+        <context-group purpose="location">
+          <context context-type="sourcefile">src/basic.html</context>
+          <context context-type="linenumber">3</context>
         </context-group>
       </trans-unit>
     </body>
@@ -80,18 +102,24 @@ const EXPECTED_XLIFF2 = `<?xml version="1.0" encoding="UTF-8" ?>
       <notes>
         <note category="description">desc</note>
         <note category="meaning">meaning</note>
-        <note category="location">src/module.ts:1</note>
+        <note category="location">src/basic.html:1</note>
+        <note category="location">src/comp2.ts:1</note>
+        <note category="location">src/basic.html:1</note>
       </notes>
       <segment>
         <source>translate me</source>
       </segment>
     </unit>
-    <unit id="3492007542396725315">
+    <unit id="9038505069473852515">
       <notes>
-        <note category="location">src/module.ts:2</note>
+        <note category="location">src/basic.html:3,4</note>
+        <note category="location">src/comp2.ts:3,4</note>
+        <note category="location">src/comp2.ts:2,3</note>
+        <note category="location">src/basic.html:3,4</note>
       </notes>
       <segment>
-        <source>Welcome</source>
+        <source>
+    Welcome</source>
       </segment>
     </unit>
   </file>
@@ -155,21 +183,54 @@ describe('extract_i18n command line', () => {
   });
 
   function writeSources() {
-    write('src/basic.html', [
-      `<div title="translate me" i18n-title="meaning|desc"></div>`,
-      `<p id="welcomeMessage"><!--i18n-->Welcome<!--/i18n--></p>`,
-    ].join('\n'));
-    write('src/module.ts', `
-    import {Component, NgModule} from '@angular/core';
+    const welcomeMessage = `
+    <!--i18n-->
+    Welcome<!--/i18n-->
+    `;
+    write('src/basic.html', `<div title="translate me" i18n-title="meaning|desc"></div>
+         <p id="welcomeMessage">${welcomeMessage}</p>`);
+
+    write('src/comp1.ts', `
+    import {Component} from '@angular/core';
 
     @Component({
       selector: 'basic',
       templateUrl: './basic.html',
     })
-    export class BasicCmp {}
+    export class BasicCmp1 {}`);
+
+    write('src/comp2.ts', `
+    import {Component} from '@angular/core';
+
+    @Component({
+      selector: 'basic2',
+      template: \`<div title="translate me" i18n-title="meaning|desc"></div>
+      <p id="welcomeMessage">${welcomeMessage}</p>\`,
+    })
+    export class BasicCmp2 {}
+    @Component({
+      selector: 'basic4',
+      template: \`<p id="welcomeMessage">${welcomeMessage}</p>\`,
+    })
+    export class BasicCmp4 {}`);
+
+    write('src/comp3.ts', `
+    import {Component} from '@angular/core';
+
+    @Component({
+      selector: 'basic3',
+      templateUrl: './basic.html',
+    })
+    export class BasicCmp3 {}`);
+
+    write('src/module.ts', `
+    import {NgModule} from '@angular/core';
+    import {BasicCmp1} from './comp1';
+    import {BasicCmp2, BasicCmp4} from './comp2';
+    import {BasicCmp3} from './comp3';
 
     @NgModule({
-      declarations: [BasicCmp]
+      declarations: [BasicCmp1, BasicCmp2, BasicCmp3, BasicCmp4]
     })
     export class I18nModule {}
     `);
