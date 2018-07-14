@@ -3,7 +3,10 @@
 # See remote cache documentation in /docs/BAZEL.md
 
 # Don't be spammy in the logs
-build --noshow_progress
+# TODO(gmagolan): Hide progress again once build performance improves
+# Presently, CircleCI can timeout during bazel test ... with the following
+# error: Too long with no output (exceeded 10m0s)
+# build --noshow_progress
 
 # Don't run manual tests
 test --test_tag_filters=-manual
