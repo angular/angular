@@ -5,38 +5,28 @@ import { browser, by, element } from 'protractor';
 /* tslint:disable:quotemark */
 describe('Elements', () => {
 
-    beforeAll(() => {
-        browser.get('');
-    });
+  beforeAll(() => browser.get(''));
 
-    it('should not display popup component', () => {
-      expect(element(by.css('body popup-component')).isPresent()).toBeFalsy();
-    });
+  it('should display popup component on button click', () => {
+    const popupComponent = element(by.css('popup-component'));
+    const popupComponentButton = element.all(by.css('button')).get(0);
 
-    it('should display popup component after button click', () => {
-      const popupComponentButton = element.all(by.tagName('button')).get(0);
-      popupComponentButton.click().then(() => {
-        expect(element(by.css('body popup-component')).isPresent()).toBe(true);
-      })
-    });
+    expect(popupComponent.isPresent()).toBe(false);
 
-    xit('should display popup component with content `Popup: Message`', () => {
-      expect(element(by.css('body popup-component')).getText()).toContain('Popup: Message');
-    });
+    popupComponentButton.click();
+    expect(popupComponent.isPresent()).toBe(true);
+    expect(popupComponent.getText()).toContain('Popup: Message');
+  });
 
-    it('should not display popup element', () => {
-      expect(element(by.css('body popup-element')).isPresent()).toBeFalsy();
-    });
+  it('should display popup element on button click', () => {
+    const popupElement = element(by.css('popup-element'));
+    const popupElementButton = element.all(by.css('button')).get(1);
 
-    it('should display popup component after button click', () => {
-      const popupElementButton = element.all(by.tagName('button')).get(1);
-      popupElementButton.click().then(() => {
-        expect(element(by.css('body popup-element')).isPresent()).toBeTruthy();
-      });
-    });
+    expect(popupElement.isPresent()).toBe(false);
 
-    xit('should display popup element with content `Popup: Message`', () => {
-      expect(element(by.css('body popup-element')).getText()).toContain('Popup: Message');
-    });
+    popupElementButton.click();
+    expect(popupElement.isPresent()).toBe(true);
+    expect(popupElement.getText()).toContain('Popup: Message');
+  });
 
 });
