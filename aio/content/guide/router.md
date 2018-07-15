@@ -1300,11 +1300,16 @@ Providing the `RouterModule` in the `AppModule` makes the Router available every
 {@a shell}
 
 
+<!--
 ### The *AppComponent* shell
+-->
+### *AppComponent* 기본 틀
 
+<!--
 The root `AppComponent` is the application shell. It has a title, a navigation bar with two links,
 and a *router outlet* where the router swaps views on and off the page. Here's what you get:
-
+-->
+애플리케이션의 기본 틀은 최상위 컴포넌트인 `AppComponent`입니다. 이 컴포넌트에는 페이지 제목과 네비게이션 바, 페이지에 뷰가 표시될 *라우팅 영역(router outlet)*이 있습니다. 실행화면으로 보면 다음과 같이 구성됩니다:
 
 <figure>
   <img src='generated/images/guide/router/shell-and-outlet.png' alt="Shell">
@@ -1314,9 +1319,10 @@ and a *router outlet* where the router swaps views on and off the page. Here's w
 
 {@a shell-template}
 
-
+<!--
 The corresponding component template looks like this:
-
+-->
+이 컴포넌트 템플릿은 다음과 같이 정의합니다:
 
 <code-example path="router/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (template)" region="template">
 
@@ -1329,18 +1335,21 @@ The corresponding component template looks like this:
 
 ### *RouterOutlet*
 
+<!--
 The `RouterOutlet` is a directive from the router library that marks
 the spot in the template where the router should display the views for that outlet.
-
+-->
+`RouterOutlet`은 라우터가 표시하는 컴포넌트를 템플릿의 어느 위치에 표시할지 지정하는 디렉티브이며, 라우터 라이브러리에 정의되어 있습니다.
 
 <div class="l-sub-section">
 
 
-
+<!--
 The router adds the `<router-outlet>` element to the DOM
 and subsequently inserts the navigated view element
 immediately _after_ the `<router-outlet>`.
-
+-->
+라우터는 DOM에 정의된 `<router-outlet>` 엘리먼트 _뒤에_ 현재 렌더링하는 뷰 엘리먼트를 표시합니다.
 
 </div>
 
@@ -1348,27 +1357,40 @@ immediately _after_ the `<router-outlet>`.
 
 {@a router-link}
 
-
+<!--
 ### *RouterLink* binding
+-->
+### *RouterLink* 바인딩
 
+<!--
 Above the outlet, within the anchor tags, you see
 [attribute bindings](guide/template-syntax#attribute-binding) to
 the `RouterLink` directive that look like `routerLink="..."`.
+-->
+라우팅 영역이 동작하는 것을 확인하기 전에, 앵커 태그에 `RouterLink` 디렉티브를 [어트리뷰트 바인딩](guide/template-syntax#attribute-binding)해야 합니다. 이 바인딩은 `routerLink="..."`와 같이 사용되었습니다.
 
+<!--
 The links in this example each have a string path, the path of a route that
 you configured earlier. There are no route parameters yet.
+-->
+이 디렉티브는 `routerLink="..."`와 같이 바인딩하며, 바인딩 값으로 이동할 위치에 해당하는 URL을 지정합니다. 라우팅 변수는 아직 없습니다.
 
+<!--
 You can also add more contextual information to the `RouterLink` by providing query string parameters
 or a URL fragment for jumping to different areas on the page. Query string parameters
 are provided through the `[queryParams]` binding which takes an object (e.g. `{ name: 'value' }`), while the URL fragment
 takes a single value bound to the `[fragment]` input binding.
+-->
+디렉티브에 지정하는 URL에는 쿼리 문자열을 추가할 수도 있고, 현재 페이지의 다른 영역으로 이동하기 위한 URL 조각을 사용할 수도 있습니다.
+쿼리 문자열 변수는 `[queryParams]` 바인딩을 통해 `{ name: 'value' }`와 같은 형식의 객체로 받을 수 있으며, URL 조각은 단일 문자열이기 때문에 `[fragment]`로 바인딩할 수 있습니다.
 
 <div class="l-sub-section">
 
 
-
+<!--
 Learn about the how you can also use the _link parameters array_ in the [appendix below](#link-parameters-array).
-
+-->
+_링크 변수 배열_ 에 대해 더 알아보려면 아래에 있는 [부록](#link-parameters-array)을 참고하세요.
 
 </div>
 
@@ -1376,26 +1398,35 @@ Learn about the how you can also use the _link parameters array_ in the [appendi
 
 {@a router-link-active}
 
-
+<!--
 ### *RouterLinkActive* binding
+-->
+### *RouterLinkActive* 바인딩
 
 <!--
 On each anchor tag, you also see [property bindings](guide/template-syntax#property-binding) to
 the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
 -->
-On each anchor tag, you also see [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩) to
-the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
+위 코드를 보면 각 앵커 태그에 `RouterLinkActivate` 디렉티브가 [프로퍼티 바인딩](guide/template-syntax#프로퍼티-바인딩)된 것을 확인할 수 있습니다. 이 바인딩은 `routerLinkActive="..."`와 같이 사용되었습니다.
 
+<!--
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes
 that the Router will add when this link is active (and remove when the link is inactive).
 You can also set the `RouterLinkActive` directive to a string of classes such as `[routerLinkActive]="'active fluffy'"`
 or bind it to a component property that returns such a string.
+-->
+이 때 등호(`=`) 뒤에 사용되는 템플릿 표현식은 문자열을 지정하며, 이 문자열은 공백으로 구분되는 CSS 클래스입니다. 이 클래스들은 현재 링크가 활성화되면 엘리먼트에 추가되고, 링크가 비활성화되면 엘리먼트에서 제거됩니다. 이 때 `RouterLinkActive` 디렉티브에 지정하는 값은 `[routerLinkActive]="'active fluffy'"`와 같이 문자열을 프로퍼티 바인딩하는 방식으로도 사용할 수 있고, 문자열을 반환하는 컴포넌트 메소드를 바인딩해도 됩니다.
 
+<!--
 The `RouterLinkActive` directive toggles css classes for active `RouterLink`s based on the current `RouterState`.
 This cascades down through each level of the route tree, so parent and child router links can be active at the same time.
 To override this behavior, you can bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression.
 By using `{ exact: true }`, a given `RouterLink` will only be active if its URL is an exact match to the current URL.
-
+-->
+`RouterLinkActive` 디렉티브는 활성화된 `RouterLink`에 있는 `RouterState`를 기반으로 CSS 클래스를 지정합니다.
+이렇게 지정되는 CSS 클래스는 라우터 트리를 따라 내려가면서 처리되기 때문에, 부모 라우터 링크와 자식 라우터 링크가 동시에 활성화되는 경우도 발생할 수 있습니다.
+이런 동작을 방지하려면 `[routerLinkActiveOptions]`에 `{ exact: true }`를 바인딩하면 됩니다.
+이 옵션을 사용하면 `RouterLink`에 있는 URL이 현재 URL과 정확하게 일치할 때만 활성화된 링크로 판단합니다.
 
 {@a router-directives}
 
