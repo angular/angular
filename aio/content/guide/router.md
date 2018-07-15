@@ -1194,47 +1194,82 @@ You only need this trick for the live example, not production code.
 {@a import}
 
 
+<!--
 ### Importing from the router library
+-->
+### 라우터 심볼 로드하기
 
+<!--
 Begin by importing some symbols from the router library.
 The Router is in its own `@angular/router` package.
 It's not part of the Angular core. The router is an optional service because not all applications
 need routing and, depending on your requirements, you may need a different routing library.
+-->
+이제 라우터 라이브러리에서 몇 가지 심볼을 로드합니다.
+라우터는 `@angular/router` 패키지에 정의되어 있는데, 이 패키지는 Angular 코어 라이브러리는 아닙니다. 라우터는 모든 애플리케이션에 필수로 구현해야 하는 것은 아니며, 필요한 경우에는 다른 라우팅 라이브러리를 사용할 수도 있기 때문에 코어 라이브러리에서 분리되었습니다.
 
+<!--
 You teach the router how to navigate by configuring it with routes.
+-->
+라우터가 네비게이션 하는 방법은 라우팅 규칙(route)으로 정의합니다.
 
 
 {@a route-config}
 
-
+<!--
 #### Define routes
+-->
+#### 라우팅 규칙 정의하기
 
+<!--
 A router must be configured with a list of route definitions.
+-->
+라우터를 사용하려면 라우팅 규칙을 먼저 정의해야 합니다.
 
+<!--
 The first configuration defines an array of two routes with simple paths leading to the
 `CrisisListComponent` and `HeroListComponent`.
+-->
+처음에는 `CrisisListComponent`와 `HeroListComponent`를 전환하는 라우팅 규칙을 간단하게 정의해 봅시다.
 
+<!--
 Each definition translates to a [Route](api/router/Route) object which has two things: a
 `path`, the URL path segment for this route; and a
 `component`, the component associated with this route.
+-->
+라우팅 규칙에는 URL 경로를 지정하는 `path`와 이 경로에 매칭될 컴포넌트를 지정하는 `component` 프로퍼티가 정의되며, 각 라우팅 규칙은 [Route](api/router/Route) 객체로 변환됩니다.
 
+<!--
 The router draws upon its registry of definitions when the browser URL changes
 or when application code tells the router to navigate along a route path.
+-->
+이 라우팅 규칙은 라우터 안에 등록되며, 이후에 브라우저 URL이 변경되거나 애플리케이션 코드가 네비게이션을 시작할 때 이렇게 등록된 라우팅 규칙을 참조합니다.
 
+<!--
 In simpler terms, you might say this of the first route:
+-->
+이 내용을 좀 더 간단하게 알아봅시다:
 
+<!--
 * When the browser's location URL changes to match the path segment `/crisis-center`, then
 the router activates an instance of the `CrisisListComponent` and displays its view.
+-->
+* 브라우저 URL이 `/crisis-center`로 변경되면, 라우터가 `CrisisListComponent` 인스턴스를 활성화하고 화면에 표시합니다.
 
+<!--
 * When the application requests navigation to the path `/crisis-center`, the router
 activates an instance of `CrisisListComponent`, displays its view, and updates the
 browser's address location and history with the URL for that path.
+-->
+* 애플리케이션에서 `/crisis-center`로 네비게이션하는 코드가 실행되면, 라우터가 `CrisisListComponent` 인스턴스를 활성화하고 화면에 표시하며, 브라우저의 주소 표시줄을 새로운 주소로 변경하고, 히스토리 방문 기록에도 추가합니다.
 
-
+<!--
 Here is the first configuration. Pass the array of routes, `appRoutes`, to the `RouterModule.forRoot` method.
 It returns a module, containing the configured `Router` service provider, plus other providers that the routing library requires.
 Once the application is bootstrapped, the `Router` performs the initial navigation based on the current browser URL.
-
+-->
+그러면 첫번째 라우터 설정은 다음과 같이 정의할 수 있습니다. 라우팅 규칙을 정의한 배열 `appRoutes`를 `RouterModule.forRoot` 메소드의 인자로 전달하면, `Router` 서비스 프로바이더와 추가로 필요한 라우팅 라이브러리가 포함된 모듈을 반환합니다.
+그리고 애플리케이션이 부트스트랩되면 `Router`가 현재 브라우저가 위치한 URL에 맞도록 첫 네비게이션 동작을 실행합니다.
 
 <code-example path="router/src/app/app.module.1.ts" linenums="false" title="src/app/app.module.ts (first-config)" region="first-config">
 
@@ -1245,19 +1280,22 @@ Once the application is bootstrapped, the `Router` performs the initial navigati
 <div class="l-sub-section">
 
 
-
+<!--
 Adding the configured `RouterModule` to the `AppModule` is sufficient for simple route configurations.
 As the application grows, you'll want to refactor the routing configuration into a separate file
 and create a **[Routing Module](#routing-module)**, a special type of `Service Module` dedicated to the purpose
 of routing in feature modules.
-
+-->
+`RouterModule` 설정이 간단하다면 `AppModule`에 바로 라우팅 규칙을 정의하는 것으로도 충분합니다.
+하지만 애플리케이션이 점점 커지면 라우팅 설정도 점점 복잡해지기 때문에 **[라우팅 모듈](#routing-module)**을 따로 정의하는 것이 좋습니다. 이 모듈은 라우팅만 담당하는 모듈로 사용하며, 다른 파일로 분리하는 것이 관리하기 편합니다. 
 
 </div>
 
 
-
+<!--
 Providing the `RouterModule` in the `AppModule` makes the Router available everywhere in the application.
-
+-->
+`AppModule`에 `RouterModule`을 등록하면 애플리케이션 어디에서도 라우터를 자유롭게 사용할 수 있습니다.
 
 {@a shell}
 
