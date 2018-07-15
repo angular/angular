@@ -49,7 +49,7 @@ if (browserDetection.supportsCustomElements && browserDetection.supportsShadowDo
     });
 
     it('should use slots to project content', () => {
-      const tpl = `<default-slot-el><span class="projected"></span></default-slot-el>`
+      const tpl = `<default-slot-el><span class="projected"></span></default-slot-el>`;
       testContainer.innerHTML = tpl;
       const testEl = testContainer.querySelector('default-slot-el') !;
       const content = testContainer.querySelector('span.projected') !;
@@ -59,7 +59,7 @@ if (browserDetection.supportsCustomElements && browserDetection.supportsShadowDo
     });
 
     it('should use a named slot to project content', () => {
-      const tpl = `<named-slot-el><span class="projected" slot="header"></span></named-slot-el>`
+      const tpl = `<named-slot-el><span class="projected" slot="header"></span></named-slot-el>`;
       testContainer.innerHTML = tpl;
       const testEl = testContainer.querySelector('named-slot-el') !;
       const content = testContainer.querySelector('span.projected') !;
@@ -73,7 +73,7 @@ if (browserDetection.supportsCustomElements && browserDetection.supportsShadowDo
       <named-slots-el>
         <span class="projected-header" slot="header"></span>
         <span class="projected-body" slot="body"></span>
-      </named-slots-el>`
+      </named-slots-el>`;
       testContainer.innerHTML = tpl;
       const testEl = testContainer.querySelector('named-slots-el') !;
       const headerContent = testContainer.querySelector('span.projected-header') !;
@@ -90,7 +90,7 @@ if (browserDetection.supportsCustomElements && browserDetection.supportsShadowDo
       const tpl = `
       <slot-events-el>
         <span class="projected">Content</span>
-      </slot-events-el>`
+      </slot-events-el>`;
       templateEl.innerHTML = tpl;
       const template = templateEl.content.cloneNode(true) as DocumentFragment;
       const testEl = template.querySelector('slot-events-el') !as NgElement & SlotEventsComponent;
@@ -157,13 +157,12 @@ class SlotEventsComponent {
   }
 }
 
-const testElements =
-    [
-      DefaultSlotComponent, NamedSlotComponent, NamedSlotsComponent, DefaultSlotsComponent,
-      SlotEventsComponent
-    ]
+const testElements = [
+  DefaultSlotComponent, NamedSlotComponent, NamedSlotsComponent, DefaultSlotsComponent,
+  SlotEventsComponent
+];
 
-    @NgModule({imports: [BrowserModule], declarations: testElements, entryComponents: testElements})
-    class TestModule {
+@NgModule({imports: [BrowserModule], declarations: testElements, entryComponents: testElements})
+class TestModule {
   ngDoBootstrap() {}
 }
