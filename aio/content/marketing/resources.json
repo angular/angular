@@ -181,7 +181,7 @@
             "rev": true,
             "title": "Amexio Canvas Web Based Drag and Drop IDE by MetaMagic",
             "url": "https://amexio.tech/"
-          }	
+          }
         }
       },
       "Tooling": {
@@ -736,6 +736,12 @@
             "rev": true,
             "title": "Angular.Schule (German)",
             "url": "https://angular.schule/"
+          },
+          "strbrw": {
+            "desc": "Angular and RxJS trainings, Code Reviews and consultancy. We help software engineers all over the world to create better web-applications...",
+            "rev": true,
+            "title": "StrongBrew",
+            "url": "https://strongbrew.io/"
           }
         }
       }
