@@ -9,7 +9,7 @@ describe('Element E2E Tests', function () {
       expect(helloWorldEl.getText()).toEqual('Hello World!');
     });
 
-    it('should display: Hello fromIndex! via name attribute', function () {
+    it('should display: Hello Foo! via name attribute', function () {
       browser.get('hello-world.html');
       const helloWorldEl = element(by.css('hello-world-el'));
       const input = element(by.css('input[type=text]'));

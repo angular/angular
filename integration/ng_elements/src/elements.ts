@@ -32,5 +32,4 @@ export class HelloWorldShadowComponent {
   styles: []
 })
 export class TestCardComponent {
-
 }

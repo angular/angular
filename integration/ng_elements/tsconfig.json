@@ -8,10 +8,8 @@
   "compilerOptions": {
     "module": "es2015",
     "moduleResolution": "node",
-    // TODO(i): strictNullChecks should turned on but are temporarily disabled due to #15432
-    "strictNullChecks": false,
-    "target": "es6",
-    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "target": "es2015",
     "sourceMap": false,
     "experimentalDecorators": true,
     "outDir": "built",
