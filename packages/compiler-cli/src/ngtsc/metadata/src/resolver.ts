@@ -671,7 +671,8 @@ class StaticInterpreter {
 
 function isFunctionOrMethodReference(ref: Reference<ts.Node>):
     ref is Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression> {
-  return ts.isFunctionDeclaration(ref.node) || ts.isMethodDeclaration(ref.node);
+  return ts.isFunctionDeclaration(ref.node) || ts.isMethodDeclaration(ref.node) ||
+      ts.isFunctionExpression(ref.node);
 }
 
 function literal(value: ResolvedValue): any {
