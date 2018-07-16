@@ -19,13 +19,14 @@ export interface R3PipeMetadata {
   name: string;
   type: o.Expression;
   pipeName: string;
-  deps: R3DependencyMetadata[];
+  deps: R3DependencyMetadata[]|null;
   pure: boolean;
 }
 
 export interface R3PipeDef {
   expression: o.Expression;
   type: o.Type;
+  statements: o.Statement[];
 }
 
 export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
@@ -39,12 +40,11 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
 
   const templateFactory = compileFactoryFunction({
     name: metadata.name,
-    fnOrClass: metadata.type,
+    type: metadata.type,
     deps: metadata.deps,
-    useNew: true,
     injectFn: R3.directiveInject,
   });
-  definitionMapValues.push({key: 'factory', value: templateFactory, quoted: false});
+  definitionMapValues.push({key: 'factory', value: templateFactory.factory, quoted: false});
 
   // e.g. `pure: true`
   definitionMapValues.push({key: 'pure', value: o.literal(metadata.pure), quoted: false});
@@ -54,7 +54,7 @@ export function compilePipeFromMetadata(metadata: R3PipeMetadata) {
     new o.ExpressionType(metadata.type),
     new o.ExpressionType(new o.LiteralExpr(metadata.pipeName)),
   ]));
-  return {expression, type};
+  return {expression, type, statements: templateFactory.statements};
 }
 
 /**

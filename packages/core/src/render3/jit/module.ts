@@ -39,7 +39,7 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
         };
         const res = compileR3NgModule(meta);
         ngModuleDef =
-            jitExpression(res.expression, angularCoreEnv, `ng://${type.name}/ngModuleDef.js`);
+            jitExpression(res.expression, angularCoreEnv, `ng://${type.name}/ngModuleDef.js`, []);
       }
       return ngModuleDef;
     },
@@ -60,8 +60,8 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
           ]),
         };
         const res = compileInjector(meta);
-        ngInjectorDef =
-            jitExpression(res.expression, angularCoreEnv, `ng://${type.name}/ngInjectorDef.js`);
+        ngInjectorDef = jitExpression(
+            res.expression, angularCoreEnv, `ng://${type.name}/ngInjectorDef.js`, res.statements);
       }
       return ngInjectorDef;
     },

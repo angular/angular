@@ -75,9 +75,10 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
               viewQueries: [],
             },
             constantPool, makeBindingParser());
+        const preStatements = [...constantPool.statements, ...res.statements];
 
         def = jitExpression(
-            res.expression, angularCoreEnv, `ng://${type.name}/ngComponentDef.js`, constantPool);
+            res.expression, angularCoreEnv, `ng://${type.name}/ngComponentDef.js`, preStatements);
 
         // If component compilation is async, then the @NgModule annotation which declares the
         // component may execute and set an ngSelectorScope property on the component type. This
@@ -113,7 +114,8 @@ export function compileDirective(type: Type<any>, directive: Directive): void {
         const sourceMapUrl = `ng://${type && type.name}/ngDirectiveDef.js`;
         const res = compileR3Directive(
             directiveMetadata(type, directive), constantPool, makeBindingParser());
-        def = jitExpression(res.expression, angularCoreEnv, sourceMapUrl, constantPool);
+        const preStatements = [...constantPool.statements, ...res.statements];
+        def = jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
       }
       return def;
     },

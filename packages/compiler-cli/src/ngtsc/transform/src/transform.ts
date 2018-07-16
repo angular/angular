@@ -72,7 +72,7 @@ class IvyVisitor extends Visitor {
           node.modifiers, node.name, node.typeParameters, node.heritageClauses || [],
           // Map over the class members and remove any Angular decorators from them.
           members.map(member => this._stripAngularDecorators(member)));
-      return {node, before: statements};
+      return {node, after: statements};
     }
 
     return {node};
