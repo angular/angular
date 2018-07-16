@@ -107,6 +107,11 @@ if (process.env['WEB_TEST_METADATA']) {
       if (headless) {
         args.push('--headless');
         args.push('--disable-gpu');
+        const isRoot = process.getuid && process.getuid() == 0;
+        if (isRoot) {
+          // Specify --no-sandbox if it is started by root.
+          args.push('--no-sandbox');
+        }
       }
       setConf(conf, 'directConnect', true, 'is set to true for chrome');
       setConf(
