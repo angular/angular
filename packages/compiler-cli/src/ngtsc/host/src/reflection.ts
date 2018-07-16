@@ -338,4 +338,6 @@ export interface ReflectionHost {
    * Check whether the given declaration node actually represents a class.
    */
   isClass(node: ts.Declaration): boolean;
+
+  hasBaseClass(node: ts.Declaration): boolean;
 }

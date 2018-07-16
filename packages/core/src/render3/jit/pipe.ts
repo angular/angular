@@ -32,7 +32,7 @@ export function compilePipe(type: Type<any>, meta: Pipe): void {
           pure: meta.pure !== undefined ? meta.pure : true,
         });
 
-        def = jitExpression(res.expression, angularCoreEnv, sourceMapUrl);
+        def = jitExpression(res.expression, angularCoreEnv, sourceMapUrl, res.statements);
       }
       return def;
     }

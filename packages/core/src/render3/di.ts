@@ -771,6 +771,26 @@ export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine.TemplateRef
   return di.templateRef;
 }
 
+export function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {
+  const typeAny = type as any;
+  const def = typeAny.ngComponentDef || typeAny.ngDirectiveDef || typeAny.ngPipeDef ||
+      typeAny.ngInjectableDef || typeAny.ngInjectorDef;
+  if (def === undefined || def.factory === undefined) {
+    return null;
+  }
+  return def.factory;
+}
+
+export function getInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
+  debugger;
+  const proto = Object.getPrototypeOf(type.prototype).constructor as Type<any>;
+  const factory = getFactoryOf<T>(proto);
+  if (factory === null) {
+    throw new Error(`Type ${proto.name} does not support inheritance`);
+  }
+  return factory;
+}
+
 class TemplateRef<T> implements viewEngine.TemplateRef<T> {
   constructor(
       private _declarationParentView: LViewData, readonly elementRef: viewEngine.ElementRef,
