@@ -1431,13 +1431,22 @@ By using `{ exact: true }`, a given `RouterLink` will only be active if its URL 
 {@a router-directives}
 
 
+<!--
 ### *Router directives*
+-->
+### *라우터 디렉티브*
 
+<!--
 `RouterLink`, `RouterLinkActive` and `RouterOutlet` are directives provided by the Angular `RouterModule` package.
 They are readily available for you to use in the template.
+-->
+`RouterLink`, `RouterLinkActive`, `RouterOutlet`는 모두 Angular `RouterModule` 패키지에서 제공하는 디렉티브입니다.
+이 디렉티브들은 라우터 모듈을 앱에 로드했다면 템플릿에 자유롭게 사용할 수 있습니다.
 
+<!--
 The current state of `app.component.ts` looks like this:
-
+-->
+지금까지 작성한 `app.component.ts`는 이렇게 구현되어 있습니다:
 
 <code-example path="router/src/app/app.component.1.ts" linenums="false" title="src/app/app.component.ts (excerpt)">
 
@@ -1448,61 +1457,89 @@ The current state of `app.component.ts` looks like this:
 {@a wildcard}
 
 
+<!--
 ### Wildcard route
+-->
+### 와일드카드 라우팅 규칙
 
+<!--
 You've created two routes in the app so far, one to `/crisis-center` and the other to `/heroes`.
 Any other URL causes the router to throw an error and crash the app.
+-->
+지금까지 작성한 앱에는 라우팅 규칙이 두 개 정의되어 있습니다. 하나는 `/crisis-center`에 해당하는 라우팅 규칙이며, 다른 하나는 `/heroes`에 해당하는 라우팅 규칙입니다.
+하지만 이렇게 정의하면 매칭되지 않은 URL로 접속했을 때 라우터에서 에러가 발생하고 앱이 중단됩니다.
 
+<!--
 Add a **wildcard** route to intercept invalid URLs and handle them gracefully.
 A _wildcard_ route has a path consisting of two asterisks. It matches _every_ URL.
 The router will select _this_ route if it can't match a route earlier in the configuration.
 A wildcard route can navigate to a custom "404 Not Found" component or [redirect](#redirect) to an existing route.
-
+-->
+이 에러를 방지하기 위해 잘못된 URL을 매칭하는 **와일드카드** 라우팅 규칙을 추가해 봅시다.
+_와일드카드_ 라우팅 규칙은 아스테리스크 2개(`**`)를 주소로 지정하며, 이 규칙은 _모든_ URL과 매칭됩니다.
+라우터는 이 라우팅 규칙을 만나기 전까지 URL에 매칭되는 라우팅 규칙을 찾지 못하면 _이_ 라우팅 규칙을 매칭시킵니다.
+그래서 와일드카드 라우팅 규칙은 "404 Not Found" 컴포넌트를 표시하거나 다른 페이지로 [리다이렉트](#redirect)하는 로직을 구현할 때 사용합니다.
 
 <div class="l-sub-section">
 
 
-
+<!--
 The router selects the route with a [_first match wins_](#example-config) strategy.
 Wildcard routes are the least specific routes in the route configuration.
 Be sure it is the _last_ route in the configuration.
-
+-->
+라우터는 앱에 등록된 라우팅 규칙 중 [첫 번째 매칭되는](#example-config) 라우팅 규칙을 처리합니다.
+이 때 와일드카드 라우팅 규칙은 구체적인 것과는 가장 거리가 먼 규칙이며, 반드시 _마지막_ 라우팅 규칙으로 등록되어야 합니다.
 
 </div>
 
 
-
+<!--
 To test this feature, add a button with a `RouterLink` to the `HeroListComponent` template and set the link to `"/sidekicks"`.
+-->
+이 동작을 테스트하기 위해 `HeroListComponent` 템플릿에 `RouterLink`를 사용하는 버튼을 하나 추가하고, 이 버튼의 링크를 `"/sidekicks"`로 지정합니다.
 
 <code-example path="router/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (excerpt)">
 
 </code-example>
 
 
-
+<!--
 The application will fail if the user clicks that button because you haven't defined a `"/sidekicks"` route yet.
+-->
+애플리케이션을 실행하고 이 버튼을 클릭하면, 아직 `"/sidekicks"`에 대한 라우팅 규칙이 정의되어 있지 않기 때문에 애플리케이션이 에러로 종료됩니다.
 
+<!--
 Instead of adding the `"/sidekicks"` route, define a `wildcard` route instead and have it navigate to a simple `PageNotFoundComponent`.
+-->
+그러면 `"/sidekicks"` 라우팅 규칙을 추가하는 대신 와일드카드 라우팅 규칙을 추가하고, 이 라우팅 규칙은 `PageNotFoundComponent`를 표시하도록 합시다.
 
 <code-example path="router/src/app/app.module.1.ts" linenums="false" title="src/app/app.module.ts (wildcard)" region="wildcard">
 
 </code-example>
 
 
-
+<!--
 Create the `PageNotFoundComponent` to display when users visit invalid URLs.
+-->
+그리고 `PageNotFoundComponent`를 다음과 같이 정의합니다.
 
 <code-example path="router/src/app/not-found.component.ts" linenums="false" title="src/app/not-found.component.ts (404 component)">
 
 </code-example>
 
 
-
+<!--
 As with the other components, add the `PageNotFoundComponent` to the `AppModule` declarations.
+-->
+다른 컴포넌트와 마찬가지로, `PageNotFoundComponent`도 `AppModule`의 `declarations` 배열에 추가해야 합니다.
 
+<!--
 Now when the user visits `/sidekicks`, or any other invalid URL, the browser displays "Page not found".
 The browser address bar continues to point to the invalid URL.
-
+-->
+이제 사용자가 `/sidekicks`와 같이 규칙으로 등록되지 않은 주소에 접근하게 되면, 브라우저에 "Page not found"가 표시됩니다.
+이 때 브라우저의 주소표시줄에는 변경되지 않은 URL이 그대로 표시됩니다.
 
 
 {@a default-route}
