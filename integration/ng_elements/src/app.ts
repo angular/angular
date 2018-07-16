@@ -1,8 +1,8 @@
-import {HelloWorldComponent, HelloWorldShadowComponent, TestCardComponent} from './elements';
-
-import {NgModule, Injector} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {Injector, NgModule} from '@angular/core';
 import {createCustomElement} from '@angular/elements';
+import {BrowserModule} from '@angular/platform-browser';
+
+import {HelloWorldComponent, HelloWorldShadowComponent, TestCardComponent} from './elements';
 
 
 @NgModule({
@@ -11,23 +11,13 @@ import {createCustomElement} from '@angular/elements';
   imports: [BrowserModule],
 })
 export class AppModule {
-  constructor(private injector:Injector){
+  constructor(private injector: Injector) {
+    customElements.define('hello-world-el', createCustomElement(HelloWorldComponent, {injector}));
     customElements.define(
-      'hello-world-el',
-      createCustomElement(HelloWorldComponent, {injector})
-    );
-    customElements.define(
-      'hello-world-shadow-el',
-      createCustomElement(HelloWorldShadowComponent, {injector})
-    );
-    customElements.define(
-      'test-card',
-      createCustomElement(HelloWorldShadowComponent, {injector})
-    );
+        'hello-world-shadow-el', createCustomElement(HelloWorldShadowComponent, {injector}));
+    customElements.define('test-card', createCustomElement(TestCardComponent, {injector}));
   }
-  ngDoBootstrap(){
-
-  }
+  ngDoBootstrap() {}
 }
 
 export {HelloWorldComponent};

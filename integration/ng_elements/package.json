@@ -29,5 +29,6 @@
     "serve": "lite-server -c e2e/browser.config.json",
     "preprotractor": "tsc -p e2e",
     "protractor": "protractor e2e/protractor.config.js"
-  }
+  },
+  "private": true
 }
