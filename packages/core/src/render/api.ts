@@ -266,6 +266,10 @@ export abstract class Renderer2 {
    * Implement this callback to prepare an element to be bootstrapped
    * as a root element, and return the element instance.
    * @param selectorOrNode The DOM element.
+   * @param preserveContent Whether the contents of the root element
+   * should be preserved, or cleared upon bootstrap (default behavior).
+   * Use with `ViewEncapsulation.ShadowDom` to allow simple native
+   * content projection via `<slot>` elements.
    * @returns The root element.
    */
   abstract selectRootElement(selectorOrNode: string|any, preserveContent?: boolean): any;
