@@ -40,7 +40,7 @@ Generate a component for the control. The steps following show you how to regist
 
 </code-example>
 
-The `FormControl` is the most basic building block when using reactive forms. Import the `FormControl` class into your component and create   a new instance of `FormControl` to save as a class property.
+The `FormControl` is the most basic building block when using reactive forms. Import the `FormControl` class into your component and create a new instance of `FormControl` to save as a class property.
 
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="create-control" title="src/app/name-editor/name-editor.component.ts">
 
@@ -79,8 +79,7 @@ The `FormControl` assigned to `name` is displayed once the component is added to
 ## Managing control values
 
 Reactive forms give you access to the form control state and value at a point in time. You can manipulate 
-the current state and value through the component class or the component template. The following examples below display the 
-value of a `FormControl` and change it.
+the current state and value through the component class or the component template. The following examples below display the value of a `FormControl` and change it.
 
 {@a display-value}
 
