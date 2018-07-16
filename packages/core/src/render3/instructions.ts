@@ -1727,10 +1727,8 @@ export function container(
 
   isParent = false;
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.Container);
-  if (queries) {
-    // check if a given container node matches
-    queries.addNode(node);
-  }
+  queries && queries.addNode(node);  // check if a given container node matches
+  queueLifecycleHooks(node.tNode.flags, tView);
 }
 
 /**
