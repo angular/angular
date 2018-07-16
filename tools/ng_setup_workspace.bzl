@@ -21,7 +21,7 @@ def ng_setup_workspace():
       data = ["@angular//:tools/yarn/check-yarn.js", "@angular//:tools/postinstall-patches.js"],
       node_modules_filegroup = """
 filegroup(
-    name = "node_modules",  
+    name = "node_modules",
     srcs = glob(["/".join([
         "node_modules",
         pkg,
@@ -61,6 +61,7 @@ filegroup(
         "class-utils",
         "co",
         "collection-visit",
+        "convert-source-map",
         "combined-stream",
         "component-emitter",
         "concat-map",
@@ -131,6 +132,7 @@ filegroup(
         "kind-of",
         "long",
         "lru-cache",
+        "magic-string",
         "map-cache",
         "map-visit",
         "math-random",
@@ -140,6 +142,7 @@ filegroup(
         "minimatch",
         "minimist",
         "mixin-deep",
+        "mock-fs",
         "nanomatch",
         "normalize-path",
         "oauth-sign",
@@ -190,6 +193,7 @@ filegroup(
         "source-map-resolve",
         "source-map-support",
         "source-map-url",
+        "sourcemap-codec",
         "split-string",
         "sshpk",
         "static-extend",
