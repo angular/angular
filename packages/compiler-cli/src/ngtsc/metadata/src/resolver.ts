@@ -452,7 +452,7 @@ class StaticInterpreter {
             value = this.visitExpression(member.value, context);
           } else if (member.declaration !== null) {
             value = new NodeReference(member.declaration);
-          } else {
+          } else if (member.node !== null) {
             value = new NodeReference(member.node);
           }
         }
@@ -468,7 +468,7 @@ class StaticInterpreter {
       throw new Error(`attempting to call something that is not a function: ${lhs}`);
     } else if (!isFunctionOrMethodDeclaration(lhs.node) || !lhs.node.body) {
       throw new Error(
-          `calling something that is not a function declaration? ${ts.SyntaxKind[lhs.node.kind]}`);
+          `calling something that is not a function declaration? ${ts.SyntaxKind[lhs.node.kind]} (${node.getText()})`);
     }
 
     const fn = lhs.node;
