@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChanges} from '../../src/core';
-import {ComponentTemplate, LifecycleHooksFeature, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
+import {OnDestroy, SimpleChanges} from '../../src/core';
+import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {containerEl, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
+
+import {NgIf} from './common_with_def';
+import {ComponentFixture, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
 
 describe('lifecycles', () => {
 
@@ -2523,6 +2525,62 @@ describe('lifecycles', () => {
 
     });
 
+  });
+
+  describe('non-regression', () => {
+
+    it('should call lifecycle hooks for directives active on <ng-template>', () => {
+      let destroyed = false;
+
+      class OnDestroyDirective implements OnDestroy {
+        ngOnDestroy() { destroyed = true; }
+
+        static ngDirectiveDef = defineDirective({
+          type: OnDestroyDirective,
+          selectors: [['', 'onDestroyDirective', '']],
+          factory: () => new OnDestroyDirective()
+        });
+      }
+
+
+      function conditionTpl(rf: RenderFlags, ctx: Cmpt) {
+        if (rf & RenderFlags.Create) {
+          container(0, cmptTpl, null, [AttributeMarker.SelectOnly, 'onDestroyDirective']);
+        }
+      }
+
+      /**
+       * <ng-template [ngIf]="condition">
+       *  <ng-template onDestroyDirective></ng-template>
+       * </ng-template>
+       */
+      function cmptTpl(rf: RenderFlags, cmpt: Cmpt) {
+        if (rf & RenderFlags.Create) {
+          container(0, conditionTpl, null, [AttributeMarker.SelectOnly, 'ngIf']);
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'ngIf', bind(cmpt.showing));
+        }
+      }
+
+      class Cmpt {
+        showing = true;
+        static ngComponentDef = defineComponent({
+          type: Cmpt,
+          factory: () => new Cmpt(),
+          selectors: [['cmpt']],
+          template: cmptTpl,
+          directives: [NgIf, OnDestroyDirective]
+        });
+      }
+
+      const fixture = new ComponentFixture(Cmpt);
+      expect(destroyed).toBeFalsy();
+
+      fixture.component.showing = false;
+      fixture.update();
+      expect(destroyed).toBeTruthy();
+    });
   });
 
 });
