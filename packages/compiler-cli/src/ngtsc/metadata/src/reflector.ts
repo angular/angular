@@ -119,7 +119,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     }
     this.checker.getExportsOfModule(symbol).forEach(exportSymbol => {
       // Map each exported Symbol to a Declaration and add it to the map.
-      const decl = this._getDeclarationOfSymbol(exportSymbol);
+      const decl = this.getDeclarationOfSymbol(exportSymbol);
       if (decl !== null) {
         map.set(exportSymbol.name, decl);
       }
@@ -138,13 +138,13 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     if (symbol === undefined) {
       return null;
     }
-    return this._getDeclarationOfSymbol(symbol);
+    return this.getDeclarationOfSymbol(symbol);
   }
 
   /**
    * Resolve a `ts.Symbol` to its declaration, keeping track of the `viaModule` along the way.
    */
-  protected _getDeclarationOfSymbol(symbol: ts.Symbol): Declaration|null {
+  protected getDeclarationOfSymbol(symbol: ts.Symbol): Declaration|null {
     let viaModule: string|null = null;
     // Look through the Symbol's immediate declarations, and see if any of them are import-type
     // statements.
