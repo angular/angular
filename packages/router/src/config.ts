@@ -252,7 +252,6 @@ import {UrlSegment, UrlSegmentGroup} from './url_tree';
  * Then it will extract the set of routes defined in that NgModule, and will transparently add
  * those routes to the main configuration.
  *
- *  use Routes
  */
 export type Routes = Route[];
 
