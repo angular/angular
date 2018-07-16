@@ -572,7 +572,8 @@ class StaticInterpreter {
 
 function isFunctionOrMethodDeclaration(node: ts.Node): node is ts.FunctionDeclaration|
     ts.MethodDeclaration {
-  return ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node);
+  return ts.isFunctionDeclaration(node) || ts.isMethodDeclaration(node) ||
+      ts.isFunctionExpression(node);
 }
 
 function literal(value: ResolvedValue): any {
