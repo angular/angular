@@ -23,6 +23,8 @@ export {
   injectViewContainerRef as ɵinjectViewContainerRef,
   injectChangeDetectorRef as ɵinjectChangeDetectorRef,
   injectAttribute as ɵinjectAttribute,
+  getFactoryOf as ɵgetFactoryOf,
+  getInheritedFactory as ɵgetInheritedFactory,
   PublicFeature as ɵPublicFeature,
   InheritDefinitionFeature as ɵInheritDefinitionFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,

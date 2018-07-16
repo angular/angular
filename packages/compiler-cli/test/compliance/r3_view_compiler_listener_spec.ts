@@ -152,7 +152,7 @@ describe('compiler compliance: listen()', () => {
         MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
           type: MyComponent,
           selectors: [["my-component"]],
-          factory: function MyComponent_Factory() { return new MyComponent(); },
+          factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
           features: [$r3$.ɵPublicFeature],
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
