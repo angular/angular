@@ -4,78 +4,66 @@ import { browser, by, element } from 'protractor';
 
 /* tslint:disable:quotemark */
 describe('Elements', () => {
+  const messageInput = element(by.css('input'));
+  const popupButtons = element.all(by.css('button'));
 
-  beforeAll(() => browser.get(''));
+  beforeEach(() => browser.get(''));
 
-  it('should display popup component on button click', () => {
+  describe('popup component', () => {
+    const popupComponentButton = popupButtons.get(0);
     const popupComponent = element(by.css('popup-component'));
-    const popupComponentButton = element.all(by.css('button')).get(0);
+    const closeButton = popupComponent.element(by.css('button'));
 
-    expect(popupComponent.isPresent()).toBe(false);
+    it('should be displayed on button click', () => {
+      expect(popupComponent.isPresent()).toBe(false);
 
-    popupComponentButton.click();
-    expect(popupComponent.isPresent()).toBe(true);
-    expect(popupComponent.getText()).toContain('Popup: Message');
+      popupComponentButton.click();
+      expect(popupComponent.isPresent()).toBe(true);
+    });
+
+    it('should display the specified message', () => {
+      messageInput.clear();
+      messageInput.sendKeys('Angular rocks!');
+
+      popupComponentButton.click();
+      expect(popupComponent.getText()).toContain('Popup: Angular rocks!');
+    });
+
+    it('should be closed on "close" button click', () => {
+      popupComponentButton.click();
+      expect(popupComponent.isPresent()).toBe(true);
+
+      closeButton.click();
+      expect(popupComponent.isPresent()).toBe(false);
+    });
   });
 
-  it('should close popup component on close button click', () => {
-    const popupComponent = element(by.css('popup-component'));
-    const popupComponentCloseButton = popupComponent.element(by.css('button'));
-
-    expect(popupComponent.isPresent()).toBe(true);
-
-    popupComponentCloseButton.click();
-    expect(popupComponent.isPresent()).toBe(false);
-  });
-
-  it('should be able to change the message', () => {
-    const popupMessageInput = element(by.css('app-root input'));
-    popupMessageInput.clear().then(() => popupMessageInput.sendKeys('Angular rocks!'));
-
-    const popupComponent = element(by.css('popup-component'));
-    const popupComponentButton = element.all(by.css('button')).get(0);
-
-    expect(popupComponent.isPresent()).toBe(false);
-
-    popupComponentButton.click();
-    expect(popupComponent.isPresent()).toBe(true);
-    expect(popupComponent.getText()).toContain('Popup: Angular rocks!');
-  });
-
-  /* Provide solution (separate build or polyfill) since Custom Elements can only be used with ES2015 classes according to the spec. */
-  xit('should display popup element on button click', () => {
+  describe('popup element', () => {
+    const popupElementButton = popupButtons.get(1);
     const popupElement = element(by.css('popup-element'));
-    const popupElementButton = element.all(by.css('button')).get(1);
+    const closeButton = popupElement.element(by.css('button'));
 
-    expect(popupElement.isPresent()).toBe(false);
+    it('should be displayed on button click', () => {
+      expect(popupElement.isPresent()).toBe(false);
 
-    popupElementButton.click();
-    expect(popupElement.isPresent()).toBe(true);
-    expect(popupElement.getText()).toContain('Popup: Message');
+      popupElementButton.click();
+      expect(popupElement.isPresent()).toBe(true);
+    });
+
+    it('should display the specified message', () => {
+      messageInput.clear();
+      messageInput.sendKeys('Angular rocks!');
+
+      popupElementButton.click();
+      expect(popupElement.getText()).toContain('Popup: Angular rocks!');
+    });
+
+    it('should be closed on "close" button click', () => {
+      popupElementButton.click();
+      expect(popupElement.isPresent()).toBe(true);
+
+      closeButton.click();
+      expect(popupElement.isPresent()).toBe(false);
+    });
   });
-
-  xit('should close popup element on close button click', () => {
-    const popupElement = element(by.css('popup-element'));
-    const popupElementCloseButton = popupElement.element(by.css('button'));
-
-    expect(popupElement.isPresent()).toBe(true);
-
-    popupElementCloseButton.click();
-    expect(popupElement.isPresent()).toBe(false);
-  });
-
-  xit('should be able to change the message', () => {
-    const popupMessageInput = element(by.css('app-root input'));
-    popupMessageInput.clear().then(() => popupMessageInput.sendKeys('Angular rocks!'));
-
-    const popupElement = element(by.css('popup-element'));
-    const popupComponentButton = element.all(by.css('button')).get(0);
-
-    expect(popupElement.isPresent()).toBe(false);
-
-    popupComponentButton.click();
-    expect(popupElement.isPresent()).toBe(true);
-    expect(popupElement.getText()).toContain('Popup: Angular rocks!');
-  });
-
 });
