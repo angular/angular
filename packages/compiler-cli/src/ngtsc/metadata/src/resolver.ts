@@ -544,7 +544,7 @@ class StaticInterpreter {
       throw new Error(`attempting to call something that is not a function: ${lhs}`);
     } else if (!isFunctionOrMethodReference(lhs)) {
       throw new Error(
-          `calling something that is not a function declaration? ${ts.SyntaxKind[lhs.node.kind]}`);
+          `calling something that is not a function declaration? ${ts.SyntaxKind[lhs.node.kind]} (${node.getText()})`);
     }
 
     const fn = lhs.node;
