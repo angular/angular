@@ -15,7 +15,7 @@ function sequenceSubscriber(observer) {
       if (idx === arr.length - 1) {
         observer.complete();
       } else {
-        doSequence(arr, idx++);
+        doSequence(arr, ++idx);
       }
     }, 1000);
   }
@@ -121,13 +121,13 @@ function doSequence(observer, arr, idx) {
     if (idx === arr.length - 1) {
       observer.complete();
     } else {
-      doSequence(observer, arr, idx++);
+      doSequence(observer, arr, ++idx);
     }
   }, 1000);
 }
 
 // Create a new Observable that will deliver the above sequence
-const multicastSequence = new Observable(multicastSequenceSubscriber);
+const multicastSequence = new Observable(multicastSequenceSubscriber());
 
 // Subscribe starts the clock, and begins to emit after 1 second
 multicastSequence.subscribe({
