@@ -140,6 +140,30 @@ The Popup Service example app defines a component that you can either load dynam
 
 For comparison, the demo shows both methods. One button adds the popup using the dynamic-loading method, and the other uses the custom element. You can see that the result is the same; only the preparation is different.
 
+### Getting the typings right
+
+In `popup.service.ts` the method `document.createElement()` will return an `HTMLElement` which means TS does not know it is a special element that implements the `NgElement` interface. This happens when you call `document.createElement()` with an unknown node name, such as `popup-element`. `NgElement` extends `HTMLElement` and adds some additional properties (such as `ngElementStrategy`).
+
+You can cast the return value of `createElement()`, like this:
+```
+const popupEl = document.createElement('popup-element') as NgElement & WithProperties<PopupComponent>;
+```
+
+Be aware that TS 2.7 cannot handle this type of cast, although TS 2.9 can. To make this work for TS 2.7, use the following syntax:
+```
+const popupEl: NgElement & WithProperties<PopupComponent> = document.createElement('popup-element') as any;
+```
+
+When creating a real application, we advice you to overload `createDocument()` to always return the correct type for your custom elements:
+```
+declare global {
+  interface Document {
+    createElement(tagName: 'popup-element'): NgElement & WithProperties<PopupComponent>;
+    createElement(tagName: 'some-element'): NgElement & WithProperties<SomeComponent>;
+  }
+}
+```
+
 <code-tabs>
 
   <code-pane title="popup.component.ts" path="elements/src/app/popup.component.ts">
