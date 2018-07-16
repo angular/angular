@@ -43,11 +43,11 @@ export class ImportManager {
   private moduleToIndex = new Map<string, string>();
   private nextIndex = 0;
 
-  constructor(private isCore: boolean) {}
+  constructor(private isCore: boolean, private prefix = 'i') {}
 
   generateNamedImport(moduleName: string, symbol: string): string {
     if (!this.moduleToIndex.has(moduleName)) {
-      this.moduleToIndex.set(moduleName, `i${this.nextIndex++}`);
+      this.moduleToIndex.set(moduleName, `${this.prefix}${this.nextIndex++}`);
     }
     if (this.isCore && moduleName === '@angular/core' && !CORE_SUPPORTED_SYMBOLS.has(symbol)) {
       throw new Error(`Importing unexpected symbol ${symbol} while compiling core`);
