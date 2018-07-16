@@ -124,6 +124,23 @@ ivyEnabled && describe('render3 jit', () => {
     expect(injected.value).toBe(2);
   });
 
+  it('compiles an injectable with an inherited constructor', () => {
+    @Injectable({providedIn: 'root'})
+    class Dep {
+    }
+
+    @Injectable()
+    class Base {
+      constructor(readonly dep: Dep) {}
+    }
+
+    @Injectable({providedIn: 'root'})
+    class Child extends Base {
+    }
+
+    expect(inject(Child).dep instanceof Dep).toBe(true);
+  });
+
   it('compiles a module to a definition', () => {
     @Component({
       template: 'foo',

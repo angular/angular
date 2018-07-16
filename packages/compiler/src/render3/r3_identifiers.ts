@@ -162,6 +162,16 @@ export class Identifiers {
 
   static listener: o.ExternalReference = {name: 'ɵL', moduleName: CORE};
 
+  static getFactoryOf: o.ExternalReference = {
+    name: 'ɵgetFactoryOf',
+    moduleName: CORE,
+  };
+
+  static getInheritedFactory: o.ExternalReference = {
+    name: 'ɵgetInheritedFactory',
+    moduleName: CORE,
+  };
+
   // Reserve slots for pure functions
   static reserveSlots: o.ExternalReference = {name: 'ɵrS', moduleName: CORE};
 

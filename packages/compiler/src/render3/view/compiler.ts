@@ -29,7 +29,7 @@ import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, co
 
 function baseDirectiveFields(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
-    bindingParser: BindingParser): DefinitionMap {
+    bindingParser: BindingParser): {definitionMap: DefinitionMap, statements: o.Statement[]} {
   const definitionMap = new DefinitionMap();
 
   // e.g. `type: MyDirective`
@@ -40,13 +40,13 @@ function baseDirectiveFields(
 
 
   // e.g. `factory: () => new MyApp(injectElementRef())`
-  definitionMap.set('factory', compileFactoryFunction({
-                      name: meta.name,
-                      fnOrClass: meta.type,
-                      deps: meta.deps,
-                      useNew: true,
-                      injectFn: R3.directiveInject,
-                    }));
+  const result = compileFactoryFunction({
+    name: meta.name,
+    type: meta.type,
+    deps: meta.deps,
+    injectFn: R3.directiveInject,
+  });
+  definitionMap.set('factory', result.factory);
 
   definitionMap.set('contentQueries', createContentQueriesFunction(meta, constantPool));
 
@@ -80,7 +80,7 @@ function baseDirectiveFields(
     definitionMap.set('features', o.literalArr(features));
   }
 
-  return definitionMap;
+  return {definitionMap, statements: result.statements};
 }
 
 /**
@@ -89,7 +89,7 @@ function baseDirectiveFields(
 export function compileDirectiveFromMetadata(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3DirectiveDef {
-  const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
+  const {definitionMap, statements} = baseDirectiveFields(meta, constantPool, bindingParser);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
 
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
@@ -100,7 +100,7 @@ export function compileDirectiveFromMetadata(
     typeWithParameters(meta.type, meta.typeArgumentCount),
     new o.ExpressionType(o.literal(selectorForType))
   ]));
-  return {expression, type};
+  return {expression, type, statements};
 }
 
 /**
@@ -109,7 +109,7 @@ export function compileDirectiveFromMetadata(
 export function compileComponentFromMetadata(
     meta: R3ComponentMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3ComponentDef {
-  const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
+  const {definitionMap, statements} = baseDirectiveFields(meta, constantPool, bindingParser);
 
   const selector = meta.selector && CssSelector.parse(meta.selector);
   const firstSelector = selector && selector[0];
@@ -180,7 +180,7 @@ export function compileComponentFromMetadata(
     new o.ExpressionType(o.literal(selectorForType))
   ]));
 
-  return {expression, type};
+  return {expression, type, statements};
 }
 
 /**

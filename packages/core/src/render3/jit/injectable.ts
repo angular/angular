@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, LiteralExpr, R3DependencyMetadata, WrappedNodeExpr, compileInjectable as compileR3Injectable, jitExpression} from '@angular/compiler';
+import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, WrappedNodeExpr, compileInjectable as compileR3Injectable, jitExpression} from '@angular/compiler';
 
 import {Injectable} from '../../di/injectable';
 import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../../di/provider';
@@ -16,6 +16,7 @@ import {getClosureSafeProperty} from '../../util/property';
 import {angularCoreEnv} from './environment';
 import {NG_INJECTABLE_DEF} from './fields';
 import {convertDependencies, reflectDependencies} from './util';
+
 
 
 /**
@@ -34,13 +35,11 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
         const hasAProvider = isUseClassProvider(meta) || isUseFactoryProvider(meta) ||
             isUseValueProvider(meta) || isUseExistingProvider(meta);
 
-        let deps: R3DependencyMetadata[]|undefined = undefined;
-        if (!hasAProvider || (isUseClassProvider(meta) && type === meta.useClass)) {
-          deps = reflectDependencies(type);
-        } else if (isUseClassProvider(meta)) {
-          deps = meta.deps && convertDependencies(meta.deps);
-        } else if (isUseFactoryProvider(meta)) {
-          deps = meta.deps && convertDependencies(meta.deps) || [];
+        const ctorDeps = reflectDependencies(type);
+
+        let userDeps: R3DependencyMetadata[]|undefined = undefined;
+        if ((isUseClassProvider(meta) || isUseFactoryProvider(meta)) && meta.deps !== undefined) {
+          userDeps = convertDependencies(meta.deps);
         }
 
         // Decide which flavor of factory to generate, based on the provider specified.
@@ -73,7 +72,7 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
           throw new Error(`Unreachable state.`);
         }
 
-        const {expression} = compileR3Injectable({
+        const {expression, statements} = compileR3Injectable({
           name: type.name,
           type: new WrappedNodeExpr(type),
           providedIn: computeProvidedIn(meta.providedIn),
@@ -81,10 +80,12 @@ export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
           useFactory,
           useValue,
           useExisting,
-          deps,
+          ctorDeps,
+          userDeps,
         });
 
-        def = jitExpression(expression, angularCoreEnv, `ng://${type.name}/ngInjectableDef.js`);
+        def = jitExpression(
+            expression, angularCoreEnv, `ng://${type.name}/ngInjectableDef.js`, statements);
       }
       return def;
     },
