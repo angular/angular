@@ -77,13 +77,12 @@ export class BrowserDetection {
 
   get supportsShadowDom() {
     const testEl = document.createElement('div');
-    return (typeof customElements !== 'undefined') && (typeof testEl.attachShadow !== 'undefined');
+    return (typeof testEl.attachShadow !== 'undefined');
   }
 
   get supportsDeprecatedShadowDomV0() {
     const testEl = document.createElement('div') as any;
-    return (typeof customElements !== 'undefined') &&
-        (typeof testEl.createShadowRoot !== 'undefined');
+    return (typeof testEl.createShadowRoot !== 'undefined');
   }
 }
 
