@@ -279,7 +279,7 @@ interface Context {
   absoluteModuleName: string|null;
   scope: Scope;
   foreignFunctionResolver?
-      (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration>,
+      (ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>,
        args: ReadonlyArray<ts.Expression>): ts.Expression|null;
 }
 
@@ -528,7 +528,7 @@ class StaticInterpreter {
             value = this.visitExpression(member.value, context);
           } else if (member.implementation !== null) {
             value = new NodeReference(member.implementation, absoluteModuleName);
-          } else {
+          } else if (member.node) {
             value = new NodeReference(member.node, absoluteModuleName);
           }
         }
@@ -670,7 +670,7 @@ class StaticInterpreter {
 }
 
 function isFunctionOrMethodReference(ref: Reference<ts.Node>):
-    ref is Reference<ts.FunctionDeclaration|ts.MethodDeclaration> {
+    ref is Reference<ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression> {
   return ts.isFunctionDeclaration(ref.node) || ts.isMethodDeclaration(ref.node);
 }
 
