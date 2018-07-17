@@ -15,7 +15,7 @@ import {CssSelectorList} from './projection';
  * Definition of what a template rendering function should look like.
  */
 export type ComponentTemplate<T> = {
-  (rf: RenderFlags, ctx: T): void; ngPrivateData?: never;
+  (rf: RenderFlags, ctx: T, ...parentCtx: ({} | null)[]): void; ngPrivateData?: never;
 };
 
 /**

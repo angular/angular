@@ -122,6 +122,8 @@ export function renderComponent<T>(
     // Create directive instance with factory() and store at index 0 in directives array
     rootContext.components.push(
         component = baseDirectiveCreate(0, componentDef.factory(), componentDef) as T);
+
+    (elementNode.data as LViewData)[CONTEXT] = component;
     initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data !);
 
     opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
