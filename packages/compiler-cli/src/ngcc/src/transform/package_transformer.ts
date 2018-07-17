@@ -41,7 +41,7 @@ import {FileInfo, Renderer} from '../rendering/renderer';
  * - Some formats may contain multiple "modules" in a single file.
  */
 export class PackageTransformer {
-  transform(packagePath: string, format: string) {
+  transform(packagePath: string, format: string): void {
     const sourceNodeModules = this.findNodeModulesPath(packagePath);
     const targetNodeModules = sourceNodeModules.replace(/node_modules$/, 'node_modules_ngtsc');
     const entryPointPaths = getEntryPoints(packagePath, format);
@@ -107,14 +107,14 @@ export class PackageTransformer {
     }
   }
 
-  findNodeModulesPath(src: string) {
+  findNodeModulesPath(src: string): string {
     while (src && !/node_modules$/.test(src)) {
       src = dirname(src);
     }
     return src;
   }
 
-  writeFile(file: FileInfo) {
+  writeFile(file: FileInfo): void {
     mkdir('-p', dirname(file.path));
     writeFileSync(file.path, file.contents, 'utf8');
   }
