@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, RootRenderer} from '@angular/core';
+import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, destroyPlatform} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -36,6 +36,9 @@ let lastCreatedRenderer: Renderer2;
 
     let uiRenderStore: RenderStore;
     let wwRenderStore: RenderStore;
+
+    beforeEach(() => destroyPlatform());
+    afterEach(() => destroyPlatform());
 
     beforeEach(() => {
       // UI side
@@ -81,10 +84,6 @@ let lastCreatedRenderer: Renderer2;
     }
 
     it('should update text nodes', () => {
-      // IE (v11 to be exact) has been problematic lately with saucelabs for this specific test
-      // TODO (matsko): revisit this once things become more stable in the saucelabs world
-      if (isOldIE()) return;
-
       const fixture =
           TestBed.overrideTemplate(MyComp2, '<div>{{ctxProp}}</div>').createComponent(MyComp2);
       const renderEl = getRenderElement(fixture.nativeElement);
@@ -97,10 +96,6 @@ let lastCreatedRenderer: Renderer2;
 
     it('should update any element property/attributes/class/style(s) independent of the compilation on the root element and other elements',
        () => {
-         // IE (v11 to be exact) has been problematic lately with saucelabs for this specific test
-         // TODO (matsko): revisit this once things become more stable in the saucelabs world
-         if (isOldIE()) return;
-
          const fixture =
              TestBed.overrideTemplate(MyComp2, '<input [title]="y" style="position:absolute">')
                  .createComponent(MyComp2);
@@ -135,10 +130,6 @@ let lastCreatedRenderer: Renderer2;
        });
 
     it('should update any template comment property/attributes', () => {
-      // IE (v11 to be exact) has been problematic lately with saucelabs for this specific test
-      // TODO (matsko): revisit this once things become more stable in the saucelabs world
-      if (isOldIE()) return;
-
       const fixture =
           TestBed.overrideTemplate(MyComp2, '<ng-container *ngIf="ctxBoolProp"></ng-container>')
               .createComponent(MyComp2);
@@ -149,10 +140,6 @@ let lastCreatedRenderer: Renderer2;
     });
 
     it('should add and remove fragments', () => {
-      // IE (v11 to be exact) has been problematic lately with saucelabs for this specific test
-      // TODO (matsko): revisit this once things become more stable in the saucelabs world
-      if (isOldIE()) return;
-
       const fixture =
           TestBed
               .overrideTemplate(MyComp2, '<ng-container *ngIf="ctxBoolProp">hello</ng-container>')
@@ -172,10 +159,6 @@ let lastCreatedRenderer: Renderer2;
 
     if (getDOM().supportsDOMEvents()) {
       it('should listen to events', () => {
-        // IE (v11 to be exact) has been problematic lately with saucelabs for this specific test
-        // TODO (matsko): revisit this once things become more stable in the saucelabs world
-        if (isOldIE()) return;
-
         const fixture = TestBed.overrideTemplate(MyComp2, '<input (change)="ctxNumProp = 1">')
                             .createComponent(MyComp2);
 
