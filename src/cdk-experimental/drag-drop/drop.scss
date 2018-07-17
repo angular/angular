@@ -6,3 +6,18 @@ $cdk-z-index-drag-preview: 1000;
   left: 0;
   z-index: $cdk-z-index-drag-preview;
 }
+
+.cdk-drag,
+.cdk-drag-handle {
+  touch-action: none;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
+
+  // stylelint-disable material/no-prefixes
+  // normally we have a mixin for these, but it's in material/core.
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  // stylelint-enable material/no-prefixes
+}
