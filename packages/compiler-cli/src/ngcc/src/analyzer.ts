@@ -13,6 +13,7 @@ import {CompileResult, DecoratorHandler} from '../../ngtsc/transform';
 import {NgccReflectionHost} from './host/ngcc_host';
 import {ParsedClass} from './parsing/parsed_class';
 import {ParsedFile} from './parsing/parsed_file';
+import {isDefined} from './utils';
 
 export interface AnalyzedClass<T = any> extends ParsedClass {
   handler: DecoratorHandler<T>;
@@ -60,7 +61,7 @@ export class Analyzer {
   analyzeFile(file: ParsedFile): AnalyzedFile {
     const analyzedClasses =
         file.decoratedClasses.map(clazz => this.analyzeClass(file.sourceFile, clazz))
-            .filter(analysis => !!analysis) as AnalyzedClass[];
+            .filter(isDefined);
 
     return {
       analyzedClasses,
@@ -71,24 +72,26 @@ export class Analyzer {
   protected analyzeClass(file: ts.SourceFile, clazz: ParsedClass): AnalyzedClass|undefined {
     const matchingHandlers =
         this.handlers.map(handler => ({handler, decorator: handler.detect(clazz.decorators)}))
-            .filter(
-                (matchingHandler): matchingHandler is MatchingHandler<any> =>
-                    !!matchingHandler.decorator);
+            .filter(isMatchingHandler);
 
-    if (matchingHandlers.length > 0) {
-      if (matchingHandlers.length > 1) {
-        throw new Error('TODO.Diagnostic: Class has multiple Angular decorators.');
-      }
-
-      const handler = matchingHandlers[0].handler;
-      const decorator = matchingHandlers[0].decorator;
-
-      const {analysis, diagnostics} = handler.analyze(clazz.declaration, decorator);
-      let compilation = handler.compile(clazz.declaration, analysis);
-      if (!Array.isArray(compilation)) {
-        compilation = [compilation];
-      }
-      return {...clazz, handler, analysis, diagnostics, compilation};
+    if (matchingHandlers.length > 1) {
+      throw new Error('TODO.Diagnostic: Class has multiple Angular decorators.');
     }
+
+    if (matchingHandlers.length == 0) {
+      return undefined;
+    }
+
+    const {handler, decorator} = matchingHandlers[0];
+    const {analysis, diagnostics} = handler.analyze(clazz.declaration, decorator);
+    let compilation = handler.compile(clazz.declaration, analysis);
+    if (!Array.isArray(compilation)) {
+      compilation = [compilation];
+    }
+    return {...clazz, handler, analysis, diagnostics, compilation};
   }
+}
+
+function isMatchingHandler<T>(handler: Partial<MatchingHandler<T>>): handler is MatchingHandler<T> {
+  return !!handler.decorator;
 }
