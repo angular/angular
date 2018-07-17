@@ -20,7 +20,6 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {DomSanitizer, SafeStyle} from '@angular/platform-browser';
 import {animationFrameScheduler, fromEvent, Observable, Subject} from 'rxjs';
 import {sampleTime, take, takeUntil} from 'rxjs/operators';
 import {CdkVirtualForOf} from './virtual-for-of';
@@ -68,11 +67,8 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
    */
   _totalContentSize = 0;
 
-  /** The transform used to offset the rendered content wrapper element. */
-  _renderedContentTransform: SafeStyle;
-
-  /** The raw string version of the rendered content transform. */
-  private _rawRenderedContentTransform: string;
+  /** The the rendered content transform. */
+  private _renderedContentTransform: string;
 
   /** The currently rendered range of indices. */
   private _renderedRange: ListRange = {start: 0, end: 0};
@@ -107,8 +103,9 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
   /** A list of functions to run after the next change detection cycle. */
   private _runAfterChangeDetection: Function[] = [];
 
-  constructor(public elementRef: ElementRef, private _changeDetectorRef: ChangeDetectorRef,
-              private _ngZone: NgZone, private _sanitizer: DomSanitizer,
+  constructor(public elementRef: ElementRef,
+              private _changeDetectorRef: ChangeDetectorRef,
+              private _ngZone: NgZone,
               @Inject(VIRTUAL_SCROLL_STRATEGY) private _scrollStrategy: VirtualScrollStrategy) {}
 
   ngOnInit() {
@@ -223,17 +220,16 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
     let transform = `translate${axis}(${Number(offset)}px)`;
     this._renderedContentOffset = offset;
     if (to === 'to-end') {
-      // TODO(mmalerba): The viewport should rewrite this as a `to-start` offset on the next render
-      // cycle. Otherwise elements will appear to expand in the wrong direction (e.g.
-      // `mat-expansion-panel` would expand upward).
       transform += ` translate${axis}(-100%)`;
+      // The viewport should rewrite this as a `to-start` offset on the next render cycle. Otherwise
+      // elements will appear to expand in the wrong direction (e.g. `mat-expansion-panel` would
+      // expand upward).
       this._renderedContentOffsetNeedsRewrite = true;
     }
-    if (this._rawRenderedContentTransform != transform) {
+    if (this._renderedContentTransform != transform) {
       // We know this value is safe because we parse `offset` with `Number()` before passing it
       // into the string.
-      this._rawRenderedContentTransform = transform;
-      this._renderedContentTransform = this._sanitizer.bypassSecurityTrustStyle(transform);
+      this._renderedContentTransform = transform;
       this._markChangeDetectionNeeded(() => {
         if (this._renderedContentOffsetNeedsRewrite) {
           this._renderedContentOffset -= this.measureRenderedContentSize();
@@ -317,6 +313,11 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
 
     // Apply changes to Angular bindings.
     this._ngZone.run(() => this._changeDetectorRef.detectChanges());
+    // Apply the content transform. The transform can't be set via an Angular binding because
+    // bypassSecurityTrustStyle is banned in Google. However the value is safe, it's composed of
+    // string literals, a variable that can only be 'X' or 'Y', and user input that is run through
+    // the `Number` function first to coerce it to a numeric value.
+    this._contentWrapper.nativeElement.style.transform = this._renderedContentTransform;
     // Apply the pending scroll offset separately, since it can't be set up as an Angular binding.
     if (this._pendingScrollOffset != null) {
       if (this.orientation === 'horizontal') {

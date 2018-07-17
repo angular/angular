@@ -23,18 +23,6 @@ describe('CdkVirtualScrollViewport', () => {
       viewport = testComponent.viewport;
     });
 
-    it('should sanitize transform inputs', fakeAsync(() => {
-      finishInit(fixture);
-      viewport.orientation = 'arbitrary string as orientation' as any;
-      viewport.setRenderedContentOffset(
-          'arbitrary string as offset' as any, 'arbitrary string as to' as any);
-      fixture.detectChanges();
-      flush();
-
-      expect((viewport._renderedContentTransform as any).changingThisBreaksApplicationSecurity)
-          .toBe('translateY(NaNpx)');
-    }));
-
     it('should render initial state', fakeAsync(() => {
       finishInit(fixture);
 
