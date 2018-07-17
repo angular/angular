@@ -17,7 +17,7 @@ import {LQueries} from './query';
 import {Renderer3} from './renderer';
 
 /** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 16;
+export const HEADER_OFFSET = 17;
 
 // Below are constants for LViewData indices to help us look up LViewData members
 // without having to remember the specific indices.
@@ -38,6 +38,7 @@ export const SANITIZER = 12;
 export const TAIL = 13;
 export const CONTAINER_INDEX = 14;
 export const CONTENT_QUERIES = 15;
+export const DECLARATION_PARENT = 16;
 
 /**
  * `LViewData` stores all of the information needed to process the instructions as
@@ -61,6 +62,9 @@ export interface LViewData extends Array<any> {
    * The parent view is needed when we exit the view and must restore the previous
    * `LViewData`. Without this, the render method would have to keep a stack of
    * views as it is recursively rendering templates.
+   *
+   * This is also the "insertion" parent for embedded views. This allows us to properly
+   * destroy embedded views.
    */
   [PARENT]: LViewData|null;
 
@@ -143,7 +147,6 @@ export interface LViewData extends Array<any> {
    * The tail allows us to quickly add a new state to the end of the view list
    * without having to propagate starting from the first child.
    */
-  // TODO: replace with global
   [TAIL]: LViewData|LContainer|null;
 
   /**
@@ -162,6 +165,32 @@ export interface LViewData extends Array<any> {
    * be refreshed.
    */
   [CONTENT_QUERIES]: QueryList<any>[]|null;
+
+  /**
+   * Parent view where this view's template was declared.
+   *
+   * Only applicable for dynamically created views. Will be null for inline/component views.
+   *
+   * The template for a dynamically created view may be declared in a different view than
+   * it is inserted. We already track the "insertion parent" (view where the template was
+   * inserted) in LViewData[PARENT], but we also need access to the "declaration parent"
+   * (view where the template was declared). Otherwise, we wouldn't be able to call the
+   * view's template function with the proper contexts. Context should be inherited from
+   * the declaration parent tree, not the insertion parent tree.
+   *
+   * Example (AppComponent template):
+   *
+   * <ng-template #foo></ng-template>       <-- declared here -->
+   * <some-comp [tpl]="foo"></some-comp>    <-- inserted inside this component -->
+   *
+   * The <ng-template> above is declared in the AppComponent template, but it will be passed into
+   * SomeComp and inserted there. In this case, the declaration parent would be the AppComponent,
+   * but the insertion parent would be SomeComp. When we are removing views, we would want to
+   * traverse through the insertion parent to clean up listeners. When we are calling the
+   * template function during change detection, we need the declaration parent to get inherited
+   * context.
+   */
+  [DECLARATION_PARENT]: LViewData|null;
 }
 
 /** Flags associated with an LView (saved in LViewData[FLAGS]) */
@@ -404,11 +433,10 @@ export interface TView {
   cleanup: any[]|null;
 
   /**
-   * A list of directive and element indices for child components that will need to be
-   * refreshed when the current view has finished its check.
+   * A list of element indices for child components that will need to be
+   * refreshed when the current view has finished its check. These indices have
+   * already been adjusted for the HEADER_OFFSET.
    *
-   * Even indices: Directive indices
-   * Odd indices: Element indices (adjusted for LViewData header offset)
    */
   components: number[]|null;
 

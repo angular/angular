@@ -7,15 +7,16 @@
  */
 
 
-import {DoCheck, ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
+import {DoCheck, Input, TemplateRef, ViewContainerRef, ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
 import {getRenderedText} from '../../src/render3/component';
-import {ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty} from '../../src/render3/index';
+import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding, tick} from '../../src/render3/instructions';
 import {ComponentDefInternal, DirectiveDefInternal, RenderFlags} from '../../src/render3/interfaces/definition';
 import {createRendererType2} from '../../src/view/index';
 
+import {NgIf} from './common_with_def';
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, containerEl, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
+import {ComponentFixture, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame, toHtml} from './render_util';
 
 describe('component', () => {
   class CounterComponent {
@@ -281,8 +282,13 @@ describe('encapsulation', () => {
 });
 
 describe('recursive components', () => {
-  let events: string[] = [];
-  let count = 0;
+  let events: string[];
+  let count: number;
+
+  beforeEach(() => {
+    events = [];
+    count = 0;
+  });
 
   class TreeNode {
     constructor(
@@ -290,10 +296,22 @@ describe('recursive components', () => {
         public right: TreeNode|null) {}
   }
 
+  /**
+   * {{ data.value }}
+   *
+   * % if (data.left != null) {
+   *   <tree-comp [data]="data.left"></tree-comp>
+   * % }
+   * % if (data.right != null) {
+   *   <tree-comp [data]="data.right"></tree-comp>
+   * % }
+   */
   class TreeComponent {
     data: TreeNode = _buildTree(0);
 
     ngDoCheck() { events.push('check' + this.data.value); }
+
+    ngOnDestroy() { events.push('destroy' + this.data.value); }
 
     static ngComponentDef = defineComponent({
       type: TreeComponent,
@@ -344,6 +362,58 @@ describe('recursive components', () => {
   (TreeComponent.ngComponentDef as ComponentDefInternal<TreeComponent>).directiveDefs =
       () => [TreeComponent.ngComponentDef];
 
+  /**
+   * {{ data.value }}
+   *  <ng-if-tree [data]="data.left" *ngIf="data.left"></ng-if-tree>
+   *  <ng-if-tree [data]="data.right" *ngIf="data.right"></ng-if-tree>
+   */
+  class NgIfTree {
+    data: TreeNode = _buildTree(0);
+
+    ngOnDestroy() { events.push('destroy' + this.data.value); }
+
+    static ngComponentDef = defineComponent({
+      type: NgIfTree,
+      selectors: [['ng-if-tree']],
+      factory: () => new NgIfTree(),
+      template: (rf: RenderFlags, ctx: NgIfTree) => {
+
+        if (rf & RenderFlags.Create) {
+          text(0);
+          container(1, IfTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
+          container(2, IfTemplate2, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        }
+        if (rf & RenderFlags.Update) {
+          textBinding(0, bind(ctx.data.value));
+          elementProperty(1, 'ngIf', bind(ctx.data.left));
+          elementProperty(2, 'ngIf', bind(ctx.data.right));
+        }
+
+        function IfTemplate(rf1: RenderFlags, left: any, parent: NgIfTree) {
+          if (rf1 & RenderFlags.Create) {
+            elementStart(0, 'ng-if-tree');
+            elementEnd();
+          }
+          if (rf1 & RenderFlags.Update) {
+            elementProperty(0, 'data', bind(parent.data.left));
+          }
+        }
+        function IfTemplate2(rf1: RenderFlags, right: any, parent: NgIfTree) {
+          if (rf1 & RenderFlags.Create) {
+            elementStart(0, 'ng-if-tree');
+            elementEnd();
+          }
+          if (rf1 & RenderFlags.Update) {
+            elementProperty(0, 'data', bind(parent.data.right));
+          }
+        }
+      },
+      inputs: {data: 'data'},
+    });
+  }
+  (NgIfTree.ngComponentDef as ComponentDefInternal<NgIfTree>).directiveDefs =
+      () => [NgIfTree.ngComponentDef, NgIf.ngDirectiveDef];
+
   function _buildTree(currDepth: number): TreeNode {
     const children = currDepth < 2 ? _buildTree(currDepth + 1) : null;
     const children2 = currDepth < 2 ? _buildTree(currDepth + 1) : null;
@@ -358,6 +428,76 @@ describe('recursive components', () => {
     events = [];
     tick(comp);
     expect(events).toEqual(['check6', 'check2', 'check0', 'check1', 'check5', 'check3', 'check4']);
+  });
+
+  // This tests that the view tree is set up properly for recursive components
+  it('should call onDestroys properly', () => {
+
+    /**
+     * % if (!skipContent) {
+     *   <tree-comp></tree-comp>
+     * % }
+     */
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        container(0);
+      }
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        if (!ctx.skipContent) {
+          const rf0 = embeddedViewStart(0);
+          if (rf0 & RenderFlags.Create) {
+            elementStart(0, 'tree-comp');
+            elementEnd();
+          }
+          embeddedViewEnd();
+        }
+        containerRefreshEnd();
+      }
+    }, [TreeComponent]);
+
+    const fixture = new ComponentFixture(App);
+    expect(getRenderedText(fixture.component)).toEqual('6201534');
+
+    events = [];
+    fixture.component.skipContent = true;
+    fixture.update();
+    expect(events).toEqual(
+        ['destroy0', 'destroy1', 'destroy2', 'destroy3', 'destroy4', 'destroy5', 'destroy6']);
+  });
+
+  it('should call onDestroys properly with ngIf', () => {
+    /**
+     * % if (!skipContent) {
+     *   <ng-if-tree></ng-if-tree>
+     * % }
+     */
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        container(0);
+      }
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        if (!ctx.skipContent) {
+          const rf0 = embeddedViewStart(0);
+          if (rf0 & RenderFlags.Create) {
+            elementStart(0, 'ng-if-tree');
+            elementEnd();
+          }
+          embeddedViewEnd();
+        }
+        containerRefreshEnd();
+      }
+    }, [NgIfTree]);
+
+    const fixture = new ComponentFixture(App);
+    expect(getRenderedText(fixture.component)).toEqual('6201534');
+
+    events = [];
+    fixture.component.skipContent = true;
+    fixture.update();
+    expect(events).toEqual(
+        ['destroy0', 'destroy1', 'destroy2', 'destroy3', 'destroy4', 'destroy5', 'destroy6']);
   });
 
   it('should map inputs minified & unminified names', async() => {
