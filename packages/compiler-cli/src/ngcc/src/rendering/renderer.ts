@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {commentRegex, mapFileCommentRegex, fromJSON, fromSource, fromMapFileSource, fromObject, generateMapFileComment, removeComments, removeMapFileComments, SourceMapConverter} from 'convert-source-map';
 import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
-import {Expression, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
+import {Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
 import {AnalyzedClass, AnalyzedFile} from '../analyzer';
 import {Decorator} from '../../../ngtsc/host';
 import {ImportManager, translateStatement} from '../../../ngtsc/transform/src/translator';
@@ -94,7 +94,8 @@ export abstract class Renderer {
 
   // Add the decorator nodes that are to be removed to a map
   // So that we can tell if we should remove the entire decorator property
-  protected trackDecorators(decorators: Decorator[], decoratorsToRemove: Map<ts.Node, ts.Node[]>) {
+  protected trackDecorators(decorators: Decorator[], decoratorsToRemove: Map<ts.Node, ts.Node[]>):
+      void {
     decorators.forEach(dec => {
       const decoratorArray = dec.node.parent !;
       if (!decoratorsToRemove.has(decoratorArray)) {
@@ -218,7 +219,7 @@ export function renderDefinitions(
  * @param analyzedClass The info about the class whose statement we want to create.
  */
 function createAssignmentStatement(
-    receiverName: ts.DeclarationName, propName: string, initializer: Expression) {
+    receiverName: ts.DeclarationName, propName: string, initializer: Expression): Statement {
   const receiver = new WrappedNodeExpr(receiverName);
   return new WritePropExpr(receiver, propName, initializer).toStmt();
 }

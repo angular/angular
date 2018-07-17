@@ -22,7 +22,7 @@ export class Esm2015Renderer extends Renderer {
   }
 
   // Add the definitions to each decorated class
-  addDefinitions(output: MagicString, analyzedClass: AnalyzedClass, definitions: string) {
+  addDefinitions(output: MagicString, analyzedClass: AnalyzedClass, definitions: string): void {
     const classSymbol = this.host.getClassSymbol(analyzedClass.declaration);
     if (!classSymbol) {
       throw new Error(`Analyzed class does not have a valid symbol: ${analyzedClass.name}`);
