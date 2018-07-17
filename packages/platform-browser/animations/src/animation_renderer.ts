@@ -74,7 +74,7 @@ export class AnimationRendererFactory implements RendererFactory2 {
     this.promise.then(() => { this._microtaskId++; });
   }
 
-  /* @internal */
+  /** @internal */
   scheduleListenerCallback(count: number, fn: (e: any) => any, data: any) {
     if (count >= 0 && count < this._microtaskId) {
       this._zone.run(() => fn(data));
