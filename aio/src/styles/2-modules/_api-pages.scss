@@ -31,13 +31,10 @@
   }
 
   .method-table, .option-table, .list-table {
-    th {
-      display: flex;
+    .with-github-links {
       align-items: center;
-
-      h3 {
-        flex: 1;
-      }
+      display: flex;
+      justify-content: space-between;
 
       .github-links {
         a {
