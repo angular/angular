@@ -33,28 +33,6 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   constructor(checker: ts.TypeChecker) { super(checker); }
 
   /**
-   * Examine a declaration which should be of a class, and return metadata about the members of the
-   * class.
-   *
-   * @param declaration a TypeScript `ts.Declaration` node representing the class over which to
-   * reflect. If the source is in ES6 format, this will be a `ts.ClassDeclaration` node. If the
-   * source is in ES5 format, this might be a `ts.VariableDeclaration` as classes in ES5 are
-   * represented as the result of an IIFE execution.
-   *
-   * @returns an array of `ClassMember` metadata representing the members of the class.
-   *
-   * @throws if `declaration` does not resolve to a class declaration.
-   */
-  // getMembersOfClass(declaration: ts.Declaration): ClassMember[] {
-  //   const members: ClassMember[] = [];
-  //   const symbol = this.getClassSymbol(declaration);
-  //   if (!symbol) {
-  //     throw new Error(`Attempted to get members of a non-class: "${declaration.getText()}"`);
-  //   }
-  //   const decoratedMembers = this.getMemberDecorators(symbol);
-  // }
-
-  /**
    * Check whether the given declaration node actually represents a class.
    */
   isClass(node: ts.Declaration): boolean { return !!this.getClassSymbol(node); }
@@ -64,7 +42,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * So we need to dig around inside to get hold of the "class" symbol.
    * @param declaration the top level declaration that represents an exported class.
    */
-  getClassSymbol(declaration: ts.Declaration) {
+  getClassSymbol(declaration: ts.Declaration): ts.Symbol|undefined {
     if (ts.isVariableDeclaration(declaration)) {
       const iifeBody = getIifeBody(declaration);
       if (iifeBody) {
@@ -81,7 +59,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * In ESM5 there is no "class" so the constructor that we want is actually the declaration
    * function itself.
    */
-  protected getConstructorParameterDeclarations(classSymbol: ts.Symbol) {
+  protected getConstructorParameterDeclarations(classSymbol: ts.Symbol): ts.ParameterDeclaration[] {
     const constructor = classSymbol.valueDeclaration as ts.FunctionDeclaration;
     if (constructor && constructor.parameters) {
       return Array.from(constructor.parameters);
@@ -103,7 +81,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * ]; };
    * ```
    */
-  protected getConstructorDecorators(classSymbol: ts.Symbol) {
+  protected getConstructorDecorators(classSymbol: ts.Symbol): (Map<string, ts.Expression>|null)[] {
     if (classSymbol.exports && classSymbol.exports.has(CONSTRUCTOR_PARAMS)) {
       const paramDecoratorsProperty =
           getPropertyValueFromSymbol(classSymbol.exports.get(CONSTRUCTOR_PARAMS) !);
@@ -138,7 +116,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
 }
 
 
-function getIifeBody(declaration: ts.VariableDeclaration) {
+function getIifeBody(declaration: ts.VariableDeclaration): ts.Block|undefined {
   if (declaration.initializer && ts.isParenthesizedExpression(declaration.initializer)) {
     const call = declaration.initializer;
     if (ts.isCallExpression(call.expression) &&
@@ -148,7 +126,7 @@ function getIifeBody(declaration: ts.VariableDeclaration) {
   }
 }
 
-function getReturnIdentifier(body: ts.Block) {
+function getReturnIdentifier(body: ts.Block): ts.Identifier|undefined {
   const returnStatement = getReturnStatement(body);
   if (returnStatement && returnStatement.expression &&
       ts.isIdentifier(returnStatement.expression)) {
@@ -156,7 +134,6 @@ function getReturnIdentifier(body: ts.Block) {
   }
 }
 
-function getReturnStatement(body: ts.Block) {
-  return body.statements.find(statement => ts.isReturnStatement(statement)) as ts.ReturnStatement |
-      undefined;
+function getReturnStatement(body: ts.Block): ts.ReturnStatement|undefined {
+  return body.statements.find(ts.isReturnStatement);
 }

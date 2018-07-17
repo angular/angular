@@ -9,8 +9,8 @@
 import * as ts from 'typescript';
 
 import {ClassMember, ClassMemberKind, Decorator, Parameter} from '../../../ngtsc/host';
-import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/metadata/src/reflector';
-
+import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/metadata';
+import {getNameText} from '../utils';
 import {NgccReflectionHost} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
@@ -71,10 +71,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
         const decoratorsIdentifier = decoratorsSymbol.valueDeclaration;
 
         if (decoratorsIdentifier && decoratorsIdentifier.parent) {
-          // AST of the array of decorator values
-          const decoratorsArray =
-              (decoratorsIdentifier.parent as ts.AssignmentExpression<ts.EqualsToken>).right;
-          return this.reflectDecorators(decoratorsArray);
+          if (ts.isBinaryExpression(decoratorsIdentifier.parent)) {
+            // AST of the array of decorator values
+            const decoratorsArray = decoratorsIdentifier.parent.right;
+            return this.reflectDecorators(decoratorsArray);
+          }
         }
       }
     }
@@ -179,7 +180,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
             null;
         const type = info && info.get('type') || null;
         const nameNode = node.name;
-        parameters.push({name: nameNode.getText(), nameNode, type, decorators});
+        parameters.push({name: getNameText(nameNode), nameNode, type, decorators});
       });
       return parameters;
     }
@@ -193,11 +194,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * a "class" or has no symbol.
    */
   getClassSymbol(declaration: ts.Declaration): ts.Symbol|undefined {
-    if (ts.isClassDeclaration(declaration)) {
-      if (declaration.name) {
-        return this.checker.getSymbolAtLocation(declaration.name);
-      }
-    }
+    return ts.isClassDeclaration(declaration) ?
+        declaration.name && this.checker.getSymbolAtLocation(declaration.name) :
+        undefined;
   }
 
   /**
@@ -246,7 +245,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
           const typeIdentifier = decorator.get('type');
           if (typeIdentifier && ts.isIdentifier(typeIdentifier)) {
             decorators.push({
-              name: typeIdentifier.getText(),
+              name: typeIdentifier.text,
               import: this.getImportOfIdentifier(typeIdentifier), node,
               args: getDecoratorArgs(node),
             });
@@ -265,9 +264,9 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     let nameNode: ts.Identifier|null = null;
     let type = null;
 
-    const node =
-        symbol.valueDeclaration || symbol.declarations && symbol.declarations[0] as ts.ClassElement;
-    if (!node) {
+
+    const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
+    if (!node || !ts.isClassElement(node)) {
       return null;
     }
 
@@ -281,13 +280,12 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       kind = ClassMemberKind.Setter;
     }
 
-    if (isStatic) {
-      name = (node as ts.PropertyAccessExpression).name.text;
-      value = symbol.flags & ts.SymbolFlags.Property ? (node.parent as ts.BinaryExpression).right :
-                                                       null;
+    if (isStatic && isPropertyAccess(node)) {
+      name = node.name.text;
+      value = symbol.flags & ts.SymbolFlags.Property ? node.parent.right : null;
     } else if (isThisAssignment(node)) {
       kind = ClassMemberKind.Property;
-      name = (node.left as ts.PropertyAccessExpression).name.text;
+      name = node.left.name.text;
       value = node.right;
       isStatic = false;
     } else if (ts.isConstructorDeclaration(node)) {
@@ -310,7 +308,8 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
       }
     }
 
-
+    // If we have still not determined if this is a static or instance member then
+    // look for the `static` keyword on the declaration
     if (isStatic === undefined) {
       isStatic = node.modifiers !== undefined &&
           node.modifiers.some(mod => mod.kind === ts.SyntaxKind.StaticKeyword);
@@ -358,7 +357,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * ];
    * ```
    */
-  protected getConstructorDecorators(classSymbol: ts.Symbol) {
+  protected getConstructorDecorators(classSymbol: ts.Symbol): (Map<string, ts.Expression>|null)[] {
     if (classSymbol.exports && classSymbol.exports.has(CONSTRUCTOR_PARAMS)) {
       const paramDecoratorsProperty =
           getPropertyValueFromSymbol(classSymbol.exports.get(CONSTRUCTOR_PARAMS) !);
@@ -377,38 +376,41 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 /**
  * The arguments of a decorator are held in the `args` property of its declaration object.
  */
-function getDecoratorArgs(node: ts.ObjectLiteralExpression) {
+function getDecoratorArgs(node: ts.ObjectLiteralExpression): ts.Expression[] {
   const argsProperty = node.properties.filter(ts.isPropertyAssignment)
-                           .find(property => property.name.getText() === 'args');
+                           .find(property => getNameText(property.name) === 'args');
   const argsExpression = argsProperty && argsProperty.initializer;
-  if (argsExpression && ts.isArrayLiteralExpression(argsExpression)) {
-    return Array.from(argsExpression.elements);
-  } else {
-    return [];
-  }
+  return argsExpression && ts.isArrayLiteralExpression(argsExpression) ?
+      Array.from(argsExpression.elements) :
+      [];
 }
 
 /**
  * Helper method to extract the value of a property given the property's "symbol",
  * which is actually the symbol of the identifier of the property.
  */
-export function getPropertyValueFromSymbol(propSymbol: ts.Symbol) {
+export function getPropertyValueFromSymbol(propSymbol: ts.Symbol): ts.Expression|undefined {
   const propIdentifier = propSymbol.valueDeclaration;
-  if (propIdentifier && propIdentifier.parent) {
-    return (propIdentifier.parent as ts.AssignmentExpression<ts.EqualsToken>).right;
-  }
+  const parent = propIdentifier && propIdentifier.parent;
+  return parent && ts.isBinaryExpression(parent) ? parent.right : undefined;
 }
 
 function removeFromMap<T>(map: Map<string, T>, key: ts.__String): T|undefined {
   const mapKey = key as string;
   const value = map.get(mapKey);
-  if (value) {
+  if (value !== undefined) {
     map.delete(mapKey);
   }
   return value;
 }
 
-function isThisAssignment(node: ts.Declaration): node is ts.BinaryExpression {
+function isPropertyAccess(node: ts.Node): node is ts.PropertyAccessExpression&
+    {parent: ts.BinaryExpression} {
+  return !!node.parent && ts.isBinaryExpression(node.parent) && ts.isPropertyAccessExpression(node);
+}
+
+function isThisAssignment(node: ts.Declaration): node is ts.BinaryExpression&
+    {left: ts.PropertyAccessExpression} {
   return ts.isBinaryExpression(node) && ts.isPropertyAccessExpression(node.left) &&
       node.left.expression.kind === ts.SyntaxKind.ThisKeyword;
 }
