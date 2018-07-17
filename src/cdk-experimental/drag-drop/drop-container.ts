@@ -9,7 +9,6 @@
 import {InjectionToken, QueryList} from '@angular/core';
 import {CdkDrag} from './drag';
 
-/** @docs-private */
 export interface CdkDropContainer<T = any> {
   /** Arbitrary data to attach to all events emitted by this container. */
   data: T;
@@ -53,6 +52,5 @@ export interface CdkDropContainer<T = any> {
 /**
  * Injection token that is used to provide a CdkDrop instance to CdkDrag.
  * Used for avoiding circular imports.
- * @docs-private
  */
 export const CDK_DROP_CONTAINER = new InjectionToken<CdkDropContainer>('CDK_DROP_CONTAINER');

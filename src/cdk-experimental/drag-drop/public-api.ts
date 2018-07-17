@@ -7,6 +7,7 @@
  */
 
 export * from './drop';
+export * from './drop-container';
 export * from './drag';
 export * from './drag-handle';
 export * from './drag-events';
