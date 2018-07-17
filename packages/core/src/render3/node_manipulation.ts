@@ -14,7 +14,7 @@ import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection'
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {stringify} from './util';
+import {readElementValue, stringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 
@@ -32,7 +32,7 @@ export function getNextLNode(node: LNode): LNode|null {
 export function getChildLNode(node: LNode): LNode|null {
   if (node.tNode.child) {
     const viewData = node.tNode.type === TNodeType.View ? node.data as LViewData : node.view;
-    return viewData[node.tNode.child.index];
+    return readElementValue(viewData[node.tNode.child.index]);
   }
   return null;
 }
@@ -50,7 +50,7 @@ export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNo
     return containerHostIndex === -1 ? null : node.view[containerHostIndex].dynamicLContainerNode;
   }
   const parent = node.tNode.parent;
-  return parent ? node.view[parent.index] : node.view[HOST_NODE];
+  return readElementValue(parent ? node.view[parent.index] : node.view[HOST_NODE]);
 }
 
 const enum WalkLNodeTreeAction {
@@ -463,7 +463,7 @@ function removeListeners(viewData: LViewData): void {
     for (let i = 0; i < cleanup.length - 1; i += 2) {
       if (typeof cleanup[i] === 'string') {
         // This is a listener with the native renderer
-        const native = viewData[cleanup[i + 1]].native;
+        const native = readElementValue(viewData[cleanup[i + 1]]).native;
         const listener = viewData[CLEANUP] ![cleanup[i + 2]];
         native.removeEventListener(cleanup[i], listener, cleanup[i + 3]);
         i += 2;

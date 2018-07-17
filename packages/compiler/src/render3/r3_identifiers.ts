@@ -33,13 +33,11 @@ export class Identifiers {
 
   static elementAttribute: o.ExternalReference = {name: 'ɵa', moduleName: CORE};
 
-  static elementClass: o.ExternalReference = {name: 'ɵk', moduleName: CORE};
-
-  static elementClassNamed: o.ExternalReference = {name: 'ɵkn', moduleName: CORE};
+  static elementClassProp: o.ExternalReference = {name: 'ɵcp', moduleName: CORE};
 
   static elementStyling: o.ExternalReference = {name: 'ɵs', moduleName: CORE};
 
-  static elementStyle: o.ExternalReference = {name: 'ɵsm', moduleName: CORE};
+  static elementStylingMap: o.ExternalReference = {name: 'ɵsm', moduleName: CORE};
 
   static elementStyleProp: o.ExternalReference = {name: 'ɵsp', moduleName: CORE};
 

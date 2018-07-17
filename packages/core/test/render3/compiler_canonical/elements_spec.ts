@@ -15,7 +15,6 @@ import {ComponentDefInternal, InitialStylingFlags} from '../../../src/render3/in
 import {ComponentFixture, renderComponent, toHtml} from '../render_util';
 
 
-
 /// See: `normative.md`
 describe('elements', () => {
   // Saving type as $any$, etc to simplify testing for compiler, as types aren't saved
@@ -271,6 +270,7 @@ describe('elements', () => {
     });
 
     it('should bind to a specific class', () => {
+      const c1: (string | InitialStylingFlags | boolean)[] = ['foo'];
       type $MyComponent$ = MyComponent;
 
       @Component({selector: 'my-component', template: `<div [class.foo]="someFlag"></div>`})
@@ -283,10 +283,13 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'div');
+              $r3$.ɵE(0, 'div');
+              $r3$.ɵs(null, c1);
+              $r3$.ɵe();
             }
             if (rf & 2) {
-              $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someFlag));
+              $r3$.ɵcp(0, 0, ctx.someFlag);
+              $r3$.ɵsa(0);
             }
           }
         });
@@ -320,13 +323,13 @@ describe('elements', () => {
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
               $r3$.ɵE(0, 'div');
-              $r3$.ɵs(1, c0);
+              $r3$.ɵs(c0);
               $r3$.ɵe();
             }
             if (rf & 2) {
-              $r3$.ɵsp(1, 0, ctx.someColor);
-              $r3$.ɵsp(1, 1, ctx.someWidth, 'px');
-              $r3$.ɵsa(1);
+              $r3$.ɵsp(0, 0, ctx.someColor);
+              $r3$.ɵsp(0, 1, ctx.someWidth, 'px');
+              $r3$.ɵsa(0);
             }
           }
         });
@@ -353,7 +356,9 @@ describe('elements', () => {
     it('should bind to many and keep order', () => {
       type $MyComponent$ = MyComponent;
 
-      const c0 = ['color', InitialStylingFlags.INITIAL_STYLES, 'color', 'red'];
+      const c0 = ['color', InitialStylingFlags.VALUES_MODE, 'color', 'red'];
+      const c1 = ['foo'];
+
       @Component({
         selector: 'my-component',
         template:
@@ -369,12 +374,13 @@ describe('elements', () => {
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
               $r3$.ɵE(0, 'div');
-              $r3$.ɵs(1, c0);
+              $r3$.ɵs(c0, c1);
               $r3$.ɵe();
             }
             if (rf & 2) {
               $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someString + 1));
-              $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someString == 'initial'));
+              $r3$.ɵcp(0, 0, ctx.someString == 'initial');
+              $r3$.ɵsa(0);
             }
           }
         });
@@ -406,13 +412,12 @@ describe('elements', () => {
           template: function StyleComponent_Template(rf: $RenderFlags$, ctx: $StyleComponent$) {
             if (rf & 1) {
               $r3$.ɵE(0, 'div');
-              $r3$.ɵs(1);
+              $r3$.ɵs();
               $r3$.ɵe();
             }
             if (rf & 2) {
-              $r3$.ɵk(0, $r3$.ɵb(ctx.classExp));
-              $r3$.ɵsm(1, ctx.styleExp);
-              $r3$.ɵsa(1);
+              $r3$.ɵsm(0, ctx.styleExp, ctx.classExp);
+              $r3$.ɵsa(0);
             }
           }
         });

@@ -120,6 +120,9 @@
     "name": "RecordViewTuple"
   },
   {
+    "name": "RendererStyleFlags3"
+  },
+  {
     "name": "SANITIZER"
   },
   {
@@ -207,6 +210,15 @@
     "name": "_c16"
   },
   {
+    "name": "_c17"
+  },
+  {
+    "name": "_c18"
+  },
+  {
+    "name": "_c19"
+  },
+  {
     "name": "_c2"
   },
   {
@@ -259,6 +271,9 @@
   },
   {
     "name": "addToViewTree"
+  },
+  {
+    "name": "allocStylingContext"
   },
   {
     "name": "appendChild"
@@ -333,6 +348,9 @@
     "name": "createRootContext"
   },
   {
+    "name": "createStylingContextTemplate"
+  },
+  {
     "name": "createTNode"
   },
   {
@@ -343,6 +361,9 @@
   },
   {
     "name": "createViewQuery"
+  },
+  {
+    "name": "currentElementNode"
   },
   {
     "name": "defineComponent"
@@ -378,7 +399,7 @@
     "name": "domRendererFactory3"
   },
   {
-    "name": "elementClassNamed"
+    "name": "elementClassProp"
   },
   {
     "name": "elementEnd"
@@ -388,6 +409,12 @@
   },
   {
     "name": "elementStart"
+  },
+  {
+    "name": "elementStyling"
+  },
+  {
+    "name": "elementStylingApply"
   },
   {
     "name": "enterView"
@@ -447,7 +474,19 @@
     "name": "getCurrentSanitizer"
   },
   {
+    "name": "getInitialIndex"
+  },
+  {
+    "name": "getInitialValue"
+  },
+  {
     "name": "getLViewChild"
+  },
+  {
+    "name": "getMultiOrSingleIndex"
+  },
+  {
+    "name": "getMultiStartIndex"
   },
   {
     "name": "getNextLNode"
@@ -480,10 +519,16 @@
     "name": "getParentState"
   },
   {
+    "name": "getPointers"
+  },
+  {
     "name": "getPreviousIndex"
   },
   {
     "name": "getPreviousOrParentNode"
+  },
+  {
+    "name": "getProp"
   },
   {
     "name": "getRenderFlags"
@@ -493,6 +538,9 @@
   },
   {
     "name": "getRootView"
+  },
+  {
+    "name": "getStylingContext"
   },
   {
     "name": "getSymbolIterator"
@@ -505,6 +553,9 @@
   },
   {
     "name": "getTypeNameForDebugging$1"
+  },
+  {
+    "name": "getValue"
   },
   {
     "name": "hostElement"
@@ -537,6 +588,9 @@
     "name": "invertObject"
   },
   {
+    "name": "isContextDirty"
+  },
+  {
     "name": "isCssClassMatching"
   },
   {
@@ -544,6 +598,9 @@
   },
   {
     "name": "isDifferent"
+  },
+  {
+    "name": "isDirty"
   },
   {
     "name": "isJsObject"
@@ -576,6 +633,12 @@
     "name": "load"
   },
   {
+    "name": "loadElement"
+  },
+  {
+    "name": "loadElementInternal"
+  },
+  {
     "name": "loadInternal"
   },
   {
@@ -603,6 +666,9 @@
     "name": "notImplemented"
   },
   {
+    "name": "pointers"
+  },
+  {
     "name": "projectionNodeStack"
   },
   {
@@ -625,6 +691,9 @@
   },
   {
     "name": "queueViewHooks"
+  },
+  {
+    "name": "readElementValue"
   },
   {
     "name": "refreshChildComponents"
@@ -654,6 +723,9 @@
     "name": "renderEmbeddedTemplate"
   },
   {
+    "name": "renderStyling"
+  },
+  {
     "name": "resetApplicationState"
   },
   {
@@ -678,7 +750,19 @@
     "name": "searchMatchesQueuedForCreation"
   },
   {
+    "name": "setClass"
+  },
+  {
+    "name": "setContextDirty"
+  },
+  {
     "name": "setCurrentInjector"
+  },
+  {
+    "name": "setDirty"
+  },
+  {
+    "name": "setFlag"
   },
   {
     "name": "setHostBindings"
@@ -690,7 +774,16 @@
     "name": "setInputsFromAttrs"
   },
   {
+    "name": "setProp"
+  },
+  {
+    "name": "setStyle"
+  },
+  {
     "name": "setUpAttributes"
+  },
+  {
+    "name": "setValue"
   },
   {
     "name": "storeCleanupFn"
@@ -726,7 +819,16 @@
     "name": "trackByIdentity"
   },
   {
+    "name": "updateClassProp"
+  },
+  {
+    "name": "updateStyleProp"
+  },
+  {
     "name": "updateViewQuery"
+  },
+  {
+    "name": "valueExists"
   },
   {
     "name": "viewAttached"

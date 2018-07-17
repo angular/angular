@@ -299,8 +299,6 @@ export type PipeTypeList =
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
 
-// Note this will expand once `class` is introduced to styling
 export const enum InitialStylingFlags {
-  /** Mode for matching initial style values */
-  INITIAL_STYLES = 0b00,
+  VALUES_MODE = 0b1,
 }

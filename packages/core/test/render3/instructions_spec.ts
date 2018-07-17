@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 
 import {RenderFlags, directiveInject} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
-import {bind, container, element, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleProp, elementStyling, elementStylingApply, interpolation1, renderTemplate, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, element, elementAttribute, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, interpolation1, renderTemplate, text, textBinding} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {AttributeMarker, LElementNode, LNode} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -23,13 +23,13 @@ import {ComponentFixture, TemplateFixture} from './render_util';
 describe('instructions', () => {
   function createAnchor() {
     elementStart(0, 'a');
-    elementStyling(1);
+    elementStyling();
     elementEnd();
   }
 
   function createDiv(initialStyles?: (string | number)[]) {
     elementStart(0, 'div');
-    elementStyling(1, initialStyles && Array.isArray(initialStyles) ? initialStyles : null);
+    elementStyling(initialStyles && Array.isArray(initialStyles) ? initialStyles : null);
     elementEnd();
   }
 
@@ -193,15 +193,15 @@ describe('instructions', () => {
     it('should use sanitizer function', () => {
       const t = new TemplateFixture(() => { return createDiv(['background-image']); });
       t.update(() => {
-        elementStyleProp(1, 0, 'url("http://server")', sanitizeStyle);
-        elementStylingApply(1);
+        elementStyleProp(0, 0, 'url("http://server")', sanitizeStyle);
+        elementStylingApply(0);
       });
       // nothing is set because sanitizer suppresses it.
       expect(t.html).toEqual('<div></div>');
 
       t.update(() => {
-        elementStyleProp(1, 0, bypassSanitizationTrustStyle('url("http://server")'), sanitizeStyle);
-        elementStylingApply(1);
+        elementStyleProp(0, 0, bypassSanitizationTrustStyle('url("http://server")'), sanitizeStyle);
+        elementStylingApply(0);
       });
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
           .toEqual('url("http://server")');
@@ -211,25 +211,33 @@ describe('instructions', () => {
   describe('elementStyleMap', () => {
     function createDivWithStyle() {
       elementStart(0, 'div');
-      elementStyling(1, ['height', InitialStylingFlags.INITIAL_STYLES, 'height', '10px']);
+      elementStyling(['height', InitialStylingFlags.VALUES_MODE, 'height', '10px']);
       elementEnd();
     }
 
     it('should add style', () => {
       const fixture = new TemplateFixture(createDivWithStyle);
       fixture.update(() => {
-        elementStyle(1, {'background-color': 'red'});
-        elementStylingApply(1);
+        elementStylingMap(0, {'background-color': 'red'});
+        elementStylingApply(0);
       });
       expect(fixture.html).toEqual('<div style="height: 10px; background-color: red;"></div>');
     });
   });
 
   describe('elementClass', () => {
+    function createDivWithStyling() {
+      elementStart(0, 'div');
+      elementStyling();
+      elementEnd();
+    }
 
     it('should add class', () => {
-      const fixture = new TemplateFixture(createDiv);
-      fixture.update(() => elementClass(0, 'multiple classes'));
+      const fixture = new TemplateFixture(createDivWithStyling);
+      fixture.update(() => {
+        elementStylingMap(0, null, 'multiple classes');
+        elementStylingApply(0);
+      });
       expect(fixture.html).toEqual('<div class="multiple classes"></div>');
     });
   });
