@@ -22,7 +22,7 @@ import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LEleme
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_PARENT, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
@@ -253,11 +253,13 @@ export function leaveView(newView: LViewData, creationOnly?: boolean): void {
 /**
  * Refreshes the view, executing the following steps in that order:
  * triggers init hooks, refreshes dynamic embedded views, triggers content hooks, sets host
- * bindings,
- * refreshes child components.
+ * bindings, refreshes child components.
  * Note: view hooks are triggered later when leaving the view.
  */
-function refreshView() {
+function refreshDescendantViews() {
+  // This needs to be set before children are processed to support recursive components
+  tView.firstTemplatePass = firstTemplatePass = false;
+
   if (!checkNoChangesMode) {
     executeInitHooks(viewData, tView, creationMode);
   }
@@ -265,9 +267,6 @@ function refreshView() {
   if (!checkNoChangesMode) {
     executeHooks(directives !, tView.contentHooks, tView.contentCheckHooks, creationMode);
   }
-
-  // This needs to be set before children are processed to support recursive components
-  tView.firstTemplatePass = firstTemplatePass = false;
 
   setHostBindings(tView.hostBindings);
   refreshContentQueries(tView);
@@ -302,8 +301,8 @@ function refreshContentQueries(tView: TView): void {
 /** Refreshes child components in the current view. */
 function refreshChildComponents(components: number[] | null): void {
   if (components != null) {
-    for (let i = 0; i < components.length; i += 2) {
-      componentRefresh(components[i], components[i + 1]);
+    for (let i = 0; i < components.length; i++) {
+      componentRefresh(components[i]);
     }
   }
 }
@@ -335,6 +334,7 @@ export function createLViewData<T>(
     null,                                                                        // tail
     -1,                                                                          // containerIndex
     null,                                                                        // contentQueries
+    null  // declarationParent
   ];
 }
 
@@ -500,7 +500,8 @@ export function renderTemplate<T>(
  * Such lViewNode will then be renderer with renderEmbeddedTemplate() (see below).
  */
 export function createEmbeddedViewNode<T>(
-    tView: TView, context: T, renderer: Renderer3, queries?: LQueries | null): LViewNode {
+    tView: TView, context: T, declarationParent: LViewData, renderer: Renderer3,
+    queries?: LQueries | null): LViewNode {
   const _isParent = isParent;
   const _previousOrParentNode = previousOrParentNode;
   isParent = true;
@@ -508,6 +509,8 @@ export function createEmbeddedViewNode<T>(
 
   const lView =
       createLViewData(renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer());
+  lView[DECLARATION_PARENT] = declarationParent;
+
   if (queries) {
     lView[QUERIES] = queries.createView();
   }
@@ -544,9 +547,9 @@ export function renderEmbeddedTemplate<T>(
 
       oldView = enterView(viewNode.data !, viewNode);
       namespaceHTML();
-      tView.template !(rf, context);
+      callTemplateWithContexts(rf, context, tView.template !, viewNode.data ![DECLARATION_PARENT] !);
       if (rf & RenderFlags.Update) {
-        refreshView();
+        refreshDescendantViews();
       } else {
         viewNode.data ![TVIEW].firstTemplatePass = firstTemplatePass = false;
       }
@@ -562,6 +565,99 @@ export function renderEmbeddedTemplate<T>(
   return viewNode;
 }
 
+/**
+ * This function calls the template function of a dynamically created view with
+ * all of its declaration parent contexts (up the view tree) until it reaches the
+ * component boundary.
+ *
+ * Example:
+ *
+ * AppComponent template:
+ *  <ul *ngFor="let list of lists">
+ *      <li *ngFor="let item of list"> {{ item }} </li>
+ *  </ul>
+ *
+ * function AppComponentTemplate(rf, ctx) {
+ *  // instructions
+ *  function ulTemplate(rf, ulCtx, appCtx) {...}
+ *  function liTemplate(rf, liCtx, ulCtx, appCtx) {...}
+ * }
+ *
+ * The ul view's template must be called with its own context and its declaration
+ * parent, AppComponent. The li view's template must be called with its own context, its
+ * parent (the ul), and the ul's parent (AppComponent).
+ *
+ * Note that a declaration parent is NOT always the same as the insertion parent. Templates
+ * can be declared in different views than they are used.
+ *
+ * @param rf The RenderFlags for this template invocation
+ * @param context The context for this template
+ * @param template The template function to call
+ * @param parent1 The declaration parent of the dynamic view
+ */
+function callTemplateWithContexts(
+    rf: RenderFlags, context: any, template: ComponentTemplate<any>, parent1: LViewData): void {
+  const parent2 = parent1[DECLARATION_PARENT];
+  // Calling a function with extra arguments has a VM cost, so only call with necessary args
+  if (!parent2) return template(rf, context, parent1[CONTEXT]);
+
+  const parent3 = parent2[DECLARATION_PARENT];
+  if (!parent3) return template(rf, context, parent1[CONTEXT], parent2[CONTEXT]);
+
+  const parent4 = parent3[DECLARATION_PARENT];
+  if (!parent4) {
+    return template(rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT]);
+  }
+
+  const parent5 = parent4[DECLARATION_PARENT];
+  if (!parent5) {
+    return template(
+        rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT]);
+  }
+
+  const parent6 = parent5[DECLARATION_PARENT];
+  if (!parent6) {
+    return template(
+        rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT],
+        parent5[CONTEXT]);
+  }
+
+  const parent7 = parent6[DECLARATION_PARENT];
+  if (!parent7) {
+    return template(
+        rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT],
+        parent5[CONTEXT], parent6[CONTEXT]);
+  }
+
+  const parent8 = parent7[DECLARATION_PARENT];
+  if (!parent8) {
+    return template(
+        rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT],
+        parent5[CONTEXT], parent6[CONTEXT], parent7[CONTEXT]);
+  }
+
+  const parent9 = parent8[DECLARATION_PARENT];
+  if (!parent9) {
+    return template(
+        rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT],
+        parent5[CONTEXT], parent6[CONTEXT], parent7[CONTEXT], parent8[CONTEXT]);
+  }
+
+  // We support up to 8 nesting levels in embedded views before we give up and call apply()
+  const contexts = [
+    parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT], parent5[CONTEXT],
+    parent6[CONTEXT], parent7[CONTEXT], parent8[CONTEXT], parent9[CONTEXT]
+  ];
+
+  let currentView: LViewData = parent9;
+  while (currentView[DECLARATION_PARENT]) {
+    contexts.push(currentView[DECLARATION_PARENT] ![CONTEXT]);
+    currentView = currentView[DECLARATION_PARENT] !;
+  }
+
+  tView.template !(rf, context, ...contexts);
+}
+
 export function renderComponentOrTemplate<T>(
     node: LElementNode, hostView: LViewData, componentOrContext: T,
     template?: ComponentTemplate<T>) {
@@ -573,14 +669,14 @@ export function renderComponentOrTemplate<T>(
     if (template) {
       namespaceHTML();
       template(getRenderFlags(hostView), componentOrContext !);
-      refreshView();
+      refreshDescendantViews();
     } else {
       executeInitAndContentHooks();
 
       // Element was stored at 0 in data and directive was stored at 0 in directives
       // in renderComponent()
       setHostBindings(_ROOT_DIRECTIVE_INDICES);
-      componentRefresh(0, HEADER_OFFSET);
+      componentRefresh(HEADER_OFFSET);
     }
   } finally {
     if (rendererFactory.end) {
@@ -770,9 +866,9 @@ export function resolveDirective(
 }
 
 /** Stores index of component's host element so it will be queued for view refresh during CD. */
-function queueComponentIndexForCheck(dirIndex: number): void {
+function queueComponentIndexForCheck(): void {
   if (firstTemplatePass) {
-    (tView.components || (tView.components = [])).push(dirIndex, viewData.length - 1);
+    (tView.components || (tView.components = [])).push(viewData.length - 1);
   }
 }
 
@@ -1543,7 +1639,7 @@ function addComponentLogic<T>(
       viewData, previousOrParentNode.tNode.index as number,
       createLViewData(
           rendererFactory.createRenderer(previousOrParentNode.native as RElement, def.rendererType),
-          tView, null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
+          tView, instance, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways,
           getCurrentSanitizer()));
 
   // We need to set the host node/data here because when the component LNode was created,
@@ -1553,7 +1649,7 @@ function addComponentLogic<T>(
 
   initChangeDetectorIfExisting(previousOrParentNode.nodeInjector, instance, componentView);
 
-  if (firstTemplatePass) queueComponentIndexForCheck(directiveIndex);
+  if (firstTemplatePass) queueComponentIndexForCheck();
 }
 
 /**
@@ -1914,7 +2010,7 @@ function getOrCreateEmbeddedTView(viewIndex: number, parent: LContainerNode): TV
 
 /** Marks the end of an embedded view. */
 export function embeddedViewEnd(): void {
-  refreshView();
+  refreshDescendantViews();
   isParent = false;
   previousOrParentNode = viewData[HOST_NODE] as LViewNode;
   leaveView(viewData[PARENT] !);
@@ -1927,10 +2023,9 @@ export function embeddedViewEnd(): void {
 /**
  * Refreshes components by entering the component view and processing its bindings, queries, etc.
  *
- * @param directiveIndex Directive index in LViewData[DIRECTIVES]
  * @param adjustedElementIndex  Element index in LViewData[] (adjusted for HEADER_OFFSET)
  */
-export function componentRefresh<T>(directiveIndex: number, adjustedElementIndex: number): void {
+export function componentRefresh<T>(adjustedElementIndex: number): void {
   ngDevMode && assertDataInRange(adjustedElementIndex);
   const element = viewData[adjustedElementIndex] as LElementNode;
   ngDevMode && assertNodeType(element, TNodeType.Element);
@@ -1940,8 +2035,7 @@ export function componentRefresh<T>(directiveIndex: number, adjustedElementIndex
 
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
-    ngDevMode && assertDataInRange(directiveIndex, directives !);
-    detectChangesInternal(hostView, element, directives ![directiveIndex]);
+    detectChangesInternal(hostView, element, hostView[CONTEXT]);
   }
 }
 
@@ -2267,7 +2361,7 @@ export function detectChangesInternal<T>(
     namespaceHTML();
     createViewQuery(viewQuery, hostView[FLAGS], component);
     template(getRenderFlags(hostView), component);
-    refreshView();
+    refreshDescendantViews();
     updateViewQuery(viewQuery, component);
   } finally {
     leaveView(oldView);

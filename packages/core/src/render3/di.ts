@@ -24,7 +24,7 @@ import {LInjector} from './interfaces/injector';
 import {AttributeMarker, LContainerNode, LElementNode, LNode, LViewNode, TContainerNode, TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {LQueries, QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
-import {DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
+import {DECLARATION_PARENT, DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getChildLNode, getParentLNode, insertView, removeView} from './node_manipulation';
 import {ViewRef} from './view_ref';
@@ -728,7 +728,7 @@ export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine.TemplateRef
     const hostTNode = hostNode.tNode;
     ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
     di.templateRef = new TemplateRef<any>(
-        getOrCreateElementRef(di), hostTNode.tViews as TView, getRenderer(),
+        hostNode.view, getOrCreateElementRef(di), hostTNode.tViews as TView, getRenderer(),
         hostNode.data[QUERIES]);
   }
   return di.templateRef;
@@ -738,14 +738,15 @@ class TemplateRef<T> implements viewEngine.TemplateRef<T> {
   readonly elementRef: viewEngine.ElementRef;
 
   constructor(
-      elementRef: viewEngine.ElementRef, private _tView: TView, private _renderer: Renderer3,
+      private _declarationParentView: LViewData, elementRef: viewEngine.ElementRef, private _tView: TView, private _renderer: Renderer3,
       private _queries: LQueries|null) {
     this.elementRef = elementRef;
   }
 
   createEmbeddedView(context: T, containerNode?: LContainerNode, index?: number):
       viewEngine.EmbeddedViewRef<T> {
-    const viewNode = createEmbeddedViewNode(this._tView, context, this._renderer, this._queries);
+    const viewNode = createEmbeddedViewNode(
+        this._tView, context, this._declarationParentView, this._renderer, this._queries);
     if (containerNode) {
       insertView(containerNode, viewNode, index !);
     }
