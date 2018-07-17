@@ -71,7 +71,11 @@ export function assertDataInRangeInternal(index: number, arr: any[]) {
   assertLessThan(index, arr ? arr.length : 0, 'index expected to be a valid data index');
 }
 
-/** Retrieves a value from current `viewData`. */
+/** Retrieves an element value from the provided `viewData`.
+  *
+  * Elements that are read may be wrapped in a style context,
+  * therefore reading the value may involve unwrapping that.
+  */
 export function loadElementInternal(index: number, arr: LViewData): LElementNode {
   const value = loadInternal<LElementNode>(index, arr);
   return readElementValue(value);

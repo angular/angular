@@ -1414,12 +1414,10 @@ export function elementStyleProp<T>(
  *        index.)
  * @param styles A key/value style map of the styles that will be applied to the given element.
  *        Any missing styles (that have already been applied to the element beforehand) will be
- * removed
- *        (unset) from the element's styling.
+ *        removed (unset) from the element's styling.
  * @param classes A key/value style map of CSS classes that will be added to the given element.
  *        Any missing classes (that have already been applied to the element beforehand) will be
- * removed
- *        (unset) from the element's list of CSS classes.
+ *        removed (unset) from the element's list of CSS classes.
  */
 export function elementStylingMap<T>(
     index: number, styles: {[styleName: string]: any} | null,
@@ -2540,6 +2538,15 @@ export function loadQueryList<T>(queryListIdx: number): QueryList<T> {
   return viewData[CONTENT_QUERIES] ![queryListIdx];
 }
 
+/** Retrieves a value from current `viewData`. */
+export function load<T>(index: number): T {
+  return loadInternal<T>(index, viewData);
+}
+
+export function loadElement(index: number): LElementNode {
+  return loadElementInternal(index, viewData);
+}
+
 /** Gets the current binding value and increments the binding index. */
 export function consumeBinding(): any {
   ngDevMode && assertDataInRange(viewData[BINDING_INDEX]);
@@ -2651,13 +2658,3 @@ export function _getComponentHostLElementNode<T>(component: T): LElementNode {
 
 export const CLEAN_PROMISE = _CLEAN_PROMISE;
 export const ROOT_DIRECTIVE_INDICES = _ROOT_DIRECTIVE_INDICES;
-
-/** Retrieves a value from current `viewData`. */
-export function load<T>(index: number): T {
-  return loadInternal<T>(index, viewData);
-}
-
-/** Retrieves a value from current `viewData`. */
-export function loadElement(index: number): LElementNode {
-  return loadElementInternal(index, viewData);
-}
