@@ -9,10 +9,12 @@
 import * as ts from 'typescript';
 
 import {NgccReflectionHost} from '../host/ngcc_host';
+import {getNameText, getOriginalSymbol, isDefined} from '../utils';
 
 import {FileParser} from './file_parser';
 import {ParsedClass} from './parsed_class';
 import {ParsedFile} from './parsed_file';
+
 
 
 /**
@@ -28,20 +30,19 @@ export class Esm5FileParser implements FileParser {
   parseFile(file: ts.SourceFile): ParsedFile[] {
     const moduleSymbol = this.checker.getSymbolAtLocation(file);
     const map = new Map<ts.SourceFile, ParsedFile>();
-    const getOriginalSymbol = (symbol: ts.Symbol) =>
-        ts.SymbolFlags.Alias & symbol.flags ? this.checker.getAliasedSymbol(symbol) : symbol;
     const getParsedClass = (declaration: ts.VariableDeclaration) => {
       const decorators = this.host.getDecoratorsOfDeclaration(declaration);
       if (decorators) {
-        return new ParsedClass(declaration.name.getText(), declaration, decorators);
+        return new ParsedClass(getNameText(declaration.name), declaration, decorators);
       }
     };
 
     if (moduleSymbol) {
       const classDeclarations = this.checker.getExportsOfModule(moduleSymbol)
-                                    .map(getOriginalSymbol)
+                                    .map(getOriginalSymbol(this.checker))
                                     .map(exportSymbol => exportSymbol.valueDeclaration)
-                                    .filter(isVariableDeclaration);
+                                    .filter(isDefined)
+                                    .filter(ts.isVariableDeclaration);
 
       const decoratedClasses = classDeclarations.map(getParsedClass).filter(isDefined);
 
@@ -55,13 +56,4 @@ export class Esm5FileParser implements FileParser {
     }
     return Array.from(map.values());
   }
-}
-
-function isVariableDeclaration(declaration: ts.Declaration | undefined):
-    declaration is ts.VariableDeclaration {
-  return !!declaration && ts.isVariableDeclaration(declaration);
-}
-
-function isDefined<T>(value: T | undefined): value is T {
-  return !!value;
 }

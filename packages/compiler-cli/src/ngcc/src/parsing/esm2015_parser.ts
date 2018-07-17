@@ -9,6 +9,7 @@
 import * as ts from 'typescript';
 
 import {NgccReflectionHost} from '../host/ngcc_host';
+import {getOriginalSymbol, isDefined} from '../utils';
 
 import {FileParser} from './file_parser';
 import {ParsedClass} from './parsed_class';
@@ -24,25 +25,21 @@ export class Esm2015FileParser implements FileParser {
     const map = new Map<ts.SourceFile, ParsedFile>();
     if (moduleSymbol) {
       const exportClasses = this.checker.getExportsOfModule(moduleSymbol)
-                                .map(
-                                    exportSymbol => ts.SymbolFlags.Alias & exportSymbol.flags ?
-                                        this.checker.getAliasedSymbol(exportSymbol) :
-                                        exportSymbol)
+                                .map(getOriginalSymbol(this.checker))
                                 .filter(exportSymbol => exportSymbol.flags & ts.SymbolFlags.Class);
 
-      const classDeclarations =
-          exportClasses.map(exportSymbol => exportSymbol.valueDeclaration as ts.ClassDeclaration);
-
+      const classDeclarations = exportClasses.map(exportSymbol => exportSymbol.valueDeclaration)
+                                    .filter(isDefined)
+                                    .filter(ts.isClassDeclaration);
 
       const decoratedClasses =
           classDeclarations
               .map(declaration => {
                 const decorators = this.host.getDecoratorsOfDeclaration(declaration);
-                if (decorators) {
-                  return new ParsedClass(declaration.name !.text, declaration, decorators);
-                }
+                return decorators && declaration.name &&
+                    new ParsedClass(declaration.name.text, declaration, decorators);
               })
-              .filter(decoratedClass => decoratedClass) as ParsedClass[];
+              .filter(isDefined);
 
       decoratedClasses.forEach(clazz => {
         const file = clazz.declaration.getSourceFile();

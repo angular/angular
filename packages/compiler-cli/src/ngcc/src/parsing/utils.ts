@@ -10,13 +10,12 @@ import {readFileSync} from 'fs';
 import {dirname, resolve} from 'path';
 import {find} from 'shelljs';
 
-
 /**
  * Search the `rootDirectory` and its subdirectories to find package.json files.
  * It ignores node dependencies, i.e. those under `node_modules` folders.
  * @param rootDirectory the directory in which we should search.
  */
-export function findAllPackageJsonFiles(rootDirectory: string) {
+export function findAllPackageJsonFiles(rootDirectory: string): string[] {
   // TODO(gkalpak): Investigate whether skipping `node_modules/` directories (instead of traversing
   //                them and filtering out the results later) makes a noticeable difference.
   const paths = Array.from(find(rootDirectory));
