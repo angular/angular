@@ -348,8 +348,7 @@ export abstract class AbstractControl {
   markAsTouched(opts: {onlySelf?: boolean} = {}): void {
     (this as{touched: boolean}).touched = true;
 
-    this._forEachChild(
-        (control: AbstractControl) => { control.markAsTouched({onlySelf: true}); });
+    this._forEachChild((control: AbstractControl) => { control.markAsTouched({onlySelf: true}); });
 
     if (this._parent && !opts.onlySelf) {
       this._parent._updateTouched(opts);
