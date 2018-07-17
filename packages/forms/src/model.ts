@@ -349,7 +349,7 @@ export abstract class AbstractControl {
     (this as{touched: boolean}).touched = true;
 
     this._forEachChild(
-      (control: AbstractControl) => { control.markAsUntouched({onlySelf: true}); });
+        (control: AbstractControl) => { control.markAsUntouched({onlySelf: true}); });
 
     if (this._parent && !opts.onlySelf) {
       this._parent._updateTouched(opts);

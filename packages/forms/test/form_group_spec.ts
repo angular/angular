@@ -130,7 +130,7 @@ import {of } from 'rxjs';
       it('should be true after form is marked as dirty', () => {
         g.markAsDirty();
 
-        expect(с.dirty).toEqual(true);
+        expect(c.dirty).toEqual(true);
       });
     });
 
