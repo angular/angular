@@ -74,13 +74,15 @@
 <a id="{$ method.anchor $}"></a>
 <table class="is-full-width method-table {$ cssClass $}">
   {% if method.name !== 'constructor' %}<thead><tr><th>
-    <h3>
-      {% if method.isCallMember %}<i>call signature</i>
-      {% elseif method.isNewMember %}<i>construct signature</i>
-      {% else %}{$ method.name $}()
-      {% endif %}
-    </h3>
-    {$ github.githubLinks(method, versionInfo) $}
+    <div class="with-github-links">
+      <h3>
+        {% if method.isCallMember %}<i>call signature</i>
+        {% elseif method.isNewMember %}<i>construct signature</i>
+        {% else %}{$ method.name $}()
+        {% endif %}
+      </h3>
+      {$ github.githubLinks(method, versionInfo) $}
+    </div>
   </th></tr></thead>{% endif %}
   <tbody>
     {% if method.shortDescription %}<tr>
