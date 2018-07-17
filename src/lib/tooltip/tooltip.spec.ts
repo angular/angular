@@ -54,7 +54,8 @@ describe('MatTooltip', () => {
         ScrollableTooltipDemo,
         OnPushTooltipDemo,
         DynamicTooltipsDemo,
-        TooltipOnTextFields
+        TooltipOnTextFields,
+        TooltipOnDraggableElement,
       ],
       providers: [
         {provide: Platform, useFactory: () => platform},
@@ -795,6 +796,15 @@ describe('MatTooltip', () => {
       expect(instance.textarea.nativeElement.style.userSelect).toBeFalsy();
       expect(instance.textarea.nativeElement.style.webkitUserSelect).toBeFalsy();
     });
+
+    it('should clear the `-webkit-user-drag` on draggable elements', () => {
+      const fixture = TestBed.createComponent(TooltipOnDraggableElement);
+
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.button.nativeElement.style.webkitUserDrag).toBeFalsy();
+    });
+
   });
 
 });
@@ -899,6 +909,20 @@ class TooltipOnTextFields {
   @ViewChild('input') input: ElementRef;
   @ViewChild('textarea') textarea: ElementRef;
 }
+
+@Component({
+  template: `
+    <button
+      #button
+      style="-webkit-user-drag: none;"
+      draggable="true"
+      matTooltip="Drag me"></button>
+  `,
+})
+class TooltipOnDraggableElement {
+  @ViewChild('button') button: ElementRef;
+}
+
 
 /** Asserts whether a tooltip directive has a tooltip instance. */
 function assertTooltipInstance(tooltip: MatTooltip, shouldExist: boolean): void {

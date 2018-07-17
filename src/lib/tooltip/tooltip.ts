@@ -223,6 +223,13 @@ export class MatTooltip implements OnDestroy {
       element.style.webkitUserSelect = element.style.userSelect = '';
     }
 
+    // Hammer applies `-webkit-user-drag: none` on all elements by default,
+    // which breaks the native drag&drop. If the consumer explicitly made
+    // the element draggable, clear the `-webkit-user-drag`.
+    if (element.draggable && element.style['webkitUserDrag'] === 'none') {
+      element.style['webkitUserDrag'] = '';
+    }
+
     _focusMonitor.monitor(element).pipe(takeUntil(this._destroyed)).subscribe(origin => {
       // Note that the focus monitor runs outside the Angular zone.
       if (!origin) {
