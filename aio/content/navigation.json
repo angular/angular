@@ -706,9 +706,9 @@
         {
           "url": "guide/styleguide",
           "title!": "Style Guide",
-          "title": "코딩 가이드",
+          "title": "코딩 스타일 가이드",
           "tooltip!": "Write Angular with style.",
-          "tooltip": "Angular 코딩 가이드"
+          "tooltip": "Angular 코딩 스타일 가이드"
         },
         {
           "url": "guide/glossary",

@@ -1,29 +1,46 @@
+<!--
 # Style Guide
+-->
+# 코딩 스타일 가이드
 
+<!--
 Looking for an opinionated guide to Angular syntax, conventions, and application structure?
 Step right in!
 This style guide presents preferred conventions and, as importantly, explains why.
-
+-->
+Angular 문법, 코딩 컨벤션, 애플리케이션 구조에 대한 가이드를 찾고 계신가요?
+바로 여기에 있습니다!
+이 코딩 스타일 가이드는 많은 개발자들이 선호하는 코딩 스타일을 소개하면서, 그 이유도 함께 소개합니다.
 
 
 {@a toc}
 
+<!--
 ## Style vocabulary
+-->
+## 스타일 가이드 용어 정리
 
+<!--
 Each guideline describes either a good or bad practice, and all have a consistent presentation.
 
 The wording of each guideline indicates how strong the recommendation is.
+-->
+각 가이드 라인에서는 권장하는 스타일을 소개하거나 권장하지 않는 스타일을 소개합니다.
+이 문서에서 사용하는 용어를 먼저 정리해 봅시다.
 
 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** is one that should always be followed.
 _Always_ might be a bit too strong of a word.
 Guidelines that literally should always be followed are extremely rare.
 On the other hand, you need a really unusual case for breaking a *Do* guideline.
-
+-->
+**"~하세요"**는 항상 그렇게 작성해야 하는 스타일을 의미합니다.
+_항상_ 이라는 단어가 조금 강하게 와닿을 수도 있지만, 이 문서에서 "항상"이라고 언급하는 경우는 그리 많지 않습니다.
+하지만 *"~하세요"*라고 설명하는 가이드라인을 벗어나는 경우는 거의 없을 것입니다.
 
 </div>
 
@@ -32,10 +49,12 @@ On the other hand, you need a really unusual case for breaking a *Do* guideline.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** guidelines should generally be followed.
 If you fully understand the meaning behind the guideline and have a good reason to deviate, then do so. Please strive to be consistent.
-
+-->
+**"~하는 것을 고려해보세요"**는 일반적으로 사용하는 스타일을 의미합니다.
+이 어휘가 사용된 가이드라인을 확실하게 이해하고 있지만, 꼭 그렇게 사용하지 않아도 될 이유가 있다면 해당 스타일 가이드를 지키지 않아도 됩니다. 코드의 일관성을 유지하는 것에 더 신경쓰는 것이 좋습니다.
 
 </div>
 
@@ -44,9 +63,10 @@ If you fully understand the meaning behind the guideline and have a good reason 
 <div class="s-rule avoid">
 
 
-
+<!--
 **Avoid** indicates something you should almost never do. Code examples to *avoid* have an unmistakeable red header.
-
+-->
+**"~하는 것은 피하세요"**는 되도록 피해야 하는 스타일을 의미합니다. 오해를 방지하기 위해 이 스타일은 빨간색 헤더로 표시합니다.
 
 </div>
 
@@ -55,47 +75,69 @@ If you fully understand the meaning behind the guideline and have a good reason 
 <div class="s-why">
 
 
-
+<!--
 **Why?** gives reasons for following the previous recommendations.
-
+-->
+**"왜?"**는 해당 스타일 가이드에 대한 이유를 설명합니다.
 
 </div>
 
 
 
-
+<!--
 ## File structure conventions
+-->
+## 파일 명명 규칙
 
+<!--
 Some code examples display a file that has one or more similarly named companion files.
 For example, `hero.component.ts` and `hero.component.html`.
+-->
+일부 예제에서는 파일 하나를 언급하거나, 관련된 파일을 함께 언급하는 경우가 있습니다.
+예를 들면 `hero.component.ts` 파일을 설명하면서 `hero.component.html` 파일을 설명하는 경우가 있습니다.
 
+<!--
 The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent those various files. Using this shortcut makes this guide's file structures easier to read and more terse.
-
-
+-->
+이 문서는 연관된 파일을 간단하게 표시하기 위해 `hero.component.ts|html|css|spec`라는 표현을 사용합니다.
+이 표현을 사용하면 파일 구조를 좀 더 이해하기 편할 것입니다.
 
 {@a single-responsibility}
 
 
+<!--
 ## Single responsibility
+-->
+## 단일 책임 (Single responsibility)
 
+<!--
 Apply the
 <a href="https://wikipedia.org/wiki/Single_responsibility_principle"><i>single responsibility principle</i> (SRP)</a>
 to all components, services, and other symbols.
 This helps make the app cleaner, easier to read and maintain, and more testable.
+-->
+모든 컴포넌트와 서비스, 심볼은 <a href="https://wikipedia.org/wiki/Single_responsibility_principle"><i>단일 책임 원칙(SRP)</i></a>을 준수하며 작성하세요.
+그러면 애플리케이션이 좀 더 깔끔해지고 유지보수하기도 편하며, 테스트하기도 편해집니다.
 
 {@a 01-01}
 
+<!--
 ### Rule of One
+-->
+### 첫번째 규칙
 
+<!--
 #### Style 01-01
-
+-->
+#### 스타일 01-01
 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** define one thing, such as a service or component, per file.
-
+-->
+한 파일에는 서비스나 컴포넌트와 같은 Angular 구성요소 하나만 정의**하세요.**
 
 </div>
 
@@ -104,9 +146,10 @@ This helps make the app cleaner, easier to read and maintain, and more testable.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** limiting files to 400 lines of code.
-
+-->
+한 파일에는 400줄 이하의 코드만 작성하는 것을 **고려해 보세요.**
 
 </div>
 
@@ -115,10 +158,11 @@ This helps make the app cleaner, easier to read and maintain, and more testable.
 <div class="s-why">
 
 
-
+<!--
 **Why?** One component per file makes it far easier to read, maintain, and avoid
 collisions with teams in source control.
-
+-->
+**왜?** 파일 하나에 컴포넌트를 하나만 정의하면 좀 더 읽기 편한 코드를 작성할 수 있고, 유지보수하기도 편하며, 팀 단위로 개발할 때 코드 충돌이 발생하는 것도 피할 수 있습니다.
 
 </div>
 
@@ -127,8 +171,10 @@ collisions with teams in source control.
 <div class="s-why">
 
 
-
+<!--
 **Why?** One component per file avoids hidden bugs that often arise when combining components in a file where they may share variables, create unwanted closures, or unwanted coupling with dependencies.
+-->
+**왜?** 한 파일에 컴포넌트를 여러개 정의하면 컴포넌트끼리 연관된 코드나 함께 공유하는 변수, 의도치 않게 사용된 클로저 때문에 버그가 발생할 수도 있습니다.
 
 
 </div>
@@ -138,29 +184,36 @@ collisions with teams in source control.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** A single component can be the default export for its file which facilitates lazy loading with the router.
+-->
+**왜?** 한 파일에 컴포넌트 하나만 정의되면, 라우터로 지연로딩할 때 기본 export 항목으로 지정할 수 있습니다.
 
 </div>
 
 
-
+<!--
 The key is to make the code more reusable, easier to read, and less mistake prone.
+-->
+요점은 코드를 좀 더 재사용성하기 편하게, 읽기 쉽게, 실수를 최대한 방지하게 하는 것입니다.
 
+<!--
 The following *negative* example defines the `AppComponent`, bootstraps the app,
 defines the `Hero` model object, and loads heroes from the server all in the same file.
 *Don't do this*.
-
+-->
+다음 예제는 `AppComponent`를 정의하면서 앱을 부트스트랩하고, `Hero` 모델을 정의하고 서버에서 데이터를 받아오는 동작을 모두 한 파일에서 하고 있습니다. *이렇게 작성하지 마세요.*
 
 <code-example path="styleguide/src/01-01/app/heroes/hero.component.avoid.ts" title="app/heroes/hero.component.ts">
 
 </code-example>
 
 
-
+<!--
 It is a better practice to redistribute the component and its
 supporting classes into their own, dedicated files.
-
+-->
+이런 코드는 각각의 역할에 맞게 개별 파일로 작성하는 것이 더 좋습니다.
 
 <code-tabs>
 
@@ -195,10 +248,12 @@ supporting classes into their own, dedicated files.
 </code-tabs>
 
 
-
+<!--
 As the app grows, this rule becomes even more important.
 <a href="#toc">Back to top</a>
-
+-->
+앱이 복잡해 질수록 이 규칙은 점점 더 중요해집니다.
+<a href="#toc">맨 위로</a>
 
 {@a 01-02}
 
