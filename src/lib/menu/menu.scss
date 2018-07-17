@@ -28,6 +28,14 @@ $mat-menu-submenu-indicator-size: 10px !default;
   @include mat-button-reset();
   @include mat-menu-item-base();
   position: relative;
+
+  @include cdk-high-contrast {
+    &.cdk-program-focused,
+    &.cdk-keyboard-focused,
+    &-highlighted {
+      outline: dotted 1px;
+    }
+  }
 }
 
 .mat-menu-item-submenu-trigger {
