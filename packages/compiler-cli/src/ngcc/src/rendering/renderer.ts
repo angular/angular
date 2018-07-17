@@ -7,8 +7,9 @@
  */
 import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
 import {SourceMapConverter, commentRegex, fromJSON, fromMapFileSource, fromObject, fromSource, generateMapFileComment, mapFileCommentRegex, removeComments, removeMapFileComments} from 'convert-source-map';
+import {readFileSync, statSync} from 'fs';
 import MagicString from 'magic-string';
-import {dirname} from 'path';
+import {basename, dirname} from 'path';
 import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import * as ts from 'typescript';
 
@@ -137,7 +138,20 @@ export abstract class Renderer {
       try {
         externalSourceMap = fromMapFileSource(file.text, dirname(file.fileName));
       } catch (e) {
-        console.warn(e);
+        if (e.code === 'ENOENT') {
+          console.warn(
+              `The external map file specified in the source code comment "${e.path}" was not found on the file system.`);
+          const mapPath = file.fileName + '.map';
+          if (basename(e.path) !== basename(mapPath) && statSync(mapPath).isFile()) {
+            console.warn(
+                `Guessing the map file name from the source file name: "${basename(mapPath)}"`);
+            try {
+              externalSourceMap = fromObject(JSON.parse(readFileSync(mapPath, 'utf8')));
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }
       }
       return {
         source: removeMapFileComments(file.text).replace(/\n\n$/, '\n'),
