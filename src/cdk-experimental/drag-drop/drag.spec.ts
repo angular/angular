@@ -15,7 +15,7 @@ import {dispatchMouseEvent, dispatchTouchEvent} from '@angular/cdk/testing';
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkDrag} from './drag';
 import {CdkDragDrop} from './drag-events';
-import {moveItemInArray, transferArrayItem} from './drag-utils';
+import {moveItemInArray} from './drag-utils';
 import {CdkDrop} from './drop';
 import {CdkDragHandle} from './drag-handle';
 
@@ -460,7 +460,9 @@ describe('CdkDrag', () => {
     it('should move the placeholder as an item is being sorted down', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
-      assertDownwardSorting(fixture);
+      assertDownwardSorting(fixture, fixture.componentInstance.dragItems.map(item => {
+        return item.element.nativeElement;
+      }));
     }));
 
     it('should move the placeholder as an item is being sorted down on a scrolled page',
@@ -470,14 +472,18 @@ describe('CdkDrag', () => {
         const cleanup = makePageScrollable();
 
         scrollTo(0, 500);
-        assertDownwardSorting(fixture);
+        assertDownwardSorting(fixture, fixture.componentInstance.dragItems.map(item => {
+          return item.element.nativeElement;
+        }));
         cleanup();
       }));
 
     it('should move the placeholder as an item is being sorted up', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
-      assertUpwardSorting(fixture);
+      assertUpwardSorting(fixture, fixture.componentInstance.dragItems.map(item => {
+        return item.element.nativeElement;
+      }));
     }));
 
     it('should move the placeholder as an item is being sorted up on a scrolled page',
@@ -487,7 +493,9 @@ describe('CdkDrag', () => {
         const cleanup = makePageScrollable();
 
         scrollTo(0, 500);
-        assertUpwardSorting(fixture);
+        assertUpwardSorting(fixture, fixture.componentInstance.dragItems.map(item => {
+          return item.element.nativeElement;
+        }));
         cleanup();
       }));
 
@@ -617,9 +625,127 @@ describe('CdkDrag', () => {
         const fixture = createComponent(ConnectedDropZones);
         fixture.detectChanges();
 
-        // TODO
-        // console.log(fixture.componentInstance.groupedDragItems.map(d => d.length));
+        const groups = fixture.componentInstance.groupedDragItems;
+        const item = groups[0][1];
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        dragElementViaMouse(fixture, item.element.nativeElement,
+            targetRect.left + 1, targetRect.top + 1);
+        flush();
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+        const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+        expect(event).toEqual({
+          previousIndex: 1,
+          currentIndex: 3,
+          item,
+          container: fixture.componentInstance.dropInstances.toArray()[1],
+          previousContainer: fixture.componentInstance.dropInstances.first
+        });
       }));
+
+    it('should be able to move the element over a new container and return it', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZones);
+      fixture.detectChanges();
+
+      const groups = fixture.componentInstance.groupedDragItems;
+      const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+      const item = groups[0][1];
+      const initialRect = item.element.nativeElement.getBoundingClientRect();
+      const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+      expect(dropZones[0].contains(item.element.nativeElement)).toBe(true);
+      dispatchMouseEvent(item.element.nativeElement, 'mousedown');
+      fixture.detectChanges();
+
+      const placeholder = dropZones[0].querySelector('.cdk-drag-placeholder')!;
+
+      expect(placeholder).toBeTruthy();
+
+      dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+      fixture.detectChanges();
+
+      expect(dropZones[1].contains(placeholder))
+          .toBe(true, 'Expected placeholder to be inside second container.');
+
+      dispatchMouseEvent(document, 'mousemove', initialRect.left + 1, initialRect.top + 1);
+      fixture.detectChanges();
+
+      expect(dropZones[0].contains(placeholder))
+          .toBe(true, 'Expected placeholder to be inside first container.');
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
+    }));
+
+    it('should transfer the DOM element from one drop zone to another', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZones);
+      fixture.detectChanges();
+
+      const groups = fixture.componentInstance.groupedDragItems;
+      const element = groups[0][1].element.nativeElement;
+      const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+      const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+      expect(dropZones[0].contains(element)).toBe(true);
+
+      dragElementViaMouse(fixture, element, targetRect.left + 1, targetRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      expect(dropZones[1].contains(element)).toBe(true);
+    }));
+
+    it('should not be able to transfer an item into a container that is not in `connectedTo`',
+      fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+
+        fixture.detectChanges();
+        fixture.componentInstance.dropInstances.forEach(d => d.connectedTo = []);
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems;
+        const element = groups[0][1].element.nativeElement;
+        const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        expect(dropZones[0].contains(element)).toBe(true);
+
+        dragElementViaMouse(fixture, element, targetRect.left + 1, targetRect.top + 1);
+        flush();
+        fixture.detectChanges();
+
+        expect(dropZones[0].contains(element)).toBe(true);
+      }));
+
+
+    it('should be able to start dragging after an item has been transferred', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZones);
+      fixture.detectChanges();
+
+      const groups = fixture.componentInstance.groupedDragItems;
+      const element = groups[0][1].element.nativeElement;
+      const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+      const targetRect = dropZones[1].getBoundingClientRect();
+
+      expect(dropZones[0].contains(element)).toBe(true);
+
+      // Drag the element into the drop zone and move it to the top.
+      [1, -1].forEach(offset => {
+        dragElementViaMouse(fixture, element, targetRect.left + offset, targetRect.top + offset);
+        flush();
+        fixture.detectChanges();
+        expect(dropZones[1].contains(element)).toBe(true);
+      });
+
+      assertDownwardSorting(fixture, Array.from(dropZones[1].querySelectorAll('.cdk-drag')));
+    }));
+
   });
 
 });
@@ -821,20 +947,9 @@ export class ConnectedDropZones implements AfterViewInit {
   @ViewChildren(CdkDrop) dropInstances: QueryList<CdkDrop>;
 
   groupedDragItems: CdkDrag[][] = [];
-
   todo = ['Zero', 'One', 'Two', 'Three'];
   done = ['Four', 'Five', 'Six'];
-
-  droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
-    } else {
-      transferArrayItem(event.previousContainer.data,
-                        event.container.data,
-                        event.previousIndex,
-                        event.currentIndex);
-    }
-  });
+  droppedSpy = jasmine.createSpy('dropped spy');
 
   ngAfterViewInit() {
     this.dropInstances.forEach((dropZone, index) => {
@@ -913,10 +1028,10 @@ function makePageScrollable() {
 /**
  * Asserts that sorting an element down works correctly.
  * @param fixture Fixture against which to run the assertions.
+ * @param items Array of items against which to test sorting.
  */
-function assertDownwardSorting(fixture: ComponentFixture<DraggableInDropZone>) {
-  const items = fixture.componentInstance.dragItems.toArray();
-  const draggedItem = items[0].element.nativeElement;
+function assertDownwardSorting(fixture: ComponentFixture<any>, items: Element[]) {
+  const draggedItem = items[0];
   const {top, left} = draggedItem.getBoundingClientRect();
 
   dispatchMouseEvent(draggedItem, 'mousedown', left, top);
@@ -926,7 +1041,7 @@ function assertDownwardSorting(fixture: ComponentFixture<DraggableInDropZone>) {
 
   // Drag over each item one-by-one going downwards.
   for (let i = 0; i < items.length; i++) {
-    const elementRect = items[i].element.nativeElement.getBoundingClientRect();
+    const elementRect = items[i].getBoundingClientRect();
 
     // Add a few pixels to the top offset so we get some overlap.
     dispatchMouseEvent(document, 'mousemove', elementRect.left, elementRect.top + 5);
@@ -942,10 +1057,10 @@ function assertDownwardSorting(fixture: ComponentFixture<DraggableInDropZone>) {
 /**
  * Asserts that sorting an element up works correctly.
  * @param fixture Fixture against which to run the assertions.
+ * @param items Array of items against which to test sorting.
  */
-function assertUpwardSorting(fixture: ComponentFixture<DraggableInDropZone>) {
-  const items = fixture.componentInstance.dragItems.toArray();
-  const draggedItem = items[items.length - 1].element.nativeElement;
+function assertUpwardSorting(fixture: ComponentFixture<any>, items: Element[]) {
+  const draggedItem = items[items.length - 1];
   const {top, left} = draggedItem.getBoundingClientRect();
 
   dispatchMouseEvent(draggedItem, 'mousedown', left, top);
@@ -955,7 +1070,7 @@ function assertUpwardSorting(fixture: ComponentFixture<DraggableInDropZone>) {
 
   // Drag over each item one-by-one going upwards.
   for (let i = items.length - 1; i > -1; i--) {
-    const elementRect = items[i].element.nativeElement.getBoundingClientRect();
+    const elementRect = items[i].getBoundingClientRect();
 
     // Remove a few pixels from the bottom offset so we get some overlap.
     dispatchMouseEvent(document, 'mousemove', elementRect.left, elementRect.bottom - 5);

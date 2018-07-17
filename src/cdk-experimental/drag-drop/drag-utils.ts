@@ -13,18 +13,21 @@
  * @param toIndex Index to which the item should be moved.
  */
 export function moveItemInArray<T = any>(array: T[], fromIndex: number, toIndex: number): void {
-  if (fromIndex === toIndex) {
+  const from = clamp(fromIndex, array.length - 1);
+  const to = clamp(toIndex, array.length - 1);
+
+  if (from === to) {
     return;
   }
 
-  const target = array[fromIndex];
-  const delta = toIndex < fromIndex ? -1 : 1;
+  const target = array[from];
+  const delta = to < from ? -1 : 1;
 
-  for (let i = fromIndex; i !== toIndex; i += delta) {
+  for (let i = from; i !== to; i += delta) {
     array[i] = array[i + delta];
   }
 
-  array[toIndex] = target;
+  array[to] = target;
 }
 
 
@@ -39,5 +42,16 @@ export function transferArrayItem<T = any>(currentArray: T[],
                                            targetArray: T[],
                                            currentIndex: number,
                                            targetIndex: number): void {
-  targetArray.splice(targetIndex, 0, currentArray.splice(currentIndex, 1)[0]);
+
+  const from = clamp(currentIndex, currentArray.length - 1);
+  const to = clamp(targetIndex, targetArray.length);
+
+  if (currentArray.length) {
+    targetArray.splice(to, 0, currentArray.splice(from, 1)[0]);
+  }
+}
+
+/** Clamps a number between zero and a maximum. */
+function clamp(value: number, max: number): number {
+  return Math.max(0, Math.min(max, value));
 }
