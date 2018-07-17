@@ -198,7 +198,8 @@ describe('ngtsc behavioral tests', () => {
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents).toContain('static ngComponentDef: i0.ɵComponentDef<TestCmp, \'test-cmp\'>');
     expect(dtsContents)
-        .toContain('static ngModuleDef: i0.ɵNgModuleDef<TestModule, [TestCmp], [], []>');
+        .toContain(
+            'static ngModuleDef: i0.ɵNgModuleDef<TestModule, [typeof TestCmp], never, never>');
     expect(dtsContents).not.toContain('__decorate');
   });
 
@@ -240,7 +241,8 @@ describe('ngtsc behavioral tests', () => {
 
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents)
-        .toContain('static ngModuleDef: i0.ɵNgModuleDef<TestModule, [TestCmp], [OtherModule], []>');
+        .toContain(
+            'static ngModuleDef: i0.ɵNgModuleDef<TestModule, [typeof TestCmp], [typeof OtherModule], never>');
     expect(dtsContents).toContain('static ngInjectorDef: i0.ɵInjectorDef');
   });
 
@@ -342,7 +344,8 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('pipes: [TestPipe]');
 
     const dtsContents = getContents('test.d.ts');
-    expect(dtsContents).toContain('i0.ɵNgModuleDef<TestModule, [TestPipe,TestCmp], [], []>');
+    expect(dtsContents)
+        .toContain('i0.ɵNgModuleDef<TestModule, [typeof TestPipe,typeof TestCmp], never, never>');
   });
 
   it('should unwrap a ModuleWithProviders function if a generic type is provided for it', () => {
@@ -372,7 +375,8 @@ describe('ngtsc behavioral tests', () => {
 
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents).toContain(`import * as i1 from 'router';`);
-    expect(dtsContents).toContain('i0.ɵNgModuleDef<TestModule, [], [i1.RouterModule], []>');
+    expect(dtsContents)
+        .toContain('i0.ɵNgModuleDef<TestModule, never, [typeof i1.RouterModule], never>');
   });
 
   it('should inject special types according to the metadata', () => {

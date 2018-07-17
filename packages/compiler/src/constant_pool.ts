@@ -298,6 +298,10 @@ class KeyVisitor implements o.ExpressionVisitor {
 
   visitReadVarExpr(node: o.ReadVarExpr) { return `VAR:${node.name}`; }
 
+  visitTypeofExpr(node: o.TypeofExpr, context: any): string {
+    return `TYPEOF:${node.expr.visitExpression(this, context)}`;
+  }
+
   visitWrappedNodeExpr = invalid;
   visitWriteVarExpr = invalid;
   visitWriteKeyExpr = invalid;

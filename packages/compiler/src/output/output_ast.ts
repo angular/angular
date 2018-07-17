@@ -33,7 +33,8 @@ export enum BuiltinTypeName {
   Int,
   Number,
   Function,
-  Inferred
+  Inferred,
+  None,
 }
 
 export class BuiltinType extends Type {
@@ -77,6 +78,7 @@ export const INT_TYPE = new BuiltinType(BuiltinTypeName.Int);
 export const NUMBER_TYPE = new BuiltinType(BuiltinTypeName.Number);
 export const STRING_TYPE = new BuiltinType(BuiltinTypeName.String);
 export const FUNCTION_TYPE = new BuiltinType(BuiltinTypeName.Function);
+export const NONE_TYPE = new BuiltinType(BuiltinTypeName.None);
 
 export interface TypeVisitor {
   visitBuiltinType(type: BuiltinType, context: any): any;
@@ -277,6 +279,22 @@ export class ReadVarExpr extends Expression {
     }
     return new WriteVarExpr(this.name, value, null, this.sourceSpan);
   }
+}
+
+export class TypeofExpr extends Expression {
+  constructor(public expr: Expression, type?: Type|null, sourceSpan?: ParseSourceSpan|null) {
+    super(type, sourceSpan);
+  }
+
+  visitExpression(visitor: ExpressionVisitor, context: any) {
+    return visitor.visitTypeofExpr(this, context);
+  }
+
+  isEquivalent(e: Expression): boolean {
+    return e instanceof TypeofExpr && e.expr.isEquivalent(this.expr);
+  }
+
+  isConstant(): boolean { return this.expr.isConstant(); }
 }
 
 export class WrappedNodeExpr<T> extends Expression {
@@ -738,6 +756,7 @@ export interface ExpressionVisitor {
   visitLiteralMapExpr(ast: LiteralMapExpr, context: any): any;
   visitCommaExpr(ast: CommaExpr, context: any): any;
   visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any;
+  visitTypeofExpr(ast: TypeofExpr, context: any): any;
 }
 
 export const THIS_EXPR = new ReadVarExpr(BuiltinVar.This, null, null);
@@ -993,6 +1012,12 @@ export class AstTransformer implements StatementVisitor, ExpressionVisitor {
     return this.transformExpr(ast, context);
   }
 
+  visitTypeofExpr(expr: TypeofExpr, context: any): any {
+    return this.transformExpr(
+        new TypeofExpr(expr.expr.visitExpression(this, context), expr.type, expr.sourceSpan),
+        context);
+  }
+
   visitWriteVarExpr(expr: WriteVarExpr, context: any): any {
     return this.transformExpr(
         new WriteVarExpr(
@@ -1220,6 +1245,7 @@ export class RecursiveAstVisitor implements StatementVisitor, ExpressionVisitor 
   visitArrayType(type: ArrayType, context: any): any { return this.visitType(type, context); }
   visitMapType(type: MapType, context: any): any { return this.visitType(type, context); }
   visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any { return ast; }
+  visitTypeofExpr(ast: TypeofExpr, context: any): any { return this.visitExpression(ast, context); }
   visitReadVarExpr(ast: ReadVarExpr, context: any): any {
     return this.visitExpression(ast, context);
   }
@@ -1472,6 +1498,10 @@ export function importType(
 export function expressionType(
     expr: Expression, typeModifiers: TypeModifier[] | null = null): ExpressionType {
   return new ExpressionType(expr, typeModifiers);
+}
+
+export function typeofExpr(expr: Expression) {
+  return new TypeofExpr(expr);
 }
 
 export function literalArr(
