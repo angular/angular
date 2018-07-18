@@ -47,17 +47,17 @@
 
 <code-example language="ts" hideCopy="true" linenums="false" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
 
-<h4 class="no-anchor">Parameters</h4>
+<h6 class="no-anchor">Parameters</h6>
 {$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter') $}
 
 {% if overload.type or overload.returns.type %}
-<h4 class="no-anchor">Returns</h4>
+<h6 class="no-anchor">Returns</h6>
 {% marked %}`{$ (overload.type or overload.returns.type) $}`{% if overload.returns %}: {$ overload.returns.description $}{% endif %}{% endmarked %}
 {% endif %}
 
 
 {% if overload.throws.length %}
-<h4 class="no-anchor">Throws</h4>
+<h6 class="no-anchor">Throws</h6>
 {% for error in overload.throws %}
 {% marked %}`{$ (error.typeList or 'Error') $}` {$ error.description $}{% endmarked %}
 {% endfor %}
@@ -73,7 +73,7 @@
 {%- macro renderMethodDetail(versionInfo, method, cssClass) -%}
 <a id="{$ method.anchor $}"></a>
 <table class="is-full-width method-table {$ cssClass $}">
-  {% if method.name !== 'constructor' %}<thead><tr><th>
+  {% if method.name !== 'constructor' %}<thead><tr><th class="icon-action-header">
     <h3>
       {% if method.isCallMember %}<i>call signature</i>
       {% elseif method.isNewMember %}<i>construct signature</i>
@@ -106,12 +106,22 @@
     <tr>
       <td>
         <details class="overloads">
-          <summary><h4 class="no-anchor">{$ method.overloads.length $} overloads...</h4></summary>
+          <summary>
+            <div class="icon-action-header">
+                <h4 class="no-anchor">Overloads</h4>
+                <a>Show All <i class="material-icons">expand_more</i></a>
+              </div>
+          </summary>
           <div class="detail-contents">
-              {% for overload in method.overloads %}
+            {% for overload in method.overloads %}
+              <div>
+                <h5 class="icon-action-header no-anchor">
+                  <span>Overload #_ of {$ method.overloads.length $}</span>
+                  <i class="material-icons">expand_more</i></h5>
                 {$ renderOverloadInfo(overload, cssClass + '-overload', method) $}
-                {% if not loop.last %}<hr class="hr-margin fullwidth">{% endif %}
+                {% if not loop.last %}<hr class="hr-margin">{% endif %}
               {% endfor %}
+              </div>
           </div>
         </details>
       </td>
@@ -170,10 +180,10 @@
         <td><a id="{$ property.anchor $}"></a>{$ property.name $}</td>
         {% if hasTypes %}<td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>{% endif %}
         <td>
-          {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-only.</span>{% endif %}
+          {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read Only</span>{% endif %}
           {% if property.shortDescription %}{$ property.shortDescription | marked $}{% endif %}
           {$ (property.description or property.constructorParamDoc.description) | marked $}
-          {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in constructor.</span>{% endif %}
+          {% if property.constructorParamDoc %} <span class='from-constructor'>Declared in Constructor</span>{% endif %}
         </td>
     </tr>
     {% endfor %}
