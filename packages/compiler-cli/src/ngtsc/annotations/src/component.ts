@@ -11,11 +11,11 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {Decorator, ReflectionHost} from '../../host';
-import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {ResourceLoader} from './api';
-import {extractDirectiveMetadata} from './directive';
+import {extractDirectiveMetadata, extractQueriesFromDecorator, queriesFromFields} from './directive';
 import {SelectorScopeRegistry} from './selector_scope';
 import {isAngularCore, unwrapExpression} from './util';
 
@@ -59,9 +59,9 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
 
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
-    const directiveMetadata =
+    const directiveResult =
         extractDirectiveMetadata(node, decorator, this.checker, this.reflector, this.isCore);
-    if (directiveMetadata === undefined) {
+    if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
       // case, compilation of the decorator is skipped. Returning an empty object signifies
       // that no analysis was produced.
@@ -69,7 +69,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     }
 
     // Next, read the `@Component`-specific fields.
-    const component = reflectObjectLiteral(meta);
+    const {decoratedElements, decorator: component, metadata} = directiveResult;
 
     let templateStr: string|null = null;
     if (component.has('templateUrl')) {
@@ -109,15 +109,29 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
 
     // If the component has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this component appears in an `@NgModule` scope, its selector can be determined.
-    if (directiveMetadata.selector !== null) {
-      this.scopeRegistry.registerSelector(node, directiveMetadata.selector);
+    if (metadata.selector !== null) {
+      this.scopeRegistry.registerSelector(node, metadata.selector);
+    }
+
+    // Construct the list of view queries.
+    const coreModule = this.isCore ? undefined : '@angular/core';
+    const viewChildFromFields = queriesFromFields(
+        filterToMembersWithDecorator(decoratedElements, 'ViewChild', coreModule), this.checker);
+    const viewChildrenFromFields = queriesFromFields(
+        filterToMembersWithDecorator(decoratedElements, 'ViewChildren', coreModule), this.checker);
+    const viewQueries = [...viewChildFromFields, ...viewChildrenFromFields];
+
+    if (component.has('queries')) {
+      const queriesFromDecorator = extractQueriesFromDecorator(
+          component.get('queries') !, this.reflector, this.checker, this.isCore);
+      viewQueries.push(...queriesFromDecorator.view);
     }
 
     return {
       analysis: {
-        ...directiveMetadata,
+        ...metadata,
         template,
-        viewQueries: [],
+        viewQueries,
 
         // These will be replaced during the compilation step, after all `NgModule`s have been
         // analyzed and the full compilation scope for the component can be realized.
