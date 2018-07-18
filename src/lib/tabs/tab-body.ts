@@ -8,6 +8,7 @@
 
 import {
   Component,
+  ChangeDetectorRef,
   Input,
   Inject,
   Output,
@@ -113,7 +114,17 @@ export class MatTabBodyPortal extends CdkPortalOutlet implements OnInit, OnDestr
     'class': 'mat-tab-body',
   },
 })
-export class MatTabBody implements OnInit {
+export class MatTabBody implements OnInit, OnDestroy {
+
+  /** Current position of the tab-body in the tab-group. Zero means that the tab is visible. */
+  private _positionIndex: number;
+
+  /** Subscription to the directionality change observable. */
+  private _dirChangeSubscription = Subscription.EMPTY;
+
+  /** Tab body position state. Used by the animation trigger for the current state. */
+  _position: MatTabBodyPositionState;
+
   /** Event emitted when the tab begins to animate towards the center as the active tab. */
   @Output() readonly _onCentering: EventEmitter<number> = new EventEmitter<number>();
 
@@ -132,44 +143,43 @@ export class MatTabBody implements OnInit {
   /** The tab body content to display. */
   @Input('content') _content: TemplatePortal;
 
+  /** Position that will be used when the tab is immediately becoming visible after creation. */
+  @Input() origin: number;
+
   /** The shifted index position of the tab body, where zero represents the active center tab. */
   @Input()
   set position(position: number) {
-    if (position < 0) {
-      this._position = this._getLayoutDirection() == 'ltr' ? 'left' : 'right';
-    } else if (position > 0) {
-      this._position = this._getLayoutDirection() == 'ltr' ? 'right' : 'left';
-    } else {
-      this._position = 'center';
-    }
+    this._positionIndex = position;
+    this._computePositionAnimationState();
   }
-  _position: MatTabBodyPositionState;
-
-  /** The origin position from which this tab should appear when it is centered into view. */
-  @Input()
-  set origin(origin: number) {
-    if (origin == null) { return; }
-
-    const dir = this._getLayoutDirection();
-    if ((dir == 'ltr' && origin <= 0) || (dir == 'rtl' && origin > 0)) {
-      this._origin = 'left';
-    } else {
-      this._origin = 'right';
-    }
-  }
-  _origin: MatTabBodyOriginState;
 
   constructor(private _elementRef: ElementRef,
-              @Optional() private _dir: Directionality) { }
+              @Optional() private _dir: Directionality,
+              /**
+               * @deletion-target 7.0.0 changeDetectorRef to be made required.
+               */
+              changeDetectorRef?: ChangeDetectorRef) {
+
+    if (this._dir && changeDetectorRef) {
+      this._dirChangeSubscription = this._dir.change.subscribe(dir => {
+        this._computePositionAnimationState(dir);
+        changeDetectorRef.markForCheck();
+      });
+    }
+  }
 
   /**
    * After initialized, check if the content is centered and has an origin. If so, set the
    * special position states that transition the tab from the left or right before centering.
    */
   ngOnInit() {
-    if (this._position == 'center' && this._origin) {
-      this._position = this._origin == 'left' ? 'left-origin-center' : 'right-origin-center';
+    if (this._position == 'center' && this.origin !== undefined) {
+      this._position = this._computePositionFromOrigin();
     }
+  }
+
+  ngOnDestroy() {
+    this._dirChangeSubscription.unsubscribe();
   }
 
   _onTranslateTabStarted(e: AnimationEvent): void {
@@ -201,5 +211,30 @@ export class MatTabBody implements OnInit {
     return position == 'center' ||
         position == 'left-origin-center' ||
         position == 'right-origin-center';
+  }
+
+  /** Computes the position state that will be used for the tab-body animation trigger. */
+  private _computePositionAnimationState(dir: Direction = this._getLayoutDirection()) {
+    if (this._positionIndex < 0) {
+      this._position = dir == 'ltr' ? 'left' : 'right';
+    } else if (this._positionIndex > 0) {
+      this._position = dir == 'ltr' ? 'right' : 'left';
+    } else {
+      this._position = 'center';
+    }
+  }
+
+  /**
+   * Computes the position state based on the specified origin position. This is used if the
+   * tab is becoming visible immediately after creation.
+   */
+  private _computePositionFromOrigin(): MatTabBodyPositionState {
+    const dir = this._getLayoutDirection();
+
+    if ((dir == 'ltr' && this.origin <= 0) || (dir == 'rtl' && this.origin > 0)) {
+      return 'left-origin-center';
+    }
+
+    return 'right-origin-center';
   }
 }

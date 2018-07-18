@@ -159,7 +159,7 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
    * a new selected tab should transition in (from the left or right).
    */
   ngAfterContentChecked() {
-    // Clamp the next selected index to the boundsof 0 and the tabs length.
+    // Clamp the next selected index to the bounds of 0 and the tabs length.
     // Note the `|| 0`, which ensures that values like NaN can't get through
     // and which would otherwise throw the component into an infinite loop
     // (since Math.max(NaN, 0) === NaN).
