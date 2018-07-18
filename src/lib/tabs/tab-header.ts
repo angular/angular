@@ -296,7 +296,11 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
     const scrollDistance = this.scrollDistance;
     const translateX = this._getLayoutDirection() === 'ltr' ? -scrollDistance : scrollDistance;
 
-    this._tabList.nativeElement.style.transform = `translate3d(${translateX}px, 0, 0)`;
+    // Don't use `translate3d` here because we don't want to create a new layer. A new layer
+    // seems to cause flickering and overflow in Internet Explorer. For example, the ink bar
+    // and ripples will exceed the boundaries of the visible tab bar.
+    // See: https://github.com/angular/material2/issues/10276
+    this._tabList.nativeElement.style.transform = `translateX(${translateX}px)`;
   }
 
   /** Sets the distance in pixels that the tab header should be transformed in the X-axis. */
