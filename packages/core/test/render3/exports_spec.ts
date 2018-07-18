@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, load, text, textBinding} from '../../src/render3/instructions';
+import {AttributeMarker, defineComponent, defineDirective} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation2, load, reference, text, textBinding} from '../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
 
+import {NgIf} from './common_with_def';
 import {ComponentFixture, createComponent, renderToHtml} from './render_util';
 
 describe('exports', () => {
@@ -21,9 +22,8 @@ describe('exports', () => {
         element(0, 'input', ['value', 'one'], ['myInput', '']);
         text(2);
       }
-      let tmp: any;
       if (rf & RenderFlags.Update) {
-        tmp = load(1);
+        const tmp = load(1) as any;
         textBinding(2, tmp.value);
       }
     }
@@ -39,9 +39,8 @@ describe('exports', () => {
         element(0, 'comp', null, ['myComp', '']);
         text(2);
       }
-      let tmp: any;
       if (rf & RenderFlags.Update) {
-        tmp = load(1);
+        const tmp = load(1) as any;
         textBinding(2, tmp.name);
       }
     }
@@ -94,9 +93,8 @@ describe('exports', () => {
         element(0, 'comp', null, ['myComp', '']);
         element(2, 'div', ['myDir', '']);
       }
-      let tmp: any;
       if (rf & RenderFlags.Update) {
-        tmp = load(1);
+        const tmp = load(1) as any;
         elementProperty(2, 'myDir', bind(tmp));
       }
     }
@@ -113,9 +111,8 @@ describe('exports', () => {
         element(0, 'div', ['someDir', ''], ['myDir', 'someDir']);
         text(2);
       }
-      let tmp: any;
       if (rf & RenderFlags.Update) {
-        tmp = load(1);
+        const tmp = load(1) as any;
         textBinding(2, tmp.name);
       }
     }
@@ -155,8 +152,8 @@ describe('exports', () => {
           text(0);
           element(1, 'input', ['value', 'one'], ['myInput', '']);
         }
-        const tmp = load(2) as any;
         if (rf & RenderFlags.Update) {
+          const tmp = load(2) as any;
           textBinding(0, bind(tmp.value));
         }
       }
@@ -172,8 +169,8 @@ describe('exports', () => {
           element(0, 'div');
           element(1, 'input', ['value', 'one'], ['myInput', '']);
         }
-        const tmp = load(2) as any;
         if (rf & RenderFlags.Update) {
+          const tmp = load(2) as any;
           elementProperty(0, 'title', bind(tmp.value));
         }
       }
@@ -188,8 +185,8 @@ describe('exports', () => {
           element(0, 'div');
           element(1, 'input', ['value', 'one'], ['myInput', '']);
         }
-        const tmp = load(2) as any;
         if (rf & RenderFlags.Update) {
+          const tmp = load(2) as any;
           elementAttribute(0, 'aria-label', bind(tmp.value));
         }
       }
@@ -206,8 +203,8 @@ describe('exports', () => {
           elementEnd();
           element(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
         }
-        const tmp = load(2) as any;
         if (rf & RenderFlags.Update) {
+          const tmp = load(2) as any;
           elementClassProp(0, 0, tmp.checked);
           elementStylingApply(0);
         }
@@ -253,9 +250,8 @@ describe('exports', () => {
           element(0, 'div', ['myDir', '']);
           element(1, 'comp', null, ['myComp', '']);
         }
-        let tmp: any;
         if (rf & RenderFlags.Update) {
-          tmp = load(2) as any;
+          const tmp = load(2) as any;
           elementProperty(0, 'myDir', bind(tmp));
         }
       }
@@ -274,11 +270,9 @@ describe('exports', () => {
           element(2, 'comp', null, ['myComp', '']);
           element(4, 'input', ['value', 'one'], ['myInput', '']);
         }
-        let tmp1: any;
-        let tmp2: any;
         if (rf & RenderFlags.Update) {
-          tmp1 = load(3) as any;
-          tmp2 = load(5) as any;
+          const tmp1 = load(3) as any;
+          const tmp2 = load(5) as any;
           textBinding(0, bind(tmp2.value));
           textBinding(1, bind(tmp1.name));
         }
@@ -315,13 +309,12 @@ describe('exports', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(1);
               {
-                let tmp: any;
                 if (rf1 & RenderFlags.Create) {
                   text(0);
                   element(1, 'input', ['value', 'one'], ['myInput', '']);
                 }
                 if (rf1 & RenderFlags.Update) {
-                  tmp = load(2);
+                  const tmp = load(2) as any;
                   textBinding(0, bind(tmp.value));
                 }
               }
@@ -337,5 +330,71 @@ describe('exports', () => {
       })).toEqual('<div>one<input value="one"></div>');
       expect(renderToHtml(Template, {condition: false})).toEqual('<div></div>');
     });
+
+    it('should support local refs in nested dynamic views', () => {
+      /**
+       * <input value="one" #outerInput>
+       * <div *ngIf="outer">
+       *     {{ outerInput.value }}
+       *
+       *     <input value = "two" #innerInput>
+       *
+       *     <div *ngIf="inner">
+       *         {{ outerInput.value }} - {{ innerInput.value}}
+       *     </div>
+       * </div>
+       */
+      const App = createComponent('app', function(rf: RenderFlags, app: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'input', ['value', 'one'], ['outerInput', '']);
+          elementEnd();
+          container(2, outerTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(2, 'ngIf', bind(app.outer));
+        }
+      }, [NgIf]);
+
+      function outerTemplate(rf: RenderFlags, outer: any, app: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div');
+          {
+            text(1);
+            elementStart(2, 'input', ['value', 'two'], ['innerInput', '']);
+            elementEnd();
+            container(4, innerTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
+          }
+          elementEnd();
+        }
+
+        const outerInput = reference(1, 1) as any;
+        if (rf & RenderFlags.Update) {
+          textBinding(1, bind(outerInput.value));
+          elementProperty(4, 'ngIf', bind(app.inner));
+        }
+      }
+
+      function innerTemplate(rf: RenderFlags, inner: any, outer: any, app: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div');
+          { text(1); }
+          elementEnd();
+        }
+
+        const outerInput = reference(2, 1) as any;
+        const innerInput = reference(1, 3) as any;
+        if (rf & RenderFlags.Update) {
+          textBinding(1, interpolation2('', outerInput.value, ' - ', innerInput.value, ''));
+        }
+      }
+
+      const fixture = new ComponentFixture(App);
+      fixture.component.outer = true;
+      fixture.component.inner = true;
+      fixture.update();
+      expect(fixture.html)
+          .toEqual(`<input value="one"><div>one<input value="two"><div>one - two</div></div>`);
+    });
+
   });
 });
