@@ -19,7 +19,8 @@ $mat-menu-submenu-indicator-size: 10px !default;
   }
 }
 
-.mat-menu-content {
+// `:not(:empty)` allows for the menu to collapse to 0x0 when it doesn't have content.
+.mat-menu-content:not(:empty) {
   padding-top: $mat-menu-vertical-padding;
   padding-bottom: $mat-menu-vertical-padding;
 }
