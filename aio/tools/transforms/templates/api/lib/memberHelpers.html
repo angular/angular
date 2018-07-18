@@ -53,17 +53,17 @@
   {$ ('**Deprecated** ' + overload.deprecated) | marked $}
 </div>{% endif %}
 
-<h4 class="no-anchor">Parameters</h4>
+<h6 class="no-anchor">Parameters</h6>
 {$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter') $}
 
 {% if overload.type or overload.returns.type %}
-<h4 class="no-anchor">Returns</h4>
+<h6 class="no-anchor">Returns</h6>
 {% marked %}`{$ (overload.type or overload.returns.type) $}`{% if overload.returns %}: {$ overload.returns.description $}{% endif %}{% endmarked %}
 {% endif %}
 
 
 {% if overload.throws.length %}
-<h4 class="no-anchor">Throws</h4>
+<h6 class="no-anchor">Throws</h6>
 {% for error in overload.throws %}
 {% marked %}`{$ (error.typeList or 'Error') $}` {$ error.description $}{% endmarked %}
 {% endfor %}
@@ -79,15 +79,15 @@
 {%- macro renderMethodDetail(versionInfo, method, cssClass) -%}
 <a id="{$ method.anchor $}"></a>
 <table class="is-full-width method-table {$ cssClass $}">
-  {% if method.name !== 'constructor' %}<thead><tr><th>
+  {% if method.name !== 'constructor' %}<thead><tr><th class="icon-action-header">
     <div class="with-github-links">
-      <h3>
-        {% if method.isCallMember %}<i>call signature</i>
-        {% elseif method.isNewMember %}<i>construct signature</i>
-        {% else %}{$ method.name $}()
-        {% endif %}
-      </h3>
-      {$ github.githubLinks(method, versionInfo) $}
+    <h3>
+      {% if method.isCallMember %}<i>call signature</i>
+      {% elseif method.isNewMember %}<i>construct signature</i>
+      {% else %}{$ method.name $}()
+      {% endif %}
+    </h3>
+    {$ github.githubLinks(method, versionInfo) $}
     </div>
   </th></tr></thead>{% endif %}
   <tbody>
@@ -121,16 +121,26 @@
     <tr>
       <td>
         <details class="overloads">
-          <summary><h4 class="no-anchor">{$ method.overloads.length $} overloads...</h4></summary>
+          <summary>
+            <div class="icon-action-header">
+                <h4 class="no-anchor">Overloads</h4>
+                <a>Show All <i class="material-icons">expand_more</i></a>
+              </div>
+          </summary>
           <div class="detail-contents">
-                {% if method.isAbstract %}
-                  {$ renderOverloadInfo(method, cssClass + '-overload', method) $}
-                  <hr class="hr-margin fullwidth">
-                {% endif %}
-                {% for overload in method.overloads %}
+            {% if method.isAbstract %}
+              {$ renderOverloadInfo(method, cssClass + '-overload', method) $}
+              <hr class="hr-margin fullwidth">
+            {% endif %}
+            {% for overload in method.overloads %}
+              <div>
+                <h5 class="icon-action-header no-anchor">
+                  <span>Overload #_ of {$ method.overloads.length $}</span>
+                  <i class="material-icons">expand_more</i></h5>
                 {$ renderOverloadInfo(overload, cssClass + '-overload', method) $}
-                {% if not loop.last %}<hr class="hr-margin fullwidth">{% endif %}
+                {% if not loop.last %}<hr class="hr-margin">{% endif %}
               {% endfor %}
+              </div>
           </div>
         </details>
       </td>
