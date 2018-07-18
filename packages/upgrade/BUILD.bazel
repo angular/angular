@@ -7,7 +7,8 @@ ng_module(
     srcs = glob(
         [
             "*.ts",
-            "src/**/*.ts",
+            "src/common/**/*.ts",
+            "src/dynamic/**/*.ts",
         ],
     ),
     module_name = "@angular/upgrade",
