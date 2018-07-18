@@ -16,7 +16,6 @@ export class Esm2015Renderer extends Renderer {
 
   // Add the imports at the top of the file
   addImports(output: MagicString, imports: {name: string; as: string;}[]): void {
-    // QUESTION: Should we move the imports to after any initial comment in the file?
     // Currently the imports get inserted at the very top of the file.
     imports.forEach(i => { output.appendLeft(0, `import * as ${i.as} from '${i.name}';\n`); });
   }
@@ -37,15 +36,14 @@ export class Esm2015Renderer extends Renderer {
       if (ts.isArrayLiteralExpression(containerNode)) {
         const items = containerNode.elements;
         if (items.length === nodesToRemove.length) {
-          // TODO check this works for different decorator types
-          // also remove any trailing semi-colon
+          // remove any trailing semi-colon
           const end = (output.slice(containerNode.getEnd(), containerNode.getEnd() + 1) === ';') ?
               containerNode.getEnd() + 1 :
               containerNode.getEnd();
           output.remove(containerNode.parent !.getFullStart(), end);
         } else {
           nodesToRemove.forEach(node => {
-            // also remove any trailing comma
+            // remove any trailing comma
             const end = (output.slice(node.getEnd(), node.getEnd() + 1) === ',') ?
                 node.getEnd() + 1 :
                 node.getEnd();
