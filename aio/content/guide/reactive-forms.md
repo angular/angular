@@ -56,7 +56,7 @@ which does something with them (such as saving them)
 and returns a new _data model_ to the component that reflects the updated model state.
 
 Using reactive form directives does not require you to follow all reactive priniciples,
-but it does facilitate the reactive programming approach should you choose to use it.
+but it does facilitate the reactive programming approach.
 
 ### Template-driven forms
 
