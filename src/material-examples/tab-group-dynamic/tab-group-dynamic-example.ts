@@ -2,7 +2,7 @@ import {Component} from '@angular/core';
 import {FormControl} from '@angular/forms';
 
 /**
- * @title Tag group with dynamically changing tabs
+ * @title Tab group with dynamically changing tabs
  */
 @Component({
   selector: 'tab-group-dynamic-example',
