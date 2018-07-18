@@ -54,16 +54,6 @@ export interface R3FactoryMetadata {
    * function could be different, and other options control how it will be invoked.
    */
   injectFn: o.ExternalReference;
-
-  /**
-   * If present, the return of the factory function will be an array with the injected value in the
-   * 0th position and the extra results included in subsequent positions.
-   *
-   * Occasionally APIs want to construct additional values when the factory function is called. The
-   * paradigm there is to have the factory function return an array, with the DI-created value as
-   * well as other values. Specifying `extraResults` enables this functionality.
-   */
-  extraResults?: o.Expression[];
 }
 
 /**
@@ -160,12 +150,8 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): o.Expression {
   const expr = meta.useNew ? new o.InstantiateExpr(meta.fnOrClass, args) :
                              new o.InvokeFunctionExpr(meta.fnOrClass, args);
 
-  // If `extraResults` is specified, then the result is an array consisting of the instantiated
-  // value plus any extra results.
-  const retExpr =
-      meta.extraResults === undefined ? expr : o.literalArr([expr, ...meta.extraResults]);
   return o.fn(
-      [], [new o.ReturnStatement(retExpr)], o.INFERRED_TYPE, undefined, `${meta.name}_Factory`);
+      [], [new o.ReturnStatement(expr)], o.INFERRED_TYPE, undefined, `${meta.name}_Factory`);
 }
 
 function compileInjectDependency(
