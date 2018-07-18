@@ -49,6 +49,9 @@ describe('GestureConfig', () => {
     const hammerGlobal = (window as any).Hammer;
     (window as any).Hammer = undefined;
 
+    // Stub out `console.warn` so the warnings don't pollute our logs.
+    spyOn(console, 'warn');
+
     TestBed
       .resetTestingModule()
       .configureTestingModule({
