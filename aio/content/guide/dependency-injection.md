@@ -692,7 +692,7 @@ If the factory function needs access to other DI tokens, it can use the inject f
 const TOKEN = 
   new InjectionToken('tree-shakeable token', 
     { providedIn: 'root', factory: () => 
-        new AppConfig(inject(Parameter1), inject(Paremeter2)), });
+        new AppConfig(inject(Parameter1), inject(Parameter2)), });
 </code-example>
 
 {@a optional}
