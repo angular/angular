@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, R3DirectiveMetadata, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser} from '@angular/compiler';
+import {ConstantPool, Expression, R3DirectiveMetadata, R3QueryMetadata, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ClassMember, ClassMemberKind, Decorator, Import, ReflectionHost} from '../../host';
-import {filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {Reference, filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
@@ -29,8 +29,9 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
   }
 
   analyze(node: ts.ClassDeclaration, decorator: Decorator): AnalysisOutput<R3DirectiveMetadata> {
-    const analysis =
+    const directiveResult =
         extractDirectiveMetadata(node, decorator, this.checker, this.reflector, this.isCore);
+    const analysis = directiveResult && directiveResult.metadata;
 
     // If the directive has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this directive appears in an `@NgModule` scope, its selector can be determined.
@@ -58,7 +59,11 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
  */
 export function extractDirectiveMetadata(
     clazz: ts.ClassDeclaration, decorator: Decorator, checker: ts.TypeChecker,
-    reflector: ReflectionHost, isCore: boolean): R3DirectiveMetadata|undefined {
+    reflector: ReflectionHost, isCore: boolean): {
+  decorator: Map<string, ts.Expression>,
+  metadata: R3DirectiveMetadata,
+  decoratedElements: ClassMember[],
+}|undefined {
   if (decorator.args === null || decorator.args.length !== 1) {
     throw new Error(`Incorrect number of arguments to @${decorator.name} decorator`);
   }
@@ -93,6 +98,19 @@ export function extractDirectiveMetadata(
   const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', checker);
   const outputsFromFields = parseDecoratedFields(
       filterToMembersWithDecorator(decoratedElements, 'Output', coreModule), checker);
+  // Construct the list of queries.
+  const contentChildFromFields = queriesFromFields(
+      filterToMembersWithDecorator(decoratedElements, 'ContentChild', coreModule), checker);
+  const contentChildrenFromFields = queriesFromFields(
+      filterToMembersWithDecorator(decoratedElements, 'ContentChildren', coreModule), checker);
+
+  const queries = [...contentChildFromFields, ...contentChildrenFromFields];
+
+  if (directive.has('queries')) {
+    const queriesFromDecorator =
+        extractQueriesFromDecorator(directive.get('queries') !, reflector, checker, isCore);
+    queries.push(...queriesFromDecorator.content);
+  }
 
   // Parse the selector.
   let selector = '';
@@ -112,7 +130,7 @@ export function extractDirectiveMetadata(
   // Detect if the component inherits from another class
   const usesInheritance = clazz.heritageClauses !== undefined &&
       clazz.heritageClauses.some(hc => hc.token === ts.SyntaxKind.ExtendsKeyword);
-  return {
+  const metadata: R3DirectiveMetadata = {
     name: clazz.name !.text,
     deps: getConstructorDependencies(clazz, reflector, isCore),
     host: {
@@ -124,17 +142,105 @@ export function extractDirectiveMetadata(
         usesOnChanges,
     },
     inputs: {...inputsFromMeta, ...inputsFromFields},
-    outputs: {...outputsFromMeta, ...outputsFromFields},
-    queries: [], selector,
+    outputs: {...outputsFromMeta, ...outputsFromFields}, queries, selector,
     type: new WrappedNodeExpr(clazz.name !),
     typeSourceSpan: null !, usesInheritance,
   };
+  return {decoratedElements, decorator: directive, metadata};
 }
 
-function assertIsStringArray(value: any[]): value is string[] {
+export function extractQueryMetadata(
+    name: string, args: ReadonlyArray<ts.Expression>, propertyName: string,
+    checker: ts.TypeChecker): R3QueryMetadata {
+  if (args.length === 0) {
+    throw new Error(`@${name} must have arguments`);
+  }
+  const first = name === 'ViewChild' || name === 'ContentChild';
+  const arg = staticallyResolve(args[0], checker);
+
+  // Extract the predicate
+  let predicate: Expression|string[]|null = null;
+  if (arg instanceof Reference) {
+    predicate = new WrappedNodeExpr(args[0]);
+  } else if (typeof arg === 'string') {
+    predicate = [arg];
+  } else if (isStringArrayOrDie(arg, '@' + name)) {
+    predicate = arg as string[];
+  } else {
+    throw new Error(`@${name} predicate cannot be interpreted`);
+  }
+
+  // Extract the read and descendants options.
+  let read: Expression|null = null;
+  // The default value for descendants is true for every decorator except @ContentChildren.
+  let descendants: boolean = name !== 'ContentChildren';
+  if (args.length === 2) {
+    const optionsExpr = unwrapExpression(args[1]);
+    if (!ts.isObjectLiteralExpression(optionsExpr)) {
+      throw new Error(`@${name} options must be an object literal`);
+    }
+    const options = reflectObjectLiteral(optionsExpr);
+    if (options.has('read')) {
+      read = new WrappedNodeExpr(options.get('read') !);
+    }
+
+    if (options.has('descendants')) {
+      const descendantsValue = staticallyResolve(options.get('descendants') !, checker);
+      if (typeof descendantsValue !== 'boolean') {
+        throw new Error(`@${name} options.descendants must be a boolean`);
+      }
+      descendants = descendantsValue;
+    }
+  } else if (args.length > 2) {
+    // Too many arguments.
+    throw new Error(`@${name} has too many arguments`);
+  }
+
+  return {
+      propertyName, predicate, first, descendants, read,
+  };
+}
+
+export function extractQueriesFromDecorator(
+    queryData: ts.Expression, reflector: ReflectionHost, checker: ts.TypeChecker,
+    isCore: boolean): {
+  content: R3QueryMetadata[],
+  view: R3QueryMetadata[],
+} {
+  const content: R3QueryMetadata[] = [], view: R3QueryMetadata[] = [];
+  const expr = unwrapExpression(queryData);
+  if (!ts.isObjectLiteralExpression(queryData)) {
+    throw new Error(`queries metadata must be an object literal`);
+  }
+  reflectObjectLiteral(queryData).forEach((queryExpr, propertyName) => {
+    queryExpr = unwrapExpression(queryExpr);
+    if (!ts.isNewExpression(queryExpr) || !ts.isIdentifier(queryExpr.expression)) {
+      throw new Error(`query metadata must be an instance of a query type`);
+    }
+    const type = reflector.getImportOfIdentifier(queryExpr.expression);
+    if (type === null || (!isCore && type.from !== '@angular/core') ||
+        !QUERY_TYPES.has(type.name)) {
+      throw new Error(`query metadata must be an instance of a query type`);
+    }
+
+    const query = extractQueryMetadata(type.name, queryExpr.arguments || [], propertyName, checker);
+    if (type.name.startsWith('Content')) {
+      content.push(query);
+    } else {
+      view.push(query);
+    }
+  });
+  return {content, view};
+}
+
+function isStringArrayOrDie(value: any, name: string): value is string[] {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+
   for (let i = 0; i < value.length; i++) {
     if (typeof value[i] !== 'string') {
-      throw new Error(`Failed to resolve @Directive.inputs[${i}] to a string`);
+      throw new Error(`Failed to resolve ${name}[${i}] to a string`);
     }
   }
   return true;
@@ -153,7 +259,7 @@ function parseFieldToPropertyMapping(
 
   // Resolve the field of interest from the directive metadata to a string[].
   const metaValues = staticallyResolve(directive.get(field) !, checker);
-  if (!Array.isArray(metaValues) || !assertIsStringArray(metaValues)) {
+  if (!isStringArrayOrDie(metaValues, field)) {
     throw new Error(`Failed to resolve @Directive.${field}`);
   }
 
@@ -199,3 +305,29 @@ function parseDecoratedFields(
       },
       {} as{[field: string]: string});
 }
+
+export function queriesFromFields(
+    fields: {member: ClassMember, decorators: Decorator[]}[],
+    checker: ts.TypeChecker): R3QueryMetadata[] {
+  return fields.map(({member, decorators}) => {
+    if (decorators.length !== 1) {
+      throw new Error(`Cannot have multiple query decorators on the same class member`);
+    } else if (!isPropertyTypeMember(member)) {
+      throw new Error(`Query decorator must go on a property-type member`);
+    }
+    const decorator = decorators[0];
+    return extractQueryMetadata(decorator.name, decorator.args || [], member.name, checker);
+  });
+}
+
+function isPropertyTypeMember(member: ClassMember): boolean {
+  return member.kind === ClassMemberKind.Getter || member.kind === ClassMemberKind.Setter ||
+      member.kind === ClassMemberKind.Property;
+}
+
+const QUERY_TYPES = new Set([
+  'ContentChild',
+  'ContentChildren',
+  'ViewChild',
+  'ViewChildren',
+]);
