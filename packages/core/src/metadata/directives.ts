@@ -46,7 +46,7 @@ export interface DirectiveDecorator {
    * ### Declaring directives
    *
    * Directives are [declarables](guide/glossary#declarable).
-   * Like component and pipes, they must be declared by an NgModule
+   * They must be declared by an NgModule
    * in order to be usable in an app.
    *
    * A directive must belong to exactly one NgModule. Do not re-declare
