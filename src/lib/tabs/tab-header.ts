@@ -198,7 +198,8 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
     };
 
     this._keyManager = new FocusKeyManager(this._labelWrappers)
-      .withHorizontalOrientation(this._getLayoutDirection());
+      .withHorizontalOrientation(this._getLayoutDirection())
+      .withWrap();
 
     this._keyManager.updateActiveItemIndex(0);
 

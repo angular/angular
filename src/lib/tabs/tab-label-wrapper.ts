@@ -22,7 +22,8 @@ export const _MatTabLabelWrapperMixinBase = mixinDisabled(MatTabLabelWrapperBase
   selector: '[matTabLabelWrapper]',
   inputs: ['disabled'],
   host: {
-    '[class.mat-tab-disabled]': 'disabled'
+    '[class.mat-tab-disabled]': 'disabled',
+    '[attr.aria-disabled]': '!!disabled',
   }
 })
 export class MatTabLabelWrapper extends _MatTabLabelWrapperMixinBase implements CanDisable {

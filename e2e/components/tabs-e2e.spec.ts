@@ -48,14 +48,8 @@ describe('tabs', () => {
       pressKeys(right);
       expect(await getFocusStates(tabLabels)).toEqual([false, false, true]);
 
-      pressKeys(right);
-      expect(await getFocusStates(tabLabels)).toEqual([false, false, true]);
-
       pressKeys(left);
       expect(await getFocusStates(tabLabels)).toEqual([false, true, false]);
-
-      pressKeys(left);
-      expect(await getFocusStates(tabLabels)).toEqual([true, false, false]);
 
       pressKeys(left);
       expect(await getFocusStates(tabLabels)).toEqual([true, false, false]);

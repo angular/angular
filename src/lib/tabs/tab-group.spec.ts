@@ -284,6 +284,7 @@ describe('MatTabGroup', () => {
       fixture.detectChanges();
       const labels = fixture.debugElement.queryAll(By.css('.mat-tab-disabled'));
       expect(labels.length).toBe(1);
+      expect(labels[0].nativeElement.getAttribute('aria-disabled')).toBe('true');
     });
 
     it('should set the disabled flag on tab', () => {
@@ -293,6 +294,7 @@ describe('MatTabGroup', () => {
       let labels = fixture.debugElement.queryAll(By.css('.mat-tab-disabled'));
       expect(tabs[2].disabled).toBe(false);
       expect(labels.length).toBe(1);
+      expect(labels[0].nativeElement.getAttribute('aria-disabled')).toBe('true');
 
       fixture.componentInstance.isDisabled = true;
       fixture.detectChanges();
@@ -300,6 +302,8 @@ describe('MatTabGroup', () => {
       expect(tabs[2].disabled).toBe(true);
       labels = fixture.debugElement.queryAll(By.css('.mat-tab-disabled'));
       expect(labels.length).toBe(2);
+      expect(labels.every(label => label.nativeElement.getAttribute('aria-disabled') === 'true'))
+          .toBe(true);
     });
   });
 
