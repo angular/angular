@@ -217,9 +217,9 @@ export interface NgModule {
    *
    * A template can use exported declarables from any
    * imported module, including those from modules that are imported indirectly
-   * and re-exported. 
+   * and re-exported.
    * For example, `ModuleA` imports `ModuleB`, and also exports
-   * it, which makes the declarables from `ModuleB` available 
+   * it, which makes the declarables from `ModuleB` available
    * wherever `ModuleA` is imported.
    *
    * ### Example

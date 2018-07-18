@@ -102,7 +102,7 @@ export interface DoCheck {
      * after the default change-detector runs.
      * See `KeyValueDiffers` and `IterableDiffers` for implementing
      * custom change checking for collections.
-     * 
+     *
      */
   ngDoCheck(): void;
 }
