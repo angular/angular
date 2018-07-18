@@ -29,6 +29,61 @@ const srcsToFmt = [
   '!tools/ts-api-guardian/test/fixtures/**',
 ];
 
+/**
+ * Gulp stream that wraps the gulp-git status task
+ * and converts the stdout into a stream of files
+ */
+function gulpStatus() {
+  const Vinyl = require('vinyl');
+  const path = require('path');
+  const gulpGit = require('gulp-git');
+  const through = require('through2');
+  const srcStream = through.obj();
+
+  const opt = {cwd: process.cwd()};
+
+  // https://git-scm.com/docs/git-status#_short_format
+  const RE_STATUS = /^((\s\w)|(\w+)|\?{0,2})\s([\w\+\-\/\\\.]+)(\s->\s)?([\w\+\-\/\\\.]+)*\n/gm;
+
+  gulpGit.status({args: '--porcelain', quiet: true}, function(err, stdout) {
+    if (err) return srcStream.emit('error', err);
+
+    const data = stdout.toString();
+    let currentMatch;
+
+    while ((currentMatch = RE_STATUS.exec(data)) !== null) {
+      // This is necessary to avoid infinite loops with zero-width matches
+      if (currentMatch.index === RE_STATUS.lastIndex) {
+        RE_STATUS.lastIndex++;
+      }
+
+      // status
+      const status = currentMatch[1].trim().toLowerCase();
+
+      // File has been deleted
+      if (status.includes('d')) {
+        continue;
+      }
+
+      // file path
+      const currentFilePath = currentMatch[4];
+
+      // new file path in case its been moved
+      const newFilePath = currentMatch[6];
+      const filePath = newFilePath || currentFilePath;
+
+      srcStream.write(new Vinyl({
+        path: path.resolve(opt.cwd, filePath),
+        cwd: opt.cwd,
+      }));
+    }
+
+    srcStream.end();
+  });
+
+  return srcStream;
+}
+
 module.exports = {
   // Check source code for formatting errors (clang-format)
   enforce: (gulp) => () => {
@@ -43,6 +98,18 @@ module.exports = {
     const format = require('gulp-clang-format');
     const clangFormat = require('clang-format');
     return gulp.src(srcsToFmt, {base: '.'})
+        .pipe(format.format('file', clangFormat))
+        .pipe(gulp.dest('.'));
+  },
+
+  // Format only the changed source code files with clang-format (see .clang-format)
+  'format-changed': (gulp) => () => {
+    const format = require('gulp-clang-format');
+    const clangFormat = require('clang-format');
+    const gulpFilter = require('gulp-filter');
+
+    return gulpStatus()
+        .pipe(gulpFilter(srcsToFmt))
         .pipe(format.format('file', clangFormat))
         .pipe(gulp.dest('.'));
   }
