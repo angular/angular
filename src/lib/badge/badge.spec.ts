@@ -114,6 +114,32 @@ describe('MatBadge', () => {
     expect(badgeContent.getAttribute('aria-describedby')).toBeFalsy();
   });
 
+  it('should toggle visibility based on whether the badge has content', () => {
+    const classList = badgeNativeElement.classList;
+
+    expect(classList.contains('mat-badge-hidden')).toBe(false);
+
+    testComponent.badgeContent = '';
+    fixture.detectChanges();
+
+    expect(classList.contains('mat-badge-hidden')).toBe(true);
+
+    testComponent.badgeContent = 'hello';
+    fixture.detectChanges();
+
+    expect(classList.contains('mat-badge-hidden')).toBe(false);
+
+    testComponent.badgeContent = ' ';
+    fixture.detectChanges();
+
+    expect(classList.contains('mat-badge-hidden')).toBe(true);
+
+    testComponent.badgeContent = 0;
+    fixture.detectChanges();
+
+    expect(classList.contains('mat-badge-hidden')).toBe(false);
+  });
+
 });
 
 /** Test component that contains a MatBadge. */
@@ -132,7 +158,7 @@ describe('MatBadge', () => {
 })
 class BadgeTestApp {
   badgeColor: ThemePalette;
-  badgeContent = '1';
+  badgeContent: string | number = '1';
   badgeDirection = 'above after';
   badgeHidden = false;
   badgeSize = 'medium';

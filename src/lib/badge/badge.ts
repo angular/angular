@@ -31,10 +31,12 @@ export type MatBadgeSize = 'small' | 'medium' | 'large';
     '[class.mat-badge-small]': 'size === "small"',
     '[class.mat-badge-medium]': 'size === "medium"',
     '[class.mat-badge-large]': 'size === "large"',
-    '[class.mat-badge-hidden]': 'hidden',
+    '[class.mat-badge-hidden]': 'hidden || !_hasContent',
   },
 })
 export class MatBadge implements OnDestroy {
+  /** Whether the badge has any content. */
+  _hasContent = false;
 
   /** The color of the badge. Can be `primary`, `accent`, or `warn`. */
   @Input('matBadgeColor')
@@ -62,8 +64,9 @@ export class MatBadge implements OnDestroy {
   /** The content for the badge */
   @Input('matBadge')
   get content(): string { return this._content; }
-  set content(val: string) {
-    this._content = val;
+  set content(value: string) {
+    this._content = value;
+    this._hasContent = value != null && `${value}`.trim().length > 0;
     this._updateTextContent();
   }
   private _content: string;
