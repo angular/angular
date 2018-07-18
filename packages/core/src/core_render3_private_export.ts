@@ -76,6 +76,7 @@ export {
   e as ɵe,
   p as ɵp,
   pD as ɵpD,
+  r as ɵr,
   rS as ɵrS,
   a as ɵa,
   s as ɵs,

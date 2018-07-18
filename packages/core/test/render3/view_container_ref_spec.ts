@@ -506,9 +506,9 @@ describe('ViewContainerRef', () => {
             *
             * <child [tpl]="foo"></child>                           <-- template insertion inside
             */
-           const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+           const Parent = createComponent('parent', function(rf: RenderFlags, parent: any) {
              if (rf & RenderFlags.Create) {
-               container(0, template);
+               container(0, fooTemplate);
                elementStart(1, 'child');
                elementEnd();
              }
@@ -519,18 +519,19 @@ describe('ViewContainerRef', () => {
                elementProperty(1, 'tpl', bind(tplRef));
              }
 
-             function template(rf1: RenderFlags, ctx1: any, parent: any) {
-               if (rf1 & RenderFlags.Create) {
-                 elementStart(0, 'div');
-                 { text(1); }
-                 elementEnd();
-               }
-
-               if (rf1 & RenderFlags.Update) {
-                 textBinding(1, bind(parent.name));
-               }
-             }
            }, [Child]);
+
+           function fooTemplate(rf1: RenderFlags, ctx: any, parent: any) {
+             if (rf1 & RenderFlags.Create) {
+               elementStart(0, 'div');
+               { text(1); }
+               elementEnd();
+             }
+
+             if (rf1 & RenderFlags.Update) {
+               textBinding(1, bind(parent.name));
+             }
+           }
 
            const fixture = new ComponentFixture(Parent);
            fixture.component.name = 'Parent';
@@ -609,36 +610,36 @@ describe('ViewContainerRef', () => {
             elementProperty(1, 'rows', bind(parent.rows));
           }
 
-          function rowTemplate(rf1: RenderFlags, row: any, parent: any) {
-            if (rf1 & RenderFlags.Create) {
-              container(0, cellTemplate);
-              elementStart(1, 'loop-comp');
-              elementEnd();
-            }
-
-            if (rf1 & RenderFlags.Update) {
-              // Hack until we have local refs for templates
-              const cellTemplateRef =
-                  getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-              elementProperty(1, 'tpl', bind(cellTemplateRef));
-              elementProperty(1, 'rows', bind(row.$implicit.data));
-            }
-          }
-
-          function cellTemplate(rf1: RenderFlags, cell: any, row: any, parent: any) {
-            if (rf1 & RenderFlags.Create) {
-              elementStart(0, 'div');
-              { text(1); }
-              elementEnd();
-            }
-
-            if (rf1 & RenderFlags.Update) {
-              textBinding(
-                  1, interpolation3(
-                         '', cell.$implicit, ' - ', row.$implicit.value, ' - ', parent.name, ''));
-            }
-          }
         }, [LoopComp]);
+
+        function rowTemplate(rf1: RenderFlags, row: any, parent: any) {
+          if (rf1 & RenderFlags.Create) {
+            container(0, cellTemplate);
+            elementStart(1, 'loop-comp');
+            elementEnd();
+          }
+
+          if (rf1 & RenderFlags.Update) {
+            // Hack until we have local refs for templates
+            const cellTemplateRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+            elementProperty(1, 'tpl', bind(cellTemplateRef));
+            elementProperty(1, 'rows', bind(row.$implicit.data));
+          }
+        }
+
+        function cellTemplate(rf1: RenderFlags, cell: any, row: any, parent: any) {
+          if (rf1 & RenderFlags.Create) {
+            elementStart(0, 'div');
+            { text(1); }
+            elementEnd();
+          }
+
+          if (rf1 & RenderFlags.Update) {
+            textBinding(
+                1, interpolation3(
+                       '', cell.$implicit, ' - ', row.$implicit.value, ' - ', parent.name, ''));
+          }
+        }
 
         const fixture = new ComponentFixture(Parent);
         fixture.component.name = 'Parent';

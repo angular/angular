@@ -18,6 +18,9 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "DECLARATION_VIEW"
+  },
+  {
     "name": "DIRECTIVES"
   },
   {
@@ -97,6 +100,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "callTemplateWithContexts"
   },
   {
     "name": "canInsertNativeNode"
@@ -210,10 +216,10 @@
     "name": "refreshContentQueries"
   },
   {
-    "name": "refreshDynamicEmbeddedViews"
+    "name": "refreshDescendantViews"
   },
   {
-    "name": "refreshView"
+    "name": "refreshDynamicEmbeddedViews"
   },
   {
     "name": "renderComponent"

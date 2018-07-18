@@ -11,11 +11,19 @@ import {RendererType2} from '../../render/api';
 import {Type} from '../../type';
 import {CssSelectorList} from './projection';
 
+
 /**
- * Definition of what a template rendering function should look like.
+ * Definition of what a template rendering function should look like for a component.
  */
 export type ComponentTemplate<T> = {
-  (rf: RenderFlags, ctx: T, ...parentCtx: ({} | null)[]): void; ngPrivateData?: never;
+  (rf: RenderFlags, ctx: T): void; ngPrivateData?: never;
+};
+
+/**
+ * Definition of what a template rendering function should look like for an embedded view.
+ */
+export type EmbeddedTemplate<T> = {
+  (rf: RenderFlags, ctx: T, ...parentCtx: any[]): void;
 };
 
 /**
