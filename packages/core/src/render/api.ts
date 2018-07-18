@@ -195,11 +195,11 @@ export enum RendererStyleFlags2 {
  *
  * Create your custom renderer using `RendererFactory2`.
  *
- * Use a custom renderer to bypass Angular's templating and make custom UI changes that can't be
- * expressed declaratively.
+ * Use a custom renderer to bypass Angular's templating and
+ * make custom UI changes that can't be expressed declaratively.
  * For example if you need to set a property or an attribute whose name is
- * not statically known, use the `setElementProperty()` or
- * `setElementAttribute()` method.
+ * not statically known, use the `setProperty()` or
+ * `setAttribute()` method.
  *
  * @experimental
  */
