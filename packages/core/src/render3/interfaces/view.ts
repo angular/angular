@@ -38,7 +38,7 @@ export const SANITIZER = 12;
 export const TAIL = 13;
 export const CONTAINER_INDEX = 14;
 export const CONTENT_QUERIES = 15;
-export const DECLARATION_PARENT = 16;
+export const DECLARATION_VIEW = 16;
 
 /**
  * `LViewData` stores all of the information needed to process the instructions as
@@ -63,7 +63,7 @@ export interface LViewData extends Array<any> {
    * `LViewData`. Without this, the render method would have to keep a stack of
    * views as it is recursively rendering templates.
    *
-   * This is also the "insertion" parent for embedded views. This allows us to properly
+   * This is the "insertion" view for embedded views. This allows us to properly
    * destroy embedded views.
    */
   [PARENT]: LViewData|null;
@@ -167,16 +167,16 @@ export interface LViewData extends Array<any> {
   [CONTENT_QUERIES]: QueryList<any>[]|null;
 
   /**
-   * Parent view where this view's template was declared.
+   * View where this view's template was declared.
    *
    * Only applicable for dynamically created views. Will be null for inline/component views.
    *
    * The template for a dynamically created view may be declared in a different view than
-   * it is inserted. We already track the "insertion parent" (view where the template was
-   * inserted) in LViewData[PARENT], but we also need access to the "declaration parent"
+   * it is inserted. We already track the "insertion view" (view where the template was
+   * inserted) in LViewData[PARENT], but we also need access to the "declaration view"
    * (view where the template was declared). Otherwise, we wouldn't be able to call the
    * view's template function with the proper contexts. Context should be inherited from
-   * the declaration parent tree, not the insertion parent tree.
+   * the declaration view tree, not the insertion view tree.
    *
    * Example (AppComponent template):
    *
@@ -184,13 +184,13 @@ export interface LViewData extends Array<any> {
    * <some-comp [tpl]="foo"></some-comp>    <-- inserted inside this component -->
    *
    * The <ng-template> above is declared in the AppComponent template, but it will be passed into
-   * SomeComp and inserted there. In this case, the declaration parent would be the AppComponent,
-   * but the insertion parent would be SomeComp. When we are removing views, we would want to
-   * traverse through the insertion parent to clean up listeners. When we are calling the
-   * template function during change detection, we need the declaration parent to get inherited
+   * SomeComp and inserted there. In this case, the declaration view would be the AppComponent,
+   * but the insertion view would be SomeComp. When we are removing views, we would want to
+   * traverse through the insertion view to clean up listeners. When we are calling the
+   * template function during change detection, we need the declaration view to get inherited
    * context.
    */
-  [DECLARATION_PARENT]: LViewData|null;
+  [DECLARATION_VIEW]: LViewData|null;
 }
 
 /** Flags associated with an LView (saved in LViewData[FLAGS]) */

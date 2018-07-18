@@ -27,6 +27,9 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "DECLARATION_VIEW"
+  },
+  {
     "name": "DIRECTIVES"
   },
   {
@@ -136,6 +139,24 @@
   },
   {
     "name": "TemplateRef$1"
+  },
+  {
+    "name": "ToDoAppComponent_footer_Template_6"
+  },
+  {
+    "name": "ToDoAppComponent_footer_button_Template_5"
+  },
+  {
+    "name": "ToDoAppComponent_section_Template_5"
+  },
+  {
+    "name": "ToDoAppComponent_section_input_Template_1"
+  },
+  {
+    "name": "ToDoAppComponent_section_li_Template_3"
+  },
+  {
+    "name": "ToDoAppComponent_section_li_input_Template_6"
   },
   {
     "name": "Todo"
@@ -304,6 +325,9 @@
   },
   {
     "name": "callHooks"
+  },
+  {
+    "name": "callTemplateWithContexts"
   },
   {
     "name": "canInsertNativeNode"
@@ -702,16 +726,19 @@
     "name": "readElementValue"
   },
   {
+    "name": "reference"
+  },
+  {
     "name": "refreshChildComponents"
   },
   {
     "name": "refreshContentQueries"
   },
   {
-    "name": "refreshDynamicEmbeddedViews"
+    "name": "refreshDescendantViews"
   },
   {
-    "name": "refreshView"
+    "name": "refreshDynamicEmbeddedViews"
   },
   {
     "name": "removeListeners"

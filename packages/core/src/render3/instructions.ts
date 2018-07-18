@@ -16,13 +16,13 @@ import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotE
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
-import {ComponentDefInternal, ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
+import {ComponentDefInternal, ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefListOrFactory, EmbeddedTemplate, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_PARENT, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_VIEW, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
@@ -334,7 +334,7 @@ export function createLViewData<T>(
     null,                                                                        // tail
     -1,                                                                          // containerIndex
     null,                                                                        // contentQueries
-    null  // declarationParent
+    null                                                                         // declarationView
   ];
 }
 
@@ -500,7 +500,7 @@ export function renderTemplate<T>(
  * Such lViewNode will then be renderer with renderEmbeddedTemplate() (see below).
  */
 export function createEmbeddedViewNode<T>(
-    tView: TView, context: T, declarationParent: LViewData, renderer: Renderer3,
+    tView: TView, context: T, declarationView: LViewData, renderer: Renderer3,
     queries?: LQueries | null): LViewNode {
   const _isParent = isParent;
   const _previousOrParentNode = previousOrParentNode;
@@ -509,7 +509,7 @@ export function createEmbeddedViewNode<T>(
 
   const lView =
       createLViewData(renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer());
-  lView[DECLARATION_PARENT] = declarationParent;
+  lView[DECLARATION_VIEW] = declarationView;
 
   if (queries) {
     lView[QUERIES] = queries.createView();
@@ -547,7 +547,7 @@ export function renderEmbeddedTemplate<T>(
 
       oldView = enterView(viewNode.data !, viewNode);
       namespaceHTML();
-      callTemplateWithContexts(rf, context, tView.template !, viewNode.data ![DECLARATION_PARENT] !);
+      callTemplateWithContexts(rf, context, tView.template !, viewNode.data ![DECLARATION_VIEW] !);
       if (rf & RenderFlags.Update) {
         refreshDescendantViews();
       } else {
@@ -577,11 +577,14 @@ export function renderEmbeddedTemplate<T>(
  *      <li *ngFor="let item of list"> {{ item }} </li>
  *  </ul>
  *
- * function AppComponentTemplate(rf, ctx) {
- *  // instructions
- *  function ulTemplate(rf, ulCtx, appCtx) {...}
- *  function liTemplate(rf, liCtx, ulCtx, appCtx) {...}
- * }
+ * function ulTemplate(rf, ulCtx, appCtx) {...}
+ * function liTemplate(rf, liCtx, ulCtx, appCtx) {...}
+ *
+ * class AppComponent {...}
+ * AppComponent.ngComponentDef = defineComponent({
+ *   template: function AppComponentTemplate(rf, ctx) {...}
+ * });
+ *
  *
  * The ul view's template must be called with its own context and its declaration
  * parent, AppComponent. The li view's template must be called with its own context, its
@@ -591,71 +594,85 @@ export function renderEmbeddedTemplate<T>(
  * can be declared in different views than they are used.
  *
  * @param rf The RenderFlags for this template invocation
- * @param context The context for this template
+ * @param currentContext The context for this template
  * @param template The template function to call
- * @param parent1 The declaration parent of the dynamic view
+ * @param parentView The declaration view of the dynamic view
  */
-function callTemplateWithContexts(
-    rf: RenderFlags, context: any, template: ComponentTemplate<any>, parent1: LViewData): void {
-  const parent2 = parent1[DECLARATION_PARENT];
+function callTemplateWithContexts<T>(
+    rf: RenderFlags, currentContext: T, template: EmbeddedTemplate<T>,
+    parentView: LViewData): void {
+  const parentContext = parentView[CONTEXT];
+  const parentView2 = parentView[DECLARATION_VIEW];
+
   // Calling a function with extra arguments has a VM cost, so only call with necessary args
-  if (!parent2) return template(rf, context, parent1[CONTEXT]);
-
-  const parent3 = parent2[DECLARATION_PARENT];
-  if (!parent3) return template(rf, context, parent1[CONTEXT], parent2[CONTEXT]);
-
-  const parent4 = parent3[DECLARATION_PARENT];
-  if (!parent4) {
-    return template(rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT]);
+  if (parentView2 === null) {
+    return template(rf, currentContext, parentContext);
   }
 
-  const parent5 = parent4[DECLARATION_PARENT];
-  if (!parent5) {
-    return template(
-        rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT]);
+  const parentContext2 = parentView2[CONTEXT];
+  const parentView3 = parentView2[DECLARATION_VIEW];
+  if (parentView3 === null) {
+    return template(rf, currentContext, parentContext, parentContext2);
   }
 
-  const parent6 = parent5[DECLARATION_PARENT];
-  if (!parent6) {
-    return template(
-        rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT],
-        parent5[CONTEXT]);
+  const parentContext3 = parentView3[CONTEXT];
+  const parentView4 = parentView3[DECLARATION_VIEW];
+  if (parentView4 === null) {
+    return template(rf, currentContext, parentContext, parentContext2, parentContext3);
   }
 
-  const parent7 = parent6[DECLARATION_PARENT];
-  if (!parent7) {
+  const parentContext4 = parentView4[CONTEXT];
+  const parentView5 = parentView4[DECLARATION_VIEW];
+  if (parentView5 === null) {
     return template(
-        rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT],
-        parent5[CONTEXT], parent6[CONTEXT]);
+        rf, currentContext, parentContext, parentContext2, parentContext3, parentContext4);
   }
 
-  const parent8 = parent7[DECLARATION_PARENT];
-  if (!parent8) {
+  const parentContext5 = parentView5[CONTEXT];
+  const parentView6 = parentView5[DECLARATION_VIEW];
+  if (parentView6 === null) {
     return template(
-        rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT],
-        parent5[CONTEXT], parent6[CONTEXT], parent7[CONTEXT]);
+        rf, currentContext, parentContext, parentContext2, parentContext3, parentContext4,
+        parentContext5);
   }
 
-  const parent9 = parent8[DECLARATION_PARENT];
-  if (!parent9) {
+  const parentContext6 = parentView6[CONTEXT];
+  const parentView7 = parentView6[DECLARATION_VIEW];
+  if (parentView7 === null) {
     return template(
-        rf, context, parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT],
-        parent5[CONTEXT], parent6[CONTEXT], parent7[CONTEXT], parent8[CONTEXT]);
+        rf, currentContext, parentContext, parentContext2, parentContext3, parentContext4,
+        parentContext5, parentContext6);
+  }
+
+  const parentContext7 = parentView7[CONTEXT];
+  const parentView8 = parentView7[DECLARATION_VIEW];
+  if (parentView8 === null) {
+    return template(
+        rf, currentContext, parentContext, parentContext2, parentContext3, parentContext4,
+        parentContext5, parentContext6, parentContext7);
+  }
+
+  const parentContext8 = parentView8[CONTEXT];
+  const parentView9 = parentView8[DECLARATION_VIEW];
+  if (parentView9 === null) {
+    return template(
+        rf, currentContext, parentContext, parentContext2, parentContext3, parentContext4,
+        parentContext5, parentContext6, parentContext7, parentContext8);
   }
 
   // We support up to 8 nesting levels in embedded views before we give up and call apply()
-  const contexts = [
-    parent1[CONTEXT], parent2[CONTEXT], parent3[CONTEXT], parent4[CONTEXT], parent5[CONTEXT],
-    parent6[CONTEXT], parent7[CONTEXT], parent8[CONTEXT], parent9[CONTEXT]
+  const templateArgs = [
+    rf, currentContext, parentContext, parentContext2, parentContext3, parentContext4,
+    parentContext5, parentContext6, parentContext7, parentContext8, parentView9[CONTEXT]
   ];
 
-  let currentView: LViewData = parent9;
-  while (currentView[DECLARATION_PARENT]) {
-    contexts.push(currentView[DECLARATION_PARENT] ![CONTEXT]);
-    currentView = currentView[DECLARATION_PARENT] !;
+  let currentDeclarationView: LViewData|null = parentView9[DECLARATION_VIEW];
+  while (currentDeclarationView) {
+    templateArgs.push(currentDeclarationView[CONTEXT]);
+    currentDeclarationView = currentDeclarationView[DECLARATION_VIEW] !;
   }
 
-  tView.template !(rf, context, ...contexts);
+  template.apply(null, templateArgs);
 }
 
 export function renderComponentOrTemplate<T>(
@@ -990,7 +1007,7 @@ function getOrCreateTView(
  * @param pipes Registry of pipes for this view
  */
 export function createTView(
-    viewIndex: number, template: ComponentTemplate<any>| null,
+    viewIndex: number, template: ComponentTemplate<any>| EmbeddedTemplate<any>| null,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
     viewQuery: ComponentQuery<any>| null): TView {
   ngDevMode && ngDevMode.tView++;
@@ -1811,7 +1828,7 @@ export function createLContainer(
  * @param localRefs A set of local reference bindings on the element.
  */
 export function container(
-    index: number, template?: ComponentTemplate<any>, tagName?: string | null, attrs?: TAttributes,
+    index: number, template?: EmbeddedTemplate<any>, tagName?: string | null, attrs?: TAttributes,
     localRefs?: string[] | null): void {
   ngDevMode &&
       assertEqual(
@@ -2634,6 +2651,20 @@ export function store<T>(index: number, value: T): void {
     tView.data[adjustedIndex] = null;
   }
   viewData[adjustedIndex] = value;
+}
+
+/** Retrieves a value from an LViewData at the given nesting level. */
+export function reference<T>(nestingLevel: number, index: number) {
+  let currentView = viewData;
+  while (nestingLevel > 0) {
+    ngDevMode && assertDefined(
+                     currentView[DECLARATION_VIEW],
+                     'Declaration view should be defined if nesting level is greater than 0.');
+    currentView = currentView[DECLARATION_VIEW] !;
+    nestingLevel--;
+  }
+
+  return loadInternal<T>(index, currentView);
 }
 
 /** Retrieves a value from the `directives` array. */

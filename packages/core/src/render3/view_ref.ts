@@ -12,6 +12,7 @@ import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
 import {checkNoChanges, detectChanges, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
+import {EmbeddedTemplate} from './interfaces/definition';
 import {LViewNode} from './interfaces/node';
 import {FLAGS, LViewData, LViewFlags} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
@@ -243,3 +244,30 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
   attachToAppRef(appRef: ApplicationRef) { this._appRef = appRef; }
 }
+<<<<<<< HEAD
+=======
+
+
+export class EmbeddedViewRef<T> extends ViewRef<T> {
+  /**
+   * @internal
+   */
+  _lViewNode: LViewNode;
+  private _viewContainerRef: viewEngine_ViewContainerRef|null = null;
+
+  constructor(viewNode: LViewNode, template: EmbeddedTemplate<T>, context: T) {
+    super(viewNode.data, context);
+    this._lViewNode = viewNode;
+  }
+
+  destroy(): void {
+    if (this._viewContainerRef && viewAttached(this._view)) {
+      this._viewContainerRef.detach(this._viewContainerRef.indexOf(this));
+      this._viewContainerRef = null;
+    }
+    super.destroy();
+  }
+
+  attachToViewContainerRef(vcRef: viewEngine_ViewContainerRef) { this._viewContainerRef = vcRef; }
+}
+>>>>>>> fixup! fix(ivy): flatten template fns for nested views

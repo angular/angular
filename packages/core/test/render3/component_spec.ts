@@ -389,28 +389,31 @@ describe('recursive components', () => {
           elementProperty(2, 'ngIf', bind(ctx.data.right));
         }
 
-        function IfTemplate(rf1: RenderFlags, left: any, parent: NgIfTree) {
-          if (rf1 & RenderFlags.Create) {
-            elementStart(0, 'ng-if-tree');
-            elementEnd();
-          }
-          if (rf1 & RenderFlags.Update) {
-            elementProperty(0, 'data', bind(parent.data.left));
-          }
-        }
-        function IfTemplate2(rf1: RenderFlags, right: any, parent: NgIfTree) {
-          if (rf1 & RenderFlags.Create) {
-            elementStart(0, 'ng-if-tree');
-            elementEnd();
-          }
-          if (rf1 & RenderFlags.Update) {
-            elementProperty(0, 'data', bind(parent.data.right));
-          }
-        }
       },
       inputs: {data: 'data'},
     });
   }
+
+  function IfTemplate(rf1: RenderFlags, left: any, parent: NgIfTree) {
+    if (rf1 & RenderFlags.Create) {
+      elementStart(0, 'ng-if-tree');
+      elementEnd();
+    }
+    if (rf1 & RenderFlags.Update) {
+      elementProperty(0, 'data', bind(parent.data.left));
+    }
+  }
+
+  function IfTemplate2(rf1: RenderFlags, right: any, parent: NgIfTree) {
+    if (rf1 & RenderFlags.Create) {
+      elementStart(0, 'ng-if-tree');
+      elementEnd();
+    }
+    if (rf1 & RenderFlags.Update) {
+      elementProperty(0, 'data', bind(parent.data.right));
+    }
+  }
+
   (NgIfTree.ngComponentDef as ComponentDefInternal<NgIfTree>).directiveDefs =
       () => [NgIfTree.ngComponentDef, NgIf.ngDirectiveDef];
 
