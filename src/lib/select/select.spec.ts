@@ -3850,6 +3850,29 @@ describe('MatSelect', () => {
       expect(fixture.componentInstance.control.value).toEqual(['steak-0', 'pizza-1', 'tacos-2']);
     }));
 
+    it('should be able to customize the value sorting logic', fakeAsync(() => {
+      fixture.componentInstance.sortComparator = (a, b, optionsArray) => {
+        return optionsArray.indexOf(b) - optionsArray.indexOf(a);
+      };
+      fixture.detectChanges();
+
+      trigger.click();
+      fixture.detectChanges();
+      flush();
+
+      const options = overlayContainerElement.querySelectorAll('mat-option') as
+          NodeListOf<HTMLElement>;
+
+      for (let i = 0; i < 3; i++) {
+        options[i].click();
+      }
+      fixture.detectChanges();
+
+      // Expect the items to be in reverse order.
+      expect(trigger.textContent).toContain('Tacos, Pizza, Steak');
+      expect(fixture.componentInstance.control.value).toEqual(['tacos-2', 'pizza-1', 'steak-0']);
+    }));
+
     it('should sort the values that get set via the model based on the panel order',
         fakeAsync(() => {
           trigger.click();
@@ -4320,7 +4343,8 @@ class FloatLabelSelect {
   selector: 'multi-select',
   template: `
     <mat-form-field>
-      <mat-select multiple placeholder="Food" [formControl]="control">
+      <mat-select multiple placeholder="Food" [formControl]="control"
+        [sortComparator]="sortComparator">
         <mat-option *ngFor="let food of foods"
                     [value]="food.value">{{ food.viewValue }}
         </mat-option>
@@ -4343,6 +4367,7 @@ class MultiSelect {
 
   @ViewChild(MatSelect) select: MatSelect;
   @ViewChildren(MatOption) options: QueryList<MatOption>;
+  sortComparator: (a: MatOption, b: MatOption, options: MatOption[]) => number;
 }
 
 @Component({

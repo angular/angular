@@ -382,7 +382,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   }
 
   /**
-   * A function to compare the option values with the selected values. The first argument
+   * Function to compare the option values with the selected values. The first argument
    * is a value from an option. The second is a value from the selection. A boolean
    * should be returned.
    */
@@ -416,8 +416,14 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   /** Input that can be used to specify the `aria-labelledby` attribute. */
   @Input('aria-labelledby') ariaLabelledby: string;
 
-  /** An object used to control when error messages are shown. */
+  /** Object used to control when error messages are shown. */
   @Input() errorStateMatcher: ErrorStateMatcher;
+
+  /**
+   * Function used to sort the values in a select in multiple mode.
+   * Follows the same logic as `Array.prototype.sort`.
+   */
+  @Input() sortComparator: (a: MatOption, b: MatOption, options: MatOption[]) => number;
 
   /** Unique id of the element. */
   @Input()
@@ -920,7 +926,11 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   private _sortValues() {
     if (this.multiple) {
       const options = this.options.toArray();
-      this._selectionModel.sort((a, b) => options.indexOf(a) - options.indexOf(b));
+
+      this._selectionModel.sort((a, b) => {
+        return this.sortComparator ? this.sortComparator(a, b, options) :
+                                     options.indexOf(a) - options.indexOf(b);
+      });
       this.stateChanges.next();
     }
   }
