@@ -42,4 +42,7 @@ export class MatBottomSheetConfig<D = any> {
 
   /** Whether the bottom sheet should close when the user goes backwards/forwards in history. */
   closeOnNavigation?: boolean = true;
+
+  /** Whether the bottom sheet should focus the first focusable element on open. */
+  autoFocus?: boolean = true;
 }

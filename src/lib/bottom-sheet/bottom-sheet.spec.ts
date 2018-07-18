@@ -509,6 +509,18 @@ describe('MatBottomSheet', () => {
           .toBe('INPUT', 'Expected first tabbable element (input) in the sheet to be focused.');
     }));
 
+    it('should allow disabling focus of the first tabbable element', fakeAsync(() => {
+      bottomSheet.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+        autoFocus: false
+      });
+
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      expect(document.activeElement.tagName).not.toBe('INPUT');
+    }));
+
     it('should re-focus trigger element when bottom sheet closes', fakeAsync(() => {
       const button = document.createElement('button');
       button.id = 'bottom-sheet-trigger';
