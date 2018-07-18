@@ -155,13 +155,24 @@ describe('AutofillMonitor', () => {
     let animationStartCallback: Function = () => {};
     inputEl.addEventListener.and.callFake((_, cb) => animationStartCallback = cb);
     const autofillStream = autofillMonitor.monitor(inputEl);
-    const spy = jasmine.createSpy('zone spy');
+    const spy = jasmine.createSpy('autofill spy');
 
     autofillStream.subscribe(() => spy(NgZone.isInAngularZone()));
     expect(spy).not.toHaveBeenCalled();
 
     animationStartCallback({animationName: 'cdk-text-field-autofill-start', target: inputEl});
     expect(spy).toHaveBeenCalledWith(true);
+  });
+
+  it('should not emit on init if input is unfilled', () => {
+    const inputEl = testComponent.input1.nativeElement;
+    let animationStartCallback: Function = () => {};
+    inputEl.addEventListener.and.callFake((_, cb) => animationStartCallback = cb);
+    const autofillStream = autofillMonitor.monitor(inputEl);
+    const spy = jasmine.createSpy('autofill spy');
+    autofillStream.subscribe(() => spy());
+    animationStartCallback({animationName: 'cdk-text-field-autofill-end', target: inputEl});
+    expect(spy).not.toHaveBeenCalled();
   });
 });
 
