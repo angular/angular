@@ -412,4 +412,36 @@ describe('ngtsc behavioral tests', () => {
         .toContain(
             `factory: function FooCmp_Factory() { return new FooCmp(i0.ɵinjectAttribute("test"), i0.ɵinjectChangeDetectorRef(), i0.ɵinjectElementRef(), i0.ɵdirectiveInject(i0.INJECTOR), i0.ɵinjectTemplateRef(), i0.ɵinjectViewContainerRef()); }`);
   });
+
+  it('should generate queries for components', () => {
+    writeConfig();
+    write(`test.ts`, `
+        import {Component, ContentChild, ContentChildren, TemplateRef, ViewChild} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div #foo></div>',
+          queries: {
+            'mview': new ViewChild('test1'),
+            'mcontent': new ContentChild('test2'),
+          }
+        })
+        class FooCmp {
+          @ContentChild('bar', {read: TemplateRef}) child: any;
+          @ContentChildren(TemplateRef) children: any;
+          get aview(): any { return null; }
+          @ViewChild('accessor') set aview(value: any) {}
+        }
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+    const jsContents = getContents('test.js');
+    expect(jsContents).toContain(`i0.ɵQ(null, ["bar"], true, TemplateRef)`);
+    expect(jsContents).toContain(`i0.ɵQ(null, TemplateRef, false)`);
+    expect(jsContents).toContain(`i0.ɵQ(null, ["test2"], true)`);
+    expect(jsContents).toContain(`i0.ɵQ(0, ["accessor"], true)`);
+    expect(jsContents).toContain(`i0.ɵQ(1, ["test1"], true)`);
+  });
 });
