@@ -263,7 +263,7 @@ export abstract class Renderer2 {
   abstract removeChild(parent: any, oldChild: any): void;
   /**
    * Implement this callback to prepare an element to be bootstrapped
-   * as a root element, and return the element instance..
+   * as a root element, and return the element instance.
    * @param selectorOrNode The DOM element.
    * @returns The root element.
    */
