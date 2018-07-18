@@ -444,4 +444,41 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain(`i0.ɵQ(0, ["accessor"], true)`);
     expect(jsContents).toContain(`i0.ɵQ(1, ["test1"], true)`);
   });
+
+  it('should generate host bindings for directives', () => {
+    writeConfig();
+    write(`test.ts`, `
+        import {Component, HostBinding, HostListener, TemplateRef} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: 'Test',
+          host: {
+            '[attr.hello]': 'foo',
+            '(click)': 'onClick($event)',
+            '[prop]': 'bar',
+          },
+        })
+        class FooCmp {
+          onClick(event: any): void {}
+
+          @HostBinding('class.someclass')
+          get someClass(): boolean { return false; }
+
+          @HostListener('onChange', ['arg'])
+          onChange(event: any, arg: any): void {}
+        }
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+    const jsContents = getContents('test.js');
+    expect(jsContents).toContain(`i0.ɵp(elIndex, "attr.hello", i0.ɵb(i0.ɵd(dirIndex).foo));`);
+    expect(jsContents).toContain(`i0.ɵp(elIndex, "prop", i0.ɵb(i0.ɵd(dirIndex).bar));`);
+    expect(jsContents)
+        .toContain('i0.ɵp(elIndex, "class.someclass", i0.ɵb(i0.ɵd(dirIndex).someClass))');
+    expect(jsContents).toContain('i0.ɵd(dirIndex).onClick($event)');
+    expect(jsContents).toContain('i0.ɵd(dirIndex).onChange(i0.ɵd(dirIndex).arg)');
+  });
 });
