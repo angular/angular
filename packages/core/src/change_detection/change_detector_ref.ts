@@ -10,17 +10,17 @@
  * Base class for Angular Views, provides change detection functionality.
  * A change-detection tree collects all views that are to be checked for changes.
  * Use the methods to add and remove views from the tree, initiate change-detection,
- * and exlicitly mark views as _dirty_, meaning that they have changed and need to be rerendered.
+ * and explicitly mark views as _dirty_, meaning that they have changed and need to be rerendered.
  *
  * @usageNotes
  *
  * The following examples demonstrate how to modify default change-detection behavior
  * to perform explicit detection when needed.
  *
- * ### Use `markForCheck()` with `checkOnce` strategy
+ * ### Use `markForCheck()` with `CheckOnce` strategy
  *
  * The following example sets the `OnPush` change-detection strategy for a component
- * (`checkOnce`, rather than the default `checkAlways`), then forces a second check
+ * (`CheckOnce`, rather than the default `CheckAlways`), then forces a second check
  * after an interval. See [live demo](http://plnkr.co/edit/GC512b?p=preview).
  *
  * <code-example path="core/ts/change_detect/change-detection.ts"

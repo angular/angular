@@ -211,19 +211,22 @@ export interface NgModule {
   declarations?: Array<Type<any>|any[]>;
 
   /**
-   * The set of NgModules whose exported directives and pipes
+   * The set of NgModules whose exported [declarables](guide/glossary#declarable)
    * are available to templates in this module.
    *
    * @usageNotes
    *
-   * A template can exported declarables from any
-   * imported module, including those that are imported indirectly.
-   * For example, `CommonModule` imports `BrowserModule`, make the
-   * `BrowserModule` exports available wherever `CommonModule` is imported.
+   * A template can use exported declarables from any
+   * imported module, including those from modules that are imported indirectly
+   * and re-exported.
+   * For example, `ModuleA` imports `ModuleB`, and also exports
+   * it, which makes the declarables from `ModuleB` available
+   * wherever `ModuleA` is imported.
    *
    * ### Example
    *
-   * The following example allows MainModule to use `CommonModule`:
+   * The following example allows MainModule to use anthing exported by
+   * `CommonModule`:
    *
    * ```javascript
    * @NgModule({
@@ -241,19 +244,18 @@ export interface NgModule {
    * NgModule that can be used in the template of any component that is part of an
    * NgModule that imports this NgModule. Exported declarations are the module's public API.
    *
+   * A declarable belongs to one and only one NgModule.
+   * A module can list another module among its exports, in which case all of that module's
+   * public declaration are exported.
+   *
    * @usageNotes
    *
-   * Declarations are private by default. If this module does not export UserComponent,
-   * then only the components within this module can use UserComponent.
+   * Declarations are private by default.
+   * If this ModuleA does not export UserComponent, then only the components within this
+   * ModuleA can use UserComponent.
    *
-   * Importing a module does not automatically re-export the imported module's imports.
-   * Module 'B' can't use `ngIf` just because it imported module 'A' which imported `CommonModule`.
-   * Module 'B' must import `CommonModule` itself.
-   *
-   * A module can list another module among its exports, in which case all of that module's
-   * public declaration are exported. Re-export makes module transitivity explicit.
-   * If Module 'A' re-exports `CommonModule` and Module 'B' imports Module 'A',
-   * then Module 'B' components can use `ngIf` even though 'B' itself did not import `CommonModule`.
+   * ModuleA can import ModuleB and also export it, making exports from ModuleB
+   * available to an NgModule that imports ModuleA.
    *
    * ### Example
    *
@@ -279,7 +281,7 @@ export interface NgModule {
    * Angular automatically adds components in the module's bootstrap
    * and route definitions into the `entryComponents` list. Use this
    * option to add components that are bootstrapped
-   * using one of the imperative techniques, such as `ViewComponentRef.createComponent()`.
+   * using one of the imperative techniques, such as `ViewContainerRef.createComponent()`.
    *
    * @see [Entry Components](guide/entry-components)
    */
@@ -346,7 +348,7 @@ export const NgModule: NgModuleDecorator = makeDecorator(
      * with information about what belongs to the NgModule.
      * * The `providers` options configures the NgModule's injector to provide
      * dependencies the NgModule members.
-     * * The `import` and `export` options bring in members from other modules, and make
+     * * The `imports` and `exports` options bring in members from other modules, and make
      * this module's members available to others.
      */
     (type: Type<any>, meta: NgModule) => (R3_COMPILE_NGMODULE || preR3NgModuleCompile)(type, meta));
