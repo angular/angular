@@ -80,6 +80,7 @@ export class Identifiers {
 
   static load: o.ExternalReference = {name: 'ɵld', moduleName: CORE};
   static loadDirective: o.ExternalReference = {name: 'ɵd', moduleName: CORE};
+  static loadQueryList: o.ExternalReference = {name: 'ɵql', moduleName: CORE};
 
   static pipe: o.ExternalReference = {name: 'ɵPp', moduleName: CORE};
 
@@ -142,6 +143,7 @@ export class Identifiers {
 
   static query: o.ExternalReference = {name: 'ɵQ', moduleName: CORE};
   static queryRefresh: o.ExternalReference = {name: 'ɵqR', moduleName: CORE};
+  static registerContentQuery: o.ExternalReference = {name: 'ɵQr', moduleName: CORE};
 
   static NgOnChangesFeature: o.ExternalReference = {name: 'ɵNgOnChangesFeature', moduleName: CORE};
 
