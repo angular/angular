@@ -920,7 +920,7 @@ so it is safe to call `TestBed.get()` as follows:
 <div class="alert is-helpful">
 
 For a use case in which `TestBed.get()` does not work,
-see the section [_Override a component's providers_](#component-override), which
+see the [_Override component providers_](#component-override) section that
 explains when and why you must get the service from the component's injector instead.
 
 </div>
