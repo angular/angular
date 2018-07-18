@@ -823,13 +823,14 @@ describe('content projection', () => {
         elementProperty(1, 'ngIf', bind(ctx.showing));
       }
 
-      function IfTemplate(rf1: RenderFlags, ctx1: any, child: any) {
-        if (rf1 & RenderFlags.Create) {
-          projectionDef();
-          projection(0);
-        }
-      }
     }, [NgIf]);
+
+    function IfTemplate(rf1: RenderFlags, ctx: any, child: any) {
+      if (rf1 & RenderFlags.Create) {
+        projectionDef();
+        projection(0);
+      }
+    }
 
     let child: {showing: boolean};
     /**
@@ -887,13 +888,14 @@ describe('content projection', () => {
         elementProperty(1, 'ngIf', bind(ctx.showing));
       }
 
-      function IfTemplate(rf1: RenderFlags, ctx1: any, child: any) {
-        if (rf1 & RenderFlags.Create) {
-          projectionDef();
-          projection(0);
-        }
-      }
     }, [NgIf]);
+
+    function IfTemplate(rf: RenderFlags, ctx: any, child: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef();
+        projection(0);
+      }
+    }
 
     let child: {showing: boolean};
     /**

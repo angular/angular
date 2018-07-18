@@ -226,32 +226,33 @@ describe('@angular/common integration', () => {
               elementProperty(1, 'ngForOf', bind(myApp.items));
             }
 
-            function liTemplate(rf1: RenderFlags, row: any, myApp: MyApp) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'li');
-                { container(1, spanTemplate, null, ['ngForOf', '']); }
-                elementEnd();
-              }
-              if (rf1 & RenderFlags.Update) {
-                const r1 = row.$implicit as any;
-                elementProperty(1, 'ngForOf', bind(r1.data));
-              }
-            }
-
-            function spanTemplate(rf1: RenderFlags, cell: any, row: any, myApp: MyApp) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'span');
-                { text(1); }
-                elementEnd();
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(
-                    1, interpolation2('', cell.$implicit, ' - ', (row.$implicit as any).value, ''));
-              }
-            }
           },
           directives: () => [NgForOf]
         });
+      }
+
+      function liTemplate(rf1: RenderFlags, row: any, myApp: MyApp) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'li');
+          { container(1, spanTemplate, null, ['ngForOf', '']); }
+          elementEnd();
+        }
+        if (rf1 & RenderFlags.Update) {
+          const r1 = row.$implicit as any;
+          elementProperty(1, 'ngForOf', bind(r1.data));
+        }
+      }
+
+      function spanTemplate(rf1: RenderFlags, cell: any, row: any, myApp: MyApp) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'span');
+          { text(1); }
+          elementEnd();
+        }
+        if (rf1 & RenderFlags.Update) {
+          textBinding(
+              1, interpolation2('', cell.$implicit, ' - ', (row.$implicit as any).value, ''));
+        }
       }
 
       const fixture = new ComponentFixture(MyApp);
@@ -392,135 +393,134 @@ describe('@angular/common integration', () => {
               elementProperty(0, 'ngForOf', bind(myApp.items));
             }
 
-            function itemTemplate0(rf1: RenderFlags, item0: any, myApp: MyApp) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'span');
-                { container(1, itemTemplate1, null, ['ngForOf', '']); }
-                elementEnd();
-              }
-              if (rf1 & RenderFlags.Update) {
-                const item = item0.$implicit as any;
-                elementProperty(1, 'ngForOf', bind(item.data));
-              }
-            }
-
-            function itemTemplate1(rf1: RenderFlags, item1: any, item0: any, myApp: MyApp) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'span');
-                { container(1, itemTemplate2, null, ['ngForOf', '']); }
-                elementEnd();
-              }
-              if (rf1 & RenderFlags.Update) {
-                const item = item1.$implicit as any;
-                elementProperty(1, 'ngForOf', bind(item.data));
-              }
-            }
-
-            function itemTemplate2(
-                rf1: RenderFlags, item2: any, item1: any, item0: any, myApp: MyApp) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'span');
-                { container(1, itemTemplate3, null, ['ngForOf', '']); }
-                elementEnd();
-              }
-              if (rf1 & RenderFlags.Update) {
-                const item = item2.$implicit as any;
-                elementProperty(1, 'ngForOf', bind(item.data));
-              }
-            }
-
-            function itemTemplate3(
-                rf1: RenderFlags, item3: any, item2: any, item1: any, item0: any, myApp: MyApp) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'span');
-                { container(1, itemTemplate4, null, ['ngForOf', '']); }
-                elementEnd();
-              }
-              if (rf1 & RenderFlags.Update) {
-                const item = item3.$implicit as any;
-                elementProperty(1, 'ngForOf', bind(item.data));
-              }
-            }
-
-            function itemTemplate4(
-                rf1: RenderFlags, item4: any, item3: any, item2: any, item1: any, item0: any,
-                myApp: MyApp) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'span');
-                { container(1, itemTemplate5, null, ['ngForOf', '']); }
-                elementEnd();
-              }
-              if (rf1 & RenderFlags.Update) {
-                const item = item4.$implicit as any;
-                elementProperty(1, 'ngForOf', bind(item.data));
-              }
-            }
-
-            function itemTemplate5(
-                rf1: RenderFlags, item5: any, item4: any, item3: any, item2: any, item1: any,
-                item0: any, myApp: MyApp) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'span');
-                { container(1, itemTemplate6, null, ['ngForOf', '']); }
-                elementEnd();
-              }
-              if (rf1 & RenderFlags.Update) {
-                const item = item5.$implicit as any;
-                elementProperty(1, 'ngForOf', bind(item.data));
-              }
-            }
-
-            function itemTemplate6(
-                rf1: RenderFlags, item6: any, item5: any, item4: any, item3: any, item2: any,
-                item1: any, item0: any, myApp: MyApp) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'span');
-                { container(1, itemTemplate7, null, ['ngForOf', '']); }
-                elementEnd();
-              }
-              if (rf1 & RenderFlags.Update) {
-                const item = item6.$implicit as any;
-                elementProperty(1, 'ngForOf', bind(item.data));
-              }
-            }
-
-            function itemTemplate7(
-                rf1: RenderFlags, item7: any, item6: any, item5: any, item4: any, item3: any,
-                item2: any, item1: any, item0: any, myApp: MyApp) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'span');
-                { container(1, itemTemplate8, null, ['ngForOf', '']); }
-                elementEnd();
-              }
-              if (rf1 & RenderFlags.Update) {
-                const item = item7.$implicit as any;
-                elementProperty(1, 'ngForOf', bind(item.data));
-              }
-            }
-
-            function itemTemplate8(
-                rf1: RenderFlags, item8: any, item7: any, item6: any, item5: any, item4: any,
-                item3: any, item2: any, item1: any, item0: any, myApp: MyApp) {
-              if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'span');
-                { text(1); }
-                elementEnd();
-              }
-
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, interpolationV([
-                              '',  item8.$implicit,       '.', item7.$implicit.value,
-                              '.', item6.$implicit.value, '.', item5.$implicit.value,
-                              '.', item4.$implicit.value, '.', item3.$implicit.value,
-                              '.', item2.$implicit.value, '.', item1.$implicit.value,
-                              '.', item0.$implicit.value, '.', myApp.value,
-                              ''
-                            ]));
-              }
-            }
           },
           directives: () => [NgForOf]
         });
+      }
+
+      function itemTemplate0(rf1: RenderFlags, item0: any, myApp: MyApp) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'span');
+          { container(1, itemTemplate1, null, ['ngForOf', '']); }
+          elementEnd();
+        }
+        if (rf1 & RenderFlags.Update) {
+          const item = item0.$implicit as any;
+          elementProperty(1, 'ngForOf', bind(item.data));
+        }
+      }
+
+      function itemTemplate1(rf1: RenderFlags, item1: any, item0: any, myApp: MyApp) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'span');
+          { container(1, itemTemplate2, null, ['ngForOf', '']); }
+          elementEnd();
+        }
+        if (rf1 & RenderFlags.Update) {
+          const item = item1.$implicit as any;
+          elementProperty(1, 'ngForOf', bind(item.data));
+        }
+      }
+
+      function itemTemplate2(rf1: RenderFlags, item2: any, item1: any, item0: any, myApp: MyApp) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'span');
+          { container(1, itemTemplate3, null, ['ngForOf', '']); }
+          elementEnd();
+        }
+        if (rf1 & RenderFlags.Update) {
+          const item = item2.$implicit as any;
+          elementProperty(1, 'ngForOf', bind(item.data));
+        }
+      }
+
+      function itemTemplate3(
+          rf1: RenderFlags, item3: any, item2: any, item1: any, item0: any, myApp: MyApp) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'span');
+          { container(1, itemTemplate4, null, ['ngForOf', '']); }
+          elementEnd();
+        }
+        if (rf1 & RenderFlags.Update) {
+          const item = item3.$implicit as any;
+          elementProperty(1, 'ngForOf', bind(item.data));
+        }
+      }
+
+      function itemTemplate4(
+          rf1: RenderFlags, item4: any, item3: any, item2: any, item1: any, item0: any,
+          myApp: MyApp) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'span');
+          { container(1, itemTemplate5, null, ['ngForOf', '']); }
+          elementEnd();
+        }
+        if (rf1 & RenderFlags.Update) {
+          const item = item4.$implicit as any;
+          elementProperty(1, 'ngForOf', bind(item.data));
+        }
+      }
+
+      function itemTemplate5(
+          rf1: RenderFlags, item5: any, item4: any, item3: any, item2: any, item1: any, item0: any,
+          myApp: MyApp) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'span');
+          { container(1, itemTemplate6, null, ['ngForOf', '']); }
+          elementEnd();
+        }
+        if (rf1 & RenderFlags.Update) {
+          const item = item5.$implicit as any;
+          elementProperty(1, 'ngForOf', bind(item.data));
+        }
+      }
+
+      function itemTemplate6(
+          rf1: RenderFlags, item6: any, item5: any, item4: any, item3: any, item2: any, item1: any,
+          item0: any, myApp: MyApp) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'span');
+          { container(1, itemTemplate7, null, ['ngForOf', '']); }
+          elementEnd();
+        }
+        if (rf1 & RenderFlags.Update) {
+          const item = item6.$implicit as any;
+          elementProperty(1, 'ngForOf', bind(item.data));
+        }
+      }
+
+      function itemTemplate7(
+          rf1: RenderFlags, item7: any, item6: any, item5: any, item4: any, item3: any, item2: any,
+          item1: any, item0: any, myApp: MyApp) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'span');
+          { container(1, itemTemplate8, null, ['ngForOf', '']); }
+          elementEnd();
+        }
+        if (rf1 & RenderFlags.Update) {
+          const item = item7.$implicit as any;
+          elementProperty(1, 'ngForOf', bind(item.data));
+        }
+      }
+
+      function itemTemplate8(
+          rf1: RenderFlags, item8: any, item7: any, item6: any, item5: any, item4: any, item3: any,
+          item2: any, item1: any, item0: any, myApp: MyApp) {
+        if (rf1 & RenderFlags.Create) {
+          elementStart(0, 'span');
+          { text(1); }
+          elementEnd();
+        }
+
+        if (rf1 & RenderFlags.Update) {
+          textBinding(
+              1, interpolationV([
+                '',  item8.$implicit,       '.', item7.$implicit.value, '.', item6.$implicit.value,
+                '.', item5.$implicit.value, '.', item4.$implicit.value, '.', item3.$implicit.value,
+                '.', item2.$implicit.value, '.', item1.$implicit.value, '.', item0.$implicit.value,
+                '.', myApp.value,           ''
+              ]));
+        }
       }
 
       const fixture = new ComponentFixture(MyApp);
@@ -564,29 +564,31 @@ describe('@angular/common integration', () => {
               elementProperty(1, 'ngIf', bind(myApp.showing));
             }
 
-            function templateOne(rf: RenderFlags, ctx: any, parent: MyApp) {
-              if (rf & RenderFlags.Create) {
-                elementStart(0, 'div');
-                { text(1); }
-                elementEnd();
-              }
-              if (rf & RenderFlags.Update) {
-                textBinding(1, bind(myApp.valueOne));
-              }
-            }
-            function templateTwo(rf: RenderFlags, ctx: any, parent: MyApp) {
-              if (rf & RenderFlags.Create) {
-                elementStart(0, 'div');
-                { text(1); }
-                elementEnd();
-              }
-              if (rf & RenderFlags.Update) {
-                textBinding(1, bind(myApp.valueTwo));
-              }
-            }
           },
           directives: () => [NgIf]
         });
+      }
+
+      function templateOne(rf: RenderFlags, ctx: any, myApp: MyApp) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div');
+          { text(1); }
+          elementEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          textBinding(1, bind(myApp.valueOne));
+        }
+      }
+
+      function templateTwo(rf: RenderFlags, ctx: any, myApp: MyApp) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div');
+          { text(1); }
+          elementEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          textBinding(1, bind(myApp.valueTwo));
+        }
       }
 
       const fixture = new ComponentFixture(MyApp);

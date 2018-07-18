@@ -76,6 +76,8 @@ export {
   text as T,
   textBinding as t,
 
+  reference as r,
+
   reserveSlots as rS,
 
   embeddedViewStart as V,
