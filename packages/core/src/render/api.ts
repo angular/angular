@@ -356,6 +356,7 @@ export abstract class Renderer2 {
    * DOM element.
    * @param eventName The event to listen for.
    * @param callback A handler function to invoke when the event occurs.
+   * @returns An "unlisten" function for disposing of this handler.
    */
   abstract listen(
       target: 'window'|'document'|'body'|any, eventName: string,
