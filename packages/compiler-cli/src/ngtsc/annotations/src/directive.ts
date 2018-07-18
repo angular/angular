@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, R3DirectiveMetadata, R3QueryMetadata, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser} from '@angular/compiler';
+import {ConstantPool, Expression, R3DirectiveMetadata, R3QueryMetadata, WrappedNodeExpr, compileDirectiveFromMetadata, makeBindingParser, parseHostBindings} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ClassMember, ClassMemberKind, Decorator, Import, ReflectionHost} from '../../host';
@@ -122,6 +122,8 @@ export function extractDirectiveMetadata(
     selector = resolved;
   }
 
+  const host = extractHostBindings(directive, decoratedElements, checker, coreModule);
+
   // Determine if `ngOnChanges` is a lifecycle hook defined on the component.
   const usesOnChanges = members.find(
                             member => member.isStatic && member.kind === ClassMemberKind.Method &&
@@ -132,12 +134,7 @@ export function extractDirectiveMetadata(
       clazz.heritageClauses.some(hc => hc.token === ts.SyntaxKind.ExtendsKeyword);
   const metadata: R3DirectiveMetadata = {
     name: clazz.name !.text,
-    deps: getConstructorDependencies(clazz, reflector, isCore),
-    host: {
-      attributes: {},
-      listeners: {},
-      properties: {},
-    },
+    deps: getConstructorDependencies(clazz, reflector, isCore), host,
     lifecycle: {
         usesOnChanges,
     },
@@ -323,6 +320,86 @@ export function queriesFromFields(
 function isPropertyTypeMember(member: ClassMember): boolean {
   return member.kind === ClassMemberKind.Getter || member.kind === ClassMemberKind.Setter ||
       member.kind === ClassMemberKind.Property;
+}
+
+type StringMap = {
+  [key: string]: string
+};
+
+function extractHostBindings(
+    metadata: Map<string, ts.Expression>, members: ClassMember[], checker: ts.TypeChecker,
+    coreModule: string | undefined): {
+  attributes: StringMap,
+  listeners: StringMap,
+  properties: StringMap,
+} {
+  let hostMetadata: StringMap = {};
+  if (metadata.has('host')) {
+    const hostMetaMap = staticallyResolve(metadata.get('host') !, checker);
+    if (!(hostMetaMap instanceof Map)) {
+      throw new Error(`Decorator host metadata must be an object`);
+    }
+    hostMetaMap.forEach((value, key) => {
+      if (typeof value !== 'string' || typeof key !== 'string') {
+        throw new Error(`Decorator host metadata must be a string -> string object, got ${value}`);
+      }
+      hostMetadata[key] = value;
+    });
+  }
+
+  const {attributes, listeners, properties, animations} = parseHostBindings(hostMetadata);
+
+  filterToMembersWithDecorator(members, 'HostBinding', coreModule)
+      .forEach(({member, decorators}) => {
+        decorators.forEach(decorator => {
+          let hostPropertyName: string = member.name;
+          if (decorator.args !== null && decorator.args.length > 0) {
+            if (decorator.args.length !== 1) {
+              throw new Error(`@HostBinding() can have at most one argument`);
+            }
+
+            const resolved = staticallyResolve(decorator.args[0], checker);
+            if (typeof resolved !== 'string') {
+              throw new Error(`@HostBinding()'s argument must be a string`);
+            }
+
+            hostPropertyName = resolved;
+          }
+
+          properties[hostPropertyName] = member.name;
+        });
+      });
+
+  filterToMembersWithDecorator(members, 'HostListener', coreModule)
+      .forEach(({member, decorators}) => {
+        decorators.forEach(decorator => {
+          let eventName: string = member.name;
+          let args: string[] = [];
+          if (decorator.args !== null && decorator.args.length > 0) {
+            if (decorator.args.length > 2) {
+              throw new Error(`@HostListener() can have at most two arguments`);
+            }
+
+            const resolved = staticallyResolve(decorator.args[0], checker);
+            if (typeof resolved !== 'string') {
+              throw new Error(`@HostListener()'s event name argument must be a string`);
+            }
+
+            eventName = resolved;
+
+            if (decorator.args.length === 2) {
+              const resolvedArgs = staticallyResolve(decorator.args[1], checker);
+              if (!isStringArrayOrDie(resolvedArgs, '@HostListener.args')) {
+                throw new Error(`@HostListener second argument must be a string array`);
+              }
+              args = resolvedArgs;
+            }
+          }
+
+          listeners[eventName] = `${member.name}(${args.join(',')})`;
+        });
+      });
+  return {attributes, properties, listeners};
 }
 
 const QUERY_TYPES = new Set([
