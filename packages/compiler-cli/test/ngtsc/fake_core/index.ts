@@ -6,13 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-type FnWithArg<T> = (arg?: any) => T;
+interface FnWithArg<T> {
+  (...args: any[]): T;
+  new (...args: any[]): T;
+}
 
 function callableClassDecorator(): FnWithArg<(clazz: any) => any> {
   return null !;
 }
 
 function callableParamDecorator(): FnWithArg<(a: any, b: any, c: any) => void> {
+  return null !;
+}
+
+function callablePropDecorator(): FnWithArg<(a: any, b: any) => any> {
   return null !;
 }
 
@@ -27,6 +34,12 @@ export const Inject = callableParamDecorator();
 export const Self = callableParamDecorator();
 export const SkipSelf = callableParamDecorator();
 export const Optional = callableParamDecorator();
+
+export const ContentChild = callablePropDecorator();
+export const ContentChildren = callablePropDecorator();
+export const ViewChild = callablePropDecorator();
+export const ViewChildren = callablePropDecorator();
+
 export type ModuleWithProviders<T> = any;
 
 export class ChangeDetectorRef {}
