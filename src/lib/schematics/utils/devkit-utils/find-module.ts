@@ -1,10 +1,13 @@
+/* tslint:disable */
+
 /**
  * @license
- * Copyright Google Inc. All Rights Reserved.
+ * Copyright Google LLC All Rights Reserved.
  *
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import { Path, join, normalize, relative, strings } from '@angular-devkit/core';
 import { DirEntry, Tree } from '@angular-devkit/schematics';
 

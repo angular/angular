@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {getStylesPath} from '../utils/ast';
 import {InsertChange} from '../utils/devkit-utils/change';
@@ -34,7 +42,7 @@ export function addThemeToAppStyles(options: Schema): (host: Tree) => Tree {
 
 /** Insert a custom theme to styles.scss file. */
 function insertCustomTheme(project: Project, host: Tree) {
-  const stylesPath = getStylesPath(host, project);
+  const stylesPath = getStylesPath(project);
 
   const buffer = host.read(stylesPath);
   if (buffer) {

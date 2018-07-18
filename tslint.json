@@ -124,12 +124,13 @@
     "missing-rollup-globals": [
       true,
       "./tools/package-tools/rollup-globals.ts",
-      "src/+(lib|cdk|material-examples|material-experimental|cdk-experimental)/**/*.ts"
+      "src/+(lib|cdk|material-examples|material-experimental|cdk-experimental)/!(schematics)**/*.ts"
     ],
     "deletion-target": true,
     "no-unescaped-html-tag": true
   },
   "linterOptions": {
-    "exclude": ["src/lib/schematics/**/*"]
+    // Exclude schematic template files that can't be linted.
+    "exclude": ["src/lib/schematics/**/files/**/*"]
   }
 }

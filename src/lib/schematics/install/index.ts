@@ -1,4 +1,19 @@
-import {chain, noop, Rule, Tree, SchematicContext, SchematicsException} from '@angular-devkit/schematics';
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {
+  chain,
+  noop,
+  Rule,
+  SchematicContext,
+  SchematicsException,
+  Tree,
+} from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {addModuleImportToRootModule, getStylesPath} from '../utils/ast';
 import {InsertChange} from '../utils/devkit-utils/change';
@@ -10,7 +25,6 @@ import {Schema} from './schema';
 import {addThemeToAppStyles} from './theming';
 import * as parse5 from 'parse5';
 
-
 /**
  * Scaffolds the basics of a Angular Material application, this includes:
  *  - Add Packages to package.json
@@ -19,7 +33,8 @@ import * as parse5 from 'parse5';
  */
 export default function(options: Schema): Rule {
   if (!parse5) {
-    throw new SchematicsException('parse5 depedency not found! Please install parse5 from npm to continue.');
+    throw new SchematicsException('Parse5 is required but could not be found! Please install ' +
+      '"parse5" manually in order to continue.');
   }
 
   return chain([
@@ -80,7 +95,7 @@ function addBodyMarginToStyles(options: Schema) {
     const workspace = getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
 
-    const stylesPath = getStylesPath(host, project);
+    const stylesPath = getStylesPath(project);
 
     const buffer = host.read(stylesPath);
     if (buffer) {

@@ -1,6 +1,5 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {join} from 'path';
-import {Tree} from '@angular-devkit/schematics';
 import {createTestApp} from '../utils/testing';
 import {getFileContent} from '@schematics/angular/utility/test';
 

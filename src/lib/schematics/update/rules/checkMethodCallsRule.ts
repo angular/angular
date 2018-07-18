@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {bold} from 'chalk';
 import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
@@ -26,15 +34,17 @@ export class CheckMethodCallsWalker extends ProgramAwareRuleWalker {
 
   visitCallExpression(expression: ts.CallExpression) {
     if (expression.expression.kind !== ts.SyntaxKind.PropertyAccessExpression) {
-      const methodName = expression.getFirstToken().getText();
+      const functionName = expression.getFirstToken().getText();
 
-      if (methodName === 'super') {
-        const type = this.getTypeChecker().getTypeAtLocation(expression.expression);
-        const className = type.symbol && type.symbol.name;
-        if (className) {
-          this.checkConstructor(expression, className);
+      if (functionName === 'super') {
+        const superClassType = this.getTypeChecker().getTypeAtLocation(expression.expression);
+        const superClassName = superClassType.symbol && superClassType.symbol.name;
+
+        if (superClassType) {
+          this.checkConstructor(expression, superClassName);
         }
       }
+
       return;
     }
 

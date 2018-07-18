@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as ts from 'typescript';
 
 /** Returns the text of a string literal without the quotes. */
@@ -7,7 +15,7 @@ export function getLiteralTextWithoutQuotes(literal: ts.StringLiteral) {
 
 /** Method that can be used to replace all search occurrences in a string. */
 export function findAll(str: string, search: string): number[] {
-  const result = [];
+  const result: number[] = [];
   let i = -1;
   while ((i = str.indexOf(search, i + 1)) !== -1) {
     result.push(i);
@@ -42,8 +50,9 @@ export function findAllOutputsInElWithAttr(html: string, name: string, attrs: st
   return findAllIoInElWithAttr(html, name, attrs, String.raw`\(`, String.raw`\)`);
 }
 
-function findAllIoInElWithTag(html:string, name: string, tagNames: string[], startIoPattern: string,
-                              endIoPattern: string): number[] {
+function findAllIoInElWithTag(html: string, name: string, tagNames: string[],
+                              startIoPattern: string, endIoPattern: string): number[] {
+
   const skipPattern = String.raw`[^>]*\s`;
   const openTagPattern = String.raw`<\s*`;
   const tagNamesPattern = String.raw`(?:${tagNames.join('|')})`;
@@ -52,11 +61,13 @@ function findAllIoInElWithTag(html:string, name: string, tagNames: string[], sta
       ${name}
       ${endIoPattern}[=\s>]`;
   const replaceIoRegex = new RegExp(replaceIoPattern.replace(/\s/g, ''), 'g');
-  const result = [];
+  const result: number[] = [];
+
   let match;
   while (match = replaceIoRegex.exec(html)) {
     result.push(match.index + match[1].length);
   }
+
   return result;
 }
 

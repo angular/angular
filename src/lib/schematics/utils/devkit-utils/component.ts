@@ -1,4 +1,14 @@
-import {normalize, strings} from '@angular-devkit/core';
+/* tslint:disable */
+
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {strings} from '@angular-devkit/core';
 import {
   apply,
   branchAndMerge,

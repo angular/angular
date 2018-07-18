@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {green, red} from 'chalk';
 import {Replacement, RuleFailure, Rules, RuleWalker} from 'tslint';
 import * as ts from 'typescript';
@@ -31,7 +39,7 @@ export class SwitchStringLiteralCssNamesWalker extends RuleWalker {
               stringLiteral,
               `Found deprecated CSS class "${red(name.replace)}" which has been renamed to` +
               ` "${green(name.replaceWith)}"`,
-              replacement)
+              replacement);
         });
       }
     });

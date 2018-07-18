@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {bold, green} from 'chalk';
 import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
@@ -27,7 +35,7 @@ export class CheckClassDeclarationMiscWalker extends ProgramAwareRuleWalker {
                 `Found class "${bold(declaration.name.text)}" which extends` +
                 ` "${bold('MatFormFieldControl')}". This class must define` +
                 ` "${green('shouldLabelFloat')}" which is now a required property.`
-            )
+            );
           }
         }
       });

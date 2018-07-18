@@ -1,4 +1,12 @@
-import {bold, green, red} from 'chalk';
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {red} from 'chalk';
 import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 import {isMaterialImportDeclaration} from '../material/typescript-specifiers';

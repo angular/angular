@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import {FileEntry, Rule, SchematicContext, Tree} from '@angular-devkit/schematics';
 import {
   NodePackageInstallTask,
@@ -39,31 +47,31 @@ export default function(): Rule {
         rulesDirectory: path.join(schematicsTmpPath, 'update/rules'),
         rules: {
           // Automatic fixes.
-          "switch-identifiers": true,
-          "switch-property-names": true,
-          "switch-string-literal-attribute-selectors": true,
-          "switch-string-literal-css-names": true,
-          "switch-string-literal-element-selectors": true,
-          "switch-stylesheet-attribute-selectors": true,
-          "switch-stylesheet-css-names": true,
-          "switch-stylesheet-element-selectors": true,
-          "switch-stylesheet-input-names": true,
-          "switch-stylesheet-output-names": true,
-          "switch-template-attribute-selectors": true,
-          "switch-template-css-names": true,
-          "switch-template-element-selectors": true,
-          "switch-template-export-as-names": true,
-          "switch-template-input-names": true,
-          "switch-template-output-names": true,
+          'switch-identifiers': true,
+          'switch-property-names': true,
+          'switch-string-literal-attribute-selectors': true,
+          'switch-string-literal-css-names': true,
+          'switch-string-literal-element-selectors': true,
+          'switch-stylesheet-attribute-selectors': true,
+          'switch-stylesheet-css-names': true,
+          'switch-stylesheet-element-selectors': true,
+          'switch-stylesheet-input-names': true,
+          'switch-stylesheet-output-names': true,
+          'switch-template-attribute-selectors': true,
+          'switch-template-css-names': true,
+          'switch-template-element-selectors': true,
+          'switch-template-export-as-names': true,
+          'switch-template-input-names': true,
+          'switch-template-output-names': true,
 
           // Additional issues we can detect but not automatically fix.
-          "check-class-declaration-misc": true,
-          "check-identifier-misc": true,
-          "check-import-misc": true,
-          "check-inheritance": true,
-          "check-method-calls": true,
-          "check-property-access-misc": true,
-          "check-template-misc": true
+          'check-class-declaration-misc': true,
+          'check-identifier-misc': true,
+          'check-import-misc': true,
+          'check-inheritance': true,
+          'check-method-calls': true,
+          'check-property-access-misc': true,
+          'check-template-misc': true
         }
       }, {
         silent: false,

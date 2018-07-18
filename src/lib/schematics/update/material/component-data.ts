@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 export interface MaterialExportAsNameData {
   /** The exportAs name to replace. */
   replace: string;
@@ -25,7 +33,7 @@ export interface MaterialCssNameData {
     html?: boolean,
     /** Replace this name in TypeScript strings. */
     strings?: boolean
-  }
+  };
 }
 
 export interface MaterialAttributeSelectorData {
@@ -44,7 +52,7 @@ export interface MaterialPropertyNameData {
   whitelist: {
     /** Replace the property only when its type is one of the given Classes. */
     classes?: string[];
-  }
+  };
 }
 
 export interface MaterialClassNameData {
@@ -67,7 +75,7 @@ export interface MaterialInputNameData {
     attributes?: string[],
     /** Whether to ignore CSS attribute selectors when doing this replacement. */
     css?: boolean,
-  }
+  };
 }
 
 export interface MaterialOutputNameData {
@@ -83,7 +91,7 @@ export interface MaterialOutputNameData {
     attributes?: string[],
     /** Whether to ignore CSS attribute selectors when doing this replacement. */
     css?: boolean,
-  }
+  };
 }
 
 export interface MaterialMethodCallData {
@@ -92,13 +100,13 @@ export interface MaterialMethodCallData {
   invalidArgCounts: {
     count: number,
     message: string
-  }[]
+  }[];
 }
 
 type Changes<T> = {
   pr: string;
   changes: T[]
-}
+};
 
 function getChanges<T>(allChanges: Changes<T>[]): T[] {
   return allChanges.reduce((result, changes) => result.concat(changes.changes), []);

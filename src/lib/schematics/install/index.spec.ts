@@ -57,8 +57,8 @@ describe('material-shell-schematic', () => {
     const config: any = getConfig(tree);
     const workspace = getWorkspace(tree);
     const project = getProjectFromWorkspace(workspace, config.project.name);
-  
-    const indexPath = getIndexHtmlPath(tree, project);
+
+    const indexPath = getIndexHtmlPath(project);
     const buffer: any = tree.read(indexPath);
     const indexSrc = buffer.toString();
     expect(indexSrc.indexOf('fonts.googleapis.com')).toBeGreaterThan(-1);

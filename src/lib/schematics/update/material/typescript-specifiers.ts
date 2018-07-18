@@ -1,3 +1,11 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
 import * as ts from 'typescript';
 import {getExportDeclaration, getImportDeclaration} from '../typescript/imports';
 
@@ -20,6 +28,6 @@ export function isMaterialExportDeclaration(node: ts.Node) {
 /** Whether the declaration is part of Angular Material. */
 function isMaterialDeclaration(declaration: ts.ImportDeclaration | ts.ExportDeclaration) {
   const moduleSpecifier = declaration.moduleSpecifier.getText();
-  return moduleSpecifier.indexOf(materialModuleSpecifier) !== -1||
+  return moduleSpecifier.indexOf(materialModuleSpecifier) !== -1 ||
       moduleSpecifier.indexOf(cdkModuleSpecifier) !== -1;
 }

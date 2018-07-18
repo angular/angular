@@ -1,12 +1,20 @@
 /**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+/**
  * TSLint custom walker implementation that also visits external and inline templates.
  */
-import {existsSync, readFileSync} from 'fs'
+import {existsSync, readFileSync} from 'fs';
 import {dirname, join, resolve} from 'path';
 import {Fix, IOptions, RuleFailure, RuleWalker} from 'tslint';
 import * as ts from 'typescript';
 import {getLiteralTextWithoutQuotes} from '../typescript/literal';
-import {createComponentFile, ExternalResource} from "./component-file";
+import {createComponentFile, ExternalResource} from './component-file';
 
 /**
  * Custom TSLint rule walker that identifies Angular components and visits specific parts of
@@ -14,11 +22,11 @@ import {createComponentFile, ExternalResource} from "./component-file";
  */
 export class ComponentWalker extends RuleWalker {
 
-  protected visitInlineTemplate(template: ts.StringLiteral) {}
-  protected visitInlineStylesheet(stylesheet: ts.StringLiteral) {}
+  protected visitInlineTemplate(_template: ts.StringLiteral) {}
+  protected visitInlineStylesheet(_stylesheet: ts.StringLiteral) {}
 
-  protected visitExternalTemplate(template: ExternalResource) {}
-  protected visitExternalStylesheet(stylesheet: ExternalResource) {}
+  protected visitExternalTemplate(_template: ExternalResource) {}
+  protected visitExternalStylesheet(_stylesheet: ExternalResource) {}
 
   private skipFiles: Set<string>;
 
@@ -52,7 +60,7 @@ export class ComponentWalker extends RuleWalker {
       const initializerKind = property.initializer.kind;
 
       if (propertyName === 'template') {
-        this.visitInlineTemplate(property.initializer as ts.StringLiteral)
+        this.visitInlineTemplate(property.initializer as ts.StringLiteral);
       }
 
       if (propertyName === 'templateUrl' && initializerKind === ts.SyntaxKind.StringLiteral) {
@@ -63,7 +71,8 @@ export class ComponentWalker extends RuleWalker {
         this._reportInlineStyles(property.initializer as ts.ArrayLiteralExpression);
       }
 
-      if (propertyName === 'styleUrls' && initializerKind === ts.SyntaxKind.ArrayLiteralExpression) {
+      if (propertyName === 'styleUrls' &&
+          initializerKind === ts.SyntaxKind.ArrayLiteralExpression) {
         this._visitExternalStylesArrayLiteral(property.initializer as ts.ArrayLiteralExpression);
       }
     }
@@ -83,7 +92,7 @@ export class ComponentWalker extends RuleWalker {
       if (!this.skipFiles.has(stylePath)) {
         this._reportExternalStyle(stylePath);
       }
-    })
+    });
   }
 
   private _reportExternalTemplate(templateUrlLiteral: ts.StringLiteral) {
@@ -107,7 +116,7 @@ export class ComponentWalker extends RuleWalker {
     this.visitExternalTemplate(templateFile);
   }
 
-  public _reportExternalStyle(stylePath: string) {
+  _reportExternalStyle(stylePath: string) {
     // Check if the external stylesheet file exists before proceeding.
     if (!existsSync(stylePath)) {
       console.error(`PARSE ERROR: ${this.getSourceFile().fileName}:` +
