@@ -15,7 +15,6 @@ import {takeUntil} from 'rxjs/operators';
 @Component({
   selector: 'datepicker-custom-header-example',
   templateUrl: 'datepicker-custom-header-example.html',
-  styleUrls: ['datepicker-custom-header-example.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DatepickerCustomHeaderExample {
@@ -25,6 +24,24 @@ export class DatepickerCustomHeaderExample {
 /** Custom header component for datepicker. */
 @Component({
   selector: 'example-header',
+  styles: [`
+    .example-header {
+      display: flex;
+      align-items: center;
+      padding: 0.5em;
+    }
+
+    .example-header-label {
+      flex: 1;
+      height: 1em;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .example-double-arrow .mat-icon {
+      margin: -22%;
+    }
+  `],
   template: `
     <div class="example-header">
       <button mat-icon-button class="example-double-arrow" (click)="previousClicked('year')">

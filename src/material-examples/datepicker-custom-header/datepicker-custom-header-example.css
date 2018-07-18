@@ -1,16 +1,1 @@
-.example-header {
-  display: flex;
-  align-items: center;
-  padding: 0.5em;
-}
-
-.example-header-label {
-  flex: 1;
-  height: 1em;
-  font-weight: bold;
-  text-align: center;
-}
-
-.example-double-arrow .mat-icon {
-  margin: -22%;
-}
+/** No CSS for this example */
