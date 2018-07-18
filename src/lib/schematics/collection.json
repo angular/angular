@@ -28,7 +28,13 @@
       "description": "Create a component with a responsive sidenav for navigation",
       "factory": "./nav/index",
       "schema": "./nav/schema.json",
-      "aliases": [ "material-nav"]
+      "aliases": [ "material-nav", "materialNav" ]
+    },
+    // Create a file tree component
+    "tree": {
+      "description": "Create a file tree component.",
+      "factory": "./tree/index",
+      "schema": "./tree/schema.json"
     },
     // Creates a address form component
     "addressForm": {
