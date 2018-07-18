@@ -803,20 +803,8 @@ describe('Esm5ReflectionHost', () => {
       expect(parameters).toEqual([]);
     });
 
-    // QUESTION - this is not going to happen in ES5 code so should we actually test it?
-    it('should ignore `ctorParameters` if it is an arrow function', () => {
-      const program = makeProgram(INVALID_CTOR_DECORATORS_FILE);
-      const host = new Esm5ReflectionHost(program.getTypeChecker());
-      const classNode = getDeclaration(
-          program, INVALID_CTOR_DECORATORS_FILE.name, 'ArrowFunction', ts.isVariableDeclaration);
-      const parameters = host.getConstructorParameters(classNode);
-
-      expect(parameters !.length).toBe(1);
-      expect(parameters ![0]).toEqual(jasmine.objectContaining({
-        name: 'arg1',
-        decorators: null,
-      }));
-    });
+    // In ES5 there are no arrow functions
+    // it('should ignore `ctorParameters` if it is an arrow function', () => { });
 
     it('should ignore `ctorParameters` if it does not return an array literal', () => {
       const program = makeProgram(INVALID_CTOR_DECORATORS_FILE);

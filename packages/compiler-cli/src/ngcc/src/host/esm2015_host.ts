@@ -62,7 +62,6 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    * `null` if either no decorators were present or if the declaration is not of a decoratable type.
    */
   getDecoratorsOfDeclaration(declaration: ts.Declaration): Decorator[]|null {
-    // QUESTION: do we need to consider decoratored functions (i.e. not ES5 class constructors)?
     const symbol = this.getClassSymbol(declaration);
     if (symbol) {
       if (symbol.exports && symbol.exports.has(DECORATORS)) {
@@ -266,7 +265,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
 
 
     const node = symbol.valueDeclaration || symbol.declarations && symbol.declarations[0];
-    if (!node || !ts.isClassElement(node)) {
+    if (!node || !isClassMemberType(node)) {
       return null;
     }
 
@@ -404,17 +403,23 @@ function removeFromMap<T>(map: Map<string, T>, key: ts.__String): T|undefined {
   return value;
 }
 
-function isPropertyAccess(node: ts.Node): node is ts.PropertyAccessExpression&
-    {parent: ts.BinaryExpression} {
+function isPropertyAccess(node: ts.Node):
+    node is ts.PropertyAccessExpression&{parent: ts.BinaryExpression} {
   return !!node.parent && ts.isBinaryExpression(node.parent) && ts.isPropertyAccessExpression(node);
 }
 
-function isThisAssignment(node: ts.Declaration): node is ts.BinaryExpression&
-    {left: ts.PropertyAccessExpression} {
+function isThisAssignment(node: ts.Declaration):
+    node is ts.BinaryExpression&{left: ts.PropertyAccessExpression} {
   return ts.isBinaryExpression(node) && ts.isPropertyAccessExpression(node.left) &&
       node.left.expression.kind === ts.SyntaxKind.ThisKeyword;
 }
 
 function isNamedDeclaration(node: ts.Declaration): node is ts.NamedDeclaration {
   return !!(node as any).name;
+}
+
+
+function isClassMemberType(node: ts.Declaration):
+    node is ts.ClassElement|ts.PropertyAccessExpression|ts.BinaryExpression {
+  return ts.isClassElement(node) || isPropertyAccess(node) || ts.isBinaryExpression(node);
 }

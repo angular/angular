@@ -14,7 +14,7 @@ import {getDeclaration, makeProgram} from '../helpers/utils';
 const SOME_DIRECTIVE_FILE = {
   name: '/some_directive.js',
   contents: `
-    import { Directive, Inject, InjectionToken, Input } from '@angular/core';
+    import { Directive, Inject, InjectionToken, Input, HostListener, HostBinding } from '@angular/core';
 
     const INJECTED_TOKEN = new InjectionToken('injected');
     const ViewContainerRef = {};
@@ -25,6 +25,12 @@ const SOME_DIRECTIVE_FILE = {
         this.instanceProperty = 'instance';
       }
       instanceMethod() {}
+
+      onClick() {}
+
+      @HostBinding('class.foo')
+      get isClassFoo() { return false; }
+
       static staticMethod() {}
     }
     SomeDirective.staticProperty = 'static';
@@ -39,6 +45,8 @@ const SOME_DIRECTIVE_FILE = {
     SomeDirective.propDecorators = {
       "input1": [{ type: Input },],
       "input2": [{ type: Input },],
+      "target": [{ type: HostBinding, args: ['attr.target',] }, { type: Input },],
+      "onClick": [{ type: HostListener, args: ['click',] },],
     };
   `,
 };
@@ -633,7 +641,13 @@ describe('Esm2015ReflectionHost', () => {
       const members = host.getMembersOfClass(classNode);
 
       expect(spy).toHaveBeenCalled();
-      spy.calls.allArgs().forEach(arg => expect(arg[0].getText()).toEqual('Input'));
+      expect(spy.calls.allArgs().map(arg => arg[0].getText())).toEqual([
+        'Input',
+        'Input',
+        'HostBinding',
+        'Input',
+        'HostListener',
+      ]);
 
       const index = members.findIndex(member => member.name === 'input1');
       expect(members[index].decorators !.length).toBe(1);
