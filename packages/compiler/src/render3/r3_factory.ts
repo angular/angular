@@ -160,12 +160,8 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): o.Expression {
   const expr = meta.useNew ? new o.InstantiateExpr(meta.fnOrClass, args) :
                              new o.InvokeFunctionExpr(meta.fnOrClass, args);
 
-  // If `extraResults` is specified, then the result is an array consisting of the instantiated
-  // value plus any extra results.
-  const retExpr =
-      meta.extraResults === undefined ? expr : o.literalArr([expr, ...meta.extraResults]);
   return o.fn(
-      [], [new o.ReturnStatement(retExpr)], o.INFERRED_TYPE, undefined, `${meta.name}_Factory`);
+      [], [new o.ReturnStatement(expr)], o.INFERRED_TYPE, undefined, `${meta.name}_Factory`);
 }
 
 function compileInjectDependency(
