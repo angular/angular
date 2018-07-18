@@ -142,3 +142,21 @@ content.
   ...
 </cdk-virtual-scroll-viewport>
 ```
+
+### Elements with parent tag requirements
+Some HTML elements such as `<tr>` and `<li>` have limitations on the kinds of parent elements they
+can be placed inside. To enable virtual scrolling over these type of elements, place the elements in
+their proper parent, and then wrap the whole thing in a `cdk-virtual-scroll-viewport`. Be careful
+that the parent does not introduce additional space (e.g. via `margin` or `padding`) as it will
+interfere with the scrolling.
+
+```html
+<cdk-virtual-scroll-viewport itemSize="50">
+  <table>
+    <tr *cdkVirtualFor="let row of rows">
+      <td>{{row.first}}</td>
+      <td>{{row.second}}</td>
+    </tr>
+  </table>
+</cdk-virtual-scroll-viewport>
+```

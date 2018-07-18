@@ -37,3 +37,21 @@
 .demo-capital {
   font-size: 14px;
 }
+
+.demo-dt {
+  height: 30px;
+  font-weight: bold;
+}
+
+.demo-dd {
+  height: 30px;
+}
+
+.demo-li,
+.demo-td {
+  height: 50px;
+}
+
+.demo-td {
+  border: 1px solid gray;
+}

@@ -57,7 +57,7 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
   @Input() orientation: 'horizontal' | 'vertical' = 'vertical';
 
   /** The element that wraps the rendered content. */
-  @ViewChild('contentWrapper') _contentWrapper: ElementRef;
+  @ViewChild('contentWrapper') _contentWrapper: ElementRef<HTMLElement>;
 
   /** A stream that emits whenever the rendered range changes. */
   renderedRangeStream: Observable<ListRange> = this._renderedRangeSubject.asObservable();
@@ -67,7 +67,10 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
    */
   _totalContentSize = 0;
 
-  /** The the rendered content transform. */
+  /**
+   * The CSS transform applied to the rendered subset of items so that they appear within the bounds
+   * of the visible viewport.
+   */
   private _renderedContentTransform: string;
 
   /** The currently rendered range of indices. */
@@ -103,7 +106,7 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
   /** A list of functions to run after the next change detection cycle. */
   private _runAfterChangeDetection: Function[] = [];
 
-  constructor(public elementRef: ElementRef,
+  constructor(public elementRef: ElementRef<HTMLElement>,
               private _changeDetectorRef: ChangeDetectorRef,
               private _ngZone: NgZone,
               @Inject(VIRTUAL_SCROLL_STRATEGY) private _scrollStrategy: VirtualScrollStrategy) {}
@@ -327,7 +330,7 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
       }
     }
 
-    for (let fn of this._runAfterChangeDetection) {
+    for (const fn of this._runAfterChangeDetection) {
       fn();
     }
     this._runAfterChangeDetection = [];

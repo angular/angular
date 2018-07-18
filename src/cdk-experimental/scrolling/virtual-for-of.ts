@@ -49,8 +49,13 @@ export type CdkVirtualForOfContext<T> = {
 };
 
 
-/** Helper to extract size from a ClientRect. */
-function getSize(orientation: 'horizontal' | 'vertical', rect: ClientRect): number {
+/** Helper to extract size from a DOM Node. */
+function getSize(orientation: 'horizontal' | 'vertical', node: Node): number {
+  const el = node as Element;
+  if (!el.getBoundingClientRect) {
+    return 0;
+  }
+  const rect = el.getBoundingClientRect();
   return orientation == 'horizontal' ? rect.width : rect.height;
 }
 
@@ -193,7 +198,6 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
     const rangeLen = range.end - range.start;
 
     // Loop over all root nodes for all items in the range and sum up their size.
-    // TODO(mmalerba): Make this work with non-element nodes.
     let totalSize = 0;
     let i = rangeLen;
     while (i--) {
@@ -201,7 +205,7 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
           EmbeddedViewRef<CdkVirtualForOfContext<T>> | null;
       let j = view ? view.rootNodes.length : 0;
       while (j--) {
-        totalSize += getSize(orientation, (view!.rootNodes[j] as Element).getBoundingClientRect());
+        totalSize += getSize(orientation, view!.rootNodes[j]);
       }
     }
 

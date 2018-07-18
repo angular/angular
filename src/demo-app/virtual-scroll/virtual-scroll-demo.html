@@ -94,3 +94,45 @@
     <div class="demo-capital">{{state.capital}}</div>
   </div>
 </cdk-virtual-scroll-viewport>
+
+<h2>Use with <code>&lt;ol&gt;</code></h2>
+
+<cdk-virtual-scroll-viewport class="demo-viewport" autosize #viewport>
+  <ol class="demo-ol" [start]="viewport.getRenderedRange().start + 1">
+    <li *cdkVirtualFor="let state of statesObservable | async" class="demo-li">
+      {{state.name}} - {{state.capital}}
+    </li>
+  </ol>
+</cdk-virtual-scroll-viewport>
+
+<h2>Use with <code>&lt;ul&gt;</code></h2>
+
+<cdk-virtual-scroll-viewport class="demo-viewport" autosize>
+  <ul class="demo-ul">
+    <li *cdkVirtualFor="let state of statesObservable | async" class="demo-li">
+      {{state.name}} - {{state.capital}}
+    </li>
+  </ul>
+</cdk-virtual-scroll-viewport>
+
+<h2>Use with <code>&lt;dl&gt;</code></h2>
+
+<cdk-virtual-scroll-viewport class="demo-viewport" autosize>
+  <dl class="demo-dl">
+    <ng-container *cdkVirtualFor="let state of statesObservable | async">
+      <dt class="demo-dt">{{state.name}}</dt>
+      <dd class="demo-dd">{{state.capital}}</dd>
+    </ng-container>
+  </dl>
+</cdk-virtual-scroll-viewport>
+
+<h2>Use with <code>&lt;table&gt;</code></h2>
+
+<cdk-virtual-scroll-viewport class="demo-viewport" autosize>
+  <table class="demo-ol">
+    <tr *cdkVirtualFor="let state of statesObservable | async" class="demo-tr">
+      <td class="demo-td">{{state.name}}</td>
+      <td class="demo-td">{{state.capital}}</td>
+    </tr>
+  </table>
+</cdk-virtual-scroll-viewport>
