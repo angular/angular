@@ -31,14 +31,14 @@ patchTestBedToDestroyFixturesAfterEveryTest(testBed);
  *    aforementioned errors were thrown, they would be reported for the wrong test (the test that's
  *    about to start, not the test that just finished).
  */
-function patchTestBedToDestroyFixturesAfterEveryTest(testBed) {
+function patchTestBedToDestroyFixturesAfterEveryTest(testBedInstance) {
   // Original resetTestingModule function of the TestBed.
-  const _resetTestingModule = testBed.resetTestingModule;
+  const _resetTestingModule = testBedInstance.resetTestingModule;
 
   // Monkey-patch the resetTestingModule to destroy fixtures outside of a try/catch block.
   // With https://github.com/angular/angular/commit/2c5a67134198a090a24f6671dcdb7b102fea6eba
   // errors when destroying components are no longer causing Jasmine to fail.
-  testBed.resetTestingModule = function() {
+  testBedInstance.resetTestingModule = function() {
     try {
       this._activeFixtures.forEach(fixture => fixture.destroy());
     } finally {
@@ -52,5 +52,5 @@ function patchTestBedToDestroyFixturesAfterEveryTest(testBed) {
   // for us because it doesn't allow developers to see what test actually failed.
   // Fixing this by resetting the testing module after each test.
   // https://github.com/angular/angular/blob/master/packages/core/testing/src/before_each.ts#L25
-  afterEach(() => testBed.resetTestingModule());
+  afterEach(() => testBedInstance.resetTestingModule());
 }

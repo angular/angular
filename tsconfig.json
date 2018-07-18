@@ -1,4 +1,4 @@
-// TypeScript config file that matches all source files in the project. This file is read by 
+// TypeScript config file that matches all source files in the project. This file is read by
 // IDEs and TSLint. For IDEs it ensures that `experimentalDecorator` warnings are not showing up.
 {
   "compilerOptions": {
@@ -15,6 +15,8 @@
   },
   "include": [
     "src/**/*.ts",
+    "e2e/**/*.ts",
+    "test/**/*.ts",
     "tools/**/*.ts"
   ],
   "exclude": [
