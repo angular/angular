@@ -501,8 +501,10 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
         // while the new trigger tries to re-open it. Wait for the animation to finish
         // before doing so. Also interrupt if the user moves to another item.
         if (this.menu instanceof MatMenu && this.menu._isAnimating) {
+          // We need the `delay(0)` here in order to avoid
+          // 'changed after checked' errors in some cases. See #12194.
           this.menu._animationDone
-            .pipe(take(1), takeUntil(this._parentMenu._hovered()))
+            .pipe(take(1), delay(0, asapScheduler), takeUntil(this._parentMenu._hovered()))
             .subscribe(() => this.openMenu());
         } else {
           this.openMenu();
