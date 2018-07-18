@@ -334,6 +334,14 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
     this._getCurrentViewComponent()._focusActiveCell();
   }
 
+  /** Updates today's date after an update of the active date */
+  updateTodaysDate() {
+    let view = this.currentView == 'month' ? this.monthView :
+            (this.currentView == 'year' ? this.yearView : this.multiYearView);
+
+    view.ngAfterContentInit();
+  }
+
   /** Handles date selection in the month view. */
   _dateSelected(date: D): void {
     if (!this._dateAdapter.sameDate(date, this.selected)) {

@@ -9,7 +9,7 @@
     [headerComponent]="datepicker.calendarHeaderComponent"
     [selected]="datepicker._selected"
     [@fadeInCalendar]="'enter'"
-    (selectedChange)="datepicker._select($event)"
+    (selectedChange)="datepicker.select($event)"
     (yearSelected)="datepicker._selectYear($event)"
     (monthSelected)="datepicker._selectMonth($event)"
     (_userSelection)="datepicker.close()">

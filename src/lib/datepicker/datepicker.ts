@@ -290,7 +290,7 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
   }
 
   /** Selects the given date */
-  _select(date: D): void {
+  select(date: D): void {
     let oldValue = this._selected;
     this._selected = date;
     if (!this._dateAdapter.sameDate(oldValue, this._selected)) {
