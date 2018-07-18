@@ -82,20 +82,13 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
    * ```
    */
   protected getConstructorDecorators(classSymbol: ts.Symbol): (Map<string, ts.Expression>|null)[] {
-    if (classSymbol.exports && classSymbol.exports.has(CONSTRUCTOR_PARAMS)) {
-      const paramDecoratorsProperty =
-          getPropertyValueFromSymbol(classSymbol.exports.get(CONSTRUCTOR_PARAMS) !);
-      if (paramDecoratorsProperty && ts.isFunctionExpression(paramDecoratorsProperty)) {
-        const returnStatement = getReturnStatement(paramDecoratorsProperty.body);
-        if (returnStatement && returnStatement.expression &&
-            ts.isArrayLiteralExpression(returnStatement.expression)) {
-          return returnStatement.expression.elements.map(
-              element =>
-                  ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null);
-        }
-      }
-    }
-    return [];
+    const declaration = classSymbol.exports && classSymbol.exports.get(CONSTRUCTOR_PARAMS);
+    const paramDecoratorsProperty = declaration && getPropertyValueFromSymbol(declaration);
+    const returnStatement = getReturnStatement(paramDecoratorsProperty);
+    const expression = returnStatement && returnStatement.expression;
+    return expression && ts.isArrayLiteralExpression(expression) ?
+        expression.elements.map(reflectArrayElement) :
+        [];
   }
 
   protected reflectMember(symbol: ts.Symbol, decorators?: Decorator[], isStatic?: boolean):
@@ -115,7 +108,6 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   }
 }
 
-
 function getIifeBody(declaration: ts.VariableDeclaration): ts.Block|undefined {
   if (declaration.initializer && ts.isParenthesizedExpression(declaration.initializer)) {
     const call = declaration.initializer;
@@ -127,13 +119,19 @@ function getIifeBody(declaration: ts.VariableDeclaration): ts.Block|undefined {
 }
 
 function getReturnIdentifier(body: ts.Block): ts.Identifier|undefined {
-  const returnStatement = getReturnStatement(body);
+  const returnStatement = body.statements.find(ts.isReturnStatement);
   if (returnStatement && returnStatement.expression &&
       ts.isIdentifier(returnStatement.expression)) {
     return returnStatement.expression;
   }
 }
 
-function getReturnStatement(body: ts.Block): ts.ReturnStatement|undefined {
-  return body.statements.find(ts.isReturnStatement);
+function getReturnStatement(declaration: ts.Expression | undefined): ts.ReturnStatement|undefined {
+  if (declaration && ts.isFunctionExpression(declaration)) {
+    return declaration.body.statements.find(ts.isReturnStatement);
+  }
+}
+
+function reflectArrayElement(element: ts.Expression) {
+  return ts.isObjectLiteralExpression(element) ? reflectObjectLiteral(element) : null;
 }
