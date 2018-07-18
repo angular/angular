@@ -128,7 +128,7 @@ export interface RendererType2 {
    * DOM elements. One of
    * - `Emulated` (default): Emulate native scoping of styles.
    * - `Native`: Use the native encapsulation mechanism of the renderer.
-   * - `ShadowDoc`: Use modern [Shadow
+   * - `ShadowDom`: Use modern [Shadow
    * DOM](https://w3c.github.io/webcomponents/spec/shadow/) and
    * create a ShadowRoot for component's host element.
    * - `None`: Do not provide any template or style encapsulation.
@@ -152,7 +152,7 @@ export interface RendererType2 {
  */
 export abstract class RendererFactory2 {
   /**
-   * Implements a custom renderer for a host DOM element.
+   * Creates and initializes a custom renderer for a host DOM element.
    * @param hostElement The element to render.
    * @param type The base class to implement.
    * @returns The new custom renderer instance.
@@ -205,7 +205,7 @@ export enum RendererStyleFlags2 {
  */
 export abstract class Renderer2 {
   /**
-   * Implement this callback to store arbitrary developer-defined data on a renderer instance,
+   * Use to store arbitrary developer-defined data on a renderer instance,
    * as an object containing key-value pairs.
    * This is useful for renderers that delegate to other renderers.
    */
@@ -262,7 +262,8 @@ export abstract class Renderer2 {
    */
   abstract removeChild(parent: any, oldChild: any): void;
   /**
-   * Implement this callback to get the root element of a DOM element.
+   * Implement this callback to prepare an element to be bootstrapped
+   * as a root element, and return the element instance..
    * @param selectorOrNode The DOM element.
    * @returns The root element.
    */
