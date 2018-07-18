@@ -100,9 +100,9 @@ export interface DoCheck {
   /**
      * A callback method that performs change-detection, invoked
      * after the default change-detector runs.
-     * @see `KeyValueDiffers` and `IterableDiffers` for implementing
+     * See `KeyValueDiffers` and `IterableDiffers` for implementing
      * custom change checking for collections.
-     * 
+     *
      */
   ngDoCheck(): void;
 }
@@ -115,7 +115,7 @@ export interface DoCheck {
  *
  * @usageNotes
  * The following snippet shows how a component can implement this interface
- * to define it own custom clean-up method.
+ * to define its own custom clean-up method.
  *  
  * {@example core/ts/metadata/lifecycle_hooks_spec.ts region='OnDestroy'}
  *
