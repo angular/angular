@@ -257,16 +257,24 @@ As the app grows, this rule becomes even more important.
 
 {@a 01-02}
 
+<!--
 ### Small functions
+-->
+### 함수는 간단하게
 
+<!--
 #### Style 01-02
+-->
+#### 스타일 01-02
 
 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** define small functions
+-->
+함수에는 간단한 기능만 구현**하세요.**
 
 
 </div>
@@ -276,9 +284,10 @@ As the app grows, this rule becomes even more important.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** limiting to no more than 75 lines.
-
+-->
+75줄 이하로 작성하는 것을 **고려해 보세요.**
 
 </div>
 
@@ -287,9 +296,10 @@ As the app grows, this rule becomes even more important.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Small functions are easier to test, especially when they do one thing and serve one purpose.
-
+-->
+**왜?** 함수는 하나의 목적으로 하나의 기능만 구현되어 있을 때 가장 테스트하기 편합니다.
 
 </div>
 
@@ -298,9 +308,10 @@ As the app grows, this rule becomes even more important.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Small functions promote reuse.
-
+-->
+**왜?** 함수의 기능이 간단할수록 재사용하기 편합니다.
 
 </div>
 
@@ -309,9 +320,10 @@ As the app grows, this rule becomes even more important.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Small functions are easier to read.
-
+-->
+**왜?** 함수의 기능이 작을수록 코드를 읽기 쉽습니다.
 
 </div>
 
@@ -320,9 +332,10 @@ As the app grows, this rule becomes even more important.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Small functions are easier to maintain.
-
+-->
+**왜?** 함수의 기능이 작을수록 유지보수하기 편합니다.
 
 </div>
 
@@ -331,34 +344,49 @@ As the app grows, this rule becomes even more important.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Small functions help avoid hidden bugs that come with large functions that share variables with external scope, create unwanted closures, or unwanted coupling with dependencies.
-
+-->
+**왜?** 함수의 기능이 작으면 버그가 발생할 가능성을 줄일 수 있습니다. 기능이 복잡한 함수는 변수를 공유하거나, 불필요한 클로저를 만들고 다른 코드와 커플링될 가능성이 더 크기 때문에 버그가 발생할 가능성도 커집니다.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
+<!--
 ## Naming
+-->
+## 명명 규칙
 
+<!--
 Naming conventions are hugely important to maintainability and readability. This guide recommends naming conventions for the file name and the symbol name.
-
+-->
+명명 규칙은 앱의 유지보수성이나 가독성 측면에서 아주 중요합니다. 이번 가이드에서는 파일의 이름이나 심볼 이름에 대한 명명 규칙을 제안합니다.
 
 
 {@a 02-01}
 
+<!--
 ### General Naming Guidelines
+-->
+### 일반 명명 규칙
 
+<!--
 #### Style 02-01
-
+-->
+#### 스타일 02-01
 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use consistent names for all symbols.
-
+-->
+심볼의 이름은 일관된 규칙으로 사용**하세요.**
 
 </div>
 
@@ -367,9 +395,10 @@ Naming conventions are hugely important to maintainability and readability. This
 <div class="s-rule do">
 
 
-
+<!--
 **Do** follow a pattern that describes the symbol's feature then its type. The recommended pattern is `feature.type.ts`.
-
+-->
+파일의 이름은 그 파일에 정의된 심볼의 기능과 타입이 드러나도록 작성**하세요.** `기능.타입.ts`와 같은 형식으로 작성하는 것을 권장합니다.
 
 </div>
 
@@ -378,9 +407,10 @@ Naming conventions are hugely important to maintainability and readability. This
 <div class="s-why">
 
 
-
+<!--
 **Why?** Naming conventions help provide a consistent way to find content at a glance. Consistency within the project is vital. Consistency with a team is important. Consistency across a company provides tremendous efficiency.
-
+-->
+**왜?** 명명 규칙은 파일의 내용을 쉽게 파악하는 데에도 도움이 됩니다. 그래서 파일의 이름은 일관된 규칙으로 정해져야 합니다. 프로젝트나 팀에 관련된 일관성이라도 좋습니다. 회사 전체에 일관된 명명 규칙을 사용한다면 더 효율적입니다.
 
 </div>
 
@@ -389,9 +419,10 @@ Naming conventions are hugely important to maintainability and readability. This
 <div class="s-why">
 
 
-
+<!--
 **Why?** The naming conventions should simply help find desired code faster and make it easier to understand.
-
+-->
+**왜?** 적절한 명명 규칙을 사용하면 원하는 코드를 빠르게 찾을 수 있고, 코드를 이해하기도 쉽습니다.
 
 </div>
 
@@ -400,28 +431,37 @@ Naming conventions are hugely important to maintainability and readability. This
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Names of folders and files should clearly convey their intent. For example, `app/heroes/hero-list.component.ts` may contain a component that manages a list of heroes.
-
+-->
+**왜?** 폴더나 파일의 이름을 보면 그 안의 내용물이 무엇인지 확실하게 알 수 있어야 합니다. 예를 들어 `app/heroes/hero-list.component.ts`라는 파일을 보면 이 파일이 히어로의 리스트를 처리하는 컴포넌트라고 바로 알 수 있습니다.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
-
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 02-02}
 
+<!--
 ### Separate file names with dots and dashes
+-->
+### 파일 이름을 마침표(`.`)와 대시(`-`)로 구분하기
 
+<!--
 #### Style 02-02
-
+-->
+#### 스타일 02-02
 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use dashes to separate words in the descriptive name.
-
+-->
+파일의 이름을 여러 단어로 설명해야 한다면 대시(`-`)로 구분**하세요.**
 
 </div>
 
@@ -430,9 +470,10 @@ Naming conventions are hugely important to maintainability and readability. This
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use dots to separate the descriptive name from the type.
-
+-->
+파일의 기능을 설명하는 부분과 타입은 마침표(`.`)로 구분**하세요.**
 
 </div>
 
@@ -441,9 +482,10 @@ Naming conventions are hugely important to maintainability and readability. This
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use consistent type names for all components following a pattern that describes the component's feature then its type. A recommended pattern is `feature.type.ts`.
-
+-->
+컴포넌트 타입의 파일이라면 그 컴포넌트의 기능을 표현하도록 파일의 이름을 작성**하세요.** `기능.component.ts` 형식을 권장합니다.
 
 </div>
 
@@ -452,10 +494,12 @@ Naming conventions are hugely important to maintainability and readability. This
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use conventional type names including `.service`, `.component`, `.pipe`, `.module`, and `.directive`.
 Invent additional type names if you must but take care not to create too many.
-
+-->
+파일의 타입은 `.service`, `.component`, `.pipe`, `.module`, `.directive`로 작성**하세요.**
+필요하다면 타입을 추가해도 문제없지만, 너무 많이 추가하는 것은 좋지 않습니다.
 
 </div>
 
@@ -464,8 +508,10 @@ Invent additional type names if you must but take care not to create too many.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Type names provide a consistent way to quickly identify what is in the file.
+-->
+**왜?** 타입의 이름을 보면 이 파일이 어떤 역할을 하는지 직관적으로 알 수 있어야 합니다.
 
 
 </div>
@@ -475,9 +521,10 @@ Invent additional type names if you must but take care not to create too many.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Type names make it easy to find a specific file type using an editor or IDE's fuzzy search techniques.
-
+-->
+**왜?** 파일의 타입을 지정하면 IDE에서 특정 종류의 파일을 찾기도 편합니다.
 
 </div>
 
@@ -486,10 +533,11 @@ Invent additional type names if you must but take care not to create too many.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Unabbreviated type names such as `.service` are descriptive and unambiguous.
 Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
-
+-->
+**왜?** `.service`와 같이 단어는 축약하지 않는 것이 좋습니다. `.srv`, `.svc`, `.serv`와 같은 단어는 혼란을 줄 수 있습니다.
 
 </div>
 
@@ -498,13 +546,17 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Type names provide pattern matching for any automated tasks.
-
+-->
+**왜?** 타입 이름은 태스크를 자동화할 때도 패턴으로 활용할 수 있습니다.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 02-03}
@@ -760,7 +812,10 @@ and reference assets of different types.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 02-04}
@@ -915,7 +970,10 @@ As always, strive for consistency.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 02-05}
@@ -986,7 +1044,10 @@ As always, strive for consistency.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 02-06}
 
@@ -1026,7 +1087,10 @@ As always, strive for consistency.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 02-07}
 
@@ -1199,7 +1263,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 02-09}
@@ -1294,7 +1361,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 02-10}
@@ -1433,7 +1503,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 02-11}
@@ -1523,7 +1596,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 02-12}
 
@@ -1752,7 +1828,10 @@ A consistent class and file name convention make these modules easy to spot and 
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 ## Coding conventions
@@ -1815,7 +1894,10 @@ By convention, upper camel case indicates a constructable asset.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 03-02}
@@ -1924,7 +2006,10 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 03-03}
@@ -2036,7 +2121,10 @@ discourage the `I` prefix.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 03-04}
 
@@ -2114,7 +2202,10 @@ discourage the `I` prefix.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 03-06}
 
@@ -2192,7 +2283,10 @@ discourage the `I` prefix.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 ## Application structure and NgModules
@@ -2206,7 +2300,10 @@ All content is one asset per file. Each component, service, and pipe is in its o
 All third party vendor scripts are stored in another folder and not in the `src` folder.
 You didn't write them and you don't want them cluttering `src`.
 Use the naming conventions for files in this guide.
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-01}
 
@@ -2251,7 +2348,10 @@ _can I quickly open and start work in all of the related files for this feature_
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-02}
 
@@ -2283,7 +2383,10 @@ A descriptive folder structure makes a world of difference to you and the people
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-03}
 
@@ -2348,7 +2451,10 @@ in a single file than as multiple files. Be wary of this loophole.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 04-04}
@@ -2408,7 +2514,10 @@ Use a flatter structure until there is an obvious value to creating a new folder
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 04-05}
@@ -2452,7 +2561,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 04-06}
@@ -2773,7 +2885,10 @@ Whatever you choose, be consistent.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-07}
 
@@ -2878,7 +2993,10 @@ and more difficult in a flat structure.
   <a href="#file-tree">Refer to this _folder and file structure_ example.</a>
 </div>
 
-<a href="#toc">Back to top
+<!--
+<a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 </a>
 
@@ -2940,7 +3058,10 @@ for example, in `/src/app`.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 04-09}
@@ -3062,7 +3183,10 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-10}
 
@@ -3314,7 +3438,10 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-11}
 
@@ -3641,7 +3768,10 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-12}
 
@@ -3699,7 +3829,10 @@ Only the root `AppModule` should import the `CoreModule`.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-13}
 
@@ -3731,7 +3864,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 04-14}
 
@@ -3760,7 +3896,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 ## Components
@@ -3816,7 +3955,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 05-03}
 
@@ -3891,7 +4033,10 @@ There are a few cases where you give a component an attribute, such as when you 
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 05-04}
 
@@ -4017,7 +4162,10 @@ in those editors that support it; it won't help with CSS styles.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 05-12}
 
@@ -4109,7 +4257,10 @@ Put it on the line above when doing so is clearly more readable.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 {@a 05-13}
@@ -4187,7 +4338,10 @@ and the directive name doesn't describe the property.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 05-14}
 
@@ -4244,7 +4398,10 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 05-15}
 
@@ -4333,7 +4490,10 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 05-16}
 
@@ -4417,7 +4577,10 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 05-17}
 
@@ -4473,7 +4636,10 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 ## Directives
@@ -4532,7 +4698,10 @@ helps instantly identify which members of the component serve which purpose.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 06-03}
 
@@ -4604,7 +4773,10 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 ## Services
@@ -4655,7 +4827,10 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 07-02}
 
@@ -4706,7 +4881,10 @@ Compare with the less preferred `host` metadata alternative.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 07-03}
 
@@ -4773,7 +4951,10 @@ Compare with the less preferred `host` metadata alternative.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 07-04}
 
@@ -4830,7 +5011,10 @@ dependencies based on the declared types of that service's constructor parameter
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 ## Data Services
@@ -4901,14 +5085,20 @@ easier to test the consumers with mock service implementations.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 ## Lifecycle hooks
 
 Use Lifecycle hooks to tap into important events exposed by Angular.
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 09-01}
 
@@ -4954,14 +5144,20 @@ signatures. use those signatures to flag spelling and syntax mistakes.
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 
 ## Appendix
 
 Useful tools and tips for Angular.
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a A-01}
 
@@ -4990,7 +5186,10 @@ Useful tools and tips for Angular.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a A-02}
 
@@ -5029,4 +5228,7 @@ Useful tools and tips for Angular.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
