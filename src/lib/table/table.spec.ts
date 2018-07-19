@@ -400,6 +400,38 @@ describe('MatTable', () => {
         ['Footer A', 'Footer B', 'Footer C'],
       ]);
     }));
+
+    it('should sort strings with numbers larger than MAX_SAFE_INTEGER correctly', () => {
+      const large = '9563256840123535';
+      const larger = '9563256840123536';
+      const largest = '9563256840123537';
+
+      dataSource.data[0].a = largest;
+      dataSource.data[1].a = larger;
+      dataSource.data[2].a = large;
+
+      component.sort.sort(component.sortHeader);
+      fixture.detectChanges();
+      expectTableToMatchContent(tableElement, [
+        ['Column A', 'Column B', 'Column C'],
+        [large, 'b_3', 'c_3'],
+        [larger, 'b_2', 'c_2'],
+        [largest, 'b_1', 'c_1'],
+        ['Footer A', 'Footer B', 'Footer C'],
+      ]);
+
+
+      component.sort.sort(component.sortHeader);
+      fixture.detectChanges();
+      expectTableToMatchContent(tableElement, [
+        ['Column A', 'Column B', 'Column C'],
+        [largest, 'b_1', 'c_1'],
+        [larger, 'b_2', 'c_2'],
+        [large, 'b_3', 'c_3'],
+        ['Footer A', 'Footer B', 'Footer C'],
+      ]);
+    });
+
   });
 });
 
