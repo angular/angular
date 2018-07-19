@@ -9,7 +9,7 @@
 import {NgForOfContext} from '@angular/common';
 import {Component} from '../../src/core';
 import {defineComponent} from '../../src/render3/definition';
-import {I18nExpInstruction, I18nInstruction, i18nApply, i18nExpMapping, i18nInterpolation, i18nInterpolationV, i18nMapping} from '../../src/render3/i18n';
+import {I18nExpInstruction, I18nInstruction, i18nApply, i18nExpMapping, i18nInterpolation1, i18nInterpolation2, i18nInterpolation3, i18nInterpolation4, i18nInterpolation5, i18nInterpolation6, i18nInterpolation7, i18nInterpolation8, i18nInterpolationV, i18nMapping} from '../../src/render3/i18n';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgForOf} from './common_with_def';
@@ -201,7 +201,7 @@ describe('Runtime i18n', () => {
             element(0, 'div');  // translated section 1
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(0, 'title', i18nInterpolation(i18n_1, 2, ctx.exp1, ctx.exp2));
+            elementProperty(0, 'title', i18nInterpolation2(i18n_1, ctx.exp1, ctx.exp2));
           }
         }
       });
@@ -295,7 +295,7 @@ describe('Runtime i18n', () => {
             textBinding(1, bind(ctx.exp1));
             textBinding(6, bind(ctx.exp2));
             textBinding(7, bind(ctx.exp3));
-            elementProperty(0, 'title', i18nInterpolation(i18n_2, 2, ctx.exp1, ctx.exp2));
+            elementProperty(0, 'title', i18nInterpolation2(i18n_2, ctx.exp1, ctx.exp2));
           }
         }
       });
@@ -389,7 +389,7 @@ describe('Runtime i18n', () => {
           }
           if (rf & RenderFlags.Update) {
             textBinding(2, bind(ctx.exp1));
-            elementProperty(4, 'title', i18nInterpolation(i18n_3, 2, ctx.exp1, ctx.exp2));
+            elementProperty(4, 'title', i18nInterpolation2(i18n_3, ctx.exp1, ctx.exp2));
           }
         }
       });
@@ -1097,7 +1097,7 @@ describe('Runtime i18n', () => {
               i18nApply(1, i18n_1[0]);
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(2, 'title', i18nInterpolation(i18n_2, 1, cmp.name));
+              elementProperty(2, 'title', i18nInterpolation1(i18n_2, cmp.name));
               textBinding(3, bind(cmp.name));
             }
           }
@@ -1184,7 +1184,7 @@ describe('Runtime i18n', () => {
               i18nApply(4, i18n_1[0]);
             }
             if (rf & RenderFlags.Update) {
-              elementProperty(3, 'title', i18nInterpolation(i18n_2, 1, cmp.name));
+              elementProperty(3, 'title', i18nInterpolation1(i18n_2, cmp.name));
               textBinding(4, bind(cmp.name));
             }
           }
@@ -1340,40 +1340,292 @@ describe('Runtime i18n', () => {
     });
   });
 
-  it('i18nInterpolation should return the same value as i18nInterpolationV', () => {
-    const MSG_DIV_SECTION_1 = `start {$EXP_2} middle {$EXP_1} end`;
-    const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1});
-    let interpolation;
-    let interpolationV;
+  describe('i18nInterpolation', () => {
+    it('i18nInterpolation should return the same value as i18nInterpolationV', () => {
+      const MSG_DIV_SECTION_1 = `start {$EXP_2} middle {$EXP_1} end`;
+      const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1});
+      let interpolation;
+      let interpolationV;
 
-    class MyApp {
-      exp1: any = '1';
-      exp2: any = '2';
+      class MyApp {
+        exp1: any = '1';
+        exp2: any = '2';
 
-      static ngComponentDef = defineComponent({
-        type: MyApp,
-        factory: () => new MyApp(),
-        selectors: [['my-app']],
-        // Initial template:
-        // <div i18n i18n-title title="{{exp1}}{{exp2}}"></div>
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          // Initial template:
+          // <div i18n i18n-title title="{{exp1}}{{exp2}}"></div>
 
-        // Translated to:
-        // <div i18n i18n-title title="start {{exp2}} middle {{exp1}} end"></div>
-        template: (rf: RenderFlags, ctx: MyApp) => {
-          if (rf & RenderFlags.Create) {
-            element(0, 'div');  // translated section 1
+          // Translated to:
+          // <div i18n i18n-title title="start {{exp2}} middle {{exp1}} end"></div>
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div');  // translated section 1
+            }
+            if (rf & RenderFlags.Update) {
+              interpolation = i18nInterpolation2(i18n_1, ctx.exp1, ctx.exp2);
+              interpolationV = i18nInterpolationV(i18n_1, [ctx.exp1, ctx.exp2]);
+              elementProperty(0, 'title', interpolation);
+            }
           }
-          if (rf & RenderFlags.Update) {
-            interpolation = i18nInterpolation(i18n_1, 2, ctx.exp1, ctx.exp2);
-            interpolationV = i18nInterpolationV(i18n_1, [ctx.exp1, ctx.exp2]);
-            elementProperty(0, 'title', interpolation);
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(interpolation).toBeDefined();
+      expect(interpolation).toEqual(interpolationV);
+    });
+
+    it('i18nInterpolation3 should work', () => {
+      const MSG_DIV_SECTION_1 = `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} end`;
+      const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2});
+
+      class MyApp {
+        exp1: any = '1';
+        exp2: any = '2';
+        exp3: any = '3';
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          // Initial template:
+          // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}"></div>
+
+          // Translated to:
+          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} end"></div>
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div');  // translated section 1
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(0, 'title', i18nInterpolation3(i18n_1, ctx.exp1, ctx.exp2, ctx.exp3));
+            }
           }
-        }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 end"></div>');
+    });
+
+    it('i18nInterpolation4 should work', () => {
+      const MSG_DIV_SECTION_1 = `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} end`;
+      const i18n_1 =
+          i18nExpMapping(MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3});
+
+      class MyApp {
+        exp1: any = '1';
+        exp2: any = '2';
+        exp3: any = '3';
+        exp4: any = '4';
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          // Initial template:
+          // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}"></div>
+
+          // Translated to:
+          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} _ {{exp4}} end"></div>
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div');  // translated section 1
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(
+                  0, 'title', i18nInterpolation4(i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4));
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 _ 4 end"></div>');
+    });
+
+    it('i18nInterpolation5 should work', () => {
+      const MSG_DIV_SECTION_1 = `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} end`;
+      const i18n_1 = i18nExpMapping(
+          MSG_DIV_SECTION_1, {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3, 'EXP_5': 4});
+
+      class MyApp {
+        exp1: any = '1';
+        exp2: any = '2';
+        exp3: any = '3';
+        exp4: any = '4';
+        exp5: any = '5';
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          // Initial template:
+          // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}"></div>
+
+          // Translated to:
+          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} _ {{exp4}} _ {{exp5}}
+          // end"></div>
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div');  // translated section 1
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(
+                  0, 'title',
+                  i18nInterpolation5(i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5));
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 _ 4 _ 5 end"></div>');
+    });
+
+    it('i18nInterpolation6 should work', () => {
+      const MSG_DIV_SECTION_1 =
+          `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} _ {$EXP_6} end`;
+      const i18n_1 = i18nExpMapping(
+          MSG_DIV_SECTION_1,
+          {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3, 'EXP_5': 4, 'EXP_6': 5});
+
+      class MyApp {
+        exp1: any = '1';
+        exp2: any = '2';
+        exp3: any = '3';
+        exp4: any = '4';
+        exp5: any = '5';
+        exp6: any = '6';
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          // Initial template:
+          // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}"></div>
+
+          // Translated to:
+          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} _ {{exp4}} _ {{exp5}}
+          // _ {{exp6}} end"></div>
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div');  // translated section 1
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(
+                  0, 'title',
+                  i18nInterpolation6(
+                      i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5, ctx.exp6));
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 _ 4 _ 5 _ 6 end"></div>');
+    });
+
+    it('i18nInterpolation7 should work', () => {
+      const MSG_DIV_SECTION_1 =
+          `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} _ {$EXP_6} _ {$EXP_7} end`;
+      const i18n_1 = i18nExpMapping(
+          MSG_DIV_SECTION_1,
+          {'EXP_1': 0, 'EXP_2': 1, 'EXP_3': 2, 'EXP_4': 3, 'EXP_5': 4, 'EXP_6': 5, 'EXP_7': 6});
+
+      class MyApp {
+        exp1: any = '1';
+        exp2: any = '2';
+        exp3: any = '3';
+        exp4: any = '4';
+        exp5: any = '5';
+        exp6: any = '6';
+        exp7: any = '7';
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          // Initial template:
+          // <div i18n i18n-title
+          // title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}{{exp7}}"></div>
+
+          // Translated to:
+          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} _ {{exp4}} _ {{exp5}}
+          // _ {{exp6}} _ {{exp7}} end"></div>
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div');  // translated section 1
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(
+                  0, 'title', i18nInterpolation7(
+                                  i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5,
+                                  ctx.exp6, ctx.exp7));
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 _ 4 _ 5 _ 6 _ 7 end"></div>');
+    });
+
+    it('i18nInterpolation8 should work', () => {
+      const MSG_DIV_SECTION_1 =
+          `start {$EXP_1} _ {$EXP_2} _ {$EXP_3} _ {$EXP_4} _ {$EXP_5} _ {$EXP_6} _ {$EXP_7} _ {$EXP_8} end`;
+      const i18n_1 = i18nExpMapping(MSG_DIV_SECTION_1, {
+        'EXP_1': 0,
+        'EXP_2': 1,
+        'EXP_3': 2,
+        'EXP_4': 3,
+        'EXP_5': 4,
+        'EXP_6': 5,
+        'EXP_7': 6,
+        'EXP_8': 7
       });
-    }
 
-    const fixture = new ComponentFixture(MyApp);
-    expect(interpolation).toBeDefined();
-    expect(interpolation).toEqual(interpolationV);
+      class MyApp {
+        exp1: any = '1';
+        exp2: any = '2';
+        exp3: any = '3';
+        exp4: any = '4';
+        exp5: any = '5';
+        exp6: any = '6';
+        exp7: any = '7';
+        exp8: any = '8';
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          // Initial template:
+          // <div i18n i18n-title
+          // title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}{{exp7}}{{exp8}}"></div>
+
+          // Translated to:
+          // <div i18n i18n-title title="start {{exp1}} _ {{exp2}} _ {{exp3}} _ {{exp4}} _ {{exp5}}
+          // _ {{exp6}} _ {{exp7}} _ {{exp8}} end"></div>
+          template: (rf: RenderFlags, ctx: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div');  // translated section 1
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(
+                  0, 'title', i18nInterpolation8(
+                                  i18n_1, ctx.exp1, ctx.exp2, ctx.exp3, ctx.exp4, ctx.exp5,
+                                  ctx.exp6, ctx.exp7, ctx.exp8));
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html).toEqual('<div title="start 1 _ 2 _ 3 _ 4 _ 5 _ 6 _ 7 _ 8 end"></div>');
+    });
+
   });
 });
