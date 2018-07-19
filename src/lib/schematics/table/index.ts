@@ -17,7 +17,10 @@ import {buildComponent} from '../utils/devkit-utils/component';
  */
 export default function(options: Schema): Rule {
   return chain([
-    buildComponent({...options}),
+    buildComponent({...options}, {
+      template: options.inlineTemplate &&
+      './__path__/__name@dasherize@if-flat__/__name@dasherize__.component.html'
+    }),
     options.skipImport ? noop() : addTableModulesToModule(options)
   ]);
 }

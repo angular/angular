@@ -22,39 +22,15 @@ export interface TreeNode {
 @Component({
   selector: '<%= selector %>',<% if (inlineTemplate) { %>
   template: `
-    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
-      <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
-        <button mat-icon-button disabled></button>
-        <mat-icon class="type-icon" [attr.aria-label]="node.type + 'icon'">
-          {{ node.type ==='file' ? 'description' : 'folder' }}
-        </mat-icon>
-        {{node.name}}
-      </mat-tree-node>
-
-      <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding>
-        <button mat-icon-button matTreeNodeToggle
-                [attr.aria-label]="'toggle ' + node.name">
-          <mat-icon class="mat-icon-rtl-mirror">
-            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-          </mat-icon>
-        </button>
-        <mat-icon class="type-icon" [attr.aria-label]="node.type + 'icon'">
-          {{ node.type === 'file' ? 'description' : 'folder' }}
-        </mat-icon>
-        {{node.name}}
-      </mat-tree-node>
-    </mat-tree>
+<%= resolvedFiles.template %>
   `,<% } else { %>
   templateUrl: './<%= dasherize(name) %>.component.html',<% } if (inlineStyle) { %>
   styles: [
     `
-    .type-icon {
-      color: #999;
-      margin-right: 5px;
-    }
-  `
-  ]<% } else { %>
-  styleUrls: ['./<%= dasherize(name) %>.component.<%= styleext %>']<% } %><% if (!!viewEncapsulation) { %>,
+<%= resolvedFiles.stylesheet %>
+    `
+  ],<% } else { %>
+  styleUrls: ['./<%= dasherize(name) %>.component.<%= styleext %>'],<% } %><% if (!!viewEncapsulation) { %>
   encapsulation: ViewEncapsulation.<%= viewEncapsulation %><% } if (changeDetection !== 'Default') { %>,
   changeDetection: ChangeDetectionStrategy.<%= changeDetection %><% } %>
 })

@@ -8,7 +8,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {strings} from '@angular-devkit/core';
+import {strings, template as interpolateTemplate} from '@angular-devkit/core';
 import {
   apply,
   branchAndMerge,
@@ -18,12 +18,12 @@ import {
   move,
   noop,
   Rule,
-  SchematicContext,
   SchematicsException,
   template,
   Tree,
   url,
 } from '@angular-devkit/schematics';
+import {FileSystemSchematicContext} from '@angular-devkit/schematics/tools';
 import * as ts from 'typescript';
 import {addDeclarationToModule, addExportToModule} from './ast-utils';
 import {InsertChange} from './change';
@@ -31,6 +31,8 @@ import {buildRelativePath, findModuleFromOptions} from './find-module';
 import {getWorkspace} from './config';
 import {parseName} from './parse-name';
 import {validateName} from './validation';
+import {resolve, dirname, join} from 'path';
+import {readFileSync} from 'fs';
 
 function addDeclarationToNgModule(options: any): Rule {
   return (host: Tree) => {
@@ -103,13 +105,27 @@ function buildSelector(options: any, projectPrefix: string) {
   return selector;
 }
 
-export function buildComponent(options: any): Rule {
-  return (host: Tree, context: SchematicContext) => {
+/**
+ * Rule that copies and interpolates the files that belong to this schematic context. Additionally
+ * a list of file paths can be passed to this rule in order to expose them inside the EJS
+ * template context.
+ *
+ * This allows inlining the external template or stylesheet files in EJS without having
+ * to manually duplicate the file content.
+ */
+export function buildComponent(options: any, additionalFiles?: {[key: string]: string}): Rule {
+  return (host: Tree, context: FileSystemSchematicContext) => {
     const workspace = getWorkspace(host);
+
     if (!options.project) {
       options.project = Object.keys(workspace.projects)[0];
     }
+
     const project = workspace.projects[options.project];
+
+    const schematicFilesUrl = './files';
+    const schematicFilesPath = resolve(dirname(context.schematic.description.path),
+        schematicFilesUrl);
 
     if (options.path === undefined) {
       options.path = `/${project.root}/src/app`;
@@ -119,19 +135,39 @@ export function buildComponent(options: any): Rule {
     options.module = findModuleFromOptions(host, options);
 
     const parsedPath = parseName(options.path, options.name);
+
     options.name = parsedPath.name;
     options.path = parsedPath.path;
 
     validateName(options.name);
 
-    const templateSource = apply(url('./files'), [
+    // Object that will be used as context for the EJS templates.
+    const baseTemplateContext = {
+      ...strings,
+      'if-flat': (s: string) => options.flat ? '' : s,
+      ...options,
+    };
+
+    // Key-value object that includes the specified additional files with their loaded content.
+    // The resolved contents can be used inside EJS templates.
+    const resolvedFiles = {};
+
+    for (let key in additionalFiles) {
+      if (additionalFiles[key]) {
+        const fileContent = readFileSync(join(schematicFilesPath, additionalFiles[key]), 'utf-8');
+
+        // Interpolate the additional files with the base EJS template context.
+        resolvedFiles[key] = interpolateTemplate(fileContent)(baseTemplateContext);
+      }
+    }
+
+    const templateSource = apply(url(schematicFilesUrl), [
       options.spec ? noop() : filter(path => !path.endsWith('.spec.ts')),
       options.inlineStyle ? filter(path => !path.endsWith('.__styleext__')) : noop(),
       options.inlineTemplate ? filter(path => !path.endsWith('.html')) : noop(),
       template({
-        ...strings,
-        'if-flat': (s: string) => options.flat ? '' : s,
-        ...options,
+        resolvedFiles,
+        ...baseTemplateContext
       }),
       move(null, parsedPath.path),
     ]);
