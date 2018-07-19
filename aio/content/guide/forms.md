@@ -29,7 +29,7 @@ You can run the <live-example></live-example> in Stackblitz and download the cod
 You can build forms by writing templates in the Angular [template syntax](guide/template-syntax) with
 the form-specific directives and techniques described in this page.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   You can also use a reactive (or model-driven) approach to build forms.
   However, this page focuses on template-driven forms.
@@ -62,7 +62,7 @@ If you delete the hero name, the form displays a validation error in an attentio
 
 Note that the *Submit* button is disabled, and the "required" bar to the left of the input control changes from green to red.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   You can customize the colors and location of the "required" bar with standard CSS.
 
@@ -180,7 +180,7 @@ Update it with the following:
 
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   There are two changes:
 
@@ -208,7 +208,7 @@ Replace the contents of its template with the following:
 
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   There are only two changes.
   The `template` is simply the new element tag identified by the component's `selector` property.
@@ -235,7 +235,7 @@ You added a *Submit* button at the bottom with some classes on it for styling.
 
 *You're not using Angular yet*. There are no bindings or extra directives, just layout.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   In template driven forms, if you've imported `FormsModule`, you don't have to do anything
   to the `<form>` tag in order to make use of `FormsModule`. Continue on to see how this works.
@@ -311,7 +311,7 @@ Find the `<input>` tag for *Name* and update it like this:
 
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   You added a diagnostic interpolation after the input tag
   so you can see what you're doing.
@@ -331,7 +331,7 @@ a template variable for the form. Update the `<form>` tag with
 
 The variable `heroForm` is now a reference to the `NgForm` directive that governs the form as a whole.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   {@a ngForm}
 
@@ -362,7 +362,7 @@ At some point it might look like this:
 The diagnostic is evidence that values really are flowing from the input box to the model and
 back again.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   That's *two-way data binding*.
   For more information, see
@@ -375,7 +375,7 @@ Notice that you also added a `name` attribute to the `<input>` tag and set it to
 which makes sense for the hero's name. Any unique value will do, but using a descriptive name is helpful.
 Defining a `name` attribute is a requirement when using `[(ngModel)]` in combination with a form.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   Internally, Angular creates `FormControl` instances and
   registers them with an `NgForm` directive that Angular attached to the `<form>` tag.
@@ -395,7 +395,7 @@ After revision, the core of the form should look like this:
 
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   * Each input element has an `id` property that is used by the `label` element's `for` attribute
   to match the label to its input control.
@@ -571,7 +571,7 @@ Here's an example of an error message added to the _name_ input box:
 You need a template reference variable to access the input box's Angular control from within the template.
 Here you created a variable called `name` and gave it the value "ngModel".
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   Why "ngModel"?
   A directive's [exportAs](api/core/Directive) property
@@ -687,7 +687,7 @@ For you, it was as simple as this:
 
 Submitting the form isn't terribly dramatic at the moment.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   An unsurprising observation for a demo. To be honest,
   jazzing it up won't teach you anything new about forms.

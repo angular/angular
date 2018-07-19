@@ -24,7 +24,7 @@ An Angular application is a tree of components. Each component instance has its 
 The tree of components parallels the tree of injectors.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -61,7 +61,7 @@ The requests keep bubbling up until Angular finds an injector that can handle th
 If it runs out of ancestors, Angular throws an error.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -196,7 +196,7 @@ Providing the service at the component level ensures that _every_ instance of th
 No tax return overwriting. No mess.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -244,7 +244,7 @@ its injector produces an instance of `Car` resolved by injector (C) with an `Eng
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 

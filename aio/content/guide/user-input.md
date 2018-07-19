@@ -96,7 +96,7 @@ Here's what the UI displays:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -179,7 +179,7 @@ Type something in the input box, and watch the display update with each keystrok
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
