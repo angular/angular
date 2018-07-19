@@ -25,7 +25,7 @@ application and don't need to be listed in any module.
 Service classes can act as their own providers which is why defining them in the `@Injectable` decorator
 is all the registration you need.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -167,7 +167,7 @@ that is visible only to the component and its children, if any.
 You could also provide the `HeroService` to a *different* component elsewhere in the application.
 That would result in a *different* instance of the service, living in a *different* injector.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -433,7 +433,7 @@ It may already have that value in its internal container.
 If it doesn't, it may be able to make one with the help of a ***provider***.
 A *provider* is a recipe for delivering a service associated with a *token*.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -577,7 +577,7 @@ The second provider substitutes the `DateLoggerService` for the `LoggerService`.
 The `LoggerService` is already registered at the `AppComponent` level.
 When _this component_ requests the `LoggerService`, it receives the `DateLoggerService` instead.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -645,7 +645,7 @@ The `HeroOfTheMonthComponent` constructor's `logger` parameter is typed as `Mini
 Behind the scenes, Angular actually sets the `logger` parameter to the full service registered under the `LoggingService` token which happens to be the `DateLoggerService` that was [provided above](guide/dependency-injection-in-action#useclass).
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -707,7 +707,7 @@ After some undisclosed work, the function returns the string of names
 and Angular injects it into the `runnersUp` parameter of the `HeroOfTheMonthComponent`.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -769,7 +769,7 @@ A ***class-interface*** should define *only* the members that its consumers are 
 Such a narrowing interface helps decouple the concrete class from its consumers.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -866,7 +866,7 @@ and displays them in the order they arrive from the database.
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -982,7 +982,7 @@ If you're lucky, they all implement the same base class
 whose API your `NewsComponent` understands.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -1165,7 +1165,7 @@ its class signature doesn't mention `Parent`:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 

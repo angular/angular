@@ -187,7 +187,7 @@ For example, given the `<base href="/my/app/">`, the browser resolves a URL such
 into a server request for `my/app/some/place/foo.jpg`.
 During navigation, the Angular router uses the _base href_ as the base path to component, template, and module files.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 See also the [*APP_BASE_HREF*](api/common/APP_BASE_HREF "API: APP_BASE_HREF") alternative.
 
@@ -215,7 +215,7 @@ The `ng build` command writes generated build artifacts to the output folder.
 The `ng serve` command does not.
 It serves build artifacts from memory instead for a faster development experience.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The output folder is  `dist/` by default.
 To output to a different folder, change the `outputPath` in `angular.json`.

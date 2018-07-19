@@ -284,7 +284,7 @@ The following are all in `src/`
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 

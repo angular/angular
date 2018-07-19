@@ -7,7 +7,7 @@ Some developers prefer Visual Studio as their Integrated Development Environment
 This cookbook describes the steps required to set up and use the
 Angular QuickStart files in **Visual Studio 2015 within an ASP.NET 4.x project**.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -25,7 +25,7 @@ the QuickStart application itself.
 To set up the QuickStart files with an **ASP.NET 4.x project** in
 Visual Studio 2015, follow these steps:
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -49,7 +49,7 @@ Note that the resulting code does not map to the docs. Adjust accordingly.
 Install **[Node.js® and npm](https://nodejs.org/en/download/)**
 if they are not already on your machine.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -146,7 +146,7 @@ Create the ASP.NET 4.x project in the usual way as follows:
 * Select the desired ASP.NET 4.5.2 template and click OK.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -281,7 +281,7 @@ rewrite rules near the bottom of the `web.config`:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -299,7 +299,7 @@ match the base href in `index.html`.
 Build and launch the app with debugger by clicking the **Run** button or by pressing `F5`.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 

@@ -34,7 +34,7 @@ An observer object can define any combination of these handlers. If you don't su
 
 An `Observable` instance begins publishing values only when someone subscribes to it. You subscribe by calling the `subscribe()` method of the instance, passing an observer object to receive the notifications.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
    In order to show how subscribing works, we need to create a new observable. There is a  constructor that you use to create new instances, but for illustration, we can use some static methods on the `Observable` class that create simple observables of frequently used types:
 
@@ -96,7 +96,7 @@ Notice that if you subscribe twice, there will be two separate streams, each emi
 
 <code-example path="observables/src/multicasting.ts" region="multicast_sequence" title="Create a multicast subscriber"></code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
    Multicasting observables take a bit more setup, but they can be useful for certain applications. Later we will look at tools that simplify the process of multicasting, allowing you to take any observable and make it multicasting.
 </div>
 

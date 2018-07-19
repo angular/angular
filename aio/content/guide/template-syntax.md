@@ -410,7 +410,7 @@ Your intuition is incorrect! Your everyday HTML mental model is misleading.
 In fact, once you start data binding, you are no longer working with HTML *attributes*. You aren't setting attributes.
 You are setting the *properties* of DOM elements, components, and directives.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 ### HTML attribute vs. DOM property
 
@@ -622,7 +622,7 @@ from a component's data property into a target element property.
 You cannot use property binding to pull values *out* of the target element.
 You can't bind to a property of the target element to _read_ it. You can only _set_ it.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Similarly, you cannot use property binding to *call* a method on the target element.
 
@@ -659,7 +659,7 @@ as it is in the following example:
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Technically, Angular is matching the name to a directive [input](guide/template-syntax#inputs-outputs),
 one of the property names listed in the directive's `inputs` array or a property decorated with `@Input()`.
@@ -782,7 +782,7 @@ The template syntax provides specialized one-way bindings for scenarios less wel
 
 You can set the value of an attribute directly with an **attribute binding**.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 This is the only exception to the rule that a binding sets a target property.
 This is the only binding that creates and sets an attribute.
@@ -872,7 +872,7 @@ It removes the class when the expression is falsy.
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 While this is a fine way to toggle a single class name,
 the [NgClass directive](guide/template-syntax#ngClass) is usually preferred when managing multiple class names at the same time.
@@ -899,14 +899,14 @@ The following example conditionally sets the font size in  “em” and “%” 
 <code-example path="template-syntax/src/app/app.component.html" region="style-binding-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 While this is a fine way to set a single style,
 the [NgStyle directive](guide/template-syntax#ngStyle) is generally preferred when setting several inline styles at the same time.
 
 </div>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Note that a _style property_ name can be written in either
 [dash-case](guide/glossary#dash-case), as shown above, or
@@ -958,7 +958,7 @@ of a known directive, as it does in the following example:
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `myClick` directive is further described in the section
 on [aliasing input/output properties](guide/template-syntax#aliasing-io).
@@ -1186,7 +1186,7 @@ Adding an `ngClass` property binding to `currentClasses` sets the element's clas
 <code-example path="template-syntax/src/app/app.component.html" region="NgClass-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 It's up to you to call `setCurrentClasses()`, both initially and when the dependent properties change.
 
@@ -1222,7 +1222,7 @@ Adding an `ngStyle` property binding to `currentStyles` sets the element's style
 <code-example path="template-syntax/src/app/app.component.html" region="NgStyle-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 It's up to you to call `setCurrentStyles()`, both initially and when the dependent properties change.
 
@@ -1273,7 +1273,7 @@ That `ngModel` directive hides these onerous details behind its own  `ngModel` i
 <code-example path="template-syntax/src/app/app.component.html" region="NgModel-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `ngModel` data property sets the element's value property and the `ngModelChange` event property
 listens for changes to the element's value.
@@ -1407,7 +1407,7 @@ The `nullHero` will never be displayed.
 <code-example path="template-syntax/src/app/app.component.html" region="NgIf-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 See also the
 [_safe navigation operator_](guide/template-syntax#safe-navigation-operator "Safe navigation operator (?.)")
@@ -1492,7 +1492,7 @@ The next example captures the `index` in a variable named `i` and displays it wi
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 `NgFor` is implemented by the `NgForOf` directive. Read more about the other `NgForOf` context values such as `last`, `even`,
 and `odd` in the [NgForOf API reference](api/common/NgForOf).
@@ -1756,7 +1756,7 @@ because the data bound properties are annotated with `@Input()` and `@Output()` 
 <code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-1" title="src/app/hero-detail.component.ts" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Alternatively, you can identify members in the `inputs` and `outputs` arrays
 of the directive metadata, as in this example:
@@ -1811,7 +1811,7 @@ You can specify the alias for the property name by passing it into the input/out
 <code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick" title="src/app/click.directive.ts" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 You can also alias property names in the `inputs` and `outputs` arrays.
 You write a colon-delimited (`:`) string with
