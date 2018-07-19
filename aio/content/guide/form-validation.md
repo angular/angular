@@ -9,7 +9,7 @@ This page shows how to validate user input in the UI and display useful validati
 using both reactive and template-driven forms. It assumes some basic knowledge of the two 
 forms modules.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 If you're new to forms, start by reviewing the [Forms](guide/forms) and 
 [Reactive Forms](guide/reactive-forms) guides.
@@ -51,7 +51,7 @@ but only if the `name` is invalid and the control is either `dirty` or `touched`
 There are messages for `required`, `minlength`, and `forbiddenName`.
  
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -178,7 +178,7 @@ Once the `ForbiddenValidatorDirective` is ready, you can simply add its selector
 </code-example>
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 You may have noticed that the custom validation directive is instantiated with `useExisting`
 rather than `useClass`. The registered validator must be _this instance_ of
@@ -211,7 +211,7 @@ set the color of each form control's border.
 ## Cross field validation 
 This section shows how to perform cross field validation. It assumes some basic knowledge of creating custom validators.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 If you haven't created custom validators before, start by reviewing the [custom validators section](guide/form-validation#custom-validators).
 

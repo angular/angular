@@ -101,7 +101,7 @@ The `loadComponent()` method is doing a lot of the heavy lifting here.
 Take it step by step. First, it picks an ad.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 

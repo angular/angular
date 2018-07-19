@@ -54,7 +54,7 @@ Angular comes with a stock of pipes such as
 They are all available for use in any template.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -123,7 +123,7 @@ As you click the button, the displayed date alternates between
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -186,7 +186,7 @@ Your pipe has one such parameter: the `exponent`.
    Your pipe's name is `exponentialStrength`.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -390,7 +390,7 @@ For this reason, a pure pipe is preferable when you can live with the change det
 When you can't, you *can* use the impure pipe.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 

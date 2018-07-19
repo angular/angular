@@ -47,7 +47,7 @@ The `pipe()` function is also a method on the RxJS `Observable`, so you use this
 
 RxJS provides many operators, but only a handful are used frequently. For a list of operators and usage samples, visit the [RxJS API Documentation](https://rxjs-dev.firebaseapp.com/api).
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
   Note that, for Angular apps, we prefer combining operators with pipes, rather than chaining. Chaining is used in many RxJS examples.
 </div>
 
@@ -80,7 +80,7 @@ The following converts the previous example to retry the request before catching
 
 <code-example path="rx-library/src/retry-on-error.ts" title="retry operator"></code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
    Do not retry **authentication** requests, since these should only be initiated by user action. We don't want to lock out user accounts with repeated login requests that the user has not initiated.
 

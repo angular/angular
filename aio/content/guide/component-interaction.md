@@ -119,7 +119,7 @@ E2E tests of input property setter with empty and non-empty names:
 
 Detect and act upon changes to input property values with the `ngOnChanges()` method of the `OnChanges` lifecycle hook interface.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -311,7 +311,7 @@ The following example illustrates this technique with the same
 Neither its appearance nor its behavior will change.
 The child [CountdownTimerComponent](guide/component-interaction#countdown-timer-example) is the same as well.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -400,7 +400,7 @@ Each `AstronautComponent` is a child of the `MissionControlComponent` and theref
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 

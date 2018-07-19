@@ -7,7 +7,7 @@ You can download and install these npm packages with the [**npm client**](https:
 The [**yarn client**](https://yarnpkg.com/en/) is a popular alternative for downloading and installing npm packages.
 The Angular CLI uses `yarn` by default to install npm packages when you create a new project.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Node.js and npm are essential to Angular development.
 
