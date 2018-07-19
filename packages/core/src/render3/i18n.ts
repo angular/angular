@@ -7,7 +7,7 @@
  */
 
 import {assertEqual, assertLessThan} from './assert';
-import {NO_CHANGE, bindingUpdated, createLNode, getPreviousOrParentNode, getRenderer, getViewData, load, resetApplicationState} from './instructions';
+import {NO_CHANGE, bindingUpdated, bindingUpdated2, bindingUpdated4, createLNode, getPreviousOrParentNode, getRenderer, getViewData, load, resetApplicationState} from './instructions';
 import {RENDER_PARENT} from './interfaces/container';
 import {LContainerNode, LNode, TContainerNode, TElementNode, TNodeType} from './interfaces/node';
 import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
@@ -369,43 +369,16 @@ export function i18nExpMapping(
 }
 
 /**
- * Checks if the value of up to 8 expressions have changed and replaces them by their values in a
- * translation, or returns NO_CHANGE.
+ * Checks if the value of an expression has changed and replaces it by its value in a translation,
+ * or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
  *
  * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
  */
-export function i18nInterpolation(
-    instructions: I18nExpInstruction[], numberOfExp: number, v0: any, v1?: any, v2?: any, v3?: any,
-    v4?: any, v5?: any, v6?: any, v7?: any): string|NO_CHANGE {
-  let different = bindingUpdated(v0);
-
-  if (numberOfExp > 1) {
-    different = bindingUpdated(v1) || different;
-
-    if (numberOfExp > 2) {
-      different = bindingUpdated(v2) || different;
-
-      if (numberOfExp > 3) {
-        different = bindingUpdated(v3) || different;
-
-        if (numberOfExp > 4) {
-          different = bindingUpdated(v4) || different;
-
-          if (numberOfExp > 5) {
-            different = bindingUpdated(v5) || different;
-
-            if (numberOfExp > 6) {
-              different = bindingUpdated(v6) || different;
-
-              if (numberOfExp > 7) {
-                different = bindingUpdated(v7) || different;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+export function i18nInterpolation1(instructions: I18nExpInstruction[], v0: any): string|NO_CHANGE {
+  const different = bindingUpdated(v0);
 
   if (!different) {
     return NO_CHANGE;
@@ -413,35 +386,308 @@ export function i18nInterpolation(
 
   let res = '';
   for (let i = 0; i < instructions.length; i++) {
-    let value: any;
-    // Odd indexes are placeholders
+    // Odd indexes are bindings
     if (i & 1) {
-      switch (instructions[i]) {
-        case 0:
-          value = v0;
-          break;
-        case 1:
-          value = v1;
-          break;
-        case 2:
-          value = v2;
-          break;
-        case 3:
-          value = v3;
-          break;
-        case 4:
-          value = v4;
-          break;
-        case 5:
-          value = v5;
-          break;
-        case 6:
-          value = v6;
-          break;
-        case 7:
-          value = v7;
-          break;
-      }
+      res += stringify(v0);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 2 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation2(instructions: I18nExpInstruction[], v0: any, v1: any): string|
+    NO_CHANGE {
+  const different = bindingUpdated2(v0, v1);
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b1 ? v1 : v0;
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 3 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation3(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any): string|NO_CHANGE {
+  let different = bindingUpdated2(v0, v1);
+  different = bindingUpdated(v2) || different;
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b2 ? v2 : (b1 ? v1 : v0);
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 4 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ * @param v3 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation4(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any): string|NO_CHANGE {
+  const different = bindingUpdated4(v0, v1, v2, v3);
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b2 ? (b1 ? v3 : v2) : (b1 ? v1 : v0);
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 5 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ * @param v3 value checked for change.
+ * @param v4 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation5(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any): string|
+    NO_CHANGE {
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated(v4) || different;
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b4 = idx & 4;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b4 ? v4 : (b2 ? (b1 ? v3 : v2) : (b1 ? v1 : v0));
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 6 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ * @param v3 value checked for change.
+ * @param v4 value checked for change.
+ * @param v5 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */ export function
+i18nInterpolation6(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any, v5: any):
+    string|NO_CHANGE {
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated2(v4, v5) || different;
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b4 = idx & 4;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b4 ? (b1 ? v5 : v4) : (b2 ? (b1 ? v3 : v2) : (b1 ? v1 : v0));
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 7 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ * @param v3 value checked for change.
+ * @param v4 value checked for change.
+ * @param v5 value checked for change.
+ * @param v6 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation7(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any, v5: any,
+    v6: any): string|NO_CHANGE {
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated2(v4, v5) || different;
+  different = bindingUpdated(v6) || different;
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b4 = idx & 4;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b4 ? (b2 ? v6 : (b1 ? v5 : v4)) : (b2 ? (b1 ? v3 : v2) : (b1 ? v1 : v0));
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 8 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ * @param v3 value checked for change.
+ * @param v4 value checked for change.
+ * @param v5 value checked for change.
+ * @param v6 value checked for change.
+ * @param v7 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation8(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any, v5: any,
+    v6: any, v7: any): string|NO_CHANGE {
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated4(v4, v5, v6, v7) || different;
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b4 = idx & 4;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value =
+          b4 ? (b2 ? (b1 ? v7 : v6) : (b1 ? v5 : v4)) : (b2 ? (b1 ? v3 : v2) : (b1 ? v1 : v0));
 
       res += stringify(value);
     } else {
