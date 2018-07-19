@@ -28,7 +28,7 @@ Use the CLI to generate it.
   ng generate module app-routing --flat --module=app
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 `--flat` puts the file in `src/app` instead of its own folder.<br>
 `--module=app` tells the CLI to register it in the `imports` array of the `AppModule`.
@@ -91,7 +91,7 @@ configure it with the `routes` in one step by calling
   region="ngmodule-imports">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   The method is called `forRoot()` because you configure the router at the application's root level.
   The `forRoot()` method supplies the service providers and directives needed for routing, 
@@ -112,7 +112,7 @@ You removed `<app-heroes>` because you will only display the `HeroesComponent` w
 
 The `<router-outlet>` tells the router where to display routed views.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `RouterOutlet` is one of the router directives that became available to the `AppComponent`
 because `AppModule` imports `AppRoutingModule` which exported `RouterModule`.
@@ -165,7 +165,7 @@ but not the heroes list.
 Click the link. 
 The address bar updates to `/heroes` and the list of heroes appears.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Make this and future navigation links look better by adding private CSS styles to `app.component.css`
 as listed in the [final code review](#appcomponent) below.

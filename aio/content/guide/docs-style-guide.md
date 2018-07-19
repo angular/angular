@@ -47,7 +47,7 @@ The reader requests a page by its Page URL. The doc viewer fetches the correspon
 Page URLs mirror the `content` file structure. The URL for the page of a guide is in the form `guide/{page-name}`. The page for _this_ "Authors Style Guide" is located at `content/guide/docs-style-guide.md` and its URL is `guide/docs-style-guide`.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 _Tutorial_ pages are exactly like guide pages. The only difference is that they reside in `content/tutorial` instead of `content/guide` and have URLs like `tutorial/{page-name}`.
 
@@ -84,7 +84,7 @@ Standard markdown processors don't allow you to put markdown _within_ HTML tags.
 </div>
 ```
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   It is customary but not required to _precede_ the _closing HTML_ tag with a blank line as well.
 
@@ -161,34 +161,6 @@ Try to minimize the heading depth, preferably only two. But more headings, such 
 
   Try to minimize ...
 ```
-
-## Subsections
-
-Subsections typically present extra detail and references to other pages.
-
-Use subsections for commentary that _enriches_ the reader's understanding of the text that precedes it.
-
-A subsection _must not_ contain anything _essential_ to that understanding. Don't put a critical instruction or a tutorial step in a subsection.
-
-A subsection is content within a `<div>` that has the `l-sub-section` CSS class. You should write the subsection content in markdown.
-
-Here is an example of a subsection `<div>` surrounding the subsection content written in markdown.
-
-<div class="l-sub-section">
-
-  You'll learn about styles for live examples in the [section below](guide/docs-style-guide#live-examples "Live examples").
-
-</div>
-
-```html
-<div class="l-sub-section">
-
-You'll learn about styles for live examples in the [section below](guide/docs-style-guide#live-examples "Live examples").
-
-</div>
-```
-
-Note that at least one blank line must follow the opening `<div>`. A blank line before the closing `</div>` is customary but not required.
 
 ## Table of contents
 
@@ -322,7 +294,7 @@ The author must also write end-to-end tests for the sample.
 
 Code samples are located in sub-folders of the `content/examples` directory of the `angular/angular` repository. An example folder name should be the same as the guide page it supports.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 A guide page might not have its own sample code. It might refer instead to a sample belonging to another page.
 
@@ -355,7 +327,7 @@ In this example, that path is  `docs-style-guide/src/app/app.module.ts`.
 You added a header to tell the reader where to find the file by setting the `title` attribute.
 Following convention, you set the `title` attribute to the file's location within the sample's root folder.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Unless otherwise noted, all code snippets in this page are derived from sample source code
 located in the `content/examples/docs-style-guide` directory.
@@ -523,7 +495,7 @@ The `linenums` attribute in the second pane restores line numbering for _itself 
 
 You must add special code snippet markup to sample source code files before they can be displayed by `<code-example>` and `<code-tabs>` components.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The sample source code for this page, located in `context/examples/docs-style-guide`, contains examples of every code snippet markup described in this section.
 
@@ -570,7 +542,7 @@ The `<code-example>` and `<code-tabs>` components won't display a source code fi
 The _#docregion_ comment begins a code snippet region.
 Every line of code _after_ that comment belongs in the region _until_ the code fragment processor encounters the end of the file or a closing _#enddocregion_.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `src/main.ts` is a simple example of a file with a single _#docregion_ at the top of the file.
 
@@ -613,7 +585,7 @@ You can nest _#docregions_ within _#docregions_
 ... yet more code ...
 /// #enddocregion
 ```
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `src/app/app.module.ts` file has a good example of a nested region.
 
@@ -726,7 +698,7 @@ By adding `<live-example>` to the page you generate links that run sample code i
 
 Live examples (AKA "stackblitz") are defined by one or more `stackblitz.json` files in the root of a code sample folder. Each sample folder usually has a single unnamed definition file, the default `stackblitz.json`.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 You can create additional, named definition files in the form `name.stackblitz.json`. See `content/examples/testing` for examples.
 
@@ -826,14 +798,14 @@ Here's an embedded live example for this guide.
 
 Every section header tag is also an anchor point. Another guide page could add a link to this section by writing:
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 See the ["Anchors"](guide/docs-style-guide#anchors "Style Guide - Anchors") section for details.
 
 </div>
 
 ```html
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 See the ["Anchors"](guide/docs-style-guide#anchors "Style Guide - Anchors") section for details.
 
@@ -875,7 +847,7 @@ Now [link to that custom anchor name](#ugly-anchors) as you did before.
 Now [link to that custom anchor name](#ugly-anchors) as you did before.
 ```
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Alternatively, you can use the HTML `<a>` tag.
 
@@ -889,44 +861,81 @@ If you do, be sure to set the `id` attribute - not the `name` attribute! The doc
 
 </div>
 
-## Alerts
+## Alerts and Calllouts
 
-Alerts draw attention to important points. Alerts should not be used for multi-line content (use callouts insteads) or stacked on top of each other.  Note that the content of an alert is indented to the right by two spaces.
+Alerts and callouts present warnings, extra detail or references to other pages. They can also be used to provide commentary that _enriches_ the reader's understanding of the content being presented.
+
+An alert or callout _must not_ contain anything _essential_ to that understanding. Don't put a critical instruction or a tutorial step in a subsection.
+
+### Alerts
+
+Alerts draw attention to short important points. Alerts should not be used for multi-line content (use [callouts](#callouts "callouts") instead).
+
+<div class="alert is-helpful">
+
+  You'll learn about styles for live examples in the [section below](guide/docs-style-guide#live-examples "Live examples").
+
+</div>
+
+  Note that at least one blank line must follow both the opening and closing `<div>` tags. A blank line before the closing `</div>` is customary but not required.
+
+```html
+<div class="alert is-helpful">
+
+You'll learn about styles for live examples in the [section below](guide/docs-style-guide#live-examples "Live examples").
+
+</div>
+```
+
+There are three different _urgency levels_ used to style the alerts based on the severity or importance of the content.
 
 <div class="alert is-critical">
+
 A critical alert.
+
 </div>
 
 <div class="alert is-important">
+
 An important alert.
+
 </div>
 
 <div class="alert is-helpful">
+
 A helpful, informational alert.
+
 </div>
 
 
 Here is the markup for these alerts.
 ```html
 <div class="alert is-critical">
+
 A critical alert.
+
 </div>
 
 <div class="alert is-important">
+
 An important alert.
+
 </div>
 
 <div class="alert is-helpful">
+
 A helpful, informational alert.
+
 </div>
 ```
 
-Alerts are meant to grab the user's attention and should be used sparingly.
-They are not for casual asides or commentary. Use [subsections](#subsections "subsections") for commentary.
+### Callouts
 
-## Callouts
+Callouts, like alerts, are meant to draw attention to important points. Use a callout when you want a riveting header and multi-line content.
 
-Callouts (like alerts) are meant to draw attention to important points. Use a callout when you want a riveting header and multi-line content.
+If you have more than two paragraphs, consider creating a new page or making it part of the main content.
+
+Callouts use the same _urgency levels_ that alerts do.
 
 <div class="callout is-critical">
 <header>A critical point</header>
@@ -943,7 +952,7 @@ Callouts (like alerts) are meant to draw attention to important points. Use a ca
 </div>
 
 <div class="callout is-helpful">
-<header>A helpful point</header>
+<header>A helpful or informational point</header>
 
 **Pitchfork hoodie semiotics**, roof party pop-up _paleo_ messenger bag cred Carles tousled Truffaut yr. Semiotics viral freegan VHS, Shoreditch disrupt McSweeney's. Intelligentsia kale chips Vice four dollar toast, Schlitz crucifix
 
@@ -959,10 +968,10 @@ Here is the markup for the first of these callouts.
 </div>
 ```
 
-Notice that
-* the callout header text is forced to all upper case.
-* the callout body can be written in markdown.
-* a blank line separates the `</header>` tag from the markdown content.
+Notice that:
+* the callout header text is forced to all upper case
+* the callout body can be written in markdown
+* a blank line separates the `</header>` tag from the markdown content
 
 Callouts are meant to grab the user's attention. They are not for casual asides. Please use them sparingly.
 
@@ -1254,7 +1263,7 @@ Note that you generally don't wrap a floating image in a `<figure>` element.
 
 If you have a floating image inside an alert, callout, or a subsection, it is a good idea to apply the `clear-fix` class to the `div` to ensure that the image doesn't overflow its container. For example:
 
-<div class="l-sub-section clear-fix">
+<div class="alert is-helpful clear-fix">
 
   <img src="generated/images/guide/docs-style-guide/flying-hero.png"
     alt="flying Angular hero"
@@ -1266,7 +1275,7 @@ If you have a floating image inside an alert, callout, or a subsection, it is a 
 </div>
 
 ```html
-<div class="l-sub-section clear-fix">
+<div class="alert is-helpful clear-fix">
 
   <img src="generated/images/guide/docs-style-guide/flying-hero.png"
     alt="flying Angular hero"

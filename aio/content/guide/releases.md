@@ -8,7 +8,7 @@ This document contains the practices that we follow to provide you with a leadin
 
 See [Updating your projects](guide/updating "Updating your projects") for information about how to update your apps and libraries to the latest version of Angular.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The practices described in this document apply to Angular 2.0 and later. If you are currently using AngularJS, see [Upgrading from AngularJS](guide/upgrade "Upgrading from Angular JS"). _AngularJS_ is the name for all v1.x versions of Angular.
 
@@ -57,7 +57,7 @@ This cadence of releases gives you access to new beta features as soon as they a
 {@a schedule}
 ## Release schedule
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Disclaimer: The dates are offered as general guidance and may be adjusted by us when necessary to ensure delivery of a high-quality platform. 
 
