@@ -9,7 +9,9 @@ import {elementEnd, elementStart, elementStyleProp, elementStyling, elementStyli
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
 import {LElementNode} from '../../src/render3/interfaces/node';
 import {Renderer3} from '../../src/render3/interfaces/renderer';
-import {StyleSanitizeFn, StylingContext, StylingFlags, StylingIndex, allocStylingContext, createStylingContextTemplate, defaultStyleSanitizer, isContextDirty, renderStyling as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '../../src/render3/styling';
+import {StylingContext, StylingFlags, StylingIndex, allocStylingContext, createStylingContextTemplate, isContextDirty, renderStyling as _renderStyling, setContextDirty, updateClassProp, updateStyleProp, updateStylingMap} from '../../src/render3/styling';
+import {defaultStyleSanitizer} from '../../src/sanitization/sanitization';
+import {StyleSanitizeFn} from '../../src/sanitization/style_sanitizer';
 
 import {renderToHtml} from './render_util';
 
@@ -20,7 +22,7 @@ describe('styling', () => {
   function initContext(
       styles?: (number | string)[] | null, classes?: (string | number | boolean)[] | null,
       sanitizer?: StyleSanitizeFn | null): StylingContext {
-    return allocStylingContext(element, createStylingContextTemplate(styles, classes, sanitizer));
+    return allocStylingContext(element, createStylingContextTemplate(classes, styles, sanitizer));
   }
 
   function renderStyles(context: StylingContext, renderer?: Renderer3) {
@@ -55,7 +57,11 @@ describe('styling', () => {
   }
 
   function updateClasses(context: StylingContext, classes: string | {[key: string]: any} | null) {
-    updateStylingMap(context, null, classes);
+    updateStylingMap(context, classes, null);
+  }
+
+  function updateStyles(context: StylingContext, styles: {[key: string]: any} | null) {
+    updateStylingMap(context, null, styles);
   }
 
   function cleanStyle(a: number = 0, b: number = 0): number { return _clean(a, b, false, false); }
@@ -146,7 +152,7 @@ describe('styling', () => {
            function Template(rf: RenderFlags, ctx: any) {
              if (rf & RenderFlags.Create) {
                elementStart(0, 'span');
-               elementStyling([
+               elementStyling([], [
                  'width', 'height', 'opacity',  //
                  InitialStylingFlags.VALUES_MODE, 'width', '100px', 'height', '100px', 'opacity',
                  '0.5'
@@ -174,30 +180,30 @@ describe('styling', () => {
       it('should build a list of multiple styling values', () => {
         const getStyles = trackStylesFactory();
         const stylingContext = initContext();
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
-        updateStylingMap(stylingContext, {height: '200px'});
+        updateStyles(stylingContext, {height: '200px'});
         expect(getStyles(stylingContext)).toEqual({width: null, height: '200px'});
       });
 
       it('should evaluate the delta between style changes when rendering occurs', () => {
         const stylingContext =
             initContext(['width', 'height', InitialStylingFlags.VALUES_MODE, 'width', '100px']);
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           height: '200px',
         });
         expect(renderStyles(stylingContext)).toEqual({width: '100px', height: '200px'});
         expect(renderStyles(stylingContext)).toEqual({});
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
         expect(renderStyles(stylingContext)).toEqual({height: '100px'});
         updateStyleProp(stylingContext, 1, '100px');
         expect(renderStyles(stylingContext)).toEqual({});
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
@@ -207,7 +213,7 @@ describe('styling', () => {
       it('should update individual values on a set of styles', () => {
         const getStyles = trackStylesFactory();
         const stylingContext = initContext(['width', 'height']);
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
@@ -219,7 +225,7 @@ describe('styling', () => {
         const stylingContext = initContext();
         expect(isContextDirty(stylingContext)).toBeFalsy();
 
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
@@ -227,13 +233,13 @@ describe('styling', () => {
 
         setContextDirty(stylingContext, false);
 
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
         expect(isContextDirty(stylingContext)).toBeFalsy();
 
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '200px',
           height: '100px',
         });
@@ -242,7 +248,7 @@ describe('styling', () => {
 
       it('should only mark itself as updated when any single properties have been applied', () => {
         const stylingContext = initContext(['height']);
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
           height: '100px',
         });
@@ -272,7 +278,7 @@ describe('styling', () => {
           opacity: '0',
         });
 
-        updateStylingMap(stylingContext, {width: '200px', height: '200px'});
+        updateStyles(stylingContext, {width: '200px', height: '200px'});
 
         expect(getStyles(stylingContext)).toEqual({
           width: '200px',
@@ -296,7 +302,7 @@ describe('styling', () => {
           opacity: '0',
         });
 
-        updateStylingMap(stylingContext, {});
+        updateStyles(stylingContext, {});
 
         expect(getStyles(stylingContext)).toEqual({
           width: '100px',
@@ -309,7 +315,7 @@ describe('styling', () => {
         const stylingContext = initContext(['width', 'height']);
         const getStyles = trackStylesFactory();
 
-        updateStylingMap(stylingContext, {width: '100px', height: '100px'});
+        updateStyles(stylingContext, {width: '100px', height: '100px'});
 
         expect(stylingContext).toEqual([
           element,
@@ -341,7 +347,7 @@ describe('styling', () => {
         ]);
 
         getStyles(stylingContext);
-        updateStylingMap(stylingContext, {width: '200px', opacity: '0'});
+        updateStyles(stylingContext, {width: '200px', opacity: '0'});
 
         expect(stylingContext).toEqual([
           element,
@@ -412,7 +418,7 @@ describe('styling', () => {
           null,
         ]);
 
-        updateStylingMap(stylingContext, {width: null});
+        updateStyles(stylingContext, {width: null});
         updateStyleProp(stylingContext, 0, '300px');
 
         expect(stylingContext).toEqual([
@@ -492,7 +498,7 @@ describe('styling', () => {
            const stylingContext = initContext(['lineHeight']);
            const getStyles = trackStylesFactory();
 
-           updateStylingMap(stylingContext, {width: '100px', height: '100px', opacity: '0.5'});
+           updateStyles(stylingContext, {width: '100px', height: '100px', opacity: '0.5'});
 
            expect(stylingContext).toEqual([
              element,
@@ -530,7 +536,7 @@ describe('styling', () => {
 
            getStyles(stylingContext);
 
-           updateStylingMap(stylingContext, {});
+           updateStyles(stylingContext, {});
            expect(stylingContext).toEqual([
              element,
              null,
@@ -566,7 +572,7 @@ describe('styling', () => {
            ]);
 
            getStyles(stylingContext);
-           updateStylingMap(stylingContext, {
+           updateStyles(stylingContext, {
              borderWidth: '5px',
            });
 
@@ -650,7 +656,7 @@ describe('styling', () => {
              null,
            ]);
 
-           updateStylingMap(stylingContext, {borderWidth: '15px', borderColor: 'red'});
+           updateStyles(stylingContext, {borderWidth: '15px', borderColor: 'red'});
 
            expect(stylingContext).toEqual([
              element,
@@ -701,7 +707,7 @@ describe('styling', () => {
         const getStyles = trackStylesFactory();
         const stylingContext = initContext(['height']);
 
-        updateStylingMap(stylingContext, {
+        updateStyles(stylingContext, {
           width: '100px',
         });
 
@@ -797,7 +803,7 @@ describe('styling', () => {
              null,
            ]);
 
-           updateStylingMap(stylingContext, {'background-image': 'unsafe'});
+           updateStyles(stylingContext, {'background-image': 'unsafe'});
 
            expect(stylingContext).toEqual([
              element,
@@ -925,10 +931,10 @@ describe('styling', () => {
          const stylingContext = initContext(null, ['guy']);
          expect(getClasses(stylingContext)).toEqual({});
 
-         updateStylingMap(stylingContext, null, 'foo bar guy');
+         updateStylingMap(stylingContext, 'foo bar guy');
          expect(getClasses(stylingContext)).toEqual({'foo': true, 'bar': true, 'guy': true});
 
-         updateStylingMap(stylingContext, null, 'foo man');
+         updateStylingMap(stylingContext, 'foo man');
          updateClassProp(stylingContext, 0, true);
          expect(getClasses(stylingContext))
              .toEqual({'foo': true, 'man': true, 'bar': false, 'guy': true});
@@ -990,7 +996,7 @@ describe('styling', () => {
 
       expect(getStylesAndClasses(stylingContext)).toEqual([{width: '100px'}, {wide: true}]);
 
-      updateStylingMap(stylingContext, {width: '200px', opacity: '0.5'}, 'tall round');
+      updateStylingMap(stylingContext, 'tall round', {width: '200px', opacity: '0.5'});
       expect(stylingContext).toEqual([
         element,
         null,
@@ -1054,7 +1060,7 @@ describe('styling', () => {
         {width: '200px', opacity: '0.5'}, {tall: true, round: true, wide: true}
       ]);
 
-      updateStylingMap(stylingContext, {width: '500px'}, {tall: true, wide: true});
+      updateStylingMap(stylingContext, {tall: true, wide: true}, {width: '500px'});
       updateStyleProp(stylingContext, 0, '300px');
 
       expect(stylingContext).toEqual([

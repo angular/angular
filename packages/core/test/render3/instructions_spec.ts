@@ -14,9 +14,10 @@ import {bind, container, element, elementAttribute, elementEnd, elementProperty,
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {AttributeMarker, LElementNode, LNode} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {StyleSanitizeFn, defaultStyleSanitizer} from '../../src/render3/styling';
-import {TrustedString, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
+import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
+import {defaultStyleSanitizer, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
+import {StyleSanitizeFn} from '../../src/sanitization/style_sanitizer';
 
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
@@ -31,7 +32,7 @@ describe('instructions', () => {
   function createDiv(initialStyles?: (string | number)[], styleSanitizer?: StyleSanitizeFn) {
     elementStart(0, 'div');
     elementStyling(
-        initialStyles && Array.isArray(initialStyles) ? initialStyles : null, null, styleSanitizer);
+        [], initialStyles && Array.isArray(initialStyles) ? initialStyles : null, styleSanitizer);
     elementEnd();
   }
 
@@ -235,14 +236,14 @@ describe('instructions', () => {
   describe('elementStyleMap', () => {
     function createDivWithStyle() {
       elementStart(0, 'div');
-      elementStyling(['height', InitialStylingFlags.VALUES_MODE, 'height', '10px']);
+      elementStyling([], ['height', InitialStylingFlags.VALUES_MODE, 'height', '10px']);
       elementEnd();
     }
 
     it('should add style', () => {
       const fixture = new TemplateFixture(createDivWithStyle);
       fixture.update(() => {
-        elementStylingMap(0, {'background-color': 'red'});
+        elementStylingMap(0, null, {'background-color': 'red'});
         elementStylingApply(0);
       });
       expect(fixture.html).toEqual('<div style="height: 10px; background-color: red;"></div>');
@@ -256,7 +257,7 @@ describe('instructions', () => {
           () => createDiv([], sanitizerInterceptor.getStyleSanitizer()), sanitizerInterceptor);
 
       fixture.update(() => {
-        elementStylingMap(0, {
+        elementStylingMap(0, null, {
           'background-image': 'background-image',
           'background': 'background',
           'border-image': 'border-image',
@@ -285,7 +286,7 @@ describe('instructions', () => {
     it('should add class', () => {
       const fixture = new TemplateFixture(createDivWithStyling);
       fixture.update(() => {
-        elementStylingMap(0, null, 'multiple classes');
+        elementStylingMap(0, 'multiple classes');
         elementStylingApply(0);
       });
       expect(fixture.html).toEqual('<div class="multiple classes"></div>');

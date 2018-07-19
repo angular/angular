@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {sanitizeStyle} from '../sanitization/sanitization';
-import {Sanitizer, SecurityContext} from '../sanitization/security';
-
+import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {InitialStylingFlags} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {Renderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
@@ -248,8 +246,8 @@ export function allocStylingContext(
  *       class will be applied to the element as an initial class since it's true
  */
 export function createStylingContextTemplate(
-    initialStyleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     initialClassDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
+    initialStyleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer?: StyleSanitizeFn | null): StylingContext {
   const initialStylingValues: InitialStyles = [null];
   const context: StylingContext = [null, styleSanitizer || null, initialStylingValues, 0, 0, null];
@@ -363,12 +361,12 @@ const EMPTY_OBJ: {[key: string]: any} = {};
  *
  * @param context The styling context that will be updated with the
  *    newly provided style values.
- * @param styles The key/value map of CSS styles that will be used for the update.
  * @param classes The key/value map of CSS class names that will be used for the update.
+ * @param styles The key/value map of CSS styles that will be used for the update.
  */
 export function updateStylingMap(
-    context: StylingContext, styles: {[key: string]: any} | null,
-    classes?: {[key: string]: any} | string | null): void {
+    context: StylingContext, classes: {[key: string]: any} | string | null,
+    styles?: {[key: string]: any} | null): void {
   let classNames: string[] = EMPTY_ARR;
   let applyAllClasses = false;
   let ignoreAllClassUpdates = false;
@@ -898,36 +896,3 @@ function hasValueChanged(
   // everything else is safe to check with a normal equality check
   return a !== b;
 }
-
-/**
- * Used to intercept and sanitize style values before they are written to the renderer.
- *
- * This function is designed to be called in two modes. When a value is not provided
- * then the function will return a boolean whether a property will be sanitized later.
- * If a value is provided then the sanitized version of that will be returned.
- */
-export interface StyleSanitizeFn {
-  (prop: string): boolean;
-  (prop: string, value: string): string;
-}
-
-/**
- * The default style sanitizer will handle sanitization for style properties by
- * sanitizing any CSS property that can include a `url` value (usually image-based properties)
- */
-export const defaultStyleSanitizer = (function(prop: string, value?: string): string | boolean {
-  if (value === undefined) {
-    switch (prop) {
-      case 'background-image':
-      case 'background':
-      case 'border-image':
-      case 'filter':
-      case 'list-style':
-      case 'list-style-image':
-        return true;
-    }
-    return false;
-  }
-
-  return sanitizeStyle(value);
-} as StyleSanitizeFn);

@@ -156,7 +156,7 @@ export class Identifiers {
   // sanitization-related functions
   static sanitizeHtml: o.ExternalReference = {name: 'ɵzh', moduleName: CORE};
   static sanitizeStyle: o.ExternalReference = {name: 'ɵzs', moduleName: CORE};
-  static getStyleSanitizer: o.ExternalReference = {name: 'ɵzss', moduleName: CORE};
+  static defaultStyleSanitizer: o.ExternalReference = {name: 'ɵzss', moduleName: CORE};
   static sanitizeResourceUrl: o.ExternalReference = {name: 'ɵzr', moduleName: CORE};
   static sanitizeScript: o.ExternalReference = {name: 'ɵzc', moduleName: CORE};
   static sanitizeUrl: o.ExternalReference = {name: 'ɵzu', moduleName: CORE};

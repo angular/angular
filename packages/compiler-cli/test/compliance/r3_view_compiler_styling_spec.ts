@@ -47,7 +47,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵe();
             }
             if (rf & 2) {
-              $r3$.ɵsm(0, $ctx$.myStyleExp);
+              $r3$.ɵsm(0, (null as any), $ctx$.myStyleExp);
               $r3$.ɵsa(0);
             }
           }
@@ -96,11 +96,11 @@ describe('compiler compliance: styling', () => {
               template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵE(0, "div");
-                  $r3$.ɵs(_c0, (null as any), $r3$.ɵzss);
+                  $r3$.ɵs((null as any), _c0, $r3$.ɵzss);
                   $r3$.ɵe();
                 }
                 if (rf & 2) {
-                  $r3$.ɵsm(0, $ctx$.myStyleExp);
+                  $r3$.ɵsm(0, (null as any), $ctx$.myStyleExp);
                   $r3$.ɵsp(0, 1, $ctx$.myWidth);
                   $r3$.ɵsp(0, 2, $ctx$.myHeight);
                   $r3$.ɵsa(0);
@@ -147,7 +147,7 @@ describe('compiler compliance: styling', () => {
               template: function MyComponent_Template(rf: $RenderFlags$, $ctx$: $MyComponent$) {
                 if (rf & 1) {
                   $r3$.ɵE(0, 'div');
-                  $r3$.ɵs(_c0, (null as any), $r3$.ɵzss);
+                  $r3$.ɵs((null as any), _c0, $r3$.ɵzss);
                   $r3$.ɵe();
                 }
                 if (rf & 2) {
@@ -193,7 +193,7 @@ describe('compiler compliance: styling', () => {
               $r3$.ɵe();
             }
             if (rf & 2) {
-              $r3$.ɵsm(0,null,$ctx$.myClassExp);
+              $r3$.ɵsm(0,$ctx$.myClassExp);
               $r3$.ɵsa(0);
             }
           }
@@ -242,11 +242,11 @@ describe('compiler compliance: styling', () => {
               template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵE(0, "div");
-                  $r3$.ɵs(null, _c0);
+                  $r3$.ɵs(_c0);
                   $r3$.ɵe();
                 }
                 if (rf & 2) {
-                  $r3$.ɵsm(0, null, $ctx$.myClassExp);
+                  $r3$.ɵsm(0, $ctx$.myClassExp);
                   $r3$.ɵcp(0, 1, $ctx$.yesToApple);
                   $r3$.ɵcp(0, 2, $ctx$.yesToOrange);
                   $r3$.ɵsa(0);
@@ -283,8 +283,8 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const _c0 = ["width",${InitialStylingFlags.VALUES_MODE},"width","100px"];
-          const _c1 = ["foo",${InitialStylingFlags.VALUES_MODE},"foo",true];
+          const _c0 = ["foo",${InitialStylingFlags.VALUES_MODE},"foo",true];
+          const _c1 = ["width",${InitialStylingFlags.VALUES_MODE},"width","100px"];
           …
           MyComponent.ngComponentDef = i0.ɵdefineComponent({
               type: MyComponent,

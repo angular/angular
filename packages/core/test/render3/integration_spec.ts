@@ -748,7 +748,7 @@ describe('render3 integration test', () => {
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
-            elementStyling(['border-color']);
+            elementStyling(null, ['border-color']);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
@@ -767,7 +767,7 @@ describe('render3 integration test', () => {
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
-            elementStyling(['font-size']);
+            elementStyling(null, ['font-size']);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
@@ -788,7 +788,7 @@ describe('render3 integration test', () => {
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
-            elementStyling(null, ['active']);
+            elementStyling(['active']);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
@@ -814,7 +814,7 @@ describe('render3 integration test', () => {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
             elementStyling(
-                null, ['existing', 'active', InitialStylingFlags.VALUES_MODE, 'existing', true]);
+                ['existing', 'active', InitialStylingFlags.VALUES_MODE, 'existing', true]);
             elementEnd();
           }
           if (rf & RenderFlags.Update) {
