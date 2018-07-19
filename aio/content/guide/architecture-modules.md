@@ -26,7 +26,7 @@ Here's a simple root NgModule definition:
 
 <code-example path="architecture/src/app/mini-app.ts" region="module" title="src/app/app.module.ts" linenums="false"></code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   The `export` of `AppComponent` is just to show how to export; it isn't actually necessary in this example. A root NgModule has no reason to _export_ anything because other modules don't need to _import_ the root NgModule.
 
@@ -56,7 +56,7 @@ A component and its template together define a _view_. A component can contain a
 
 When you create a component, it is associated directly with a single view, called the _host view_. The host view can be the root of a view hierarchy, which can contain _embedded views_, which are in turn the host views of other components. Those components can be in the same NgModule, or can be imported from other NgModules. Views in the tree can be nested to any depth.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
     The hierarchical structure of views is a key factor in the way Angular detects and responds to changes in the DOM and app data. 
 </div>
 
@@ -72,7 +72,7 @@ Other JavaScript modules use *import statements* to access public objects from o
 
 <code-example path="architecture/src/app/app.module.ts" region="export" linenums="false"></code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
   <a href="http://exploringjs.com/es6/ch_modules.html">Learn more about the JavaScript module system on the web.</a>
 </div>
 
@@ -99,7 +99,7 @@ In the example of the simple root module above, the application module needs mat
 
 In this way you're using both the Angular and JavaScript module systems _together_. Although it's easy to confuse the two systems, which share the common vocabulary of "imports" and "exports", you will become familiar with the different contexts in which they are used.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   Learn more from the [NgModules](guide/ngmodules) page.
 

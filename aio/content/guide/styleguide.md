@@ -2335,7 +2335,7 @@ Longer file names are far better than _short-but-obscure_ abbreviated names.
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -2759,7 +2759,7 @@ Here is a compliant folder and file structure:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -3627,7 +3627,7 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -3802,7 +3802,7 @@ Developers place components on the page as they would native HTML elements and w
 
 </div>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 There are a few cases where you give a component an attribute, such as when you want to augment a built-in element. For example, [Material Design](https://material.angular.io/components/button/overview) uses this technique with `<button mat-button>`. However, you wouldn't use this technique on a custom element.
 

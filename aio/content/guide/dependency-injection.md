@@ -98,7 +98,7 @@ Without a provider, the injector would not know
 that it is responsible for injecting the service
 nor be able to create the service.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 You'll learn much more about _providers_ [below](#providers).
 For now, it is sufficient to know that they configure where and how services are created.
@@ -141,7 +141,7 @@ The second registers a value (`HERO_DI_CONFIG`) under the `APP_CONFIG` _injectio
 With the above registrations, Angular can inject the `UserService` or the `HERO_DI_CONFIG` value
 into any class that it creates.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 You'll learn about _injection tokens_ and _provider_ syntax [below](#providers).
 </div>
@@ -174,7 +174,7 @@ You're likely to inject the `UserService` in many places throughout the app
 and will want to inject the same service instance every time.
 Providing the `UserService` with an Angular module is a good choice if an `@Injectable` provider is not an option..
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 To be precise, Angular module providers are registered with the root injector
 _unless the module is_ [lazy loaded](guide/lazy-loading-ngmodules).
@@ -199,7 +199,7 @@ and is never destroyed so the `HeroService` created for the `HeroComponent` also
 If you want to restrict `HeroService` access to the `HeroComponent` and its nested `HeroListComponent`,
 providing the `HeroService` in the `HeroComponent` may be a good choice.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The scope and lifetime of component-provided services is a consequence of [the way Angular creates component instances](#component-child-injectors). 
 
@@ -375,7 +375,7 @@ and let the injector pass them along to the factory function:
 <code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="provider" title="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `useFactory` field tells Angular that the provider is a factory function
 whose implementation is the `heroServiceFactory`.
@@ -440,7 +440,7 @@ The service can be instantiated by configuring a factory function as shown below
 
 <code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  title="src/app/tree-shaking/service.0.ts" linenums="false"> </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 To override tree-shakable providers, register the provider using the `providers: []` array syntax of any Angular decorator that supports it.
 
@@ -532,7 +532,7 @@ under test:
 <code-example path="dependency-injection/src/app/test.component.ts" region="spec" title="src/app/test.component.ts" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Learn more in the [Testing](guide/testing) guide.
 
@@ -636,7 +636,7 @@ But what should you use as the token?
 You don't have a class to serve as a token.
 There is no `AppConfig` class.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 ### TypeScript interfaces aren't valid tokens
 
@@ -742,7 +742,7 @@ You can call `get()` with a second parameter, which is the value to return if th
 is not found. Angular can't find the service if it's not registered with this or any ancestor injector.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -776,7 +776,7 @@ If you define the component before the service,
 you'll get a runtime null reference error.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 You actually can define the component first with the help of the `forwardRef()` method as explained
 in this [blog post](http://blog.thoughtram.io/angular/2015/09/03/forward-references-in-angular-2.html).

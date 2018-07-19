@@ -27,7 +27,7 @@ Like JavaScript modules, NgModules can import functionality from other NgModules
 
 Organizing your code into distinct functional modules helps in managing development of complex applications, and in designing for reusability. In addition, this technique lets you take advantage of _lazy-loading_&mdash;that is, loading modules on demand&mdash;in order to minimize the amount of code that needs to be loaded at startup.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   For a more detailed discussion, see [Introduction to modules](guide/architecture-modules).
 
@@ -39,7 +39,7 @@ Every Angular application has at least one component, the *root component* that 
 
 The `@Component` decorator identifies the class immediately below it as a component, and provides the template and related component-specific metadata.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
    Decorators are functions that modify JavaScript classes. Angular defines a number of such decorators that attach specific kinds of metadata to classes, so that it knows what those classes mean and how they should work.
 
@@ -59,7 +59,7 @@ Before a view is displayed, Angular evaluates the directives and resolves the bi
 
 Your templates can also use *pipes* to improve the user experience by transforming values for display. Use pipes to display, for example, dates and currency values in a way appropriate to the user's locale. Angular provides predefined pipes for common transformations, and you can also define your own.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   For a more detailed discussion of these concepts, see [Introduction to components](guide/architecture-components).
 
@@ -74,7 +74,7 @@ For data or logic that is not associated with a specific view, and that you want
 
  *Dependency injection* (or DI) lets you keep your component classes lean and efficient. They don't fetch data from the server, validate user input, or log directly to the console; they delegate such tasks to services.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   For a more detailed discusssion, see [Introduction to services and DI](guide/architecture-services).
 
@@ -96,7 +96,7 @@ The router interprets a link URL according to your app's view navigation rules a
 
 To define navigation rules, you associate *navigation paths* with your components. A path uses a URL-like syntax that integrates your program data, in much the same way that template syntax integrates your views with your program data. You can then apply program logic to choose which views to show or to hide, in response to user input and your own access rules.
 
- <div class="l-sub-section">
+ <div class="alert is-helpful">
 
    For a more detailed discussion, see [Routing and navigation](guide/router).
 
@@ -128,7 +128,7 @@ Each of these subjects is introduced in more detail in the following pages.
   * [Pipes](guide/architecture-components#pipes)
 * [Services and dependency injection](guide/architecture-services)
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
    Note that the code referenced on these pages is available as a <live-example></live-example>.
 </div>
