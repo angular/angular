@@ -1,0 +1,67 @@
+<!-- #docplaster -->
+<!-- #docregion formgroup -->
+<form [formGroup]="profileForm">
+  
+  <label>
+    First Name:
+    <input type="text" formControlName="firstName">
+  </label>
+
+  <label>
+    Last Name:
+    <input type="text" formControlName="lastName">
+  </label>
+
+<!-- #enddocregion formgroup -->
+  <!-- #docregion formgroupname -->
+  <div formGroupName="address">
+    <h3>Address</h3>
+
+    <label>
+      Street:
+      <input type="text" formControlName="street">
+    </label>
+
+    <label>
+      City:
+      <input type="text" formControlName="city">
+    </label>
+    
+    <label>
+      State:
+      <input type="text" formControlName="state">
+    </label>
+
+    <label>
+      Zip Code:
+      <input type="text" formControlName="zip">
+    </label>
+  </div>
+  <!-- #enddocregion formgroupname -->
+
+  <!-- #docregion formarrayname -->
+  <div formArrayName="aliases">
+    <h3>Aliases</h3> <button (click)="addAlias()">Add Alias</button>
+
+    <div *ngFor="let address of aliases.controls; let i=index">
+      <!-- The repeated alias template -->
+      <label>
+        Alias:
+        <input type="text" [formControlName]="i">
+      </label>
+    </div>
+  </div>
+  <!-- #enddocregion formarrayname -->
+<!-- #docregion formgroup -->  
+</form>
+<!-- #enddocregion formgroup -->
+
+<p>
+  Form Value: {{ profileForm.value | json }}
+</p>
+
+<!-- #docregion patch-value -->
+<p>
+  <button (click)="updateProfile()">Update Profile</button>
+</p>
+<!-- #enddocregion patch-value -->
