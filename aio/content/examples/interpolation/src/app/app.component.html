@@ -1,0 +1,43 @@
+
+<div>
+  <h1>Interpolation and Template Expressions</h1>
+  <hr />
+
+  <div>
+    <h2>Interpolation</h2>
+    <h3>Current customer: {{ currentCustomer }}</h3>
+    <p>{{title}}</p>
+    <div><img src="{{itemImageUrl}}"></div>
+
+    <h3>Evaluating template expressions </h3>
+    <h4>Simple evaluation (to a string):</h4>
+    <!-- "The sum of 1 + 1 is 2" -->
+    <p>The sum of 1 + 1 is {{1 + 1}}.</p>
+
+    <h4>Evaluates using a method (also evaluates to a string):</h4>
+    <!-- "The sum of 1 + 1 is not 4" -->
+    <p>The sum of 1 + 1 is not {{1 + 1 + getVal()}}.</p>
+
+  </div>
+
+  <hr />
+<h2>Expression Context</h2>
+
+<div>
+  <h3>Component context: properties of app.component.ts:</h3>
+  <h4>{{recommended}}</h4>
+  <img [src]="itemImageUrl2">
+</div>
+
+<div>
+  <h4>Template context: template input variables (let customer):</h4>
+  <div *ngFor="let customer of customers">{{customer.name}}</div>
+</div>
+
+<div (keyup)="0">
+  <h4>Template context: template reference variables (#customerInput):</h4>
+  <label>Type something:
+  <input #customerInput>{{customerInput.value}}</label>
+</div>
+
+</div>

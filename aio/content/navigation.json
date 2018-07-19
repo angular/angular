@@ -207,6 +207,11 @@
               "url": "guide/animations",
               "title": "Animations",
               "tooltip": "A guide to Angular's animation system."
+            },
+            {
+            "url": "guide/interpolation",
+            "title": "Interpolation",
+            "tooltip": "A guide to Angular's animation system."
             }
           ]
         },
