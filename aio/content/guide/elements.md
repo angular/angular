@@ -169,20 +169,11 @@ You can cast the return value of `createElement()`, like this:
 const popupEl = document.createElement('popup-element') as NgElement & WithProperties<PopupComponent>;
 ```
 
-In order to get `createElement()` to always return the correct type for your custom elements it's possible to overload it.
+Or you could get `createElement()` to always return the correct type for your custom elements by overloading it.
 ```
-class HTMLPopupElement extends HTMLElement {
-  message = 'Popup: Message';
-}
-
-class HTMLFooElement extends HTMLElement {
-  foo = true;
-}
-
 declare global {
   interface HTMLElementTagNameMap {
-    'popup-element': HTMLPopupElement;
-    'foo': HTMLFooElement;
+    'popup-element': NgElement & WithProperties<{message: 'string}>;
   }
 }
 ```
