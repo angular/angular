@@ -86,7 +86,7 @@ describe('i18n', () => {
             $r3$.ɵe();
           }
           if (rf & 2) {
-            $r3$.ɵp(0, 'title', $r3$.ɵiI($i18n_1$, 2, ctx.exp1));
+            $r3$.ɵp(0, 'title', $r3$.ɵiI1($i18n_1$, ctx.exp1));
           }
         }
       });

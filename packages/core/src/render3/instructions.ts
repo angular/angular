@@ -2454,7 +2454,7 @@ export function interpolation2(
   return different ? prefix + stringify(v0) + i0 + stringify(v1) + suffix : NO_CHANGE;
 }
 
-/** Creates an interpolation bindings with 3 expressions. */
+/** Creates an interpolation binding with 3 expressions. */
 export function interpolation3(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string|
     NO_CHANGE {
