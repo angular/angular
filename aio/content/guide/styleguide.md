@@ -563,7 +563,10 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 
 ### Symbols and file names
 
+<!--
 #### Style 02-03
+-->
+#### 스타일 02-03
 
 
 <div class="s-rule do">
@@ -822,7 +825,10 @@ and reference assets of different types.
 
 ### Service names
 
+<!--
 #### Style 02-04
+-->
+#### 스타일 02-04
 
 <div class="s-rule do">
 
@@ -980,7 +986,10 @@ As always, strive for consistency.
 
 ### Bootstrapping
 
+<!--
 #### Style 02-05
+-->
+#### 스타일 02-05
 
 
 <div class="s-rule do">
@@ -1053,8 +1062,10 @@ As always, strive for consistency.
 
 ### Directive selectors
 
+<!--
 #### Style 02-06
-
+-->
+#### 스타일 02-06
 
 <div class="s-rule do">
 
@@ -1096,8 +1107,10 @@ As always, strive for consistency.
 
 ### Custom prefix for components
 
+<!--
 #### Style 02-07
-
+-->
+#### 스타일 02-07
 
 <div class="s-rule do">
 
@@ -1203,7 +1216,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 ### Custom prefix for directives
 
+<!--
 #### Style 02-08
+-->
+#### 스타일 02-08
 
 <div class="s-rule do">
 
@@ -1273,7 +1289,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 ### Pipe names
 
+<!--
 #### Style 02-09
+-->
+#### 스타일 02-09
 
 <div class="s-rule do">
 
@@ -1371,7 +1390,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 ### Unit test file names
 
+<!--
 #### Style 02-10
+-->
+#### 스타일 02-10
 
 <div class="s-rule do">
 
@@ -1513,7 +1535,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 ### _End-to-End_ (E2E) test file names
 
+<!--
 #### Style 02-11
+-->
+#### 스타일 02-11
 
 <div class="s-rule do">
 
@@ -1605,8 +1630,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 ### Angular _NgModule_ names
 
+<!--
 #### Style 02-12
-
+-->
+#### 스타일 02-12
 
 <div class="s-rule do">
 
@@ -1844,7 +1871,10 @@ Have a consistent set of coding, naming, and whitespace conventions.
 
 ### Classes
 
+<!--
 #### Style 03-01
+-->
+#### 스타일 03-01
 
 <div class="s-rule do">
 
@@ -1904,7 +1934,10 @@ By convention, upper camel case indicates a constructable asset.
 
 ### Constants
 
+<!--
 #### Style 03-02
+-->
+#### 스타일 03-02
 
 <div class="s-rule do">
 
@@ -2016,7 +2049,10 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 
 ### Interfaces
 
+<!--
 #### Style 03-03
+-->
+#### 스타일 03-03
 
 <div class="s-rule do">
 
@@ -2130,8 +2166,10 @@ discourage the `I` prefix.
 
 ### Properties and methods
 
+<!--
 #### Style 03-04
-
+-->
+#### 스타일 03-04
 
 <div class="s-rule do">
 
@@ -2211,8 +2249,10 @@ discourage the `I` prefix.
 
 ### Import line spacing
 
+<!--
 #### Style 03-06
-
+-->
+#### 스타일 03-06
 
 <div class="s-rule consider">
 
@@ -2309,8 +2349,10 @@ Use the naming conventions for files in this guide.
 
 ### _LIFT_
 
+<!--
 #### Style 04-01
-
+-->
+#### 스타일 04-01
 
 <div class="s-rule do">
 
@@ -2357,8 +2399,10 @@ _can I quickly open and start work in all of the related files for this feature_
 
 ### Locate
 
+<!--
 #### Style 04-02
-
+-->
+#### 스타일 04-02
 
 <div class="s-rule do">
 
@@ -2392,8 +2436,10 @@ A descriptive folder structure makes a world of difference to you and the people
 
 ### Identify
 
+<!--
 #### Style 04-03
-
+-->
+#### 스타일 04-03
 
 <div class="s-rule do">
 
@@ -2461,7 +2507,10 @@ in a single file than as multiple files. Be wary of this loophole.
 
 ### Flat
 
+<!--
 #### Style 04-04
+-->
+#### 스타일 04-04
 
 <div class="s-rule do">
 
@@ -2524,7 +2573,10 @@ Use a flatter structure until there is an obvious value to creating a new folder
 
 ### _T-DRY_ (Try to be _DRY_)
 
+<!--
 #### Style 04-05
+-->
+#### 스타일 04-05
 
 <div class="s-rule do">
 
@@ -2571,7 +2623,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 ### Overall structural guidelines
 
+<!--
 #### Style 04-06
+-->
+#### 스타일 04-06
 
 <div class="s-rule do">
 
@@ -2894,8 +2949,10 @@ Whatever you choose, be consistent.
 
 ### _Folders-by-feature_ structure
 
+<!--
 #### Style 04-07
-
+-->
+#### 스타일 04-07
 
 <div class="s-rule do">
 
@@ -3005,7 +3062,10 @@ and more difficult in a flat structure.
 
 ### App _root module_
 
+<!--
 #### Style 04-08
+-->
+#### 스타일 04-08
 
 <div class="s-rule do">
 
@@ -3068,8 +3128,10 @@ for example, in `/src/app`.
 
 ### Feature modules
 
+<!--
 #### Style 04-09
-
+-->
+#### 스타일 04-09
 
 <div class="s-rule do">
 
@@ -3192,8 +3254,10 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 
 ### Shared feature module
 
+<!--
 #### Style 04-10
-
+-->
+#### 스타일 04-10
 
 <div class="s-rule do">
 
@@ -3447,8 +3511,10 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 
 ### Core feature module
 
+<!--
 #### Style 04-11
-
+-->
+#### 스타일 04-11
 
 <div class="s-rule consider">
 
@@ -3777,7 +3843,10 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 
 ### Prevent re-import of the core module
 
+<!--
 #### Style 04-12
+-->
+#### 스타일 04-12
 
 Only the root `AppModule` should import the `CoreModule`.
 
@@ -3838,7 +3907,10 @@ Only the root `AppModule` should import the `CoreModule`.
 
 ### Lazy Loaded folders
 
+<!--
 #### Style 04-13
+-->
+#### 스타일 04-13
 
 A distinct application feature or workflow may be *lazy loaded* or *loaded on demand* rather than when the application starts.
 
@@ -3873,8 +3945,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 ### Never directly import lazy loaded folders
 
+<!--
 #### Style 04-14
-
+-->
+#### 스타일 04-14
 
 <div class="s-rule avoid">
 
@@ -3908,8 +3982,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 ### Component selector names
 
+<!--
 #### Style 05-02
-
+-->
+#### 스타일 05-02
 
 <div class="s-rule do">
 
@@ -3964,8 +4040,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 ### Components as elements
 
+<!--
 #### Style 05-03
-
+-->
+#### 스타일 05-03
 
 <div class="s-rule do">
 
@@ -4042,8 +4120,10 @@ There are a few cases where you give a component an attribute, such as when you 
 
 ### Extract templates and styles to their own files
 
+<!--
 #### Style 05-04
-
+-->
+#### 스타일 05-04
 
 <div class="s-rule do">
 
@@ -4171,8 +4251,10 @@ in those editors that support it; it won't help with CSS styles.
 
 ### Decorate _input_ and _output_ properties
 
+<!--
 #### Style 05-12
-
+-->
+#### 스타일 05-12
 
 <div class="s-rule do">
 
@@ -4267,8 +4349,10 @@ Put it on the line above when doing so is clearly more readable.
 
 ### Avoid aliasing _inputs_ and _outputs_
 
+<!--
 #### Style 05-13
-
+-->
+#### 스타일 05-13
 
 <div class="s-rule avoid">
 
@@ -4347,8 +4431,10 @@ and the directive name doesn't describe the property.
 
 ### Member sequence
 
+<!--
 #### Style 05-14
-
+-->
+#### 스타일 05-14
 
 <div class="s-rule do">
 
@@ -4407,8 +4493,10 @@ helps instantly identify which members of the component serve which purpose.
 
 ### Delegate complex component logic to services
 
+<!--
 #### Style 05-15
-
+-->
+#### 스타일 05-15
 
 <div class="s-rule do">
 
@@ -4499,8 +4587,10 @@ helps instantly identify which members of the component serve which purpose.
 
 ### Don't prefix _output_ properties
 
+<!--
 #### Style 05-16
-
+-->
+#### 스타일 05-16
 
 <div class="s-rule do">
 
@@ -4586,8 +4676,10 @@ helps instantly identify which members of the component serve which purpose.
 
 ### Put presentation logic in the component class
 
+<!--
 #### Style 05-17
-
+-->
+#### 스타일 05-17
 
 <div class="s-rule do">
 
@@ -4648,8 +4740,10 @@ helps instantly identify which members of the component serve which purpose.
 
 ### Use directives to enhance an element
 
+<!--
 #### Style 06-01
-
+-->
+#### 스타일 06-01
 
 <div class="s-rule do">
 
@@ -4707,8 +4801,10 @@ helps instantly identify which members of the component serve which purpose.
 
 ### _HostListener_/_HostBinding_ decorators versus _host_ metadata
 
+<!--
 #### Style 06-03
-
+-->
+#### 스타일 06-03
 
 <div class="s-rule consider">
 
@@ -4785,8 +4881,10 @@ Compare with the less preferred `host` metadata alternative.
 
 ### Services are singletons
 
+<!--
 #### Style 07-01
-
+-->
+#### 스타일 07-01
 
 <div class="s-rule do">
 
@@ -4836,8 +4934,10 @@ Compare with the less preferred `host` metadata alternative.
 
 ### Single responsibility
 
+<!--
 #### Style 07-02
-
+-->
+#### 스타일 07-02
 
 <div class="s-rule do">
 
@@ -4890,8 +4990,10 @@ Compare with the less preferred `host` metadata alternative.
 
 ### Providing a service
 
+<!--
 #### Style 07-03
-
+-->
+#### 스타일 07-03
 
 <div class="s-rule do">
 
@@ -4960,8 +5062,10 @@ Compare with the less preferred `host` metadata alternative.
 
 ### Use the @Injectable() class decorator
 
+<!--
 #### Style 07-04
-
+-->
+#### 스타일 07-04
 
 <div class="s-rule do">
 
@@ -5023,8 +5127,10 @@ dependencies based on the declared types of that service's constructor parameter
 
 ### Talk to the server through a service
 
+<!--
 #### Style 08-01
-
+-->
+#### 스타일 08-01
 
 <div class="s-rule do">
 
@@ -5104,8 +5210,10 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 
 ### Implement lifecycle hook interfaces
 
+<!--
 #### Style 09-01
-
+-->
+#### 스타일 09-01
 
 <div class="s-rule do">
 
