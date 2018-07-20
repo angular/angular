@@ -147,9 +147,9 @@ export interface ClassMember {
 }
 
 /**
- * A parameter to a function or constructor.
+ * A parameter to a constructor.
  */
-export interface Parameter {
+export interface CtorParameter {
   /**
    * Name of the parameter, if available.
    *
@@ -178,6 +178,54 @@ export interface Parameter {
    * Any `Decorator`s which are present on the parameter, or `null` if none are present.
    */
   decorators: Decorator[]|null;
+}
+
+/**
+ * Definition of a function or method, including its body if present and any parameters.
+ *
+ * In TypeScript code this metadata will be a simple reflection of the declarations in the node
+ * itself. In ES5 code this can be more complicated, as the default values for parameters may
+ * be extracted from certain body statements.
+ */
+export interface FunctionDefinition<T extends ts.MethodDeclaration|ts.FunctionDeclaration|
+                                    ts.FunctionExpression> {
+  /**
+   * A reference to the node which declares the function.
+   */
+  node: T;
+
+  /**
+   * Statements of the function body, if a body is present, or null if no body is present.
+   *
+   * This list may have been filtered to exclude statements which perform parameter default value
+   * initialization.
+   */
+  body: ts.Statement[]|null;
+
+  /**
+   * Metadata regarding the function's parameters, including possible default value expressions.
+   */
+  parameters: Parameter[];
+}
+
+/**
+ * A parameter to a function or method.
+ */
+export interface Parameter {
+  /**
+   * Name of the parameter, if available.
+   */
+  name: string|null;
+
+  /**
+   * Declaration which created this parameter.
+   */
+  node: ts.ParameterDeclaration;
+
+  /**
+   * Expression which represents the default value of the parameter, if any.
+   */
+  initializer: ts.Expression|null;
 }
 
 /**
@@ -273,7 +321,30 @@ export interface ReflectionHost {
    * a constructor exists. If the constructor exists and has 0 parameters, this array will be empty.
    * If the class has no constructor, this method returns `null`.
    */
-  getConstructorParameters(declaration: ts.Declaration): Parameter[]|null;
+  getConstructorParameters(declaration: ts.Declaration): CtorParameter[]|null;
+
+  /**
+   * Reflect over a function and return metadata about its parameters and body.
+   *
+   * Functions in TypeScript and ES5 code have different AST representations, in particular around
+   * default values for parameters. A TypeScript function has its default value as the initializer
+   * on the parameter declaration, whereas an ES5 function has its default value set in a statement
+   * of the form:
+   *
+   * if (param === void 0) { param = 3; }
+   *
+   * This method abstracts over these details, and interprets the function declaration and body to
+   * extract parameter default values and the "real" body.
+   *
+   * A current limitation is that this metadata has no representation for shorthand assignment of
+   * parameter objects in the function signature.
+   *
+   * @param fn a TypeScript `ts.Declaration` node representing the function over which to reflect.
+   *
+   * @returns a `FunctionDefinition` giving metadata about the function definition.
+   */
+  getDefinitionOfFunction<T extends ts.MethodDeclaration|ts.FunctionDeclaration|
+                          ts.FunctionExpression>(fn: T): FunctionDefinition<T>;
 
   /**
    * Determine if an identifier was imported from another module and return `Import` metadata
