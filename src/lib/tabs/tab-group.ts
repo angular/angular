@@ -159,12 +159,9 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
    * a new selected tab should transition in (from the left or right).
    */
   ngAfterContentChecked() {
-    // Clamp the next selected index to the bounds of 0 and the tabs length.
-    // Note the `|| 0`, which ensures that values like NaN can't get through
-    // and which would otherwise throw the component into an infinite loop
-    // (since Math.max(NaN, 0) === NaN).
-    let indexToSelect = this._indexToSelect =
-        Math.min(this._tabs.length - 1, Math.max(this._indexToSelect || 0, 0));
+    // Don't clamp the `indexToSelect` immediately in the setter because it can happen that
+    // the amount of tabs changes before the actual change detection runs.
+    const indexToSelect = this._indexToSelect = this._clampTabIndex(this._indexToSelect);
 
     // If there is a change in selected index, emit a change event. Should not trigger if
     // the selected index has not yet been initialized.
@@ -200,16 +197,21 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
     // Subscribe to changes in the amount of tabs, in order to be
     // able to re-render the content as new tabs are added or removed.
     this._tabsSubscription = this._tabs.changes.subscribe(() => {
-      const tabs = this._tabs.toArray();
+      const indexToSelect = this._clampTabIndex(this._indexToSelect);
 
-      // Maintain the previously-selected tab if a new tab is added or removed.
-      for (let i = 0; i < tabs.length; i++) {
-        if (tabs[i].isActive) {
-          // Assign both to the `_indexToSelect` and `_selectedIndex` so we don't fire a changed
-          // event, otherwise the consumer may end up in an infinite loop in some edge cases like
-          // adding a tab within the `selectedIndexChange` event.
-          this._indexToSelect = this._selectedIndex = i;
-          break;
+      // Maintain the previously-selected tab if a new tab is added or removed and there is no
+      // explicit change that selects a different tab.
+      if (indexToSelect === this._selectedIndex) {
+        const tabs = this._tabs.toArray();
+
+        for (let i = 0; i < tabs.length; i++) {
+          if (tabs[i].isActive) {
+            // Assign both to the `_indexToSelect` and `_selectedIndex` so we don't fire a changed
+            // event, otherwise the consumer may end up in an infinite loop in some edge cases like
+            // adding a tab within the `selectedIndexChange` event.
+            this._indexToSelect = this._selectedIndex = i;
+            break;
+          }
         }
       }
 
@@ -259,6 +261,14 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
         ...this._tabs.map(tab => tab._labelChange)).subscribe(() => {
       this._changeDetectorRef.markForCheck();
     });
+  }
+
+  /** Clamps the given index to the bounds of 0 and the tabs length. */
+  private _clampTabIndex(index: number | null): number {
+    // Note the `|| 0`, which ensures that values like NaN can't get through
+    // and which would otherwise throw the component into an infinite loop
+    // (since Math.max(NaN, 0) === NaN).
+    return Math.min(this._tabs.length - 1, Math.max(index || 0, 0));
   }
 
   /** Returns a unique id for each tab label element */

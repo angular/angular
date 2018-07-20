@@ -427,25 +427,35 @@ describe('MatTabGroup', () => {
 
 
     it('should maintain the selected tab if a tab is removed', () => {
-      // Add a couple of tabs so we have more to work with.
-      fixture.componentInstance.tabs.push(
-        {label: 'New tab', content: 'with new content'},
-        {label: 'Another new tab', content: 'with newer content'}
-      );
-
-      // Select the second-to-last tab.
-      fixture.componentInstance.selectedIndex = 3;
+      // Select the second tab.
+      fixture.componentInstance.selectedIndex = 1;
       fixture.detectChanges();
 
       const component: MatTabGroup =
           fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
 
-      // Remove a tab right before the selected one.
-      fixture.componentInstance.tabs.splice(2, 1);
+      // Remove the first tab that is right before the selected one.
+      fixture.componentInstance.tabs.splice(0, 1);
       fixture.detectChanges();
 
-      expect(component.selectedIndex).toBe(1);
-      expect(component._tabs.toArray()[1].isActive).toBe(true);
+      // Since the first tab has been removed and the second one was selected before, the selected
+      // tab moved one position to the right. Meaning that the tab is now the first tab.
+      expect(component.selectedIndex).toBe(0);
+      expect(component._tabs.toArray()[0].isActive).toBe(true);
+    });
+
+    it('should be able to select a new tab after creation', () => {
+      fixture.detectChanges();
+      const component: MatTabGroup =
+        fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
+
+      fixture.componentInstance.tabs.push({label: 'Last tab', content: 'at the end'});
+      fixture.componentInstance.selectedIndex = 3;
+
+      fixture.detectChanges();
+
+      expect(component.selectedIndex).toBe(3);
+      expect(component._tabs.toArray()[3].isActive).toBe(true);
     });
 
     it('should not fire `selectedTabChange` when the amount of tabs changes', fakeAsync(() => {
