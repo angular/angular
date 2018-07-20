@@ -10,6 +10,7 @@ export const files = [
         children: [
           {
             name: 'cdk',
+            type: 'folder',
             children: [
               { name: 'package.json', type: 'file' },
               { name: 'BUILD.bazel', type: 'file' },
