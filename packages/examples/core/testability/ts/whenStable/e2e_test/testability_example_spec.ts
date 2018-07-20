@@ -30,7 +30,7 @@ describe('testability example', () => {
 
       browser.driver.executeAsyncScript(waitWithResultScript).then((result: any[]) => {
         let pendingTask = result[0];
-        expect(pendingTask.delay).toEqual(5000);
+        expect(pendingTask.data.delay).toEqual(5000);
         expect(pendingTask.source).toEqual('setTimeout');
         expect(element(by.css('.status')).getText()).not.toContain('done');
         done();
