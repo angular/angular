@@ -1,4 +1,5 @@
-import {dispatchFakeEvent} from '@angular/cdk/testing';
+import {LEFT_ARROW} from '@angular/cdk/keycodes';
+import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -230,6 +231,46 @@ describe('MatTabGroup', () => {
 
       expect(labels.map(label => label.getAttribute('aria-posinset'))).toEqual(['1', '2', '3']);
       expect(labels.every(label => label.getAttribute('aria-setsize') === '3')).toBe(true);
+    });
+
+    it('should emit focusChange event on click', () => {
+      spyOn(fixture.componentInstance, 'handleFocus');
+      fixture.detectChanges();
+
+      const tabLabels = fixture.debugElement.queryAll(By.css('.mat-tab-label'));
+
+      expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(0);
+
+      tabLabels[1].nativeElement.click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(1);
+      expect(fixture.componentInstance.handleFocus)
+        .toHaveBeenCalledWith(jasmine.objectContaining({index: 1}));
+    });
+
+    it('should emit focusChange on arrow key navigation', () => {
+      spyOn(fixture.componentInstance, 'handleFocus');
+      fixture.detectChanges();
+
+      const tabLabels = fixture.debugElement.queryAll(By.css('.mat-tab-label'));
+      const tabLabelContainer = fixture.debugElement
+        .query(By.css('.mat-tab-label-container')).nativeElement as HTMLElement;
+
+      expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(0);
+
+      // In order to verify that the `focusChange` event also fires with the correct
+      // index, we focus the second tab before testing the keyboard navigation.
+      tabLabels[1].nativeElement.click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(1);
+
+      dispatchKeyboardEvent(tabLabelContainer, 'keydown', LEFT_ARROW);
+
+      expect(fixture.componentInstance.handleFocus).toHaveBeenCalledTimes(2);
+      expect(fixture.componentInstance.handleFocus)
+        .toHaveBeenCalledWith(jasmine.objectContaining({index: 0}));
     });
 
   });

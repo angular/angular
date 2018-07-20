@@ -28,7 +28,8 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
-import {merge, of as observableOf, Subscription} from 'rxjs';
+import {merge, of as observableOf, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {MatInkBar} from './ink-bar';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
 import {FocusKeyManager} from '@angular/cdk/a11y';
@@ -87,8 +88,8 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
   /** Whether the header should scroll to the selected index after the view has been checked. */
   private _selectedIndexChanged = false;
 
-  /** Combines listeners that will re-align the ink bar whenever they're invoked. */
-  private _realignInkBar = Subscription.EMPTY;
+  /** Emits when the component is destroyed. */
+  private readonly _destroyed = new Subject<void>();
 
   /** Whether the controls for pagination should be displayed */
   _showPaginationControls = false;
@@ -201,20 +202,31 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
       .withHorizontalOrientation(this._getLayoutDirection())
       .withWrap();
 
-    this._keyManager.updateActiveItemIndex(0);
+    this._keyManager.updateActiveItem(0);
 
     // Defer the first call in order to allow for slower browsers to lay out the elements.
     // This helps in cases where the user lands directly on a page with paginated tabs.
     typeof requestAnimationFrame !== 'undefined' ? requestAnimationFrame(realign) : realign();
 
-    this._realignInkBar = merge(dirChange, resize).subscribe(() => {
+    // On dir change or window resize, realign the ink bar and update the orientation of
+    // the key manager if the direction has changed.
+    merge(dirChange, resize).pipe(takeUntil(this._destroyed)).subscribe(() => {
       realign();
       this._keyManager.withHorizontalOrientation(this._getLayoutDirection());
+    });
+
+    // If there is a change in the focus key manager we need to emit the `indexFocused`
+    // event in order to provide a public event that notifies about focus changes. Also we realign
+    // the tabs container by scrolling the new focused tab into the visible section.
+    this._keyManager.change.pipe(takeUntil(this._destroyed)).subscribe(newFocusIndex => {
+      this.indexFocused.emit(newFocusIndex);
+      this._setTabFocus(newFocusIndex);
     });
   }
 
   ngOnDestroy() {
-    this._realignInkBar.unsubscribe();
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
   /**
@@ -242,11 +254,11 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
 
   /** When the focus index is set, we must manually send focus to the correct label */
   set focusIndex(value: number) {
-    if (!this._isValidIndex(value) || this.focusIndex == value || !this._keyManager) { return; }
+    if (!this._isValidIndex(value) || this.focusIndex === value || !this._keyManager) {
+      return;
+    }
 
     this._keyManager.setActiveItem(value);
-    this.indexFocused.emit(value);
-    this._setTabFocus(value);
   }
 
   /**
