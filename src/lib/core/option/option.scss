@@ -58,7 +58,9 @@
   text-overflow: ellipsis;
 }
 
-.mat-option-ripple {
+// Increase specificity because ripple styles are part of the `mat-core` mixin and can
+// potentially overwrite the absolute position of the container.
+.mat-option .mat-option-ripple {
   @include mat-fill;
 
   // Disable pointer events for the ripple container because the container will overlay the

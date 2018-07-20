@@ -75,8 +75,11 @@
   }
 }
 
-// The ripple container should match the bounds of the entire button.
-.mat-button-ripple, .mat-button-focus-overlay {
+// The ripple container and focus overlay should match the bounds of the entire button.
+// Increase specificity for the ripple container because ripple styles are part of
+// the `mat-core` mixin and can potentially overwrite the absolute position of the container.
+.mat-button-ripple.mat-ripple,
+.mat-button-focus-overlay {
   @include mat-fill;
 
   // Disable pointer events for the ripple container and focus overlay because the container

@@ -1,7 +1,4 @@
 .example-ripple-container {
-  /** Necessary until: https://github.com/angular/material2/pull/11913*/
-  position: relative;
-
   cursor: pointer;
   text-align: center;
 

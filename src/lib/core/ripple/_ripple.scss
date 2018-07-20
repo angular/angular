@@ -4,10 +4,15 @@
 $mat-ripple-color-opacity: 0.1;
 
 @mixin mat-ripple() {
+
   // The host element of an mat-ripple directive should always have a position of "absolute" or
-  // "relative" so that the ripple divs it creates inside itself are correctly positioned.
+  // "relative" so that the ripples inside are correctly positioned relatively to the container.
   .mat-ripple {
     overflow: hidden;
+
+    // By default, every ripple container should have position: relative in favor of creating an
+    // easy API for developers using the MatRipple directive.
+    position: relative;
   }
 
   .mat-ripple.mat-ripple-unbounded {

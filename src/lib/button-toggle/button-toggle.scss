@@ -93,7 +93,9 @@ $mat-button-toggle-border-radius: 2px !default;
   }
 }
 
-.mat-button-toggle-ripple {
+// Increase specificity because ripple styles are part of the `mat-core` mixin and can
+// potentially overwrite the absolute position of the container.
+.mat-button-toggle .mat-button-toggle-ripple {
   @include mat-fill;
 
   // Disable pointer events for the ripple container, because the container will overlay the user

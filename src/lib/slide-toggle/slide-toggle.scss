@@ -179,7 +179,9 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 }
 
 // Ripple positioning for the slide-toggle. Moves the ripple container into the center of the thumb.
-.mat-slide-toggle-ripple {
+// Increase specificity because ripple styles are part of the `mat-core` mixin and can
+// potentially overwrite the absolute position of the container.
+.mat-slide-toggle .mat-slide-toggle-ripple {
   position: absolute;
   top: calc(50% - #{$mat-slide-toggle-ripple-radius});
   left: calc(50% - #{$mat-slide-toggle-ripple-radius});

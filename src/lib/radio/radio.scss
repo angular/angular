@@ -115,7 +115,9 @@ $mat-radio-ripple-radius: 25px;
   cursor: default;
 }
 
-.mat-radio-ripple {
+// Increase specificity because ripple styles are part of the `mat-core` mixin and can
+// potentially overwrite the absolute position of the container.
+.mat-radio-button .mat-radio-ripple {
   position: absolute;
   left: calc(50% - #{$mat-radio-ripple-radius});
   top: calc(50% - #{$mat-radio-ripple-radius});

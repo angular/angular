@@ -52,7 +52,9 @@ $mat-step-header-icon-size: 16px !default;
   overflow: hidden;
 }
 
-.mat-step-header-ripple {
+// Increase specificity because ripple styles are part of the `mat-core` mixin and can
+// potentially overwrite the absolute position of the container.
+.mat-step-header .mat-step-header-ripple {
   @include mat-fill;
   pointer-events: none;
 }

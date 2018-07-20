@@ -83,7 +83,9 @@ button.mat-menu-item {
   width: 100%;
 }
 
-.mat-menu-ripple {
+// Increase specificity because ripple styles are part of the `mat-core` mixin and can
+// potentially overwrite the absolute position of the container.
+.mat-menu-item .mat-menu-ripple {
   @include mat-fill;
 
   // Prevent any pointer events on the ripple container for a menu item. The ripple container is
