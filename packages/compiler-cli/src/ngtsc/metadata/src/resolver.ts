@@ -547,11 +547,11 @@ class StaticInterpreter {
           `calling something that is not a function declaration? ${ts.SyntaxKind[lhs.node.kind]} (${node.getText()})`);
     }
 
-    const fn = lhs.node;
+    const fn = this.host.getDefinitionOfFunction(lhs.node);
 
     // If the function is foreign (declared through a d.ts file), attempt to resolve it with the
     // foreignFunctionResolver, if one is specified.
-    if (fn.body === undefined) {
+    if (fn.body === null) {
       let expr: ts.Expression|null = null;
       if (context.foreignFunctionResolver) {
         expr = context.foreignFunctionResolver(lhs, node.arguments);
@@ -572,10 +572,10 @@ class StaticInterpreter {
     }
 
     const body = fn.body;
-    if (body.statements.length !== 1 || !ts.isReturnStatement(body.statements[0])) {
+    if (body.length !== 1 || !ts.isReturnStatement(body[0])) {
       throw new Error('Function body must have a single return statement only.');
     }
-    const ret = body.statements[0] as ts.ReturnStatement;
+    const ret = body[0] as ts.ReturnStatement;
 
     const newScope: Scope = new Map<ts.ParameterDeclaration, ResolvedValue>();
     fn.parameters.forEach((param, index) => {
@@ -584,10 +584,10 @@ class StaticInterpreter {
         const arg = node.arguments[index];
         value = this.visitExpression(arg, context);
       }
-      if (value === undefined && param.initializer !== undefined) {
+      if (value === undefined && param.initializer !== null) {
         value = this.visitExpression(param.initializer, context);
       }
-      newScope.set(param, value);
+      newScope.set(param.node, value);
     });
 
     return ret.expression !== undefined ?
