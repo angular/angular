@@ -25,7 +25,7 @@ firebaseBin=$(npm bin)/firebase
 cd ${dashboardFolder}
 
 # Install node_modules for the dashboard and afterwards build the dashboard app in production.
-(npm install; $(npm bin)/ng build --aot -prod) &
+(npm install; npm run build-production) &
 
 # Install node modules for dashboard functions. Firebase CLI needs to execute the functions
 # to collect all function names before it can deploy them.
