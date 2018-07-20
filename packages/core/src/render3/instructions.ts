@@ -529,29 +529,35 @@ export function createEmbeddedViewNode<T>(
  * TView for dynamically created views on their host TNode, which only has one instance.
  */
 export function renderEmbeddedTemplate<T>(
-    viewNode: LViewNode, tView: TView, context: T, rf: RenderFlags): LViewNode {
+    viewNode: LViewNode | LElementNode, tView: TView, context: T, rf: RenderFlags): LViewNode|
+    LElementNode {
   const _isParent = isParent;
   const _previousOrParentNode = previousOrParentNode;
   let oldView: LViewData;
-  try {
-    isParent = true;
-    previousOrParentNode = null !;
+  if (viewNode.data ![PARENT] == null && viewNode.data ![CONTEXT] && !tView.template) {
+    // This is a root view inside the view tree
+    tickRootContext(viewNode.data ![CONTEXT] as RootContext);
+  } else {
+    try {
+      isParent = true;
+      previousOrParentNode = null !;
 
-    oldView = enterView(viewNode.data, viewNode);
-    namespaceHTML();
-    tView.template !(rf, context);
-    if (rf & RenderFlags.Update) {
-      refreshView();
-    } else {
-      viewNode.data[TVIEW].firstTemplatePass = firstTemplatePass = false;
+      oldView = enterView(viewNode.data !, viewNode);
+      namespaceHTML();
+      tView.template !(rf, context);
+      if (rf & RenderFlags.Update) {
+        refreshView();
+      } else {
+        viewNode.data ![TVIEW].firstTemplatePass = firstTemplatePass = false;
+      }
+    } finally {
+      // renderEmbeddedTemplate() is called twice in fact, once for creation only and then once for
+      // update. When for creation only, leaveView() must not trigger view hooks, nor clean flags.
+      const isCreationOnly = (rf & RenderFlags.Create) === RenderFlags.Create;
+      leaveView(oldView !, isCreationOnly);
+      isParent = _isParent;
+      previousOrParentNode = _previousOrParentNode;
     }
-  } finally {
-    // renderEmbeddedTemplate() is called twice in fact, once for creation only and then once for
-    // update. When for creation only, leaveView() must not trigger view hooks, nor clean flags.
-    const isCreationOnly = (rf & RenderFlags.Create) === RenderFlags.Create;
-    leaveView(oldView !, isCreationOnly);
-    isParent = _isParent;
-    previousOrParentNode = _previousOrParentNode;
   }
   return viewNode;
 }
@@ -654,17 +660,7 @@ export function elementStart(
 
   ngDevMode && ngDevMode.rendererCreateElement++;
 
-  let native: RElement;
-
-  if (isProceduralRenderer(renderer)) {
-    native = renderer.createElement(name, _currentNamespace);
-  } else {
-    if (_currentNamespace === null) {
-      native = renderer.createElement(name);
-    } else {
-      native = renderer.createElementNS(_currentNamespace, name);
-    }
-  }
+  const native = elementCreate(name);
 
   ngDevMode && assertDataInRange(index - 1);
 
@@ -677,6 +673,27 @@ export function elementStart(
   }
   appendChild(getParentLNode(node), native, viewData);
   createDirectivesAndLocals(localRefs);
+  return native;
+}
+/**
+ * Creates a native element from a tag name, using a renderer.
+ * @param name the tag name
+ * @param overriddenRenderer Optional A renderer to override the default one
+ * @returns the element created
+ */
+export function elementCreate(name: string, overriddenRenderer?: Renderer3): RElement {
+  let native: RElement;
+  const rendererToUse = overriddenRenderer || renderer;
+
+  if (isProceduralRenderer(rendererToUse)) {
+    native = rendererToUse.createElement(name, _currentNamespace);
+  } else {
+    if (_currentNamespace === null) {
+      native = rendererToUse.createElement(name);
+    } else {
+      native = rendererToUse.createElementNS(_currentNamespace, name);
+    }
+  }
   return native;
 }
 

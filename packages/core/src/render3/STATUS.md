@@ -244,7 +244,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `clear()`              |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `get()`                |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `createEmbededView()`  |  ✅                | ✅           | n/a              | n/a      | n/a         | n/a                  |
-| `createComponent()`    |  ❌                | n/a          | n/a              | n/a      | n/a         | n/a                  |
+| `createComponent()`    |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `insert()`             |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `move()`               |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
 | `indexOf()`            |  ✅                | n/a          | n/a              | n/a      | n/a         | n/a                  |
