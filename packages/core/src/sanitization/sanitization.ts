@@ -9,7 +9,7 @@
 import {getCurrentSanitizer} from '../render3/instructions';
 import {stringify} from '../render3/util';
 
-import {allowSanitizationBypass} from './bypass';
+import {BypassType, allowSanitizationBypass} from './bypass';
 import {_sanitizeHtml as _sanitizeHtml} from './html_sanitizer';
 import {SecurityContext} from './security';
 import {StyleSanitizeFn, _sanitizeStyle as _sanitizeStyle} from './style_sanitizer';
@@ -35,7 +35,7 @@ export function sanitizeHtml(unsafeHtml: any): string {
   if (s) {
     return s.sanitize(SecurityContext.HTML, unsafeHtml) || '';
   }
-  if (allowSanitizationBypass(unsafeHtml, 'Html')) {
+  if (allowSanitizationBypass(unsafeHtml, BypassType.Html)) {
     return unsafeHtml.toString();
   }
   return _sanitizeHtml(document, stringify(unsafeHtml));
@@ -59,7 +59,7 @@ export function sanitizeStyle(unsafeStyle: any): string {
   if (s) {
     return s.sanitize(SecurityContext.STYLE, unsafeStyle) || '';
   }
-  if (allowSanitizationBypass(unsafeStyle, 'Style')) {
+  if (allowSanitizationBypass(unsafeStyle, BypassType.Style)) {
     return unsafeStyle.toString();
   }
   return _sanitizeStyle(stringify(unsafeStyle));
@@ -84,7 +84,7 @@ export function sanitizeUrl(unsafeUrl: any): string {
   if (s) {
     return s.sanitize(SecurityContext.URL, unsafeUrl) || '';
   }
-  if (allowSanitizationBypass(unsafeUrl, 'Url')) {
+  if (allowSanitizationBypass(unsafeUrl, BypassType.Url)) {
     return unsafeUrl.toString();
   }
   return _sanitizeUrl(stringify(unsafeUrl));
@@ -104,7 +104,7 @@ export function sanitizeResourceUrl(unsafeResourceUrl: any): string {
   if (s) {
     return s.sanitize(SecurityContext.RESOURCE_URL, unsafeResourceUrl) || '';
   }
-  if (allowSanitizationBypass(unsafeResourceUrl, 'ResourceUrl')) {
+  if (allowSanitizationBypass(unsafeResourceUrl, BypassType.ResourceUrl)) {
     return unsafeResourceUrl.toString();
   }
   throw new Error('unsafe value used in a resource URL context (see http://g.co/ng/security#xss)');
@@ -124,7 +124,7 @@ export function sanitizeScript(unsafeScript: any): string {
   if (s) {
     return s.sanitize(SecurityContext.SCRIPT, unsafeScript) || '';
   }
-  if (allowSanitizationBypass(unsafeScript, 'Script')) {
+  if (allowSanitizationBypass(unsafeScript, BypassType.Script)) {
     return unsafeScript.toString();
   }
   throw new Error('unsafe value used in a script context');
