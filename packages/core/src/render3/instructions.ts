@@ -21,7 +21,8 @@ import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LEleme
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, PROJECTABLE_NODES, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
@@ -334,6 +335,7 @@ export function createLViewData<T>(
     null,                                                                        // tail
     -1,                                                                          // containerIndex
     null,                                                                        // contentQueries
+    null                                                                         // projectableNodes
   ];
 }
 
@@ -528,29 +530,35 @@ export function createEmbeddedViewNode<T>(
  * TView for dynamically created views on their host TNode, which only has one instance.
  */
 export function renderEmbeddedTemplate<T>(
-    viewNode: LViewNode, tView: TView, context: T, rf: RenderFlags): LViewNode {
+    viewNode: LViewNode | LElementNode, tView: TView, context: T, rf: RenderFlags): LViewNode|
+    LElementNode {
   const _isParent = isParent;
   const _previousOrParentNode = previousOrParentNode;
   let oldView: LViewData;
-  try {
-    isParent = true;
-    previousOrParentNode = null !;
+  if (viewNode.data ![PARENT] == null && viewNode.data ![CONTEXT] && !tView.template) {
+    // This is a root view inside the view tree
+    tickRootContext(viewNode.data ![CONTEXT] as RootContext);
+  } else {
+    try {
+      isParent = true;
+      previousOrParentNode = null !;
 
-    oldView = enterView(viewNode.data, viewNode);
-    namespaceHTML();
-    tView.template !(rf, context);
-    if (rf & RenderFlags.Update) {
-      refreshView();
-    } else {
-      viewNode.data[TVIEW].firstTemplatePass = firstTemplatePass = false;
+      oldView = enterView(viewNode.data !, viewNode);
+      namespaceHTML();
+      tView.template !(rf, context);
+      if (rf & RenderFlags.Update) {
+        refreshView();
+      } else {
+        viewNode.data ![TVIEW].firstTemplatePass = firstTemplatePass = false;
+      }
+    } finally {
+      // renderEmbeddedTemplate() is called twice in fact, once for creation only and then once for
+      // update. When for creation only, leaveView() must not trigger view hooks, nor clean flags.
+      const isCreationOnly = (rf & RenderFlags.Create) === RenderFlags.Create;
+      leaveView(oldView !, isCreationOnly);
+      isParent = _isParent;
+      previousOrParentNode = _previousOrParentNode;
     }
-  } finally {
-    // renderEmbeddedTemplate() is called twice in fact, once for creation only and then once for
-    // update. When for creation only, leaveView() must not trigger view hooks, nor clean flags.
-    const isCreationOnly = (rf & RenderFlags.Create) === RenderFlags.Create;
-    leaveView(oldView !, isCreationOnly);
-    isParent = _isParent;
-    previousOrParentNode = _previousOrParentNode;
   }
   return viewNode;
 }
@@ -653,17 +661,7 @@ export function elementStart(
 
   ngDevMode && ngDevMode.rendererCreateElement++;
 
-  let native: RElement;
-
-  if (isProceduralRenderer(renderer)) {
-    native = renderer.createElement(name, _currentNamespace);
-  } else {
-    if (_currentNamespace === null) {
-      native = renderer.createElement(name);
-    } else {
-      native = renderer.createElementNS(_currentNamespace, name);
-    }
-  }
+  const native = elementCreate(name);
 
   ngDevMode && assertDataInRange(index - 1);
 
@@ -676,6 +674,27 @@ export function elementStart(
   }
   appendChild(getParentLNode(node), native, viewData);
   createDirectivesAndLocals(localRefs);
+  return native;
+}
+/**
+ * Creates a native element from a tag name, using a renderer.
+ * @param name the tag name
+ * @param overridenRenderer Optional A renderer to override the default one
+ * @returns the element created
+ */
+export function elementCreate(name: string, overridenRenderer?: Renderer3): RElement {
+  let native: RElement;
+  const rendererToUse = overridenRenderer || renderer;
+
+  if (isProceduralRenderer(rendererToUse)) {
+    native = rendererToUse.createElement(name, _currentNamespace);
+  } else {
+    if (_currentNamespace === null) {
+      native = rendererToUse.createElement(name);
+    } else {
+      native = rendererToUse.createElementNS(_currentNamespace, name);
+    }
+  }
   return native;
 }
 
@@ -1953,27 +1972,31 @@ export function projectionDef(selectors?: CssSelectorList[], textSelectors?: str
   const componentNode: LElementNode = findComponentHost(viewData);
 
   if (!componentNode.tNode.projection) {
-    const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
-    const pData: (TNode | null)[] = componentNode.tNode.projection =
-        new Array(noOfNodeBuckets).fill(null);
-    const tails: (TNode | null)[] = pData.slice();
+    if (componentNode.data && componentNode.data[PROJECTABLE_NODES]) {
+      componentNode.tNode.projection = componentNode.data[PROJECTABLE_NODES];
+    } else {
+      const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
+      const pData: (TNode | null)[] = componentNode.tNode.projection =
+          new Array(noOfNodeBuckets).fill(null);
+      const tails: (TNode | null)[] = pData.slice();
 
-    let componentChild = componentNode.tNode.child;
+      let componentChild = componentNode.tNode.child;
 
-    while (componentChild !== null) {
-      const bucketIndex =
-          selectors ? matchingSelectorIndex(componentChild, selectors, textSelectors !) : 0;
-      const nextNode = componentChild.next;
+      while (componentChild !== null) {
+        const bucketIndex =
+            selectors ? matchingSelectorIndex(componentChild, selectors, textSelectors !) : 0;
+        const nextNode = componentChild.next;
 
-      if (tails[bucketIndex]) {
-        tails[bucketIndex] !.next = componentChild;
-      } else {
-        pData[bucketIndex] = componentChild;
-        componentChild.next = null;
+        if (tails[bucketIndex]) {
+          tails[bucketIndex] !.next = componentChild;
+        } else {
+          pData[bucketIndex] = componentChild;
+          componentChild.next = null;
+        }
+        tails[bucketIndex] = componentChild;
+
+        componentChild = nextNode;
       }
-      tails[bucketIndex] = componentChild;
-
-      componentChild = nextNode;
     }
   }
 }
