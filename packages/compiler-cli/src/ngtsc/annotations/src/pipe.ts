@@ -14,7 +14,7 @@ import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore} from './util';
+import {getConstructorDependencies, isAngularCore, unwrapExpression} from './util';
 
 export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata> {
   constructor(
@@ -35,7 +35,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata> {
     if (decorator.args === null) {
       throw new Error(`@Pipe must be called`);
     }
-    const meta = decorator.args[0];
+    const meta = unwrapExpression(decorator.args[0]);
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new Error(`Decorator argument must be literal.`);
     }
@@ -44,7 +44,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata> {
     if (!pipe.has('name')) {
       throw new Error(`@Pipe decorator is missing name field`);
     }
-    const pipeName = staticallyResolve(pipe.get('name') !, this.checker);
+    const pipeName = staticallyResolve(pipe.get('name') !, this.reflector, this.checker);
     if (typeof pipeName !== 'string') {
       throw new Error(`@Pipe.name must be a string`);
     }
@@ -52,7 +52,7 @@ export class PipeDecoratorHandler implements DecoratorHandler<R3PipeMetadata> {
 
     let pure = true;
     if (pipe.has('pure')) {
-      const pureValue = staticallyResolve(pipe.get('pure') !, this.checker);
+      const pureValue = staticallyResolve(pipe.get('pure') !, this.reflector, this.checker);
       if (typeof pureValue !== 'boolean') {
         throw new Error(`@Pipe.pure must be a boolean`);
       }

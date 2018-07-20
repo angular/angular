@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MockDirectory, setup} from '../aot/test_util';
+import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 describe('compiler compliance: bindings', () => {
@@ -37,14 +37,14 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-      template:function MyComponent_Template(rf: IDENT, $ctx$: IDENT){
+      template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
-          $i0$.ɵE(0, 'div');
+          $i0$.ɵE(0, "div");
           $i0$.ɵT(1);
           $i0$.ɵe();
         }
         if (rf & 2) {
-          $i0$.ɵt(1, $i0$.ɵi1('Hello ', $ctx$.name, ''));
+          $i0$.ɵt(1, $i0$.ɵi1("Hello ", $ctx$.name, ""));
         }
       }`;
       const result = compile(files, angularFiles);
@@ -73,12 +73,12 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-      template:function MyComponent_Template(rf: IDENT, $ctx$: IDENT){
+      template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
-          $i0$.ɵEe(0, 'a');
+          $i0$.ɵEe(0, "a");
         }
         if (rf & 2) {
-          $i0$.ɵp(0, 'title', $i0$.ɵb($ctx$.title));
+          $i0$.ɵp(0, "title", $i0$.ɵb($ctx$.title));
         }
       }`;
       const result = compile(files, angularFiles);
@@ -105,12 +105,12 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
-      template:function MyComponent_Template(rf: IDENT, $ctx$: IDENT){
+      template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
-          $i0$.ɵEe(0, 'a');
+          $i0$.ɵEe(0, "a");
         }
         if (rf & 2) {
-          $i0$.ɵp(0, 'title', $i0$.ɵi1('Hello ', $ctx$.name, ''));
+          $i0$.ɵp(0, "title", $i0$.ɵi1("Hello ", $ctx$.name, ""));
         }
       }`;
       const result = compile(files, angularFiles);

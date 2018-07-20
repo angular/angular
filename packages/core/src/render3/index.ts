@@ -95,7 +95,7 @@ export {
   I18nExpInstruction
 } from './i18n';
 
-export {NgModuleDef, NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
+export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
 
 export {
     AttributeMarker

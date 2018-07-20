@@ -97,6 +97,9 @@ export class Identifiers {
   static injectViewContainerRef:
       o.ExternalReference = {name: 'ɵinjectViewContainerRef', moduleName: CORE};
 
+  static injectChangeDetectorRef:
+      o.ExternalReference = {name: 'ɵinjectChangeDetectorRef', moduleName: CORE};
+
   static directiveInject: o.ExternalReference = {name: 'ɵdirectiveInject', moduleName: CORE};
 
   static defineComponent: o.ExternalReference = {name: 'ɵdefineComponent', moduleName: CORE};

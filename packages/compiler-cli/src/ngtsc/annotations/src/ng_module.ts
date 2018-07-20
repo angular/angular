@@ -14,7 +14,7 @@ import {Reference, ResolvedValue, reflectObjectLiteral, staticallyResolve} from 
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore, referenceToExpression} from './util';
+import {getConstructorDependencies, isAngularCore, referenceToExpression, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
@@ -43,7 +43,9 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     // @NgModule can be invoked without arguments. In case it is, pretend as if a blank object
     // literal was specified. This simplifies the code below.
-    const meta = decorator.args.length === 1 ? decorator.args[0] : ts.createObjectLiteral([]);
+    const meta = decorator.args.length === 1 ? unwrapExpression(decorator.args[0]) :
+                                               ts.createObjectLiteral([]);
+
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new Error(`Decorator argument must be literal.`);
     }
@@ -57,17 +59,22 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     // Extract the module declarations, imports, and exports.
     let declarations: Reference[] = [];
     if (ngModule.has('declarations')) {
-      const declarationMeta = staticallyResolve(ngModule.get('declarations') !, this.checker);
+      const declarationMeta =
+          staticallyResolve(ngModule.get('declarations') !, this.reflector, this.checker);
       declarations = resolveTypeList(declarationMeta, 'declarations');
     }
     let imports: Reference[] = [];
     if (ngModule.has('imports')) {
-      const importsMeta = staticallyResolve(ngModule.get('imports') !, this.checker);
+      const importsMeta = staticallyResolve(
+          ngModule.get('imports') !, this.reflector, this.checker,
+          node => this._extractModuleFromModuleWithProvidersFn(node));
       imports = resolveTypeList(importsMeta, 'imports');
     }
     let exports: Reference[] = [];
     if (ngModule.has('exports')) {
-      const exportsMeta = staticallyResolve(ngModule.get('exports') !, this.checker);
+      const exportsMeta = staticallyResolve(
+          ngModule.get('exports') !, this.reflector, this.checker,
+          node => this._extractModuleFromModuleWithProvidersFn(node));
       exports = resolveTypeList(exportsMeta, 'exports');
     }
 
@@ -90,12 +97,19 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         new WrappedNodeExpr(ngModule.get('providers') !) :
         new LiteralArrayExpr([]);
 
+    const injectorImports: WrappedNodeExpr<ts.Expression>[] = [];
+    if (ngModule.has('imports')) {
+      injectorImports.push(new WrappedNodeExpr(ngModule.get('imports') !));
+    }
+    if (ngModule.has('exports')) {
+      injectorImports.push(new WrappedNodeExpr(ngModule.get('exports') !));
+    }
+
     const ngInjectorDef: R3InjectorMetadata = {
       name: node.name !.text,
       type: new WrappedNodeExpr(node.name !),
       deps: getConstructorDependencies(node, this.reflector, this.isCore), providers,
-      imports: new LiteralArrayExpr(
-          [...imports, ...exports].map(imp => referenceToExpression(imp, context))),
+      imports: new LiteralArrayExpr(injectorImports),
     };
 
     return {
@@ -122,6 +136,46 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
         type: ngInjectorDef.type,
       },
     ];
+  }
+
+  /**
+   * Given a `FunctionDeclaration` or `MethodDeclaration`, check if it is typed as a
+   * `ModuleWithProviders` and return an expression referencing the module if available.
+   */
+  private _extractModuleFromModuleWithProvidersFn(node: ts.FunctionDeclaration|
+                                                  ts.MethodDeclaration): ts.Expression|null {
+    const type = node.type;
+    // Examine the type of the function to see if it's a ModuleWithProviders reference.
+    if (type === undefined || !ts.isTypeReferenceNode(type) || !ts.isIdentifier(type.typeName)) {
+      return null;
+    }
+
+    // Look at the type itself to see where it comes from.
+    const id = this.reflector.getImportOfIdentifier(type.typeName);
+
+    // If it's not named ModuleWithProviders, bail.
+    if (id === null || id.name !== 'ModuleWithProviders') {
+      return null;
+    }
+
+    // If it's not from @angular/core, bail.
+    if (!this.isCore && id.from !== '@angular/core') {
+      return null;
+    }
+
+    // If there's no type parameter specified, bail.
+    if (type.typeArguments === undefined || type.typeArguments.length !== 1) {
+      return null;
+    }
+
+    const arg = type.typeArguments[0];
+
+    // If the argument isn't an Identifier, bail.
+    if (!ts.isTypeReferenceNode(arg) || !ts.isIdentifier(arg.typeName)) {
+      return null;
+    }
+
+    return arg.typeName;
   }
 }
 

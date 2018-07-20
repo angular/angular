@@ -11,13 +11,13 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import {Decorator, ReflectionHost} from '../../host';
-import {reflectObjectLiteral, staticallyResolve} from '../../metadata';
+import {filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} from '../../metadata';
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {ResourceLoader} from './api';
-import {extractDirectiveMetadata} from './directive';
+import {extractDirectiveMetadata, extractQueriesFromDecorator, queriesFromFields} from './directive';
 import {SelectorScopeRegistry} from './selector_scope';
-import {isAngularCore} from './util';
+import {isAngularCore, unwrapExpression} from './util';
 
 const EMPTY_MAP = new Map<string, Expression>();
 
@@ -43,7 +43,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     const component = reflectObjectLiteral(meta);
 
     if (this.resourceLoader.preload !== undefined && component.has('templateUrl')) {
-      const templateUrl = staticallyResolve(component.get('templateUrl') !, this.checker);
+      const templateUrl =
+          staticallyResolve(component.get('templateUrl') !, this.reflector, this.checker);
       if (typeof templateUrl !== 'string') {
         throw new Error(`templateUrl should be a string`);
       }
@@ -59,9 +60,9 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
 
     // @Component inherits @Directive, so begin by extracting the @Directive metadata and building
     // on it.
-    const directiveMetadata =
+    const directiveResult =
         extractDirectiveMetadata(node, decorator, this.checker, this.reflector, this.isCore);
-    if (directiveMetadata === undefined) {
+    if (directiveResult === undefined) {
       // `extractDirectiveMetadata` returns undefined when the @Directive has `jit: true`. In this
       // case, compilation of the decorator is skipped. Returning an empty object signifies
       // that no analysis was produced.
@@ -69,11 +70,12 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     }
 
     // Next, read the `@Component`-specific fields.
-    const component = reflectObjectLiteral(meta);
+    const {decoratedElements, decorator: component, metadata} = directiveResult;
 
     let templateStr: string|null = null;
     if (component.has('templateUrl')) {
-      const templateUrl = staticallyResolve(component.get('templateUrl') !, this.checker);
+      const templateUrl =
+          staticallyResolve(component.get('templateUrl') !, this.reflector, this.checker);
       if (typeof templateUrl !== 'string') {
         throw new Error(`templateUrl should be a string`);
       }
@@ -81,7 +83,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
       templateStr = this.resourceLoader.load(url);
     } else if (component.has('template')) {
       const templateExpr = component.get('template') !;
-      const resolvedTemplate = staticallyResolve(templateExpr, this.checker);
+      const resolvedTemplate = staticallyResolve(templateExpr, this.reflector, this.checker);
       if (typeof resolvedTemplate !== 'string') {
         throw new Error(`Template must statically resolve to a string: ${node.name!.text}`);
       }
@@ -92,7 +94,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
 
     let preserveWhitespaces: boolean = false;
     if (component.has('preserveWhitespaces')) {
-      const value = staticallyResolve(component.get('preserveWhitespaces') !, this.checker);
+      const value =
+          staticallyResolve(component.get('preserveWhitespaces') !, this.reflector, this.checker);
       if (typeof value !== 'boolean') {
         throw new Error(`preserveWhitespaces must resolve to a boolean if present`);
       }
@@ -109,15 +112,31 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
 
     // If the component has a selector, it should be registered with the `SelectorScopeRegistry` so
     // when this component appears in an `@NgModule` scope, its selector can be determined.
-    if (directiveMetadata.selector !== null) {
-      this.scopeRegistry.registerSelector(node, directiveMetadata.selector);
+    if (metadata.selector !== null) {
+      this.scopeRegistry.registerSelector(node, metadata.selector);
+    }
+
+    // Construct the list of view queries.
+    const coreModule = this.isCore ? undefined : '@angular/core';
+    const viewChildFromFields = queriesFromFields(
+        filterToMembersWithDecorator(decoratedElements, 'ViewChild', coreModule), this.reflector,
+        this.checker);
+    const viewChildrenFromFields = queriesFromFields(
+        filterToMembersWithDecorator(decoratedElements, 'ViewChildren', coreModule), this.reflector,
+        this.checker);
+    const viewQueries = [...viewChildFromFields, ...viewChildrenFromFields];
+
+    if (component.has('queries')) {
+      const queriesFromDecorator = extractQueriesFromDecorator(
+          component.get('queries') !, this.reflector, this.checker, this.isCore);
+      viewQueries.push(...queriesFromDecorator.view);
     }
 
     return {
       analysis: {
-        ...directiveMetadata,
+        ...metadata,
         template,
-        viewQueries: [],
+        viewQueries,
 
         // These will be replaced during the compilation step, after all `NgModule`s have been
         // analyzed and the full compilation scope for the component can be realized.
@@ -156,7 +175,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     if (decorator.args === null || decorator.args.length !== 1) {
       throw new Error(`Incorrect number of arguments to @Component decorator`);
     }
-    const meta = decorator.args[0];
+    const meta = unwrapExpression(decorator.args[0]);
+
     if (!ts.isObjectLiteralExpression(meta)) {
       throw new Error(`Decorator argument must be literal.`);
     }

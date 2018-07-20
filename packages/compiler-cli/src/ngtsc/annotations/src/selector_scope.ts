@@ -353,10 +353,10 @@ export class SelectorScopeRegistry {
       return [];
     }
     return def.elementTypes.map(element => {
-      if (!ts.isTypeReferenceNode(element)) {
-        throw new Error(`Expected TypeReferenceNode`);
+      if (!ts.isTypeQueryNode(element)) {
+        throw new Error(`Expected TypeQueryNode`);
       }
-      const type = element.typeName;
+      const type = element.exprName;
       const {node, from} = reflectTypeEntityToDeclaration(type, this.checker);
       const moduleName = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
       const clazz = node as ts.Declaration;

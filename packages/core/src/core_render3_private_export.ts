@@ -18,16 +18,18 @@ export {
   DirectiveType as ɵDirectiveType,
   RenderFlags as ɵRenderFlags,
   directiveInject as ɵdirectiveInject,
+  injectElementRef as ɵinjectElementRef,
   injectTemplateRef as ɵinjectTemplateRef,
   injectViewContainerRef as ɵinjectViewContainerRef,
   injectChangeDetectorRef as ɵinjectChangeDetectorRef,
   injectAttribute as ɵinjectAttribute,
   PublicFeature as ɵPublicFeature,
+  InheritDefinitionFeature as ɵInheritDefinitionFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,
-  NgModuleDef as ɵNgModuleDef,
   NgModuleType as ɵNgModuleType,
   CssSelectorList as ɵCssSelectorList,
   markDirty as ɵmarkDirty,
+  NgModuleFactory as ɵNgModuleFactory,
   NC as ɵNC,
   C as ɵC,
   E as ɵE,
@@ -98,6 +100,7 @@ export {
   I18nInstruction as ɵI18nInstruction,
   I18nExpInstruction as ɵI18nExpInstruction,
 } from './render3/index';
+export {NgModuleDef as ɵNgModuleDef} from './metadata/ng_module';
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
   bypassSanitizationTrustStyle as ɵbypassSanitizationTrustStyle,

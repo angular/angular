@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {setup} from '../aot/test_util';
+import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 const TRANSLATION_NAME_REGEXP = /^MSG_[A-Z0-9]+/;
@@ -43,15 +43,15 @@ describe('i18n support in the view compiler', () => {
       };
 
       const template = `
-      const $msg_1$ = goog.getMsg('Hello world');
-      const $msg_2$ = goog.getMsg('farewell');
+      const $msg_1$ = goog.getMsg("Hello world");
+      const $msg_2$ = goog.getMsg("farewell");
       …
-      template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+      template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
           …
           $r3$.ɵT(1, $msg_1$);
           …
-          $r3$.ɵT(3,'&');
+          $r3$.ɵT(3,"&");
           …
           $r3$.ɵT(5, $msg_2$);
           …
@@ -92,18 +92,18 @@ describe('i18n support in the view compiler', () => {
       /**
        * @desc desc
        */
-      const $msg_1$ = goog.getMsg('introduction');
-      const $c1$ = ['title', $msg_1$];
+      const $msg_1$ = goog.getMsg("introduction");
+      const $c1$ = ["title", $msg_1$];
       …
       /**
        * @desc desc
        * @meaning meaning
        */
-      const $msg_2$ = goog.getMsg('Hello world');
+      const $msg_2$ = goog.getMsg("Hello world");
       …
-      template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+      template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $r3$.ɵE(0, 'div', $c1$);
+          $r3$.ɵE(0, "div", $c1$);
           $r3$.ɵT(1, $msg_2$);
           $r3$.ɵe();
         }
@@ -143,12 +143,12 @@ describe('i18n support in the view compiler', () => {
        * @desc d
        * @meaning m
        */
-      const $msg_1$ = goog.getMsg('introduction');
-      const $c1$ = ['id', 'static', 'title', $msg_1$];
+      const $msg_1$ = goog.getMsg("introduction");
+      const $c1$ = ["id", "static", "title", $msg_1$];
       …
-      template: function MyComponent_Template(rf: IDENT, ctx: IDENT) {
+      template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $r3$.ɵEe(0, 'div', $c1$);
+          $r3$.ɵEe(0, "div", $c1$);
         }
       }
     `;
@@ -186,8 +186,8 @@ describe('i18n support in the view compiler', () => {
       };
 
       const template = `
-      const $r1$ = {'b':[2], 'i':[4, 6]};
-      const $r2$ = {'i':[13]};
+      const $r1$ = {"b":[2], "i":[4, 6]};
+      const $r2$ = {"i":[13]};
     `;
 
       const result = compile(files, angularFiles);
