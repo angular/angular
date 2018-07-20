@@ -84,19 +84,21 @@ export function extractDirectiveMetadata(
   // Construct the map of inputs both from the @Directive/@Component
   // decorator, and the decorated
   // fields.
-  const inputsFromMeta = parseFieldToPropertyMapping(directive, 'inputs', checker);
+  const inputsFromMeta = parseFieldToPropertyMapping(directive, 'inputs', reflector, checker);
   const inputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, 'Input', '@angular/core'), checker);
+      filterToMembersWithDecorator(decoratedElements, 'Input', '@angular/core'), reflector,
+      checker);
 
   // And outputs.
-  const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', checker);
+  const outputsFromMeta = parseFieldToPropertyMapping(directive, 'outputs', reflector, checker);
   const outputsFromFields = parseDecoratedFields(
-      filterToMembersWithDecorator(decoratedElements, '@angular/core', 'Output'), checker);
+      filterToMembersWithDecorator(decoratedElements, '@angular/core', 'Output'), reflector,
+      checker);
 
   // Parse the selector.
   let selector = '';
   if (directive.has('selector')) {
-    const resolved = staticallyResolve(directive.get('selector') !, checker);
+    const resolved = staticallyResolve(directive.get('selector') !, reflector, checker);
     if (typeof resolved !== 'string') {
       throw new Error(`Selector must be a string`);
     }
@@ -144,14 +146,14 @@ function assertIsStringArray(value: any[]): value is string[] {
  * correctly shaped metadata object.
  */
 function parseFieldToPropertyMapping(
-    directive: Map<string, ts.Expression>, field: string,
+    directive: Map<string, ts.Expression>, field: string, reflector: ReflectionHost,
     checker: ts.TypeChecker): {[field: string]: string} {
   if (!directive.has(field)) {
     return EMPTY_OBJECT;
   }
 
   // Resolve the field of interest from the directive metadata to a string[].
-  const metaValues = staticallyResolve(directive.get(field) !, checker);
+  const metaValues = staticallyResolve(directive.get(field) !, reflector, checker);
   if (!Array.isArray(metaValues) || !assertIsStringArray(metaValues)) {
     throw new Error(`Failed to resolve @Directive.${field}`);
   }
@@ -172,7 +174,7 @@ function parseFieldToPropertyMapping(
  * object.
  */
 function parseDecoratedFields(
-    fields: {member: ClassMember, decorators: Decorator[]}[],
+    fields: {member: ClassMember, decorators: Decorator[]}[], reflector: ReflectionHost,
     checker: ts.TypeChecker): {[field: string]: string} {
   return fields.reduce(
       (results, field) => {
@@ -183,7 +185,7 @@ function parseDecoratedFields(
           if (decorator.args == null || decorator.args.length === 0) {
             results[fieldName] = fieldName;
           } else if (decorator.args.length === 1) {
-            const property = staticallyResolve(decorator.args[0], checker);
+            const property = staticallyResolve(decorator.args[0], reflector, checker);
             if (typeof property !== 'string') {
               throw new Error(`Decorator argument must resolve to a string`);
             }

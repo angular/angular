@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, Decorator, Import, Parameter, ReflectionHost} from '../../host';
+import {ClassMember, ClassMemberKind, Declaration, Decorator, Import, Parameter, ReflectionHost} from '../../host';
 
 /**
  * reflector.ts implements static reflection of declarations using the TypeScript `ts.TypeChecker`.
@@ -104,7 +104,91 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return {from, name};
   }
 
-  isClass(node: ts.Node): node is ts.Declaration { return ts.isClassDeclaration(node); }
+  getExportsOfModule(node: ts.Node): Map<string, Declaration>|null {
+    // In TypeScript code, modules are only ts.SourceFiles. Throw if the node isn't a module.
+    if (!ts.isSourceFile(node)) {
+      throw new Error(`getDeclarationsOfModule() called on non-SourceFile in TS code`);
+    }
+    const map = new Map<string, Declaration>();
+
+    // Reflect the module to a Symbol, and use getExportsOfModule() to get a list of exported
+    // Symbols.
+    const symbol = this.checker.getSymbolAtLocation(node);
+    if (symbol === undefined) {
+      return null;
+    }
+    this.checker.getExportsOfModule(symbol).forEach(exportSymbol => {
+      // Map each exported Symbol to a Declaration and add it to the map.
+      const decl = this._getDeclarationOfSymbol(exportSymbol);
+      if (decl !== null) {
+        map.set(exportSymbol.name, decl);
+      }
+    });
+    return map;
+  }
+
+  isClass(node: ts.Declaration): node is ts.ClassDeclaration {
+    // In TypeScript code, classes are ts.ClassDeclarations.
+    return ts.isClassDeclaration(node);
+  }
+
+  getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
+    // Resolve the identifier to a Symbol, and return the declaration of that.
+    let symbol: ts.Symbol|undefined = this.checker.getSymbolAtLocation(id);
+    if (symbol === undefined) {
+      return null;
+    }
+    return this._getDeclarationOfSymbol(symbol);
+  }
+
+  /**
+   * Resolve a `ts.Symbol` to its declaration, keeping track of the `viaModule` along the way.
+   */
+  protected _getDeclarationOfSymbol(symbol: ts.Symbol): Declaration|null {
+    let viaModule: string|null = null;
+    // Look through the Symbol's immediate declarations, and see if any of them are import-type
+    // statements.
+    if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
+      for (let i = 0; i < symbol.declarations.length; i++) {
+        const decl = symbol.declarations[i];
+        if (ts.isImportSpecifier(decl) && decl.parent !== undefined &&
+            decl.parent.parent !== undefined && decl.parent.parent.parent !== undefined) {
+          // Find the ImportDeclaration that imported this Symbol.
+          const importDecl = decl.parent.parent.parent;
+          // The moduleSpecifier should always be a string.
+          if (ts.isStringLiteral(importDecl.moduleSpecifier)) {
+            // Check if the moduleSpecifier is absolute. If it is, this symbol comes from an
+            // external module, and the import path becomes the viaModule.
+            const moduleSpecifier = importDecl.moduleSpecifier.text;
+            if (!moduleSpecifier.startsWith('.')) {
+              viaModule = moduleSpecifier;
+            }
+          }
+        }
+      }
+    }
+
+    // Now, resolve the Symbol to its declaration by following any and all aliases.
+    while (symbol.flags & ts.SymbolFlags.Alias) {
+      symbol = this.checker.getAliasedSymbol(symbol);
+    }
+
+    // Look at the resolved Symbol's declarations and pick one of them to return. Value declarations
+    // are given precedence over type declarations.
+    if (symbol.valueDeclaration !== undefined) {
+      return {
+        node: symbol.valueDeclaration,
+        viaModule,
+      };
+    } else if (symbol.declarations !== undefined && symbol.declarations.length > 0) {
+      return {
+        node: symbol.declarations[0],
+        viaModule,
+      };
+    } else {
+      return null;
+    }
+  }
 
   private _reflectDecorator(node: ts.Decorator): Decorator|null {
     // Attempt to resolve the decorator expression into a reference to a concrete Identifier. The
@@ -135,13 +219,13 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
   private _reflectMember(node: ts.ClassElement): ClassMember|null {
     let kind: ClassMemberKind|null = null;
-    let initializer: ts.Expression|null = null;
+    let value: ts.Expression|null = null;
     let name: string|null = null;
     let nameNode: ts.Identifier|null = null;
 
     if (ts.isPropertyDeclaration(node)) {
       kind = ClassMemberKind.Property;
-      initializer = node.initializer || null;
+      value = node.initializer || null;
     } else if (ts.isGetAccessorDeclaration(node)) {
       kind = ClassMemberKind.Getter;
     } else if (ts.isSetAccessorDeclaration(node)) {
@@ -169,8 +253,8 @@ export class TypeScriptReflectionHost implements ReflectionHost {
 
     return {
       node,
-      kind,
-      type: node.type || null, name, nameNode, decorators, initializer, isStatic,
+      declaration: node, kind,
+      type: node.type || null, name, nameNode, decorators, value, isStatic,
     };
   }
 }
