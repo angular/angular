@@ -23,7 +23,6 @@
 # petebacondarwin - Pete Bacon Darwin
 # pkozlowski-opensource - Pawel Kozlowski
 # robwormald - Rob Wormald
-# tinayuangao - Tina Gao
 # vicb - Victor Berchet
 # vikerman - Vikram Subramanian
 
@@ -218,7 +217,6 @@ groups:
         - "aio/content/examples/reactive-forms/*"
     users:
       - kara #primary
-      - tinayuangao #secondary
       - IgorMinar #fallback
       - mhevery #fallback
 
