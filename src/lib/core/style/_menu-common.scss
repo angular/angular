@@ -35,6 +35,9 @@ $mat-menu-icon-margin: 16px !default;
   text-align: left;
   text-decoration: none;   // necessary to reset anchor tags
 
+  // Required for Edge not to show scrollbars when setting the width manually. See #12112.
+  max-width: 100%;
+
   &[disabled] {
     cursor: default;
   }
