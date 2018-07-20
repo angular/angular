@@ -43,11 +43,11 @@ describe('compiler compliance: styling', () => {
           template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵE(0, "div");
-              $r3$.ɵs((null as any), (null as any), $r3$.ɵzss);
+              $r3$.ɵs(null, null, $r3$.ɵzss);
               $r3$.ɵe();
             }
             if (rf & 2) {
-              $r3$.ɵsm(0, (null as any), $ctx$.myStyleExp);
+              $r3$.ɵsm(0, null, $ctx$.myStyleExp);
               $r3$.ɵsa(0);
             }
           }
@@ -96,15 +96,15 @@ describe('compiler compliance: styling', () => {
               template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵE(0, "div");
-                  $r3$.ɵs((null as any), _c0, $r3$.ɵzss);
+                  $r3$.ɵs(null, _c0, $r3$.ɵzss);
                   $r3$.ɵe();
                 }
                 if (rf & 2) {
-                  $r3$.ɵsm(0, (null as any), $ctx$.myStyleExp);
+                  $r3$.ɵsm(0, null, $ctx$.myStyleExp);
                   $r3$.ɵsp(0, 1, $ctx$.myWidth);
                   $r3$.ɵsp(0, 2, $ctx$.myHeight);
                   $r3$.ɵsa(0);
-                  $r3$.ɵa(0, "style", $r3$.ɵb('border-width: 10px'), $r3$.ɵzs);
+                  $r3$.ɵa(0, "style", $r3$.ɵb("border-width: 10px"), $r3$.ɵzs);
                 }
               }
             });
@@ -136,27 +136,31 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const _c0 = ['background-image'];
-          class MyComponent {
-            static ngComponentDef = i0.ɵdefineComponent({
-              type: MyComponent,
-              selectors:[['my-component']],
-              factory:function MyComponent_Factory(){
-                return new MyComponent();
-              },
-              template: function MyComponent_Template(rf: $RenderFlags$, $ctx$: $MyComponent$) {
-                if (rf & 1) {
-                  $r3$.ɵE(0, 'div');
-                  $r3$.ɵs((null as any), _c0, $r3$.ɵzss);
-                  $r3$.ɵe();
-                }
-                if (rf & 2) {
-                  $r3$.ɵsp(0, 0, $ctx$.myImage);
-                  $r3$.ɵsa(0);
->>>>>>> feat(ivy): bridge compile instructions to include sanitization helpers:packages/compiler/test/render3/r3_view_compiler_styling_spec.ts
-                }
+          const _c0 = ["background-image"];
+          export class MyComponent {
+              constructor() {
+                  this.myImage = 'url(foo.jpg)';
               }
-            });
+          }
+
+          MyComponent.ngComponentDef = i0.ɵdefineComponent({
+            type: MyComponent,
+            selectors: [["my-component"]],
+            factory: function MyComponent_Factory() {
+              return new MyComponent();
+            },
+            template: function MyComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                i0.ɵE(0, "div");
+                i0.ɵs(null, _c0, i0.ɵzss);
+                i0.ɵe();
+              }
+              if (rf & 2) {
+                i0.ɵsp(0, 0, ctx.myImage);
+                i0.ɵsa(0);
+              }
+            }
+          });
         `;
 
          const result = compile(files, angularFiles);
@@ -300,7 +304,7 @@ describe('compiler compliance: styling', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵa(0, "class", $r3$.ɵb("round"));
-                  $r3$.ɵa(0, "style", $r3$.ɵb('height:100px'), $r3$.ɵzs);
+                  $r3$.ɵa(0, "style", $r3$.ɵb("height:100px"), $r3$.ɵzs);
                 }
               }
             });
