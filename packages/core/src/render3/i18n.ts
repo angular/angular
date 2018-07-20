@@ -76,10 +76,11 @@ export function i18nMapping(
     expressions?: (PlaceholderMap | null)[] | null, templateRoots?: string[] | null,
     lastChildIndex?: number | null): I18nInstruction[][] {
   const translationParts = translation.split(i18nTagRegex);
-  const instructions: I18nInstruction[][] = [];
+  const nbTemplates = templateRoots ? templateRoots.length + 1 : 1;
+  const instructions: I18nInstruction[][] = (new Array(nbTemplates)).fill(undefined);
 
   generateMappingInstructions(
-      0, translationParts, instructions, elements, expressions, templateRoots, lastChildIndex);
+      0, 0, translationParts, instructions, elements, expressions, templateRoots, lastChildIndex);
 
   return instructions;
 }
@@ -90,7 +91,9 @@ export function i18nMapping(
  *
  * See `i18nMapping()` for more details.
  *
- * @param index The current index in `translationParts`.
+ * @param tmplIndex The order of appearance of the template.
+ * 0 for the root template, following indexes match the order in `templateRoots`.
+ * @param instructionsIndex The current index in `translationParts`.
  * @param translationParts The translation string split into an array of placeholders and text
  * elements.
  * @param instructions The current list of instructions to update.
@@ -102,13 +105,14 @@ export function i18nMapping(
  * generating the instructions for their parent template.
  * @param lastChildIndex The index of the last child of the i18n node. Used when the i18n block is
  * an ng-container.
+ *
  * @returns the current index in `translationParts`
  */
 function generateMappingInstructions(
-    index: number, translationParts: string[], instructions: I18nInstruction[][],
-    elements: (PlaceholderMap | null)[] | null, expressions?: (PlaceholderMap | null)[] | null,
-    templateRoots?: string[] | null, lastChildIndex?: number | null): number {
-  const tmplIndex = instructions.length;
+    tmplIndex: number, instructionsIndex: number, translationParts: string[],
+    instructions: I18nInstruction[][], elements: (PlaceholderMap | null)[] | null,
+    expressions?: (PlaceholderMap | null)[] | null, templateRoots?: string[] | null,
+    lastChildIndex?: number | null): number {
   const tmplInstructions: I18nInstruction[] = [];
   const phVisited: string[] = [];
   let openedTagCount = 0;
@@ -118,20 +122,21 @@ function generateMappingInstructions(
   let currentExpressions: PlaceholderMap|null =
       expressions && expressions[tmplIndex] ? expressions[tmplIndex] : null;
 
-  instructions.push(tmplInstructions);
+  instructions[tmplIndex] = tmplInstructions;
 
-  for (; index < translationParts.length; index++) {
-    const value = translationParts[index];
+  for (; instructionsIndex < translationParts.length; instructionsIndex++) {
+    // The value can either be text or the name of a placeholder (element/template root/expression)
+    const value = translationParts[instructionsIndex];
 
     // Odd indexes are placeholders
-    if (index & 1) {
+    if (instructionsIndex & 1) {
       let phIndex;
       if (currentElements && currentElements[value] !== undefined) {
         phIndex = currentElements[value];
         // The placeholder represents a DOM element
         // Add an instruction to move the element
-        const isTemplateRoot = templateRoots && templateRoots[tmplIndex] === value;
-        if (isTemplateRoot) {
+        if (templateRoots && templateRoots.indexOf(value) !== -1 &&
+            (templateRoots.indexOf(value) + 1) !== tmplIndex) {
           // This is a template root, it has no closing tag, not treating it as an element
           tmplInstructions.push(phIndex | I18nInstructions.TemplateRoot);
         } else {
@@ -163,11 +168,13 @@ function generateMappingInstructions(
         maxIndex = phIndex;
       }
 
-      if (templateRoots && templateRoots.indexOf(value) !== -1 &&
-          templateRoots.indexOf(value) >= tmplIndex) {
-        index = generateMappingInstructions(
-            index, translationParts, instructions, elements, expressions, templateRoots,
-            lastChildIndex);
+      if (templateRoots) {
+        const newTmplIndex = templateRoots.indexOf(value) + 1;
+        if (newTmplIndex !== 0 && newTmplIndex !== tmplIndex) {
+          instructionsIndex = generateMappingInstructions(
+              newTmplIndex, instructionsIndex, translationParts, instructions, elements,
+              expressions, templateRoots, lastChildIndex);
+        }
       }
 
     } else if (value) {
@@ -237,7 +244,7 @@ function generateMappingInstructions(
     }
   }
 
-  return index;
+  return instructionsIndex;
 }
 
 function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
