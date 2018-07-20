@@ -22,52 +22,42 @@ export const enum BypassType {
  * See: {@link TrustedHtmlString}, {@link TrustedResourceUrlString}, {@link TrustedScriptString},
  * {@link TrustedStyleString}, {@link TrustedUrlString}
  */
-export interface TrustedString extends String { '__SANITIZER_TRUSTED_BRAND__': BypassType; }
+export interface TrustedString extends String { [BRAND]: BypassType; }
 
 /**
  * A branded trusted string used with sanitization of `html` strings.
  *
  * See: {@link bypassSanitizationTrustHtml} and {@link htmlSanitizer}.
  */
-export interface TrustedHtmlString extends TrustedString {
-  '__SANITIZER_TRUSTED_BRAND__': BypassType.Html;
-}
+export interface TrustedHtmlString extends TrustedString { [BRAND]: BypassType.Html; }
 
 /**
  * A branded trusted string used with sanitization of `style` strings.
  *
  * See: {@link bypassSanitizationTrustStyle} and {@link styleSanitizer}.
  */
-export interface TrustedStyleString extends TrustedString {
-  '__SANITIZER_TRUSTED_BRAND__': BypassType.Style;
-}
+export interface TrustedStyleString extends TrustedString { [BRAND]: BypassType.Style; }
 
 /**
  * A branded trusted string used with sanitization of `url` strings.
  *
  * See: {@link bypassSanitizationTrustScript} and {@link scriptSanitizer}.
  */
-export interface TrustedScriptString extends TrustedString {
-  '__SANITIZER_TRUSTED_BRAND__': BypassType.Script;
-}
+export interface TrustedScriptString extends TrustedString { [BRAND]: BypassType.Script; }
 
 /**
  * A branded trusted string used with sanitization of `url` strings.
  *
  * See: {@link bypassSanitizationTrustUrl} and {@link urlSanitizer}.
  */
-export interface TrustedUrlString extends TrustedString {
-  '__SANITIZER_TRUSTED_BRAND__': BypassType.Url;
-}
+export interface TrustedUrlString extends TrustedString { [BRAND]: BypassType.Url; }
 
 /**
  * A branded trusted string used with sanitization of `resourceUrl` strings.
  *
  * See: {@link bypassSanitizationTrustResourceUrl} and {@link resourceUrlSanitizer}.
  */
-export interface TrustedResourceUrlString extends TrustedString {
-  '__SANITIZER_TRUSTED_BRAND__': BypassType.ResourceUrl;
-}
+export interface TrustedResourceUrlString extends TrustedString { [BRAND]: BypassType.ResourceUrl; }
 
 export function allowSanitizationBypass(value: any, type: BypassType): boolean {
   return (value instanceof String && (value as TrustedStyleString)[BRAND] === type) ? true : false;
