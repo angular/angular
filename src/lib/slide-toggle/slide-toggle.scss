@@ -33,6 +33,10 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   &.mat-checked {
     .mat-slide-toggle-thumb-container {
       transform: translate3d($mat-slide-toggle-bar-track-width, 0, 0);
+
+      [dir='rtl'] & {
+        transform: translate3d(-$mat-slide-toggle-bar-track-width, 0, 0);
+      }
     }
   }
 
@@ -115,6 +119,11 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   ._mat-animation-noopable & {
     transition: none;
   }
+
+  [dir='rtl'] & {
+    left: auto;
+    right: 0;
+  }
 }
 
 // The visual thumb element that moves inside of the thumb bar.
@@ -147,8 +156,15 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
 .mat-slide-toggle-input {
   // Move the input to the bottom and in the middle of the thumb.
   // Visual improvement to properly show browser popups when being required.
+  $horizontal-offset: $mat-slide-toggle-thumb-size / 2;
+
   bottom: 0;
-  left: $mat-slide-toggle-thumb-size / 2;
+  left: $horizontal-offset;
+
+  [dir='rtl'] & {
+    left: auto;
+    right: $horizontal-offset;
+  }
 }
 
 .mat-slide-toggle-bar,

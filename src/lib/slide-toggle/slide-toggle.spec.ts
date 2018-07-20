@@ -5,6 +5,7 @@ import {ComponentFixture, fakeAsync, flushMicrotasks, TestBed, tick} from '@angu
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {defaultRippleAnimationConfig} from '@angular/material/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
+import {BidiModule, Direction} from '@angular/cdk/bidi';
 import {TestGestureConfig} from '../slider/test-gesture-config';
 import {MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS} from './slide-toggle-config';
 import {MatSlideToggle, MatSlideToggleChange, MatSlideToggleModule} from './index';
@@ -18,7 +19,7 @@ describe('MatSlideToggle without forms', () => {
     mutationObserverCallbacks = [];
 
     TestBed.configureTestingModule({
-      imports: [MatSlideToggleModule],
+      imports: [MatSlideToggleModule, BidiModule],
       declarations: [
         SlideToggleBasic,
         SlideToggleWithTabindexAttr,
@@ -493,6 +494,29 @@ describe('MatSlideToggle without forms', () => {
       expect(slideThumbContainer.classList).not.toContain('mat-dragging');
     }));
 
+    it('should drag from start to end in RTL', fakeAsync(() => {
+      testComponent.direction = 'rtl';
+      fixture.detectChanges();
+
+      expect(slideToggle.checked).toBe(false);
+
+      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
+
+      expect(slideThumbContainer.classList).toContain('mat-dragging');
+
+      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
+        deltaX: -200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
+      });
+
+      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
+
+      // Flush the timeout for the slide ending.
+      tick();
+
+      expect(slideToggle.checked).toBe(true);
+      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
+    }));
+
     it('should drag from end to start', fakeAsync(() => {
       slideToggle.checked = true;
 
@@ -502,6 +526,29 @@ describe('MatSlideToggle without forms', () => {
 
       gestureConfig.emitEventForElement('slide', slideThumbContainer, {
         deltaX: -200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
+      });
+
+      gestureConfig.emitEventForElement('slideend', slideThumbContainer);
+
+      // Flush the timeout for the slide ending.
+      tick();
+
+      expect(slideToggle.checked).toBe(false);
+      expect(slideThumbContainer.classList).not.toContain('mat-dragging');
+    }));
+
+    it('should drag from end to start in RTL', fakeAsync(() => {
+      testComponent.direction = 'rtl';
+      fixture.detectChanges();
+
+      slideToggle.checked = true;
+
+      gestureConfig.emitEventForElement('slidestart', slideThumbContainer);
+
+      expect(slideThumbContainer.classList).toContain('mat-dragging');
+
+      gestureConfig.emitEventForElement('slide', slideThumbContainer, {
+        deltaX: 200 // Arbitrary, large delta that will be clamped to the end of the slide-toggle.
       });
 
       gestureConfig.emitEventForElement('slideend', slideThumbContainer);
@@ -943,7 +990,7 @@ describe('MatSlideToggle with forms', () => {
 
 @Component({
   template: `
-    <mat-slide-toggle [required]="isRequired"
+    <mat-slide-toggle [dir]="direction" [required]="isRequired"
                      [disabled]="isDisabled"
                      [color]="slideColor"
                      [id]="slideId"
@@ -976,6 +1023,7 @@ class SlideToggleBasic {
   labelPosition: string;
   toggleTriggered: number = 0;
   dragTriggered: number = 0;
+  direction: Direction = 'ltr';
 
   onSlideClick: (event?: Event) => void = () => {};
   onSlideChange = (event: MatSlideToggleChange) => this.lastEvent = event;

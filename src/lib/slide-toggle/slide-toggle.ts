@@ -7,6 +7,7 @@
  */
 
 import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
+import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {
@@ -193,7 +194,8 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
               private _ngZone: NgZone,
               @Inject(MAT_SLIDE_TOGGLE_DEFAULT_OPTIONS)
                   public defaults: MatSlideToggleDefaultOptions,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
+              @Optional() private _dir?: Directionality) {
     super(elementRef);
     this.tabIndex = parseInt(tabIndex) || 0;
   }
@@ -330,9 +332,10 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
 
   _onDrag(event: HammerInput) {
     if (this._dragging) {
-      this._dragPercentage = this._getDragPercentage(event.deltaX);
+      const direction = this._dir && this._dir.value === 'rtl' ? -1 : 1;
+      this._dragPercentage = this._getDragPercentage(event.deltaX * direction);
       // Calculate the moved distance based on the thumb bar width.
-      const dragX = (this._dragPercentage / 100) * this._thumbBarWidth;
+      const dragX = (this._dragPercentage / 100) * this._thumbBarWidth * direction;
       this._thumbEl.nativeElement.style.transform = `translate3d(${dragX}px, 0, 0)`;
     }
   }
