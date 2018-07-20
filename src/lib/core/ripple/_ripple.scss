@@ -8,11 +8,6 @@ $mat-ripple-color-opacity: 0.1;
   // "relative" so that the ripple divs it creates inside itself are correctly positioned.
   .mat-ripple {
     overflow: hidden;
-
-    // In high contrast mode the ripple is opaque, causing it to obstruct the content.
-    @include cdk-high-contrast {
-      display: none;
-    }
   }
 
   .mat-ripple.mat-ripple-unbounded {
@@ -26,6 +21,11 @@ $mat-ripple-color-opacity: 0.1;
 
     transition: opacity, transform 0ms cubic-bezier(0, 0, 0.2, 1);
     transform: scale(0);
+
+    // In high contrast mode the ripple is opaque, causing it to obstruct the content.
+    @include cdk-high-contrast {
+      display: none;
+    }
   }
 }
 
