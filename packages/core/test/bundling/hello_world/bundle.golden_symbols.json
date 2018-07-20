@@ -51,6 +51,9 @@
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
+    "name": "PARENT"
+  },
+  {
     "name": "QUERIES"
   },
   {
@@ -79,6 +82,9 @@
   },
   {
     "name": "_ROOT_DIRECTIVE_INDICES"
+  },
+  {
+    "name": "_getComponentHostLElementNode"
   },
   {
     "name": "_renderCompCount"
@@ -171,6 +177,9 @@
     "name": "getRenderFlags"
   },
   {
+    "name": "getRootView"
+  },
+  {
     "name": "hostElement"
   },
   {
@@ -210,6 +219,9 @@
     "name": "renderComponent"
   },
   {
+    "name": "renderComponentOrTemplate"
+  },
+  {
     "name": "renderEmbeddedTemplate"
   },
   {
@@ -229,6 +241,9 @@
   },
   {
     "name": "text"
+  },
+  {
+    "name": "tickRootContext"
   },
   {
     "name": "updateViewQuery"
