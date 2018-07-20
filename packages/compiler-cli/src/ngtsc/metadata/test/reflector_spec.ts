@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Parameter} from '../../host';
+import {CtorParameter} from '../../host';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
 import {TypeScriptReflectionHost} from '../src/reflector';
 
@@ -165,7 +165,7 @@ describe('reflector', () => {
 });
 
 function expectParameter(
-    param: Parameter, name: string, type?: string, decorator?: string,
+    param: CtorParameter, name: string, type?: string, decorator?: string,
     decoratorFrom?: string): void {
   expect(param.name !).toEqual(name);
   if (type === undefined) {

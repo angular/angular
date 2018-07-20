@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, Declaration, Decorator, Import, Parameter, ReflectionHost} from '../../host';
+import {ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, Import, Parameter, ReflectionHost, FunctionDefinition} from '../../host';
 
 /**
  * reflector.ts implements static reflection of declarations using the TypeScript `ts.TypeChecker`.
@@ -31,7 +31,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         .filter((member): member is ClassMember => member !== null);
   }
 
-  getConstructorParameters(declaration: ts.Declaration): Parameter[]|null {
+  getConstructorParameters(declaration: ts.Declaration): CtorParameter[]|null {
     const clazz = castDeclarationToClassOrDie(declaration);
 
     // First, find the constructor.
@@ -139,6 +139,18 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       return null;
     }
     return this._getDeclarationOfSymbol(symbol);
+  }
+
+  getDefinitionOfFunction<T extends ts.FunctionDeclaration|ts.MethodDeclaration|ts.FunctionExpression>(node: T): FunctionDefinition<T> {
+    return {
+      node,
+      body: node.body !== undefined ? Array.from(node.body.statements) : null,
+      parameters: node.parameters.map(node => {
+        const name = parameterName(node.name);
+        const initializer = node.initializer || null;
+        return {name, node, initializer};
+      }),
+    };
   }
 
   /**
