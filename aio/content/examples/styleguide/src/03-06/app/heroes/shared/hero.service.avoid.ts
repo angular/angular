@@ -3,7 +3,7 @@
 /* avoid */
 
 import { ExceptionService, SpinnerService, ToastService } from '../../core';
-import { Http } from '@angular/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Hero } from './hero.model';
@@ -16,17 +16,17 @@ export class HeroService {
     private exceptionService: ExceptionService,
     private spinnerService: SpinnerService,
     private toastService: ToastService,
-    private http: Http
+    private http: HttpClient
   ) { }
 
   getHero(id: number) {
-    return this.http.get(`api/heroes/${id}`).pipe(
-      map(response => response.json().data as Hero));
+    return this.http.get<Hero>(`api/heroes/${id}`).pipe(
+      map(response => response.data as Hero));
   }
 
   getHeroes() {
-    return this.http.get(`api/heroes`).pipe(
-      map(response => response.json().data as Hero[]));
+    return this.http.get<Hero[]>(`api/heroes`).pipe(
+      map(response => response.data as Hero[]));
   }
 
 }
