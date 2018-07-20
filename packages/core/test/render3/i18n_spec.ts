@@ -720,6 +720,116 @@ describe('Runtime i18n', () => {
               '<ul><li>valeur: one!</li><li>valeur: two!</li><li>valeur bis: one!</li><li>valeur bis: two!</li></ul>');
     });
 
+    it('should support changing the order of multiple template roots in the same template', () => {
+      const MSG_DIV_SECTION_1 =
+          `{$START_LI_1}valeur bis: {$EXP_2}!{$END_LI_1}{$START_LI_0}valeur: {$EXP_1}!{$END_LI_0}`;
+      // The indexes are based on each template function
+      let i18n_1: I18nInstruction[][];
+      class MyApp {
+        items: string[] = ['1', '2'];
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          // Initial template:
+          // <ul i18n>
+          //   <li *ngFor="let item of items">value: {{item}}</li>
+          //   <li *ngFor="let item of items">value bis: {{item}}</li>
+          // </ul>
+
+          // Translated to:
+          // <ul i18n>
+          //   <li *ngFor="let item of items">valeur bis: {{item}}!</li>
+          //   <li *ngFor="let item of items">valeur: {{item}}!</li>
+          // </ul>
+          template: (rf: RenderFlags, myApp: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              if (!i18n_1) {
+                i18n_1 = i18nMapping(
+                    MSG_DIV_SECTION_1,
+                    [{'START_LI_0': 1, 'START_LI_1': 2}, {'START_LI_0': 0}, {'START_LI_1': 0}],
+                    [null, {'EXP_1': 1}, {'EXP_2': 1}], ['START_LI_0', 'START_LI_1']);
+              }
+
+              elementStart(0, 'ul');
+              {
+                // Start of translated section 1
+                container(1, liTemplate, null, ['ngForOf', '']);     // START_LI_0
+                container(2, liTemplateBis, null, ['ngForOf', '']);  // START_LI_1
+                // End of translated section 1
+              }
+              elementEnd();
+              i18nApply(1, i18n_1[0]);
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(1, 'ngForOf', bind(myApp.items));
+              elementProperty(2, 'ngForOf', bind(myApp.items));
+            }
+
+            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
+              if (rf1 & RenderFlags.Create) {
+                // This is a container so the whole template is a translated section
+                // Start of translated section 2
+                elementStart(0, 'li');  // START_LI_0
+                { text(1); }            // EXP_1
+                elementEnd();
+                // End of translated section 2
+                i18nApply(0, i18n_1[1]);
+              }
+              if (rf1 & RenderFlags.Update) {
+                textBinding(1, bind(row.$implicit));
+              }
+            }
+
+            function liTemplateBis(rf1: RenderFlags, row: NgForOfContext<string>) {
+              if (rf1 & RenderFlags.Create) {
+                // This is a container so the whole template is a translated section
+                // Start of translated section 3
+                elementStart(0, 'li');  // START_LI_1
+                { text(1); }            // EXP_2
+                elementEnd();
+                // End of translated section 3
+                i18nApply(0, i18n_1[2]);
+              }
+              if (rf1 & RenderFlags.Update) {
+                textBinding(1, bind(row.$implicit));
+              }
+            }
+          },
+          directives: () => [NgForOf]
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html)
+          .toEqual(
+              '<ul><li>valeur bis: 1!</li><li>valeur bis: 2!</li><li>valeur: 1!</li><li>valeur: 2!</li></ul>');
+
+      // Change detection cycle, no model changes
+      fixture.update();
+      expect(fixture.html)
+          .toEqual(
+              '<ul><li>valeur bis: 1!</li><li>valeur bis: 2!</li><li>valeur: 1!</li><li>valeur: 2!</li></ul>');
+
+      // Remove the last item
+      fixture.component.items.length = 1;
+      fixture.update();
+      expect(fixture.html).toEqual('<ul><li>valeur bis: 1!</li><li>valeur: 1!</li></ul>');
+
+      // Change an item
+      fixture.component.items[0] = 'one';
+      fixture.update();
+      expect(fixture.html).toEqual('<ul><li>valeur bis: one!</li><li>valeur: one!</li></ul>');
+
+      // Add an item
+      fixture.component.items.push('two');
+      fixture.update();
+      expect(fixture.html)
+          .toEqual(
+              '<ul><li>valeur bis: one!</li><li>valeur bis: two!</li><li>valeur: one!</li><li>valeur: two!</li></ul>');
+    });
+
     it('should support nested embedded templates', () => {
       const MSG_DIV_SECTION_1 = `{$START_LI}{$START_SPAN}valeur: {$EXP_1}!{$END_SPAN}{$END_LI}`;
       // The indexes are based on each template function
@@ -831,7 +941,7 @@ describe('Runtime i18n', () => {
               '<ul><li><span>valeur: one!</span><span>valeur: two!</span></li><li><span>valeur: one!</span><span>valeur: two!</span></li></ul>');
     });
 
-    it('should be able to move template directives around', () => {
+    it('should be able to move template roots around', () => {
       const MSG_DIV_SECTION_1 =
           `{$START_LI_0}début{$END_LI_0}{$START_LI_1}valeur: {$EXP_1}{$END_LI_1}fin`;
       // The indexes are based on each template function
@@ -928,7 +1038,7 @@ describe('Runtime i18n', () => {
           .toEqual('<ul><li>début</li><li>valeur: one</li><li>valeur: two</li>fin</ul>');
     });
 
-    it('should be able to remove containers', () => {
+    it('should be able to remove template roots', () => {
       const MSG_DIV_SECTION_1 = `loop`;
       // The indexes are based on each template function
       let i18n_1: I18nInstruction[][];
