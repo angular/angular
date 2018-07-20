@@ -320,6 +320,20 @@ describe('MatChipList', () => {
         manager = chipListInstance._keyManager;
       });
 
+      it('should maintain focus if the active chip is deleted', () => {
+        const secondChip = fixture.nativeElement.querySelectorAll('.mat-chip')[1];
+
+        secondChip.focus();
+        fixture.detectChanges();
+
+        expect(chipListInstance.chips.toArray().findIndex(chip => chip._hasFocus)).toBe(1);
+
+        dispatchKeyboardEvent(secondChip, 'keydown', DELETE);
+        fixture.detectChanges();
+
+        expect(chipListInstance.chips.toArray().findIndex(chip => chip._hasFocus)).toBe(1);
+      });
+
       describe('when the input has focus', () => {
 
         it('should not focus the last chip when press DELETE', () => {
@@ -1073,15 +1087,22 @@ class StandardChipList {
     <mat-form-field>
       <mat-label>Add a chip</mat-label>
       <mat-chip-list #chipList>
-        <mat-chip>Chip 1</mat-chip>
-        <mat-chip>Chip 1</mat-chip>
-        <mat-chip>Chip 1</mat-chip>
+        <mat-chip *ngFor="let chip of chips" (removed)="remove(chip)">{{chip}}</mat-chip>
       </mat-chip-list>
       <input name="test" [matChipInputFor]="chipList"/>
     </mat-form-field>
   `
 })
 class FormFieldChipList {
+  chips = ['Chip 0', 'Chip 1', 'Chip 2'];
+
+  remove(chip: string) {
+    const index = this.chips.indexOf(chip);
+
+    if (index > -1) {
+      this.chips.splice(index, 1);
+    }
+  }
 }
 
 

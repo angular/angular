@@ -238,8 +238,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
 
   /** Whether any chips or the matChipInput inside of this chip-list has focus. */
   get focused(): boolean {
-    return this.chips.some(chip => chip._hasFocus) ||
-      (this._chipInput && this._chipInput.focused);
+    return (this._chipInput && this._chipInput.focused) || this.chips.some(chip => chip._hasFocus);
   }
 
   /**
@@ -515,13 +514,14 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
    * one.
    */
   protected _updateFocusForDestroyedChips() {
-    let chipsArray = this.chips;
+    const chipsArray = this.chips.toArray();
 
-    if (this._lastDestroyedIndex != null && chipsArray.length > 0 && this.focused) {
+    if (this._lastDestroyedIndex != null && chipsArray.length > 0 && (this.focused ||
+      (this._keyManager.activeItem && chipsArray.indexOf(this._keyManager.activeItem) === -1))) {
       // Check whether the destroyed chip was the last item
       const newFocusIndex = Math.min(this._lastDestroyedIndex, chipsArray.length - 1);
       this._keyManager.setActiveItem(newFocusIndex);
-      let focusChip = this._keyManager.activeItem;
+      const focusChip = this._keyManager.activeItem;
       // Focus the chip
       if (focusChip) {
         focusChip.focus();
