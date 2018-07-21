@@ -1,4 +1,5 @@
 import {AfterViewInit, Compiler, Component, ViewChild, ViewContainerRef} from '@angular/core';
+import {DynamicCompiler} from "./dynamic-compiler";
 
 declare var System: any;
 
@@ -12,7 +13,7 @@ declare var System: any;
 export class AppComponent implements AfterViewInit {
   @ViewChild('vc', {read: ViewContainerRef}) container: ViewContainerRef;
 
-  constructor(private compiler: Compiler) {
+  constructor(private compiler: DynamicCompiler) {
   }
 
   ngAfterViewInit() {
