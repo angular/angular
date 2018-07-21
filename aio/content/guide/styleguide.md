@@ -561,7 +561,10 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 
 {@a 02-03}
 
+<!--
 ### Symbols and file names
+-->
+### 심볼과 파일 이름
 
 <!--
 #### Style 02-03
@@ -571,9 +574,10 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 
 <div class="s-rule do">
 
-
-
+<!--
 **Do** use consistent names for all assets named after what they represent.
+-->
+애플리케이션에 사용하는 모든 이름은 그 특성을 나타내도록 일관되게 **지으세요.**
 
 
 </div>
@@ -583,9 +587,10 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use upper camel case for class names.
-
+-->
+클래스 이름은 대문자 캐멀 케이스를 **사용하세요.**
 
 </div>
 
@@ -594,9 +599,10 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** match the name of the symbol to the name of the file.
-
+-->
+심볼의 이름과 파일의 이름이 연관되도록 **하세요.**
 
 </div>
 
@@ -605,10 +611,12 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** append the symbol name with the conventional suffix (such as `Component`,
 `Directive`, `Module`, `Pipe`, or `Service`) for a thing of that type.
-
+-->
+심볼 이름 뒤에는 타입을 표현하는 접미사(`Component`,
+`Directive`, `Module`, `Pipe`, `Service`)를 **붙이세요.**
 
 </div>
 
@@ -617,9 +625,12 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** give the filename the conventional suffix (such as `.component.ts`, `.directive.ts`,
 `.module.ts`, `.pipe.ts`, or `.service.ts`) for a file of that type.
+-->
+파일 이름에도 타입을 표현하는 접미사(`.component.ts`, `.directive.ts`,
+`.module.ts`, `.pipe.ts`, `.service.ts`)를 **붙이세요.**
 
 </div>
 
@@ -628,10 +639,11 @@ Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Consistent conventions make it easy to quickly identify
 and reference assets of different types.
-
+-->
+**왜?** 심볼과 파일의 이름을 일관되게 지으면 어떤 타입인지 구분하기 편하고, 참조하기도 편합니다.
 
 </div>
 
@@ -650,11 +662,17 @@ and reference assets of different types.
   <tr>
 
     <th>
+      <!--
       Symbol Name
+      -->
+      심볼 이름
     </th>
 
     <th>
+      <!--
       File Name
+      -->
+      파일 이름
     </th>
 
   </tr>
@@ -823,7 +841,10 @@ and reference assets of different types.
 
 {@a 02-04}
 
+<!--
 ### Service names
+-->
+### 서비스 이름
 
 <!--
 #### Style 02-04
@@ -833,9 +854,10 @@ and reference assets of different types.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use consistent names for all services named after their feature.
-
+-->
+서비스의 이름은 그 서비스가 제공하는 기능을 표현하도록 **정의하세요.**
 
 </div>
 
@@ -844,17 +866,25 @@ and reference assets of different types.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** suffix a service class name with `Service`.
 For example, something that gets data or heroes
 should be called a `DataService` or a `HeroService`.
+-->
+서비스 클래스 이름 뒤에 `Service`라는 접미사를 **붙이세요.**
+데이터를 처리하는 서비스라면 `DataService`로, 히어로를 관리하는 서비스는 `HeroService`로 정의하는 식입니다.
 
+<!--
 A few terms are unambiguously services. They typically
 indicate agency by ending in "-er". You may prefer to name
 a service that logs messages `Logger` rather than `LoggerService`.
 Decide if this exception is agreeable in your project.
 As always, strive for consistency.
-
+-->
+이렇게 작성하면 간단한 단어 하나로도 서비스라는 것이 명확해 집니다.
+하지만 개발자에 따라서 "-er" 접미사를 사용하는 것이 더 익숙할 수도 있습니다. 그래서 `LoggerService`라는 이름보다 `Logger`가 더 익숙할 수 있습니다.
+프로젝트에 어울린다면 어떤 방식을 사용해도 문제없습니다.
+일관성을 유지하기만 하면 됩니다.
 
 </div>
 
@@ -863,9 +893,10 @@ As always, strive for consistency.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Provides a consistent way to quickly identify and reference services.
-
+-->
+**왜?** 이름을 일관되게 정의하면 해당 심볼이 서비스라는 것이 명확해집니다.
 
 </div>
 
@@ -874,9 +905,10 @@ As always, strive for consistency.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Clear service names such as `Logger` do not require a suffix.
-
+-->
+**왜?** `Logger`와 같은 이름을 사용할 때는 클래스에 `Service` 접미사를 붙이지 않는 것이 좋습니다.
 
 </div>
 
@@ -885,9 +917,10 @@ As always, strive for consistency.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Service names such as `Credit` are nouns and require a suffix and should be named with a suffix when it is not obvious if it is a service or something else.
-
+-->
+**왜?** `Service`라는 접미사 없이 서비스 이름을 `Credit`라고 정의하면, 이 이름만 보고 이 심볼이 서비스인지 쉽게 알 수 없습니다.
 
 </div>
 
@@ -906,11 +939,17 @@ As always, strive for consistency.
   <tr>
 
     <th>
+      <!--
       Symbol Name
+      -->
+      심볼 이름
     </th>
 
     <th>
+      <!--
       File Name
+      -->
+      파일 이름
     </th>
 
   </tr>
@@ -984,7 +1023,10 @@ As always, strive for consistency.
 
 {@a 02-05}
 
+<!--
 ### Bootstrapping
+-->
+### 부트스트랩
 
 <!--
 #### Style 02-05
@@ -995,9 +1037,10 @@ As always, strive for consistency.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** put bootstrapping and platform logic for the app in a file named `main.ts`.
-
+-->
+부트스트랩이나 플랫폼과 관련된 로직은 `main.ts` 파일에 **작성하세요.**
 
 </div>
 
@@ -1006,9 +1049,10 @@ As always, strive for consistency.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** include error handling in the bootstrapping logic.
-
+-->
+부트스트랩 로직에서 발생할 수 있는 에러를 처리하는 로직도 함께 **작성하세요.**
 
 </div>
 
@@ -1017,9 +1061,10 @@ As always, strive for consistency.
 <div class="s-rule avoid">
 
 
-
+<!--
 **Avoid** putting app logic in `main.ts`. Instead, consider placing it in a component or service.
-
+-->
+애플리케이션 로직을 `main.ts` 파일에 작성하는 것은 **피하세요.** 이 로직은 컴포넌트나 서비스에 들어가는 것이 좋습니다.
 
 </div>
 
@@ -1028,9 +1073,10 @@ As always, strive for consistency.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Follows a consistent convention for the startup logic of an app.
-
+-->
+**왜?** `main.ts` 파일에는 애플리케이션을 시작할 때 필요한 로직만 들어가는 것이 좋습니다.
 
 </div>
 
@@ -1039,9 +1085,10 @@ As always, strive for consistency.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Follows a familiar convention from other technology platforms.
-
+-->
+**왜?** Angular 애플리케이션을 시작하는 로직은 실행 환경에 따라 달라질 수 있습니다. 이 로직은 플랫폼에 따라 다르게 구현하기 때문에 분리하는 것이 좋습니다.
 
 </div>
 
@@ -1060,7 +1107,10 @@ As always, strive for consistency.
 
 {@a 02-06}
 
+<!--
 ### Directive selectors
+-->
+### 디렉티브 셀렉터
 
 <!--
 #### Style 02-06
@@ -1070,9 +1120,10 @@ As always, strive for consistency.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** Use lower camel case for naming the selectors of directives.
-
+-->
+디렉티브의 셀렉터 이름은 소문자 캐멀 케이스로 **정의하세요.**
 
 </div>
 
@@ -1081,9 +1132,10 @@ As always, strive for consistency.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Keeps the names of the properties defined in the directives that are bound to the view consistent with the attribute names.
-
+-->
+**왜?** 디렉티브에 정의된 프로퍼티들은 뷰에서 어트리뷰트 이름으로 바인딩되어 사용됩니다. 엘리먼트의 프로퍼티로 사용하는 방식이 자연스럽기 때문에 소문자 캐멀 케이스로 사용하는 것이 좋습니다.
 
 </div>
 
@@ -1092,9 +1144,10 @@ As always, strive for consistency.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** The Angular HTML parser is case sensitive and recognizes lower camel case.
-
+-->
+**왜?** Angular HTML 파서는 대소문자를 구분하기 때문에 소문자 캐멀 케이스를 그대로 사용할 수 있습니다.
 
 </div>
 
@@ -1105,7 +1158,10 @@ As always, strive for consistency.
 
 {@a 02-07}
 
+<!--
 ### Custom prefix for components
+-->
+### 컴포넌트의 커스텀 접두사
 
 <!--
 #### Style 02-07
@@ -1115,10 +1171,10 @@ As always, strive for consistency.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use a hyphenated, lowercase element selector value (e.g. `admin-users`).
-
-
+-->
+컴포넌트 셀렉터는 하이픈(`-`)으로 구분되는 소문자를 **사용하세요.** (예) `admin-users`)
 
 </div>
 
@@ -1127,10 +1183,12 @@ As always, strive for consistency.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use a custom prefix for a component selector.
 For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
-
+-->
+컴포넌트 셀렉터에는 커스텀 접두사를 **사용하세요.**
+예를 들어 **T**our **o**f **H**eroes 프로젝트에서는 `toh`를 접두사로 사용할 수 있으며, 관리자용 기능이 구현되어 있는 곳에서는 `admin`을 접두사로 사용할 수 있습니다.
 
 </div>
 
@@ -1139,9 +1197,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use a prefix that identifies the feature area or the app itself.
-
+-->
+접두사는 해당 컴포넌트의 기능이나 앱의 특성을 표현할 수 있도록 **지정하세요.**
 
 </div>
 
@@ -1150,9 +1209,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why">
 
 
-
+<!--
 **Why?** Prevents element name collisions with components in other apps and with native HTML elements.
-
+-->
+**왜?** 컴포넌트의 엘리먼트 셀렉터는 다른 앱의 컴포넌트 셀렉터나 네이티브 HTML과 충돌하지 않도록 지정해야 합니다.
 
 </div>
 
@@ -1161,9 +1221,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why">
 
 
-
+<!--
 **Why?** Makes it easier to promote and share the component in other apps.
-
+-->
+**왜?** 다른 앱에서 로드하는 컴포넌트를 구현한다면, 사용하기 편하고 잘 구분되는 이름을 사용하는 것이 좋습니다.
 
 </div>
 
@@ -1172,9 +1233,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Components are easy to identify in the DOM.
-
+-->
+**왜?** DOM에 사용된 컴포넌트는 다른 네이티브 HTML 엘리먼트와 쉽게 구분되어야 합니다.
 
 </div>
 
