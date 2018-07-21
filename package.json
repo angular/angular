@@ -129,7 +129,7 @@
     "stylelint": "^8.4.0",
     "ts-node": "^3.0.4",
     "tsconfig-paths": "^2.3.0",
-    "tslint": "^5.9.1",
+    "tslint": "^5.11.0",
     "tsutils": "^2.6.0",
     "typescript": "2.7.x",
     "uglify-js": "^2.8.14"
