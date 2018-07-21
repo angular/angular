@@ -132,15 +132,15 @@ export interface IterableDifferFactory {
   create<V>(trackByFn?: TrackByFunction<V>): IterableDiffer<V>;
 }
 
+const defaultIterableDifferFactories = [new DefaultIterableDifferFactory()];
+
 /**
  * A repository of different iterable diffing strategies used by NgFor, NgClass, and others.
  *
  */
 export class IterableDiffers {
-  static ngInjectableDef = defineInjectable({
-    providedIn: 'root',
-    factory: () => new IterableDiffers([new DefaultIterableDifferFactory()])
-  });
+  static ngInjectableDef = defineInjectable(
+      {providedIn: 'root', factory: () => new IterableDiffers(defaultIterableDifferFactories)});
 
   /**
    * @deprecated v4.0.0 - Should be private
@@ -152,6 +152,8 @@ export class IterableDiffers {
     if (parent != null) {
       const copied = parent.factories.slice();
       factories = factories.concat(copied);
+    } else {
+      factories = factories.concat(defaultIterableDifferFactories);
     }
 
     return new IterableDiffers(factories);
@@ -161,6 +163,8 @@ export class IterableDiffers {
    * Takes an array of {@link IterableDifferFactory} and returns a provider used to extend the
    * inherited {@link IterableDiffers} instance with the provided factories and return a new
    * {@link IterableDiffers} instance.
+   *
+   * @deprecated v6.1.0 - Use `IterableDiffers.create()` instead
    *
    * @usageNotes
    * ### Example

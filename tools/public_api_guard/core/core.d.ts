@@ -450,7 +450,7 @@ export declare class IterableDiffers {
     find(iterable: any): IterableDifferFactory;
     static ngInjectableDef: never;
     static create(factories: IterableDifferFactory[], parent?: IterableDiffers): IterableDiffers;
-    static extend(factories: IterableDifferFactory[]): StaticProvider;
+    /** @deprecated */ static extend(factories: IterableDifferFactory[]): StaticProvider;
 }
 
 export interface KeyValueChangeRecord<K, V> {
@@ -483,8 +483,9 @@ export declare class KeyValueDiffers {
     /** @deprecated */ factories: KeyValueDifferFactory[];
     constructor(factories: KeyValueDifferFactory[]);
     find(kv: any): KeyValueDifferFactory;
+    static ngInjectableDef: never;
     static create<S>(factories: KeyValueDifferFactory[], parent?: KeyValueDiffers): KeyValueDiffers;
-    static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
+    /** @deprecated */ static extend<S>(factories: KeyValueDifferFactory[]): StaticProvider;
 }
 
 /** @experimental */

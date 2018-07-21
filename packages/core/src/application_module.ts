@@ -9,7 +9,6 @@
 import {APP_INITIALIZER, ApplicationInitStatus} from './application_init';
 import {ApplicationRef} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
-import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
 import {Console} from './console';
 import {InjectionToken, Injector, StaticProvider} from './di';
 import {Inject, Optional, SkipSelf} from './di/metadata';
@@ -19,14 +18,6 @@ import {ComponentFactoryResolver} from './linker';
 import {Compiler} from './linker/compiler';
 import {NgModule} from './metadata';
 import {NgZone} from './zone';
-
-export function _iterableDiffersFactory() {
-  return defaultIterableDiffers;
-}
-
-export function _keyValueDiffersFactory() {
-  return defaultKeyValueDiffers;
-}
 
 export function _localeFactory(locale?: string): string {
   return locale || 'en-US';
@@ -46,8 +37,6 @@ export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
   },
   {provide: Compiler, useClass: Compiler, deps: []},
   APP_ID_RANDOM_PROVIDER,
-  {provide: IterableDiffers, useFactory: _iterableDiffersFactory, deps: []},
-  {provide: KeyValueDiffers, useFactory: _keyValueDiffersFactory, deps: []},
   {
     provide: LOCALE_ID,
     useFactory: _localeFactory,

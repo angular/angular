@@ -45,7 +45,14 @@ import {SpyIterableDifferFactory} from '../../spies';
       const parent = IterableDiffers.create(<any>[factory1]);
       const child = IterableDiffers.create(<any>[factory2], parent);
 
-      expect(child.factories).toEqual([factory2, factory1]);
+      expect(child.factories.length).toBe(3);
+      expect(child.factories.slice(0, 2)).toEqual([factory2, factory1]);
+    });
+
+    it('should contain default differ factories by default', () => {
+      const differs = IterableDiffers.create([]);
+
+      expect(differs.find([])).toBeDefined();
     });
 
     describe('.extend()', () => {

@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Optional, SkipSelf, StaticProvider} from '../../di';
+import {Optional, SkipSelf, StaticProvider, defineInjectable} from '../../di';
 
+import {DefaultKeyValueDifferFactory} from './default_keyvalue_differ';
 
 /**
  * A differ that tracks changes made to an object over time.
@@ -110,11 +111,16 @@ export interface KeyValueDifferFactory {
   create<K, V>(): KeyValueDiffer<K, V>;
 }
 
+const defaultKeyValueDifferFactories = [new DefaultKeyValueDifferFactory()];
+
 /**
  * A repository of different Map diffing strategies used by NgClass, NgStyle, and others.
  *
  */
 export class KeyValueDiffers {
+  static ngInjectableDef = defineInjectable(
+      {providedIn: 'root', factory: () => new KeyValueDiffers(defaultKeyValueDifferFactories)});
+
   /**
    * @deprecated v4.0.0 - Should be private.
    */
@@ -126,7 +132,10 @@ export class KeyValueDiffers {
     if (parent) {
       const copied = parent.factories.slice();
       factories = factories.concat(copied);
+    } else {
+      factories = factories.concat(defaultKeyValueDifferFactories);
     }
+
     return new KeyValueDiffers(factories);
   }
 
@@ -134,6 +143,8 @@ export class KeyValueDiffers {
    * Takes an array of {@link KeyValueDifferFactory} and returns a provider used to extend the
    * inherited {@link KeyValueDiffers} instance with the provided factories and return a new
    * {@link KeyValueDiffers} instance.
+   *
+   * @deprecated v6.1.0 - Use `KeyValueDiffers.create()` instead
    *
    * @usageNotes
    * ### Example
