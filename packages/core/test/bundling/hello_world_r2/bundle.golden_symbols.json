@@ -2415,6 +2415,9 @@
     "name": "checkStable"
   },
   {
+    "name": "cloneNgModuleDefinition"
+  },
+  {
     "name": "collectReferences"
   },
   {
