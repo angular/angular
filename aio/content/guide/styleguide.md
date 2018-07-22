@@ -2205,7 +2205,10 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 
 {@a 03-03}
 
+<!--
 ### Interfaces
+-->
+### 인터페이스
 
 <!--
 #### Style 03-03
@@ -2215,9 +2218,10 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name an interface using upper camel case.
-
+-->
+인터페이스 이름은 대문자 캐멀 케이스로 **작성하세요.**
 
 </div>
 
@@ -2226,9 +2230,10 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** naming an interface without an `I` prefix.
-
+-->
+인터페이스에 `I` 접두사는 사용하지 않는 것을 **고려해 보세요.**
 
 </div>
 
@@ -2237,9 +2242,10 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** using a class instead of an interface for services and declarables (components, directives, and pipes).
-
+-->
+서비스나 컴포넌트, 디렉티브, 파이프에는 인터페이스 대신 클래스를 사용하는 것을 **고려해 보세요.**
 
 </div>
 
@@ -2248,9 +2254,10 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** using an interface for data models.
-
+-->
+인터페이스는 데이터 모델로 사용하는 것을 **고려해 보세요.**
 
 </div>
 
@@ -2259,10 +2266,11 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 <div class="s-why">
 
 
-
+<!--
 **Why?** <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines">TypeScript guidelines</a>
 discourage the `I` prefix.
-
+-->
+**왜?** <a href="https://github.com/Microsoft/TypeScript/wiki/Coding-guidelines">TypeScript 공식 가이드라인</a>에서도 `I` 접두사는 사용하지 않는 것을 권장하고 있습니다.
 
 </div>
 
@@ -2271,9 +2279,10 @@ discourage the `I` prefix.
 <div class="s-why">
 
 
-
+<!--
 **Why?** A class alone is less code than a _class-plus-interface_.
-
+-->
+**왜?** _클래스와 인터페이스를 함께 사용하는 것_ 보다 클래스만 사용하는 것이 더 간단합니다.
 
 </div>
 
@@ -2282,9 +2291,10 @@ discourage the `I` prefix.
 <div class="s-why">
 
 
-
+<!--
 **Why?** A class can act as an interface (use `implements` instead of `extends`).
-
+-->
+**왜?** 클래스는 인터페이스로 사용할 수도 있습니다. (`extends` 대신 `implements`로 사용할 수 있습니다.)
 
 </div>
 
@@ -2293,9 +2303,10 @@ discourage the `I` prefix.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** An interface-class can be a provider lookup token in Angular dependency injection.
-
+-->
+**왜?** 인터페이스로 사용하는 클래스는 Angular 의존성을 주입할 때 토큰으로 참조할 수도 있습니다.
 
 </div>
 
@@ -2322,7 +2333,10 @@ discourage the `I` prefix.
 
 {@a 03-04}
 
+<!--
 ### Properties and methods
+-->
+### 프로퍼티, 메소드
 
 <!--
 #### Style 03-04
@@ -2332,9 +2346,10 @@ discourage the `I` prefix.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use lower camel case to name properties and methods.
-
+-->
+프로퍼티와 메소드 이름에는 소문자 캐멀 케이스를 **사용하세요.**
 
 </div>
 
@@ -2343,9 +2358,10 @@ discourage the `I` prefix.
 <div class="s-rule avoid">
 
 
-
+<!--
 **Avoid** prefixing private properties and methods with an underscore.
-
+-->
+private 프로퍼티나 메소드에 밑줄(`_`)을 붙이는 것은 **피하세요.**
 
 </div>
 
@@ -2354,9 +2370,10 @@ discourage the `I` prefix.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Follows conventional thinking for properties and methods.
-
+-->
+**왜?** 프로퍼티나 메소드 이름은 다른 언어에서도 사용하는 방식을 따르는 것이 좋습니다.
 
 </div>
 
@@ -2365,9 +2382,10 @@ discourage the `I` prefix.
 <div class="s-why">
 
 
-
+<!--
 **Why?** JavaScript lacks a true private property or method.
-
+-->
+**왜?** JavaScript에서 정말 private인 것은 없습니다.
 
 </div>
 
@@ -2376,9 +2394,10 @@ discourage the `I` prefix.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** TypeScript tooling makes it easy to identify private vs. public properties and methods.
-
+-->
+**왜?** private과 public을 구별하는 것은 TypeScript 툴로도 충분합니다.
 
 </div>
 
@@ -2405,7 +2424,10 @@ discourage the `I` prefix.
 
 {@a 03-06}
 
+<!--
 ### Import line spacing
+-->
+### Import 줄의 공백
 
 <!--
 #### Style 03-06
@@ -2415,9 +2437,10 @@ discourage the `I` prefix.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** leaving one empty line between third party imports and application imports.
-
+-->
+서드 파티 라이브러리를 로드하는 줄과 애플리케이션 심볼을 로드하는 줄 사이에는 빈 줄을 추가하는 것을 **고려해 보세요.**
 
 </div>
 
@@ -2426,9 +2449,10 @@ discourage the `I` prefix.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** listing import lines alphabetized by the module.
-
+-->
+import 줄들은 로드하는 모듈 알파벳 순서로 정렬하는 것을 **고려해 보세요.**
 
 </div>
 
@@ -2437,9 +2461,10 @@ discourage the `I` prefix.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** listing destructured imported symbols alphabetically.
-
+-->
+모듈 안에서 일부 심볼만 참조할 때, 이 심볼들은 알파벳 순서로 참조하는 것을 **고려해 보세요.**
 
 </div>
 
@@ -2448,9 +2473,10 @@ discourage the `I` prefix.
 <div class="s-why">
 
 
-
+<!--
 **Why?** The empty line separates _your_ stuff from _their_ stuff.
-
+-->
+**왜?** 서드 파티를 로드하는 줄과 애플리케이션 심볼을 로드하는 줄 사이에 빈 줄을 추가하면, _내가 만든_ 심볼과 _서드 파티에서 불러온_ 심볼을 구분할 수 있습니다.
 
 </div>
 
@@ -2459,9 +2485,10 @@ discourage the `I` prefix.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Alphabetizing makes it easier to read and locate symbols.
-
+-->
+**왜?** 심볼을 알파벳 순서로 나열하면, 원하는 심볼을 쉽게 찾을 수 있습니다.
 
 </div>
 
@@ -2486,18 +2513,34 @@ discourage the `I` prefix.
 -->
 <a href="#toc">맨 위로</a>
 
-
+<!--
 ## Application structure and NgModules
+-->
+## 애플리케이션 구조와 NgModule
 
+<!--
 Have a near-term view of implementation and a long-term vision. Start small but keep in mind where the app is heading down the road.
+-->
+단기적인 구현과 장기적인 계획을 함께 고려하세요. 코딩하는 내용이 적더라도 애플리케이션은 일관된 방향으로 나아가야 합니다.
 
+<!--
 All of the app's code goes in a folder named `src`.
 All feature areas are in their own folder, with their own NgModule.
+-->
+애플리케이션의 코드는 모두 `src` 폴더 안에 작성하세요.
+그리고 모든 기능은 그 기능을 표현하는 폴더의 NgModule 안에 들어가야 합니다.
 
+<!--
 All content is one asset per file. Each component, service, and pipe is in its own file.
 All third party vendor scripts are stored in another folder and not in the `src` folder.
 You didn't write them and you don't want them cluttering `src`.
 Use the naming conventions for files in this guide.
+-->
+모든 컴포넌트나 서비스, 파이프는 개별 파일에 정의되어야 합니다.
+그리고 서드 파티 스크립트들은 `src` 폴더가 아닌 다른 폴더에 보관해야 합니다.
+왜냐하면 이 코드들은 수정할 필요가 없으며 `src` 폴더의 내용과 함께 처리할 필요도 없기 때문입니다.
+각각의 파일 이름은 이 문서에서 설명하는 가이드를 참고하세요.
+
 <!--
 <a href="#toc">Back to top</a>
 -->
@@ -2505,7 +2548,10 @@ Use the naming conventions for files in this guide.
 
 {@a 04-01}
 
+<!--
 ### _LIFT_
+-->
+#### _LIST 규칙_
 
 <!--
 #### Style 04-01
@@ -2515,12 +2561,17 @@ Use the naming conventions for files in this guide.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** structure the app such that you can **L**ocate code quickly,
 **I**dentify the code at a glance,
 keep the **F**lattest structure you can, and
 **T**ry to be DRY.
-
+-->
+애플리케이션 구조는 _LIST 규칙_ 에 맞게 **마련하세요.**
+코드는 빠르게 접근할 수 있는 곳에 위치해야 하며(**L**ocate),
+파일 이름만 봐도 무슨 내용인지 확인할 수 있어야 하고(**I**dentify),
+최대한 단순한 구조여야 하며(**F**lattest),
+간결한 이름을 사용해야 합니다(**T**ry to be DRY).
 
 </div>
 
