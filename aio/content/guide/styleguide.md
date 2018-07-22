@@ -1161,7 +1161,7 @@ As always, strive for consistency.
 <!--
 ### Custom prefix for components
 -->
-### 컴포넌트의 커스텀 접두사
+### 커스텀 컴포넌트의 접두사
 
 <!--
 #### Style 02-07
@@ -1276,7 +1276,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 {@a 02-08}
 
+<!--
 ### Custom prefix for directives
+-->
+### 커스텀 디렉티브의 접두사
 
 <!--
 #### Style 02-08
@@ -1286,9 +1289,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use a custom prefix for the selector of directives (e.g, the prefix `toh` from **T**our **o**f **H**eroes).
-
+-->
+커스텀 디렉티브의 셀렉터에는 접두사를 **사용하세요.** 예를 들어 **T**our **o**f **H**eroes 라면 `toh`를 접두사로 사용할 수 있습니다.
 
 </div>
 
@@ -1297,9 +1301,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** spell non-element selectors in lower camel case unless the selector is meant to match a native HTML attribute.
-
+-->
+디렉티브 셀렉터는 네이티브 HTML 엘리먼트나 네이티브 어트리뷰트와 겹치지 않는 소문자 캐멀 케이스를 **사용하세요.**
 
 </div>
 
@@ -1308,9 +1313,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why">
 
 
-
+<!--
 **Why?** Prevents name collisions.
-
+-->
+**왜?** 디렉티브가 네이티브 HTML과 충돌하면 안됩니다.
 
 </div>
 
@@ -1319,9 +1325,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Directives are easily identified.
-
+-->
+**왜?** 디렉티브는 이름만 보고 쉽게 구분할 수 있어야 합니다.
 
 </div>
 
@@ -1349,7 +1356,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 {@a 02-09}
 
+<!--
 ### Pipe names
+-->
+### 파이프 이름
 
 <!--
 #### Style 02-09
@@ -1359,9 +1369,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use consistent names for all pipes, named after their feature.
-
+-->
+커스텀 파이프를 구현한 클래스에는 `Pipe` 접미사를 **붙이고,** 이 파일에는 `.pipe` 타입을 **명시하세요.**
 
 </div>
 
@@ -1370,9 +1381,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Provides a consistent way to quickly identify and reference pipes.
-
+-->
+**왜?** 이렇게 하면 파이프를 쉽게 구별할 수 있고, 참조하기도 편합니다.
 
 </div>
 
@@ -1391,11 +1403,17 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
   <tr>
 
     <th>
+      <!--
       Symbol Name
+      -->
+      심볼 이름
     </th>
 
     <th>
+      <!--
       File Name
+      -->
+      파일 이름
     </th>
 
   </tr>
@@ -1450,7 +1468,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 {@a 02-10}
 
+<!--
 ### Unit test file names
+-->
+### 유닛 테스트 파일의 이름
 
 <!--
 #### Style 02-10
@@ -1460,9 +1481,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name test specification files the same as the component they test.
-
+-->
+유닛 테스트 파일의 이름에 그 파일이 테스트하는 컴포넌트의 이름을 **사용하세요.**
 
 </div>
 
@@ -1471,9 +1493,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name test specification files with a suffix of `.spec`.
-
+-->
+유닛 테스트 파일에는 `.spec` 접미사를 **붙이세요.**
 
 </div>
 
@@ -1482,9 +1505,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why">
 
 
-
+<!--
 **Why?** Provides a consistent way to quickly identify tests.
-
+-->
+**왜?** 이렇게 하면 테스트 파일을 쉽게 구분할 수 있습니다.
 
 </div>
 
@@ -1493,9 +1517,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Provides pattern matching for [karma](http://karma-runner.github.io/) or other test runners.
-
+-->
+**왜?** [karma](http://karma-runner.github.io/)와 같은 테스트 러너는 파일 패턴 매칭도 지원합니다.
 
 </div>
 
@@ -1516,11 +1541,17 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
   <tr>
 
     <th>
+      <!--
       Test Type
+      -->
+      테스트 타입
     </th>
 
     <th>
+      <!--
       File Names
+      -->
+      파일 이름
     </th>
 
   </tr>
@@ -1529,8 +1560,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
     <td>
 
-
+      <!--
       Components
+      -->
+      컴포넌트
     </td>
 
     <td>
@@ -1549,8 +1582,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
     <td>
 
-
+      <!--
       Services
+      -->
+      서비스
     </td>
 
     <td>
@@ -1569,8 +1604,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
     <td>
 
-
+      <!--
       Pipes
+      -->
+      파이프
     </td>
 
     <td>
@@ -1595,7 +1632,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 {@a 02-11}
 
+<!--
 ### _End-to-End_ (E2E) test file names
+-->
+### _엔드-투-엔드_ (E2E) 테스트 파일의 이름
 
 <!--
 #### Style 02-11
@@ -1605,9 +1645,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name end-to-end test specification files after the feature they test with a suffix of `.e2e-spec`.
-
+-->
+엔드-투-엔드 테스트 파일의 이름은 테스트하려는 기능 뒤에 `.e2e-spec` 접미사를 **붙이세요.**
 
 </div>
 
@@ -1616,9 +1657,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why">
 
 
-
+<!--
 **Why?** Provides a consistent way to quickly identify end-to-end tests.
-
+-->
+**왜?** 이렇게 하면 엔드-투-엔드 테스트 파일을 쉽게 구분할 수 있습니다.
 
 </div>
 
@@ -1627,9 +1669,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Provides pattern matching for test runners and build automation.
-
+-->
+**왜?** 이렇게 하면 테스트 러너나 빌드 자동화에 패턴 매칭을 사용할 수 잇습니다.
 
 </div>
 
@@ -1652,11 +1695,17 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
   <tr>
 
     <th>
+      <!--
       Test Type
+      -->
+      테스트 타입
     </th>
 
     <th>
+      <!--
       File Names
+      -->
+      파일 이름
     </th>
 
   </tr>
@@ -1666,7 +1715,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
     <td>
 
 
+      <!--
       End-to-End Tests
+      -->
+      엔드-투-엔드 테스트
     </td>
 
     <td>
@@ -1690,7 +1742,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 {@a 02-12}
 
+<!--
 ### Angular _NgModule_ names
+-->
+### Angular _NgModule_ 의 이름
 
 <!--
 #### Style 02-12
@@ -1700,9 +1755,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** append the symbol name with the suffix `Module`.
-
+-->
+_NgModule_ 심볼 이름에는 `Module` 접미사를 **붙이세요.**
 
 </div>
 
@@ -1711,9 +1767,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** give the file name the `.module.ts` extension.
-
+-->
+모듈을 정의한 파일 이름에는 `.module.ts` 접두사를 **붙이세요.**
 
 </div>
 
@@ -1722,9 +1779,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name the module after the feature and folder it resides in.
-
+-->
+모듈의 기능을 표현할 수 있는 폴더 이름을 짓고, 이 파일 안에 모듈을 **작성하세요.**
 
 </div>
 
@@ -1733,9 +1791,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why">
 
 
-
+<!--
 **Why?** Provides a consistent way to quickly identify and reference modules.
-
+-->
+**왜?** 이렇게 하면 모듈을 쉽게 구분할 수 있고, 참조하기도 편합니다.
 
 </div>
 
@@ -1744,9 +1803,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why">
 
 
-
+<!--
 **Why?** Upper camel case is conventional for identifying objects that can be instantiated using a constructor.
-
+-->
+**왜?** 인스턴스를 생성하는 용도로 사용하는 객체의 이름은 대문자 캐멀 케이스로 정의하는 것이 일반적입니다.
 
 </div>
 
@@ -1755,9 +1815,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Easily identifies the module as the root of the same named feature.
-
+-->
+**왜?** 이렇게 하면 같은 이름을 사용하더라도 최상위 객체인 모듈을 쉽게 구분할 수 있습니다.
 
 </div>
 
@@ -1766,9 +1827,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** suffix a _RoutingModule_ class name with `RoutingModule`.
-
+-->
+정의하는 모듈이 _라우팅 모듈_ 이라면 `RoutingModule` 접미사를 **붙이세요.**
 
 </div>
 
@@ -1777,9 +1839,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-rule do">
 
 
-
+<!--
 **Do** end the filename of a _RoutingModule_ with `-routing.module.ts`.
-
+-->
+_라우팅 모듈_ 을 정의한 파일의 이름에는 `-routing.module.ts` 접미사를 **붙이세요.**
 
 </div>
 
@@ -1788,9 +1851,12 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** A `RoutingModule` is a module dedicated exclusively to configuring the Angular router.
 A consistent class and file name convention make these modules easy to spot and verify.
+-->
+**왜?** _라우팅 모듈_ 은 Angular 라우터에 특화된 기능을 제공하는 모듈입니다.
+클래스 이름과 파일 이름을 이렇게 지정하면, 다른 모듈과 라우팅 모듈을 쉽게 구분할 수 있습니다.
 
 </div>
 
@@ -1809,11 +1875,17 @@ A consistent class and file name convention make these modules easy to spot and 
   <tr>
 
     <th>
+      <!--
       Symbol Name
+      -->
+      심볼 이름
     </th>
 
     <th>
+      <!--
       File Name
+      -->
+      파일 이름
     </th>
 
   </tr>
@@ -1922,16 +1994,23 @@ A consistent class and file name convention make these modules easy to spot and 
 -->
 <a href="#toc">맨 위로</a>
 
-
+<!--
 ## Coding conventions
+-->
+## 코딩 컨벤션
 
+<!--
 Have a consistent set of coding, naming, and whitespace conventions.
-
+-->
+코드, 클래스와 변수 이름, 공백문자에 대한 코딩 컨벤션을 소개합니다.
 
 
 {@a 03-01}
 
+<!--
 ### Classes
+-->
+### 클래스
 
 <!--
 #### Style 03-01
@@ -1941,9 +2020,10 @@ Have a consistent set of coding, naming, and whitespace conventions.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use upper camel case when naming classes.
-
+-->
+클래스 이름에는 대문자 캐멀 케이스를 **사용하세요.**
 
 </div>
 
@@ -1952,9 +2032,10 @@ Have a consistent set of coding, naming, and whitespace conventions.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Follows conventional thinking for class names.
-
+-->
+**왜?** 클래스 이름은 다른 언어에서와 비슷한 방식을 따르는 것이 좋습니다.
 
 </div>
 
@@ -1963,10 +2044,12 @@ Have a consistent set of coding, naming, and whitespace conventions.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Classes can be instantiated and construct an instance.
 By convention, upper camel case indicates a constructable asset.
-
+-->
+**왜?** 클래스 이름은 인스턴스를 생성할 때 사용됩니다.
+인스턴스로 생성되는 객체의 이름은 대문자 캐멀 케이스로 정의하는 것이 일반적입니다.
 
 </div>
 
@@ -1994,7 +2077,10 @@ By convention, upper camel case indicates a constructable asset.
 
 {@a 03-02}
 
+<!--
 ### Constants
+-->
+### 상수
 
 <!--
 #### Style 03-02
@@ -2004,9 +2090,10 @@ By convention, upper camel case indicates a constructable asset.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** declare variables with `const` if their values should not change during the application lifetime.
-
+-->
+애플리케이션이 실행되는 동안 값이 변하지 않는 변수는 `const`로 **선언하세요.**
 
 </div>
 
@@ -2015,9 +2102,10 @@ By convention, upper camel case indicates a constructable asset.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Conveys to readers that the value is invariant.
-
+-->
+**왜?** 이렇게 하면 해당 변수의 값이 변하지 않는다는 정보를 제공할 수 있습니다.
 
 </div>
 
@@ -2026,10 +2114,11 @@ By convention, upper camel case indicates a constructable asset.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** TypeScript helps enforce that intent by requiring immediate initialization and by
 preventing subsequent re-assignment.
-
+-->
+**왜?** 이렇게 하면 TypeScript 컴파일러의 검사 로직이 동작하는데, 변수를 생성하면서 값을 초기화해야 하고 값이 재할당되는 것을 언어 레벨에서 방지할 수 있습니다.
 
 </div>
 
@@ -2038,9 +2127,10 @@ preventing subsequent re-assignment.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** spelling `const` variables in lower camel case.
-
+-->
+상수의 이름은 소문자 캐멀 케이스로 지정하는 것을 **고려해 보세요.**
 
 </div>
 
@@ -2049,10 +2139,11 @@ preventing subsequent re-assignment.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Lower camel case variable names (`heroRoutes`) are easier to read and understand
 than the traditional UPPER_SNAKE_CASE names (`HERO_ROUTES`).
-
+-->
+**왜?** `heroRoutes`와 같이 소문자 캐멀 케이스로 선언한 변수는 `HERO_ROUTES`와 같은 대문자\_스네이크\_케이스 보다 읽기 편합니다.
 
 </div>
 
@@ -2061,11 +2152,13 @@ than the traditional UPPER_SNAKE_CASE names (`HERO_ROUTES`).
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** The tradition of naming constants in UPPER_SNAKE_CASE reflects
 an era before the modern IDEs that quickly reveal the `const` declaration.
 TypeScript prevents accidental reassignment.
-
+-->
+**왜?** 상수의 이름은 대문자\_스네이크\_케이스 로 정의하는 것이 일반적입니다. 하지만 이 방식은 최신 IDE가 등장하기 이전의 방식이었고, 요즘 IDE에서는 `const` 키워드로 상수를 구별할 수 있습니다.
+상수에 값이 재할당되는 것은 TypeScript로 방지할 수 있습니다.
 
 </div>
 
@@ -2074,9 +2167,10 @@ TypeScript prevents accidental reassignment.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** tolerate _existing_ `const` variables that are spelled in UPPER_SNAKE_CASE.
-
+-->
+이미 대문자\_스네이크\_케이스 로 사용된 `const` 변수는 그대로 **사용하세요.**
 
 </div>
 
@@ -2085,11 +2179,13 @@ TypeScript prevents accidental reassignment.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** The tradition of UPPER_SNAKE_CASE remains popular and pervasive,
 especially in third party modules.
 It is rarely worth the effort to change them at the risk of breaking existing code and documentation.
-
+-->
+**왜?** 대문자\_스네이크\_케이스 는 상수를 선언할 때 널리 사용되는 방법이며, 서드 파티 모듈이라면 더욱 그렇습니다.
+굳이 대문자\_스네이크\_케이스 를 소문자 캐멀 케이스로 바꿀 필요는 없으며, 이미 동작하고 있는 코드나 문서에 어긋나는 작업을 할 필요도 없습니다.
 
 </div>
 
