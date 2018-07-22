@@ -714,6 +714,9 @@
     "name": "GET_PROPERTY_NAME$1"
   },
   {
+    "name": "GET_PROPERTY_NAME$2"
+  },
+  {
     "name": "GOOG_GET_MSG"
   },
   {
@@ -1132,6 +1135,12 @@
   },
   {
     "name": "PROP_METADATA"
+  },
+  {
+    "name": "PROVIDED_IN"
+  },
+  {
+    "name": "PROVIDED_IN$1"
   },
   {
     "name": "ParseError"

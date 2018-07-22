@@ -19,6 +19,8 @@ import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, Existin
 const GET_PROPERTY_NAME = {} as any;
 const USE_VALUE = getClosureSafeProperty<ValueProvider>(
     {provide: String, useValue: GET_PROPERTY_NAME}, GET_PROPERTY_NAME);
+const PROVIDED_IN =
+    getClosureSafeProperty<Injectable>({providedIn: GET_PROPERTY_NAME}, GET_PROPERTY_NAME);
 
 /**
  * Injectable providers used in `@Injectable` decorator.
@@ -105,11 +107,17 @@ export function convertInjectableProviderToFactory(
 function preR3InjectableCompile(
     injectableType: InjectableType<any>,
     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
-  if (options && options.providedIn !== undefined && injectableType.ngInjectableDef === undefined) {
-    injectableType.ngInjectableDef = defineInjectable({
-      providedIn: options.providedIn,
-      factory: convertInjectableProviderToFactory(injectableType, options),
-    });
+  if (options && PROVIDED_IN in options) {
+    if (options.providedIn === undefined) {
+      console && console.warn &&
+          console.warn(
+              `Encountered undefined providedIn target in type '${injectableType.name}'! Usually this means you have a circular dependencies.`);
+    } else if (injectableType.ngInjectableDef === undefined) {
+      injectableType.ngInjectableDef = defineInjectable({
+        providedIn: options.providedIn,
+        factory: convertInjectableProviderToFactory(injectableType, options),
+      });
+    }
   }
 }
 

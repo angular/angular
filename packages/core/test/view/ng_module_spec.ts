@@ -8,6 +8,8 @@
 
 import {NgModuleRef} from '@angular/core';
 import {InjectableDef, defineInjectable} from '@angular/core/src/di/defs';
+import {Injectable} from '@angular/core/src/di/injectable';
+import {InjectionToken} from '@angular/core/src/di/injection_token';
 import {INJECTOR, InjectFlags, Injector, inject} from '@angular/core/src/di/injector';
 import {makePropDecorator} from '@angular/core/src/util/decorators';
 import {NgModuleDefinition, NgModuleProviderDef, NodeFlags} from '@angular/core/src/view';
@@ -229,6 +231,28 @@ describe('NgModuleRef_ injector', () => {
     expect(Service.destroyed).toBe(0);
     ref.destroy();
     expect(Service.destroyed).toBe(1);
+  });
+
+  it('warn if dep provided in undefined (possible circular dep)', () => {
+    const consoleWarn = console.warn;
+    const warnings: string[] = [];
+    spyOn(console, 'warn').and.callFake((message: string) => warnings.push(message));
+
+    @Injectable({providedIn: undefined as any})
+    class Dep {
+    }
+
+    new InjectionToken('Foo', {providedIn: undefined as any, factory: () => new Dep()});
+
+    console.warn = consoleWarn;
+
+    expect(warnings.length).toBe(2);
+    expect(warnings[0])
+        .toBe(
+            `Encountered undefined providedIn target in type 'Dep'! Usually this means you have a circular dependencies.`);
+    expect(warnings[1])
+        .toBe(
+            `Encountered undefined providedIn target in InjectionToken 'Foo'! Usually this means you have a circular dependencies.`);
   });
 
   describe('moduleDef', () => {

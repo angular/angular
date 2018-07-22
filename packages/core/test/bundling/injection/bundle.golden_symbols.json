@@ -12,6 +12,9 @@
     "name": "GET_PROPERTY_NAME"
   },
   {
+    "name": "GET_PROPERTY_NAME$1"
+  },
+  {
     "name": "INJECTOR"
   },
   {
@@ -34,6 +37,9 @@
   },
   {
     "name": "PARAMETERS"
+  },
+  {
+    "name": "PROVIDED_IN"
   },
   {
     "name": "R3Injector"
@@ -82,6 +88,9 @@
   },
   {
     "name": "forwardRef"
+  },
+  {
+    "name": "getClosureSafeProperty"
   },
   {
     "name": "getClosureSafeProperty$1"

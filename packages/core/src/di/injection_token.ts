@@ -7,8 +7,13 @@
  */
 
 import {Type} from '../type';
+import {getClosureSafeProperty} from '../util/property';
 
 import {InjectableDef, defineInjectable} from './defs';
+
+const GET_PROPERTY_NAME = {} as any;
+const PROVIDED_IN = getClosureSafeProperty<{providedIn?: Type<any>| 'root' | null}>(
+    {providedIn: GET_PROPERTY_NAME}, GET_PROPERTY_NAME);
 
 /**
  * Creates a token that can be used in a DI Provider.
@@ -57,6 +62,11 @@ export class InjectionToken<T> {
     factory: () => T
   }) {
     if (options !== undefined) {
+      if (PROVIDED_IN in options && options.providedIn === undefined) {
+        console && console.warn &&
+            console.warn(
+                `Encountered undefined providedIn target in InjectionToken '${_desc}'! Usually this means you have a circular dependencies.`);
+      }
       this.ngInjectableDef = defineInjectable({
         providedIn: options.providedIn || 'root',
         factory: options.factory,
