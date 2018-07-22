@@ -115,7 +115,6 @@ describe('ApiListComponent', () => {
 
       component.filteredSections.subscribe(filtered => {
         filtered = filtered.filter(s => s.items);
-        console.log(filtered);
         expect(filtered.length).toBe(1, 'sections');
         expect(filtered[0].name).toBe(section, 'section name');
         const items = filtered[0].items!;
