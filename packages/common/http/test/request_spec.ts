@@ -61,6 +61,14 @@ const TEST_STRING = `I'm a body!`;
         const req = new HttpRequest('GET', TEST_URL);
         expect(req.responseType).toBe('json');
       });
+      it('accepts canonical parameters', () => {
+        const headers = new HttpHeaders();
+        const req = new HttpRequest(TEST_URL, {method: 'DELETE', body: TEST_STRING, headers});
+        expect(req.method).toBe('DELETE');
+        expect(req.url).toBe(TEST_URL);
+        expect(req.body).toBe(TEST_STRING);
+        expect(req.headers instanceof HttpHeaders).toBeTruthy();
+      });
     });
     describe('clone() copies the request', () => {
       const headers = new HttpHeaders({

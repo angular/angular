@@ -24,6 +24,8 @@ interface HttpRequestInit {
 
 /**
  * Determine whether the given HTTP method may include a body.
+ *
+ * Note: This is incorrect, DELETE request do have body, left for compatiblity
  */
 function mightHaveBody(method: string): boolean {
   switch (method) {
@@ -77,6 +79,11 @@ function isFormData(value: any): value is FormData {
  */
 export class HttpRequest<T> {
   /**
+   * Request URL
+   */
+  readonly url: string = '';
+
+  /**
    * The request body, or `null` if one isn't set.
    *
    * Bodies are not enforced to be immutable, as they can include a reference to any
@@ -128,6 +135,18 @@ export class HttpRequest<T> {
    */
   readonly urlWithParams: string;
 
+  constructor(url: string, init: {
+    method: string,
+    body?: T|null,
+    headers?: HttpHeaders,
+    reportProgress?: boolean,
+    params?: HttpParams,
+    responseType?: 'arraybuffer'|'blob'|'json'|'text',
+    withCredentials?: boolean,
+  });
+  /**
+   * @deprecated v6.1.0 - provide method in `init` object instead
+   */
   constructor(method: 'DELETE'|'GET'|'HEAD'|'JSONP'|'OPTIONS', url: string, init?: {
     headers?: HttpHeaders,
     reportProgress?: boolean,
@@ -135,6 +154,9 @@ export class HttpRequest<T> {
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
   });
+  /**
+   * @deprecated v6.1.0 - provide method and body in `init` object instead
+   */
   constructor(method: 'POST'|'PUT'|'PATCH', url: string, body: T|null, init?: {
     headers?: HttpHeaders,
     reportProgress?: boolean,
@@ -142,6 +164,9 @@ export class HttpRequest<T> {
     responseType?: 'arraybuffer'|'blob'|'json'|'text',
     withCredentials?: boolean,
   });
+  /**
+   * @deprecated v6.1.0 - provide method and body in `init` object instead
+   */
   constructor(method: string, url: string, body: T|null, init?: {
     headers?: HttpHeaders,
     reportProgress?: boolean,
@@ -150,7 +175,16 @@ export class HttpRequest<T> {
     withCredentials?: boolean,
   });
   constructor(
-      method: string, readonly url: string, third?: T|{
+      first: string, second: string|{
+        method: string,
+        body?: T|null,
+        headers?: HttpHeaders,
+        reportProgress?: boolean,
+        params?: HttpParams,
+        responseType?: 'arraybuffer'|'blob'|'json'|'text',
+        withCredentials?: boolean,
+      },
+      third?: T|{
         headers?: HttpHeaders,
         reportProgress?: boolean,
         params?: HttpParams,
@@ -164,20 +198,33 @@ export class HttpRequest<T> {
         responseType?: 'arraybuffer'|'blob'|'json'|'text',
         withCredentials?: boolean,
       }) {
-    this.method = method.toUpperCase();
     // Next, need to figure out which argument holds the HttpRequestInit
     // options, if any.
     let options: HttpRequestInit|undefined;
 
-    // Check whether a body argument is expected. The only valid way to omit
-    // the body argument is to use a known no-body method like GET.
-    if (mightHaveBody(this.method) || !!fourth) {
-      // Body is the third argument, options are the fourth.
-      this.body = (third !== undefined) ? third as T : null;
-      options = fourth;
+    // Check if method used as parameter
+    if (typeof second !== 'string') {
+      // Only url and init
+      this.url = first;
+      const init = second;
+      this.method = init.method;
+      this.body = init.body !== undefined ? init.body : null;
+      options = init;
     } else {
-      // No body required, options are the third argument. The body stays null.
-      options = third as HttpRequestInit;
+      // Method, url, ...
+      this.url = second;
+      this.method = first.toUpperCase();
+
+      // Check whether a body argument is expected. The only valid way to omit
+      // the body argument is to use a known no-body method like GET.
+      if (mightHaveBody(this.method) || !!fourth) {
+        // Body is the third argument, options are the fourth.
+        this.body = (third !== undefined) ? third as T : null;
+        options = fourth;
+      } else {
+        // No body required, options are the third argument. The body stays null.
+        options = third as HttpRequestInit;
+      }
     }
 
     // If options have been passed, interpret them.
@@ -209,16 +256,16 @@ export class HttpRequest<T> {
     // If no parameters have been passed in, construct a new HttpUrlEncodedParams instance.
     if (!this.params) {
       this.params = new HttpParams();
-      this.urlWithParams = url;
+      this.urlWithParams = this.url;
     } else {
       // Encode the parameters to a string in preparation for inclusion in the URL.
       const params = this.params.toString();
       if (params.length === 0) {
         // No parameters, the visible URL is just the URL given at creation time.
-        this.urlWithParams = url;
+        this.urlWithParams = this.url;
       } else {
         // Does the URL already have query parameters? Look for '?'.
-        const qIdx = url.indexOf('?');
+        const qIdx = this.url.indexOf('?');
         // There are 3 cases to handle:
         // 1) No existing parameters -> append '?' followed by params.
         // 2) '?' exists and is followed by existing query string ->
@@ -226,8 +273,8 @@ export class HttpRequest<T> {
         // 3) '?' exists at the end of the url -> append params directly.
         // This basically amounts to determining the character, if any, with
         // which to join the URL and parameters.
-        const sep: string = qIdx === -1 ? '?' : (qIdx < url.length - 1 ? '&' : '');
-        this.urlWithParams = url + sep + params;
+        const sep: string = qIdx === -1 ? '?' : (qIdx < this.url.length - 1 ? '&' : '');
+        this.urlWithParams = this.url + sep + params;
       }
     }
   }
@@ -380,8 +427,8 @@ export class HttpRequest<T> {
 
     // Finally, construct the new HttpRequest using the pieces from above.
     return new HttpRequest(
-        method, url, body, {
-                               params, headers, reportProgress, responseType, withCredentials,
-                           });
+        url, {
+                 method, body, params, headers, reportProgress, responseType, withCredentials,
+             });
   }
 }

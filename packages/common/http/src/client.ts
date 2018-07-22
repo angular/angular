@@ -363,9 +363,9 @@ export class HttpClient {
       }
 
       // Construct the request.
-      req = new HttpRequest(first, url !, (options.body !== undefined ? options.body : null), {
-        headers,
-        params,
+      req = new HttpRequest(url !, {
+        method: first,
+        body: options.body !== undefined ? options.body : null, headers, params,
         reportProgress: options.reportProgress,
         // By default, JSON is assumed to be returned for all calls.
         responseType: options.responseType || 'json',

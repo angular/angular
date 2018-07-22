@@ -1591,21 +1591,30 @@ export declare class HttpRequest<T> {
     readonly url: string;
     readonly urlWithParams: string;
     readonly withCredentials: boolean;
-    constructor(method: 'DELETE' | 'GET' | 'HEAD' | 'JSONP' | 'OPTIONS', url: string, init?: {
+    /** @deprecated */ constructor(method: 'DELETE' | 'GET' | 'HEAD' | 'JSONP' | 'OPTIONS', url: string, init?: {
         headers?: HttpHeaders;
         reportProgress?: boolean;
         params?: HttpParams;
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
     });
-    constructor(method: 'POST' | 'PUT' | 'PATCH', url: string, body: T | null, init?: {
+    /** @deprecated */ constructor(method: 'POST' | 'PUT' | 'PATCH', url: string, body: T | null, init?: {
         headers?: HttpHeaders;
         reportProgress?: boolean;
         params?: HttpParams;
         responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
         withCredentials?: boolean;
     });
-    constructor(method: string, url: string, body: T | null, init?: {
+    /** @deprecated */ constructor(method: string, url: string, body: T | null, init?: {
+        headers?: HttpHeaders;
+        reportProgress?: boolean;
+        params?: HttpParams;
+        responseType?: 'arraybuffer' | 'blob' | 'json' | 'text';
+        withCredentials?: boolean;
+    });
+    constructor(url: string, init: {
+        method: string;
+        body?: T | null;
         headers?: HttpHeaders;
         reportProgress?: boolean;
         params?: HttpParams;
