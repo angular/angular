@@ -35,7 +35,7 @@ aio-notification {
     text-transform: none;
     padding: 0;
 
-    .flex {
+    > * {
       display: flex;
     }
 
