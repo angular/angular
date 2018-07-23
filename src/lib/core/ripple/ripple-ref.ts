@@ -18,12 +18,14 @@ export enum RippleState {
  */
 export class RippleRef {
 
-  /** Current state of the ripple reference. */
+  /** Current state of the ripple. */
   state: RippleState = RippleState.HIDDEN;
 
   constructor(
     private _renderer: RippleRenderer,
+    /** Reference to the ripple HTML element. */
     public element: HTMLElement,
+    /** Ripple configuration used for the ripple. */
     public config: RippleConfig) {
   }
 

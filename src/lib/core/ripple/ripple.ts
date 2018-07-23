@@ -163,7 +163,10 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
     this._rippleRenderer.fadeOutAll();
   }
 
-  /** Ripple configuration from the directive's input values. */
+  /**
+   * Ripple configuration from the directive's input values.
+   * @docs-private Implemented as part of RippleTarget
+   */
   get rippleConfig(): RippleConfig {
     return {
       centered: this.centered,
@@ -175,7 +178,10 @@ export class MatRipple implements OnInit, OnDestroy, RippleTarget {
     };
   }
 
-  /** Whether ripples on pointer-down are disabled or not. */
+  /**
+   * Whether ripples on pointer-down are disabled or not.
+   * @docs-private Implemented as part of RippleTarget
+   */
   get rippleDisabled(): boolean {
     return this.disabled || !!this._globalOptions.disabled;
   }
