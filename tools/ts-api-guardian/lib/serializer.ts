@@ -42,7 +42,9 @@ export function publicApi(fileName: string, options: SerializationOptions = {}):
 export function publicApiInternal(
     host: ts.CompilerHost, fileName: string, tsOptions: ts.CompilerOptions,
     options: SerializationOptions = {}): string {
-  const entrypoint = path.normalize(fileName);
+  // Since the entry point will be compared with the source files from the TypeScript program,
+  // the path needs to be normalized with forward slashes in order to work within Windows.
+  const entrypoint = path.normalize(fileName).replace(/\\/g, '/');
 
   if (!entrypoint.match(/\.d\.ts$/)) {
     throw new Error(`Source file "${fileName}" is not a declaration file`);
