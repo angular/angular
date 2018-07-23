@@ -54,16 +54,6 @@ export interface R3FactoryMetadata {
    * function could be different, and other options control how it will be invoked.
    */
   injectFn: o.ExternalReference;
-
-  /**
-   * If present, the return of the factory function will be an array with the injected value in the
-   * 0th position and the extra results included in subsequent positions.
-   *
-   * Occasionally APIs want to construct additional values when the factory function is called. The
-   * paradigm there is to have the factory function return an array, with the DI-created value as
-   * well as other values. Specifying `extraResults` enables this functionality.
-   */
-  extraResults?: o.Expression[];
 }
 
 /**
