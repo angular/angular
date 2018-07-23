@@ -41,7 +41,7 @@ export class TreeComponent {
     template: function(rf: RenderFlags, ctx: TreeComponent) {
       if (rf & RenderFlags.Create) {
         E(0, 'span');
-        s(c0);
+        s(null, c0);
         { T(1); }
         e();
         C(2);
@@ -114,7 +114,7 @@ export function TreeTpl(rf: RenderFlags, ctx: TreeNode) {
     E(0, 'tree');
     {
       E(1, 'span');
-      s(c1);
+      s(null, c1);
       { T(2); }
       e();
       C(3);

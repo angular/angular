@@ -284,7 +284,7 @@ describe('elements', () => {
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
               $r3$.ɵE(0, 'div');
-              $r3$.ɵs(null, c1);
+              $r3$.ɵs(c1);
               $r3$.ɵe();
             }
             if (rf & 2) {
@@ -323,7 +323,7 @@ describe('elements', () => {
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
               $r3$.ɵE(0, 'div');
-              $r3$.ɵs(c0);
+              $r3$.ɵs(null, c0);
               $r3$.ɵe();
             }
             if (rf & 2) {
@@ -356,8 +356,8 @@ describe('elements', () => {
     it('should bind to many and keep order', () => {
       type $MyComponent$ = MyComponent;
 
-      const c0 = ['color', InitialStylingFlags.VALUES_MODE, 'color', 'red'];
-      const c1 = ['foo'];
+      const c0 = ['foo'];
+      const c1 = ['color', InitialStylingFlags.VALUES_MODE, 'color', 'red'];
 
       @Component({
         selector: 'my-component',
@@ -416,7 +416,7 @@ describe('elements', () => {
               $r3$.ɵe();
             }
             if (rf & 2) {
-              $r3$.ɵsm(0, ctx.styleExp, ctx.classExp);
+              $r3$.ɵsm(0, ctx.classExp, ctx.styleExp);
               $r3$.ɵsa(0);
             }
           }

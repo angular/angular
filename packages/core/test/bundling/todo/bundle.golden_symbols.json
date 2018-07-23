@@ -540,6 +540,9 @@
     "name": "getRootView"
   },
   {
+    "name": "getStyleSanitizer"
+  },
+  {
     "name": "getStylingContext"
   },
   {
@@ -556,6 +559,9 @@
   },
   {
     "name": "getValue"
+  },
+  {
+    "name": "hasValueChanged"
   },
   {
     "name": "hostElement"
@@ -667,6 +673,9 @@
   },
   {
     "name": "pointers"
+  },
+  {
+    "name": "prepareInitialFlag"
   },
   {
     "name": "projectionNodeStack"

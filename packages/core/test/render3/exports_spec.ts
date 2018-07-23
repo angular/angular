@@ -213,7 +213,7 @@ describe('exports', () => {
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
-          elementStyling(null, [InitialStylingFlags.VALUES_MODE, 'red', true]);
+          elementStyling([InitialStylingFlags.VALUES_MODE, 'red', true]);
           elementEnd();
           elementStart(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
           elementEnd();
