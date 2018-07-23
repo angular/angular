@@ -987,7 +987,7 @@ describe('compiler compliance', () => {
           app: {
             ...directive,
             'spec.ts': `
-            import {Component, ContentChild, NgModule} from '@angular/core';
+            import {Component, ContentChild, ContentChildren, NgModule, QueryList} from '@angular/core';
             import {SomeDirective} from './some.directive';
 
             @Component({
@@ -998,6 +998,7 @@ describe('compiler compliance', () => {
             })
             export class ContentQueryComponent {
               @ContentChild(SomeDirective) someDir: SomeDirective;
+              @ContentChildren(SomeDirective) someDirList !: QueryList<SomeDirective>;
             }
 
             @Component({
@@ -1021,11 +1022,17 @@ describe('compiler compliance', () => {
             type: ContentQueryComponent,
             selectors: [["content-query-component"]],
             factory: function ContentQueryComponent_Factory() {
-              return [new ContentQueryComponent(), $r3$.ɵQ(null, SomeDirective, true)];
+              return new ContentQueryComponent();
+            },            
+            contentQueries: function ContentQueryComponent_ContentQueries() {
+              $r3$.ɵQr($r3$.ɵQ(null, SomeDirective, true));
+              $r3$.ɵQr($r3$.ɵQ(null, SomeDirective, false));
             },
-            hostBindings: function ContentQueryComponent_HostBindings(dirIndex, elIndex) {
+            contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(dirIndex, queryStartIndex) {  
+              const instance = $r3$.ɵd(dirIndex);
               var $tmp$;
-              ($r3$.ɵqR(($tmp$ = $r3$.ɵd(dirIndex)[1])) && ($r3$.ɵd(dirIndex)[0].someDir = $tmp$.first));
+              ($r3$.ɵqR(($tmp$ = $r3$.ɵql(queryStartIndex))) && ($instance$.someDir = $tmp$.first));
+              ($r3$.ɵqR(($tmp$ = $r3$.ɵql((queryStartIndex + 1)))) && ($instance$.someDirList = $tmp$));
             },
             template: function ContentQueryComponent_Template(rf, ctx) {
               if (rf & 1) {

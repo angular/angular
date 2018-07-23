@@ -41,7 +41,6 @@ function baseDirectiveFields(
   // e.g. `selectors: [['', 'someDir', '']]`
   definitionMap.set('selectors', createDirectiveSelector(meta.selector !));
 
-  const queryDefinitions = createQueryDefinitions(meta.queries, constantPool);
 
   // e.g. `factory: () => new MyApp(injectElementRef())`
   definitionMap.set('factory', compileFactoryFunction({
@@ -50,8 +49,11 @@ function baseDirectiveFields(
                       deps: meta.deps,
                       useNew: true,
                       injectFn: R3.directiveInject,
-                      extraResults: queryDefinitions,
                     }));
+
+  definitionMap.set('contentQueries', createContentQueriesFunction(meta, constantPool));
+
+  definitionMap.set('contentQueriesRefresh', createContentQueriesRefreshFunction(meta));
 
   // e.g. `hostBindings: (dirIndex, elIndex) => { ... }
   definitionMap.set('hostBindings', createHostBindingsFunction(meta, bindingParser));
@@ -366,31 +368,70 @@ function createHostAttributesArray(meta: R3DirectiveMetadata): o.Expression|null
   return null;
 }
 
+// Return a contentQueries function or null if one is not necessary.
+function createContentQueriesFunction(
+    meta: R3DirectiveMetadata, constantPool: ConstantPool): o.Expression|null {
+  const queryDefinitions = createQueryDefinitions(meta.queries, constantPool);
+
+  if (queryDefinitions) {
+    const statements: o.Statement[] = queryDefinitions.map((qd: o.Expression) => {
+      return o.importExpr(R3.registerContentQuery).callFn([qd]).toStmt();
+    });
+    const typeName = meta.name;
+    return o.fn(
+        [], statements, o.INFERRED_TYPE, null, typeName ? `${typeName}_ContentQueries` : null);
+  }
+
+  return null;
+}
+
+// Return a contentQueriesRefresh function or null if one is not necessary.
+function createContentQueriesRefreshFunction(meta: R3DirectiveMetadata): o.Expression|null {
+  if (meta.queries.length > 0) {
+    const statements: o.Statement[] = [];
+    const typeName = meta.name;
+    const parameters = [
+      new o.FnParam('dirIndex', o.NUMBER_TYPE),
+      new o.FnParam('queryStartIndex', o.NUMBER_TYPE),
+    ];
+    const directiveInstanceVar = o.variable('instance');
+    // var $tmp$: any;
+    const temporary = temporaryAllocator(statements, TEMPORARY_NAME);
+
+    // const $instance$ = $r3$.ɵd(dirIndex);
+    statements.push(
+        directiveInstanceVar.set(o.importExpr(R3.loadDirective).callFn([o.variable('dirIndex')]))
+            .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
+
+    meta.queries.forEach((query: R3QueryMetadata, idx: number) => {
+      const loadQLArg = o.variable('queryStartIndex');
+      const getQueryList = o.importExpr(R3.loadQueryList).callFn([
+        idx > 0 ? loadQLArg.plus(o.literal(idx)) : loadQLArg
+      ]);
+      const assignToTemporary = temporary().set(getQueryList);
+      const callQueryRefresh = o.importExpr(R3.queryRefresh).callFn([assignToTemporary]);
+
+      const updateDirective = directiveInstanceVar.prop(query.propertyName)
+                                  .set(query.first ? temporary().prop('first') : temporary());
+      const refreshQueryAndUpdateDirective = callQueryRefresh.and(updateDirective);
+
+      statements.push(refreshQueryAndUpdateDirective.toStmt());
+    });
+
+    return o.fn(
+        parameters, statements, o.INFERRED_TYPE, null,
+        typeName ? `${typeName}_ContentQueriesRefresh` : null);
+  }
+
+  return null;
+}
+
 // Return a host binding function or null if one is not necessary.
 function createHostBindingsFunction(
     meta: R3DirectiveMetadata, bindingParser: BindingParser): o.Expression|null {
   const statements: o.Statement[] = [];
 
-  const temporary = temporaryAllocator(statements, TEMPORARY_NAME);
-
   const hostBindingSourceSpan = meta.typeSourceSpan;
-
-  // Calculate the queries
-  for (let index = 0; index < meta.queries.length; index++) {
-    const query = meta.queries[index];
-
-    // e.g. r3.qR(tmp = r3.d(dirIndex)[1]) && (r3.d(dirIndex)[0].someDir = tmp);
-    const getDirectiveMemory = o.importExpr(R3.loadDirective).callFn([o.variable('dirIndex')]);
-    // The query list is at the query index + 1 because the directive itself is in slot 0.
-    const getQueryList = getDirectiveMemory.key(o.literal(index + 1));
-    const assignToTemporary = temporary().set(getQueryList);
-    const callQueryRefresh = o.importExpr(R3.queryRefresh).callFn([assignToTemporary]);
-    const updateDirective = getDirectiveMemory.key(o.literal(0, o.INFERRED_TYPE))
-                                .prop(query.propertyName)
-                                .set(query.first ? temporary().prop('first') : temporary());
-    const andExpression = callQueryRefresh.and(updateDirective);
-    statements.push(andExpression.toStmt());
-  }
 
   const directiveSummary = metadataAsSummary(meta);
 
