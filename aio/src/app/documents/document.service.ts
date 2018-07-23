@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 
 import { AsyncSubject, Observable, of } from 'rxjs';
 import { catchError, switchMap, tap } from 'rxjs/operators';
-import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/do';
 
 import { DocumentContents } from './document-contents';
 export { DocumentContents } from './document-contents';

@@ -200,11 +200,11 @@
   dependencies:
     tslib "^1.9.0"
 
-"@angular/service-worker@5.1.0":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-5.1.0.tgz#bf998e094ef37c13d50b7e32a91d2921f73316d3"
+"@angular/service-worker@6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@angular/service-worker/-/service-worker-6.0.0.tgz#35a187554d33e05911544080fafc281ff1b322e0"
   dependencies:
-    tslib "^1.7.1"
+    tslib "^1.9.0"
 
 "@google-cloud/common@^0.13.0":
   version "0.13.6"
