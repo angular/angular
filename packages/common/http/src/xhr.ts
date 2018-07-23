@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable} from '@angular/core';
+import {Inject, Injectable, InjectionToken} from '@angular/core';
 import {Observable, Observer} from 'rxjs';
 
 import {HttpBackend} from './backend';
@@ -15,6 +15,13 @@ import {HttpRequest} from './request';
 import {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpJsonParseError, HttpResponse, HttpUploadProgressEvent} from './response';
 
 const XSSI_PREFIX = /^\)\]\}',?\n/;
+
+/**
+ * Utility for parsing JSON text to JavaScript object
+ */
+export interface JsonParser { parse(text: string, reviver?: (key: any, value: any) => any): any; }
+
+export const JSON_PARSER = new InjectionToken<JsonParser>('JsonParser');
 
 /**
  * Determine an appropriate URL for the response, by checking either
@@ -70,7 +77,8 @@ interface PartialResponse {
  */
 @Injectable()
 export class HttpXhrBackend implements HttpBackend {
-  constructor(private xhrFactory: XhrFactory) {}
+  constructor(private xhrFactory: XhrFactory, @Inject(JSON_PARSER) private jsonParser: JsonParser) {
+  }
 
   /**
    * Processes a request and returns a stream of response events.
@@ -192,7 +200,7 @@ export class HttpXhrBackend implements HttpBackend {
           body = body.replace(XSSI_PREFIX, '');
           try {
             // Attempt the parse. If it fails, a parse error should be delivered to the user.
-            body = body !== '' ? JSON.parse(body) : null;
+            body = body !== '' ? this.jsonParser.parse(body) : null;
           } catch (error) {
             // Since the JSON.parse failed, it's reasonable to assume this might not have been a
             // JSON response. Restore the original body (including any XSSI prefix) to deliver

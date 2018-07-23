@@ -15,7 +15,7 @@ import {HTTP_INTERCEPTORS, HttpInterceptor, HttpInterceptorHandler, NoopIntercep
 import {JsonpCallbackContext, JsonpClientBackend, JsonpInterceptor} from './jsonp';
 import {HttpRequest} from './request';
 import {HttpEvent} from './response';
-import {BrowserXhr, HttpXhrBackend, XhrFactory} from './xhr';
+import {BrowserXhr, HttpXhrBackend, JSON_PARSER, JsonParser, XhrFactory} from './xhr';
 import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XSRF_COOKIE_NAME, XSRF_HEADER_NAME} from './xsrf';
 
 /**
@@ -131,6 +131,10 @@ export class HttpClientXsrfModule {
   }
 }
 
+export function _JSON(): JsonParser {
+  return JSON;
+}
+
 /**
  * Configures the [dependency injector](guide/glossary#injector) for `HttpClient`
  * with supporting services for XSRF. Automatically imported by `HttpClientModule`.
@@ -161,6 +165,7 @@ export class HttpClientXsrfModule {
     {provide: HttpBackend, useExisting: HttpXhrBackend},
     BrowserXhr,
     {provide: XhrFactory, useExisting: BrowserXhr},
+    {provide: JSON_PARSER, useFactory: _JSON, deps: []},
   ],
 })
 export class HttpClientModule {

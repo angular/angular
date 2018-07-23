@@ -1725,12 +1725,18 @@ export declare interface HttpUserEvent<T> {
 }
 
 export declare class HttpXhrBackend implements HttpBackend {
-    constructor(xhrFactory: XhrFactory);
+    constructor(xhrFactory: XhrFactory, jsonParser: JsonParser);
     handle(req: HttpRequest<any>): Observable<HttpEvent<any>>;
 }
 
 export declare abstract class HttpXsrfTokenExtractor {
     abstract getToken(): string | null;
+}
+
+export declare const JSON_PARSER: InjectionToken<JsonParser>;
+
+export interface JsonParser {
+    parse(text: string, reviver?: (key: any, value: any) => any): any;
 }
 
 export declare class JsonpClientBackend implements HttpBackend {

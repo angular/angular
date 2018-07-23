@@ -15,5 +15,5 @@ export {HttpClientJsonpModule, HttpClientModule, HttpClientXsrfModule, HttpInter
 export {HttpParameterCodec, HttpParams, HttpParamsOptions, HttpUrlEncodingCodec} from './src/params';
 export {HttpRequest} from './src/request';
 export {HttpDownloadProgressEvent, HttpErrorResponse, HttpEvent, HttpEventType, HttpHeaderResponse, HttpProgressEvent, HttpResponse, HttpResponseBase, HttpSentEvent, HttpUploadProgressEvent, HttpUserEvent} from './src/response';
-export {HttpXhrBackend, XhrFactory} from './src/xhr';
+export {HttpXhrBackend, JSON_PARSER, JsonParser, XhrFactory} from './src/xhr';
 export {HttpXsrfTokenExtractor} from './src/xsrf';
