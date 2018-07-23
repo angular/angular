@@ -614,10 +614,14 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
   return di.viewContainerRef;
 }
 
+let componentFactoryResolverSingleton: ComponentFactoryResolver|null = null;
 export function getOrCreateComponentFactoryResolver(di: LInjector):
     viewEngine_ComponentFactoryResolver {
   if (!di.componentFactoryResolver) {
-    di.componentFactoryResolver = new ComponentFactoryResolver();
+    if (!componentFactoryResolverSingleton) {
+      componentFactoryResolverSingleton = new ComponentFactoryResolver();
+    }
+    di.componentFactoryResolver = componentFactoryResolverSingleton;
   }
   return di.componentFactoryResolver;
 }

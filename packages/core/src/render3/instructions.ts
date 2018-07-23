@@ -21,7 +21,7 @@ import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LEleme
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, PROJECTABLE_NODES, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
@@ -335,7 +335,6 @@ export function createLViewData<T>(
     null,                                                                        // tail
     -1,                                                                          // containerIndex
     null,                                                                        // contentQueries
-    null                                                                         // projectableNodes
   ];
 }
 
@@ -679,12 +678,12 @@ export function elementStart(
 /**
  * Creates a native element from a tag name, using a renderer.
  * @param name the tag name
- * @param overridenRenderer Optional A renderer to override the default one
+ * @param overriddenRenderer Optional A renderer to override the default one
  * @returns the element created
  */
-export function elementCreate(name: string, overridenRenderer?: Renderer3): RElement {
+export function elementCreate(name: string, overriddenRenderer?: Renderer3): RElement {
   let native: RElement;
-  const rendererToUse = overridenRenderer || renderer;
+  const rendererToUse = overriddenRenderer || renderer;
 
   if (isProceduralRenderer(rendererToUse)) {
     native = rendererToUse.createElement(name, _currentNamespace);
@@ -1972,31 +1971,27 @@ export function projectionDef(selectors?: CssSelectorList[], textSelectors?: str
   const componentNode: LElementNode = findComponentHost(viewData);
 
   if (!componentNode.tNode.projection) {
-    if (componentNode.data && componentNode.data[PROJECTABLE_NODES]) {
-      componentNode.tNode.projection = componentNode.data[PROJECTABLE_NODES];
-    } else {
-      const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
-      const pData: (TNode | null)[] = componentNode.tNode.projection =
-          new Array(noOfNodeBuckets).fill(null);
-      const tails: (TNode | null)[] = pData.slice();
+    const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
+    const pData: (TNode | null)[] = componentNode.tNode.projection =
+        new Array(noOfNodeBuckets).fill(null);
+    const tails: (TNode | null)[] = pData.slice();
 
-      let componentChild = componentNode.tNode.child;
+    let componentChild = componentNode.tNode.child;
 
-      while (componentChild !== null) {
-        const bucketIndex =
-            selectors ? matchingSelectorIndex(componentChild, selectors, textSelectors !) : 0;
-        const nextNode = componentChild.next;
+    while (componentChild !== null) {
+      const bucketIndex =
+          selectors ? matchingSelectorIndex(componentChild, selectors, textSelectors !) : 0;
+      const nextNode = componentChild.next;
 
-        if (tails[bucketIndex]) {
-          tails[bucketIndex] !.next = componentChild;
-        } else {
-          pData[bucketIndex] = componentChild;
-          componentChild.next = null;
-        }
-        tails[bucketIndex] = componentChild;
-
-        componentChild = nextNode;
+      if (tails[bucketIndex]) {
+        tails[bucketIndex] !.next = componentChild;
+      } else {
+        pData[bucketIndex] = componentChild;
+        componentChild.next = null;
       }
+      tails[bucketIndex] = componentChild;
+
+      componentChild = nextNode;
     }
   }
 }

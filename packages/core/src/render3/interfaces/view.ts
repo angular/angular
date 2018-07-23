@@ -17,7 +17,7 @@ import {LQueries} from './query';
 import {Renderer3} from './renderer';
 
 /** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 17;
+export const HEADER_OFFSET = 16;
 
 // Below are constants for LViewData indices to help us look up LViewData members
 // without having to remember the specific indices.
@@ -38,7 +38,6 @@ export const SANITIZER = 12;
 export const TAIL = 13;
 export const CONTAINER_INDEX = 14;
 export const CONTENT_QUERIES = 15;
-export const PROJECTABLE_NODES = 16;
 
 /**
  * `LViewData` stores all of the information needed to process the instructions as
@@ -163,11 +162,6 @@ export interface LViewData extends Array<any> {
    * be refreshed.
    */
   [CONTENT_QUERIES]: QueryList<any>[]|null;
-
-  /**
-   * An optional list of projectable nodes (see ComponentFactory.create() API).
-   */
-  [PROJECTABLE_NODES]: (TNode|null)[]|null;
 }
 
 /** Flags associated with an LView (saved in LViewData[FLAGS]) */
