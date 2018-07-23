@@ -82,7 +82,7 @@ export class CdkDrag implements AfterContentInit, OnDestroy {
   private _activeTransform: Point = {x: 0, y: 0};
 
   /** Whether the element is being dragged. */
-  private _isDragging = false;
+  _isDragging = false;
 
   /** Whether the element has moved since the user started dragging it. */
   private _hasMoved = false;

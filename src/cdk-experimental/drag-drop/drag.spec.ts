@@ -657,7 +657,8 @@ describe('CdkDrag', () => {
       const initialRect = item.element.nativeElement.getBoundingClientRect();
       const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
 
-      expect(dropZones[0].contains(item.element.nativeElement)).toBe(true);
+      expect(dropZones[0].contains(item.element.nativeElement))
+        .toBe(true, 'Expected placeholder to be inside the first container.');
       dispatchMouseEvent(item.element.nativeElement, 'mousedown');
       fixture.detectChanges();
 
@@ -675,7 +676,7 @@ describe('CdkDrag', () => {
       fixture.detectChanges();
 
       expect(dropZones[0].contains(placeholder))
-          .toBe(true, 'Expected placeholder to be inside first container.');
+          .toBe(true, 'Expected placeholder to be back inside first container.');
 
       dispatchMouseEvent(document, 'mouseup');
       fixture.detectChanges();
@@ -744,6 +745,46 @@ describe('CdkDrag', () => {
       });
 
       assertDownwardSorting(fixture, Array.from(dropZones[1].querySelectorAll('.cdk-drag')));
+    }));
+
+    it('should be able to return the last item inside its initial container', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZones);
+
+      // Make sure there's only one item in the first list.
+      fixture.componentInstance.todo = ['things'];
+      fixture.detectChanges();
+
+      const groups = fixture.componentInstance.groupedDragItems;
+      const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+      const item = groups[0][0];
+      const initialRect = item.element.nativeElement.getBoundingClientRect();
+      const targetRect = groups[1][0].element.nativeElement.getBoundingClientRect();
+
+      expect(dropZones[0].contains(item.element.nativeElement))
+          .toBe(true, 'Expected placeholder to be inside the first container.');
+      dispatchMouseEvent(item.element.nativeElement, 'mousedown');
+      fixture.detectChanges();
+
+      const placeholder = dropZones[0].querySelector('.cdk-drag-placeholder')!;
+
+      expect(placeholder).toBeTruthy();
+
+      dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
+      fixture.detectChanges();
+
+      expect(dropZones[1].contains(placeholder))
+          .toBe(true, 'Expected placeholder to be inside second container.');
+
+      dispatchMouseEvent(document, 'mousemove', initialRect.left + 1, initialRect.top + 1);
+      fixture.detectChanges();
+
+      expect(dropZones[0].contains(placeholder))
+          .toBe(true, 'Expected placeholder to be back inside first container.');
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
     }));
 
   });
@@ -916,29 +957,36 @@ export class DraggableInDropZoneWithCustomPlaceholder {
 
 
 @Component({
+  encapsulation: ViewEncapsulation.None,
+  styles: [`
+    .cdk-drop {
+      display: block;
+      width: 100px;
+      min-height: ${ITEM_HEIGHT}px;
+      background: hotpink;
+    }
+
+    .cdk-drag {
+      display: block;
+      height: ${ITEM_HEIGHT}px;
+      background: red;
+    }
+  `],
   template: `
     <cdk-drop
       #todoZone
-      style="display: block; width: 100px; background: pink;"
       [data]="todo"
       [connectedTo]="[doneZone]"
       (dropped)="droppedSpy($event)">
-      <div
-        *ngFor="let item of todo"
-        cdkDrag
-        style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">{{item}}</div>
+      <div *ngFor="let item of todo" cdkDrag>{{item}}</div>
     </cdk-drop>
 
     <cdk-drop
       #doneZone
-      style="display: block; width: 100px; background: purple;"
       [data]="done"
       [connectedTo]="[todoZone]"
       (dropped)="droppedSpy($event)">
-      <div
-        *ngFor="let item of done"
-        cdkDrag
-        style="width: 100%; height: ${ITEM_HEIGHT}px; background: green;">{{item}}</div>
+      <div *ngFor="let item of done" cdkDrag>{{item}}</div>
     </cdk-drop>
   `
 })

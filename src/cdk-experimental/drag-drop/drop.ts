@@ -141,7 +141,9 @@ export class CdkDrop<T = any> {
     const siblings = this._positionCache.items;
     const newPosition = siblings.find(({drag, clientRect}) => {
       if (drag === item) {
-        return false;
+        // If there's only one left item in the container, it must be
+        // the dragged item itself so we use it as a reference.
+        return siblings.length < 2;
       }
 
       return this.orientation === 'horizontal' ?
@@ -153,7 +155,10 @@ export class CdkDrop<T = any> {
       return;
     }
 
-    const element = newPosition ? newPosition.drag.element.nativeElement : null;
+    // Don't take the element of a dragged item as a reference,
+    // because it has been moved down to the end of the body.
+    const element = (newPosition && !newPosition.drag._isDragging) ?
+        newPosition.drag.element.nativeElement : null;
     const next = element ? element!.nextSibling : null;
     const parent = element ? element.parentElement! : this.element.nativeElement;
     const placeholder = item.getPlaceholderElement();
