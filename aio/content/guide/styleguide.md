@@ -53,7 +53,7 @@ _항상_ 이라는 단어가 조금 강하게 와닿을 수도 있지만, 이 �
 **Consider** guidelines should generally be followed.
 If you fully understand the meaning behind the guideline and have a good reason to deviate, then do so. Please strive to be consistent.
 -->
-**"~하는 것을 고려해보세요"**는 일반적으로 사용하는 스타일을 의미합니다.
+**"권장합니다"**나 **"~하는 것을 고려해보세요"**는 일반적으로 사용하는 스타일을 의미합니다.
 이 어휘가 사용된 가이드라인을 확실하게 이해하고 있지만, 꼭 그렇게 사용하지 않아도 될 이유가 있다면 해당 스타일 가이드를 지키지 않아도 됩니다. 코드의 일관성을 유지하는 것에 더 신경쓰는 것이 좋습니다.
 
 </div>
@@ -149,7 +149,7 @@ This helps make the app cleaner, easier to read and maintain, and more testable.
 <!--
 **Consider** limiting files to 400 lines of code.
 -->
-한 파일에는 400줄 이하의 코드만 작성하는 것을 **고려해 보세요.**
+한 파일에는 400줄 이하의 코드만 작성하는 것을 **권장합니다.**
 
 </div>
 
@@ -287,7 +287,7 @@ As the app grows, this rule becomes even more important.
 <!--
 **Consider** limiting to no more than 75 lines.
 -->
-75줄 이하로 작성하는 것을 **고려해 보세요.**
+75줄 이하로 작성하는 것을 **권장합니다.**
 
 </div>
 
@@ -2130,7 +2130,7 @@ preventing subsequent re-assignment.
 <!--
 **Consider** spelling `const` variables in lower camel case.
 -->
-상수의 이름은 소문자 캐멀 케이스로 지정하는 것을 **고려해 보세요.**
+상수의 이름은 소문자 캐멀 케이스로 지정하는 것을 **권장합니다.**
 
 </div>
 
@@ -2233,7 +2233,7 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 <!--
 **Consider** naming an interface without an `I` prefix.
 -->
-인터페이스에 `I` 접두사는 사용하지 않는 것을 **고려해 보세요.**
+인터페이스에 `I` 접두사는 사용하지 않는 것을 **권장합니다.**
 
 </div>
 
@@ -2245,7 +2245,7 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 <!--
 **Consider** using a class instead of an interface for services and declarables (components, directives, and pipes).
 -->
-서비스나 컴포넌트, 디렉티브, 파이프에는 인터페이스 대신 클래스를 사용하는 것을 **고려해 보세요.**
+서비스나 컴포넌트, 디렉티브, 파이프에는 인터페이스 대신 클래스를 사용하는 것을 **권장합니다.**
 
 </div>
 
@@ -2257,7 +2257,7 @@ It is rarely worth the effort to change them at the risk of breaking existing co
 <!--
 **Consider** using an interface for data models.
 -->
-인터페이스는 데이터 모델로 사용하는 것을 **고려해 보세요.**
+인터페이스는 데이터 모델로 사용하는 것을 **권장합니다.**
 
 </div>
 
@@ -2440,7 +2440,7 @@ private 프로퍼티나 메소드에 밑줄(`_`)을 붙이는 것은 **피하세
 <!--
 **Consider** leaving one empty line between third party imports and application imports.
 -->
-서드 파티 라이브러리를 로드하는 줄과 애플리케이션 심볼을 로드하는 줄 사이에는 빈 줄을 추가하는 것을 **고려해 보세요.**
+서드 파티 라이브러리를 로드하는 줄과 애플리케이션 심볼을 로드하는 줄 사이에는 빈 줄을 추가하는 것을 **권장합니다.**
 
 </div>
 
@@ -2452,7 +2452,7 @@ private 프로퍼티나 메소드에 밑줄(`_`)을 붙이는 것은 **피하세
 <!--
 **Consider** listing import lines alphabetized by the module.
 -->
-import 줄들은 로드하는 모듈 알파벳 순서로 정렬하는 것을 **고려해 보세요.**
+import 줄들은 로드하는 모듈 알파벳 순서로 정렬하는 것을 **권장합니다.**
 
 </div>
 
@@ -2464,7 +2464,7 @@ import 줄들은 로드하는 모듈 알파벳 순서로 정렬하는 것을 **�
 <!--
 **Consider** listing destructured imported symbols alphabetically.
 -->
-모듈 안에서 일부 심볼만 참조할 때, 이 심볼들은 알파벳 순서로 참조하는 것을 **고려해 보세요.**
+모듈 안에서 일부 심볼만 참조할 때, 이 심볼들은 알파벳 순서로 참조하는 것을 **권장합니다.**
 
 </div>
 
@@ -2571,7 +2571,7 @@ keep the **F**lattest structure you can, and
 코드는 빠르게 접근할 수 있는 곳에 위치해야 하며(**L**ocate),
 파일 이름만 봐도 무슨 내용인지 확인할 수 있어야 하고(**I**dentify),
 최대한 단순한 구조여야 하며(**F**lattest),
-간결한 이름을 사용해야 합니다(**T**ry to be DRY).
+불필요하게 반복하는 내용을 줄이세요.(**T**ry to be DRY).
 
 </div>
 
@@ -2580,9 +2580,10 @@ keep the **F**lattest structure you can, and
 <div class="s-rule do">
 
 
-
+<!--
 **Do** define the structure to follow these four basic guidelines, listed in order of importance.
-
+-->
+애플리케이션의 기본 구조는 이 라이드라인을 따라 **마련하세요.** 각 항목의 순서가 중요도의 순서입니다.
 
 </div>
 
@@ -2591,11 +2592,13 @@ keep the **F**lattest structure you can, and
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** LIFT Provides a consistent structure that scales well, is modular, and makes it easier to increase developer efficiency by finding code quickly.
 To confirm your intuition about a particular structure, ask:
 _can I quickly open and start work in all of the related files for this feature_?
-
+-->
+**왜?** LIFT 규칙을 준수하면 애플리케이션의 구조를 일관되게 유지할 수 있으며, 애플리케이션의 규모가 커지거나 모듈을 구현하면서 코드를 나눌 때도 원하는 코드를 빠르게 찾을 수 있습니다.
+애플리케이션의 구조를 잡을 때 가장 중요한 내용을 생각해 보세요. 비슷한 파일들 중에 원하는 파일을 빠르게 열어서 바로 작업할 수 있는 것이 좋은 애플리케이션 구조입니다.
 
 </div>
 
@@ -2606,7 +2609,10 @@ _can I quickly open and start work in all of the related files for this feature_
 
 {@a 04-02}
 
+<!--
 ### Locate
+-->
+### 위치 (Locate)
 
 <!--
 #### Style 04-02
@@ -2616,9 +2622,10 @@ _can I quickly open and start work in all of the related files for this feature_
 <div class="s-rule do">
 
 
-
+<!--
 **Do** make locating code intuitive, simple and fast.
-
+-->
+코드는 직관적으로 와닿는 곳에 **두세요.** 그래야 찾기 쉽습니다.
 
 </div>
 
@@ -2627,12 +2634,13 @@ _can I quickly open and start work in all of the related files for this feature_
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** To work efficiently you must be able to find files quickly,
 especially when you do not know (or do not remember) the file _names_.
 Keeping related files near each other in an intuitive location saves time.
 A descriptive folder structure makes a world of difference to you and the people who come after you.
-
+-->
+**왜?** 작업을 효율적으로 하려면 파일의 이름을 모르더라도 원하는 내용을 빠르게 찾을 수 있어야 합니다. 그래서 서로 연관된 파일은 비슷한 위치에 두면 원하는 코드를 찾을때 걸리는 시간을 줄일 수 있습니다. 폴더 구조에 일관성이 없으면 당신은 물론이고 주변 사람들도 모두 피곤하게 만들 수 있습니다.
 
 </div>
 
@@ -2643,7 +2651,10 @@ A descriptive folder structure makes a world of difference to you and the people
 
 {@a 04-03}
 
+<!--
 ### Identify
+-->
+### 파일 이름 짓기 (Identify)
 
 <!--
 #### Style 04-03
@@ -2653,9 +2664,10 @@ A descriptive folder structure makes a world of difference to you and the people
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name the file such that you instantly know what it contains and represents.
-
+-->
+파일의 이름은 그 파일의 내용이 무엇인지 바로 알아차릴 수 있는 이름으로 **지정하세요.**
 
 </div>
 
@@ -2664,9 +2676,10 @@ A descriptive folder structure makes a world of difference to you and the people
 <div class="s-rule do">
 
 
-
+<!--
 **Do** be descriptive with file names and keep the contents of the file to exactly one component.
-
+-->
+파일의 이름은 그 파일의 내용을 명확하게 표현할 수 **있어야 하며**, 그렇기 때문에 한 파일에는 하나의 컴포넌트만 구현해야 **합니다.**
 
 </div>
 
@@ -2675,9 +2688,10 @@ A descriptive folder structure makes a world of difference to you and the people
 <div class="s-rule avoid">
 
 
-
+<!--
 **Avoid** files with multiple components, multiple services, or a mixture.
-
+-->
+한 파일에 컴포넌트나 서비스를 여러개 정의하는 것은 **피하세요.**
 
 </div>
 
@@ -2686,10 +2700,12 @@ A descriptive folder structure makes a world of difference to you and the people
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Spend less time hunting and pecking for code, and become more efficient.
 Longer file names are far better than _short-but-obscure_ abbreviated names.
-
+-->
+**왜?** 원하는 코드를 찾느라 들이는 시간은 최대한 줄이고, 그 시간을 좀 더 효율적으로 사용하세요.
+_알아볼 수 없게 줄여놓은_ 파일 이름보다, 조금은 길지만 파일을 충분히 설명할 수 있는 이름이 더 좋습니다.
 
 </div>
 
@@ -2698,11 +2714,12 @@ Longer file names are far better than _short-but-obscure_ abbreviated names.
 <div class="l-sub-section">
 
 
-
+<!--
 It may be advantageous to deviate from the _one-thing-per-file_ rule when
 you have a set of small, closely-related features that are better discovered and understood
 in a single file than as multiple files. Be wary of this loophole.
-
+-->
+아주 작지만 서로 연관된 기능을 구현한다면 _한 파일에 하나만 구현하는_ 규칙을 지키지 않는 것이 유리할 수도 있습니다. 이 코드들의 분량이 길지 않다면 여러 파일에 흩어져 있는 것보다 편하기 때문입니다. 다만, 이 파일에 너무 많은 내용이 들어가지 않도록 주의하세요.
 
 </div>
 
@@ -2714,7 +2731,10 @@ in a single file than as multiple files. Be wary of this loophole.
 
 {@a 04-04}
 
+<!--
 ### Flat
+-->
+### 폴더 구조는 단순하게 (Flat)
 
 <!--
 #### Style 04-04
@@ -2724,9 +2744,10 @@ in a single file than as multiple files. Be wary of this loophole.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** keep a flat folder structure as long as possible.
-
+-->
+폴더 구조는 최대한 단순하게 **구성하세요.**
 
 </div>
 
@@ -2735,9 +2756,10 @@ in a single file than as multiple files. Be wary of this loophole.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** creating sub-folders when a folder reaches seven or more files.
-
+-->
+폴더에 있는 파일이 7개가 넘어갈 때 하위 폴더를 만드는 것을 **권장합니다.**
 
 </div>
 
@@ -2746,9 +2768,10 @@ in a single file than as multiple files. Be wary of this loophole.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** configuring the IDE to hide distracting, irrelevant files such as generated `.js` and `.js.map` files.
-
+-->
+`.js` 파일이나 `.js.map` 파일같이, IDE가 자동으로 생성하지만 개발 단계에서 필요 없는 파일은 IDE에 표시되지 않도록 설정하는 것을 **권장합니다.**
 
 </div>
 
@@ -2757,18 +2780,28 @@ in a single file than as multiple files. Be wary of this loophole.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** No one wants to search for a file through seven levels of folders.
 A flat structure is easy to scan.
+-->
+**왜?** 원하는 파일을 찾기 위해 7겹으로 된 하위 폴더를 여는 것은 아무도 좋아하지 않을 것입니다.
+폴더 구조는 단순해야 원하는 파일을 찾기 쉽습니다.
 
+<!--
 On the other hand,
 <a href="https://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two">psychologists believe</a>
 that humans start to struggle when the number of adjacent interesting things exceeds nine.
 So when a folder has ten or more files, it may be time to create subfolders.
+-->
+하지만 <a href="https://en.wikipedia.org/wiki/The_Magical_Number_Seven,_Plus_or_Minus_Two">심리학자들의 의견</a>에 따르면, 비슷한 것이 9개 정도 모여있는 것은 사람들이 재미있어한다고 하기도 합니다.
+그렇다면 폴더에 있는 파일이 10개를 넘어가면 하위 폴더를 만드는 방법도 있습니다.
 
+<!--
 Base your decision on your comfort level.
 Use a flatter structure until there is an obvious value to creating a new folder.
-
+-->
+폴더 안에 파일을 몇개까지 둘지는 개발자의 선택에 달려있습니다.
+새 폴더를 만들기 전까지는 최대한 단순한 폴더 구조를 유지하세요.
 
 </div>
 
@@ -2780,7 +2813,10 @@ Use a flatter structure until there is an obvious value to creating a new folder
 
 {@a 04-05}
 
+<!--
 ### _T-DRY_ (Try to be _DRY_)
+-->
+### 불필요한 반복 피하기 (Try to be _DRY_)
 
 <!--
 #### Style 04-05
@@ -2790,9 +2826,10 @@ Use a flatter structure until there is an obvious value to creating a new folder
 <div class="s-rule do">
 
 
-
+<!--
 **Do** be DRY (Don't Repeat Yourself).
-
+-->
+DRY(Don't Repeat Yourself) 원칙을 최대한 **지키세요.**
 
 </div>
 
@@ -2801,9 +2838,10 @@ Use a flatter structure until there is an obvious value to creating a new folder
 <div class="s-rule avoid">
 
 
-
+<!--
 **Avoid** being so DRY that you sacrifice readability.
-
+-->
+하지만 DRY 원칙 때문에 가독성을 포기하지는 **마세요.**
 
 </div>
 
@@ -2812,13 +2850,17 @@ Use a flatter structure until there is an obvious value to creating a new folder
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Being DRY is important, but not crucial if it sacrifices the other elements of LIFT.
 That's why it's called _T-DRY_.
 For example, it's redundant to name a template `hero-view.component.html` because
 with the `.html` extension, it is obviously a view.
 But if something is not obvious or departs from a convention, then spell it out.
-
+-->
+**왜?** DRY 원칙을 지키도록 노력하는 것은 물론 중요하지만, 이것 때문에 다른 LIFT 원칙을 포기하는 것은 좋지 않습니다.
+그래서 DRY 원칙을 _반드시 지키라고_ 하지 않고 _할 수 있는 만큼 하라고_ 하는 것입니다.
+예를 들면, 템플릿 파일의 확장자는 `.html`이기 때문에 이 파일의 이름을 `hero-view.component.html`이라고 짓는 것은 불필요한 작업입니다. 파일의 확장자를 보면 이 파일의 역할을 명백하게 구별할 수 있습니다.
+하지만 애매한 부분이 있거나 일반적인 방식을 벗어난다면, 확실하게 명시하는 것이 좋습니다.
 
 </div>
 
@@ -2830,7 +2872,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 {@a 04-06}
 
+<!--
 ### Overall structural guidelines
+-->
+### 애플리케이션 전체 구조 가이드라인
 
 <!--
 #### Style 04-06
