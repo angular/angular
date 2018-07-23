@@ -999,6 +999,9 @@
     "name": "NG_CONTENT_SELECT_ATTR"
   },
   {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
     "name": "NG_NON_BINDABLE_ATTR"
   },
   {

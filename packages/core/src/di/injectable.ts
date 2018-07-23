@@ -19,6 +19,8 @@ import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, Existin
 const GET_PROPERTY_NAME = {} as any;
 const USE_VALUE = getClosureSafeProperty<ValueProvider>(
     {provide: String, useValue: GET_PROPERTY_NAME}, GET_PROPERTY_NAME);
+const NG_INJECTABLE_DEF = getClosureSafeProperty<{ngInjectableDef: any}>(
+    {ngInjectableDef: GET_PROPERTY_NAME}, GET_PROPERTY_NAME);
 
 /**
  * Injectable providers used in `@Injectable` decorator.
@@ -105,7 +107,8 @@ export function convertInjectableProviderToFactory(
 function preR3InjectableCompile(
     injectableType: InjectableType<any>,
     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
-  if (options && options.providedIn !== undefined && injectableType.ngInjectableDef === undefined) {
+  if (options && options.providedIn !== undefined &&
+      !injectableType.hasOwnProperty(NG_INJECTABLE_DEF)) {
     injectableType.ngInjectableDef = defineInjectable({
       providedIn: options.providedIn,
       factory: convertInjectableProviderToFactory(injectableType, options),
