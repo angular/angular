@@ -43,6 +43,7 @@ jasmine_node_test(
     ],
     deps = [
         ":extract_i18n_lib",
+        "//packages/common:npm_package",
         "//packages/core",
         "//tools/testing:node",
     ],
