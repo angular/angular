@@ -67,14 +67,14 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     if (ngModule.has('imports')) {
       const importsMeta = staticallyResolve(
           ngModule.get('imports') !, this.reflector, this.checker,
-          node => this._extractModuleFromModuleWithProvidersFn(node));
+          ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       imports = resolveTypeList(importsMeta, 'imports');
     }
     let exports: Reference[] = [];
     if (ngModule.has('exports')) {
       const exportsMeta = staticallyResolve(
           ngModule.get('exports') !, this.reflector, this.checker,
-          node => this._extractModuleFromModuleWithProvidersFn(node));
+          ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       exports = resolveTypeList(exportsMeta, 'exports');
     }
 
