@@ -14,7 +14,7 @@ import {Reference, ResolvedValue, reflectObjectLiteral, staticallyResolve} from 
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore, referenceToExpression, unwrapExpression} from './util';
+import {getConstructorDependencies, isAngularCore, toR3Reference, unwrapExpression} from './util';
 
 export interface NgModuleAnalysis {
   ngModuleDef: R3NgModuleMetadata;
@@ -87,9 +87,9 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     const ngModuleDef: R3NgModuleMetadata = {
       type: new WrappedNodeExpr(node.name !),
       bootstrap: [],
-      declarations: declarations.map(decl => referenceToExpression(decl, context)),
-      exports: exports.map(exp => referenceToExpression(exp, context)),
-      imports: imports.map(imp => referenceToExpression(imp, context)),
+      declarations: declarations.map(decl => toR3Reference(decl, context)),
+      exports: exports.map(exp => toR3Reference(exp, context)),
+      imports: imports.map(imp => toR3Reference(imp, context)),
       emitInline: false,
     };
 

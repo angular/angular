@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, R3DependencyMetadata, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Decorator, ReflectionHost} from '../../host';
-import {AbsoluteReference, Reference} from '../../metadata';
+import {AbsoluteReference, ImportMode, Reference} from '../../metadata';
 
 export function getConstructorDependencies(
     clazz: ts.ClassDeclaration, reflector: ReflectionHost,
@@ -79,12 +79,13 @@ export function getConstructorDependencies(
   return useType;
 }
 
-export function referenceToExpression(ref: Reference, context: ts.SourceFile): Expression {
-  const exp = ref.toExpression(context);
-  if (exp === null) {
+export function toR3Reference(ref: Reference, context: ts.SourceFile): R3Reference {
+  const value = ref.toExpression(context, ImportMode.UseExistingImport);
+  const type = ref.toExpression(context, ImportMode.ForceNewImport);
+  if (value === null || type === null) {
     throw new Error(`Could not refer to ${ts.SyntaxKind[ref.node.kind]}`);
   }
-  return exp;
+  return {value, type};
 }
 
 export function isAngularCore(decorator: Decorator): boolean {
