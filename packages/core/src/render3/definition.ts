@@ -16,7 +16,7 @@ import {Type} from '../type';
 import {resolveRendererType2} from '../view/util';
 
 import {diPublic} from './di';
-import {ComponentDefFeature, ComponentDefInternal, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeDefInternal, PipeType, PipeTypesOrFactory} from './interfaces/definition';
+import {BaseDef, ComponentDefFeature, ComponentDefInternal, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveDefListOrFactory, DirectiveType, DirectiveTypesOrFactory, PipeDefInternal, PipeType, PipeTypesOrFactory} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 
@@ -351,6 +351,84 @@ function invertObject(obj: any, secondary?: any): any {
     }
   }
   return newLookup;
+}
+
+/**
+ * Create a base definition
+ *
+ * # Example
+ * ```
+ * class ShouldBeInherited {
+ *   static ngBaseDef = defineBase({
+ *      ...
+ *   })
+ * }
+ * @param baseDefinition The base definition parameters
+ */
+export function defineBase<T>(baseDefinition: {
+  /**
+   * A map of input names.
+   *
+   * The format is in: `{[actualPropertyName: string]:(string|[string, string])}`.
+   *
+   * Given:
+   * ```
+   * class MyComponent {
+   *   @Input()
+   *   publicInput1: string;
+   *
+   *   @Input('publicInput2')
+   *   declaredInput2: string;
+   * }
+   * ```
+   *
+   * is described as:
+   * ```
+   * {
+   *   publicInput1: 'publicInput1',
+   *   declaredInput2: ['declaredInput2', 'publicInput2'],
+   * }
+   * ```
+   *
+   * Which the minifier may translate to:
+   * ```
+   * {
+   *   minifiedPublicInput1: 'publicInput1',
+   *   minifiedDeclaredInput2: [ 'declaredInput2', 'publicInput2'],
+   * }
+   * ```
+   *
+   * This allows the render to re-construct the minified, public, and declared names
+   * of properties.
+   *
+   * NOTE:
+   *  - Because declared and public name are usually same we only generate the array
+   *    `['declared', 'public']` format when they differ.
+   *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
+   *    inconsistent behavior in that it uses declared names rather than minified or public. For
+   *    this reason `NgOnChanges` will be deprecated and removed in future version and this
+   *    API will be simplified to be consistent with `outputs`.
+   */
+  inputs?: {[P in keyof T]?: string | [string, string]};
+
+  /**
+   * A map of output names.
+   *
+   * The format is in: `{[actualPropertyName: string]:string}`.
+   *
+   * Which the minifier may translate to: `{[minifiedPropertyName: string]:string}`.
+   *
+   * This allows the render to re-construct the minified and non-minified names
+   * of properties.
+   */
+  outputs?: {[P in keyof T]?: string};
+}): BaseDef<T> {
+  const declaredInputs: {[P in keyof T]: P} = {} as any;
+  return {
+    inputs: invertObject(baseDefinition.inputs, declaredInputs),
+    declaredInputs: declaredInputs,
+    outputs: invertObject(baseDefinition.outputs),
+  };
 }
 
 /**
