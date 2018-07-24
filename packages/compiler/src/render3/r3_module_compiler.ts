@@ -15,7 +15,7 @@ import {OutputContext} from '../util';
 
 import {R3DependencyMetadata, compileFactoryFunction} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
-import {convertMetaToOutput, mapToMapExpression} from './util';
+import {R3Reference, convertMetaToOutput, mapToMapExpression} from './util';
 
 export interface R3NgModuleDef {
   expression: o.Expression;
@@ -40,17 +40,17 @@ export interface R3NgModuleMetadata {
   /**
    * An array of expressions representing the directives and pipes declared by the module.
    */
-  declarations: o.Expression[];
+  declarations: R3Reference[];
 
   /**
    * An array of expressions representing the imports of the module.
    */
-  imports: o.Expression[];
+  imports: R3Reference[];
 
   /**
    * An array of expressions representing the exports of the module.
    */
-  exports: o.Expression[];
+  exports: R3Reference[];
 
   /**
    * Whether to emit the selector scope values (declarations, imports, exports) inline into the
@@ -68,9 +68,9 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
   const expression = o.importExpr(R3.defineNgModule).callFn([mapToMapExpression({
     type: moduleType,
     bootstrap: o.literalArr(bootstrap),
-    declarations: o.literalArr(declarations),
-    imports: o.literalArr(imports),
-    exports: o.literalArr(exports),
+    declarations: o.literalArr(declarations.map(ref => ref.value)),
+    imports: o.literalArr(imports.map(ref => ref.value)),
+    exports: o.literalArr(exports.map(ref => ref.value)),
   })]);
 
   const type = new o.ExpressionType(o.importExpr(R3.NgModuleDef, [
@@ -148,7 +148,7 @@ function accessExportScope(module: o.Expression): o.Expression {
   return new o.ReadPropExpr(selectorScope, 'exported');
 }
 
-function tupleTypeOf(exp: o.Expression[]): o.Type {
-  const types = exp.map(type => o.typeofExpr(type));
+function tupleTypeOf(exp: R3Reference[]): o.Type {
+  const types = exp.map(ref => o.typeofExpr(ref.type));
   return exp.length > 0 ? o.expressionType(o.literalArr(types)) : o.NONE_TYPE;
 }

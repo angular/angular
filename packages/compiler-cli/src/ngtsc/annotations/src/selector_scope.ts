@@ -13,7 +13,7 @@ import {ReflectionHost} from '../../host';
 import {AbsoluteReference, Reference, reflectTypeEntityToDeclaration} from '../../metadata';
 import {reflectIdentifierOfDeclaration, reflectNameOfDeclaration} from '../../metadata/src/reflector';
 
-import {referenceToExpression} from './util';
+import {toR3Reference} from './util';
 
 
 
@@ -384,7 +384,7 @@ function convertReferenceMap(
     map: Map<string, Reference>, context: ts.SourceFile): Map<string, Expression> {
   return new Map<string, Expression>(Array.from(map.entries()).map(([selector, ref]): [
     string, Expression
-  ] => [selector, referenceToExpression(ref, context)]));
+  ] => [selector, toR3Reference(ref, context).value]));
 }
 
 function convertScopeToExpressions(

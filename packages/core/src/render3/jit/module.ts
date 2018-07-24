@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, R3InjectorMetadata, R3NgModuleMetadata, WrappedNodeExpr, compileInjector, compileNgModule as compileR3NgModule, jitExpression} from '@angular/compiler';
+import {Expression, R3InjectorMetadata, R3NgModuleMetadata, R3Reference, WrappedNodeExpr, compileInjector, compileNgModule as compileR3NgModule, jitExpression} from '@angular/compiler';
 
 import {ModuleWithProviders, NgModule, NgModuleDefInternal, NgModuleTransitiveScopes} from '../../metadata/ng_module';
 import {Type} from '../../type';
@@ -28,11 +28,13 @@ export function compileNgModule(type: Type<any>, ngModule: NgModule): void {
         const meta: R3NgModuleMetadata = {
           type: wrap(type),
           bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY).map(wrap),
-          declarations: declarations.map(wrap),
-          imports:
-              flatten(ngModule.imports || EMPTY_ARRAY).map(expandModuleWithProviders).map(wrap),
-          exports:
-              flatten(ngModule.exports || EMPTY_ARRAY).map(expandModuleWithProviders).map(wrap),
+          declarations: declarations.map(wrapReference),
+          imports: flatten(ngModule.imports || EMPTY_ARRAY)
+                       .map(expandModuleWithProviders)
+                       .map(wrapReference),
+          exports: flatten(ngModule.exports || EMPTY_ARRAY)
+                       .map(expandModuleWithProviders)
+                       .map(wrapReference),
           emitInline: true,
         };
         const res = compileR3NgModule(meta);
@@ -208,6 +210,11 @@ function expandModuleWithProviders(value: Type<any>| ModuleWithProviders): Type<
 
 function wrap(value: Type<any>): Expression {
   return new WrappedNodeExpr(value);
+}
+
+function wrapReference(value: Type<any>): R3Reference {
+  const wrapped = wrap(value);
+  return {value: wrapped, type: wrapped};
 }
 
 function isModuleWithProviders(value: any): value is ModuleWithProviders {
