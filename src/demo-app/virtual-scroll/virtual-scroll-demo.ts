@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 
 
@@ -22,6 +22,7 @@ type State = {
   templateUrl: 'virtual-scroll-demo.html',
   styleUrls: ['virtual-scroll-demo.css'],
   encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VirtualScrollDemo {
   fixedSizeData = Array(10000).fill(50);

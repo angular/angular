@@ -21,7 +21,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {animationFrameScheduler, fromEvent, Observable, Subject} from 'rxjs';
-import {sampleTime, take, takeUntil} from 'rxjs/operators';
+import {sampleTime, takeUntil} from 'rxjs/operators';
 import {CdkVirtualForOf} from './virtual-for-of';
 import {VIRTUAL_SCROLL_STRATEGY, VirtualScrollStrategy} from './virtual-scroll-strategy';
 
@@ -301,11 +301,7 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
     if (!this._isChangeDetectionPending) {
       this._isChangeDetectionPending = true;
       this._ngZone.runOutsideAngular(() => Promise.resolve().then(() => {
-        if (this._ngZone.isStable) {
-           this._doChangeDetection();
-        } else {
-          this._ngZone.onStable.pipe(take(1)).subscribe(() => this._doChangeDetection());
-        }
+        this._doChangeDetection();
       }));
     }
   }
@@ -314,8 +310,10 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
   private _doChangeDetection() {
     this._isChangeDetectionPending = false;
 
-    // Apply changes to Angular bindings.
-    this._ngZone.run(() => this._changeDetectorRef.detectChanges());
+    // Apply changes to Angular bindings. Note: We must call `markForCheck` to run change detection
+    // from the root, since the repeated items are content projected in. Calling `detectChanges`
+    // instead does not properly check the projected content.
+    this._ngZone.run(() => this._changeDetectorRef.markForCheck());
     // Apply the content transform. The transform can't be set via an Angular binding because
     // bypassSecurityTrustStyle is banned in Google. However the value is safe, it's composed of
     // string literals, a variable that can only be 'X' or 'Y', and user input that is run through
@@ -330,9 +328,10 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
       }
     }
 
-    for (const fn of this._runAfterChangeDetection) {
+    const runAfterChangeDetection = this._runAfterChangeDetection;
+    this._runAfterChangeDetection = [];
+    for (const fn of runAfterChangeDetection) {
       fn();
     }
-    this._runAfterChangeDetection = [];
   }
 }

@@ -101,9 +101,10 @@ describe('CdkVirtualScrollViewport', () => {
 
     it('should set total content size', fakeAsync(() => {
       finishInit(fixture);
+
       viewport.setTotalContentSize(10000);
-      fixture.detectChanges();
       flush();
+      fixture.detectChanges();
 
       expect(viewport.elementRef.nativeElement.scrollHeight).toBe(10000);
     }));
