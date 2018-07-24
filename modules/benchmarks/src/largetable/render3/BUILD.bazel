@@ -1,18 +1,63 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ng_module")
+load("//tools:defaults.bzl", "ts_library")
+load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
+load("//packages/bazel:index.bzl", "protractor_web_test")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 
-ng_module(
+ts_library(
     name = "largetable_lib",
     srcs = glob(
         [
             "**/*.ts",
         ],
+        exclude = ["protractor.on-prepare.ts"],
     ),
     deps = [
+        "//modules/benchmarks/src:util_lib",
         "//modules/benchmarks/src/largetable:util_lib",
         "//packages:types",
         "//packages/core",
         "@rxjs",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = "modules/benchmarks/src/largetable/render3/index.js",
+    deps = [
+        ":largetable_lib",
+    ],
+)
+
+genrule(
+    name = "favicon",
+    srcs = ["//modules/benchmarks:favicon"],
+    outs = ["favicon.ico"],
+    cmd = "cp $< $@",
+)
+
+ts_devserver(
+    name = "devserver",
+    static_files = [
+        ":bundle.min_debug.js",
+        ":bundle.min.js",
+        "index.html",
+        ":favicon",
+    ],
+)
+
+protractor_web_test(
+    name = "perf",
+    configuration = "//:protractor-perf.conf.js",
+    data = [
+        "//packages/bazel/src/protractor/utils",
+        "//packages/benchpress",
+    ],
+    on_prepare = ":protractor.on-prepare.js",
+    server = ":devserver",
+    tags = ["manual"],
+    deps = [
+        "//modules/benchmarks/src/largetable:perf_lib",
     ],
 )
