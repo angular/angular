@@ -2885,9 +2885,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** start small but keep in mind where the app is heading down the road.
-
+-->
+애플리케이션은 작은 규모부터 시작하지만 최종 결과물이 어떤 방향으로 확장될지 항상 고려해야 **합니다.**
 
 </div>
 
@@ -2896,9 +2897,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** have a near term view of implementation and a long term vision.
-
+-->
+개발을 할 때 단기적인 계획과 장기적인 계획을 함께 **고려하세요.**
 
 </div>
 
@@ -2907,9 +2909,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** put all of the app's code in a folder named `src`.
-
+-->
+애플리케이션 코드는 모두 `src` 폴더 아래에 **작성하세요.**
 
 </div>
 
@@ -2918,9 +2921,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** creating a folder for a component when it has multiple accompanying files (`.ts`, `.html`, `.css` and `.spec`).
-
+-->
+컴포넌트를 구성하는 파일이 여러개라면(`.ts`, `.html`, `.css`, `.spec`) 컴포넌트를 표현하는 폴더를 따로 만들고 관련된 파일을 모두 이 폴더에 두는 것을 **권장합니다.**
 
 </div>
 
@@ -2929,9 +2933,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Helps keep the app structure small and easy to maintain in the early stages, while being easy to evolve as the app grows.
-
+-->
+**왜?** 애플리케이션 구조를 유지보수하기 편하게 구성하면, 애플리케이션의 규모가 커지더라도 좀 더 편하게 확장할 수 있습니다.
 
 </div>
 
@@ -2940,9 +2945,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Components often have four files (e.g. `*.html`, `*.css`, `*.ts`, and `*.spec.ts`) and can clutter a folder quickly.
-
+-->
+**왜?** 컴포넌트는 보통 4개의 파일(`.html`, `*.css`, `.ts`, `.spec.ts`)로 구성되기 때문에 이 파일들은 한 폴더로 모으는 것이 좋습니다.
 
 </div>
 
@@ -2950,9 +2956,10 @@ But if something is not obvious or departs from a convention, then spell it out.
 
 {@a file-tree}
 
-
+<!--
 Here is a compliant folder and file structure:
-
+-->
+이 가이드라인을 따르면 다음과 같이 폴더와 파일 구조를 작성할 수 있습니다:
 
 <div class='filetree'>
 
