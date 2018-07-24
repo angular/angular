@@ -38,7 +38,7 @@ export class FormsModule {
 export class ReactiveFormsModule {
   static withConfig(opts: {
     /** @deprecated as of v6 */ warnOnNgModelWithFormControl: 'never' | 'once' | 'always'
-  }): ModuleWithProviders {
+  }): ModuleWithProviders<ReactiveFormsModule> {
     return {
       ngModule: ReactiveFormsModule,
       providers: [{

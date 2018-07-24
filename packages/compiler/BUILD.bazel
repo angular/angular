@@ -23,6 +23,7 @@ ng_package(
     include_devmode_srcs = True,
     tags = [
         "ivy-jit",
+        "ivy-local",
         "release-with-framework",
     ],
     deps = [

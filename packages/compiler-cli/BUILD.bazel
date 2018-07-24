@@ -38,6 +38,7 @@ npm_package(
     ],
     tags = [
         "ivy-jit",
+        "ivy-local",
         "release-with-framework",
     ],
     deps = [":compiler-cli"],

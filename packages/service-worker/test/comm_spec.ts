@@ -27,7 +27,7 @@ import {async_fit, async_it} from './async';
     });
 
     describe('NgswCommsChannel', () => {
-      it('can access the registration when it comes before subscription', (done: DoneFn) => {
+      it('can access the registration when it comes before subscription', done => {
         const mock = new MockServiceWorkerContainer();
         const comm = new NgswCommChannel(mock as any);
         const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
@@ -36,7 +36,7 @@ import {async_fit, async_it} from './async';
 
         (comm as any).registration.subscribe((reg: any) => { done(); });
       });
-      it('can access the registration when it comes after subscription', (done: DoneFn) => {
+      it('can access the registration when it comes after subscription', done => {
         const mock = new MockServiceWorkerContainer();
         const comm = new NgswCommChannel(mock as any);
         const regPromise = mock.getRegistration() as any as MockServiceWorkerRegistration;
@@ -385,41 +385,41 @@ import {async_fit, async_it} from './async';
         update = new SwUpdate(comm);
         mock.setupSw();
       });
-      it('processes update availability notifications when sent', (done: DoneFn) => {
+      it('processes update availability notifications when sent', done => {
         update.available.subscribe(event => {
-          expect(event.current).toEqual({version: 'A'});
-          expect(event.available).toEqual({version: 'B'});
+          expect(event.current).toEqual({hash: 'A'});
+          expect(event.available).toEqual({hash: 'B'});
           expect(event.type).toEqual('UPDATE_AVAILABLE');
           done();
         });
         mock.sendMessage({
           type: 'UPDATE_AVAILABLE',
           current: {
-            version: 'A',
+            hash: 'A',
           },
           available: {
-            version: 'B',
+            hash: 'B',
           },
         });
       });
-      it('processes update activation notifications when sent', (done: DoneFn) => {
+      it('processes update activation notifications when sent', done => {
         update.activated.subscribe(event => {
-          expect(event.previous).toEqual({version: 'A'});
-          expect(event.current).toEqual({version: 'B'});
+          expect(event.previous).toEqual({hash: 'A'});
+          expect(event.current).toEqual({hash: 'B'});
           expect(event.type).toEqual('UPDATE_ACTIVATED');
           done();
         });
         mock.sendMessage({
           type: 'UPDATE_ACTIVATED',
           previous: {
-            version: 'A',
+            hash: 'A',
           },
           current: {
-            version: 'B',
+            hash: 'B',
           },
         });
       });
-      it('activates updates when requested', (done: DoneFn) => {
+      it('activates updates when requested', done => {
         mock.messages.subscribe((msg: {action: string, statusNonce: number}) => {
           expect(msg.action).toEqual('ACTIVATE_UPDATE');
           mock.sendMessage({
@@ -430,7 +430,7 @@ import {async_fit, async_it} from './async';
         });
         return update.activateUpdate().then(() => done()).catch(err => done.fail(err));
       });
-      it('reports activation failure when requested', (done: DoneFn) => {
+      it('reports activation failure when requested', done => {
         mock.messages.subscribe((msg: {action: string, statusNonce: number}) => {
           expect(msg.action).toEqual('ACTIVATE_UPDATE');
           mock.sendMessage({

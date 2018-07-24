@@ -84,7 +84,7 @@ export interface DirectiveDef<T, Selector extends string> {
   type: Type<T>;
 
   /** Function that makes a directive public to the DI system. */
-  diPublic: ((def: DirectiveDef<any, string>) => void)|null;
+  diPublic: ((def: DirectiveDef<T, string>) => void)|null;
 
   /** The selectors that will be used to match nodes to this directive. */
   selectors: CssSelectorList;
@@ -94,7 +94,13 @@ export interface DirectiveDef<T, Selector extends string> {
    * are their aliases if any, or their original unminified property names
    * (as in `@Input('alias') propertyName: any;`).
    */
-  readonly inputs: {[P in keyof T]: P};
+  readonly inputs: {[P in keyof T]: string};
+
+  /**
+   * @deprecated This is only here because `NgOnChanges` incorrectly uses declared name instead of
+   * public or minified name.
+   */
+  readonly declaredInputs: {[P in keyof T]: P};
 
   /**
    * A dictionary mapping the outputs' minified property names to their public API names, which
@@ -116,6 +122,14 @@ export interface DirectiveDef<T, Selector extends string> {
    */
   factory(): T|[T];
 
+  /**
+   * Function to create instances of content queries associated with a given directive.
+   */
+  contentQueries: (() => void)|null;
+
+  /** Refreshes content queries associated with directives in a given view */
+  contentQueriesRefresh: ((directiveIndex: number, queryIndex: number) => void)|null;
+
   /** Refreshes host bindings on the associated directive. */
   hostBindings: ((directiveIndex: number, elementIndex: number) => void)|null;
 
@@ -135,6 +149,11 @@ export interface DirectiveDef<T, Selector extends string> {
   afterViewInit: (() => void)|null;
   afterViewChecked: (() => void)|null;
   onDestroy: (() => void)|null;
+
+  /**
+   * The features applied to this directive
+   */
+  features: DirectiveDefFeature[]|null;
 }
 
 /**
@@ -215,13 +234,13 @@ export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T
  *
  * See: {@link definePipe}
  */
-export interface PipeDef<T> {
+export interface PipeDef<T, S extends string> {
   /**
    * Pipe name.
    *
    * Used to resolve pipe in templates.
    */
-  name: string;
+  name: S;
 
   /**
    * Factory function used to create a new pipe instance.
@@ -239,6 +258,8 @@ export interface PipeDef<T> {
   /* The following are lifecycle hooks for this pipe */
   onDestroy: (() => void)|null;
 }
+
+export type PipeDefInternal<T> = PipeDef<T, string>;
 
 export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T, string>) => void;
 export type ComponentDefFeature = <T>(componentDef: ComponentDef<T, string>) => void;
@@ -265,14 +286,19 @@ export type DirectiveTypeList =
  */
 export type PipeDefListOrFactory = (() => PipeDefList) | PipeDefList;
 
-export type PipeDefList = PipeDef<any>[];
+export type PipeDefList = PipeDefInternal<any>[];
 
 export type PipeTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
 
 export type PipeTypeList =
-    (PipeDef<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
+    (PipeDefInternal<any>|
+     Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
+
+export const enum InitialStylingFlags {
+  VALUES_MODE = 0b1,
+}

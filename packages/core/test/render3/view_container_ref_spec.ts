@@ -671,9 +671,9 @@ describe('ViewContainerRef', () => {
           factory: () => new Child(),
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
-              projectionDef(0);
-              elementStart(1, 'div');
-              { projection(2, 0); }
+              projectionDef();
+              elementStart(0, 'div');
+              { projection(1); }
               elementEnd();
             }
           }
@@ -727,9 +727,12 @@ describe('ViewContainerRef', () => {
       @Component({
         selector: 'child-with-view',
         template: `
-      % if (show) {
-        <ng-content></ng-content>
-      % }`
+          Before (inside)-
+          % if (show) {
+            <ng-content></ng-content>
+          % }
+          After (inside)
+        `
       })
       class ChildWithView {
         show: boolean = true;
@@ -739,15 +742,17 @@ describe('ViewContainerRef', () => {
           factory: () => new ChildWithView(),
           template: (rf: RenderFlags, cmp: ChildWithView) => {
             if (rf & RenderFlags.Create) {
-              projectionDef(0);
+              projectionDef();
+              text(0, 'Before (inside)-');
               container(1);
+              text(2, 'After (inside)');
             }
             if (rf & RenderFlags.Update) {
               containerRefreshStart(1);
               if (cmp.show) {
                 let rf0 = embeddedViewStart(0);
                 if (rf0 & RenderFlags.Create) {
-                  projection(0, 0);
+                  projection(0);
                 }
                 embeddedViewEnd();
               }
@@ -764,7 +769,9 @@ describe('ViewContainerRef', () => {
               <span>{{name}}</span>
           </ng-template>
           <child-with-view>
+            Before projected
             <header vcref [tplRef]="foo" [name]="name">blah</header>
+            After projected
           </child-with-view>`
       })
       class Parent {
@@ -777,15 +784,17 @@ describe('ViewContainerRef', () => {
             if (rf & RenderFlags.Create) {
               container(0, embeddedTemplate);
               elementStart(1, 'child-with-view');
-              elementStart(2, 'header', ['vcref', '']);
-              text(3, 'blah');
+              text(2, 'Before projected');
+              elementStart(3, 'header', ['vcref', '']);
+              text(4, 'blah');
               elementEnd();
+              text(5, 'After projected-');
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
               const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-              elementProperty(2, 'tplRef', bind(tplRef));
-              elementProperty(2, 'name', bind(cmp.name));
+              elementProperty(3, 'tplRef', bind(tplRef));
+              elementProperty(3, 'name', bind(cmp.name));
             }
           },
           directives: [ChildWithView, DirectiveWithVCRef]
@@ -794,13 +803,14 @@ describe('ViewContainerRef', () => {
 
       const fixture = new ComponentFixture(Parent);
       expect(fixture.html)
-          .toEqual('<child-with-view><header vcref="">blah</header></child-with-view>');
+          .toEqual(
+              '<child-with-view>Before (inside)-Before projected<header vcref="">blah</header>After projected-After (inside)</child-with-view>');
 
       directiveInstance !.vcref.createEmbeddedView(directiveInstance !.tplRef, fixture.component);
       fixture.update();
       expect(fixture.html)
           .toEqual(
-              '<child-with-view><header vcref="">blah</header><span>bar</span></child-with-view>');
+              '<child-with-view>Before (inside)-Before projected<header vcref="">blah</header><span>bar</span>After projected-After (inside)</child-with-view>');
     });
 
     describe('with select', () => {
@@ -817,12 +827,12 @@ describe('ViewContainerRef', () => {
           factory: () => new ChildWithSelector(),
           template: (rf: RenderFlags, cmp: ChildWithSelector) => {
             if (rf & RenderFlags.Create) {
-              projectionDef(0, [[['header']]], ['header']);
-              elementStart(1, 'first');
-              { projection(2, 0, 1); }
+              projectionDef([[['header']]], ['header']);
+              elementStart(0, 'first');
+              { projection(1, 1); }
               elementEnd();
-              elementStart(3, 'second');
-              { projection(4, 0); }
+              elementStart(2, 'second');
+              { projection(3); }
               elementEnd();
             }
           },
@@ -966,7 +976,7 @@ describe('ViewContainerRef', () => {
               textBinding(0, interpolation1('', cmp.name, ''));
             }
           },
-          features: [NgOnChangesFeature()],
+          features: [NgOnChangesFeature],
           inputs: {name: 'name'}
         });
       }

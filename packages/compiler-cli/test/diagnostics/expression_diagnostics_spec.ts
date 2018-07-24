@@ -76,7 +76,7 @@ describe('expression diagnostics', () => {
     }
   }
 
-  function reject(template: string, expected: string | RegExp) {
+  function reject(template: string, expected: string) {
     const info = getDiagnosticTemplateInfo(context, type, 'app/app.component.html', template);
     if (info) {
       const diagnostics = getTemplateExpressionDiagnostics(info);

@@ -27,5 +27,5 @@ else
     echo "Creating packages .metadata.json files..."
     node --max-old-space-size=3000 dist/tools/@angular/compiler-cli/src/main -p packages/tsconfig-metadata.json
   fi
-  node dist/tools/tsc-watch/ $1 watch $2
+  node --harmony dist/tools/tsc-watch/ $1 watch $2
 fi

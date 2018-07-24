@@ -7,16 +7,17 @@
  */
 
 import {Injector} from '../../di/injector';
+import {QueryList} from '../../linker';
 import {Sanitizer} from '../../sanitization/security';
 
 import {LContainer} from './container';
-import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDef, PipeDefList} from './definition';
+import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDefInternal, PipeDefList} from './definition';
 import {LContainerNode, LElementNode, LViewNode, TNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
 
 /** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 15;
+export const HEADER_OFFSET = 16;
 
 // Below are constants for LViewData indices to help us look up LViewData members
 // without having to remember the specific indices.
@@ -36,6 +37,7 @@ export const RENDERER = 11;
 export const SANITIZER = 12;
 export const TAIL = 13;
 export const CONTAINER_INDEX = 14;
+export const CONTENT_QUERIES = 15;
 
 /**
  * `LViewData` stores all of the information needed to process the instructions as
@@ -153,6 +155,13 @@ export interface LViewData extends Array<any> {
    * in multiple containers, so the parent cannot be shared between view instances).
    */
   [CONTAINER_INDEX]: number;
+
+  /**
+   * Stores QueryLists associated with content queries of a directive. This data structure is
+   * filled-in as part of a directive creation process and is later used to retrieve a QueryList to
+   * be refreshed.
+   */
+  [CONTENT_QUERIES]: QueryList<any>[]|null;
 }
 
 /** Flags associated with an LView (saved in LViewData[FLAGS]) */
@@ -413,6 +422,15 @@ export interface TView {
    * they will be fed into instructions that expect the raw index (e.g. elementProperty)
    */
   hostBindings: number[]|null;
+
+
+  /**
+   * A list of indices for child directives that have content queries.
+   *
+   * Even indices: Directive indices
+   * Odd indices: Starting index of content queries (stored in CONTENT_QUERIES) for this directive
+   */
+  contentQueries: number[]|null;
 }
 
 /**
@@ -456,7 +474,7 @@ export type HookData = (number | (() => void))[];
  * as its pipe instance in the data array. Any nodes that do not have static
  * data store a null value in tData to avoid a sparse array.
  */
-export type TData = (TNode | PipeDef<any>| null)[];
+export type TData = (TNode | PipeDefInternal<any>| null)[];
 
 /** Type for TView.currentMatches */
 export type CurrentMatchesList = [DirectiveDefInternal<any>, (string | number | null)];

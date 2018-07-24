@@ -7,9 +7,13 @@
  */
 
 import {LifecycleHooksFeature, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
-import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
+import {defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
+import {InheritDefinitionFeature} from './features/inherit_definition_feature';
+import {NgOnChangesFeature} from './features/ng_onchanges_feature';
+import {PublicFeature} from './features/public_feature';
 import {I18nExpInstruction, I18nInstruction, i18nExpMapping, i18nInterpolation, i18nInterpolationV} from './i18n';
-import {ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
+import {ComponentDef, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
+
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
 export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
 export {RenderFlags} from './interfaces/definition';
@@ -47,13 +51,15 @@ export {
 
   element as Ee,
   elementAttribute as a,
-  elementClass as k,
-  elementClassNamed as kn,
+  elementClassProp as cp,
   elementEnd as e,
   elementProperty as p,
   elementStart as E,
-  elementStyle as s,
-  elementStyleNamed as sn,
+
+  elementStyling as s,
+  elementStylingMap as sm,
+  elementStyleProp as sp,
+  elementStylingApply as sa,
 
   listener as L,
   store as st,
@@ -89,7 +95,7 @@ export {
   I18nExpInstruction
 } from './i18n';
 
-export {NgModuleDef, NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
+export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
 
 export {
     AttributeMarker
@@ -109,6 +115,11 @@ export {
   query as Q,
   queryRefresh as qR,
 } from './query';
+export  {
+  registerContentQuery as Qr,
+  loadQueryList as ql,
+} from './instructions';
+
 export {
   pureFunction0 as f0,
   pureFunction1 as f1,
@@ -126,13 +137,16 @@ export {
 // clang-format on
 
 export {
+  ComponentDef,
   ComponentDefInternal,
   ComponentTemplate,
   ComponentType,
-  DirectiveDefInternal,
+  DirectiveDef,
   DirectiveDefFlags,
+  DirectiveDefInternal,
   DirectiveType,
   NgOnChangesFeature,
+  InheritDefinitionFeature,
   PublicFeature,
   PipeDef,
   LifecycleHooksFeature,

@@ -13,14 +13,15 @@ import {Decorator, ReflectionHost} from '../../host';
 import {Reference} from '../../metadata';
 
 export function getConstructorDependencies(
-    clazz: ts.ClassDeclaration, reflector: ReflectionHost): R3DependencyMetadata[] {
+    clazz: ts.ClassDeclaration, reflector: ReflectionHost,
+    isCore: boolean): R3DependencyMetadata[] {
   const useType: R3DependencyMetadata[] = [];
   const ctorParams = reflector.getConstructorParameters(clazz) || [];
   ctorParams.forEach((param, idx) => {
     let tokenExpr = param.type;
     let optional = false, self = false, skipSelf = false, host = false;
     let resolved = R3ResolvedDependencyType.Token;
-    (param.decorators || []).filter(isAngularCore).forEach(dec => {
+    (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
       if (dec.name === 'Inject') {
         if (dec.args === null || dec.args.length !== 1) {
           throw new Error(`Unexpected number of arguments to @Inject().`);
@@ -52,6 +53,9 @@ export function getConstructorDependencies(
       const importedSymbol = reflector.getImportOfIdentifier(tokenExpr);
       if (importedSymbol !== null && importedSymbol.from === '@angular/core') {
         switch (importedSymbol.name) {
+          case 'ChangeDetectorRef':
+            resolved = R3ResolvedDependencyType.ChangeDetectorRef;
+            break;
           case 'ElementRef':
             resolved = R3ResolvedDependencyType.ElementRef;
             break;
@@ -85,4 +89,17 @@ export function referenceToExpression(ref: Reference, context: ts.SourceFile): E
 
 export function isAngularCore(decorator: Decorator): boolean {
   return decorator.import !== null && decorator.import.from === '@angular/core';
+}
+
+/**
+ * Unwrap a `ts.Expression`, removing outer type-casts or parentheses until the expression is in its
+ * lowest level form.
+ *
+ * For example, the expression "(foo as Type)" unwraps to "foo".
+ */
+export function unwrapExpression(node: ts.Expression): ts.Expression {
+  while (ts.isAsExpression(node) || ts.isParenthesizedExpression(node)) {
+    node = node.expression;
+  }
+  return node;
 }

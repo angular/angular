@@ -11,9 +11,8 @@ import {browserDetection} from '@angular/platform-browser/testing/src/browser_ut
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {AttributeMarker} from '../../../src/render3';
-import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
+import {ComponentDefInternal, InitialStylingFlags} from '../../../src/render3/interfaces/definition';
 import {ComponentFixture, renderComponent, toHtml} from '../render_util';
-
 
 
 /// See: `normative.md`
@@ -271,6 +270,7 @@ describe('elements', () => {
     });
 
     it('should bind to a specific class', () => {
+      const c1: (string | InitialStylingFlags | boolean)[] = ['foo'];
       type $MyComponent$ = MyComponent;
 
       @Component({selector: 'my-component', template: `<div [class.foo]="someFlag"></div>`})
@@ -283,10 +283,13 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'div');
+              $r3$.ɵE(0, 'div');
+              $r3$.ɵs(c1);
+              $r3$.ɵe();
             }
             if (rf & 2) {
-              $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someFlag));
+              $r3$.ɵcp(0, 0, ctx.someFlag);
+              $r3$.ɵsa(0);
             }
           }
         });
@@ -304,6 +307,7 @@ describe('elements', () => {
     it('should bind to a specific style', () => {
       type $MyComponent$ = MyComponent;
 
+      const c0 = ['color', 'width'];
       @Component({
         selector: 'my-component',
         template: `<div [style.color]="someColor" [style.width.px]="someWidth"></div>`
@@ -318,11 +322,14 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'div');
+              $r3$.ɵE(0, 'div');
+              $r3$.ɵs(null, c0);
+              $r3$.ɵe();
             }
             if (rf & 2) {
-              $r3$.ɵsn(0, 'color', $r3$.ɵb(ctx.someColor));
-              $r3$.ɵsn(0, 'width', $r3$.ɵb(ctx.someWidth), 'px');
+              $r3$.ɵsp(0, 0, ctx.someColor);
+              $r3$.ɵsp(0, 1, ctx.someWidth, 'px');
+              $r3$.ɵsa(0);
             }
           }
         });
@@ -349,9 +356,8 @@ describe('elements', () => {
     it('should bind to many and keep order', () => {
       type $MyComponent$ = MyComponent;
 
-      // NORMATIVE
-      const $e0_attrs$ = ['style', 'color: red;'];
-      // /NORMATIVE
+      const c0 = ['foo'];
+      const c1 = ['color', InitialStylingFlags.VALUES_MODE, 'color', 'red'];
 
       @Component({
         selector: 'my-component',
@@ -367,11 +373,14 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'div', $e0_attrs$);
+              $r3$.ɵE(0, 'div');
+              $r3$.ɵs(c0, c1);
+              $r3$.ɵe();
             }
             if (rf & 2) {
               $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someString + 1));
-              $r3$.ɵkn(0, 'foo', $r3$.ɵb(ctx.someString == 'initial'));
+              $r3$.ɵcp(0, 0, ctx.someString == 'initial');
+              $r3$.ɵsa(0);
             }
           }
         });
@@ -402,11 +411,13 @@ describe('elements', () => {
           factory: function StyleComponent_Factory() { return new StyleComponent(); },
           template: function StyleComponent_Template(rf: $RenderFlags$, ctx: $StyleComponent$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'div');
+              $r3$.ɵE(0, 'div');
+              $r3$.ɵs();
+              $r3$.ɵe();
             }
             if (rf & 2) {
-              $r3$.ɵk(0, $r3$.ɵb(ctx.classExp));
-              $r3$.ɵs(0, $r3$.ɵb(ctx.styleExp));
+              $r3$.ɵsm(0, ctx.classExp, ctx.styleExp);
+              $r3$.ɵsa(0);
             }
           }
         });

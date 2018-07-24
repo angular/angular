@@ -36,3 +36,14 @@ export function convertMetaToOutput(meta: any, ctx: OutputContext): o.Expression
 
   throw new Error(`Internal error: Unsupported or unknown metadata: ${meta}`);
 }
+
+export function typeWithParameters(type: o.Expression, numParams: number): o.ExpressionType {
+  let params: o.Type[]|null = null;
+  if (numParams > 0) {
+    params = [];
+    for (let i = 0; i < numParams; i++) {
+      params.push(o.DYNAMIC_TYPE);
+    }
+  }
+  return o.expressionType(type, null, params);
+}

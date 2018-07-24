@@ -80,14 +80,14 @@ import {DOCUMENT} from '@angular/platform-browser/src/dom/dom_tokens';
     it('supports setting and accessing value \'false\' via get', () => {
       const transferState: TransferState = TestBed.get(TransferState);
       transferState.set(TEST_KEY, false);
-      expect(transferState.get(TEST_KEY, 20)).toBe(false);
+      expect(transferState.get(TEST_KEY, true)).toBe(false);
       expect(transferState.hasKey(TEST_KEY)).toBe(true);
     });
 
     it('supports setting and accessing value \'null\' via get', () => {
       const transferState: TransferState = TestBed.get(TransferState);
       transferState.set(TEST_KEY, null);
-      expect(transferState.get(TEST_KEY, 20)).toBe(null);
+      expect(transferState.get(TEST_KEY, 20 as any)).toBe(null);
       expect(transferState.hasKey(TEST_KEY)).toBe(true);
     });
 

@@ -54,16 +54,6 @@ export interface R3FactoryMetadata {
    * function could be different, and other options control how it will be invoked.
    */
   injectFn: o.ExternalReference;
-
-  /**
-   * If present, the return of the factory function will be an array with the injected value in the
-   * 0th position and the extra results included in subsequent positions.
-   *
-   * Occasionally APIs want to construct additional values when the factory function is called. The
-   * paradigm there is to have the factory function return an array, with the DI-created value as
-   * well as other values. Specifying `extraResults` enables this functionality.
-   */
-  extraResults?: o.Expression[];
 }
 
 /**
@@ -106,6 +96,11 @@ export enum R3ResolvedDependencyType {
    * The dependency is for `ViewContainerRef`.
    */
   ViewContainerRef = 5,
+
+  /**
+   * The dependency is for `ChangeDetectorRef`.
+   */
+  ChangeDetectorRef = 6,
 }
 
 /**
@@ -155,12 +150,8 @@ export function compileFactoryFunction(meta: R3FactoryMetadata): o.Expression {
   const expr = meta.useNew ? new o.InstantiateExpr(meta.fnOrClass, args) :
                              new o.InvokeFunctionExpr(meta.fnOrClass, args);
 
-  // If `extraResults` is specified, then the result is an array consisting of the instantiated
-  // value plus any extra results.
-  const retExpr =
-      meta.extraResults === undefined ? expr : o.literalArr([expr, ...meta.extraResults]);
   return o.fn(
-      [], [new o.ReturnStatement(retExpr)], o.INFERRED_TYPE, undefined, `${meta.name}_Factory`);
+      [], [new o.ReturnStatement(expr)], o.INFERRED_TYPE, undefined, `${meta.name}_Factory`);
 }
 
 function compileInjectDependency(
@@ -182,7 +173,7 @@ function compileInjectDependency(
       }
 
       // Build up the arguments to the injectFn call.
-      const injectArgs = [dep.token];
+      const injectArgs = [token];
       // If this dependency is optional or otherwise has non-default flags, then additional
       // parameters describing how to inject the dependency must be passed to the inject function
       // that's being used.
@@ -200,6 +191,8 @@ function compileInjectDependency(
       return o.importExpr(R3.injectTemplateRef).callFn([]);
     case R3ResolvedDependencyType.ViewContainerRef:
       return o.importExpr(R3.injectViewContainerRef).callFn([]);
+    case R3ResolvedDependencyType.ChangeDetectorRef:
+      return o.importExpr(R3.injectChangeDetectorRef).callFn([]);
     default:
       return unsupported(
           `Unknown R3ResolvedDependencyType: ${R3ResolvedDependencyType[dep.resolved]}`);

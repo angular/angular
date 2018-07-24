@@ -6,16 +6,16 @@ workspace(name = "bazel_integration_test")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.9.1.zip",
-    strip_prefix = "rules_nodejs-0.9.1",
-    sha256 = "6139762b62b37c1fd171d7f22aa39566cb7dc2916f0f801d505a9aaf118c117f",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.10.1.zip",
+    strip_prefix = "rules_nodejs-0.10.1",
+    sha256 = "634206524d90dc03c52392fa3f19a16637d2bcf154910436fe1d669a0d9d7b9c",
 )
 
 http_archive(
     name = "io_bazel_rules_webtesting",
-    url = "https://github.com/bazelbuild/rules_webtesting/archive/v0.2.0.zip",
-    strip_prefix = "rules_webtesting-0.2.0",
-    sha256 = "cecc12f07e95740750a40d38e8b14b76fefa1551bef9332cb432d564d693723c",
+    url = "https://github.com/bazelbuild/rules_webtesting/archive/8fd9ce0fd9254bde251da0bc373d6cd08e811434.zip",
+    strip_prefix = "rules_webtesting-8fd9ce0fd9254bde251da0bc373d6cd08e811434",
+    sha256 = "4baee95fcfadfbaf868707af8accfd1cb98c5d13f808908e0152468bfb47f0f7",
 )
 
 http_archive(
@@ -44,7 +44,7 @@ http_archive(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
 
-check_bazel_version("0.14.0")
+check_bazel_version("0.15.0")
 node_repositories(package_json = ["//:package.json"])
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
@@ -81,3 +81,11 @@ local_repository(
     name = "rxjs",
     path = "node_modules/rxjs/src",
 )
+
+#
+# Load and install our dependencies from local repositories
+#
+
+load("@angular//:index.bzl", "ng_setup_workspace")
+
+ng_setup_workspace()

@@ -274,7 +274,7 @@ import {CssLexer, CssLexerMode, CssToken, CssTokenType, cssScannerError, getRawM
       it('should throw an error if a selector is being parsed while in the wrong mode', () => {
         const cssCode = '.class > tag';
 
-        let capturedMessage: string = undefined !;
+        let capturedMessage: string|null = null;
         try {
           tokenize(cssCode, false, CssLexerMode.STYLE_BLOCK);
         } catch (e) {
@@ -282,8 +282,8 @@ import {CssLexer, CssLexerMode, CssToken, CssTokenType, cssScannerError, getRawM
         }
 
         expect(capturedMessage).toMatch(/Unexpected character \[\>\] at column 0:7 in expression/g);
-        capturedMessage = null !;
 
+        capturedMessage = null;
         try {
           tokenize(cssCode, false, CssLexerMode.SELECTOR);
         } catch (e) {

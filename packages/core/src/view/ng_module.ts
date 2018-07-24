@@ -43,7 +43,7 @@ export function moduleDef(providers: NgModuleProviderDef[]): NgModuleDefinition 
   let isRoot: boolean = false;
   for (let i = 0; i < providers.length; i++) {
     const provider = providers[i];
-    if (provider.token === APP_ROOT) {
+    if (provider.token === APP_ROOT && provider.value === true) {
       isRoot = true;
     }
     if (provider.flags & NodeFlags.TypeNgModule) {

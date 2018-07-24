@@ -143,6 +143,16 @@ describe('InjectorDef-based createInjector()', () => {
     });
   }
 
+  class NotAModule {}
+
+  class ImportsNotAModule {
+    static ngInjectorDef = defineInjector({
+      factory: () => new ImportsNotAModule(),
+      imports: [NotAModule],
+      providers: [],
+    });
+  }
+
   class ScopedService {
     static ngInjectableDef = defineInjectable({
       providedIn: Module,
@@ -240,5 +250,10 @@ describe('InjectorDef-based createInjector()', () => {
     (injector as R3Injector).destroy();
     expect(() => (injector as R3Injector).destroy())
         .toThrowError('Injector has already been destroyed.');
+  });
+
+  it('should not crash when importing something that has no ngInjectorDef', () => {
+    injector = createInjector(ImportsNotAModule);
+    expect(injector.get(ImportsNotAModule)).toBeDefined();
   });
 });

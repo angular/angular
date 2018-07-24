@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var browserProvidersConf = require('./browser-providers.conf.js');
-var internalAngularReporter = require('./tools/karma/reporter.js');
+const browserProvidersConf = require('./browser-providers.conf');
+const {generateSeed} = require('./tools/jasmine-seed-generator');
 
 // Karma configuration
 // Generated on Thu Sep 25 2014 11:52:02 GMT-0700 (PDT)
@@ -15,6 +15,13 @@ module.exports = function(config) {
   config.set({
 
     frameworks: ['jasmine'],
+
+    client: {
+      jasmine: {
+        random: true,
+        seed: generateSeed('karma-js.conf'),
+      },
+    },
 
     files: [
       // Sources and specs.
@@ -66,11 +73,12 @@ module.exports = function(config) {
       'dist/all/@angular/benchpress/**',
       'dist/all/@angular/compiler-cli/**',
       'dist/all/@angular/compiler-cli/src/ngtsc/**',
+      'dist/all/@angular/compiler-cli/test/compliance/**',
       'dist/all/@angular/compiler-cli/test/ngtsc/**',
       'dist/all/@angular/compiler/test/aot/**',
       'dist/all/@angular/compiler/test/render3/**',
       'dist/all/@angular/core/test/bundling/**',
-      'dist/all/@angular/core/test/render3/**',
+      'dist/all/@angular/core/test/render3/ivy/**',
       'dist/all/@angular/elements/schematics/**',
       'dist/all/@angular/examples/**/e2e_test/*',
       'dist/all/@angular/language-service/**',
@@ -88,7 +96,6 @@ module.exports = function(config) {
       'karma-sauce-launcher',
       'karma-chrome-launcher',
       'karma-sourcemap-loader',
-      internalAngularReporter,
     ],
 
     preprocessors: {
@@ -105,7 +112,7 @@ module.exports = function(config) {
       '/base/angular/': '/base/',
     },
 
-    reporters: ['internal-angular'],
+    reporters: ['dots'],
     sauceLabs: {
       testName: 'Angular2',
       retryLimit: 3,

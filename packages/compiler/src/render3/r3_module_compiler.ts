@@ -74,8 +74,8 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
   })]);
 
   const type = new o.ExpressionType(o.importExpr(R3.NgModuleDef, [
-    new o.ExpressionType(moduleType), new o.ExpressionType(o.literalArr(declarations)),
-    new o.ExpressionType(o.literalArr(imports)), new o.ExpressionType(o.literalArr(exports))
+    new o.ExpressionType(moduleType), tupleTypeOf(declarations), tupleTypeOf(imports),
+    tupleTypeOf(exports)
   ]));
 
   const additionalStatements: o.Statement[] = [];
@@ -107,7 +107,8 @@ export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
     providers: meta.providers,
     imports: meta.imports,
   })]);
-  const type = new o.ExpressionType(o.importExpr(R3.InjectorDef));
+  const type =
+      new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type)]));
   return {expression, type};
 }
 
@@ -145,4 +146,9 @@ export function compileNgModuleFromRender2(
 function accessExportScope(module: o.Expression): o.Expression {
   const selectorScope = new o.ReadPropExpr(module, 'ngModuleDef');
   return new o.ReadPropExpr(selectorScope, 'exported');
+}
+
+function tupleTypeOf(exp: o.Expression[]): o.Type {
+  const types = exp.map(type => o.typeofExpr(type));
+  return exp.length > 0 ? o.expressionType(o.literalArr(types)) : o.NONE_TYPE;
 }

@@ -395,6 +395,12 @@
             "rev": true,
             "title": "Essential JS 2",
             "url": "https://www.syncfusion.com/products/angular-js2"
+          },
+          "trulyui": {
+            "desc": "TrulyUI is an Angular UI Framework especially developed for Desktop Applications based on Web Components using the greatest technologies of the world.",
+            "rev": true,
+            "title": "Truly UI",
+            "url": "http://truly-ui.tk"
           }
         }
       }
@@ -612,6 +618,12 @@
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
           },
+          "willh-angular-zero": {
+            "desc": "Online video course in Chinese for newbies who need to learning from the scratch in Chinese.  It's covering Angular, Angular CLI, TypeScript, VSCode, and some must known knowledge of Angular development.",
+            "rev": true,
+            "title": "Angular in Action: Start From Scratch (正體中文)",
+            "url": "https://www.udemy.com/angular-zero/?couponCode=ANGULAR.IO"
+          },
           "angular-firebase": {
             "desc": "Video lessons covering progressive web apps with Angular, Firebase, RxJS, and related APIs.",
             "rev": true,
@@ -634,6 +646,12 @@
             "rev": true,
             "title": "Angular Academy (Canada)",
             "url": "http://www.angularacademy.ca"
+          },
+          "at": {
+            "desc": "Angular Training teaches Angular on-site all over the world. Also provides consulting and mentoring.",
+            "rev": true,
+            "title": "Angular Training",
+            "url": "http://www.angulartraining.com"
           },
           "-KLIBo_lm-WrK1Sjtt-2": {
             "desc": "Basic and Advanced training across Europe in German",
@@ -666,8 +684,8 @@
             "url": "http://ninja-squad.com/formations/formation-angular2"
           },
           "a2b": {
-            "desc": "Angular Boot Camp covers introductory and intermediate content. It includes extensive workshop session, with hands-on help from our experienced developer-trainers. At the end of this class, student are usually able to use AngularJS to make an end-to-end, working application.",
-            "logo": "",
+            "desc": "Angular Boot Camp covers introductory through advanced Angular topics. It includes extensive workshop sessions, with hands-on help from our experienced developer-trainers. We take developers or teams from the beginnings of Angular understanding through a working knowledge of all essential Angular features.",
+            "logo": "https://angularbootcamp.com/images/angular-boot-camp-logo.svg",
             "rev": true,
             "title": "Angular Boot Camp",
             "url": "https://angularbootcamp.com"

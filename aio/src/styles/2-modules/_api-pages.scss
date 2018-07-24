@@ -30,14 +30,11 @@
     }
   }
 
-  .method-table, .option-table {
-    th {
-      display: flex;
+  .method-table, .option-table, .list-table {
+    .with-github-links {
       align-items: center;
-
-      h3 {
-        flex: 1;
-      }
+      display: flex;
+      justify-content: space-between;
 
       .github-links {
         a {

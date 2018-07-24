@@ -18,17 +18,13 @@
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@types/jasmine": "2.8.7",
     "@types/source-map": "0.5.1",
-    "concurrently": "3.5.1",
     "http-server": "0.11.1",
     "protractor": "file:../../node_modules/protractor",
+    "tsutils": "file:../../node_modules/tsutils",
     "typescript": "file:../../node_modules/typescript"
   },
   "scripts": {
-    "postinstall": "concurrently \"webdriver-manager update $CHROMEDRIVER_VERSION_ARG\" \"ngc -p angular.tsconfig.json\"",
-    "test": "bazel build //... --noshow_progress && yarn e2e",
-    "pree2e": "bazel build test/...",
-    "e2e": "yarn e2e-prodserver && yarn e2e-devserver",
-    "e2e-prodserver": "concurrently \"bazel run //src:prodserver\" \"while ! nc -z 127.0.0.1 5432; do sleep 1; done && protractor\" --kill-others --success first",
-    "e2e-devserver": "concurrently \"bazel run //src:devserver\" \"while ! nc -z 127.0.0.1 5432; do sleep 1; done && protractor\" --kill-others --success first"
+    "postinstall": "ngc -p angular.tsconfig.json",
+    "test": "bazel build ... --noshow_progress && bazel test ..."
   }
 }

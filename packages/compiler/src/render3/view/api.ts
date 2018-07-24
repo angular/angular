@@ -26,6 +26,11 @@ export interface R3DirectiveMetadata {
   type: o.Expression;
 
   /**
+   * Number of generic type parameters of the type itself.
+   */
+  typeArgumentCount: number;
+
+  /**
    * A source span for the directive type.
    */
   typeSourceSpan: ParseSourceSpan;
@@ -86,6 +91,11 @@ export interface R3DirectiveMetadata {
    * A mapping of output field names to the property names.
    */
   outputs: {[field: string]: string};
+
+  /**
+   * Whether or not the component or directive inherits from another class
+   */
+  usesInheritance: boolean;
 }
 
 /**

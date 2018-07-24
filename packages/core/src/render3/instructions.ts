@@ -8,25 +8,29 @@
 
 import './ng_dev_mode';
 
+import {QueryList} from '../linker';
 import {Sanitizer} from '../sanitization/security';
+import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
+import {ComponentDefInternal, ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {CssSelectorList, LProjection, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
+import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
-
-import {AttributeMarker, TAttributes, LContainerNode, LElementNode, LNode, TNodeType, TNodeFlags, LProjectionNode, LTextNode, LViewNode, TNode, TContainerNode, InitialInputData, InitialInputs, PropertyAliases, PropertyAliasValue, TElementNode,} from './interfaces/node';
+import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {appendChild, insertView, appendProjectedNode, removeView, canInsertNativeNode, createTextNode, getNextLNode, getChildLNode, getParentLNode, getLViewChild} from './node_manipulation';
+import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
-import {ComponentDefInternal, ComponentTemplate, ComponentQuery, DirectiveDefInternal, DirectiveDefListOrFactory, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
-import {RComment, RElement, RText, Renderer3, RendererFactory3, ProceduralRenderer3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-import {isDifferent, stringify} from './util';
+import {StylingContext, allocStylingContext, createStylingContextTemplate, renderStyling as renderElementStyles, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling';
+import {assertDataInRangeInternal, isDifferent, loadElementInternal, loadInternal, stringify} from './util';
 import {ViewRef} from './view_ref';
+
+
 
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
@@ -93,6 +97,7 @@ export const CIRCULAR = '__CIRCULAR__';
  */
 let renderer: Renderer3;
 let rendererFactory: RendererFactory3;
+let currentElementNode: LElementNode|null = null;
 
 export function getRenderer(): Renderer3 {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
@@ -265,8 +270,10 @@ function refreshView() {
   tView.firstTemplatePass = firstTemplatePass = false;
 
   setHostBindings(tView.hostBindings);
+  refreshContentQueries(tView);
   refreshChildComponents(tView.components);
 }
+
 
 /** Sets the host bindings for the current view. */
 export function setHostBindings(bindings: number[] | null): void {
@@ -276,6 +283,18 @@ export function setHostBindings(bindings: number[] | null): void {
       const dirIndex = bindings[i];
       const def = defs[dirIndex] as DirectiveDefInternal<any>;
       def.hostBindings && def.hostBindings(dirIndex, bindings[i + 1]);
+    }
+  }
+}
+
+/** Refreshes content queries for all directives in the given view. */
+function refreshContentQueries(tView: TView): void {
+  if (tView.contentQueries != null) {
+    for (let i = 0; i < tView.contentQueries.length; i += 2) {
+      const directiveDefIdx = tView.contentQueries[i];
+      const directiveDef = tView.directives ![directiveDefIdx];
+
+      directiveDef.contentQueriesRefresh !(directiveDefIdx, tView.contentQueries[i + 1]);
     }
   }
 }
@@ -314,7 +333,8 @@ export function createLViewData<T>(
     renderer,                                                                    // renderer
     sanitizer || null,                                                           // sanitizer
     null,                                                                        // tail
-    -1                                                                           // containerIndex
+    -1,                                                                          // containerIndex
+    null,                                                                        // contentQueries
   ];
 }
 
@@ -334,9 +354,7 @@ export function createLNodeObject(
     data: state,
     queries: queries,
     tNode: null !,
-    pNextOrParent: null,
-    dynamicLContainerNode: null,
-    pChild: null,
+    dynamicLContainerNode: null
   };
 }
 
@@ -363,11 +381,11 @@ export function createLNode(
     attrs: TAttributes | null, lContainer: LContainer): LContainerNode;
 export function createLNode(
     index: number, type: TNodeType.Projection, native: null, name: null, attrs: TAttributes | null,
-    lProjection: LProjection): LProjectionNode;
+    lProjection: null): LProjectionNode;
 export function createLNode(
     index: number, type: TNodeType, native: RText | RElement | RComment | null, name: string | null,
-    attrs: TAttributes | null, state?: null | LViewData | LContainer | LProjection): LElementNode&
-    LTextNode&LViewNode&LContainerNode&LProjectionNode {
+    attrs: TAttributes | null, state?: null | LViewData | LContainer): LElementNode&LTextNode&
+    LViewNode&LContainerNode&LProjectionNode {
   const parent = isParent ? previousOrParentNode :
                             previousOrParentNode && getParentLNode(previousOrParentNode) !as LNode;
   // Parents cannot cross component boundaries because components will be used in multiple places,
@@ -440,7 +458,7 @@ export function createLNode(
 /**
  * Resets the application state.
  */
-function resetApplicationState() {
+export function resetApplicationState() {
   isParent = false;
   previousOrParentNode = null !;
 }
@@ -652,8 +670,11 @@ export function elementStart(
 
   const node: LElementNode =
       createLNode(index, TNodeType.Element, native !, name, attrs || null, null);
+  currentElementNode = node;
 
-  if (attrs) setUpAttributes(native, attrs);
+  if (attrs) {
+    setUpAttributes(native, attrs);
+  }
   appendChild(getParentLNode(node), native, viewData);
   createDirectivesAndLocals(localRefs);
   return native;
@@ -881,6 +902,7 @@ export function createTView(
     pipeDestroyHooks: null,
     cleanup: null,
     hostBindings: null,
+    contentQueries: null,
     components: null,
     directiveRegistry: typeof directives === 'function' ? directives() : directives,
     pipeRegistry: typeof pipes === 'function' ? pipes() : pipes,
@@ -1085,6 +1107,7 @@ export function elementEnd() {
   const queries = previousOrParentNode.queries;
   queries && queries.addNode(previousOrParentNode);
   queueLifecycleHooks(previousOrParentNode.tNode.flags, tView);
+  currentElementNode = null;
 }
 
 /**
@@ -1099,7 +1122,7 @@ export function elementEnd() {
 export function elementAttribute(
     index: number, name: string, value: any, sanitizer?: SanitizerFn): void {
   if (value !== NO_CHANGE) {
-    const element: LElementNode = load(index);
+    const element = loadElement(index);
     if (value == null) {
       ngDevMode && ngDevMode.rendererRemoveAttribute++;
       isProceduralRenderer(renderer) ? renderer.removeAttribute(element.native, name) :
@@ -1130,7 +1153,7 @@ export function elementAttribute(
 export function elementProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn): void {
   if (value === NO_CHANGE) return;
-  const node = load(index) as LElementNode;
+  const node = loadElement(index) as LElementNode;
   const tNode = node.tNode;
   // if tNode.inputs is undefined, a listener has created outputs, but inputs haven't
   // yet been checked
@@ -1186,7 +1209,9 @@ export function createTNode(
     child: null,
     parent: parent,
     dynamicContainerNode: null,
-    detached: null
+    detached: null,
+    stylingTemplate: null,
+    projection: null
   };
 }
 
@@ -1247,120 +1272,163 @@ function generatePropertyAliases(
  *        renaming as part of minification.
  * @param value A value indicating if a given class should be added or removed.
  */
-export function elementClassNamed<T>(index: number, className: string, value: T | NO_CHANGE): void {
-  if (value !== NO_CHANGE) {
-    const lElement = load(index) as LElementNode;
-    if (value) {
-      ngDevMode && ngDevMode.rendererAddClass++;
-      isProceduralRenderer(renderer) ? renderer.addClass(lElement.native, className) :
-                                       lElement.native.classList.add(className);
-
-    } else {
-      ngDevMode && ngDevMode.rendererRemoveClass++;
-      isProceduralRenderer(renderer) ? renderer.removeClass(lElement.native, className) :
-                                       lElement.native.classList.remove(className);
-    }
-  }
+export function elementClassProp<T>(
+    index: number, stylingIndex: number, value: T | NO_CHANGE): void {
+  updateElementClassProp(getStylingContext(index), stylingIndex, value ? true : false);
 }
 
 /**
- * Set the `className` property on a DOM element.
+ * Assign any inline style values to the element during creation mode.
  *
- * This instruction is meant to handle the `[class]="exp"` usage.
+ * This instruction is meant to be called during creation mode to apply all styling
+ * (e.g. `style="..."`) values to the element. This is also where the provided index
+ * value is allocated for the styling details for its corresponding element (the element
+ * index is the previous index value from this one).
  *
- * `elementClass` instruction writes the value to the "element's" `className` property.
+ * (Note this function calls `elementStylingApply` immediately when called.)
  *
- * @param index The index of the element to update in the data array
- * @param value A value indicating a set of classes which should be applied. The method overrides
- *   any existing classes. The value is stringified (`toString`) before it is applied to the
- *   element.
+ *
+ * @param index Index value which will be allocated to store styling data for the element.
+ *        (Note that this is not the element index, but rather an index value allocated
+ *        specifically for element styling--the index must be the next index after the element
+ *        index.)
+ * @param classDeclarations A key/value array of CSS classes that will be registered on the element.
+ *   Each individual style will be used on the element as long as it is not overridden
+ *   by any classes placed on the element by multiple (`[class]`) or singular (`[class.named]`)
+ *   bindings. If a class binding changes its value to a falsy value then the matching initial
+ *   class value that are passed in here will be applied to the element (if matched).
+ * @param styleDeclarations A key/value array of CSS styles that will be registered on the element.
+ *   Each individual style will be used on the element as long as it is not overridden
+ *   by any styles placed on the element by multiple (`[style]`) or singular (`[style.prop]`)
+ *   bindings. If a style binding changes its value to null then the initial styling
+ *   values that are passed in here will be applied to the element (if matched).
+ * @param styleSanitizer An optional sanitizer function that will be used (if provided)
+ *   to sanitize the any CSS property values that are applied to the element (during rendering).
  */
-export function elementClass<T>(index: number, value: T | NO_CHANGE): void {
-  if (value !== NO_CHANGE) {
-    // TODO: This is a naive implementation which simply writes value to the `className`. In the
-    // future
-    // we will add logic here which would work with the animation code.
-    const lElement: LElementNode = load(index);
-    ngDevMode && ngDevMode.rendererSetClassName++;
-    isProceduralRenderer(renderer) ? renderer.setProperty(lElement.native, 'className', value) :
-                                     lElement.native['className'] = stringify(value);
+export function elementStyling<T>(
+    classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
+    styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
+    styleSanitizer?: StyleSanitizeFn | null): void {
+  const lElement = currentElementNode !;
+  const tNode = lElement.tNode;
+  if (!tNode.stylingTemplate) {
+    // initialize the styling template.
+    tNode.stylingTemplate =
+        createStylingContextTemplate(classDeclarations, styleDeclarations, styleSanitizer);
+  }
+  if (styleDeclarations && styleDeclarations.length ||
+      classDeclarations && classDeclarations.length) {
+    elementStylingApply(tNode.index - HEADER_OFFSET);
   }
 }
 
 /**
- * Update a given style on an Element.
+ * Retrieve the `StylingContext` at a given index.
  *
- * @param index Index of the element to change in the data array
+ * This method lazily creates the `StylingContext`. This is because in most cases
+ * we have styling without any bindings. Creating `StylingContext` eagerly would mean that
+ * every style declaration such as `<div style="color: 'red' ">` would result `StyleContext`
+ * which would create unnecessary memory pressure.
+ *
+ * @param index Index of the style allocation. See: `elementStyling`.
+ */
+function getStylingContext(index: number): StylingContext {
+  let stylingContext = load<StylingContext>(index);
+  if (!Array.isArray(stylingContext)) {
+    const lElement = stylingContext as any as LElementNode;
+    const tNode = lElement.tNode;
+    ngDevMode &&
+        assertDefined(tNode.stylingTemplate, 'getStylingContext() called before elementStyling()');
+    stylingContext = viewData[index + HEADER_OFFSET] =
+        allocStylingContext(lElement, tNode.stylingTemplate !);
+  }
+  return stylingContext;
+}
+
+/**
+ * Apply all styling values to the element which have been queued by any styling instructions.
+ *
+ * This instruction is meant to be run once one or more `elementStyle` and/or `elementStyleProp`
+ * have been issued against the element. This function will also determine if any styles have
+ * changed and will then skip the operation if there is nothing new to render.
+ *
+ * Once called then all queued styles will be flushed.
+ *
+ * @param index Index of the element's styling storage that will be rendered.
+ *        (Note that this is not the element index, but rather an index value allocated
+ *        specifically for element styling--the index must be the next index after the element
+ *        index.)
+ */
+export function elementStylingApply<T>(index: number): void {
+  renderElementStyles(getStylingContext(index), renderer);
+}
+
+/**
+ * Queue a given style to be rendered on an Element.
+ *
+ * If the style value is `null` then it will be removed from the element
+ * (or assigned a different value depending if there are any styles placed
+ * on the element with `elementStyle` or any styles that are present
+ * from when the element was created (with `elementStyling`).
+ *
+ * (Note that the styling instruction will not be applied until `elementStylingApply` is called.)
+ *
+ * @param index Index of the element's styling storage to change in the data array.
+ *        (Note that this is not the element index, but rather an index value allocated
+ *        specifically for element styling--the index must be the next index after the element
+ *        index.)
+ * @param styleIndex Index of the style property on this element. (Monotonically increasing.)
  * @param styleName Name of property. Because it is going to DOM this is not subject to
  *        renaming as part of minification.
  * @param value New value to write (null to remove).
  * @param suffix Optional suffix. Used with scalar values to add unit such as `px`.
- * @param sanitizer An optional function used to transform the value typically used for
- *        sanitization.
+ *        Note that when a suffix is provided then the underlying sanitizer will
+ *        be ignored.
  */
-export function elementStyleNamed<T>(
-    index: number, styleName: string, value: T | NO_CHANGE, suffix?: string): void;
-export function elementStyleNamed<T>(
-    index: number, styleName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn): void;
-export function elementStyleNamed<T>(
-    index: number, styleName: string, value: T | NO_CHANGE,
-    suffixOrSanitizer?: string | SanitizerFn): void {
-  if (value !== NO_CHANGE) {
-    const lElement: LElementNode = load(index);
-    if (value == null) {
-      ngDevMode && ngDevMode.rendererRemoveStyle++;
-      isProceduralRenderer(renderer) ?
-          renderer.removeStyle(lElement.native, styleName, RendererStyleFlags3.DashCase) :
-          lElement.native['style'].removeProperty(styleName);
+export function elementStyleProp<T>(
+    index: number, styleIndex: number, value: T | null, suffix?: string): void {
+  let valueToAdd: string|null = null;
+  if (value) {
+    if (suffix) {
+      // when a suffix is applied then it will bypass
+      // sanitization entirely (b/c a new string is created)
+      valueToAdd = stringify(value) + suffix;
     } else {
-      let strValue =
-          typeof suffixOrSanitizer == 'function' ? suffixOrSanitizer(value) : stringify(value);
-      if (typeof suffixOrSanitizer == 'string') strValue = strValue + suffixOrSanitizer;
-      ngDevMode && ngDevMode.rendererSetStyle++;
-      isProceduralRenderer(renderer) ?
-          renderer.setStyle(lElement.native, styleName, strValue, RendererStyleFlags3.DashCase) :
-          lElement.native['style'].setProperty(styleName, strValue);
+      // sanitization happens by dealing with a String value
+      // this means that the string value will be passed through
+      // into the style rendering later (which is where the value
+      // will be sanitized before it is applied)
+      valueToAdd = value as any as string;
     }
   }
+  updateElementStyleProp(getStylingContext(index), styleIndex, valueToAdd);
 }
 
 /**
- * Set the `style` property on a DOM element.
+ * Queue a key/value map of styles to be rendered on an Element.
  *
- * This instruction is meant to handle the `[style]="exp"` usage.
+ * This instruction is meant to handle the `[style]="exp"` usage. When styles are applied to
+ * the Element they will then be placed with respect to any styles set with `elementStyleProp`.
+ * If any styles are set to `null` then they will be removed from the element (unless the same
+ * style properties have been assigned to the element during creation using `elementStyling`).
  *
+ * (Note that the styling instruction will not be applied until `elementStylingApply` is called.)
  *
- * @param index The index of the element to update in the LViewData array
- * @param value A value indicating if a given style should be added or removed.
- *   The expected shape of `value` is an object where keys are style names and the values
- *   are their corresponding values to set. If value is falsy, then the style is removed. An absence
- *   of style does not cause that style to be removed. `NO_CHANGE` implies that no update should be
- *   performed.
+ * @param index Index of the element's styling storage to change in the data array.
+ *        (Note that this is not the element index, but rather an index value allocated
+ *        specifically for element styling--the index must be the next index after the element
+ *        index.)
+ * @param classes A key/value style map of CSS classes that will be added to the given element.
+ *        Any missing classes (that have already been applied to the element beforehand) will be
+ *        removed (unset) from the element's list of CSS classes.
+ * @param styles A key/value style map of the styles that will be applied to the given element.
+ *        Any missing styles (that have already been applied to the element beforehand) will be
+ *        removed (unset) from the element's styling.
  */
-export function elementStyle<T>(
-    index: number, value: {[styleName: string]: any} | NO_CHANGE): void {
-  if (value !== NO_CHANGE) {
-    // TODO: This is a naive implementation which simply writes value to the `style`. In the future
-    // we will add logic here which would work with the animation code.
-    const lElement = load(index) as LElementNode;
-    if (isProceduralRenderer(renderer)) {
-      ngDevMode && ngDevMode.rendererSetStyle++;
-      renderer.setProperty(lElement.native, 'style', value);
-    } else {
-      const style = lElement.native['style'];
-      for (let i = 0, keys = Object.keys(value); i < keys.length; i++) {
-        const styleName: string = keys[i];
-        const styleValue: any = (value as any)[styleName];
-        if (styleValue == null) {
-          ngDevMode && ngDevMode.rendererRemoveStyle++;
-          style.removeProperty(styleName);
-        } else {
-          ngDevMode && ngDevMode.rendererSetStyle++;
-          style.setProperty(styleName, styleValue);
-        }
-      }
-    }
-  }
+export function elementStylingMap<T>(
+    index: number, classes: {[key: string]: any} | string | null,
+    styles?: {[styleName: string]: any} | null): void {
+  updateStylingMap(getStylingContext(index), classes, styles);
 }
 
 //////////////////////////
@@ -1395,7 +1463,7 @@ export function text(index: number, value?: any): void {
 export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
   if (value !== NO_CHANGE) {
     ngDevMode && assertDataInRange(index + HEADER_OFFSET);
-    const existingNode = load(index) as LTextNode;
+    const existingNode = loadElement(index) as any as LTextNode;
     ngDevMode && assertDefined(existingNode, 'LNode should exist');
     ngDevMode && assertDefined(existingNode.native, 'native element should exist');
     ngDevMode && ngDevMode.rendererSetText++;
@@ -1409,7 +1477,7 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
 //////////////////////////
 
 /**
- * Create a directive.
+ * Create a directive and their associated content queries.
  *
  * NOTE: directives can be created in order other than the index order. They can also
  *       be retrieved before they are created in which case the value will be null.
@@ -1418,28 +1486,32 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
  * @param directiveDef DirectiveDef object which contains information about the template.
  */
 export function directiveCreate<T>(
-    index: number, directive: T,
+    directiveDefIdx: number, directive: T,
     directiveDef: DirectiveDefInternal<T>| ComponentDefInternal<T>): T {
-  const instance = baseDirectiveCreate(index, directive, directiveDef);
+  const instance = baseDirectiveCreate(directiveDefIdx, directive, directiveDef);
 
   ngDevMode && assertDefined(previousOrParentNode.tNode, 'previousOrParentNode.tNode');
   const tNode = previousOrParentNode.tNode;
 
   const isComponent = (directiveDef as ComponentDefInternal<T>).template;
   if (isComponent) {
-    addComponentLogic(index, directive, directiveDef as ComponentDefInternal<T>);
+    addComponentLogic(directiveDefIdx, directive, directiveDef as ComponentDefInternal<T>);
   }
 
   if (firstTemplatePass) {
     // Init hooks are queued now so ngOnInit is called in host components before
     // any projected components.
-    queueInitHooks(index, directiveDef.onInit, directiveDef.doCheck, tView);
+    queueInitHooks(directiveDefIdx, directiveDef.onInit, directiveDef.doCheck, tView);
 
-    if (directiveDef.hostBindings) queueHostBindingForCheck(index);
+    if (directiveDef.hostBindings) queueHostBindingForCheck(directiveDefIdx);
   }
 
   if (tNode && tNode.attrs) {
-    setInputsFromAttrs(index, instance, directiveDef.inputs, tNode);
+    setInputsFromAttrs(directiveDefIdx, instance, directiveDef.inputs, tNode);
+  }
+
+  if (directiveDef.contentQueries) {
+    directiveDef.contentQueries();
   }
 
   return instance;
@@ -1526,7 +1598,7 @@ export function baseDirectiveCreate<T>(
  * @param tNode The static data for this node
  */
 function setInputsFromAttrs<T>(
-    directiveIndex: number, instance: T, inputs: {[key: string]: string}, tNode: TNode): void {
+    directiveIndex: number, instance: T, inputs: {[P in keyof T]: string;}, tNode: TNode): void {
   let initialInputData = tNode.initialInputs as InitialInputData | undefined;
   if (initialInputData === undefined || directiveIndex >= initialInputData.length) {
     initialInputData = generateInitialInputs(directiveIndex, inputs, tNode);
@@ -1661,10 +1733,8 @@ export function container(
 
   isParent = false;
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.Container);
-  if (queries) {
-    // check if a given container node matches
-    queries.addNode(node);
-  }
+  queries && queries.addNode(node);  // check if a given container node matches
+  queueLifecycleHooks(node.tNode.flags, tView);
 }
 
 /**
@@ -1673,7 +1743,7 @@ export function container(
  * @param index The index of the container in the data array
  */
 export function containerRefreshStart(index: number): void {
-  previousOrParentNode = load(index) as LNode;
+  previousOrParentNode = loadElement(index) as LNode;
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.Container);
   isParent = true;
   (previousOrParentNode as LContainerNode).data[ACTIVE_INDEX] = 0;
@@ -1831,46 +1901,9 @@ export function embeddedViewEnd(): void {
   refreshView();
   isParent = false;
   previousOrParentNode = viewData[HOST_NODE] as LViewNode;
-  if (creationMode) {
-    const containerNode = getParentLNode(previousOrParentNode) as LContainerNode;
-    if (containerNode) {
-      ngDevMode && assertNodeType(previousOrParentNode, TNodeType.View);
-      ngDevMode && assertNodeType(containerNode, TNodeType.Container);
-      // When projected nodes are going to be inserted, the renderParent of the dynamic container
-      // used by the ViewContainerRef must be set.
-      setRenderParentInProjectedNodes(
-          containerNode.data[RENDER_PARENT], previousOrParentNode as LViewNode);
-    }
-  }
   leaveView(viewData[PARENT] !);
   ngDevMode && assertEqual(isParent, false, 'isParent');
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.View);
-}
-
-/**
- * For nodes which are projected inside an embedded view, this function sets the renderParent
- * of their dynamic LContainerNode.
- * @param renderParent the renderParent of the LContainer which contains the embedded view.
- * @param viewNode the embedded view.
- */
-function setRenderParentInProjectedNodes(
-    renderParent: LElementNode | null, viewNode: LViewNode): void {
-  if (renderParent != null) {
-    let node: LNode|null = getChildLNode(viewNode);
-    while (node) {
-      if (node.tNode.type === TNodeType.Projection) {
-        let nodeToProject: LNode|null = (node as LProjectionNode).data.head;
-        const lastNodeToProject = (node as LProjectionNode).data.tail;
-        while (nodeToProject) {
-          if (nodeToProject.dynamicLContainerNode) {
-            nodeToProject.dynamicLContainerNode.data[RENDER_PARENT] = renderParent;
-          }
-          nodeToProject = nodeToProject === lastNodeToProject ? null : nodeToProject.pNextOrParent;
-        }
-      }
-      node = getNextLNode(node);
-    }
-  }
 }
 
 /////////////
@@ -1892,7 +1925,7 @@ export function componentRefresh<T>(directiveIndex: number, adjustedElementIndex
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
     ngDevMode && assertDataInRange(directiveIndex, directives !);
-    detectChangesInternal(hostView, element, getDirectiveInstance(directives ![directiveIndex]));
+    detectChangesInternal(hostView, element, directives ![directiveIndex]);
   }
 }
 
@@ -1922,149 +1955,107 @@ export function viewAttached(view: LViewData): boolean {
  * @param selectors A collection of parsed CSS selectors
  * @param rawSelectors A collection of CSS selectors in the raw, un-parsed form
  */
-export function projectionDef(
-    index: number, selectors?: CssSelectorList[], textSelectors?: string[]): void {
-  const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
-  const distributedNodes = new Array<LNode[]>(noOfNodeBuckets);
-  for (let i = 0; i < noOfNodeBuckets; i++) {
-    distributedNodes[i] = [];
-  }
-
+export function projectionDef(selectors?: CssSelectorList[], textSelectors?: string[]): void {
   const componentNode: LElementNode = findComponentHost(viewData);
-  let isProjectingI18nNodes = false;
-  let componentChild: LNode|null;
-  // for i18n translations we use pChild to point to the next child
-  // TODO(kara): Remove when removing LNodes
-  if (componentNode.pChild) {
-    isProjectingI18nNodes = true;
-    componentChild = componentNode.pChild;
-  } else {
-    componentChild = getChildLNode(componentNode);
-  }
 
-  while (componentChild !== null) {
-    // execute selector matching logic if and only if:
-    // - there are selectors defined
-    // - a node has a tag name / attributes that can be matched
-    if (selectors && componentChild.tNode) {
-      const matchedIdx = matchingSelectorIndex(componentChild.tNode, selectors, textSelectors !);
-      distributedNodes[matchedIdx].push(componentChild);
-    } else {
-      distributedNodes[0].push(componentChild);
-    }
+  if (!componentNode.tNode.projection) {
+    const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
+    const pData: (TNode | null)[] = componentNode.tNode.projection =
+        new Array(noOfNodeBuckets).fill(null);
+    const tails: (TNode | null)[] = pData.slice();
 
-    if (isProjectingI18nNodes) {
-      componentChild = componentChild.pNextOrParent;
-    } else {
-      componentChild = getNextLNode(componentChild);
+    let componentChild = componentNode.tNode.child;
+
+    while (componentChild !== null) {
+      const bucketIndex =
+          selectors ? matchingSelectorIndex(componentChild, selectors, textSelectors !) : 0;
+      const nextNode = componentChild.next;
+
+      if (tails[bucketIndex]) {
+        tails[bucketIndex] !.next = componentChild;
+      } else {
+        pData[bucketIndex] = componentChild;
+        componentChild.next = null;
+      }
+      tails[bucketIndex] = componentChild;
+
+      componentChild = nextNode;
     }
   }
-
-  ngDevMode && assertDataNext(index + HEADER_OFFSET);
-  store(index, distributedNodes);
 }
 
 /**
- * Updates the linked list of a projection node, by appending another linked list.
+ * Stack used to keep track of projection nodes in projection() instruction.
  *
- * @param projectionNode Projection node whose projected nodes linked list has to be updated
- * @param appendedFirst First node of the linked list to append.
- * @param appendedLast Last node of the linked list to append.
+ * This is deliberately created outside of projection() to avoid allocating
+ * a new array each time the function is called. Instead the array will be
+ * re-used by each invocation. This works because the function is not reentrant.
  */
-function appendToProjectionNode(
-    projectionNode: LProjectionNode,
-    appendedFirst: LElementNode | LTextNode | LContainerNode | null,
-    appendedLast: LElementNode | LTextNode | LContainerNode | null) {
-  ngDevMode && assertEqual(
-                   !!appendedFirst, !!appendedLast,
-                   'appendedFirst can be null if and only if appendedLast is also null');
-  if (!appendedLast) {
-    // nothing to append
-    return;
-  }
-  const projectionNodeData = projectionNode.data;
-  if (projectionNodeData.tail) {
-    projectionNodeData.tail.pNextOrParent = appendedFirst;
-  } else {
-    projectionNodeData.head = appendedFirst;
-  }
-  projectionNodeData.tail = appendedLast;
-  appendedLast.pNextOrParent = projectionNode;
-}
+const projectionNodeStack: LProjectionNode[] = [];
 
 /**
  * Inserts previously re-distributed projected nodes. This instruction must be preceded by a call
  * to the projectionDef instruction.
  *
  * @param nodeIndex
- * @param localIndex - index under which distribution of projected nodes was memorized
  * @param selectorIndex:
  *        - 0 when the selector is `*` (or unspecified as this is the default value),
  *        - 1 based index of the selector from the {@link projectionDef}
  */
-export function projection(
-    nodeIndex: number, localIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
-  const node = createLNode(
-      nodeIndex, TNodeType.Projection, null, null, attrs || null, {head: null, tail: null});
+export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
+  const node = createLNode(nodeIndex, TNodeType.Projection, null, null, attrs || null, null);
+
+  // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
+  if (node.tNode.projection === null) node.tNode.projection = selectorIndex;
 
   // `<ng-content>` has no content
   isParent = false;
 
-  // re-distribution of projectable nodes is memorized on a component's view level
-  const componentNode = findComponentHost(viewData);
-  const componentLView = componentNode.data as LViewData;
-  const distributedNodes = loadInternal(localIndex, componentLView) as Array<LNode[]>;
-  const nodesForSelector = distributedNodes[selectorIndex];
+  // re-distribution of projectable nodes is stored on a component's view level
+  const parent = getParentLNode(node);
 
-  // build the linked list of projected nodes:
-  for (let i = 0; i < nodesForSelector.length; i++) {
-    const nodeToProject = nodesForSelector[i];
-    if (nodeToProject.tNode.type === TNodeType.Projection) {
-      // Reprojecting a projection -> append the list of previously projected nodes
-      const previouslyProjected = (nodeToProject as LProjectionNode).data;
-      appendToProjectionNode(node, previouslyProjected.head, previouslyProjected.tail);
-    } else {
-      // Projecting a single node
-      appendToProjectionNode(
-          node, nodeToProject as LTextNode | LElementNode | LContainerNode,
-          nodeToProject as LTextNode | LElementNode | LContainerNode);
-    }
-  }
+  if (canInsertNativeNode(parent, viewData)) {
+    const componentNode = findComponentHost(viewData);
+    let nodeToProject = (componentNode.tNode.projection as(TNode | null)[])[selectorIndex];
+    let projectedView = componentNode.view;
+    let projectionNodeIndex = -1;
+    let grandparent: LContainerNode;
+    const renderParent = parent.tNode.type === TNodeType.View ?
+        (grandparent = getParentLNode(parent) as LContainerNode) &&
+            grandparent.data[RENDER_PARENT] ! :
+        parent as LElementNode;
 
-  const currentParent = getParentLNode(node);
-  if (canInsertNativeNode(currentParent, viewData)) {
-    ngDevMode && assertNodeOfPossibleTypes(currentParent, TNodeType.Element, TNodeType.View);
-    // process each node in the list of projected nodes:
-    let nodeToProject: LNode|null = node.data.head;
-    const lastNodeToProject = node.data.tail;
     while (nodeToProject) {
-      appendProjectedNode(
-          nodeToProject as LTextNode | LElementNode | LContainerNode, currentParent as LElementNode,
-          viewData);
-      nodeToProject = nodeToProject === lastNodeToProject ? null : nodeToProject.pNextOrParent;
+      if (nodeToProject.type === TNodeType.Projection) {
+        // This node is re-projected, so we must go up the tree to get its projected nodes.
+        const currentComponentHost = findComponentHost(projectedView);
+        const firstProjectedNode = (currentComponentHost.tNode.projection as(
+            TNode | null)[])[nodeToProject.projection as number];
+
+        if (firstProjectedNode) {
+          projectionNodeStack[++projectionNodeIndex] = projectedView[nodeToProject.index];
+          nodeToProject = firstProjectedNode;
+          projectedView = currentComponentHost.view;
+          continue;
+        }
+      } else {
+        const lNode = projectedView[nodeToProject.index];
+        lNode.tNode.flags |= TNodeFlags.isProjected;
+        appendProjectedNode(
+            lNode as LTextNode | LElementNode | LContainerNode, parent, viewData, renderParent);
+      }
+
+      // If we are finished with a list of re-projected nodes, we need to get
+      // back to the root projection node that was re-projected.
+      if (nodeToProject.next === null && projectedView !== componentNode.view) {
+        // move down into the view of the component we're projecting right now
+        const lNode = projectionNodeStack[projectionNodeIndex--];
+        nodeToProject = lNode.tNode;
+        projectedView = lNode.view;
+      }
+      nodeToProject = nodeToProject.next;
     }
   }
-}
-
-/**
- * Given a current view, finds the nearest component's host (LElement).
- *
- * @param lViewData LViewData for which we want a host element node
- * @returns The host node
- */
-function findComponentHost(lViewData: LViewData): LElementNode {
-  let viewRootLNode = lViewData[HOST_NODE];
-
-  while (viewRootLNode.tNode.type === TNodeType.View) {
-    ngDevMode && assertDefined(lViewData[PARENT], 'lViewData.parent');
-    lViewData = lViewData[PARENT] !;
-    viewRootLNode = lViewData[HOST_NODE];
-  }
-
-  ngDevMode && assertNodeType(viewRootLNode, TNodeType.Element);
-  ngDevMode && assertDefined(viewRootLNode.data, 'node.data');
-
-  return viewRootLNode as LElementNode;
 }
 
 /**
@@ -2535,22 +2526,29 @@ export function store<T>(index: number, value: T): void {
   viewData[adjustedIndex] = value;
 }
 
-/** Retrieves a value from current `viewData`. */
-export function load<T>(index: number): T {
-  return loadInternal<T>(index, viewData);
-}
-
-/** Retrieves a value from any `LViewData`. */
-export function loadInternal<T>(index: number, arr: LViewData): T {
-  ngDevMode && assertDataInRange(index + HEADER_OFFSET, arr);
-  return arr[index + HEADER_OFFSET];
-}
-
 /** Retrieves a value from the `directives` array. */
 export function loadDirective<T>(index: number): T {
   ngDevMode && assertDefined(directives, 'Directives array should be defined if reading a dir.');
   ngDevMode && assertDataInRange(index, directives !);
   return directives ![index];
+}
+
+export function loadQueryList<T>(queryListIdx: number): QueryList<T> {
+  ngDevMode && assertDefined(
+                   viewData[CONTENT_QUERIES],
+                   'Content QueryList array should be defined if reading a query.');
+  ngDevMode && assertDataInRange(queryListIdx, viewData[CONTENT_QUERIES] !);
+
+  return viewData[CONTENT_QUERIES] ![queryListIdx];
+}
+
+/** Retrieves a value from current `viewData`. */
+export function load<T>(index: number): T {
+  return loadInternal<T>(index, viewData);
+}
+
+export function loadElement(index: number): LElementNode {
+  return loadElementInternal(index, viewData);
 }
 
 /** Gets the current binding value and increments the binding index. */
@@ -2602,10 +2600,22 @@ export function getTView(): TView {
   return tView;
 }
 
-export function getDirectiveInstance<T>(instanceOrArray: T | [T]): T {
-  // Directives with content queries store an array in directives[directiveIndex]
-  // with the instance as the first index
-  return Array.isArray(instanceOrArray) ? instanceOrArray[0] : instanceOrArray;
+/**
+ * Registers a QueryList, associated with a content query, for later refresh (part of a view
+ * refresh).
+ */
+export function registerContentQuery<Q>(queryList: QueryList<Q>): void {
+  const savedContentQueriesLength =
+      (viewData[CONTENT_QUERIES] || (viewData[CONTENT_QUERIES] = [])).push(queryList);
+  if (firstTemplatePass) {
+    const currentDirectiveIndex = directives !.length - 1;
+    const tViewContentQueries = tView.contentQueries || (tView.contentQueries = []);
+    const lastSavedDirectiveIndex =
+        tView.contentQueries.length ? tView.contentQueries[tView.contentQueries.length - 2] : -1;
+    if (currentDirectiveIndex !== lastSavedDirectiveIndex) {
+      tViewContentQueries.push(currentDirectiveIndex, savedContentQueriesLength - 1);
+    }
+  }
 }
 
 export function assertPreviousIsParent() {
@@ -2618,7 +2628,7 @@ function assertHasParent() {
 
 function assertDataInRange(index: number, arr?: any[]) {
   if (arr == null) arr = viewData;
-  assertLessThan(index, arr ? arr.length : 0, 'index expected to be a valid data index');
+  assertDataInRangeInternal(index, arr || viewData);
 }
 
 function assertDataNext(index: number, arr?: any[]) {

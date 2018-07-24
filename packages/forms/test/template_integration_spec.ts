@@ -460,7 +460,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const values: string[] = [];
+             const values: any[] = [];
              const form = fixture.debugElement.children[0].injector.get(NgForm);
 
              const sub = merge(form.valueChanges !, form.statusChanges !)
@@ -748,7 +748,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
         it('should reset properly', fakeAsync(() => {
              const fixture = initTest(NgModelForm);
-             fixture.componentInstance.name = 'Nancy';
+             fixture.componentInstance.name = 'Nancy' as string | null;
              fixture.componentInstance.options = {updateOn: 'submit'};
              fixture.detectChanges();
              tick();
@@ -792,7 +792,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const values: string[] = [];
+             const values: any[] = [];
              const form = fixture.debugElement.children[0].injector.get(NgForm);
 
              const sub = merge(form.valueChanges !, form.statusChanges !)
@@ -1028,7 +1028,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
       it('should reset the form to empty when reset event is fired', fakeAsync(() => {
            const fixture = initTest(NgModelForm);
-           fixture.componentInstance.name = 'should be cleared';
+           fixture.componentInstance.name = 'should be cleared' as string | null;
            fixture.detectChanges();
            tick();
 
@@ -1654,7 +1654,7 @@ class StandaloneNgModel {
 })
 class NgModelForm {
   // TODO(issue/24571): remove '!'.
-  name !: string;
+  name !: string | null;
   // TODO(issue/24571): remove '!'.
   event !: Event;
   options = {};

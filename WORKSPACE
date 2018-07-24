@@ -6,23 +6,23 @@ workspace(name = "angular")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.9.1.zip",
-    strip_prefix = "rules_nodejs-0.9.1",
-    sha256 = "6139762b62b37c1fd171d7f22aa39566cb7dc2916f0f801d505a9aaf118c117f",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.10.1.zip",
+    strip_prefix = "rules_nodejs-0.10.1",
+    sha256 = "634206524d90dc03c52392fa3f19a16637d2bcf154910436fe1d669a0d9d7b9c",
 )
 
 http_archive(
     name = "io_bazel_rules_webtesting",
-    url = "https://github.com/bazelbuild/rules_webtesting/archive/v0.2.0.zip",
-    strip_prefix = "rules_webtesting-0.2.0",
-    sha256 = "cecc12f07e95740750a40d38e8b14b76fefa1551bef9332cb432d564d693723c",
+    url = "https://github.com/bazelbuild/rules_webtesting/archive/7ffe970bbf380891754487f66c3d680c087d67f2.zip",
+    strip_prefix = "rules_webtesting-7ffe970bbf380891754487f66c3d680c087d67f2",
+    sha256 = "4fb0dca8c9a90547891b7ef486592775a523330fc4555c88cd8f09270055c2ce",
 )
 
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.15.0.zip",
-    strip_prefix = "rules_typescript-0.15.0",
-    sha256 = "1aa75917330b820cb239b3c10a936a10f0a46fe215063d4492dd76dc6e1616f4",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/0.15.3.zip",
+    strip_prefix = "rules_typescript-0.15.3",
+    sha256 = "a2b26ac3fc13036011196063db1bf7f1eae81334449201dc28087ebfa3708c99",
 )
 
 http_archive(
@@ -58,10 +58,10 @@ http_archive(
 # Even better, things like aspects will visit the entire graph including
 # ts_library rules in the devkit repository.
 http_archive(
-    name = "angular_devkit",
-    url = "https://github.com/angular/devkit/archive/v0.3.1.zip",
-    strip_prefix = "devkit-0.3.1",
-    sha256 = "31d4b597fe9336650acf13df053c1c84dcbe9c29c6a833bcac3819cd3fd8cad3",
+    name = "angular_cli",
+    url = "https://github.com/angular/angular-cli/archive/v6.1.0-rc.0.zip",
+    strip_prefix = "angular-cli-6.1.0-rc.0",
+    sha256 = "8cf320ea58c321e103f39087376feea502f20eaf79c61a4fdb05c7286c8684fd",
 )
 
 http_archive(
@@ -77,8 +77,11 @@ http_archive(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-check_bazel_version("0.14.0")
-node_repositories(package_json = ["//:package.json"])
+check_bazel_version("0.15.0")
+node_repositories(
+  package_json = ["//:package.json"],
+  preserve_symlinks = True,
+)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
 
@@ -96,6 +99,10 @@ browser_repositories(
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
 
 ts_setup_workspace()
+
+load("//packages/bazel/src:ng_setup_workspace.bzl", "ng_setup_workspace")
+
+ng_setup_workspace()
 
 #
 # Point Bazel to WORKSPACEs that live in subdirectories

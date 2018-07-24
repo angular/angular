@@ -13,5 +13,6 @@ ts_library(
         "//packages:types",
         "//packages/compiler",
         "//packages/compiler-cli/src/ngtsc/host",
+        "//packages/compiler-cli/src/ngtsc/util",
     ],
 )

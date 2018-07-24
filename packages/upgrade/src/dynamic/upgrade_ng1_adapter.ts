@@ -45,7 +45,7 @@ export class UpgradeNg1ComponentAdapterBuilder {
     // TODO(tbosch): find or file a bug against TypeScript for this.
     const directive = {selector: selector, inputs: this.inputsRename, outputs: this.outputsRename};
 
-    @Directive(directive)
+    @Directive({jit: true, ...directive})
     class MyClass {
       // TODO(issue/24571): remove '!'.
       directive !: angular.IDirective;

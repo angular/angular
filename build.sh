@@ -409,6 +409,10 @@ if [[ ${BUILD_ALL} == true && ${TYPECHECK_ALL} == true ]]; then
   travisFoldStart "tsc -p ${TSCONFIG}" "no-xtrace"
     $TSC -p ${TSCONFIG}
   travisFoldEnd "tsc -p ${TSCONFIG}"
+  TSCONFIG="packages/examples/tsconfig.json"
+  travisFoldStart "tsc -p ${TSCONFIG}" "no-xtrace"
+    $TSC -p ${TSCONFIG}
+  travisFoldEnd "tsc -p ${TSCONFIG}"
   TSCONFIG="modules/tsconfig.json"
   travisFoldStart "tsc -p ${TSCONFIG}" "no-xtrace"
     $TSC -p ${TSCONFIG}

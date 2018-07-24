@@ -13,8 +13,10 @@
   <a id="{$ option.anchor $}"></a>
   <table class="is-full-width option-table">
     <thead><tr><th>
-      <h3>{$ option.name $}</h3>
-      {$ github.githubLinks(option, versionInfo) $}
+      <div class="with-github-links">
+        <h3>{$ option.name $}</h3>
+        {$ github.githubLinks(option, versionInfo) $}
+      </div>
     </th></tr></thead>
     <tbody>
       <tr>
