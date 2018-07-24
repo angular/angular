@@ -455,7 +455,7 @@ describe('MatSelectionList without forms', () => {
     }));
 
     it('should set its initial selected state in the selectedOptions', () => {
-      let optionEl = listItemEl.injector.get(MatListOption);
+      let optionEl = listItemEl.injector.get<MatListOption>(MatListOption);
       let selectedOptions = selectionList.componentInstance.selectedOptions;
       expect(selectedOptions.isSelected(optionEl)).toBeTruthy();
     });
@@ -633,7 +633,8 @@ describe('MatSelectionList without forms', () => {
       // property of the selection list has been updated, the ripple directive can be used.
       // Inspecting the host classes of the options doesn't work because those update as part
       // of the parent template (of the selection-list).
-      const listOptionRipple = listOption[2].query(By.directive(MatRipple)).injector.get(MatRipple);
+      const listOptionRipple = listOption[2].query(By.directive(MatRipple))
+          .injector.get<MatRipple>(MatRipple);
 
       expect(listOptionRipple.disabled)
         .toBe(true, 'Expected ripples of list option to be disabled');

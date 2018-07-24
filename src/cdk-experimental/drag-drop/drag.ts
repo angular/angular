@@ -23,7 +23,7 @@ import {
   ContentChildren,
   QueryList,
 } from '@angular/core';
-import {DOCUMENT} from '@angular/platform-browser';
+import {DOCUMENT} from '@angular/common';
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkDragHandle} from './drag-handle';
 import {CdkDropContainer, CDK_DROP_CONTAINER} from './drop-container';

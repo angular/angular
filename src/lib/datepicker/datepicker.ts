@@ -442,7 +442,7 @@ export class MatDatepicker<D> implements OnDestroy, CanColor {
   /** Create the popup PositionStrategy. */
   private _createPopupPositionStrategy(): PositionStrategy {
     return this._overlay.position()
-      .flexibleConnectedTo(this._datepickerInput.getPopupConnectionElementRef())
+      .flexibleConnectedTo(this._datepickerInput.getConnectedOverlayOrigin())
       .withTransformOriginOn('.mat-datepicker-content')
       .withFlexibleDimensions(false)
       .withViewportMargin(8)
