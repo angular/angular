@@ -78,6 +78,11 @@ export interface ResolvedValueArray extends Array<ResolvedValue> {}
  */
 type Scope = Map<ts.ParameterDeclaration, ResolvedValue>;
 
+export enum ImportMode {
+  UseExistingImport,
+  ForceNewImport,
+}
+
 /**
  * A reference to a `ts.Node`.
  *
@@ -99,7 +104,7 @@ export abstract class Reference<T extends ts.Node = ts.Node> {
    * This could be a local variable reference, if the symbol is imported, or it could be a new
    * import if needed.
    */
-  abstract toExpression(context: ts.SourceFile): Expression|null;
+  abstract toExpression(context: ts.SourceFile, importMode?: ImportMode): Expression|null;
 
   abstract withIdentifier(identifier: ts.Identifier): Reference;
 }
@@ -115,7 +120,7 @@ export class NodeReference<T extends ts.Node = ts.Node> extends Reference<T> {
 
   toExpression(context: ts.SourceFile): null { return null; }
 
-  withIdentifier(identifier: ts.Identifier): NodeReference { return this; }
+  withIdentifier(identifier: ts.Identifier): NodeReference<T> { return this; }
 }
 
 /**
@@ -128,8 +133,20 @@ export class ResolvedReference<T extends ts.Node = ts.Node> extends Reference<T>
 
   readonly expressable = true;
 
-  toExpression(context: ts.SourceFile): Expression {
-    if (ts.getOriginalNode(context) === ts.getOriginalNode(this.identifier).getSourceFile()) {
+  toExpression(context: ts.SourceFile, importMode: ImportMode = ImportMode.UseExistingImport):
+      Expression {
+    let compareCtx: ts.Node|null = null;
+    switch (importMode) {
+      case ImportMode.UseExistingImport:
+        compareCtx = this.identifier;
+        break;
+      case ImportMode.ForceNewImport:
+        compareCtx = this.node;
+        break;
+      default:
+        throw new Error(`Unsupported ImportMode: ${ImportMode[importMode]}`);
+    }
+    if (ts.getOriginalNode(context) === ts.getOriginalNode(compareCtx).getSourceFile()) {
       return new WrappedNodeExpr(this.identifier);
     } else {
       // Relative import from context -> this.node.getSourceFile().
@@ -175,8 +192,20 @@ export class AbsoluteReference extends Reference {
 
   readonly expressable = true;
 
-  toExpression(context: ts.SourceFile): Expression {
-    if (ts.getOriginalNode(context) === ts.getOriginalNode(this.identifier).getSourceFile()) {
+  toExpression(context: ts.SourceFile, importMode: ImportMode = ImportMode.UseExistingImport):
+      Expression {
+    let compareCtx: ts.Node|null = null;
+    switch (importMode) {
+      case ImportMode.UseExistingImport:
+        compareCtx = this.identifier;
+        break;
+      case ImportMode.ForceNewImport:
+        compareCtx = this.node;
+        break;
+      default:
+        throw new Error(`Unsupported ImportMode: ${ImportMode[importMode]}`);
+    }
+    if (ts.getOriginalNode(context) === ts.getOriginalNode(compareCtx).getSourceFile()) {
       return new WrappedNodeExpr(this.identifier);
     } else {
       return new ExternalExpr(new ExternalReference(this.moduleName, this.symbolName));

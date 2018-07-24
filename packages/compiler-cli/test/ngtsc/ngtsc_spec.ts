@@ -246,6 +246,65 @@ describe('ngtsc behavioral tests', () => {
     expect(dtsContents).toContain('static ngInjectorDef: i0.ɵInjectorDef');
   });
 
+  it('should compile NgModules with references to local components', () => {
+    writeConfig();
+    write('test.ts', `
+      import {NgModule} from '@angular/core';
+      import {Foo} from './foo';
+
+      @NgModule({
+        declarations: [Foo],
+      })
+      export class FooModule {}
+    `);
+    write('foo.ts', `
+      import {Component} from '@angular/core';
+      @Component({selector: 'foo', template: ''})
+      export class Foo {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    const dtsContents = getContents('test.d.ts');
+
+    expect(jsContents).toContain('import { Foo } from \'./foo\';');
+    expect(jsContents).not.toMatch(/as i[0-9] from '.\/foo'/);
+    expect(dtsContents).toContain('as i1 from \'./foo\';');
+  });
+
+  it('should compile NgModules with references to absolute components', () => {
+    writeConfig();
+    write('test.ts', `
+      import {NgModule} from '@angular/core';
+      import {Foo} from 'foo';
+
+      @NgModule({
+        declarations: [Foo],
+      })
+      export class FooModule {}
+    `);
+    write('node_modules/foo/index.d.ts', `
+      import * as i0 from '@angular/core';
+      export class Foo {
+        static ngComponentDef: i0.ɵComponentDef<Foo, 'foo'>;
+      }
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    const dtsContents = getContents('test.d.ts');
+
+    expect(jsContents).toContain('import { Foo } from \'foo\';');
+    expect(jsContents).not.toMatch(/as i[0-9] from 'foo'/);
+    expect(dtsContents).toContain('as i1 from \'foo\';');
+  });
+
   it('should compile Pipes without errors', () => {
     writeConfig();
     write('test.ts', `
