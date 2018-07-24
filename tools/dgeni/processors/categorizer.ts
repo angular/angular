@@ -49,6 +49,7 @@ export class Categorizer implements Processor {
     // Special decorations for real class documents that don't apply for interfaces.
     if (classLikeDoc.docType === 'class') {
       this.decorateClassDoc(classLikeDoc as CategorizedClassDoc);
+      this.replaceMethodsWithOverload(classLikeDoc as CategorizedClassDoc);
     }
 
     // Call decorate hooks that can modify the method and property docs.
@@ -116,6 +117,29 @@ export class Categorizer implements Processor {
 
     propertyDoc.isDirectiveOutput = !!outputMetadata;
     propertyDoc.directiveOutputAlias = (outputMetadata && outputMetadata.alias) || '';
+  }
+
+  /**
+   * Walks through every method of the specified class doc and replaces the method
+   * with its referenced overload method definitions, if the method is having overload definitions.
+   */
+  private replaceMethodsWithOverload(classDoc: CategorizedClassDoc) {
+    const methodsToAdd: CategorizedMethodMemberDoc[] = [];
+
+    classDoc.methods.forEach((methodDoc, index) => {
+      if (methodDoc.overloads.length > 0) {
+
+        // Add each method overload to the methods that will be shown in the docs.
+        // Note that we cannot add the overloads immediately to the methods array because
+        // that would cause the iteration to visit the new overloads.
+        methodsToAdd.push(...methodDoc.overloads as CategorizedMethodMemberDoc[]);
+
+        // Remove the base method for the overloads from the documentation.
+        classDoc.methods.splice(index, 1);
+      }
+    });
+
+    classDoc.methods.push(...methodsToAdd);
   }
 }
 
