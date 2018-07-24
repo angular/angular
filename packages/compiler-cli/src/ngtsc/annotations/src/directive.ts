@@ -14,7 +14,7 @@ import {Reference, filterToMembersWithDecorator, reflectObjectLiteral, staticall
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {SelectorScopeRegistry} from './selector_scope';
-import {getConstructorDependencies, isAngularCore, unwrapExpression} from './util';
+import {getConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwardRef} from './util';
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
@@ -156,12 +156,13 @@ export function extractQueryMetadata(
     throw new Error(`@${name} must have arguments`);
   }
   const first = name === 'ViewChild' || name === 'ContentChild';
-  const arg = staticallyResolve(args[0], reflector, checker);
+  const node = unwrapForwardRef(args[0], reflector);
+  const arg = staticallyResolve(node, reflector, checker);
 
   // Extract the predicate
   let predicate: Expression|string[]|null = null;
   if (arg instanceof Reference) {
-    predicate = new WrappedNodeExpr(args[0]);
+    predicate = new WrappedNodeExpr(node);
   } else if (typeof arg === 'string') {
     predicate = [arg];
   } else if (isStringArrayOrDie(arg, '@' + name)) {
