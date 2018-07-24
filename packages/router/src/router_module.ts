@@ -321,9 +321,9 @@ export interface ExtraOptions {
    * * 'enabled'--set the scroll position to the stored position. This option will be the default in
    * the future.
    *
-   * When enabled, the router store store scroll positions when navigating forward, and will
-   * restore the stored positions whe navigating back (popstate). When navigating forward,
-   * the scroll position will be set to [0, 0], or to the anchor if one is provided.
+   * When enabled, the router stores and restores scroll positions during navigation.
+   * When navigating forward, the scroll position will be set to [0, 0], or to the anchor
+   * if one is provided.
    *
    * You can implement custom scroll restoration behavior as follows.
    * ```typescript
