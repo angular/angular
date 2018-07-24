@@ -449,6 +449,30 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain(`i0.ɵQ(1, ["test1"], true)`);
   });
 
+  it('should handle queries that use forwardRef', () => {
+    writeConfig();
+    write(`test.ts`, `
+        import {Component, ContentChild, TemplateRef, ViewContainerRef, forwardRef} from '@angular/core';
+
+        @Component({
+          selector: 'test',
+          template: '<div #foo></div>',
+        })
+        class FooCmp {
+          @ContentChild(forwardRef(() => TemplateRef)) child: any;
+
+          @ContentChild(forwardRef(function() { return ViewContainerRef; })) child2: any;
+        }
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+    const jsContents = getContents('test.js');
+    expect(jsContents).toContain(`i0.ɵQ(null, TemplateRef, true)`);
+    expect(jsContents).toContain(`i0.ɵQ(null, ViewContainerRef, true)`);
+  });
+
   it('should generate host bindings for directives', () => {
     writeConfig();
     write(`test.ts`, `
