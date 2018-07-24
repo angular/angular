@@ -5,7 +5,7 @@ import { <%= classify(name) %>DataSource } from './<%= dasherize(name) %>-dataso
 @Component({
   selector: '<%= selector %>',<% if(inlineTemplate) { %>
   template: `
-<%= resolvedFiles.template %>
+    <%= indentTextContent(resolvedFiles.template, 4) %>
   `,<% } else { %>
   templateUrl: './<%= dasherize(name) %>.component.html',<% } if(inlineStyle) { %>
   styles: []<% } else { %>

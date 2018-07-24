@@ -106,6 +106,17 @@ function buildSelector(options: any, projectPrefix: string) {
 }
 
 /**
+ * Indents the text content with the amount of specified spaces. The spaces will be added after
+ * every line-break. This utility function can be used inside of EJS templates to properly
+ * include the additional files.
+ */
+function indentTextContent(text: string, numSpaces: number): string {
+  // In the Material project there should be only LF line-endings, but the schematic files
+  // are not being linted and therefore there can be also use CRLF or just CR line-endings.
+  return text.replace(/(\r\n|\r|\n)/g, `$1${' '.repeat(numSpaces)}`);
+}
+
+/**
  * Rule that copies and interpolates the files that belong to this schematic context. Additionally
  * a list of file paths can be passed to this rule in order to expose them inside the EJS
  * template context.
@@ -113,7 +124,9 @@ function buildSelector(options: any, projectPrefix: string) {
  * This allows inlining the external template or stylesheet files in EJS without having
  * to manually duplicate the file content.
  */
-export function buildComponent(options: any, additionalFiles?: {[key: string]: string}): Rule {
+export function buildComponent(options: any,
+                               additionalFiles: {[key: string]: string} = {}): Rule {
+
   return (host: Tree, context: FileSystemSchematicContext) => {
     const workspace = getWorkspace(host);
 
@@ -166,6 +179,7 @@ export function buildComponent(options: any, additionalFiles?: {[key: string]: s
       options.inlineStyle ? filter(path => !path.endsWith('.__styleext__')) : noop(),
       options.inlineTemplate ? filter(path => !path.endsWith('.html')) : noop(),
       template({
+        indentTextContent,
         resolvedFiles,
         ...baseTemplateContext
       }),
@@ -180,3 +194,5 @@ export function buildComponent(options: any, additionalFiles?: {[key: string]: s
     ])(host, context);
   };
 }
+
+// TODO(paul): move this utility out of the `devkit-utils` because it's no longer taken from there.
