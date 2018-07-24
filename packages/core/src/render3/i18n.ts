@@ -7,9 +7,9 @@
  */
 
 import {assertEqual, assertLessThan} from './assert';
-import {NO_CHANGE, bindingUpdated, createLNode, getPreviousOrParentNode, getRenderer, getViewData, load, resetApplicationState} from './instructions';
+import {NO_CHANGE, bindingUpdated, bindingUpdated2, bindingUpdated4, createLNode, getPreviousOrParentNode, getRenderer, getViewData, load, resetApplicationState} from './instructions';
 import {RENDER_PARENT} from './interfaces/container';
-import {LContainerNode, LElementNode, LNode, TContainerNode, TElementNode, TNodeType} from './interfaces/node';
+import {LContainerNode, LNode, TContainerNode, TElementNode, TNodeType} from './interfaces/node';
 import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
 import {appendChild, createTextNode, getParentLNode, removeChild} from './node_manipulation';
 import {stringify} from './util';
@@ -22,8 +22,10 @@ export const enum I18nInstructions {
   Text = 1 << 29,
   Element = 2 << 29,
   Expression = 3 << 29,
-  CloseNode = 4 << 29,
-  RemoveNode = 5 << 29,
+  TemplateRoot = 4 << 29,
+  Any = 5 << 29,
+  CloseNode = 6 << 29,
+  RemoveNode = 7 << 29,
   /** Used to decode the number encoded with the instruction. */
   IndexMask = (1 << 29) - 1,
   /** Used to test the type of instruction. */
@@ -46,7 +48,7 @@ export type I18nExpInstruction = number | string;
 export type PlaceholderMap = {
   [name: string]: number
 };
-const i18nTagRegex = /\{\$([^}]+)\}/g;
+const i18nTagRegex = /{\$([^}]+)}/g;
 
 /**
  * Takes a translation string, the initial list of placeholders (elements and expressions) and the
@@ -62,8 +64,8 @@ const i18nTagRegex = /\{\$([^}]+)\}/g;
  * their indexes.
  * @param expressions An array containing, for each template, the maps of expression placeholders
  * and their indexes.
- * @param tmplContainers An array of template container placeholders whose content should be ignored
- * when generating the instructions for their parent template.
+ * @param templateRoots An array of template roots whose content should be ignored when
+ * generating the instructions for their parent template.
  * @param lastChildIndex The index of the last child of the i18n node. Used when the i18n block is
  * an ng-container.
  *
@@ -71,13 +73,14 @@ const i18nTagRegex = /\{\$([^}]+)\}/g;
  */
 export function i18nMapping(
     translation: string, elements: (PlaceholderMap | null)[] | null,
-    expressions?: (PlaceholderMap | null)[] | null, tmplContainers?: string[] | null,
+    expressions?: (PlaceholderMap | null)[] | null, templateRoots?: string[] | null,
     lastChildIndex?: number | null): I18nInstruction[][] {
   const translationParts = translation.split(i18nTagRegex);
-  const instructions: I18nInstruction[][] = [];
+  const nbTemplates = templateRoots ? templateRoots.length + 1 : 1;
+  const instructions: I18nInstruction[][] = (new Array(nbTemplates)).fill(undefined);
 
   generateMappingInstructions(
-      0, translationParts, instructions, elements, expressions, tmplContainers, lastChildIndex);
+      0, 0, translationParts, instructions, elements, expressions, templateRoots, lastChildIndex);
 
   return instructions;
 }
@@ -88,7 +91,9 @@ export function i18nMapping(
  *
  * See `i18nMapping()` for more details.
  *
- * @param index The current index in `translationParts`.
+ * @param tmplIndex The order of appearance of the template.
+ * 0 for the root template, following indexes match the order in `templateRoots`.
+ * @param partIndex The current index in `translationParts`.
  * @param translationParts The translation string split into an array of placeholders and text
  * elements.
  * @param instructions The current list of instructions to update.
@@ -96,46 +101,55 @@ export function i18nMapping(
  * their indexes.
  * @param expressions An array containing, for each template, the maps of expression placeholders
  * and their indexes.
- * @param tmplContainers An array of template container placeholders whose content should be ignored
- * when generating the instructions for their parent template.
+ * @param templateRoots An array of template roots whose content should be ignored when
+ * generating the instructions for their parent template.
  * @param lastChildIndex The index of the last child of the i18n node. Used when the i18n block is
  * an ng-container.
+ *
  * @returns the current index in `translationParts`
  */
 function generateMappingInstructions(
-    index: number, translationParts: string[], instructions: I18nInstruction[][],
-    elements: (PlaceholderMap | null)[] | null, expressions?: (PlaceholderMap | null)[] | null,
-    tmplContainers?: string[] | null, lastChildIndex?: number | null): number {
-  const tmplIndex = instructions.length;
+    tmplIndex: number, partIndex: number, translationParts: string[],
+    instructions: I18nInstruction[][], elements: (PlaceholderMap | null)[] | null,
+    expressions?: (PlaceholderMap | null)[] | null, templateRoots?: string[] | null,
+    lastChildIndex?: number | null): number {
   const tmplInstructions: I18nInstruction[] = [];
-  const phVisited = [];
+  const phVisited: string[] = [];
   let openedTagCount = 0;
   let maxIndex = 0;
+  let currentElements: PlaceholderMap|null =
+      elements && elements[tmplIndex] ? elements[tmplIndex] : null;
+  let currentExpressions: PlaceholderMap|null =
+      expressions && expressions[tmplIndex] ? expressions[tmplIndex] : null;
 
-  instructions.push(tmplInstructions);
+  instructions[tmplIndex] = tmplInstructions;
 
-  for (; index < translationParts.length; index++) {
-    const value = translationParts[index];
+  for (; partIndex < translationParts.length; partIndex++) {
+    // The value can either be text or the name of a placeholder (element/template root/expression)
+    const value = translationParts[partIndex];
 
     // Odd indexes are placeholders
-    if (index & 1) {
+    if (partIndex & 1) {
       let phIndex;
-
-      if (elements && elements[tmplIndex] &&
-          typeof(phIndex = elements[tmplIndex] ![value]) !== 'undefined') {
-        // The placeholder represents a DOM element
-        // Add an instruction to move the element
-        tmplInstructions.push(phIndex | I18nInstructions.Element);
+      if (currentElements && currentElements[value] !== undefined) {
+        phIndex = currentElements[value];
+        // The placeholder represents a DOM element, add an instruction to move it
+        let templateRootIndex = templateRoots ? templateRoots.indexOf(value) : -1;
+        if (templateRootIndex !== -1 && (templateRootIndex + 1) !== tmplIndex) {
+          // This is a template root, it has no closing tag, not treating it as an element
+          tmplInstructions.push(phIndex | I18nInstructions.TemplateRoot);
+        } else {
+          tmplInstructions.push(phIndex | I18nInstructions.Element);
+          openedTagCount++;
+        }
         phVisited.push(value);
-        openedTagCount++;
-      } else if (
-          expressions && expressions[tmplIndex] &&
-          typeof(phIndex = expressions[tmplIndex] ![value]) !== 'undefined') {
-        // The placeholder represents an expression
-        // Add an instruction to move the expression
+      } else if (currentExpressions && currentExpressions[value] !== undefined) {
+        phIndex = currentExpressions[value];
+        // The placeholder represents an expression, add an instruction to move it
         tmplInstructions.push(phIndex | I18nInstructions.Expression);
         phVisited.push(value);
-      } else {  // It is a closing tag
+      } else {
+        // It is a closing tag
         tmplInstructions.push(I18nInstructions.CloseNode);
 
         if (tmplIndex > 0) {
@@ -148,15 +162,17 @@ function generateMappingInstructions(
         }
       }
 
-      if (typeof phIndex !== 'undefined' && phIndex > maxIndex) {
+      if (phIndex !== undefined && phIndex > maxIndex) {
         maxIndex = phIndex;
       }
 
-      if (tmplContainers && tmplContainers.indexOf(value) !== -1 &&
-          tmplContainers.indexOf(value) >= tmplIndex) {
-        index = generateMappingInstructions(
-            index, translationParts, instructions, elements, expressions, tmplContainers,
-            lastChildIndex);
+      if (templateRoots) {
+        const newTmplIndex = templateRoots.indexOf(value) + 1;
+        if (newTmplIndex !== 0 && newTmplIndex !== tmplIndex) {
+          partIndex = generateMappingInstructions(
+              newTmplIndex, partIndex, translationParts, instructions, elements, expressions,
+              templateRoots, lastChildIndex);
+        }
       }
 
     } else if (value) {
@@ -165,7 +181,7 @@ function generateMappingInstructions(
     }
   }
 
-  // Check if some elements from the template are missing from the translation
+  // Add instructions to remove elements that are not used in the translation
   if (elements) {
     const tmplElements = elements[tmplIndex];
 
@@ -188,7 +204,7 @@ function generateMappingInstructions(
     }
   }
 
-  // Check if some expressions from the template are missing from the translation
+  // Add instructions to remove expressions that are not used in the translation
   if (expressions) {
     const tmplExpressions = expressions[tmplIndex];
 
@@ -222,13 +238,11 @@ function generateMappingInstructions(
       if (ngDevMode) {
         assertLessThan(i.toString(2).length, 28, `Index ${i} is too big and will overflow`);
       }
-      // We consider those additional placeholders as expressions because we don't care about
-      // their children, all we need to do is to append them
-      tmplInstructions.push(i | I18nInstructions.Expression);
+      tmplInstructions.push(i | I18nInstructions.Any);
     }
   }
 
-  return index;
+  return partIndex;
 }
 
 function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
@@ -258,8 +272,6 @@ function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
 
   // Template containers also have a comment node for the `ViewContainerRef` that should be moved
   if (node.tNode.type === TNodeType.Container && node.dynamicLContainerNode) {
-    // (node.native as RComment).textContent = 'test';
-    // console.log(node.native);
     appendChild(parentNode, node.dynamicLContainerNode.native || null, viewData);
     if (firstTemplatePass) {
       node.tNode.dynamicContainerNode = node.dynamicLContainerNode.tNode;
@@ -302,8 +314,10 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         localParentNode = element;
         break;
       case I18nInstructions.Expression:
-        const expr: LNode = load(instruction & I18nInstructions.IndexMask);
-        localPreviousNode = appendI18nNode(expr, localParentNode, localPreviousNode);
+      case I18nInstructions.TemplateRoot:
+      case I18nInstructions.Any:
+        const node: LNode = load(instruction & I18nInstructions.IndexMask);
+        localPreviousNode = appendI18nNode(node, localParentNode, localPreviousNode);
         break;
       case I18nInstructions.Text:
         if (ngDevMode) {
@@ -360,43 +374,16 @@ export function i18nExpMapping(
 }
 
 /**
- * Checks if the value of up to 8 expressions have changed and replaces them by their values in a
- * translation, or returns NO_CHANGE.
+ * Checks if the value of an expression has changed and replaces it by its value in a translation,
+ * or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
  *
  * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
  */
-export function i18nInterpolation(
-    instructions: I18nExpInstruction[], numberOfExp: number, v0: any, v1?: any, v2?: any, v3?: any,
-    v4?: any, v5?: any, v6?: any, v7?: any): string|NO_CHANGE {
-  let different = bindingUpdated(v0);
-
-  if (numberOfExp > 1) {
-    different = bindingUpdated(v1) || different;
-
-    if (numberOfExp > 2) {
-      different = bindingUpdated(v2) || different;
-
-      if (numberOfExp > 3) {
-        different = bindingUpdated(v3) || different;
-
-        if (numberOfExp > 4) {
-          different = bindingUpdated(v4) || different;
-
-          if (numberOfExp > 5) {
-            different = bindingUpdated(v5) || different;
-
-            if (numberOfExp > 6) {
-              different = bindingUpdated(v6) || different;
-
-              if (numberOfExp > 7) {
-                different = bindingUpdated(v7) || different;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
+export function i18nInterpolation1(instructions: I18nExpInstruction[], v0: any): string|NO_CHANGE {
+  const different = bindingUpdated(v0);
 
   if (!different) {
     return NO_CHANGE;
@@ -404,35 +391,308 @@ export function i18nInterpolation(
 
   let res = '';
   for (let i = 0; i < instructions.length; i++) {
-    let value: any;
-    // Odd indexes are placeholders
+    // Odd indexes are bindings
     if (i & 1) {
-      switch (instructions[i]) {
-        case 0:
-          value = v0;
-          break;
-        case 1:
-          value = v1;
-          break;
-        case 2:
-          value = v2;
-          break;
-        case 3:
-          value = v3;
-          break;
-        case 4:
-          value = v4;
-          break;
-        case 5:
-          value = v5;
-          break;
-        case 6:
-          value = v6;
-          break;
-        case 7:
-          value = v7;
-          break;
-      }
+      res += stringify(v0);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 2 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation2(instructions: I18nExpInstruction[], v0: any, v1: any): string|
+    NO_CHANGE {
+  const different = bindingUpdated2(v0, v1);
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b1 ? v1 : v0;
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 3 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation3(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any): string|NO_CHANGE {
+  let different = bindingUpdated2(v0, v1);
+  different = bindingUpdated(v2) || different;
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b2 ? v2 : (b1 ? v1 : v0);
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 4 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ * @param v3 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation4(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any): string|NO_CHANGE {
+  const different = bindingUpdated4(v0, v1, v2, v3);
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b2 ? (b1 ? v3 : v2) : (b1 ? v1 : v0);
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 5 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ * @param v3 value checked for change.
+ * @param v4 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation5(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any): string|
+    NO_CHANGE {
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated(v4) || different;
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b4 = idx & 4;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b4 ? v4 : (b2 ? (b1 ? v3 : v2) : (b1 ? v1 : v0));
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 6 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ * @param v3 value checked for change.
+ * @param v4 value checked for change.
+ * @param v5 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */ export function
+i18nInterpolation6(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any, v5: any):
+    string|NO_CHANGE {
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated2(v4, v5) || different;
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b4 = idx & 4;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b4 ? (b1 ? v5 : v4) : (b2 ? (b1 ? v3 : v2) : (b1 ? v1 : v0));
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 7 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ * @param v3 value checked for change.
+ * @param v4 value checked for change.
+ * @param v5 value checked for change.
+ * @param v6 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation7(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any, v5: any,
+    v6: any): string|NO_CHANGE {
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated2(v4, v5) || different;
+  different = bindingUpdated(v6) || different;
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b4 = idx & 4;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value = b4 ? (b2 ? v6 : (b1 ? v5 : v4)) : (b2 ? (b1 ? v3 : v2) : (b1 ? v1 : v0));
+
+      res += stringify(value);
+    } else {
+      res += instructions[i];
+    }
+  }
+
+  return res;
+}
+
+/**
+ * Checks if the values of up to 8 expressions have changed and replaces them by their values in a
+ * translation, or returns NO_CHANGE.
+ *
+ * @param instructions A list of instructions that will be used to translate an attribute.
+ * @param v0 value checked for change.
+ * @param v1 value checked for change.
+ * @param v2 value checked for change.
+ * @param v3 value checked for change.
+ * @param v4 value checked for change.
+ * @param v5 value checked for change.
+ * @param v6 value checked for change.
+ * @param v7 value checked for change.
+ *
+ * @returns The concatenated string when any of the arguments changes, `NO_CHANGE` otherwise.
+ */
+export function i18nInterpolation8(
+    instructions: I18nExpInstruction[], v0: any, v1: any, v2: any, v3: any, v4: any, v5: any,
+    v6: any, v7: any): string|NO_CHANGE {
+  let different = bindingUpdated4(v0, v1, v2, v3);
+  different = bindingUpdated4(v4, v5, v6, v7) || different;
+
+  if (!different) {
+    return NO_CHANGE;
+  }
+
+  let res = '';
+  for (let i = 0; i < instructions.length; i++) {
+    // Odd indexes are bindings
+    if (i & 1) {
+      // Extract bits
+      const idx = instructions[i] as number;
+      const b4 = idx & 4;
+      const b2 = idx & 2;
+      const b1 = idx & 1;
+      // Get the value from the argument vx where x = idx
+      const value =
+          b4 ? (b2 ? (b1 ? v7 : v6) : (b1 ? v5 : v4)) : (b2 ? (b1 ? v3 : v2) : (b1 ? v1 : v0));
 
       res += stringify(value);
     } else {
