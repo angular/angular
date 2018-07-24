@@ -30,7 +30,6 @@ filegroup(
     "tsickle",
     "tslib",
     "tslint",
-    "tsutils",
     "typescript",
     "zone.js",
   ] for ext in [
