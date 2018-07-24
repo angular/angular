@@ -1329,7 +1329,16 @@ describe('MatAutocomplete', () => {
       const panel = fixture.debugElement.query(By.css('.mat-autocomplete-panel')).nativeElement;
 
       expect(input.getAttribute('aria-owns'))
-          .toEqual(panel.getAttribute('id'), 'Expected aria-owns to match attached autocomplete.');
+          .toBe(panel.getAttribute('id'), 'Expected aria-owns to match attached autocomplete.');
+    });
+
+    it('should not set aria-owns while the autocomplete is closed', () => {
+      expect(input.getAttribute('aria-owns')).toBeFalsy();
+
+      fixture.componentInstance.trigger.openPanel();
+      fixture.detectChanges();
+
+      expect(input.getAttribute('aria-owns')).toBeTruthy();
     });
 
     it('should restore focus to the input when clicking to select a value', fakeAsync(() => {
