@@ -46,7 +46,12 @@ export class PackageTransformer {
     const targetNodeModules = sourceNodeModules.replace(/node_modules$/, 'node_modules_ngtsc');
     const entryPointPaths = getEntryPoints(packagePath, format);
     entryPointPaths.forEach(entryPointPath => {
-      const options: ts.CompilerOptions = {allowJs: true, rootDir: entryPointPath};
+      const options: ts.CompilerOptions = {
+        allowJs: true,
+        maxNodeModuleJsDepth: Infinity,
+        rootDir: entryPointPath,
+      };
+
       const host = ts.createCompilerHost(options);
       const packageProgram = ts.createProgram([entryPointPath], options, host);
       const entryPointFile = packageProgram.getSourceFile(entryPointPath) !;

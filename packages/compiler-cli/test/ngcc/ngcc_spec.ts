@@ -72,16 +72,30 @@ describe('ngcc behavioral tests', () => {
     setupNodeModules(support);
   });
 
-  it('should run ngcc without errors', () => {
+  it('should run ngcc without errors for fesm2015', () => {
     const nodeModulesPath = path.join(basePath, 'node_modules');
     console.error(nodeModulesPath);
     const commonPath = path.join(nodeModulesPath, '@angular/common');
-    const exitCode = mainNgcc([commonPath]);
+    const exitCode = mainNgcc([commonPath, 'fesm2015']);
 
     console.warn(find('node_modules_ngtsc').filter(p => p.endsWith('.js') || p.endsWith('map')));
 
     console.warn(cat('node_modules_ngtsc/@angular/common/fesm2015/common.js').stdout);
     console.warn(cat('node_modules_ngtsc/@angular/common/fesm2015/common.js.map').stdout);
+
+    expect(exitCode).toBe(0);
+  });
+
+  it('should run ngcc without errors for esm2015', () => {
+    const nodeModulesPath = path.join(basePath, 'node_modules');
+    console.error(nodeModulesPath);
+    const commonPath = path.join(nodeModulesPath, '@angular/common');
+    const exitCode = mainNgcc([commonPath, 'esm2015']);
+
+    console.warn(find('node_modules_ngtsc').filter(p => p.endsWith('.js') || p.endsWith('map')));
+
+    console.warn(cat('node_modules_ngtsc/@angular/common/esm2015/src/directives/ng_if.js').stdout);
+    console.warn(cat('node_modules_ngtsc/@angular/common/esm2015/http/src/module.js').stdout);
 
     expect(exitCode).toBe(0);
   });
