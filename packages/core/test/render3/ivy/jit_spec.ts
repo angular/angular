@@ -12,9 +12,10 @@ import {InjectorDef, defineInjectable} from '@angular/core/src/di/defs';
 import {Injectable} from '@angular/core/src/di/injectable';
 import {inject, setCurrentInjector} from '@angular/core/src/di/injector';
 import {ivyEnabled} from '@angular/core/src/ivy_switch';
-import {Component, HostBinding, HostListener, Pipe} from '@angular/core/src/metadata/directives';
+import {Component, HostBinding, HostListener, Input, Output, Pipe} from '@angular/core/src/metadata/directives';
 import {NgModule, NgModuleDefInternal} from '@angular/core/src/metadata/ng_module';
 import {ComponentDefInternal, PipeDefInternal} from '@angular/core/src/render3/interfaces/definition';
+
 
 ivyEnabled && describe('render3 jit', () => {
   let injector: any;
@@ -232,6 +233,32 @@ ivyEnabled && describe('render3 jit', () => {
 
     const pipeDef = (P as any).ngPipeDef as PipeDefInternal<P>;
     expect(pipeDef.pure).toBe(true, 'pipe should be pure');
+  });
+
+  it('should add ngBaseDef to types with @Input properties', () => {
+    class C {
+      @Input('alias1')
+      prop1 = 'test';
+
+      @Input('alias2')
+      prop2 = 'test';
+    }
+
+    expect((C as any).ngBaseDef).toBeDefined();
+    expect((C as any).ngBaseDef.inputs).toEqual({prop1: 'alias1', prop2: 'alias2'});
+  });
+
+  it('should add ngBaseDef to types with @Output properties', () => {
+    class C {
+      @Output('alias1')
+      prop1 = 'test';
+
+      @Output('alias2')
+      prop2 = 'test';
+    }
+
+    expect((C as any).ngBaseDef).toBeDefined();
+    expect((C as any).ngBaseDef.outputs).toEqual({prop1: 'alias1', prop2: 'alias2'});
   });
 });
 
