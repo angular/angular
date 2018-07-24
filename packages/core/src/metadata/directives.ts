@@ -9,9 +9,12 @@
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
 import {R3_COMPILE_COMPONENT, R3_COMPILE_DIRECTIVE, R3_COMPILE_PIPE} from '../ivy_switch';
+import {BaseDef} from '../render3/interfaces/definition';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
+
 import {ViewEncapsulation} from './view';
+
 
 
 /**
@@ -761,12 +764,66 @@ export interface Input {
   bindingPropertyName?: string;
 }
 
+const NG_BASE_DEF = 'ngBaseDef';
+const INPUTS = 'inputs';
+const OUTPUTS = 'outputs';
+
+/**
+ * Sets properties on a target object from a source object, but only if
+ * the property doesn't already exist on the target object.
+ * @param target The target to set properties on
+ * @param source The source of the property keys and values to set
+ */
+function fillProperties(target: {[key: string]: string}, source: {[key: string]: string}) {
+  for (const key in source) {
+    if (source.hasOwnProperty(key) && !target.hasOwnProperty(key)) {
+      target[key] = source[key];
+    }
+  }
+}
+
+const initializeBaseDef = (target: any):
+    void => {
+      const constructor = target.constructor;
+      const inheritedBaseDef = constructor[NG_BASE_DEF];
+
+      const baseDef = constructor[NG_BASE_DEF] = {
+        inputs: {},
+        outputs: {},
+        declaredInputs: {},
+      };
+
+      if (inheritedBaseDef) {
+        fillProperties(baseDef.inputs, inheritedBaseDef.inputs);
+        fillProperties(baseDef.outputs, inheritedBaseDef.outputs);
+        fillProperties(baseDef.declaredInputs, inheritedBaseDef.declaredInputs);
+      }
+    }
+
+/**
+ * Does the work of creating the `ngBaseDef` property for the @Input and @Output decorators.
+ * @param key "inputs" or "outputs"
+ */
+const updateBaseDefFromIOProp = (key: 'inputs' | 'outputs') =>
+    (target: any, name: string, ...args: any[]) => {
+      const constructor = target.constructor;
+
+      if (!constructor.hasOwnProperty(NG_BASE_DEF)) {
+        initializeBaseDef(target);
+      }
+
+      const baseDef = constructor[NG_BASE_DEF];
+      const defProp = baseDef[key] = baseDef[key] || {};
+      defProp[name] = args[0];
+    };
+
 /**
  *
  * @Annotation
  */
-export const Input: InputDecorator =
-    makePropDecorator('Input', (bindingPropertyName?: string) => ({bindingPropertyName}));
+export const Input: InputDecorator = makePropDecorator(
+    'Input', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
+    updateBaseDefFromIOProp(INPUTS));
 
 /**
  * Type of the Output decorator / constructor function.
@@ -800,8 +857,10 @@ export interface Output { bindingPropertyName?: string; }
  *
  * @Annotation
  */
-export const Output: OutputDecorator =
-    makePropDecorator('Output', (bindingPropertyName?: string) => ({bindingPropertyName}));
+export const Output: OutputDecorator = makePropDecorator(
+    'Output', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
+    updateBaseDefFromIOProp(OUTPUTS));
+
 
 
 /**

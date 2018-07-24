@@ -45,9 +45,9 @@ function getSuperType(type: Type<any>): Type<any>&
 export function InheritDefinitionFeature(
     definition: DirectiveDefInternal<any>| ComponentDefInternal<any>): void {
   let superType = getSuperType(definition.type);
-  let superDef: DirectiveDefInternal<any>|ComponentDefInternal<any>|undefined = undefined;
 
-  while (superType && !superDef) {
+  while (superType) {
+    let superDef: DirectiveDefInternal<any>|ComponentDefInternal<any>|undefined = undefined;
     if (isComponentDef(definition)) {
       superDef = superType.ngComponentDef || superType.ngDirectiveDef;
     } else {
@@ -57,12 +57,15 @@ export function InheritDefinitionFeature(
       superDef = superType.ngDirectiveDef;
     }
 
-    if (superDef) {
+    const baseDef = (superType as any).ngBaseDef;
+    if (baseDef) {
       // Merge inputs and outputs
-      fillProperties(definition.inputs, superDef.inputs);
-      fillProperties(definition.declaredInputs, superDef.declaredInputs);
-      fillProperties(definition.outputs, superDef.outputs);
+      fillProperties(definition.inputs, baseDef.inputs);
+      fillProperties(definition.declaredInputs, baseDef.declaredInputs);
+      fillProperties(definition.outputs, baseDef.outputs);
+    }
 
+    if (superDef) {
       // Merge hostBindings
       const prevHostBindings = definition.hostBindings;
       const superHostBindings = superDef.hostBindings;
@@ -76,6 +79,11 @@ export function InheritDefinitionFeature(
           definition.hostBindings = superHostBindings;
         }
       }
+
+      // Merge inputs and outputs
+      fillProperties(definition.inputs, superDef.inputs);
+      fillProperties(definition.declaredInputs, superDef.declaredInputs);
+      fillProperties(definition.outputs, superDef.outputs);
 
       // Inherit hooks
       // Assume super class inheritance feature has already run.
@@ -97,6 +105,8 @@ export function InheritDefinitionFeature(
           }
         }
       }
+
+      break;
     } else {
       // Even if we don't have a definition, check the type for the hooks and use those if need be
       const superPrototype = superType.prototype;
