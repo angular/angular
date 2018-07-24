@@ -86,7 +86,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     const rendererFactory =
         ngModule ? ngModule.injector.get(RendererFactory2) : domRendererFactory3;
-    let hostNode = isInternalRootView ?
+    const hostNode = isInternalRootView ?
         elementCreate(
             this.selector, rendererFactory.createRenderer(null, this.componentDef.rendererType)) :
         locateHostElement(rendererFactory, rootSelectorOrNode);
@@ -130,12 +130,14 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       // projection instruction. This is needed to support the reprojection of these nodes.
       if (projectableNodes) {
         let index = 0;
-        elementNode.tNode.projection = projectableNodes.map(nodeList => {
+        const projection: TNode[] = elementNode.tNode.projection = [];
+        for (let i = 0; i < projectableNodes.length; i++) {
+          const nodeList = projectableNodes[i];
           let firstTNode: TNode|null = null;
           let previousTNode: TNode|null = null;
-          for (let i = 0; i < nodeList.length; i++) {
+          for (let j = 0; j < nodeList.length; j++) {
             const lNode =
-                createLNode(++index, TNodeType.Element, nodeList[i] as RElement, null, null);
+                createLNode(++index, TNodeType.Element, nodeList[j] as RElement, null, null);
             if (previousTNode) {
               previousTNode.next = lNode.tNode;
             } else {
@@ -143,8 +145,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
             }
             previousTNode = lNode.tNode;
           }
-          return firstTNode;
-        });
+          projection.push(firstTNode !);
+        }
       }
 
       // Execute the template in creation mode only, and then turn off the CreationMode flag

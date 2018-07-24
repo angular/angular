@@ -7,7 +7,6 @@
  */
 
 import {ChangeDetectorRef} from '../../change_detection/change_detector_ref';
-import {ComponentFactoryResolver} from '../../linker/component_factory_resolver';
 import {ElementRef} from '../../linker/element_ref';
 import {TemplateRef} from '../../linker/template_ref';
 import {ViewContainerRef} from '../../linker/view_container_ref';
@@ -84,10 +83,6 @@ export interface LInjector {
    * same instance.
    */
   changeDetectorRef: ChangeDetectorRef|null;
-
-  /** Stores the ComponentFactoryResolver so subsequent injections of the ComponentFactoryResolver
-   *  get the same instance. */
-  componentFactoryResolver: ComponentFactoryResolver|null;
 }
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency

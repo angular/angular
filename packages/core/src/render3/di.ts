@@ -133,7 +133,6 @@ export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNo
     viewContainerRef: null,
     elementRef: null,
     changeDetectorRef: null,
-    componentFactoryResolver: null,
   };
 }
 
@@ -232,8 +231,9 @@ export function injectChangeDetectorRef(): viewEngine_ChangeDetectorRef {
  * @returns The ComponentFactoryResolver instance to use
  */
 export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryResolver {
-  return getOrCreateComponentFactoryResolver(getOrCreateNodeInjector());
+  return componentFactoryResolver;
 }
+const componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryResolver();
 
 /**
  * Inject static attribute value into directive constructor.
@@ -612,18 +612,6 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
   }
 
   return di.viewContainerRef;
-}
-
-let componentFactoryResolverSingleton: ComponentFactoryResolver|null = null;
-export function getOrCreateComponentFactoryResolver(di: LInjector):
-    viewEngine_ComponentFactoryResolver {
-  if (!di.componentFactoryResolver) {
-    if (!componentFactoryResolverSingleton) {
-      componentFactoryResolverSingleton = new ComponentFactoryResolver();
-    }
-    di.componentFactoryResolver = componentFactoryResolverSingleton;
-  }
-  return di.componentFactoryResolver;
 }
 
 /**
