@@ -11,7 +11,7 @@
  */
 import {existsSync, readFileSync} from 'fs';
 import {dirname, join, resolve} from 'path';
-import {Fix, IOptions, RuleFailure, RuleWalker} from 'tslint';
+import {IOptions, RuleWalker} from 'tslint';
 import * as ts from 'typescript';
 import {getLiteralTextWithoutQuotes} from '../typescript/literal';
 import {createComponentFile, ExternalResource} from './component-file';
@@ -49,7 +49,13 @@ export class ComponentWalker extends RuleWalker {
   }
 
   private _visitDirectiveCallExpression(callExpression: ts.CallExpression) {
-    const directiveMetadata = callExpression.arguments[0] as ts.ObjectLiteralExpression;
+    // If the call expressions does not have the correct amount of arguments, we can assume that
+    // this call expression is not related to Angular and just uses a similar decorator name.
+    if (callExpression.arguments.length !== 1) {
+      return;
+    }
+
+    const directiveMetadata = this._findMetadataFromExpression(callExpression.arguments[0]);
 
     if (!directiveMetadata) {
       return;
@@ -130,11 +136,20 @@ export class ComponentWalker extends RuleWalker {
     this.visitExternalStylesheet(stylesheetFile);
   }
 
-  /** Creates a TSLint rule failure for the given external resource. */
-  protected addExternalResourceFailure(file: ExternalResource, message: string, fix?: Fix) {
-    const ruleFailure = new RuleFailure(file, file.getStart(), file.getEnd(),
-        message, this.getRuleName(), fix);
+  /**
+   * Recursively searches for the metadata object literal expression inside of a directive call
+   * expression. Since expression calls can be nested through *parenthesized* expressions, we
+   * need to recursively visit and check every expression inside of a parenthesized expression.
+   *
+   * e.g. @Component((({myMetadataExpression}))) will return `myMetadataExpression`.
+   */
+  private _findMetadataFromExpression(node: ts.Expression): ts.ObjectLiteralExpression | null {
+    if (node.kind === ts.SyntaxKind.ObjectLiteralExpression) {
+      return node as ts.ObjectLiteralExpression;
+    } else if (node.kind === ts.SyntaxKind.ParenthesizedExpression) {
+      return this._findMetadataFromExpression((node as ts.ParenthesizedExpression).expression);
+    }
 
-    this.addFailure(ruleFailure);
+    return null;
   }
 }
