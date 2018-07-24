@@ -580,7 +580,7 @@ For more information, see https://www.npmjs.com/package/@angular-devkit/schemati
 ## Scoped package
 
 A way to group related npm packages. 
-NgModules are delivered within *scoped packages* whose names begin with the Angular *scope name* `@angular`. For example, `@angular/core`, `@angular/common`, `@angular/http`, and `@angular/router`.
+NgModules are delivered within *scoped packages* whose names begin with the Angular *scope name* `@angular`. For example, `@angular/core`, `@angular/common`, `@angular/forms`, and `@angular/router`.
 
 Import a scoped package in the same way that you import a normal package. 
 
