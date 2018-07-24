@@ -17,7 +17,7 @@ import {TreeControl} from './control/tree-control';
 import {FlatTreeControl} from './control/flat-tree-control';
 import {NestedTreeControl} from './control/nested-tree-control';
 import {CdkTreeModule} from './index';
-import {CdkTree} from './tree';
+import {CdkTree, CdkTreeNode} from './tree';
 import {getTreeControlFunctionsMissingError} from './tree-errors';
 
 
@@ -34,6 +34,20 @@ describe('CdkTree', () => {
       declarations: declarations,
     }).compileComponents();
   }
+
+  it('should clear out the `mostRecentTreeNode` on destroy', () => {
+    configureCdkTreeTestingModule([SimpleCdkTreeApp]);
+    const fixture = TestBed.createComponent(SimpleCdkTreeApp);
+    fixture.detectChanges();
+
+    // Cast the assertions to a boolean to avoid Jasmine going into an
+    // infinite loop when stringifying the object, if the test starts failing.
+    expect(!!CdkTreeNode.mostRecentTreeNode).toBe(true);
+
+    fixture.destroy();
+
+    expect(!!CdkTreeNode.mostRecentTreeNode).toBe(false);
+  });
 
   describe('flat tree', () => {
     describe('should initialize', () => {

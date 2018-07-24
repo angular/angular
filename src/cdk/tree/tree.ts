@@ -290,7 +290,7 @@ export class CdkTree<T>
     'class': 'cdk-tree-node',
   },
 })
-export class CdkTreeNode<T>  implements FocusableOption, OnDestroy {
+export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
   /**
    * The most recently created `CdkTreeNode`. We save it in static variable so we can retrieve it
    * in `CdkTree` and set the data to it.
@@ -328,6 +328,12 @@ export class CdkTreeNode<T>  implements FocusableOption, OnDestroy {
   }
 
   ngOnDestroy() {
+    // If this is the last tree node being destroyed,
+    // clear out the reference to avoid leaking memory.
+    if (CdkTreeNode.mostRecentTreeNode === this) {
+      CdkTreeNode.mostRecentTreeNode = null;
+    }
+
     this._destroyed.next();
     this._destroyed.complete();
   }
