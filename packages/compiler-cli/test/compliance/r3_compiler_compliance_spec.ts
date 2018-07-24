@@ -963,14 +963,18 @@ describe('compiler compliance', () => {
             type: ViewQueryComponent,
             selectors: [["view-query-component"]],
             factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
-            template: function ViewQueryComponent_Template(rf, ctx) {
-              var $tmp$;
+            viewQuery: function ViewQueryComponent_Query(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵQ(0, SomeDirective, true);
-                $r3$.ɵEe(1, "div", $e0_attrs$);
               }
               if (rf & 2) {
+                var $tmp$;
                 ($r3$.ɵqR(($tmp$ = $r3$.ɵld(0))) && (ctx.someDir = $tmp$.first));
+              }
+            },
+            template: function ViewQueryComponent_Template(rf, ctx) {
+              if (rf & 1) {
+                $r3$.ɵEe(1, "div", $e0_attrs$);
               }
             },
             directives:[SomeDirective]

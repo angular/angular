@@ -27,8 +27,8 @@ import {Render3ParseResult} from '../r3_template_transform';
 import {typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
-import {BindingScope, TemplateDefinitionBuilder} from './template';
-import {CONTEXT_NAME, DefinitionMap, ID_SEPARATOR, MEANING_SEPARATOR, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator, unsupported} from './util';
+import {BindingScope, TemplateDefinitionBuilder, renderFlagCheckIfStmt} from './template';
+import {CONTEXT_NAME, DefinitionMap, ID_SEPARATOR, MEANING_SEPARATOR, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator, unsupported} from './util';
 
 function baseDirectiveFields(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
@@ -136,6 +136,10 @@ export function compileComponentFromMetadata(
       matcher.addSelectables(CssSelector.parse(selector), expression);
     });
     directiveMatcher = matcher;
+  }
+
+  if (meta.viewQueries.length) {
+    definitionMap.set('viewQuery', createViewQueriesFunction(meta, constantPool));
   }
 
   // e.g. `template: function MyComponent_Template(_ctx, _cm) {...}`
@@ -322,32 +326,22 @@ function selectorsFromGlobalMetadata(
   return o.NULL_EXPR;
 }
 
-/**
- *
- * @param meta
- * @param constantPool
- */
-function createQueryDefinitions(
-    queries: R3QueryMetadata[], constantPool: ConstantPool): o.Expression[]|undefined {
-  const queryDefinitions: o.Expression[] = [];
-  for (let i = 0; i < queries.length; i++) {
-    const query = queries[i];
-    const predicate = getQueryPredicate(query, constantPool);
+function createQueryDefinition(
+    query: R3QueryMetadata, constantPool: ConstantPool, idx: number | null): o.Expression {
+  const predicate = getQueryPredicate(query, constantPool);
 
-    // e.g. r3.Q(null, somePredicate, false) or r3.Q(null, ['div'], false)
-    const parameters = [
-      o.literal(null, o.INFERRED_TYPE),
-      predicate,
-      o.literal(query.descendants),
-    ];
+  // e.g. r3.Q(null, somePredicate, false) or r3.Q(0, ['div'], false)
+  const parameters = [
+    o.literal(idx, o.INFERRED_TYPE),
+    predicate,
+    o.literal(query.descendants),
+  ];
 
-    if (query.read) {
-      parameters.push(query.read);
-    }
-
-    queryDefinitions.push(o.importExpr(R3.query).callFn(parameters));
+  if (query.read) {
+    parameters.push(query.read);
   }
-  return queryDefinitions.length > 0 ? queryDefinitions : undefined;
+
+  return o.importExpr(R3.query).callFn(parameters);
 }
 
 // Turn a directive selector into an R3-compatible selector for directive def
@@ -371,11 +365,10 @@ function createHostAttributesArray(meta: R3DirectiveMetadata): o.Expression|null
 // Return a contentQueries function or null if one is not necessary.
 function createContentQueriesFunction(
     meta: R3DirectiveMetadata, constantPool: ConstantPool): o.Expression|null {
-  const queryDefinitions = createQueryDefinitions(meta.queries, constantPool);
-
-  if (queryDefinitions) {
-    const statements: o.Statement[] = queryDefinitions.map((qd: o.Expression) => {
-      return o.importExpr(R3.registerContentQuery).callFn([qd]).toStmt();
+  if (meta.queries.length) {
+    const statements: o.Statement[] = meta.queries.map((query: R3QueryMetadata) => {
+      const queryDefinition = createQueryDefinition(query, constantPool, null);
+      return o.importExpr(R3.registerContentQuery).callFn([queryDefinition]).toStmt();
     });
     const typeName = meta.name;
     return o.fn(
@@ -424,6 +417,40 @@ function createContentQueriesRefreshFunction(meta: R3DirectiveMetadata): o.Expre
   }
 
   return null;
+}
+
+// Define and update any view queries
+function createViewQueriesFunction(
+    meta: R3ComponentMetadata, constantPool: ConstantPool): o.Expression {
+  const createStatements: o.Statement[] = [];
+  const updateStatements: o.Statement[] = [];
+  const tempAllocator = temporaryAllocator(updateStatements, TEMPORARY_NAME);
+
+  for (let i = 0; i < meta.viewQueries.length; i++) {
+    const query = meta.viewQueries[i];
+
+    // creation, e.g. r3.Q(0, somePredicate, true);
+    const queryDefinition = createQueryDefinition(query, constantPool, i);
+    createStatements.push(queryDefinition.toStmt());
+
+    // update, e.g. (r3.qR(tmp = r3.ɵld(0)) && (ctx.someDir = tmp));
+    const temporary = tempAllocator();
+    const getQueryList = o.importExpr(R3.load).callFn([o.literal(i)]);
+    const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
+    const updateDirective = o.variable(CONTEXT_NAME)
+                                .prop(query.propertyName)
+                                .set(query.first ? temporary.prop('first') : temporary);
+    updateStatements.push(refresh.and(updateDirective).toStmt());
+  }
+
+  const viewQueryFnName = meta.name ? `${meta.name}_Query` : null;
+  return o.fn(
+      [new o.FnParam(RENDER_FLAGS, o.NUMBER_TYPE), new o.FnParam(CONTEXT_NAME, null)],
+      [
+        renderFlagCheckIfStmt(core.RenderFlags.Create, createStatements),
+        renderFlagCheckIfStmt(core.RenderFlags.Update, updateStatements)
+      ],
+      o.INFERRED_TYPE, null, viewQueryFnName);
 }
 
 // Return a host binding function or null if one is not necessary.
