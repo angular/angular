@@ -28,7 +28,7 @@ You need to set up your development environment before you can do anything.
 Install **[Node.js® and npm](https://nodejs.org/en/download/)**
 if they are not already on your machine.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -73,7 +73,7 @@ The Angular CLI installs the necessary npm packages, creates the project files, 
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -630,7 +630,7 @@ These files go in the root folder next to `src/`.
   </tr>
 </table>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 ### Next Step
 

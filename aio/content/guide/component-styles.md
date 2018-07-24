@@ -187,7 +187,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   You can specify more than one styles file or even a combination of `styles` and `styleUrls`.
 

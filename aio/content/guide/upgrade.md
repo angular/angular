@@ -385,7 +385,7 @@ That means that you need at least one module each from both AngularJS and Angula
 You will import `UpgradeModule` inside the NgModule, and then use it for
 bootstrapping the AngularJS module.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 For more information, see [NgModules](guide/ngmodules).
 
@@ -444,7 +444,7 @@ In the constructor of the `AppModule`, use dependency injection to get a hold of
 and use it to bootstrap the AngularJS app in the `AppModule.ngDoBootstrap` method.
 The `upgrade.bootstrap` method takes the exact same arguments as [angular.bootstrap](https://docs.angularjs.org/api/ng/function/angular.bootstrap):
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Note that you do not add a `bootstrap` declaration to the `@NgModule` decorator, since
 AngularJS will own the root template of the application.
@@ -490,7 +490,7 @@ NgModule.
 <code-example path="upgrade-module/src/app/downgrade-static/app.module.ts" region="ngmodule" title="app.module.ts">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 All Angular components, directives and pipes must be declared in an NgModule.
 
@@ -1107,7 +1107,7 @@ can verify you're calling their APIs with the correct kinds of arguments.
 <code-example path="upgrade-phonecat-1-typescript/app/app.config.ts" title="app/app.config.ts">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The [AngularJS 1.x type definitions](https://www.npmjs.com/package/@types/angular)
 you installed are not officially maintained by the Angular team,
@@ -1280,7 +1280,7 @@ so it is already being loaded by the browser.
 Now you're running both AngularJS and Angular at the same time. That's pretty
 exciting! You're not running any actual Angular components yet. That's next.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 #### Why declare _angular_ as _angular.IAngularStatic_?
 
@@ -1640,7 +1640,7 @@ and let that directive construct the appropriate URL to the `PhoneDetailComponen
 <code-example path="upgrade-phonecat-3-final/app/phone-list/phone-list.template.html" region="list" title="app/phone-list/phone-list.template.html (list with links)" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 See the [Routing](guide/router) page for details.
 

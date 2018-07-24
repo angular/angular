@@ -13,7 +13,7 @@ The final UI looks like this:
   <img src="generated/images/guide/displaying-data/final.png" alt="Final UI">
 </figure>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -60,7 +60,7 @@ interpolation:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -79,7 +79,7 @@ inserts those values into the browser. Angular updates the display
 when these properties change.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -213,7 +213,7 @@ to the item (the hero) in the current iteration. Angular uses that variable as t
 context for the interpolation in the double curly braces.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 

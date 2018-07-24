@@ -11,7 +11,7 @@ The `@angular/elements` package exports a `createCustomElement()` API that provi
 Transforming a component to a custom element makes all of the required Angular infrastructure available to the browser. 
 Creating a custom element is simple and straightforward, and automatically connects your component-defined view with change detection and data binding, mapping Angular functionality to the corresponding native HTML equivalents. 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
     We are working on custom elements that can be used by web apps built on other frameworks. 
     A minimal, self-contained version of the Angular framework will be injected as a service to support the component's change-detection and data-binding functionality. 

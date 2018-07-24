@@ -8,7 +8,7 @@ For information about our versioning policy and practices&mdash;including
 support and deprecation practices, as well as the release schedule&mdash;see [Angular versioning and releases](guide/releases "Angular versioning and releases"). 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 If you are currently using AngularJS, see [Upgrading from AngularJS](guide/upgrade "Upgrading from Angular JS"). _AngularJS_ is the name for all v1.x versions of Angular.
 
