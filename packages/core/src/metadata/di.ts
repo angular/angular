@@ -11,15 +11,16 @@ import {Type} from '../type';
 import {makeParamDecorator, makePropDecorator} from '../util/decorators';
 
 /**
- * This token can be used to create a virtual provider that will populate the
- * `entryComponents` fields of components and ng modules based on its `useValue`.
+ * A DI token that you can use to create a virtual [provider](guide/glossary#provider)
+ * that will populate the `entryComponents` field of components and NgModules
+ * based on its `useValue` property value.
  * All components that are referenced in the `useValue` value (either directly
- * or in a nested array or map) will be added to the `entryComponents` property.
+ * or in a nested array or map) are added to the `entryComponents` property.
  *
  * @usageNotes
- * ### Example
+ *
  * The following example shows how the router can populate the `entryComponents`
- * field of an NgModule based on the router configuration which refers
+ * field of an NgModule based on a router configuration that refers
  * to components.
  *
  * ```typescript
@@ -48,7 +49,7 @@ import {makeParamDecorator, makePropDecorator} from '../util/decorators';
 export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForEntryComponents');
 
 /**
- * Type of the Attribute decorator / constructor function.
+ * Type of the `Attribute` decorator / constructor function.
  *
  * @publicApi
  */
@@ -67,28 +68,9 @@ export interface AttributeDecorator {
    * <input type="text">
    * ```
    *
-   * A decorator can inject string literal `text` like so:
+   * A decorator can inject string literal `text` as in the following example.
    *
    * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
-   *
-   * ### Example as TypeScript Decorator
-   *
-   * {@example core/ts/metadata/metadata.ts region='attributeFactory'}
-   *
-   * ### Example as ES5 annotation
-   *
-   * ```
-   * var MyComponent = function(title) {
-   *   ...
-   * };
-   *
-   * MyComponent.annotations = [
-   *   new ng.Component({...})
-   * ]
-   * MyComponent.parameters = [
-   *   [new ng.Attribute('title')]
-   * ]
-   * ```
    *
    * @publicApi
    */
@@ -102,7 +84,12 @@ export interface AttributeDecorator {
  *
  * @publicApi
  */
-export interface Attribute { attributeName?: string; }
+export interface Attribute {
+  /**
+   * The name of the attribute to be injected into the constructor.
+   */
+  attributeName?: string;
+}
 
 /**
  * Attribute decorator and metadata.
