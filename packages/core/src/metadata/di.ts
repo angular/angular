@@ -11,15 +11,16 @@ import {Type} from '../interface/type';
 import {makePropDecorator} from '../util/decorators';
 
 /**
- * This token can be used to create a virtual provider that will populate the
- * `entryComponents` fields of components and ng modules based on its `useValue`.
+ * A DI token that you can use to create a virtual [provider](guide/glossary#provider)
+ * that will populate the `entryComponents` field of components and NgModules
+ * based on its `useValue` property value.
  * All components that are referenced in the `useValue` value (either directly
- * or in a nested array or map) will be added to the `entryComponents` property.
+ * or in a nested array or map) are added to the `entryComponents` property.
  *
  * @usageNotes
- * ### Example
+ *
  * The following example shows how the router can populate the `entryComponents`
- * field of an NgModule based on the router configuration which refers
+ * field of an NgModule based on a router configuration that refers
  * to components.
  *
  * ```typescript
@@ -47,6 +48,48 @@ import {makePropDecorator} from '../util/decorators';
  */
 export const ANALYZE_FOR_ENTRY_COMPONENTS = new InjectionToken<any>('AnalyzeForEntryComponents');
 
+/**
+ * Type of the `Attribute` decorator / constructor function.
+ *
+ * @publicApi
+ */
+export interface AttributeDecorator {
+  /**
+   * Specifies that a constant attribute value should be injected.
+   *
+   * The directive can inject constant string literals of host element attributes.
+   *
+   * @usageNotes
+   * ### Example
+   *
+   * Suppose we have an `<input>` element and want to know its `type`.
+   *
+   * ```html
+   * <input type="text">
+   * ```
+   *
+   * A decorator can inject string literal `text` as in the following example.
+   *
+   * {@example core/ts/metadata/metadata.ts region='attributeMetadata'}
+   *
+   * @publicApi
+   */
+  (name: string): any;
+  new (name: string): Attribute;
+}
+
+
+/**
+ * Type of the Attribute metadata.
+ *
+ * @publicApi
+ */
+export interface Attribute {
+  /**
+   * The name of the attribute to be injected into the constructor.
+   */
+  attributeName?: string;
+}
 
 /**
  * Type of the Query metadata.
