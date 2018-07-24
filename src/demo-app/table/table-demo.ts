@@ -7,6 +7,7 @@
  */
 
 import {Component} from '@angular/core';
+import {EXAMPLE_COMPONENTS} from '@angular/material-examples';
 
 
 @Component({
@@ -14,25 +15,6 @@ import {Component} from '@angular/core';
   templateUrl: 'table-demo.html',
 })
 export class TableDemo {
-  examples = [
-    'table-basic',
-    'table-basic-flex',
-    'cdk-table-basic',
-    'cdk-table-basic-flex',
-    'table-dynamic-columns',
-    'table-filtering',
-    'table-footer-row',
-    'table-http',
-    'table-overview',
-    'table-pagination',
-    'table-row-context',
-    'table-selection',
-    'table-sorting',
-    'table-expandable-rows',
-    'table-sticky-header',
-    'table-sticky-columns',
-    'table-sticky-footer',
-    'table-sticky-complex',
-    'table-sticky-complex-flex',
-  ];
+  examples = Object.keys(EXAMPLE_COMPONENTS)
+      .filter(example => example.startsWith('table-') || example.startsWith('cdk-table-'));
 }

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {Component} from '@angular/core';
+import {EXAMPLE_COMPONENTS} from '@angular/material-examples';
 
 @Component({
   moduleId: module.id,
@@ -13,15 +14,5 @@ import {Component} from '@angular/core';
   templateUrl: 'tooltip-demo.html',
 })
 export class TooltipDemo {
-  examples = [
-    'tooltip-overview',
-    'tooltip-position',
-    'tooltip-disabled',
-    'tooltip-message',
-    'tooltip-delay',
-    'tooltip-manual',
-    'tooltip-modified-defaults',
-    'tooltip-auto-hide',
-    'tooltip-custom-class',
-  ];
+  examples = Object.keys(EXAMPLE_COMPONENTS).filter(example => example.startsWith('tooltip-'));
 }

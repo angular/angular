@@ -7,6 +7,7 @@
  */
 
 import {Component} from '@angular/core';
+import {EXAMPLE_COMPONENTS} from '@angular/material-examples';
 
 @Component({
   moduleId: module.id,
@@ -14,16 +15,5 @@ import {Component} from '@angular/core';
   templateUrl: 'tabs-demo.html',
 })
 export class TabsDemo {
-  examples = [
-    'tab-group-basic',
-    'tab-group-dynamic-height',
-    'tab-group-stretched',
-    'tab-group-async',
-    'tab-group-custom-label',
-    'tab-group-header-below',
-    'tab-group-theme',
-    'tab-group-lazy-loaded',
-    'tab-group-dynamic',
-    'tab-nav-bar-basic',
-  ];
+  examples = Object.keys(EXAMPLE_COMPONENTS).filter(example => example.startsWith('tab-'));
 }
