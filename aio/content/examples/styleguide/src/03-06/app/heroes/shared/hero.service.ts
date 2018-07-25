@@ -1,12 +1,11 @@
 // #docregion
 // #docregion example
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { Http }       from '@angular/http';
+import { map }        from 'rxjs/operators';
 
-import { ExceptionService, SpinnerService, ToastService } from '../../core';
 import { Hero } from './hero.model';
-
+import { ExceptionService, SpinnerService, ToastService } from '../../core';
 // #enddocregion example
 
 @Injectable()
@@ -17,17 +16,17 @@ export class HeroService {
     private exceptionService: ExceptionService,
     private spinnerService: SpinnerService,
     private toastService: ToastService,
-    private http: HttpClient
+    private http: Http
   ) { }
 
   getHero(id: number) {
-    return this.http.get<Hero>(`api/heroes/${id}`).pipe(
-      map(response => response as Hero));
+    return this.http.get(`api/heroes/${id}`).pipe(
+      map(response => response.json() as Hero));
   }
 
   getHeroes() {
-    return this.http.get<Hero[]>(`api/heroes`).pipe(
-      map(response => response as Hero[]));
+    return this.http.get(`api/heroes`).pipe(
+      map(response => response.json() as Hero[]));
   }
 
 }
