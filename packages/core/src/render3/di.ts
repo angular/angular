@@ -9,7 +9,7 @@
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
-import {InjectFlags, Injector, inject, setCurrentInjector} from '../di/injector';
+import {InjectFlags, Injector, NullInjector, inject, setCurrentInjector} from '../di/injector';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
@@ -608,10 +608,28 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
 
     addToViewTree(vcRefHost.view, hostTNode.index as number, lContainer);
 
-    di.viewContainerRef = new ViewContainerRef(lContainerNode);
+    di.viewContainerRef = new ViewContainerRef(lContainerNode, vcRefHost);
   }
 
   return di.viewContainerRef;
+}
+
+class NodeInjector implements Injector {
+  constructor(private _lInjector: LInjector) {}
+
+  get(token: any): any {
+    if (token === viewEngine_TemplateRef) {
+      return getOrCreateTemplateRef(this._lInjector);
+    } else if (token === viewEngine_ViewContainerRef) {
+      return getOrCreateContainerRef(this._lInjector);
+    } else if (token === viewEngine_ElementRef) {
+      return getOrCreateElementRef(this._lInjector);
+    } else if (token === viewEngine_ChangeDetectorRef) {
+      return getOrCreateChangeDetectorRef(this._lInjector, null);
+    } else {
+      return getOrCreateInjectable(this._lInjector, token);
+    }
+  }
 }
 
 /**
@@ -620,14 +638,21 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
  */
 class ViewContainerRef implements viewEngine_ViewContainerRef {
   private _viewRefs: viewEngine_ViewRef[] = [];
-  // TODO(issue/24571): remove '!'.
-  element !: viewEngine_ElementRef;
-  // TODO(issue/24571): remove '!'.
-  injector !: Injector;
-  // TODO(issue/24571): remove '!'.
-  parentInjector !: Injector;
 
-  constructor(private _lContainerNode: LContainerNode) {}
+  constructor(
+      private _lContainerNode: LContainerNode, private _hostNode: LElementNode|LContainerNode) {}
+
+  get element(): ElementRef { return new ElementRef(this._hostNode.native); }
+
+  get injector(): Injector {
+    return new NodeInjector(getOrCreateNodeInjectorForNode(this._hostNode));
+  }
+
+  /** @deprecated No replacement */
+  get parentInjector(): Injector {
+    const parentLInjector = getParentLNode(this._hostNode).nodeInjector;
+    return parentLInjector ? new NodeInjector(parentLInjector) : new NullInjector();
+  }
 
   clear(): void {
     const lContainer = this._lContainerNode.data;
@@ -659,7 +684,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
       ngModuleRef?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<C> {
     const contextInjector = injector || this.parentInjector;
     if (!ngModuleRef && contextInjector) {
-      ngModuleRef = contextInjector.get(viewEngine_NgModuleRef);
+      ngModuleRef = contextInjector.get(viewEngine_NgModuleRef, null);
     }
 
     const componentRef =

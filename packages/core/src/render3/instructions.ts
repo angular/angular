@@ -329,7 +329,7 @@ export function createLViewData<T>(
     null,                                                                        // directives
     null,                                                                        // cleanupInstances
     context,                                                                     // context
-    viewData && viewData[INJECTOR],                                              // injector
+    viewData && viewData[INJECTOR] || null,                                      // injector
     renderer,                                                                    // renderer
     sanitizer || null,                                                           // sanitizer
     null,                                                                        // tail

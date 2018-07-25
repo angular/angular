@@ -27,6 +27,9 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "ChangeDetectorRef"
+  },
+  {
     "name": "DIRECTIVES"
   },
   {
@@ -40,6 +43,9 @@
   },
   {
     "name": "EMPTY_RENDERER_TYPE_ID"
+  },
+  {
+    "name": "ElementRef"
   },
   {
     "name": "ElementRef$1"
@@ -96,6 +102,12 @@
     "name": "NgModuleRef"
   },
   {
+    "name": "NodeInjector"
+  },
+  {
+    "name": "NullInjector"
+  },
+  {
     "name": "Optional"
   },
   {
@@ -138,6 +150,9 @@
     "name": "TemplateRef"
   },
   {
+    "name": "TemplateRef$1"
+  },
+  {
     "name": "Todo"
   },
   {
@@ -151,6 +166,9 @@
   },
   {
     "name": "ViewContainerRef"
+  },
+  {
+    "name": "ViewContainerRef$1"
   },
   {
     "name": "ViewEncapsulation$1"
@@ -169,6 +187,9 @@
   },
   {
     "name": "_ROOT_DIRECTIVE_INDICES"
+  },
+  {
+    "name": "_THROW_IF_NOT_FOUND"
   },
   {
     "name": "__read"
@@ -471,6 +492,9 @@
     "name": "getCleanup"
   },
   {
+    "name": "getClosestComponentAncestor"
+  },
+  {
     "name": "getCurrentSanitizer"
   },
   {
@@ -492,10 +516,16 @@
     "name": "getNextLNode"
   },
   {
+    "name": "getOrCreateChangeDetectorRef"
+  },
+  {
     "name": "getOrCreateContainerRef"
   },
   {
     "name": "getOrCreateElementRef"
+  },
+  {
+    "name": "getOrCreateHostChangeDetector"
   },
   {
     "name": "getOrCreateInjectable"
@@ -592,6 +622,9 @@
   },
   {
     "name": "invertObject"
+  },
+  {
+    "name": "isComponent"
   },
   {
     "name": "isContextDirty"
