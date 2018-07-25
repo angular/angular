@@ -2263,6 +2263,15 @@ export function detectChanges<T>(component: T): void {
   detectChangesInternal(hostNode.data as LViewData, hostNode, component);
 }
 
+/**
+ * Synchronously perform change detection on a root view and its components.
+ *
+ * @param lViewData The view which the change detection should be performed on.
+ */
+export function detectChangesInRootView(lViewData: LViewData): void {
+  tickRootContext(lViewData[CONTEXT] as RootContext);
+}
+
 
 /**
  * Checks the change detector and its children, and throws if any changes are detected.
@@ -2274,6 +2283,24 @@ export function checkNoChanges<T>(component: T): void {
   checkNoChangesMode = true;
   try {
     detectChanges(component);
+  } finally {
+    checkNoChangesMode = false;
+  }
+}
+
+/**
+ * Checks the change detector on a root view and its components, and throws if any changes are
+ * detected.
+ *
+ * This is used in development mode to verify that running change detection doesn't
+ * introduce other changes.
+ *
+ * @param lViewData The view which the change detection should be checked on.
+ */
+export function checkNoChangesInRootView(lViewData: LViewData): void {
+  checkNoChangesMode = true;
+  try {
+    detectChangesInRootView(lViewData);
   } finally {
     checkNoChangesMode = false;
   }
