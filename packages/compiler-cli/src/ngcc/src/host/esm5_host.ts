@@ -7,9 +7,8 @@
  */
 
 import * as ts from 'typescript';
-import {Decorator} from '../../../ngtsc/host';
-import {ClassMember, ClassMemberKind} from '../../../ngtsc/host/src/reflection';
-import {reflectObjectLiteral} from '../../../ngtsc/metadata/src/reflector';
+import {ClassMember, ClassMemberKind, Decorator} from '../../../ngtsc/host';
+import {reflectObjectLiteral} from '../../../ngtsc/metadata';
 import {CONSTRUCTOR_PARAMS, Esm2015ReflectionHost, getPropertyValueFromSymbol} from './esm2015_host';
 
 /**

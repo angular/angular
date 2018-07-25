@@ -14,7 +14,7 @@ import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import {Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
 import {AnalyzedClass, AnalyzedFile} from '../analyzer';
 import {Decorator} from '../../../ngtsc/host';
-import {ImportManager, translateStatement} from '../../../ngtsc/transform/src/translator';
+import {ImportManager, translateStatement} from '../../../ngtsc/transform';
 
 interface SourceMapInfo {
   source: string;

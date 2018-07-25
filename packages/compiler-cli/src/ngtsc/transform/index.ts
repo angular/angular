@@ -9,3 +9,4 @@
 export * from './src/api';
 export {IvyCompilation} from './src/compilation';
 export {ivyTransformFactory} from './src/transform';
+export {ImportManager, translateStatement} from './src/translator';
