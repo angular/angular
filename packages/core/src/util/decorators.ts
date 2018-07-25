@@ -153,7 +153,7 @@ export function makePropDecorator(
       meta[name].unshift(decoratorInstance);
 
       if (additionalProcessing) additionalProcessing(target, name, ...args);
-    };
+    }
 
     return PropDecorator;
   }

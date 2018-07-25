@@ -782,23 +782,22 @@ function fillProperties(target: {[key: string]: string}, source: {[key: string]:
   }
 }
 
-const initializeBaseDef = (target: any):
-    void => {
-      const constructor = target.constructor;
-      const inheritedBaseDef = constructor[NG_BASE_DEF];
+const initializeBaseDef = (target: any): void => {
+  const constructor = target.constructor;
+  const inheritedBaseDef = constructor[NG_BASE_DEF];
 
-      const baseDef = constructor[NG_BASE_DEF] = {
-        inputs: {},
-        outputs: {},
-        declaredInputs: {},
-      };
+  const baseDef = constructor[NG_BASE_DEF] = {
+    inputs: {},
+    outputs: {},
+    declaredInputs: {},
+  };
 
-      if (inheritedBaseDef) {
-        fillProperties(baseDef.inputs, inheritedBaseDef.inputs);
-        fillProperties(baseDef.outputs, inheritedBaseDef.outputs);
-        fillProperties(baseDef.declaredInputs, inheritedBaseDef.declaredInputs);
-      }
-    }
+  if (inheritedBaseDef) {
+    fillProperties(baseDef.inputs, inheritedBaseDef.inputs);
+    fillProperties(baseDef.outputs, inheritedBaseDef.outputs);
+    fillProperties(baseDef.declaredInputs, inheritedBaseDef.declaredInputs);
+  }
+};
 
 /**
  * Does the work of creating the `ngBaseDef` property for the @Input and @Output decorators.
