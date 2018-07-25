@@ -86,6 +86,20 @@ describe('ngcc behavioral tests', () => {
     expect(exitCode).toBe(0);
   });
 
+  it('should run ngcc without errors for fesm5', () => {
+    const nodeModulesPath = path.join(basePath, 'node_modules');
+    console.error(nodeModulesPath);
+    const commonPath = path.join(nodeModulesPath, '@angular/common');
+    const exitCode = mainNgcc([commonPath, 'fesm5']);
+
+    console.warn(find('node_modules_ngtsc').filter(p => p.endsWith('.js') || p.endsWith('map')));
+
+    console.warn(cat('node_modules_ngtsc/@angular/common/fesm5/common.js').stdout);
+    console.warn(cat('node_modules_ngtsc/@angular/common/fesm5/common.js.map').stdout);
+
+    expect(exitCode).toBe(0);
+  });
+
   it('should run ngcc without errors for esm2015', () => {
     const nodeModulesPath = path.join(basePath, 'node_modules');
     console.error(nodeModulesPath);
@@ -96,6 +110,20 @@ describe('ngcc behavioral tests', () => {
 
     console.warn(cat('node_modules_ngtsc/@angular/common/esm2015/src/directives/ng_if.js').stdout);
     console.warn(cat('node_modules_ngtsc/@angular/common/esm2015/http/src/module.js').stdout);
+
+    expect(exitCode).toBe(0);
+  });
+
+  it('should run ngcc without errors for esm5', () => {
+    const nodeModulesPath = path.join(basePath, 'node_modules');
+    console.error(nodeModulesPath);
+    const commonPath = path.join(nodeModulesPath, '@angular/common');
+    const exitCode = mainNgcc([commonPath, 'esm5']);
+
+    console.warn(find('node_modules_ngtsc').filter(p => p.endsWith('.js') || p.endsWith('map')));
+
+    console.warn(cat('node_modules_ngtsc/@angular/common/esm5/src/directives/ng_if.js').stdout);
+    console.warn(cat('node_modules_ngtsc/@angular/common/esm5/http/src/module.js').stdout);
 
     expect(exitCode).toBe(0);
   });
