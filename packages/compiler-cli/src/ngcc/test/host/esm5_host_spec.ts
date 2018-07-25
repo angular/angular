@@ -8,6 +8,7 @@
 
 import * as ts from 'typescript';
 import {ClassMemberKind, Import} from '../../../ngtsc/host';
+import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
 import {Esm5ReflectionHost} from '../../src/host/esm5_host';
 import {getDeclaration, makeProgram} from '../helpers/utils';
 
@@ -50,7 +51,8 @@ const SIMPLE_CLASS_FILE = {
   name: '/simple_class.js',
   contents: `
     var EmptyClass = (function() {
-      function EmptyClass() {}
+      function EmptyClass() {
+      }
       return EmptyClass;
     }());
     var NoDecoratorConstructorClass = (function() {
@@ -1122,20 +1124,104 @@ describe('Esm5ReflectionHost', () => {
     });
   });
 
-  describe('isClass()', () => {
-    it('should return true if a given node is an ES5 class declaration', () => {
+  describe('getClassSymbol()', () => {
+    let superGetClassSymbolSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      superGetClassSymbolSpy = spyOn(Esm2015ReflectionHost.prototype, 'getClassSymbol');
+    });
+
+    it('should return the class symbol returned by the superclass (if any)', () => {
+      const mockNode = {} as ts.Node;
+      const mockSymbol = {} as ts.Symbol;
+      superGetClassSymbolSpy.and.returnValue(mockSymbol);
+
+      const host = new Esm5ReflectionHost({} as any);
+
+      expect(host.getClassSymbol(mockNode)).toBe(mockSymbol);
+      expect(superGetClassSymbolSpy).toHaveBeenCalledWith(mockNode);
+    });
+
+    it('should return the class symbol for an ES5 class (outer variable declaration)', () => {
       const program = makeProgram(SIMPLE_CLASS_FILE);
       const host = new Esm5ReflectionHost(program.getTypeChecker());
       const node =
           getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
-      expect(host.isClass(node)).toBe(true);
+      expect(host.getClassSymbol(node)).toBeDefined();
     });
 
-    it('should return false if a given node is not an ES5 class declaration', () => {
+    it('should return the class symbol for an ES5 class (inner function declaration)', () => {
+      const program = makeProgram(SIMPLE_CLASS_FILE);
+      const host = new Esm5ReflectionHost(program.getTypeChecker());
+      const outerNode =
+          getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
+      const innerNode =
+          (((outerNode.initializer as ts.ParenthesizedExpression).expression as ts.CallExpression)
+               .expression as ts.FunctionExpression)
+              .body.statements.find(ts.isFunctionDeclaration) !;
+
+      expect(host.getClassSymbol(innerNode)).toBeDefined();
+    });
+
+    it('should return the same class symbol for outer and inner declarations', () => {
+      const program = makeProgram(SIMPLE_CLASS_FILE);
+      const host = new Esm5ReflectionHost(program.getTypeChecker());
+      const outerNode =
+          getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isVariableDeclaration);
+      const innerNode =
+          (((outerNode.initializer as ts.ParenthesizedExpression).expression as ts.CallExpression)
+               .expression as ts.FunctionExpression)
+              .body.statements.find(ts.isFunctionDeclaration) !;
+
+      expect(host.getClassSymbol(innerNode)).toBe(host.getClassSymbol(outerNode));
+    });
+
+    it('should return undefined if node is not an ES5 class', () => {
       const program = makeProgram(FOO_FUNCTION_FILE);
       const host = new Esm5ReflectionHost(program.getTypeChecker());
       const node = getDeclaration(program, FOO_FUNCTION_FILE.name, 'foo', ts.isFunctionDeclaration);
-      expect(host.isClass(node)).toBe(false);
+      expect(host.getClassSymbol(node)).toBeUndefined();
+    });
+  });
+
+  describe('isClass()', () => {
+    let host: Esm5ReflectionHost;
+    let mockNode: ts.Node;
+    let superIsClassSpy: jasmine.Spy;
+    let getClassSymbolSpy: jasmine.Spy;
+
+    beforeEach(() => {
+      host = new Esm5ReflectionHost(null as any);
+      mockNode = {} as any;
+
+      superIsClassSpy = spyOn(Esm2015ReflectionHost.prototype, 'isClass');
+      getClassSymbolSpy = spyOn(Esm5ReflectionHost.prototype, 'getClassSymbol');
+    });
+
+    it('should return true if superclass returns true', () => {
+      superIsClassSpy.and.returnValue(true);
+
+      expect(host.isClass(mockNode)).toBe(true);
+      expect(superIsClassSpy).toHaveBeenCalledWith(mockNode);
+      expect(getClassSymbolSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return true if it can find a symbol for the class', () => {
+      superIsClassSpy.and.returnValue(false);
+      getClassSymbolSpy.and.returnValue(true);
+
+      expect(host.isClass(mockNode)).toBe(true);
+      expect(superIsClassSpy).toHaveBeenCalledWith(mockNode);
+      expect(getClassSymbolSpy).toHaveBeenCalledWith(mockNode);
+    });
+
+    it('should return false if it cannot find a symbol for the class', () => {
+      superIsClassSpy.and.returnValue(false);
+      getClassSymbolSpy.and.returnValue(false);
+
+      expect(host.isClass(mockNode)).toBe(false);
+      expect(superIsClassSpy).toHaveBeenCalledWith(mockNode);
+      expect(getClassSymbolSpy).toHaveBeenCalledWith(mockNode);
     });
   });
 });

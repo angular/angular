@@ -33,24 +33,64 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
   constructor(checker: ts.TypeChecker) { super(checker); }
 
   /**
-   * Check whether the given declaration node actually represents a class.
+   * Check whether the given node actually represents a class.
    */
-  isClass(node: ts.Declaration): boolean { return !!this.getClassSymbol(node); }
+  isClass(node: ts.Node): boolean { return super.isClass(node) || !!this.getClassSymbol(node); }
 
   /**
-   * In ESM5 the implementation of a class is a function expression that is hidden inside an IIFE.
+   * Find a symbol for a node that we think is a class.
+   *
+   * In ES5, the implementation of a class is a function expression that is hidden inside an IIFE.
    * So we need to dig around inside to get hold of the "class" symbol.
-   * @param declaration the top level declaration that represents an exported class.
+   *
+   * `node` might be one of:
+   * - A class declaration (from a declaration file).
+   * - The declaration of the outer variable, which is assigned the result of the IIFE.
+   * - The function declaration inside the IIFE, which is eventually returned and assigned to the
+   *   outer variable.
+   *
+   * @param node The top level declaration that represents an exported class or the function
+   *     expression inside the IIFE.
+   * @returns The symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
-  getClassSymbol(declaration: ts.Declaration): ts.Symbol|undefined {
-    if (ts.isVariableDeclaration(declaration)) {
-      const iifeBody = getIifeBody(declaration);
-      if (iifeBody) {
-        const innerClassIdentifier = getReturnIdentifier(iifeBody);
-        if (innerClassIdentifier) {
-          return this.checker.getSymbolAtLocation(innerClassIdentifier);
-        }
-      }
+  getClassSymbol(node: ts.Node): ts.Symbol|undefined {
+    const symbol = super.getClassSymbol(node);
+    if (symbol) return symbol;
+
+    if (ts.isVariableDeclaration(node)) {
+      const iifeBody = getIifeBody(node);
+      if (!iifeBody) return undefined;
+
+      const innerClassIdentifier = getReturnIdentifier(iifeBody);
+      if (!innerClassIdentifier) return undefined;
+
+      return this.checker.getSymbolAtLocation(innerClassIdentifier);
+    }
+
+    if (ts.isFunctionDeclaration(node)) {
+      // It might be the function expression inside the IIFE. We need to go 5 levels up...
+
+      // 1. IIFE body.
+      let outerNode = node.parent;
+      if (!outerNode || !ts.isBlock(outerNode)) return undefined;
+
+      // 2. IIFE function expression.
+      outerNode = outerNode.parent;
+      if (!outerNode || !ts.isFunctionExpression(outerNode)) return undefined;
+
+      // 3. IIFE call expression.
+      outerNode = outerNode.parent;
+      if (!outerNode || !ts.isCallExpression(outerNode)) return undefined;
+
+      // 4. Parenthesis around IIFE.
+      outerNode = outerNode.parent;
+      if (!outerNode || !ts.isParenthesizedExpression(outerNode)) return undefined;
+
+      // 5. Outer variable declaration.
+      outerNode = outerNode.parent;
+      if (!outerNode || !ts.isVariableDeclaration(outerNode)) return undefined;
+
+      return this.getClassSymbol(outerNode);
     }
     return undefined;
   }
