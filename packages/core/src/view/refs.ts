@@ -138,6 +138,7 @@ class ViewContainerRef_ implements ViewContainerData {
 
   get injector(): Injector { return new Injector_(this._view, this._elDef); }
 
+  /** @deprecated No replacement */
   get parentInjector(): Injector {
     let view = this._view;
     let elDef = this._elDef.parent;
