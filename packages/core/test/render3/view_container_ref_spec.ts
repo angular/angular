@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ComponentFactoryResolver, Directive, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
+import {Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, load, loadDirective, nextContext, projection, projectionDef, reserveSlots, text, textBinding} from '../../src/render3/instructions';
@@ -1033,6 +1033,66 @@ describe('ViewContainerRef', () => {
         expect(fixture.html)
             .toEqual(
                 '<p vcref=""></p><embedded-cmp-with-ngcontent>12<hr>34</embedded-cmp-with-ngcontent>');
+      });
+    });
+
+    describe('getters', () => {
+      it('should work on elements', () => {
+        function createTemplate() {
+          elementStart(0, 'header', ['vcref', '']);
+          elementEnd();
+          elementStart(1, 'footer');
+          elementEnd();
+        }
+
+        new TemplateFixture(createTemplate, undefined, [DirectiveWithVCRef]);
+
+        expect(directiveInstance !.vcref.element.nativeElement.tagName.toLowerCase())
+            .toEqual('header');
+        expect(
+            directiveInstance !.vcref.injector.get(ElementRef).nativeElement.tagName.toLowerCase())
+            .toEqual('header');
+        expect(() => directiveInstance !.vcref.parentInjector.get(ElementRef)).toThrow();
+      });
+
+      it('should work on components', () => {
+        const HeaderComponent =
+            createComponent('header-cmp', function(rf: RenderFlags, ctx: any) {});
+
+        function createTemplate() {
+          elementStart(0, 'header-cmp', ['vcref', '']);
+          elementEnd();
+          elementStart(1, 'footer');
+          elementEnd();
+        }
+
+        new TemplateFixture(createTemplate, undefined, [HeaderComponent, DirectiveWithVCRef]);
+
+        expect(directiveInstance !.vcref.element.nativeElement.tagName.toLowerCase())
+            .toEqual('header-cmp');
+        expect(
+            directiveInstance !.vcref.injector.get(ElementRef).nativeElement.tagName.toLowerCase())
+            .toEqual('header-cmp');
+        expect(() => directiveInstance !.vcref.parentInjector.get(ElementRef)).toThrow();
+      });
+
+      it('should work on containers', () => {
+        function createTemplate() {
+          container(0, embeddedTemplate, undefined, ['vcref', '']);
+          elementStart(1, 'footer');
+          elementEnd();
+        }
+
+        function updateTemplate() {
+          containerRefreshStart(0);
+          containerRefreshEnd();
+        }
+
+        new TemplateFixture(createTemplate, updateTemplate, [DirectiveWithVCRef]);
+        expect(directiveInstance !.vcref.element.nativeElement.textContent).toEqual('container');
+        expect(directiveInstance !.vcref.injector.get(ElementRef).nativeElement.textContent)
+            .toEqual('container');
+        expect(() => directiveInstance !.vcref.parentInjector.get(ElementRef)).toThrow();
       });
     });
   });
