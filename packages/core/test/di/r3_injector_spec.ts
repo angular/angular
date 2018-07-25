@@ -41,12 +41,23 @@ describe('InjectorDef-based createInjector()', () => {
 
   const STATIC_TOKEN = new InjectionToken<StaticService>('STATIC_TOKEN');
 
+  const LOCALE = new InjectionToken<string[]>('LOCALE');
+
   class ServiceWithDep {
     constructor(readonly service: Service) {}
 
     static ngInjectableDef = defineInjectable({
       providedIn: null,
       factory: () => new ServiceWithDep(inject(Service)),
+    });
+  }
+
+  class ServiceWithMultiDep {
+    constructor(readonly locale: string[]) {}
+
+    static ngInjectableDef = defineInjectable({
+      providedIn: null,
+      factory: () => new ServiceWithMultiDep(inject(LOCALE)),
     });
   }
 
@@ -112,6 +123,9 @@ describe('InjectorDef-based createInjector()', () => {
       imports: [IntermediateModule],
       providers: [
         ServiceWithDep,
+        ServiceWithMultiDep,
+        {provide: LOCALE, multi: true, useValue: 'en'},
+        {provide: LOCALE, multi: true, useValue: 'es'},
         Service,
         {provide: SERVICE_TOKEN, useExisting: Service},
         CircularA,
@@ -125,6 +139,16 @@ describe('InjectorDef-based createInjector()', () => {
     static ngInjectorDef = defineInjector({
       factory: () => new OtherModule(),
       imports: undefined,
+      providers: [],
+    });
+  }
+
+  class NotAModule {}
+
+  class ImportsNotAModule {
+    static ngInjectorDef = defineInjector({
+      factory: () => new ImportsNotAModule(),
+      imports: [NotAModule],
       providers: [],
     });
   }
@@ -166,6 +190,12 @@ describe('InjectorDef-based createInjector()', () => {
     const instance = injector.get(ServiceWithDep);
     expect(instance instanceof ServiceWithDep);
     expect(instance.service).toBe(injector.get(Service));
+  });
+
+  it('injects a service with dependencies on multi-providers', () => {
+    const instance = injector.get(ServiceWithMultiDep);
+    expect(instance instanceof ServiceWithMultiDep);
+    expect(instance.locale).toEqual(['en', 'es']);
   });
 
   it('injects a token with useExisting', () => {
@@ -220,5 +250,10 @@ describe('InjectorDef-based createInjector()', () => {
     (injector as R3Injector).destroy();
     expect(() => (injector as R3Injector).destroy())
         .toThrowError('Injector has already been destroyed.');
+  });
+
+  it('should not crash when importing something that has no ngInjectorDef', () => {
+    injector = createInjector(ImportsNotAModule);
+    expect(injector.get(ImportsNotAModule)).toBeDefined();
   });
 });

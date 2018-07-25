@@ -48,13 +48,11 @@ import {Options, PerfLogEvent, PerfLogFeatures, UserMetric, WebDriverAdapter} fr
            const metric = createMetric(
                [[]], new PerfLogFeatures(),
                {userMetrics: {'loadTime': 'time to load', 'content': 'time to see content'}});
-           metric.beginMeasure()
-               .then((_) => metric.endMeasure(true))
-               .then((values: {[key: string]: string}) => {
-                 expect(values['loadTime']).toBe(25);
-                 expect(values['content']).toBe(250);
-                 async.done();
-               });
+           metric.beginMeasure().then(() => metric.endMeasure(true)).then(values => {
+             expect(values['loadTime']).toBe(25);
+             expect(values['content']).toBe(250);
+             async.done();
+           });
 
            wdAdapter.data['loadTime'] = 25;
            // Wait before setting 2nd property.

@@ -3,8 +3,8 @@ export declare const APP_BASE_HREF: InjectionToken<string>;
 export declare class AsyncPipe implements OnDestroy, PipeTransform {
     constructor(_ref: ChangeDetectorRef);
     ngOnDestroy(): void;
-    transform<T>(obj: Promise<T> | null | undefined): T | null;
     transform<T>(obj: Observable<T> | null | undefined): T | null;
+    transform<T>(obj: Promise<T> | null | undefined): T | null;
     transform<T>(obj: undefined): undefined;
     transform<T>(obj: null): null;
 }
@@ -66,13 +66,13 @@ export declare enum FormatWidth {
     Short = 0,
     Medium = 1,
     Long = 2,
-    Full = 3,
+    Full = 3
 }
 
 /** @experimental */
 export declare enum FormStyle {
     Format = 0,
-    Standalone = 1,
+    Standalone = 1
 }
 
 /** @experimental */
@@ -175,6 +175,23 @@ export declare class JsonPipe implements PipeTransform {
     transform(value: any): string;
 }
 
+export interface KeyValue<K, V> {
+    key: K;
+    value: V;
+}
+
+export declare class KeyValuePipe implements PipeTransform {
+    constructor(differs: KeyValueDiffers);
+    transform<K, V>(input: null, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): null;
+    transform<V>(input: {
+        [key: string]: V;
+    } | Map<string, V>, compareFn?: (a: KeyValue<string, V>, b: KeyValue<string, V>) => number): Array<KeyValue<string, V>>;
+    transform<V>(input: {
+        [key: number]: V;
+    } | Map<number, V>, compareFn?: (a: KeyValue<number, V>, b: KeyValue<number, V>) => number): Array<KeyValue<number, V>>;
+    transform<K, V>(input: Map<K, V>, compareFn?: (a: KeyValue<K, V>, b: KeyValue<K, V>) => number): Array<KeyValue<K, V>>;
+}
+
 export declare class Location {
     constructor(platformStrategy: LocationStrategy);
     back(): void;
@@ -240,13 +257,12 @@ export declare class NgComponentOutlet implements OnChanges, OnDestroy {
     ngOnDestroy(): void;
 }
 
-export declare class NgForOf<T> implements DoCheck, OnChanges {
+export declare class NgForOf<T> implements DoCheck {
     ngForOf: NgIterable<T>;
     ngForTemplate: TemplateRef<NgForOfContext<T>>;
     ngForTrackBy: TrackByFunction<T>;
     constructor(_viewContainer: ViewContainerRef, _template: TemplateRef<NgForOfContext<T>>, _differs: IterableDiffers);
     ngDoCheck(): void;
-    ngOnChanges(changes: SimpleChanges): void;
 }
 
 export declare class NgForOfContext<T> {
@@ -275,10 +291,10 @@ export declare class NgIfContext {
 
 /** @experimental */
 export declare class NgLocaleLocalization extends NgLocalization {
-    /** @deprecated */ protected deprecatedPluralFn: ((locale: string, value: string | number) => Plural) | null | undefined;
+    /** @deprecated */ protected deprecatedPluralFn?: ((locale: string, value: string | number) => Plural) | null | undefined;
     protected locale: string;
     constructor(locale: string,
-        /** @deprecated */ deprecatedPluralFn?: ((locale: string, value: string | number) => Plural) | null | undefined);
+    /** @deprecated */ deprecatedPluralFn?: ((locale: string, value: string | number) => Plural) | null | undefined);
     getPluralCategory(value: any, locale?: string): string;
 }
 
@@ -334,7 +350,7 @@ export declare enum NumberFormatStyle {
     Decimal = 0,
     Percent = 1,
     Currency = 2,
-    Scientific = 3,
+    Scientific = 3
 }
 
 /** @experimental */
@@ -352,7 +368,7 @@ export declare enum NumberSymbol {
     NaN = 10,
     TimeSeparator = 11,
     CurrencyDecimal = 12,
-    CurrencyGroup = 13,
+    CurrencyGroup = 13
 }
 
 export declare class PathLocationStrategy extends LocationStrategy {
@@ -373,9 +389,9 @@ export declare class PercentPipe implements PipeTransform {
 }
 
 export declare abstract class PlatformLocation {
-    readonly abstract hash: string;
-    readonly abstract pathname: string;
-    readonly abstract search: string;
+    abstract readonly hash: string;
+    abstract readonly pathname: string;
+    abstract readonly search: string;
     abstract back(): void;
     abstract forward(): void;
     abstract getBaseHrefFromDOM(): string;
@@ -392,7 +408,7 @@ export declare enum Plural {
     Two = 2,
     Few = 3,
     Many = 4,
-    Other = 5,
+    Other = 5
 }
 
 /** @experimental */
@@ -425,7 +441,7 @@ export declare enum TranslationWidth {
     Narrow = 0,
     Abbreviated = 1,
     Wide = 2,
-    Short = 3,
+    Short = 3
 }
 
 export declare class UpperCasePipe implements PipeTransform {
@@ -433,6 +449,15 @@ export declare class UpperCasePipe implements PipeTransform {
 }
 
 export declare const VERSION: Version;
+
+export declare abstract class ViewportScroller {
+    abstract getScrollPosition(): [number, number];
+    abstract scrollToAnchor(anchor: string): void;
+    abstract scrollToPosition(position: [number, number]): void;
+    abstract setHistoryScrollRestoration(scrollRestoration: 'auto' | 'manual'): void;
+    abstract setOffset(offset: [number, number] | (() => [number, number])): void;
+    static ngInjectableDef: never;
+}
 
 /** @experimental */
 export declare enum WeekDay {
@@ -442,5 +467,5 @@ export declare enum WeekDay {
     Wednesday = 3,
     Thursday = 4,
     Friday = 5,
-    Saturday = 6,
+    Saturday = 6
 }

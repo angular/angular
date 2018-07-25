@@ -19,6 +19,11 @@ export type ComponentTemplate<T> = {
 };
 
 /**
+ * Definition of what a query function should look like.
+ */
+export type ComponentQuery<T> = ComponentTemplate<T>;
+
+/**
  * Flags passed into template functions to determine which blocks (i.e. creation, update)
  * should be executed.
  *
@@ -55,6 +60,12 @@ export const enum DirectiveDefFlags {ContentQuery = 0b10}
 export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
 
 /**
+ * A version of {@link DirectiveDef} that represents the runtime type shape only, and excludes
+ * metadata parameters.
+ */
+export type DirectiveDefInternal<T> = DirectiveDef<T, string>;
+
+/**
  * Runtime link information for Directives.
  *
  * This is internal data structure used by the render to link
@@ -64,14 +75,16 @@ export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
  * never create the object directly since the shape of this object
  * can change between versions.
  *
+ * @param Selector type metadata specifying the selector of the directive or component
+ *
  * See: {@link defineDirective}
  */
-export interface DirectiveDef<T> {
+export interface DirectiveDef<T, Selector extends string> {
   /** Token representing the directive. Used by DI. */
   type: Type<T>;
 
   /** Function that makes a directive public to the DI system. */
-  diPublic: ((def: DirectiveDef<any>) => void)|null;
+  diPublic: ((def: DirectiveDef<T, string>) => void)|null;
 
   /** The selectors that will be used to match nodes to this directive. */
   selectors: CssSelectorList;
@@ -81,7 +94,13 @@ export interface DirectiveDef<T> {
    * are their aliases if any, or their original unminified property names
    * (as in `@Input('alias') propertyName: any;`).
    */
-  readonly inputs: {[P in keyof T]: P};
+  readonly inputs: {[P in keyof T]: string};
+
+  /**
+   * @deprecated This is only here because `NgOnChanges` incorrectly uses declared name instead of
+   * public or minified name.
+   */
+  readonly declaredInputs: {[P in keyof T]: P};
 
   /**
    * A dictionary mapping the outputs' minified property names to their public API names, which
@@ -103,6 +122,14 @@ export interface DirectiveDef<T> {
    */
   factory(): T|[T];
 
+  /**
+   * Function to create instances of content queries associated with a given directive.
+   */
+  contentQueries: (() => void)|null;
+
+  /** Refreshes content queries associated with directives in a given view */
+  contentQueriesRefresh: ((directiveIndex: number, queryIndex: number) => void)|null;
+
   /** Refreshes host bindings on the associated directive. */
   hostBindings: ((directiveIndex: number, elementIndex: number) => void)|null;
 
@@ -122,7 +149,18 @@ export interface DirectiveDef<T> {
   afterViewInit: (() => void)|null;
   afterViewChecked: (() => void)|null;
   onDestroy: (() => void)|null;
+
+  /**
+   * The features applied to this directive
+   */
+  features: DirectiveDefFeature[]|null;
 }
+
+/**
+ * A version of {@link ComponentDef} that represents the runtime type shape only, and excludes
+ * metadata parameters.
+ */
+export type ComponentDefInternal<T> = ComponentDef<T, string>;
 
 /**
  * Runtime link information for Components.
@@ -136,18 +174,19 @@ export interface DirectiveDef<T> {
  *
  * See: {@link defineComponent}
  */
-export interface ComponentDef<T> extends DirectiveDef<T> {
+export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T, Selector> {
   /**
    * The View template of the component.
-   *
-   * NOTE: only used with component directives.
    */
   readonly template: ComponentTemplate<T>;
 
   /**
+   * Query-related instructions for a component.
+   */
+  readonly viewQuery: ComponentQuery<T>|null;
+
+  /**
    * Renderer type data of the component.
-   *
-   * NOTE: only used with component directives.
    */
   readonly rendererType: RendererType2|null;
 
@@ -195,21 +234,18 @@ export interface ComponentDef<T> extends DirectiveDef<T> {
  *
  * See: {@link definePipe}
  */
-export interface PipeDef<T> {
+export interface PipeDef<T, S extends string> {
   /**
    * Pipe name.
    *
    * Used to resolve pipe in templates.
    */
-  name: string;
+  name: S;
 
   /**
-   * factory function used to create a new directive instance.
-   *
-   * NOTE: this property is short (1 char) because it is used in
-   * component templates which is sensitive to size.
+   * Factory function used to create a new pipe instance.
    */
-  n: () => T;
+  factory: () => T;
 
   /**
    * Whether or not the pipe is pure.
@@ -223,8 +259,10 @@ export interface PipeDef<T> {
   onDestroy: (() => void)|null;
 }
 
-export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T>) => void;
-export type ComponentDefFeature = <T>(componentDef: ComponentDef<T>) => void;
+export type PipeDefInternal<T> = PipeDef<T, string>;
+
+export type DirectiveDefFeature = <T>(directiveDef: DirectiveDef<T, string>) => void;
+export type ComponentDefFeature = <T>(componentDef: ComponentDef<T, string>) => void;
 
 /**
  * Type used for directiveDefs on component definition.
@@ -233,12 +271,12 @@ export type ComponentDefFeature = <T>(componentDef: ComponentDef<T>) => void;
  */
 export type DirectiveDefListOrFactory = (() => DirectiveDefList) | DirectiveDefList;
 
-export type DirectiveDefList = (DirectiveDef<any>| ComponentDef<any>)[];
+export type DirectiveDefList = (DirectiveDef<any, string>| ComponentDef<any, string>)[];
 
 export type DirectiveTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
 
 export type DirectiveTypeList =
-    (DirectiveDef<any>| ComponentDef<any>|
+    (DirectiveDef<any, string>| ComponentDef<any, string>|
      Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 /**
@@ -248,14 +286,19 @@ export type DirectiveTypeList =
  */
 export type PipeDefListOrFactory = (() => PipeDefList) | PipeDefList;
 
-export type PipeDefList = PipeDef<any>[];
+export type PipeDefList = PipeDefInternal<any>[];
 
 export type PipeTypesOrFactory = (() => DirectiveTypeList) | DirectiveTypeList;
 
 export type PipeTypeList =
-    (PipeDef<any>| Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
+    (PipeDefInternal<any>|
+     Type<any>/* Type as workaround for: Microsoft/TypeScript/issues/4881 */)[];
 
 
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
+
+export const enum InitialStylingFlags {
+  VALUES_MODE = 0b1,
+}

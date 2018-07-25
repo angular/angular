@@ -11,8 +11,10 @@ import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../../../src/ml
 
 class Unparser implements AstVisitor {
   private static _quoteRegExp = /"/g;
-  private _expression: string;
-  private _interpolationConfig: InterpolationConfig;
+  // TODO(issue/24571): remove '!'.
+  private _expression !: string;
+  // TODO(issue/24571): remove '!'.
+  private _interpolationConfig !: InterpolationConfig;
 
   unparse(ast: AST, interpolationConfig: InterpolationConfig) {
     this._expression = '';

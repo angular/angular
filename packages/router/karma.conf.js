@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-var browserProvidersConf = require('../../browser-providers.conf.js');
+const browserProvidersConf = require('../../browser-providers.conf');
+const {generateSeed} = require('../../tools/jasmine-seed-generator');
 
 // Karma configuration
 module.exports = function(config) {
@@ -15,6 +16,13 @@ module.exports = function(config) {
     basePath: '../../',
 
     frameworks: ['jasmine'],
+
+    client: {
+      jasmine: {
+        random: true,
+        seed: generateSeed('router/karma.conf'),
+      },
+    },
 
     files: [
       // Polyfills.

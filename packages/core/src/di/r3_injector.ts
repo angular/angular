@@ -14,7 +14,7 @@ import {InjectableDef, InjectableType, InjectorDef, InjectorType, InjectorTypeWi
 import {resolveForwardRef} from './forward_ref';
 import {InjectableDefToken, InjectionToken} from './injection_token';
 import {INJECTOR, InjectFlags, Injector, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, inject, injectArgs, setCurrentInjector} from './injector';
-import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, TypeProvider, ValueProvider} from './provider';
+import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './provider';
 import {APP_ROOT} from './scope';
 
 
@@ -64,14 +64,15 @@ interface Record<T> {
 }
 
 /**
- * Create a new `Injector` which is configured using `InjectorType`s.
+ * Create a new `Injector` which is configured using a `defType` of `InjectorType<any>`s.
  *
  * @experimental
  */
 export function createInjector(
-    defType: /* InjectorType<any> */ any, parent: Injector | null = null): Injector {
+    defType: /* InjectorType<any> */ any, parent: Injector | null = null,
+    additionalProviders: StaticProvider[] | null = null): Injector {
   parent = parent || getNullInjector();
-  return new R3Injector(defType, parent);
+  return new R3Injector(defType, additionalProviders, parent);
 }
 
 export class R3Injector {
@@ -101,11 +102,17 @@ export class R3Injector {
    */
   private destroyed = false;
 
-  constructor(def: InjectorType<any>, readonly parent: Injector) {
+  constructor(
+      def: InjectorType<any>, additionalProviders: StaticProvider[]|null,
+      readonly parent: Injector) {
     // Start off by creating Records for every provider declared in every InjectorType
     // included transitively in `def`.
     deepForEach(
         [def], injectorDef => this.processInjectorType(injectorDef, new Set<InjectorType<any>>()));
+
+    additionalProviders &&
+        deepForEach(additionalProviders, provider => this.processProvider(provider));
+
 
     // Make sure the INJECTOR token provides this injector.
     this.records.set(INJECTOR, makeRecord(undefined, this));
@@ -224,9 +231,9 @@ export class R3Injector {
       def = ngModule.ngInjectorDef;
     }
 
-    // If no definition was found, throw.
+    // If no definition was found, it might be from exports. Remove it.
     if (def == null) {
-      throw new Error(`Type ${stringify(defType)} is missing an ngInjectorDef definition.`);
+      return;
     }
 
     // Check for circular dependencies.
@@ -284,20 +291,18 @@ export class R3Injector {
           throw new Error(`Mixed multi-provider for ${token}.`);
         }
       } else {
-        token = provider;
         multiRecord = makeRecord(undefined, NOT_YET, true);
         multiRecord.factory = () => injectArgs(multiRecord !.multi !);
         this.records.set(token, multiRecord);
       }
       token = provider;
       multiRecord.multi !.push(provider);
+    } else {
+      const existing = this.records.get(token);
+      if (existing && existing.multi !== undefined) {
+        throw new Error(`Mixed multi-provider for ${stringify(token)}`);
+      }
     }
-
-    const existing = this.records.get(token);
-    if (existing && existing.multi !== undefined) {
-      throw new Error(`Mixed multi-provider for ${token}`);
-    }
-
     this.records.set(token, record);
   }
 
@@ -328,7 +333,12 @@ export class R3Injector {
 function injectableDefRecord(token: Type<any>| InjectionToken<any>): Record<any> {
   const def = (token as InjectableType<any>).ngInjectableDef as InjectableDef<any>;
   if (def === undefined) {
-    throw new Error(`Type ${stringify(token)} is missing an ngInjectableDef definition.`);
+    if (token instanceof InjectionToken) {
+      throw new Error(`Token ${stringify(token)} is missing an ngInjectableDef definition.`);
+    }
+    // TODO(alxhub): there should probably be a strict mode which throws here instead of assuming a
+    // no-args constructor.
+    return makeRecord(() => new (token as Type<any>)());
   }
   return makeRecord(def.factory);
 }

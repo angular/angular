@@ -91,4 +91,12 @@ describe('QueryList', () => {
 
   });
 
+  describe('destroy', () => {
+    it('should close all subscriptions', () => {
+      let completed = false;
+      q.changes.subscribe(() => {}, () => {}, () => { completed = true; });
+      q.destroy();
+      expect(completed).toBeTruthy();
+    });
+  });
 });

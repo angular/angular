@@ -19,9 +19,12 @@ import {Type} from '../../type';
 
 let _reflect: ReflectionCapabilities|null = null;
 
+export function getReflect(): ReflectionCapabilities {
+  return (_reflect = _reflect || new ReflectionCapabilities());
+}
+
 export function reflectDependencies(type: Type<any>): R3DependencyMetadata[] {
-  _reflect = _reflect || new ReflectionCapabilities();
-  return convertDependencies(_reflect.parameters(type));
+  return convertDependencies(getReflect().parameters(type));
 }
 
 export function convertDependencies(deps: any[]): R3DependencyMetadata[] {

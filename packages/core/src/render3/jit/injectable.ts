@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, LiteralExpr, R3DependencyMetadata, WrappedNodeExpr, compileInjectable as compileIvyInjectable, jitPatchDefinition} from '@angular/compiler';
+import {Expression, LiteralExpr, R3DependencyMetadata, WrappedNodeExpr, compileInjectable as compileR3Injectable, jitExpression} from '@angular/compiler';
 
 import {Injectable} from '../../di/injectable';
 import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../../di/provider';
@@ -14,6 +14,7 @@ import {Type} from '../../type';
 import {getClosureSafeProperty} from '../../util/property';
 
 import {angularCoreEnv} from './environment';
+import {NG_INJECTABLE_DEF} from './fields';
 import {convertDependencies, reflectDependencies} from './util';
 
 
@@ -27,60 +28,69 @@ export function compileInjectable(type: Type<any>, meta?: Injectable): void {
     return;
   }
 
-  // Check whether the injectable metadata includes a provider specification.
-  const hasAProvider = isUseClassProvider(meta) || isUseFactoryProvider(meta) ||
-      isUseValueProvider(meta) || isUseExistingProvider(meta);
+  let def: any = null;
+  Object.defineProperty(type, NG_INJECTABLE_DEF, {
+    get: () => {
+      if (def === null) {
+        // Check whether the injectable metadata includes a provider specification.
+        const hasAProvider = isUseClassProvider(meta) || isUseFactoryProvider(meta) ||
+            isUseValueProvider(meta) || isUseExistingProvider(meta);
 
-  let deps: R3DependencyMetadata[]|undefined = undefined;
-  if (!hasAProvider || (isUseClassProvider(meta) && type === meta.useClass)) {
-    deps = reflectDependencies(type);
-  } else if (isUseClassProvider(meta)) {
-    deps = meta.deps && convertDependencies(meta.deps);
-  } else if (isUseFactoryProvider(meta)) {
-    deps = meta.deps && convertDependencies(meta.deps) || [];
-  }
+        let deps: R3DependencyMetadata[]|undefined = undefined;
+        if (!hasAProvider || (isUseClassProvider(meta) && type === meta.useClass)) {
+          deps = reflectDependencies(type);
+        } else if (isUseClassProvider(meta)) {
+          deps = meta.deps && convertDependencies(meta.deps);
+        } else if (isUseFactoryProvider(meta)) {
+          deps = meta.deps && convertDependencies(meta.deps) || [];
+        }
 
-  // Decide which flavor of factory to generate, based on the provider specified.
-  // Only one of the use* fields should be set.
-  let useClass: Expression|undefined = undefined;
-  let useFactory: Expression|undefined = undefined;
-  let useValue: Expression|undefined = undefined;
-  let useExisting: Expression|undefined = undefined;
+        // Decide which flavor of factory to generate, based on the provider specified.
+        // Only one of the use* fields should be set.
+        let useClass: Expression|undefined = undefined;
+        let useFactory: Expression|undefined = undefined;
+        let useValue: Expression|undefined = undefined;
+        let useExisting: Expression|undefined = undefined;
 
-  if (!hasAProvider) {
-    // In the case the user specifies a type provider, treat it as {provide: X, useClass: X}.
-    // The deps will have been reflected above, causing the factory to create the class by calling
-    // its constructor with injected deps.
-    useClass = new WrappedNodeExpr(type);
-  } else if (isUseClassProvider(meta)) {
-    // The user explicitly specified useClass, and may or may not have provided deps.
-    useClass = new WrappedNodeExpr(meta.useClass);
-  } else if (isUseValueProvider(meta)) {
-    // The user explicitly specified useValue.
-    useValue = new WrappedNodeExpr(meta.useValue);
-  } else if (isUseFactoryProvider(meta)) {
-    // The user explicitly specified useFactory.
-    useFactory = new WrappedNodeExpr(meta.useFactory);
-  } else if (isUseExistingProvider(meta)) {
-    // The user explicitly specified useExisting.
-    useExisting = new WrappedNodeExpr(meta.useExisting);
-  } else {
-    // Can't happen - either hasAProvider will be false, or one of the providers will be set.
-    throw new Error(`Unreachable state.`);
-  }
+        if (!hasAProvider) {
+          // In the case the user specifies a type provider, treat it as {provide: X, useClass: X}.
+          // The deps will have been reflected above, causing the factory to create the class by
+          // calling
+          // its constructor with injected deps.
+          useClass = new WrappedNodeExpr(type);
+        } else if (isUseClassProvider(meta)) {
+          // The user explicitly specified useClass, and may or may not have provided deps.
+          useClass = new WrappedNodeExpr(meta.useClass);
+        } else if (isUseValueProvider(meta)) {
+          // The user explicitly specified useValue.
+          useValue = new WrappedNodeExpr(meta.useValue);
+        } else if (isUseFactoryProvider(meta)) {
+          // The user explicitly specified useFactory.
+          useFactory = new WrappedNodeExpr(meta.useFactory);
+        } else if (isUseExistingProvider(meta)) {
+          // The user explicitly specified useExisting.
+          useExisting = new WrappedNodeExpr(meta.useExisting);
+        } else {
+          // Can't happen - either hasAProvider will be false, or one of the providers will be set.
+          throw new Error(`Unreachable state.`);
+        }
 
-  const {expression} = compileIvyInjectable({
-    name: type.name,
-    type: new WrappedNodeExpr(type),
-    providedIn: computeProvidedIn(meta.providedIn),
-    useClass,
-    useFactory,
-    useValue,
-    useExisting,
-    deps,
+        const {expression} = compileR3Injectable({
+          name: type.name,
+          type: new WrappedNodeExpr(type),
+          providedIn: computeProvidedIn(meta.providedIn),
+          useClass,
+          useFactory,
+          useValue,
+          useExisting,
+          deps,
+        });
+
+        def = jitExpression(expression, angularCoreEnv, `ng://${type.name}/ngInjectableDef.js`);
+      }
+      return def;
+    },
   });
-
-  jitPatchDefinition(type, 'ngInjectableDef', expression, angularCoreEnv);
 }
 
 function computeProvidedIn(providedIn: Type<any>| string | null | undefined): Expression {

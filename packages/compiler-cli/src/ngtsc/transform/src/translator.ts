@@ -6,110 +6,196 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ArrayType, AssertNotNull, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, StatementVisitor, ThrowStmt, TryCatchStmt, Type, TypeVisitor, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import {ArrayType, AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinType, BuiltinTypeName, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, Expression, ExpressionStatement, ExpressionType, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, MapType, NotExpr, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, Type, TypeVisitor, TypeofExpr, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import * as ts from 'typescript';
+
+import {relativePathBetween} from '../../util/src/path';
+
+export class Context {
+  constructor(readonly isStatement: boolean) {}
+
+  get withExpressionMode(): Context { return this.isStatement ? new Context(false) : this; }
+
+  get withStatementMode(): Context { return this.isStatement ? new Context(true) : this; }
+}
+
+const BINARY_OPERATORS = new Map<BinaryOperator, ts.BinaryOperator>([
+  [BinaryOperator.And, ts.SyntaxKind.AmpersandAmpersandToken],
+  [BinaryOperator.Bigger, ts.SyntaxKind.GreaterThanToken],
+  [BinaryOperator.BiggerEquals, ts.SyntaxKind.GreaterThanEqualsToken],
+  [BinaryOperator.BitwiseAnd, ts.SyntaxKind.AmpersandToken],
+  [BinaryOperator.Divide, ts.SyntaxKind.SlashToken],
+  [BinaryOperator.Equals, ts.SyntaxKind.EqualsEqualsToken],
+  [BinaryOperator.Identical, ts.SyntaxKind.EqualsEqualsEqualsToken],
+  [BinaryOperator.Lower, ts.SyntaxKind.LessThanToken],
+  [BinaryOperator.LowerEquals, ts.SyntaxKind.LessThanEqualsToken],
+  [BinaryOperator.Minus, ts.SyntaxKind.MinusToken],
+  [BinaryOperator.Modulo, ts.SyntaxKind.PercentToken],
+  [BinaryOperator.Multiply, ts.SyntaxKind.AsteriskToken],
+  [BinaryOperator.NotEquals, ts.SyntaxKind.ExclamationEqualsToken],
+  [BinaryOperator.NotIdentical, ts.SyntaxKind.ExclamationEqualsEqualsToken],
+  [BinaryOperator.Or, ts.SyntaxKind.BarBarToken],
+  [BinaryOperator.Plus, ts.SyntaxKind.PlusToken],
+]);
+
+const CORE_SUPPORTED_SYMBOLS = new Set<string>([
+  'defineInjectable',
+  'defineInjector',
+  'ɵdefineNgModule',
+  'inject',
+  'ɵInjectableDef',
+  'ɵInjectorDef',
+  'ɵNgModuleDef',
+]);
 
 export class ImportManager {
   private moduleToIndex = new Map<string, string>();
   private nextIndex = 0;
 
-  generateNamedImport(moduleName: string): string {
+  constructor(private isCore: boolean) {}
+
+  generateNamedImport(moduleName: string, symbol: string): string {
     if (!this.moduleToIndex.has(moduleName)) {
       this.moduleToIndex.set(moduleName, `i${this.nextIndex++}`);
+    }
+    if (this.isCore && moduleName === '@angular/core' && !CORE_SUPPORTED_SYMBOLS.has(symbol)) {
+      throw new Error(`Importing unexpected symbol ${symbol} while compiling core`);
     }
     return this.moduleToIndex.get(moduleName) !;
   }
 
-  getAllImports(): {name: string, as: string}[] {
+  getAllImports(contextPath: string, rewriteCoreImportsTo: ts.SourceFile|null):
+      {name: string, as: string}[] {
     return Array.from(this.moduleToIndex.keys()).map(name => {
-      const as = this.moduleToIndex.get(name) !;
+      const as: string|null = this.moduleToIndex.get(name) !;
+      if (rewriteCoreImportsTo !== null && name === '@angular/core') {
+        const relative = relativePathBetween(contextPath, rewriteCoreImportsTo.fileName);
+        if (relative === null) {
+          throw new Error(
+              `Failed to rewrite import inside core: ${contextPath} -> ${rewriteCoreImportsTo.fileName}`);
+        }
+        name = relative;
+      }
       return {name, as};
     });
   }
 }
 
 export function translateExpression(expression: Expression, imports: ImportManager): ts.Expression {
-  return expression.visitExpression(new ExpressionTranslatorVisitor(imports), null);
+  return expression.visitExpression(new ExpressionTranslatorVisitor(imports), new Context(false));
+}
+
+export function translateStatement(statement: Statement, imports: ImportManager): ts.Statement {
+  return statement.visitStatement(new ExpressionTranslatorVisitor(imports), new Context(true));
 }
 
 export function translateType(type: Type, imports: ImportManager): string {
-  return type.visitType(new TypeTranslatorVisitor(imports), null);
+  return type.visitType(new TypeTranslatorVisitor(imports), new Context(false));
 }
 
 class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor {
   constructor(private imports: ImportManager) {}
 
-  visitDeclareVarStmt(stmt: DeclareVarStmt, context: any) {
+  visitDeclareVarStmt(stmt: DeclareVarStmt, context: Context): ts.VariableStatement {
+    const nodeFlags = stmt.hasModifier(StmtModifier.Final) ? ts.NodeFlags.Const : ts.NodeFlags.None;
+    return ts.createVariableStatement(
+        undefined, ts.createVariableDeclarationList(
+                       [ts.createVariableDeclaration(
+                           stmt.name, undefined, stmt.value &&
+                               stmt.value.visitExpression(this, context.withExpressionMode))],
+                       nodeFlags));
+  }
+
+  visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: Context): ts.FunctionDeclaration {
+    return ts.createFunctionDeclaration(
+        undefined, undefined, undefined, stmt.name, undefined,
+        stmt.params.map(param => ts.createParameter(undefined, undefined, undefined, param.name)),
+        undefined, ts.createBlock(stmt.statements.map(
+                       child => child.visitStatement(this, context.withStatementMode))));
+  }
+
+  visitExpressionStmt(stmt: ExpressionStatement, context: Context): ts.ExpressionStatement {
+    return ts.createStatement(stmt.expr.visitExpression(this, context.withStatementMode));
+  }
+
+  visitReturnStmt(stmt: ReturnStatement, context: Context): ts.ReturnStatement {
+    return ts.createReturn(stmt.value.visitExpression(this, context.withExpressionMode));
+  }
+
+  visitDeclareClassStmt(stmt: ClassStmt, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitDeclareFunctionStmt(stmt: DeclareFunctionStmt, context: any) {
+  visitIfStmt(stmt: IfStmt, context: Context): ts.IfStatement {
+    return ts.createIf(
+        stmt.condition.visitExpression(this, context),
+        ts.createBlock(
+            stmt.trueCase.map(child => child.visitStatement(this, context.withStatementMode))),
+        stmt.falseCase.length > 0 ?
+            ts.createBlock(stmt.falseCase.map(
+                child => child.visitStatement(this, context.withStatementMode))) :
+            undefined);
+  }
+
+  visitTryCatchStmt(stmt: TryCatchStmt, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitExpressionStmt(stmt: ExpressionStatement, context: any) {
+  visitThrowStmt(stmt: ThrowStmt, context: Context) { throw new Error('Method not implemented.'); }
+
+  visitCommentStmt(stmt: CommentStmt, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitReturnStmt(stmt: ReturnStatement, context: any): ts.ReturnStatement {
-    return ts.createReturn(stmt.value.visitExpression(this, context));
+  visitJSDocCommentStmt(stmt: JSDocCommentStmt, context: Context): ts.NotEmittedStatement {
+    const commentStmt = ts.createNotEmittedStatement(ts.createLiteral(''));
+    const text = stmt.toString();
+    const kind = ts.SyntaxKind.MultiLineCommentTrivia;
+    ts.setSyntheticLeadingComments(commentStmt, [{kind, text, pos: -1, end: -1}]);
+    return commentStmt;
   }
 
-  visitDeclareClassStmt(stmt: ClassStmt, context: any) {
-    throw new Error('Method not implemented.');
-  }
-
-  visitIfStmt(stmt: IfStmt, context: any) { throw new Error('Method not implemented.'); }
-
-  visitTryCatchStmt(stmt: TryCatchStmt, context: any) {
-    throw new Error('Method not implemented.');
-  }
-
-  visitThrowStmt(stmt: ThrowStmt, context: any) { throw new Error('Method not implemented.'); }
-
-  visitCommentStmt(stmt: CommentStmt, context: any): never {
-    throw new Error('Method not implemented.');
-  }
-
-  visitJSDocCommentStmt(stmt: JSDocCommentStmt, context: any): never {
-    throw new Error('Method not implemented.');
-  }
-
-  visitReadVarExpr(ast: ReadVarExpr, context: any): ts.Identifier {
+  visitReadVarExpr(ast: ReadVarExpr, context: Context): ts.Identifier {
     return ts.createIdentifier(ast.name !);
   }
 
-  visitWriteVarExpr(expr: WriteVarExpr, context: any): ts.BinaryExpression {
-    return ts.createBinary(
+  visitWriteVarExpr(expr: WriteVarExpr, context: Context): ts.Expression {
+    const result: ts.Expression = ts.createBinary(
         ts.createIdentifier(expr.name), ts.SyntaxKind.EqualsToken,
         expr.value.visitExpression(this, context));
+    return context.isStatement ? result : ts.createParen(result);
   }
 
-  visitWriteKeyExpr(expr: WriteKeyExpr, context: any): never {
+  visitWriteKeyExpr(expr: WriteKeyExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitWritePropExpr(expr: WritePropExpr, context: any): never {
-    throw new Error('Method not implemented.');
+  visitWritePropExpr(expr: WritePropExpr, context: Context): ts.BinaryExpression {
+    return ts.createBinary(
+        ts.createPropertyAccess(expr.receiver.visitExpression(this, context), expr.name),
+        ts.SyntaxKind.EqualsToken, expr.value.visitExpression(this, context));
   }
 
-  visitInvokeMethodExpr(ast: InvokeMethodExpr, context: any): never {
-    throw new Error('Method not implemented.');
+  visitInvokeMethodExpr(ast: InvokeMethodExpr, context: Context): ts.CallExpression {
+    const target = ast.receiver.visitExpression(this, context);
+    return ts.createCall(
+        ast.name !== null ? ts.createPropertyAccess(target, ast.name) : target, undefined,
+        ast.args.map(arg => arg.visitExpression(this, context)));
   }
 
-  visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): ts.CallExpression {
+  visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: Context): ts.CallExpression {
     return ts.createCall(
         ast.fn.visitExpression(this, context), undefined,
         ast.args.map(arg => arg.visitExpression(this, context)));
   }
 
-  visitInstantiateExpr(ast: InstantiateExpr, context: any): ts.NewExpression {
+  visitInstantiateExpr(ast: InstantiateExpr, context: Context): ts.NewExpression {
     return ts.createNew(
         ast.classExpr.visitExpression(this, context), undefined,
         ast.args.map(arg => arg.visitExpression(this, context)));
   }
 
-  visitLiteralExpr(ast: LiteralExpr, context: any): ts.Expression {
+  visitLiteralExpr(ast: LiteralExpr, context: Context): ts.Expression {
     if (ast.value === undefined) {
       return ts.createIdentifier('undefined');
     } else if (ast.value === null) {
@@ -119,35 +205,35 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     }
   }
 
-  visitExternalExpr(ast: ExternalExpr, context: any): ts.PropertyAccessExpression {
+  visitExternalExpr(ast: ExternalExpr, context: Context): ts.PropertyAccessExpression {
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol ${ast.value}`);
     }
     return ts.createPropertyAccess(
-        ts.createIdentifier(this.imports.generateNamedImport(ast.value.moduleName)),
+        ts.createIdentifier(this.imports.generateNamedImport(ast.value.moduleName, ast.value.name)),
         ts.createIdentifier(ast.value.name));
   }
 
-  visitConditionalExpr(ast: ConditionalExpr, context: any): ts.ParenthesizedExpression {
+  visitConditionalExpr(ast: ConditionalExpr, context: Context): ts.ParenthesizedExpression {
     return ts.createParen(ts.createConditional(
         ast.condition.visitExpression(this, context), ast.trueCase.visitExpression(this, context),
         ast.falseCase !.visitExpression(this, context)));
   }
 
-  visitNotExpr(ast: NotExpr, context: any): ts.PrefixUnaryExpression {
+  visitNotExpr(ast: NotExpr, context: Context): ts.PrefixUnaryExpression {
     return ts.createPrefix(
         ts.SyntaxKind.ExclamationToken, ast.condition.visitExpression(this, context));
   }
 
-  visitAssertNotNullExpr(ast: AssertNotNull, context: any): ts.NonNullExpression {
+  visitAssertNotNullExpr(ast: AssertNotNull, context: Context): ts.NonNullExpression {
     return ts.createNonNullExpression(ast.condition.visitExpression(this, context));
   }
 
-  visitCastExpr(ast: CastExpr, context: any): ts.Expression {
+  visitCastExpr(ast: CastExpr, context: Context): ts.Expression {
     return ast.value.visitExpression(this, context);
   }
 
-  visitFunctionExpr(ast: FunctionExpr, context: any): ts.FunctionExpression {
+  visitFunctionExpr(ast: FunctionExpr, context: Context): ts.FunctionExpression {
     return ts.createFunctionExpression(
         undefined, undefined, ast.name || undefined, undefined,
         ast.params.map(
@@ -156,23 +242,30 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
         undefined, ts.createBlock(ast.statements.map(stmt => stmt.visitStatement(this, context))));
   }
 
-  visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: any): never {
-    throw new Error('Method not implemented.');
+  visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: Context): ts.Expression {
+    if (!BINARY_OPERATORS.has(ast.operator)) {
+      throw new Error(`Unknown binary operator: ${BinaryOperator[ast.operator]}`);
+    }
+    const binEx = ts.createBinary(
+        ast.lhs.visitExpression(this, context), BINARY_OPERATORS.get(ast.operator) !,
+        ast.rhs.visitExpression(this, context));
+    return ast.parens ? ts.createParen(binEx) : binEx;
   }
 
-  visitReadPropExpr(ast: ReadPropExpr, context: any): never {
-    throw new Error('Method not implemented.');
+  visitReadPropExpr(ast: ReadPropExpr, context: Context): ts.PropertyAccessExpression {
+    return ts.createPropertyAccess(ast.receiver.visitExpression(this, context), ast.name);
   }
 
-  visitReadKeyExpr(ast: ReadKeyExpr, context: any): never {
-    throw new Error('Method not implemented.');
+  visitReadKeyExpr(ast: ReadKeyExpr, context: Context): ts.ElementAccessExpression {
+    return ts.createElementAccess(
+        ast.receiver.visitExpression(this, context), ast.index.visitExpression(this, context));
   }
 
-  visitLiteralArrayExpr(ast: LiteralArrayExpr, context: any): never {
-    throw new Error('Method not implemented.');
+  visitLiteralArrayExpr(ast: LiteralArrayExpr, context: Context): ts.ArrayLiteralExpression {
+    return ts.createArrayLiteral(ast.entries.map(expr => expr.visitExpression(this, context)));
   }
 
-  visitLiteralMapExpr(ast: LiteralMapExpr, context: any): ts.ObjectLiteralExpression {
+  visitLiteralMapExpr(ast: LiteralMapExpr, context: Context): ts.ObjectLiteralExpression {
     const entries = ast.entries.map(
         entry => ts.createPropertyAssignment(
             entry.quoted ? ts.createLiteral(entry.key) : ts.createIdentifier(entry.key),
@@ -180,17 +273,21 @@ class ExpressionTranslatorVisitor implements ExpressionVisitor, StatementVisitor
     return ts.createObjectLiteral(entries);
   }
 
-  visitCommaExpr(ast: CommaExpr, context: any): never {
+  visitCommaExpr(ast: CommaExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any): any { return ast.node; }
+  visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: Context): any { return ast.node; }
+
+  visitTypeofExpr(ast: TypeofExpr, context: Context): ts.TypeOfExpression {
+    return ts.createTypeOf(ast.expr.visitExpression(this, context));
+  }
 }
 
 export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
   constructor(private imports: ImportManager) {}
 
-  visitBuiltinType(type: BuiltinType, context: any): string {
+  visitBuiltinType(type: BuiltinType, context: Context): string {
     switch (type.name) {
       case BuiltinTypeName.Bool:
         return 'boolean';
@@ -201,20 +298,28 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
         return 'number';
       case BuiltinTypeName.String:
         return 'string';
+      case BuiltinTypeName.None:
+        return 'never';
       default:
         throw new Error(`Unsupported builtin type: ${BuiltinTypeName[type.name]}`);
     }
   }
 
-  visitExpressionType(type: ExpressionType, context: any): any {
-    return type.value.visitExpression(this, context);
+  visitExpressionType(type: ExpressionType, context: Context): string {
+    const exprStr = type.value.visitExpression(this, context);
+    if (type.typeParams !== null) {
+      const typeSegments = type.typeParams.map(param => param.visitType(this, context));
+      return `${exprStr}<${typeSegments.join(',')}>`;
+    } else {
+      return exprStr;
+    }
   }
 
-  visitArrayType(type: ArrayType, context: any): string {
+  visitArrayType(type: ArrayType, context: Context): string {
     return `Array<${type.visitType(this, context)}>`;
   }
 
-  visitMapType(type: MapType, context: any): string {
+  visitMapType(type: MapType, context: Context): string {
     if (type.valueType !== null) {
       return `{[key: string]: ${type.valueType.visitType(this, context)}}`;
     } else {
@@ -222,38 +327,38 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     }
   }
 
-  visitReadVarExpr(ast: ReadVarExpr, context: any): string {
+  visitReadVarExpr(ast: ReadVarExpr, context: Context): string {
     if (ast.name === null) {
       throw new Error(`ReadVarExpr with no variable name in type`);
     }
     return ast.name;
   }
 
-  visitWriteVarExpr(expr: WriteVarExpr, context: any): never {
+  visitWriteVarExpr(expr: WriteVarExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitWriteKeyExpr(expr: WriteKeyExpr, context: any): never {
+  visitWriteKeyExpr(expr: WriteKeyExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitWritePropExpr(expr: WritePropExpr, context: any): never {
+  visitWritePropExpr(expr: WritePropExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitInvokeMethodExpr(ast: InvokeMethodExpr, context: any): never {
+  visitInvokeMethodExpr(ast: InvokeMethodExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: any): never {
+  visitInvokeFunctionExpr(ast: InvokeFunctionExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitInstantiateExpr(ast: InstantiateExpr, context: any): never {
+  visitInstantiateExpr(ast: InstantiateExpr, context: Context): never {
     throw new Error('Method not implemented.');
   }
 
-  visitLiteralExpr(ast: LiteralExpr, context: any): string {
+  visitLiteralExpr(ast: LiteralExpr, context: Context): string {
     if (typeof ast.value === 'string') {
       const escaped = ast.value.replace(/\'/g, '\\\'');
       return `'${escaped}'`;
@@ -262,11 +367,12 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     }
   }
 
-  visitExternalExpr(ast: ExternalExpr, context: any): string {
+  visitExternalExpr(ast: ExternalExpr, context: Context): string {
     if (ast.value.moduleName === null || ast.value.name === null) {
       throw new Error(`Import unknown module or symbol`);
     }
-    const base = `${this.imports.generateNamedImport(ast.value.moduleName)}.${ast.value.name}`;
+    const moduleSymbol = this.imports.generateNamedImport(ast.value.moduleName, ast.value.name);
+    const base = `${moduleSymbol}.${ast.value.name}`;
     if (ast.typeParams !== null) {
       const generics = ast.typeParams.map(type => type.visitType(this, context)).join(', ');
       return `${base}<${generics}>`;
@@ -275,39 +381,46 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     }
   }
 
-  visitConditionalExpr(ast: ConditionalExpr, context: any) {
+  visitConditionalExpr(ast: ConditionalExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitNotExpr(ast: NotExpr, context: any) { throw new Error('Method not implemented.'); }
+  visitNotExpr(ast: NotExpr, context: Context) { throw new Error('Method not implemented.'); }
 
-  visitAssertNotNullExpr(ast: AssertNotNull, context: any) {
+  visitAssertNotNullExpr(ast: AssertNotNull, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitCastExpr(ast: CastExpr, context: any) { throw new Error('Method not implemented.'); }
+  visitCastExpr(ast: CastExpr, context: Context) { throw new Error('Method not implemented.'); }
 
-  visitFunctionExpr(ast: FunctionExpr, context: any) { throw new Error('Method not implemented.'); }
-
-  visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: any) {
+  visitFunctionExpr(ast: FunctionExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitReadPropExpr(ast: ReadPropExpr, context: any) { throw new Error('Method not implemented.'); }
-
-  visitReadKeyExpr(ast: ReadKeyExpr, context: any) { throw new Error('Method not implemented.'); }
-
-  visitLiteralArrayExpr(ast: LiteralArrayExpr, context: any) {
+  visitBinaryOperatorExpr(ast: BinaryOperatorExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitLiteralMapExpr(ast: LiteralMapExpr, context: any) {
+  visitReadPropExpr(ast: ReadPropExpr, context: Context) {
     throw new Error('Method not implemented.');
   }
 
-  visitCommaExpr(ast: CommaExpr, context: any) { throw new Error('Method not implemented.'); }
+  visitReadKeyExpr(ast: ReadKeyExpr, context: Context) {
+    throw new Error('Method not implemented.');
+  }
 
-  visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: any) {
+  visitLiteralArrayExpr(ast: LiteralArrayExpr, context: Context): string {
+    const values = ast.entries.map(expr => expr.visitExpression(this, context));
+    return `[${values.join(',')}]`;
+  }
+
+  visitLiteralMapExpr(ast: LiteralMapExpr, context: Context) {
+    throw new Error('Method not implemented.');
+  }
+
+  visitCommaExpr(ast: CommaExpr, context: Context) { throw new Error('Method not implemented.'); }
+
+  visitWrappedNodeExpr(ast: WrappedNodeExpr<any>, context: Context) {
     const node: ts.Node = ast.node;
     if (ts.isIdentifier(node)) {
       return node.text;
@@ -315,5 +428,9 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
       throw new Error(
           `Unsupported WrappedNodeExpr in TypeTranslatorVisitor: ${ts.SyntaxKind[node.kind]}`);
     }
+  }
+
+  visitTypeofExpr(ast: TypeofExpr, context: Context): string {
+    return `typeof ${ast.expr.visitExpression(this, context)}`;
   }
 }

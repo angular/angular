@@ -9,7 +9,8 @@
 import {PipeTransform} from '../change_detection/pipe_transform';
 
 import {getTView, load, store} from './instructions';
-import {PipeDef, PipeDefList} from './interfaces/definition';
+import {PipeDefInternal, PipeDefList} from './interfaces/definition';
+import {HEADER_OFFSET} from './interfaces/view';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunctionV} from './pure_function';
 
 /**
@@ -21,19 +22,21 @@ import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction
  */
 export function pipe(index: number, pipeName: string): any {
   const tView = getTView();
-  let pipeDef: PipeDef<any>;
+  let pipeDef: PipeDefInternal<any>;
+  const adjustedIndex = index + HEADER_OFFSET;
 
   if (tView.firstTemplatePass) {
     pipeDef = getPipeDef(pipeName, tView.pipeRegistry);
-    tView.data[index] = pipeDef;
+    tView.data[adjustedIndex] = pipeDef;
     if (pipeDef.onDestroy) {
-      (tView.pipeDestroyHooks || (tView.pipeDestroyHooks = [])).push(index, pipeDef.onDestroy);
+      (tView.pipeDestroyHooks || (tView.pipeDestroyHooks = [
+       ])).push(adjustedIndex, pipeDef.onDestroy);
     }
   } else {
-    pipeDef = tView.data[index] as PipeDef<any>;
+    pipeDef = tView.data[adjustedIndex] as PipeDefInternal<any>;
   }
 
-  const pipeInstance = pipeDef.n();
+  const pipeInstance = pipeDef.factory();
   store(index, pipeInstance);
   return pipeInstance;
 }
@@ -46,7 +49,7 @@ export function pipe(index: number, pipeName: string): any {
  * @param registry Full list of available pipes
  * @returns Matching PipeDef
  */
-function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
+function getPipeDef(name: string, registry: PipeDefList | null): PipeDefInternal<any> {
   if (registry) {
     for (let i = 0; i < registry.length; i++) {
       const pipeDef = registry[i];
@@ -65,11 +68,12 @@ function getPipeDef(name: string, registry: PipeDefList | null): PipeDef<any> {
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
+ * @param slotOffset the offset in the reserved slot space {@link reserveSlots}
  * @param v1 1st argument to {@link PipeTransform#transform}.
  */
-export function pipeBind1(index: number, v1: any): any {
+export function pipeBind1(index: number, slotOffset: number, v1: any): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ? pureFunction1(pipeInstance.transform, v1, pipeInstance) :
+  return isPure(index) ? pureFunction1(slotOffset, pipeInstance.transform, v1, pipeInstance) :
                          pipeInstance.transform(v1);
 }
 
@@ -80,12 +84,13 @@ export function pipeBind1(index: number, v1: any): any {
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
+ * @param slotOffset the offset in the reserved slot space {@link reserveSlots}
  * @param v1 1st argument to {@link PipeTransform#transform}.
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  */
-export function pipeBind2(index: number, v1: any, v2: any): any {
+export function pipeBind2(index: number, slotOffset: number, v1: any, v2: any): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ? pureFunction2(pipeInstance.transform, v1, v2, pipeInstance) :
+  return isPure(index) ? pureFunction2(slotOffset, pipeInstance.transform, v1, v2, pipeInstance) :
                          pipeInstance.transform(v1, v2);
 }
 
@@ -96,14 +101,16 @@ export function pipeBind2(index: number, v1: any, v2: any): any {
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
+ * @param slotOffset the offset in the reserved slot space {@link reserveSlots}
  * @param v1 1st argument to {@link PipeTransform#transform}.
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  * @param v3 4rd argument to {@link PipeTransform#transform}.
  */
-export function pipeBind3(index: number, v1: any, v2: any, v3: any): any {
+export function pipeBind3(index: number, slotOffset: number, v1: any, v2: any, v3: any): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ? pureFunction3(pipeInstance.transform, v1, v2, v3, pipeInstance) :
-                         pipeInstance.transform(v1, v2, v3);
+  return isPure(index) ?
+      pureFunction3(slotOffset, pipeInstance.transform, v1, v2, v3, pipeInstance) :
+      pipeInstance.transform(v1, v2, v3);
 }
 
 /**
@@ -113,15 +120,18 @@ export function pipeBind3(index: number, v1: any, v2: any, v3: any): any {
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
+ * @param slotOffset the offset in the reserved slot space {@link reserveSlots}
  * @param v1 1st argument to {@link PipeTransform#transform}.
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  * @param v3 3rd argument to {@link PipeTransform#transform}.
  * @param v4 4th argument to {@link PipeTransform#transform}.
  */
-export function pipeBind4(index: number, v1: any, v2: any, v3: any, v4: any): any {
+export function pipeBind4(
+    index: number, slotOffset: number, v1: any, v2: any, v3: any, v4: any): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ? pureFunction4(pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
-                         pipeInstance.transform(v1, v2, v3, v4);
+  return isPure(index) ?
+      pureFunction4(slotOffset, pipeInstance.transform, v1, v2, v3, v4, pipeInstance) :
+      pipeInstance.transform(v1, v2, v3, v4);
 }
 
 /**
@@ -131,14 +141,15 @@ export function pipeBind4(index: number, v1: any, v2: any, v3: any, v4: any): an
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
+ * @param slotOffset the offset in the reserved slot space {@link reserveSlots}
  * @param values Array of arguments to pass to {@link PipeTransform#transform} method.
  */
-export function pipeBindV(index: number, values: any[]): any {
+export function pipeBindV(index: number, slotOffset: number, values: any[]): any {
   const pipeInstance = load<PipeTransform>(index);
-  return isPure(index) ? pureFunctionV(pipeInstance.transform, values, pipeInstance) :
+  return isPure(index) ? pureFunctionV(slotOffset, pipeInstance.transform, values, pipeInstance) :
                          pipeInstance.transform.apply(pipeInstance, values);
 }
 
 function isPure(index: number): boolean {
-  return (<PipeDef<any>>getTView().data[index]).pure;
+  return (<PipeDefInternal<any>>getTView().data[index + HEADER_OFFSET]).pure;
 }

@@ -21,7 +21,7 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
 
 (function() {
   // these tests are only mean't to be run within the DOM (for now)
-  if (typeof Element == 'undefined') return;
+  if (isNode) return;
 
   describe('animation query tests', function() {
     function getLog(): MockAnimationPlayer[] {
@@ -1049,7 +1049,8 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
             ])]
         })
         class Cmp {
-          public items: any[];
+          // TODO(issue/24571): remove '!'.
+          public items !: any[];
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1129,7 +1130,8 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
         })
         class Cmp {
              public exp: any;
-             public items: any[];
+             // TODO(issue/24571): remove '!'.
+             public items !: any[];
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1349,7 +1351,8 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
         })
         class Cmp {
           public exp: any;
-          public items: any[];
+          // TODO(issue/24571): remove '!'.
+          public items !: any[];
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1401,7 +1404,8 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
         })
         class Cmp {
           public exp: any;
-          public items: any[];
+          // TODO(issue/24571): remove '!'.
+          public items !: any[];
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1463,7 +1467,8 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
         class Cmp {
           public exp1: any;
           public exp2: any;
-          public items: any[];
+          // TODO(issue/24571): remove '!'.
+          public items !: any[];
         }
 
         TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1532,7 +1537,8 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
            })
            class Cmp {
              public exp: any;
-             public items: any[];
+             // TODO(issue/24571): remove '!'.
+             public items !: any[];
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -1586,7 +1592,8 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
           })
           class Cmp {
              public exp: any;
-             public items: any[];
+             // TODO(issue/24571): remove '!'.
+             public items !: any[];
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2469,7 +2476,8 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
           `
            })
            class Cmp {
-             public exp: boolean;
+             // TODO(issue/24571): remove '!'.
+             public exp !: boolean;
            }
 
            TestBed.configureTestingModule({declarations: [Cmp]});
@@ -2648,7 +2656,8 @@ import {fakeAsync, flushMicrotasks} from '../../testing/src/fake_async';
           `
            })
            class Cmp {
-             public exp: boolean;
+             // TODO(issue/24571): remove '!'.
+             public exp !: boolean;
              public log: string[] = [];
              callback(event: any) {
                this.log.push(event.element.getAttribute('data-name') + '-' + event.phaseName);

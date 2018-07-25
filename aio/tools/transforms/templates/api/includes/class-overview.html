@@ -1,7 +1,7 @@
 {% import "lib/memberHelpers.html" as memberHelper -%}
 
 <section class="{$ doc.docType $}-overview">
-<code-example language="ts" hideCopy="true">
+<code-example language="ts" hideCopy="true" linenums="false">
 {% if doc.isAbstract %}abstract {% endif%}{$ doc.docType $} {$ doc.name $}{$ doc.typeParams | escape $}{$ memberHelper.renderHeritage(doc) $} {{$ memberHelper.renderMembers(doc) $}
 }
 </code-example>

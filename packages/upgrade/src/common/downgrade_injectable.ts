@@ -26,21 +26,21 @@ import {INJECTOR_KEY} from './constants';
  * that will be part of the upgrade application. For example, let's assume we have
  * defined `HeroesService`
  *
- * {@example upgrade/static/ts/module.ts region="ng2-heroes-service"}
+ * {@example upgrade/static/ts/full/module.ts region="ng2-heroes-service"}
  *
  * and that we have included this in our upgrade app `NgModule`
  *
- * {@example upgrade/static/ts/module.ts region="ng2-module"}
+ * {@example upgrade/static/ts/full/module.ts region="ng2-module"}
  *
  * Now we can register the `downgradeInjectable` factory function for the service
  * on an AngularJS module.
  *
- * {@example upgrade/static/ts/module.ts region="downgrade-ng2-heroes-service"}
+ * {@example upgrade/static/ts/full/module.ts region="downgrade-ng2-heroes-service"}
  *
  * Inside an AngularJS component's controller we can get hold of the
  * downgraded service via the name we gave when downgrading.
  *
- * {@example upgrade/static/ts/module.ts region="example-app"}
+ * {@example upgrade/static/ts/full/module.ts region="example-app"}
  *
  * @param token an `InjectionToken` that identifies a service provided from Angular.
  *

@@ -164,7 +164,7 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-The CLI defines an empty `styles` array when you create the component with the `--inline-styles` flag.
+The CLI defines an empty `styles` array when you create the component with the `--inline-style` flag.
 
 <code-example language="sh" class="code-shell">
 ng generate component hero-app --inline-style
@@ -187,9 +187,9 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
-  You can specify more than one styles file or even a combination of `style` and `styleUrls`.
+  You can specify more than one styles file or even a combination of `styles` and `styleUrls`.
 
 </div>
 
@@ -216,10 +216,9 @@ You can also write `<link>` tags into the component's HTML template.
 
 <div class="alert is-critical">
 
-The link tag's `href` URL must be relative to the
-_**application root**_, not relative to the component file.
-
 When building with the CLI, be sure to include the linked style file among the assets to be copied to the server as described in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-asset-configuration).
+
+Once included, the CLI will include the stylesheet, whether the link tag's href URL is relative to the application root or the component file.
 
 </div>
 
@@ -280,11 +279,13 @@ To control how this encapsulation happens on a *per
 component* basis, you can set the *view encapsulation mode* in the component metadata.
 Choose from the following modes:
 
-* `Native` view encapsulation uses the browser's native shadow DOM implementation (see
+* `ShadowDom` view encapsulation uses the browser's native shadow DOM implementation (see
   [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM)
   on the [MDN](https://developer.mozilla.org) site)
   to attach a shadow DOM to the component's host element, and then puts the component
   view inside that shadow DOM. The component's styles are included within the shadow DOM.
+
+* `Native` view encapsulation uses a now deprecated version of the browser's native shadow DOM implementation - [learn about the changes](https://hayato.io/2016/shadowdomv1/).
 
 * `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
   (and renaming) the CSS code to effectively scope the CSS to the component's view.
@@ -300,8 +301,8 @@ To set the components encapsulation mode, use the `encapsulation` property in th
 <code-example path="component-styles/src/app/quest-summary.component.ts" region="encapsulation.native" title="src/app/quest-summary.component.ts" linenums="false">
 </code-example>
 
-`Native` view encapsulation only works on browsers that have native support
-for shadow DOM (see [Shadow DOM v0](http://caniuse.com/#feat=shadowdom) on the
+`ShadowDom` view encapsulation only works on browsers that have native support
+for shadow DOM (see [Shadow DOM v1](https://caniuse.com/#feat=shadowdomv1) on the
 [Can I use](http://caniuse.com) site). The support is still limited,
 which is why `Emulated` view encapsulation is the default mode and recommended
 in most cases.

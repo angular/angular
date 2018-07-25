@@ -9,7 +9,7 @@
 import {defineComponent} from '../../src/render3/definition';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {ComponentFixture, createComponent, renderToHtml} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
 
 describe('JS control flow', () => {
   it('should work with if block', () => {
@@ -132,6 +132,76 @@ describe('JS control flow', () => {
 
     ctx.condition2 = true;
     expect(renderToHtml(Template, ctx)).toEqual('<div><span>Hello</span></div>');
+  });
+
+  it('should work with nested adjacent if blocks', () => {
+    const ctx: {condition: boolean,
+                condition2: boolean,
+                condition3: boolean} = {condition: true, condition2: false, condition3: true};
+
+    /**
+     * % if(ctx.condition) {
+     *   % if(ctx.condition2) {
+     *     Hello
+     *   % }
+     *   % if(ctx.condition3) {
+     *     World
+     *   % }
+     * % }
+     */
+    function createTemplate() { container(0); }
+
+    function updateTemplate() {
+      containerRefreshStart(0);
+      {
+        if (ctx.condition) {
+          let rf1 = embeddedViewStart(1);
+          {
+            if (rf1 & RenderFlags.Create) {
+              { container(0); }
+              { container(1); }
+            }
+            if (rf1 & RenderFlags.Update) {
+              containerRefreshStart(0);
+              {
+                if (ctx.condition2) {
+                  let rf2 = embeddedViewStart(2);
+                  {
+                    if (rf2 & RenderFlags.Create) {
+                      text(0, 'Hello');
+                    }
+                  }
+                  embeddedViewEnd();
+                }
+              }
+              containerRefreshEnd();
+              containerRefreshStart(1);
+              {
+                if (ctx.condition3) {
+                  let rf2 = embeddedViewStart(2);
+                  {
+                    if (rf2 & RenderFlags.Create) {
+                      text(0, 'World');
+                    }
+                  }
+                  embeddedViewEnd();
+                }
+              }
+              containerRefreshEnd();
+            }
+          }
+          embeddedViewEnd();
+        }
+      }
+      containerRefreshEnd();
+    }
+
+    const fixture = new TemplateFixture(createTemplate, updateTemplate);
+    expect(fixture.html).toEqual('World');
+
+    ctx.condition2 = true;
+    fixture.update();
+    expect(fixture.html).toEqual('HelloWorld');
   });
 
   it('should work with adjacent if blocks managing views in the same container', () => {

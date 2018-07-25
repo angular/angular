@@ -8,14 +8,14 @@
 
 import * as ts from 'typescript';
 
-import {Parameter, reflectConstructorParameters} from '../src/reflector';
-
-import {getDeclaration, makeProgram} from './in_memory_typescript';
+import {Parameter} from '../../host';
+import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
+import {TypeScriptReflectionHost} from '../src/reflector';
 
 describe('reflector', () => {
   describe('ctor params', () => {
     it('should reflect a single argument', () => {
-      const program = makeProgram([{
+      const {program} = makeProgram([{
         name: 'entry.ts',
         contents: `
             class Bar {}
@@ -27,13 +27,14 @@ describe('reflector', () => {
       }]);
       const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
       const checker = program.getTypeChecker();
-      const args = reflectConstructorParameters(clazz, checker) !;
+      const host = new TypeScriptReflectionHost(checker);
+      const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(1);
-      expectArgument(args[0], 'bar', 'Bar');
+      expectParameter(args[0], 'bar', 'Bar');
     });
 
     it('should reflect a decorated argument', () => {
-      const program = makeProgram([
+      const {program} = makeProgram([
         {
           name: 'dec.ts',
           contents: `
@@ -55,13 +56,14 @@ describe('reflector', () => {
       ]);
       const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
       const checker = program.getTypeChecker();
-      const args = reflectConstructorParameters(clazz, checker) !;
+      const host = new TypeScriptReflectionHost(checker);
+      const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(1);
-      expectArgument(args[0], 'bar', 'Bar', 'dec', './dec');
+      expectParameter(args[0], 'bar', 'Bar', 'dec', './dec');
     });
 
     it('should reflect a decorated argument with a call', () => {
-      const program = makeProgram([
+      const {program} = makeProgram([
         {
           name: 'dec.ts',
           contents: `
@@ -83,13 +85,14 @@ describe('reflector', () => {
       ]);
       const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
       const checker = program.getTypeChecker();
-      const args = reflectConstructorParameters(clazz, checker) !;
+      const host = new TypeScriptReflectionHost(checker);
+      const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(1);
-      expectArgument(args[0], 'bar', 'Bar', 'dec', './dec');
+      expectParameter(args[0], 'bar', 'Bar', 'dec', './dec');
     });
 
     it('should reflect a decorated argument with an indirection', () => {
-      const program = makeProgram([
+      const {program} = makeProgram([
         {
           name: 'bar.ts',
           contents: `
@@ -110,26 +113,73 @@ describe('reflector', () => {
       ]);
       const clazz = getDeclaration(program, 'entry.ts', 'Foo', ts.isClassDeclaration);
       const checker = program.getTypeChecker();
-      const args = reflectConstructorParameters(clazz, checker) !;
+      const host = new TypeScriptReflectionHost(checker);
+      const args = host.getConstructorParameters(clazz) !;
       expect(args.length).toBe(2);
-      expectArgument(args[0], 'bar', 'Bar');
-      expectArgument(args[1], 'otherBar', 'star.Bar');
+      expectParameter(args[0], 'bar', 'Bar');
+      expectParameter(args[1], 'otherBar', 'star.Bar');
     });
+  });
+
+  it('should reflect a re-export', () => {
+    const {program} = makeProgram([
+      {name: '/node_modules/absolute/index.ts', contents: 'export class Target {}'},
+      {name: 'local1.ts', contents: `export {Target as AliasTarget} from 'absolute';`},
+      {name: 'local2.ts', contents: `export {AliasTarget as Target} from './local1';`}, {
+        name: 'entry.ts',
+        contents: `
+          import {Target} from './local2';
+          import {Target as DirectTarget} from 'absolute';
+
+          const target = Target;
+          const directTarget = DirectTarget;
+      `
+      }
+    ]);
+    const target = getDeclaration(program, 'entry.ts', 'target', ts.isVariableDeclaration);
+    if (target.initializer === undefined || !ts.isIdentifier(target.initializer)) {
+      return fail('Unexpected initializer for target');
+    }
+    const directTarget =
+        getDeclaration(program, 'entry.ts', 'directTarget', ts.isVariableDeclaration);
+    if (directTarget.initializer === undefined || !ts.isIdentifier(directTarget.initializer)) {
+      return fail('Unexpected initializer for directTarget');
+    }
+    const Target = target.initializer;
+    const DirectTarget = directTarget.initializer;
+
+    const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
+    const targetDecl = host.getDeclarationOfIdentifier(Target);
+    const directTargetDecl = host.getDeclarationOfIdentifier(DirectTarget);
+    if (targetDecl === null) {
+      return fail('No declaration found for Target');
+    } else if (directTargetDecl === null) {
+      return fail('No declaration found for DirectTarget');
+    }
+    expect(targetDecl.node.getSourceFile().fileName).toBe('/node_modules/absolute/index.ts');
+    expect(ts.isClassDeclaration(targetDecl.node)).toBe(true);
+    expect(directTargetDecl.viaModule).toBe('absolute');
+    expect(directTargetDecl.node).toBe(targetDecl.node);
   });
 });
 
-function expectArgument(
-    arg: Parameter, name: string, type?: string, decorator?: string, decoratorFrom?: string): void {
-  expect(argExpressionToString(arg.name)).toEqual(name);
+function expectParameter(
+    param: Parameter, name: string, type?: string, decorator?: string,
+    decoratorFrom?: string): void {
+  expect(param.name !).toEqual(name);
   if (type === undefined) {
-    expect(arg.typeValueExpr).toBeNull();
+    expect(param.type).toBeNull();
   } else {
-    expect(arg.typeValueExpr).not.toBeNull();
-    expect(argExpressionToString(arg.typeValueExpr !)).toEqual(type);
+    expect(param.type).not.toBeNull();
+    expect(argExpressionToString(param.type !)).toEqual(type);
   }
   if (decorator !== undefined) {
-    expect(arg.decorators.length).toBeGreaterThan(0);
-    expect(arg.decorators.some(dec => dec.name === decorator && dec.from === decoratorFrom))
+    expect(param.decorators).not.toBeNull();
+    expect(param.decorators !.length).toBeGreaterThan(0);
+    expect(param.decorators !.some(
+               dec => dec.name === decorator && dec.import !== null &&
+                   dec.import.from === decoratorFrom))
         .toBe(true);
   }
 }

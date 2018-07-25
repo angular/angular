@@ -28,12 +28,14 @@ export abstract class SystemJsNgModuleLoaderConfig {
   /**
    * Prefix to add when computing the name of the factory module for a given module name.
    */
-  factoryPathPrefix: string;
+  // TODO(issue/24571): remove '!'.
+  factoryPathPrefix !: string;
 
   /**
    * Suffix to add when computing the name of the factory module for a given module name.
    */
-  factoryPathSuffix: string;
+  // TODO(issue/24571): remove '!'.
+  factoryPathSuffix !: string;
 }
 
 const DEFAULT_CONFIG: SystemJsNgModuleLoaderConfig = {

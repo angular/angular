@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {defineComponent} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, reserveSlots} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
 import {renderToHtml} from '../../test/render3/render_util';
@@ -15,7 +15,8 @@ describe('array literals', () => {
   let myComp: MyComp;
 
   class MyComp {
-    names: string[];
+    // TODO(issue/24571): remove '!'.
+    names !: string[];
 
     static ngComponentDef = defineComponent({
       type: MyComp,
@@ -36,9 +37,10 @@ describe('array literals', () => {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'my-comp');
         elementEnd();
+        reserveSlots(2);
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'names', bind(pureFunction1(e0_ff, ctx.customName)));
+        elementProperty(0, 'names', bind(pureFunction1(2, e0_ff, ctx.customName)));
       }
     }
 
@@ -67,8 +69,10 @@ describe('array literals', () => {
     let manyPropComp: ManyPropComp;
 
     class ManyPropComp {
-      names1: string[];
-      names2: string[];
+      // TODO(issue/24571): remove '!'.
+      names1 !: string[];
+      // TODO(issue/24571): remove '!'.
+      names2 !: string[];
 
       static ngComponentDef = defineComponent({
         type: ManyPropComp,
@@ -90,10 +94,11 @@ describe('array literals', () => {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'many-prop-comp');
         elementEnd();
+        reserveSlots(4);
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'names1', bind(pureFunction1(e0_ff, ctx.customName)));
-        elementProperty(0, 'names2', bind(pureFunction1(e0_ff_1, ctx.customName2)));
+        elementProperty(0, 'names1', bind(pureFunction1(2, e0_ff, ctx.customName)));
+        elementProperty(0, 'names2', bind(pureFunction1(4, e0_ff_1, ctx.customName2)));
       }
     }
 
@@ -130,9 +135,10 @@ describe('array literals', () => {
             elementStart(0, 'my-comp');
             myComps.push(loadDirective(0));
             elementEnd();
+            reserveSlots(2);
           }
           if (rf & RenderFlags.Update) {
-            elementProperty(0, 'names', bind(ctx.someFn(pureFunction1(e0_ff, ctx.customName))));
+            elementProperty(0, 'names', bind(ctx.someFn(pureFunction1(2, e0_ff, ctx.customName))));
           }
         },
         directives: directives
@@ -170,9 +176,10 @@ describe('array literals', () => {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'my-comp');
         elementEnd();
+        reserveSlots(3);
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'names', bind(pureFunction2(e0_ff, ctx.customName, ctx.customName2)));
+        elementProperty(0, 'names', bind(pureFunction2(3, e0_ff, ctx.customName, ctx.customName2)));
       }
     }
 
@@ -241,17 +248,19 @@ describe('array literals', () => {
         elementStart(5, 'my-comp');
         f8Comp = loadDirective(5);
         elementEnd();
+        reserveSlots(39);
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'names', bind(pureFunction3(e0_ff, c[5], c[6], c[7])));
-        elementProperty(1, 'names', bind(pureFunction4(e2_ff, c[4], c[5], c[6], c[7])));
-        elementProperty(2, 'names', bind(pureFunction5(e4_ff, c[3], c[4], c[5], c[6], c[7])));
-        elementProperty(3, 'names', bind(pureFunction6(e6_ff, c[2], c[3], c[4], c[5], c[6], c[7])));
+        elementProperty(0, 'names', bind(pureFunction3(4, e0_ff, c[5], c[6], c[7])));
+        elementProperty(1, 'names', bind(pureFunction4(9, e2_ff, c[4], c[5], c[6], c[7])));
+        elementProperty(2, 'names', bind(pureFunction5(15, e4_ff, c[3], c[4], c[5], c[6], c[7])));
         elementProperty(
-            4, 'names', bind(pureFunction7(e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
+            3, 'names', bind(pureFunction6(22, e6_ff, c[2], c[3], c[4], c[5], c[6], c[7])));
+        elementProperty(
+            4, 'names', bind(pureFunction7(30, e8_ff, c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
         elementProperty(
             5, 'names',
-            bind(pureFunction8(e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
+            bind(pureFunction8(39, e10_ff, c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7])));
       }
     }
 
@@ -284,38 +293,39 @@ describe('array literals', () => {
     const e0_ff =
         (v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any,
          v8: any) => ['start', v0, v1, v2, v3, v4, v5, v6, v7, v8, 'end'];
-    const e0_ff_1 = (v: any) => { return {name: v}; };
+    const e0_ff_1 = (v: any) => `modified_${v}`;
 
     renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
     /**
-     * <my-comp [names]="['start', v0, v1, v2, v3, {name: v4}, v5, v6, v7, v8, 'end']">
+     * <my-comp [names]="['start', v0, v1, v2, v3, `modified_${v4}`, v5, v6, v7, v8, 'end']">
      * </my-comp>
      */
     function Template(rf: RenderFlags, c: any) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'my-comp');
         elementEnd();
+        reserveSlots(12);
       }
       if (rf & RenderFlags.Update) {
         elementProperty(
-            0, 'names', bind(pureFunctionV(e0_ff, [
-              c[0], c[1], c[2], c[3], pureFunction1(e0_ff_1, c[4]), c[5], c[6], c[7], c[8]
+            0, 'names', bind(pureFunctionV(12, e0_ff, [
+              c[0], c[1], c[2], c[3], pureFunction1(2, e0_ff_1, c[4]), c[5], c[6], c[7], c[8]
             ])));
       }
     }
 
     expect(myComp !.names).toEqual([
-      'start', 'a', 'b', 'c', 'd', {name: 'e'}, 'f', 'g', 'h', 'i', 'end'
+      'start', 'a', 'b', 'c', 'd', 'modified_e', 'f', 'g', 'h', 'i', 'end'
     ]);
 
     renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
     expect(myComp !.names).toEqual([
-      'start', 'a1', 'b', 'c', 'd', {name: 'e'}, 'f', 'g', 'h', 'i', 'end'
+      'start', 'a1', 'b', 'c', 'd', 'modified_e', 'f', 'g', 'h', 'i', 'end'
     ]);
 
     renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e5', 'f', 'g', 'h', 'i'], directives);
     expect(myComp !.names).toEqual([
-      'start', 'a1', 'b', 'c', 'd', {name: 'e5'}, 'f', 'g', 'h', 'i', 'end'
+      'start', 'a1', 'b', 'c', 'd', 'modified_e5', 'f', 'g', 'h', 'i', 'end'
     ]);
   });
 
@@ -324,7 +334,8 @@ describe('object literals', () => {
   let objectComp: ObjectComp;
 
   class ObjectComp {
-    config: {[key: string]: any};
+    // TODO(issue/24571): remove '!'.
+    config !: {[key: string]: any};
 
     static ngComponentDef = defineComponent({
       type: ObjectComp,
@@ -345,9 +356,10 @@ describe('object literals', () => {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'object-comp');
         elementEnd();
+        reserveSlots(2);
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'config', bind(pureFunction1(e0_ff, ctx.name)));
+        elementProperty(0, 'config', bind(pureFunction1(2, e0_ff, ctx.name)));
       }
     }
 
@@ -380,12 +392,13 @@ describe('object literals', () => {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'object-comp');
         elementEnd();
+        reserveSlots(7);
       }
       if (rf & RenderFlags.Update) {
         elementProperty(
-            0, 'config',
-            bind(pureFunction2(
-                e0_ff, ctx.name, pureFunction1(e0_ff_1, pureFunction1(e0_ff_2, ctx.duration)))));
+            0, 'config', bind(pureFunction2(
+                             7, e0_ff, ctx.name,
+                             pureFunction1(4, e0_ff_1, pureFunction1(2, e0_ff_2, ctx.duration)))));
       }
     }
 
@@ -451,11 +464,12 @@ describe('object literals', () => {
               elementStart(0, 'object-comp');
               objectComps.push(loadDirective(0));
               elementEnd();
+              reserveSlots(3);
             }
             if (rf1 & RenderFlags.Update) {
               elementProperty(
                   0, 'config',
-                  bind(pureFunction2(e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)));
+                  bind(pureFunction2(3, e0_ff, ctx.configs[i].opacity, ctx.configs[i].duration)));
             }
             embeddedViewEnd();
           }

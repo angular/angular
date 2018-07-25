@@ -672,7 +672,7 @@ describe('ngc transformer command-line', () => {
         expect(mymoduleSource).toContain('args: [{ declarations: [] },] }');
         expect(mymoduleSource).not.toContain(`__metadata`);
         expect(mymoduleSource).toContain(`import { AClass } from './aclass';`);
-        expect(mymoduleSource).toContain(`{ type: AClass, }`);
+        expect(mymoduleSource).toContain(`{ type: AClass }`);
       });
     });
 
@@ -1747,7 +1747,7 @@ describe('ngc transformer command-line', () => {
       const exitCode =
           main(['-p', path.join(basePath, 'src/tsconfig.json')], message => messages.push(message));
       expect(exitCode).toBe(1, 'Compile was expected to fail');
-      expect(messages[0]).toContain(['Tagged template expressions are not supported in metadata']);
+      expect(messages[0]).toContain('Tagged template expressions are not supported in metadata');
     });
 
     // Regression: #20076

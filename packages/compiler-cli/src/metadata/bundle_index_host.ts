@@ -103,7 +103,7 @@ export function createBundleIndexHost<H extends ts.CompilerHost>(
   // etc.
   const getMetadataBundle = (cache: MetadataCache | null) => {
     const bundler = new MetadataBundler(
-        indexModule, ngOptions.flatModuleId, new CompilerHostAdapter(host, cache),
+        indexModule, ngOptions.flatModuleId, new CompilerHostAdapter(host, cache, ngOptions),
         ngOptions.flatModulePrivateSymbolPrefix);
     return bundler.getMetadataBundle();
   };

@@ -106,8 +106,7 @@ export class BuildCreator extends EventEmitter {
         }
 
         try {
-          // Undocumented signature (see https://github.com/shelljs/shelljs/pull/663).
-          (shell as any).chmod('-R', 'a-w', outputDir);
+          shell.chmod('-R', 'a-w', outputDir);
           shell.rm('-f', inputFile);
           resolve();
         } catch (err) {

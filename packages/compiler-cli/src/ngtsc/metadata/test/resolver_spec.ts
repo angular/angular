@@ -6,19 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {ResolvedValue, staticallyResolve} from '../src/resolver';
-
-import {getDeclaration, makeProgram} from './in_memory_typescript';
+import {TypeScriptReflectionHost} from '..';
+import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
+import {AbsoluteReference, Reference, ResolvedValue, staticallyResolve} from '../src/resolver';
 
 function makeSimpleProgram(contents: string): ts.Program {
-  return makeProgram([{name: 'entry.ts', contents}]);
+  return makeProgram([{name: 'entry.ts', contents}]).program;
 }
 
 function makeExpression(
     code: string, expr: string): {expression: ts.Expression, checker: ts.TypeChecker} {
-  const program = makeProgram([{name: 'entry.ts', contents: `${code}; const target$ = ${expr};`}]);
+  const {program} =
+      makeProgram([{name: 'entry.ts', contents: `${code}; const target$ = ${expr};`}]);
   const checker = program.getTypeChecker();
   const decl = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
   return {
@@ -29,12 +31,13 @@ function makeExpression(
 
 function evaluate<T extends ResolvedValue>(code: string, expr: string): T {
   const {expression, checker} = makeExpression(code, expr);
-  return staticallyResolve(expression, checker) as T;
+  const host = new TypeScriptReflectionHost(checker);
+  return staticallyResolve(expression, host, checker) as T;
 }
 
 describe('ngtsc metadata', () => {
   it('reads a file correctly', () => {
-    const program = makeProgram([
+    const {program} = makeProgram([
       {
         name: 'entry.ts',
         contents: `
@@ -51,8 +54,9 @@ describe('ngtsc metadata', () => {
       }
     ]);
     const decl = getDeclaration(program, 'entry.ts', 'X', ts.isVariableDeclaration);
+    const host = new TypeScriptReflectionHost(program.getTypeChecker());
 
-    const value = staticallyResolve(decl.initializer !, program.getTypeChecker());
+    const value = staticallyResolve(decl.initializer !, host, program.getTypeChecker());
     expect(value).toEqual('test');
   });
 
@@ -111,13 +115,79 @@ describe('ngtsc metadata', () => {
   it('array access works',
      () => { expect(evaluate(`const a = [1, 2, 3];`, 'a[1] + a[0]')).toEqual(3); });
 
+  it('array `length` property access works',
+     () => { expect(evaluate(`const a = [1, 2, 3];`, 'a[\'length\'] + 1')).toEqual(4); });
+
   it('negation works', () => {
     expect(evaluate(`const x = 3;`, '!x')).toEqual(false);
     expect(evaluate(`const x = 3;`, '!!x')).toEqual(true);
   });
 
+  it('imports work', () => {
+    const {program} = makeProgram([
+      {name: 'second.ts', contents: 'export function foo(bar) { return bar; }'},
+      {
+        name: 'entry.ts',
+        contents: `
+          import {foo} from './second';
+          const target$ = foo;
+      `
+      },
+    ]);
+    const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
+    const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
+    const expr = result.initializer !;
+    const resolved = staticallyResolve(expr, host, checker);
+    if (!(resolved instanceof Reference)) {
+      return fail('Expected expression to resolve to a reference');
+    }
+    expect(ts.isFunctionDeclaration(resolved.node)).toBe(true);
+    expect(resolved.expressable).toBe(true);
+    const reference = resolved.toExpression(program.getSourceFile('entry.ts') !);
+    if (!(reference instanceof WrappedNodeExpr)) {
+      return fail('Expected expression reference to be a wrapped node');
+    }
+    if (!ts.isIdentifier(reference.node)) {
+      return fail('Expected expression to be an Identifier');
+    }
+    expect(reference.node.getSourceFile()).toEqual(program.getSourceFile('entry.ts') !);
+  });
+
+  it('absolute imports work', () => {
+    const {program} = makeProgram([
+      {name: 'node_modules/some_library/index.d.ts', contents: 'export declare function foo(bar);'},
+      {
+        name: 'entry.ts',
+        contents: `
+          import {foo} from 'some_library';
+          const target$ = foo;
+      `
+      },
+    ]);
+    const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
+    const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
+    const expr = result.initializer !;
+    const resolved = staticallyResolve(expr, host, checker);
+    if (!(resolved instanceof AbsoluteReference)) {
+      return fail('Expected expression to resolve to an absolute reference');
+    }
+    expect(resolved.moduleName).toBe('some_library');
+    expect(ts.isFunctionDeclaration(resolved.node)).toBe(true);
+    expect(resolved.expressable).toBe(true);
+    const reference = resolved.toExpression(program.getSourceFile('entry.ts') !);
+    if (!(reference instanceof WrappedNodeExpr)) {
+      return fail('Expected expression reference to be a wrapped node');
+    }
+    if (!ts.isIdentifier(reference.node)) {
+      return fail('Expected expression to be an Identifier');
+    }
+    expect(reference.node.getSourceFile()).toEqual(program.getSourceFile('entry.ts') !);
+  });
+
   it('reads values from default exports', () => {
-    const program = makeProgram([
+    const {program} = makeProgram([
       {name: 'second.ts', contents: 'export default {property: "test"}'},
       {
         name: 'entry.ts',
@@ -128,14 +198,14 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    debugger;
-    expect(staticallyResolve(expr, checker)).toEqual('test');
+    expect(staticallyResolve(expr, host, checker)).toEqual('test');
   });
 
   it('reads values from named exports', () => {
-    const program = makeProgram([
+    const {program} = makeProgram([
       {name: 'second.ts', contents: 'export const a = {property: "test"};'},
       {
         name: 'entry.ts',
@@ -146,13 +216,14 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    expect(staticallyResolve(expr, checker)).toEqual('test');
+    expect(staticallyResolve(expr, host, checker)).toEqual('test');
   });
 
   it('chain of re-exports works', () => {
-    const program = makeProgram([
+    const {program} = makeProgram([
       {name: 'const.ts', contents: 'export const value = {property: "test"};'},
       {name: 'def.ts', contents: `import {value} from './const'; export default value;`},
       {name: 'indirect-reexport.ts', contents: `import value from './def'; export {value};`},
@@ -163,9 +234,10 @@ describe('ngtsc metadata', () => {
       },
     ]);
     const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
     const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
     const expr = result.initializer !;
-    expect(staticallyResolve(expr, checker)).toEqual('test');
+    expect(staticallyResolve(expr, host, checker)).toEqual('test');
   });
 
   it('map spread works', () => {
@@ -190,4 +262,7 @@ describe('ngtsc metadata', () => {
                'obj.fn("test")'))
         .toEqual('test');
   });
+
+  it('template expressions work',
+     () => { expect(evaluate('const a = 2, b = 4;', '`1${a}3${b}5`')).toEqual('12345'); });
 });

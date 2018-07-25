@@ -88,7 +88,7 @@ you apply the directive to an element in the HTML template.
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -392,7 +392,7 @@ An `NgSwitchCase` displays its host element when its value matches the switch va
 The `NgSwitchDefault` displays its host element when no sibling `NgSwitchCase` matches the switch value.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -691,7 +691,7 @@ The directive consumer expects to bind a true/false condition to `[appUnless]`.
 That means the directive needs an `appUnless` property, decorated with `@Input`
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 

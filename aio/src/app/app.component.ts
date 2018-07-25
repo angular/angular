@@ -69,7 +69,7 @@ export class AppComponent implements OnInit {
   topMenuNodes: NavigationNode[];
   topMenuNarrowNodes: NavigationNode[];
 
-  hasFloatingToc = true;
+  hasFloatingToc = false;
   private showFloatingToc = new BehaviorSubject(false);
   private showFloatingTocWidth = 800;
   tocMaxHeight: string;

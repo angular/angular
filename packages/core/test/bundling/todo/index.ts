@@ -6,13 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CommonModule, NgForOf, NgIf} from '@angular/common';
-import {Component, Injectable, IterableDiffers, NgModule, defineInjector, ɵNgOnChangesFeature as NgOnChangesFeature, ɵdefineDirective as defineDirective, ɵdirectiveInject as directiveInject, ɵinjectTemplateRef as injectTemplateRef, ɵinjectViewContainerRef as injectViewContainerRef, ɵrenderComponent as renderComponent} from '@angular/core';
+import '@angular/core/test/bundling/util/src/reflect_metadata';
 
-export class Todo {
+import {CommonModule} from '@angular/common';
+import {Component, Injectable, NgModule, ɵrenderComponent as renderComponent} from '@angular/core';
+
+class Todo {
   editing: boolean;
 
-  private _title: string;
+  // TODO(issue/24571): remove '!'.
+  private _title !: string;
   get title() { return this._title; }
   set title(value: string) { this._title = value.trim(); }
 
@@ -23,7 +26,7 @@ export class Todo {
 }
 
 @Injectable({providedIn: 'root'})
-export class TodoStore {
+class TodoStore {
   todos: Array<Todo> = [
     new Todo('Demonstrate Components'),
     new Todo('Demonstrate Structural Directives', true),
@@ -60,32 +63,32 @@ export class TodoStore {
   <section class="todoapp">
     <header class="header">
       <h1>todos</h1>
-      <input class="new-todo" placeholder="What needs to be done?" autofocus="" 
-             [value]="newTodoText" 
+      <input class="new-todo" placeholder="What needs to be done?" autofocus=""
+             [value]="newTodoText"
              (keyup)="$event.code == 'Enter' ? addTodo() : newTodoText = $event.target.value">
     </header>
     <section *ngIf="todoStore.todos.length > 0" class="main">
-      <input *ngIf="todoStore.todos.length" 
-             #toggleall class="toggle-all" type="checkbox" 
-             [checked]="todoStore.allCompleted()" 
+      <input *ngIf="todoStore.todos.length"
+             #toggleall class="toggle-all" type="checkbox"
+             [checked]="todoStore.allCompleted()"
              (click)="todoStore.setAllTo(toggleall.checked)">
       <ul class="todo-list">
-        <li *ngFor="let todo of todoStore.todos" 
-            [class.completed]="todo.completed" 
+        <li *ngFor="let todo of todoStore.todos"
+            [class.completed]="todo.completed"
             [class.editing]="todo.editing">
           <div class="view">
-            <input class="toggle" type="checkbox" 
-                   (click)="toggleCompletion(todo)" 
+            <input class="toggle" type="checkbox"
+                   (click)="toggleCompletion(todo)"
                    [checked]="todo.completed">
             <label (dblclick)="editTodo(todo)">{{todo.title}}</label>
             <button class="destroy" (click)="remove(todo)"></button>
           </div>
-          <input *ngIf="todo.editing" 
+          <input *ngIf="todo.editing"
                  class="edit" #editedtodo
-                 [value]="todo.title" 
+                 [value]="todo.title"
                  (blur)="stopEditing(todo, editedtodo.value)"
-                 (keyup)="todo.title = $event.target.value" 
-                 (keyup)="$event.code == 'Enter' && updateEditingTodo(todo, editedtodo.value)" 
+                 (keyup)="todo.title = $event.target.value"
+                 (keyup)="$event.code == 'Enter' && updateEditingTodo(todo, editedtodo.value)"
                  (keyup)="$event.code == 'Escape' && cancelEditingTodo(todo)">
         </li>
       </ul>
@@ -95,8 +98,8 @@ export class TodoStore {
         <strong>{{todoStore.getRemaining().length}}</strong>
         {{todoStore.getRemaining().length == 1 ? 'item' : 'items'}} left
       </span>
-      <button *ngIf="todoStore.getCompleted().length > 0" 
-              class="clear-completed" 
+      <button *ngIf="todoStore.getCompleted().length > 0"
+              class="clear-completed"
               (click)="removeCompleted()">
         Clear completed
       </button>
@@ -106,7 +109,7 @@ export class TodoStore {
   // TODO(misko): switch over to OnPush
   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ToDoAppComponent {
+class ToDoAppComponent {
   newTodoText = '';
 
   constructor(public todoStore: TodoStore) {}
@@ -145,38 +148,8 @@ export class ToDoAppComponent {
   }
 }
 
-// TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
-(CommonModule as any).ngInjectorDef = defineInjector({factory: () => new CommonModule});
-
-// TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
-(NgForOf as any).ngDirectiveDef = defineDirective({
-  type: NgForOf,
-  selectors: [['', 'ngFor', '', 'ngForOf', '']],
-  factory: () => new NgForOf(
-               injectViewContainerRef(), injectTemplateRef(), directiveInject(IterableDiffers)),
-  features: [NgOnChangesFeature({
-    ngForOf: 'ngForOf',
-    ngForTrackBy: 'ngForTrackBy',
-    ngForTemplate: 'ngForTemplate',
-  })],
-  inputs: {
-    ngForOf: 'ngForOf',
-    ngForTrackBy: 'ngForTrackBy',
-    ngForTemplate: 'ngForTemplate',
-  }
-});
-
-// TODO(misko): This hack is here because common is not compiled with Ivy flag turned on.
-(NgIf as any).ngDirectiveDef = defineDirective({
-  type: NgIf,
-  selectors: [['', 'ngIf', '']],
-  factory: () => new NgIf(injectViewContainerRef(), injectTemplateRef()),
-  inputs: {ngIf: 'ngIf', ngIfThen: 'ngIfThen', ngIfElse: 'ngIfElse'}
-});
-
-
-@NgModule({declarations: [ToDoAppComponent, ToDoAppComponent], imports: [CommonModule]})
-export class ToDoAppModule {
+@NgModule({declarations: [ToDoAppComponent], imports: [CommonModule]})
+class ToDoAppModule {
 }
 
 // TODO(misko): create cleaner way to publish component into global location for tests.

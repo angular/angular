@@ -24,7 +24,7 @@ import {el} from '../../../testing/src/browser_util';
     beforeEach(() => {
       doc = getDOM().supportsDOMEvents() ? document : getDOM().createHtmlDocument();
       zone = new NgZone({});
-      domEventPlugin = new DomEventsPlugin(doc, zone);
+      domEventPlugin = new DomEventsPlugin(doc, zone, null);
     });
 
     it('should delegate event bindings to plugins that are passed in from the most generic one to the most specific one',

@@ -3,6 +3,6 @@ import {NgModule} from '@angular/core';
 
 @NgModule({
   declarations: [HelloWorldComponent],
-  bootstrap: [HelloWorldComponent],
+  exports: [HelloWorldComponent],
 })
 export class HelloWorldModule {}

@@ -993,7 +993,7 @@ export class CompileMetadataResolver {
           providerMeta = new cpl.ProviderMeta(provider, {useClass: provider});
         } else if (provider === void 0) {
           this._reportError(syntaxError(
-              `Encountered undefined provider! Usually this means you have a circular dependencies (might be caused by using 'barrel' index.ts files.`));
+              `Encountered undefined provider! Usually this means you have a circular dependencies. This might be caused by using 'barrel' index.ts files.`));
           return;
         } else {
           const providersInfo =

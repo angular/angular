@@ -13,6 +13,7 @@ import {mapLiteral} from '../output/map_util';
 import * as o from '../output/output_ast';
 import {OutputContext} from '../util';
 
+import {R3DependencyMetadata, compileFactoryFunction} from './r3_factory';
 import {Identifiers as R3} from './r3_identifiers';
 import {convertMetaToOutput, mapToMapExpression} from './util';
 
@@ -72,10 +73,43 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
     exports: o.literalArr(exports),
   })]);
 
-  // TODO(alxhub): write a proper type reference when AOT compilation of @NgModule is implemented.
-  const type = new o.ExpressionType(o.NULL_EXPR);
+  const type = new o.ExpressionType(o.importExpr(R3.NgModuleDef, [
+    new o.ExpressionType(moduleType), tupleTypeOf(declarations), tupleTypeOf(imports),
+    tupleTypeOf(exports)
+  ]));
+
   const additionalStatements: o.Statement[] = [];
   return {expression, type, additionalStatements};
+}
+
+export interface R3InjectorDef {
+  expression: o.Expression;
+  type: o.Type;
+}
+
+export interface R3InjectorMetadata {
+  name: string;
+  type: o.Expression;
+  deps: R3DependencyMetadata[];
+  providers: o.Expression;
+  imports: o.Expression;
+}
+
+export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
+  const expression = o.importExpr(R3.defineInjector).callFn([mapToMapExpression({
+    factory: compileFactoryFunction({
+      name: meta.name,
+      fnOrClass: meta.type,
+      deps: meta.deps,
+      useNew: true,
+      injectFn: R3.inject,
+    }),
+    providers: meta.providers,
+    imports: meta.imports,
+  })]);
+  const type =
+      new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type)]));
+  return {expression, type};
 }
 
 // TODO(alxhub): integrate this with `compileNgModule`. Currently the two are separate operations.
@@ -112,4 +146,9 @@ export function compileNgModuleFromRender2(
 function accessExportScope(module: o.Expression): o.Expression {
   const selectorScope = new o.ReadPropExpr(module, 'ngModuleDef');
   return new o.ReadPropExpr(selectorScope, 'exported');
+}
+
+function tupleTypeOf(exp: o.Expression[]): o.Type {
+  const types = exp.map(type => o.typeofExpr(type));
+  return exp.length > 0 ? o.expressionType(o.literalArr(types)) : o.NONE_TYPE;
 }

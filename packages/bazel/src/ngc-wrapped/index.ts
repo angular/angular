@@ -119,6 +119,15 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     compilerOpts.annotationsAs = 'static fields';
   }
 
+  // Detect from compilerOpts whether the entrypoint is being invoked in Ivy mode.
+  const isInIvyMode = compilerOpts.enableIvy === 'ngtsc' || compilerOpts.enableIvy === 'tsc';
+
+  // Disable downleveling and Closure annotation if in Ivy mode.
+  if (isInIvyMode) {
+    compilerOpts.annotateForClosureCompiler = false;
+    compilerOpts.annotationsAs = 'decorators';
+  }
+
   if (!compilerOpts.rootDirs) {
     throw new Error('rootDirs is not set!');
   }
@@ -172,6 +181,12 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   const bazelHost = new CompilerHost(
       files, compilerOpts, bazelOpts, tsHost, fileLoader, allowNonHermeticReads,
       generatedFileModuleResolver);
+
+  // Also need to disable decorator downleveling in the BazelHost in Ivy mode.
+  if (isInIvyMode) {
+    bazelHost.transformDecorators = false;
+  }
+
   // Prevent tsickle adding any types at all if we don't want closure compiler annotations.
   bazelHost.transformTypesToClosure = compilerOpts.annotateForClosureCompiler;
   const origBazelHostFileExist = bazelHost.fileExists;

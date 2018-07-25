@@ -6,23 +6,23 @@ workspace(name = "angular")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.8.0.zip",
-    strip_prefix = "rules_nodejs-0.8.0",
-    sha256 = "4e40dd49ae7668d245c3107645f2a138660fcfd975b9310b91eda13f0c973953",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.10.1.zip",
+    strip_prefix = "rules_nodejs-0.10.1",
+    sha256 = "634206524d90dc03c52392fa3f19a16637d2bcf154910436fe1d669a0d9d7b9c",
 )
 
 http_archive(
     name = "io_bazel_rules_webtesting",
-    url = "https://github.com/bazelbuild/rules_webtesting/archive/cfcaaf98553fee8e7063b5f5c11fd1b77e43d683.zip",
-    strip_prefix = "rules_webtesting-cfcaaf98553fee8e7063b5f5c11fd1b77e43d683",
-    sha256 = "636c7a9ac2ca13a04d982c2f9c874876ecc90a7b9ccfe4188156122b26ada7b3",
+    url = "https://github.com/bazelbuild/rules_webtesting/archive/7ffe970bbf380891754487f66c3d680c087d67f2.zip",
+    strip_prefix = "rules_webtesting-7ffe970bbf380891754487f66c3d680c087d67f2",
+    sha256 = "4fb0dca8c9a90547891b7ef486592775a523330fc4555c88cd8f09270055c2ce",
 )
 
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/v0.13.0.zip",
-    strip_prefix = "rules_typescript-0.13.0",
-    sha256 = "8f2767ff56ad68c80c62e9a1cdc2ba2c2ba0b19d350f713365e5333045df02e3",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/0.15.3.zip",
+    strip_prefix = "rules_typescript-0.15.3",
+    sha256 = "a2b26ac3fc13036011196063db1bf7f1eae81334449201dc28087ebfa3708c99",
 )
 
 http_archive(
@@ -34,13 +34,13 @@ http_archive(
 # This commit matches the version of buildifier in angular/ngcontainer
 # If you change this, also check if it matches the version in the angular/ngcontainer
 # version in /.circleci/config.yml
-BAZEL_BUILDTOOLS_VERSION = "fd9878fd5de921e0bbab3dcdcb932c2627812ee1"
+BAZEL_BUILDTOOLS_VERSION = "82b21607e00913b16fe1c51bec80232d9d6de31c"
 
 http_archive(
     name = "com_github_bazelbuild_buildtools",
     url = "https://github.com/bazelbuild/buildtools/archive/%s.zip" % BAZEL_BUILDTOOLS_VERSION,
     strip_prefix = "buildtools-%s" % BAZEL_BUILDTOOLS_VERSION,
-    sha256 = "27bb461ade23fd44ba98723ad98f84ee9c83cd3540b773b186a1bc5037f3d862",
+    sha256 = "edb24c2f9c55b10a820ec74db0564415c0cf553fa55e9fc709a6332fb6685eff",
 )
 
 # Fetching the Bazel source code allows us to compile the Skylark linter
@@ -58,17 +58,17 @@ http_archive(
 # Even better, things like aspects will visit the entire graph including
 # ts_library rules in the devkit repository.
 http_archive(
-    name = "angular_devkit",
-    url = "https://github.com/angular/devkit/archive/v0.3.1.zip",
-    strip_prefix = "devkit-0.3.1",
-    sha256 = "31d4b597fe9336650acf13df053c1c84dcbe9c29c6a833bcac3819cd3fd8cad3",
+    name = "angular_cli",
+    url = "https://github.com/angular/angular-cli/archive/v6.1.0-rc.0.zip",
+    strip_prefix = "angular-cli-6.1.0-rc.0",
+    sha256 = "8cf320ea58c321e103f39087376feea502f20eaf79c61a4fdb05c7286c8684fd",
 )
 
 http_archive(
     name = "org_brotli",
-    url = "https://github.com/google/brotli/archive/c6333e1e79fb62ea088443f192293f964409b04e.zip",
-    strip_prefix = "brotli-c6333e1e79fb62ea088443f192293f964409b04e",
-    sha256 = "3f781988dee7dd3bcce2bf238294663cfaaf3b6433505bdb762e24d0a284d1dc",
+    url = "https://github.com/google/brotli/archive/f9b8c02673c576a3e807edbf3a9328e9e7af6d7c.zip",
+    strip_prefix = "brotli-f9b8c02673c576a3e807edbf3a9328e9e7af6d7c",
+    sha256 = "8a517806d2b7c8505ba5c53934e7d7c70d341b68ffd268e9044d35b564a48828",
 )
 
 #
@@ -77,8 +77,11 @@ http_archive(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
 
-check_bazel_version("0.13.0")
-node_repositories(package_json = ["//:package.json"])
+check_bazel_version("0.15.0")
+node_repositories(
+  package_json = ["//:package.json"],
+  preserve_symlinks = True,
+)
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
 
@@ -96,6 +99,10 @@ browser_repositories(
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_setup_workspace")
 
 ts_setup_workspace()
+
+load("//packages/bazel/src:ng_setup_workspace.bzl", "ng_setup_workspace")
+
+ng_setup_workspace()
 
 #
 # Point Bazel to WORKSPACEs that live in subdirectories

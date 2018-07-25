@@ -30,7 +30,7 @@ export class HeroService {
   getHeroes (): Observable<Hero[]> {
     return this.http.get<Hero[]>(this.heroesUrl)
       .pipe(
-        tap(heroes => this.log(`fetched heroes`)),
+        tap(heroes => this.log('fetched heroes')),
         catchError(this.handleError('getHeroes', []))
       );
   }
@@ -123,6 +123,6 @@ export class HeroService {
 
   /** Log a HeroService message with the MessageService */
   private log(message: string) {
-    this.messageService.add('HeroService: ' + message);
+    this.messageService.add(`HeroService: ${message}`);
   }
 }

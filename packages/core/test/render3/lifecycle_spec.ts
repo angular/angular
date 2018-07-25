@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChanges} from '../../src/core';
-import {ComponentTemplate, LifecycleHooksFeature, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
+import {OnDestroy, SimpleChanges} from '../../src/core';
+import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {containerEl, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
+
+import {NgIf} from './common_with_def';
+import {ComponentFixture, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
 
 describe('lifecycles', () => {
 
@@ -33,9 +35,9 @@ describe('lifecycles', () => {
 
     let Comp = createOnInitComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'div');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'div');
+        { projection(1); }
         elementEnd();
       }
     });
@@ -500,27 +502,27 @@ describe('lifecycles', () => {
 
     let Comp = createAfterContentInitComp('comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        projection(1, 0);
+        projectionDef();
+        projection(0);
       }
     });
 
     let Parent = createAfterContentInitComp('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'comp');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'comp');
+        { projection(1); }
         elementEnd();
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(1, 'val', bind(ctx.val));
+        elementProperty(0, 'val', bind(ctx.val));
       }
     }, [Comp]);
 
     let ProjectedComp = createAfterContentInitComp('projected', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        projection(1, 0);
+        projectionDef();
+        projection(0);
       }
     });
 
@@ -893,9 +895,9 @@ describe('lifecycles', () => {
 
     let Comp = createAfterViewInitComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'div');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'div');
+        { projection(1); }
         elementEnd();
       }
     });
@@ -1356,8 +1358,8 @@ describe('lifecycles', () => {
 
     let Comp = createOnDestroyComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        projection(1, 0);
+        projectionDef();
+        projection(0);
       }
     });
     let Parent = createOnDestroyComponent('parent', getParentTemplate('comp'), [Comp]);
@@ -1893,9 +1895,9 @@ describe('lifecycles', () => {
 
     const Comp = createOnChangesComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'div');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'div');
+        { projection(1); }
         elementEnd();
       }
     });
@@ -1932,8 +1934,8 @@ describe('lifecycles', () => {
           type: Component,
           selectors: [[name]],
           factory: () => new Component(),
-          features: [NgOnChangesFeature({b: 'val2'})],
-          inputs: {a: 'val1', b: 'publicName'}, template,
+          features: [NgOnChangesFeature],
+          inputs: {a: 'val1', b: ['publicName', 'val2']}, template,
           directives: directives
         });
       };
@@ -1953,8 +1955,8 @@ describe('lifecycles', () => {
         type: Directive,
         selectors: [['', 'dir', '']],
         factory: () => new Directive(),
-        features: [NgOnChangesFeature({b: 'val2'})],
-        inputs: {a: 'val1', b: 'publicName'}
+        features: [NgOnChangesFeature],
+        inputs: {a: 'val1', b: ['publicName', 'val2']}
       });
     }
 
@@ -1976,11 +1978,10 @@ describe('lifecycles', () => {
       renderToHtml(Template, {val1: '1', val2: 'a'}, defs);
       expect(events).toEqual(['comp=comp val1=1 val2=a - changed=[val1,val2]']);
 
+      events.length = 0;
+
       renderToHtml(Template, {val1: '2', val2: 'b'}, defs);
-      expect(events).toEqual([
-        'comp=comp val1=1 val2=a - changed=[val1,val2]',
-        'comp=comp val1=2 val2=b - changed=[val1,val2]'
-      ]);
+      expect(events).toEqual(['comp=comp val1=2 val2=b - changed=[val1,val2]']);
     });
 
     it('should call parent onChanges before child onChanges', () => {
@@ -2336,7 +2337,7 @@ describe('lifecycles', () => {
           selectors: [[name]],
           factory: () => new Component(),
           inputs: {val: 'val'}, template,
-          features: [NgOnChangesFeature()],
+          features: [NgOnChangesFeature],
           directives: directives
         });
       };
@@ -2445,13 +2446,13 @@ describe('lifecycles', () => {
       /** <ng-content></ng-content><view [val]="val"></view> */
       const Parent = createAllHooksComponent('parent', (rf: RenderFlags, ctx: any) => {
         if (rf & RenderFlags.Create) {
-          projectionDef(0);
-          projection(1, 0);
-          elementStart(2, 'view');
+          projectionDef();
+          projection(0);
+          elementStart(1, 'view');
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(2, 'val', bind(ctx.val));
+          elementProperty(1, 'val', bind(ctx.val));
         }
       }, [View]);
 
@@ -2524,6 +2525,62 @@ describe('lifecycles', () => {
 
     });
 
+  });
+
+  describe('non-regression', () => {
+
+    it('should call lifecycle hooks for directives active on <ng-template>', () => {
+      let destroyed = false;
+
+      class OnDestroyDirective implements OnDestroy {
+        ngOnDestroy() { destroyed = true; }
+
+        static ngDirectiveDef = defineDirective({
+          type: OnDestroyDirective,
+          selectors: [['', 'onDestroyDirective', '']],
+          factory: () => new OnDestroyDirective()
+        });
+      }
+
+
+      function conditionTpl(rf: RenderFlags, ctx: Cmpt) {
+        if (rf & RenderFlags.Create) {
+          container(0, cmptTpl, null, [AttributeMarker.SelectOnly, 'onDestroyDirective']);
+        }
+      }
+
+      /**
+       * <ng-template [ngIf]="condition">
+       *  <ng-template onDestroyDirective></ng-template>
+       * </ng-template>
+       */
+      function cmptTpl(rf: RenderFlags, cmpt: Cmpt) {
+        if (rf & RenderFlags.Create) {
+          container(0, conditionTpl, null, [AttributeMarker.SelectOnly, 'ngIf']);
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'ngIf', bind(cmpt.showing));
+        }
+      }
+
+      class Cmpt {
+        showing = true;
+        static ngComponentDef = defineComponent({
+          type: Cmpt,
+          factory: () => new Cmpt(),
+          selectors: [['cmpt']],
+          template: cmptTpl,
+          directives: [NgIf, OnDestroyDirective]
+        });
+      }
+
+      const fixture = new ComponentFixture(Cmpt);
+      expect(destroyed).toBeFalsy();
+
+      fixture.component.showing = false;
+      fixture.update();
+      expect(destroyed).toBeTruthy();
+    });
   });
 
 });

@@ -12,7 +12,6 @@ import {ValueTransformer, visitValue} from '../util';
 import {StaticSymbol, StaticSymbolCache} from './static_symbol';
 import {isGeneratedFile, stripSummaryForJitFileSuffix, stripSummaryForJitNameSuffix, summaryForJitFileName, summaryForJitName} from './util';
 
-const DTS = /\.d\.ts$/;
 const TS = /^(?!.*\.d\.ts$).*\.ts$/;
 
 export class ResolvedStaticSymbol {
@@ -334,7 +333,7 @@ export class StaticSymbolResolver {
     }
 
     // handle the actual metadata. Has to be after the exports
-    // as there migth be collisions in the names, and we want the symbols
+    // as there might be collisions in the names, and we want the symbols
     // of the current module to win ofter reexports.
     if (metadata['metadata']) {
       // handle direct declarations of the symbol
@@ -387,7 +386,7 @@ export class StaticSymbolResolver {
     let _originalFileMemo: string|undefined;
     const getOriginalName: () => string = () => {
       if (!_originalFileMemo) {
-        // Guess what hte original file name is from the reference. If it has a `.d.ts` extension
+        // Guess what the original file name is from the reference. If it has a `.d.ts` extension
         // replace it with `.ts`. If it already has `.ts` just leave it in place. If it doesn't have
         // .ts or .d.ts, append `.ts'. Also, if it is in `node_modules`, trim the `node_module`
         // location as it is not important to finding the file.

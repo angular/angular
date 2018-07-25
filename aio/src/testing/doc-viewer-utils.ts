@@ -56,8 +56,8 @@ export class MockTocService {
 }
 
 export class MockElementsLoader {
-  loadContainingCustomElements =
-      jasmine.createSpy('MockElementsLoader#loadContainingCustomElements');
+  loadContainedCustomElements =
+      jasmine.createSpy('MockElementsLoader#loadContainedCustomElements');
 }
 
 @NgModule({

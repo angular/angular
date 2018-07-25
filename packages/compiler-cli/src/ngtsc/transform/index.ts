@@ -6,6 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+export * from './src/api';
 export {IvyCompilation} from './src/compilation';
-export {InjectableCompilerAdapter} from './src/injectable';
 export {ivyTransformFactory} from './src/transform';

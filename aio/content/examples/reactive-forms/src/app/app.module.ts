@@ -1,45 +1,34 @@
 // #docplaster
-// #docregion
-// #docregion v1
-import { NgModule }            from '@angular/core';
-import { BrowserModule }       from '@angular/platform-browser';
-import { ReactiveFormsModule } from '@angular/forms';  // <-- #1 import module
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+// #docregion imports
+import { ReactiveFormsModule } from '@angular/forms';
 
-import { AppComponent }        from './app.component';
-import { HeroDetailComponent } from './hero-detail/hero-detail.component';
-// #enddocregion v1
-// #docregion hero-service-list
-// add JavaScript imports
-import { HeroListComponent }   from './hero-list/hero-list.component';
-import { HeroService }         from './hero.service';
-// #docregion v1
+// #enddocregion imports
+import { AppComponent } from './app.component';
+import { NameEditorComponent } from './name-editor/name-editor.component';
+import { ProfileEditorComponent } from './profile-editor/profile-editor.component';
 
+// #docregion imports
 @NgModule({
+// #enddocregion imports
   declarations: [
     AppComponent,
-    HeroDetailComponent,
-// #enddocregion v1
-    HeroListComponent // <--declare HeroListComponent
-// #docregion v1
+    NameEditorComponent,
+    ProfileEditorComponent
   ],
- // #enddocregion hero-service-list
+// #docregion imports
   imports: [
+// #enddocregion imports
     BrowserModule,
-    ReactiveFormsModule // <-- #2 add to @NgModule imports
+// #docregion imports
+    // other imports ...
+    ReactiveFormsModule
   ],
-  // #enddocregion v1
-  // export for the DemoModule
-  // #docregion hero-service-list
-  // ...
-  exports: [
-    AppComponent,
-    HeroDetailComponent,
-    HeroListComponent // <-- export HeroListComponent
-  ],
-  providers: [ HeroService ], // <-- provide HeroService
-// #enddocregion hero-service-list
-// #docregion v1
-  bootstrap: [ AppComponent ]
+// #enddocregion imports
+  providers: [],
+  bootstrap: [AppComponent]
+// #docregion imports
 })
 export class AppModule { }
-// #enddocregion v1
+// #enddocregion imports

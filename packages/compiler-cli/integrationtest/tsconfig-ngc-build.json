@@ -13,6 +13,7 @@
     "experimentalDecorators": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "skipLibCheck": true,
     "moduleResolution": "node",
     "rootDir": "",

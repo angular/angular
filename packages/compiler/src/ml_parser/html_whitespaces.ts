@@ -49,7 +49,7 @@ export function replaceNgsp(value: string): string {
  * whitespace removal. The default option for whitespace removal will be revisited in Angular 6
  * and might be changed to "on" by default.
  */
-class WhitespaceVisitor implements html.Visitor {
+export class WhitespaceVisitor implements html.Visitor {
   visitElement(element: html.Element, context: any): any {
     if (SKIP_WS_TRIM_TAGS.has(element.name) || hasPreserveWhitespacesAttr(element.attrs)) {
       // don't descent into elements where we need to preserve whitespaces

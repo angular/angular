@@ -8,6 +8,7 @@
 
 import {NgModuleFactory, NgModuleRef, Type} from '@angular/core';
 import {Observable} from 'rxjs';
+import {EmptyOutletComponent} from './components/empty_outlet';
 import {PRIMARY_OUTLET} from './shared';
 import {UrlSegment, UrlSegmentGroup} from './url_tree';
 
@@ -412,9 +413,10 @@ function validateNode(route: Route, fullPath: string): void {
   if (Array.isArray(route)) {
     throw new Error(`Invalid configuration of route '${fullPath}': Array cannot be specified`);
   }
-  if (!route.component && (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
+  if (!route.component && !route.children && !route.loadChildren &&
+      (route.outlet && route.outlet !== PRIMARY_OUTLET)) {
     throw new Error(
-        `Invalid configuration of route '${fullPath}': a componentless route cannot have a named outlet set`);
+        `Invalid configuration of route '${fullPath}': a componentless route without children or loadChildren cannot have a named outlet set`);
   }
   if (route.redirectTo && route.children) {
     throw new Error(
@@ -477,8 +479,14 @@ function getFullPath(parentPath: string, currentRoute: Route): string {
   }
 }
 
-
-export function copyConfig(r: Route): Route {
-  const children = r.children && r.children.map(copyConfig);
-  return children ? {...r, children} : {...r};
+/**
+ * Makes a copy of the config and adds any default required properties.
+ */
+export function standardizeConfig(r: Route): Route {
+  const children = r.children && r.children.map(standardizeConfig);
+  const c = children ? {...r, children} : {...r};
+  if (!c.component && (children || c.loadChildren) && (c.outlet && c.outlet !== PRIMARY_OUTLET)) {
+    c.component = EmptyOutletComponent;
+  }
+  return c;
 }

@@ -8,11 +8,12 @@
 
 import {NgForOfContext} from '@angular/common';
 
-import {defineComponent} from '../../src/render3/index';
-import {bind, container, elementEnd, elementProperty, elementStart, interpolation1, interpolation3, listener, text, textBinding, tick} from '../../src/render3/instructions';
+import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
+import {AttributeMarker, defineComponent} from '../../src/render3/index';
+import {bind, container, elementEnd, elementProperty, elementStart, interpolation1, interpolation3, listener, load, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
-import {NgForOf, NgIf} from './common_with_def';
+import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
 import {ComponentFixture} from './render_util';
 
 describe('@angular/common integration', () => {
@@ -199,6 +200,83 @@ describe('@angular/common integration', () => {
       expect(fixture.html)
           .toEqual('<button>Toggle List</button><ul><li>1</li><li>2</li><li>3</li></ul>');
     });
+
+    it('should support multiple levels of embedded templates', () => {
+      /**
+       * <ul *ngFor="let outterItem of items.">
+       *   <li *ngFor="let item of items">
+       *      <span>{{item}}</span>
+       *   </li>
+       * </ul>
+       */
+      class MyApp {
+        items: string[] = ['1', '2'];
+
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          template: (rf: RenderFlags, myApp: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'ul');
+              { container(1, liTemplate, null, ['ngForOf', '']); }
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(1, 'ngForOf', bind(myApp.items));
+            }
+
+            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
+              if (rf1 & RenderFlags.Create) {
+                elementStart(0, 'li');
+                { container(1, spanTemplate, null, ['ngForOf', '']); }
+                elementEnd();
+              }
+              if (rf1 & RenderFlags.Update) {
+                elementProperty(1, 'ngForOf', bind(myApp.items));
+              }
+            }
+
+            function spanTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
+              if (rf1 & RenderFlags.Create) {
+                elementStart(0, 'span');
+                { text(1); }
+                elementEnd();
+              }
+              if (rf1 & RenderFlags.Update) {
+                textBinding(1, bind(row.$implicit));
+              }
+            }
+          },
+          directives: () => [NgForOf]
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+
+      // Change detection cycle, no model changes
+      fixture.update();
+      expect(fixture.html)
+          .toEqual(
+              '<ul><li><span>1</span><span>2</span></li><li><span>1</span><span>2</span></li></ul>');
+
+      // Remove the last item
+      fixture.component.items.length = 1;
+      fixture.update();
+      expect(fixture.html).toEqual('<ul><li><span>1</span></li></ul>');
+
+      // Change an item
+      fixture.component.items[0] = 'one';
+      fixture.update();
+      expect(fixture.html).toEqual('<ul><li><span>one</span></li></ul>');
+
+      // Add an item
+      fixture.component.items.push('two');
+      fixture.update();
+      expect(fixture.html)
+          .toEqual(
+              '<ul><li><span>one</span><span>two</span></li><li><span>one</span><span>two</span></li></ul>');
+    });
   });
 
   describe('ngIf', () => {
@@ -258,6 +336,52 @@ describe('@angular/common integration', () => {
       fixture.component.valueTwo = '$$two$$';
       fixture.update();
       expect(fixture.html).toEqual('<div>$$one$$</div><div>$$two$$</div>');
+    });
+
+  });
+
+  describe('NgTemplateOutlet', () => {
+
+    it('should create and remove embedded views', () => {
+
+      class MyApp {
+        showing = false;
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          /**
+           * <ng-template #tpl>from tpl</ng-template>
+           * <ng-template [ngTemplateOutlet]="showing ? tpl : null"></ng-template>
+           */
+          template: (rf: RenderFlags, myApp: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              container(0, (rf1: RenderFlags) => {
+                if (rf1 & RenderFlags.Create) {
+                  text(0, 'from tpl');
+                }
+              }, undefined, undefined, ['tpl', '']);
+              container(2, undefined, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+            }
+            if (rf & RenderFlags.Update) {
+              const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+              elementProperty(2, 'ngTemplateOutlet', bind(myApp.showing ? tplRef : null));
+            }
+          },
+          directives: () => [NgTemplateOutlet]
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html).toEqual('');
+
+      fixture.component.showing = true;
+      fixture.update();
+      expect(fixture.html).toEqual('from tpl');
+
+      fixture.component.showing = false;
+      fixture.update();
+      expect(fixture.html).toEqual('');
     });
 
   });

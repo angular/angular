@@ -629,6 +629,18 @@ import {of } from 'rxjs';
       });
     });
 
+    describe('retrieve', () => {
+      let group: FormGroup;
+
+      beforeEach(() => {
+        group = new FormGroup({
+          'required': new FormControl('requiredValue'),
+        });
+      });
+
+      it('should not get inherited properties',
+         () => { expect(group.get('constructor')).toBe(null); });
+    });
 
     describe('statusChanges', () => {
       let control: FormControl;

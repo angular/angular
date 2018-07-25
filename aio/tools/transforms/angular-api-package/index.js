@@ -32,6 +32,8 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .processor(require('./processors/computeSearchTitle'))
   .processor(require('./processors/simplifyMemberAnchors'))
   .processor(require('./processors/computeStability'))
+  .processor(require('./processors/removeInjectableConstructors'))
+  .processor(require('./processors/processPackages'))
 
   /**
    * These are the API doc types that will be rendered to actual files.
@@ -39,19 +41,28 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
    * more Angular specific API types, such as decorators and directives.
    */
   .factory(function API_DOC_TYPES_TO_RENDER(EXPORT_DOC_TYPES) {
-    return EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe', 'module']);
+    return EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe', 'package']);
+  })
+
+  /**
+   * These are the doc types that are contained within other docs
+   */
+  .factory(function API_CONTAINED_DOC_TYPES() {
+    return ['member', 'function-overload', 'get-accessor-info', 'set-accessor-info', 'parameter'];
   })
 
   /**
    * These are the doc types that are API docs, including ones that will be merged into container docs,
    * such as members and overloads.
    */
-  .factory(function API_DOC_TYPES(API_DOC_TYPES_TO_RENDER) {
-    return API_DOC_TYPES_TO_RENDER.concat(['member', 'function-overload']);
+  .factory(function API_DOC_TYPES(API_DOC_TYPES_TO_RENDER, API_CONTAINED_DOC_TYPES) {
+    return API_DOC_TYPES_TO_RENDER.concat(API_CONTAINED_DOC_TYPES);
   })
 
+  .factory(require('./readers/package-content'))
+
   // Where do we get the source files?
-  .config(function(readTypeScriptModules, readFilesProcessor, collectExamples, tsParser) {
+  .config(function(readTypeScriptModules, readFilesProcessor, collectExamples, tsParser, packageContentFileReader) {
 
     // Tell TypeScript how to load modules that start with with `@angular`
     tsParser.options.paths = { '@angular/*': [API_SOURCE_PATH + '/*'] };
@@ -94,12 +105,19 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       'upgrade/static/index.ts',
     ];
 
+    readFilesProcessor.fileReaders.push(packageContentFileReader);
+
     // API Examples
     readFilesProcessor.sourceFiles = [
       {
         basePath: API_SOURCE_PATH,
         include: API_SOURCE_PATH + '/examples/**/*',
         fileReader: 'exampleFileReader'
+      },
+      {
+        basePath: API_SOURCE_PATH,
+        include: API_SOURCE_PATH + '/**/PACKAGE.md',
+        fileReader: 'packageContentFileReader'
       }
     ];
     collectExamples.exampleFolders.push('examples');
@@ -112,11 +130,22 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
         parseTagsProcessor.tagDefinitions.concat(getInjectables(requireFolder(__dirname, './tag-defs')));
   })
 
-  .config(function(computeStability, splitDescription, addNotYetDocumentedProperty, EXPORT_DOC_TYPES, API_DOC_TYPES) {
-    computeStability.docTypes = EXPORT_DOC_TYPES;
+  .config(function(computeStability, splitDescription, addNotYetDocumentedProperty, API_DOC_TYPES_TO_RENDER, API_DOC_TYPES) {
+    computeStability.docTypes = API_DOC_TYPES_TO_RENDER;
     // Only split the description on the API docs
-    splitDescription.docTypes = API_DOC_TYPES;
+    splitDescription.docTypes = API_DOC_TYPES.concat(['package-content']);
     addNotYetDocumentedProperty.docTypes = API_DOC_TYPES;
+  })
+
+  .config(function(mergeDecoratorDocs) {
+    mergeDecoratorDocs.propertiesToMerge = [
+      'shortDescription',
+      'description',
+      'security',
+      'deprecated',
+      'see',
+      'usageNotes',
+    ];
   })
 
   .config(function(checkContentRules, EXPORT_DOC_TYPES) {
@@ -144,6 +173,16 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     });
   })
 
+  .config(function(filterContainedDocs, API_CONTAINED_DOC_TYPES) {
+    filterContainedDocs.docTypes = API_CONTAINED_DOC_TYPES;
+  })
+
+  .config(function(checkContentRules, API_DOC_TYPES, API_CONTAINED_DOC_TYPES) {
+    addMinLengthRules(checkContentRules);
+    addHeadingRules(checkContentRules, API_DOC_TYPES);
+    addAllowedPropertiesRules(checkContentRules, API_CONTAINED_DOC_TYPES);
+  })
+
   .config(function(computePathsProcessor, EXPORT_DOC_TYPES, generateApiListDoc) {
 
     const API_SEGMENT = 'api';
@@ -151,7 +190,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     generateApiListDoc.outputFolder = API_SEGMENT;
 
     computePathsProcessor.pathTemplates.push({
-      docTypes: ['module'],
+      docTypes: ['package'],
       getPath: function computeModulePath(doc) {
         doc.moduleFolder = `${API_SEGMENT}/${doc.id.replace(/\/index$/, '')}`;
         return doc.moduleFolder;
@@ -177,3 +216,45 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
     autoLinkCode.docTypes = API_DOC_TYPES;
     autoLinkCode.codeElements = ['code', 'code-example', 'code-pane'];
   });
+
+
+function addMinLengthRules(checkContentRules) {
+  const createMinLengthRule = require('./content-rules/minLength');
+  const paramRuleSet = checkContentRules.docTypeRules['parameter'] = checkContentRules.docTypeRules['parameter'] || {};
+  const paramRules = paramRuleSet['name'] = paramRuleSet['name'] || [];
+  paramRules.push(createMinLengthRule());
+}
+
+function addHeadingRules(checkContentRules, API_DOC_TYPES) {
+  const createNoMarkdownHeadingsRule = require('./content-rules/noMarkdownHeadings');
+  const noMarkdownHeadings = createNoMarkdownHeadingsRule();
+  const allowOnlyLevel3Headings = createNoMarkdownHeadingsRule(1, 2, '4,');
+
+  API_DOC_TYPES.forEach(docType => {
+    let rules;
+    const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
+
+    rules = ruleSet['description'] = ruleSet['description'] || [];
+    rules.push(noMarkdownHeadings);
+
+    rules = ruleSet['shortDescription'] = ruleSet['shortDescription'] || [];
+    rules.push(noMarkdownHeadings);
+
+    rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
+    rules.push(allowOnlyLevel3Headings);
+  });
+}
+
+function addAllowedPropertiesRules(checkContentRules, API_CONTAINED_DOC_TYPES) {
+  API_CONTAINED_DOC_TYPES.forEach(docType => {
+    const ruleSet = checkContentRules.docTypeRules[docType] = checkContentRules.docTypeRules[docType] || {};
+
+    const rules = ruleSet['usageNotes'] = ruleSet['usageNotes'] || [];
+    rules.push((doc, prop, value) => value && !isMethod(doc) &&
+      `Invalid property: "${prop}" is not allowed on "${doc.docType}" docs.`);
+  });
+}
+
+function isMethod(doc) {
+  return doc.hasOwnProperty('parameters') && !doc.isGetAccessor && !doc.isSetAccessor;
+}

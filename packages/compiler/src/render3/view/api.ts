@@ -26,6 +26,11 @@ export interface R3DirectiveMetadata {
   type: o.Expression;
 
   /**
+   * Number of generic type parameters of the type itself.
+   */
+  typeArgumentCount: number;
+
+  /**
    * A source span for the directive type.
    */
   typeSourceSpan: ParseSourceSpan;
@@ -67,6 +72,17 @@ export interface R3DirectiveMetadata {
   };
 
   /**
+   * Information about usage of specific lifecycle events which require special treatment in the
+   * code generator.
+   */
+  lifecycle: {
+    /**
+     * Whether the directive uses NgOnChanges.
+     */
+    usesOnChanges: boolean;
+  };
+
+  /**
    * A mapping of input field names to the property names.
    */
   inputs: {[field: string]: string};
@@ -75,6 +91,11 @@ export interface R3DirectiveMetadata {
    * A mapping of output field names to the property names.
    */
   outputs: {[field: string]: string};
+
+  /**
+   * Whether or not the component or directive inherits from another class
+   */
+  usesInheritance: boolean;
 }
 
 /**
@@ -99,17 +120,6 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
      * Selectors found in the <ng-content> tags in the template.
      */
     ngContentSelectors: string[];
-  };
-
-  /**
-   * Information about usage of specific lifecycle events which require special treatment in the
-   * code generator.
-   */
-  lifecycle: {
-    /**
-     * Whether the component uses NgOnChanges.
-     */
-    usesOnChanges: boolean;
   };
 
   /**

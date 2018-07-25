@@ -6,11 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LifecycleHooksFeature, createComponentRef, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
-import {NgOnChangesFeature, PublicFeature, defineComponent, defineDirective, definePipe} from './definition';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveType, PipeDef} from './interfaces/definition';
+import {LifecycleHooksFeature, getHostElement, getRenderedText, renderComponent, whenRendered} from './component';
+import {defineComponent, defineDirective, defineNgModule, definePipe} from './definition';
+import {InheritDefinitionFeature} from './features/inherit_definition_feature';
+import {NgOnChangesFeature} from './features/ng_onchanges_feature';
+import {PublicFeature} from './features/public_feature';
+import {I18nExpInstruction, I18nInstruction, i18nExpMapping, i18nInterpolation1, i18nInterpolation2, i18nInterpolation3, i18nInterpolation4, i18nInterpolation5, i18nInterpolation6, i18nInterpolation7, i18nInterpolation8, i18nInterpolationV} from './i18n';
+import {ComponentDef, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
 
-export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
+export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
+export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectComponentFactoryResolver, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
 
@@ -44,19 +49,26 @@ export {
   containerRefreshStart as cR,
   containerRefreshEnd as cr,
 
+  element as Ee,
   elementAttribute as a,
-  elementClass as k,
-  elementClassNamed as kn,
+  elementClassProp as cp,
   elementEnd as e,
   elementProperty as p,
   elementStart as E,
-  elementStyle as s,
-  elementStyleNamed as sn,
+
+  elementStyling as s,
+  elementStylingMap as sm,
+  elementStyleProp as sp,
+  elementStylingApply as sa,
 
   listener as L,
   store as st,
   load as ld,
   loadDirective as d,
+
+  namespaceHTML as NH,
+  namespaceMathML as NM,
+  namespaceSVG as NS,
 
   projection as P,
   projectionDef as pD,
@@ -64,12 +76,37 @@ export {
   text as T,
   textBinding as t,
 
+  reserveSlots as rS,
+
   embeddedViewStart as V,
   embeddedViewEnd as v,
   detectChanges,
   markDirty,
   tick,
 } from './instructions';
+
+export {
+  i18nApply as iA,
+  i18nMapping as iM,
+  i18nInterpolation1 as iI1,
+  i18nInterpolation2 as iI2,
+  i18nInterpolation3 as iI3,
+  i18nInterpolation4 as iI4,
+  i18nInterpolation5 as iI5,
+  i18nInterpolation6 as iI6,
+  i18nInterpolation7 as iI7,
+  i18nInterpolation8 as iI8,
+  i18nInterpolationV as iIV,
+  i18nExpMapping as iEM,
+  I18nInstruction,
+  I18nExpInstruction
+} from './i18n';
+
+export {NgModuleFactory, NgModuleRef, NgModuleType} from './ng_module_ref';
+
+export {
+    AttributeMarker
+} from './interfaces/node';
 
 export {
   pipe as Pp,
@@ -82,10 +119,14 @@ export {
 
 export {
   QueryList,
-
   query as Q,
   queryRefresh as qR,
 } from './query';
+export  {
+  registerContentQuery as Qr,
+  loadQueryList as ql,
+} from './instructions';
+
 export {
   pureFunction0 as f0,
   pureFunction1 as f1,
@@ -104,19 +145,22 @@ export {
 
 export {
   ComponentDef,
+  ComponentDefInternal,
   ComponentTemplate,
   ComponentType,
   DirectiveDef,
   DirectiveDefFlags,
+  DirectiveDefInternal,
   DirectiveType,
   NgOnChangesFeature,
+  InheritDefinitionFeature,
   PublicFeature,
   PipeDef,
   LifecycleHooksFeature,
   defineComponent,
   defineDirective,
+  defineNgModule,
   definePipe,
-  createComponentRef,
   getHostElement,
   getRenderedText,
   renderComponent,

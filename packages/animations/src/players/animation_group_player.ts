@@ -140,7 +140,7 @@ export class AnimationGroupPlayer implements AnimationPlayer {
     });
   }
 
-  /* @internal */
+  /** @internal */
   triggerCallback(phaseName: string): void {
     const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
     methods.forEach(fn => fn());

@@ -450,7 +450,7 @@ Here is a `searchHeroes` method that queries for heroes whose names contain the 
 
 If there is a search term, the code constructs an options object with an HTML URL-encoded search parameter. If the term were "foo", the GET request URL would be `api/heroes/?name=foo`.
 
-The `HttpParms` are immutable so you'll have to use the `set()` method to update the options.
+The `HttpParams` are immutable so you'll have to use the `set()` method to update the options.
 
 ### Debouncing requests
 
@@ -497,7 +497,7 @@ and displays search results as they arrive.
 
 A search value reaches the service only if it's a new value and the user has stopped typing.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `withRefresh` option is explained [below](#cache-refresh).
 
@@ -517,7 +517,7 @@ it cancels that request and sends a new one.
 server returns them out of order. 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 If you think you'll reuse this debouncing logic,
 consider moving it to a utility function or into the `PackageSearchService` itself.
@@ -622,7 +622,7 @@ Then import and add it to the `AppModule` _providers array_ like this:
 As you create new interceptors, add them to the `httpInterceptorProviders` array and
 you won't have to revisit the `AppModule`.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 There are many more interceptors in the complete sample code.
 
@@ -824,7 +824,7 @@ and emits again later with the updated search results.
 
 The _cache-then-refresh_ option is triggered by the presence of a **custom `x-refresh` header**.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 A checkbox on the `PackageSearchComponent` toggles a `withRefresh` flag,
 which is one of the arguments to `PackageSearchService.search()`.
@@ -1034,7 +1034,7 @@ Call `request.flush()` with an error message, as seen in the following example.
 
 <code-example 
   path="http/src/testing/http-client.spec.ts"
-  region="network-error"
+  region="404"
   linenums="false">
 </code-example>
 

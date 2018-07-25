@@ -2,7 +2,6 @@
 $hamburgerShownMargin: 0 8px 0 0;
 $hamburgerHiddenMargin: 0 16px 0 -88px;
 
-
 // DOCS PAGE / STANDARD: TOPNAV TOOLBAR FIXED
 mat-toolbar.mat-toolbar {
   position: fixed;
@@ -10,7 +9,7 @@ mat-toolbar.mat-toolbar {
   right: 0;
   left: 0;
   z-index: 10;
-  box-shadow: 0 2px 5px 0 rgba(0,0,0,0.30);
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.3);
 
   mat-toolbar-row {
     padding: 0 16px 0 0;
@@ -21,7 +20,6 @@ mat-toolbar.mat-toolbar {
   }
 }
 
-
 // HOME PAGE OVERRIDE: TOPNAV TOOLBAR
 aio-shell.page-home mat-toolbar.mat-toolbar {
   background-color: $blue;
@@ -29,11 +27,10 @@ aio-shell.page-home mat-toolbar.mat-toolbar {
   @media (min-width: 481px) {
     &:not(.transitioning) {
       background-color: transparent;
-      transition: background-color .2s linear;
+      transition: background-color 0.2s linear;
     }
   }
 }
-
 
 // MARKETING PAGES OVERRIDE: TOPNAV TOOLBAR AND HAMBURGER
 aio-shell.page-home mat-toolbar.mat-toolbar,
@@ -48,7 +45,6 @@ aio-shell.page-resources mat-toolbar.mat-toolbar {
   }
 }
 
-
 // DOCS PAGES OVERRIDE: HAMBURGER
 aio-shell.folder-api mat-toolbar.mat-toolbar,
 aio-shell.folder-docs mat-toolbar.mat-toolbar,
@@ -62,7 +58,6 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   }
 }
 
-
 // HAMBURGER BUTTON
 .hamburger.mat-button {
   height: 100%;
@@ -70,9 +65,9 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   padding: 0;
 
   &:not(.starting) {
-    transition-duration: .4s;
+    transition-duration: 0.4s;
     transition-property: color, margin;
-    transition-timing-function: cubic-bezier(.25, .8, .25, 1);
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
   @media (min-width: 992px) {
@@ -91,21 +86,25 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   }
 }
 
-
 // HOME NAV-LINK
-.nav-link.home img {
-  position: relative;
-  margin-top: -21px;
-  top: 12px;
-  height: 40px;
+.nav-link.home {
+  cursor: pointer;
+  margin: 0 16px 0 0;
+  padding: 21px 0;
 
-  @media(max-width: 992px) {
-    &:hover {
-      transform: scale(1.1);
+  img {
+    position: relative;
+    margin-top: -21px;
+    top: 12px;
+    height: 40px;
+
+    @media (max-width: 992px) {
+      &:hover {
+        transform: scale(1.1);
+      }
     }
   }
 }
-
 
 // TOP MENU
 aio-top-menu {
@@ -143,10 +142,6 @@ aio-top-menu {
     padding: 24px 16px;
     cursor: pointer;
 
-    &.home{
-      margin-right: 20px;
-    }
-    
     &:focus {
       background: rgba($white, 0.15);
       border-radius: 4px;
@@ -155,7 +150,6 @@ aio-top-menu {
     }
   }
 }
-
 
 // SEARCH BOX
 aio-search-box.search-container {
@@ -179,7 +173,7 @@ aio-search-box.search-container {
     -webkit-appearance: none;
 
     &:focus {
-        outline: none;
+      outline: none;
     }
 
     @include bp(big) {
@@ -191,6 +185,28 @@ aio-search-box.search-container {
     }
     @media (max-width: 480px) {
       width: 150px;
+    }
+  }
+}
+
+// EXTERNAL LINK ICONS
+.app-toolbar {
+  .toolbar-external-icons-container {
+    display: flex;
+    flex-direction: row;
+
+    a {
+      display: flex;
+      align-items: center;
+      margin-left: 16px;
+
+      &:hover {
+        opacity: 0.8;
+      }
+
+      img {
+        height: 24px;
+      }
     }
   }
 }

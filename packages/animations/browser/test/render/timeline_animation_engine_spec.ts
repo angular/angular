@@ -9,19 +9,20 @@ import {AnimationMetadata, animate, style} from '@angular/animations';
 
 import {AnimationStyleNormalizer, NoopAnimationStyleNormalizer} from '../../src/dsl/style_normalization/animation_style_normalizer';
 import {AnimationDriver} from '../../src/render/animation_driver';
+import {getBodyNode} from '../../src/render/shared';
 import {TimelineAnimationEngine} from '../../src/render/timeline_animation_engine';
 import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_animation_driver';
 
 (function() {
   const defaultDriver = new MockAnimationDriver();
 
-  function makeEngine(driver?: AnimationDriver, normalizer?: AnimationStyleNormalizer) {
+  function makeEngine(body: any, driver?: AnimationDriver, normalizer?: AnimationStyleNormalizer) {
     return new TimelineAnimationEngine(
-        driver || defaultDriver, normalizer || new NoopAnimationStyleNormalizer());
+        body, driver || defaultDriver, normalizer || new NoopAnimationStyleNormalizer());
   }
 
   // these tests are only mean't to be run within the DOM
-  if (typeof Element == 'undefined') return;
+  if (isNode) return;
 
   describe('TimelineAnimationEngine', () => {
     let element: any;
@@ -35,7 +36,7 @@ import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_a
     afterEach(() => document.body.removeChild(element));
 
     it('should animate a timeline', () => {
-      const engine = makeEngine();
+      const engine = makeEngine(getBodyNode());
       const steps = [style({height: 100}), animate(1000, style({height: 0}))];
       expect(MockAnimationDriver.log.length).toEqual(0);
       invokeAnimation(engine, element, steps);
@@ -43,7 +44,7 @@ import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_a
     });
 
     it('should not destroy timeline-based animations after they have finished', () => {
-      const engine = makeEngine();
+      const engine = makeEngine(getBodyNode());
 
       const log: string[] = [];
       function capture(value: string) {
@@ -66,7 +67,8 @@ import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_a
 
     it('should normalize the style values that are animateTransitioned within an a timeline animation',
        () => {
-         const engine = makeEngine(defaultDriver, new SuffixNormalizer('-normalized'));
+         const engine =
+             makeEngine(getBodyNode(), defaultDriver, new SuffixNormalizer('-normalized'));
 
          const steps = [
            style({width: '333px'}),
@@ -82,7 +84,7 @@ import {MockAnimationDriver, MockAnimationPlayer} from '../../testing/src/mock_a
 
     it('should normalize `*` values', () => {
       const driver = new SuperMockDriver();
-      const engine = makeEngine(driver);
+      const engine = makeEngine(getBodyNode(), driver);
 
       const steps = [
         style({width: '*'}),

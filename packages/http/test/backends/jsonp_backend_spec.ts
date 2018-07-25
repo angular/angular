@@ -20,7 +20,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 let existingScripts: MockBrowserJsonp[] = [];
 
 class MockBrowserJsonp extends BrowserJsonp {
-  src: string;
+  // TODO(issue/24571): remove '!'.
+  src !: string;
   callbacks = new Map<string, (data: any) => any>();
 
   addEventListener(type: string, cb: (data: any) => any) { this.callbacks.set(type, cb); }
@@ -114,12 +115,8 @@ class MockBrowserJsonp extends BrowserJsonp {
          inject([AsyncTestCompleter], (async: AsyncTestCompleter) => {
            const connection = new (JSONPConnection as any)(sampleRequest, new MockBrowserJsonp());
            connection.response.subscribe(
-               (res: Response) => {
-                 expect('response listener called').toBe(false);
-                 async.done();
-               },
-               (err: Response) => {
-                 expect(err.text()).toEqual('JSONP injected script did not invoke callback.');
+               () => async.fail('Response listener should not be called'), (err: Response) => {
+                 expect(err.text()).toBe('JSONP injected script did not invoke callback.');
                  async.done();
                });
 
@@ -131,11 +128,7 @@ class MockBrowserJsonp extends BrowserJsonp {
            const connection = new (JSONPConnection as any)(sampleRequest, new MockBrowserJsonp());
 
            connection.response.subscribe(
-               (res: Response) => {
-                 expect('response listener called').toBe(false);
-                 async.done();
-               },
-               (err: Response) => {
+               () => async.fail('Response listener should not be called'), (err: Response) => {
                  expect(err.text()).toBe('Oops!');
                  async.done();
                });

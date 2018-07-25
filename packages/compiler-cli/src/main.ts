@@ -40,8 +40,8 @@ export function main(
 
 
 function createEmitCallback(options: api.CompilerOptions): api.TsEmitCallback|undefined {
-  const transformDecorators =
-      options.enableIvy !== 'ngtsc' && options.annotationsAs !== 'decorators';
+  const transformDecorators = options.enableIvy !== 'ngtsc' && options.enableIvy !== 'tsc' &&
+      options.annotationsAs !== 'decorators';
   const transformTypesToClosure = options.annotateForClosureCompiler;
   if (!transformDecorators && !transformTypesToClosure) {
     return undefined;

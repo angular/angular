@@ -12,8 +12,8 @@
 ## IMPORTANT
 # If you change the `docker_image` version, also change the `cache_key` suffix and the version of
 # `com_github_bazelbuild_buildtools` in the `/WORKSPACE` file.
-var_1: &docker_image angular/ngcontainer:0.3.0
-var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.3.0
+var_1: &docker_image angular/ngcontainer:0.3.3
+var_2: &cache_key v2-angular-{{ .Branch }}-{{ checksum "yarn.lock" }}-0.3.3
 
 # Define common ENV vars
 var_3: &define_env_vars
@@ -80,12 +80,12 @@ jobs:
 
       - run: ls /home/circleci/bazel_repository_cache || true
       - run: bazel info release
-      - run: bazel run @yarn//:yarn
+      - run: bazel run @nodejs//:yarn
       # Use bazel query so that we explicitly ask for all buildable targets to be built as well
       # This avoids waiting for the slowest build target to finish before running the first test
       # See https://github.com/bazelbuild/bazel/issues/4257
       # NOTE: Angular developers should typically just bazel build //packages/... or bazel test //packages/...
-      - run: bazel query --output=label //... | xargs bazel test
+      - run: bazel query --output=label //... | xargs bazel test --build_tag_filters=-ivy-only --test_tag_filters=-manual,-ivy-only
 
       # CircleCI will allow us to go back and view/download these artifacts from past builds.
       # Also we can use a service like https://buildsize.org/ to automatically track binary size of these artifacts.
@@ -111,6 +111,42 @@ jobs:
           paths:
             - "node_modules"
             - "~/bazel_repository_cache"
+  # Temporary job to test what will happen when we flip the Ivy flag to true
+  test_ivy_jit:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      # See remote cache documentation in /docs/BAZEL.md
+      - run: .circleci/setup_cache.sh
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup-bazel-remote-cache
+
+      - restore_cache:
+          key: *cache_key
+
+      - run: bazel run @yarn//:yarn
+      - run: bazel query --output=label //... | xargs bazel test --define=compile=jit --build_tag_filters=ivy-jit --test_tag_filters=-manual,ivy-jit
+
+  test_ivy_aot:
+    <<: *job_defaults
+    resource_class: xlarge
+    steps:
+      - *define_env_vars
+      - checkout:
+          <<: *post_checkout
+      # See remote cache documentation in /docs/BAZEL.md
+      - run: .circleci/setup_cache.sh
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
+      - *setup-bazel-remote-cache
+
+      - restore_cache:
+          key: *cache_key
+
+      - run: bazel run @yarn//:yarn
+      - run: bazel query --output=label //... | xargs bazel test --define=compile=local --build_tag_filters=ivy-local --test_tag_filters=-manual,ivy-local
 
   # This job exists only for backwards-compatibility with old scripts and tests
   # that rely on the pre-Bazel dist/packages-dist layout.
@@ -131,7 +167,7 @@ jobs:
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
       - *setup-bazel-remote-cache
 
-      - run: bazel run @yarn//:yarn
+      - run: bazel run @nodejs//:yarn
       - run: scripts/build-packages-dist.sh
 
       # Save the npm packages from //packages/... for other workflow jobs to read
@@ -140,6 +176,8 @@ jobs:
           root: dist
           paths:
             - packages-dist
+            - packages-dist-ivy-jit
+            - packages-dist-ivy-local
 
   # We run the integration tests outside of Bazel for now.
   # They are a separate workflow job so that they can be easily re-run.
@@ -149,6 +187,10 @@ jobs:
   # See comments inside the integration/run_tests.sh script.
   integration_test:
     <<: *job_defaults
+    # Note: we run Bazel in one of the integration tests, and it can consume >2G
+    # of memory. Together with the system under test, this can exhaust the RAM
+    # on a 4G worker so we use a larger machine here too.
+    resource_class: xlarge
     steps:
       - *define_env_vars
       - checkout:
@@ -200,6 +242,8 @@ workflows:
     jobs:
       - lint
       - test
+      - test_ivy_jit
+      - test_ivy_aot
       - build-packages-dist
       - integration_test:
           requires:
@@ -212,6 +256,8 @@ workflows:
           requires:
             # Only publish if tests and integration tests pass
             - test
+            - test_ivy_jit
+            - test_ivy_aot
             - integration_test
             # Get the artifacts to publish from the build-packages-dist job
             # since the publishing script expects the legacy outputs layout.

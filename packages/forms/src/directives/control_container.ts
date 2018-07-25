@@ -18,7 +18,8 @@ import {Form} from './form_interface';
  *
  */
 export abstract class ControlContainer extends AbstractControlDirective {
-  name: string;
+  // TODO(issue/24571): remove '!'.
+  name !: string;
 
   /**
    * Get the form to which this container belongs.

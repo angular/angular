@@ -19,7 +19,7 @@ import {ResourceLoaderImpl} from '../../src/resource_loader/resource_loader_impl
     // will be relative to here, so url200 should look like
     // static_assets/200.html.
     // We currently have no way of detecting this.
-    const url200 = '/base/packages/platform-browser/test/browser/static_assets/200.html';
+    const url200 = '/base/angular/packages/platform-browser/test/browser/static_assets/200.html';
     const url404 = '/bad/path/404.html';
 
     beforeEach(() => { resourceLoader = new ResourceLoaderImpl(); });

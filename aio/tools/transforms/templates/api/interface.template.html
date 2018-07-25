@@ -7,5 +7,5 @@
 {% block details %}
   {% include "includes/description.html" %}
   {$ memberHelper.renderProperties(doc.properties, 'instance-properties', 'instance-property', 'Properties') $}
-  {$ memberHelper.renderMethodDetails(doc.methods, 'instance-methods', 'instance-method', 'Methods') $}
+  {$ memberHelper.renderMethodDetails(versionInfo, doc.methods, 'instance-methods', 'instance-method', 'Methods') $}
 {% endblock %}

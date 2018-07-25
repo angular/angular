@@ -18,7 +18,7 @@
   "routing": {
     "index": "/index.html",
     "routes": {
-      "^(?!/styleguide|/docs/.|(?:/guide/(?:cli-quickstart|metadata|ngmodule|service-worker-(?:getstart|comm|configref)|learning-angular)|/news)(?:\\.html|/)?$|/testing|/api/(?:.+/[^/]+-|platform-browser/AnimationDriver|testing/|api/|animate/|(?:common/(?:NgModel|Control|MaxLengthValidator))|(?:[^/]+/)?(?:NgFor(?:$|-)|AnimationStateDeclarationMetadata|CORE_DIRECTIVES|PLATFORM_PIPES|DirectiveMetadata|HTTP_PROVIDERS))|.*/stackblitz(?:\\.html)?(?:\\?.*)?$|.*\\.[^\/.]+$)": {
+      "^(?!/styleguide|/docs/.|(?:/guide/(?:cli-quickstart|metadata|ngmodule|service-worker-(?:getstart|comm|configref)|learning-angular|webpack)|/news)(?:\\.html|/)?$|/testing|/api/(?:.+/[^/]+-|platform-browser/AnimationDriver|testing/|api/|animate/|(?:common/(?:NgModel|Control|MaxLengthValidator))|(?:[^/]+/)?(?:NgFor(?:$|-)|AnimationStateDeclarationMetadata|CORE_DIRECTIVES|PLATFORM_PIPES|DirectiveMetadata|HTTP_PROVIDERS))|.*/stackblitz(?:\\.html)?(?:\\?.*)?$|.*\\.[^\/.]+$)": {
         "match": "regex"
       }
     }

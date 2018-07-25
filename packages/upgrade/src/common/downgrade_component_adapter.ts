@@ -22,10 +22,13 @@ export class DowngradeComponentAdapter {
   private inputChangeCount: number = 0;
   private inputChanges: SimpleChanges = {};
   private componentScope: angular.IScope;
-  private componentRef: ComponentRef<any>;
+  // TODO(issue/24571): remove '!'.
+  private componentRef !: ComponentRef<any>;
   private component: any;
-  private changeDetector: ChangeDetectorRef;
-  private viewChangeDetector: ChangeDetectorRef;
+  // TODO(issue/24571): remove '!'.
+  private changeDetector !: ChangeDetectorRef;
+  // TODO(issue/24571): remove '!'.
+  private viewChangeDetector !: ChangeDetectorRef;
 
   constructor(
       private element: angular.IAugmentedJQuery, private attrs: angular.IAttributes,

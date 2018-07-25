@@ -51,7 +51,7 @@ ng generate directive highlight
 
 The CLI creates `src/app/highlight.directive.ts`, a corresponding test file (`.../spec.ts`, and _declares_ the directive class in the root `AppModule`.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 _Directives_ must be declared in [Angular Modules](guide/ngmodules) in the same manner as _components_.
 
@@ -71,7 +71,7 @@ Angular locates each element in the template that has an attribute named `appHig
 
 The _attribute selector_ pattern explains the name of this kind of directive.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 #### Why not "highlight"?
 
@@ -96,7 +96,7 @@ Now edit the generated `src/app/highlight.directive.ts` to look as follows:
 
 The `import` statement specifies an additional `ElementRef` symbol from the Angular `core` library:
 
-You use the `ElementRef`in the directive's constructor
+You use the `ElementRef` in the directive's constructor
 to [inject](guide/dependency-injection) a reference to the host DOM element, 
 the element to which you applied `appHighlight`.
 
@@ -146,7 +146,7 @@ each adorned by the `HostListener` decorator.
 The `@HostListener` decorator lets you subscribe to events of the DOM
 element that hosts an attribute directive, the `<p>` in this case.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Of course you could reach into the DOM with standard JavaScript and attach event listeners manually.
 There are at least three problems with _that_ approach:

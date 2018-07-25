@@ -50,19 +50,17 @@ class R3JitReflector implements CompileReflector {
 }
 
 /**
- * JIT compiles an expression and monkey-patches the result of executing the expression onto a given
- * type.
+ * JIT compiles an expression and returns the result of executing that expression.
  *
- * @param type the type which will receive the monkey-patched result
- * @param field name of the field on the type to monkey-patch
  * @param def the definition which will be compiled and executed to get the value to patch
  * @param context an object map of @angular/core symbol names to symbols which will be available in
  * the context of the compiled expression
+ * @param sourceUrl a URL to use for the source map of the compiled expression
  * @param constantPool an optional `ConstantPool` which contains constants used in the expression
  */
-export function jitPatchDefinition(
-    type: any, field: string, def: o.Expression, context: {[key: string]: any},
-    constantPool?: ConstantPool): void {
+export function jitExpression(
+    def: o.Expression, context: {[key: string]: any}, sourceUrl: string,
+    constantPool?: ConstantPool): any {
   // The ConstantPool may contain Statements which declare variables used in the final expression.
   // Therefore, its statements need to precede the actual JIT operation. The final statement is a
   // declaration of $def which is set to the expression being compiled.
@@ -71,8 +69,6 @@ export function jitPatchDefinition(
     new o.DeclareVarStmt('$def', def, undefined, [o.StmtModifier.Exported]),
   ];
 
-  // Monkey patch the field on the given type with the result of compilation.
-  // TODO(alxhub): consider a better source url.
-  type[field] = jitStatements(
-      `ng://${type && type.name}/${field}`, statements, new R3JitReflector(context), false)['$def'];
+  const res = jitStatements(sourceUrl, statements, new R3JitReflector(context), false);
+  return res['$def'];
 }

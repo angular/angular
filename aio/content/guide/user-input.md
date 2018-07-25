@@ -69,7 +69,7 @@ DOM event object in the `$event` variable which this code passes as a parameter 
 
 
 The properties of an `$event` object vary depending on the type of DOM event. For example,
-a mouse event includes different information than a input box editing event.
+a mouse event includes different information than an input box editing event.
 
 All [standard DOM event objects](https://developer.mozilla.org/en-US/docs/Web/API/Event)
 have a `target` property, a reference to the element that raised the event.
@@ -96,7 +96,7 @@ Here's what the UI displays:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -179,7 +179,7 @@ Type something in the input box, and watch the display update with each keystrok
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 

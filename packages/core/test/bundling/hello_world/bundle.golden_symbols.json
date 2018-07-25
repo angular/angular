@@ -1,18 +1,48 @@
 [
   {
+    "name": "ACTIVE_INDEX"
+  },
+  {
+    "name": "BINDING_INDEX"
+  },
+  {
     "name": "CLEAN_PROMISE"
   },
   {
-    "name": "EMPTY$2"
+    "name": "CONTAINER_INDEX"
+  },
+  {
+    "name": "CONTEXT"
+  },
+  {
+    "name": "ChangeDetectionStrategy"
+  },
+  {
+    "name": "DIRECTIVES"
+  },
+  {
+    "name": "EMPTY$1"
   },
   {
     "name": "EMPTY_RENDERER_TYPE_ID"
   },
   {
-    "name": "HelloWorld"
+    "name": "FLAGS"
   },
   {
-    "name": "INeedToExistEvenThoughIAmNotNeeded"
+    "name": "HEADER_FILLER"
+  },
+  {
+    "name": "HEADER_OFFSET"
+  },
+  {
+    "name": "HOST_NODE"
+  },
+  {
+    "name": "INJECTOR$1"
+  },
+  {
+    "name": "NEXT"
   },
   {
     "name": "NG_HOST_SYMBOL"
@@ -21,10 +51,40 @@
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
+    "name": "PARENT"
+  },
+  {
+    "name": "QUERIES"
+  },
+  {
+    "name": "RENDERER"
+  },
+  {
+    "name": "RENDER_PARENT"
+  },
+  {
     "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
+    "name": "TVIEW"
+  },
+  {
     "name": "UNDEFINED_RENDERER_TYPE_ID"
+  },
+  {
+    "name": "VIEWS"
+  },
+  {
+    "name": "ViewEncapsulation$1"
+  },
+  {
+    "name": "_CLEAN_PROMISE"
+  },
+  {
+    "name": "_ROOT_DIRECTIVE_INDICES"
+  },
+  {
+    "name": "_getComponentHostLElementNode"
   },
   {
     "name": "_renderCompCount"
@@ -54,7 +114,10 @@
     "name": "createLNodeObject"
   },
   {
-    "name": "createLView"
+    "name": "createLViewData"
+  },
+  {
+    "name": "createRootContext"
   },
   {
     "name": "createTNode"
@@ -66,13 +129,10 @@
     "name": "createTextNode"
   },
   {
-    "name": "currentView"
+    "name": "createViewQuery"
   },
   {
     "name": "defineComponent"
-  },
-  {
-    "name": "defineInjector"
   },
   {
     "name": "detectChangesInternal"
@@ -102,16 +162,22 @@
     "name": "firstTemplatePass"
   },
   {
-    "name": "getCurrentSanitizer"
+    "name": "getChildLNode"
   },
   {
-    "name": "getDirectiveInstance"
+    "name": "getLViewChild"
   },
   {
     "name": "getOrCreateTView"
   },
   {
+    "name": "getParentLNode"
+  },
+  {
     "name": "getRenderFlags"
+  },
+  {
+    "name": "getRootView"
   },
   {
     "name": "hostElement"
@@ -132,16 +198,28 @@
     "name": "locateHostElement"
   },
   {
+    "name": "namespaceHTML"
+  },
+  {
+    "name": "readElementValue"
+  },
+  {
     "name": "refreshChildComponents"
   },
   {
-    "name": "refreshDynamicChildren"
+    "name": "refreshContentQueries"
+  },
+  {
+    "name": "refreshDynamicEmbeddedViews"
   },
   {
     "name": "refreshView"
   },
   {
     "name": "renderComponent"
+  },
+  {
+    "name": "renderComponentOrTemplate"
   },
   {
     "name": "renderEmbeddedTemplate"
@@ -159,10 +237,16 @@
     "name": "setUpAttributes"
   },
   {
-    "name": "stringify$1"
+    "name": "stringify$2"
   },
   {
     "name": "text"
+  },
+  {
+    "name": "tickRootContext"
+  },
+  {
+    "name": "updateViewQuery"
   },
   {
     "name": "viewAttached"

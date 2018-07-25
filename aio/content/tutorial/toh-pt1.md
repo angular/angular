@@ -175,7 +175,7 @@ This information is called _metadata_
 Some of the metadata is in the `@Component` decorators that you added to your component classes.
 Other critical metadata is in [`@NgModule`](guide/ngmodules) decorators.
 
-The most important `@NgModule`decorator annotates the top-level **AppModule** class.
+The most important `@NgModule` decorator annotates the top-level **AppModule** class.
 
 The Angular CLI generated an `AppModule` class in `src/app/app.module.ts` when it created the project.
 This is where you _opt-in_ to the `FormsModule`.

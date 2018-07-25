@@ -25,6 +25,10 @@ declare global {
     rendererRemoveClass: number;
     rendererSetStyle: number;
     rendererRemoveStyle: number;
+    rendererDestroy: number;
+    rendererDestroyNode: number;
+    rendererMoveNode: number;
+    rendererRemoveNode: number;
   }
 }
 
@@ -50,6 +54,10 @@ export const ngDevModeResetPerfCounters: () => void =
            rendererRemoveClass: 0,
            rendererSetStyle: 0,
            rendererRemoveStyle: 0,
+           rendererDestroy: 0,
+           rendererDestroyNode: 0,
+           rendererMoveNode: 0,
+           rendererRemoveNode: 0,
          };
        }
        ngDevModeResetPerfCounters();

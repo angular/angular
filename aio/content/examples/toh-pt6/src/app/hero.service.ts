@@ -40,7 +40,7 @@ export class HeroService {
   // #enddocregion getHeroes-1
       .pipe(
         // #enddocregion getHeroes-2
-        tap(heroes => this.log(`fetched heroes`)),
+        tap(heroes => this.log('fetched heroes')),
         // #docregion getHeroes-2
         catchError(this.handleError('getHeroes', []))
       );
@@ -151,7 +151,7 @@ export class HeroService {
   // #docregion log
   /** Log a HeroService message with the MessageService */
   private log(message: string) {
-    this.messageService.add('HeroService: ' + message);
+    this.messageService.add(`HeroService: ${message}`);
   }
   // #enddocregion log
 }

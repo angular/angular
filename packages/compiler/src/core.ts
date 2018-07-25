@@ -75,7 +75,8 @@ export interface Component extends Directive {
 export enum ViewEncapsulation {
   Emulated = 0,
   Native = 1,
-  None = 2
+  None = 2,
+  ShadowDom = 3
 }
 
 export enum ChangeDetectionStrategy {
@@ -377,4 +378,8 @@ export const enum RenderFlags {
 
   /* Whether to run the update block (e.g. refresh bindings) */
   Update = 0b10
+}
+
+export const enum InitialStylingFlags {
+  VALUES_MODE = 0b1,
 }

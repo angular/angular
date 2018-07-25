@@ -676,7 +676,8 @@ describe('change detection', () => {
 
         class OnPushComp {
           /** @Input() */
-          value: string;
+          // TODO(issue/24571): remove '!'.
+          value !: string;
 
           constructor(public cdr: ChangeDetectorRef) {}
 

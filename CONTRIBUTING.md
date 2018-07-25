@@ -227,10 +227,15 @@ The following is the list of supported scopes:
 
 There are currently a few exceptions to the "use package name" rule:
 
-* **packaging**: used for changes that change the npm package layout in all of our packages, e.g. public path changes, package.json changes done to all packages, d.ts file/format changes, changes to bundles, etc.
+* **packaging**: used for changes that change the npm package layout in all of our packages, e.g.
+  public path changes, package.json changes done to all packages, d.ts file/format changes, changes
+  to bundles, etc.
 * **changelog**: used for updating the release notes in CHANGELOG.md
-* **aio**: used for docs-app (angular.io) related changes within the /aio directory of the repo
-* none/empty string: useful for `style`, `test` and `refactor` changes that are done across all packages (e.g. `style: add missing semicolons`)
+* **docs-infra**: used for docs-app (angular.io) related changes within the /aio directory of the
+  repo
+* none/empty string: useful for `style`, `test` and `refactor` changes that are done across all
+  packages (e.g. `style: add missing semicolons`) and for docs changes that are not related to a
+  specific package (e.g. `docs: fix typo in tutorial`).
 
 ### Subject
 The subject contains a succinct description of the change:
@@ -269,7 +274,7 @@ changes to be accepted, the CLA must be signed. It's a quick process, we promise
   * https://help.github.com/articles/about-commit-email-addresses/
   * https://help.github.com/articles/blocking-command-line-pushes-that-expose-your-personal-email-address/
 
-  Note that if you have more than one Git identity, it is important to verify that you are logged in with the same ID with which you signed the CLA, before you commit changes. If not, your PR will fail the CLA check.  
+  Note that if you have more than one Git identity, it is important to verify that you are logged in with the same ID with which you signed the CLA, before you commit changes. If not, your PR will fail the CLA check.
 
 <hr>
 

@@ -204,8 +204,7 @@ The test consumes that spy in the same way it did earlier.
 Most test suites in this guide call `beforeEach()` to set the preconditions for each `it()` test
 and rely on the `TestBed` to create classes and inject services.
 
-There's another school of testing that never calls `beforeEach()` and
-and prefers to create classes explicitly rather than use the `TestBed`.
+There's another school of testing that never calls `beforeEach()` and prefers to create classes explicitly rather than use the `TestBed`.
 
 Here's how you might rewrite one of the `MasterService` tests in that style.
 
@@ -347,7 +346,7 @@ It appears within the template of a parent component,
 which binds a _hero_ to the `@Input` property and
 listens for an event raised through the _selected_ `@Output` property.
 
-You can test that the class code works without creating the the `DashboardHeroComponent`
+You can test that the class code works without creating the `DashboardHeroComponent`
 or its parent component.
 
 <code-example 
@@ -399,7 +398,7 @@ But a component is more than just its class.
 A component interacts with the DOM and with other components.
 The _class-only_ tests can tell you about class behavior.
 They cannot tell you if the component is going to render properly,
-respond to user input and gestures, or integrate with its parent and and child components.
+respond to user input and gestures, or integrate with its parent and child components.
 
 None of the _class-only_ tests above can answer key questions about how the
 components actually behave on screen.
@@ -467,7 +466,7 @@ simply declares `BannerComponent`, the component to test.
   region="configureTestingModule">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 There's no need to declare or import anything else.
 The default test module is pre-configured with 
@@ -918,7 +917,7 @@ so it is safe to call `TestBed.get()` as follows:
   title="TestBed injector">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 For a use case in which `TestBed.get()` does not work,
 see the section [_Override a component's providers_](#component-override), which
@@ -952,7 +951,7 @@ And here are some tests:
 
 The first is a sanity test; it confirms that the stubbed `UserService` is called and working.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The second parameter to the Jasmine matcher (e.g., `'expected name'`) is an optional failure label.
 If the expectation fails, Jasmine displays appends this label to the expectation failure message.
@@ -1408,7 +1407,7 @@ The `DashboardComponent` depends on the Angular router and the `HeroService`.
 You'd probably have to replace them both with test doubles, which is a lot of work.
 The router seems particularly challenging.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The [discussion below](#routing-component) covers testing components that require the router.
 
@@ -1494,7 +1493,7 @@ The test assumes (correctly in this case) that the runtime
 event handler&mdash;the component's `click()` method&mdash;doesn't
 care about the event object.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Other handlers are less forgiving. For example, the `RouterLink`
 directive expects an object with a `button` property
@@ -1697,7 +1696,7 @@ for the `id` to change during its lifetime.
 
 <code-example path="testing/src/app/hero/hero-detail.component.ts" region="ng-on-init" title="app/hero/hero-detail.component.ts (ngOnInit)" linenums="false"></code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The [Router](guide/router#route-parameters) guide covers `ActivatedRoute.paramMap` in more detail.
 
@@ -1744,7 +1743,7 @@ Here's a test demonstrating the component's behavior when the observed `id` refe
 
 <code-example path="testing/src/app/hero/hero-detail.component.spec.ts" region="route-good-id" title="app/hero/hero-detail.component.spec.ts (existing id)" linenums="false"></code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `createComponent()` method and `page` object are discussed [below](#page-object).
 Rely on your intuition for now.
@@ -1928,7 +1927,7 @@ which sets the stub's telltale `navigatedTo` property.
 Tests inspect `navigatedTo` to confirm that clicking the anchor
 set the expected route definition.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Whether the router is configured properly to navigate with that route definition is a
 question for a separate set of tests.
@@ -1972,7 +1971,7 @@ as expected:
 
 <code-example path="testing/src/app/app.component.spec.ts" region="tests" title="app/app.component.spec.ts (selected tests)" linenums="false"></code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The "click" test _in this example_ is misleading.
 It tests the `RouterLinkDirectiveStub` rather than the _component_.
@@ -2259,7 +2258,7 @@ One approach is to configure the testing module from the individual pieces as in
   title="app/hero/hero-detail.component.spec.ts (FormsModule setup)" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Notice that the `beforeEach()` is asynchronous and calls `TestBed.compileComponents`
 because the `HeroDetailComponent` has an external template and css file.
@@ -2330,7 +2329,7 @@ And `TestBed.configureTestingModule` can't configure them either.
 
 Angular has been creating new instances of the real `HeroDetailService` all along!
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 These tests could fail or timeout if the `HeroDetailService` made its own XHR calls to a remote server.
 There might not be a remote server to call.
@@ -2367,9 +2366,9 @@ The [override metadata object](#metadata-override-object) is a generic defined a
 
 <code-example format="." language="javascript">
   type MetadataOverride<T> = {
-    add?: T;
-    remove?: T;
-    set?: T;
+    add?: Partial<T>;
+    remove?: Partial<T>;
+    set?: Partial<T>;
   };
 </code-example>
 
@@ -2463,7 +2462,7 @@ A better solution is to create an artificial test component that demonstrates al
   <img src='generated/images/guide/testing/highlight-directive-spec.png' alt="HighlightDirective spec in action">
 </figure>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `<input>` case binds the `HighlightDirective` to the name of a color value in the input box.
 The initial value is the word "cyan" which should be the background color of the input box.
@@ -2603,7 +2602,7 @@ Here's a summary of the stand-alone functions, in order of likely utility:
       Simulates the passage of time and the completion of pending asynchronous activities
       by flushing both _timer_ and _micro-task_ queues within the _fakeAsync test zone_.
 
-      <div class="l-sub-section">
+      <div class="alert is-helpful">
 
       The curious, dedicated reader might enjoy this lengthy blog post,
       ["_Tasks, microtasks, queues and schedules_"](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/).
@@ -2725,9 +2724,9 @@ appropriate to the method, that is, the parameter of an `@NgModule`,
 
 <code-example format="." language="javascript">
   type MetadataOverride<T> = {
-    add?: T;
-    remove?: T;
-    set?: T;
+    add?: Partial<T>;
+    remove?: Partial<T>;
+    set?: Partial<T>;
   };
 </code-example>
 
@@ -3222,7 +3221,7 @@ Here are the most useful `DebugElement` members for testers, in approximate orde
 
       The immediate `DebugElement` children. Walk the tree by descending through `children`.
 
-      <div class="l-sub-section">
+      <div class="alert is-helpful">
 
       `DebugElement` also has `childNodes`, a list of `DebugNode` objects.
       `DebugElement` derives from `DebugNode` objects and there are often
@@ -3379,11 +3378,11 @@ next to their corresponding helper files.
 {@a q-e2e}
 #### Why not rely on E2E tests of DOM integration?
 
-The component DOM tests describe in this guide often require extensive setup and 
-advanced techniques where as the [class-only test](#component-class-testing)
-were comparatively simple.
+The component DOM tests described in this guide often require extensive setup and 
+advanced techniques whereas the [unit tests](#component-class-testing)
+are comparatively simple.
 
-Why not defer DOM integration tests to end-to-end (E2E) testing?
+#### Why not defer DOM integration tests to end-to-end (E2E) testing?
 
 E2E tests are great for high-level validation of the entire system.
 But they can't give you the comprehensive test coverage that you'd expect from unit tests.

@@ -280,6 +280,7 @@ p {
 .code-anchor {
   cursor: pointer;
   text-decoration: none;
+  font-size: inherit;
 
   &:hover {
     text-decoration: underline;

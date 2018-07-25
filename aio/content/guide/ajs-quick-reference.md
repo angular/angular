@@ -895,7 +895,7 @@ For more information on pipes, see [Pipes](guide/pipes).
       ### lowercase
 
       <code-example hideCopy>
-        &lt;div>{{movie.title | lowercase}}&lt;/div>
+        &lt;td>{{movie.title | lowercase}}&lt;/td>
       </code-example>
 
 

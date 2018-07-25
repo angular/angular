@@ -54,29 +54,6 @@ export interface R3FactoryMetadata {
    * function could be different, and other options control how it will be invoked.
    */
   injectFn: o.ExternalReference;
-
-  /**
-   * Whether the `injectFn` given above accepts a 2nd parameter indicating the default value to
-   * be used to resolve missing @Optional dependencies.
-   *
-   * If the optional parameter is used, injectFn for an optional dependency will be invoked as:
-   * `injectFn(token, null, flags)`.
-   *
-   * If it's not used, injectFn for an optional dependency will be invoked as:
-   * `injectFn(token, flags)`. The Optional flag will indicate that injectFn should select a default
-   * value if it cannot satisfy the injection request for the token.
-   */
-  useOptionalParam: boolean;
-
-  /**
-   * If present, the return of the factory function will be an array with the injected value in the
-   * 0th position and the extra results included in subsequent positions.
-   *
-   * Occasionally APIs want to construct additional values when the factory function is called. The
-   * paradigm there is to have the factory function return an array, with the DI-created value as
-   * well as other values. Specifying `extraResults` enables this functionality.
-   */
-  extraResults?: o.Expression[];
 }
 
 /**
@@ -119,6 +96,11 @@ export enum R3ResolvedDependencyType {
    * The dependency is for `ViewContainerRef`.
    */
   ViewContainerRef = 5,
+
+  /**
+   * The dependency is for `ChangeDetectorRef`.
+   */
+  ChangeDetectorRef = 6,
 }
 
 /**
@@ -162,24 +144,18 @@ export interface R3DependencyMetadata {
  */
 export function compileFactoryFunction(meta: R3FactoryMetadata): o.Expression {
   // Each dependency becomes an invocation of an inject*() function.
-  const args =
-      meta.deps.map(dep => compileInjectDependency(dep, meta.injectFn, meta.useOptionalParam));
+  const args = meta.deps.map(dep => compileInjectDependency(dep, meta.injectFn));
 
   // The overall result depends on whether this is construction or function invocation.
   const expr = meta.useNew ? new o.InstantiateExpr(meta.fnOrClass, args) :
                              new o.InvokeFunctionExpr(meta.fnOrClass, args);
 
-  // If `extraResults` is specified, then the result is an array consisting of the instantiated
-  // value plus any extra results.
-  const retExpr =
-      meta.extraResults === undefined ? expr : o.literalArr([expr, ...meta.extraResults]);
   return o.fn(
-      [], [new o.ReturnStatement(retExpr)], o.INFERRED_TYPE, undefined, `${meta.name}_Factory`);
+      [], [new o.ReturnStatement(expr)], o.INFERRED_TYPE, undefined, `${meta.name}_Factory`);
 }
 
 function compileInjectDependency(
-    dep: R3DependencyMetadata, injectFn: o.ExternalReference,
-    useOptionalParam: boolean): o.Expression {
+    dep: R3DependencyMetadata, injectFn: o.ExternalReference): o.Expression {
   // Interpret the dependency according to its resolved type.
   switch (dep.resolved) {
     case R3ResolvedDependencyType.Token:
@@ -197,23 +173,12 @@ function compileInjectDependency(
       }
 
       // Build up the arguments to the injectFn call.
-      const injectArgs = [dep.token];
+      const injectArgs = [token];
       // If this dependency is optional or otherwise has non-default flags, then additional
       // parameters describing how to inject the dependency must be passed to the inject function
       // that's being used.
       if (flags !== InjectFlags.Default || dep.optional) {
-        // Either the dependency is optional, or non-default flags are in use. Either of these cases
-        // necessitates adding an argument for the default value if such an argument is required
-        // by the inject function (useOptionalParam === true).
-        if (useOptionalParam) {
-          // The inject function requires a default value parameter.
-          injectArgs.push(dep.optional ? o.NULL_EXPR : o.literal(undefined));
-        }
-        // The last parameter is always the InjectFlags, which only need to be specified if they're
-        // non-default.
-        if (flags !== InjectFlags.Default) {
-          injectArgs.push(o.literal(flags));
-        }
+        injectArgs.push(o.literal(flags));
       }
       return o.importExpr(injectFn).callFn(injectArgs);
     }
@@ -226,6 +191,8 @@ function compileInjectDependency(
       return o.importExpr(R3.injectTemplateRef).callFn([]);
     case R3ResolvedDependencyType.ViewContainerRef:
       return o.importExpr(R3.injectViewContainerRef).callFn([]);
+    case R3ResolvedDependencyType.ChangeDetectorRef:
+      return o.importExpr(R3.injectChangeDetectorRef).callFn([]);
     default:
       return unsupported(
           `Unknown R3ResolvedDependencyType: ${R3ResolvedDependencyType[dep.resolved]}`);

@@ -18,7 +18,7 @@ describe('filterPrivateDocs processor', () => {
 
   it('should run after the correct processor', () => {
     const processor = processorFactory();
-    expect(processor.$runAfter).toEqual(['extra-docs-added']);
+    expect(processor.$runAfter).toEqual(['extra-docs-added', 'checkContentRules']);
   });
 
   it('should remove docs that are marked as private exports', () => {

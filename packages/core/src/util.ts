@@ -6,10 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// Import zero symbols from zone.js. This causes the zone ambient type to be
-// added to the type-checker, without emitting any runtime module load statement
-import {} from 'zone.js';
-
 // TODO(jteplitz602): Load WorkerGlobalScope from lib.webworker.d.ts file #3492
 declare var WorkerGlobalScope: any /** TODO #9100 */;
 // CommonJS / Node have global context exposed as "global" variable.
@@ -20,7 +16,10 @@ const __window = typeof window !== 'undefined' && window;
 const __self = typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
     self instanceof WorkerGlobalScope && self;
 const __global = typeof global !== 'undefined' && global;
-const _global: {[name: string]: any} = __window || __global || __self;
+
+// Check __global first, because in Node tests both __global and __window may be defined and _global
+// should be __global in that case.
+const _global: {[name: string]: any} = __global || __window || __self;
 
 const promise: Promise<any> = Promise.resolve(0);
 /**

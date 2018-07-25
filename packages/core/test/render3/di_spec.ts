@@ -12,9 +12,9 @@ import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
 import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLView, createTView, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLViewData, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
-import {LNodeType} from '../../src/render3/interfaces/node';
+import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
 import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
@@ -556,7 +556,8 @@ describe('di', () => {
     describe('flags', () => {
 
       class DirB {
-        value: string;
+        // TODO(issue/24571): remove '!'.
+        value !: string;
 
         static ngDirectiveDef = defineDirective({
           type: DirB,
@@ -946,8 +947,8 @@ describe('di', () => {
         factory: () => comp = new MyComp(injectChangeDetectorRef()),
         template: function(rf: RenderFlags, ctx: MyComp) {
           if (rf & RenderFlags.Create) {
-            projectionDef(0);
-            projection(1, 0);
+            projectionDef();
+            projection(0);
           }
         }
       });
@@ -994,7 +995,7 @@ describe('di', () => {
         selectors: [['', 'myIf', '']],
         factory: () => new IfDirective(injectTemplateRef(), injectViewContainerRef()),
         inputs: {myIf: 'myIf'},
-        features: [PublicFeature, NgOnChangesFeature()]
+        features: [PublicFeature, NgOnChangesFeature]
       });
     }
 
@@ -1199,21 +1200,61 @@ describe('di', () => {
     });
   });
 
-  it('should injectAttribute', () => {
-    let exist: string|undefined = 'wrong';
-    let nonExist: string|undefined = 'wrong';
+  describe('@Attribute', () => {
 
-    const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
-      if (rf & RenderFlags.Create) {
-        elementStart(0, 'div', ['exist', 'existValue', 'other', 'ignore']);
-        exist = injectAttribute('exist');
-        nonExist = injectAttribute('nonExist');
-      }
+    it('should inject attribute', () => {
+      let exist = 'wrong' as string | undefined;
+      let nonExist = 'wrong' as string | undefined;
+
+      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div', ['exist', 'existValue', 'other', 'ignore']);
+          exist = injectAttribute('exist');
+          nonExist = injectAttribute('nonExist');
+        }
+      });
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(exist).toEqual('existValue');
+      expect(nonExist).toEqual(undefined);
     });
 
-    const app = renderComponent(MyApp);
-    expect(exist).toEqual('existValue');
-    expect(nonExist).toEqual(undefined);
+    // https://stackblitz.com/edit/angular-8ytqkp?file=src%2Fapp%2Fapp.component.ts
+    it('should not inject attributes representing bindings and outputs', () => {
+      let exist = 'wrong' as string | undefined;
+      let nonExist = 'wrong' as string | undefined;
+
+      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div', ['exist', 'existValue', AttributeMarker.SelectOnly, 'nonExist']);
+          exist = injectAttribute('exist');
+          nonExist = injectAttribute('nonExist');
+        }
+      });
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(exist).toEqual('existValue');
+      expect(nonExist).toEqual(undefined);
+    });
+
+    it('should not accidentally inject attributes representing bindings and outputs', () => {
+      let exist = 'wrong' as string | undefined;
+      let nonExist = 'wrong' as string | undefined;
+
+      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div', [
+            'exist', 'existValue', AttributeMarker.SelectOnly, 'binding1', 'nonExist', 'binding2'
+          ]);
+          exist = injectAttribute('exist');
+          nonExist = injectAttribute('nonExist');
+        }
+      });
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(exist).toEqual('existValue');
+      expect(nonExist).toEqual(undefined);
+    });
   });
 
   describe('inject', () => {
@@ -1363,18 +1404,18 @@ describe('di', () => {
 
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
-      const contentView =
-          createLView(-1, null !, createTView(null, null), null, null, LViewFlags.CheckAlways);
+      const contentView = createLViewData(
+          null !, createTView(-1, null, null, null, null), null, LViewFlags.CheckAlways);
       const oldView = enterView(contentView, null !);
       try {
-        const parent = createLNode(0, LNodeType.Element, null, null, null, null);
+        const parent = createLNode(0, TNodeType.Element, null, null, null, null);
 
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values
         // so that we have smaller HelloWorld.
-        (parent as{parent: any}).parent = undefined;
+        (parent.tNode as{parent: any}).parent = undefined;
 
-        const injector = getOrCreateNodeInjector();
+        const injector: any = getOrCreateNodeInjector();  // TODO: Review use of `any` here (#19904)
         expect(injector).not.toBe(null);
       } finally {
         leaveView(oldView);

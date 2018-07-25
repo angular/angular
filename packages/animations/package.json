@@ -1,7 +1,7 @@
 {
   "name": "@angular/animations",
   "version": "0.0.0-PLACEHOLDER",
-  "description": "Angular - animations integration with web-animationss",
+  "description": "Angular - animations integration with web-animations",
   "main": "./bundles/animations.umd.js",
   "module": "./fesm5/animations.js",
   "es2015": "./fesm2015/animations.js",
