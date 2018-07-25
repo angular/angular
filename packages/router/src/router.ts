@@ -273,6 +273,23 @@ export class Router {
   paramsInheritanceStrategy: 'emptyOnly'|'always' = 'emptyOnly';
 
   /**
+   * Defines when the router updates the browser URL. The default behavior is to update after
+   * successful navigation. However, some applications may prefer a mode where the URL gets
+   * updated at the beginning of navigation. The most common use case would be updating the
+   * URL early so if navigation fails, you can show an error message with the URL that failed.
+   * Available options are:
+   *
+   * - `'deferred'`, the default, updates the browser URL after navigation has finished.
+   * - `'eager'`, updates browser URL at the beginning of navigation.
+   */
+  urlUpdateStrategy: 'deferred'|'eager' = 'deferred';
+
+  /**
+   * See {@link RouterModule} for more information.
+   */
+  relativeLinkResolution: 'legacy'|'corrected' = 'legacy';
+
+  /**
    * Creates the router service.
    */
   // TODO: vsavkin make internal after the final is out.
@@ -649,7 +666,7 @@ export class Router {
         urlAndSnapshot$ = redirectsApplied$.pipe(mergeMap((appliedUrl: UrlTree) => {
           return recognize(
                      this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl),
-                     this.paramsInheritanceStrategy)
+                     this.paramsInheritanceStrategy, this.relativeLinkResolution)
               .pipe(map((snapshot: any) => {
                 (this.events as Subject<Event>)
                     .next(new RoutesRecognized(
