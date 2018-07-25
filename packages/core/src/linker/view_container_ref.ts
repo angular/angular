@@ -41,6 +41,7 @@ export abstract class ViewContainerRef {
 
   abstract get injector(): Injector;
 
+  /** @deprecated No replacement */
   abstract get parentInjector(): Injector;
 
   /**
