@@ -69,7 +69,7 @@ describe('LiveAnnouncer', () => {
       // Call the lifecycle hook manually since Angular won't do it in tests.
       announcer.ngOnDestroy();
 
-      expect(document.body.querySelector('[aria-live]'))
+      expect(document.body.querySelector('.cdk-live-announcer-element'))
           .toBeFalsy('Expected that the aria-live element was remove from the DOM.');
     }));
 
@@ -184,7 +184,7 @@ describe('CdkAriaLive', () => {
 
 
 function getLiveElement(): Element {
-  return document.body.querySelector('[aria-live]')!;
+  return document.body.querySelector('.cdk-live-announcer-element')!;
 }
 
 @Component({template: `<button (click)="announceText('Test')">Announce</button>`})
