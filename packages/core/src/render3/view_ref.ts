@@ -11,7 +11,7 @@ import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detec
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
-import {checkNoChanges, detectChanges, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
+import {checkNoChanges, checkNoChangesInRootView, detectChanges, detectChangesInRootView, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
 import {LViewNode} from './interfaces/node';
 import {FLAGS, LViewData, LViewFlags} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
@@ -242,4 +242,13 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   detachFromAppRef() { this._appRef = null; }
 
   attachToAppRef(appRef: ApplicationRef) { this._appRef = appRef; }
+}
+
+/** @internal */
+export class RootViewRef<T> extends ViewRef<T> {
+  constructor(protected _view: LViewData) { super(_view, null); }
+
+  detectChanges(): void { detectChangesInRootView(this._view); }
+
+  checkNoChanges(): void { checkNoChangesInRootView(this._view); }
 }
