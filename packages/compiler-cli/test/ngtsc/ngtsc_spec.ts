@@ -568,4 +568,38 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).toContain('i0.ɵd(dirIndex).onClick($event)');
     expect(jsContents).toContain('i0.ɵd(dirIndex).onChange(i0.ɵd(dirIndex).arg)');
   });
+
+  it('should correctly recognize local symbols', () => {
+    writeConfig();
+    write('module.ts', `
+        import {NgModule} from '@angular/core';
+        import {Dir, Comp} from './test';
+
+        @NgModule({
+          declarations: [Dir, Comp],
+          exports: [Dir, Comp],
+        })
+        class Module {}
+    `);
+    write(`test.ts`, `
+        import {Component, Directive} from '@angular/core';
+
+        @Directive({
+          selector: '[dir]',
+        })
+        export class Dir {}
+
+        @Component({
+          selector: 'test',
+          template: '<div dir>Test</div>',
+        })
+        export class Comp {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+    const jsContents = getContents('test.js');
+    expect(jsContents).not.toMatch(/import \* as i[0-9] from ['"].\/test['"]/);
+  });
 });
