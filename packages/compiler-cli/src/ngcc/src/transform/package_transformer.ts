@@ -81,6 +81,7 @@ export class PackageTransformer {
       case 'esm2015':
       case 'fesm2015':
         return new Esm2015ReflectionHost(program.getTypeChecker());
+      case 'esm5':
       case 'fesm5':
         return new Esm5ReflectionHost(program.getTypeChecker());
       default:
@@ -93,6 +94,7 @@ export class PackageTransformer {
       case 'esm2015':
       case 'fesm2015':
         return new Esm2015FileParser(program, host);
+      case 'esm5':
       case 'fesm5':
         return new Esm5FileParser(program, host);
       default:
@@ -105,6 +107,7 @@ export class PackageTransformer {
       case 'esm2015':
       case 'fesm2015':
         return new Esm2015Renderer(host);
+      case 'esm5':
       case 'fesm5':
         return new Esm5Renderer(host);
       default:
