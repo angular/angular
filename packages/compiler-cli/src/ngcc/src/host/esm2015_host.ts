@@ -188,12 +188,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
-   * Find a symbol for a declaration that we think is a class.
-   * @param declaration The declaration whose symbol we are finding
-   * @returns the symbol for the declaration or `undefined` if it is not
-   * a "class" or has no symbol.
+   * Find a symbol for a node that we think is a class.
+   * @param node The node whose symbol we are finding.
+   * @returns The symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
-  getClassSymbol(declaration: ts.Declaration): ts.Symbol|undefined {
+  getClassSymbol(declaration: ts.Node): ts.Symbol|undefined {
     return ts.isClassDeclaration(declaration) ?
         declaration.name && this.checker.getSymbolAtLocation(declaration.name) :
         undefined;

@@ -127,7 +127,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return map;
   }
 
-  isClass(node: ts.Declaration): boolean {
+  isClass(node: ts.Node): boolean {
     // In TypeScript code, classes are ts.ClassDeclarations.
     return ts.isClassDeclaration(node);
   }
