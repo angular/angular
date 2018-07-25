@@ -34,7 +34,30 @@
 
 <h2>Fixed size</h2>
 
-<cdk-virtual-scroll-viewport class="demo-viewport" [itemSize]="50">
+<mat-form-field>
+  <mat-label>Behavior</mat-label>
+  <mat-select [(ngModel)]="scrollToBehavior">
+    <mat-option value="auto">Auto</mat-option>
+    <mat-option value="instant">Instant</mat-option>
+    <mat-option value="smooth">Smooth</mat-option>
+  </mat-select>
+</mat-form-field>
+<mat-form-field>
+  <mat-label>Offset</mat-label>
+  <input matInput type="number" [(ngModel)]="scrollToOffset">
+</mat-form-field>
+<button mat-button (click)="viewport1.scrollToOffset(scrollToOffset, scrollToBehavior)">
+  Go to offset
+</button>
+<mat-form-field>
+  <mat-label>Index</mat-label>
+  <input matInput type="number" [(ngModel)]="scrollToIndex">
+</mat-form-field>
+<button mat-button (click)="viewport1.scrollToIndex(scrollToIndex, scrollToBehavior)">
+  Go to index
+</button>
+
+<cdk-virtual-scroll-viewport class="demo-viewport" [itemSize]="50" #viewport1>
   <div *cdkVirtualFor="let size of fixedSizeData; let i = index" class="demo-item"
        [style.height.px]="size">
     Item #{{i}} - ({{size}}px)
@@ -97,8 +120,8 @@
 
 <h2>Use with <code>&lt;ol&gt;</code></h2>
 
-<cdk-virtual-scroll-viewport class="demo-viewport" autosize #viewport>
-  <ol class="demo-ol" [start]="viewport.getRenderedRange().start + 1">
+<cdk-virtual-scroll-viewport class="demo-viewport" autosize #viewport2>
+  <ol class="demo-ol" [start]="viewport2.getRenderedRange().start + 1">
     <li *cdkVirtualFor="let state of statesObservable | async" class="demo-li">
       {{state.name}} - {{state.capital}}
     </li>

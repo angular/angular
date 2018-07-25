@@ -7,6 +7,7 @@
  */
 
 import {ListRange} from '@angular/cdk/collections';
+import {supportsScrollBehavior} from '@angular/cdk/platform';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -245,7 +246,36 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
     }
   }
 
-  /** Sets the scroll offset on the viewport. */
+  /**
+   * Scrolls to the offset on the viewport.
+   * @param offset The offset to scroll to.
+   * @param behavior The ScrollBehavior to use when scrolling. Default is behavior is `auto`.
+   */
+  scrollToOffset(offset: number, behavior: ScrollBehavior = 'auto') {
+    const viewportElement = this.elementRef.nativeElement;
+
+    if (supportsScrollBehavior()) {
+      const offsetDirection = this.orientation === 'horizontal' ? 'left' : 'top';
+      viewportElement.scrollTo({[offsetDirection]: offset, behavior});
+    } else {
+      if (this.orientation === 'horizontal') {
+        viewportElement.scrollLeft = offset;
+      } else {
+        viewportElement.scrollTop = offset;
+      }
+    }
+  }
+
+  /**
+   * Scrolls to the offset for the given index.
+   * @param index The index of the element to scroll to.
+   * @param behavior The ScrollBehavior to use when scrolling. Default is behavior is `auto`.
+   */
+  scrollToIndex(index: number,  behavior: ScrollBehavior = 'auto') {
+    this._scrollStrategy.scrollToIndex(index, behavior);
+  }
+
+  /** @docs-private Internal method to set the scroll offset on the viewport. */
   setScrollOffset(offset: number) {
     // Rather than setting the offset immediately, we batch it up to be applied along with other DOM
     // writes during the next change detection cycle.

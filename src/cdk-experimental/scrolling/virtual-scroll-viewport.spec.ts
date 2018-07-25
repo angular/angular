@@ -156,6 +156,56 @@ describe('CdkVirtualScrollViewport', () => {
       expect(viewport.getRenderedRange()).toEqual({start: 2, end: 6});
     }));
 
+    it('should scroll to offset', fakeAsync(() => {
+      finishInit(fixture);
+      viewport.scrollToOffset(testComponent.itemSize * 2);
+
+      triggerScroll(viewport);
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.elementRef.nativeElement.scrollTop).toBe(testComponent.itemSize * 2);
+      expect(viewport.getRenderedRange()).toEqual({start: 2, end: 6});
+    }));
+
+    it('should scroll to index', fakeAsync(() => {
+      finishInit(fixture);
+      viewport.scrollToIndex(2);
+
+      triggerScroll(viewport);
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.elementRef.nativeElement.scrollTop).toBe(testComponent.itemSize * 2);
+      expect(viewport.getRenderedRange()).toEqual({start: 2, end: 6});
+    }));
+
+    it('should scroll to offset in horizontal mode', fakeAsync(() => {
+      testComponent.orientation = 'horizontal';
+      finishInit(fixture);
+      viewport.scrollToOffset(testComponent.itemSize * 2);
+
+      triggerScroll(viewport);
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.elementRef.nativeElement.scrollLeft).toBe(testComponent.itemSize * 2);
+      expect(viewport.getRenderedRange()).toEqual({start: 2, end: 6});
+    }));
+
+    it('should scroll to index in horizontal mode', fakeAsync(() => {
+      testComponent.orientation = 'horizontal';
+      finishInit(fixture);
+      viewport.scrollToIndex(2);
+
+      triggerScroll(viewport);
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.elementRef.nativeElement.scrollLeft).toBe(testComponent.itemSize * 2);
+      expect(viewport.getRenderedRange()).toEqual({start: 2, end: 6});
+    }));
+
     it('should update viewport as user scrolls down', fakeAsync(() => {
       finishInit(fixture);
 

@@ -151,6 +151,13 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
     }
   }
 
+  /** Scroll to the offset for the given index. */
+  scrollToIndex(): void {
+    // TODO(mmalerba): Implement.
+    throw new Error('cdk-virtual-scroll: scrollToIndex is currently not supported for the autosize'
+        + ' scroll strategy');
+  }
+
   /**
    * Update the buffer parameters.
    * @param minBufferPx The minimum amount of buffer rendered beyond the viewport (in pixels).
