@@ -265,6 +265,26 @@ describe('CdkDrag', () => {
       expect(fixture.componentInstance.dropInstance.data).toBe(fixture.componentInstance.items);
     });
 
+    it('should be able to attach data to a drag item', () => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dragItems.first.data)
+          .toBe(fixture.componentInstance.items[0]);
+    });
+
+    it('should be able to overwrite the drop zone id', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+
+      fixture.componentInstance.dropZoneId = 'custom-id';
+      fixture.detectChanges();
+
+      const drop = fixture.componentInstance.dropInstance;
+
+      expect(drop.id).toBe('custom-id');
+      expect(drop.element.nativeElement.getAttribute('id')).toBe('custom-id');
+    }));
+
     it('should toggle a class when the user starts dragging an item', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
@@ -787,6 +807,40 @@ describe('CdkDrag', () => {
       expect(fixture.componentInstance.droppedSpy).not.toHaveBeenCalled();
     }));
 
+    it('should assign a default id on each drop zone', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZones);
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.dropInstances.toArray().every(dropZone => {
+        return !!dropZone.id && !!dropZone.element.nativeElement.getAttribute('id');
+      })).toBe(true);
+    }));
+
+    it('should be able to connect two drop zones by id', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZones);
+      fixture.detectChanges();
+
+      const dropZones = fixture.componentInstance.dropInstances.toArray();
+
+      dropZones[0].id = 'todo';
+      dropZones[1].id = 'done';
+      dropZones[0].connectedTo = ['done'];
+      dropZones[1].connectedTo = ['todo'];
+      fixture.detectChanges();
+
+      const groups = fixture.componentInstance.groupedDragItems;
+      const element = groups[0][1].element.nativeElement;
+      const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+      expect(dropZones[0].element.nativeElement.contains(element)).toBe(true);
+
+      dragElementViaMouse(fixture, element, targetRect.left + 1, targetRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      expect(dropZones[1].element.nativeElement.contains(element)).toBe(true);
+    }));
+
   });
 
 });
@@ -866,11 +920,13 @@ export class StandaloneDraggableWithMultipleHandles {
   template: `
     <cdk-drop
       style="display: block; width: 100px; background: pink;"
+      [id]="dropZoneId"
       [data]="items"
       (dropped)="droppedSpy($event)">
       <div
         *ngFor="let item of items"
         cdkDrag
+        [data]="item"
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">{{item}}</div>
     </cdk-drop>
   `
@@ -879,6 +935,7 @@ export class DraggableInDropZone {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   @ViewChild(CdkDrop) dropInstance: CdkDrop;
   items = ['Zero', 'One', 'Two', 'Three'];
+  dropZoneId = 'items';
   droppedSpy = jasmine.createSpy('dropped spy').and.callFake((event: CdkDragDrop<string[]>) => {
     moveItemInArray(this.items, event.previousIndex, event.currentIndex);
   });
