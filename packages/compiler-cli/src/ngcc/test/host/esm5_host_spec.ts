@@ -406,6 +406,43 @@ const EXPORTS_FILES = [
   },
 ];
 
+const FUNCTION_BODY_FILE = {
+  name: '/function_body.js',
+  contents: `
+    function foo(x) {
+      return x;
+    }
+    function bar(x, y) {
+      if (y === void 0) { y = 42; }
+      return x + y;
+    }
+    function complex() {
+      var x = 42;
+      return 42;
+    }
+    function baz(x) {
+      var y;
+      if (x === void 0) { y = 42; }
+      return y;
+    }
+    var y;
+    function qux(x) {
+      if (x === void 0) { y = 42; }
+      return y;
+    }
+    function moo() {
+      var x;
+      if (x === void 0) { x = 42; }
+      return x;
+    }
+    var x;
+    function juu() {
+      if (x === void 0) { x = 42; }
+      return x;
+    }
+  `
+};
+
 describe('Esm5ReflectionHost', () => {
 
   describe('getDecoratorsOfDeclaration()', () => {
@@ -925,6 +962,54 @@ describe('Esm5ReflectionHost', () => {
         expect(decorators[0].name).toBe('NotArrayLiteralDecorator');
         expect(decorators[0].args).toEqual([]);
       });
+    });
+  });
+
+  describe('getDefinitionOfFunction()', () => {
+    it('should return an object describing the function declaration passed as an argument', () => {
+      const program = makeProgram(FUNCTION_BODY_FILE);
+      const host = new Esm5ReflectionHost(program.getTypeChecker());
+
+      const fooNode =
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'foo', ts.isFunctionDeclaration) !;
+      const fooDef = host.getDefinitionOfFunction(fooNode);
+      expect(fooDef.node).toBe(fooNode);
+      expect(fooDef.body !.length).toEqual(1);
+      expect(fooDef.body ![0].getText()).toEqual(`return x;`);
+      expect(fooDef.parameters.length).toEqual(1);
+      expect(fooDef.parameters[0].name).toEqual('x');
+      expect(fooDef.parameters[0].initializer).toBe(null);
+
+      const barNode =
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'bar', ts.isFunctionDeclaration) !;
+      const barDef = host.getDefinitionOfFunction(barNode);
+      expect(barDef.node).toBe(barNode);
+      expect(barDef.body !.length).toEqual(1);
+      expect(ts.isReturnStatement(barDef.body ![0])).toBeTruthy();
+      expect(barDef.body ![0].getText()).toEqual(`return x + y;`);
+      expect(barDef.parameters.length).toEqual(2);
+      expect(barDef.parameters[0].name).toEqual('x');
+      expect(fooDef.parameters[0].initializer).toBe(null);
+      expect(barDef.parameters[1].name).toEqual('y');
+      expect(barDef.parameters[1].initializer !.getText()).toEqual('42');
+
+      const bazNode =
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'baz', ts.isFunctionDeclaration) !;
+      const bazDef = host.getDefinitionOfFunction(bazNode);
+      expect(bazDef.node).toBe(bazNode);
+      expect(bazDef.body !.length).toEqual(3);
+      expect(bazDef.parameters.length).toEqual(1);
+      expect(bazDef.parameters[0].name).toEqual('x');
+      expect(bazDef.parameters[0].initializer).toBe(null);
+
+      const quxNode =
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'qux', ts.isFunctionDeclaration) !;
+      const quxDef = host.getDefinitionOfFunction(quxNode);
+      expect(quxDef.node).toBe(quxNode);
+      expect(quxDef.body !.length).toEqual(2);
+      expect(quxDef.parameters.length).toEqual(1);
+      expect(quxDef.parameters[0].name).toEqual('x');
+      expect(quxDef.parameters[0].initializer).toBe(null);
     });
   });
 
