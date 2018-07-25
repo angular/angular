@@ -23,10 +23,8 @@ export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: Component
 /** @experimental */
 export declare const APP_ID: InjectionToken<string>;
 
-/** @experimental */
 export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
 
-/** @experimental */
 export declare class ApplicationInitStatus {
     readonly done: boolean;
     readonly donePromise: Promise<any>;
