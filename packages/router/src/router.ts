@@ -16,6 +16,7 @@ import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {applyRedirects} from './operators/apply_redirects';
+import {beforePreactivation} from './operators/before_preactivation';
 import {recognize} from './operators/recognize';
 import {PreActivation} from './pre_activation';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
@@ -694,41 +695,31 @@ export class Router {
     return new Promise((resolvePromise, rejectPromise) => {
       // create an observable of the url and route state snapshot
       // this operation do not result in any side effects
-      let urlAndSnapshot$: Observable<NavStreamValue>;
-      if (!precreatedState) {
-        const moduleInjector = this.ngModule.injector;
-        const redirectsApplied$ = applyRedirects(
-            moduleInjector, this.configLoader, this.urlSerializer, this.config)(of (url));
+      let urlAndSnapshot$ = of (url).pipe(mergeMap(url => {
+        if (precreatedState) {
+          return of ({appliedUrl: url, snapshot: precreatedState});
+        } else {
+          return applyRedirects(
+                     this.ngModule.injector, this.configLoader, this.urlSerializer,
+                     this.config)(of (url))
+              .pipe(mergeMap(
+                  appliedUrl =>
+                      recognize(
+                          this.rootComponentType, this.config, (url) => this.serializeUrl(url),
+                          this.paramsInheritanceStrategy)(of (appliedUrl))
+                          .pipe(
+                              map((snapshot: RouterStateSnapshot) => ({appliedUrl, snapshot})),
+                              tap(({appliedUrl, snapshot}:
+                                       {appliedUrl: UrlTree, snapshot: RouterStateSnapshot}) =>
+                                      (this.events as Subject<Event>)
+                                          .next(new RoutesRecognized(
+                                              id, this.serializeUrl(url),
+                                              this.serializeUrl(appliedUrl), snapshot))))));
+        }
+      }));
 
-        urlAndSnapshot$ = redirectsApplied$.pipe(mergeMap(
-            (appliedUrl: UrlTree) =>
-                recognize(
-                    this.rootComponentType, this.config, (url) => this.serializeUrl(url),
-                    this.paramsInheritanceStrategy)(of (appliedUrl))
-                    .pipe(
-                        map((snapshot: RouterStateSnapshot) => ({appliedUrl, snapshot})),
-                        tap(({appliedUrl,
-                              snapshot}: {appliedUrl: UrlTree, snapshot: RouterStateSnapshot}) =>
-                                (this.events as Subject<Event>)
-                                    .next(new RoutesRecognized(
-                                        id, this.serializeUrl(url), this.serializeUrl(appliedUrl),
-                                        snapshot))))));
-
-      } else {
-        urlAndSnapshot$ = of ({appliedUrl: url, snapshot: precreatedState});
-      }
-
-      const beforePreactivationDone$ =
-          urlAndSnapshot$.pipe(mergeMap((p): Observable<NavStreamValue> => {
-            if (typeof p === 'boolean') return of (p);
-            return this.hooks
-                .beforePreactivation(p.snapshot, {
-                  navigationId: id,
-                  appliedUrlTree: url,
-                  rawUrlTree: rawUrl, skipLocationChange, replaceUrl,
-                })
-                .pipe(map(() => p));
-          }));
+      const beforePreactivationDone$ = urlAndSnapshot$.pipe(beforePreactivation(
+          this.hooks.beforePreactivation, id, url, rawUrl, skipLocationChange, replaceUrl));
 
       // run preactivation: guards and data resolvers
       let preActivation: PreActivation;
