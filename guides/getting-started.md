@@ -3,17 +3,17 @@ For help getting started with a new Angular app, check out the
 
 For existing apps, follow these steps to begin using Angular Material.
 
-### Step 1: Install Angular Material and Angular CDK
+### Step 1: Install Angular Material, Angular CDK and Angular Animations
 
 You can use either the npm or yarn command-line tool to install packages. Use whichever is appropriate for your project in the examples below.
 
 #### NPM
 ```bash
-npm install --save @angular/material @angular/cdk
+npm install --save @angular/material @angular/cdk @angular/animations
 ```
 #### Yarn
 ```bash
-yarn add @angular/material @angular/cdk
+yarn add @angular/material @angular/cdk @angular/animations
 ```
 
 
@@ -24,29 +24,17 @@ build should not be considered stable and may break between releases.
 
 #### NPM
 ```bash
-npm install --save angular/material2-builds angular/cdk-builds
+npm install --save angular/material2-builds angular/cdk-builds angular/animations-builds
 ```
 
 #### Yarn
 ```bash
-yarn add angular/material2-builds angular/cdk-builds
+yarn add angular/material2-builds angular/cdk-builds angular/animations-builds
 ```
 
-### Step 2: Animations
+### Step 2: Configure animations
 
-Some Material components depend on the Angular animations module in order to be able to do
-more advanced transitions. If you want these animations to work in your app, you have to
-install the `@angular/animations` module and include the `BrowserAnimationsModule` in your app.
-
-#### NPM
-```bash
-npm install --save @angular/animations
-```
-
-#### Yarn
-```bash
-yarn add @angular/animations
-```
+Once the animations package is installed, import `BrowserAnimationsModule` into your application to enable animations support.
 
 ```ts
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
@@ -59,7 +47,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 export class PizzaPartyAppModule { }
 ```
 
-If you don't want to add another dependency to your project, you can use the `NoopAnimationsModule`.
+Alternatively, you can disable animations by importing `NoopAnimationsModule`.
 
 ```ts
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
