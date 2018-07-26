@@ -28,6 +28,7 @@ export class VirtualScrollDemo {
   scrollToOffset = 0;
   scrollToIndex = 0;
   scrollToBehavior: ScrollBehavior = 'auto';
+  scrolledIndex = 0;
   fixedSizeData = Array(10000).fill(50);
   increasingSizeData = Array(10000).fill(0).map((_, i) => (1 + Math.floor(i / 1000)) * 20);
   decreasingSizeData = Array(10000).fill(0)
@@ -109,5 +110,9 @@ export class VirtualScrollDemo {
       }
       return 0;
     }));
+  }
+
+  scrolled(index: number) {
+    this.scrolledIndex = index;
   }
 }

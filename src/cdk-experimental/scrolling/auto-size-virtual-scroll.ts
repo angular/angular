@@ -9,6 +9,7 @@
 import {coerceNumberProperty} from '@angular/cdk/coercion';
 import {ListRange} from '@angular/cdk/collections';
 import {Directive, forwardRef, Input, OnChanges} from '@angular/core';
+import {Observable} from 'rxjs';
 import {VIRTUAL_SCROLL_STRATEGY, VirtualScrollStrategy} from './virtual-scroll-strategy';
 import {CdkVirtualScrollViewport} from './virtual-scroll-viewport';
 
@@ -65,6 +66,13 @@ export class ItemSizeAverager {
 
 /** Virtual scrolling strategy for lists with items of unknown or dynamic size. */
 export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
+  /** @docs-private Implemented as part of VirtualScrollStrategy. */
+  scrolledIndexChange = Observable.create(() => {
+    // TODO(mmalerba): Implement.
+    throw Error('cdk-virtual-scroll: scrolledIndexChange is currently not supported for the' +
+        ' autosize scroll strategy');
+  });
+
   /** The attached viewport. */
   private _viewport: CdkVirtualScrollViewport | null = null;
 
@@ -154,7 +162,7 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
   /** Scroll to the offset for the given index. */
   scrollToIndex(): void {
     // TODO(mmalerba): Implement.
-    throw new Error('cdk-virtual-scroll: scrollToIndex is currently not supported for the autosize'
+    throw Error('cdk-virtual-scroll: scrollToIndex is currently not supported for the autosize'
         + ' scroll strategy');
   }
 

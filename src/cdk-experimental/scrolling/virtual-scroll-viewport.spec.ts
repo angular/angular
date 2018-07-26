@@ -206,6 +206,21 @@ describe('CdkVirtualScrollViewport', () => {
       expect(viewport.getRenderedRange()).toEqual({start: 2, end: 6});
     }));
 
+    it('should output scrolled index', fakeAsync(() => {
+      finishInit(fixture);
+      triggerScroll(viewport, testComponent.itemSize * 2 - 1);
+      fixture.detectChanges();
+      flush();
+
+      expect(testComponent.scrolledToIndex).toBe(1);
+
+      triggerScroll(viewport, testComponent.itemSize * 2);
+      fixture.detectChanges();
+      flush();
+
+      expect(testComponent.scrolledToIndex).toBe(2);
+    }));
+
     it('should update viewport as user scrolls down', fakeAsync(() => {
       finishInit(fixture);
 
@@ -608,7 +623,8 @@ function triggerScroll(viewport: CdkVirtualScrollViewport, offset?: number) {
   template: `
     <cdk-virtual-scroll-viewport
         [itemSize]="itemSize" [bufferSize]="bufferSize" [orientation]="orientation"
-        [style.height.px]="viewportHeight" [style.width.px]="viewportWidth">
+        [style.height.px]="viewportHeight" [style.width.px]="viewportWidth"
+        (scrolledIndexChange)="scrolledToIndex = $event">
       <div class="item"
            *cdkVirtualFor="let item of items; let i = index; trackBy: trackBy; \
                            templateCacheSize: templateCacheSize"
@@ -641,6 +657,8 @@ class FixedSizeVirtualScroll {
   @Input() items = Array(10).fill(0).map((_, i) => i);
   @Input() trackBy;
   @Input() templateCacheSize = 20;
+
+  scrolledToIndex = 0;
 
   get viewportWidth() {
     return this.orientation == 'horizontal' ? this.viewportSize : this.viewportCrossSize;

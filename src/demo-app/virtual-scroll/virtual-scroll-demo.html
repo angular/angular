@@ -56,8 +56,12 @@
 <button mat-button (click)="viewport1.scrollToIndex(scrollToIndex, scrollToBehavior)">
   Go to index
 </button>
+<p>
+  Currently scrolled to item: {{scrolledIndex}}
+</p>
 
-<cdk-virtual-scroll-viewport class="demo-viewport" [itemSize]="50" #viewport1>
+<cdk-virtual-scroll-viewport class="demo-viewport" [itemSize]="50" #viewport1
+                             (scrolledIndexChange)="scrolled($event)">
   <div *cdkVirtualFor="let size of fixedSizeData; let i = index" class="demo-item"
        [style.height.px]="size">
     Item #{{i}} - ({{size}}px)
