@@ -11,11 +11,11 @@ import {Compiler, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Optional
 import {BehaviorSubject, Observable, Subject, Subscription, of } from 'rxjs';
 import {concatMap, map, mergeMap, tap} from 'rxjs/operators';
 
-import {applyRedirects} from './apply_redirects';
 import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {applyRedirects} from './operators/apply_redirects';
 import {recognize} from './operators/recognize';
 import {PreActivation} from './pre_activation';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
@@ -27,6 +27,7 @@ import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_st
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {forEach} from './utils/collection';
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
+
 
 
 /**
@@ -688,8 +689,8 @@ export class Router {
       let urlAndSnapshot$: Observable<NavStreamValue>;
       if (!precreatedState) {
         const moduleInjector = this.ngModule.injector;
-        const redirectsApplied$ =
-            applyRedirects(moduleInjector, this.configLoader, this.urlSerializer, url, this.config);
+        const redirectsApplied$ = applyRedirects(
+            moduleInjector, this.configLoader, this.urlSerializer, this.config)(of (url));
 
         urlAndSnapshot$ = redirectsApplied$.pipe(mergeMap(
             (appliedUrl: UrlTree) =>
