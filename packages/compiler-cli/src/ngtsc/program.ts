@@ -82,9 +82,7 @@ export class NgtscProgram implements api.Program {
                           .filter((result): result is Promise<void> => result !== undefined));
   }
 
-  listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
-    throw new Error('Method not implemented.');
-  }
+  listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] { return []; }
 
   getLibrarySummaries(): Map<string, api.LibrarySummary> {
     throw new Error('Method not implemented.');
