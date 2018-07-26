@@ -738,8 +738,8 @@ class TemplateRef<T> implements viewEngine.TemplateRef<T> {
   readonly elementRef: viewEngine.ElementRef;
 
   constructor(
-      private _declarationParentView: LViewData, elementRef: viewEngine.ElementRef, private _tView: TView, private _renderer: Renderer3,
-      private _queries: LQueries|null) {
+      private _declarationParentView: LViewData, elementRef: viewEngine.ElementRef,
+      private _tView: TView, private _renderer: Renderer3, private _queries: LQueries|null) {
     this.elementRef = elementRef;
   }
 

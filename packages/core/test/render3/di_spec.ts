@@ -12,7 +12,7 @@ import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
 import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
 import {LViewFlags} from '../../src/render3/interfaces/view';
@@ -40,9 +40,8 @@ describe('di', () => {
           { text(2); }
           elementEnd();
         }
-        let tmp: any;
         if (rf & RenderFlags.Update) {
-          tmp = load(1);
+          const tmp = reference(1) as any;
           textBinding(2, bind(tmp.value));
         }
       }
@@ -105,9 +104,8 @@ describe('di', () => {
           }
           elementEnd();
         }
-        let tmp: any;
         if (rf & RenderFlags.Update) {
-          tmp = load(2);
+          const tmp = reference(2) as any;
           textBinding(3, bind(tmp.value));
         }
       }
@@ -815,11 +813,9 @@ describe('di', () => {
           elementEnd();
         }
 
-        let tmp1: any;
-        let tmp2: any;
         if (rf & RenderFlags.Update) {
-          tmp1 = load(1);
-          tmp2 = load(2);
+          const tmp1 = reference(1) as any;
+          const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp2.value, '-', tmp1.value, ''));
         }
       }
@@ -870,11 +866,9 @@ describe('di', () => {
           }, undefined, ['dir', '', 'dirSame', ''], ['dir', 'dir', 'dirSame', 'dirSame']);
           text(3);
         }
-        let tmp1: any;
-        let tmp2: any;
         if (rf & RenderFlags.Update) {
-          tmp1 = load(1);
-          tmp2 = load(2);
+          const tmp1 = reference(1) as any;
+          const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
         }
       }
@@ -925,11 +919,9 @@ describe('di', () => {
           { text(3); }
           elementEnd();
         }
-        let tmp1: any;
-        let tmp2: any;
         if (rf & RenderFlags.Update) {
-          tmp1 = load(1);
-          tmp2 = load(2);
+          const tmp1 = reference(1) as any;
+          const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
         }
       }
@@ -1016,9 +1008,8 @@ describe('di', () => {
           element(0, 'my-comp', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
           text(2);
         }
-        let tmp: any;
         if (rf & RenderFlags.Update) {
-          tmp = load(1);
+          const tmp = reference(1) as any;
           textBinding(2, bind(tmp.value));
         }
       }, directives);
@@ -1048,9 +1039,8 @@ describe('di', () => {
               { text(2); }
               elementEnd();
             }
-            let tmp: any;
             if (rf & RenderFlags.Update) {
-              tmp = load(1);
+              const tmp = reference(1) as any;
               textBinding(2, bind(tmp.value));
             }
           },
@@ -1087,8 +1077,8 @@ describe('di', () => {
               elementEnd();
               text(3);
             }
-            const tmp = load(2) as any;
             if (rf & RenderFlags.Update) {
+              const tmp = reference(2) as any;
               textBinding(3, bind(tmp.value));
             }
           },
@@ -1134,9 +1124,8 @@ describe('di', () => {
                     { text(2); }
                     elementEnd();
                   }
-                  let tmp: any;
                   if (rf1 & RenderFlags.Update) {
-                    tmp = load(1);
+                    const tmp = reference(1) as any;
                     textBinding(2, bind(tmp.value));
                   }
                 }
@@ -1183,9 +1172,8 @@ describe('di', () => {
                 { text(2); }
                 elementEnd();
               }
-              let tmp: any;
               if (rf1 & RenderFlags.Update) {
-                tmp = load(1);
+                const tmp = reference(1) as any;
                 textBinding(2, bind(tmp.value));
               }
             }
@@ -1382,11 +1370,9 @@ describe('di', () => {
               { text(3); }
               elementEnd();
             }
-            let tmp1: any;
-            let tmp2: any;
             if (rf & RenderFlags.Update) {
-              tmp1 = load(1);
-              tmp2 = load(2);
+              const tmp1 = reference(1) as any;
+              const tmp2 = reference(2) as any;
               textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
             }
             embeddedViewEnd();

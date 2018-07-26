@@ -9,7 +9,7 @@
 import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective, tick} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, load, loadDirective, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, loadDirective, reference, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {ComponentFixture, renderToHtml} from './render_util';
@@ -554,7 +554,7 @@ describe('elementProperty', () => {
               text(2);
             }
             if (rf & RenderFlags.Update) {
-              const tmp = load(1) as any;
+              const tmp = reference(1) as any;
               textBinding(2, bind(tmp.role));
             }
           },
