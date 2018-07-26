@@ -75,12 +75,11 @@ export class NgtscProgram implements api.Program {
   async loadNgStructureAsync(): Promise<void> {
     if (this.compilation === undefined) {
       this.compilation = this.makeCompilation();
-
-      await this.tsProgram.getSourceFiles()
-          .filter(file => !file.fileName.endsWith('.d.ts'))
-          .map(file => this.compilation !.analyzeAsync(file))
-          .filter((result): result is Promise<void> => result !== undefined);
     }
+    await Promise.all(this.tsProgram.getSourceFiles()
+                          .filter(file => !file.fileName.endsWith('.d.ts'))
+                          .map(file => this.compilation !.analyzeAsync(file))
+                          .filter((result): result is Promise<void> => result !== undefined));
   }
 
   listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
