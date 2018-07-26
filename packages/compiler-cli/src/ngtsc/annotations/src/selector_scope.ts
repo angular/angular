@@ -10,7 +10,7 @@ import {Expression, ExternalExpr, ExternalReference} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ReflectionHost} from '../../host';
-import {AbsoluteReference, Reference, reflectTypeEntityToDeclaration} from '../../metadata';
+import {AbsoluteReference, Reference, ResolvedReference, reflectTypeEntityToDeclaration} from '../../metadata';
 import {reflectIdentifierOfDeclaration, reflectNameOfDeclaration} from '../../metadata/src/reflector';
 
 import {toR3Reference} from './util';
@@ -199,10 +199,6 @@ export class SelectorScopeRegistry {
     } else {
       // The module wasn't analyzed before, and probably has a precompiled ngModuleDef with a type
       // annotation that specifies the needed metadata.
-      if (ngModuleImportedFrom === null) {
-        // TODO(alxhub): handle hand-compiled ngModuleDef in the current Program.
-        throw new Error(`Need to read .d.ts module but ngModuleImportedFrom is unspecified`);
-      }
       data = this._readMetadataFromCompiledClass(node, ngModuleImportedFrom);
       // Note that data here could still be null, if the class didn't have a precompiled
       // ngModuleDef.
@@ -267,7 +263,7 @@ export class SelectorScopeRegistry {
    * @param ngModuleImportedFrom module specifier of the import path to assume for all declarations
    * stemming from this module.
    */
-  private _readMetadataFromCompiledClass(clazz: ts.Declaration, ngModuleImportedFrom: string):
+  private _readMetadataFromCompiledClass(clazz: ts.Declaration, ngModuleImportedFrom: string|null):
       ModuleData|null {
     // This operation is explicitly not memoized, as it depends on `ngModuleImportedFrom`.
     // TODO(alxhub): investigate caching of .d.ts module metadata.
@@ -348,7 +344,8 @@ export class SelectorScopeRegistry {
    * This operation assumes that these types should be imported from `ngModuleImportedFrom` unless
    * they themselves were imported from another absolute path.
    */
-  private _extractReferencesFromType(def: ts.TypeNode, ngModuleImportedFrom: string): Reference[] {
+  private _extractReferencesFromType(def: ts.TypeNode, ngModuleImportedFrom: string|null):
+      Reference[] {
     if (!ts.isTupleTypeNode(def)) {
       return [];
     }
@@ -357,11 +354,16 @@ export class SelectorScopeRegistry {
         throw new Error(`Expected TypeQueryNode`);
       }
       const type = element.exprName;
-      const {node, from} = reflectTypeEntityToDeclaration(type, this.checker);
-      const moduleName = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
-      const clazz = node as ts.Declaration;
-      const id = reflectIdentifierOfDeclaration(clazz);
-      return new AbsoluteReference(node, id !, moduleName, id !.text);
+      if (ngModuleImportedFrom !== null) {
+        const {node, from} = reflectTypeEntityToDeclaration(type, this.checker);
+        const moduleName = (from !== null && !from.startsWith('.') ? from : ngModuleImportedFrom);
+        const id = reflectIdentifierOfDeclaration(node);
+        return new AbsoluteReference(node, id !, moduleName, id !.text);
+      } else {
+        const {node} = reflectTypeEntityToDeclaration(type, this.checker);
+        const id = reflectIdentifierOfDeclaration(node);
+        return new ResolvedReference(node, id !);
+      }
     });
   }
 }
