@@ -15,7 +15,7 @@ load(
     "tsc_wrapped_tsconfig",
 )
 
-def _compile_strategy(ctx):
+def compile_strategy(ctx):
     """Detect which strategy should be used to implement ng_module.
 
     Depending on the value of the 'compile' define flag or the '_global_mode' attribute, ng_module
@@ -51,7 +51,7 @@ def _compiler_name(ctx):
       the name of the current compiler to be displayed in build output
     """
 
-    strategy = _compile_strategy(ctx)
+    strategy = compile_strategy(ctx)
     if strategy == "legacy":
         return "ngc"
     elif strategy == "global":
@@ -73,7 +73,7 @@ def _enable_ivy_value(ctx):
       the value of enableIvy that needs to be set in angularCompilerOptions in the generated tsconfig
     """
 
-    strategy = _compile_strategy(ctx)
+    strategy = compile_strategy(ctx)
     if strategy == "legacy":
         return False
     elif strategy == "global":
@@ -96,7 +96,7 @@ def _include_ng_files(ctx):
       factory files), false otherwise
     """
 
-    strategy = _compile_strategy(ctx)
+    strategy = compile_strategy(ctx)
     return strategy == "legacy" or strategy == "global"
 
 def _basename_of(ctx, file):
