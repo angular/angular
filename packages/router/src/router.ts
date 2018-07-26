@@ -298,6 +298,11 @@ export class Router {
   urlUpdateStrategy: 'deferred'|'eager' = 'deferred';
 
   /**
+   * See {@link RouterModule} for more information.
+   */
+  relativeLinkResolution: 'legacy'|'corrected' = 'legacy';
+
+  /**
    * Creates the router service.
    */
   // TODO: vsavkin make internal after the final is out.
@@ -676,7 +681,7 @@ export class Router {
         urlAndSnapshot$ = redirectsApplied$.pipe(mergeMap((appliedUrl: UrlTree) => {
           return recognize(
                      this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl),
-                     this.paramsInheritanceStrategy)
+                     this.paramsInheritanceStrategy, this.relativeLinkResolution)
               .pipe(map((snapshot: any) => {
                 (this.events as Subject<Event>)
                     .next(new RoutesRecognized(

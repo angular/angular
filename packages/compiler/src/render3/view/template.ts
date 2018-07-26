@@ -46,6 +46,12 @@ function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefin
   }
 }
 
+//  if (rf & flags) { .. }
+export function renderFlagCheckIfStmt(
+    flags: core.RenderFlags, statements: o.Statement[]): o.IfStmt {
+  return o.ifStmt(o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(flags), null, false), statements);
+}
+
 export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver {
   private _dataIndex = 0;
   private _bindingContext = 0;
@@ -54,7 +60,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   private _variableCode: o.Statement[] = [];
   private _bindingCode: o.Statement[] = [];
   private _postfixCode: o.Statement[] = [];
-  private _temporary = temporaryAllocator(this._prefixCode, TEMPORARY_NAME);
   private _valueConverter: ValueConverter;
   private _unsupported = unsupported;
   private _bindingScope: BindingScope;
@@ -75,6 +80,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       private directiveMatcher: SelectorMatcher|null, private directives: Set<o.Expression>,
       private pipeTypeByName: Map<string, o.Expression>, private pipes: Set<o.Expression>,
       private _namespace: o.ExternalReference) {
+    // view queries can take up space in data and allocation happens earlier (in the "viewQuery"
+    // function)
+    this._dataIndex = viewQueries.length;
     this._bindingScope =
         parentBindingScope.nestedScope((lhsVar: o.ReadVarExpr, expression: o.Expression) => {
           this._bindingCode.push(
@@ -127,32 +135,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       this.instruction(this._creationCode, null, R3.projectionDef, ...parameters);
     }
 
-    // Define and update any view queries
-    for (let query of this.viewQueries) {
-      // e.g. r3.Q(0, somePredicate, true);
-      const querySlot = this.allocateDataSlot();
-      const predicate = getQueryPredicate(query, this.constantPool);
-      const args: o.Expression[] = [
-        o.literal(querySlot, o.INFERRED_TYPE),
-        predicate,
-        o.literal(query.descendants, o.INFERRED_TYPE),
-      ];
-
-      if (query.read) {
-        args.push(query.read);
-      }
-      this.instruction(this._creationCode, null, R3.query, ...args);
-
-      // (r3.qR(tmp = r3.ɵld(0)) && (ctx.someDir = tmp));
-      const temporary = this._temporary();
-      const getQueryList = o.importExpr(R3.load).callFn([o.literal(querySlot)]);
-      const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
-      const updateDirective = o.variable(CONTEXT_NAME)
-                                  .prop(query.propertyName)
-                                  .set(query.first ? temporary.prop('first') : temporary);
-      this._bindingCode.push(refresh.and(updateDirective).toStmt());
-    }
-
     t.visitAll(this, nodes);
 
     if (this._pureFunctionSlots > 0) {
@@ -161,15 +143,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     const creationCode = this._creationCode.length > 0 ?
-        [o.ifStmt(
-            o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(core.RenderFlags.Create), null, false),
-            this._creationCode)] :
+        [renderFlagCheckIfStmt(core.RenderFlags.Create, this._creationCode)] :
         [];
 
     const updateCode = this._bindingCode.length > 0 ?
-        [o.ifStmt(
-            o.variable(RENDER_FLAGS).bitwiseAnd(o.literal(core.RenderFlags.Update), null, false),
-            this._bindingCode)] :
+        [renderFlagCheckIfStmt(core.RenderFlags.Update, this._bindingCode)] :
         [];
 
     // Generate maps of placeholder name to node indexes

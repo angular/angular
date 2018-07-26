@@ -497,7 +497,7 @@ and displays search results as they arrive.
 
 A search value reaches the service only if it's a new value and the user has stopped typing.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `withRefresh` option is explained [below](#cache-refresh).
 
@@ -517,7 +517,7 @@ it cancels that request and sends a new one.
 server returns them out of order. 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 If you think you'll reuse this debouncing logic,
 consider moving it to a utility function or into the `PackageSearchService` itself.
@@ -622,7 +622,7 @@ Then import and add it to the `AppModule` _providers array_ like this:
 As you create new interceptors, add them to the `httpInterceptorProviders` array and
 you won't have to revisit the `AppModule`.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 There are many more interceptors in the complete sample code.
 
@@ -824,7 +824,7 @@ and emits again later with the updated search results.
 
 The _cache-then-refresh_ option is triggered by the presence of a **custom `x-refresh` header**.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 A checkbox on the `PackageSearchComponent` toggles a `withRefresh` flag,
 which is one of the arguments to `PackageSearchService.search()`.

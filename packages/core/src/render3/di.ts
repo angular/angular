@@ -11,6 +11,7 @@
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {InjectFlags, Injector, inject, setCurrentInjector} from '../di/injector';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
+import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
 import {ElementRef as viewEngine_ElementRef} from '../linker/element_ref';
 import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory';
 import {TemplateRef as viewEngine_TemplateRef} from '../linker/template_ref';
@@ -19,9 +20,10 @@ import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_Vie
 import {Type} from '../type';
 
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
+import {ComponentFactoryResolver} from './component_ref';
 import {addToViewTree, assertPreviousIsParent, createEmbeddedViewNode, createLContainer, createLNodeObject, createTNode, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
 import {VIEWS} from './interfaces/container';
-import {ComponentTemplate, DirectiveDefInternal, RenderFlags} from './interfaces/definition';
+import {DirectiveDefInternal, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {AttributeMarker, LContainerNode, LElementNode, LNode, LViewNode, TContainerNode, TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {LQueries, QueryReadType} from './interfaces/query';
@@ -29,8 +31,8 @@ import {Renderer3} from './interfaces/renderer';
 import {DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getChildLNode, getParentLNode, insertView, removeView} from './node_manipulation';
-import {notImplemented, stringify} from './util';
-import {EmbeddedViewRef, ViewRef} from './view_ref';
+import {stringify} from './util';
+import {ViewRef} from './view_ref';
 
 
 
@@ -130,7 +132,7 @@ export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNo
     templateRef: null,
     viewContainerRef: null,
     elementRef: null,
-    changeDetectorRef: null
+    changeDetectorRef: null,
   };
 }
 
@@ -220,6 +222,18 @@ export function injectViewContainerRef(): viewEngine_ViewContainerRef {
 export function injectChangeDetectorRef(): viewEngine_ChangeDetectorRef {
   return getOrCreateChangeDetectorRef(getOrCreateNodeInjector(), null);
 }
+
+/**
+ * Creates a ComponentFactoryResolver and stores it on the injector. Or, if the
+ * ComponentFactoryResolver
+ * already exists, retrieves the existing ComponentFactoryResolver.
+ *
+ * @returns The ComponentFactoryResolver instance to use
+ */
+export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryResolver {
+  return componentFactoryResolver;
+}
+const componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryResolver();
 
 /**
  * Inject static attribute value into directive constructor.
@@ -634,7 +648,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     const adjustedIdx = this._adjustIndex(index);
     const viewRef = (templateRef as TemplateRef<C>)
                         .createEmbeddedView(context || <any>{}, this._lContainerNode, adjustedIdx);
-    (viewRef as EmbeddedViewRef<any>).attachToViewContainerRef(this);
+    (viewRef as ViewRef<any>).attachToViewContainerRef(this);
     this._viewRefs.splice(adjustedIdx, 0, viewRef);
     return viewRef;
   }
@@ -642,15 +656,23 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
   createComponent<C>(
       componentFactory: viewEngine_ComponentFactory<C>, index?: number|undefined,
       injector?: Injector|undefined, projectableNodes?: any[][]|undefined,
-      ngModule?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<C> {
-    throw notImplemented();
+      ngModuleRef?: viewEngine_NgModuleRef<any>|undefined): viewEngine_ComponentRef<C> {
+    const contextInjector = injector || this.parentInjector;
+    if (!ngModuleRef && contextInjector) {
+      ngModuleRef = contextInjector.get(viewEngine_NgModuleRef);
+    }
+
+    const componentRef =
+        componentFactory.create(contextInjector, projectableNodes, undefined, ngModuleRef);
+    this.insert(componentRef.hostView, index);
+    return componentRef;
   }
 
   insert(viewRef: viewEngine_ViewRef, index?: number): viewEngine_ViewRef {
     if (viewRef.destroyed) {
       throw new Error('Cannot insert a destroyed View in a ViewContainer!');
     }
-    const lViewNode = (viewRef as EmbeddedViewRef<any>)._lViewNode;
+    const lViewNode = (viewRef as ViewRef<any>)._lViewNode !;
     const adjustedIdx = this._adjustIndex(index);
 
     insertView(this._lContainerNode, lViewNode, adjustedIdx);
@@ -660,7 +682,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
         this._lContainerNode.native;
     addRemoveViewFromContainer(this._lContainerNode, lViewNode, true, beforeNode);
 
-    (viewRef as EmbeddedViewRef<any>).attachToViewContainerRef(this);
+    (viewRef as ViewRef<any>).attachToViewContainerRef(this);
     this._viewRefs.splice(adjustedIdx, 0, viewRef);
 
     return viewRef;
@@ -736,6 +758,8 @@ class TemplateRef<T> implements viewEngine_TemplateRef<T> {
       insertView(containerNode, viewNode, index !);
     }
     renderEmbeddedTemplate(viewNode, this._tView, context, RenderFlags.Create);
-    return new EmbeddedViewRef(viewNode, this._tView.template !as ComponentTemplate<T>, context);
+    const viewRef = new ViewRef(viewNode.data, context);
+    viewRef._lViewNode = viewNode;
+    return viewRef;
   }
 }

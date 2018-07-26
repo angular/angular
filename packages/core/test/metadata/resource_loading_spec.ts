@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {jasmineAwait} from '@angular/core/testing';
-
 import {Component} from '../../src/core';
 import {clearResolutionOfComponentResourcesQueue, resolveComponentResources} from '../../src/metadata/resource_loading';
 import {ComponentType} from '../../src/render3/interfaces/definition';
@@ -60,59 +58,59 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
     }
     beforeEach(() => resourceFetchCount = 0);
 
-    it('should resolve template', jasmineAwait(async() => {
-         const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
-         const metadata: Component = {templateUrl: 'test://content'};
-         compileComponent(MyComponent, metadata);
-         await resolveComponentResources(testResolver);
-         expect(MyComponent.ngComponentDef).toBeDefined();
-         expect(metadata.templateUrl).toBe(undefined);
-         expect(metadata.template).toBe('content');
-         expect(resourceFetchCount).toBe(1);
-       }));
+    it('should resolve template', async() => {
+      const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
+      const metadata: Component = {templateUrl: 'test://content'};
+      compileComponent(MyComponent, metadata);
+      await resolveComponentResources(testResolver);
+      expect(MyComponent.ngComponentDef).toBeDefined();
+      expect(metadata.templateUrl).toBe(undefined);
+      expect(metadata.template).toBe('content');
+      expect(resourceFetchCount).toBe(1);
+    });
 
-    it('should resolve styleUrls', jasmineAwait(async() => {
-         const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
-         const metadata: Component = {template: '', styleUrls: ['test://style1', 'test://style2']};
-         compileComponent(MyComponent, metadata);
-         await resolveComponentResources(testResolver);
-         expect(MyComponent.ngComponentDef).toBeDefined();
-         expect(metadata.styleUrls).toBe(undefined);
-         expect(metadata.styles).toEqual(['style1', 'style2']);
-         expect(resourceFetchCount).toBe(2);
-       }));
+    it('should resolve styleUrls', async() => {
+      const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
+      const metadata: Component = {template: '', styleUrls: ['test://style1', 'test://style2']};
+      compileComponent(MyComponent, metadata);
+      await resolveComponentResources(testResolver);
+      expect(MyComponent.ngComponentDef).toBeDefined();
+      expect(metadata.styleUrls).toBe(undefined);
+      expect(metadata.styles).toEqual(['style1', 'style2']);
+      expect(resourceFetchCount).toBe(2);
+    });
 
-    it('should cache multiple resolution to same URL', jasmineAwait(async() => {
-         const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
-         const metadata: Component = {template: '', styleUrls: ['test://style1', 'test://style1']};
-         compileComponent(MyComponent, metadata);
-         await resolveComponentResources(testResolver);
-         expect(MyComponent.ngComponentDef).toBeDefined();
-         expect(metadata.styleUrls).toBe(undefined);
-         expect(metadata.styles).toEqual(['style1', 'style1']);
-         expect(resourceFetchCount).toBe(1);
-       }));
+    it('should cache multiple resolution to same URL', async() => {
+      const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
+      const metadata: Component = {template: '', styleUrls: ['test://style1', 'test://style1']};
+      compileComponent(MyComponent, metadata);
+      await resolveComponentResources(testResolver);
+      expect(MyComponent.ngComponentDef).toBeDefined();
+      expect(metadata.styleUrls).toBe(undefined);
+      expect(metadata.styles).toEqual(['style1', 'style1']);
+      expect(resourceFetchCount).toBe(1);
+    });
 
-    it('should keep order even if the resolution is out of order', jasmineAwait(async() => {
-         const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
-         const metadata: Component = {
-           template: '',
-           styles: ['existing'],
-           styleUrls: ['test://style1', 'test://style2']
-         };
-         compileComponent(MyComponent, metadata);
-         const resolvers: any[] = [];
-         const resolved = resolveComponentResources(
-             (url) => new Promise((resolve, response) => resolvers.push(url, resolve)));
-         // Out of order resolution
-         expect(resolvers[0]).toEqual('test://style1');
-         expect(resolvers[2]).toEqual('test://style2');
-         resolvers[3]('second');
-         resolvers[1]('first');
-         await resolved;
-         expect(metadata.styleUrls).toBe(undefined);
-         expect(metadata.styles).toEqual(['existing', 'first', 'second']);
-       }));
+    it('should keep order even if the resolution is out of order', async() => {
+      const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
+      const metadata: Component = {
+        template: '',
+        styles: ['existing'],
+        styleUrls: ['test://style1', 'test://style2']
+      };
+      compileComponent(MyComponent, metadata);
+      const resolvers: any[] = [];
+      const resolved = resolveComponentResources(
+          (url) => new Promise((resolve, response) => resolvers.push(url, resolve)));
+      // Out of order resolution
+      expect(resolvers[0]).toEqual('test://style1');
+      expect(resolvers[2]).toEqual('test://style2');
+      resolvers[3]('second');
+      resolvers[1]('first');
+      await resolved;
+      expect(metadata.styleUrls).toBe(undefined);
+      expect(metadata.styles).toEqual(['existing', 'first', 'second']);
+    });
 
   });
 
@@ -123,14 +121,14 @@ Did you run and wait for 'resolveComponentResources()'?`.trim());
       } as any as Response);
     }
 
-    it('should work with fetch', jasmineAwait(async() => {
-         const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
-         const metadata: Component = {templateUrl: 'test://content'};
-         compileComponent(MyComponent, metadata);
-         await resolveComponentResources(fetch);
-         expect(MyComponent.ngComponentDef).toBeDefined();
-         expect(metadata.templateUrl).toBe(undefined);
-         expect(metadata.template).toBe('response for test://content');
-       }));
+    it('should work with fetch', async() => {
+      const MyComponent: ComponentType<any> = (class MyComponent{}) as any;
+      const metadata: Component = {templateUrl: 'test://content'};
+      compileComponent(MyComponent, metadata);
+      await resolveComponentResources(fetch);
+      expect(MyComponent.ngComponentDef).toBeDefined();
+      expect(metadata.templateUrl).toBe(undefined);
+      expect(metadata.template).toBe('response for test://content');
+    });
   });
 });

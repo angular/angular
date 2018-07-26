@@ -22,7 +22,7 @@ The HTML `<title>` is in the document `<head>`, outside the body, making it inac
 You could grab the browser `document` object and set the title manually.
 That's dirty and undermines your chances of running the app outside of a browser someday.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   Running your app outside a browser means that you can take advantage of server-side
   pre-rendering for near-instant first app render times and for SEO.  It means you could run from

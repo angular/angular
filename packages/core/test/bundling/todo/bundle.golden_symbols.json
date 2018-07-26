@@ -42,10 +42,7 @@
     "name": "EMPTY_RENDERER_TYPE_ID"
   },
   {
-    "name": "ElementRef"
-  },
-  {
-    "name": "EmbeddedViewRef"
+    "name": "ElementRef$1"
   },
   {
     "name": "FLAGS"
@@ -94,6 +91,9 @@
   },
   {
     "name": "NgIfContext"
+  },
+  {
+    "name": "NgModuleRef"
   },
   {
     "name": "Optional"
@@ -156,6 +156,9 @@
     "name": "ViewEncapsulation$1"
   },
   {
+    "name": "ViewRef"
+  },
+  {
     "name": "_CLEAN_PROMISE"
   },
   {
@@ -166,9 +169,6 @@
   },
   {
     "name": "_ROOT_DIRECTIVE_INDICES"
-  },
-  {
-    "name": "__extends"
   },
   {
     "name": "__read"
@@ -402,6 +402,9 @@
     "name": "elementClassProp"
   },
   {
+    "name": "elementCreate"
+  },
+  {
     "name": "elementEnd"
   },
   {
@@ -436,9 +439,6 @@
   },
   {
     "name": "executePipeOnDestroys"
-  },
-  {
-    "name": "extendStatics"
   },
   {
     "name": "extractDirectiveDef"
@@ -667,9 +667,6 @@
   },
   {
     "name": "namespaceHTML"
-  },
-  {
-    "name": "notImplemented"
   },
   {
     "name": "pointers"

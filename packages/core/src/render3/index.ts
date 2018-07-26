@@ -11,11 +11,11 @@ import {defineComponent, defineDirective, defineNgModule, definePipe} from './de
 import {InheritDefinitionFeature} from './features/inherit_definition_feature';
 import {NgOnChangesFeature} from './features/ng_onchanges_feature';
 import {PublicFeature} from './features/public_feature';
-import {I18nExpInstruction, I18nInstruction, i18nExpMapping, i18nInterpolation, i18nInterpolationV} from './i18n';
+import {I18nExpInstruction, I18nInstruction, i18nExpMapping, i18nInterpolation1, i18nInterpolation2, i18nInterpolation3, i18nInterpolation4, i18nInterpolation5, i18nInterpolation6, i18nInterpolation7, i18nInterpolation8, i18nInterpolationV} from './i18n';
 import {ComponentDef, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
 
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
-export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
+export {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, directiveInject, injectAttribute, injectChangeDetectorRef, injectComponentFactoryResolver, injectElementRef, injectTemplateRef, injectViewContainerRef} from './di';
 export {RenderFlags} from './interfaces/definition';
 export {CssSelectorList} from './interfaces/projection';
 
@@ -88,7 +88,14 @@ export {
 export {
   i18nApply as iA,
   i18nMapping as iM,
-  i18nInterpolation as iI,
+  i18nInterpolation1 as iI1,
+  i18nInterpolation2 as iI2,
+  i18nInterpolation3 as iI3,
+  i18nInterpolation4 as iI4,
+  i18nInterpolation5 as iI5,
+  i18nInterpolation6 as iI6,
+  i18nInterpolation7 as iI7,
+  i18nInterpolation8 as iI8,
   i18nInterpolationV as iIV,
   i18nExpMapping as iEM,
   I18nInstruction,
