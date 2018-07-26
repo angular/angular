@@ -96,7 +96,7 @@ describe('MatProgressBar', () => {
 
     it('should prefix SVG references with the current path', () => {
       const rect = fixture.debugElement.query(By.css('rect')).nativeElement;
-      expect(rect.getAttribute('fill')).toMatch(/^url\(\/fake-path#.*\)$/);
+      expect(rect.getAttribute('fill')).toMatch(/^url\(['"]?\/fake-path#.*['"]?\)$/);
     });
 
     it('should not be able to tab into the underlying SVG element', () => {

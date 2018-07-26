@@ -8,7 +8,7 @@
       <circle cx="2.5" cy="2.5" r="2.5"/>
     </pattern>
   </defs>
-  <rect [attr.fill]="'url(' + _currentPath + '#' + progressbarId + ')'" width="100%" height="100%"/>
+  <rect [attr.fill]="_rectangleFillValue" width="100%" height="100%"/>
 </svg>
 <div class="mat-progress-bar-buffer mat-progress-bar-element" [ngStyle]="_bufferTransform()"></div>
 <div class="mat-progress-bar-primary mat-progress-bar-fill mat-progress-bar-element" [ngStyle]="_primaryTransform()"></div>

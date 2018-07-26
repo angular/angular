@@ -55,12 +55,6 @@ let progressbarId = 0;
   encapsulation: ViewEncapsulation.None,
 })
 export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor {
-  /**
-   * Current page path. Used to prefix SVG references which
-   * won't work on Safari unless they're prefixed with the path.
-   */
-  _currentPath: string;
-
   constructor(public _elementRef: ElementRef,
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
               /**
@@ -69,7 +63,11 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
                */
               @Optional() location?: Location) {
     super(_elementRef);
-    this._currentPath = location ? location.path() : '';
+
+    // We need to prefix the SVG reference with the current path, otherwise they won't work
+    // in Safari if the page has a `<base>` tag. Note that we need quotes inside the `url()`,
+    // because named route URLs can contain parentheses (see #12338).
+    this._rectangleFillValue = `url('${location ? location.path() : ''}#${this.progressbarId}')`;
   }
 
   /** Value of the progress bar. Defaults to zero. Mirrored to aria-valuenow. */
@@ -93,8 +91,11 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
    */
   @Input() mode: 'determinate' | 'indeterminate' | 'buffer' | 'query' = 'determinate';
 
-  /** The id of the progress bar. */
+  /** ID of the progress bar. */
   progressbarId = `mat-progress-bar-${progressbarId++}`;
+
+  /** Attribute to be used for the `fill` attribute on the internal `rect` element. */
+  _rectangleFillValue: string;
 
   /** Gets the current transform value for the progress bar's primary indicator. */
   _primaryTransform() {
