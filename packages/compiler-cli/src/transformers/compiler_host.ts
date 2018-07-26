@@ -12,7 +12,6 @@ import * as ts from 'typescript';
 
 import {TypeCheckHost} from '../diagnostics/translate_diagnostics';
 import {METADATA_VERSION, ModuleMetadata} from '../metadata/index';
-import {NgtscCompilerHost} from '../ngtsc/compiler_host';
 
 import {CompilerHost, CompilerOptions, LibrarySummary} from './api';
 import {MetadataReaderHost, createMetadataReaderCache, readMetadata} from './metadata_reader';
@@ -24,9 +23,6 @@ const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 export function createCompilerHost(
     {options, tsHost = ts.createCompilerHost(options, true)}:
         {options: CompilerOptions, tsHost?: ts.CompilerHost}): CompilerHost {
-  if (options.enableIvy === 'ngtsc' || options.enableIvy === 'tsc') {
-    return new NgtscCompilerHost(tsHost);
-  }
   return tsHost;
 }
 
