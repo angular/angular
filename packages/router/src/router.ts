@@ -9,15 +9,15 @@
 import {Location} from '@angular/common';
 import {Compiler, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Optional, Type, isDevMode, ɵConsole as Console} from '@angular/core';
 import {BehaviorSubject, Observable, Subject, Subscription, of } from 'rxjs';
-import {concatMap, map, mergeMap} from 'rxjs/operators';
+import {concatMap, map, mergeMap, tap} from 'rxjs/operators';
 
 import {applyRedirects} from './apply_redirects';
 import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
+import {recognize} from './operators/recognize';
 import {PreActivation} from './pre_activation';
-import {recognize} from './recognize';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
@@ -699,18 +699,20 @@ export class Router {
         const redirectsApplied$ =
             applyRedirects(moduleInjector, this.configLoader, this.urlSerializer, url, this.config);
 
-        urlAndSnapshot$ = redirectsApplied$.pipe(mergeMap((appliedUrl: UrlTree) => {
-          return recognize(
-                     this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl),
-                     this.paramsInheritanceStrategy, this.relativeLinkResolution)
-              .pipe(map((snapshot: any) => {
-                (this.events as Subject<Event>)
-                    .next(new RoutesRecognized(
-                        id, this.serializeUrl(url), this.serializeUrl(appliedUrl), snapshot));
+        urlAndSnapshot$ = redirectsApplied$.pipe(mergeMap(
+            (appliedUrl: UrlTree) =>
+                recognize(
+                    this.rootComponentType, this.config, (url) => this.serializeUrl(url),
+                    this.paramsInheritanceStrategy)(of (appliedUrl))
+                    .pipe(
+                        map((snapshot: RouterStateSnapshot) => ({appliedUrl, snapshot})),
+                        tap(({appliedUrl,
+                              snapshot}: {appliedUrl: UrlTree, snapshot: RouterStateSnapshot}) =>
+                                (this.events as Subject<Event>)
+                                    .next(new RoutesRecognized(
+                                        id, this.serializeUrl(url), this.serializeUrl(appliedUrl),
+                                        snapshot))))));
 
-                return {appliedUrl, snapshot};
-              }));
-        }));
       } else {
         urlAndSnapshot$ = of ({appliedUrl: url, snapshot: precreatedState});
       }
