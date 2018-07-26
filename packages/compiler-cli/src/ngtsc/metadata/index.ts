@@ -7,4 +7,4 @@
  */
 
 export {TypeScriptReflectionHost, filterToMembersWithDecorator, findMember, reflectObjectLiteral, reflectTypeEntityToDeclaration} from './src/reflector';
-export {AbsoluteReference, ImportMode, Reference, ResolvedValue, isDynamicValue, staticallyResolve} from './src/resolver';
+export {AbsoluteReference, ImportMode, Reference, ResolvedReference, ResolvedValue, isDynamicValue, staticallyResolve} from './src/resolver';
