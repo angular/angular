@@ -222,7 +222,8 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
         .replace(/^<div fixture="mark">/, '')
         .replace(/<\/div>$/, '')
         .replace(' style=""', '')
-        .replace(/<!--container-->/g, '');
+        .replace(/<!--container-->/g, '')
+        .replace(/<!--ng-container-->/g, '');
   }
 }
 
