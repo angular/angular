@@ -3192,12 +3192,15 @@ Here is a compliant folder and file structure:
 <div class="l-sub-section">
 
 
-
+<!--
 While components in dedicated folders are widely preferred,
 another option for small apps is to keep components flat (not in a dedicated folder).
 This adds up to four files to the existing folder, but also reduces the folder nesting.
 Whatever you choose, be consistent.
-
+-->
+컴포넌트와 관련된 파일은 개별 폴더에 두는 것을 권장하지만, 애플리케이션의 크기가 작다면 `components` 폴더에 하위 폴더 없이 그냥 두는 것도 좋습니다.
+그리고 `components` 폴더의 파일이 4개 이상 생기면 그때 하위 폴더를 만드는 것을 고려해 보세요.
+어떤 선택을 하던지, 일관성을 유지하기만 하면 됩니다.
 
 </div>
 
@@ -3208,7 +3211,10 @@ Whatever you choose, be consistent.
 
 {@a 04-07}
 
+<!--
 ### _Folders-by-feature_ structure
+-->
+### 기능별로 폴더 구성하기
 
 <!--
 #### Style 04-07
@@ -3218,9 +3224,10 @@ Whatever you choose, be consistent.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** create folders named for the feature area they represent.
-
+-->
+관련된 기능이 있으면 한 폴더로 묶고 해당 기능을 표현하는 이름을 **지정하세요.**
 
 </div>
 
@@ -3229,10 +3236,11 @@ Whatever you choose, be consistent.
 <div class="s-why">
 
 
-
+<!--
 **Why?** A developer can locate the code and identify what each file represents
 at a glance. The structure is as flat as it can be and there are no repetitive or redundant names.
-
+-->
+**왜?** 파일의 이름은 자유롭게 지정해도 됩니다. 하지만 관련된 파일을 폴더로 묶으면 파일 이름에 반복적으로 들어가는 단어를 생략하고 더 간단하게 지정할 수 있습니다.
 
 </div>
 
@@ -3241,9 +3249,10 @@ at a glance. The structure is as flat as it can be and there are no repetitive o
 <div class="s-why">
 
 
-
+<!--
 **Why?** The LIFT guidelines are all covered.
-
+-->
+**왜?** LIFT 원칙은 이 내용에도 유효합니다.
 
 </div>
 
@@ -3252,10 +3261,11 @@ at a glance. The structure is as flat as it can be and there are no repetitive o
 <div class="s-why">
 
 
-
+<!--
 **Why?** Helps reduce the app from becoming cluttered through organizing the
 content and keeping them aligned with the LIFT guidelines.
-
+-->
+**왜?** 애플리케이션을 구성하는 파일들이 어수선하게 흩어져 있는 것을 방지하고 효율적으로 관리하려면 LIST 원칙을 지키는 것이 좋습니다.
 
 </div>
 
@@ -3264,11 +3274,12 @@ content and keeping them aligned with the LIFT guidelines.
 <div class="s-why">
 
 
-
+<!--
 **Why?** When there are a lot of files, for example 10+,
 locating them is easier with a consistent folder structure
 and more difficult in a flat structure.
-
+-->
+**왜?** 파일이 10개 이상 있다면 한 폴더에 모두 모아놓는 것보다 관련된 파일끼리 묶어둬야 관리하기 편합니다.
 
 </div>
 
@@ -3277,9 +3288,10 @@ and more difficult in a flat structure.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** create an NgModule for each feature area.
-
+-->
+각 기능마다 NgModule을 **작성하세요.**
 
 </div>
 
@@ -3288,9 +3300,10 @@ and more difficult in a flat structure.
 <div class="s-why">
 
 
-
+<!--
 **Why?** NgModules make it easy to lazy load routable features.
-
+-->
+**왜?** NgModule을 사용하면 해당 기능을 지연 로딩할 수 있습니다.
 
 </div>
 
@@ -3299,16 +3312,20 @@ and more difficult in a flat structure.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** NgModules make it easier to isolate, test, and re-use features.
-
+-->
+**왜?** NgModule을 구성하면 애플리케이션 코드를 기능별로 분리할 수 있고, 테스트하거나 재사용하기 편해집니다.
 
 </div>
 
 
 
 <div class='file-tree-reference'>
+  <!--
   <a href="#file-tree">Refer to this _folder and file structure_ example.</a>
+  -->
+  <a href="#file-tree">여기에 설명한 _폴더와 파일 구조_ 예제를 참고하세요.</a>
 </div>
 
 <!--
@@ -3321,7 +3338,10 @@ and more difficult in a flat structure.
 
 {@a 04-08}
 
+<!--
 ### App _root module_
+-->
+### 애플리케이션 _최상위 모듈_
 
 <!--
 #### Style 04-08
@@ -3331,10 +3351,12 @@ and more difficult in a flat structure.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** create an NgModule in the app's root folder,
 for example, in `/src/app`.
-
+-->
+애플리케이션의 최상위 모듈은 애플리케이션 최상위 폴더에 **생성하세요.**
+일반적으로는 `/src/app` 입니다.
 
 </div>
 
@@ -3343,9 +3365,10 @@ for example, in `/src/app`.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Every app requires at least one root NgModule.
-
+-->
+**왜?** 모든 앱에는 최상위 NgModule이 반드시 존재해야 합니다.
 
 </div>
 
@@ -3354,9 +3377,10 @@ for example, in `/src/app`.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** naming the root module `app.module.ts`.
-
+-->
+최상위 모듈의 파일 이름은 `app.module.ts`를 권장합니다.
 
 </div>
 
@@ -3365,9 +3389,10 @@ for example, in `/src/app`.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Makes it easier to locate and identify the root module.
-
+-->
+**왜?** 애플리케이션 최상위 모듈은 최상위 폴더에 두는 것이 가장 찾기 쉽습니다.
 
 </div>
 
@@ -3387,7 +3412,10 @@ for example, in `/src/app`.
 
 {@a 04-09}
 
+<!--
 ### Feature modules
+-->
+### 기능 모듈
 
 <!--
 #### Style 04-09
@@ -3397,10 +3425,12 @@ for example, in `/src/app`.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** create an NgModule for all distinct features in an application;
 for example, a `Heroes` feature.
-
+-->
+애플리케이션을 구성하는 기능마다 NgModule을 **만드세요.**
+히어로들의 여행 튜토리얼을 예를 들면 `Heroes` 기능을 따로 분리하는 식입니다.
 
 </div>
 
@@ -3409,10 +3439,12 @@ for example, a `Heroes` feature.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** place the feature module in the same named folder as the feature area;
 for example, in `app/heroes`.
-
+-->
+기능 모듈을 구현한 파일은 관련된 기능으로 묶은 폴더 안에 **두세요.**
+예를 들면 `app/heroes` 폴더 안에 구현할 수 있습니다.
 
 </div>
 
@@ -3421,10 +3453,12 @@ for example, in `app/heroes`.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name the feature module file reflecting the name of the feature area
 and folder; for example, `app/heroes/heroes.module.ts`.
-
+-->
+기능 모듈의 파일 이름은 그 모듈이 담당하는 기능을 충분히 표현할 수 있도록 **지정하세요.**
+에를 들면 `app/heroes/heroes.module.ts`과 같이 지정할 수 있습니다.
 
 </div>
 
@@ -3433,10 +3467,12 @@ and folder; for example, `app/heroes/heroes.module.ts`.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name the feature module symbol reflecting the name of the feature
 area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `HeroesModule`.
-
+-->
+기능 모듈의 심볼 이름은 그 모듈이 담당하는 기능을 충분히 표현할 수 있도록 **지정하세요.**
+예를 들면 `app/heroes/heroes.module.ts` 파일에 `HeroesModule`을 구현할 수 있습니다.
 
 </div>
 
@@ -3445,9 +3481,10 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why">
 
 
-
+<!--
 **Why?** A feature module can expose or hide its implementation from other modules.
-
+-->
+**왜?** 기능 모듈은 원하는 기능을 모듈 밖으로 공개하면서, 원하지 않는 내용은 다른 모듈에서 참조할 수 없도록 감출 수 있습니다.
 
 </div>
 
@@ -3456,9 +3493,10 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why">
 
 
-
+<!--
 **Why?** A feature module identifies distinct sets of related components that comprise the feature area.
-
+-->
+**왜?** 기능 모듈의 이름은 관련된 컴포넌트와 담당하는 기능을 모두 대표하는 이름으로 지정해야 합니다.
 
 </div>
 
@@ -3467,9 +3505,10 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why">
 
 
-
+<!--
 **Why?** A feature module can easily be routed to both eagerly and lazily.
-
+-->
+**왜?** 기능 모듈은 애플리케이션이 시작되면서 바로 로드할 수도 있고, 원하면 지연로딩 할 수도 있습니다.
 
 </div>
 
@@ -3478,9 +3517,10 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why">
 
 
-
+<!--
 **Why?** A feature module defines clear boundaries between specific functionality and other application features.
-
+-->
+**왜?** 기능 모듈은 애플리케이션에서 담당하는 역할로 따져봤을 때 다른 기능 모듈과 명확하게 구분되어야 합니다.
 
 </div>
 
@@ -3489,9 +3529,10 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why">
 
 
-
+<!--
 **Why?** A feature module helps clarify and make it easier to assign development responsibilities to different teams.
-
+-->
+**왜?** 기능 모듈을 명확하게 구분하면 담당 개발자나 팀 단위로 업무를 분배하기에도 좋습니다.
 
 </div>
 
@@ -3500,9 +3541,10 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** A feature module can easily be isolated for testing.
-
+-->
+**왜?** 기능 모듈을 나누면 각 모듈을 따로 테스트하기에도 좋습니다.
 
 </div>
 
@@ -3513,7 +3555,10 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 
 {@a 04-10}
 
+<!--
 ### Shared feature module
+-->
+### 공통 기능 모듈
 
 <!--
 #### Style 04-10
@@ -3523,10 +3568,12 @@ area, folder, and file; for example, `app/heroes/heroes.module.ts` defines `Hero
 <div class="s-rule do">
 
 
-
+<!--
 **Do** create a feature module named `SharedModule` in a `shared` folder;
 for example, `app/shared/shared.module.ts` defines `SharedModule`.
-
+-->
+공통 기능 모듈이라면 `shared` 폴더 안에 **만드세요.**
+예를 들면 `app/shared/shared.module.ts` 파일에 `SharedModule`을 만드는 식입니다.
 
 </div>
 
@@ -3535,10 +3582,11 @@ for example, `app/shared/shared.module.ts` defines `SharedModule`.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** declare components, directives, and pipes in a shared module when those
 items will be re-used and referenced by the components declared in other feature modules.
-
+-->
+공통 기능 모듈에 구현하는 컴포넌트나 디렉티브, 파이프는 다른 모듈에서도 쉽게 재사용할 수 있도록 **구현하세요.**
 
 </div>
 
@@ -3547,10 +3595,11 @@ items will be re-used and referenced by the components declared in other feature
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** using the name SharedModule when the contents of a shared
 module are referenced across the entire application.
-
+-->
+애플리케이션 전반에 사용되는 공통 기능 모듈이라면 `SharedModule`이라고 이름 짓는 것을 **권장합니다.**
 
 </div>
 
@@ -3559,11 +3608,13 @@ module are referenced across the entire application.
 <div class="s-rule avoid">
 
 
-
+<!--
 **Avoid** providing services in shared modules. Services are usually
 singletons that are provided once for the entire application or
 in a particular feature module.
-
+-->
+공통 기능 모듈에 서비스를 구현하는 것은 **피하세요.**
+일반적으로 서비스는 애플리케이션 전체나 특정 모듈에서 싱글턴 인스턴스로만 존재하는 것이 좋습니다.
 
 </div>
 
@@ -3572,10 +3623,12 @@ in a particular feature module.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** import all modules required by the assets in the `SharedModule`;
 for example, `CommonModule` and `FormsModule`.
-
+-->
+애플리케이션에 자주 사용하는 모듈은 `SharedModule`에서 로드하고 모듈 외부로 공개하는 것이 좋습니다.
+예를 들면 `CommonModule`이나 `FormsModule`이 해당됩니다.
 
 </div>
 
@@ -3584,11 +3637,13 @@ for example, `CommonModule` and `FormsModule`.
 <div class="s-why">
 
 
-
+<!--
 **Why?** `SharedModule` will contain components, directives and pipes
 that may need features from another common module; for example,
 `ngFor` in `CommonModule`.
-
+-->
+**왜?** 애플리케이션 공통 기능을 `SharedModule`에 로드하고 모듈 외부로 다시 공개하면 모듈 로딩 구문을 간단하게 작성할 수 있습니다.
+이렇게 구현하면 `CommonModule`을 따로 로드하지 않아도 `SharedModule`에서 제공하는 `ngFor` 디렉티브를 자연스럽게 사용할 수 있습니다.
 
 </div>
 
@@ -3597,9 +3652,10 @@ that may need features from another common module; for example,
 <div class="s-rule do">
 
 
-
+<!--
 **Do** declare all components, directives, and pipes in the `SharedModule`.
-
+-->
+애플리케이션 전반에 사용되는 컴포넌트, 디렉티브, 파이프는 최대한 `SharedModule`에 **구현하세요.**
 
 </div>
 
@@ -3608,9 +3664,10 @@ that may need features from another common module; for example,
 <div class="s-rule do">
 
 
-
+<!--
 **Do** export all symbols from the `SharedModule` that other feature modules need to use.
-
+-->
+다른 모듈에서 사용할 수 있는 심볼은 모두 `SharedModule` 밖으로 **공개(`export`)하세요.**
 
 </div>
 
@@ -3619,9 +3676,10 @@ that may need features from another common module; for example,
 <div class="s-why">
 
 
-
+<!--
 **Why?** `SharedModule` exists to make commonly used components, directives and pipes available for use in the templates of components in many other modules.
-
+-->
+**왜?** `SharedModule`을 만드는 목적은 다른 모듈의 컴포넌트 템플릿에 자주 사용하는 컴포넌트, 디렉티브, 파이프를 모아두는 것이기 때문입니다.
 
 </div>
 
@@ -3630,9 +3688,11 @@ that may need features from another common module; for example,
 <div class="s-rule avoid">
 
 
-
+<!--
 **Avoid** specifying app-wide singleton providers in a `SharedModule`. Intentional singletons are OK. Take care.
-
+-->
+애플리케이션 전역에 사용되는 싱글턴 프로바이더를 `SharedModule`에 구현하는 것은 **피하세요.**
+모듈 내부에만 사용되는 싱글턴이라면 문제 없습니다. 주의하세요.
 
 </div>
 
@@ -3641,9 +3701,10 @@ that may need features from another common module; for example,
 <div class="s-why">
 
 
-
+<!--
 **Why?** A lazy loaded feature module that imports that shared module will make its own copy of the service and likely have undesirable results.
-
+-->
+**왜?** 지연로딩되는 모듈이 공통 모듈을 로드하면 서비스 인스턴스가 새로 만들어집니다.
 
 </div>
 
@@ -3652,10 +3713,12 @@ that may need features from another common module; for example,
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** You don't want each module to have its own separate instance of singleton services.
 Yet there is a real danger of that happening if the `SharedModule` provides a service.
-
+-->
+**왜?** 싱글턴 서비스를 모듈마다 생성하면 이 서비스는 더이상 싱글턴 인스턴스가 아닙니다.
+그래서 `SharedModule`이 서비스 프로바이더를 제공하면 애플리케이션이 예상한 대로 동작하지 않을 수 있습니다.
 
 </div>
 
@@ -3770,7 +3833,10 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 
 {@a 04-11}
 
+<!--
 ### Core feature module
+-->
+### 코어 기능 모듈
 
 <!--
 #### Style 04-11
