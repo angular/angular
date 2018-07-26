@@ -21,7 +21,7 @@ import {addToViewTree, assertPreviousIsParent, createEmbeddedViewNode, createLCo
 import {VIEWS} from './interfaces/container';
 import {DirectiveDefInternal, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {AttributeMarker, LContainerNode, LElementNode, LNode, LViewNode, TContainerNode, TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {AttributeMarker, LContainerNode, LElementContainerNode, LElementNode, LNode, LViewNode, TContainerNode, TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {LQueries, QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
 import {DECLARATION_VIEW, DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
@@ -91,7 +91,8 @@ export function bloomAdd(injector: LInjector, type: Type<any>): void {
 
 export function getOrCreateNodeInjector(): LInjector {
   ngDevMode && assertPreviousIsParent();
-  return getOrCreateNodeInjectorForNode(getPreviousOrParentNode() as LElementNode | LContainerNode);
+  return getOrCreateNodeInjectorForNode(
+      getPreviousOrParentNode() as LElementNode | LElementContainerNode | LContainerNode);
 }
 
 /**
@@ -100,7 +101,8 @@ export function getOrCreateNodeInjector(): LInjector {
  * @param node for which an injector should be retrieved / created.
  * @returns Node injector
  */
-export function getOrCreateNodeInjectorForNode(node: LElementNode | LContainerNode): LInjector {
+export function getOrCreateNodeInjectorForNode(
+    node: LElementNode | LElementContainerNode | LContainerNode): LInjector {
   const nodeInjector = node.nodeInjector;
   const parent = getParentLNode(node);
   const parentInjector = parent && parent.nodeInjector;
@@ -637,7 +639,8 @@ class ViewContainerRef implements viewEngine.ViewContainerRef {
   private _viewRefs: viewEngine.ViewRef[] = [];
 
   constructor(
-      private _lContainerNode: LContainerNode, private _hostNode: LElementNode|LContainerNode) {}
+      private _lContainerNode: LContainerNode,
+      private _hostNode: LElementNode|LElementContainerNode|LContainerNode) {}
 
   get element(): ElementRef {
     const injector = getOrCreateNodeInjectorForNode(this._hostNode);
