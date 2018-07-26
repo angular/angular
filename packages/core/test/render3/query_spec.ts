@@ -12,7 +12,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {EventEmitter} from '../..';
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, loadElement, loadQueryList, registerContentQuery} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, loadElement, loadQueryList, registerContentQuery} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
 
@@ -363,6 +363,43 @@ describe('query', () => {
         expect(isElementRef(qList.first)).toBeTruthy();
         expect(qList.first.nativeElement).toEqual(elToQuery);
       });
+
+      it('should query for <ng-container> and read ElementRef with a native element pointing to comment node',
+         () => {
+           let elToQuery;
+           /**
+            * <ng-container #foo></ng-container>
+            * class Cmpt {
+            *  @ViewChildren('foo') query;
+            * }
+            */
+           const Cmpt = createComponent(
+               'cmpt',
+               function(rf: RenderFlags, ctx: any) {
+                 if (rf & RenderFlags.Create) {
+                   elementContainerStart(1, null, ['foo', '']);
+                   elToQuery = loadElement(1).native;
+                   elementContainerEnd();
+                 }
+               },
+               [], [],
+               function(rf: RenderFlags, ctx: any) {
+                 if (rf & RenderFlags.Create) {
+                   query(0, ['foo'], false, QUERY_READ_ELEMENT_REF);
+                 }
+                 if (rf & RenderFlags.Update) {
+                   let tmp: any;
+                   queryRefresh(tmp = load<QueryList<any>>(0)) &&
+                       (ctx.query = tmp as QueryList<any>);
+                 }
+               });
+
+           const cmptInstance = renderComponent(Cmpt);
+           const qList = (cmptInstance.query as QueryList<any>);
+           expect(qList.length).toBe(1);
+           expect(isElementRef(qList.first)).toBeTruthy();
+           expect(qList.first.nativeElement).toEqual(elToQuery);
+         });
 
       it('should read ViewContainerRef from element nodes when explicitly asked for', () => {
         /**
