@@ -192,7 +192,7 @@ export class IvyCompilation {
    * Process a .d.ts source string and return a transformed version that incorporates the changes
    * made to the source file.
    */
-  transformedDtsFor(tsFileName: string, dtsOriginalSource: string, dtsPath: string): string {
+  transformedDtsFor(tsFileName: string, dtsOriginalSource: string): string {
     // No need to transform if no changes have been requested to the input file.
     if (!this.dtsMap.has(tsFileName)) {
       return dtsOriginalSource;
