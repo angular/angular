@@ -21,11 +21,12 @@ import {LViewData, TView} from './view';
  * on how to map a particular set of bits in LNode.flags to the node type.
  */
 export const enum TNodeType {
-  Container = 0b00,
-  Projection = 0b01,
-  View = 0b10,
-  Element = 0b11,
-  ViewOrElement = 0b10,
+  Container = 0b000,
+  Projection = 0b001,
+  View = 0b010,
+  Element = 0b011,
+  ViewOrElement = 0b010,
+  ElementContainer = 0b100,
 }
 
 /**
@@ -116,6 +117,13 @@ export interface LElementNode extends LNode {
 
   /** If Component then data has LView (light DOM) */
   readonly data: LViewData|null;
+}
+
+/** LNode representing <ng-container>. */
+export interface LElementContainerNode extends LNode {
+  /** The DOM comment associated with this node. */
+  readonly native: RComment;
+  readonly data: null;
 }
 
 /** LNode representing a #text node. */
