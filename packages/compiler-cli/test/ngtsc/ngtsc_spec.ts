@@ -405,7 +405,7 @@ describe('ngtsc behavioral tests', () => {
 
     const dtsContents = getContents('test.d.ts');
     expect(dtsContents)
-        .toContain('i0.ɵNgModuleDef<TestModule, [typeof TestPipe,typeof TestCmp], never, never>');
+        .toContain('i0.ɵNgModuleDef<TestModule, [typeof TestPipe, typeof TestCmp], never, never>');
   });
 
   it('should unwrap a ModuleWithProviders function if a generic type is provided for it', () => {
