@@ -10,7 +10,7 @@
 import {DoCheck, Input, TemplateRef, ViewContainerRef, ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
 import {getRenderedText} from '../../src/render3/component';
 import {AttributeMarker, ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding, tick} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, text, textBinding, tick} from '../../src/render3/instructions';
 import {ComponentDefInternal, DirectiveDefInternal, RenderFlags} from '../../src/render3/interfaces/definition';
 import {createRendererType2} from '../../src/view/index';
 
@@ -394,22 +394,24 @@ describe('recursive components', () => {
     });
   }
 
-  function IfTemplate(rf1: RenderFlags, left: any, parent: NgIfTree) {
-    if (rf1 & RenderFlags.Create) {
+  function IfTemplate(rf: RenderFlags, left: any) {
+    if (rf & RenderFlags.Create) {
       elementStart(0, 'ng-if-tree');
       elementEnd();
     }
-    if (rf1 & RenderFlags.Update) {
+    if (rf & RenderFlags.Update) {
+      const parent = nextContext();
       elementProperty(0, 'data', bind(parent.data.left));
     }
   }
 
-  function IfTemplate2(rf1: RenderFlags, right: any, parent: NgIfTree) {
-    if (rf1 & RenderFlags.Create) {
+  function IfTemplate2(rf: RenderFlags, right: any) {
+    if (rf & RenderFlags.Create) {
       elementStart(0, 'ng-if-tree');
       elementEnd();
     }
-    if (rf1 & RenderFlags.Update) {
+    if (rf & RenderFlags.Update) {
+      const parent = nextContext();
       elementProperty(0, 'data', bind(parent.data.right));
     }
   }

@@ -327,9 +327,6 @@
     "name": "callHooks"
   },
   {
-    "name": "callTemplateWithContexts"
-  },
-  {
     "name": "canInsertNativeNode"
   },
   {
@@ -346,6 +343,9 @@
   },
   {
     "name": "container"
+  },
+  {
+    "name": "contextViewData"
   },
   {
     "name": "createDirectivesAndLocals"
@@ -693,6 +693,9 @@
     "name": "namespaceHTML"
   },
   {
+    "name": "nextContext"
+  },
+  {
     "name": "pointers"
   },
   {
@@ -724,9 +727,6 @@
   },
   {
     "name": "readElementValue"
-  },
-  {
-    "name": "reference"
   },
   {
     "name": "refreshChildComponents"
@@ -868,6 +868,9 @@
   },
   {
     "name": "walkLNodeTree"
+  },
+  {
+    "name": "walkUpViews"
   },
   {
     "name": "wrapListenerWithDirtyAndDefault"
