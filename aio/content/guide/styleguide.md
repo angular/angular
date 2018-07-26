@@ -3846,10 +3846,11 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** collecting numerous, auxiliary, single-use classes inside a core module
 to simplify the apparent structure of a feature module.
-
+-->
+기능 모듈의 구조를 간단하게 하기 위해 보조 역할을 하는 클래스, 한 번만 사용하는 클래스는 코어 모듈에 모아두는 것을 **권장합니다.**
 
 </div>
 
@@ -3858,11 +3859,13 @@ to simplify the apparent structure of a feature module.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** calling the application-wide core module, `CoreModule`.
 Importing `CoreModule` into the root `AppModule` reduces its complexity
 and emphasizes its role as orchestrator of the application as a whole.
-
+-->
+애플리케이션 전역에 사용하는 코어 모듈은 `CoreModule`이라는 이름을 사용할 것을 **권장합니다.**
+코어 모듈의 이름을 이렇게 정의하면 `AppModule`에서 `CoreModule`을 로드하는 의미가 더욱 명확해집니다.
 
 </div>
 
@@ -3871,9 +3874,11 @@ and emphasizes its role as orchestrator of the application as a whole.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** create a feature module named `CoreModule` in a `core` folder (e.g. `app/core/core.module.ts` defines `CoreModule`).
-
+-->
+`CoreModule`은 `core` 폴더에 **구현하세요.**
+예를 들면 `app/core/core.module.ts` 파일에 `CoreModule`을 구현하는 식입니다.
 
 </div>
 
@@ -3882,9 +3887,11 @@ and emphasizes its role as orchestrator of the application as a whole.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** put a singleton service whose instance will be shared throughout the application in the `CoreModule` (e.g. `ExceptionService` and `LoggerService`).
-
+-->
+애플리케이션 전역에서 싱글턴으로 사용되는 서비스 프로바이더는 `CoreModule`에 **정의하세요.**
+`ExceptionService`나 `LoggerService`가 대상이 될 수 있습니다.
 
 </div>
 
@@ -3893,9 +3900,11 @@ and emphasizes its role as orchestrator of the application as a whole.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** import all modules required by the assets in the `CoreModule` (e.g. `CommonModule` and `FormsModule`).
-
+-->
+애플리케이션 전역에서 자주 사용하는 모듈은 `CoreModule`에 로드하고 모듈 외부로 다시 **공개하세요.**
+`CommonModule`이나 `FormsModule`이 대상이 될 수 있습니다.
 
 </div>
 
@@ -3904,9 +3913,12 @@ and emphasizes its role as orchestrator of the application as a whole.
 <div class="s-why">
 
 
-
+<!--
 **Why?** `CoreModule` provides one or more singleton services. Angular registers the providers with the app root injector, making a singleton instance of each service available to any component that needs them, whether that component is eagerly or lazily loaded.
-
+-->
+**왜?** `CoreModule`은 싱글턴 서비스를 하나 이상 제공할 수 있습니다.
+최상위 모듈에서 생성한 싱글턴 서비스는 애플리케이션 최상위 인젝터에 등록되며, 이 서비스를 의존성으로 주입받는 컴포넌트들에서 의존성 주입을 요청할 때마다 인젝터에 등록된 프로바이더를 통해 인스턴스를 주입합니다.
+이 때 컴포넌트는 애플리케이션이 실행되면서 즉시 로드되던지, 지연 로딩되는 것과 상관없이 인스턴스를 주입받을 수 있습니다.
 
 </div>
 
@@ -3915,9 +3927,10 @@ and emphasizes its role as orchestrator of the application as a whole.
 <div class="s-why">
 
 
-
+<!--
 **Why?** `CoreModule` will contain singleton services. When a lazy loaded module imports these, it will get a new instance and not the intended app-wide singleton.
-
+-->
+**왜?** `CoreModule`에 등록된 서비스 프로바이더는 의존성 주입에 사용되는 서비스의 인스턴스를 생성합니다. 다만, 지연되는 모듈에서 코어 모듈을 로드한다면 애플리케이션이 시작될 때 생성된 서비스 인스턴스와 다른 서비스 인스턴스를 새로 생성합니다.
 
 </div>
 
@@ -3926,10 +3939,12 @@ and emphasizes its role as orchestrator of the application as a whole.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** gather application-wide, single use components in the `CoreModule`.
 Import it once (in the `AppModule`) when the app starts and never import it anywhere else. (e.g. `NavComponent` and `SpinnerComponent`).
-
+-->
+애플리케이션 전역에 사용하는 컴포넌트는 `CoreModule`에 **모으세요.**
+그리고 `AppModule`에서 코어 모듈을 로드하면 애플리케이션이 시작되면서 이 컴포넌트들을 모두 로드하기 때문에, 다른 모듈에서 따로 로드하지 않아도 이 컴포넌트들을 자유롭게 사용할 수 있습니다.
 
 </div>
 
@@ -3938,11 +3953,13 @@ Import it once (in the `AppModule`) when the app starts and never import it anyw
 <div class="s-why">
 
 
-
+<!--
 **Why?** Real world apps can have several single-use components (e.g., spinners, message toasts, and modal dialogs) that appear only in the `AppComponent` template.
 They are not imported elsewhere so they're not shared in that sense.
 Yet they're too big and messy to leave loose in the root folder.
-
+-->
+**왜?** 실제로 배포되는 애플리케이션들에는 `AppComponent`의 템플릿에서만 사용되는 컴포넌트들이 있습니다. 로딩 이미지나 메시지 토스트, 모달 팝업이 이런 종류에 해당되며, 이 컴포넌트들은 `AppComponent`에서만 사용되기 때문에 공유 모듈에 들어갈 필요가 없습니다.
+이런 컴포넌트들이 너무 많아진다면 하위 폴더로 옮기는 것도 고려해 볼 만 합니다.
 
 </div>
 
@@ -3951,9 +3968,10 @@ Yet they're too big and messy to leave loose in the root folder.
 <div class="s-rule avoid">
 
 
-
+<!--
 **Avoid** importing the `CoreModule` anywhere except in the `AppModule`.
-
+-->
+`CoreModule`을 `AppModule`이 아닌 모듈에서 로드하는 것은 **피하세요.**
 
 </div>
 
@@ -3962,9 +3980,10 @@ Yet they're too big and messy to leave loose in the root folder.
 <div class="s-why">
 
 
-
+<!--
 **Why?** A lazily loaded feature module that directly imports the `CoreModule` will make its own copy of services and likely have undesirable results.
-
+-->
+**왜?** 지연로딩되는 모듈에서 `CoreModule`을 다시 로드하면, `CoreModule`에 정의된 서비스들의 인스턴스가 새로 만들어지며, 예상치 못한 동작을 할 수도 있습니다.
 
 </div>
 
@@ -3973,9 +3992,10 @@ Yet they're too big and messy to leave loose in the root folder.
 <div class="s-why">
 
 
-
+<!--
 **Why?** An eagerly loaded feature module already has access to the `AppModule`'s injector, and thus the `CoreModule`'s services.
-
+-->
+**왜?** 애플리케이션이 시작되면서 즉시 로딩되는 기능 모듈은 `AppModule`의 인젝터에 자연스럽게 접근할 수 있으며, `CoreModule`에 생성된 서비스 인스턴스를 함께 사용합니다.
 
 </div>
 
@@ -3984,9 +4004,10 @@ Yet they're too big and messy to leave loose in the root folder.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** export all symbols from the `CoreModule` that the `AppModule` will import and make available for other feature modules to use.
-
+-->
+`CoreModule`에 정의된 심볼은 `AppModule`이나 다른 기능 모듈에서 사용할 수 있도록 모두 모듈 외부로 **공개하세요.**
 
 </div>
 
@@ -3995,9 +4016,10 @@ Yet they're too big and messy to leave loose in the root folder.
 <div class="s-why">
 
 
-
+<!--
 **Why?** `CoreModule` exists to make commonly used singleton services available for use in the many other modules.
-
+-->
+**왜?** `CoreModule`은 다른 모듈에서 사용하는 싱글턴 서비스를 모아두기 위해 만드는 모듈입니다.
 
 </div>
 
@@ -4006,12 +4028,13 @@ Yet they're too big and messy to leave loose in the root folder.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** You want the entire app to use the one, singleton instance.
 You don't want each module to have its own separate instance of singleton services.
 Yet there is a real danger of that happening accidentally if the `CoreModule` provides a service.
-
-
+-->
+**왜?** 애플리케이션에서 사용하는 싱글턴 서비스는 인스턴스를 딱 하나만 생성해야 합니다.
+싱글턴 서비스의 인스턴스가 모듈마다 생성되는 것은 싱글턴 서비스의 목적에 벗어나는 것이며, 원하는 대로 동작하지도 않을 것입니다.
 
 </div>
 
@@ -4152,12 +4175,16 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 <div class="l-sub-section">
 
 
-
+<!--
 `AppModule` is a little smaller because many app/root classes have moved to other modules.
 `AppModule` is stable because you will add future components and providers to other modules, not this one.
 `AppModule` delegates to imported modules rather than doing work.
 `AppModule` is focused on its main task, orchestrating the app as a whole.
-
+-->
+일관된 규칙으로 모듈을 나누면 `AppModule`의 크기는 다른 모듈보다 많이 작아집니다.
+그리고 새로 추가되는 컴포넌트나 서비스 프로바이더도 해당 역할을 하는 모듈에 구현할 것이기 때문에 `AppModule`의 코드가 바뀌는 일은 그리 많지 않습니다.
+`AppModule`은 모듈을 로드하는 방법으로 애플리케이션의 모듈을 조합하며, 애플리케이션의 동작과 관련된 로직은 작성하지 않는 것이 좋습니다.
+`AppModule`의 역할은 애플리케이션 전체 모듈을 구성하는 것으로만 제한하는 것이 좋습니다.
 
 </div>
 
