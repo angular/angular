@@ -294,8 +294,7 @@ That header is in the `httpOptions` constant defined in the `HeroService`.
   region="http-options">
 </code-example>
 
-Refresh the browser, change a hero name, save your change,
-and click the "go back" button. 
+Refresh the browser, change a hero name and save your change. Navigating to the previous view is implemented in the `save()` method defined in `HeroDetailComponent`.
 The hero now appears in the list with the changed name.
 
 ## Add a new hero
