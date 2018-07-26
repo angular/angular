@@ -8,8 +8,6 @@
 
 import * as ts from 'typescript';
 
-import {relativePathBetween} from '../../util/src/path';
-
 import {CompileResult} from './api';
 import {ImportManager, translateType} from './translator';
 
