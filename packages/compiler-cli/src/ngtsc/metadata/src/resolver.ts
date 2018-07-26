@@ -202,7 +202,7 @@ function pickIdentifier(
     context: ts.SourceFile, primary: ts.Identifier, secondaries: ts.Identifier[],
     mode: ImportMode): ts.Identifier|null {
   context = ts.getOriginalNode(context) as ts.SourceFile;
-  let localIdentifier: ts.Identifier|null = null;
+
   if (ts.getOriginalNode(primary).getSourceFile() === context) {
     return primary;
   } else if (mode === ImportMode.UseExistingImport) {
