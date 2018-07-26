@@ -6,11 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, R3DependencyMetadata, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
+import {Expression, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Decorator, ReflectionHost} from '../../host';
-import {Reference} from '../../metadata';
+import {AbsoluteReference, ImportMode, Reference} from '../../metadata';
 
 export function getConstructorDependencies(
     clazz: ts.ClassDeclaration, reflector: ReflectionHost,
@@ -79,12 +79,13 @@ export function getConstructorDependencies(
   return useType;
 }
 
-export function referenceToExpression(ref: Reference, context: ts.SourceFile): Expression {
-  const exp = ref.toExpression(context);
-  if (exp === null) {
+export function toR3Reference(ref: Reference, context: ts.SourceFile): R3Reference {
+  const value = ref.toExpression(context, ImportMode.UseExistingImport);
+  const type = ref.toExpression(context, ImportMode.ForceNewImport);
+  if (value === null || type === null) {
     throw new Error(`Could not refer to ${ts.SyntaxKind[ref.node.kind]}`);
   }
-  return exp;
+  return {value, type};
 }
 
 export function isAngularCore(decorator: Decorator): boolean {
@@ -102,4 +103,70 @@ export function unwrapExpression(node: ts.Expression): ts.Expression {
     node = node.expression;
   }
   return node;
+}
+
+function expandForwardRef(arg: ts.Expression): ts.Expression|null {
+  if (!ts.isArrowFunction(arg) && !ts.isFunctionExpression(arg)) {
+    return null;
+  }
+
+  const body = arg.body;
+  // Either the body is a ts.Expression directly, or a block with a single return statement.
+  if (ts.isBlock(body)) {
+    // Block body - look for a single return statement.
+    if (body.statements.length !== 1) {
+      return null;
+    }
+    const stmt = body.statements[0];
+    if (!ts.isReturnStatement(stmt) || stmt.expression === undefined) {
+      return null;
+    }
+    return stmt.expression;
+  } else {
+    // Shorthand body - return as an expression.
+    return body;
+  }
+}
+
+/**
+ * Possibly resolve a forwardRef() expression into the inner value.
+ *
+ * @param node the forwardRef() expression to resolve
+ * @param reflector a ReflectionHost
+ * @returns the resolved expression, if the original expression was a forwardRef(), or the original
+ * expression otherwise
+ */
+export function unwrapForwardRef(node: ts.Expression, reflector: ReflectionHost): ts.Expression {
+  if (!ts.isCallExpression(node) || !ts.isIdentifier(node.expression) ||
+      node.arguments.length !== 1) {
+    return node;
+  }
+  const expr = expandForwardRef(node.arguments[0]);
+  if (expr === null) {
+    return node;
+  }
+  const imp = reflector.getImportOfIdentifier(node.expression);
+  if (imp === null || imp.from !== '@angular/core' || imp.name !== 'forwardRef') {
+    return node;
+  } else {
+    return expr;
+  }
+}
+
+/**
+ * A foreign function resolver for `staticallyResolve` which unwraps forwardRef() expressions.
+ *
+ * @param ref a Reference to the declaration of the function being called (which might be
+ * forwardRef)
+ * @param args the arguments to the invocation of the forwardRef expression
+ * @returns an unwrapped argument if `ref` pointed to forwardRef, or null otherwise
+ */
+export function forwardRefResolver(
+    ref: Reference<ts.FunctionDeclaration|ts.MethodDeclaration>,
+    args: ts.Expression[]): ts.Expression|null {
+  if (!(ref instanceof AbsoluteReference) || ref.moduleName !== '@angular/core' ||
+      ref.symbolName !== 'forwardRef' || args.length !== 1) {
+    return null;
+  }
+  return expandForwardRef(args[0]);
 }

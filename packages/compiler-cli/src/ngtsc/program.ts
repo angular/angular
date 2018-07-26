@@ -13,7 +13,6 @@ import * as ts from 'typescript';
 import * as api from '../transformers/api';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from './annotations';
-import {CompilerHost} from './compiler_host';
 import {TypeScriptReflectionHost} from './metadata';
 import {FileResourceLoader, HostResourceLoader} from './resource_loader';
 import {IvyCompilation, ivyTransformFactory} from './transform';
@@ -76,17 +75,14 @@ export class NgtscProgram implements api.Program {
   async loadNgStructureAsync(): Promise<void> {
     if (this.compilation === undefined) {
       this.compilation = this.makeCompilation();
-
-      await this.tsProgram.getSourceFiles()
-          .filter(file => !file.fileName.endsWith('.d.ts'))
-          .map(file => this.compilation !.analyzeAsync(file))
-          .filter((result): result is Promise<void> => result !== undefined);
     }
+    await Promise.all(this.tsProgram.getSourceFiles()
+                          .filter(file => !file.fileName.endsWith('.d.ts'))
+                          .map(file => this.compilation !.analyzeAsync(file))
+                          .filter((result): result is Promise<void> => result !== undefined));
   }
 
-  listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] {
-    throw new Error('Method not implemented.');
-  }
+  listLazyRoutes(entryRoute?: string|undefined): api.LazyRoute[] { return []; }
 
   getLibrarySummaries(): Map<string, api.LibrarySummary> {
     throw new Error('Method not implemented.');

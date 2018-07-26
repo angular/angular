@@ -47,3 +47,8 @@ export function typeWithParameters(type: o.Expression, numParams: number): o.Exp
   }
   return o.expressionType(type, null, params);
 }
+
+export interface R3Reference {
+  value: o.Expression;
+  type: o.Expression;
+}
