@@ -8,8 +8,8 @@
 
 import {Component, ComponentFactoryResolver, Directive, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
-import {AttributeMarker,NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, load, loadDirective, projection, projectionDef, reserveSlots, text, textBinding} from '../../src/render3/instructions';
+import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, load, loadDirective, nextContext, projection, projectionDef, reserveSlots, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
@@ -521,7 +521,7 @@ describe('ViewContainerRef', () => {
 
            }, [Child]);
 
-           function fooTemplate(rf1: RenderFlags, ctx: any, parent: any) {
+           function fooTemplate(rf1: RenderFlags, ctx: any) {
              if (rf1 & RenderFlags.Create) {
                elementStart(0, 'div');
                { text(1); }
@@ -529,6 +529,7 @@ describe('ViewContainerRef', () => {
              }
 
              if (rf1 & RenderFlags.Update) {
+               const parent = nextContext();
                textBinding(1, bind(parent.name));
              }
            }
@@ -612,32 +613,34 @@ describe('ViewContainerRef', () => {
 
         }, [LoopComp]);
 
-        function rowTemplate(rf1: RenderFlags, row: any, parent: any) {
-          if (rf1 & RenderFlags.Create) {
+        function rowTemplate(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
             container(0, cellTemplate);
             elementStart(1, 'loop-comp');
             elementEnd();
           }
 
-          if (rf1 & RenderFlags.Update) {
+          if (rf & RenderFlags.Update) {
+            const row = ctx.$implicit as any;
             // Hack until we have local refs for templates
             const cellTemplateRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
             elementProperty(1, 'tpl', bind(cellTemplateRef));
-            elementProperty(1, 'rows', bind(row.$implicit.data));
+            elementProperty(1, 'rows', bind(row.data));
           }
         }
 
-        function cellTemplate(rf1: RenderFlags, cell: any, row: any, parent: any) {
-          if (rf1 & RenderFlags.Create) {
+        function cellTemplate(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
             elementStart(0, 'div');
             { text(1); }
             elementEnd();
           }
 
-          if (rf1 & RenderFlags.Update) {
-            textBinding(
-                1, interpolation3(
-                       '', cell.$implicit, ' - ', row.$implicit.value, ' - ', parent.name, ''));
+          if (rf & RenderFlags.Update) {
+            const cell = ctx.$implicit as any;
+            const row = nextContext().$implicit as any;
+            const parent = nextContext();
+            textBinding(1, interpolation3('', cell, ' - ', row.value, ' - ', parent.name, ''));
           }
         }
 

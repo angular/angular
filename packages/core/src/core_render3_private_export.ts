@@ -32,6 +32,7 @@ export {
   NgModuleFactory as ɵNgModuleFactory,
   NC as ɵNC,
   C as ɵC,
+  x as ɵx,
   E as ɵE,
   NH as ɵNH,
   NM as ɵNM,

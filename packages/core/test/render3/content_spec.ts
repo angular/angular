@@ -825,7 +825,7 @@ describe('content projection', () => {
 
     }, [NgIf]);
 
-    function IfTemplate(rf1: RenderFlags, ctx: any, child: any) {
+    function IfTemplate(rf1: RenderFlags, ctx: any) {
       if (rf1 & RenderFlags.Create) {
         projectionDef();
         projection(0);
@@ -890,7 +890,7 @@ describe('content projection', () => {
 
     }, [NgIf]);
 
-    function IfTemplate(rf: RenderFlags, ctx: any, child: any) {
+    function IfTemplate(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         projectionDef();
         projection(0);
