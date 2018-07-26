@@ -18,6 +18,7 @@ import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckSta
 import {applyRedirects} from './operators/apply_redirects';
 import {beforePreactivation} from './operators/before_preactivation';
 import {recognize} from './operators/recognize';
+import {setupPreactivation} from './operators/setup_preactivation';
 import {PreActivation} from './pre_activation';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
@@ -724,16 +725,15 @@ export class Router {
       // run preactivation: guards and data resolvers
       let preActivation: PreActivation;
 
-      const preactivationSetup$ = beforePreactivationDone$.pipe(map((p): NavStreamValue => {
-        if (typeof p === 'boolean') return p;
-        const {appliedUrl, snapshot} = p;
-        const moduleInjector = this.ngModule.injector;
-        preActivation = new PreActivation(
-            snapshot, this.routerState.snapshot, moduleInjector,
-            (evt: Event) => this.triggerEvent(evt));
-        preActivation.initialize(this.rootContexts);
-        return {appliedUrl, snapshot};
-      }));
+      const preactivationSetup$ = beforePreactivationDone$.pipe(
+          mergeMap(
+              p => of (p.snapshot)
+                       .pipe(
+                           setupPreactivation(
+                               this.rootContexts, this.routerState.snapshot, this.ngModule.injector,
+                               (evt: Event) => this.triggerEvent(evt)),
+                           map(preActivation => ({...p, preActivation})))),
+          tap(p => preActivation = p.preActivation));
 
       const preactivationCheckGuards$ =
           preactivationSetup$.pipe(mergeMap((p): Observable<NavStreamValue> => {
