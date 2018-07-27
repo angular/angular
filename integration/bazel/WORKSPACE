@@ -6,9 +6,16 @@ workspace(name = "bazel_integration_test")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/0.10.1.zip",
-    strip_prefix = "rules_nodejs-0.10.1",
-    sha256 = "634206524d90dc03c52392fa3f19a16637d2bcf154910436fe1d669a0d9d7b9c",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.11.2.zip"],
+    strip_prefix = "rules_nodejs-0.11.2",
+    sha256 = "c00d5381adeefb56e0ef959a7b168cae628535dab933cfad1c2cd1870cd7c9de",
+)
+
+http_archive(
+    name = "bazel_skylib",
+    urls = ["https://github.com/bazelbuild/bazel-skylib/archive/0.3.1.zip"],
+    strip_prefix = "bazel-skylib-0.3.1",
+    sha256 = "95518adafc9a2b656667bbf517a952e54ce7f350779d0dd95133db4eb5c27fb1",
 )
 
 http_archive(
@@ -20,9 +27,9 @@ http_archive(
 
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.15.0.zip",
-    strip_prefix = "rules_typescript-0.15.0",
-    sha256 = "1aa75917330b820cb239b3c10a936a10f0a46fe215063d4492dd76dc6e1616f4",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/1d9a4b0087f307e31af91e2b221a6447288994c6.zip",
+    strip_prefix = "rules_typescript-1d9a4b0087f307e31af91e2b221a6447288994c6",
+    sha256 = "e17ac3f33d5d3cd2a0c385c4fd28b814d0ad46c6c67ccaef97160be99d7a24eb",
 )
 
 http_archive(

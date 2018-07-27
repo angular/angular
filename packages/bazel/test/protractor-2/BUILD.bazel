@@ -6,6 +6,7 @@ load("//tools/http-server:http_server.bzl", "http_server")
 ts_library(
     name = "app",
     srcs = ["app.ts"],
+    tsconfig = ":tsconfig.json",
 )
 
 ts_devserver(
@@ -33,6 +34,7 @@ ts_library(
     name = "ts_spec",
     testonly = True,
     srcs = ["test.spec.ts"],
+    tsconfig = ":tsconfig.json",
 )
 
 protractor_web_test_suite(
