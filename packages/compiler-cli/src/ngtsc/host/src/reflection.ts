@@ -53,9 +53,9 @@ export enum ClassMemberKind {
  */
 export interface ClassMember {
   /**
-   * TypeScript reference to the class member itself.
+   * TypeScript reference to the class member itself, or null if it is not applicable.
    */
-  node: ts.Node;
+  node: ts.Node|null;
 
   /**
    * Indication of which type of member this is (property, method, etc).

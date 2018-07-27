@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * @license
  * Copyright Google Inc. All Rights Reserved.
@@ -6,7 +7,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export * from './src/api';
-export {IvyCompilation} from './src/compilation';
-export {ivyTransformFactory} from './src/transform';
-export {ImportManager, translateStatement} from './src/translator';
+import {mainNgcc} from './src/main';
+
+// CLI entry point
+if (require.main === module) {
+  const args = process.argv.slice(2);
+  process.exitCode = mainNgcc(args);
+}
