@@ -459,46 +459,54 @@ export function bloomFindPossibleInjector(
   // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
   // to bit positions 0 - 31 in a 32 bit integer.
   const mask = 1 << bloomBit;
+  const b7 = bloomBit & 0x80;
+  const b6 = bloomBit & 0x40;
+  const b5 = bloomBit & 0x20;
 
   // Traverse up the injector tree until we find a potential match or until we know there *isn't* a
   // match.
   let injector: LInjector|null =
-      flags & InjectFlags.SkipSelf ? startInjector.parent ! : startInjector;
+      flags & InjectFlags.SkipSelf ? startInjector.parent : startInjector;
+
   while (injector) {
     // Our bloom filter size is 256 bits, which is eight 32-bit bloom filter buckets:
     // bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127], etc.
     // Get the bloom filter value from the appropriate bucket based on the directive's bloomBit.
     let value: number;
-    if (bloomBit < 128) {
-      value = bloomBit < 64 ? (bloomBit < 32 ? injector.bf0 : injector.bf1) :
-                              (bloomBit < 96 ? injector.bf2 : injector.bf3);
+
+    if (b7) {
+      value = b6 ? (b5 ? injector.bf7 : injector.bf6) : (b5 ? injector.bf5 : injector.bf4);
     } else {
-      value = bloomBit < 192 ? (bloomBit < 160 ? injector.bf4 : injector.bf5) :
-                               (bloomBit < 224 ? injector.bf6 : injector.bf7);
+      value = b6 ? (b5 ? injector.bf3 : injector.bf2) : (b5 ? injector.bf1 : injector.bf0);
     }
 
     // If the bloom filter value has the bit corresponding to the directive's bloomBit flipped on,
     // this injector is a potential match.
-    if ((value & mask) === mask) {
+    if (value & mask) {
       return injector;
-    } else if (flags & InjectFlags.Self || flags & InjectFlags.Host && !sameHostView(injector)) {
+    }
+
+    if (flags & InjectFlags.Self || flags & InjectFlags.Host && !sameHostView(injector)) {
       return null;
     }
 
     // If the current injector does not have the directive, check the bloom filters for the ancestor
     // injectors (cbf0 - cbf7). These filters capture *all* ancestor injectors.
-    if (bloomBit < 128) {
-      value = bloomBit < 64 ? (bloomBit < 32 ? injector.cbf0 : injector.cbf1) :
-                              (bloomBit < 96 ? injector.cbf2 : injector.cbf3);
+    if (b7) {
+      value = b6 ? (b5 ? injector.cbf7 : injector.cbf6) : (b5 ? injector.cbf5 : injector.cbf4);
     } else {
-      value = bloomBit < 192 ? (bloomBit < 160 ? injector.cbf4 : injector.cbf5) :
-                               (bloomBit < 224 ? injector.cbf6 : injector.cbf7);
+      value = b6 ? (b5 ? injector.cbf3 : injector.cbf2) : (b5 ? injector.cbf1 : injector.cbf0);
     }
 
     // If the ancestor bloom filter value has the bit corresponding to the directive, traverse up to
     // find the specific injector. If the ancestor bloom filter does not have the bit, we can abort.
-    injector = (value & mask) ? injector.parent : null;
+    if (value & mask) {
+      injector = injector.parent;
+    } else {
+      return null;
+    }
   }
+
   return null;
 }
 
