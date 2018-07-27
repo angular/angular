@@ -104,9 +104,9 @@ class BadTemplateUrl {
           reject = rej;
         });
         originalJasmineIt = jasmine.getEnv().it;
-        jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */): any => {
-          const done = () => { resolve(null); };
-          (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
+        jasmine.getEnv().it = (description: string, fn: (done: DoneFn) => void): any => {
+          const done = (() => resolve(null)) as DoneFn;
+          done.fail = reject;
           fn(done);
           return null;
         };
@@ -115,7 +115,7 @@ class BadTemplateUrl {
 
       const restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
 
-      it('should fail when an ResourceLoader fails', (done: any /** TODO #9100 */) => {
+      it('should fail when an ResourceLoader fails', done => {
         const itPromise = patchJasmineIt();
 
         it('should fail with an error from a promise', async(() => {
