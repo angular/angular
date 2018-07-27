@@ -173,9 +173,7 @@ export function diPublic(def: DirectiveDefInternal<any>): void {
  * @returns the value from the injector or `null` when not found
  */
 export function directiveInject<T>(token: Type<T>| InjectionToken<T>): T;
-export function directiveInject<T>(
-    token: Type<T>| InjectionToken<T>, flags: InjectFlags.Optional): T|null;
-export function directiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T|null;
+export function directiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T;
 export function directiveInject<T>(
     token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
   return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags);
