@@ -635,11 +635,9 @@ export function namespaceHTML() {
  * @param localRefs A set of local reference bindings on the element.
  */
 export function element(
-    index: number, name: string, attrs?: TAttributes | null,
-    localRefs?: string[] | null): RElement {
-  const rElement = elementStart(index, name, attrs, localRefs);
+    index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
+  elementStart(index, name, attrs, localRefs);
   elementEnd();
-  return rElement;
 }
 
 /**
@@ -655,8 +653,7 @@ export function element(
  * ['id', 'warning5', 'class', 'alert']
  */
 export function elementStart(
-    index: number, name: string, attrs?: TAttributes | null,
-    localRefs?: string[] | null): RElement {
+    index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
   ngDevMode &&
       assertEqual(viewData[BINDING_INDEX], -1, 'elements should be created before any bindings');
 
@@ -675,8 +672,8 @@ export function elementStart(
   }
   appendChild(getParentLNode(node), native, viewData);
   createDirectivesAndLocals(localRefs);
-  return native;
 }
+
 /**
  * Creates a native element from a tag name, using a renderer.
  * @param name the tag name
