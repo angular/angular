@@ -8,7 +8,7 @@
 
 import {NgForOf, NgForOfContext} from '@angular/common';
 import {Component, ContentChild, Directive, EventEmitter, Injectable, Input, NgModule, OnDestroy, Optional, Output, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, Type, ViewChild, ViewContainerRef, defineInjectable, defineInjector} from '@angular/core';
-import {withBody} from '@angular/core/testing';
+import {withBody} from '@angular/private/testing';
 
 import * as r3 from '../../../src/render3/index';
 
