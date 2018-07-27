@@ -4,7 +4,7 @@
 # found in the LICENSE file at https://angular.io/license
 """ Public API surface is re-exported here.
 
-This API is exported for user's building angular from source in downstream
+This API is exported for users building angular from source in downstream
 projects. The rules from packages/bazel are re-exported here as well
 as the ng_setup_workspace repository rule needed when building angular
 from source downstream. Alternately, this API is available from the
