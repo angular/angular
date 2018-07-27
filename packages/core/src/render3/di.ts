@@ -37,7 +37,7 @@ import {ViewRef} from './view_ref';
 
 
 /**
- * If a directive is diPublic, bloomAdd sets a property on the instance with this constant as
+ * If a directive is diPublic, bloomAdd sets a property on the type with this constant as
  * the key and the directive's unique ID as the value. This allows us to map directives to their
  * bloom filter bit for DI.
  */
@@ -157,11 +157,10 @@ export function diPublic(def: DirectiveDefInternal<any>): void {
 }
 
 /**
- * Searches for an instance of the given type up the injector tree and returns
- * that instance if found.
+ * Returns the value associated to the given token from the injectors.
  *
- * If not found, it will propagate up to the next parent injector until the token
- * is found or the top is reached.
+ * `directiveInject` is intended to be used for directive, component and pipe factories.
+ *  All other injection use `inject` which does not walk the node injector tree.
  *
  * Usage example (in factory function):
  *
@@ -174,12 +173,9 @@ export function diPublic(def: DirectiveDefInternal<any>): void {
  *   });
  * }
  *
- * NOTE: use `directiveInject` with `@Directive`, `@Component`, and `@Pipe`. For
- * all other injection use `inject` which does not walk the DOM render tree.
- *
- * @param token The directive type to search for
- * @param flags Injection flags (e.g. CheckParent)
- * @returns The instance found
+ * @param token the type or token to inject
+ * @param flags Injection flags
+ * @returns the value from the injector or `null` when not found
  */
 export function directiveInject<T>(token: Type<T>): T;
 export function directiveInject<T>(token: Type<T>, flags: InjectFlags.Optional): T|null;
@@ -332,21 +328,15 @@ function getClosestComponentAncestor(node: LViewNode | LElementNode): LElementNo
 }
 
 /**
- * Searches for an instance of the given directive type up the injector tree and returns
- * that instance if found.
+ * Returns the value associated to the given token from the injectors.
  *
- * Specifically, it gets the bloom filter bit associated with the directive (see bloomHashBit),
- * checks that bit against the bloom filter structure to identify an injector that might have
- * the directive (see bloomFindPossibleInjector), then searches the directives on that injector
- * for a match.
+ * Look for the injector providing the token by walking up the node injector tree and then
+ * the module injector tree.
  *
- * If not found, it will propagate up to the next parent injector until the token
- * is found or the top is reached.
- *
- * @param di Node injector where the search should start
- * @param token The directive type to search for
- * @param flags Injection flags (e.g. CheckParent)
- * @returns The instance found
+ * @param nodeInjector Node injector where the search should start
+ * @param token The token to look for
+ * @param flags Injection flags
+ * @returns the value from the injector or `null` when not found
  */
 export function getOrCreateInjectable<T>(
     di: LInjector, token: Type<T>, flags: InjectFlags = InjectFlags.Default): T|null {
@@ -433,16 +423,15 @@ function searchMatchesQueuedForCreation<T>(node: LNode, token: any): T|null {
 }
 
 /**
- * Given a directive type, this function returns the bit in an injector's bloom filter
- * that should be used to determine whether or not the directive is present.
+ * Returns the bit in an injector's bloom filter that should be used to determine whether or not
+ * the directive might be provided by the injector.
  *
- * When the directive was added to the bloom filter, it was given a unique ID that can be
- * retrieved on the class. Since there are only BLOOM_SIZE slots per bloom filter, the directive's
- * ID must be modulo-ed by BLOOM_SIZE to get the correct bloom bit (directives share slots after
- * BLOOM_SIZE is reached).
+ * When a directive is public, it is added to the bloom filter and given a unique ID that can be
+ * retrieved on the Type. When the directive isn't public or the token is not a directive `null`
+ * is returned as the node injector can not possibly provide that token.
  *
- * @param type The directive type
- * @returns The bloom bit to check for the directive
+ * @param token the injection token
+ * @returns the matching bit to check in the bloom filter or `null` if the token is not known.
  */
 function bloomHashBit(type: Type<any>): number|null {
   let id: number|undefined = (type as any)[NG_ELEMENT_ID];
