@@ -27,6 +27,7 @@ ts_library(
         "//packages/platform-browser-dynamic",
         "//packages/platform-browser/animations",
         "//packages/platform-browser/testing",
+        "//packages/private/testing",
         "//packages/router",
         "//packages/router/testing",
         "@rxjs",
