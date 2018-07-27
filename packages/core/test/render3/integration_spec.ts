@@ -9,7 +9,7 @@
 import {RenderFlags} from '@angular/core/src/render3';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
@@ -185,8 +185,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'b');
           {
-            elementStart(1, 'span');
-            elementEnd();
+            element(1, 'span');
             elementStart(2, 'span', ['class', 'foo']);
             {}
             elementEnd();
@@ -247,8 +246,7 @@ describe('render3 integration test', () => {
     it('should support a basic component template', () => {
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'todo');
-          elementEnd();
+          element(0, 'todo');
         }
       }
 
@@ -258,8 +256,7 @@ describe('render3 integration test', () => {
     it('should support a component template with sibling', () => {
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'todo');
-          elementEnd();
+          element(0, 'todo');
           text(1, 'two');
         }
       }
@@ -273,10 +270,8 @@ describe('render3 integration test', () => {
        */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'todo');
-          elementEnd();
-          elementStart(1, 'todo');
-          elementEnd();
+          element(0, 'todo');
+          element(1, 'todo');
         }
       }
       expect(renderToHtml(Template, null, defs))
@@ -312,8 +307,7 @@ describe('render3 integration test', () => {
 
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'todo');
-          elementEnd();
+          element(0, 'todo');
         }
       }
 
@@ -361,8 +355,7 @@ describe('render3 integration test', () => {
 
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp');
-          elementEnd();
+          element(0, 'comp');
         }
       }
 
@@ -409,8 +402,7 @@ describe('render3 integration test', () => {
       /** <comp [condition]="condition"></comp> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp');
-          elementEnd();
+          element(0, 'comp');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'condition', bind(ctx.condition));
@@ -578,8 +570,7 @@ describe('render3 integration test', () => {
 
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'span');
-            elementEnd();
+            element(0, 'span');
           }
           if (rf & RenderFlags.Update) {
             elementAttribute(0, 'title', bind(ctx.title));
@@ -603,8 +594,7 @@ describe('render3 integration test', () => {
 
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'span');
-            elementEnd();
+            element(0, 'span');
           }
           if (rf & RenderFlags.Update) {
             elementAttribute(0, 'title', bind(ctx.title));
@@ -620,8 +610,7 @@ describe('render3 integration test', () => {
       it('should update bindings', () => {
         function Template(rf: RenderFlags, c: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'b');
-            elementEnd();
+            element(0, 'b');
           }
           if (rf & RenderFlags.Update) {
             elementAttribute(0, 'a', interpolationV(c));
@@ -727,8 +716,7 @@ describe('render3 integration test', () => {
 
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div', ['hostBindingDir', '']);
-            elementEnd();
+            element(0, 'div', ['hostBindingDir', '']);
           }
         }
 
@@ -847,8 +835,7 @@ describe('render3 integration test', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'div');
-                elementEnd();
+                element(0, 'div');
               }
               embeddedViewEnd();
             }
@@ -889,8 +876,7 @@ describe('render3 integration test', () => {
           factory: () => new SanitizationComp(),
           template: (rf: RenderFlags, ctx: SanitizationComp) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'a');
-              elementEnd();
+              element(0, 'a');
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'href', bind(ctx.href), sanitizeUrl);
@@ -909,13 +895,13 @@ describe('render3 integration test', () => {
       fixture.component.updateLink('http://foo');
       fixture.update();
 
-      const element = fixture.hostElement.querySelector('a') !;
-      expect(element.getAttribute('href')).toEqual('http://bar');
+      const anchor = fixture.hostElement.querySelector('a') !;
+      expect(anchor.getAttribute('href')).toEqual('http://bar');
 
       fixture.component.updateLink(sanitizer.bypassSecurityTrustUrl('http://foo'));
       fixture.update();
 
-      expect(element.getAttribute('href')).toEqual('http://foo');
+      expect(anchor.getAttribute('href')).toEqual('http://foo');
     });
   });
 });

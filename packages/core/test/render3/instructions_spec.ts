@@ -36,10 +36,7 @@ describe('instructions', () => {
     elementEnd();
   }
 
-  function createScript() {
-    elementStart(0, 'script');
-    elementEnd();
-  }
+  function createScript() { element(0, 'script'); }
 
   describe('bind', () => {
     it('should update bindings when value changes', () => {
@@ -95,7 +92,7 @@ describe('instructions', () => {
 
     it('should allow setting namespaced attributes', () => {
       const t = new TemplateFixture(() => {
-        elementStart(0, 'div', [
+        element(0, 'div', [
           // id="test"
           'id',
           'test',
@@ -108,7 +105,6 @@ describe('instructions', () => {
           'title',
           'Hello',
         ]);
-        elementEnd();
       });
 
       const div = (t.hostNode.native as HTMLElement).querySelector('div') !;

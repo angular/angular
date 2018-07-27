@@ -12,7 +12,7 @@ import {Input, TemplateRef, ViewContainerRef, ViewRef} from '../../src/core';
 import {defineDirective} from '../../src/render3/definition';
 import {injectTemplateRef, injectViewContainerRef} from '../../src/render3/di';
 import {AttributeMarker, detectChanges} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, projection, projectionDef, text} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, projection, projectionDef, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {ComponentFixture, createComponent, renderComponent, toHtml} from './render_util';
@@ -169,10 +169,7 @@ describe('content projection', () => {
     const Parent = createComponent('parent', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'child');
-        {
-          elementStart(1, 'projected-comp');
-          elementEnd();
-        }
+        { element(1, 'projected-comp'); }
         elementEnd();
       }
     }, [Child, ProjectedComp]);
@@ -506,8 +503,7 @@ describe('content projection', () => {
     /** <child></child> */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
-        elementEnd();
+        element(0, 'child');
 
         // testing
         childCmptInstance = loadDirective(0);
@@ -1539,8 +1535,7 @@ describe('content projection', () => {
         if (rf & RenderFlags.Create) {
           projectionDef([[['span']]], ['span']);
           projection(0, 1);
-          elementStart(1, 'hr');
-          elementEnd();
+          element(1, 'hr');
           projection(2);
         }
       });
@@ -1603,8 +1598,7 @@ describe('content projection', () => {
               [[['', 'card-title', '']], [['', 'card-content', '']]],
               ['[card-title]', '[card-content]']);
           projection(0, 1);
-          elementStart(1, 'hr');
-          elementEnd();
+          element(1, 'hr');
           projection(2, 2);
         }
       });
@@ -1662,8 +1656,7 @@ describe('content projection', () => {
               [[['', 'card-title', '']], [['', 'card-content', '']]],
               ['[card-title]', '[card-content]']);
           projection(0, 1);
-          elementStart(1, 'hr');
-          elementEnd();
+          element(1, 'hr');
           projection(2, 2);
         }
       });

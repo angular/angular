@@ -10,7 +10,7 @@
 import {DoCheck, ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
 import {getRenderedText} from '../../src/render3/component';
 import {ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding, tick} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding, tick} from '../../src/render3/instructions';
 import {ComponentDefInternal, DirectiveDefInternal, RenderFlags} from '../../src/render3/interfaces/definition';
 import {createRendererType2} from '../../src/view/index';
 
@@ -156,8 +156,7 @@ describe('component with a container', () => {
 
   function template(rf: RenderFlags, ctx: {items: string[]}) {
     if (rf & RenderFlags.Create) {
-      elementStart(0, 'wrapper');
-      elementEnd();
+      element(0, 'wrapper');
     }
     if (rf & RenderFlags.Update) {
       elementProperty(0, 'items', bind(ctx.items));
@@ -185,8 +184,7 @@ describe('encapsulation', () => {
       selectors: [['wrapper']],
       template: function(rf: RenderFlags, ctx: WrapperComponent) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'encapsulated');
-          elementEnd();
+          element(0, 'encapsulated');
         }
       },
       factory: () => new WrapperComponent,
@@ -201,8 +199,7 @@ describe('encapsulation', () => {
       template: function(rf: RenderFlags, ctx: EncapsulatedComponent) {
         if (rf & RenderFlags.Create) {
           text(0, 'foo');
-          elementStart(1, 'leaf');
-          elementEnd();
+          element(1, 'leaf');
         }
       },
       factory: () => new EncapsulatedComponent,
@@ -248,8 +245,7 @@ describe('encapsulation', () => {
         selectors: [['wrapper']],
         template: function(rf: RenderFlags, ctx: WrapperComponentWith) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'leaf');
-            elementEnd();
+            element(0, 'leaf');
           }
         },
         factory: () => new WrapperComponentWith,
@@ -316,8 +312,7 @@ describe('recursive components', () => {
             if (ctx.data.left != null) {
               let rf0 = embeddedViewStart(0);
               if (rf0 & RenderFlags.Create) {
-                elementStart(0, 'tree-comp');
-                elementEnd();
+                element(0, 'tree-comp');
               }
               if (rf0 & RenderFlags.Update) {
                 elementProperty(0, 'data', bind(ctx.data.left));
@@ -331,8 +326,7 @@ describe('recursive components', () => {
             if (ctx.data.right != null) {
               let rf0 = embeddedViewStart(0);
               if (rf0 & RenderFlags.Create) {
-                elementStart(0, 'tree-comp');
-                elementEnd();
+                element(0, 'tree-comp');
               }
               if (rf0 & RenderFlags.Update) {
                 elementProperty(0, 'data', bind(ctx.data.right));
