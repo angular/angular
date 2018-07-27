@@ -82,10 +82,10 @@ export function bloomAdd(injector: LInjector, type: Type<any>): void {
 
   if (b7) {
     b6 ? (b5 ? (injector.bf7 |= mask) : (injector.bf6 |= mask)) :
-         (b5 ? (injector.bf5 |= mask) : (injector.bf4 |= mask))
+         (b5 ? (injector.bf5 |= mask) : (injector.bf4 |= mask));
   } else {
     b6 ? (b5 ? (injector.bf3 |= mask) : (injector.bf2 |= mask)) :
-         (b5 ? (injector.bf1 |= mask) : (injector.bf0 |= mask))
+         (b5 ? (injector.bf1 |= mask) : (injector.bf0 |= mask));
   }
 }
 
