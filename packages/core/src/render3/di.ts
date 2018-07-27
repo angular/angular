@@ -44,6 +44,7 @@ const NG_ELEMENT_ID = '__NG_ELEMENT_ID__';
  * the existence of a directive.
  */
 const BLOOM_SIZE = 256;
+const BLOOM_MASK = BLOOM_SIZE - 1;
 
 /** Counter used to generate unique IDs for directives. */
 let nextNgElementId = 0;
@@ -56,7 +57,7 @@ let nextNgElementId = 0;
  * @param type The directive to register
  */
 export function bloomAdd(injector: LInjector, type: Type<any>): void {
-  let id = (type as any)[NG_ELEMENT_ID];
+  let id: number|undefined = (type as any)[NG_ELEMENT_ID];
 
   // Set a unique ID on the directive type, so if something tries to inject the directive,
   // we can easily retrieve the ID and hash it into the bloom bit that should be checked.
@@ -66,9 +67,7 @@ export function bloomAdd(injector: LInjector, type: Type<any>): void {
 
   // We only have BLOOM_SIZE (256) slots in our bloom filter (8 buckets * 32 bits each),
   // so all unique IDs must be modulo-ed into a number from 0 - 255 to fit into the filter.
-  // This means that after 255, some directives will share slots, leading to some false positives
-  // when checking for a directive's presence.
-  const bloomBit = id % BLOOM_SIZE;
+  const bloomBit = id & BLOOM_MASK;
 
   // Create a mask that targets the specific bit associated with the directive.
   // JS bit operations are 32 bits, so this will be a number between 2^0 and 2^31, corresponding
@@ -77,13 +76,16 @@ export function bloomAdd(injector: LInjector, type: Type<any>): void {
 
   // Use the raw bloomBit number to determine which bloom filter bucket we should check
   // e.g: bf0 = [0 - 31], bf1 = [32 - 63], bf2 = [64 - 95], bf3 = [96 - 127], etc
-  if (bloomBit < 128) {
-    // Then use the mask to flip on the bit (0-31) associated with the directive in that bucket
-    bloomBit < 64 ? (bloomBit < 32 ? (injector.bf0 |= mask) : (injector.bf1 |= mask)) :
-                    (bloomBit < 96 ? (injector.bf2 |= mask) : (injector.bf3 |= mask));
+  const b7 = bloomBit & 0x80;
+  const b6 = bloomBit & 0x40;
+  const b5 = bloomBit & 0x20;
+
+  if (b7) {
+    b6 ? (b5 ? (injector.bf7 |= mask) : (injector.bf6 |= mask)) :
+         (b5 ? (injector.bf5 |= mask) : (injector.bf4 |= mask))
   } else {
-    bloomBit < 192 ? (bloomBit < 160 ? (injector.bf4 |= mask) : (injector.bf5 |= mask)) :
-                     (bloomBit < 224 ? (injector.bf6 |= mask) : (injector.bf7 |= mask));
+    b6 ? (b5 ? (injector.bf3 |= mask) : (injector.bf2 |= mask)) :
+         (b5 ? (injector.bf1 |= mask) : (injector.bf0 |= mask))
   }
 }
 
@@ -428,7 +430,7 @@ function searchMatchesQueuedForCreation<T>(node: LNode, token: any): T|null {
  */
 function bloomHashBit(token: Type<any>| InjectionToken<any>): number|null {
   let id: number|undefined = (token as any)[NG_ELEMENT_ID];
-  return typeof id === 'number' ? id % BLOOM_SIZE : null;
+  return typeof id === 'number' ? id & BLOOM_MASK : null;
 }
 
 /**
