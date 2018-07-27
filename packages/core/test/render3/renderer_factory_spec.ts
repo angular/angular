@@ -10,8 +10,8 @@ import {AnimationEvent} from '@angular/animations';
 import {MockAnimationDriver, MockAnimationPlayer} from '@angular/animations/browser/testing';
 
 import {RendererType2, ViewEncapsulation} from '../../src/core';
-import {defineComponent, detectChanges} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text, tick} from '../../src/render3/instructions';
+import {defineComponent} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text, tick} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {createRendererType2} from '../../src/view/index';
 
@@ -67,8 +67,7 @@ describe('renderer factory lifecycle', () => {
     logs.push('function_with_component');
     if (rf & RenderFlags.Create) {
       text(0, 'bar');
-      elementStart(1, 'some-component');
-      elementEnd();
+      element(1, 'some-component');
     }
   }
 
@@ -227,12 +226,9 @@ describe('Renderer2 destruction hooks', () => {
           let rf1 = embeddedViewStart(1);
           {
             if (rf1 & RenderFlags.Create) {
-              elementStart(0, 'span');
-              elementEnd();
-              elementStart(1, 'span');
-              elementEnd();
-              elementStart(2, 'span');
-              elementEnd();
+              element(0, 'span');
+              element(1, 'span');
+              element(2, 'span');
             }
           }
           embeddedViewEnd();
@@ -259,8 +255,7 @@ describe('Renderer2 destruction hooks', () => {
         selectors: [['simple']],
         template: function(rf: RenderFlags, ctx: SimpleComponent) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'span');
-            elementEnd();
+            element(0, 'span');
           }
         },
         factory: () => new SimpleComponent,
@@ -282,12 +277,9 @@ describe('Renderer2 destruction hooks', () => {
           let rf1 = embeddedViewStart(1);
           {
             if (rf1 & RenderFlags.Create) {
-              elementStart(0, 'simple');
-              elementEnd();
-              elementStart(1, 'span');
-              elementEnd();
-              elementStart(2, 'simple');
-              elementEnd();
+              element(0, 'simple');
+              element(1, 'span');
+              element(2, 'simple');
             }
           }
           embeddedViewEnd();

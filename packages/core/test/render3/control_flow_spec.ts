@@ -7,8 +7,9 @@
  */
 
 import {defineComponent} from '../../src/render3/definition';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+
 import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
 
 describe('JS control flow', () => {
@@ -673,8 +674,7 @@ describe('JS control flow', () => {
         factory: () => new App(),
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div');
-            elementEnd();
+            element(0, 'div');
             container(1);
             container(2);
           }
@@ -684,8 +684,7 @@ describe('JS control flow', () => {
               if (ctx.condition) {
                 let rf1 = embeddedViewStart(0);
                 if (rf1 & RenderFlags.Create) {
-                  elementStart(0, 'comp');
-                  elementEnd();
+                  element(0, 'comp');
                 }
                 embeddedViewEnd();
               }
@@ -696,8 +695,7 @@ describe('JS control flow', () => {
               if (ctx.condition2) {
                 let rf1 = embeddedViewStart(0);
                 if (rf1 & RenderFlags.Create) {
-                  elementStart(0, 'comp');
-                  elementEnd();
+                  element(0, 'comp');
                 }
                 embeddedViewEnd();
               }
@@ -740,8 +738,7 @@ describe('JS control flow', () => {
         factory: () => new App(),
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div');
-            elementEnd();
+            element(0, 'div');
             container(1);
             container(2);
           }
@@ -751,8 +748,7 @@ describe('JS control flow', () => {
               if (ctx.condition) {
                 let rf1 = embeddedViewStart(0);
                 if (rf1 & RenderFlags.Create) {
-                  elementStart(0, 'comp');
-                  elementEnd();
+                  element(0, 'comp');
                 }
                 embeddedViewEnd();
               }
@@ -763,8 +759,7 @@ describe('JS control flow', () => {
               if (ctx.condition2) {
                 let rf1 = embeddedViewStart(0);
                 if (rf1 & RenderFlags.Create) {
-                  elementStart(0, 'comp');
-                  elementEnd();
+                  element(0, 'comp');
                 }
                 embeddedViewEnd();
               }

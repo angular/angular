@@ -635,9 +635,11 @@ export function namespaceHTML() {
  * @param localRefs A set of local reference bindings on the element.
  */
 export function element(
-    index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
-  elementStart(index, name, attrs, localRefs);
+    index: number, name: string, attrs?: TAttributes | null,
+    localRefs?: string[] | null): RElement {
+  const rElement = elementStart(index, name, attrs, localRefs);
   elementEnd();
+  return rElement;
 }
 
 /**
@@ -1113,7 +1115,7 @@ export function storeCleanupFn(view: LViewData, cleanupFn: Function): void {
 }
 
 /** Mark the end of the element. */
-export function elementEnd() {
+export function elementEnd(): void {
   if (isParent) {
     isParent = false;
   } else {

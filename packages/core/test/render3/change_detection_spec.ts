@@ -11,8 +11,9 @@ import {withBody} from '@angular/core/testing';
 import {ChangeDetectionStrategy, ChangeDetectorRef, DoCheck} from '../../src/core';
 import {getRenderedText, whenRendered} from '../../src/render3/component';
 import {LifecycleHooksFeature, defineComponent, defineDirective, injectChangeDetectorRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, text, textBinding, tick} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, detectChanges, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, listener, markDirty, text, textBinding, tick} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+
 import {containerEl, createComponent, renderComponent, requestAnimationFrame} from './render_util';
 
 describe('change detection', () => {
@@ -130,8 +131,7 @@ describe('change detection', () => {
         /** <my-comp [name]="name"></my-comp> */
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'my-comp');
-            elementEnd();
+            element(0, 'my-comp');
           }
           if (rf & RenderFlags.Update) {
             elementProperty(0, 'name', bind(ctx.name));
@@ -201,8 +201,7 @@ describe('change detection', () => {
 
       const ButtonParent = createComponent('button-parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'my-comp');
-          elementEnd();
+          element(0, 'my-comp');
           elementStart(1, 'button', ['id', 'parent']);
           { listener('click', () => noop()); }
           elementEnd();
@@ -233,8 +232,7 @@ describe('change detection', () => {
           template: (rf: RenderFlags, ctx: ButtonParent) => {
             if (rf & RenderFlags.Create) {
               text(0);
-              elementStart(1, 'my-comp');
-              elementEnd();
+              element(1, 'my-comp');
             }
             if (rf & RenderFlags.Update) {
               textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
@@ -247,8 +245,7 @@ describe('change detection', () => {
 
       const MyButtonApp = createComponent('my-button-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'button-parent');
-          elementEnd();
+          element(0, 'button-parent');
         }
       }, [ButtonParent]);
 
@@ -321,8 +318,7 @@ describe('change detection', () => {
           template: (rf: RenderFlags, ctx: ParentComp) => {
             if (rf & RenderFlags.Create) {
               text(0);
-              elementStart(1, 'my-comp');
-              elementEnd();
+              element(1, 'my-comp');
             }
             if (rf & RenderFlags.Update) {
               textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
@@ -400,8 +396,7 @@ describe('change detection', () => {
         /** <my-comp dir></my-comp> */
         const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'my-comp', ['dir', '']);
-            elementEnd();
+            element(0, 'my-comp', ['dir', '']);
           }
         }, [MyComp, Dir]);
 
@@ -421,8 +416,7 @@ describe('change detection', () => {
         const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             text(0);
-            elementStart(1, 'div', ['dir', '']);
-            elementEnd();
+            element(1, 'div', ['dir', '']);
           }
           if (rf & RenderFlags.Update) {
             textBinding(1, bind(ctx.value));
@@ -468,8 +462,7 @@ describe('change detection', () => {
                   if (ctx.showing) {
                     let rf0 = embeddedViewStart(0);
                     if (rf0 & RenderFlags.Create) {
-                      elementStart(0, 'div', ['dir', '']);
-                      elementEnd();
+                      element(0, 'div', ['dir', '']);
                     }
                   }
                   embeddedViewEnd();
@@ -566,8 +559,7 @@ describe('change detection', () => {
           /** <detached-comp></detached-comp> */
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'detached-comp');
-              elementEnd();
+              element(0, 'detached-comp');
             }
           },
           directives: () => [DetachedComp]
@@ -702,8 +694,7 @@ describe('change detection', () => {
         /** <on-push-comp [value]="value"></on-push-comp> */
         const OnPushApp = createComponent('on-push-app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'on-push-comp');
-            elementEnd();
+            element(0, 'on-push-comp');
           }
           if (rf & RenderFlags.Update) {
             elementProperty(0, 'value', bind(ctx.value));
@@ -772,8 +763,7 @@ describe('change detection', () => {
           template: (rf: RenderFlags, ctx: OnPushParent) => {
             if (rf & RenderFlags.Create) {
               text(0);
-              elementStart(1, 'on-push-comp');
-              elementEnd();
+              element(1, 'on-push-comp');
             }
             if (rf & RenderFlags.Update) {
               textBinding(0, interpolation1('', ctx.value, ' - '));
@@ -852,8 +842,7 @@ describe('change detection', () => {
                   if (ctx.showing) {
                     let rf0 = embeddedViewStart(0);
                     if (rf0 & RenderFlags.Create) {
-                      elementStart(0, 'on-push-comp');
-                      elementEnd();
+                      element(0, 'on-push-comp');
                     }
                     embeddedViewEnd();
                   }
@@ -937,8 +926,7 @@ describe('change detection', () => {
           template: (rf: RenderFlags, ctx: AppComp) => {
             if (rf & RenderFlags.Create) {
               text(0);
-              elementStart(1, 'no-changes-comp');
-              elementEnd();
+              element(1, 'no-changes-comp');
             }
             if (rf & RenderFlags.Update) {
               textBinding(0, interpolation1('', ctx.value, ' - '));
