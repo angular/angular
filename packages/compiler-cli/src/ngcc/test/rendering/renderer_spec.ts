@@ -32,7 +32,7 @@ class TestRenderer extends Renderer {
 }
 
 function createTestRenderer() {
-  const renderer = new TestRenderer();
+  const renderer = new TestRenderer({} as Esm2015ReflectionHost);
   spyOn(renderer, 'addImports').and.callThrough();
   spyOn(renderer, 'addDefinitions').and.callThrough();
   spyOn(renderer, 'removeDecorators').and.callThrough();
