@@ -12,6 +12,7 @@
     "compiler/test",
     "compiler-cli/integrationtest",
     "platform-server/integrationtest",
+    "router/test/aot_ngsummary_test",
     "common/locales",
     "examples",
     "**/*_spec.ts",
