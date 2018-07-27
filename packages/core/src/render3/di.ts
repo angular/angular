@@ -8,7 +8,9 @@
 
 // We are temporarily importing the existing viewEngine_from core so we can be sure we are
 // correctly implementing its interfaces for backwards compatibility.
+
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {InjectionToken} from '../di/injection_token';
 import {InjectFlags, Injector, inject, setCurrentInjector} from '../di/injector';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
 import {ComponentFactoryResolver as viewEngine_ComponentFactoryResolver} from '../linker/component_factory_resolver';
@@ -31,7 +33,6 @@ import {Renderer3} from './interfaces/renderer';
 import {DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getChildLNode, getParentLNode, insertView, removeView} from './node_manipulation';
-import {stringify} from './util';
 import {ViewRef} from './view_ref';
 
 
@@ -61,7 +62,7 @@ let nextNgElementId = 0;
  * @param type The directive to register
  */
 export function bloomAdd(injector: LInjector, type: Type<any>): void {
-  let id: number|undefined = (type as any)[NG_ELEMENT_ID];
+  let id = (type as any)[NG_ELEMENT_ID];
 
   // Set a unique ID on the directive type, so if something tries to inject the directive,
   // we can easily retrieve the ID and hash it into the bloom bit that should be checked.
@@ -177,10 +178,10 @@ export function diPublic(def: DirectiveDefInternal<any>): void {
  * @param flags Injection flags
  * @returns the value from the injector or `null` when not found
  */
-export function directiveInject<T>(token: Type<T>): T;
-export function directiveInject<T>(token: Type<T>, flags: InjectFlags.Optional): T|null;
-export function directiveInject<T>(token: Type<T>, flags: InjectFlags): T;
-export function directiveInject<T>(token: Type<T>, flags = InjectFlags.Default): T|null {
+export function directiveInject<T>(token: Type<T>| InjectionToken<T>): T;
+export function directiveInject<T>(token: Type<T>| InjectionToken<T>, flags: InjectFlags): T;
+export function directiveInject<T>(
+    token: Type<T>| InjectionToken<T>, flags = InjectFlags.Default): T|null {
   return getOrCreateInjectable<T>(getOrCreateNodeInjector(), token, flags);
 }
 
@@ -339,21 +340,14 @@ function getClosestComponentAncestor(node: LViewNode | LElementNode): LElementNo
  * @returns the value from the injector or `null` when not found
  */
 export function getOrCreateInjectable<T>(
-    di: LInjector, token: Type<T>, flags: InjectFlags = InjectFlags.Default): T|null {
+    nodeInjector: LInjector, token: Type<T>| InjectionToken<T>,
+    flags: InjectFlags = InjectFlags.Default): T|null {
   const bloomHash = bloomHashBit(token);
 
   // If the token has a bloom hash, then it is a directive that is public to the injection system
-  // (diPublic). If there is no hash, fall back to the module injector.
-  if (bloomHash === null) {
-    const moduleInjector = getPreviousOrParentNode().view[INJECTOR];
-    const formerInjector = setCurrentInjector(moduleInjector);
-    try {
-      return inject(token, flags);
-    } finally {
-      setCurrentInjector(formerInjector);
-    }
-  } else {
-    let injector: LInjector|null = di;
+  // (diPublic) otherwise fall back to the module injector.
+  if (bloomHash !== null) {
+    let injector: LInjector|null = nodeInjector;
 
     while (injector) {
       // Get the closest potential matching injector (upwards in the injector tree) that
@@ -390,7 +384,8 @@ export function getOrCreateInjectable<T>(
       // If we *didn't* find the directive for the token and we are searching the current node's
       // injector, it's possible the directive is on this node and hasn't been created yet.
       let instance: T|null;
-      if (injector === di && (instance = searchMatchesQueuedForCreation<T>(node, token))) {
+      if (injector === nodeInjector &&
+          (instance = searchMatchesQueuedForCreation<T>(node, token))) {
         return instance;
       }
 
@@ -404,9 +399,13 @@ export function getOrCreateInjectable<T>(
     }
   }
 
-  // No directive was found for the given token.
-  if (flags & InjectFlags.Optional) return null;
-  throw new Error(`Injector: NOT_FOUND [${stringify(token)}]`);
+  const moduleInjector = getPreviousOrParentNode().view[INJECTOR];
+  const formerInjector = setCurrentInjector(moduleInjector);
+  try {
+    return inject(token, flags);
+  } finally {
+    setCurrentInjector(formerInjector);
+  }
 }
 
 function searchMatchesQueuedForCreation<T>(node: LNode, token: any): T|null {
@@ -433,8 +432,8 @@ function searchMatchesQueuedForCreation<T>(node: LNode, token: any): T|null {
  * @param token the injection token
  * @returns the matching bit to check in the bloom filter or `null` if the token is not known.
  */
-function bloomHashBit(type: Type<any>): number|null {
-  let id: number|undefined = (type as any)[NG_ELEMENT_ID];
+function bloomHashBit(token: Type<any>| InjectionToken<any>): number|null {
+  let id: number|undefined = (token as any)[NG_ELEMENT_ID];
   return typeof id === 'number' ? id % BLOOM_SIZE : null;
 }
 
@@ -694,7 +693,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
 
   detach(index?: number): viewEngine_ViewRef|null {
     const adjustedIdx = this._adjustIndex(index, -1);
-    const lViewNode = detachView(this._lContainerNode, adjustedIdx);
+    detachView(this._lContainerNode, adjustedIdx);
     return this._viewRefs.splice(adjustedIdx, 1)[0] || null;
   }
 

@@ -8,7 +8,7 @@
 
 import {Type} from '../type';
 
-import {InjectableDef, defineInjectable} from './defs';
+import {defineInjectable} from './defs';
 
 /**
  * Creates a token that can be used in a DI Provider.
