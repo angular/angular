@@ -41,7 +41,7 @@ describe('largetable benchmark perf', () => {
 
   [CreateOnlyWorker, CreateAndDestroyWorker, UpdateWorker].forEach((worker) => {
     describe(worker.id, () => {
-      it('should run for render3', (done) => {
+      it('should run for render3', done => {
         runTableBenchmark({
           id: `largeTable.render3.${worker.id}`,
           url: 'index.html',
