@@ -111,8 +111,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                elToQuery = elementStart(1, 'div', ['child', '']);
-                elementEnd();
+                elToQuery = element(1, 'div', ['child', '']);
               }
             },
             [Child], [],
@@ -182,8 +181,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                elementStart(1, 'div', ['child', '']);
-                elementEnd();
+                element(1, 'div', ['child', '']);
               }
             },
             [Child, OtherChild], [],
@@ -219,10 +217,8 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                elToQuery = elementStart(1, 'div', null, ['foo', '']);
-                elementEnd();
-                elementStart(3, 'div');
-                elementEnd();
+                elToQuery = element(1, 'div', null, ['foo', '']);
+                element(3, 'div');
               }
             },
             [], [],
@@ -257,10 +253,8 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                elToQuery = elementStart(2, 'div', null, ['foo', '', 'bar', '']);
-                elementEnd();
-                elementStart(5, 'div');
-                elementEnd();
+                elToQuery = element(2, 'div', null, ['foo', '', 'bar', '']);
+                element(5, 'div');
               }
             },
             [], [],
@@ -305,12 +299,9 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                el1ToQuery = elementStart(1, 'div', null, ['foo', '']);
-                elementEnd();
-                elementStart(3, 'div');
-                elementEnd();
-                el2ToQuery = elementStart(4, 'div', null, ['bar', '']);
-                elementEnd();
+                el1ToQuery = element(1, 'div', null, ['foo', '']);
+                element(3, 'div');
+                el2ToQuery = element(4, 'div', null, ['bar', '']);
               }
             },
             [], [],
@@ -345,8 +336,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                elToQuery = elementStart(1, 'div', null, ['foo', '']);
-                elementEnd();
+                elToQuery = element(1, 'div', null, ['foo', '']);
                 element(3, 'div');
               }
             },
@@ -749,8 +739,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                div = elementStart(1, 'div', ['child', ''], ['foo', 'child']);
-                elementEnd();
+                div = element(1, 'div', ['child', ''], ['foo', 'child']);
               }
             },
             [Child], [],
@@ -784,8 +773,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                div = elementStart(1, 'div', ['child', ''], ['foo', '', 'bar', 'child']);
-                elementEnd();
+                div = element(1, 'div', ['child', ''], ['foo', '', 'bar', 'child']);
               }
               if (rf & RenderFlags.Update) {
                 childInstance = loadDirective(0);
@@ -889,8 +877,7 @@ describe('query', () => {
               if (rf & RenderFlags.Create) {
                 container(1, (rf1: RenderFlags, ctx1: any) => {
                   if (rf1 & RenderFlags.Create) {
-                    elementStart(0, 'div', null, ['foo', '']);
-                    elementEnd();
+                    element(0, 'div', null, ['foo', '']);
                   }
                 }, null, ['ngIf', '']);
               }
@@ -944,8 +931,7 @@ describe('query', () => {
               if (rf & RenderFlags.Create) {
                 container(1, (rf1: RenderFlags, row: NgForOfContext<string>) => {
                   if (rf1 & RenderFlags.Create) {
-                    elementStart(0, 'div', null, ['foo', '']);
-                    elementEnd();
+                    element(0, 'div', null, ['foo', '']);
                   }
                   if (rf1 & RenderFlags.Update) {
                     elementProperty(0, 'id', bind(row.$implicit));
@@ -1013,21 +999,18 @@ describe('query', () => {
                  if (rf & RenderFlags.Create) {
                    container(1, (rf: RenderFlags, ctx: {idx: number}) => {
                      if (rf & RenderFlags.Create) {
-                       elementStart(0, 'div', null, ['foo', '']);
-                       elementEnd();
+                       element(0, 'div', null, ['foo', '']);
                      }
                      if (rf & RenderFlags.Update) {
                        elementProperty(0, 'id', bind('foo1_' + ctx.idx));
                      }
                    }, null, []);
 
-                   elementStart(2, 'div', ['id', 'middle'], ['foo', '']);
-                   elementEnd();
+                   element(2, 'div', ['id', 'middle'], ['foo', '']);
 
                    container(4, (rf: RenderFlags, ctx: {idx: number}) => {
                      if (rf & RenderFlags.Create) {
-                       elementStart(0, 'div', null, ['foo', '']);
-                       elementEnd();
+                       element(0, 'div', null, ['foo', '']);
                      }
                      if (rf & RenderFlags.Update) {
                        elementProperty(0, 'id', bind('foo2_' + ctx.idx));
@@ -1119,8 +1102,7 @@ describe('query', () => {
                  if (rf & RenderFlags.Create) {
                    container(1, (rf: RenderFlags, ctx: {idx: number, container_idx: number}) => {
                      if (rf & RenderFlags.Create) {
-                       elementStart(0, 'div', null, ['foo', '']);
-                       elementEnd();
+                       element(0, 'div', null, ['foo', '']);
                      }
                      if (rf & RenderFlags.Update) {
                        elementProperty(0, 'id', bind('foo_' + ctx.container_idx + '_' + ctx.idx));
@@ -1257,8 +1239,7 @@ describe('query', () => {
                     let rf1 = embeddedViewStart(1);
                     {
                       if (rf1 & RenderFlags.Create) {
-                        firstEl = elementStart(0, 'div', null, ['foo', '']);
-                        elementEnd();
+                        firstEl = element(0, 'div', null, ['foo', '']);
                       }
                     }
                     embeddedViewEnd();
@@ -1309,11 +1290,9 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   firstEl = elementStart(1, 'span', null, ['foo', '']);
-                   elementEnd();
+                   firstEl = element(1, 'span', null, ['foo', '']);
                    container(3);
-                   lastEl = elementStart(4, 'span', null, ['foo', '']);
-                   elementEnd();
+                   lastEl = element(4, 'span', null, ['foo', '']);
                  }
                  if (rf & RenderFlags.Update) {
                    containerRefreshStart(3);
@@ -1322,8 +1301,7 @@ describe('query', () => {
                        let rf1 = embeddedViewStart(1);
                        {
                          if (rf1 & RenderFlags.Create) {
-                           viewEl = elementStart(0, 'div', null, ['foo', '']);
-                           elementEnd();
+                           viewEl = element(0, 'div', null, ['foo', '']);
                          }
                        }
                        embeddedViewEnd();
@@ -1389,8 +1367,7 @@ describe('query', () => {
                     let rf0 = embeddedViewStart(0);
                     {
                       if (rf0 & RenderFlags.Create) {
-                        firstEl = elementStart(0, 'div', null, ['foo', '']);
-                        elementEnd();
+                        firstEl = element(0, 'div', null, ['foo', '']);
                       }
                     }
                     embeddedViewEnd();
@@ -1399,8 +1376,7 @@ describe('query', () => {
                     let rf1 = embeddedViewStart(1);
                     {
                       if (rf1 & RenderFlags.Create) {
-                        lastEl = elementStart(0, 'span', null, ['foo', '']);
-                        elementEnd();
+                        lastEl = element(0, 'span', null, ['foo', '']);
                       }
                     }
                     embeddedViewEnd();
@@ -1462,8 +1438,7 @@ describe('query', () => {
                     let rf0 = embeddedViewStart(0);
                     {
                       if (rf0 & RenderFlags.Create) {
-                        firstEl = elementStart(0, 'div', null, ['foo', '']);
-                        elementEnd();
+                        firstEl = element(0, 'div', null, ['foo', '']);
                         container(2);
                       }
                       if (rf0 & RenderFlags.Update) {
@@ -1473,8 +1448,7 @@ describe('query', () => {
                             let rf2 = embeddedViewStart(0);
                             {
                               if (rf2) {
-                                lastEl = elementStart(0, 'span', null, ['foo', '']);
-                                elementEnd();
+                                lastEl = element(0, 'span', null, ['foo', '']);
                               }
                             }
                             embeddedViewEnd();
@@ -1536,8 +1510,7 @@ describe('query', () => {
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 container(2);
-                elementStart(3, 'span', null, ['foo', '']);
-                elementEnd();
+                element(3, 'span', null, ['foo', '']);
               }
               if (rf & RenderFlags.Update) {
                 containerRefreshStart(2);
@@ -1546,8 +1519,7 @@ describe('query', () => {
                     let rf0 = embeddedViewStart(0);
                     {
                       if (rf0 & RenderFlags.Create) {
-                        elementStart(0, 'div', null, ['foo', '']);
-                        elementEnd();
+                        element(0, 'div', null, ['foo', '']);
                       }
                     }
                     embeddedViewEnd();
@@ -1630,8 +1602,7 @@ describe('query', () => {
           'some-component-with-query',
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              elementStart(1, 'div', null, ['foo', '']);
-              elementEnd();
+              element(1, 'div', null, ['foo', '']);
             }
           },
           [], [],
@@ -1655,8 +1626,7 @@ describe('query', () => {
             let rf1 = embeddedViewStart(1);
             {
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'some-component-with-query');
-                elementEnd();
+                element(0, 'some-component-with-query');
               }
             }
             embeddedViewEnd();

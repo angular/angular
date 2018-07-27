@@ -63,8 +63,7 @@ describe('ViewContainerRef', () => {
      */
     function createTemplate() {
       container(0, embeddedTemplate);
-      elementStart(1, 'p', ['vcref', '']);
-      elementEnd();
+      element(1, 'p', ['vcref', '']);
     }
 
     function updateTemplate() {
@@ -76,10 +75,8 @@ describe('ViewContainerRef', () => {
       it('should work on elements', () => {
         function createTemplate() {
           container(0, embeddedTemplate);
-          elementStart(1, 'header', ['vcref', '']);
-          elementEnd();
-          elementStart(2, 'footer');
-          elementEnd();
+          element(1, 'header', ['vcref', '']);
+          element(2, 'footer');
         }
 
         const fixture = new TemplateFixture(createTemplate, updateTemplate, [DirectiveWithVCRef]);
@@ -108,10 +105,8 @@ describe('ViewContainerRef', () => {
 
         function createTemplate() {
           container(0, embeddedTemplate);
-          elementStart(1, 'header-cmp', ['vcref', '']);
-          elementEnd();
-          elementStart(2, 'footer');
-          elementEnd();
+          element(1, 'header-cmp', ['vcref', '']);
+          element(2, 'footer');
         }
 
         const fixture = new TemplateFixture(
@@ -141,10 +136,8 @@ describe('ViewContainerRef', () => {
 
         function createTemplate() {
           container(0, embeddedTemplate);
-          elementStart(1, 'div', ['vcref', '']);
-          elementEnd();
-          elementStart(2, 'div', ['vcref', '']);
-          elementEnd();
+          element(1, 'div', ['vcref', '']);
+          element(2, 'div', ['vcref', '']);
 
           // for testing only:
           firstDir = loadDirective(0);
@@ -170,8 +163,7 @@ describe('ViewContainerRef', () => {
       it('should work on containers', () => {
         function createTemplate() {
           container(0, embeddedTemplate, undefined, ['vcref', '']);
-          elementStart(1, 'footer');
-          elementEnd();
+          element(1, 'footer');
         }
 
         function updateTemplate() {
@@ -419,8 +411,7 @@ describe('ViewContainerRef', () => {
               if (rf & RenderFlags.Create) {
                 container(0, (rf: RenderFlags, ctx: any) => {
                   if (rf & RenderFlags.Create) {
-                    elementStart(0, 'child');
-                    elementEnd();
+                    element(0, 'child');
                     pipe(1, 'starPipe');
                     reserveSlots(2);
                   }
@@ -429,11 +420,9 @@ describe('ViewContainerRef', () => {
                   }
                 });
                 pipe(1, 'starPipe');
-                elementStart(2, 'child', ['vcref', '']);
-                elementEnd();
+                element(2, 'child', ['vcref', '']);
                 pipe(3, 'starPipe');
-                elementStart(4, 'child');
-                elementEnd();
+                element(4, 'child');
                 reserveSlots(4);
               }
               if (rf & RenderFlags.Update) {
@@ -1173,17 +1162,14 @@ describe('ViewContainerRef', () => {
             if (rf & RenderFlags.Create) {
               container(0, (rf: RenderFlags, ctx: any) => {
                 if (rf & RenderFlags.Create) {
-                  elementStart(0, 'hooks');
-                  elementEnd();
+                  element(0, 'hooks');
                 }
                 if (rf & RenderFlags.Update) {
                   elementProperty(0, 'name', bind('C'));
                 }
               });
-              elementStart(1, 'hooks', ['vcref', '']);
-              elementEnd();
-              elementStart(2, 'hooks');
-              elementEnd();
+              element(1, 'hooks', ['vcref', '']);
+              element(2, 'hooks');
             }
             if (rf & RenderFlags.Update) {
               const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
@@ -1273,10 +1259,8 @@ describe('ViewContainerRef', () => {
           factory: () => new SomeComponent(),
           template: (rf: RenderFlags, cmp: SomeComponent) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'hooks', ['vcref', '']);
-              elementEnd();
-              elementStart(1, 'hooks');
-              elementEnd();
+              element(0, 'hooks', ['vcref', '']);
+              element(1, 'hooks');
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'name', bind('A'));
