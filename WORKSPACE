@@ -6,9 +6,16 @@ workspace(name = "angular")
 
 http_archive(
     name = "build_bazel_rules_nodejs",
-    url = "https://github.com/bazelbuild/rules_nodejs/archive/20ff5892612f8359aec8aaf26dd3902a24976ada.zip",
-    strip_prefix = "rules_nodejs-20ff5892612f8359aec8aaf26dd3902a24976ada",
-    sha256 = "07da9d4c3e688a02745d0f50709a87744706d4f5d1959b799b0ac38e97acd622",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.11.2.zip"],
+    strip_prefix = "rules_nodejs-0.11.2",
+    sha256 = "c00d5381adeefb56e0ef959a7b168cae628535dab933cfad1c2cd1870cd7c9de",
+)
+
+http_archive(
+    name = "bazel_skylib",
+    urls = ["https://github.com/bazelbuild/bazel-skylib/archive/0.3.1.zip"],
+    strip_prefix = "bazel-skylib-0.3.1",
+    sha256 = "95518adafc9a2b656667bbf517a952e54ce7f350779d0dd95133db4eb5c27fb1",
 )
 
 http_archive(
@@ -20,9 +27,9 @@ http_archive(
 
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.15.3.zip",
-    strip_prefix = "rules_typescript-0.15.3",
-    sha256 = "a2b26ac3fc13036011196063db1bf7f1eae81334449201dc28087ebfa3708c99",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/1d9a4b0087f307e31af91e2b221a6447288994c6.zip",
+    strip_prefix = "rules_typescript-1d9a4b0087f307e31af91e2b221a6447288994c6",
+    sha256 = "e17ac3f33d5d3cd2a0c385c4fd28b814d0ad46c6c67ccaef97160be99d7a24eb",
 )
 
 http_archive(
