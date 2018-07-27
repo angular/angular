@@ -3,24 +3,26 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
 load("//tools:defaults.bzl", "ng_module")
 
 
-ts_library(
-    name = "test_lib",
-    testonly = 1,
-    srcs = glob(
-        ["**/*.ts"]
-    ),
+ng_module(
+    name = "aot_routing_module",
+    srcs = ["aot_router_module.ts"],
     deps = [
-        "//packages/common",
-        "//packages/common/testing",
+        "//packages/core",
+        "//packages/router",
+        "@rxjs",
+    ],
+)
+
+ts_library(
+    name = "aot_test_lib",
+    testonly = 1,
+    srcs = ["aot_router_bootstrap.spec.ts"],
+    deps = [
+        ":aot_routing_module",
         "//packages/core",
         "//packages/core/testing",
-        "//packages/platform-browser",
-        "//packages/platform-browser-dynamic",
-        "//packages/platform-browser/testing",
         "//packages/router",
         "//packages/router/testing",
-        "@rxjs",
-        "@rxjs//operators",
     ],
 )
 
@@ -28,14 +30,7 @@ jasmine_node_test(
     name = "test",
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     deps = [
-        ":test_lib",
+        ":aot_test_lib",
         "//tools/testing:node",
-    ],
-)
-
-ts_web_test_suite(
-    name = "test_web",
-    deps = [
-        ":test_lib",
     ],
 )
