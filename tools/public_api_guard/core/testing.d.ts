@@ -148,7 +148,7 @@ export declare type TestModuleMetadata = {
 export declare function tick(millis?: number): void;
 
 /** @experimental */
-export declare function withBody<T>(html: string, blockFn: T): T;
+export declare function withBody<T extends Function>(html: string, blockFn: T): T;
 
 /** @experimental */
 export declare function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;
