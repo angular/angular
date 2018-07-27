@@ -117,7 +117,7 @@ describe('di', () => {
           .toEqual('<div dira=""><span dirb="" dirc="">DirADirB</span></div>');
     });
 
-    it('should instantiate injected directives first', () => {
+    it('should instantiate injected directives in dependency order', () => {
       class DirA {
         constructor(dir: DirB) { log.push(`DirA (dep: ${dir.value})`); }
 
@@ -136,8 +136,43 @@ describe('di', () => {
         }
       }, [DirA, DirB]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'DirA (dep: DirB)']);
+    });
+
+    it('should fallback to the module injector', () => {
+      class DirA {
+        constructor(dir: DirB) { log.push(`DirA (dep: ${dir.value})`); }
+
+        static ngDirectiveDef = defineDirective({
+          selectors: [['', 'dirA', '']],
+          type: DirA,
+          factory: () => new DirA(directiveInject(DirB)),
+        });
+      }
+
+      // `<div dirB></div><div dirA></div>`
+      // - dirB is know to the node injectors (it uses the diPublic feature)
+      // - then when dirA tries to inject dirB, it will check the node injector first tree
+      // - if not found, it will check the module injector tree
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div', ['dirB', '']);
+          elementEnd();
+          elementStart(1, 'div', ['dirA', '']);
+          elementEnd();
+        }
+      }, [DirA, DirB]);
+
+      const fakeModuleInjector: any = {
+        get: function(token: any) {
+          const value = token === DirB ? 'module' : 'fail';
+          return {value: value};
+        }
+      };
+
+      new ComponentFixture(App, {injector: fakeModuleInjector});
+      expect(log).toEqual(['DirB', 'DirA (dep: module)']);
     });
 
     it('should instantiate injected directives before components', () => {
@@ -160,7 +195,7 @@ describe('di', () => {
         }
       }, [Comp, DirB]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'Comp (dep: DirB)']);
     });
 
@@ -197,7 +232,7 @@ describe('di', () => {
         containerRefreshEnd();
       }, [DirA, DirB]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(
           ['DirB', 'DirA (dep: DirB)', 'DirB', 'DirA (dep: DirB)', 'DirB', 'DirA (dep: DirB)']);
     });
@@ -247,7 +282,7 @@ describe('di', () => {
         }
       }, [DirA, DirB, DirC]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(['DirA', 'DirC', 'DirB (deps: DirA and DirC)']);
     });
 
@@ -307,7 +342,7 @@ describe('di', () => {
         }
       }, [Comp, DirA, DirB, DirC, DirD]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(
           ['DirB', 'DirC (dep: DirB)', 'DirA (dep: DirC)', 'DirD (dep: DirA)', 'Comp (dep: DirD)']);
     });
@@ -344,7 +379,7 @@ describe('di', () => {
         });
       }
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'DirA (deps: DirB and App)']);
     });
 
@@ -393,7 +428,7 @@ describe('di', () => {
         }
       }, [Parent, DirB]);
 
-      const fixture = new ComponentFixture(App);
+      new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'DirB', 'DirA (dep: DirB - 2)']);
     });
 
@@ -590,7 +625,7 @@ describe('di', () => {
         }, [DirA, DirB]);
 
         expect(() => {
-          const fixture = new ComponentFixture(App);
+          new ComponentFixture(App);
           expect(dirA !.dirB).toEqual(null);
         }).not.toThrow();
       });
@@ -622,7 +657,7 @@ describe('di', () => {
         }, [DirA, DirB]);
 
         expect(() => {
-          const fixture = new ComponentFixture(App);
+          new ComponentFixture(App);
           expect(dirA !.dirB).toEqual(null);
         }).not.toThrow();
       });
@@ -656,7 +691,7 @@ describe('di', () => {
           }
         }, [Comp, DirB]);
 
-        const fixture = new ComponentFixture(App);
+        new ComponentFixture(App);
         expect(dirA !.dirB.value).toEqual('parent');
       });
 
@@ -687,9 +722,7 @@ describe('di', () => {
           }
         }, [DirA, DirB]);
 
-        expect(() => {
-          const fixture = new ComponentFixture(App);
-        }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
+        expect(() => { new ComponentFixture(App); }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
       });
 
       it('should check only the current node with @Self even with false positive', () => {
@@ -724,7 +757,7 @@ describe('di', () => {
         expect(() => {
           (DirA as any)['__NG_ELEMENT_ID__'] = 1;
           (DirC as any)['__NG_ELEMENT_ID__'] = 257;
-          const fixture = new ComponentFixture(App);
+          new ComponentFixture(App);
         }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
       });
 
@@ -757,9 +790,7 @@ describe('di', () => {
           }
         }, [Comp, DirB]);
 
-        expect(() => {
-          const fixture = new ComponentFixture(App);
-        }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
+        expect(() => { new ComponentFixture(App); }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
 
       });
 
@@ -1214,7 +1245,7 @@ describe('di', () => {
         }
       });
 
-      const fixture = new ComponentFixture(MyApp);
+      new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
       expect(nonExist).toEqual(undefined);
     });
@@ -1232,7 +1263,7 @@ describe('di', () => {
         }
       });
 
-      const fixture = new ComponentFixture(MyApp);
+      new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
       expect(nonExist).toEqual(undefined);
     });
@@ -1251,7 +1282,7 @@ describe('di', () => {
         }
       });
 
-      const fixture = new ComponentFixture(MyApp);
+      new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
       expect(nonExist).toEqual(undefined);
     });
