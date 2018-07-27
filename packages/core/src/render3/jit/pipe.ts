@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, WrappedNodeExpr, compilePipeFromMetadata, jitExpression} from '@angular/compiler';
+import {WrappedNodeExpr, compilePipeFromMetadata, jitExpression} from '@angular/compiler';
 
 import {Pipe} from '../../metadata/directives';
 import {Type} from '../../type';

@@ -6,7 +6,7 @@
     "name": "BINDING_INDEX"
   },
   {
-    "name": "BLOOM_SIZE"
+    "name": "BLOOM_MASK"
   },
   {
     "name": "CIRCULAR$1"
@@ -135,7 +135,7 @@
     "name": "TVIEW"
   },
   {
-    "name": "TemplateRef"
+    "name": "TemplateRef$1"
   },
   {
     "name": "Todo"
@@ -150,13 +150,13 @@
     "name": "VIEWS"
   },
   {
-    "name": "ViewContainerRef"
+    "name": "ViewContainerRef$1"
   },
   {
     "name": "ViewEncapsulation$1"
   },
   {
-    "name": "ViewRef"
+    "name": "ViewRef$1"
   },
   {
     "name": "_CLEAN_PROMISE"
