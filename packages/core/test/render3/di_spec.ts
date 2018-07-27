@@ -12,7 +12,7 @@ import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
 import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLViewData, createTView, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, load, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
 import {LViewFlags} from '../../src/render3/interfaces/view';
@@ -131,8 +131,7 @@ describe('di', () => {
       /** <div dirA dirB></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dirA', '', 'dirB', '']);
-          elementEnd();
+          element(0, 'div', ['dirA', '', 'dirB', '']);
         }
       }, [DirA, DirB]);
 
@@ -157,10 +156,8 @@ describe('di', () => {
       // - if not found, it will check the module injector tree
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dirB', '']);
-          elementEnd();
-          elementStart(1, 'div', ['dirA', '']);
-          elementEnd();
+          element(0, 'div', ['dirB', '']);
+          element(1, 'div', ['dirA', '']);
         }
       }, [DirA, DirB]);
 
@@ -190,8 +187,7 @@ describe('di', () => {
       /** <comp dirB></comp> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp', ['dirB', '']);
-          elementEnd();
+          element(0, 'comp', ['dirB', '']);
         }
       }, [Comp, DirB]);
 
@@ -223,8 +219,7 @@ describe('di', () => {
         {
           for (let i = 0; i < 3; i++) {
             if (embeddedViewStart(0)) {
-              elementStart(0, 'div', ['dirA', '', 'dirB', '']);
-              elementEnd();
+              element(0, 'div', ['dirA', '', 'dirB', '']);
             }
             embeddedViewEnd();
           }
@@ -277,8 +272,7 @@ describe('di', () => {
       /** <div dirA dirB dirC></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dirA', '', 'dirB', '', 'dirC', '']);
-          elementEnd();
+          element(0, 'div', ['dirA', '', 'dirB', '', 'dirC', '']);
         }
       }, [DirA, DirB, DirC]);
 
@@ -337,8 +331,7 @@ describe('di', () => {
       /** <comp dirA dirB dirC dirD></comp> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp', ['dirA', '', 'dirB', '', 'dirC', '', 'dirD', '']);
-          elementEnd();
+          element(0, 'comp', ['dirA', '', 'dirB', '', 'dirC', '', 'dirD', '']);
         }
       }, [Comp, DirA, DirB, DirC, DirD]);
 
@@ -370,8 +363,7 @@ describe('di', () => {
           /** <div dirA dirB dirC></div> */
           template: (rf: RenderFlags, ctx: any) => {
             if (rf & RenderFlags.Create) {
-              elementStart(0, 'div', ['dirA', '', 'dirB', '', 'dirC', 'dirC']);
-              elementEnd();
+              element(0, 'div', ['dirA', '', 'dirB', '', 'dirC', 'dirC']);
             }
           },
           directives: [DirA, DirB],
@@ -415,16 +407,14 @@ describe('di', () => {
       /** <div dirA dirB></div> */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dirA', '', 'dirB', '']);
-          elementEnd();
+          element(0, 'div', ['dirA', '', 'dirB', '']);
         }
       }, [DirA, DirB]);
 
       /** <parent dirB></parent> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent', ['dirB', '']);
-          elementEnd();
+          element(0, 'parent', ['dirB', '']);
         }
       }, [Parent, DirB]);
 
@@ -485,8 +475,7 @@ describe('di', () => {
       /** <div dir></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dir', '']);
-          elementEnd();
+          element(0, 'div', ['dir', '']);
         }
       }, [Dir, OtherDir]);
 
@@ -520,10 +509,8 @@ describe('di', () => {
        */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['other', '']);
-          elementEnd();
-          elementStart(1, 'div', ['dir', '']);
-          elementEnd();
+          element(0, 'div', ['other', '']);
+          element(1, 'div', ['dir', '']);
         }
       }, [Dir, OtherDir]);
 
@@ -557,8 +544,7 @@ describe('di', () => {
       /** <div dirA dirB></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dirA', '', 'dirB', '']);
-          elementEnd();
+          element(0, 'div', ['dirA', '', 'dirB', '']);
         }
       }, [DirA, DirB]);
 
@@ -580,8 +566,7 @@ describe('di', () => {
       /** <div dir></div> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dir', '']);
-          elementEnd();
+          element(0, 'div', ['dir', '']);
         }
       }, [Dir]);
 
@@ -619,8 +604,7 @@ describe('di', () => {
         /** <div dirA></div> */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div', ['dirA', '']);
-            elementEnd();
+            element(0, 'div', ['dirA', '']);
           }
         }, [DirA, DirB]);
 
@@ -649,10 +633,8 @@ describe('di', () => {
          */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div', ['dirB', '']);
-            elementEnd();
-            elementStart(1, 'div', ['dirA', '']);
-            elementEnd();
+            element(0, 'div', ['dirB', '']);
+            element(1, 'div', ['dirA', '']);
           }
         }, [DirA, DirB]);
 
@@ -678,16 +660,14 @@ describe('di', () => {
         /** <div dirA dirB="self"></div> */
         const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div', ['dirA', '', 'dirB', 'self']);
-            elementEnd();
+            element(0, 'div', ['dirA', '', 'dirB', 'self']);
           }
         }, [DirA, DirB]);
 
         /* <comp dirB="parent"></comp> */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'comp', ['dirB', 'parent']);
-            elementEnd();
+            element(0, 'comp', ['dirB', 'parent']);
           }
         }, [Comp, DirB]);
 
@@ -716,8 +696,7 @@ describe('di', () => {
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'div', ['dirB', '']);
-            elementStart(1, 'div', ['dirA', '']);
-            elementEnd();
+            element(1, 'div', ['dirA', '']);
             elementEnd();
           }
         }, [DirA, DirB]);
@@ -748,8 +727,7 @@ describe('di', () => {
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'div', ['dirB', '']);
-            elementStart(1, 'div', ['dirA', '', 'dirC', '']);
-            elementEnd();
+            element(1, 'div', ['dirA', '', 'dirC', '']);
             elementEnd();
           }
         }, [DirA, DirB, DirC]);
@@ -777,16 +755,14 @@ describe('di', () => {
         /** <div dirA></div> */
         const Comp = createComponent('comp', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div', ['dirA', '']);
-            elementEnd();
+            element(0, 'div', ['dirA', '']);
           }
         }, [DirA, DirB]);
 
         /* <comp dirB></comp> */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'comp', ['dirB', '']);
-            elementEnd();
+            element(0, 'comp', ['dirB', '']);
           }
         }, [Comp, DirB]);
 
@@ -1037,8 +1013,7 @@ describe('di', () => {
       /** <my-comp dir dirSameInstance #dir="dir"></my-comp> {{ dir.value }} */
       const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'my-comp', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
-          elementEnd();
+          element(0, 'my-comp', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
           text(2);
         }
         let tmp: any;
@@ -1108,10 +1083,7 @@ describe('di', () => {
           template: function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'my-comp');
-              {
-                elementStart(1, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
-                elementEnd();
-              }
+              { element(1, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']); }
               elementEnd();
               text(3);
             }
