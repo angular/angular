@@ -5,6 +5,7 @@ ts_library(
     name = "e2e",
     testonly = 1,
     srcs = ["app.spec.ts"],
+    tsconfig = ":tsconfig.json",
 )
 
 ts_library(
