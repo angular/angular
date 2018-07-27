@@ -349,7 +349,7 @@ function declareTests({useJit}: {useJit: boolean}) {
       it('should display correct error message for uninitialized @Output', () => {
         @Component({selector: 'my-uninitialized-output', template: '<p>It works!</p>'})
         class UninitializedOutputComp {
-          @Output() customEvent: EventEmitter<any>;
+          @Output() customEvent !: EventEmitter<any>;
         }
 
         const template =
