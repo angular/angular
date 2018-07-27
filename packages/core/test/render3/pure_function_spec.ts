@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {defineComponent} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, reserveSlots} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, reserveSlots} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
 import {renderToHtml} from '../../test/render3/render_util';
@@ -35,8 +35,7 @@ describe('array literals', () => {
     /** <my-comp [names]="['Nancy', customName, 'Bess']"></my-comp> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'my-comp');
-        elementEnd();
+        element(0, 'my-comp');
         reserveSlots(2);
       }
       if (rf & RenderFlags.Update) {
@@ -92,8 +91,7 @@ describe('array literals', () => {
      */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'many-prop-comp');
-        elementEnd();
+        element(0, 'many-prop-comp');
         reserveSlots(4);
       }
       if (rf & RenderFlags.Update) {
@@ -147,10 +145,8 @@ describe('array literals', () => {
 
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'parent-comp');
-        elementEnd();
-        elementStart(1, 'parent-comp');
-        elementEnd();
+        element(0, 'parent-comp');
+        element(1, 'parent-comp');
       }
     }
 
@@ -174,8 +170,7 @@ describe('array literals', () => {
     /** <my-comp [names]="['Nancy', customName, 'Bess', customName2]"></my-comp> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'my-comp');
-        elementEnd();
+        element(0, 'my-comp');
         reserveSlots(3);
       }
       if (rf & RenderFlags.Update) {
@@ -302,8 +297,7 @@ describe('array literals', () => {
      */
     function Template(rf: RenderFlags, c: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'my-comp');
-        elementEnd();
+        element(0, 'my-comp');
         reserveSlots(12);
       }
       if (rf & RenderFlags.Update) {
@@ -354,8 +348,7 @@ describe('object literals', () => {
     /** <object-comp [config]="{duration: 500, animation: name}"></object-comp> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'object-comp');
-        elementEnd();
+        element(0, 'object-comp');
         reserveSlots(2);
       }
       if (rf & RenderFlags.Update) {
@@ -390,8 +383,7 @@ describe('object literals', () => {
      */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'object-comp');
-        elementEnd();
+        element(0, 'object-comp');
         reserveSlots(7);
       }
       if (rf & RenderFlags.Update) {

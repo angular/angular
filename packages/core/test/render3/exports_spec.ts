@@ -7,7 +7,7 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, load, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, load, text, textBinding} from '../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {ComponentFixture, createComponent, renderToHtml} from './render_util';
@@ -18,8 +18,7 @@ describe('exports', () => {
     /** <input value="one" #myInput> {{ myInput.value }} */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'input', ['value', 'one'], ['myInput', '']);
-        elementEnd();
+        element(0, 'input', ['value', 'one'], ['myInput', '']);
         text(2);
       }
       let tmp: any;
@@ -37,8 +36,7 @@ describe('exports', () => {
     /** <comp #myComp></comp> {{ myComp.name }} */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'comp', null, ['myComp', '']);
-        elementEnd();
+        element(0, 'comp', null, ['myComp', '']);
         text(2);
       }
       let tmp: any;
@@ -93,10 +91,8 @@ describe('exports', () => {
     /** <comp #myComp></comp> <div [myDir]="myComp"></div> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'comp', null, ['myComp', '']);
-        elementEnd();
-        elementStart(2, 'div', ['myDir', '']);
-        elementEnd();
+        element(0, 'comp', null, ['myComp', '']);
+        element(2, 'div', ['myDir', '']);
       }
       let tmp: any;
       if (rf & RenderFlags.Update) {
@@ -114,8 +110,7 @@ describe('exports', () => {
     /** <div someDir #myDir="someDir"></div> {{ myDir.name }} */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div', ['someDir', ''], ['myDir', 'someDir']);
-        elementEnd();
+        element(0, 'div', ['someDir', ''], ['myDir', 'someDir']);
         text(2);
       }
       let tmp: any;
@@ -143,8 +138,7 @@ describe('exports', () => {
     /** <div #myDir="someDir"></div> */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'div', null, ['myDir', 'someDir']);
-        elementEnd();
+        element(0, 'div', null, ['myDir', 'someDir']);
       }
     });
 
@@ -159,8 +153,7 @@ describe('exports', () => {
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           text(0);
-          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
-          elementEnd();
+          element(1, 'input', ['value', 'one'], ['myInput', '']);
         }
         const tmp = load(2) as any;
         if (rf & RenderFlags.Update) {
@@ -176,10 +169,8 @@ describe('exports', () => {
       /** <div [title]="myInput.value"</div> <input value="one" #myInput> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div');
-          elementEnd();
-          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
-          elementEnd();
+          element(0, 'div');
+          element(1, 'input', ['value', 'one'], ['myInput', '']);
         }
         const tmp = load(2) as any;
         if (rf & RenderFlags.Update) {
@@ -194,10 +185,8 @@ describe('exports', () => {
       /** <div [attr.aria-label]="myInput.value"</div> <input value="one" #myInput> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div');
-          elementEnd();
-          elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
-          elementEnd();
+          element(0, 'div');
+          element(1, 'input', ['value', 'one'], ['myInput', '']);
         }
         const tmp = load(2) as any;
         if (rf & RenderFlags.Update) {
@@ -215,8 +204,7 @@ describe('exports', () => {
           elementStart(0, 'div');
           elementStyling([InitialStylingFlags.VALUES_MODE, 'red', true]);
           elementEnd();
-          elementStart(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
-          elementEnd();
+          element(1, 'input', ['type', 'checkbox', 'checked', 'true'], ['myInput', '']);
         }
         const tmp = load(2) as any;
         if (rf & RenderFlags.Update) {
@@ -262,10 +250,8 @@ describe('exports', () => {
       /** <div [myDir]="myComp"></div><comp #myComp></comp> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['myDir', '']);
-          elementEnd();
-          elementStart(1, 'comp', null, ['myComp', '']);
-          elementEnd();
+          element(0, 'div', ['myDir', '']);
+          element(1, 'comp', null, ['myComp', '']);
         }
         let tmp: any;
         if (rf & RenderFlags.Update) {
@@ -285,10 +271,8 @@ describe('exports', () => {
         if (rf & RenderFlags.Create) {
           text(0);
           text(1);
-          elementStart(2, 'comp', null, ['myComp', '']);
-          elementEnd();
-          elementStart(4, 'input', ['value', 'one'], ['myInput', '']);
-          elementEnd();
+          element(2, 'comp', null, ['myComp', '']);
+          element(4, 'input', ['value', 'one'], ['myInput', '']);
         }
         let tmp1: any;
         let tmp2: any;
@@ -334,8 +318,7 @@ describe('exports', () => {
                 let tmp: any;
                 if (rf1 & RenderFlags.Create) {
                   text(0);
-                  elementStart(1, 'input', ['value', 'one'], ['myInput', '']);
-                  elementEnd();
+                  element(1, 'input', ['value', 'one'], ['myInput', '']);
                 }
                 if (rf1 & RenderFlags.Update) {
                   tmp = load(2);

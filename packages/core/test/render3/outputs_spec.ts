@@ -9,8 +9,9 @@
 import {EventEmitter} from '@angular/core';
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+
 import {containerEl, renderToHtml} from './render_util';
 
 describe('outputs', () => {
@@ -273,8 +274,7 @@ describe('outputs', () => {
                 listener('change', function() { return ctx.onChange(); });
               }
               elementEnd();
-              elementStart(3, 'destroy-comp');
-              elementEnd();
+              element(3, 'destroy-comp');
             }
             embeddedViewEnd();
           }
