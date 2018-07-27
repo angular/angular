@@ -1,8 +1,5 @@
 export declare function async(fn: Function): (done: any) => any;
 
-/** @experimental */
-export declare function cleanupDocument(): void;
-
 export declare class ComponentFixture<T> {
     changeDetectorRef: ChangeDetectorRef;
     componentInstance: T;
@@ -29,9 +26,6 @@ export declare const ComponentFixtureNoNgZone: InjectionToken<boolean[]>;
 
 /** @experimental */
 export declare function discardPeriodicTasks(): void;
-
-/** @experimental */
-export declare function ensureDocument(): void;
 
 /** @experimental */
 export declare function fakeAsync(fn: Function): (...args: any[]) => any;
@@ -146,9 +140,6 @@ export declare type TestModuleMetadata = {
 
 /** @experimental */
 export declare function tick(millis?: number): void;
-
-/** @experimental */
-export declare function withBody<T extends Function>(html: string, blockFn: T): T;
 
 /** @experimental */
 export declare function withModule(moduleDef: TestModuleMetadata): InjectSetupWrapper;

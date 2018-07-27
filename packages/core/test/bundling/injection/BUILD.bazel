@@ -39,6 +39,7 @@ ts_library(
         ":injection",
         "//packages:types",
         "//packages/core/testing",
+        "//packages/private/testing",
     ],
 )
 
