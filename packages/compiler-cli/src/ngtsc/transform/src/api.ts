@@ -57,6 +57,7 @@ export interface DecoratorHandler<A> {
 export interface AnalysisOutput<A> {
   analysis?: A;
   diagnostics?: ts.Diagnostic[];
+  factorySymbolName?: string;
 }
 
 /**

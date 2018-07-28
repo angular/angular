@@ -58,9 +58,10 @@ describe('ngtsc behavioral tests', () => {
     return fs.readFileSync(modulePath, 'utf8');
   }
 
-  function writeConfig(
-      tsconfig: string =
-          '{"extends": "./tsconfig-base.json", "angularCompilerOptions": {"enableIvy": "ngtsc"}}') {
+  function writeConfig(extraOpts: {[key: string]: string | boolean} = {}): void {
+    const opts = JSON.stringify({...extraOpts, 'enableIvy': 'ngtsc'});
+    const tsconfig: string =
+        `{"extends": "./tsconfig-base.json", "angularCompilerOptions": ${opts}}`;
     write('tsconfig.json', tsconfig);
   }
 
@@ -601,5 +602,42 @@ describe('ngtsc behavioral tests', () => {
     expect(exitCode).toBe(0);
     const jsContents = getContents('test.js');
     expect(jsContents).not.toMatch(/import \* as i[0-9] from ['"].\/test['"]/);
+  });
+
+  it('should generate correct factory stubs for a test module', () => {
+    writeConfig({'allowEmptyCodegenFiles': true});
+
+    write('test.ts', `
+        import {Injectable, NgModule} from '@angular/core';
+
+        @Injectable()
+        export class NotAModule {}
+
+        @NgModule({})
+        export class TestModule {}
+    `);
+
+    write('empty.ts', `
+        import {Injectable} from '@angular/core';
+
+        @Injectable()
+        export class NotAModule {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const factoryContents = getContents('test.ngfactory.js');
+    expect(factoryContents).toContain(`import * as i0 from '@angular/core';`);
+    expect(factoryContents).toContain(`import { NotAModule, TestModule } from './test';`);
+    expect(factoryContents)
+        .toContain(`export var TestModuleNgFactory = new i0.ɵNgModuleFactory(TestModule);`);
+    expect(factoryContents).not.toContain(`NotAModuleNgFactory`);
+    expect(factoryContents).not.toContain('ɵNonEmptyModule');
+
+    const emptyFactory = getContents('empty.ngfactory.js');
+    expect(emptyFactory).toContain(`import * as i0 from '@angular/core';`);
+    expect(emptyFactory).toContain(`export var ɵNonEmptyModule = true;`);
   });
 });
