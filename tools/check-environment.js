@@ -17,10 +17,10 @@
 
 'use strict';
 
-var exec = require('child_process').exec;
-var checkNodeModules;
-var semver;
-var issues = [];
+const exec = require('child_process').exec;
+let checkNodeModules;
+let semver;
+const issues = [];
 
 // coarse Node version check
 if (+process.version[1] < 5) {
@@ -56,7 +56,7 @@ try {
 if (require.main === module) {
   // we are running this script directly so just run checkEnvironment against the main angular
   // package.json
-  var engines = require(__dirname + '/../package.json').engines;
+  const engines = require(__dirname + '/../package.json').engines;
   checkEnvironment({
     requiredNodeVersion: engines.node,
     requiredNpmVersion: engines.npm,
@@ -66,9 +66,9 @@ if (require.main === module) {
 
 function checkEnvironment(reqs) {
   exec('yarn --version', function(yarnErr, yarnStdout) {
-    var foundNodeVersion = process.version;
-    var foundYarnVersion = !yarnErr && semver.clean(yarnStdout);
-    var issues = [];
+    const foundNodeVersion = process.version;
+    const foundYarnVersion = !yarnErr && semver.clean(yarnStdout);
+    const issues = [];
 
     if (!semver.satisfies(foundNodeVersion, reqs.requiredNodeVersion)) {
       issues.push(
