@@ -653,8 +653,7 @@ export function element(
  * ['id', 'warning5', 'class', 'alert']
  */
 export function elementStart(
-    index: number, name: string, attrs?: TAttributes | null,
-    localRefs?: string[] | null): RElement {
+    index: number, name: string, attrs?: TAttributes | null, localRefs?: string[] | null): void {
   ngDevMode &&
       assertEqual(viewData[BINDING_INDEX], -1, 'elements should be created before any bindings');
 
@@ -673,8 +672,8 @@ export function elementStart(
   }
   appendChild(getParentLNode(node), native, viewData);
   createDirectivesAndLocals(localRefs);
-  return native;
 }
+
 /**
  * Creates a native element from a tag name, using a renderer.
  * @param name the tag name
@@ -1113,7 +1112,7 @@ export function storeCleanupFn(view: LViewData, cleanupFn: Function): void {
 }
 
 /** Mark the end of the element. */
-export function elementEnd() {
+export function elementEnd(): void {
   if (isParent) {
     isParent = false;
   } else {

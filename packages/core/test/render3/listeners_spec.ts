@@ -7,8 +7,9 @@
  */
 
 import {defineComponent, defineDirective} from '../../src/render3/index';
-import {container, containerRefreshEnd, containerRefreshStart, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
+import {container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+
 import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, containerEl, renderComponent, renderToHtml} from './render_util';
 
@@ -530,10 +531,8 @@ describe('event listeners', () => {
             let rf1 = embeddedViewStart(0);
             if (rf1 & RenderFlags.Create) {
               text(0, 'Hello');
-              elementStart(1, 'comp');
-              elementEnd();
-              elementStart(2, 'comp');
-              elementEnd();
+              element(1, 'comp');
+              element(2, 'comp');
             }
             embeddedViewEnd();
           }

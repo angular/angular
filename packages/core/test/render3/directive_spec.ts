@@ -9,7 +9,7 @@
 import {EventEmitter} from '@angular/core';
 
 import {AttributeMarker, defineDirective} from '../../src/render3/index';
-import {bind, elementEnd, elementProperty, elementStart, listener, loadDirective} from '../../src/render3/instructions';
+import {bind, element, elementEnd, elementProperty, elementStart, listener, loadDirective} from '../../src/render3/instructions';
 
 import {TemplateFixture} from './render_util';
 
@@ -33,10 +33,7 @@ describe('directive', () => {
         });
       }
 
-      function Template() {
-        elementStart(0, 'span', [AttributeMarker.SelectOnly, 'dir']);
-        elementEnd();
-      }
+      function Template() { element(0, 'span', [AttributeMarker.SelectOnly, 'dir']); }
 
       const fixture = new TemplateFixture(Template, () => {}, [Directive]);
       expect(fixture.html).toEqual('<span class="foo"></span>');
@@ -84,8 +81,7 @@ describe('directive', () => {
        */
       function createTemplate() {
         // using 2 bindings to show example shape of attributes array
-        elementStart(0, 'span', ['class', 'fade', AttributeMarker.SelectOnly, 'test', 'other']);
-        elementEnd();
+        element(0, 'span', ['class', 'fade', AttributeMarker.SelectOnly, 'test', 'other']);
       }
 
       function updateTemplate() { elementProperty(0, 'test', bind(false)); }
@@ -136,9 +132,8 @@ describe('directive', () => {
           */
          function createTemplate() {
            // putting name (test) in the "usual" value position
-           elementStart(
+           element(
                0, 'span', ['class', 'fade', AttributeMarker.SelectOnly, 'prop1', 'test', 'prop2']);
-           elementEnd();
          }
 
          function updateTemplate() {
