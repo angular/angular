@@ -4649,7 +4649,10 @@ Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 
 
 {@a 05-12}
 
+<!--
 ### Decorate _input_ and _output_ properties
+-->
+### _입력_ 프로퍼티와 _출력_ 프로퍼티 지정하기
 
 <!--
 #### Style 05-12
@@ -4659,10 +4662,11 @@ Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use the `@Input()` and `@Output()` class decorators instead of the `inputs` and `outputs` properties of the
 `@Directive` and `@Component` metadata:
-
+-->
+컴포넌트의 입출력 프로퍼티는 `@Directive`나 `@Component` 메타데이터의 `inputs`, `outputs`로 지정하지 말고 `@Input()`, `@Output()` 데코레이터로 **지정하세요**
 
 </div>
 
@@ -4671,9 +4675,10 @@ Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** placing `@Input()` or `@Output()` on the same line as the property it decorates.
-
+-->
+`@Input()`, `@Output()` 데코레이터는 프로퍼티 이름과 같은 줄에 놓는 것을 **권장합니다.**
 
 </div>
 
@@ -4682,9 +4687,10 @@ Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 
 <div class="s-why">
 
 
-
+<!--
 **Why?** It is easier and more readable to identify which properties in a class are inputs or outputs.
-
+-->
+**왜?** 입출력 데코레이터를 사용하면 클래스 프로퍼티 중 어떤 것이 입력 프로퍼티이고 어떤 것이 출력 프로퍼티인지 쉽게 구분할 수 있습니다.
 
 </div>
 
@@ -4693,10 +4699,11 @@ Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 
 <div class="s-why">
 
 
-
+<!--
 **Why?** If you ever need to rename the property or event name associated with
 `@Input` or `@Output`, you can modify it in a single place.
-
+-->
+**왜?** 클래스 프로퍼티에 입출력 데코레이터를 지정하면, 이 프로퍼티 이름을 다른 이름으로 바인딩 받거나 이벤트 이름을 다르게 지정할 때도 관련된 내용을 한 곳에서 모두 수정할 수 있습니다.
 
 </div>
 
@@ -4705,9 +4712,10 @@ Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 
 <div class="s-why">
 
 
-
+<!--
 **Why?** The metadata declaration attached to the directive is shorter and thus more readable.
-
+-->
+**왜?** 메타데이터 선언은 짧을수록 가독성이 좋아집니다.
 
 </div>
 
@@ -4716,10 +4724,12 @@ Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Placing the decorator on the same line _usually_ makes for shorter code and still easily identifies the property as an input or output.
 Put it on the line above when doing so is clearly more readable.
-
+-->
+**왜?** 데코레이터를 프로퍼티 이름 바로 앞에 같은 줄로 두면 전체 코드 라인을 많이 늘리지 않으며, 어떤 프로퍼티가 입력 프로퍼티이고 출력 프로퍼티인지 쉽게 알아볼 수 있습니다.
+다른 줄로 분리할 때 가독성이 좋아지는 것이 명확할 때만 데코레이터를 프로퍼티 선언과 다른 줄로 분리하세요.
 
 </div>
 
@@ -4747,7 +4757,10 @@ Put it on the line above when doing so is clearly more readable.
 
 {@a 05-13}
 
+<!--
 ### Avoid aliasing _inputs_ and _outputs_
+-->
+### 입력 프로퍼티와 출력 프로퍼티에 별칭(alias) 사용하지 않기
 
 <!--
 #### Style 05-13
@@ -4757,9 +4770,10 @@ Put it on the line above when doing so is clearly more readable.
 <div class="s-rule avoid">
 
 
-
+<!--
 **Avoid** _input_ and _output_ aliases except when it serves an important purpose.
-
+-->
+꼭 사용해야 하는 경우가 아니라면 입력 프로퍼티와 출력 프로퍼티에 별칭을 지정하지 **마세요.**
 
 </div>
 
@@ -4768,9 +4782,10 @@ Put it on the line above when doing so is clearly more readable.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Two names for the same property (one private, one public) is inherently confusing.
-
+-->
+**왜?** 컴포넌트 외부에서 사용하는 프로퍼티 이름과 내부에서 사용하는 프로퍼티 이름이 다르다면, 당연히 헷갈릴 수 밖에 없습니다.
 
 </div>
 
@@ -4779,10 +4794,11 @@ Put it on the line above when doing so is clearly more readable.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** You should use an alias when the directive name is also an _input_ property,
 and the directive name doesn't describe the property.
-
+-->
+**왜?** 별칭은 디렉티브 이름이 _입력_ 프로퍼티와 같을 때, 디렉티브 이름으로는 프로퍼티를 확인하기 어려울 때만 사용하는 것이 좋습니다.
 
 </div>
 
@@ -4829,7 +4845,10 @@ and the directive name doesn't describe the property.
 
 {@a 05-14}
 
+<!--
 ### Member sequence
+-->
+### 클래스 멤버의 순서
 
 <!--
 #### Style 05-14
@@ -4839,9 +4858,10 @@ and the directive name doesn't describe the property.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** place properties up top followed by methods.
-
+-->
+메소드보다 프로퍼티를 먼저 **선언하세요.**
 
 </div>
 
@@ -4850,9 +4870,10 @@ and the directive name doesn't describe the property.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** place private members after public members, alphabetized.
-
+-->
+private 멤버보다 public 멤버를 먼저, 이들끼리는 알파벳 순서로 **선언하세요.**
 
 </div>
 
@@ -4861,10 +4882,11 @@ and the directive name doesn't describe the property.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Placing members in a consistent sequence makes it easy to read and
 helps instantly identify which members of the component serve which purpose.
-
+-->
+**왜?** 클래스 멤버를 일관된 순서로 선언하면 코드의 가독성이 좋아지며, 이 컴포넌트가 어떤 역할을 하는지 정보를 제공할 수도 있습니다.
 
 </div>
 
