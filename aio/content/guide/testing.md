@@ -13,7 +13,7 @@ The sample application and all tests in this guide are available for inspection 
 
 ## Setup
 
-The Angular CLI downloads and install everything you need to test an Angular application with the [Jasmine test framework](http://jasmine.github.io/2.4/introduction.html).
+The Angular CLI downloads and install everything you need to test an Angular application with the [Jasmine test framework](https://jasmine.github.io/).
 
 The project you create with the CLI is immediately ready to test.
 Just run this one CLI command:
