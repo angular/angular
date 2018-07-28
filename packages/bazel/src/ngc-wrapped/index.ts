@@ -207,7 +207,7 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     if (fileName ===
         path.join(compilerOpts.baseUrl, bazelOpts.package, compilerOpts.flatModuleOutFile + '.ts'))
       return true;
-    // Also handle the case when angular is build from source as an external repository
+    // Also handle the case when angular is built from source as an external repository
     if (fileName ===
         path.join(
             compilerOpts.baseUrl, 'external/angular', bazelOpts.package,
