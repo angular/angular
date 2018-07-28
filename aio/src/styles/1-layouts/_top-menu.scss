@@ -64,16 +64,20 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   margin: $hamburgerShownMargin;
   padding: 0;
 
-  &:not(.starting) {
-    transition-duration: 0.4s;
-    transition-property: color, margin;
-    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
-  }
-
   @media (min-width: 992px) {
     // Hamburger hidden by default on large screens.
     // (Will be shown per doc.)
     margin: $hamburgerHiddenMargin;
+  }
+
+  @media (max-width: 480px) {
+    min-width: 15%;
+  }
+
+  &:not(.starting) {
+    transition-duration: 0.4s;
+    transition-property: color, margin;
+    transition-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1);
   }
 
   &:hover {
@@ -91,6 +95,10 @@ aio-shell.folder-tutorial mat-toolbar.mat-toolbar {
   cursor: pointer;
   margin: 0 16px 0 0;
   padding: 21px 0;
+
+  @media screen and (max-width: 480px) {
+    margin-right: 8px;
+  }
 
   img {
     position: relative;
@@ -194,11 +202,16 @@ aio-search-box.search-container {
   .toolbar-external-icons-container {
     display: flex;
     flex-direction: row;
+    height: 100%;
 
     a {
       display: flex;
       align-items: center;
       margin-left: 16px;
+
+      @media screen and (max-width: 480px) {
+        margin-left: 8px;
+      }
 
       &:hover {
         opacity: 0.8;
