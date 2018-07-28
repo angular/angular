@@ -4195,22 +4195,28 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 
 {@a 04-12}
 
+<!--
 ### Prevent re-import of the core module
+-->
+### 코어 모듈을 다시 로드하지 말기
 
 <!--
 #### Style 04-12
 -->
 #### 스타일 04-12
 
+<!--
 Only the root `AppModule` should import the `CoreModule`.
-
+-->
+`CoreModule`은 `AppModule`에서만 로드해야 합니다.
 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** guard against reimporting of `CoreModule` and fail fast by adding guard logic.
-
+-->
+`CoreModule`이 두 번 이상 로드되면 에러를 발생하도록 방어 로직을 **작성하세요.**
 
 </div>
 
@@ -4219,9 +4225,10 @@ Only the root `AppModule` should import the `CoreModule`.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Guards against reimporting of the `CoreModule`.
-
+-->
+**왜?** 방어 로직을 작성하면 `CoreModule`이 여러번 로드되는 것을 방지할 수 있습니다.
 
 </div>
 
@@ -4230,9 +4237,10 @@ Only the root `AppModule` should import the `CoreModule`.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Guards against creating multiple instances of assets intended to be singletons.
-
+-->
+**왜?** `CoreModule`은 싱글턴 서비스를 제공하기 때문에, 싱글턴 서비스의 인스턴스를 하나로 제한하는 방어 로직을 작성하는 것이 좋습니다.
 
 </div>
 
@@ -4259,23 +4267,30 @@ Only the root `AppModule` should import the `CoreModule`.
 
 {@a 04-13}
 
+<!--
 ### Lazy Loaded folders
+-->
+### 지연 로딩 모듈의 폴더
 
 <!--
 #### Style 04-13
 -->
 #### 스타일 04-13
 
+<!--
 A distinct application feature or workflow may be *lazy loaded* or *loaded on demand* rather than when the application starts.
-
+-->
+애플리케이션 모듈은 *지연로딩*하거나 흐름상 *필요할 때 로드*할 수 있습니다. 그러면 애플리케이션에는 이 모듈이 제외되면서 초기 실행 속도가 빨라집니다.
 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** put the contents of lazy loaded features in a *lazy loaded folder*.
 A typical *lazy loaded folder* contains a *routing component*, its child components, and their related assets and modules.
-
+-->
+지연로딩하는 모듈은 *지연 로딩용 폴더*에 따로 작성하세요.
+일반적으로 이 폴더에는 *라우팅 컴포넌트*, 라우팅 컴포넌트의 자식 컴포넌트, 관련 리소스가 위치합니다.
 
 </div>
 
@@ -4284,9 +4299,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** The folder makes it easy to identify and isolate the feature content.
-
+-->
+**왜?** 폴더를 따로 나누면 지연로딩하는 모듈을 쉽게 구분할 수 있습니다.
 
 </div>
 
@@ -4297,7 +4313,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 {@a 04-14}
 
+<!--
 ### Never directly import lazy loaded folders
+-->
+### 지연로딩 모듈을 직접 로드하지 마세요.
 
 <!--
 #### Style 04-14
@@ -4307,9 +4326,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 <div class="s-rule avoid">
 
 
-
+<!--
 **Avoid** allowing modules in sibling and parent folders to directly import a module in a *lazy loaded feature*.
-
+-->
+이웃 폴더나 부모 폴더에서 *지연로딩 모듈*을 직접 로드하는 것은 피하세요.**
 
 </div>
 
@@ -4318,9 +4338,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Directly importing and using a module will load it immediately when the intention is to load it on demand.
-
+-->
+**왜?** 지연모듈을 직접 로드하면 이 모듈이 사용된다는 것을 의미하며, 지연로딩되지 않고 애플리케이션이 시작될 때 즉시 로드됩니다. 지연로딩의 의미는 없어집니다.
 
 </div>
 
@@ -4330,11 +4351,17 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 <a href="#toc">맨 위로</a>
 
 
+<!--
 ## Components
+-->
+## 컴포넌트
 
 {@a 05-02}
 
+<!--
 ### Component selector names
+-->
+### 컴포넌트 셀렉터
 
 <!--
 #### Style 05-02
@@ -4344,9 +4371,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use _dashed-case_ or _kebab-case_ for naming the element selectors of components.
-
+-->
+컴포넌트의 엘리먼트 셀렉터 이름은 대시를 사용하는 _케밥-케이스(`kebab-case`)_ 로 **지정하세요.**
 
 </div>
 
@@ -4355,9 +4383,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Keeps the element names consistent with the specification for [Custom Elements](https://www.w3.org/TR/custom-elements/).
-
+-->
+**왜?** 엘리먼트 이름은 [커스텀 엘리먼트](https://www.w3.org/TR/custom-elements/)에서 지정한 표준을 따르는 것이 좋습니다.
 
 </div>
 
@@ -4392,7 +4421,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 {@a 05-03}
 
+<!--
 ### Components as elements
+-->
+### 엘리먼트로 사용하기
 
 <!--
 #### Style 05-03
@@ -4401,9 +4433,10 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 <div class="s-rule do">
 
-
+<!--
 **Consider** giving components an _element_ selector, as opposed to _attribute_ or _class_ selectors.
-
+-->
+컴포넌트 셀렉터는 _어트리뷰트_ 나 _클래스_ 셀렉터보다 _엘리먼트_ 셀렉터로 사용하는 것을 **권장합니다.**
 
 </div>
 
@@ -4472,7 +4505,10 @@ There are a few cases where you give a component an attribute, such as when you 
 
 {@a 05-04}
 
+<!--
 ### Extract templates and styles to their own files
+-->
+### 템플릿과 스타일은 개별 파일로 분리
 
 <!--
 #### Style 05-04
@@ -4482,9 +4518,10 @@ There are a few cases where you give a component an attribute, such as when you 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** extract templates and styles into a separate file, when more than 3 lines.
-
+-->
+템플릿과 스타일을 지정하는 코드가 3줄 이상 된다면 개별 파일로 **분리하세요.**
 
 </div>
 
@@ -4493,9 +4530,10 @@ There are a few cases where you give a component an attribute, such as when you 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name the template file `[component-name].component.html`, where [component-name] is the component name.
-
+-->
+템플릿 파일의 이름은 `[컴포넌트 이름].component.html`으로 **지정하세요.**
 
 </div>
 
@@ -4504,9 +4542,10 @@ There are a few cases where you give a component an attribute, such as when you 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name the style file `[component-name].component.css`, where [component-name] is the component name.
-
+-->
+스타일 파일의 이름은 `[컴포넌트 이름].component.css`로 **지정하세요.**
 
 </div>
 
@@ -4515,9 +4554,10 @@ There are a few cases where you give a component an attribute, such as when you 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** specify _component-relative_ URLs, prefixed with `./`.
-
+-->
+컴포넌트 클래스에서는 `./`로 시작하는 _상대 주소_ 로 **참조하세요.**
 
 </div>
 
@@ -4526,9 +4566,10 @@ There are a few cases where you give a component an attribute, such as when you 
 <div class="s-why">
 
 
-
+<!--
 **Why?** Large, inline templates and styles obscure the component's purpose and implementation, reducing readability and maintainability.
-
+-->
+**왜?** 템플릿과 스타일을 컴포넌트 클래스 파일 안에 길게 작성하면 가독성이 떨어지고 유지보수하기도 어려워 집니다.
 
 </div>
 
@@ -4537,11 +4578,14 @@ There are a few cases where you give a component an attribute, such as when you 
 <div class="s-why">
 
 
-
+<!--
 **Why?** In most editors, syntax hints and code snippets aren't available when developing inline templates and styles.
 The Angular TypeScript Language Service (forthcoming) promises to overcome this deficiency for HTML templates
 in those editors that support it; it won't help with CSS styles.
-
+-->
+**왜?** 최근에 사용되는 에디터 중 일부는 인라인 템플릿이나 인라인 스타일에 적용되는 코드 하이라이팅 기능과 자동완성 기능이 충분하지 않은 경우가 있습니다.
+Angular는 앞으로 HTML 템플릿에도 이 기능을 지원할 수 있도록 노력할 예정이지만, 아직 CSS에 대해서는 정해지지 않았습니다.
+다행히, 이 기능을 지원하는 IDE는 점점 늘어나고 있습니다.
 
 </div>
 
@@ -4550,9 +4594,10 @@ in those editors that support it; it won't help with CSS styles.
 <div class="s-why">
 
 
-
+<!--
 **Why?** A _component relative_ URL requires no change when you move the component files, as long as the files stay together.
-
+-->
+**왜?** 컴포넌트 템플릿 파일과 스타일 파일을 _상대 주소_ 로 지정하면, 컴포넌트 파일을 다른 곳으로 옮기더라도 함께 움직이기 때문에 참조하는 주소를 수정할 필요가 없습니다.
 
 </div>
 
@@ -4561,9 +4606,10 @@ in those editors that support it; it won't help with CSS styles.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** The `./` prefix is standard syntax for relative URLs; don't depend on Angular's current ability to do without that prefix.
-
+-->
+**왜?** `./` 접미사는 상대주소를 표현하는 표준 문법입니다. Angular와는 관련이 없습니다.
 
 
 </div>
