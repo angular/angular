@@ -13,6 +13,7 @@ import * as ts from 'typescript';
 import * as api from '../transformers/api';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from './annotations';
+import {FactoryGenerator, FactoryInfo, GeneratedFactoryHostWrapper, generatedFactoryTransform} from './factories';
 import {TypeScriptReflectionHost} from './metadata';
 import {FileResourceLoader, HostResourceLoader} from './resource_loader';
 import {IvyCompilation, ivyTransformFactory} from './transform';
@@ -21,10 +22,13 @@ export class NgtscProgram implements api.Program {
   private tsProgram: ts.Program;
   private resourceLoader: ResourceLoader;
   private compilation: IvyCompilation|undefined = undefined;
+  private factoryToSourceInfo: Map<string, FactoryInfo>|null = null;
+  private sourceToFactorySymbols: Map<string, Set<string>>|null = null;
 
   private _coreImportsFrom: ts.SourceFile|null|undefined = undefined;
   private _reflector: TypeScriptReflectionHost|undefined = undefined;
   private _isCore: boolean|undefined = undefined;
+
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
@@ -32,9 +36,25 @@ export class NgtscProgram implements api.Program {
     this.resourceLoader = host.readResource !== undefined ?
         new HostResourceLoader(host.readResource.bind(host)) :
         new FileResourceLoader();
+    const shouldGenerateFactories = options.allowEmptyCodegenFiles || false;
+    let tsHost: ts.CompilerHost = host;
+    let rootFiles = [...rootNames];
+    if (shouldGenerateFactories) {
+      const generator = new FactoryGenerator();
+      const factoryFileMap = generator.computeFactoryFileMap(rootNames);
+      rootFiles.push(...Array.from(factoryFileMap.keys()));
+      this.factoryToSourceInfo = new Map<string, FactoryInfo>();
+      this.sourceToFactorySymbols = new Map<string, Set<string>>();
+      factoryFileMap.forEach((sourceFilePath, factoryPath) => {
+        const moduleSymbolNames = new Set<string>();
+        this.sourceToFactorySymbols !.set(sourceFilePath, moduleSymbolNames);
+        this.factoryToSourceInfo !.set(factoryPath, {sourceFilePath, moduleSymbolNames});
+      });
+      tsHost = new GeneratedFactoryHostWrapper(host, generator, factoryFileMap);
+    }
 
     this.tsProgram =
-        ts.createProgram(rootNames, options, host, oldProgram && oldProgram.getTsProgram());
+        ts.createProgram(rootFiles, options, tsHost, oldProgram && oldProgram.getTsProgram());
   }
 
   getTsProgram(): ts.Program { return this.tsProgram; }
@@ -125,7 +145,11 @@ export class NgtscProgram implements api.Program {
           this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
         };
 
-
+    const transforms =
+        [ivyTransformFactory(this.compilation !, this.reflector, this.coreImportsFrom)];
+    if (this.factoryToSourceInfo !== null) {
+      transforms.push(generatedFactoryTransform(this.factoryToSourceInfo, this.coreImportsFrom));
+    }
     // Run the emit, including a custom transformer that will downlevel the Ivy decorators in code.
     const emitResult = emitCallback({
       program: this.tsProgram,
@@ -133,7 +157,7 @@ export class NgtscProgram implements api.Program {
       options: this.options,
       emitOnlyDtsFiles: false, writeFile,
       customTransformers: {
-        before: [ivyTransformFactory(this.compilation !, this.reflector, this.coreImportsFrom)],
+        before: transforms,
       },
     });
     return emitResult;
@@ -153,7 +177,8 @@ export class NgtscProgram implements api.Program {
       new PipeDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
     ];
 
-    return new IvyCompilation(handlers, checker, this.reflector, this.coreImportsFrom);
+    return new IvyCompilation(
+        handlers, checker, this.reflector, this.coreImportsFrom, this.sourceToFactorySymbols);
   }
 
   private get reflector(): TypeScriptReflectionHost {
