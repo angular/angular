@@ -49,6 +49,9 @@ export class ElementRef {}
 export class Injector {}
 export class TemplateRef {}
 export class ViewContainerRef {}
+export class ɵNgModuleFactory<T> {
+  constructor(public clazz: T) {}
+}
 
 export function forwardRef<T>(fn: () => T): T {
   return fn();
