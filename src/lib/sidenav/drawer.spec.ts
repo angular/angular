@@ -16,6 +16,7 @@ import {A11yModule} from '@angular/cdk/a11y';
 import {PlatformModule} from '@angular/cdk/platform';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {CdkScrollable} from '@angular/cdk/scrolling';
 
 
 describe('MatDrawer', () => {
@@ -497,6 +498,7 @@ describe('MatDrawerContainer', () => {
         DrawerContainerStateChangesTestApp,
         AutosizeDrawer,
         BasicTestApp,
+        DrawerContainerWithContent,
       ],
     });
 
@@ -719,6 +721,27 @@ describe('MatDrawerContainer', () => {
       expect(fixture.componentInstance.drawer.opened).toBe(false);
     }));
 
+    it('should expose a scrollable when the consumer has not specified drawer content',
+      fakeAsync(() => {
+        const fixture = TestBed.createComponent(DrawerContainerTwoDrawerTestApp);
+
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.drawerContainer.scrollable instanceof CdkScrollable)
+            .toBe(true);
+      }));
+
+    it('should expose a scrollable when the consumer has specified drawer content',
+      fakeAsync(() => {
+        const fixture = TestBed.createComponent(DrawerContainerWithContent);
+
+        fixture.detectChanges();
+
+        expect(fixture.componentInstance.drawerContainer.scrollable instanceof CdkScrollable)
+            .toBe(true);
+      }));
+
+
 });
 
 
@@ -900,4 +923,17 @@ class DrawerContainerStateChangesTestApp {
 class AutosizeDrawer {
   @ViewChild(MatDrawer) drawer: MatDrawer;
   fillerWidth = 0;
+}
+
+
+@Component({
+  template: `
+    <mat-drawer-container>
+      <mat-drawer>Drawer</mat-drawer>
+      <mat-drawer-content>Content</mat-drawer-content>
+    </mat-drawer-container>
+  `,
+})
+class DrawerContainerWithContent {
+  @ViewChild(MatDrawerContainer) drawerContainer: MatDrawerContainer;
 }
