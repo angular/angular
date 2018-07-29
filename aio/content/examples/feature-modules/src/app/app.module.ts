@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppComponent } from './app.component';
-// import the feature module here so you can add it to the imports array below
+// imports 배열에 추가할 모듈은 여기에서 로드합니다.
 import { CustomerDashboardModule } from './customer-dashboard/customer-dashboard.module';
 
 @NgModule({
@@ -16,8 +16,8 @@ import { CustomerDashboardModule } from './customer-dashboard/customer-dashboard
   imports: [
     BrowserModule,
     FormsModule,
-    HttpClientModule,
-    CustomerDashboardModule // add the feature module here
+    HttpModule,
+    CustomerDashboardModule // 기능 모듈은 여기에 추가합니다.
   ],
   providers: [],
   bootstrap: [AppComponent]

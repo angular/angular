@@ -1,6 +1,6 @@
 // #docplaster
 // #docregion interceptor-providers
-/* "Barrel" of Http Interceptors */
+/* Http Interceptor를 한 번에 관리합니다. */
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 // #enddocregion interceptor-providers
@@ -16,7 +16,7 @@ import { UploadInterceptor } from './upload-interceptor';
 
 // #docregion interceptor-providers
 
-/** Http interceptor providers in outside-in order */
+/** Http interceptor 프로바이더를 실행 순서대로 등록합니다. */
 export const httpInterceptorProviders = [
   // #docregion noop-provider
   { provide: HTTP_INTERCEPTORS, useClass: NoopInterceptor, multi: true },

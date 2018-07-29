@@ -36,7 +36,7 @@ import { httpInterceptorProviders } from './http-interceptors/index';
 // #enddocregion sketch
     FormsModule,
 // #docregion sketch
-    // import HttpClientModule after BrowserModule.
+    // BrowserModule 뒤에 HttpClientModule을 로드합니다.
 // #docregion xsrf
     HttpClientModule,
 // #enddocregion sketch

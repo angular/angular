@@ -409,7 +409,7 @@ You should be careful. Readers don't always read carefully and are likely to cop
 When you do, set the `class` to `avoid`. The code snippet will be framed in bright red to grab the reader's attention.
 
 Here's the markup for an "avoid" example in the
-[_Angular Style Guide_](guide/styleguide#style-05-03 "Style 05-03: components as elements").
+[_Angular Style Guide_](guide/styleguide#05-03 "Style 05-03: components as elements").
 
 ```html
 <code-example
