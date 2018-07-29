@@ -11,7 +11,7 @@
 
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {InjectionToken} from '../di/injection_token';
-import {InjectFlags, Injector, inject, setCurrentInjector} from '../di/injector';
+import {InjectFlags, Injector, NullInjector, inject, setCurrentInjector} from '../di/injector';
 import * as viewEngine from '../linker';
 import {Type} from '../type';
 
@@ -649,7 +649,7 @@ class ViewContainerRef implements viewEngine.ViewContainerRef {
   /** @deprecated No replacement */
   get parentInjector(): Injector {
     const parentLInjector = getParentLNode(this._hostNode).nodeInjector;
-    return parentLInjector ? new NodeInjector(parentLInjector) : Injector.NULL;
+    return parentLInjector ? new NodeInjector(parentLInjector) : new NullInjector();
   }
 
   clear(): void {
