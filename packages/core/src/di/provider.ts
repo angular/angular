@@ -28,39 +28,6 @@ export interface ValueSansProvider {
 }
 
 /**
-<<<<<<< HEAD
- * @usageNotes
- * ```
- * @Injectable(SomeModule, {useValue: 'someValue'})
- * class SomeClass {}
- * ```
- *
- * @description
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
- *
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='ValueSansProvider'}
- *
- * @experimental
- */
-export interface ValueSansProvider {
-  /**
-   * The value to inject.
-   */
-  useValue: any;
-}
-
-/**
- * @whatItDoes Configures the {@link Injector} to return a value for a token.
- * @howToUse
- * ```
- * const provider: ValueProvider = {provide: 'someToken', useValue: 'someValue'};
- * ```
- *
- * @description
-=======
->>>>>>> 6a797d540169ce979048e30abc619d4c6eaf7b1d
  * Configures the `Injector` to return a value for a token.
  *
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
@@ -114,49 +81,6 @@ export interface StaticClassSansProvider {
 }
 
 /**
-<<<<<<< HEAD
- * @usageNotes
- * ```
- * @Injectable(SomeModule, {useClass: MyService, deps: []})
- * class MyService {}
- * ```
- *
- * @description
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
- *
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='StaticClassSansProvider'}
- *
- * @experimental
- */
-export interface StaticClassSansProvider {
-  /**
-   * An optional class to instantiate for the `token`. (If not provided `provide` is assumed to be a
-   * class to instantiate)
-   */
-  useClass: Type<any>;
-
-  /**
-   * A list of `token`s which need to be resolved by the injector. The list of values is then
-   * used as arguments to the `useClass` constructor.
-   */
-  deps: any[];
-}
-
-/**
- * @whatItDoes Configures the {@link Injector} to return an instance of `useClass` for a token.
- * @howToUse
- * ```
- * @Injectable()
- * class MyService {}
- *
- * const provider: ClassProvider = {provide: 'someToken', useClass: MyService, deps: []};
- * ```
- *
- * @description
-=======
->>>>>>> 6a797d540169ce979048e30abc619d4c6eaf7b1d
  * Configures the `Injector` to return an instance of `useClass` for a token.
  *
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
@@ -211,43 +135,6 @@ export interface ConstructorSansProvider {
 }
 
 /**
-<<<<<<< HEAD
- * @usageNotes
- * ```
- * @Injectable(SomeModule, {deps: []})
- * class MyService {}
- * ```
- *
- * @description
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
- *
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='ConstructorSansProvider'}
- *
- * @experimental
- */
-export interface ConstructorSansProvider {
-  /**
-   * A list of `token`s which need to be resolved by the injector. The list of values is then
-   * used as arguments to the `useClass` constructor.
-   */
-  deps?: any[];
-}
-
-/**
- * @whatItDoes Configures the {@link Injector} to return an instance of a token.
- * @howToUse
- * ```
- * @Injectable()
- * class MyService {}
- *
- * const provider: ClassProvider = {provide: MyClass, deps: []};
- * ```
- *
- * @description
-=======
->>>>>>> 6a797d540169ce979048e30abc619d4c6eaf7b1d
  * Configures the `Injector` to return an instance of a token.
  *
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
@@ -292,39 +179,6 @@ export interface ExistingSansProvider {
 }
 
 /**
-<<<<<<< HEAD
- * @usageNotes
- * ```
- * @Injectable(SomeModule, {useExisting: 'someOtherToken'})
- * class SomeClass {}
- * ```
- *
- * @description
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
- *
- * ### Example
- *
- * {@example core/di/ts/provider_spec.ts region='ExistingSansProvider'}
- *
- * @stable
- */
-export interface ExistingSansProvider {
-  /**
-   * Existing `token` to return. (equivalent to `injector.get(useExisting)`)
-   */
-  useExisting: any;
-}
-
-/**
- * @whatItDoes Configures the {@link Injector} to return a value of another `useExisting` token.
- * @howToUse
- * ```
- * const provider: ExistingProvider = {provide: 'someToken', useExisting: 'someOtherToken'};
- * ```
- *
- * @description
-=======
->>>>>>> 6a797d540169ce979048e30abc619d4c6eaf7b1d
  * Configures the `Injector` to return a value of another `useExisting` token.
  *
  * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).

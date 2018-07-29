@@ -113,22 +113,10 @@ The `pipe()` function is also a method on the RxJS `Observable`, so you use this
 -->
 ### 공통 연산자
 
-<<<<<<< HEAD
-<!--
-RxJS provides many operators (over 150 of them), but only a handful are used frequently. Here is a list of common operators; for usage examples, see  [RxJS 5 Operators By Example](https://github.com/btroncone/learn-rxjs/blob/master/operators/complete.md) in RxJS documentation.
--->
-RxJS는 간단하게 사용할 수 있는 연산자를 150개 이상 제공합니다. 이 중 자주 사용하는 연산자를 몇 가지 알아봅시다. 사용 방법은 RxJS 사이트에서 [RxJS 5 Operators By Example](https://github.com/btroncone/learn-rxjs/blob/master/operators/complete.md) 문서를 참고하세요.
-
-<div class="l-sub-section">
-  <!--
-=======
 RxJS provides many operators, but only a handful are used frequently. For a list of operators and usage samples, visit the [RxJS API Documentation](https://rxjs-dev.firebaseapp.com/api).
 
 <div class="alert is-helpful">
->>>>>>> 6a797d540169ce979048e30abc619d4c6eaf7b1d
   Note that, for Angular apps, we prefer combining operators with pipes, rather than chaining. Chaining is used in many RxJS examples.
-  -->
-  RxJS에서 제공하는 예제는 체이닝 방식을 많이 사용합니다. 하지만 Angular 앱에서 연산자를 사용할 때는 체이닝 대신 파이프를 사용하는 것을 권장합니다.
 </div>
 
 <!--

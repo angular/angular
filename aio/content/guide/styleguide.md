@@ -1113,9 +1113,9 @@ As always, strive for consistency.
 ### 컴포넌트 셀렉터
 
 <!--
-#### Style 02-06
+#### Style 05-02
 -->
-#### 스타일 02-06
+#### 스타일 05-02
 
 <div class="s-rule do">
 

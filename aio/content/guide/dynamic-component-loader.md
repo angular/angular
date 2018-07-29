@@ -184,7 +184,7 @@ Take it step by step. First, it picks an ad.
 <!--
 **How _loadComponent()_ chooses an ad**
 -->
-**_loadComponent()_가 뷰에 표시할 광고를 결정하는 방법**
+**_loadComponent()_ 가 뷰에 표시할 광고를 결정하는 방법**
 
 <!--
 The `loadComponent()` method chooses an ad using some math.
@@ -197,7 +197,7 @@ currently is plus one, dividing that by the length of the `AdItem` array, and
 using the _remainder_ as the new `currentAdIndex` value. Then, it uses that
 value to select an `adItem` from the array.
 -->
-이 함수는 현재 `currentAdIndex` 값에 1을 더한 값을 `AdItem` 배열의 길이로 나눈 _나머지_를 `currentAdIndex` 값으로 할당합니다.
+이 함수는 현재 `currentAdIndex` 값에 1을 더한 값을 `AdItem` 배열의 길이로 나눈 _나머지_ 를 `currentAdIndex` 값으로 할당합니다.
 그리고 이 값을 인덱스로 활용해서 `adItem` 배열을 참조합니다.
 
 </div>

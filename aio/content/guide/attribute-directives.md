@@ -115,7 +115,7 @@ The CLI creates `src/app/highlight.directive.ts`, a corresponding test file (`..
 <!--
 _Directives_ must be declared in [Angular Modules](guide/ngmodules) in the same manner as _components_.
 -->
-_디렉티브_는 _컴포넌트_와 마찬가지로 [Angular 모듈](guide/ngmodules)에 반드시 정의되어야 합니다.
+_디렉티브_ 는 _컴포넌트_ 와 마찬가지로 [Angular 모듈](guide/ngmodules)에 반드시 정의되어야 합니다.
 
 </div >
 
@@ -147,7 +147,7 @@ Angular locates each element in the template that has an attribute named `appHig
 <!--
 The _attribute selector_ pattern explains the name of this kind of directive.
 -->
-따라서 _어트리뷰트 셀렉터_는 디렉티브의 동작을 적절하게 표현할 수 있는 이름으로 지정하는 것이 좋습니다.
+따라서 _어트리뷰트 셀렉터_ 는 디렉티브의 동작을 적절하게 표현할 수 있는 이름으로 지정하는 것이 좋습니다.
 
 <div class="alert is-helpful">
 

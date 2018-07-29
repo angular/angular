@@ -76,16 +76,6 @@
     },
 
     {
-<<<<<<< HEAD
-      "url": "guide/webpack",
-      "title!": "Webpack: An Introduction",
-      "title": "Webpack: 소개",
-      "hidden": true
-    },
-
-    {
-=======
->>>>>>> 6a797d540169ce979048e30abc619d4c6eaf7b1d
       "url": "guide/quickstart",
       "title!": "Getting Started",
       "title": "시작하기",
@@ -683,6 +673,11 @@
               "title": "AngularJS 애플리케이션 업그레이드 하기",
               "tooltip!": "Incrementally upgrade an AngularJS application to Angular.",
               "tooltip": "AngularJS 애플리케이션을 Angular로 업그레이드 하세요."
+            },
+            {
+              "url": "guide/upgrade-performance",
+              "title": "Upgrading for Performance",
+              "tooltip": "Upgrade from AngularJS to Angular in a more flexible way."
             },
             {
               "url": "guide/upgrade-performance",

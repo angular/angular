@@ -424,7 +424,9 @@ to the application root injector.
 -->
 모듈이 로드되면 이 모듈에 등록된 서비스 프로바이더가 애플리케이션 최상위 인젝터에도 등록됩니다.
 
+<!--
 This makes the provider visible to every class in the application that knows the provider's lookup token, or name.
+-->
 그래서 프로바이더의 토큰이나 이름을 알면 애플리케이션의 모든 클래스에 자유롭게 사용할 수 있습니다.
 
 <!--
@@ -529,6 +531,7 @@ The `AppModule` always wins.
 <hr/>
 
 {@a service-scope}
+<!--
 ## How do I restrict service scope to a module?
 -->
 ## 서비스를 모듈 범위로 제한하고 싶으면 어떻게 하면 되나요?

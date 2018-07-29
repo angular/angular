@@ -793,14 +793,8 @@
             "url": "http://ninja-squad.com/formations/formation-angular2"
           },
           "a2b": {
-<<<<<<< HEAD
-            "//desc": "Angular Boot Camp covers introductory and intermediate content. It includes extensive workshop session, with hands-on help from our experienced developer-trainers. At the end of this class, student are usually able to use AngularJS to make an end-to-end, working application.",
-            "desc": "Angular Boot Camp는 Angular의 기초를 다루며, 이 수업에서는 이론과 함께 전문 트레이너의 도움을 받을 수도 있습니다. 수업을 마치고 나면 현업에서 사용할 수 있는 Angular 애플리케이션을 만들 수 있을 것입니다.",
-            "logo": "",
-=======
             "desc": "Angular Boot Camp covers introductory through advanced Angular topics. It includes extensive workshop sessions, with hands-on help from our experienced developer-trainers. We take developers or teams from the beginnings of Angular understanding through a working knowledge of all essential Angular features.",
             "logo": "https://angularbootcamp.com/images/angular-boot-camp-logo.svg",
->>>>>>> 6a797d540169ce979048e30abc619d4c6eaf7b1d
             "rev": true,
             "title": "Angular Boot Camp",
             "url": "https://angularbootcamp.com"

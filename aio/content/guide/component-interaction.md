@@ -173,6 +173,7 @@ Detect and act upon changes to input property values with the `ngOnChanges()` me
 <div class="alert is-helpful">
 
 
+
 <!--
 You may prefer this approach to the property setter when watching multiple, interacting input properties.
 
@@ -443,6 +444,8 @@ The child [CountdownTimerComponent](guide/component-interaction#countdown-timer-
 
 <div class="alert is-helpful">
 
+
+
 <!--
 The switch from the *local variable* to the *ViewChild* technique
 is solely for the purpose of demonstration.
@@ -585,6 +588,7 @@ Each `AstronautComponent` is a child of the `MissionControlComponent` and theref
 
 
 <div class="alert is-helpful">
+
 
 
 <!--
