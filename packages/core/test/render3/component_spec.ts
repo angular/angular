@@ -98,24 +98,7 @@ describe('component', () => {
       const fixture = new ComponentFixture(MyComponent, {injector: createInjector(MyModule)});
       expect(fixture.html).toEqual('injector');
     });
-  }
 
-  function template(ctx: {items: string[]}, cm: boolean) {
-    if (cm) {
-      elementStart(0, 'wrapper');
-      elementEnd();
-    }
-    elementProperty(0, 'items', bind(ctx.items));
-  }
-
-  const defs = [WrapperComponent.ngComponentDef];
-
-  it('should re-render on input change', () => {
-    const ctx: {items: string[]} = {items: ['a']};
-    expect(renderToHtml(template, ctx, defs)).toEqual('<wrapper>a</wrapper>');
-
-    ctx.items = [...ctx.items, 'b'];
-    expect(renderToHtml(template, ctx, defs)).toEqual('<wrapper>ab</wrapper>');
   });
 
 });

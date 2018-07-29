@@ -57,16 +57,3 @@ ng_package(
         "//packages/service-worker/config",
     ],
 )
-
-ng_package(
-    name = "npm_package",
-    srcs = [
-        "package.json",
-        "//packages/service-worker/config:package.json",
-    ],
-    entry_point = "packages/service-worker/index.js",
-    deps = [
-        ":service-worker",
-        "//packages/service-worker/config",
-    ],
-)

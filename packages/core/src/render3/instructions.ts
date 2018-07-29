@@ -1500,7 +1500,6 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
  *
  * @param directive The directive instance.
  * @param directiveDef DirectiveDef object which contains information about the template.
- * @param localRefs Names under which a query can retrieve the directive instance
  */
 export function directiveCreate<T>(
     directiveDefIdx: number, directive: T,

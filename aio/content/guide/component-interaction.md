@@ -643,5 +643,3 @@ and verify that the history meets expectations:
 [Back to top](guide/component-interaction#top)
 -->
 [맨 위로](guide/component-interaction#top)
-
-{@a bidirectional-service}

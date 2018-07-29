@@ -4,7 +4,7 @@
 # Angular Elements 개요
 
 <!--
-Angular Elements are Angular components packaged as custom elements, a web standard for defining new html elements in a framework-agnostic way.
+_Angular elements_ are Angular components packaged as _custom elements_, a web standard for defining new HTML elements in a framework-agnostic way.
 -->
 Angular Element는 웹 표준인 Web Component를 Angular 방식으로 지원하는 프로젝트입니다. 그래서 이 문서에서 언급하는 커스텀 엘리먼트는 특정 프레임워크에 종속되지 않는 웹 표준을 가리키며, HTML 문서에 사용할 수 있도록 새롭게 정의한 HTML 엘리먼트를 의미합니다.
 
@@ -23,9 +23,11 @@ The `@angular/elements` package exports a `createCustomElement()` API that provi
 `@angular/elements` 패키지에서 제공하는 `createCustomElement()` API는 Angular의 컴포넌트 인터페이스와 변화 감지 기능을 브라우저의 DOM API와 연결합니다.
 
 <!--
-Transforming a component to a custom element makes all of the required Angular infrastructure available to the browser. Creating a custom element is simple and straightforward, and automatically connects your component-defined view with change detection and data binding, mapping Angular functionality to the corresponding native HTML equivalents. 
+Transforming a component to a custom element makes all of the required Angular infrastructure available to the browser. 
+Creating a custom element is simple and straightforward, and automatically connects your component-defined view with change detection and data binding, mapping Angular functionality to the corresponding native HTML equivalents. 
 -->
-이렇게 Angular 컴포넌트를 커스텀 엘리먼트로 변환하면, Angular 애플리케이션을 브라우저에서 동작시킬 때 필요한 Angular 요구사항을 모두 만족시킬 수 있습니다. Angular에서 제공하는 커스텀 엘리먼트 변환 방식은 아주 단순하며 직관적이고, 컴포넌트에 정의된 뷰에서 동작하는 변화 감지 메커니즘, 데이터 바인딩, Angular에서 네이티브 HTML에 접근하는 기능을 모두 자동으로 연결합니다.
+이렇게 Angular 컴포넌트를 커스텀 엘리먼트로 변환하면, Angular 애플리케이션을 브라우저에서 동작시킬 때 필요한 Angular 요구사항을 모두 만족시킬 수 있습니다.
+Angular에서 제공하는 커스텀 엘리먼트 변환 방식은 아주 단순하며 직관적이고, 컴포넌트에 정의된 뷰에서 동작하는 변화 감지 메커니즘, 데이터 바인딩, Angular에서 네이티브 HTML에 접근하는 기능을 모두 자동으로 연결합니다.
 
 <div class="alert is-helpful">
 
@@ -126,7 +128,9 @@ When the browser encounters the tag for the registered element, it uses the cons
 
 <figure>
 
-<!--<img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">  -->
+<!--
+<img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">  
+-->
 <img src="generated/images/guide/elements/createElement.png" alt="컴포넌트를 커스텀 엘리먼트로 변환하는 과정" class="left">
 
 </figure>

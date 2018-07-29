@@ -852,34 +852,6 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         expect(await requestFoo('only-if-cached', 'no-cors')).toBeNull();
       });
     });
-
-    describe('bugs', () => {
-      async_it('does not crash with bad index hash', async() => {
-        scope = new SwTestHarnessBuilder().withServerState(brokenServer).build();
-        (scope.registration as any).scope = 'http://site.com';
-        driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
-
-        expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-      });
-
-      async_it('enters degraded mode when update has a bad index', async() => {
-        expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
-        await driver.initialized;
-        server.clearRequests();
-
-        scope = new SwTestHarnessBuilder()
-                    .withCacheState(scope.caches.dehydrate())
-                    .withServerState(brokenServer)
-                    .build();
-        driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
-        await driver.checkForUpdate();
-
-        scope.advance(12000);
-        await driver.idle.empty;
-
-        expect(driver.state).toEqual(DriverReadyState.EXISTING_CLIENTS_ONLY);
-      });
-    });
   });
 })();
 
