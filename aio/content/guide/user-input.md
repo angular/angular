@@ -114,10 +114,6 @@ a mouse event includes different information than a input box editing event.
 그래서 마우스 이벤트와 입력 필드에서 발생하는 이벤트의 구성은 다릅니다.
 
 <!--
-=======
-a mouse event includes different information than an input box editing event.
-
->>>>>>> 6a797d540169ce979048e30abc619d4c6eaf7b1d
 All [standard DOM event objects](https://developer.mozilla.org/en-US/docs/Web/API/Event)
 have a `target` property, a reference to the element that raised the event.
 In this case, `target` refers to the [`<input>` element](https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement) and

@@ -87,7 +87,7 @@ There are messages for `required`, `minlength`, and `forbiddenName`.
 
 <div class="alert is-helpful">
 
-
+{a 왜-dirty-와-touched-를-확인할까요}
 <!--
 #### Why check _dirty_ and _touched_?
 -->
@@ -171,7 +171,7 @@ Note that:
 다음 내용을 확인해 보세요:
 
 <!--
-* The name control sets up two built-in validators&mdash;`Validators.required` and `Validators.minLength(4)`&mdash;and one custom validator, `forbiddenNameValidator`. For more details see the [Custom validators](guide/form-validation#커스텀-유효성-검사기) section in this guide.
+* The name control sets up two built-in validators&mdash;`Validators.required` and `Validators.minLength(4)`&mdash;and one custom validator, `forbiddenNameValidator`. For more details see the [Custom validators](guide/form-validation#custom-validators) section in this guide.
 * As these validators are all sync validators, you pass them in as the second argument. 
 * Support multiple validators by passing the functions in as an array.
 * This example adds a few getter methods. In a reactive form, you can always access any form control through the `get` method on its parent group, but sometimes it's useful to define getters as shorthands 
@@ -362,7 +362,10 @@ This section shows how to perform cross field validation. It assumes some basic 
 
 <div class="alert is-helpful">
 
+<!--
 If you haven't created custom validators before, start by reviewing the [custom validators section](guide/form-validation#custom-validators).
+-->
+If you haven't created custom validators before, start by reviewing the [custom validators section](guide/form-validation#커스텀-유효성-검사기).
 
 </div>
 
@@ -407,9 +410,14 @@ Next, to provide better user experience, we show an appropriate error message wh
 <code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" title="reactive/hero-form-template.component.html" linenums="false">
 </code-example>
 
+<!--
 Note that we check if:
 - the `FormGroup` has the cross validation error returned by the `identityRevealed` validator, 
 - the user is yet to [interact](guide/form-validation#why-check-dirty-and-touched) with the form.
+-->
+Note that we check if:
+- the `FormGroup` has the cross validation error returned by the `identityRevealed` validator, 
+- the user is yet to [interact](guide/form-validation#왜-dirty-와-touched-를-확인할까요) with the form.
 
 ### Adding to template driven forms
 First we must create a directive that will wrap the validator function. We provide it as the validator using the `NG_VALIDATORS` token. If you are not sure why, or you do not fully understand the syntax, revisit the previous [section](guide/form-validation#adding-to-template-driven-forms).
@@ -425,9 +433,14 @@ To provide better user experience, we show an appropriate error message when the
 <code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" title="template/hero-form-template.component.html" linenums="false">
 </code-example>
 
+<!--
 Note that we check if:
 - the form has the cross validation error returned by the `identityRevealed` validator, 
 - the user is yet to [interact](guide/form-validation#why-check-dirty-and-touched) with the form.
+-->
+Note that we check if:
+- the form has the cross validation error returned by the `identityRevealed` validator, 
+- the user is yet to [interact](guide/form-validation#왜-dirty-와-touched-를-확인할까요) with the form.
 
 This completes the cross validation example. We managed to:
 - validate the form based on the values of two sibling controls, 
