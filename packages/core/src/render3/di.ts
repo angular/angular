@@ -11,7 +11,7 @@
 
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {InjectionToken} from '../di/injection_token';
-import {InjectFlags, Injector, inject, setCurrentInjector} from '../di/injector';
+import {InjectFlags, Injector, NullInjector, inject, setCurrentInjector} from '../di/injector';
 import * as viewEngine from '../linker';
 import {Type} from '../type';
 
@@ -636,20 +636,23 @@ class NodeInjector implements Injector {
 class ViewContainerRef implements viewEngine.ViewContainerRef {
   private _viewRefs: viewEngine.ViewRef[] = [];
 
-
   constructor(
       private _lContainerNode: LContainerNode, private _hostNode: LElementNode|LContainerNode) {}
 
-  get element(): ElementRef { return new ElementRef(this._hostNode.native); }
+  get element(): ElementRef {
+    const injector = getOrCreateNodeInjectorForNode(this._hostNode);
+    return getOrCreateElementRef(injector);
+  }
 
   get injector(): Injector {
-    return new NodeInjector(getOrCreateNodeInjectorForNode(this._hostNode));
+    const injector = getOrCreateNodeInjectorForNode(this._hostNode);
+    return new NodeInjector(injector);
   }
 
   /** @deprecated No replacement */
   get parentInjector(): Injector {
     const parentLInjector = getParentLNode(this._hostNode).nodeInjector;
-    return parentLInjector ? new NodeInjector(parentLInjector) : Injector.NULL;
+    return parentLInjector ? new NodeInjector(parentLInjector) : new NullInjector();
   }
 
   clear(): void {

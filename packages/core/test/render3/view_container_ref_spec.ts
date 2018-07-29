@@ -1039,10 +1039,8 @@ describe('ViewContainerRef', () => {
     describe('getters', () => {
       it('should work on elements', () => {
         function createTemplate() {
-          elementStart(0, 'header', ['vcref', '']);
-          elementEnd();
-          elementStart(1, 'footer');
-          elementEnd();
+          element(0, 'header', ['vcref', '']);
+          element(1, 'footer');
         }
 
         new TemplateFixture(createTemplate, undefined, [DirectiveWithVCRef]);
@@ -1060,10 +1058,8 @@ describe('ViewContainerRef', () => {
             createComponent('header-cmp', function(rf: RenderFlags, ctx: any) {});
 
         function createTemplate() {
-          elementStart(0, 'header-cmp', ['vcref', '']);
-          elementEnd();
-          elementStart(1, 'footer');
-          elementEnd();
+          element(0, 'header-cmp', ['vcref', '']);
+          element(1, 'footer');
         }
 
         new TemplateFixture(createTemplate, undefined, [HeaderComponent, DirectiveWithVCRef]);
@@ -1079,8 +1075,7 @@ describe('ViewContainerRef', () => {
       it('should work on containers', () => {
         function createTemplate() {
           container(0, embeddedTemplate, undefined, ['vcref', '']);
-          elementStart(1, 'footer');
-          elementEnd();
+          element(1, 'footer');
         }
 
         function updateTemplate() {
