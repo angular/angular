@@ -29,6 +29,11 @@ $mat-card-header-size: 40px !default;
     &.mat-divider-inset {
       position: static;
       margin: 0;
+
+      [dir='rtl'] & {
+        // Needs to be reset explicitly since the divider set `margin-right` in particular in RTL.
+        margin-right: 0;
+      }
     }
   }
 
