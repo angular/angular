@@ -4897,7 +4897,10 @@ helps instantly identify which members of the component serve which purpose.
 
 {@a 05-15}
 
+<!--
 ### Delegate complex component logic to services
+-->
+### 복잡한 컴포넌트 로직은 서비스로 옮기기
 
 <!--
 #### Style 05-15
@@ -4907,9 +4910,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** limit logic in a component to only that required for the view. All other logic should be delegated to services.
-
+-->
+컴포넌트에 작성하는 로직은 뷰와 관련된 로직으로만 **제한하세요.** 뷰와 관계없는 로직은 모두 서비스로 옮기는 것이 좋습니다.
 
 </div>
 
@@ -4918,9 +4922,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** move reusable logic to services and keep components simple and focused on their intended purpose.
-
+-->
+다른 컴포넌트에서 재사용할 수 있는 로직도 서비스로 옮기세요. 컴포넌트에는 그 역할에 맞는 기능만 간결하게 작성해야 합니다.
 
 </div>
 
@@ -4929,9 +4934,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Logic may be reused by multiple components when placed within a service and exposed via a function.
-
+-->
+**왜?** 다른 컴포넌트에도 재사용할 수 있는 로직을 서비스 안에 함수로 작성하면 필요한 곳에 자유롭게 활용할 수 있습니다.
 
 </div>
 
@@ -4940,8 +4946,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Logic in a service can more easily be isolated in a unit test, while the calling logic in the component can be easily mocked.
+-->
+**왜?** 컴포넌트에서 사용하는 서비스 로직은 목업 로직으로 쉽게 대체할 수 있기 때문에 유닛 테스트에도 유리합니다.
 
 
 </div>
@@ -4951,9 +4959,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Removes dependencies and hides implementation details from the component.
-
+-->
+**왜?** 컴포넌트의 로직을 서비스로 옮기면 컴포넌트에 주입하는 의존성을 줄일 수 있으며, 컴포넌트에 꼭 필요한 로직만 작성하기 쉬워집니다.
 
 </div>
 
@@ -4962,9 +4971,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Keeps the component slim, trim, and focused.
-
+-->
+**왜?** 컴포넌트 코드는 짧게, 간결하게, 꼭 필요한 로직만 작성하세요.
 
 </div>
 
