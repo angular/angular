@@ -340,6 +340,29 @@ describe('CdkDrag', () => {
           .toEqual(['One', 'Two', 'Zero', 'Three']);
     }));
 
+    it('should not move the original element from its initial DOM position', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const root = fixture.nativeElement as HTMLElement;
+      let dragElements = Array.from(root.querySelectorAll('.cdk-drag'));
+
+      expect(dragElements.map(el => el.textContent)).toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      // Stub out the original call so the list doesn't get re-rendered.
+      // We're testing the DOM order explicitly.
+      fixture.componentInstance.droppedSpy.and.callFake(() => {});
+
+      const thirdItemRect = dragElements[2].getBoundingClientRect();
+
+      dragElementViaMouse(fixture, fixture.componentInstance.dragItems.first.element.nativeElement,
+          thirdItemRect.left + 1, thirdItemRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      dragElements = Array.from(root.querySelectorAll('.cdk-drag'));
+      expect(dragElements.map(el => el.textContent)).toEqual(['Zero', 'One', 'Two', 'Three']);
+    }));
+
     it('should dispatch the `dropped` event in a horizontal drop zone', fakeAsync(() => {
       const fixture = createComponent(DraggableInHorizontalDropZone);
       fixture.detectChanges();
@@ -677,14 +700,14 @@ describe('CdkDrag', () => {
       const initialRect = item.element.nativeElement.getBoundingClientRect();
       const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
 
-      expect(dropZones[0].contains(item.element.nativeElement))
-        .toBe(true, 'Expected placeholder to be inside the first container.');
       dispatchMouseEvent(item.element.nativeElement, 'mousedown');
       fixture.detectChanges();
 
       const placeholder = dropZones[0].querySelector('.cdk-drag-placeholder')!;
 
       expect(placeholder).toBeTruthy();
+      expect(dropZones[0].contains(placeholder))
+          .toBe(true, 'Expected placeholder to be inside the first container.');
 
       dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
       fixture.detectChanges();
@@ -708,18 +731,25 @@ describe('CdkDrag', () => {
       const fixture = createComponent(ConnectedDropZones);
       fixture.detectChanges();
 
-      const groups = fixture.componentInstance.groupedDragItems;
+      const groups = fixture.componentInstance.groupedDragItems.slice();
       const element = groups[0][1].element.nativeElement;
-      const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+      const dropInstances = fixture.componentInstance.dropInstances.toArray();
       const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
-
-      expect(dropZones[0].contains(element)).toBe(true);
 
       dragElementViaMouse(fixture, element, targetRect.left + 1, targetRect.top + 1);
       flush();
       fixture.detectChanges();
 
-      expect(dropZones[1].contains(element)).toBe(true);
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      expect(event).toBeTruthy();
+      expect(event).toEqual({
+        previousIndex: 1,
+        currentIndex: 3,
+        item: groups[0][1],
+        container: dropInstances[1],
+        previousContainer: dropInstances[0]
+      });
     }));
 
     it('should not be able to transfer an item into a container that is not in `connectedTo`',
@@ -730,18 +760,25 @@ describe('CdkDrag', () => {
         fixture.componentInstance.dropInstances.forEach(d => d.connectedTo = []);
         fixture.detectChanges();
 
-        const groups = fixture.componentInstance.groupedDragItems;
+        const groups = fixture.componentInstance.groupedDragItems.slice();
         const element = groups[0][1].element.nativeElement;
-        const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
+        const dropInstances = fixture.componentInstance.dropInstances.toArray();
         const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
-
-        expect(dropZones[0].contains(element)).toBe(true);
 
         dragElementViaMouse(fixture, element, targetRect.left + 1, targetRect.top + 1);
         flush();
         fixture.detectChanges();
 
-        expect(dropZones[0].contains(element)).toBe(true);
+        const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+        expect(event).toBeTruthy();
+        expect(event).toEqual({
+          previousIndex: 1,
+          currentIndex: 1,
+          item: groups[0][1],
+          container: dropInstances[0],
+          previousContainer: dropInstances[0]
+        });
       }));
 
 
@@ -751,20 +788,17 @@ describe('CdkDrag', () => {
 
       const groups = fixture.componentInstance.groupedDragItems;
       const element = groups[0][1].element.nativeElement;
-      const dropZones = fixture.componentInstance.dropInstances.map(d => d.element.nativeElement);
-      const targetRect = dropZones[1].getBoundingClientRect();
-
-      expect(dropZones[0].contains(element)).toBe(true);
+      const dropZone = fixture.componentInstance.dropInstances.toArray()[1].element.nativeElement;
+      const targetRect = dropZone.getBoundingClientRect();
 
       // Drag the element into the drop zone and move it to the top.
       [1, -1].forEach(offset => {
         dragElementViaMouse(fixture, element, targetRect.left + offset, targetRect.top + offset);
         flush();
         fixture.detectChanges();
-        expect(dropZones[1].contains(element)).toBe(true);
       });
 
-      assertDownwardSorting(fixture, Array.from(dropZones[1].querySelectorAll('.cdk-drag')));
+      assertDownwardSorting(fixture, Array.from(dropZone.querySelectorAll('.cdk-drag')));
     }));
 
     it('should be able to return the last item inside its initial container', fakeAsync(() => {
@@ -780,14 +814,15 @@ describe('CdkDrag', () => {
       const initialRect = item.element.nativeElement.getBoundingClientRect();
       const targetRect = groups[1][0].element.nativeElement.getBoundingClientRect();
 
-      expect(dropZones[0].contains(item.element.nativeElement))
-          .toBe(true, 'Expected placeholder to be inside the first container.');
       dispatchMouseEvent(item.element.nativeElement, 'mousedown');
       fixture.detectChanges();
 
       const placeholder = dropZones[0].querySelector('.cdk-drag-placeholder')!;
 
       expect(placeholder).toBeTruthy();
+
+      expect(dropZones[0].contains(placeholder))
+          .toBe(true, 'Expected placeholder to be inside the first container.');
 
       dispatchMouseEvent(document, 'mousemove', targetRect.left + 1, targetRect.top + 1);
       fixture.detectChanges();
@@ -820,25 +855,32 @@ describe('CdkDrag', () => {
       const fixture = createComponent(ConnectedDropZones);
       fixture.detectChanges();
 
-      const dropZones = fixture.componentInstance.dropInstances.toArray();
+      const dropInstances = fixture.componentInstance.dropInstances.toArray();
 
-      dropZones[0].id = 'todo';
-      dropZones[1].id = 'done';
-      dropZones[0].connectedTo = ['done'];
-      dropZones[1].connectedTo = ['todo'];
+      dropInstances[0].id = 'todo';
+      dropInstances[1].id = 'done';
+      dropInstances[0].connectedTo = ['done'];
+      dropInstances[1].connectedTo = ['todo'];
       fixture.detectChanges();
 
       const groups = fixture.componentInstance.groupedDragItems;
       const element = groups[0][1].element.nativeElement;
       const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
 
-      expect(dropZones[0].element.nativeElement.contains(element)).toBe(true);
-
       dragElementViaMouse(fixture, element, targetRect.left + 1, targetRect.top + 1);
       flush();
       fixture.detectChanges();
 
-      expect(dropZones[1].element.nativeElement.contains(element)).toBe(true);
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      expect(event).toBeTruthy();
+      expect(event).toEqual({
+        previousIndex: 1,
+        currentIndex: 3,
+        item: groups[0][1],
+        container: dropInstances[1],
+        previousContainer: dropInstances[0]
+      });
     }));
 
   });
