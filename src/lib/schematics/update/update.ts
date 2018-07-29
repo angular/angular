@@ -10,14 +10,14 @@ import {FileEntry, Rule, SchematicContext, Tree} from '@angular-devkit/schematic
 import {
   NodePackageInstallTask,
   RunSchematicTask,
-  TslintFixTask
+  TslintFixTask,
 } from '@angular-devkit/schematics/tasks';
+import {getWorkspace} from '@schematics/angular/utility/config';
 import {existsSync, mkdtempSync} from 'fs';
 import * as path from 'path';
-import {getWorkspace} from '../utils/devkit-utils/config';
 
 const schematicsSrcPath = 'node_modules/@angular/material/schematics';
-const schematicsTmpPath = mkdtempSync('angular_material_schematics-');
+const schematicsTmpPath = mkdtempSync('angular_material_temp_schematics');
 
 /** Entry point for `ng update` from Angular CLI. */
 export default function(): Rule {
@@ -87,10 +87,9 @@ export default function(): Rule {
     }), allUpdateTasks);
 
     // Delete the temporary schematics directory.
-    context.addTask(
-        new RunSchematicTask('ng-post-update', {
-          deletePath: schematicsTmpPath
-        }), [upgradeTask]);
+    context.addTask(new RunSchematicTask('ng-post-update', {
+      deletePath: schematicsTmpPath
+    }), [upgradeTask]);
   };
 }
 

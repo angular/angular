@@ -9,8 +9,8 @@
 import {Tree, SchematicsException} from '@angular-devkit/schematics';
 import * as parse5 from 'parse5';
 import {getIndexHtmlPath} from './ast';
-import {InsertChange} from './devkit-utils/change';
-import {Project} from './devkit-utils/config';
+import {InsertChange} from '@schematics/angular/utility/change';
+import {WorkspaceProject} from '@schematics/angular/utility/config';
 
 /**
  * Parses the index.html file to get the HEAD tag position.
@@ -52,7 +52,7 @@ export function getHeadTag(src: string) {
  * @param project The project we're targeting.
  * @param link html element string we are inserting.
  */
-export function addHeadLink(host: Tree, project: Project, link: string) {
+export function addHeadLink(host: Tree, project: WorkspaceProject, link: string) {
   const indexPath = getIndexHtmlPath(project);
   const buffer = host.read(indexPath);
   if (!buffer) {

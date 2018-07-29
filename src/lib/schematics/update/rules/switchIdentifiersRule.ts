@@ -10,7 +10,7 @@ import {green, red} from 'chalk';
 import {relative} from 'path';
 import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-import {classNames} from '../material/component-data';
+import {classNames} from '../material/data/class-names';
 import {
   isMaterialExportDeclaration,
   isMaterialImportDeclaration,

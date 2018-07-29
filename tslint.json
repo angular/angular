@@ -131,6 +131,7 @@
   },
   "linterOptions": {
     // Exclude schematic template files that can't be linted.
-    "exclude": ["src/lib/schematics/**/files/**/*"]
+    // TODO(paul) re-renable specs once the devkit schematics properly work with Bazel.
+    "exclude": ["src/lib/schematics/**/files/**/*", "src/lib/schematics/**/*.spec.ts"]
   }
 }

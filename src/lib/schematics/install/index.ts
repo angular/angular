@@ -16,8 +16,9 @@ import {
 } from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
 import {addModuleImportToRootModule, getStylesPath} from '../utils/ast';
-import {InsertChange} from '../utils/devkit-utils/change';
-import {getProjectFromWorkspace, getWorkspace} from '../utils/devkit-utils/config';
+import {InsertChange} from '@schematics/angular/utility/change';
+import {getWorkspace} from '@schematics/angular/utility/config';
+import {getProjectFromWorkspace} from '../utils/get-project';
 import {addHeadLink} from '../utils/html';
 import {angularVersion, materialVersion} from '../utils/lib-versions';
 import {addPackageToPackageJson} from '../utils/package';

@@ -10,7 +10,7 @@ import {bold} from 'chalk';
 import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 import {color} from '../material/color';
-import {methodCallChecks} from '../material/component-data';
+import {methodCallChecks} from '../material/data/method-call-checks';
 
 /**
  * Rule that walks through every property access expression and updates properties that have

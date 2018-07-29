@@ -10,7 +10,7 @@ import {green, red} from 'chalk';
 import {sync as globSync} from 'glob';
 import {IOptions, Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-import {cssNames} from '../material/component-data';
+import {cssNames} from '../material/data/css-names';
 import {ExternalResource} from '../tslint/component-file';
 import {ComponentWalker} from '../tslint/component-walker';
 import {findAll} from '../typescript/literal';

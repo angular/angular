@@ -9,11 +9,11 @@
 import {green, red} from 'chalk';
 import {sync as globSync} from 'glob';
 import {IOptions, Replacement, RuleFailure, Rules} from 'tslint';
-import * as ts from 'typescript';
-import {inputNames} from '../material/component-data';
+import {inputNames} from '../material/data/input-names';
 import {ExternalResource} from '../tslint/component-file';
 import {ComponentWalker} from '../tslint/component-walker';
 import {findAll} from '../typescript/literal';
+import * as ts from 'typescript';
 
 /**
  * Rule that walks through every component decorator and updates their inline or external

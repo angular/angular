@@ -9,7 +9,7 @@
 import {bold, green, red} from 'chalk';
 import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-import {propertyNames} from '../material/component-data';
+import {propertyNames} from '../material/data/property-names';
 
 /**
  * Rule that walks through every property access expression and updates properties that have

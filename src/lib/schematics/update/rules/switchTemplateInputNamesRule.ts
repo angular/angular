@@ -9,7 +9,7 @@
 import {green, red} from 'chalk';
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-import {inputNames} from '../material/component-data';
+import {inputNames} from '../material/data/input-names';
 import {ExternalResource} from '../tslint/component-file';
 import {ComponentWalker} from '../tslint/component-walker';
 import {findAll, findAllInputsInElWithAttr, findAllInputsInElWithTag} from '../typescript/literal';

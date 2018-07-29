@@ -7,14 +7,10 @@
  */
 
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
+import {InsertChange} from '@schematics/angular/utility/change';
+import {getWorkspace, WorkspaceProject, WorkspaceSchema} from '@schematics/angular/utility/config';
 import {getStylesPath} from '../utils/ast';
-import {InsertChange} from '../utils/devkit-utils/change';
-import {
-  getProjectFromWorkspace,
-  getWorkspace,
-  Project,
-  Workspace,
-} from '../utils/devkit-utils/config';
+import {getProjectFromWorkspace} from '../utils/get-project';
 import {createCustomTheme} from './custom-theme';
 import {Schema} from './schema';
 
@@ -31,9 +27,9 @@ export function addThemeToAppStyles(options: Schema): (host: Tree) => Tree {
 
     const themeName = options.theme || 'indigo-pink';
     if (themeName === 'custom') {
-      insertCustomTheme(project, host);
+      insertCustomTheme(project, options.project, host);
     } else {
-      insertPrebuiltTheme(project, host, themeName, workspace);
+      insertPrebuiltTheme(project, host, themeName, workspace, options.project);
     }
 
     return host;
@@ -41,12 +37,12 @@ export function addThemeToAppStyles(options: Schema): (host: Tree) => Tree {
 }
 
 /** Insert a custom theme to styles.scss file. */
-function insertCustomTheme(project: Project, host: Tree) {
+function insertCustomTheme(project: WorkspaceProject, projectName: string, host: Tree) {
   const stylesPath = getStylesPath(project);
-
   const buffer = host.read(stylesPath);
+
   if (buffer) {
-    const insertion = new InsertChange(stylesPath, 0, createCustomTheme(project));
+    const insertion = new InsertChange(stylesPath, 0, createCustomTheme(projectName));
     const recorder = host.beginUpdate(stylesPath);
     recorder.insertLeft(insertion.pos, insertion.toAdd);
     host.commitUpdate(recorder);
@@ -56,35 +52,35 @@ function insertCustomTheme(project: Project, host: Tree) {
 }
 
 /** Insert a pre-built theme into the angular.json file. */
-function insertPrebuiltTheme(project: Project, host: Tree, theme: string, workspace: Workspace) {
-  // TODO(jelbourn): what should this be relative to?
-  const themePath = `node_modules/@angular/material/prebuilt-themes/${theme}.css`;
+function insertPrebuiltTheme(project: WorkspaceProject, host: Tree, theme: string,
+                             workspace: WorkspaceSchema, projectName: string) {
+
+  // Path needs to be always relative to the `package.json` or workspace root.
+  const themePath =  `./node_modules/@angular/material/prebuilt-themes/${theme}.css`;
 
   if (project.architect) {
     addStyleToTarget(project.architect['build'], host, themePath, workspace);
     addStyleToTarget(project.architect['test'], host, themePath, workspace);
   } else {
-    throw new SchematicsException(`${project.name} does not have an architect configuration`);
+    throw new SchematicsException(`${projectName} does not have an architect configuration`);
   }
 }
 
 /** Adds a style entry to the given target. */
-function addStyleToTarget(target: any, host: Tree, asset: string, workspace: Workspace) {
-  const styleEntry = {input: asset};
-
+function addStyleToTarget(target: any, host: Tree, asset: string, workspace: WorkspaceSchema) {
   // We can't assume that any of these properties are defined, so safely add them as we go
   // if necessary.
   if (!target.options) {
-    target.options = {styles: [styleEntry]};
+    target.options = {styles: [asset]};
   } else if (!target.options.styles) {
-    target.options.styles = [styleEntry];
+    target.options.styles = [asset];
   } else {
     const existingStyles = target.options.styles.map(s => typeof s === 'string' ? s : s.input);
     const hasGivenTheme = existingStyles.find(s => s.includes(asset));
     const hasOtherTheme = existingStyles.find(s => s.includes('material/prebuilt'));
 
     if (!hasGivenTheme && !hasOtherTheme) {
-      target.options.styles.splice(0, 0, styleEntry);
+      target.options.styles.unshift(asset);
     }
   }
 
@@ -92,7 +88,7 @@ function addStyleToTarget(target: any, host: Tree, asset: string, workspace: Wor
 }
 
 /** Throws if the project is not using the default build and test config. */
-function assertDefaultProjectConfig(project: Project) {
+function assertDefaultProjectConfig(project: WorkspaceProject) {
   if (!isProjectUsingDefaultConfig(project)) {
     throw new SchematicsException('Your project is not using the default configuration for ' +
      'build and test. The Angular Material schematics can only be used with the default ' +
@@ -101,7 +97,7 @@ function assertDefaultProjectConfig(project: Project) {
 }
 
 /** Gets whether the Angular CLI project is using the default build configuration. */
-function isProjectUsingDefaultConfig(project: Project) {
+function isProjectUsingDefaultConfig(project: WorkspaceProject) {
   const defaultBuilder = '@angular-devkit/build-angular:browser';
   const defaultTestBuilder = '@angular-devkit/build-angular:karma';
 

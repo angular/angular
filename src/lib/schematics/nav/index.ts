@@ -7,9 +7,9 @@
  */
 
 import {chain, Rule, noop, Tree} from '@angular-devkit/schematics';
+import {buildComponent} from '../utils/build-component';
 import {Schema} from './schema';
 import {addModuleImportToModule, findModuleFromOptions} from '../utils/ast';
-import {buildComponent} from '../utils/devkit-utils/component';
 
 /**
  * Scaffolds a new navigation component.

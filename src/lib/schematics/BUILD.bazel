@@ -1,8 +1,12 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
-load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package")
+load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package", "jasmine_node_test")
 
+filegroup(
+  name = "schematics_assets",
+  srcs = glob(["**/files/**/*"]) + ["README.md", "collection.json", "migration.json"],
+)
 
 ts_library(
   name = "schematics",
@@ -14,8 +18,43 @@ ts_library(
 # This package is intended to be combined into the main @angular/material package as a dep.
 npm_package(
   name = "npm_package",
-  srcs = [
-    ":collection.json",
-  ] + glob(["**/files/**/*", "**/data/**/*", "**/schema.json", "**/migration.json"]),
+  srcs = [":schematics_assets"],
   deps = [":schematics"],
+)
+
+### Testing rules
+
+jasmine_node_test(
+  name = "unit_tests",
+  srcs = [":schematics_test_sources"],
+  data = [":schematics_assets"],
+  deps = [":copy-collection-file", ":copy-migration-file"],
+)
+
+ts_library(
+  name = "schematics_test_sources",
+  srcs = glob(["**/*.spec.ts"], exclude=["**/files/**/*"]),
+  deps = [":schematics"],
+  tsconfig = ":tsconfig.json",
+  testonly = True,
+)
+
+# Workaround for https://github.com/bazelbuild/rules_typescript/issues/154
+genrule(
+  name = "copy-collection-file",
+  srcs = ["collection.json"],
+  outs = ["test-collection.json"],
+  cmd = "cp $< $@",
+  output_to_bindir = True,
+  testonly = True,
+)
+
+# Workaround for https://github.com/bazelbuild/rules_typescript/issues/154
+genrule(
+  name = "copy-migration-file",
+  srcs = ["migration.json"],
+  outs = ["test-migration.json"],
+  cmd = "cp $< $@",
+  output_to_bindir = True,
+  testonly = True,
 )

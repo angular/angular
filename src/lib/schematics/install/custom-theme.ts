@@ -6,11 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Project} from '../utils/devkit-utils/config';
-
 /** Create custom theme for the given application configuration. */
-export function createCustomTheme(project: Project) {
-  const name = project.name || 'app';
+export function createCustomTheme(name: string = 'app') {
 return `
 // Custom Theming for Angular Material
 // For more information: https://material.angular.io/guide/theming

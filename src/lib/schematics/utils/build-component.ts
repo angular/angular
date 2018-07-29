@@ -24,40 +24,51 @@ import {
   url,
 } from '@angular-devkit/schematics';
 import {FileSystemSchematicContext} from '@angular-devkit/schematics/tools';
-import * as ts from 'typescript';
-import {addDeclarationToModule, addExportToModule} from './ast-utils';
-import {InsertChange} from './change';
-import {buildRelativePath, findModuleFromOptions} from './find-module';
-import {getWorkspace} from './config';
-import {parseName} from './parse-name';
-import {validateName} from './validation';
+import {Schema as ComponentOptions} from '@schematics/angular/component/schema';
+import {
+  addDeclarationToModule,
+  addEntryComponentToModule,
+  addExportToModule,
+} from '@schematics/angular/utility/ast-utils';
+import {InsertChange} from '@schematics/angular/utility/change';
+import {getWorkspace} from '@schematics/angular/utility/config';
+import {buildRelativePath, findModuleFromOptions} from '@schematics/angular/utility/find-module';
+import {parseName} from '@schematics/angular/utility/parse-name';
+import {buildDefaultPath} from '@schematics/angular/utility/project';
+import {validateHtmlSelector, validateName} from '@schematics/angular/utility/validation';
 import {resolve, dirname, join} from 'path';
 import {readFileSync} from 'fs';
+import * as ts from 'typescript';
 
-function addDeclarationToNgModule(options: any): Rule {
+function readIntoSourceFile(host: Tree, modulePath: string): ts.SourceFile {
+  const text = host.read(modulePath);
+  if (text === null) {
+    throw new SchematicsException(`File ${modulePath} does not exist.`);
+  }
+  const sourceText = text.toString('utf-8');
+
+  return ts.createSourceFile(modulePath, sourceText, ts.ScriptTarget.Latest, true);
+}
+
+function addDeclarationToNgModule(options: ComponentOptions): Rule {
   return (host: Tree) => {
     if (options.skipImport || !options.module) {
       return host;
     }
 
     const modulePath = options.module;
-    const text = host.read(modulePath);
-    if (text === null) {
-      throw new SchematicsException(`File ${modulePath} does not exist.`);
-    }
-    const sourceText = text.toString('utf-8');
-    const source = ts.createSourceFile(modulePath, sourceText, ts.ScriptTarget.Latest, true);
+    const source = readIntoSourceFile(host, modulePath);
 
     const componentPath = `/${options.path}/`
-                          + (options.flat ? '' : strings.dasherize(options.name) + '/')
-                          + strings.dasherize(options.name)
-                          + '.component';
+      + (options.flat ? '' : strings.dasherize(options.name) + '/')
+      + strings.dasherize(options.name)
+      + '.component';
     const relativePath = buildRelativePath(modulePath, componentPath);
     const classifiedName = strings.classify(`${options.name}Component`);
     const declarationChanges = addDeclarationToModule(source,
-                                                      modulePath,
-                                                      classifiedName,
-                                                      relativePath);
+      modulePath,
+      classifiedName,
+      relativePath);
 
     const declarationRecorder = host.beginUpdate(modulePath);
     for (const change of declarationChanges) {
@@ -69,17 +80,12 @@ function addDeclarationToNgModule(options: any): Rule {
 
     if (options.export) {
       // Need to refresh the AST because we overwrote the file in the host.
-      const text = host.read(modulePath);
-      if (text === null) {
-        throw new SchematicsException(`File ${modulePath} does not exist.`);
-      }
-      const sourceText = text.toString('utf-8');
-      const source = ts.createSourceFile(modulePath, sourceText, ts.ScriptTarget.Latest, true);
+      const source = readIntoSourceFile(host, modulePath);
 
       const exportRecorder = host.beginUpdate(modulePath);
       const exportChanges = addExportToModule(source, modulePath,
-                                              strings.classify(`${options.name}Component`),
-                                              relativePath);
+        strings.classify(`${options.name}Component`),
+        relativePath);
 
       for (const change of exportChanges) {
         if (change instanceof InsertChange) {
@@ -89,12 +95,31 @@ function addDeclarationToNgModule(options: any): Rule {
       host.commitUpdate(exportRecorder);
     }
 
+    if (options.entryComponent) {
+      // Need to refresh the AST because we overwrote the file in the host.
+      const source = readIntoSourceFile(host, modulePath);
+
+      const entryComponentRecorder = host.beginUpdate(modulePath);
+      const entryComponentChanges = addEntryComponentToModule(
+        source, modulePath,
+        strings.classify(`${options.name}Component`),
+        relativePath);
+
+      for (const change of entryComponentChanges) {
+        if (change instanceof InsertChange) {
+          entryComponentRecorder.insertLeft(change.pos, change.toAdd);
+        }
+      }
+      host.commitUpdate(entryComponentRecorder);
+    }
+
 
     return host;
   };
 }
 
-function buildSelector(options: any, projectPrefix: string) {
+
+function buildSelector(options: ComponentOptions, projectPrefix: string) {
   let selector = strings.dasherize(options.name);
   if (options.prefix) {
     selector = `${options.prefix}-${selector}`;
@@ -124,35 +149,30 @@ function indentTextContent(text: string, numSpaces: number): string {
  * This allows inlining the external template or stylesheet files in EJS without having
  * to manually duplicate the file content.
  */
-export function buildComponent(options: any,
+export function buildComponent(options: ComponentOptions,
                                additionalFiles: {[key: string]: string} = {}): Rule {
 
   return (host: Tree, context: FileSystemSchematicContext) => {
     const workspace = getWorkspace(host);
-
-    if (!options.project) {
-      options.project = Object.keys(workspace.projects)[0];
-    }
-
-    const project = workspace.projects[options.project];
+    const project = workspace.projects[options.project || workspace.defaultProject];
 
     const schematicFilesUrl = './files';
     const schematicFilesPath = resolve(dirname(context.schematic.description.path),
         schematicFilesUrl);
 
     if (options.path === undefined) {
-      options.path = `/${project.root}/src/app`;
+      options.path = buildDefaultPath(project);
     }
 
-    options.selector = options.selector || buildSelector(options, project.prefix);
     options.module = findModuleFromOptions(host, options);
 
     const parsedPath = parseName(options.path, options.name);
-
     options.name = parsedPath.name;
     options.path = parsedPath.path;
+    options.selector = options.selector || buildSelector(options, project.prefix);
 
     validateName(options.name);
+    validateHtmlSelector(options.selector);
 
     // Object that will be used as context for the EJS templates.
     const baseTemplateContext = {
@@ -178,11 +198,9 @@ export function buildComponent(options: any,
       options.spec ? noop() : filter(path => !path.endsWith('.spec.ts')),
       options.inlineStyle ? filter(path => !path.endsWith('.__styleext__')) : noop(),
       options.inlineTemplate ? filter(path => !path.endsWith('.html')) : noop(),
-      template({
-        indentTextContent,
-        resolvedFiles,
-        ...baseTemplateContext
-      }),
+      // Treat the template options as any, because the type definition for the template options
+      // is made unnecessarily explicit. Every type of object can be used in the EJS template.
+      template({ indentTextContent, resolvedFiles, ...baseTemplateContext} as any),
       move(null, parsedPath.path),
     ]);
 
