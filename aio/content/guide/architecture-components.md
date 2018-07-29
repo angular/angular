@@ -23,14 +23,19 @@ _컴포넌트_ 는 *뷰*라고 하는 화면의 일부를 조작합니다. 간�
 * 히어로 에디터
 
 <!--
-You define a component's application logic&mdash;what it does to support the view&mdash;inside a class. The class interacts with the view through an API of properties and methods.
+You define a component's application logic&mdash;what it does to support the view&mdash;inside a class.
+The class interacts with the view through an API of properties and methods.
 -->
 뷰에서 사용할 애플리케이션 로직은 컴포넌트에 정의하며, 뷰는 클래스의 프로퍼티와 메소드를 활용해서 클래스와 상호작용 합니다.
 
-<!--
+For example, the `HeroListComponent` has a `heroes` property that holds an array of heroes. It also has a `selectHero()` method that sets a `selectedHero` property when the user clicks to choose a hero from that list. The component acquires the heroes from a service, which is a TypeScript [parameter property](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) on the constructor. The service is provided to the component through the dependency injection system.
+
+<!-- old
 For example, the `HeroListComponent` has a `heroes` property that returns an array of heroes that it acquires from a service. `HeroListComponent` also has a `selectHero()` method that sets a `selectedHero` property when the user clicks to choose a hero from that list.
 -->
+<!--
 예를 들어 `HeroListComponent`에 있는 `heroes` 프로퍼티는 서비스에서 히어로 목록을 받아서 저장해두는 프로퍼티입니다. 그리고 `selectHero()` 메소드는 사용자가 히어로 목록에서 한 명을 선택했을 때 이 히어로를 `selectedHero` 프로퍼티에 저장하는 메소드입니다.
+-->
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (class)" region="class"></code-example>
 
@@ -90,10 +95,9 @@ Angular inserts an instance of the `HeroListComponent` view between those tags.
 * `templateUrl`: 컴포넌트의 HTML 템플릿을 외부 파일에 정의할 때, 이 템플릿 파일의 위치를 지정합니다. 템플릿을 인라인으로 구성하려면 이 프로퍼티 대신 `template` 프로퍼티를 사용하면 됩니다. 템플릿은 컴포넌트의 _호스트 뷰_ 를 정의합니다.
 
 <!--
-* `providers`: An array of **dependency injection providers** for services that the component requires. In the example, this tells Angular that the component's constructor requires a `HeroService` instance
-in order to get the list of heroes to display.
+* `providers`: An array of **dependency injection providers** for services that the component requires. In the example, this tells Angular how to provide the `HeroService` instance that the component's constructor uses to get the list of heroes to display.  
 -->
-* `providers`: 컴포넌트가 생성될 때 의존성으로 주입되는 서비스의 **프로바이더**를 지정합니다. 위 코드에서는 화면에 표시할 히어로의 목록을 가져오기 위해 `HeroService`를 의존성으로 주입받습니다.
+* `providers`: 컴포넌트가 생성될 때 의존성으로 주입되는 서비스의 **프로바이더**를 지정합니다. 위 코드에서는 화면에 표시할 히어로의 목록을 가져오기 위해 생성자에서 `HeroService`를 의존성으로 주입받는데, 이 `HeroService`의 인스턴스를 어떻게 받아올지 지정합니다.
 
 <hr/>
 

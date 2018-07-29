@@ -54,7 +54,7 @@ Because `ng serve` does not work with service workers, you must use a separate H
 To serve with `http-server`, change to the directory containing your web files and start the web server: 
 
 ```sh
-cd dist
+cd dist/*project-name*
 http-server -p 8080
 ```
 

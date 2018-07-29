@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {ComponentDef} from '../../../src/render3/interfaces/definition';
+import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
 import {renderComponent, toHtml} from '../render_util';
 
 
@@ -25,7 +25,8 @@ describe('lifecycle hooks', () => {
 
   @Component({selector: 'lifecycle-comp', template: ``})
   class LifecycleComp {
-    @Input('name') nameMin: string;
+    // TODO(issue/24571): remove '!'.
+    @Input('name') nameMin !: string;
 
     ngOnChanges() { events.push('changes' + this.nameMin); }
 
@@ -46,8 +47,8 @@ describe('lifecycle hooks', () => {
       selectors: [['lifecycle-comp']],
       factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
       template: function LifecycleComp_Template(rf: $RenderFlags$, ctx: $LifecycleComp$) {},
-      inputs: {nameMin: 'name'},
-      features: [$r3$.ɵNgOnChangesFeature({nameMin: 'nameMin'})]
+      inputs: {nameMin: ['name', 'nameMin']},
+      features: [$r3$.ɵNgOnChangesFeature]
     });
     // /NORMATIVE
   }
@@ -70,10 +71,8 @@ describe('lifecycle hooks', () => {
       factory: function SimpleLayout_Factory() { return simpleLayout = new SimpleLayout(); },
       template: function SimpleLayout_Template(rf: $RenderFlags$, ctx: $SimpleLayout$) {
         if (rf & 1) {
-          $r3$.ɵE(0, 'lifecycle-comp');
-          $r3$.ɵe();
-          $r3$.ɵE(1, 'lifecycle-comp');
-          $r3$.ɵe();
+          $r3$.ɵEe(0, 'lifecycle-comp');
+          $r3$.ɵEe(1, 'lifecycle-comp');
         }
         if (rf & 2) {
           $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
@@ -85,7 +84,8 @@ describe('lifecycle hooks', () => {
   }
 
   // NON-NORMATIVE
-  (SimpleLayout.ngComponentDef as ComponentDef<any>).directiveDefs = [LifecycleComp.ngComponentDef];
+  (SimpleLayout.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
+      [LifecycleComp.ngComponentDef];
   // /NON-NORMATIVE
 
   it('should gen hooks with a few simple components', () => {

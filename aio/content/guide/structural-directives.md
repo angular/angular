@@ -131,7 +131,7 @@ you apply the directive to an element in the HTML template.
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--
@@ -609,7 +609,7 @@ The `NgSwitchDefault` displays its host element when no sibling `NgSwitchCase` m
 그래서 이 디렉티브들은 별표(`*`)를 사용하면서 엘리먼트에 지정합니다.
 그러면 지정된 값에 해당하는 `NgSwitchCase`가 화면에 표시되고, 아무 값도 해당되지 않으면 `NgSwitchDefault`가 화면에 표시됩니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--
@@ -1021,7 +1021,7 @@ That means the directive needs an `appUnless` property, decorated with `@Input`
 이 디렉티브는 `[appUnless]`로 true/false 조건을 받습니다.
 이 말은, 디렉티브에 `appUnless` 프로퍼티가 있어야 하며, 이 프로퍼티는 `@Input`로 지정되어야 한다는 것을 의미합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--

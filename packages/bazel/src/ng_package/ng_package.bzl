@@ -76,18 +76,18 @@ WELL_KNOWN_GLOBALS = { p: _global_name(p) for p in [
     "rxjs/operators",
 ]}
 
-def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es", package_name = "", include_tslib = False):
+def _rollup(ctx, bundle_name, rollup_config, entry_point, inputs, js_output, format = "es", package_name = "", include_tslib = False):
   map_output = ctx.actions.declare_file(js_output.basename + ".map", sibling = js_output)
 
   args = ctx.actions.args()
-  args.add(["--config", rollup_config.path])
+  args.add("--config", rollup_config)
 
-  args.add(["--input", entry_point])
-  args.add(["--output.file", js_output.path])
-  args.add(["--output.format", format])
+  args.add("--input", entry_point)
+  args.add("--output.file", js_output)
+  args.add("--output.format", format)
   if package_name:
-    args.add(["--output.name", _global_name(package_name)])
-    args.add(["--amd.id", package_name])
+    args.add("--output.name", _global_name(package_name))
+    args.add("--amd.id", package_name)
 
   # Note: if the input has external source maps then we need to also install and use
   #   `rollup-plugin-sourcemaps`, which will require us to use rollup.config.js file instead
@@ -95,14 +95,15 @@ def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es", p
   args.add("--sourcemap")
 
   globals = dict(WELL_KNOWN_GLOBALS, **ctx.attr.globals)
-  args.add("--external")
   external = globals.keys()
   if not include_tslib:
     external.append("tslib")
-  args.add(external, join_with=",")
+  args.add_joined("--external", external, join_with=",")
 
-  args.add("--globals")
-  args.add(["%s:%s" % g for g in globals.items()], join_with=",")
+  args.add_joined(
+      "--globals",
+      ["%s:%s" % g for g in globals.items()],
+      join_with=",")
 
   args.add("--silent")
 
@@ -112,7 +113,7 @@ def _rollup(ctx, rollup_config, entry_point, inputs, js_output, format = "es", p
   if ctx.version_file:
     other_inputs.append(ctx.version_file)
   ctx.actions.run(
-      progress_message = "ng_package: Rollup %s" % ctx.label,
+      progress_message = "ng_package: Rollup %s %s" % (bundle_name, ctx.label),
       mnemonic = "AngularPackageRollup",
       inputs = inputs.to_list() + other_inputs,
       outputs = [js_output, map_output],
@@ -142,6 +143,10 @@ def _filter_out_generated_files(files):
     if (not(file.path.endswith(".ngfactory.js") or file.path.endswith(".ngsummary.js") or file.path.endswith(".ngstyle.js"))):
       result.append(file)
   return depset(result)
+
+
+def _esm2015_root_dir(ctx):
+  return ctx.label.name + ".es6"
 
 
 # ng_package produces package that is npm-ready.
@@ -191,7 +196,7 @@ def _ng_package_impl(ctx):
     es2015_entry_point = "/".join([p for p in [
         ctx.bin_dir.path,
         ctx.label.package,
-        ctx.label.name + ".es6",
+        _esm2015_root_dir(ctx),
         ctx.label.package,
         entry_point,
         flat_module_out_file,
@@ -218,13 +223,14 @@ def _ng_package_impl(ctx):
       umd_output = ctx.outputs.umd
       min_output = ctx.outputs.umd_min
 
-    config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]))
+    esm2015_config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, _esm2015_root_dir(ctx)]), filename="_%s.rollup_esm2015.conf.js")
+    esm5_config = write_rollup_config(ctx, [], "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]), filename="_%s.rollup_esm5.conf.js")
 
-    fesm2015.append(_rollup(ctx, config, es2015_entry_point, esm_2015_files, fesm2015_output))
-    fesm5.append(_rollup(ctx, config, es5_entry_point, esm5_sources, fesm5_output))
+    fesm2015.append(_rollup(ctx, "fesm2015", esm2015_config, es2015_entry_point, esm_2015_files + ctx.files.node_modules, fesm2015_output))
+    fesm5.append(_rollup(ctx, "fesm5", esm5_config, es5_entry_point, esm5_sources + ctx.files.node_modules, fesm5_output))
 
     bundles.append(
-        _rollup(ctx, config, es5_entry_point, esm5_sources, umd_output,
+        _rollup(ctx, "umd", esm5_config, es5_entry_point, esm5_sources + ctx.files.node_modules, umd_output,
                 format = "umd", package_name = package_name, include_tslib = True))
     uglify_sourcemap = run_uglify(ctx, umd_output, min_output,
         config_name = entry_point.replace("/", "_"))
@@ -246,8 +252,8 @@ def _ng_package_impl(ctx):
   # The order of arguments matters here, as they are read in order in packager.ts.
   packager_args.add(npm_package_directory.path)
   packager_args.add(ctx.label.package)
-  packager_args.add([ctx.bin_dir.path, ctx.label.package], join_with="/")
-  packager_args.add([ctx.genfiles_dir.path, ctx.label.package], join_with="/")
+  packager_args.add_joined([ctx.bin_dir.path, ctx.label.package], join_with="/")
+  packager_args.add_joined([ctx.genfiles_dir.path, ctx.label.package], join_with="/")
 
   # Marshal the metadata into a JSON string so we can parse the data structure
   # in the TypeScript program easily.
@@ -268,19 +274,19 @@ def _ng_package_impl(ctx):
     # placeholder
     packager_args.add("")
 
-  packager_args.add(_flatten_paths(fesm2015), join_with=",")
-  packager_args.add(_flatten_paths(fesm5), join_with=",")
-  packager_args.add(_flatten_paths(esm2015), join_with=",")
-  packager_args.add(_flatten_paths(esm5), join_with=",")
-  packager_args.add(_flatten_paths(bundles), join_with=",")
-  packager_args.add([s.path for s in ctx.files.srcs], join_with=",")
+  packager_args.add_joined(_flatten_paths(fesm2015), join_with=",")
+  packager_args.add_joined(_flatten_paths(fesm5), join_with=",")
+  packager_args.add_joined(_flatten_paths(esm2015), join_with=",")
+  packager_args.add_joined(_flatten_paths(esm5), join_with=",")
+  packager_args.add_joined(_flatten_paths(bundles), join_with=",")
+  packager_args.add_joined([s.path for s in ctx.files.srcs], join_with=",")
 
   # TODO: figure out a better way to gather runfiles providers from the transitive closure.
-  packager_args.add([d.path for d in ctx.files.data], join_with=",")
+  packager_args.add_joined([d.path for d in ctx.files.data], join_with=",")
 
   if ctx.file.license_banner:
     packager_inputs.append(ctx.file.license_banner)
-    packager_args.add(ctx.file.license_banner.path)
+    packager_args.add(ctx.file.license_banner)
   else:
     # placeholder
     packager_args.add("")

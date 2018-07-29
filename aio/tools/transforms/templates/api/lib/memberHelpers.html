@@ -1,3 +1,4 @@
+{% import "lib/githubLinks.html" as github -%}
 {% import "lib/paramList.html" as params -%}
 
 {%- macro renderHeritage(exportDoc) -%}
@@ -39,12 +40,12 @@
 
 {%- macro renderOverloadInfo(overload, cssClass, method) -%}
 
-<code-example language="ts" hideCopy="true" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
-
 {% if overload.shortDescription and (overload.shortDescription != method.shortDescription) %}
 <div class="short-description">
   {$ overload.shortDescription | marked $}
 </div>{% endif %}
+
+<code-example language="ts" hideCopy="true" linenums="false" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
 
 <h4 class="no-anchor">Parameters</h4>
 {$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter') $}
@@ -69,15 +70,20 @@
 {%- endif %}
 {%- endmacro -%}
 
-{%- macro renderMethodDetail(method, cssClass) -%}
+{%- macro renderMethodDetail(versionInfo, method, cssClass) -%}
 <a id="{$ method.anchor $}"></a>
 <table class="is-full-width method-table {$ cssClass $}">
-  {% if method.name !== 'constructor' %}<thead><tr><th><h3>
-    {% if method.isCallMember %}<i>call signature</i>
-    {% elseif method.isNewMember %}<i>construct signature</i>
-    {% else %}{$ method.name $}()
-    {% endif %}
-  </h3></th></tr></thead>{% endif %}
+  {% if method.name !== 'constructor' %}<thead><tr><th>
+    <div class="with-github-links">
+      <h3>
+        {% if method.isCallMember %}<i>call signature</i>
+        {% elseif method.isNewMember %}<i>construct signature</i>
+        {% else %}{$ method.name $}()
+        {% endif %}
+      </h3>
+      {$ github.githubLinks(method, versionInfo) $}
+    </div>
+  </th></tr></thead>{% endif %}
   <tbody>
     {% if method.shortDescription %}<tr>
       <td class="short-description">
@@ -113,22 +119,33 @@
       </td>
     </tr>
   {% endif %}
-  {% if method.description %}<tr>
+
+  {% if method.description -%}
+    <tr>
       <td class="description">
-        {$ method.description | marked $}
+        {$ method.description | marked({ h3: 'h4' }) $}
       </td>
-    </tr>{% endif %}
-  </tbody>
+    </tr>
+  {%- endif %}
+
+  {% if method.usageNotes -%}
+    <tr>
+      <td class="usage-notes">
+        {$ method.usageNotes | marked({ h3: 'h4' }) $}
+      </td>
+    </tr>
+  {%- endif %}
+    </tbody>
 </table>
 {% endmacro -%}
 
-{%- macro renderMethodDetails(methods, containerClass, itemClass, headingText) -%}
+{%- macro renderMethodDetails(versionInfo, methods, containerClass, itemClass, headingText) -%}
 {% set nonInternalMethods = methods | filterByPropertyValue('internal', undefined) %}
 {% if nonInternalMethods.length %}
 <section class="{$ containerClass $}">
   <h2>{$ headingText $}</h2>
   {% for member in nonInternalMethods %}
-    {$ renderMethodDetail(member, itemClass) $}
+    {$ renderMethodDetail(versionInfo, member, itemClass) $}
   {% endfor %}
 </section>
 {% endif %}
@@ -141,7 +158,7 @@
 {% if nonInternalProperties.length -%}
 <section class="{$ containerClass $}">
   <h2>{$ headingText $}</h2>
-  <table class="is-full-width list-table properties-table">
+  <table class="is-full-width list-table property-table">
     <thead>
       <tr>
         <th>{$ headings[0] or 'Property' $}</th>

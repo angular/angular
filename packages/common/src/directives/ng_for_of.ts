@@ -114,10 +114,12 @@ export class NgForOf<T> implements DoCheck {
 
   get ngForTrackBy(): TrackByFunction<T> { return this._trackByFn; }
 
-  private _ngForOf: NgIterable<T>;
+  // TODO(issue/24571): remove '!'.
+  private _ngForOf !: NgIterable<T>;
   private _ngForOfDirty: boolean = true;
   private _differ: IterableDiffer<T>|null = null;
-  private _trackByFn: TrackByFunction<T>;
+  // TODO(issue/24571): remove '!'.
+  private _trackByFn !: TrackByFunction<T>;
 
   constructor(
       private _viewContainer: ViewContainerRef, private _template: TemplateRef<NgForOfContext<T>>,
@@ -180,6 +182,7 @@ export class NgForOf<T> implements DoCheck {
       const viewRef = <EmbeddedViewRef<NgForOfContext<T>>>this._viewContainer.get(i);
       viewRef.context.index = i;
       viewRef.context.count = ilen;
+      viewRef.context.ngForOf = this._ngForOf;
     }
 
     changes.forEachIdentityChange((record: any) => {

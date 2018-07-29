@@ -152,7 +152,7 @@ function main(args: string[]): number {
   allsrcs.filter(hasFileExtension('.d.ts')).forEach((f: string) => {
     const content = fs.readFileSync(f, 'utf-8')
                         // Strip the named AMD module for compatibility with non-bazel users
-                        .replace(/^\/\/\/ <amd-module name=.*\/>\n/, '');
+                        .replace(/^\/\/\/ <amd-module name=.*\/>\n/gm, '');
     writeFileFromInputPath(f, content);
   });
 

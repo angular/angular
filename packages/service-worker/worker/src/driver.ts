@@ -225,16 +225,21 @@ export class Driver implements Debuggable, UpdateSource {
     // Initialization is the only event which is sent directly from the SW to itself,
     // and thus `event.source` is not a Client. Handle it here, before the check
     // for Client sources.
-    if (data.action === 'INITIALIZE' && this.initialized === null) {
-      // Initialize the SW.
-      this.initialized = this.initialize();
+    if (data.action === 'INITIALIZE') {
+      // Only initialize if not already initialized (or initializing).
+      if (this.initialized === null) {
+        // Initialize the SW.
+        this.initialized = this.initialize();
 
-      // Wait until initialization is properly scheduled, then trigger idle
-      // events to allow it to complete (assuming the SW is idle).
-      event.waitUntil((async() => {
-        await this.initialized;
-        await this.idle.trigger();
-      })());
+        // Wait until initialization is properly scheduled, then trigger idle
+        // events to allow it to complete (assuming the SW is idle).
+        event.waitUntil((async() => {
+          await this.initialized;
+          await this.idle.trigger();
+        })());
+      }
+
+      return;
     }
 
     // Only messages from true clients are accepted past this point (this is essentially
@@ -724,16 +729,6 @@ export class Driver implements Debuggable, UpdateSource {
 
   private async setupUpdate(manifest: Manifest, hash: string): Promise<void> {
     const newVersion = new AppVersion(this.scope, this.adapter, this.db, this.idle, manifest, hash);
-
-    // Try to determine a version that's safe to update from.
-    let updateFrom: AppVersion|undefined = undefined;
-
-    // It's always safe to update from a version, even a broken one, as it will still
-    // only have valid resources cached. If there is no latest version, though, this
-    // update will have to install as a fresh version.
-    if (this.latestHash !== null) {
-      updateFrom = this.versions.get(this.latestHash);
-    }
 
     // Firstly, check if the manifest version is correct.
     if (manifest.configVersion !== SUPPORTED_CONFIG_VERSION) {

@@ -31,9 +31,9 @@ export interface AnimationPlayer {
   parentPlayer: AnimationPlayer|null;
   readonly totalTime: number;
   beforeDestroy?: () => any;
-  /* @internal */
+  /** @internal */
   triggerCallback?: (phaseName: string) => void;
-  /* @internal */
+  /** @internal */
   disabled?: boolean;
 }
 
@@ -70,7 +70,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
     this._started = true;
   }
 
-  /* @internal */
+  /** @internal */
   triggerMicrotask() { scheduleMicroTask(() => this._onFinish()); }
 
   private _onStart() {
@@ -96,7 +96,7 @@ export class NoopAnimationPlayer implements AnimationPlayer {
   setPosition(p: number): void {}
   getPosition(): number { return 0; }
 
-  /* @internal */
+  /** @internal */
   triggerCallback(phaseName: string): void {
     const methods = phaseName == 'start' ? this._onStartFns : this._onDoneFns;
     methods.forEach(fn => fn());

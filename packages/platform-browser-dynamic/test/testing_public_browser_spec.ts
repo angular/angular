@@ -7,7 +7,7 @@
  */
 
 import {ResourceLoader} from '@angular/compiler';
-import {Component} from '@angular/core';
+import {Compiler, Component, NgModule} from '@angular/core';
 import {TestBed, async, fakeAsync, inject, tick} from '@angular/core/testing';
 
 import {ResourceLoaderImpl} from '../src/resource_loader/resource_loader_impl';
@@ -77,6 +77,22 @@ class BadTemplateUrl {
       });
     });
 
+    describe('Compiler', () => {
+      it('should return NgModule id when asked', () => {
+        @NgModule({
+          id: 'test-module',
+        })
+        class TestModule {
+        }
+
+        TestBed.configureTestingModule({
+          imports: [TestModule],
+        });
+        const compiler = TestBed.get(Compiler) as Compiler;
+        expect(compiler.getModuleId(TestModule)).toBe('test-module');
+      });
+    });
+
     describe('errors', () => {
       let originalJasmineIt: any;
 
@@ -88,9 +104,9 @@ class BadTemplateUrl {
           reject = rej;
         });
         originalJasmineIt = jasmine.getEnv().it;
-        jasmine.getEnv().it = (description: string, fn: any /** TODO #9100 */): any => {
-          const done = () => { resolve(null); };
-          (<any>done).fail = (err: any /** TODO #9100 */) => { reject(err); };
+        jasmine.getEnv().it = (description: string, fn: (done: DoneFn) => void): any => {
+          const done = (() => resolve(null)) as DoneFn;
+          done.fail = reject;
           fn(done);
           return null;
         };
@@ -99,7 +115,7 @@ class BadTemplateUrl {
 
       const restoreJasmineIt = () => { jasmine.getEnv().it = originalJasmineIt; };
 
-      it('should fail when an ResourceLoader fails', (done: any /** TODO #9100 */) => {
+      it('should fail when an ResourceLoader fails', done => {
         const itPromise = patchJasmineIt();
 
         it('should fail with an error from a promise', async(() => {

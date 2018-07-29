@@ -65,6 +65,11 @@ describe('NgCompilerHost', () => {
           .toBe('@angular/core');
     });
 
+    it('should allow an import o a package whose name contains dot (e.g. @angular.io)', () => {
+      expect(host.fileNameToModuleName('/tmp/node_modules/@angular.io/core.d.ts', '/tmp/main.ts'))
+          .toBe('@angular.io/core');
+    });
+
     it('should use a package import when accessing a package from another package', () => {
       expect(host.fileNameToModuleName(
                  '/tmp/node_modules/mod1/index.d.ts', '/tmp/node_modules/mod2/index.d.ts'))

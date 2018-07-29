@@ -70,7 +70,7 @@ Organizing your code into distinct functional modules helps in managing developm
 -->
 비슷한 코드를 하나의 기능 모듈로 관리하면 코드를 더 효율적으로 관리할 수 있습니다. 이렇게 만든 모듈은 코드를 재사용하는 측면에서도 더 효율적이며, 복잡한 애플리케이션을 개발할수록 체감할 수 있는 효율이 증가할 것입니다. 그리고 코드를 모듈로 관리하면 애플리케이션이 실행될 때 모든 모듈을 한 번에 불러오지 않고, 필요할 때 불러오는 _지연 로딩_ 을 활용할 때도 유리합니다. 지연 로딩을 활용하면 애플리케이션의 초기 실행 속도를 최소화할 수 있습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   For a more detailed discussion, see [Introduction to modules](guide/architecture-modules).
@@ -94,7 +94,7 @@ The `@Component` decorator identifies the class immediately below it as a compon
 -->
 Angular 컴포넌트는 컴포넌트 클래스에 `@Component` 데코레이터를 사용해서 컴포넌트에 대한 메타데이터를 지정하면서 템플릿도 함께 지정합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
    Decorators are functions that modify JavaScript classes. Angular defines a number of such decorators that attach specific kinds of metadata to classes, so that it knows what those classes mean and how they should work.
@@ -137,7 +137,7 @@ Your templates can also use *pipes* to improve the user experience by transformi
 -->
 데이터를 화면에 표시될 때 특정 형식을 지정하려면 *파이프*를 사용할 수 있습니다. 예를 들면 날짜나 통화 데이터를 사용자의 국가 형식에 맞게 변형할 때 사용할 수 있습니다. 많이 사용하는 파이프는 Angular에서 제공하고 있으며, 필요한 기능이 더 있다면 직접 파이프를 정의해서 사용할 수도 있습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   For a more detailed discussion of these concepts, see [Introduction to components](guide/architecture-components).
@@ -166,7 +166,7 @@ For data or logic that is not associated with a specific view, and that you want
 -->
 *의존성 주입(Dependency injection, DI)*을 사용하면 컴포넌트 클래스를 유연하면서도 효율적으로 구성할 수 있습니다. 서버에서 데이터를 받아오거나, 사용자의 입력을 검증한다던지, 콘솔에 로그를 출력하는 로직은 특정 뷰와 직접적인 관련이 없기 때문에 서비스에서 처리하는 것이 좋습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
   <!--
   For a more detailed discusssion, see [Introduction to services and DI](guide/architecture-services).
   -->
@@ -212,7 +212,7 @@ To define navigation rules, you associate *navigation paths* with your component
 -->
 네비게이션 룰은 *네비게이션 경로*를 컴포넌트와 연결해서 정의합니다. 이 때 네비게이션 경로는 URL과 비슷한 형식으로 정의하며, 뷰에 있는 데이터를 활용할 수도 있습니다. 사용자의 입력이나 애플리케이션의 규칙에 따라 어떤 뷰로 전환할지 선택할 수 있고, 뷰를 추가로 표시하거나 숨길 수도 있습니다.
 
-<div class="l-sub-section">
+ <div class="alert is-helpful">
 
 <!--
    For a more detailed discussion, see [Routing and navigation](guide/router).
@@ -275,7 +275,7 @@ Each of these subjects is introduced in more detail in the following pages.
   * [파이프](guide/architecture-components#파이프)
 * [서비스와 의존성 주입](guide/architecture-services)
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 <!--
    Note that the code referenced on these pages is available as a <live-example></live-example>.
  -->

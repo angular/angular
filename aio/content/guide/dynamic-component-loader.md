@@ -178,7 +178,7 @@ Take it step by step. First, it picks an ad.
 이 코드에서 `loadComponent()` 메소드의 로직은 조금 복잡합니다.
 하나씩 확인해 봅시다. 제일 먼저 어떤 광고를 표시할지 결정합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--

@@ -88,7 +88,7 @@ An `Observable` instance begins publishing values only when someone subscribes t
 -->
 `Observable` 인스턴스는 누군가 이 옵저버블을 구독해야 데이터를 발행하기 시작합니다. 옵저버블 인스턴스에서 제공하는 `subscribe()` 함수를 실행하면 구독을 시작할 수 있으며, 이 때 옵저버블을 처리하는 옵저버 객체를 함께 전달합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
    <!--
    In order to show how subscribing works, we need to create a new observable. There is a  constructor that you use to create new instances, but for illustration, we can use some static methods on the `Observable` class that create simple observables of frequently used types:
@@ -238,7 +238,7 @@ Notice that if you subscribe twice, there will be two separate streams, each emi
 -->
 <code-example path="observables/src/multicasting.ts" region="multicast_sequence" title="멀티캐스트 구독하기"></code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
    <!--
    Multicasting observables take a bit more setup, but they can be useful for certain applications. Later we will look at tools that simplify the process of multicasting, allowing you to take any observable and make it multicasting.
    -->

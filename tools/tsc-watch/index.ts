@@ -7,10 +7,9 @@
  */
 
 /* tslint:disable:no-console  */
-import {spawn} from 'child_process';
-import {existsSync, mkdirSync, writeFileSync} from 'fs';
+import {existsSync, mkdirSync} from 'fs';
 
-import {TSC, TscWatch, reportError} from './tsc_watch';
+import {TscWatch} from './tsc_watch';
 
 export * from './tsc_watch';
 import 'reflect-metadata';
@@ -32,15 +31,15 @@ const runMode: string = process.argv.length >= 4 ? process.argv[3] : null;
 const debugMode = process.argv.some(arg => arg === '--debug');
 const BaseConfig = {
   start: 'File change detected. Starting incremental compilation...',
-  error: 'error',
-  complete: 'Compilation complete. Watching for file changes.'
+  // This regex uses a negative lookbehind group (?<! 0 ), which causes it to not match a string
+  // containing " 0 error" but to match anything else containing "error". It requires the --harmony
+  // flag to run under node versions < 9.
+  error: /(?<! 0 )error/,
+  complete: 'Found 0 errors. Watching for file changes.',
 };
 
 if (platform == 'node') {
-  const specFiles = [
-    '@angular/**/*_spec.js', '@angular/compiler-cli/test/**/*_spec.js',
-    '@angular/benchpress/test/**/*_spec.js'
-  ];
+  const specFiles = ['@angular/**/*_spec.js'];
   tscWatch = new TscWatch(Object.assign(
       {
         tsconfig: 'packages/tsconfig.json',

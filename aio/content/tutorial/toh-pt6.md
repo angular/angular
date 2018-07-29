@@ -158,7 +158,7 @@ Applying the optional type specifier, `<Hero[]>` , gives you a typed result obje
 The shape of the JSON data is determined by the server's data API.
 The _Tour of Heroes_ data API returns the hero data as an array.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Other APIs may bury the data that you want within an object.
 You might have to dig that data out by processing the `Observable` result
@@ -294,8 +294,7 @@ That header is in the `httpOptions` constant defined in the `HeroService`.
   region="http-options">
 </code-example>
 
-Refresh the browser, change a hero name, save your change,
-and click the "go back" button. 
+Refresh the browser, change a hero name and save your change. Navigating to the previous view is implemented in the `save()` method defined in `HeroDetailComponent`.
 The hero now appears in the list with the changed name.
 
 ## Add a new hero
@@ -536,7 +535,7 @@ before passing along the latest string. You'll never make requests more frequent
 It cancels and discards previous search observables, returning only the latest search service observable.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   With the [switchMap operator](http://www.learnrxjs.io/operators/transformation/switchmap.html),
   every qualifying key event can trigger an `HttpClient.get()` method call.

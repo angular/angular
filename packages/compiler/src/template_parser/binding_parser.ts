@@ -221,7 +221,7 @@ export class BindingParser {
 
   private _parseBinding(value: string, isHostBinding: boolean, sourceSpan: ParseSourceSpan):
       ASTWithSource {
-    const sourceInfo = sourceSpan.start.toString();
+    const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown)').toString();
 
     try {
       const ast = isHostBinding ?
@@ -343,7 +343,7 @@ export class BindingParser {
   }
 
   private _parseAction(value: string, sourceSpan: ParseSourceSpan): ASTWithSource {
-    const sourceInfo = sourceSpan.start.toString();
+    const sourceInfo = (sourceSpan && sourceSpan.start || '(unknown').toString();
 
     try {
       const ast = this._exprParser.parseAction(value, sourceInfo, this._interpolationConfig);

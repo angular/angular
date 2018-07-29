@@ -6,19 +6,20 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {SimpleChanges} from '../../src/core';
-import {ComponentTemplate, LifecycleHooksFeature, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, text} from '../../src/render3/instructions';
+import {OnDestroy, SimpleChanges} from '../../src/core';
+import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
-import {containerEl, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
+
+import {NgIf} from './common_with_def';
+import {ComponentFixture, containerEl, createComponent, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
 
 describe('lifecycles', () => {
 
   function getParentTemplate(name: string) {
     return (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        elementStart(0, name);
-        elementEnd();
+        element(0, name);
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'val', bind(ctx.val));
@@ -33,9 +34,9 @@ describe('lifecycles', () => {
 
     let Comp = createOnInitComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'div');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'div');
+        { projection(1); }
         elementEnd();
       }
     });
@@ -76,8 +77,7 @@ describe('lifecycles', () => {
          /** <comp [val]="val"></comp> */
          function Template(rf: RenderFlags, ctx: any) {
            if (rf & RenderFlags.Create) {
-             elementStart(0, 'comp');
-             elementEnd();
+             element(0, 'comp');
            }
            if (rf & RenderFlags.Update) {
              elementProperty(0, 'val', bind(ctx.val));
@@ -108,8 +108,7 @@ describe('lifecycles', () => {
 
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
+          element(0, 'parent');
         }
       }
 
@@ -127,10 +126,8 @@ describe('lifecycles', () => {
 
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
-          elementStart(1, 'parent');
-          elementEnd();
+          element(0, 'parent');
+          element(1, 'parent');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
@@ -160,8 +157,7 @@ describe('lifecycles', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'comp');
-                elementEnd();
+                element(0, 'comp');
               }
               embeddedViewEnd();
             }
@@ -232,8 +228,7 @@ describe('lifecycles', () => {
       /** <comp directive></comp> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp', ['dir', '']);
-          elementEnd();
+          element(0, 'comp', ['dir', '']);
         }
       }
 
@@ -249,8 +244,7 @@ describe('lifecycles', () => {
       /** <div directive></div> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dir', '']);
-          elementEnd();
+          element(0, 'div', ['dir', '']);
         }
       }
 
@@ -272,11 +266,9 @@ describe('lifecycles', () => {
 
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp');
-          elementEnd();
+          element(0, 'comp');
           container(1);
-          elementStart(2, 'comp');
-          elementEnd();
+          element(2, 'comp');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
@@ -286,8 +278,7 @@ describe('lifecycles', () => {
             for (let j = 2; j < 5; j++) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'comp');
-                elementEnd();
+                element(0, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val', j);
@@ -317,11 +308,9 @@ describe('lifecycles', () => {
 
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
+          element(0, 'parent');
           container(1);
-          elementStart(2, 'parent');
-          elementEnd();
+          element(2, 'parent');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
@@ -331,8 +320,7 @@ describe('lifecycles', () => {
             for (let j = 2; j < 5; j++) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'parent');
-                elementEnd();
+                element(0, 'parent');
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val', j);
@@ -400,8 +388,7 @@ describe('lifecycles', () => {
       /** <comp></comp> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp');
-          elementEnd();
+          element(0, 'comp');
         }
       }
 
@@ -429,8 +416,7 @@ describe('lifecycles', () => {
 
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
+          element(0, 'parent');
         }
       }
 
@@ -442,8 +428,7 @@ describe('lifecycles', () => {
       /** <comp></comp> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp');
-          elementEnd();
+          element(0, 'comp');
         }
       }
 
@@ -458,8 +443,7 @@ describe('lifecycles', () => {
       /** <comp directive></comp> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp', ['dir', '']);
-          elementEnd();
+          element(0, 'comp', ['dir', '']);
         }
       }
 
@@ -475,8 +459,7 @@ describe('lifecycles', () => {
       /** <div directive></div> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dir', '']);
-          elementEnd();
+          element(0, 'div', ['dir', '']);
         }
       }
 
@@ -500,27 +483,27 @@ describe('lifecycles', () => {
 
     let Comp = createAfterContentInitComp('comp', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        projection(1, 0);
+        projectionDef();
+        projection(0);
       }
     });
 
     let Parent = createAfterContentInitComp('parent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'comp');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'comp');
+        { projection(1); }
         elementEnd();
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(1, 'val', bind(ctx.val));
+        elementProperty(0, 'val', bind(ctx.val));
       }
     }, [Comp]);
 
     let ProjectedComp = createAfterContentInitComp('projected', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        projection(1, 0);
+        projectionDef();
+        projection(0);
       }
     });
 
@@ -858,8 +841,7 @@ describe('lifecycles', () => {
         /** <comp directive></comp> */
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'comp', ['dir', '']);
-            elementEnd();
+            element(0, 'comp', ['dir', '']);
           }
         }
 
@@ -871,8 +853,7 @@ describe('lifecycles', () => {
         /** <div directive></div> */
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div', ['dir', '']);
-            elementEnd();
+            element(0, 'div', ['dir', '']);
           }
         }
 
@@ -893,9 +874,9 @@ describe('lifecycles', () => {
 
     let Comp = createAfterViewInitComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'div');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'div');
+        { projection(1); }
         elementEnd();
       }
     });
@@ -942,8 +923,7 @@ describe('lifecycles', () => {
       /** <comp></comp> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp');
-          elementEnd();
+          element(0, 'comp');
         }
       }
 
@@ -979,8 +959,7 @@ describe('lifecycles', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'comp');
-                elementEnd();
+                element(0, 'comp');
               }
               embeddedViewEnd();
             }
@@ -1008,8 +987,7 @@ describe('lifecycles', () => {
        */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
+          element(0, 'parent');
         }
       }
 
@@ -1027,10 +1005,8 @@ describe('lifecycles', () => {
        */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
-          elementStart(1, 'parent');
-          elementEnd();
+          element(0, 'parent');
+          element(1, 'parent');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
@@ -1051,10 +1027,7 @@ describe('lifecycles', () => {
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'comp');
-          {
-            elementStart(1, 'projected');
-            elementEnd();
-          }
+          { element(1, 'projected'); }
           elementEnd();
         }
       }
@@ -1075,16 +1048,10 @@ describe('lifecycles', () => {
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'comp');
-          {
-            elementStart(1, 'projected');
-            elementEnd();
-          }
+          { element(1, 'projected'); }
           elementEnd();
           elementStart(2, 'comp');
-          {
-            elementStart(3, 'projected');
-            elementEnd();
-          }
+          { element(3, 'projected'); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -1108,10 +1075,7 @@ describe('lifecycles', () => {
       const ParentComp = createAfterViewInitComponent('parent', (rf: RenderFlags, ctx: any) => {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'comp');
-          {
-            elementStart(1, 'projected');
-            elementEnd();
-          }
+          { element(1, 'projected'); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -1126,10 +1090,8 @@ describe('lifecycles', () => {
        */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
-          elementStart(1, 'parent');
-          elementEnd();
+          element(0, 'parent');
+          element(1, 'parent');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
@@ -1151,11 +1113,9 @@ describe('lifecycles', () => {
        */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp');
-          elementEnd();
+          element(0, 'comp');
           container(1);
-          elementStart(2, 'comp');
-          elementEnd();
+          element(2, 'comp');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
@@ -1165,8 +1125,7 @@ describe('lifecycles', () => {
             for (let i = 2; i < 4; i++) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'comp');
-                elementEnd();
+                element(0, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val', i);
@@ -1193,11 +1152,9 @@ describe('lifecycles', () => {
        */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
+          element(0, 'parent');
           container(1);
-          elementStart(2, 'parent');
-          elementEnd();
+          element(2, 'parent');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
@@ -1207,8 +1164,7 @@ describe('lifecycles', () => {
             for (let i = 2; i < 4; i++) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'parent');
-                elementEnd();
+                element(0, 'parent');
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val', i);
@@ -1232,8 +1188,7 @@ describe('lifecycles', () => {
         /** <comp></comp> */
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'comp');
-            elementEnd();
+            element(0, 'comp');
           }
         }
 
@@ -1257,8 +1212,7 @@ describe('lifecycles', () => {
         /** <comp [val]="myVal"></comp> */
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'comp');
-            elementEnd();
+            element(0, 'comp');
           }
           if (rf & RenderFlags.Update) {
             elementProperty(0, 'val', bind(ctx.myVal));
@@ -1282,11 +1236,9 @@ describe('lifecycles', () => {
          */
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'parent');
-            elementEnd();
+            element(0, 'parent');
             container(1);
-            elementStart(2, 'parent');
-            elementEnd();
+            element(2, 'parent');
           }
           if (rf & RenderFlags.Update) {
             elementProperty(0, 'val', 1);
@@ -1296,8 +1248,7 @@ describe('lifecycles', () => {
               for (let i = 2; i < 4; i++) {
                 let rf1 = embeddedViewStart(0);
                 if (rf1 & RenderFlags.Create) {
-                  elementStart(0, 'parent');
-                  elementEnd();
+                  element(0, 'parent');
                 }
                 if (rf1 & RenderFlags.Update) {
                   elementProperty(0, 'val', i);
@@ -1325,8 +1276,7 @@ describe('lifecycles', () => {
         /** <comp directive></comp> */
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'comp', ['dir', '']);
-            elementEnd();
+            element(0, 'comp', ['dir', '']);
           }
         }
 
@@ -1338,8 +1288,7 @@ describe('lifecycles', () => {
         /** <div directive></div> */
         function Template(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'div', ['dir', '']);
-            elementEnd();
+            element(0, 'div', ['dir', '']);
           }
         }
 
@@ -2633,8 +2582,8 @@ describe('lifecycles', () => {
 
     let Comp = createOnDestroyComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        projection(1, 0);
+        projectionDef();
+        projection(0);
       }
     });
     let Parent = createOnDestroyComponent('parent', getParentTemplate('comp'), [Comp]);
@@ -2658,8 +2607,7 @@ describe('lifecycles', () => {
 
     let Grandparent = createOnDestroyComponent('grandparent', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'parent');
-        elementEnd();
+        element(0, 'parent');
       }
     }, [Parent]);
 
@@ -2691,8 +2639,7 @@ describe('lifecycles', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'comp');
-                elementEnd();
+                element(0, 'comp');
               }
               embeddedViewEnd();
             }
@@ -2724,10 +2671,8 @@ describe('lifecycles', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'comp');
-                elementEnd();
-                elementStart(1, 'comp');
-                elementEnd();
+                element(0, 'comp');
+                element(1, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val', bind('1'));
@@ -2764,8 +2709,7 @@ describe('lifecycles', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'parent');
-                elementEnd();
+                element(0, 'parent');
               }
               embeddedViewEnd();
             }
@@ -2799,8 +2743,7 @@ describe('lifecycles', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'grandparent');
-                elementEnd();
+                element(0, 'grandparent');
               }
               embeddedViewEnd();
             }
@@ -2836,16 +2779,10 @@ describe('lifecycles', () => {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'comp');
-                {
-                  elementStart(1, 'projected');
-                  elementEnd();
-                }
+                { element(1, 'projected'); }
                 elementEnd();
                 elementStart(2, 'comp');
-                {
-                  elementStart(3, 'projected');
-                  elementEnd();
-                }
+                { element(3, 'projected'); }
                 elementEnd();
               }
               if (rf1 & RenderFlags.Update) {
@@ -2889,11 +2826,9 @@ describe('lifecycles', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'comp');
-                elementEnd();
+                element(0, 'comp');
                 container(1);
-                elementStart(2, 'comp');
-                elementEnd();
+                element(2, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val', bind('1'));
@@ -2903,8 +2838,7 @@ describe('lifecycles', () => {
                   if (ctx.condition2) {
                     let rf2 = embeddedViewStart(0);
                     if (rf2 & RenderFlags.Create) {
-                      elementStart(0, 'comp');
-                      elementEnd();
+                      element(0, 'comp');
                     }
                     if (rf2 & RenderFlags.Update) {
                       elementProperty(0, 'val', bind('2'));
@@ -2967,11 +2901,9 @@ describe('lifecycles', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'comp');
-                elementEnd();
+                element(0, 'comp');
                 container(1);
-                elementStart(2, 'comp');
-                elementEnd();
+                element(2, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val', bind('1'));
@@ -2981,8 +2913,7 @@ describe('lifecycles', () => {
                   for (let j = 2; j < ctx.len; j++) {
                     let rf2 = embeddedViewStart(0);
                     if (rf2 & RenderFlags.Create) {
-                      elementStart(0, 'comp');
-                      elementEnd();
+                      element(0, 'comp');
                     }
                     if (rf2 & RenderFlags.Update) {
                       elementProperty(0, 'val', bind(j));
@@ -3053,8 +2984,7 @@ describe('lifecycles', () => {
                   text(1, 'Click me');
                 }
                 elementEnd();
-                elementStart(2, 'comp');
-                elementEnd();
+                element(2, 'comp');
                 elementStart(3, 'button');
                 {
                   listener('click', ctx.onClick.bind(ctx));
@@ -3109,8 +3039,7 @@ describe('lifecycles', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'comp', ['dir', '']);
-                elementEnd();
+                element(0, 'comp', ['dir', '']);
               }
               embeddedViewEnd();
             }
@@ -3144,8 +3073,7 @@ describe('lifecycles', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'div', ['dir', '']);
-                elementEnd();
+                element(0, 'div', ['dir', '']);
               }
               embeddedViewEnd();
             }
@@ -3170,16 +3098,15 @@ describe('lifecycles', () => {
 
     const Comp = createOnChangesComponent('comp', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        projectionDef(0);
-        elementStart(1, 'div');
-        { projection(2, 0); }
+        projectionDef();
+        elementStart(0, 'div');
+        { projection(1); }
         elementEnd();
       }
     });
     const Parent = createOnChangesComponent('parent', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'comp');
-        elementEnd();
+        element(0, 'comp');
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'val1', bind(ctx.a));
@@ -3209,8 +3136,8 @@ describe('lifecycles', () => {
           type: Component,
           selectors: [[name]],
           factory: () => new Component(),
-          features: [NgOnChangesFeature({b: 'val2'})],
-          inputs: {a: 'val1', b: 'publicName'}, template,
+          features: [NgOnChangesFeature],
+          inputs: {a: 'val1', b: ['publicName', 'val2']}, template,
           directives: directives
         });
       };
@@ -3230,8 +3157,8 @@ describe('lifecycles', () => {
         type: Directive,
         selectors: [['', 'dir', '']],
         factory: () => new Directive(),
-        features: [NgOnChangesFeature({b: 'val2'})],
-        inputs: {a: 'val1', b: 'publicName'}
+        features: [NgOnChangesFeature],
+        inputs: {a: 'val1', b: ['publicName', 'val2']}
       });
     }
 
@@ -3241,8 +3168,7 @@ describe('lifecycles', () => {
       /** <comp [val1]="val1" [publicName]="val2"></comp> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp');
-          elementEnd();
+          element(0, 'comp');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(ctx.val1));
@@ -3253,11 +3179,10 @@ describe('lifecycles', () => {
       renderToHtml(Template, {val1: '1', val2: 'a'}, defs);
       expect(events).toEqual(['comp=comp val1=1 val2=a - changed=[val1,val2]']);
 
+      events.length = 0;
+
       renderToHtml(Template, {val1: '2', val2: 'b'}, defs);
-      expect(events).toEqual([
-        'comp=comp val1=1 val2=a - changed=[val1,val2]',
-        'comp=comp val1=2 val2=b - changed=[val1,val2]'
-      ]);
+      expect(events).toEqual(['comp=comp val1=2 val2=b - changed=[val1,val2]']);
     });
 
     it('should call parent onChanges before child onChanges', () => {
@@ -3268,8 +3193,7 @@ describe('lifecycles', () => {
 
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
+          element(0, 'parent');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(ctx.val1));
@@ -3294,10 +3218,8 @@ describe('lifecycles', () => {
 
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
-          elementStart(1, 'parent');
-          elementEnd();
+          element(0, 'parent');
+          element(1, 'parent');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
@@ -3334,8 +3256,7 @@ describe('lifecycles', () => {
             if (ctx.condition) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'comp');
-                elementEnd();
+                element(0, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val1', bind(1));
@@ -3431,8 +3352,7 @@ describe('lifecycles', () => {
       /** <comp directive></comp> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp', ['dir', '']);
-          elementEnd();
+          element(0, 'comp', ['dir', '']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
@@ -3456,8 +3376,7 @@ describe('lifecycles', () => {
       /** <div directive></div> */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'div', ['dir', '']);
-          elementEnd();
+          element(0, 'div', ['dir', '']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
@@ -3483,11 +3402,9 @@ describe('lifecycles', () => {
 
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp');
-          elementEnd();
+          element(0, 'comp');
           container(1);
-          elementStart(2, 'comp');
-          elementEnd();
+          element(2, 'comp');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
@@ -3499,8 +3416,7 @@ describe('lifecycles', () => {
             for (let j = 2; j < 5; j++) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'comp');
-                elementEnd();
+                element(0, 'comp');
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val1', bind(j));
@@ -3537,11 +3453,9 @@ describe('lifecycles', () => {
 
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
+          element(0, 'parent');
           container(1);
-          elementStart(2, 'parent');
-          elementEnd();
+          element(2, 'parent');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val1', bind(1));
@@ -3553,8 +3467,7 @@ describe('lifecycles', () => {
             for (let j = 2; j < 5; j++) {
               let rf1 = embeddedViewStart(0);
               if (rf1 & RenderFlags.Create) {
-                elementStart(0, 'parent');
-                elementEnd();
+                element(0, 'parent');
               }
               if (rf1 & RenderFlags.Update) {
                 elementProperty(0, 'val1', bind(j));
@@ -3613,7 +3526,7 @@ describe('lifecycles', () => {
           selectors: [[name]],
           factory: () => new Component(),
           inputs: {val: 'val'}, template,
-          features: [NgOnChangesFeature()],
+          features: [NgOnChangesFeature],
           directives: directives
         });
       };
@@ -3629,10 +3542,8 @@ describe('lifecycles', () => {
        */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp');
-          elementEnd();
-          elementStart(1, 'comp');
-          elementEnd();
+          element(0, 'comp');
+          element(1, 'comp');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
@@ -3662,8 +3573,7 @@ describe('lifecycles', () => {
       /** <comp [val]="val"></comp> */
       const Parent = createAllHooksComponent('parent', (rf: RenderFlags, ctx: any) => {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'comp');
-          elementEnd();
+          element(0, 'comp');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', bind(ctx.val));
@@ -3676,10 +3586,8 @@ describe('lifecycles', () => {
        */
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'parent');
-          elementEnd();
-          elementStart(1, 'parent');
-          elementEnd();
+          element(0, 'parent');
+          element(1, 'parent');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', 1);
@@ -3722,13 +3630,12 @@ describe('lifecycles', () => {
       /** <ng-content></ng-content><view [val]="val"></view> */
       const Parent = createAllHooksComponent('parent', (rf: RenderFlags, ctx: any) => {
         if (rf & RenderFlags.Create) {
-          projectionDef(0);
-          projection(1, 0);
-          elementStart(2, 'view');
-          elementEnd();
+          projectionDef();
+          projection(0);
+          element(1, 'view');
         }
         if (rf & RenderFlags.Update) {
-          elementProperty(2, 'val', bind(ctx.val));
+          elementProperty(1, 'val', bind(ctx.val));
         }
       }, [View]);
 
@@ -3743,16 +3650,10 @@ describe('lifecycles', () => {
       function Template(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'parent');
-          {
-            elementStart(1, 'content');
-            elementEnd();
-          }
+          { element(1, 'content'); }
           elementEnd();
           elementStart(2, 'parent');
-          {
-            elementStart(3, 'content');
-            elementEnd();
-          }
+          { element(3, 'content'); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -3801,6 +3702,62 @@ describe('lifecycles', () => {
 
     });
 
+  });
+
+  describe('non-regression', () => {
+
+    it('should call lifecycle hooks for directives active on <ng-template>', () => {
+      let destroyed = false;
+
+      class OnDestroyDirective implements OnDestroy {
+        ngOnDestroy() { destroyed = true; }
+
+        static ngDirectiveDef = defineDirective({
+          type: OnDestroyDirective,
+          selectors: [['', 'onDestroyDirective', '']],
+          factory: () => new OnDestroyDirective()
+        });
+      }
+
+
+      function conditionTpl(rf: RenderFlags, ctx: Cmpt) {
+        if (rf & RenderFlags.Create) {
+          container(0, cmptTpl, null, [AttributeMarker.SelectOnly, 'onDestroyDirective']);
+        }
+      }
+
+      /**
+       * <ng-template [ngIf]="condition">
+       *  <ng-template onDestroyDirective></ng-template>
+       * </ng-template>
+       */
+      function cmptTpl(rf: RenderFlags, cmpt: Cmpt) {
+        if (rf & RenderFlags.Create) {
+          container(0, conditionTpl, null, [AttributeMarker.SelectOnly, 'ngIf']);
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'ngIf', bind(cmpt.showing));
+        }
+      }
+
+      class Cmpt {
+        showing = true;
+        static ngComponentDef = defineComponent({
+          type: Cmpt,
+          factory: () => new Cmpt(),
+          selectors: [['cmpt']],
+          template: cmptTpl,
+          directives: [NgIf, OnDestroyDirective]
+        });
+      }
+
+      const fixture = new ComponentFixture(Cmpt);
+      expect(destroyed).toBeFalsy();
+
+      fixture.component.showing = false;
+      fixture.update();
+      expect(destroyed).toBeTruthy();
+    });
   });
 
 });

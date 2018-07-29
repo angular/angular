@@ -300,7 +300,7 @@ They are _not inherited_ by any components nested within the template nor by any
 </div>
 
 <!--
-The CLI defines an empty `styles` array when you create the component with the `--inline-styles` flag.
+The CLI defines an empty `styles` array when you create the component with the `--inline-style` flag.
 -->
 그리고 Angular CLI로 컴포넌트를 생성할 때 `--inline-styles` 옵션을 사용하면 `styles` 초기값이 빈 배열로 지정됩니다.
 
@@ -334,10 +334,10 @@ They are _not inherited_ by any components nested within the template nor by any
 
 </div>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
-  You can specify more than one styles file or even a combination of `style` and `styleUrls`.
+  You can specify more than one styles file or even a combination of `styles` and `styleUrls`.
   -->
   `styles`이나 `styleUrls` 프로퍼티에는 한 번에 여러 스타일을 지정하거나 여러 파일을 지정할 수 있습니다.
 
@@ -382,15 +382,11 @@ You can also write `<link>` tags into the component's HTML template.
 <div class="alert is-critical">
 
 <!--
-The link tag's `href` URL must be relative to the
-_**application root**_, not relative to the component file.
--->
-링크 태그의 `href`에서 지정하는 URL은 _**애플리케이션 최상위 폴더**_의 상대주소로 지정되어야 합니다. 컴포넌트의 상대주소가 아닙니다.
-
-<!--
 When building with the CLI, be sure to include the linked style file among the assets to be copied to the server as described in the [CLI documentation](https://github.com/angular/angular-cli/wiki/stories-asset-configuration).
 -->
 Angular CLI가 애플리케이션을 빌드할 때 링크로 연결된 스타일 파일이 `assets` 폴더에 있고 빌드 결과에 제대로 포함되는지 꼭 확인하세요. `assets` 폴더를 활용하는 방법은 [CLI 문서](https://github.com/angular/angular-cli/wiki/stories-asset-configuration)에서 소개합니다.
+
+Once included, the CLI will include the stylesheet, whether the link tag's href URL is relative to the application root or the component file.
 
 </div>
 
@@ -501,15 +497,17 @@ Choose from the following modes:
 지정할 수 있는 뷰 캡슐화 정책은 다음과 같습니다:
 
 <!--
-* `Native` view encapsulation uses the browser's native shadow DOM implementation (see
+* `ShadowDom` view encapsulation uses the browser's native shadow DOM implementation (see
   [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM)
   on the [MDN](https://developer.mozilla.org) site)
   to attach a shadow DOM to the component's host element, and then puts the component
   view inside that shadow DOM. The component's styles are included within the shadow DOM.
 -->
-* `Native` 캡슐화 정책을 사용하면 브라우저의 네이티브 섀도우 DOM 구현 방식을 사용해서 컴포넌트의 호스트 엘리먼트를 구성합니다.
+* `ShadowDom` 캡슐화 정책을 사용하면 브라우저의 네이티브 섀도우 DOM 구현 방식을 사용해서 컴포넌트의 호스트 엘리먼트를 구성합니다.
 컴포넌트 뷰는 이 섀도우 DOM 안에 들어가며, 이 때 컴포넌트의 스타일도 함께 섀도우 DOM에 포함됩니다.
 섀도우 DOM에 대한 자세한 내용은 [MDN](https://developer.mozilla.org) 사이트에서 제공하는 [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM) 문서를 참고하세요.
+
+* `Native` view encapsulation uses a now deprecated version of the browser's native shadow DOM implementation - [learn about the changes](https://hayato.io/2016/shadowdomv1/).
 
 <!--
 * `Emulated` view encapsulation (the default) emulates the behavior of shadow DOM by preprocessing
@@ -537,13 +535,13 @@ To set the components encapsulation mode, use the `encapsulation` property in th
 </code-example>
 
 <!--
-`Native` view encapsulation only works on browsers that have native support
-for shadow DOM (see [Shadow DOM v0](http://caniuse.com/#feat=shadowdom) on the
+`ShadowDom` view encapsulation only works on browsers that have native support
+for shadow DOM (see [Shadow DOM v1](https://caniuse.com/#feat=shadowdomv1) on the
 [Can I use](http://caniuse.com) site). The support is still limited,
 which is why `Emulated` view encapsulation is the default mode and recommended
 in most cases.
 -->
-`Native` 캡슐화 정책은 [Shadow DOM v0](http://caniuse.com/#feat=shadowdom)를 네이티브로 지원하는 브라우저에서만 유효하며, 지원 여부는 [Can I use](http://caniuse.com) 사이트에서 확인할 수 있습니다. 하지만 모든 브라우저가 이 표준을 지원하는 것은 아니기 때문에 Angular의 뷰 캡슐화 정책은 `Emulated`가 기본값이며, 대부분의 경우에 이 모드를 권장합니다.
+`ShadowDom` 캡슐화 정책은 [Shadow DOM v0](http://caniuse.com/#feat=shadowdomv1)를 네이티브로 지원하는 브라우저에서만 유효하며, 지원 여부는 [Can I use](http://caniuse.com) 사이트에서 확인할 수 있습니다. 하지만 모든 브라우저가 이 표준을 지원하는 것은 아니기 때문에 Angular의 뷰 캡슐화 정책은 `Emulated`가 기본값이며, 대부분의 경우에 이 모드를 권장합니다.
 
 <!--
 {@a inspect-generated-css}

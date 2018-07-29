@@ -27,7 +27,7 @@ Transforming a component to a custom element makes all of the required Angular i
 -->
 이렇게 Angular 컴포넌트를 커스텀 엘리먼트로 변환하면, Angular 애플리케이션을 브라우저에서 동작시킬 때 필요한 Angular 요구사항을 모두 만족시킬 수 있습니다. Angular에서 제공하는 커스텀 엘리먼트 변환 방식은 아주 단순하며 직관적이고, 컴포넌트에 정의된 뷰에서 동작하는 변화 감지 메커니즘, 데이터 바인딩, Angular에서 네이티브 HTML에 접근하는 기능을 모두 자동으로 연결합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
     <!--
     We are working on custom elements that can be used by web apps built on other frameworks. 

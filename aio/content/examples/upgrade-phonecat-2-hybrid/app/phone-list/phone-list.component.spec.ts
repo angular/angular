@@ -2,7 +2,7 @@
 // #docregion
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { SpyLocation } from '@angular/common/testing';
 
@@ -15,7 +15,7 @@ class ActivatedRouteMock {
 
 class MockPhone {
   query(): Observable<PhoneData[]> {
-    return Observable.of([
+    return of([
       {name: 'Nexus S', snippet: '', images: []},
       {name: 'Motorola DROID', snippet: '', images: []}
     ]);

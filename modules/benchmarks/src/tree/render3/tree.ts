@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵC as C, ɵE as E, ɵRenderFlags as RenderFlags, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵsn as sn, ɵt as t, ɵv as v} from '@angular/core';
-import {ComponentDef} from '@angular/core/src/render3/interfaces/definition';
+import {ɵC as C, ɵE as E, ɵRenderFlags as RenderFlags, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵs as s, ɵsa as sa, ɵsm as sm, ɵsp as sp, ɵt as t, ɵv as v} from '@angular/core';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
 
@@ -31,23 +30,25 @@ export function detectChanges(component: TreeComponent) {
   numberOfChecksEl.textContent = `${detectChangesRuns}`;
 }
 
+const c0 = ['background-color'];
 export class TreeComponent {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
-  static ngComponentDef: ComponentDef<TreeComponent> = defineComponent({
+  static ngComponentDef = defineComponent({
     type: TreeComponent,
     selectors: [['tree']],
     template: function(rf: RenderFlags, ctx: TreeComponent) {
       if (rf & RenderFlags.Create) {
         E(0, 'span');
+        s(null, c0);
         { T(1); }
         e();
         C(2);
         C(3);
       }
       if (rf & RenderFlags.Update) {
-        sn(0, 'background-color', b(ctx.data.depth % 2 ? '' : 'grey'));
+        sp(0, 0, ctx.data.depth % 2 ? '' : 'grey');
         t(1, i1(' ', ctx.data.value, ' '));
         cR(2);
         {
@@ -95,7 +96,7 @@ export class TreeFunction {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
-  static ngComponentDef: ComponentDef<TreeFunction> = defineComponent({
+  static ngComponentDef = defineComponent({
     type: TreeFunction,
     selectors: [['tree']],
     template: function(rf: RenderFlags, ctx: TreeFunction) {
@@ -107,11 +108,13 @@ export class TreeFunction {
   });
 }
 
+const c1 = ['background-color'];
 export function TreeTpl(rf: RenderFlags, ctx: TreeNode) {
   if (rf & RenderFlags.Create) {
     E(0, 'tree');
     {
       E(1, 'span');
+      s(null, c1);
       { T(2); }
       e();
       C(3);
@@ -120,7 +123,7 @@ export function TreeTpl(rf: RenderFlags, ctx: TreeNode) {
     e();
   }
   if (rf & RenderFlags.Update) {
-    sn(1, 'background-color', b(ctx.depth % 2 ? '' : 'grey'));
+    sp(1, 0, ctx.depth % 2 ? '' : 'grey');
     t(2, i1(' ', ctx.value, ' '));
     cR(3);
     {

@@ -59,7 +59,7 @@ export declare const Attribute: AttributeDecorator;
 
 export declare enum ChangeDetectionStrategy {
     OnPush = 0,
-    Default = 1,
+    Default = 1
 }
 
 export declare abstract class ChangeDetectorRef {
@@ -86,6 +86,7 @@ export declare class Compiler {
     compileModuleAndAllComponentsSync<T>(moduleType: Type<T>): ModuleWithComponentFactories<T>;
     compileModuleAsync<T>(moduleType: Type<T>): Promise<NgModuleFactory<T>>;
     compileModuleSync<T>(moduleType: Type<T>): NgModuleFactory<T>;
+    getModuleId(moduleType: Type<any>): string | undefined;
 }
 
 /** @experimental */
@@ -113,17 +114,17 @@ export interface ComponentDecorator {
 }
 
 export declare abstract class ComponentFactory<C> {
-    readonly abstract componentType: Type<any>;
-    readonly abstract inputs: {
+    abstract readonly componentType: Type<any>;
+    abstract readonly inputs: {
         propName: string;
         templateName: string;
     }[];
-    readonly abstract ngContentSelectors: string[];
-    readonly abstract outputs: {
+    abstract readonly ngContentSelectors: string[];
+    abstract readonly outputs: {
         propName: string;
         templateName: string;
     }[];
-    readonly abstract selector: string;
+    abstract readonly selector: string;
     abstract create(injector: Injector, projectableNodes?: any[][], rootSelectorOrNode?: string | any, ngModule?: NgModuleRef<any>): ComponentRef<C>;
 }
 
@@ -133,14 +134,19 @@ export declare abstract class ComponentFactoryResolver {
 }
 
 export declare abstract class ComponentRef<C> {
-    readonly abstract changeDetectorRef: ChangeDetectorRef;
-    readonly abstract componentType: Type<any>;
-    readonly abstract hostView: ViewRef;
-    readonly abstract injector: Injector;
-    readonly abstract instance: C;
-    readonly abstract location: ElementRef;
+    abstract readonly changeDetectorRef: ChangeDetectorRef;
+    abstract readonly componentType: Type<any>;
+    abstract readonly hostView: ViewRef;
+    abstract readonly injector: Injector;
+    abstract readonly instance: C;
+    abstract readonly location: ElementRef;
     abstract destroy(): void;
     abstract onDestroy(callback: Function): void;
+}
+
+/** @experimental */
+export interface ConstructorSansProvider {
+    deps?: any[];
 }
 
 export declare const ContentChild: ContentChildDecorator;
@@ -168,7 +174,7 @@ export interface ContentChildrenDecorator {
 }
 
 /** @experimental */
-export declare function createInjector(defType: any, parent?: Injector | null): Injector;
+export declare function createInjector(defType: any, parent?: Injector | null, additionalProviders?: StaticProvider[] | null): Injector;
 
 /** @experimental */
 export declare function createPlatform(injector: Injector): PlatformRef;
@@ -274,8 +280,8 @@ export declare class ElementRef<T = any> {
 
 /** @experimental */
 export declare abstract class EmbeddedViewRef<C> extends ViewRef {
-    readonly abstract context: C;
-    readonly abstract rootNodes: any[];
+    abstract readonly context: C;
+    abstract readonly rootNodes: any[];
 }
 
 export declare function enableProdMode(): void;
@@ -372,7 +378,7 @@ export declare const enum InjectFlags {
     Host = 1,
     Self = 2,
     SkipSelf = 4,
-    Optional = 8,
+    Optional = 8
 }
 
 export declare class InjectionToken<T> {
@@ -462,10 +468,10 @@ export interface KeyValueChanges<K, V> {
 }
 
 export interface KeyValueDiffer<K, V> {
-    diff(object: Map<K, V>): KeyValueChanges<K, V>;
+    diff(object: Map<K, V>): KeyValueChanges<K, V> | null;
     diff(object: {
         [key: string]: V;
-    }): KeyValueChanges<string, V>;
+    }): KeyValueChanges<string, V> | null;
 }
 
 export interface KeyValueDifferFactory {
@@ -488,7 +494,7 @@ export declare const LOCALE_ID: InjectionToken<string>;
 export declare enum MissingTranslationStrategy {
     Error = 0,
     Warning = 1,
-    Ignore = 2,
+    Ignore = 2
 }
 
 /** @experimental */
@@ -498,8 +504,8 @@ export declare class ModuleWithComponentFactories<T> {
     constructor(ngModuleFactory: NgModuleFactory<T>, componentFactories: ComponentFactory<any>[]);
 }
 
-export interface ModuleWithProviders {
-    ngModule: Type<any>;
+export interface ModuleWithProviders<T = any> {
+    ngModule: Type<T>;
     providers?: Provider[];
 }
 
@@ -509,7 +515,7 @@ export declare const NgModule: NgModuleDecorator;
 
 /** @experimental */
 export declare abstract class NgModuleFactory<T> {
-    readonly abstract moduleType: Type<T>;
+    abstract readonly moduleType: Type<T>;
     abstract create(parentInjector: Injector | null): NgModuleRef<T>;
 }
 
@@ -518,9 +524,9 @@ export declare abstract class NgModuleFactoryLoader {
 }
 
 export declare abstract class NgModuleRef<T> {
-    readonly abstract componentFactoryResolver: ComponentFactoryResolver;
-    readonly abstract injector: Injector;
-    readonly abstract instance: T;
+    abstract readonly componentFactoryResolver: ComponentFactoryResolver;
+    abstract readonly injector: Injector;
+    abstract readonly instance: T;
     abstract destroy(): void;
     abstract onDestroy(callback: () => void): void;
 }
@@ -541,7 +547,7 @@ export declare class NgZone {
     readonly onMicrotaskEmpty: EventEmitter<any>;
     readonly onStable: EventEmitter<any>;
     readonly onUnstable: EventEmitter<any>;
-    constructor({enableLongStackTrace}: {
+    constructor({ enableLongStackTrace }: {
         enableLongStackTrace?: boolean;
     });
     run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
@@ -609,7 +615,7 @@ export interface Predicate<T> {
     (value: T): boolean;
 }
 
-export declare type Provider = TypeProvider | ValueProvider | ClassProvider | ExistingProvider | FactoryProvider | any[];
+export declare type Provider = TypeProvider | ValueProvider | ClassProvider | ConstructorProvider | ExistingProvider | FactoryProvider | any[];
 
 export declare abstract class Query {
 }
@@ -636,7 +642,7 @@ export declare class QueryList<T> {
 
 /** @deprecated */
 export declare abstract class ReflectiveInjector implements Injector {
-    readonly abstract parent: Injector | null;
+    abstract readonly parent: Injector | null;
     abstract createChildFromResolved(providers: ResolvedReflectiveProvider[]): ReflectiveInjector;
     abstract get(token: any, notFoundValue?: any): any;
     abstract instantiateResolved(provider: ResolvedReflectiveProvider): any;
@@ -693,7 +699,7 @@ export declare abstract class Renderer {
 
 /** @experimental */
 export declare abstract class Renderer2 {
-    readonly abstract data: {
+    abstract readonly data: {
         [key: string]: any;
     };
     destroyNode: ((node: any) => void) | null;
@@ -729,7 +735,7 @@ export declare abstract class RendererFactory2 {
 /** @experimental */
 export declare enum RendererStyleFlags2 {
     Important = 1,
-    DashCase = 2,
+    DashCase = 2
 }
 
 /** @experimental */
@@ -747,8 +753,8 @@ export declare class ResolvedReflectiveFactory {
     dependencies: ReflectiveDependency[];
     factory: Function;
     constructor(
-        factory: Function,
-        dependencies: ReflectiveDependency[]);
+    factory: Function,
+    dependencies: ReflectiveDependency[]);
 }
 
 /** @experimental */
@@ -781,7 +787,7 @@ export declare enum SecurityContext {
     STYLE = 2,
     SCRIPT = 3,
     URL = 4,
-    RESOURCE_URL = 5,
+    RESOURCE_URL = 5
 }
 
 export declare const Self: SelfDecorator;
@@ -828,7 +834,7 @@ export declare abstract class SystemJsNgModuleLoaderConfig {
 }
 
 export declare abstract class TemplateRef<C> {
-    readonly abstract elementRef: ElementRef;
+    abstract readonly elementRef: ElementRef;
     abstract createEmbeddedView(context: C): EmbeddedViewRef<C>;
 }
 
@@ -913,10 +919,10 @@ export interface ViewChildrenDecorator {
 }
 
 export declare abstract class ViewContainerRef {
-    readonly abstract element: ElementRef;
-    readonly abstract injector: Injector;
-    readonly abstract length: number;
-    readonly abstract parentInjector: Injector;
+    abstract readonly element: ElementRef;
+    abstract readonly injector: Injector;
+    abstract readonly length: number;
+    abstract readonly parentInjector: Injector;
     abstract clear(): void;
     abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;
@@ -932,12 +938,13 @@ export declare enum ViewEncapsulation {
     Emulated = 0,
     Native = 1,
     None = 2,
+    ShadowDom = 3
 }
 
 export declare abstract class ViewRef extends ChangeDetectorRef {
-    readonly abstract destroyed: boolean;
+    abstract readonly destroyed: boolean;
     abstract destroy(): void;
-    abstract onDestroy(callback: Function): any;
+    abstract onDestroy(callback: Function): any /** TODO #9100 */;
 }
 
 export declare class WrappedValue {

@@ -5,6 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {assertLessThan} from './assert';
+import {LElementNode} from './interfaces/node';
+import {HEADER_OFFSET, LViewData} from './interfaces/view';
+
 
 /**
 * Must use this method for CD (instead of === ) since NaN !== NaN
@@ -55,4 +59,28 @@ export function flatten(list: any[]): any[] {
   }
 
   return result;
+}
+
+/** Retrieves a value from any `LViewData`. */
+export function loadInternal<T>(index: number, arr: LViewData): T {
+  ngDevMode && assertDataInRangeInternal(index + HEADER_OFFSET, arr);
+  return arr[index + HEADER_OFFSET];
+}
+
+export function assertDataInRangeInternal(index: number, arr: any[]) {
+  assertLessThan(index, arr ? arr.length : 0, 'index expected to be a valid data index');
+}
+
+/** Retrieves an element value from the provided `viewData`.
+  *
+  * Elements that are read may be wrapped in a style context,
+  * therefore reading the value may involve unwrapping that.
+  */
+export function loadElementInternal(index: number, arr: LViewData): LElementNode {
+  const value = loadInternal<LElementNode>(index, arr);
+  return readElementValue(value);
+}
+
+export function readElementValue(value: LElementNode | any[]): LElementNode {
+  return (Array.isArray(value) ? (value as any as any[])[0] : value) as LElementNode;
 }

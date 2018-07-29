@@ -54,7 +54,7 @@ if they are not already on your machine.
 -->
 **[Node.js® 와 npm](https://nodejs.org/en/download/)**이 설치되어 있지 않다면 이 프로그램들을 설치합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 **Verify that you are running at least Node.js version `8.x` or greater and npm version `5.x` or greater**
@@ -108,7 +108,7 @@ The Angular CLI installs the necessary npm packages, creates the project files, 
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -808,7 +808,7 @@ These files go in the root folder next to `src/`.
   </tr>
 </table>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 ### Next Step

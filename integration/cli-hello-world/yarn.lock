@@ -128,7 +128,7 @@
     chokidar "^1.4.2"
     minimist "^1.2.0"
     reflect-metadata "^0.1.2"
-    tsickle "^0.27.2"
+    tsickle "^0.29.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
   version "6.0.0-rc.5"
@@ -5599,14 +5599,8 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
-rxjs@^6.0.0-beta.3, rxjs@^6.0.0-turbo-rc.4:
+rxjs@^6.0.0-beta.3, rxjs@^6.0.0-turbo-rc.4, "rxjs@file:../../node_modules/rxjs":
   version "6.0.0"
-  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.0.0.tgz#d647e029b5854617f994c82fe57a4c6747b352da"
-  dependencies:
-    tslib "^1.9.0"
-
-"rxjs@file:../../node_modules/rxjs":
-  version "6.0.0-uncanny-rc.7"
   dependencies:
     tslib "^1.9.0"
 
@@ -6538,9 +6532,9 @@ tsconfig@^7.0.0:
     strip-bom "^3.0.0"
     strip-json-comments "^2.0.0"
 
-tsickle@^0.27.2:
-  version "0.27.2"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.27.2.tgz#f33d46d046f73dd5c155a37922e422816e878736"
+tsickle@^0.29.0:
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.29.0.tgz#812806554bb46c1aa16eb0fe2a051da95ca8f5a4"
   dependencies:
     minimist "^1.2.0"
     mkdirp "^0.5.1"

@@ -27,7 +27,10 @@ ng_package(
         "//packages/platform-browser-dynamic/testing:package.json",
     ],
     entry_point = "packages/platform-browser-dynamic/index.js",
-    tags = ["release-with-framework"],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
     deps = [
         ":platform-browser-dynamic",
         "//packages/platform-browser-dynamic/testing",

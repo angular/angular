@@ -138,7 +138,8 @@ import {TestBed} from '../../testing';
             [transition('* => *', [style({height: '!'}), animate(1000, style({height: '*'}))])])]
       })
       class Cmp {
-        public exp: number;
+        // TODO(issue/24571): remove '!'.
+        public exp !: number;
         public items = [0, 1, 2, 3, 4];
       }
 
@@ -358,7 +359,8 @@ import {TestBed} from '../../testing';
         ]
       })
       class Cmp {
-        public exp: string;
+        // TODO(issue/24571): remove '!'.
+        public exp !: string;
       }
 
       TestBed.configureTestingModule({declarations: [Cmp]});
@@ -411,7 +413,8 @@ import {TestBed} from '../../testing';
            ]
          })
          class Cmp {
-           public exp: string;
+           // TODO(issue/24571): remove '!'.
+           public exp !: string;
            public items: any[] = [];
          }
 

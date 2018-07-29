@@ -108,10 +108,14 @@ DOM event object in the `$event` variable which this code passes as a parameter 
 
 <!--
 The properties of an `$event` object vary depending on the type of DOM event. For example,
+<<<<<<< HEAD
 a mouse event includes different information than a input box editing event.
 -->
 `$event` 객체의 프로퍼티는 발생하는 DOM 이벤트에 따라 달라집니다.
 그래서 마우스 이벤트와 입력 필드에서 발생하는 이벤트의 구성은 다릅니다.
+=======
+a mouse event includes different information than an input box editing event.
+>>>>>>> 6a797d540169ce979048e30abc619d4c6eaf7b1d
 
 <!--
 All [standard DOM event objects](https://developer.mozilla.org/en-US/docs/Web/API/Event)
@@ -150,7 +154,7 @@ Here's what the UI displays:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--
@@ -274,7 +278,7 @@ Type something in the input box, and watch the display update with each keystrok
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--

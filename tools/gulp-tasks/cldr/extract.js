@@ -454,7 +454,7 @@ function getNumberSettings(localeData) {
     symbols.timeSeparator,
   ];
 
-  if (symbols.currencyDecimal) {
+  if (symbols.currencyDecimal || symbols.currencyGroup) {
     symbolValues.push(symbols.currencyDecimal);
   }
 

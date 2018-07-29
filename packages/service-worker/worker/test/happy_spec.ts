@@ -24,6 +24,9 @@ const dist =
         .addFile('/baz.txt', 'this is baz')
         .addFile('/qux.txt', 'this is qux')
         .addFile('/quux.txt', 'this is quux')
+        .addFile('/quuux.txt', 'this is quuux')
+        .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
+        .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
         .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
         .build();
 
@@ -34,6 +37,9 @@ const distUpdate =
         .addFile('/baz.txt', 'this is baz v2')
         .addFile('/qux.txt', 'this is qux v2')
         .addFile('/quux.txt', 'this is quux v2')
+        .addFile('/quuux.txt', 'this is quuux v2')
+        .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
+        .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
         .addUnhashedFile('/unhashed/a.txt', 'this is unhashed v2', {'Cache-Control': 'max-age=10'})
         .addUnhashedFile('/ignored/file1', 'this is not handled by the SW')
         .addUnhashedFile('/ignored/dir/file2', 'this is not handled by the SW either')
@@ -92,7 +98,12 @@ const manifest: Manifest = {
       name: 'lazy_prefetch',
       installMode: 'lazy',
       updateMode: 'prefetch',
-      urls: ['/quux.txt'],
+      urls: [
+        '/quux.txt',
+        '/quuux.txt',
+        '/lazy/unchanged1.txt',
+        '/lazy/unchanged2.txt',
+      ],
       patterns: [],
     }
   ],
@@ -134,7 +145,12 @@ const manifestUpdate: Manifest = {
       name: 'lazy_prefetch',
       installMode: 'lazy',
       updateMode: 'prefetch',
-      urls: ['/quux.txt'],
+      urls: [
+        '/quux.txt',
+        '/quuux.txt',
+        '/lazy/unchanged1.txt',
+        '/lazy/unchanged2.txt',
+      ],
       patterns: [],
     }
   ],
@@ -528,14 +544,45 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
     async_it('prefetches updates to lazy cache when set', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
-      expect(await makeRequest(scope, '/quux.txt')).toEqual('this is quux');
 
+      // Fetch some files from the `lazy_prefetch` asset group.
+      expect(await makeRequest(scope, '/quux.txt')).toEqual('this is quux');
+      expect(await makeRequest(scope, '/lazy/unchanged1.txt')).toEqual('this is unchanged (1)');
+
+      // Install update.
       scope.updateServerState(serverUpdate);
-      expect(await driver.checkForUpdate()).toEqual(true);
+      expect(await driver.checkForUpdate()).toBe(true);
+
+      // Previously requested and changed: Fetch from network.
       serverUpdate.assertSawRequestFor('/quux.txt');
+      // Never requested and changed: Don't fetch.
+      serverUpdate.assertNoRequestFor('/quuux.txt');
+      // Previously requested and unchanged: Fetch from cache.
+      serverUpdate.assertNoRequestFor('/lazy/unchanged1.txt');
+      // Never requested and unchanged: Don't fetch.
+      serverUpdate.assertNoRequestFor('/lazy/unchanged2.txt');
+
       serverUpdate.clearRequests();
+
+      // Update client.
       await driver.updateClient(await scope.clients.get('default'));
-      expect(await makeRequest(scope, '/quux.txt')).toEqual('this is quux v2');
+
+      // Already cached.
+      expect(await makeRequest(scope, '/quux.txt')).toBe('this is quux v2');
+      serverUpdate.assertNoOtherRequests();
+
+      // Not cached: Fetch from network.
+      expect(await makeRequest(scope, '/quuux.txt')).toBe('this is quuux v2');
+      serverUpdate.assertSawRequestFor('/quuux.txt');
+
+      // Already cached (copied from old cache).
+      expect(await makeRequest(scope, '/lazy/unchanged1.txt')).toBe('this is unchanged (1)');
+      serverUpdate.assertNoOtherRequests();
+
+      // Not cached: Fetch from network.
+      expect(await makeRequest(scope, '/lazy/unchanged2.txt')).toBe('this is unchanged (2)');
+      serverUpdate.assertSawRequestFor('/lazy/unchanged2.txt');
+
       serverUpdate.assertNoOtherRequests();
     });
 

@@ -21,7 +21,7 @@ that are important to Angular developers, including details about the following 
 Typically, you add a TypeScript configuration file called `tsconfig.json` to your project to
 guide the compiler as it generates JavaScript files.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -132,7 +132,7 @@ QuickStart identifies two *typings*, or `d.ts`, files:
 * [jasmine](http://jasmine.github.io/) typings for the Jasmine test framework.
 
 * [node](https://www.npmjs.com/package/@types/node) for code that references objects in the *Node.js®* environment;
-you can view an example in the [webpack](guide/webpack) page.
+
 
 QuickStart doesn't require these typings but many of the samples do.
 

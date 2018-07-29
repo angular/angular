@@ -106,8 +106,9 @@ import {TestBed} from '@angular/core/testing';
       // #docregion OnChanges
       @Component({selector: 'my-cmp', template: `...`})
       class MyComponent implements OnChanges {
+        // TODO(issue/24571): remove '!'.
         @Input()
-        prop: number;
+        prop !: number;
 
         ngOnChanges(changes: SimpleChanges) {
           // changes.prop contains the old and the new value...

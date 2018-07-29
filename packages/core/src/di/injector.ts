@@ -32,6 +32,10 @@ export const INJECTOR = new InjectionToken<Injector>('INJECTOR');
 export class NullInjector implements Injector {
   get(token: any, notFoundValue: any = _THROW_IF_NOT_FOUND): any {
     if (notFoundValue === _THROW_IF_NOT_FOUND) {
+      // Intentionally left behind: With dev tools open the debugger will stop here. There is no
+      // reason why correctly written application should cause this exception.
+      // TODO(misko): uncomment the next line once `ngDevMode` works with closure.
+      // if(ngDevMode) debugger;
       throw new Error(`NullInjectorError: No provider for ${stringify(token)}!`);
     }
     return notFoundValue;
@@ -39,23 +43,17 @@ export class NullInjector implements Injector {
 }
 
 /**
- * @usageNotes
- * ```
- * const injector: Injector = ...;
- * injector.get(...);
- * ```
- *
- * @description
- *
  * Concrete injectors implement this interface.
  *
- * For more details, see the {@linkDocs guide/dependency-injection "Dependency Injection Guide"}.
+ * For more details, see the ["Dependency Injection Guide"](guide/dependency-injection).
  *
+ * @usageNotes
  * ### Example
  *
  * {@example core/di/ts/injector_spec.ts region='Injector'}
  *
  * `Injector` returns itself when given `Injector` as a token:
+ *
  * {@example core/di/ts/injector_spec.ts region='injectInjector'}
  *
  *
@@ -66,10 +64,8 @@ export abstract class Injector {
 
   /**
    * Retrieves an instance from the injector based on the provided token.
-   * If not found:
-   * - Throws an error if no `notFoundValue` that is not equal to
-   * Injector.THROW_IF_NOT_FOUND is given
-   * - Returns the `notFoundValue` otherwise
+   * @returns The instance from the injector if defined, otherwise the `notFoundValue`.
+   * @throws When the `notFoundValue` is `undefined` or `Injector.THROW_IF_NOT_FOUND`.
    */
   abstract get<T>(token: Type<T>|InjectionToken<T>, notFoundValue?: T, flags?: InjectFlags): T;
   /**
@@ -88,6 +84,7 @@ export abstract class Injector {
   /**
    * Create a new Injector which is configure using `StaticProvider`s.
    *
+   * @usageNotes
    * ### Example
    *
    * {@example core/di/ts/provider_spec.ts region='ConstructorProvider'}
@@ -446,7 +443,10 @@ export function setCurrentInjector(injector: Injector | null | undefined): Injec
  * Injects a token from the currently active injector.
  *
  * This function must be used in the context of a factory function such as one defined for an
- * `InjectionToken`, and will throw an error if not called from such a context. For example:
+ * `InjectionToken`, and will throw an error if not called from such a context.
+ *
+ * @usageNotes
+ * ### Example
  *
  * {@example core/di/ts/injector_spec.ts region='ShakeableInjectionToken'}
  *
@@ -487,11 +487,11 @@ export function injectArgs(types: (Type<any>| InjectionToken<any>| any[])[]): an
 
       for (let j = 0; j < arg.length; j++) {
         const meta = arg[j];
-        if (meta instanceof Optional || meta.__proto__.ngMetadataName === 'Optional') {
+        if (meta instanceof Optional || meta.ngMetadataName === 'Optional') {
           flags |= InjectFlags.Optional;
-        } else if (meta instanceof SkipSelf || meta.__proto__.ngMetadataName === 'SkipSelf') {
+        } else if (meta instanceof SkipSelf || meta.ngMetadataName === 'SkipSelf') {
           flags |= InjectFlags.SkipSelf;
-        } else if (meta instanceof Self || meta.__proto__.ngMetadataName === 'Self') {
+        } else if (meta instanceof Self || meta.ngMetadataName === 'Self') {
           flags |= InjectFlags.Self;
         } else if (meta instanceof Inject) {
           type = meta.token;

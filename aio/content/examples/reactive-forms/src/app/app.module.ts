@@ -1,4 +1,5 @@
 // #docplaster
+<<<<<<< HEAD
 // #docregion
 // #docregion v1
 import { NgModule }            from '@angular/core';
@@ -13,33 +14,38 @@ import { HeroDetailComponent } from './hero-detail/hero-detail.component';
 import { HeroListComponent }   from './hero-list/hero-list.component';
 import { HeroService }         from './hero.service';
 // #docregion v1
+=======
+import { BrowserModule } from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+// #docregion imports
+import { ReactiveFormsModule } from '@angular/forms';
 
+// #enddocregion imports
+import { AppComponent } from './app.component';
+import { NameEditorComponent } from './name-editor/name-editor.component';
+import { ProfileEditorComponent } from './profile-editor/profile-editor.component';
+>>>>>>> 6a797d540169ce979048e30abc619d4c6eaf7b1d
+
+// #docregion imports
 @NgModule({
+// #enddocregion imports
   declarations: [
     AppComponent,
-    HeroDetailComponent,
-// #enddocregion v1
-    HeroListComponent // <-- HeroListComponent를 등록합니다.
-// #docregion v1
+    NameEditorComponent,
+    ProfileEditorComponent
   ],
- // #enddocregion hero-service-list
+// #docregion imports
   imports: [
+// #enddocregion imports
     BrowserModule,
-    ReactiveFormsModule // <-- #2 @NgModule imports 목록에 추가합니다.
+// #docregion imports
+    // other imports ...
+    ReactiveFormsModule
   ],
-  // #enddocregion v1
-  // export for the DemoModule
-  // #docregion hero-service-list
-  // ...
-  exports: [
-    AppComponent,
-    HeroDetailComponent,
-    HeroListComponent // <-- HeroListComponent를 모듈 외부로 공개합니다.
-  ],
-  providers: [ HeroService ], // <-- HeroService의 프로바이더를 등록합니다.
-// #enddocregion hero-service-list
-// #docregion v1
-  bootstrap: [ AppComponent ]
+// #enddocregion imports
+  providers: [],
+  bootstrap: [AppComponent]
+// #docregion imports
 })
 export class AppModule { }
-// #enddocregion v1
+// #enddocregion imports

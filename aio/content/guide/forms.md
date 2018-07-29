@@ -61,7 +61,7 @@ the form-specific directives and techniques described in this page.
 -->
 간단한 폼은 Angular [템플릿 문법](guide/template-syntax)을 활용해서 템플릿만으로도 작성할 수 있습니다. 템플릿 기반 폼에 활용되는 디렉티브와 테크닉을 알아봅시다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   You can also use a reactive (or model-driven) approach to build forms.
@@ -117,7 +117,7 @@ Note that the *Submit* button is disabled, and the "required" bar to the left of
 -->
 *Submit* 버튼이 비활성화 된 것도 확인해 보세요. 그리고 필수 입력 필드 왼쪽에 있던 녹색 막대는 빨간색으로 변경됩니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   You can customize the colors and location of the "required" bar with standard CSS.
@@ -265,7 +265,8 @@ nothing to distinguish it from any component you've written before.
 Understanding this component requires only the Angular concepts covered in previous pages.
 
 * The code imports the Angular core library and the `Hero` model you just created.
-* The `@Component` selector value of "hero-form" means you can drop this form in a parent template with a `<hero-form>` tag.
+* The `@Component` selector value of "app-hero-form" means you can drop this form in a parent
+template with a `<app-hero-form>` tag.
 * The `templateUrl` property points to a separate file for the template HTML.
 * You defined dummy data for `model` and `powers`, as befits a demo.
 
@@ -316,7 +317,7 @@ Update it with the following:
 
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   There are two changes:
@@ -361,7 +362,7 @@ Replace the contents of its template with the following:
 
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   There are only two changes.
@@ -409,7 +410,7 @@ You added a *Submit* button at the bottom with some classes on it for styling.
 
 *아직까지 Angular와 관련된 내용은 없습니다*. 바인딩이나 디렉티브도 사용되지 않았고 레이아웃만 작성했습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   In template driven forms, if you've imported `FormsModule`, you don't have to do anything
@@ -533,7 +534,7 @@ Find the `<input>` tag for *Name* and update it like this:
 
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   You added a diagnostic interpolation after the input tag
@@ -565,7 +566,7 @@ The variable `heroForm` is now a reference to the `NgForm` directive that govern
 -->
 변수 `heroForm`는 이제 폼 전체를 표현하는 `NgForm`디렉티브를 가리킵니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   {@a ngForm}
 
@@ -615,7 +616,7 @@ back again.
 -->
 템플릿에 추가한 디버그용 구문을 활용하면 입력 필드의 값이 모델로 반영되고, 이 값이 다시 화면에 반영되는 것을 확인할 수 있습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   That's *two-way data binding*.
@@ -636,7 +637,7 @@ Defining a `name` attribute is a requirement when using `[(ngModel)]` in combina
 이 예제에서는 `<input>` 태그에 `name="name"` 이라는 어트리뷰트를 추가했는데, 이 어트리뷰트는 히어로의 이름과 연결됩니다. 어디에서도 마찬가지지만, 필드 이름은 그 자체로 의미를 설명할 수 있도록 지정하는 것이 좋습니다.
 이제 폼에 `[(ngModel)]`을 사용하기 때문에 `name` 어트리뷰트는 꼭 지정해야 합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   Internally, Angular creates `FormControl` instances and
@@ -666,7 +667,7 @@ After revision, the core of the form should look like this:
 
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   * Each input element has an `id` property that is used by the `label` element's `for` attribute
@@ -936,7 +937,7 @@ Here you created a variable called `name` and gave it the value "ngModel".
 템플릿 참조 변수는 입력 필드에 연결된 Angular 폼 컨트롤을 템플릿 안에서 접근하기 위해 필요합니다.
 위 코드에서는 이 변수를 `name`으로 선언했으며, "ngModel"을 그대로 연결했습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   Why "ngModel"?
@@ -1142,7 +1143,7 @@ Submitting the form isn't terribly dramatic at the moment.
 -->
 아직까지 폼 제출 기능은 그렇게 복잡하지 않습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   An unsurprising observation for a demo. To be honest,

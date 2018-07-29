@@ -110,7 +110,7 @@ The CLI creates `src/app/highlight.directive.ts`, a corresponding test file (`..
 -->
 이 명령을 실행하면 CLI가 `src/app/highlight.directive.ts` 파일과 테스트 파일인 `.../spec.ts` 파일을 함께 생성하고 최상위 모듈 `AppModule`에 이 디렉티브 클래스를 자동으로 추가합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 _Directives_ must be declared in [Angular Modules](guide/ngmodules) in the same manner as _components_.
@@ -149,7 +149,7 @@ The _attribute selector_ pattern explains the name of this kind of directive.
 -->
 따라서 _어트리뷰트 셀렉터_는 디렉티브의 동작을 적절하게 표현할 수 있는 이름으로 지정하는 것이 좋습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 #### Why not "highlight"?
@@ -196,7 +196,7 @@ The `import` statement specifies an additional `ElementRef` symbol from the Angu
 이 때 `ElementRef` 심볼을 의존성으로 주입받기 위해 `import` 키워드를 사용해서 Angular `core` 라이브러리를 불러왔습니다:
 
 <!--
-You use the `ElementRef`in the directive's constructor
+You use the `ElementRef` in the directive's constructor
 to [inject](guide/dependency-injection) a reference to the host DOM element, 
 the element to which you applied `appHighlight`.
 -->
@@ -287,7 +287,7 @@ element that hosts an attribute directive, the `<p>` in this case.
 -->
 `@HostListener` 데코레이터를 사용하면 DOM 엘리먼트에서 발생하는 이벤트를 구독할 수 있습니다. 이 예제 코드의 경우에는 `<p>` 엘리먼트가 해당됩니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 Of course you could reach into the DOM with standard JavaScript and attach event listeners manually.

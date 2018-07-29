@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {ApplicationRef, Compiler, Component, ComponentFactory, ComponentRef, Injector, NgModule, Testability, TestabilityRegistry} from '@angular/core';
-import {TestBed, getTestBed, inject} from '@angular/core/testing';
+import {Compiler, Component, ComponentFactory, Injector, NgModule, TestabilityRegistry} from '@angular/core';
+import {TestBed} from '@angular/core/testing';
 import * as angular from '@angular/upgrade/src/common/angular1';
 import {DowngradeComponentAdapter, groupNodesBySelector} from '@angular/upgrade/src/common/downgrade_component_adapter';
 
@@ -82,6 +82,7 @@ withEachNg1Version(() => {
       let adapter: DowngradeComponentAdapter;
       let content: string;
       let compiler: Compiler;
+      let registry: TestabilityRegistry;
       let element: angular.IAugmentedJQuery;
 
       class mockScope implements angular.IScope {
@@ -110,13 +111,18 @@ withEachNg1Version(() => {
         $evalAsync(exp: angular.Ng1Expression, locals?: any) {
           return () => {};
         }
-        $$childTail: angular.IScope;
-        $$childHead: angular.IScope;
-        $$nextSibling: angular.IScope;
+        // TODO(issue/24571): remove '!'.
+        $$childTail !: angular.IScope;
+        // TODO(issue/24571): remove '!'.
+        $$childHead !: angular.IScope;
+        // TODO(issue/24571): remove '!'.
+        $$nextSibling !: angular.IScope;
         [key: string]: any;
         $id = 'mockScope';
-        $parent: angular.IScope;
-        $root: angular.IScope;
+        // TODO(issue/24571): remove '!'.
+        $parent !: angular.IScope;
+        // TODO(issue/24571): remove '!'.
+        $root !: angular.IScope;
       }
 
       function getAdaptor(): DowngradeComponentAdapter {
@@ -163,15 +169,13 @@ withEachNg1Version(() => {
             componentFactory, wrapCallback);
       }
 
-      beforeEach((inject([Compiler], (inject_compiler: Compiler) => {
-        compiler = inject_compiler;
+      beforeEach(() => {
+        compiler = TestBed.get(Compiler);
+        registry = TestBed.get(TestabilityRegistry);
         adapter = getAdaptor();
-      })));
-
-      afterEach(() => {
-        let registry = TestBed.get(TestabilityRegistry);
-        registry.unregisterAllApplications();
       });
+      beforeEach(() => registry.unregisterAllApplications());
+      afterEach(() => registry.unregisterAllApplications());
 
       it('should add testabilities hook when creating components', () => {
 

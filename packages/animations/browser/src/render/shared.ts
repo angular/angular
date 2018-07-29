@@ -14,6 +14,10 @@ export function isBrowser() {
   return (typeof window !== 'undefined' && typeof window.document !== 'undefined');
 }
 
+export function isNode() {
+  return (typeof process !== 'undefined');
+}
+
 export function optimizeGroupPlayer(players: AnimationPlayer[]): AnimationPlayer {
   switch (players.length) {
     case 0:
@@ -142,11 +146,14 @@ let _query: (element: any, selector: string, multi: boolean) => any[] =
       return [];
     };
 
-if (isBrowser()) {
+// Define utility methods for browsers and platform-server(domino) where Element
+// and utility methods exist.
+const _isNode = isNode();
+if (_isNode || typeof Element !== 'undefined') {
   // this is well supported in all browsers
   _contains = (elm1: any, elm2: any) => { return elm1.contains(elm2) as boolean; };
 
-  if (Element.prototype.matches) {
+  if (_isNode || Element.prototype.matches) {
     _matches = (element: any, selector: string) => element.matches(selector);
   } else {
     const proto = Element.prototype as any;

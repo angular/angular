@@ -26,13 +26,7 @@
     "serve:cli": "http-server dist/",
     "build:aot": "ngc -p tsconfig-aot.json && rollup -c rollup-config.js",
     "serve:aot": "lite-server -c bs-config.aot.json",
-    "start:webpack": "webpack-dev-server --inline --progress --port 8080",
-    "test:webpack": "karma start karma.webpack.conf.js",
-    "build:webpack": "rimraf dist && webpack --config config/webpack.prod.js --bail",
     "build:babel": "babel src -d src --extensions \".es6\" --source-maps",
-    "build:uni-client": "webpack --config webpack.config.client.js",
-    "build:uni": "webpack --config webpack.config.universal.js",
-    "serve:uni": "node dist/server.js",
 
     "clean": "rimraf src/dist && rimraf src/app/*.js* && rimraf src/universal/*.js* && rimraf src/main.js*",
     "copy-dist-files": "node ./copy-dist-files.js",

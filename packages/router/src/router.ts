@@ -12,7 +12,7 @@ import {BehaviorSubject, Observable, Subject, Subscription, of } from 'rxjs';
 import {concatMap, map, mergeMap} from 'rxjs/operators';
 
 import {applyRedirects} from './apply_redirects';
-import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, copyConfig, validateConfig} from './config';
+import {LoadedRouterConfig, QueryParamsHandling, Route, Routes, standardizeConfig, validateConfig} from './config';
 import {createRouterState} from './create_router_state';
 import {createUrlTree} from './create_url_tree';
 import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
@@ -160,6 +160,11 @@ function defaultErrorHandler(error: any): any {
   throw error;
 }
 
+function defaultMalformedUriErrorHandler(
+    error: URIError, urlSerializer: UrlSerializer, url: string): UrlTree {
+  return urlSerializer.parse('/');
+}
+
 type NavStreamValue =
     boolean | {appliedUrl: UrlTree, snapshot: RouterStateSnapshot, shouldActivate?: boolean};
 
@@ -214,7 +219,8 @@ export class Router {
   private rawUrlTree: UrlTree;
   private navigations = new BehaviorSubject<NavigationParams>(null !);
 
-  private locationSubscription: Subscription;
+  // TODO(issue/24571): remove '!'.
+  private locationSubscription !: Subscription;
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
   private ngModule: NgModuleRef<any>;
@@ -229,7 +235,14 @@ export class Router {
    */
   errorHandler: ErrorHandler = defaultErrorHandler;
 
-
+  /**
+   * Malformed uri error handler is invoked when `Router.parseUrl(url)` throws an
+   * error due to containing an invalid character. The most common case would be a `%` sign
+   * that's not encoded and is not part of a percent encoded sequence.
+   */
+  malformedUriErrorHandler:
+      (error: URIError, urlSerializer: UrlSerializer,
+       url: string) => UrlTree = defaultMalformedUriErrorHandler;
 
   /**
    * Indicates if at least one navigation happened.
@@ -271,6 +284,23 @@ export class Router {
    * - `'always'`, enables unconditional inheritance of parent params.
    */
   paramsInheritanceStrategy: 'emptyOnly'|'always' = 'emptyOnly';
+
+  /**
+   * Defines when the router updates the browser URL. The default behavior is to update after
+   * successful navigation. However, some applications may prefer a mode where the URL gets
+   * updated at the beginning of navigation. The most common use case would be updating the
+   * URL early so if navigation fails, you can show an error message with the URL that failed.
+   * Available options are:
+   *
+   * - `'deferred'`, the default, updates the browser URL after navigation has finished.
+   * - `'eager'`, updates browser URL at the beginning of navigation.
+   */
+  urlUpdateStrategy: 'deferred'|'eager' = 'deferred';
+
+  /**
+   * See {@link RouterModule} for more information.
+   */
+  relativeLinkResolution: 'legacy'|'corrected' = 'legacy';
 
   /**
    * Creates the router service.
@@ -324,7 +354,7 @@ export class Router {
     // run into ngZone
     if (!this.locationSubscription) {
       this.locationSubscription = <any>this.location.subscribe((change: any) => {
-        const rawUrlTree = this.urlSerializer.parse(change['url']);
+        let rawUrlTree = this.parseUrl(change['url']);
         const source: NavigationTrigger = change['type'] === 'popstate' ? 'popstate' : 'hashchange';
         const state = change.state && change.state.navigationId ?
             {navigationId: change.state.navigationId} :
@@ -357,7 +387,7 @@ export class Router {
    */
   resetConfig(config: Routes): void {
     validateConfig(config);
-    this.config = config.map(copyConfig);
+    this.config = config.map(standardizeConfig);
     this.navigated = false;
     this.lastSuccessfulId = -1;
   }
@@ -502,7 +532,15 @@ export class Router {
   serializeUrl(url: UrlTree): string { return this.urlSerializer.serialize(url); }
 
   /** Parses a string into a `UrlTree` */
-  parseUrl(url: string): UrlTree { return this.urlSerializer.parse(url); }
+  parseUrl(url: string): UrlTree {
+    let urlTree: UrlTree;
+    try {
+      urlTree = this.urlSerializer.parse(url);
+    } catch (e) {
+      urlTree = this.malformedUriErrorHandler(e, this.urlSerializer, url);
+    }
+    return urlTree;
+  }
 
   /** Returns whether the url is activated */
   isActive(url: string|UrlTree, exact: boolean): boolean {
@@ -510,7 +548,7 @@ export class Router {
       return containsTree(this.currentUrlTree, url, exact);
     }
 
-    const urlTree = this.urlSerializer.parse(url);
+    const urlTree = this.parseUrl(url);
     return containsTree(this.currentUrlTree, urlTree, exact);
   }
 
@@ -543,7 +581,6 @@ export class Router {
       rawUrl: UrlTree, source: NavigationTrigger, state: {navigationId: number}|null,
       extras: NavigationExtras): Promise<boolean> {
     const lastNavigation = this.navigations.value;
-
     // If the user triggers a navigation imperatively (e.g., by using navigateByUrl),
     // and that navigation results in 'replaceState' that leads to the same URL,
     // we should skip those.
@@ -590,6 +627,9 @@ export class Router {
 
     if ((this.onSameUrlNavigation === 'reload' ? true : urlTransition) &&
         this.urlHandlingStrategy.shouldProcessUrl(rawUrl)) {
+      if (this.urlUpdateStrategy === 'eager' && !extras.skipLocationChange) {
+        this.setBrowserUrl(rawUrl, !!extras.replaceUrl, id);
+      }
       (this.events as Subject<Event>)
           .next(new NavigationStart(id, this.serializeUrl(url), source, state));
       Promise.resolve()
@@ -641,7 +681,7 @@ export class Router {
         urlAndSnapshot$ = redirectsApplied$.pipe(mergeMap((appliedUrl: UrlTree) => {
           return recognize(
                      this.rootComponentType, this.config, appliedUrl, this.serializeUrl(appliedUrl),
-                     this.paramsInheritanceStrategy)
+                     this.paramsInheritanceStrategy, this.relativeLinkResolution)
               .pipe(map((snapshot: any) => {
                 (this.events as Subject<Event>)
                     .next(new RoutesRecognized(
@@ -771,13 +811,8 @@ export class Router {
 
           (this as{routerState: RouterState}).routerState = state;
 
-          if (!skipLocationChange) {
-            const path = this.urlSerializer.serialize(this.rawUrlTree);
-            if (this.location.isCurrentPathEqualTo(path) || replaceUrl) {
-              this.location.replaceState(path, '', {navigationId: id});
-            } else {
-              this.location.go(path, '', {navigationId: id});
-            }
+          if (this.urlUpdateStrategy === 'deferred' && !skipLocationChange) {
+            this.setBrowserUrl(this.rawUrlTree, replaceUrl, id);
           }
 
           new ActivateRoutes(
@@ -821,6 +856,15 @@ export class Router {
                 }
               }
             });
+  }
+
+  private setBrowserUrl(url: UrlTree, replaceUrl: boolean, id: number) {
+    const path = this.urlSerializer.serialize(url);
+    if (this.location.isCurrentPathEqualTo(path) || replaceUrl) {
+      this.location.replaceState(path, '', {navigationId: id});
+    } else {
+      this.location.go(path, '', {navigationId: id});
+    }
   }
 
   private resetStateAndUrl(storedState: RouterState, storedUrl: UrlTree, rawUrl: UrlTree): void {

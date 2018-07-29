@@ -1,4 +1,6 @@
-import {browser, by, element, ExpectedConditions} from 'protractor';
+import {browser, by, element} from 'protractor';
+
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 120000;
 
 describe('angular example application', () => {
   it('should display: Hello World!', (done) => {

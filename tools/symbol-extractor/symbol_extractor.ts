@@ -49,8 +49,7 @@ export class SymbolExtractor {
           if (varDecl.initializer && fnRecurseDepth !== 0) {
             symbols.push({name: varDecl.name.getText()});
           }
-          if (fnRecurseDepth == 0 &&
-              isRollupExportSymbol(child.parent as ts.VariableDeclarationList)) {
+          if (fnRecurseDepth == 0 && isRollupExportSymbol(varDecl)) {
             ts.forEachChild(child, visitor);
           }
           break;
@@ -122,13 +121,12 @@ function toName(symbol: Symbol): string {
 }
 
 /**
- * Detects if VariableDeclarationList is format `var x = function(){}()`;
+ * Detects if VariableDeclarationList is format `var ..., bundle = function(){}()`;
  *
  * Rollup produces this format when it wants to export symbols from a bundle.
  * @param child
  */
-function isRollupExportSymbol(child: ts.VariableDeclarationList): boolean {
-  if (child.declarations.length !== 1) return false;
-  const decl: ts.VariableDeclaration = child.declarations[0];
-  return !!(decl.initializer && decl.initializer.kind == ts.SyntaxKind.CallExpression);
+function isRollupExportSymbol(decl: ts.VariableDeclaration): boolean {
+  return !!(decl.initializer && decl.initializer.kind == ts.SyntaxKind.CallExpression) &&
+      ts.isIdentifier(decl.name) && decl.name.text === 'bundle';
 }

@@ -11,6 +11,7 @@ ts_library(
         exclude = [
             "**/*_node_only_spec.ts",
             "render3/**/*.ts",
+            "ivy_local_empty_spec.ts",
         ],
     ),
     deps = [
@@ -30,6 +31,15 @@ ts_library(
         "//packages/router/testing",
         "@rxjs",
         "@rxjs//operators",
+    ],
+)
+
+ts_library(
+    name = "ivy_local_empty_lib",
+    testonly = 1,
+    srcs = ["ivy_local_empty_spec.ts"],
+    deps = [
+        "//packages:types",
     ],
 )
 
@@ -57,6 +67,19 @@ jasmine_node_test(
         "//packages/platform-server",
         "//packages/platform-server/testing",
         "//tools/testing:node",
+    ],
+)
+
+jasmine_node_test(
+    name = "ivy_local_empty_test",
+    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
+    tags = [
+        "ivy-local",
+        "ivy-only",
+    ],
+    deps = [
+        ":ivy_local_empty_lib",
+        "//tools/testing:node_no_angular",
     ],
 )
 

@@ -9,6 +9,7 @@
     "stripInternal": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": true,
     "noFallthroughCasesInSwitch": true,
     "moduleResolution": "node",
     "module": "es2015",

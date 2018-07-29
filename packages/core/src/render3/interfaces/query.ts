@@ -13,6 +13,13 @@ import {LNode} from './node';
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */
 export interface LQueries {
   /**
+   * Ask queries to prepare copy of itself. This assures that tracking new queries on child nodes
+   * doesn't mutate list of queries tracked on a parent node. We will clone LQueries before
+   * constructing content queries.
+   */
+  clone(): LQueries|null;
+
+  /**
    * Used to ask queries if those should be cloned to the child element.
    *
    * For example in the case of deep queries the `child()` returns
@@ -49,7 +56,7 @@ export interface LQueries {
    * Notify `LQueries` that an `LView` has been removed from `LContainer`. As a result all
    * the matching nodes from this view should be removed from container's queries.
    */
-  removeView(removeIndex: number): void;
+  removeView(): void;
 
   /**
    * Add additional `QueryList` to track.

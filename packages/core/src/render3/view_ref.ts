@@ -6,32 +6,54 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ApplicationRef} from '../application_ref';
+import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
-import {EmbeddedViewRef as viewEngine_EmbeddedViewRef} from '../linker/view_ref';
+import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
-import {checkNoChanges, detectChanges, markViewDirty, storeCleanupFn} from './instructions';
-import {ComponentTemplate} from './interfaces/definition';
+import {checkNoChanges, detectChanges, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
 import {LViewNode} from './interfaces/node';
-import {LView, LViewFlags} from './interfaces/view';
+import {FLAGS, LViewData, LViewFlags} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
 
-export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
-  context: T;
-  rootNodes: any[];
+// Needed due to tsickle downleveling where multiple `implements` with classes creates
+// multiple @extends in Closure annotations, which is illegal. This workaround fixes
+// the multiple @extends by making the annotation @implements instead
+export interface viewEngine_ChangeDetectorRef_interface extends viewEngine_ChangeDetectorRef {}
 
-  constructor(protected _view: LView, context: T|null) { this.context = context !; }
+export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_InternalViewRef,
+    viewEngine_ChangeDetectorRef_interface {
+  private _appRef: ApplicationRef|null = null;
+  private _viewContainerRef: viewEngine_ViewContainerRef|null = null;
+
+  /**
+   * @internal
+   */
+  _lViewNode: LViewNode|null = null;
+
+  context: T;
+  // TODO(issue/24571): remove '!'.
+  rootNodes !: any[];
+
+  constructor(protected _view: LViewData, context: T|null) { this.context = context !; }
 
   /** @internal */
-  _setComponentContext(view: LView, context: T) {
+  _setComponentContext(view: LViewData, context: T) {
     this._view = view;
     this.context = context;
   }
 
   get destroyed(): boolean {
-    return (this._view.flags & LViewFlags.Destroyed) === LViewFlags.Destroyed;
+    return (this._view[FLAGS] & LViewFlags.Destroyed) === LViewFlags.Destroyed;
   }
 
-  destroy(): void { destroyLView(this._view); }
+  destroy(): void {
+    if (this._viewContainerRef && viewAttached(this._view)) {
+      this._viewContainerRef.detach(this._viewContainerRef.indexOf(this));
+      this._viewContainerRef = null;
+    }
+    destroyLView(this._view);
+  }
 
   onDestroy(callback: Function) { storeCleanupFn(this._view, callback); }
 
@@ -47,7 +69,8 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    *
    * <!-- TODO: Add a link to a chapter on OnPush components -->
    *
-   * ### Example ([live demo](https://stackblitz.com/edit/angular-kx7rrw))
+   * @usageNotes
+   * ### Example
    *
    * ```typescript
    * @Component({
@@ -81,6 +104,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->
    *
+   * @usageNotes
    * ### Example
    *
    * The following example defines a component with a large list of readonly data.
@@ -122,7 +146,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    * }
    * ```
    */
-  detach(): void { this._view.flags &= ~LViewFlags.Attached; }
+  detach(): void { this._view[FLAGS] &= ~LViewFlags.Attached; }
 
   /**
    * Re-attaches a view to the change detection tree.
@@ -132,7 +156,8 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    *
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    *
-   * ### Example ([live demo](https://stackblitz.com/edit/angular-ymgsxw))
+   * @usageNotes
+   * ### Example
    *
    * The following example creates a component displaying `live` data. The component will detach
    * its change detector from the main change detector tree when the component's live property
@@ -179,7 +204,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    * }
    * ```
    */
-  reattach(): void { this._view.flags |= LViewFlags.Attached; }
+  reattach(): void { this._view[FLAGS] |= LViewFlags.Attached; }
 
   /**
    * Checks the view and its children.
@@ -190,6 +215,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    * <!-- TODO: Add a link to a chapter on detach/reattach/local digest -->
    * <!-- TODO: Add a live demo once ref.detectChanges is merged into master -->
    *
+   * @usageNotes
    * ### Example
    *
    * The following example defines a component with a large list of readonly data.
@@ -210,29 +236,10 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T> {
    * introduce other changes.
    */
   checkNoChanges(): void { checkNoChanges(this.context); }
-}
-
-
-export class EmbeddedViewRef<T> extends ViewRef<T> {
-  /**
-   * @internal
-   */
-  _lViewNode: LViewNode;
-  private _viewContainerRef: viewEngine_ViewContainerRef|null = null;
-
-  constructor(viewNode: LViewNode, template: ComponentTemplate<T>, context: T) {
-    super(viewNode.data, context);
-    this._lViewNode = viewNode;
-  }
-
-  destroy(): void {
-    if (this._viewContainerRef &&
-        (this._view.flags & LViewFlags.Attached) === LViewFlags.Attached) {
-      this._viewContainerRef.detach(this._viewContainerRef.indexOf(this));
-      this._viewContainerRef = null;
-    }
-    super.destroy();
-  }
 
   attachToViewContainerRef(vcRef: viewEngine_ViewContainerRef) { this._viewContainerRef = vcRef; }
+
+  detachFromAppRef() { this._appRef = null; }
+
+  attachToAppRef(appRef: ApplicationRef) { this._appRef = appRef; }
 }

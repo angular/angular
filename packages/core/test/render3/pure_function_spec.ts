@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import {defineComponent} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, reserveSlots} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, reserveSlots} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {pureFunction1, pureFunction2, pureFunction3, pureFunction4, pureFunction5, pureFunction6, pureFunction7, pureFunction8, pureFunctionV} from '../../src/render3/pure_function';
 import {renderToHtml} from '../../test/render3/render_util';
@@ -15,7 +15,8 @@ describe('array literals', () => {
   let myComp: MyComp;
 
   class MyComp {
-    names: string[];
+    // TODO(issue/24571): remove '!'.
+    names !: string[];
 
     static ngComponentDef = defineComponent({
       type: MyComp,
@@ -34,8 +35,7 @@ describe('array literals', () => {
     /** <my-comp [names]="['Nancy', customName, 'Bess']"></my-comp> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'my-comp');
-        elementEnd();
+        element(0, 'my-comp');
         reserveSlots(2);
       }
       if (rf & RenderFlags.Update) {
@@ -68,8 +68,10 @@ describe('array literals', () => {
     let manyPropComp: ManyPropComp;
 
     class ManyPropComp {
-      names1: string[];
-      names2: string[];
+      // TODO(issue/24571): remove '!'.
+      names1 !: string[];
+      // TODO(issue/24571): remove '!'.
+      names2 !: string[];
 
       static ngComponentDef = defineComponent({
         type: ManyPropComp,
@@ -89,8 +91,7 @@ describe('array literals', () => {
      */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'many-prop-comp');
-        elementEnd();
+        element(0, 'many-prop-comp');
         reserveSlots(4);
       }
       if (rf & RenderFlags.Update) {
@@ -144,10 +145,8 @@ describe('array literals', () => {
 
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'parent-comp');
-        elementEnd();
-        elementStart(1, 'parent-comp');
-        elementEnd();
+        element(0, 'parent-comp');
+        element(1, 'parent-comp');
       }
     }
 
@@ -171,8 +170,7 @@ describe('array literals', () => {
     /** <my-comp [names]="['Nancy', customName, 'Bess', customName2]"></my-comp> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'my-comp');
-        elementEnd();
+        element(0, 'my-comp');
         reserveSlots(3);
       }
       if (rf & RenderFlags.Update) {
@@ -290,17 +288,16 @@ describe('array literals', () => {
     const e0_ff =
         (v0: any, v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any,
          v8: any) => ['start', v0, v1, v2, v3, v4, v5, v6, v7, v8, 'end'];
-    const e0_ff_1 = (v: any) => { return {name: v}; };
+    const e0_ff_1 = (v: any) => `modified_${v}`;
 
     renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
     /**
-     * <my-comp [names]="['start', v0, v1, v2, v3, {name: v4}, v5, v6, v7, v8, 'end']">
+     * <my-comp [names]="['start', v0, v1, v2, v3, `modified_${v4}`, v5, v6, v7, v8, 'end']">
      * </my-comp>
      */
     function Template(rf: RenderFlags, c: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'my-comp');
-        elementEnd();
+        element(0, 'my-comp');
         reserveSlots(12);
       }
       if (rf & RenderFlags.Update) {
@@ -312,17 +309,17 @@ describe('array literals', () => {
     }
 
     expect(myComp !.names).toEqual([
-      'start', 'a', 'b', 'c', 'd', {name: 'e'}, 'f', 'g', 'h', 'i', 'end'
+      'start', 'a', 'b', 'c', 'd', 'modified_e', 'f', 'g', 'h', 'i', 'end'
     ]);
 
     renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
     expect(myComp !.names).toEqual([
-      'start', 'a1', 'b', 'c', 'd', {name: 'e'}, 'f', 'g', 'h', 'i', 'end'
+      'start', 'a1', 'b', 'c', 'd', 'modified_e', 'f', 'g', 'h', 'i', 'end'
     ]);
 
     renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e5', 'f', 'g', 'h', 'i'], directives);
     expect(myComp !.names).toEqual([
-      'start', 'a1', 'b', 'c', 'd', {name: 'e5'}, 'f', 'g', 'h', 'i', 'end'
+      'start', 'a1', 'b', 'c', 'd', 'modified_e5', 'f', 'g', 'h', 'i', 'end'
     ]);
   });
 
@@ -331,7 +328,8 @@ describe('object literals', () => {
   let objectComp: ObjectComp;
 
   class ObjectComp {
-    config: {[key: string]: any};
+    // TODO(issue/24571): remove '!'.
+    config !: {[key: string]: any};
 
     static ngComponentDef = defineComponent({
       type: ObjectComp,
@@ -350,8 +348,7 @@ describe('object literals', () => {
     /** <object-comp [config]="{duration: 500, animation: name}"></object-comp> */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'object-comp');
-        elementEnd();
+        element(0, 'object-comp');
         reserveSlots(2);
       }
       if (rf & RenderFlags.Update) {
@@ -386,8 +383,7 @@ describe('object literals', () => {
      */
     function Template(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'object-comp');
-        elementEnd();
+        element(0, 'object-comp');
         reserveSlots(7);
       }
       if (rf & RenderFlags.Update) {

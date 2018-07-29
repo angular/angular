@@ -11,7 +11,8 @@ import {Component, Directive, Input, ViewChild} from '@angular/core';
 
 @Directive({selector: 'pane'})
 export class Pane {
-  @Input() id: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() id !: string;
 }
 
 @Component({

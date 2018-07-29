@@ -92,16 +92,21 @@ export class RadioControlRegistry {
 export class RadioControlValueAccessor implements ControlValueAccessor,
     OnDestroy, OnInit {
   /** @internal */
-  _state: boolean;
+  // TODO(issue/24571): remove '!'.
+  _state !: boolean;
   /** @internal */
-  _control: NgControl;
+  // TODO(issue/24571): remove '!'.
+  _control !: NgControl;
   /** @internal */
-  _fn: Function;
+  // TODO(issue/24571): remove '!'.
+  _fn !: Function;
   onChange = () => {};
   onTouched = () => {};
 
-  @Input() name: string;
-  @Input() formControlName: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() name !: string;
+  // TODO(issue/24571): remove '!'.
+  @Input() formControlName !: string;
   @Input() value: any;
 
   constructor(

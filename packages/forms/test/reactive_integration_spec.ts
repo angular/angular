@@ -8,7 +8,7 @@
 
 import {Component, Directive, Input, Type, forwardRef} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, tick} from '@angular/core/testing';
-import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validators} from '@angular/forms';
+import {AbstractControl, AsyncValidator, AsyncValidatorFn, COMPOSITION_BUFFER_MODE, FormArray, FormControl, FormControlDirective, FormControlName, FormGroup, FormGroupDirective, FormsModule, NG_ASYNC_VALIDATORS, NG_VALIDATORS, ReactiveFormsModule, Validators} from '@angular/forms';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util';
@@ -207,7 +207,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.detectChanges();
 
         emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
-        expect(emailInput).toBe(null);
+        expect(emailInput as any).toBe(null);  // TODO: Review use of `any` here (#19904)
       });
 
       it('should strip array controls that are not found', () => {
@@ -1393,7 +1393,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const values: string[] = [];
+          const values: any[] = [];
           const streams = merge(
               control.valueChanges, control.statusChanges, formGroup.valueChanges,
               formGroup.statusChanges);
@@ -1430,7 +1430,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const values: string[] = [];
+          const values: (string | {[key: string]: string})[] = [];
           const streams = merge(
               control.valueChanges, control.statusChanges, formGroup.valueChanges,
               formGroup.statusChanges);
@@ -1625,14 +1625,17 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
     });
 
     describe('ngModel interactions', () => {
+      let warnSpy: jasmine.Spy;
+
+      beforeEach(() => {
+        // Reset `_ngModelWarningSentOnce` on `FormControlDirective` and `FormControlName` types.
+        (FormControlDirective as any)._ngModelWarningSentOnce = false;
+        (FormControlName as any)._ngModelWarningSentOnce = false;
+
+        warnSpy = spyOn(console, 'warn');
+      });
 
       describe('deprecation warnings', () => {
-        let warnSpy: any;
-
-        beforeEach(() => {
-          warnSpy = jasmine.createSpy('warn');
-          console.warn = warnSpy;
-        });
 
         it('should warn once by default when using ngModel with formControlName', fakeAsync(() => {
              const fixture = initTest(FormGroupNgModel);
@@ -2467,7 +2470,8 @@ function sortedClassList(el: HTMLElement) {
 
 @Component({selector: 'form-control-comp', template: `<input type="text" [formControl]="control">`})
 class FormControlComp {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({
@@ -2478,9 +2482,12 @@ class FormControlComp {
     </form>`
 })
 class FormGroupComp {
-  control: FormControl;
-  form: FormGroup;
-  event: Event;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  event !: Event;
 }
 
 @Component({
@@ -2495,7 +2502,8 @@ class FormGroupComp {
     </form>`
 })
 class NestedFormGroupComp {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }
 
 @Component({
@@ -2510,8 +2518,10 @@ class NestedFormGroupComp {
      </form>`
 })
 class FormArrayComp {
-  form: FormGroup;
-  cityArray: FormArray;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  cityArray !: FormArray;
 }
 
 @Component({
@@ -2527,8 +2537,10 @@ class FormArrayComp {
      </div>`
 })
 class FormArrayNestedGroup {
-  form: FormGroup;
-  cityArray: FormArray;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  cityArray !: FormArray;
 }
 
 @Component({
@@ -2540,9 +2552,12 @@ class FormArrayNestedGroup {
    </form>`
 })
 class FormGroupNgModel {
-  form: FormGroup;
-  login: string;
-  password: string;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  login !: string;
+  // TODO(issue/24571): remove '!'.
+  password !: string;
 }
 
 @Component({
@@ -2553,10 +2568,14 @@ class FormGroupNgModel {
   `
 })
 class FormControlNgModel {
-  control: FormControl;
-  login: string;
-  passwordControl: FormControl;
-  password: string;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
+  // TODO(issue/24571): remove '!'.
+  login !: string;
+  // TODO(issue/24571): remove '!'.
+  passwordControl !: FormControl;
+  // TODO(issue/24571): remove '!'.
+  password !: string;
 }
 
 @Component({
@@ -2570,7 +2589,8 @@ class FormControlNgModel {
    </div>`
 })
 class LoginIsEmptyWrapper {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }
 
 @Component({
@@ -2584,11 +2604,16 @@ class LoginIsEmptyWrapper {
    </div>`
 })
 class ValidationBindingsForm {
-  form: FormGroup;
-  required: boolean;
-  minLen: number;
-  maxLen: number;
-  pattern: string;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  required !: boolean;
+  // TODO(issue/24571): remove '!'.
+  minLen !: number;
+  // TODO(issue/24571): remove '!'.
+  maxLen !: number;
+  // TODO(issue/24571): remove '!'.
+  pattern !: string;
 }
 
 @Component({
@@ -2596,7 +2621,8 @@ class ValidationBindingsForm {
   template: `<input type="checkbox" [formControl]="control">`
 })
 class FormControlCheckboxRequiredValidator {
-  control: FormControl;
+  // TODO(issue/24571): remove '!'.
+  control !: FormControl;
 }
 
 @Component({
@@ -2607,5 +2633,6 @@ class FormControlCheckboxRequiredValidator {
   </div>`
 })
 class UniqLoginWrapper {
-  form: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  form !: FormGroup;
 }

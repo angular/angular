@@ -3,45 +3,45 @@
 
 
 "@angular/animations@file:../../dist/packages-dist/animations":
-  version "6.0.0-beta.7-54970933bb"
+  version "6.0.0-rc.5"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/common@file:../../dist/packages-dist/common":
-  version "6.0.0-beta.7-54970933bb"
+  version "6.0.0-rc.5"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/compiler-cli@file:../../dist/packages-dist/compiler-cli":
-  version "6.0.0-beta.7-54970933bb"
+  version "6.0.0-rc.5"
   dependencies:
     chokidar "^1.4.2"
     minimist "^1.2.0"
     reflect-metadata "^0.1.2"
-    tsickle "^0.27.2"
+    tsickle "^0.29.0"
 
 "@angular/compiler@file:../../dist/packages-dist/compiler":
-  version "6.0.0-beta.7-54970933bb"
+  version "6.0.0-rc.5"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/core@file:../../dist/packages-dist/core":
-  version "6.0.0-beta.7-54970933bb"
+  version "6.0.0-rc.5"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-browser-dynamic@file:../../dist/packages-dist/platform-browser-dynamic":
-  version "6.0.0-beta.7-54970933bb"
+  version "6.0.0-rc.5"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-browser@file:../../dist/packages-dist/platform-browser":
-  version "6.0.0-beta.7-54970933bb"
+  version "6.0.0-rc.5"
   dependencies:
     tslib "^1.9.0"
 
 "@angular/platform-server@file:../../dist/packages-dist/platform-server":
-  version "6.0.0-beta.7-54970933bb"
+  version "6.0.0-rc.5"
   dependencies:
     domino "^2.0.1"
     tslib "^1.9.0"
@@ -1881,7 +1881,9 @@ rx@4.1.0:
   resolved "https://registry.yarnpkg.com/rx/-/rx-4.1.0.tgz#a5f13ff79ef3b740fe30aa803fb09f98805d4782"
 
 "rxjs@file:../../node_modules/rxjs":
-  version "6.0.0-alpha.3"
+  version "6.0.0"
+  dependencies:
+    tslib "^1.9.0"
 
 safe-buffer@^5.0.1, safe-buffer@^5.1.1, safe-buffer@~5.1.0, safe-buffer@~5.1.1:
   version "5.1.1"
@@ -2223,9 +2225,9 @@ tree-kill@^1.1.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/tree-kill/-/tree-kill-1.2.0.tgz#5846786237b4239014f05db156b643212d4c6f36"
 
-tsickle@^0.27.2:
-  version "0.27.2"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.27.2.tgz#f33d46d046f73dd5c155a37922e422816e878736"
+tsickle@^0.29.0:
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.29.0.tgz#812806554bb46c1aa16eb0fe2a051da95ca8f5a4"
   dependencies:
     minimist "^1.2.0"
     mkdirp "^0.5.1"
@@ -2247,7 +2249,7 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
 
 "typescript@file:../../node_modules/typescript":
-  version "2.6.2"
+  version "2.7.2"
 
 ua-parser-js@0.7.12:
   version "0.7.12"
@@ -2454,4 +2456,4 @@ yeast@0.1.2:
   resolved "https://registry.yarnpkg.com/yeast/-/yeast-0.1.2.tgz#008e06d8094320c372dbc2f8ed76a0ca6c8ac419"
 
 "zone.js@file:../../node_modules/zone.js":
-  version "0.8.20"
+  version "0.8.26"

@@ -33,7 +33,6 @@ nodejs_binary(
         "@build_bazel_rules_typescript//internal:worker_protocol.proto",
     ],
     entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js",
-    node_modules = "@build_bazel_rules_typescript_tsc_wrapped_deps//:node_modules",
     visibility = ["//visibility:public"],
 )
 

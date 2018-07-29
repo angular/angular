@@ -46,7 +46,7 @@ Angular 6버전부터는 브라우저가 네이티브로 웹 애니메이션 API
 
 </div>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 The examples in this page are available as a <live-example></live-example>.
@@ -320,7 +320,7 @@ and leaves to the right.
 이 코드에서는 `void` 상태에 적용되는 스타일을 `state(void)`로 지정하지 않고 트랜지션 정의에 직접 지정했습니다.
 그래서 엘리먼트가 나타날 때와 사라질 때 효과가 다르며, 엘리먼트가 나타날 때는 왼쪽부터 나타나고, 엘리먼트가 사라질 때는 오른쪽으로 사라집니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 These two common animations have their own aliases:

@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BASE_HREF} from '@angular/common';
+import {APP_BASE_HREF, Location, ViewportScroller} from '@angular/common';
 import {ApplicationRef, CUSTOM_ELEMENTS_SCHEMA, Component, NgModule, destroyPlatform} from '@angular/core';
 import {inject} from '@angular/core/testing';
 import {BrowserModule, DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
-import {NavigationEnd, Resolve, Router, RouterModule} from '@angular/router';
-
+import {NavigationEnd, NavigationStart, Resolve, Router, RouterModule} from '@angular/router';
+import {filter, first} from 'rxjs/operators';
 
 describe('bootstrap', () => {
   if (isNode) return;
@@ -86,7 +86,7 @@ describe('bootstrap', () => {
       expect(log).toEqual([
         'TestModule', 'NavigationStart', 'RoutesRecognized', 'GuardsCheckStart',
         'ChildActivationStart', 'ActivationStart', 'GuardsCheckEnd', 'ResolveStart', 'ResolveEnd',
-        'RootCmp', 'ActivationEnd', 'ChildActivationEnd', 'NavigationEnd'
+        'RootCmp', 'ActivationEnd', 'ChildActivationEnd', 'NavigationEnd', 'Scroll'
       ]);
       done();
     });
@@ -210,7 +210,7 @@ describe('bootstrap', () => {
 
        platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
          const router = res.injector.get(Router);
-         spyOn(router, 'resetRootComponentType').and.callThrough();
+         spyOn(router as any, 'resetRootComponentType').and.callThrough();
 
          const appRef: ApplicationRef = res.injector.get(ApplicationRef);
          appRef.bootstrap(SecondRootCmp);
@@ -236,7 +236,7 @@ describe('bootstrap', () => {
 
        platformBrowserDynamic([]).bootstrapModule(TestModule).then(res => {
          const router = res.injector.get(Router);
-         spyOn(router, 'resetRootComponentType').and.callThrough();
+         spyOn(router as any, 'resetRootComponentType').and.callThrough();
 
          const appRef: ApplicationRef = res.injector.get(ApplicationRef);
          appRef.components[0].onDestroy(() => {
@@ -248,4 +248,78 @@ describe('bootstrap', () => {
          appRef.components[0].destroy();
        });
      });
+
+
+  it('should restore the scrolling position', async(done) => {
+    @Component({
+      selector: 'component-a',
+      template: `
+           <div style="height: 3000px;"></div>
+           <div id="marker1"></div>
+           <div style="height: 3000px;"></div>
+           <div id="marker2"></div>
+           <div style="height: 3000px;"></div>
+           <a name="marker3"></a>
+           <div style="height: 3000px;"></div>
+      `
+    })
+    class TallComponent {
+    }
+    @NgModule({
+      imports: [
+        BrowserModule,
+        RouterModule.forRoot(
+            [
+              {path: '', pathMatch: 'full', redirectTo: '/aa'},
+              {path: 'aa', component: TallComponent}, {path: 'bb', component: TallComponent},
+              {path: 'cc', component: TallComponent},
+              {path: 'fail', component: TallComponent, canActivate: ['returnFalse']}
+            ],
+            {
+              useHash: true,
+              scrollPositionRestoration: 'enabled',
+              anchorScrolling: 'enabled',
+              scrollOffset: [0, 100],
+              onSameUrlNavigation: 'reload'
+            })
+      ],
+      declarations: [TallComponent, RootCmp],
+      bootstrap: [RootCmp],
+      providers: [...testProviders, {provide: 'returnFalse', useValue: () => false}],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA]
+    })
+    class TestModule {
+    }
+
+    const res = await platformBrowserDynamic([]).bootstrapModule(TestModule);
+    const router = res.injector.get(Router);
+    const location: Location = res.injector.get(Location);
+
+    await router.navigateByUrl('/aa');
+    window.scrollTo(0, 5000);
+
+    await router.navigateByUrl('/fail');
+    expect(window.scrollY).toEqual(5000);
+
+    await router.navigateByUrl('/bb');
+    window.scrollTo(0, 3000);
+
+    expect(window.scrollY).toEqual(3000);
+
+    await router.navigateByUrl('/cc');
+    expect(window.scrollY).toEqual(0);
+
+    await router.navigateByUrl('/aa#marker2');
+    expect(window.scrollY >= 5900).toBe(true);
+    expect(window.scrollY < 6000).toBe(true);  // offset
+
+    await router.navigateByUrl('/aa#marker3');
+    expect(window.scrollY >= 8900).toBe(true);
+    expect(window.scrollY < 9000).toBe(true);
+    done();
+  });
+
+  function waitForNavigationToComplete(router: Router): Promise<any> {
+    return router.events.pipe(filter((e: any) => e instanceof NavigationEnd), first()).toPromise();
+  }
 });

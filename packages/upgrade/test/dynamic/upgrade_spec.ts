@@ -217,7 +217,8 @@ withEachNg1Version(() => {
 
            @Component({selector: 'my-app', template: '<my-child [value]="value"></my-child>'})
            class AppComponent {
-             value: number;
+             // TODO(issue/24571): remove '!'.
+             value !: number;
              constructor() { appComponent = this; }
            }
 
@@ -226,7 +227,8 @@ withEachNg1Version(() => {
              template: '<div>{{valueFromPromise}}',
            })
            class ChildComponent {
-             valueFromPromise: number;
+             // TODO(issue/24571): remove '!'.
+             valueFromPromise !: number;
              @Input()
              set value(v: number) { expect(NgZone.isInAngularZone()).toBe(true); }
 
@@ -496,8 +498,10 @@ withEachNg1Version(() => {
            class Ng2Component implements OnChanges {
              ngOnChangesCount = 0;
              firstChangesCount = 0;
-             initialValue: string;
-             @Input() foo: string;
+             // TODO(issue/24571): remove '!'.
+             initialValue !: string;
+             // TODO(issue/24571): remove '!'.
+             @Input() foo !: string;
 
              ngOnChanges(changes: SimpleChanges) {
                this.ngOnChangesCount++;
@@ -742,7 +746,8 @@ withEachNg1Version(() => {
       it('should correctly project structural directives', async(() => {
            @Component({selector: 'ng2', template: 'ng2-{{ itemId }}(<ng-content></ng-content>)'})
            class Ng2Component {
-             @Input() itemId: string;
+             // TODO(issue/24571): remove '!'.
+             @Input() itemId !: string;
            }
 
            @NgModule({imports: [BrowserModule], declarations: [Ng2Component]})

@@ -135,17 +135,29 @@ The process of `HeroService` injection looks something like this:
 -->
 ### 서비스 프로바이더 등록하기
 
-<!--
-You must register at least one *provider* of any service you are going to use. You can register providers in modules or in components.
--->
-서비스를 사용하려면 반드시 *프로바이더*를 지정해야 합니다. 이 때 프로바이더는 모듈이나 컴포넌트 계층에 지정할 수 있습니다.
+You must register at least one *provider* of any service you are going to use. A service can register providers itself, making it available everywhere, or you can register providers with specific modules or components. You register providers in the metadata of the service (in the `@Injectable` decorator), or in the `@NgModule` or `@Component` metadata 
 
-<!--
-* When you add providers to the [root module](guide/architecture-modules), the same instance of a service is available to all components in your app.
--->
-* [최상위 모듈](guide/architecture-modules)에 프로바이더를 등록하면 애플리케이션에 있는 모든 컴포넌트가 같은 인스턴스를 사용합니다.
+* By default, the Angular CLI command `ng generate service` registers a provider with the root injector for your service by including provider metadata in the `@Injectable` decorator. The tutorial uses this method to register the provider of  HeroService class definition:
 
-<code-example path="architecture/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (module providers)" region="providers"></code-example>
+``` 
+@Injectable({
+  providedIn: 'root',
+})
+``` 
+
+ When you provide the service at the root level, Angular creates a single, shared instance of HeroService and injects into any class that asks for it. Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all. 
+
+* When you register a provider with a [specific NgModule](guide/architecture-modules), the same instance of a service is available to all components in that NgModule. To register at this level, use the `providers` property of the `@NgModule` decorator:
+
+``` 
+@NgModule({
+  providers: [
+   BackendService,
+   Logger
+ ],
+ ...
+})
+``` 
 
 <!--
 * When you register a provider at the component level, you get a new instance of the

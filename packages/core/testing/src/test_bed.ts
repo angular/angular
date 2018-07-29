@@ -389,6 +389,7 @@ export class TestBed implements Injector {
         providers: [
           ...rootProviderOverrides,
         ],
+        jit: true,
       })
       class RootScopeModule {
       }
@@ -399,7 +400,7 @@ export class TestBed implements Injector {
     const imports = [rootScopeImports, this.ngModule, this._imports];
     const schemas = this._schemas;
 
-    @NgModule({providers, declarations, imports, schemas})
+    @NgModule({providers, declarations, imports, schemas, jit: true})
     class DynamicTestModule {
     }
 
@@ -540,7 +541,7 @@ export class TestBed implements Injector {
   overrideTemplateUsingTestingModule(component: Type<any>, template: string) {
     this._assertNotInstantiated('overrideTemplateUsingTestingModule', 'override template');
 
-    @Component({selector: 'empty', template})
+    @Component({selector: 'empty', template, jit: true})
     class OverrideComponent {
     }
 

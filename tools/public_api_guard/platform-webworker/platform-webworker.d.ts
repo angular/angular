@@ -58,7 +58,7 @@ export interface ReceivedMessage {
 export declare const enum SerializerTypes {
     RENDERER_TYPE_2 = 0,
     PRIMITIVE = 1,
-    RENDER_STORE_OBJECT = 2,
+    RENDER_STORE_OBJECT = 2
 }
 
 /** @experimental */
@@ -73,7 +73,7 @@ export declare class ServiceMessageBrokerFactory {
 
 /** @experimental */
 export declare class UiArguments {
-    args: FnArg[] | undefined;
+    args?: FnArg[] | undefined;
     method: string;
     constructor(method: string, args?: FnArg[] | undefined);
 }

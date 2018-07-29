@@ -404,6 +404,28 @@ export class ActivationEnd {
 /**
  * @description
  *
+ * Represents a scrolling event.
+ */
+export class Scroll {
+  constructor(
+      /** @docsNotRequired */
+      readonly routerEvent: NavigationEnd,
+
+      /** @docsNotRequired */
+      readonly position: [number, number]|null,
+
+      /** @docsNotRequired */
+      readonly anchor: string|null) {}
+
+  toString(): string {
+    const pos = this.position ? `${this.position[0]}, ${this.position[1]}` : null;
+    return `Scroll(anchor: '${this.anchor}', position: '${pos}')`;
+  }
+}
+
+/**
+ * @description
+ *
  * Represents a router event, allowing you to track the lifecycle of the router.
  *
  * The sequence of router events is:
@@ -423,8 +445,9 @@ export class ActivationEnd {
  * - `NavigationEnd`,
  * - `NavigationCancel`,
  * - `NavigationError`
+ * - `Scroll`
  *
  *
  */
 export type Event = RouterEvent | RouteConfigLoadStart | RouteConfigLoadEnd | ChildActivationStart |
-    ChildActivationEnd | ActivationStart | ActivationEnd;
+    ChildActivationEnd | ActivationStart | ActivationEnd | Scroll;
