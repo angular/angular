@@ -1,9 +1,9 @@
 /* tslint:disable: member-ordering forin */
+// #docplaster
 // #docregion
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { forbiddenNameValidator } from '../shared/forbidden-name.directive';
-import { identityRevealedValidator } from '../shared/identity-revealed.directive';
 import { UniqueAlterEgoValidator } from '../shared/alter-ego.directive';
 
 @Component({
@@ -20,6 +20,7 @@ export class HeroFormReactiveComponent implements OnInit {
   heroForm: FormGroup;
 
   ngOnInit(): void {
+    // #docregion async-validation
     this.heroForm = new FormGroup({
       'name': new FormControl(this.hero.name, [
         Validators.required,
@@ -31,7 +32,8 @@ export class HeroFormReactiveComponent implements OnInit {
         updateOn: 'blur'
       }),
       'power': new FormControl(this.hero.power, Validators.required)
-    },  { validators: identityRevealedValidator }); // <-- add custom validator at the FormGroup level
+    });
+    // #enddocregion async-validation
   }
 
   get name() { return this.heroForm.get('name'); }
@@ -40,5 +42,7 @@ export class HeroFormReactiveComponent implements OnInit {
 
   get alterEgo() { return this.heroForm.get('alterEgo'); }
 
-  constructor(private alterEgoValidator: UniqueAlterEgoValidator) { }
+  // #docregion async-validation
+  constructor(private alterEgoValidator: UniqueAlterEgoValidator) {}
+  // #enddocregion async-validation
 }
