@@ -84,7 +84,6 @@
     },
 
     {
-      "url": "tutorial",
       "title!": "Tutorial",
       "title": "튜토리얼",
       "tooltip": "The Tour of Heroes tutorial takes you through the steps of creating an Angular application in TypeScript.",
@@ -680,16 +679,9 @@
               "tooltip": "Upgrade from AngularJS to Angular in a more flexible way."
             },
             {
-              "url": "guide/upgrade-performance",
-              "title": "Upgrading for Performance",
-              "tooltip": "Upgrade from AngularJS to Angular in a more flexible way."
-            },
-            {
               "url": "guide/ajs-quick-reference",
-              "title!": "Upgrade Cheatsheet",
-              "title": "업그레이드 치트 시트",
-              "tooltip!": "Learn how AngularJS concepts and techniques map to Angular.",
-              "tooltip": "AngularJS와 Angular 구현 방식 비교"
+              "title": "AngularJS-Angular Concepts",
+              "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
             }
           ]
         },
