@@ -949,7 +949,7 @@ export const locale_de_AT = [
   [['v. Chr.', 'n. Chr.'], u, u], 1, [6, 0],
   ['dd.MM.yy', 'dd.MM.y', 'd. MMMM y', 'EEEE, d. MMMM y'],
   ['HH:mm', 'HH:mm:ss', 'HH:mm:ss z', 'HH:mm:ss zzzz'], ['{1}, {0}', u, '{1} \'um\' {0}', u],
-  [',', ' ', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':', '.'],
+  [',', ' ', ';', '%', '+', '-', 'E', '·', '‰', '∞', 'NaN', ':', u, '.'],
   ['#,##0.###', '#,##0 %', '¤ #,##0.00', '#E0'], '€', 'Euro', {
     'ATS': ['öS'],
     'AUD': ['AU$', '$'],
@@ -2947,7 +2947,7 @@ export const locale_lv = [
 function plural_mk(n: number): number {
   let i = Math.floor(Math.abs(n)), v = n.toString().replace(/^[^.]*\.?/, '').length,
       f = parseInt(n.toString().replace(/^[^.]*\.?/, ''), 10) || 0;
-  if (v === 0 && i % 10 === 1 || f % 10 === 1) return 1;
+  if (v === 0 && i % 10 === 1 && !(i % 100 === 11) || f % 10 === 1 && !(f % 100 === 11)) return 1;
   return 5;
 }
 

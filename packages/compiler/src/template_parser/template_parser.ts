@@ -80,8 +80,6 @@ export class TemplateParser {
 
   public get expressionParser() { return this._exprParser; }
 
-  public get expressionParser() { return this._exprParser; }
-
   parse(
       component: CompileDirectiveMetadata, template: string|ParseTreeResult,
       directives: CompileDirectiveSummary[], pipes: CompilePipeSummary[], schemas: SchemaMetadata[],
@@ -414,7 +412,6 @@ class TemplateParseVisitor implements html.Visitor {
     const boundEvents: ParsedEvent[] = [];
     const bindParts = name.match(BIND_NAME_REGEXP);
     let hasBinding = false;
-    const boundEvents: BoundEventAst[] = [];
 
     if (bindParts !== null) {
       hasBinding = true;

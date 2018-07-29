@@ -487,7 +487,7 @@ The sequence of log messages follows the prescribed hook calling order:
 `OnChanges`, `OnInit`, `DoCheck`&nbsp;(3번), `AfterContentInit`, `AfterContentChecked`&nbsp;(3번),
 `AfterViewInit`, `AfterViewChecked`&nbsp;(3번), `OnDestroy`.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   The constructor isn't an Angular hook *per se*.
@@ -529,7 +529,7 @@ The heroes will never know they're being watched.
 -->
 이 예제에서는 디렉티브의 생성과 종료를 확인할 수 있는 스파이 디렉티브를 만들어 봅니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   Kidding aside, pay attention to two key points:
@@ -625,7 +625,7 @@ Experienced developers agree that components should be cheap and safe to constru
 -->
 숙련된 개발자라면 컴포넌트의 생성자는 최대한 간결하게 작성해야 한다는 것에 동의할 것입니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   Misko Hevery, Angular team lead,
@@ -662,7 +662,7 @@ They'll have been set when `ngOnInit()` runs.
 입력 프로퍼티의 값이 반영되는 것은 Angular의 라이프싸이클을 따르기 때문에 JavaScript에서 제공하는 생성자에서 이 입력 프로퍼티 값을 사용할 수 없습니다.
 `ngOnInit()`이 실행되는 시점이라면 입력 프로퍼티 값이 모두 반영된 이후입니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   The `ngOnChanges()` method is your first opportunity to access those properties.
@@ -787,7 +787,7 @@ Use the `DoCheck` hook to detect and act upon changes that Angular doesn't catch
 -->
 Angular의 변화 감지 싸이클을 수동으로 실행하는 경우라면 `DoCheck` 함수를 사용할 수 있습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   Use this method to detect a change that Angular overlooked.
@@ -941,7 +941,7 @@ into the component's template in a designated spot.
 -->
 *컨텐츠 프로젝션*은 컴포넌트의 템플릿을 정의하는 외부 HTML 파일을 컴포넌트 안에 가져와서 컴포넌트 템플릿에 반영하는 것을 의미합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   AngularJS developers know this technique as *transclusion*.
@@ -988,7 +988,7 @@ Angular가 이 태그를 확인하면 컴포넌트 외부에서 전달되는 컨
   <img src='generated/images/guide/lifecycle-hooks/projected-child-view.png' alt="Projected Content">
 </figure>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
   <!--
   The telltale signs of *content projection* are twofold:

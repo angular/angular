@@ -44,14 +44,15 @@ describe('compiler sanitization', () => {
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
             $r3$.ɵE(0, 'div');
+            $r3$.ɵs(['background-image']);
             $r3$.ɵe();
-            $r3$.ɵE(1, 'img');
-            $r3$.ɵe();
+            $r3$.ɵEe(1, 'img');
           }
           if (rf & 2) {
             $r3$.ɵp(0, 'innerHTML', $r3$.ɵb(ctx.innerHTML), $r3$.ɵsanitizeHtml);
             $r3$.ɵp(0, 'hidden', $r3$.ɵb(ctx.hidden));
-            $r3$.ɵsn(1, 'background-image', $r3$.ɵb(ctx.style), $r3$.ɵsanitizeStyle);
+            $r3$.ɵsp(0, 0, ctx.style);
+            $r3$.ɵsa(0);
             $r3$.ɵp(1, 'src', $r3$.ɵb(ctx.url), $r3$.ɵsanitizeUrl);
             $r3$.ɵa(1, 'srcset', $r3$.ɵb(ctx.url), $r3$.ɵsanitizeUrl);
           }

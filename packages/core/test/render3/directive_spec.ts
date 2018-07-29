@@ -9,7 +9,7 @@
 import {EventEmitter} from '@angular/core';
 
 import {AttributeMarker, defineDirective} from '../../src/render3/index';
-import {bind, elementEnd, elementProperty, elementStart, listener, loadDirective} from '../../src/render3/instructions';
+import {bind, element, elementEnd, elementProperty, elementStart, listener, loadDirective} from '../../src/render3/instructions';
 
 import {TemplateFixture} from './render_util';
 
@@ -33,10 +33,7 @@ describe('directive', () => {
         });
       }
 
-      function Template() {
-        elementStart(0, 'span', [AttributeMarker.SELECT_ONLY, 'dir']);
-        elementEnd();
-      }
+      function Template() { element(0, 'span', [AttributeMarker.SelectOnly, 'dir']); }
 
       const fixture = new TemplateFixture(Template, () => {}, [Directive]);
       expect(fixture.html).toEqual('<span class="foo"></span>');
@@ -61,8 +58,10 @@ describe('directive', () => {
           inputs: {test: 'test', other: 'other'}
         });
 
-        testValue: boolean;
-        other: boolean;
+        // TODO(issue/24571): remove '!'.
+        testValue !: boolean;
+        // TODO(issue/24571): remove '!'.
+        other !: boolean;
 
         /**
          * A setter to assert that a binding is not invoked with stringified attribute value
@@ -82,8 +81,7 @@ describe('directive', () => {
        */
       function createTemplate() {
         // using 2 bindings to show example shape of attributes array
-        elementStart(0, 'span', ['class', 'fade', AttributeMarker.SELECT_ONLY, 'test', 'other']);
-        elementEnd();
+        element(0, 'span', ['class', 'fade', AttributeMarker.SelectOnly, 'test', 'other']);
       }
 
       function updateTemplate() { elementProperty(0, 'test', bind(false)); }
@@ -108,9 +106,12 @@ describe('directive', () => {
              inputs: {test: 'test', prop1: 'prop1', prop2: 'prop2'}
            });
 
-           prop1: boolean;
-           prop2: boolean;
-           testValue: boolean;
+           // TODO(issue/24571): remove '!'.
+           prop1 !: boolean;
+           // TODO(issue/24571): remove '!'.
+           prop2 !: boolean;
+           // TODO(issue/24571): remove '!'.
+           testValue !: boolean;
 
 
            /**
@@ -127,13 +128,12 @@ describe('directive', () => {
          }
 
          /**
-          * <span [prop1]="true" [test]="false" [prop2]="true"></span>
+          * <span class="fade" [prop1]="true" [test]="false" [prop2]="true"></span>
           */
          function createTemplate() {
            // putting name (test) in the "usual" value position
-           elementStart(
-               0, 'span', ['class', 'fade', AttributeMarker.SELECT_ONLY, 'prop1', 'test', 'prop2']);
-           elementEnd();
+           element(
+               0, 'span', ['class', 'fade', AttributeMarker.SelectOnly, 'prop1', 'test', 'prop2']);
          }
 
          function updateTemplate() {
@@ -168,7 +168,7 @@ describe('directive', () => {
        * <span (out)="someVar = true"></span>
        */
       function createTemplate() {
-        elementStart(0, 'span', [AttributeMarker.SELECT_ONLY, 'out']);
+        elementStart(0, 'span', [AttributeMarker.SelectOnly, 'out']);
         { listener('out', () => {}); }
         elementEnd();
       }

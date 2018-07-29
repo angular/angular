@@ -14,7 +14,7 @@ function sequenceSubscriber(observer) {
       if (idx === arr.length - 1) {
         observer.complete();
       } else {
-        doSequence(arr, idx++);
+        doSequence(arr, ++idx);
       }
     }, 1000);
   }
@@ -94,7 +94,7 @@ function multicastSequenceSubscriber() {
         },
         complete() {
           // 모든 구독에 종료 스트림을 전달합니다.
-          observers.forEach(obs => obs.complete());
+          observers.slice(0).forEach(obs => obs.complete());
         }
       }, seq, 0);
     }
@@ -119,13 +119,13 @@ function doSequence(observer, arr, idx) {
     if (idx === arr.length - 1) {
       observer.complete();
     } else {
-      doSequence(observer, arr, idx++);
+      doSequence(observer, arr, ++idx);
     }
   }, 1000);
 }
 
 // doSequence()에 정의된 스트림을 발행하는 옵저버블을 생성합니다.
-const multicastSequence = new Observable(multicastSequenceSubscriber);
+const multicastSequence = new Observable(multicastSequenceSubscriber());
 
 // 옵저버블을 구독하면 타이머를 시작하고 1초마다 스트림을 받습니다.
 multicastSequence.subscribe({

@@ -170,7 +170,8 @@ Detect and act upon changes to input property values with the `ngOnChanges()` me
 -->
 입력 프로퍼티는 `OnChanges` 라이프싸이클 후킹 인터페이스를 사용하는 `ngOnChanges()` 메소드로도 가로챌 수 있습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
+
 
 
 <!--
@@ -441,8 +442,8 @@ The child [CountdownTimerComponent](guide/component-interaction#countdown-timer-
 이 내용은 다음 예제로 알아봅시다. 이 예제는 위에서 살펴본 [카운트다운 타이머](guide/component-interaction#countdown-timer-example)와 같은 동작을 하지만, 구현 방식은 조금 다릅니다.
 먼저, 자식 컴포넌트인 [CountdownTimerComponent](guide/component-interaction#countdown-timer-example) 코드는 동일합니다.
 
+<div class="alert is-helpful">
 
-<div class="l-sub-section">
 
 
 <!--
@@ -586,7 +587,8 @@ Each `AstronautComponent` is a child of the `MissionControlComponent` and theref
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
+
 
 
 <!--
@@ -641,5 +643,3 @@ and verify that the history meets expectations:
 [Back to top](guide/component-interaction#top)
 -->
 [맨 위로](guide/component-interaction#top)
-
-{@a bidirectional-service}

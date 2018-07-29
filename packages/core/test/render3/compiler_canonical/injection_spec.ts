@@ -54,8 +54,7 @@ describe('injection', () => {
           /** <my-comp></my-comp> */
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'my-comp');
-              $r3$.ɵe();
+              $r3$.ɵEe(0, 'my-comp');
             }
           },
           directives: () => [MyComp]
@@ -101,8 +100,7 @@ describe('injection', () => {
           /** <my-comp></my-comp> */
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'my-comp', e0_attrs);
-              $r3$.ɵe();
+              $r3$.ɵEe(0, 'my-comp', e0_attrs);
             }
           },
           directives: () => [MyComp]

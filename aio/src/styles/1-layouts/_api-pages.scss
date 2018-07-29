@@ -1,0 +1,46 @@
+.api-body {
+
+    max-width: 1200px;
+
+    table {
+        margin: 12px 0 24px;
+
+        th {
+            text-transform: none;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        tr {
+            border-bottom: 1px solid $lightgray;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+        hr {
+            margin: 16px 0;
+        }
+
+        tr:last-child {
+            border-bottom: none;
+        }
+
+        &.item-table {
+            td {
+                padding: 32px;
+            }
+        }
+
+        &.list-table {
+            td {
+                padding: 16px 24px;
+            }
+        }
+
+        .short-description {
+            margin-left: 0;
+        }
+    }
+}

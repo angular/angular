@@ -40,5 +40,7 @@ export class HighlightDirective {
   // #docregion color-2
   @Input() appHighlight: string;
   // #enddocregion color-2
-}
 
+// #docregion
+}
+// #enddocregion

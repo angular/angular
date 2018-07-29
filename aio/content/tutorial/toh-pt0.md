@@ -37,7 +37,7 @@ The Angular CLI generated a new project with a default application and supportin
 Angular CLI가 기본 애플리케이션과 필요한 파일들을 포함한 새로운 프로젝트를 생성하였습니다. 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 
@@ -65,7 +65,7 @@ Go to the project directory and launch the application.
   ng serve --open
 </code-example>
  
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 The `ng serve` command builds the app, starts the development server,

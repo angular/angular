@@ -1,13 +1,13 @@
 <!doctype html>
 <html>
+
 <body>
 
   <h2>Params</h2>
   <form>
     Cols:
     <input type="number" name="cols" placeholder="cols" value="40">
-    <br>
-    Rows:
+    <br> Rows:
     <input type="number" name="rows" placeholder="rows" value="200">
     <br>
     <button>Apply</button>
@@ -28,9 +28,15 @@
   <script>
     // TODO(mlaval): remove once we have a proper solution
     ngDevMode = false;
+    var isBazel = location.pathname.indexOf('/all/') !== 0;
+    // isBazel needed while 'scripts/ci/test-e2e.sh test.e2e.protractor-e2e' is run
+    // on Travis
+    // TODO: port remaining protractor e2e tests to bazel protractor_web_test_suite rule
+    var bazelBundle = document.location.search.endsWith('debug') ? 'bundle.min_debug.js' : 'bundle.min.js';
     var mainUrl = window.location.search.split(/[?&]main=([^&]+)/)[1]
       || '../../bootstrap_ng2.js';
-    document.write('<script src="' + mainUrl + '">\u003c/script>');
+    document.write('<script src="' + (isBazel ? bazelBundle : mainUrl) + '">\u003c/script>');
   </script>
 </body>
+
 </html>

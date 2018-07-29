@@ -65,7 +65,7 @@ Here's a simple root NgModule definition:
 
 <code-example path="architecture/src/app/mini-app.ts" region="module" title="src/app/app.module.ts" linenums="false"></code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
   The `export` of `AppComponent` is just to show how to export; it isn't actually necessary in this example. A root NgModule has no reason to _export_ anything because other modules don't need to _import_ the root NgModule.
@@ -116,8 +116,8 @@ When you create a component, it is associated directly with a single view, calle
 -->
 컴포넌트를 정의할 때는 _호스트 뷰(host view)_ 라는 뷰가 연결됩니다. 호스트 뷰는 뷰 계층에서 컴포넌트가 차지하는 최상위 뷰를 가리키며, 뷰 안에 컴포넌트를 추가해서 _종속된 뷰(enbedded view)_ 를 자유롭게 구성할 수도 있습니다. 이 때 추가되는 컴포넌트는 부모 컴포넌트와 같은 NgModule에 있거나 다른 NgModule에서 가져온 컴포넌트가 될 수 있습니다.
 
-<div class="l-sub-section">
-	<!--
+<div class="alert is-helpful">
+  <!--
     The hierarchical structure of views is a key factor in the way Angular detects and responds to changes in the DOM and app data. 
 	-->
 	뷰 계층은 Angular가 DOM이나 앱 데이터가 변할 때 변화를 감지하는 단위가 되기 때문에 효율적으로 구성하는 것이 중요합니다.
@@ -145,7 +145,7 @@ JavaScript에서는 각각의 _파일_ 이 하나의 모듈이며, 이 파일에
 
 <code-example path="architecture/src/app/app.module.ts" region="export" linenums="false"></code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 <!--
   <a href="http://exploringjs.com/es6/ch_modules.html">Learn more about the JavaScript module system on the web.</a>
 -->
@@ -177,9 +177,11 @@ For example, import Angular's `Component` decorator from the `@angular/core` lib
 <code-example path="architecture/src/app/app.component.ts" region="import" linenums="false"></code-example>
 
 <!--
-You also import NgModules from Angular _libraries_ using JavaScript import statements:
+You also import NgModules from Angular _libraries_ using JavaScript import statements. 
+For example, the following code imports the `BrowserModule` NgModule from the `platform-browser` library:
 -->
 그리고 Angular에서 제공하는 NgModule도 비슷한 방법으로 불러와서 사용합니다:
+예를 들면, 다음 코드는 `platform-browser` 라이브러리에서 `BrowserModule` NgModule을 로드하는 코드입니다.
 
 <code-example path="architecture/src/app/mini-app.ts" region="import-browser-module" linenums="false"></code-example>
 
@@ -195,18 +197,12 @@ In this way you're using both the Angular and JavaScript module systems _togethe
 -->
 지금까지 살펴본 코드처럼 Angular의 모듈 체계와 JavaScript의 모듈 체계는 _함께_ 사용됩니다. 지금은 두 체계를 함께 사용하면서 "imports"와 "exports" 키워드를 비슷하게 사용하기 때문에 혼란스러울 수 있지만, Angular를 계속 사용하면서 익숙해질 것입니다.
 
+<div class="alert is-helpful">
 <!--
-<div class="l-sub-section">
-
   Learn more from the [NgModules](guide/ngmodules) page.
-
-</div>
 -->
-<div class="l-sub-section">
-
   [NgModule](guide/ngmodules)에 대해 더 알아보세요.
 
 </div>
-
 
 <hr/>

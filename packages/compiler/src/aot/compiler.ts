@@ -23,7 +23,7 @@ import {OutputEmitter} from '../output/abstract_emitter';
 import * as o from '../output/output_ast';
 import {ParseError} from '../parse_util';
 import {compileNgModuleFromRender2 as compileR3Module} from '../render3/r3_module_compiler';
-import {compilePipe as compileR3Pipe} from '../render3/r3_pipe_compiler';
+import {compilePipeFromRender2 as compileR3Pipe} from '../render3/r3_pipe_compiler';
 import {htmlAstToRender3Ast} from '../render3/r3_template_transform';
 import {compileComponentFromRender2 as compileR3Component, compileDirectiveFromRender2 as compileR3Directive} from '../render3/view/compiler';
 import {DomElementSchemaRegistry} from '../schema/dom_element_schema_registry';
@@ -318,10 +318,12 @@ export class AotCompiler {
       });
       compMetas.forEach(compMeta => {
         const html = compMeta.template !.template !;
+        // Template URL points to either an HTML or TS file depending on whether
+        // the file is used with `templateUrl:` or `template:`, respectively.
+        const templateUrl = compMeta.template !.templateUrl !;
         const interpolationConfig =
             InterpolationConfig.fromArray(compMeta.template !.interpolation);
-        errors.push(
-            ...messageBundle.updateFromTemplate(html, file.fileName, interpolationConfig) !);
+        errors.push(...messageBundle.updateFromTemplate(html, templateUrl, interpolationConfig) !);
       });
     });
 

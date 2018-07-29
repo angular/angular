@@ -9,6 +9,7 @@
   ],
   "dependencies": [],
   "devDependencies": [
+    "@angular-devkit/build-angular",
     "@angular/cli",
     "@types/jasminewd2",
     "jasmine-marbles",

@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceFile, ParseSourceSpan, PartialModule, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
+import {AssertNotNull, BinaryOperator, BinaryOperatorExpr, BuiltinMethod, BuiltinVar, CastExpr, ClassStmt, CommaExpr, CommentStmt, ConditionalExpr, DeclareFunctionStmt, DeclareVarStmt, ExpressionStatement, ExpressionVisitor, ExternalExpr, ExternalReference, FunctionExpr, IfStmt, InstantiateExpr, InvokeFunctionExpr, InvokeMethodExpr, JSDocCommentStmt, LiteralArrayExpr, LiteralExpr, LiteralMapExpr, NotExpr, ParseSourceFile, ParseSourceSpan, PartialModule, ReadKeyExpr, ReadPropExpr, ReadVarExpr, ReturnStatement, Statement, StatementVisitor, StmtModifier, ThrowStmt, TryCatchStmt, TypeofExpr, WrappedNodeExpr, WriteKeyExpr, WritePropExpr, WriteVarExpr} from '@angular/compiler';
 import * as ts from 'typescript';
-import {error} from './util';
 
 import {error} from './util';
 
@@ -151,12 +150,6 @@ function firstAfter<T>(a: T[], predicate: (value: T) => boolean) {
 // to ensure that NodeEmitterVisitor.record has been called on all nodes returned by the
 // NodeEmitterVisitor
 export type RecordedNode<T extends ts.Node = ts.Node> = (T & { __recorded: any;}) | null;
-
-function escapeLiteral(value: string): string {
-  return value.replace(/(\"|\\)/g, '\\$1').replace(/(\n)|(\r)/g, function(v, n, r) {
-    return n ? '\\n' : '\\r';
-  });
-}
 
 function escapeLiteral(value: string): string {
   return value.replace(/(\"|\\)/g, '\\$1').replace(/(\n)|(\r)/g, function(v, n, r) {
@@ -471,6 +464,11 @@ export class NodeEmitterVisitor implements StatementVisitor, ExpressionVisitor {
 
   // ExpressionVisitor
   visitWrappedNodeExpr(expr: WrappedNodeExpr<any>) { return this.record(expr, expr.node); }
+
+  visitTypeofExpr(expr: TypeofExpr) {
+    const typeOf = ts.createTypeOf(expr.expr.visitExpression(this, null));
+    return this.record(expr, typeOf);
+  }
 
   // ExpressionVisitor
   visitReadVarExpr(expr: ReadVarExpr) {

@@ -8,7 +8,7 @@
 
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {ComponentDef} from '../../../src/render3/interfaces/definition';
+import {ComponentDefInternal} from '../../../src/render3/interfaces/definition';
 import {renderComponent, toHtml} from '../render_util';
 
 
@@ -27,11 +27,13 @@ describe('template variables', () => {
 
   @Directive({selector: '[forOf]'})
   class ForOfDirective {
-    private previous: any[];
+    // TODO(issue/24571): remove '!'.
+    private previous !: any[];
 
     constructor(private view: ViewContainerRef, private template: TemplateRef<any>) {}
 
-    @Input() forOf: any[];
+    // TODO(issue/24571): remove '!'.
+    @Input() forOf !: any[];
 
     ngOnChanges(simpleChanges: SimpleChanges) {
       if ('forOf' in simpleChanges) {
@@ -70,7 +72,7 @@ describe('template variables', () => {
         return new ForOfDirective($r3$.ɵinjectViewContainerRef(), $r3$.ɵinjectTemplateRef());
       },
       // TODO(chuckj): Enable when ngForOf enabling lands.
-      // features: [NgOnChangesFeature(NgForOf)],
+      // features: [NgOnChangesFeature],
       inputs: {forOf: 'forOf'}
     });
     // /NORMATIVE
@@ -125,7 +127,7 @@ describe('template variables', () => {
     }
 
     // NON-NORMATIVE
-    (MyComponent.ngComponentDef as ComponentDef<any>).directiveDefs =
+    (MyComponent.ngComponentDef as ComponentDefInternal<any>).directiveDefs =
         [ForOfDirective.ngDirectiveDef];
     // /NON-NORMATIVE
 

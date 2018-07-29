@@ -188,16 +188,6 @@ function generateBaseCurrencies(localeData, addDigits) {
         symbolsArray = [undefined, undefined, digits];
       }
     }
-    if (addDigits && fractions[key] && fractions[key]['_digits']) {
-      const digits = parseInt(fractions[key]['_digits'], 10);
-      if (symbolsArray.length === 2) {
-        symbolsArray.push(digits);
-      } else if (symbolsArray.length === 1) {
-        symbolsArray = [...symbolsArray, , digits];
-      } else {
-        symbolsArray = [, , digits];
-      }
-    }
     if (symbolsArray.length > 0) {
       currencies[key] = symbolsArray;
     }
@@ -454,7 +444,7 @@ function getNumberSettings(localeData) {
     symbols.timeSeparator,
   ];
 
-  if (symbols.currencyDecimal) {
+  if (symbols.currencyDecimal || symbols.currencyGroup) {
     symbolValues.push(symbols.currencyDecimal);
   }
 

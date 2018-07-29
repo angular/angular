@@ -10,11 +10,14 @@ import {NgForOfContext} from '@angular/common';
 
 import {RenderFlags, directiveInject} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
-import {bind, container, elementAttribute, elementClass, elementEnd, elementProperty, elementStart, elementStyle, elementStyleNamed, interpolation1, renderTemplate, text, textBinding} from '../../src/render3/instructions';
-import {LElementNode, LNode} from '../../src/render3/interfaces/node';
+import {bind, container, element, elementAttribute, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, interpolation1, renderTemplate, text, textBinding} from '../../src/render3/instructions';
+import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
+import {AttributeMarker, LElementNode, LNode} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
-import {TrustedString, bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
+import {bypassSanitizationTrustHtml, bypassSanitizationTrustResourceUrl, bypassSanitizationTrustScript, bypassSanitizationTrustStyle, bypassSanitizationTrustUrl} from '../../src/sanitization/bypass';
+import {defaultStyleSanitizer, sanitizeHtml, sanitizeResourceUrl, sanitizeScript, sanitizeStyle, sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
+import {StyleSanitizeFn} from '../../src/sanitization/style_sanitizer';
 
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
@@ -22,18 +25,18 @@ import {ComponentFixture, TemplateFixture} from './render_util';
 describe('instructions', () => {
   function createAnchor() {
     elementStart(0, 'a');
+    elementStyling();
     elementEnd();
   }
 
-  function createDiv() {
+  function createDiv(initialStyles?: (string | number)[], styleSanitizer?: StyleSanitizeFn) {
     elementStart(0, 'div');
+    elementStyling(
+        [], initialStyles && Array.isArray(initialStyles) ? initialStyles : null, styleSanitizer);
     elementEnd();
   }
 
-  function createScript() {
-    elementStart(0, 'script');
-    elementEnd();
-  }
+  function createScript() { element(0, 'script'); }
 
   describe('bind', () => {
     it('should update bindings when value changes', () => {
@@ -68,6 +71,63 @@ describe('instructions', () => {
         tView: 1,
         rendererCreateElement: 1,
         rendererSetProperty: 1
+      });
+    });
+  });
+
+  describe('element', () => {
+    it('should create an element', () => {
+      const t = new TemplateFixture(() => { element(0, 'div', ['id', 'test', 'title', 'Hello']); });
+
+      const div = (t.hostNode.native as HTMLElement).querySelector('div') !;
+      expect(div.id).toEqual('test');
+      expect(div.title).toEqual('Hello');
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 1,
+        tNode: 2,  // 1 for div, 1 for host element
+        tView: 1,
+        rendererCreateElement: 1,
+      });
+    });
+
+    it('should allow setting namespaced attributes', () => {
+      const t = new TemplateFixture(() => {
+        element(0, 'div', [
+          // id="test"
+          'id',
+          'test',
+          // test:foo="bar"
+          AttributeMarker.NamespaceURI,
+          'http://someuri.com/2018/test',
+          'test:foo',
+          'bar',
+          // title="Hello"
+          'title',
+          'Hello',
+        ]);
+      });
+
+      const div = (t.hostNode.native as HTMLElement).querySelector('div') !;
+      const attrs: any = div.attributes;
+
+      expect(attrs['id'].name).toEqual('id');
+      expect(attrs['id'].namespaceURI).toEqual(null);
+      expect(attrs['id'].value).toEqual('test');
+
+      expect(attrs['test:foo'].name).toEqual('test:foo');
+      expect(attrs['test:foo'].namespaceURI).toEqual('http://someuri.com/2018/test');
+      expect(attrs['test:foo'].value).toEqual('bar');
+
+      expect(attrs['title'].name).toEqual('title');
+      expect(attrs['title'].namespaceURI).toEqual(null);
+      expect(attrs['title'].value).toEqual('Hello');
+
+      expect(ngDevMode).toHaveProperties({
+        firstTemplatePass: 1,
+        tNode: 2,  // 1 for div, 1 for host element
+        tView: 1,
+        rendererCreateElement: 1,
+        rendererSetAttribute: 3
       });
     });
   });
@@ -128,41 +188,103 @@ describe('instructions', () => {
     });
   });
 
-  describe('elementStyleNamed', () => {
-    it('should use sanitizer function', () => {
-      const t = new TemplateFixture(createDiv);
-      t.update(
-          () => elementStyleNamed(0, 'background-image', 'url("http://server")', sanitizeStyle));
+  describe('elementStyleProp', () => {
+    it('should automatically sanitize unless a bypass operation is applied', () => {
+      const t = new TemplateFixture(
+          () => { return createDiv(['background-image'], defaultStyleSanitizer); });
+      t.update(() => {
+        elementStyleProp(0, 0, 'url("http://server")');
+        elementStylingApply(0);
+      });
       // nothing is set because sanitizer suppresses it.
       expect(t.html).toEqual('<div></div>');
 
-      t.update(
-          () => elementStyleNamed(
-              0, 'background-image', bypassSanitizationTrustStyle('url("http://server")'),
-              sanitizeStyle));
+      t.update(() => {
+        elementStyleProp(0, 0, bypassSanitizationTrustStyle('url("http://server2")'));
+        elementStylingApply(0);
+      });
       expect((t.hostElement.firstChild as HTMLElement).style.getPropertyValue('background-image'))
-          .toEqual('url("http://server")');
+          .toEqual('url("http://server2")');
+    });
+
+    it('should not re-apply the style value even if it is a newly bypassed again', () => {
+      const sanitizerInterceptor = new MockSanitizerInterceptor();
+      const t = createTemplateFixtureWithSanitizer(
+          () => createDiv(['background-image'], sanitizerInterceptor.getStyleSanitizer()),
+          sanitizerInterceptor);
+
+      t.update(() => {
+        elementStyleProp(0, 0, bypassSanitizationTrustStyle('apple'));
+        elementStylingApply(0);
+      });
+
+      expect(sanitizerInterceptor.lastValue !).toEqual('apple');
+      sanitizerInterceptor.lastValue = null;
+
+      t.update(() => {
+        elementStyleProp(0, 0, bypassSanitizationTrustStyle('apple'));
+        elementStylingApply(0);
+      });
+      expect(sanitizerInterceptor.lastValue).toEqual(null);
     });
   });
 
-  describe('elementStyle', () => {
+  describe('elementStyleMap', () => {
     function createDivWithStyle() {
-      elementStart(0, 'div', ['style', 'height: 10px']);
+      elementStart(0, 'div');
+      elementStyling([], ['height', InitialStylingFlags.VALUES_MODE, 'height', '10px']);
       elementEnd();
     }
 
     it('should add style', () => {
       const fixture = new TemplateFixture(createDivWithStyle);
-      fixture.update(() => elementStyle(0, {'background-color': 'red'}));
+      fixture.update(() => {
+        elementStylingMap(0, null, {'background-color': 'red'});
+        elementStylingApply(0);
+      });
       expect(fixture.html).toEqual('<div style="height: 10px; background-color: red;"></div>');
+    });
+
+    it('should sanitize new styles that may contain `url` properties', () => {
+      const detectedValues: string[] = [];
+      const sanitizerInterceptor =
+          new MockSanitizerInterceptor(value => { detectedValues.push(value); });
+      const fixture = createTemplateFixtureWithSanitizer(
+          () => createDiv([], sanitizerInterceptor.getStyleSanitizer()), sanitizerInterceptor);
+
+      fixture.update(() => {
+        elementStylingMap(0, null, {
+          'background-image': 'background-image',
+          'background': 'background',
+          'border-image': 'border-image',
+          'list-style': 'list-style',
+          'list-style-image': 'list-style-image',
+          'filter': 'filter',
+          'width': 'width'
+        });
+        elementStylingApply(0);
+      });
+
+      const props = detectedValues.sort();
+      expect(props).toEqual([
+        'background', 'background-image', 'border-image', 'filter', 'list-style', 'list-style-image'
+      ]);
     });
   });
 
   describe('elementClass', () => {
+    function createDivWithStyling() {
+      elementStart(0, 'div');
+      elementStyling();
+      elementEnd();
+    }
 
     it('should add class', () => {
-      const fixture = new TemplateFixture(createDiv);
-      fixture.update(() => elementClass(0, 'multiple classes'));
+      const fixture = new TemplateFixture(createDivWithStyling);
+      fixture.update(() => {
+        elementStylingMap(0, 'multiple classes');
+        elementStylingApply(0);
+      });
       expect(fixture.html).toEqual('<div class="multiple classes"></div>');
     });
   });
@@ -401,7 +523,8 @@ class LocalSanitizedValue {
 }
 
 class LocalMockSanitizer implements Sanitizer {
-  public lastSanitizedValue: string|null;
+  // TODO(issue/24571): remove '!'.
+  public lastSanitizedValue !: string | null;
 
   constructor(private _interceptor: (value: string|null|any) => string) {}
 
@@ -428,7 +551,23 @@ class LocalMockSanitizer implements Sanitizer {
   bypassSecurityTrustResourceUrl(value: string) { return new LocalSanitizedValue(value); }
 }
 
+class MockSanitizerInterceptor {
+  public lastValue: string|null = null;
+  constructor(private _interceptorFn?: ((value: any) => any)|null) {}
+  getStyleSanitizer() { return defaultStyleSanitizer; }
+  sanitize(context: SecurityContext, value: LocalSanitizedValue|string|null|any): string|null {
+    if (this._interceptorFn) {
+      this._interceptorFn(value);
+    }
+    return this.lastValue = value;
+  }
+}
+
 function stripStyleWsCharacters(value: string): string {
   // color: blue; => color:blue
   return value.replace(/;/g, '').replace(/:\s+/g, ':');
+}
+
+function createTemplateFixtureWithSanitizer(buildFn: () => any, sanitizer: Sanitizer) {
+  return new TemplateFixture(buildFn, () => {}, null, null, sanitizer);
 }

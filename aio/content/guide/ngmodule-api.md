@@ -24,8 +24,8 @@ A basic understanding of the following concepts:
 <!--
 At a high level, NgModules are a way to organize Angular apps
 and they accomplish this through the metadata in the `@NgModule`
-decorator. The metadata falls
-into three categories:
+decorator.
+The metadata falls into three categories:
 -->
 NgModule을 사용하면 Angular 애플리케이션의 코드를 효율적으로 구성할 수 있으며, 이 때 `@NgModule` 데코레이터를 사용합니다. 이 데코레이터의 메타데이터는 세종류로 나눠 볼 수 있습니다:
 
@@ -123,6 +123,8 @@ The following table summarizes the `@NgModule` metadata properties.
       </ol>
 
       Components, directives, and pipes must belong to _exactly_ one module.
+      The compiler emits an error if you try to declare the same class in more than one module. Be careful not to re-declare a class that is imported
+      directly or indirectly from another module.
       The compiler emits an error if you try to declare the same class in more than one module.
 
       Don't re-declare a class imported from another module.
@@ -139,6 +141,13 @@ The following table summarizes the `@NgModule` metadata properties.
           </ul>
         </li>
       </ol>
+
+      Components, directives, and pipes must belong to _exactly_ one module.
+      The compiler emits an error if you try to declare the same class in more than one module. Be careful not to re-declare a class that is imported
+      directly or indirectly from another module.
+      The compiler emits an error if you try to declare the same class in more than one module.
+
+      Don't re-declare a class imported from another module.
 
     </td>
 
@@ -170,7 +179,7 @@ The following table summarizes the `@NgModule` metadata properties.
 
       Components in external modules continue to receive the instance provided by their injectors.
 
-      For more information on injector hierarchy and scoping, see [Providers](guide/providers).
+      For more information on injector hierarchy and scoping, see [Providers](guide/providers) and the [DI Guide](guide/dependency-injection).
       -->
       의존성 주입에 사용되는 서비스 프로바이더를 등록합니다.
 
@@ -184,7 +193,7 @@ The following table summarizes the `@NgModule` metadata properties.
 
       이 때 모듈 밖에 있는 컴포넌트는 여전히 애플리케이션 최상위 인젝터를 사용합니다.
 
-      인젝터의 계층과 스코프에 대해 더 알아보려면 [프로바이더](guide/providers) 문서를 참고하세요.
+      인젝터의 계층과 스코프에 대해 더 알아보려면 [프로바이더](guide/providers) 문서와 [DI Guide](guide/dependency-injection) 문서를 참고하세요.
 
     </td>
 

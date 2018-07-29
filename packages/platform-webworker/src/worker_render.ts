@@ -29,8 +29,10 @@ import {MessageBasedRenderer2} from './web_workers/ui/renderer';
  */
 @Injectable()
 export class WebWorkerInstance {
-  public worker: Worker;
-  public bus: MessageBus;
+  // TODO(issue/24571): remove '!'.
+  public worker !: Worker;
+  // TODO(issue/24571): remove '!'.
+  public bus !: MessageBus;
 
   /** @internal */
   public init(worker: Worker, bus: MessageBus) {

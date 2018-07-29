@@ -68,7 +68,8 @@ export class FormGroupDirective extends ControlContainer implements Form,
     OnChanges {
   public readonly submitted: boolean = false;
 
-  private _oldForm: FormGroup;
+  // TODO(issue/24571): remove '!'.
+  private _oldForm !: FormGroup;
   directives: FormControlName[] = [];
 
   @Input('formGroup') form: FormGroup = null !;

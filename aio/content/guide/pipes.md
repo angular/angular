@@ -11,7 +11,7 @@ Getting data could be as simple as creating a local variable or as complex as st
 이때 사용하는 데이터가 지역 변수인지 스트리밍 데이터나 웹소켓인지에 따라 데이터를 가져오는 로직은 달라질 수 있습니다.
 
 <!--
-Once data arrive, you could push their raw `toString` values directly to the view,
+Once data arrives, you could push their raw `toString` values directly to the view,
 but that rarely makes for a good user experience.
 For example, in most use cases, users prefer to see a date in a simple format like
 <samp>April 15, 1988</samp> rather than the raw string format
@@ -89,7 +89,7 @@ They are all available for use in any template.
 Angular는 `DatePipe`, `UpperCasePipe`, `LowerCasePipe`, `CurrencyPipe`, `PercentPipe`와 같은 파이프를 기본으로 제공합니다.
 이 파이프들은 모든 템플릿에 자유롭게 사용할 수 있습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--
@@ -180,7 +180,7 @@ As you click the button, the displayed date alternates between
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--
@@ -263,7 +263,7 @@ Your pipe has one such parameter: the `exponent`.
 * 커스텀 파이프를 Angular에 등록하려면 `@Pipe` 데코레이터를 사용합니다. 이 데코레이터는 Angular 코어 라이브러리에 있습니다.
 * `@Pipe` 데코레이터에는 템플릿 표현식에 사용할 파이프 이름을 지정합니다. 파이프 이름은 JavaScript 문법에 적합하게 지정해야 하며, 이 예제에서는 `exponentialStrength`로 지정했습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 ## The *PipeTransform* interface
@@ -573,8 +573,7 @@ Date 객체의 일부 요소가 바뀐다던가, 배열에 항목이 추가된�
 기본 변화 감지 정책으로도 원하는 변화를 감지할 수 있다면 순수한 파이프를 사용하는 것으로 충분합니다.
 하지만 순수하지 않은 파이프를 사용해야만 하는 경우도 있습니다.
 
-<div class="l-sub-section">
-
+<div class="alert is-helpful">
 
 <!--
 Or you might not use a pipe at all.

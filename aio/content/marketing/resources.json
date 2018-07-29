@@ -207,7 +207,13 @@
             "rev": true,
             "title": "Angular IDE by Webclipse",
             "url": "https://www.genuitec.com/products/angular-ide"
-          }
+          },
+          "amexio-canvas": {
+             "desc": "Amexio Canvas is Drag and Drop Environment to create Fully Responsive Web and Smart Device HTML5/Angular Apps. Code will be auto generated and hot deployed by the Canvas for live testing. Out of the box 50+ Material Design Theme support. Commit your code to GitHub public or private repository.",
+            "rev": true,
+            "title": "Amexio Canvas Web Based Drag and Drop IDE by MetaMagic",
+            "url": "https://amexio.tech/"
+          }	
         }
       },
       "개발 툴": {
@@ -452,6 +458,12 @@
             "rev": true,
             "title": "Essential JS 2",
             "url": "https://www.syncfusion.com/products/angular-js2"
+          },
+          "trulyui": {
+            "desc": "TrulyUI is an Angular UI Framework especially developed for Desktop Applications based on Web Components using the greatest technologies of the world.",
+            "rev": true,
+            "title": "Truly UI",
+            "url": "http://truly-ui.tk"
           }
         }
       }
@@ -564,6 +576,13 @@
             "//title": "Angular-Buch (German)",
             "title": "Angular-Buch (독일)",
             "url": "https://angular-buch.com/"
+          },
+          "wishtack-guide-angular": {
+            "desc": "The free, open-source and up-to-date Angular guide. This pragmatic guide is focused on best practices and will drive you from scratch to cloud.",
+            "logo": "https://raw.githubusercontent.com/wishtack/gitbook-guide-angular/master/.gitbook/assets/wishtack-logo-with-text.png",
+            "rev": true,
+            "title": "The Angular Guide by Wishtack (Français)",
+            "url": "https://guide-angular.wishtack.io/"
           }
         }
       },
@@ -695,6 +714,12 @@
             "title": "Ultimate Angular",
             "url": "https://ultimateangular.com/"
           },
+          "willh-angular-zero": {
+            "desc": "Online video course in Chinese for newbies who need to learning from the scratch in Chinese.  It's covering Angular, Angular CLI, TypeScript, VSCode, and some must known knowledge of Angular development.",
+            "rev": true,
+            "title": "Angular in Action: Start From Scratch (正體中文)",
+            "url": "https://www.udemy.com/angular-zero/?couponCode=ANGULAR.IO"
+          },
           "angular-firebase": {
             "//desc": "Video lessons covering progressive web apps with Angular, Firebase, RxJS, and related APIs.",
             "desc": "Angular를 활용하는 프로그레시브 웹 앱과 Firebase, RxJs에 대해 다룹니다.",
@@ -722,6 +747,12 @@
             "//title": "Angular Academy (Canada)",
             "title": "Angular Academy (캐나다)",
             "url": "http://www.angularacademy.ca"
+          },
+          "at": {
+            "desc": "Angular Training teaches Angular on-site all over the world. Also provides consulting and mentoring.",
+            "rev": true,
+            "title": "Angular Training",
+            "url": "http://www.angulartraining.com"
           },
           "-KLIBo_lm-WrK1Sjtt-2": {
             "//desc": "Basic and Advanced training across Europe in German",
@@ -762,9 +793,8 @@
             "url": "http://ninja-squad.com/formations/formation-angular2"
           },
           "a2b": {
-            "//desc": "Angular Boot Camp covers introductory and intermediate content. It includes extensive workshop session, with hands-on help from our experienced developer-trainers. At the end of this class, student are usually able to use AngularJS to make an end-to-end, working application.",
-            "desc": "Angular Boot Camp는 Angular의 기초를 다루며, 이 수업에서는 이론과 함께 전문 트레이너의 도움을 받을 수도 있습니다. 수업을 마치고 나면 현업에서 사용할 수 있는 Angular 애플리케이션을 만들 수 있을 것입니다.",
-            "logo": "",
+            "desc": "Angular Boot Camp covers introductory through advanced Angular topics. It includes extensive workshop sessions, with hands-on help from our experienced developer-trainers. We take developers or teams from the beginnings of Angular understanding through a working knowledge of all essential Angular features.",
+            "logo": "https://angularbootcamp.com/images/angular-boot-camp-logo.svg",
             "rev": true,
             "title": "Angular Boot Camp",
             "url": "https://angularbootcamp.com"

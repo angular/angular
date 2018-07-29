@@ -81,7 +81,7 @@ now in the constructor.
 The `Car` class no longer creates an `engine` or `tires`.
 It just consumes them.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 This example leverages TypeScript's constructor syntax for declaring
 parameters and properties simultaneously.
@@ -101,7 +101,7 @@ conform to the general API requirements of an `engine` or `tires`.
 
 Now, if someone extends the `Engine` class, that is not `Car`'s problem.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The _consumer_ of `Car` has the problem. The consumer must update the car creation code to
 something like this:

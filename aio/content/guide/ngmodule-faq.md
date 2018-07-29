@@ -132,7 +132,7 @@ or haven't imported the NgModule to which "x" belongs.
 -->
 이 에러는 디렉티브 "x"를 모듈에 등록하지 않았거나 디렉티브 "x"가 등록된 모듈을 로드하지 않았을 때 발생합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 Perhaps you declared "x" in an application sub-module but forgot to export it.
@@ -401,11 +401,8 @@ configure services in root and feature modules respectively.
 -->
 `forRoot()` 메소드와 `forChild()` 메소드는 모두 앱 모듈이나 기능 모듈에 서비스를 편하게 등록하기 위한 용도로 제공되는 함수입니다.
 
-<!--
 Angular doesn't recognize these names but Angular developers do.
 Follow this convention when you write similar modules with configurable service providers.
--->
-<!--KW--I don't understand how Angular doesn't understand these methods...-->
 
 <hr/>
 
@@ -428,9 +425,9 @@ to the application root injector.
 모듈이 로드되면 이 모듈에 등록된 서비스 프로바이더가 애플리케이션 최상위 인젝터에도 등록됩니다.
 
 <!--
-This makes the provider visible to every class in the application that knows the provider's lookup token, or knows its name.
+This makes the provider visible to every class in the application that knows the provider's lookup token, or name.
 -->
-그래서 모든 프로바이더는 애플리케이션의 모든 클래스에 자유롭게 사용할 수 있습니다.
+그래서 프로바이더의 토큰이나 이름을 알면 애플리케이션의 모든 클래스에 자유롭게 사용할 수 있습니다.
 
 <!--
 This is by design.
@@ -453,6 +450,8 @@ not just the classes declared in the `HeroModule`.
 -->
 하지만 기능 모듈 밖으로 서비스가 노출되지 않는 것이 좋다고 생각하는 관점에서는 이 방식이 어색할 수 있습니다.
 확실하게 이해해야 하는 것은, `HeroModule`에 `heroService`가 등록되어 있고 `AppModule`이 `HeroModule`을 로드한다면 `HeroModule` 안에서만이 아니라 앱 전체에서 `HeroService`를 주입받아 사용할 수 있습니다.
+
+To limit access to a service, consider lazy loading the NgModule that provides that service. See [How do I restrict service scope to a module?](guide/ngmodule-faq#service-scope) for more information.
 
 <hr/>
 
@@ -531,6 +530,7 @@ The `AppModule` always wins.
 
 <hr/>
 
+{@a service-scope}
 <!--
 ## How do I restrict service scope to a module?
 -->
@@ -627,6 +627,8 @@ Define child routes and let the router load module components into that outlet.
 자식 컴포넌트는 일반적으로 최상위 컴포넌트의 템플릿 안에 사용될 것입니다.
 아니면 `<router-outlet>`으로 라우팅되는 컴포넌트를 활용할 수도 있습니다.
 모듈에 자식 라우터를 설정하면 라우팅 영역 안에 컴포넌트가 표시될 것입니다.
+
+Though you can limit access to a service by providing it in a lazy loaded module or providing it in a component, providing services in a component can lead to multiple instances of those services. Thus, the lazy loading is preferable.
 
 <hr/>
 

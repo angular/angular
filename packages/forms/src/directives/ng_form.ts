@@ -93,7 +93,8 @@ export class NgForm extends ControlContainer implements Form,
    * ```
    *
    */
-  @Input('ngFormOptions') options: {updateOn?: FormHooks};
+  // TODO(issue/24571): remove '!'.
+  @Input('ngFormOptions') options !: {updateOn?: FormHooks};
 
   constructor(
       @Optional() @Self() @Inject(NG_VALIDATORS) validators: any[],

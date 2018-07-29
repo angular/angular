@@ -10,7 +10,7 @@
  * Rollup exports symbols in this particular way. This test demonstrates that we can correctly read
  * symbols.
  */
-var fooBar = function(exports) {
+var bundle = function(exports) {
   'use strict';
   // tslint:disable-next-line:no-console
   console.log('Hello, Alice in Wonderland');

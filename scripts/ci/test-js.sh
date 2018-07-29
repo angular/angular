@@ -21,7 +21,7 @@ travisFoldEnd "test.unit.tools"
 
 # Run unit tests in node
 travisFoldStart "test.unit.node"
-  node ./dist/tools/tsc-watch/ node runCmdsOnly
+  node --harmony ./dist/tools/tsc-watch/ node runCmdsOnly
 travisFoldEnd "test.unit.node"
 
 

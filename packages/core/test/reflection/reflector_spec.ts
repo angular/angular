@@ -315,7 +315,7 @@ class TestObj {
         // But we should still get an array of the right length based on function.length.
         expect(reflector.parameters(ChildWithCtorNoDecorator)).toEqual([
           undefined, undefined, undefined
-        ]);
+        ] as any[]);  // TODO: Review use of `any` here (#19904)
 
         expect(reflector.parameters(NoDecorators)).toEqual([]);
         expect(reflector.parameters(<any>{})).toEqual([]);
@@ -329,17 +329,21 @@ class TestObj {
         class C {}
 
         class Parent {
+          // TODO(issue/24571): remove '!'.
           @PropDecorator('a')
-          a: A;
+          a !: A;
+          // TODO(issue/24571): remove '!'.
           @PropDecorator('b1')
-          b: B;
+          b !: B;
         }
 
         class Child extends Parent {
+          // TODO(issue/24571): remove '!'.
           @PropDecorator('b2')
-          b: B;
+          b !: B;
+          // TODO(issue/24571): remove '!'.
           @PropDecorator('c')
-          c: C;
+          c !: C;
         }
 
         class NoDecorators {}

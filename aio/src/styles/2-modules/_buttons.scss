@@ -48,11 +48,19 @@ a.button.mat-button {
   &.button-subtle {
     background: $mediumgray;
     color: darken($offwhite, 10%);
+
+    &:hover {
+      color: rgba($white, 0.7);
+    }
   }
 
-  &.button-navy {
+  &.button-blue {
     background: $blue;
     color: rgba($white, .87);
+
+    &:hover {
+      color: rgba($white, 0.7);
+    }
   }
 
   &.button-banner {

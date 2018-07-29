@@ -117,12 +117,20 @@ function publishPackages {
   echo "Finished publishing build artifacts"
 }
 
+function publishAllBuilds() {
+  GIT_SCHEME="$1"
+
+  publishPackages $GIT_SCHEME dist/packages-dist $CUR_BRANCH
+  publishPackages $GIT_SCHEME dist/packages-dist-ivy-jit "${CUR_BRANCH}-ivy-jit"
+  publishPackages $GIT_SCHEME dist/packages-dist-ivy-local "${CUR_BRANCH}-ivy-aot"
+}
+
 # See docs/DEVELOPER.md for help
 CUR_BRANCH=${CIRCLE_BRANCH:-$(git symbolic-ref --short HEAD)}
 if [ $# -gt 0 ]; then
   ORG=$1
-  publishPackages "ssh" dist/packages-dist $CUR_BRANCH
+  publishAllBuilds "ssh"
 else
   ORG="angular"
-  publishPackages "http" dist/packages-dist $CUR_BRANCH
+  publishAllBuilds "http"
 fi

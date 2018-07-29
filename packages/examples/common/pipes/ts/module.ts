@@ -14,6 +14,7 @@ import {CurrencyPipeComponent, DeprecatedCurrencyPipeComponent} from './currency
 import {DatePipeComponent, DeprecatedDatePipeComponent} from './date_pipe';
 import {I18nPluralPipeComponent, I18nSelectPipeComponent} from './i18n_pipe';
 import {JsonPipeComponent} from './json_pipe';
+import {KeyValuePipeComponent} from './keyvalue_pipe';
 import {LowerUpperPipeComponent} from './lowerupper_pipe';
 import {DeprecatedNumberPipeComponent, NumberPipeComponent} from './number_pipe';
 import {DeprecatedPercentPipeComponent, PercentPipeComponent} from './percent_pipe';
@@ -31,7 +32,7 @@ import {TitleCasePipeComponent} from './titlecase_pipe';
 
     <h2><code>date</code></h2>
     <date-pipe></date-pipe>
-    
+
     <h2><code>json</code></h2>
     <json-pipe></json-pipe>
 
@@ -53,6 +54,9 @@ import {TitleCasePipeComponent} from './titlecase_pipe';
     <h2><code>i18n</code></h2>
     <i18n-plural-pipe></i18n-plural-pipe>
     <i18n-select-pipe></i18n-select-pipe>
+
+    <h2><code>keyvalue</code></h2>
+    <keyvalue-pipe></keyvalue-pipe>
   `
 })
 export class ExampleAppComponent {
@@ -64,7 +68,7 @@ export class ExampleAppComponent {
     DatePipeComponent, DeprecatedDatePipeComponent, LowerUpperPipeComponent, TitleCasePipeComponent,
     NumberPipeComponent, PercentPipeComponent, DeprecatedPercentPipeComponent,
     CurrencyPipeComponent, DeprecatedCurrencyPipeComponent, SlicePipeStringComponent,
-    SlicePipeListComponent, I18nPluralPipeComponent, I18nSelectPipeComponent
+    SlicePipeListComponent, I18nPluralPipeComponent, I18nSelectPipeComponent, KeyValuePipeComponent
   ],
   imports: [BrowserModule],
   bootstrap: [ExampleAppComponent]

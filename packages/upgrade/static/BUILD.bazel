@@ -6,7 +6,9 @@ load("//tools:defaults.bzl", "ng_module")
 
 ng_module(
     name = "static",
-    srcs = glob(["**/*.ts"]),
+    # Workaround for Bazel issue where Windows symlinks
+    # aka. junctions are not traversed by glob
+    srcs = glob(["*.ts"]) + glob(["src/**/*.ts"]),
     module_name = "@angular/upgrade/static",
     deps = [
         "//packages/core",

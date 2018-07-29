@@ -4,7 +4,7 @@ The Angular Ahead-of-Time (AOT) compiler converts your Angular HTML and TypeScri
 
 This guide explains how to build with the AOT compiler using different compiler options and how to write Angular metadata that AOT can compile.
 
-<div class="l-sub-section">
+<div class="alert is-helpful>
 
   <a href="https://www.youtube.com/watch?v=kW9cJsvcsGo">Watch compiler author Tobias Bosch explain the Angular Compiler</a> at AngularConnect 2016.
 
@@ -39,7 +39,7 @@ For AOT compilation, append the `--aot` flags to the _build-only_ or the _build-
   ng serve --aot
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 The `--prod` meta-flag compiles with AOT by default.
 
@@ -97,6 +97,9 @@ You can control your app compilation by providing template compiler options in t
   }
 }
 ```
+### *enableResourceInlining*
+This options tell the compiler to replace the `templateUrl` and `styleUrls` property in all `@Component` decorators with inlined contents in `template` and `styles` properties.
+When enabled, the `.js` output of ngc will have no lazy-loaded `templateUrl` or `styleUrls`.
 
 ### *skipMetadataEmit*
 
@@ -236,14 +239,14 @@ Tells the compiler to generate all the possible generated files even if they are
 how `bazel` rules track file dependencies. It is not recommended to use this option outside of the `bazel`
 rules.
 
-  ### *enableIvy*
+### *enableIvy*
 
-  Tells the compiler to generate definitions using the Render3 style code generation. This option defaults to `false`.
+Tells the compiler to generate definitions using the Render3 style code generation. This option defaults to `false`.
 
-  Not all features are supported with this option enabled. It is only supported
-  for experimentation and testing of Render3 style code generation.
+Not all features are supported with this option enabled. It is only supported
+for experimentation and testing of Render3 style code generation.
 
-  *Note*: Is it not recommended to use this option as it is not yet feature complete with the Render2 code generation.
+*Note*: Is it not recommended to use this option as it is not yet feature complete with the Render2 code generation.
 
 
 ## Angular Metadata and AOT
@@ -294,7 +297,7 @@ At the same time, the AOT **_collector_** analyzes the metadata recorded in the 
 
 You can think of `.metadata.json` as a diagram of the overall structure of a decorator's metadata, represented as an [abstract syntax tree (AST)](https://en.wikipedia.org/wiki/Abstract_syntax_tree).
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 Angular's [schema.ts](https://github.com/angular/angular/blob/master/packages/compiler-cli/src/metadata/schema.ts)
 describes the JSON format as a collection of TypeScript interfaces.
@@ -330,7 +333,7 @@ Parentheses                        | `(a + b)`
 If an expression uses unsupported syntax, the _collector_ writes an error node to the `.metadata.json` file. The compiler later reports the error if it needs that
 piece of metadata to generate the application code.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
  If you want `ngc` to report syntax errors immediately rather than produce a `.metadata.json` file with errors, set the `strictMetadataEmit` option in `tsconfig`.
 

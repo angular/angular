@@ -7,11 +7,11 @@
  */
 
 
-import {ComponentFactory, DoCheck, ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
+import {DoCheck, ViewEncapsulation, createInjector, defineInjectable, defineInjector} from '../../src/core';
 import {getRenderedText} from '../../src/render3/component';
-import {LifecycleHooksFeature, defineComponent, directiveInject, markDirty} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding, tick} from '../../src/render3/instructions';
-import {ComponentDef, DirectiveDef, RenderFlags} from '../../src/render3/interfaces/definition';
+import {ComponentFactory, LifecycleHooksFeature, defineComponent, directiveInject, markDirty} from '../../src/render3/index';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, text, textBinding, tick} from '../../src/render3/instructions';
+import {ComponentDefInternal, DirectiveDefInternal, RenderFlags} from '../../src/render3/interfaces/definition';
 import {createRendererType2} from '../../src/view/index';
 
 import {getRendererFactory2} from './imported_renderer2';
@@ -98,24 +98,7 @@ describe('component', () => {
       const fixture = new ComponentFixture(MyComponent, {injector: createInjector(MyModule)});
       expect(fixture.html).toEqual('injector');
     });
-  }
 
-  function template(ctx: {items: string[]}, cm: boolean) {
-    if (cm) {
-      elementStart(0, 'wrapper');
-      elementEnd();
-    }
-    elementProperty(0, 'items', bind(ctx.items));
-  }
-
-  const defs = [WrapperComponent.ngComponentDef];
-
-  it('should re-render on input change', () => {
-    const ctx: {items: string[]} = {items: ['a']};
-    expect(renderToHtml(template, ctx, defs)).toEqual('<wrapper>a</wrapper>');
-
-    ctx.items = [...ctx.items, 'b'];
-    expect(renderToHtml(template, ctx, defs)).toEqual('<wrapper>ab</wrapper>');
   });
 
 });
@@ -147,7 +130,8 @@ describe('component with a container', () => {
   }
 
   class WrapperComponent {
-    items: string[];
+    // TODO(issue/24571): remove '!'.
+    items !: string[];
     static ngComponentDef = defineComponent({
       type: WrapperComponent,
       selectors: [['wrapper']],
@@ -172,8 +156,7 @@ describe('component with a container', () => {
 
   function template(rf: RenderFlags, ctx: {items: string[]}) {
     if (rf & RenderFlags.Create) {
-      elementStart(0, 'wrapper');
-      elementEnd();
+      element(0, 'wrapper');
     }
     if (rf & RenderFlags.Update) {
       elementProperty(0, 'items', bind(ctx.items));
@@ -201,8 +184,7 @@ describe('encapsulation', () => {
       selectors: [['wrapper']],
       template: function(rf: RenderFlags, ctx: WrapperComponent) {
         if (rf & RenderFlags.Create) {
-          elementStart(0, 'encapsulated');
-          elementEnd();
+          element(0, 'encapsulated');
         }
       },
       factory: () => new WrapperComponent,
@@ -217,8 +199,7 @@ describe('encapsulation', () => {
       template: function(rf: RenderFlags, ctx: EncapsulatedComponent) {
         if (rf & RenderFlags.Create) {
           text(0, 'foo');
-          elementStart(1, 'leaf');
-          elementEnd();
+          element(1, 'leaf');
         }
       },
       factory: () => new EncapsulatedComponent,
@@ -264,8 +245,7 @@ describe('encapsulation', () => {
         selectors: [['wrapper']],
         template: function(rf: RenderFlags, ctx: WrapperComponentWith) {
           if (rf & RenderFlags.Create) {
-            elementStart(0, 'leaf');
-            elementEnd();
+            element(0, 'leaf');
           }
         },
         factory: () => new WrapperComponentWith,
@@ -332,8 +312,7 @@ describe('recursive components', () => {
             if (ctx.data.left != null) {
               let rf0 = embeddedViewStart(0);
               if (rf0 & RenderFlags.Create) {
-                elementStart(0, 'tree-comp');
-                elementEnd();
+                element(0, 'tree-comp');
               }
               if (rf0 & RenderFlags.Update) {
                 elementProperty(0, 'data', bind(ctx.data.left));
@@ -347,8 +326,7 @@ describe('recursive components', () => {
             if (ctx.data.right != null) {
               let rf0 = embeddedViewStart(0);
               if (rf0 & RenderFlags.Create) {
-                elementStart(0, 'tree-comp');
-                elementEnd();
+                element(0, 'tree-comp');
               }
               if (rf0 & RenderFlags.Update) {
                 elementProperty(0, 'data', bind(ctx.data.right));
@@ -363,7 +341,7 @@ describe('recursive components', () => {
     });
   }
 
-  (TreeComponent.ngComponentDef as ComponentDef<TreeComponent>).directiveDefs =
+  (TreeComponent.ngComponentDef as ComponentDefInternal<TreeComponent>).directiveDefs =
       () => [TreeComponent.ngComponentDef];
 
   function _buildTree(currDepth: number): TreeNode {
@@ -381,4 +359,28 @@ describe('recursive components', () => {
     tick(comp);
     expect(events).toEqual(['check6', 'check2', 'check0', 'check1', 'check5', 'check3', 'check4']);
   });
+
+  it('should map inputs minified & unminified names', async() => {
+    class TestInputsComponent {
+      // TODO(issue/24571): remove '!'.
+      minifiedName !: string;
+      static ngComponentDef = defineComponent({
+        type: TestInputsComponent,
+        selectors: [['test-inputs']],
+        inputs: {minifiedName: 'unminifiedName'},
+        factory: () => new TestInputsComponent(),
+        template: function(rf: RenderFlags, ctx: TestInputsComponent): void {
+          // Template not needed for this test
+        }
+      });
+    }
+
+    const testInputsComponentFactory = new ComponentFactory(TestInputsComponent.ngComponentDef);
+
+    expect([
+      {propName: 'minifiedName', templateName: 'unminifiedName'}
+    ]).toEqual(testInputsComponentFactory.inputs);
+
+  });
+
 });

@@ -16,7 +16,7 @@ import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_sty
 import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, iteratorToArray, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
-import {getBodyNode, getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
+import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
 
 const QUEUED_CLASSNAME = 'ng-animate-queued';
 const QUEUED_SELECTOR = '.ng-animate-queued';
@@ -530,7 +530,9 @@ export class TransitionAnimationEngine {
   /** @internal */
   _onRemovalComplete(element: any, context: any) { this.onRemovalComplete(element, context); }
 
-  constructor(public driver: AnimationDriver, private _normalizer: AnimationStyleNormalizer) {}
+  constructor(
+      public bodyNode: any, public driver: AnimationDriver,
+      private _normalizer: AnimationStyleNormalizer) {}
 
   get queuedPlayers(): TransitionAnimationPlayer[] {
     const players: TransitionAnimationPlayer[] = [];
@@ -740,10 +742,10 @@ export class TransitionAnimationEngine {
 
   private _buildInstruction(
       entry: QueueInstruction, subTimelines: ElementInstructionMap, enterClassName: string,
-      leaveClassName: string) {
+      leaveClassName: string, skipBuildAst?: boolean) {
     return entry.transition.build(
         this.driver, entry.element, entry.fromState.value, entry.toState.value, enterClassName,
-        leaveClassName, entry.fromState.options, entry.toState.options, subTimelines);
+        leaveClassName, entry.fromState.options, entry.toState.options, subTimelines, skipBuildAst);
   }
 
   destroyInnerAnimations(containerElement: any) {
@@ -890,7 +892,7 @@ export class TransitionAnimationEngine {
       }
     });
 
-    const bodyNode = getBodyNode();
+    const bodyNode = this.bodyNode;
     const allTriggerElements = Array.from(this.statesByElement.keys());
     const enterNodeMap = buildRootMap(allTriggerElements, this.collectedEnterElements);
 
@@ -962,17 +964,24 @@ export class TransitionAnimationEngine {
           }
         }
 
-        if (!bodyNode || !this.driver.containsElement(bodyNode, element)) {
-          player.destroy();
+        const nodeIsOrphaned = !bodyNode || !this.driver.containsElement(bodyNode, element);
+        const leaveClassName = leaveNodeMapIds.get(element) !;
+        const enterClassName = enterNodeMapIds.get(element) !;
+        const instruction = this._buildInstruction(
+            entry, subTimelines, enterClassName, leaveClassName, nodeIsOrphaned) !;
+        if (instruction.errors && instruction.errors.length) {
+          erroneousTransitions.push(instruction);
           return;
         }
 
-        const leaveClassName = leaveNodeMapIds.get(element) !;
-        const enterClassName = enterNodeMapIds.get(element) !;
-        const instruction =
-            this._buildInstruction(entry, subTimelines, enterClassName, leaveClassName) !;
-        if (instruction.errors && instruction.errors.length) {
-          erroneousTransitions.push(instruction);
+        // even though the element may not be apart of the DOM, it may
+        // still be added at a later point (due to the mechanics of content
+        // projection and/or dynamic component insertion) therefore it's
+        // important we still style the element.
+        if (nodeIsOrphaned) {
+          player.onStart(() => eraseStyles(element, instruction.fromStyles));
+          player.onDestroy(() => setStyles(element, instruction.toStyles));
+          skippedPlayers.push(player);
           return;
         }
 
@@ -1415,7 +1424,8 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
 
   private _queuedCallbacks: {[name: string]: (() => any)[]} = {};
   public readonly destroyed = false;
-  public parentPlayer: AnimationPlayer;
+  // TODO(issue/24571): remove '!'.
+  public parentPlayer !: AnimationPlayer;
 
   public markedForDestroy: boolean = false;
   public disabled = false;
@@ -1504,7 +1514,7 @@ export class TransitionAnimationPlayer implements AnimationPlayer {
 
   getPosition(): number { return this.queued ? 0 : this._player.getPosition(); }
 
-  /* @internal */
+  /** @internal */
   triggerCallback(phaseName: string): void {
     const p = this._player as any;
     if (p.triggerCallback) {

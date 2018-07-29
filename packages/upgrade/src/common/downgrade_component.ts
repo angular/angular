@@ -34,18 +34,23 @@ interface Thenable<T> {
  * Let's assume that you have an Angular component called `ng2Heroes` that needs
  * to be made available in AngularJS templates.
  *
- * {@example upgrade/static/ts/module.ts region="ng2-heroes"}
+ * {@example upgrade/static/ts/full/module.ts region="ng2-heroes"}
  *
  * We must create an AngularJS [directive](https://docs.angularjs.org/guide/directive)
  * that will make this Angular component available inside AngularJS templates.
  * The `downgradeComponent()` function returns a factory function that we
  * can use to define the AngularJS directive that wraps the "downgraded" component.
  *
- * {@example upgrade/static/ts/module.ts region="ng2-heroes-wrapper"}
+ * {@example upgrade/static/ts/full/module.ts region="ng2-heroes-wrapper"}
  *
  * @param info contains information about the Component that is being downgraded:
  *
  * * `component: Type<any>`: The type of the Component that will be downgraded
+ * * `propagateDigest?: boolean`: Whether to perform {@link ChangeDetectorRef#detectChanges
+ *   change detection} on the component on every
+ *   [$digest](https://docs.angularjs.org/api/ng/type/$rootScope.Scope#$digest). If set to `false`,
+ *   change detection will still be performed when any of the component's inputs changes.
+ *   (Default: true)
  *
  * @returns a factory function that can be used to register the component in an
  * AngularJS module.
@@ -158,7 +163,8 @@ export function downgradeComponent(info: {
  * to preserve the synchronous nature of Angular 1's $compile.
  */
 class ParentInjectorPromise {
-  private injector: Injector;
+  // TODO(issue/24571): remove '!'.
+  private injector !: Injector;
   private injectorKey: string = controllerKey(INJECTOR_KEY);
   private callbacks: ((injector: Injector) => any)[] = [];
 

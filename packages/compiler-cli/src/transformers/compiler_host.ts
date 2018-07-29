@@ -12,21 +12,17 @@ import * as ts from 'typescript';
 
 import {TypeCheckHost} from '../diagnostics/translate_diagnostics';
 import {METADATA_VERSION, ModuleMetadata} from '../metadata/index';
-import {NgtscCompilerHost} from '../ngtsc/compiler_host';
 
 import {CompilerHost, CompilerOptions, LibrarySummary} from './api';
 import {MetadataReaderHost, createMetadataReaderCache, readMetadata} from './metadata_reader';
 import {DTS, GENERATED_FILES, isInRootDir, relativeToRootDirs} from './util';
 
-const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-)+|(@(\w|-)+\/(\w|-)+))/;
+const NODE_MODULES_PACKAGE_NAME = /node_modules\/((\w|-|\.)+|(@(\w|-|\.)+\/(\w|-|\.)+))/;
 const EXT = /(\.ts|\.d\.ts|\.js|\.jsx|\.tsx)$/;
 
 export function createCompilerHost(
     {options, tsHost = ts.createCompilerHost(options, true)}:
         {options: CompilerOptions, tsHost?: ts.CompilerHost}): CompilerHost {
-  if (options.enableIvy === 'ngtsc' || options.enableIvy === 'tsc') {
-    return new NgtscCompilerHost(tsHost);
-  }
   return tsHost;
 }
 
@@ -74,10 +70,14 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   private emitter = new TypeScriptEmitter();
   private metadataReaderHost: MetadataReaderHost;
 
-  getCancellationToken: () => ts.CancellationToken;
-  getDefaultLibLocation: () => string;
-  trace: (s: string) => void;
-  getDirectories: (path: string) => string[];
+  // TODO(issue/24571): remove '!'.
+  getCancellationToken !: () => ts.CancellationToken;
+  // TODO(issue/24571): remove '!'.
+  getDefaultLibLocation !: () => string;
+  // TODO(issue/24571): remove '!'.
+  trace !: (s: string) => void;
+  // TODO(issue/24571): remove '!'.
+  getDirectories !: (path: string) => string[];
   directoryExists?: (directoryName: string) => boolean;
 
   constructor(

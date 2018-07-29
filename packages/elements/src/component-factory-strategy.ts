@@ -44,10 +44,12 @@ export class ComponentNgElementStrategyFactory implements NgElementStrategyFacto
  */
 export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Merged stream of the component's output events. */
-  events: Observable<NgElementStrategyEvent>;
+  // TODO(issue/24571): remove '!'.
+  events !: Observable<NgElementStrategyEvent>;
 
   /** Reference to the component that was created on connect. */
-  private componentRef: ComponentRef<any>|null;
+  // TODO(issue/24571): remove '!'.
+  private componentRef !: ComponentRef<any>| null;
 
   /** Changes that have been made to the component ref since the last time onChanges was called. */
   private inputChanges: SimpleChanges|null = null;

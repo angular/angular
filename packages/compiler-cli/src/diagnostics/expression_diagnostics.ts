@@ -185,7 +185,8 @@ export function getExpressionScope(
 
 class ExpressionDiagnosticsVisitor extends RecursiveTemplateAstVisitor {
   private path: TemplateAstPath;
-  private directiveSummary: CompileDirectiveSummary;
+  // TODO(issue/24571): remove '!'.
+  private directiveSummary !: CompileDirectiveSummary;
 
   diagnostics: ExpressionDiagnostic[] = [];
 

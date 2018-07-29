@@ -35,12 +35,13 @@ function mockSystem(modules: {[module: string]: any}) {
 
     it('loads a default factory by appending the factory suffix', async(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());
-         loader.load('test').then(contents => { expect(contents).toBe('test module factory'); });
+         loader.load('test').then(
+             contents => { expect(contents).toBe('test module factory' as any); });
        }));
     it('loads a named factory by appending the factory suffix', async(() => {
          const loader = new SystemJsNgModuleLoader(new Compiler());
          loader.load('test#Named').then(contents => {
-           expect(contents).toBe('test NamedNgFactory');
+           expect(contents).toBe('test NamedNgFactory' as any);
          });
        }));
     it('loads a named factory with a configured prefix and suffix', async(() => {
@@ -49,7 +50,7 @@ function mockSystem(modules: {[module: string]: any}) {
            factoryPathSuffix: '/suffixed',
          });
          loader.load('test#Named').then(contents => {
-           expect(contents).toBe('test module factory');
+           expect(contents).toBe('test module factory' as any);
          });
        }));
   });

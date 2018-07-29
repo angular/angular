@@ -115,12 +115,20 @@ export function setupTestingRouter(
     opts?: ExtraOptions | UrlHandlingStrategy, urlHandlingStrategy?: UrlHandlingStrategy) {
   const router = new Router(
       null !, urlSerializer, contexts, location, injector, loader, compiler, flatten(routes));
-  // Handle deprecated argument ordering.
   if (opts) {
+    // Handle deprecated argument ordering.
     if (isUrlHandlingStrategy(opts)) {
       router.urlHandlingStrategy = opts;
-    } else if (opts.paramsInheritanceStrategy) {
-      router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
+    } else {
+      // Handle ExtraOptions
+
+      if (opts.malformedUriErrorHandler) {
+        router.malformedUriErrorHandler = opts.malformedUriErrorHandler;
+      }
+
+      if (opts.paramsInheritanceStrategy) {
+        router.paramsInheritanceStrategy = opts.paramsInheritanceStrategy;
+      }
     }
   }
 
@@ -172,7 +180,8 @@ export function setupTestingRouter(
   ]
 })
 export class RouterTestingModule {
-  static withRoutes(routes: Routes, config?: ExtraOptions): ModuleWithProviders {
+  static withRoutes(routes: Routes, config?: ExtraOptions):
+      ModuleWithProviders<RouterTestingModule> {
     return {
       ngModule: RouterTestingModule,
       providers: [

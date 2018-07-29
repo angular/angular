@@ -141,7 +141,8 @@ export const formControlBinding: any = {
 export class FormControlDirective extends NgControl implements OnChanges {
   viewModel: any;
 
-  @Input('formControl') form: FormControl;
+  // TODO(issue/24571): remove '!'.
+  @Input('formControl') form !: FormControl;
 
   @Input('disabled')
   set isDisabled(isDisabled: boolean) { ReactiveErrors.disabledAttrWarning(); }

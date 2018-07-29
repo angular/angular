@@ -7,7 +7,7 @@
  */
 
 import {ɵAnimationEngine} from '@angular/animations/browser';
-import {PlatformLocation, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
+import {PlatformLocation, ViewportScroller, ɵNullViewportScroller as NullViewportScroller, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
 import {Injectable, InjectionToken, Injector, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, StaticProvider, Testability, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
 import {HttpModule} from '@angular/http';
@@ -74,6 +74,7 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
     SERVER_RENDER_PROVIDERS,
     SERVER_HTTP_PROVIDERS,
     {provide: Testability, useValue: null},
+    {provide: ViewportScroller, useClass: NullViewportScroller},
   ],
 })
 export class ServerModule {

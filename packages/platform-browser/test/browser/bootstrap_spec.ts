@@ -12,7 +12,7 @@ import {ApplicationRef, destroyPlatform} from '@angular/core/src/application_ref
 import {Console} from '@angular/core/src/console';
 import {ComponentRef} from '@angular/core/src/linker/component_factory';
 import {Testability, TestabilityRegistry} from '@angular/core/src/testability/testability';
-import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, iit, inject, it} from '@angular/core/testing/src/testing_internal';
+import {AsyncTestCompleter, Log, afterEach, beforeEach, beforeEachProviders, describe, fit, inject, it} from '@angular/core/testing/src/testing_internal';
 import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
@@ -79,8 +79,9 @@ class HelloUrlCmp {
 
 @Directive({selector: '[someDir]', host: {'[title]': 'someDir'}})
 class SomeDirective {
+  // TODO(issue/24571): remove '!'.
   @Input()
-  someDir: string;
+  someDir !: string;
 }
 
 @Pipe({name: 'somePipe'})
@@ -211,9 +212,10 @@ function bootstrap(
          bootstrap(RootCmp, [{provide: ErrorHandler, useValue: errorHandler}], [], [
            CustomModule
          ]).then(null, (e: Error) => {
-           expect(e.message).toContain(`StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: 
-  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: 
-    NullInjectorError: No provider for IDontExist!`);
+           expect(e.message).toContain(
+               'StaticInjectorError(TestModule)[CustomCmp -> IDontExist]: \n' +
+               '  StaticInjectorError(Platform: core)[CustomCmp -> IDontExist]: \n' +
+               '    NullInjectorError: No provider for IDontExist!');
            async.done();
            return null;
          });
@@ -254,7 +256,7 @@ function bootstrap(
 
     it('should create an injector promise', () => {
       const refPromise = bootstrap(HelloRootCmp, testProviders);
-      expect(refPromise).not.toBe(null);
+      expect(refPromise).toEqual(jasmine.any(Promise));
     });
 
     it('should set platform name to browser',

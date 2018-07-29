@@ -11,3 +11,4 @@ export const R3_COMPILE_COMPONENT: ((type: any, meta: any) => void)|null = null;
 export const R3_COMPILE_DIRECTIVE: ((type: any, meta: any) => void)|null = null;
 export const R3_COMPILE_INJECTABLE: ((type: any, meta: any) => void)|null = null;
 export const R3_COMPILE_NGMODULE: ((type: any, meta: any) => void)|null = null;
+export const R3_COMPILE_PIPE: ((type: any, meta: any) => void)|null = null;

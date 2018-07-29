@@ -1,6 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ts_library", "ng_package")
+load("//tools:defaults.bzl", "ng_package", "ts_library")
 
 ts_library(
     name = "compiler",
@@ -21,7 +21,11 @@ ng_package(
     ],
     entry_point = "packages/compiler/compiler.js",
     include_devmode_srcs = True,
-    tags = ["release-with-framework"],
+    tags = [
+        "ivy-jit",
+        "ivy-local",
+        "release-with-framework",
+    ],
     deps = [
         ":compiler",
         "//packages/compiler/testing",

@@ -870,7 +870,7 @@ A search value reaches the service only if it's a new value and the user has sto
 -->
 이렇게 작성하면 사용자가 멈췄을 때, 새로운 값일 때만 서비스로 검색어가 전달됩니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 The `withRefresh` option is explained [below](#cache-refresh).
@@ -905,7 +905,8 @@ server returns them out of order.
 -->
 3. 이 연산자는 연산자에 전달된 스트림 순서로 결과를 반환합니다. 서버에서 어떤 순서로 반환하는지는 관계없습니다.
 
-<div class="l-sub-section">
+
+<div class="alert is-helpful">
 
 <!--
 If you think you'll reuse this debouncing logic,
@@ -956,6 +957,7 @@ To implement an interceptor, declare a class that implements the `intercept()` m
  Here is a do-nothing _noop_ interceptor that simply passes the request through without touching it:
 -->
 다음 코드는 기존 HTTP 요청을 변형하지 않고 그대로 통과시키는 인터셉터 기본 코드입니다:
+
 <code-example 
   path="http/src/app/http-interceptors/noop-interceptor.ts"
   title="app/http-interceptors/noop-interceptor.ts"
@@ -1098,7 +1100,7 @@ you won't have to revisit the `AppModule`.
 -->
 이제 새로운 인터셉터를 추가했을 때 `httpInterceptorProviders`에 등록하기만 하면, `AppModule`은 따로 수정하지 않아도 됩니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 There are many more interceptors in the complete sample code.
@@ -1481,7 +1483,7 @@ The _cache-then-refresh_ option is triggered by the presence of a **custom `x-re
 -->
 이 때 업데이트 방식으로 동작하는지는 **`x-refresh`라는 커스텀 헤더**로 설정합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 A checkbox on the `PackageSearchComponent` toggles a `withRefresh` flag,
@@ -1838,7 +1840,7 @@ Call `request.flush()` with an error message, as seen in the following example.
 <!--
 <code-example 
   path="http/src/testing/http-client.spec.ts"
-  region="network-error"
+  region="404"
   linenums="false">
 </code-example>
 -->

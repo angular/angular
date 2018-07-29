@@ -11,9 +11,9 @@ import {stringifyElement} from '@angular/platform-browser/testing/src/browser_ut
 import {Injector} from '../../src/di/injector';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
-import {ComponentDef, ComponentTemplate, ComponentType, DirectiveDef, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
+import {ComponentTemplate, ComponentType, DirectiveDefInternal, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, renderTemplate} from '../../src/render3/instructions';
-import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, PipeDef, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
+import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, PipeDefInternal, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {LElementNode} from '../../src/render3/interfaces/node';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {Sanitizer} from '../../src/sanitization/security';
@@ -32,11 +32,7 @@ export abstract class BaseFixture {
   /**
    * Current state of rendered HTML.
    */
-  get html(): string {
-    return (this.hostElement as any as Element)
-        .innerHTML.replace(/ style=""/g, '')
-        .replace(/ class=""/g, '');
-  }
+  get html(): string { return toHtml(this.hostElement as any as Element); }
 }
 
 function noop() {}
@@ -135,7 +131,7 @@ export class ComponentFixture<T> extends BaseFixture {
 // Fixtures above are preferred way of testing Components and Templates
 ///////////////////////////////////////////////////////////////////////////////////
 
-export const document = ((global || window) as any).document;
+export const document = ((typeof global == 'object' && global || window) as any).document;
 export let containerEl: HTMLElement = null !;
 let host: LElementNode|null;
 const isRenderer2 =
@@ -184,13 +180,13 @@ export function renderToHtml(
 
 function toDefs(
     types: DirectiveTypesOrFactory | undefined | null,
-    mapFn: (type: Type<any>) => DirectiveDef<any>): DirectiveDefList|null;
+    mapFn: (type: Type<any>) => DirectiveDefInternal<any>): DirectiveDefList|null;
 function toDefs(
     types: PipeTypesOrFactory | undefined | null,
-    mapFn: (type: Type<any>) => PipeDef<any>): PipeDefList|null;
+    mapFn: (type: Type<any>) => PipeDefInternal<any>): PipeDefList|null;
 function toDefs(
     types: PipeTypesOrFactory | DirectiveTypesOrFactory | undefined | null,
-    mapFn: (type: Type<any>) => PipeDef<any>| DirectiveDef<any>): any {
+    mapFn: (type: Type<any>) => PipeDefInternal<any>| DirectiveDefInternal<any>): any {
   if (!types) return null;
   if (typeof types == 'function') {
     types = types();
@@ -223,15 +219,17 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
   } else {
     return stringifyElement(componentOrElement)
         .replace(/^<div host="">/, '')
+        .replace(/^<div fixture="mark">/, '')
         .replace(/<\/div>$/, '')
         .replace(' style=""', '')
-        .replace(/<!--[\w]*-->/g, '');
+        .replace(/<!--container-->/g, '');
   }
 }
 
 export function createComponent(
     name: string, template: ComponentTemplate<any>, directives: DirectiveTypesOrFactory = [],
-    pipes: PipeTypesOrFactory = []): ComponentType<any> {
+    pipes: PipeTypesOrFactory = [],
+    viewQuery: ComponentTemplate<any>| null = null): ComponentType<any> {
   return class Component {
     value: any;
     static ngComponentDef = defineComponent({
@@ -239,6 +237,7 @@ export function createComponent(
       selectors: [[name]],
       factory: () => new Component,
       template: template,
+      viewQuery: viewQuery,
       features: [PublicFeature],
       directives: directives,
       pipes: pipes

@@ -789,7 +789,7 @@ You are setting the *properties* of DOM elements, components, and directives.
 사실 데이터 바인딩을 사용하고 나면 더이상 HTML *어트리뷰트* 를 직접 조작할 필요가 없습니다.
 단지 DOM 엘리먼트나 컴포넌트, 디렉티브의 *프로퍼티* 값만 지정하게 될 뿐입니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 ### HTML attribute vs. DOM property
@@ -1166,7 +1166,7 @@ You can't bind to a property of the target element to _read_ it. You can only _s
 그래서 대상 엘리먼트의 값을 *가져오는* 용도로는 프로퍼티 바인딩을 사용할 수 없습니다.
 이 말은 대상 엘리먼트의 값을 *읽는 용도*로는 프로퍼티를 바인딩 할 수 없다는 뜻입니다. 대상 엘리먼트의 값을 *설정하는 용도로만* 프로퍼티 바인딩 할 수 있습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 Similarly, you cannot use property binding to *call* a method on the target element.
@@ -1231,7 +1231,7 @@ as it is in the following example:
 <code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 Technically, Angular is matching the name to a directive [input](guide/template-syntax#inputs-outputs),
@@ -1463,7 +1463,7 @@ You can set the value of an attribute directly with an **attribute binding**.
 -->
 **어트리뷰트 바인딩** 을 사용하면 어트리뷰트의 값을 직접 설정할 수 있습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 This is the only exception to the rule that a binding sets a target property.
@@ -1619,7 +1619,7 @@ It removes the class when the expression is falsy.
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 While this is a fine way to toggle a single class name,
@@ -1664,7 +1664,7 @@ The following example conditionally sets the font size in  “em” and “%” 
 <code-example path="template-syntax/src/app/app.component.html" region="style-binding-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 While this is a fine way to set a single style,
@@ -1675,7 +1675,7 @@ the [NgStyle directive](guide/template-syntax#ngStyle) is generally preferred wh
 
 </div>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 Note that a _style property_ name can be written in either
@@ -1763,7 +1763,7 @@ of a known directive, as it does in the following example:
 <code-example path="template-syntax/src/app/app.component.html" region="event-binding-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 The `myClick` directive is further described in the section
@@ -2189,7 +2189,7 @@ Adding an `ngClass` property binding to `currentClasses` sets the element's clas
 <code-example path="template-syntax/src/app/app.component.html" region="NgClass-1" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 It's up to you to call `setCurrentClasses()`, both initially and when the dependent properties change.
@@ -2248,7 +2248,7 @@ Adding an `ngStyle` property binding to `currentStyles` sets the element's style
 <code-example path="template-syntax/src/app/app.component.html" region="NgStyle-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 It's up to you to call `setCurrentStyles()`, both initially and when the dependent properties change.
@@ -2336,7 +2336,7 @@ That `ngModel` directive hides these onerous details behind its own  `ngModel` i
 <code-example path="template-syntax/src/app/app.component.html" region="NgModel-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 The `ngModel` data property sets the element's value property and the `ngModelChange` event property
@@ -2581,7 +2581,7 @@ The `nullHero` will never be displayed.
 <code-example path="template-syntax/src/app/app.component.html" region="NgIf-2" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 See also the
@@ -2728,7 +2728,7 @@ The next example captures the `index` in a variable named `i` and displays it wi
 <code-example path="template-syntax/src/app/app.component.html" region="NgFor-3" title="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 `NgFor` is implemented by the `NgForOf` directive. Read more about the other `NgForOf` context values such as `last`, `even`,
@@ -3229,7 +3229,7 @@ because the data bound properties are annotated with `@Input()` and `@Output()` 
 <code-example path="template-syntax/src/app/hero-detail.component.ts" region="input-output-1" title="src/app/hero-detail.component.ts" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 Alternatively, you can identify members in the `inputs` and `outputs` arrays
@@ -3328,7 +3328,7 @@ You can specify the alias for the property name by passing it into the input/out
 <code-example path="template-syntax/src/app/click.directive.ts" region="output-myClick" title="src/app/click.directive.ts" linenums="false">
 </code-example>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 You can also alias property names in the `inputs` and `outputs` arrays.

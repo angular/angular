@@ -30,7 +30,9 @@ genrule(
     name = "ngsw_worker_renamed",
     srcs = ["//packages/service-worker/worker:ngsw_worker.es6.js"],
     outs = ["ngsw-worker.js"],
-    cmd = "cp $< $@",
+    # Remove sourcemap since this file will be served in production site
+    # See https://github.com/angular/angular/issues/23596
+    cmd = "grep -v '//# sourceMappingURL' < $< > $@",
 )
 
 ng_package(
@@ -47,21 +49,9 @@ ng_package(
     ],
     entry_point = "packages/service-worker/index.js",
     tags = [
+        "ivy-jit",
         "release-with-framework",
     ],
-    deps = [
-        ":service-worker",
-        "//packages/service-worker/config",
-    ],
-)
-
-ng_package(
-    name = "npm_package",
-    srcs = [
-        "package.json",
-        "//packages/service-worker/config:package.json",
-    ],
-    entry_point = "packages/service-worker/index.js",
     deps = [
         ":service-worker",
         "//packages/service-worker/config",

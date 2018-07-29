@@ -1105,37 +1105,25 @@ As always, strive for consistency.
 -->
 <a href="#toc">맨 위로</a>
 
-{@a 02-06}
+{@a 05-02}
 
 <!--
-### Directive selectors
+### Component selectors
 -->
-### 디렉티브 셀렉터
+### 컴포넌트 셀렉터
 
 <!--
-#### Style 02-06
+#### Style 05-02
 -->
-#### 스타일 02-06
+#### 스타일 05-02
 
 <div class="s-rule do">
 
 
 <!--
-**Do** Use lower camel case for naming the selectors of directives.
+**Do** use _dashed-case_ or _kebab-case_ for naming the element selectors of components.
 -->
-디렉티브의 셀렉터 이름은 소문자 캐멀 케이스로 **정의하세요.**
-
-</div>
-
-
-
-<div class="s-why">
-
-
-<!--
-**Why?** Keeps the names of the properties defined in the directives that are bound to the view consistent with the attribute names.
--->
-**왜?** 디렉티브에 정의된 프로퍼티들은 뷰에서 어트리뷰트 이름으로 바인딩되어 사용됩니다. 엘리먼트의 프로퍼티로 사용하는 방식이 자연스럽기 때문에 소문자 캐멀 케이스로 사용하는 것이 좋습니다.
+컴포넌트의 셀렉터 이름은 _대시-케이스_ 나 _케밥-케이스_ 로 **정의하세요.**
 
 </div>
 
@@ -1144,12 +1132,33 @@ As always, strive for consistency.
 <div class="s-why-last">
 
 
-<!--
-**Why?** The Angular HTML parser is case sensitive and recognizes lower camel case.
--->
-**왜?** Angular HTML 파서는 대소문자를 구분하기 때문에 소문자 캐멀 케이스를 그대로 사용할 수 있습니다.
+**Why?** Keeps the element names consistent with the specification for [Custom Elements](https://www.w3.org/TR/custom-elements/).
 
 </div>
+
+
+
+<code-example path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" title="app/heroes/shared/hero-button/hero-button.component.ts">
+
+</code-example>
+
+
+
+
+
+<code-tabs>
+
+  <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
+
+  </code-pane>
+
+  <code-pane title="app/app.component.html" path="styleguide/src/05-02/app/app.component.html">
+
+  </code-pane>
+
+</code-tabs>
+
+
 
 <!--
 <a href="#toc">Back to top</a>
@@ -1159,7 +1168,7 @@ As always, strive for consistency.
 {@a 02-07}
 
 <!--
-### Custom prefix for components
+### Component custom prefix
 -->
 ### 커스텀 컴포넌트의 접두사
 
@@ -1272,12 +1281,52 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
+<a href="#toc">Back to top</a>
 
+{@a 02-06}
+
+### Directive selectors
+
+#### Style 02-06
+
+
+<div class="s-rule do">
+
+
+
+**Do** Use lower camel case for naming the selectors of directives.
+
+
+</div>
+
+
+
+<div class="s-why">
+
+
+
+**Why?** Keeps the names of the properties defined in the directives that are bound to the view consistent with the attribute names.
+
+
+</div>
+
+
+
+<div class="s-why-last">
+
+
+
+**Why?** The Angular HTML parser is case sensitive and recognizes lower camel case.
+
+
+</div>
+
+<a href="#toc">Back to top</a>
 
 {@a 02-08}
 
 <!--
-### Custom prefix for directives
+### Directive custom prefix
 -->
 ### 커스텀 디렉티브의 접두사
 
@@ -2711,7 +2760,7 @@ _알아볼 수 없게 줄여놓은_ 파일 이름보다, 조금은 길지만 파
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--
@@ -3189,7 +3238,7 @@ Here is a compliant folder and file structure:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--
@@ -3608,13 +3657,11 @@ module are referenced across the entire application.
 <div class="s-rule avoid">
 
 
-<!--
-**Avoid** providing services in shared modules. Services are usually
+
+**Consider** _not_ providing services in shared modules. Services are usually
 singletons that are provided once for the entire application or
-in a particular feature module.
--->
-공통 기능 모듈에 서비스를 구현하는 것은 **피하세요.**
-일반적으로 서비스는 애플리케이션 전체나 특정 모듈에서 싱글턴 인스턴스로만 존재하는 것이 좋습니다.
+in a particular feature module. There are exceptions, however. For example, in the sample code that follows, notice that the `SharedModule` provides `FilterTextService`. This is acceptable here because the service is stateless;that is, the consumers of the service aren't impacted by new instances.
+
 
 </div>
 
@@ -4172,7 +4219,7 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--
@@ -4356,69 +4403,6 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 -->
 ## 컴포넌트
 
-{@a 05-02}
-
-<!--
-### Component selector names
--->
-### 컴포넌트 셀렉터
-
-<!--
-#### Style 05-02
--->
-#### 스타일 05-02
-
-<div class="s-rule do">
-
-
-<!--
-**Do** use _dashed-case_ or _kebab-case_ for naming the element selectors of components.
--->
-컴포넌트의 엘리먼트 셀렉터 이름은 대시를 사용하는 _케밥-케이스(`kebab-case`)_ 로 **지정하세요.**
-
-</div>
-
-
-
-<div class="s-why-last">
-
-
-<!--
-**Why?** Keeps the element names consistent with the specification for [Custom Elements](https://www.w3.org/TR/custom-elements/).
--->
-**왜?** 엘리먼트 이름은 [커스텀 엘리먼트](https://www.w3.org/TR/custom-elements/)에서 지정한 표준을 따르는 것이 좋습니다.
-
-</div>
-
-
-
-<code-example path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.avoid.ts" region="example" title="app/heroes/shared/hero-button/hero-button.component.ts">
-
-</code-example>
-
-
-
-
-
-<code-tabs>
-
-  <code-pane title="app/heroes/shared/hero-button/hero-button.component.ts" path="styleguide/src/05-02/app/heroes/shared/hero-button/hero-button.component.ts" region="example">
-
-  </code-pane>
-
-  <code-pane title="app/app.component.html" path="styleguide/src/05-02/app/app.component.html">
-
-  </code-pane>
-
-</code-tabs>
-
-
-
-<!--
-<a href="#toc">Back to top</a>
--->
-<a href="#toc">맨 위로</a>
-
 {@a 05-03}
 
 <!--
@@ -4464,7 +4448,7 @@ Developers place components on the page as they would native HTML elements and w
 
 </div>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 There are a few cases where you give a component an attribute, such as when you want to augment a built-in element. For example, [Material Design](https://material.angular.io/components/button/overview) uses this technique with `<button mat-button>`. However, you wouldn't use this technique on a custom element.
 
@@ -4913,7 +4897,10 @@ helps instantly identify which members of the component serve which purpose.
 
 {@a 05-15}
 
+<!--
 ### Delegate complex component logic to services
+-->
+### 복잡한 컴포넌트 로직은 서비스로 옮기기
 
 <!--
 #### Style 05-15
@@ -4923,9 +4910,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** limit logic in a component to only that required for the view. All other logic should be delegated to services.
-
+-->
+컴포넌트에 작성하는 로직은 뷰와 관련된 로직으로만 **제한하세요.** 뷰와 관계없는 로직은 모두 서비스로 옮기는 것이 좋습니다.
 
 </div>
 
@@ -4934,9 +4922,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** move reusable logic to services and keep components simple and focused on their intended purpose.
-
+-->
+다른 컴포넌트에서 재사용할 수 있는 로직도 서비스로 옮기세요. 컴포넌트에는 그 역할에 맞는 기능만 간결하게 작성해야 합니다.
 
 </div>
 
@@ -4945,9 +4934,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Logic may be reused by multiple components when placed within a service and exposed via a function.
-
+-->
+**왜?** 다른 컴포넌트에도 재사용할 수 있는 로직을 서비스 안에 함수로 작성하면 필요한 곳에 자유롭게 활용할 수 있습니다.
 
 </div>
 
@@ -4956,8 +4946,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Logic in a service can more easily be isolated in a unit test, while the calling logic in the component can be easily mocked.
+-->
+**왜?** 컴포넌트에서 사용하는 서비스 로직은 목업 로직으로 쉽게 대체할 수 있기 때문에 유닛 테스트에도 유리합니다.
 
 
 </div>
@@ -4967,9 +4959,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Removes dependencies and hides implementation details from the component.
-
+-->
+**왜?** 컴포넌트의 로직을 서비스로 옮기면 컴포넌트에 주입하는 의존성을 줄일 수 있으며, 컴포넌트에 꼭 필요한 로직만 작성하기 쉬워집니다.
 
 </div>
 
@@ -4978,9 +4971,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Keeps the component slim, trim, and focused.
-
+-->
+**왜?** 컴포넌트 코드는 짧게, 간결하게, 꼭 필요한 로직만 작성하세요.
 
 </div>
 

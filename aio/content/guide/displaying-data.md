@@ -28,7 +28,7 @@ The final UI looks like this:
   <img src="generated/images/guide/displaying-data/final.png" alt="최종 화면">
 </figure>
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--
@@ -103,7 +103,7 @@ interpolation:
 
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 The template is a multi-line string within ECMAScript 2015 backticks (<code>\`</code>).
@@ -125,7 +125,7 @@ when these properties change.
 그러면 컴포넌트에 있는 `title` 과 `myHero` 프로퍼티 값을 Angular가 끌어와서 템플릿에 표시합니다.
 이렇게 바인딩 된 프로퍼티는 값이 변경될 때마다 Angular가 감지해서 화면을 갱신합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--
@@ -322,7 +322,7 @@ context for the interpolation in the double curly braces.
 이 때 전달된 변수는 이중 중괄호 안에서만 유효합니다.
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 
 <!--

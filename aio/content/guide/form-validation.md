@@ -14,7 +14,7 @@ forms modules.
 
 이 문서는 사용자가 폼에 입력한 내용을 어떻게 검사하는지, 검사 결과를 화면에 메시지로 표시하려면 어떻게 해야 하는지 설명합니다. 이 때 폼 반응형 폼과 템플릿 기반 폼 모두 해당되며, 두 모듈의 기본적인 내용은 이미 알고 있다고 가정합니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 If you're new to forms, start by reviewing the [Forms](guide/forms) and 
@@ -85,9 +85,9 @@ There are messages for `required`, `minlength`, and `forbiddenName`.
 -->
 * 각각의 `<div>` 엘리먼트는 에러로 발생할 수 있는 각 상황의 에러 메시지를 표현합니다. 이 코드에서는 `required`와 `minlength`, `forbiddenName` 과 관련된 메시지가 작성되어 있습니다.
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
-
+{a 왜-dirty-와-touched-를-확인할까요}
 <!--
 #### Why check _dirty_ and _touched_?
 -->
@@ -162,7 +162,7 @@ built-in validators&mdash;this time, in function form. See below:
 
 {@a reactive-component-class}
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="form-group" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="form-group" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
 </code-example>
 
 <!--
@@ -171,7 +171,7 @@ Note that:
 다음 내용을 확인해 보세요:
 
 <!--
-* The name control sets up two built-in validators&mdash;`Validators.required` and `Validators.minLength(4)`&mdash;and one custom validator, `forbiddenNameValidator`. For more details see the [Custom validators](guide/form-validation#커스텀-유효성-검사기) section in this guide.
+* The name control sets up two built-in validators&mdash;`Validators.required` and `Validators.minLength(4)`&mdash;and one custom validator, `forbiddenNameValidator`. For more details see the [Custom validators](guide/form-validation#custom-validators) section in this guide.
 * As these validators are all sync validators, you pass them in as the second argument. 
 * Support multiple validators by passing the functions in as an array.
 * This example adds a few getter methods. In a reactive form, you can always access any form control through the `get` method on its parent group, but sometimes it's useful to define getters as shorthands 
@@ -265,7 +265,7 @@ to the `FormControl`.
 -->
 커스텀 유효성 검사기를 반응형 폼에 적용하는 것은 아주 간단합니다. `FormControl` 인스턴스를 생성할 때 인자로 전달하기만 하면 됩니다.
 
-<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.ts" region="custom-validator" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.1.ts" region="custom-validator" title="reactive/hero-form-reactive.component.ts (validator functions)" linenums="false">
 </code-example>
 
 <!--
@@ -314,7 +314,7 @@ Once the `ForbiddenValidatorDirective` is ready, you can simply add its selector
 </code-example>
 
 
-<div class="l-sub-section">
+<div class="alert is-helpful">
 
 <!--
 You may have noticed that the custom validation directive is instantiated with `useExisting`
@@ -356,6 +356,95 @@ set the color of each form control's border.
 <code-example path="form-validation/src/assets/forms.css" title="forms.css (status classes)">
 
 </code-example>
+
+## Cross field validation 
+This section shows how to perform cross field validation. It assumes some basic knowledge of creating custom validators.
+
+<div class="alert is-helpful">
+
+<!--
+If you haven't created custom validators before, start by reviewing the [custom validators section](guide/form-validation#custom-validators).
+-->
+If you haven't created custom validators before, start by reviewing the [custom validators section](guide/form-validation#커스텀-유효성-검사기).
+
+</div>
+
+In the following section, we will make sure that our heroes do not reveal their true identities by filling out the Hero Form. We will do that by validating that the hero names and alter egos do not match. 
+
+### Adding to reactive forms
+
+The form has the following structure:
+
+```javascript
+const heroForm = new FormGroup({
+  'name': new FormControl(),
+  'alterEgo': new FormControl(),
+  'power': new FormControl()
+});
+```
+
+Notice that the name and alterEgo are sibling controls. To evaluate both controls in a single custom validator, we should perform the validation in a common ancestor control: the `FormGroup`. That way, we can query the `FormGroup` for the child controls which will allow us to compare their values.
+
+To add a validator to the `FormGroup`, pass the new validator in as the second argument on creation.
+
+```javascript
+const heroForm = new FormGroup({
+  'name': new FormControl(),
+  'alterEgo': new FormControl(),
+  'power': new FormControl()
+}, { validators: identityRevealedValidator });
+```
+
+The validator code is as follows:
+
+<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-validator" title="shared/identity-revealed.directive.ts" linenums="false">
+</code-example>
+
+The identity validator implements the `ValidatorFn` interface. It takes an Angular control object as an argument and returns either null if the form is valid, or `ValidationErrors` otherwise.
+
+First we retrieve the child controls by calling the `FormGroup`'s [get](api/forms/AbstractControl#get) method. Then we simply compare the values of the `name` and `alterEgo` controls. 
+
+If the values do not match, the hero's identity remains secret, and we can safely return null. Otherwise, the hero's identity is revealed and we must mark the form as invalid by returning an error object.
+
+Next, to provide better user experience, we show an appropriate error message when the form is invalid.
+<code-example path="form-validation/src/app/reactive/hero-form-reactive.component.html" region="cross-validation-error-message" title="reactive/hero-form-template.component.html" linenums="false">
+</code-example>
+
+<!--
+Note that we check if:
+- the `FormGroup` has the cross validation error returned by the `identityRevealed` validator, 
+- the user is yet to [interact](guide/form-validation#why-check-dirty-and-touched) with the form.
+-->
+Note that we check if:
+- the `FormGroup` has the cross validation error returned by the `identityRevealed` validator, 
+- the user is yet to [interact](guide/form-validation#왜-dirty-와-touched-를-확인할까요) with the form.
+
+### Adding to template driven forms
+First we must create a directive that will wrap the validator function. We provide it as the validator using the `NG_VALIDATORS` token. If you are not sure why, or you do not fully understand the syntax, revisit the previous [section](guide/form-validation#adding-to-template-driven-forms).
+
+<code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-directive" title="shared/identity-revealed.directive.ts" linenums="false">
+</code-example>
+
+Next, we have to add the directive to the html template. Since the validator must be registered at the highest level in the form, we put the directive on the `form` tag.
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-register-validator" title="template/hero-form-template.component.html" linenums="false">
+</code-example>
+
+To provide better user experience, we show an appropriate error message when the form is invalid.
+<code-example path="form-validation/src/app/template/hero-form-template.component.html" region="cross-validation-error-message" title="template/hero-form-template.component.html" linenums="false">
+</code-example>
+
+<!--
+Note that we check if:
+- the form has the cross validation error returned by the `identityRevealed` validator, 
+- the user is yet to [interact](guide/form-validation#why-check-dirty-and-touched) with the form.
+-->
+Note that we check if:
+- the form has the cross validation error returned by the `identityRevealed` validator, 
+- the user is yet to [interact](guide/form-validation#왜-dirty-와-touched-를-확인할까요) with the form.
+
+This completes the cross validation example. We managed to:
+- validate the form based on the values of two sibling controls, 
+- show a descriptive error message after the user interacted with the form and the validation failed.
 
 <!--
 **You can run the <live-example></live-example> to see the complete reactive and template-driven example code.**

@@ -84,8 +84,10 @@ class _Tokenizer {
   private _index: number = -1;
   private _line: number = 0;
   private _column: number = -1;
-  private _currentTokenStart: ParseLocation;
-  private _currentTokenType: TokenType;
+  // TODO(issue/24571): remove '!'.
+  private _currentTokenStart !: ParseLocation;
+  // TODO(issue/24571): remove '!'.
+  private _currentTokenType !: TokenType;
   private _expansionCaseStack: TokenType[] = [];
   private _inInterpolation: boolean = false;
 

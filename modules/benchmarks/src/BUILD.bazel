@@ -12,3 +12,14 @@ ts_library(
         "//packages/core",
     ],
 )
+
+ts_library(
+    name = "bootstrap",
+    srcs = [
+        "bootstrap_ng2.ts",
+        "bootstrap_plain.ts",
+    ],
+    deps = [
+        "//packages:types",
+    ],
+)
