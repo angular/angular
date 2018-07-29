@@ -4,7 +4,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 // #enddocregion customer-dashboard
 // #docregion customer-dashboard-component
-// import the new component
+// 새로 만든 컴포넌트를 로드합니다.
 import { CustomerDashboardComponent } from './customer-dashboard/customer-dashboard.component';
 // #enddocregion customer-dashboard-component
 

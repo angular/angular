@@ -35,7 +35,7 @@ const appRoutes: Routes = [
     FormsModule,
     RouterModule.forRoot(
       appRoutes,
-      { enableTracing: true } // <-- debugging purposes only
+      { enableTracing: true } // <-- 디버깅용으로만 사용
     )
   ],
   declarations: [

@@ -30,8 +30,8 @@ export class ConfigComponent {
     this.configService.getConfig()
   // #enddocregion v1, v2
       .subscribe(
-        (data: Config) => this.config = { ...data }, // success path
-        error => this.error = error // error path
+        (data: Config) => this.config = { ...data }, // 성공한 경우 실행되는 함수
+        error => this.error = error // 에러가 발생한 경우 실행되는 함수
       );
   }
   // #enddocregion v3
@@ -50,7 +50,7 @@ export class ConfigComponent {
   showConfig_v2() {
     this.configService.getConfig()
   // #docregion v2, v2_callback
-      // clone the data object, using its known Config shape
+      // Config 타입을 알기 때문에 클래스 프로퍼티로 바로 할당할 수 있습니다.
       .subscribe((data: Config) => this.config = { ...data });
   // #enddocregion v2_callback
   }
@@ -59,14 +59,14 @@ export class ConfigComponent {
 // #docregion showConfigResponse
   showConfigResponse() {
     this.configService.getConfigResponse()
-      // resp is of type `HttpResponse<Config>`
+      // 반환 형식은 `HttpResponse<Config>` 입니다.
       .subscribe(resp => {
-        // display its headers
+        // 헤더를 확인합니다.
         const keys = resp.headers.keys();
         this.headers = keys.map(key =>
           `${key}: ${resp.headers.get(key)}`);
 
-        // access the body directly, which is typed as `Config`.
+        // `HttpResponse` 객체의 body 프로퍼티는 `Config` 타입입니다.
         this.config = { ... resp.body };
       });
   }

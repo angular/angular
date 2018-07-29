@@ -28,20 +28,20 @@ export class CachingInterceptor implements HttpInterceptor {
   constructor(private cache: RequestCache) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
-    // continue if not cachable.
+    // 캐싱 대상이 아니면 그대로 진행합니다.
     if (!isCachable(req)) { return next.handle(req); }
 
     const cachedResponse = this.cache.get(req);
     // #enddocregion v1
     // #docregion intercept-refresh
-    // cache-then-refresh
+    // 커스텀 헤더가 설정되면 업데이트 방식으로 동작합니다.
     if (req.headers.get('x-refresh')) {
       const results$ = sendRequest(req, next, this.cache);
       return cachedResponse ?
         results$.pipe( startWith(cachedResponse) ) :
         results$;
     }
-    // cache-or-fetch
+    // 업데이트 방식을 사용하지 않고 기존 방식으로 동작합니다.
     // #docregion v1
     return cachedResponse ?
       of(cachedResponse) : sendRequest(req, next, this.cache);
@@ -61,22 +61,22 @@ function isCachable(req: HttpRequest<any>) {
 
 // #docregion send-request
 /**
- * Get server response observable by sending request to `next()`.
- * Will add the response to the cache on the way out.
+ * `next()` 함수를 실행해서 서버로 요청을 보냅니다.
+ * 서버에서 받은 응답은 캐싱합니다.
  */
 function sendRequest(
   req: HttpRequest<any>,
   next: HttpHandler,
   cache: RequestCache): Observable<HttpEvent<any>> {
 
-  // No headers allowed in npm search request
+  // npm 검색 API에는 헤더가 필요 없습니다.
   const noHeaderReq = req.clone({ headers: new HttpHeaders() });
 
   return next.handle(noHeaderReq).pipe(
     tap(event => {
-      // There may be other events besides the response.
+      // 서버의 응답은 HttpResponse 타입이 아닐 수도 있습니다.
       if (event instanceof HttpResponse) {
-        cache.put(req, event); // Update the cache.
+        cache.put(req, event); // 캐시를 업데이트합니다.
       }
     })
   );

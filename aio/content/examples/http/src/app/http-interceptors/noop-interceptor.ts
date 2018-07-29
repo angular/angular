@@ -5,7 +5,7 @@ import {
 
 import { Observable } from 'rxjs';
 
-/** Pass untouched request through to the next request handler. */
+/** 인자로 받은 HTTP 요청을 조작하지 않고, 다음 핸들러로 전달합니다. */
 @Injectable()
 export class NoopInterceptor implements HttpInterceptor {
 
