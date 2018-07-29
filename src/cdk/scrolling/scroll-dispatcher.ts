@@ -170,13 +170,13 @@ export class ScrollDispatcher implements OnDestroy {
 }
 
 
-/** @docs-private @deprecated @deletion-target 7.0.0 */
+/** @docs-private @deprecated @breaking-change 7.0.0 */
 export function SCROLL_DISPATCHER_PROVIDER_FACTORY(
     parentDispatcher: ScrollDispatcher, ngZone: NgZone, platform: Platform) {
   return parentDispatcher || new ScrollDispatcher(ngZone, platform);
 }
 
-/** @docs-private @deprecated @deletion-target 7.0.0 */
+/** @docs-private @deprecated @breaking-change 7.0.0 */
 export const SCROLL_DISPATCHER_PROVIDER = {
   // If there is already a ScrollDispatcher available, use that. Otherwise, provide a new one.
   provide: ScrollDispatcher,

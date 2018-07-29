@@ -456,7 +456,7 @@ export class MatSlider extends _MatSliderMixinBase
               private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Directionality,
               @Attribute('tabindex') tabIndex: string,
-              // @deletion-target 7.0.0 `_animationMode` parameter to be made required.
+              // @breaking-change 7.0.0 `_animationMode` parameter to be made required.
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(elementRef);
 

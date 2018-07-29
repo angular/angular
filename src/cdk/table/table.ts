@@ -478,7 +478,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    * table's content is checked.
    * @docs-private
    * @deprecated Use `addHeaderRowDef` and `removeHeaderRowDef` instead
-   * @deletion-target 8.0.0
+   * @breaking-change 8.0.0
    */
   setHeaderRowDef(headerRowDef: CdkHeaderRowDef) {
     this._customHeaderRowDefs = new Set([headerRowDef]);
@@ -491,7 +491,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    * table's content is checked.
    * @docs-private
    * @deprecated Use `addFooterRowDef` and `removeFooterRowDef` instead
-   * @deletion-target 8.0.0
+   * @breaking-change 8.0.0
    */
   setFooterRowDef(footerRowDef: CdkFooterRowDef) {
     this._customFooterRowDefs = new Set([footerRowDef]);

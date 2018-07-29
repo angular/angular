@@ -59,7 +59,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
               @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string,
               /**
                * @deprecated `location` parameter to be made required.
-               * @deletion-target 8.0.0
+               * @breaking-change 8.0.0
                */
               @Optional() location?: Location) {
     super(_elementRef);

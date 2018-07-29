@@ -3,8 +3,14 @@ import * as Lint from 'tslint';
 import * as utils from 'tsutils';
 import * as path from 'path';
 
+/** Doc tag that can be used to indicate a breaking change. */
+const BREAKING_CHANGE = '@breaking-change';
+
+/** Name of the old doc tag that was being used to indicate a breaking change. */
+const DELETION_TARGET = '@deletion-target';
+
 /**
- * Rule ensuring that deletion targets have not expired.
+ * Rule ensuring that breaking changes have not expired.
  * The current version is taken from the `package.json`.
  */
 export class Rule extends Lint.Rules.AbstractRule {
@@ -15,17 +21,25 @@ export class Rule extends Lint.Rules.AbstractRule {
     return this.applyWithFunction(sourceFile, (ctx: Lint.WalkContext<any>) => {
       utils.forEachComment(ctx.sourceFile, (file, {pos, end}) => {
         const commentText = file.substring(pos, end);
-        const hasDeletionTarget = commentText.indexOf('@deletion-target') > -1;
 
-        if (!hasDeletionTarget && commentText.indexOf('@deprecated') > -1) {
-          ctx.addFailure(pos, end, '@deprecated marker has to have a @deletion-target.');
-        } if (hasDeletionTarget) {
+        // TODO(crisbeto): remove this check once most of the pending
+        // PRs start using `breaking-change`.
+        if (commentText.indexOf(DELETION_TARGET) > -1) {
+          ctx.addFailure(pos, end, `${DELETION_TARGET} has been replaced with ${BREAKING_CHANGE}.`);
+          return;
+        }
+
+        const hasBreakingChange = commentText.indexOf(BREAKING_CHANGE) > -1;
+
+        if (!hasBreakingChange && commentText.indexOf('@deprecated') > -1) {
+          ctx.addFailure(pos, end, `@deprecated marker has to have a ${BREAKING_CHANGE}.`);
+        } if (hasBreakingChange) {
           const version = commentText.match(/\d+\.\d+\.\d+/);
 
           if (!version) {
-            ctx.addFailure(pos, end, '@deletion-target must have a version.');
+            ctx.addFailure(pos, end, `${BREAKING_CHANGE} must have a version.`);
           } else if (this._hasExpired(packageVersion, version[0])) {
-            ctx.addFailure(pos, end, `Deletion target at ${version[0]} is due to be deleted. ` +
+            ctx.addFailure(pos, end, `Breaking change at ${version[0]} is due to be deleted. ` +
                                      `Current version is ${packageVersion}.`);
           }
         }
@@ -36,15 +50,15 @@ export class Rule extends Lint.Rules.AbstractRule {
   /**
    * Checks whether a version has expired, based on the current version.
    * @param currentVersion Current version of the package.
-   * @param deletionTarget Version that is being checked.
+   * @param breakingChange Version that is being checked.
    */
-  private _hasExpired(currentVersion: string, deletionTarget: string) {
-    if (currentVersion === deletionTarget) {
+  private _hasExpired(currentVersion: string, breakingChange: string) {
+    if (currentVersion === breakingChange) {
       return true;
     }
 
     const current = this._parseVersion(currentVersion);
-    const target = this._parseVersion(deletionTarget);
+    const target = this._parseVersion(breakingChange);
 
     return target.major < current.major ||
           (target.major === current.major && target.minor < current.minor) ||

@@ -68,7 +68,7 @@ export class Platform {
   SAFARI: boolean = this.isBrowser && /safari/i.test(navigator.userAgent) && this.WEBKIT;
 
   /**
-   * @deletion-target v7.0.0 remove optional decorator
+   * @breaking-change v7.0.0 remove optional decorator
    */
   constructor(@Optional() @Inject(PLATFORM_ID) private _platformId?: Object) {
   }

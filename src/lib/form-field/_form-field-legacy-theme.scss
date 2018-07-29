@@ -96,7 +96,7 @@ $mat-form-field-legacy-dedupe: 0;
                 $subscript-font-scale, $infix-padding, $infix-margin-top);
       }
 
-      // @deletion-target 7.0.0 will rely on AutofillMonitor instead.
+      // @breaking-change 7.0.0 will rely on AutofillMonitor instead.
       .mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-label-wrapper
       .mat-form-field-label {
         @include _mat-form-field-legacy-label-floating(

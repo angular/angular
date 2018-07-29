@@ -8,7 +8,7 @@ import {NormalizedMethodMemberDoc} from './normalize-method-parameters';
 /** Interface that describes categorized docs that can be deprecated. */
 export interface DeprecationDoc extends ApiDoc {
   isDeprecated: boolean;
-  deletionTarget: string | null;
+  breakingChange: string | null;
 }
 
 /** Interface that describes Dgeni documents that have decorators. */

@@ -152,7 +152,7 @@ export class FocusTrap {
                                                  `[cdk-focus-${bound}]`) as NodeListOf<HTMLElement>;
 
     for (let i = 0; i < markers.length; i++) {
-      // @deletion-target 7.0.0
+      // @breaking-change 7.0.0
       if (markers[i].hasAttribute(`cdk-focus-${bound}`)) {
         console.warn(`Found use of deprecated attribute 'cdk-focus-${bound}', ` +
                      `use 'cdkFocusRegion${bound}' instead. The deprecated ` +
@@ -181,7 +181,7 @@ export class FocusTrap {
                                                           `[cdkFocusInitial]`) as HTMLElement;
 
     if (redirectToElement) {
-      // @deletion-target 7.0.0
+      // @breaking-change 7.0.0
       if (redirectToElement.hasAttribute(`cdk-focus-initial`)) {
         console.warn(`Found use of deprecated attribute 'cdk-focus-initial', ` +
                     `use 'cdkFocusInitial' instead. The deprecated attribute ` +

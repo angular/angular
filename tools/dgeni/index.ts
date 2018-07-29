@@ -91,7 +91,7 @@ apiDocsPackage.config((computePathsProcessor: any) => {
 apiDocsPackage.config((parseTagsProcessor: any) => {
   parseTagsProcessor.tagDefinitions = parseTagsProcessor.tagDefinitions.concat([
     {name: 'docs-private'},
-    {name: 'deletion-target'}
+    {name: 'breaking-change'}
   ]);
 });
 

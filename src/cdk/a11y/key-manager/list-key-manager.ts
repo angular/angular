@@ -305,7 +305,7 @@ export class ListKeyManager<T extends ListKeyManagerOption> {
    * Allows setting of the activeItemIndex without any other effects.
    * @param index The new activeItemIndex.
    * @deprecated Use `updateActiveItem` instead.
-   * @deletion-target 7.0.0
+   * @breaking-change 7.0.0
    */
   updateActiveItemIndex(index: number): void {
     this.updateActiveItem(index);

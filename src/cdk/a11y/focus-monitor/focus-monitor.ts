@@ -402,13 +402,13 @@ export class CdkMonitorFocus implements OnDestroy {
   }
 }
 
-/** @docs-private @deprecated @deletion-target 7.0.0 */
+/** @docs-private @deprecated @breaking-change 7.0.0 */
 export function FOCUS_MONITOR_PROVIDER_FACTORY(
     parentDispatcher: FocusMonitor, ngZone: NgZone, platform: Platform) {
   return parentDispatcher || new FocusMonitor(ngZone, platform);
 }
 
-/** @docs-private @deprecated @deletion-target 7.0.0 */
+/** @docs-private @deprecated @breaking-change 7.0.0 */
 export const FOCUS_MONITOR_PROVIDER = {
   // If there is already a FocusMonitor available, use that. Otherwise, provide a new one.
   provide: FocusMonitor,

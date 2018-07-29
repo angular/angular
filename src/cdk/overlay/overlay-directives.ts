@@ -73,7 +73,7 @@ const defaultPositionList: ConnectedPosition[] = [
 export const CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY =
     new InjectionToken<() => ScrollStrategy>('cdk-connected-overlay-scroll-strategy');
 
-/** @docs-private @deprecated @deletion-target 7.0.0 */
+/** @docs-private @deprecated @breaking-change 7.0.0 */
 export function CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_FACTORY(overlay: Overlay):
   () => ScrollStrategy {
   return (config?: RepositionScrollStrategyConfig) => overlay.scrollStrategies.reposition(config);

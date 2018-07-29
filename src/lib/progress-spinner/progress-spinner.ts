@@ -176,7 +176,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   constructor(public _elementRef: ElementRef,
               platform: Platform,
               @Optional() @Inject(DOCUMENT) private _document: any,
-              // @deletion-target 7.0.0 animationMode and defaults parameters to be made required.
+              // @breaking-change 7.0.0 animationMode and defaults parameters to be made required.
               @Optional() @Inject(ANIMATION_MODULE_TYPE) private animationMode?: string,
               @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
                   private defaults?: MatProgressSpinnerDefaultOptions) {
@@ -291,7 +291,7 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
 export class MatSpinner extends MatProgressSpinner {
   constructor(elementRef: ElementRef, platform: Platform,
               @Optional() @Inject(DOCUMENT) document: any,
-              // @deletion-targets 7.0.0 animationMode and defaults parameters to be made required.
+              // @breaking-changes 7.0.0 animationMode and defaults parameters to be made required.
               @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode?: string,
               @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
                   defaults?: MatProgressSpinnerDefaultOptions) {

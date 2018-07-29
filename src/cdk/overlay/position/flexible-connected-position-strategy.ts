@@ -132,7 +132,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     connectedTo: ElementRef | HTMLElement,
     private _viewportRuler: ViewportRuler,
     private _document: Document,
-    // @deletion-target 7.0.0 `_platform` and `_overlayContainer` parameters to be made required.
+    // @breaking-change 7.0.0 `_platform` and `_overlayContainer` parameters to be made required.
     private _platform?: Platform,
     private _overlayContainer?: OverlayContainer) {
     this.setOrigin(connectedTo);
@@ -171,7 +171,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
    */
   apply(): void {
     // We shouldn't do anything if the strategy was disposed or we're on the server.
-    // @deletion-target 7.0.0 Remove `_platform` null check once it's guaranteed to be defined.
+    // @breaking-change 7.0.0 Remove `_platform` null check once it's guaranteed to be defined.
     if (this._isDisposed || (this._platform && !this._platform.isBrowser)) {
       return;
     }
@@ -842,7 +842,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       overlayPoint = this._pushOverlayOnScreen(overlayPoint, this._overlayRect);
     }
 
-    // @deletion-target 7.0.0 Currently the `_overlayContainer` is optional in order to avoid a
+    // @breaking-change 7.0.0 Currently the `_overlayContainer` is optional in order to avoid a
     // breaking change. The null check here can be removed once the `_overlayContainer` becomes
     // a required parameter.
     let virtualKeyboardOffset = this._overlayContainer ?

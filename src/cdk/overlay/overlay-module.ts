@@ -35,7 +35,7 @@ export class OverlayModule {}
 
 /**
  * @deprecated Use `OverlayModule` instead.
- * @deletion-target 7.0.0
+ * @breaking-change 7.0.0
  */
 export const OVERLAY_PROVIDERS: Provider[] = [
   Overlay,

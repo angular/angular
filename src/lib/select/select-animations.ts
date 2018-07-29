@@ -79,12 +79,12 @@ export const matSelectAnimations: {
 
 /**
  * @deprecated
- * @deletion-target 7.0.0
+ * @breaking-change 7.0.0
  */
 export const transformPanel = matSelectAnimations.transformPanel;
 
 /**
  * @deprecated
- * @deletion-target 7.0.0
+ * @breaking-change 7.0.0
  */
 export const fadeInContent = matSelectAnimations.fadeInContent;

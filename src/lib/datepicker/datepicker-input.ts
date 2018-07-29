@@ -283,7 +283,7 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
 
   /**
    * @deprecated
-   * @deletion-target 7.0.0 Use `getConnectedOverlayOrigin` instead
+   * @breaking-change 7.0.0 Use `getConnectedOverlayOrigin` instead
    */
   getPopupConnectionElementRef(): ElementRef {
     return this.getConnectedOverlayOrigin();

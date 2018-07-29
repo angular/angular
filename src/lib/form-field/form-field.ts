@@ -223,7 +223,7 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   /**
    * @deprecated
-   * @deletion-target 7.0.0
+   * @breaking-change 7.0.0
    */
   @ViewChild('underline') underlineRef: ElementRef;
 
@@ -245,7 +245,7 @@ export class MatFormField extends _MatFormFieldMixinBase
       @Optional() private _dir: Directionality,
       @Optional() @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) private _defaultOptions:
           MatFormFieldDefaultOptions,
-      // @deletion-target 7.0.0 _platform, _ngZone and _animationMode to be made required.
+      // @breaking-change 7.0.0 _platform, _ngZone and _animationMode to be made required.
       private _platform?: Platform,
       private _ngZone?: NgZone,
       @Optional() @Inject(ANIMATION_MODULE_TYPE) _animationMode?: string) {
@@ -300,7 +300,7 @@ export class MatFormField extends _MatFormFieldMixinBase
     this._validateControlChild();
 
     if (!this._initialGapCalculated) {
-      // @deletion-target 7.0.0 Remove this check and else block once _ngZone is required.
+      // @breaking-change 7.0.0 Remove this check and else block once _ngZone is required.
       if (this._ngZone) {
         // It's important that we run this outside the `_ngZone`, because the `Promise.resolve`
         // can kick us into an infinite change detection loop, if the `_initialGapCalculated`

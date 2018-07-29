@@ -7,22 +7,22 @@
 
 
 // @deprecated renamed to $dark-primary-text.
-// @deletion-target 7.0.0
+// @breaking-change 7.0.0
 $black-87-opacity: rgba(black, 0.87);
 // @deprecated renamed to $light-primary-text.
-// @deletion-target 7.0.0
+// @breaking-change 7.0.0
 $white-87-opacity: rgba(white, 0.87);
 // @deprecated use $dark-[secondary-text,disabled-text,dividers,focused] instead.
-// @deletion-target 7.0.0
+// @breaking-change 7.0.0
 $black-12-opacity: rgba(black, 0.12);
 // @deprecated use $light-[secondary-text,disabled-text,dividers,focused] instead.
-// @deletion-target 7.0.0
+// @breaking-change 7.0.0
 $white-12-opacity: rgba(white, 0.12);
 // @deprecated use $dark-[secondary-text,disabled-text,dividers,focused] instead.
-// @deletion-target 7.0.0
+// @breaking-change 7.0.0
 $black-6-opacity: rgba(black, 0.06);
 // @deprecated use $light-[secondary-text,disabled-text,dividers,focused] instead.
-// @deletion-target 7.0.0
+// @breaking-change 7.0.0
 $white-6-opacity: rgba(white, 0.06);
 
 $dark-primary-text: rgba(black, 0.87);

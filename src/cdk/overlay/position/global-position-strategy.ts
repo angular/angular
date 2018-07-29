@@ -93,7 +93,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
    * Sets the overlay width and clears any previously set width.
    * @param value New width for the overlay
    * @deprecated Pass the `width` through the `OverlayConfig`.
-   * @deletion-target 7.0.0
+   * @breaking-change 7.0.0
    */
   width(value: string = ''): this {
     if (this._overlayRef) {
@@ -109,7 +109,7 @@ export class GlobalPositionStrategy implements PositionStrategy {
    * Sets the overlay height and clears any previously set height.
    * @param value New height for the overlay
    * @deprecated Pass the `height` through the `OverlayConfig`.
-   * @deletion-target 7.0.0
+   * @breaking-change 7.0.0
    */
   height(value: string = ''): this {
     if (this._overlayRef) {

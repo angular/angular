@@ -13,7 +13,7 @@ import {Directive, Input} from '@angular/core';
 /**
  * Directive to automatically resize a textarea to fit its content.
  * @deprecated Use `cdkTextareaAutosize` from `@angular/cdk/text-field` instead.
- * @deletion-target 7.0.0
+ * @breaking-change 7.0.0
  */
 @Directive({
   selector: 'textarea[mat-autosize], textarea[matTextareaAutosize]',

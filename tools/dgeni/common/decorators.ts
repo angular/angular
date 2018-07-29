@@ -82,14 +82,13 @@ export function hasDecorator(doc: HasDecoratorsDoc, decoratorName: string) {
     doc.decorators.some(d => d.name == decoratorName);
 }
 
-export function getDeletionTarget(doc: any): string | null {
+export function getBreakingChange(doc: any): string | null {
   if (!doc.tags) {
     return null;
   }
 
-  const deletionTarget = doc.tags.tags.find((t: any) => t.tagName === 'deletion-target');
-
-  return deletionTarget ? deletionTarget.description : null;
+  const breakingChange = doc.tags.tags.find((t: any) => t.tagName === 'breaking-change');
+  return breakingChange ? breakingChange.description : null;
 }
 
 /**
@@ -98,12 +97,12 @@ export function getDeletionTarget(doc: any): string | null {
  */
 export function decorateDeprecatedDoc(doc: DeprecationDoc) {
   doc.isDeprecated = isDeprecatedDoc(doc);
-  doc.deletionTarget = getDeletionTarget(doc);
+  doc.breakingChange = getBreakingChange(doc);
 
-  if (doc.isDeprecated && !doc.deletionTarget) {
-    console.warn('Warning: There is a deprecated item without a @deletion-target tag.', doc.id);
-  } else if  (doc.deletionTarget && !doc.isDeprecated) {
-    console.warn('Warning: There is an item with a @deletion-target which is not deprecated.',
+  if (doc.isDeprecated && !doc.breakingChange) {
+    console.warn('Warning: There is a deprecated item without a @breaking-change tag.', doc.id);
+  } else if  (doc.breakingChange && !doc.isDeprecated) {
+    console.warn('Warning: There is an item with a @breaking-change which is not deprecated.',
       doc.id);
   }
 }

@@ -57,7 +57,7 @@ export const MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR: any = {
 
 /**
  * @deprecated Use `MatButtonToggleGroup` instead.
- * @deletion-target 7.0.0
+ * @breaking-change 7.0.0
  */
 export class MatButtonToggleGroupMultiple {}
 

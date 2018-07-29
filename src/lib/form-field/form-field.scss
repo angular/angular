@@ -116,7 +116,7 @@ $mat-form-field-default-infix-width: 180px !default;
 // This is necessary because these browsers do not actually fire any events when a form auto-fill is
 // occurring. Once the autofill is committed, a change event happen and the regular mat-form-field
 // classes take over to fulfill this behaviour.
-// @deletion-target 7.0.0 will rely on AutofillMonitor instead.
+// @breaking-change 7.0.0 will rely on AutofillMonitor instead.
 .mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-label-wrapper
     .mat-form-field-label {
   // The form field will be considered empty if it is autofilled, and therefore the label will

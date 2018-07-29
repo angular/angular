@@ -9,7 +9,7 @@ $mat-paginator-selector-trigger-width: 56px;
 $mat-paginator-selector-trigger-outline-width: 64px;
 $mat-paginator-selector-trigger-fill-width: 64px;
 
-/** @deprecated Use `$mat-paginator-selector-trigger-width` instead. @deletion-target 8.0.0 */
+/** @deprecated Use `$mat-paginator-selector-trigger-width` instead. @breaking-change 8.0.0 */
 $mat-paginator-selector-trigger-min-width: $mat-paginator-selector-trigger-width;
 
 $mat-paginator-range-actions-min-height: 48px;
