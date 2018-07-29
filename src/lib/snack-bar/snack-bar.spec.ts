@@ -75,21 +75,21 @@ describe('MatSnackBar', () => {
         .toBe('alert', 'Expected snack bar container to have role="alert"');
    });
 
-   it('should open and close a snackbar without a ViewContainerRef', fakeAsync(() => {
-      let snackBarRef = snackBar.open('Snack time!', 'Chew');
-      viewContainerFixture.detectChanges();
+  it('should open and close a snackbar without a ViewContainerRef', fakeAsync(() => {
+    let snackBarRef = snackBar.open('Snack time!', 'Chew');
+    viewContainerFixture.detectChanges();
 
-      let messageElement = overlayContainerElement.querySelector('snack-bar-container')!;
-      expect(messageElement.textContent).toContain('Snack time!',
-         'Expected snack bar to show a message without a ViewContainerRef');
+    let messageElement = overlayContainerElement.querySelector('snack-bar-container')!;
+    expect(messageElement.textContent).toContain('Snack time!',
+       'Expected snack bar to show a message without a ViewContainerRef');
 
-      snackBarRef.dismiss();
-      viewContainerFixture.detectChanges();
-      flush();
+    snackBarRef.dismiss();
+    viewContainerFixture.detectChanges();
+    flush();
 
-      expect(overlayContainerElement.childNodes.length)
-          .toBe(0, 'Expected snack bar to be dismissed without a ViewContainerRef');
-   }));
+    expect(overlayContainerElement.childNodes.length)
+        .toBe(0, 'Expected snack bar to be dismissed without a ViewContainerRef');
+  }));
 
   it('should open a simple message with a button', () => {
     let config: MatSnackBarConfig = {viewContainerRef: testViewContainerRef};
@@ -151,6 +151,36 @@ describe('MatSnackBar', () => {
     expect(dismissCompleteSpy).toHaveBeenCalled();
     expect(overlayContainerElement.childElementCount)
         .toBe(0, 'Expected the overlay container element to have no child elements');
+  }));
+
+
+  it('should default to the passed message for the announcement message', fakeAsync(() => {
+    spyOn(liveAnnouncer, 'announce');
+
+    snackBar.open(simpleMessage);
+    viewContainerFixture.detectChanges();
+
+    expect(overlayContainerElement.childElementCount)
+      .toBe(1, 'Expected the overlay with the default announcement message to be added');
+
+    // Expect the live announcer to have been called with the display message and some
+    // string for the politeness. We do not want to test for the default politeness here.
+    expect(liveAnnouncer.announce).toHaveBeenCalledWith(simpleMessage, jasmine.any(String));
+  }));
+
+  it('should be able to specify a custom announcement message', fakeAsync(() => {
+    spyOn(liveAnnouncer, 'announce');
+
+    snackBar.open(simpleMessage, '', {
+      announcementMessage: 'Custom announcement',
+      politeness: 'assertive'
+    });
+    viewContainerFixture.detectChanges();
+
+    expect(overlayContainerElement.childElementCount)
+      .toBe(1, 'Expected the overlay with a custom `announcementMessage` to be added');
+
+    expect(liveAnnouncer.announce).toHaveBeenCalledWith('Custom announcement', 'assertive');
   }));
 
   it('should be able to get dismissed through the service', fakeAsync(() => {

@@ -112,7 +112,10 @@ export class MatSnackBar {
     // Since the user doesn't have access to the component, we can
     // override the data to pass in our own message and action.
     _config.data = {message, action};
-    _config.announcementMessage = message;
+
+    if (!_config.announcementMessage) {
+      _config.announcementMessage = message;
+    }
 
     return this.openFromComponent(SimpleSnackBar, _config);
   }
