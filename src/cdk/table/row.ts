@@ -14,6 +14,7 @@ import {
   IterableDiffer,
   IterableDiffers,
   OnChanges,
+  OnDestroy,
   SimpleChanges,
   TemplateRef,
   ViewContainerRef,
@@ -207,7 +208,7 @@ export interface CdkCellOutletMultiRowContext<T> {
  * @docs-private
  */
 @Directive({selector: '[cdkCellOutlet]'})
-export class CdkCellOutlet {
+export class CdkCellOutlet implements OnDestroy {
   /** The ordered list of cells to render within this outlet's view container */
   cells: CdkCellDef[];
 
@@ -225,6 +226,14 @@ export class CdkCellOutlet {
 
   constructor(public _viewContainer: ViewContainerRef) {
     CdkCellOutlet.mostRecentCellOutlet = this;
+  }
+
+  ngOnDestroy() {
+    // If this was the last outlet being rendered in the view, remove the reference
+    // from the static property after it has been destroyed to avoid leaking memory.
+    if (CdkCellOutlet.mostRecentCellOutlet === this) {
+      CdkCellOutlet.mostRecentCellOutlet = null;
+    }
   }
 }
 
