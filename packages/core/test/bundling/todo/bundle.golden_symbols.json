@@ -27,6 +27,9 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "ChangeDetectorRef"
+  },
+  {
     "name": "DECLARATION_VIEW"
   },
   {
@@ -147,6 +150,9 @@
     "name": "TVIEW"
   },
   {
+    "name": "TemplateRef"
+  },
+  {
     "name": "TemplateRef$1"
   },
   {
@@ -180,7 +186,7 @@
     "name": "VIEWS"
   },
   {
-    "name": "ViewContainerRef$1"
+    "name": "ViewContainerRef"
   },
   {
     "name": "ViewContainerRef$1"
