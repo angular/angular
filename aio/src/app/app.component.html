@@ -7,14 +7,16 @@
 <mat-toolbar color="primary" class="app-toolbar no-print" [class.transitioning]="isTransitioning">
   <mat-toolbar-row class="notification-container">
     <aio-notification
-      notificationId="angular-v6-announcement"
-      expirationDate="2018-07-01"
+      notificationId="angular-github-stars-campaign-201808"
+      expirationDate="2018-09-01"
       [dismissOnContentClick]="true"
       (dismissed)="notificationDismissed()">
-      <a href="https://blog.angular.io/version-6-0-0-of-angular-now-available-cc56b0efa7a4">
-        <mat-icon class="icon" svgIcon="insert_comment" aria-label="Announcement"></mat-icon>
-        <span class="message">Version 6 of Angular Now Available!</span>
-        <span class="action-button">Learn More</span>
+      <a href="https://github.com/angular/angular" target="_blank">
+        <span class="message">Give our repo a star if you love Angular as much as we do!</span>
+        <div class="action-button action-button-github">
+          <mat-icon class="icon" svgIcon="star_rate" aria-label="GitHub Star Icon"> </mat-icon>
+          <span> Star</span>
+        </div>
       </a>
     </aio-notification>
   </mat-toolbar-row>

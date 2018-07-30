@@ -39,8 +39,13 @@ aio-notification {
       display: flex;
     }
 
+    a {
+      align-items: center;
+    }
+
     .icon {
       margin-right: 10px;
+
       @media (max-width: 464px) {
         display: none;
       }
@@ -50,6 +55,7 @@ aio-notification {
       overflow: hidden;
       text-overflow: ellipsis;
       margin-right: 10px;
+      text-transform: none;
     }
 
     .action-button {
@@ -58,8 +64,28 @@ aio-notification {
       text-transform: uppercase;
       padding: 0 10px;
       font-size: 12px;
+
       @media (max-width: 780px) {
         display: none;
+      }
+
+      &.action-button-github {
+        background-color: #EFF3F6;
+        border: 1px solid #D1D2D3;
+        color: #24292E;
+        text-transform: none;
+        border-radius: 2px;
+        font-size: 14px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        padding: 4px 8px;
+
+        .icon {
+          color: $darkgray;
+          height: 24px;
+          margin-right: 2px;
+        }
       }
     }
   }
