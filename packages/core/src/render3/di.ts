@@ -636,14 +636,17 @@ class NodeInjector implements Injector {
 class ViewContainerRef implements viewEngine.ViewContainerRef {
   private _viewRefs: viewEngine.ViewRef[] = [];
 
-
   constructor(
       private _lContainerNode: LContainerNode, private _hostNode: LElementNode|LContainerNode) {}
 
-  get element(): ElementRef { return new ElementRef(this._hostNode.native); }
+  get element(): ElementRef {
+    const injector = getOrCreateNodeInjectorForNode(this._hostNode);
+    return getOrCreateElementRef(injector);
+  }
 
   get injector(): Injector {
-    return new NodeInjector(getOrCreateNodeInjectorForNode(this._hostNode));
+    const injector = getOrCreateNodeInjectorForNode(this._hostNode);
+    return new NodeInjector(injector);
   }
 
   /** @deprecated No replacement */

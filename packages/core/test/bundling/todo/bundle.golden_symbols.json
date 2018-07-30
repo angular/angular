@@ -27,6 +27,9 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "ChangeDetectorRef"
+  },
+  {
     "name": "DECLARATION_VIEW"
   },
   {
@@ -148,6 +151,9 @@
   },
   {
     "name": "TemplateRef"
+  },
+  {
+    "name": "TemplateRef$1"
   },
   {
     "name": "ToDoAppComponent_footer_Template_6"
