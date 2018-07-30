@@ -17,8 +17,6 @@ import {NgModule, NgModuleDefInternal} from '@angular/core/src/metadata/ng_modul
 import {ComponentDefInternal, PipeDefInternal} from '@angular/core/src/render3/interfaces/definition';
 
 
-
-// tslint:disable-next-line:no-unused-expression
 ivyEnabled && describe('render3 jit', () => {
   let injector: any;
   beforeAll(() => { injector = setCurrentInjector(null); });

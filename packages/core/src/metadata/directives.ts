@@ -9,12 +9,9 @@
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
 import {R3_COMPILE_COMPONENT, R3_COMPILE_DIRECTIVE, R3_COMPILE_PIPE} from '../ivy_switch';
-import {BaseDef} from '../render3/interfaces/definition';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
-
 import {ViewEncapsulation} from './view';
-
 
 
 /**
@@ -764,10 +761,6 @@ export interface Input {
   bindingPropertyName?: string;
 }
 
-const NG_BASE_DEF = 'ngBaseDef';
-const INPUTS = 'inputs';
-const OUTPUTS = 'outputs';
-
 /**
  * Sets properties on a target object from a source object, but only if
  * the property doesn't already exist on the target object.
@@ -784,9 +777,9 @@ function fillProperties(target: {[key: string]: string}, source: {[key: string]:
 
 const initializeBaseDef = (target: any): void => {
   const constructor = target.constructor;
-  const inheritedBaseDef = constructor[NG_BASE_DEF];
+  const inheritedBaseDef = constructor.ngBaseDef;
 
-  const baseDef = constructor[NG_BASE_DEF] = {
+  const baseDef = constructor.ngBaseDef = {
     inputs: {},
     outputs: {},
     declaredInputs: {},
@@ -803,16 +796,16 @@ const initializeBaseDef = (target: any): void => {
  * Does the work of creating the `ngBaseDef` property for the @Input and @Output decorators.
  * @param key "inputs" or "outputs"
  */
-const updateBaseDefFromIOProp = (key: 'inputs' | 'outputs') =>
+const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any}) => any) =>
     (target: any, name: string, ...args: any[]) => {
       const constructor = target.constructor;
 
-      if (!constructor.hasOwnProperty(NG_BASE_DEF)) {
+      if (!constructor.hasOwnProperty('ngBaseDef')) {
         initializeBaseDef(target);
       }
 
-      const baseDef = constructor[NG_BASE_DEF];
-      const defProp = baseDef[key] = baseDef[key] || {};
+      const baseDef = constructor.ngBaseDef;
+      const defProp = getProp(baseDef);
       defProp[name] = args[0];
     };
 
@@ -822,7 +815,7 @@ const updateBaseDefFromIOProp = (key: 'inputs' | 'outputs') =>
  */
 export const Input: InputDecorator = makePropDecorator(
     'Input', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
-    updateBaseDefFromIOProp(INPUTS));
+    updateBaseDefFromIOProp(baseDef => baseDef.inputs || {}));
 
 /**
  * Type of the Output decorator / constructor function.
@@ -858,7 +851,7 @@ export interface Output { bindingPropertyName?: string; }
  */
 export const Output: OutputDecorator = makePropDecorator(
     'Output', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
-    updateBaseDefFromIOProp(OUTPUTS));
+    updateBaseDefFromIOProp(baseDef => baseDef.outputs || {}));
 
 
 

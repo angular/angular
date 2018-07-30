@@ -138,7 +138,7 @@ describe('InheritDefinitionFeature', () => {
 
       static ngBaseDef = defineBase({
         inputs: {
-          input5: 'alias5',
+          input5: 'input5',
         },
       });
     }
@@ -149,7 +149,7 @@ describe('InheritDefinitionFeature', () => {
 
       static ngDirectiveDef = defineDirective({
         inputs: {
-          input4: 'alias4',
+          input4: 'input4',
         },
         type: Class4,
         selectors: [['', 'superDir', '']],
@@ -165,7 +165,7 @@ describe('InheritDefinitionFeature', () => {
 
       static ngBaseDef = defineBase({
         inputs: {
-          input3: 'alias3',
+          input3: ['alias3', 'input3'],
         }
       }) as any;
     }
@@ -178,8 +178,8 @@ describe('InheritDefinitionFeature', () => {
       static ngDirectiveDef = defineDirective({
         type: Class1,
         inputs: {
-          input1: 'alias1',
-          input2: 'alias2',
+          input1: 'input1',
+          input2: 'input2',
         },
         selectors: [['', 'subDir', '']],
         factory: () => new Class1(),
@@ -190,18 +190,18 @@ describe('InheritDefinitionFeature', () => {
     const subDef = Class1.ngDirectiveDef as DirectiveDefInternal<any>;
 
     expect(subDef.inputs).toEqual({
-      alias1: 'input1',
-      alias2: 'input2',
+      input1: 'input1',
+      input2: 'input2',
       alias3: 'input3',
-      alias4: 'input4',
-      alias5: 'input5',
+      input4: 'input4',
+      input5: 'input5',
     });
     expect(subDef.declaredInputs).toEqual({
-      alias1: 'input1',
-      alias2: 'input2',
-      alias3: 'input3',
-      alias4: 'input4',
-      alias5: 'input5',
+      input1: 'input1',
+      input2: 'input2',
+      input3: 'input3',
+      input4: 'input4',
+      input5: 'input5',
     });
   });
 
