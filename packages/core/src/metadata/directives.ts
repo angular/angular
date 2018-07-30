@@ -11,7 +11,10 @@ import {Provider} from '../di';
 import {R3_COMPILE_COMPONENT, R3_COMPILE_DIRECTIVE, R3_COMPILE_PIPE} from '../ivy_switch';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
+import {fillProperties} from '../util/property';
+
 import {ViewEncapsulation} from './view';
+
 
 
 /**
@@ -734,7 +737,7 @@ export interface Input {
    *   selector: 'bank-account',
    *   template: `
    *     Bank Name: {{bankName}}
-  *      Account Id: {{id}}
+   *     Account Id: {{id}}
    *   `
    * })
    * class BankAccount {
@@ -759,20 +762,6 @@ export interface Input {
    * ```
    */
   bindingPropertyName?: string;
-}
-
-/**
- * Sets properties on a target object from a source object, but only if
- * the property doesn't already exist on the target object.
- * @param target The target to set properties on
- * @param source The source of the property keys and values to set
- */
-function fillProperties(target: {[key: string]: string}, source: {[key: string]: string}) {
-  for (const key in source) {
-    if (source.hasOwnProperty(key) && !target.hasOwnProperty(key)) {
-      target[key] = source[key];
-    }
-  }
 }
 
 const initializeBaseDef = (target: any): void => {

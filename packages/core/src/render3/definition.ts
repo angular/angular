@@ -394,7 +394,7 @@ export function defineBase<T>(baseDefinition: {
    * ```
    * {
    *   minifiedPublicInput1: 'publicInput1',
-   *   minifiedDeclaredInput2: [ 'publicInput2', 'declaredInput2'],
+   *   minifiedDeclaredInput2: [ 'declaredInput2', 'publicInput2'],
    * }
    * ```
    *
@@ -407,7 +407,7 @@ export function defineBase<T>(baseDefinition: {
    *  - The reason why this API and `outputs` API is not the same is that `NgOnChanges` has
    *    inconsistent behavior in that it uses declared names rather than minified or public. For
    *    this reason `NgOnChanges` will be deprecated and removed in future version and this
-   *    API will be simplified to be consistent with `output`.
+   *    API will be simplified to be consistent with `outputs`.
    */
   inputs?: {[P in keyof T]?: string | [string, string]};
 
