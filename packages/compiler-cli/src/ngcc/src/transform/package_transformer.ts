@@ -10,7 +10,7 @@ import {dirname, relative, resolve} from 'path';
 import {mkdir} from 'shelljs';
 import * as ts from 'typescript';
 
-import {Analyzer} from '../analyzer';
+import {AnalyzedFile, Analyzer} from '../analyzer';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
@@ -47,12 +47,14 @@ export class PackageTransformer {
     const entryPoints = getEntryPoints(packagePath, format);
 
     entryPoints.forEach(entryPoint => {
+      const outputFiles: FileInfo[] = [];
       const options: ts.CompilerOptions = {
         allowJs: true,
         maxNodeModuleJsDepth: Infinity,
         rootDir: entryPoint.entryFileName,
       };
 
+      // Create the TS program and necessary helpers.
       const host = ts.createCompilerHost(options);
       const packageProgram = ts.createProgram([entryPoint.entryFileName], options, host);
       const typeChecker = packageProgram.getTypeChecker();
@@ -62,18 +64,17 @@ export class PackageTransformer {
       const analyzer = new Analyzer(typeChecker, reflectionHost);
       const renderer = this.getRenderer(format, packageProgram, reflectionHost);
 
+      // Parse and analyze the files.
       const entryPointFile = packageProgram.getSourceFile(entryPoint.entryFileName) !;
       const parsedFiles = parser.parseFile(entryPointFile);
-      parsedFiles.forEach(parsedFile => {
-        const analyzedFile = analyzer.analyzeFile(parsedFile);
-        const targetPath = resolve(
-            targetNodeModules, relative(sourceNodeModules, analyzedFile.sourceFile.fileName));
-        const {source, map} = renderer.renderFile(analyzedFile, targetPath);
-        this.writeFile(source);
-        if (map) {
-          this.writeFile(map);
-        }
-      });
+      const analyzedFiles = parsedFiles.map(parsedFile => analyzer.analyzeFile(parsedFile));
+
+      // Transform the source files and source maps.
+      outputFiles.push(...this.transformSourceFiles(
+          analyzedFiles, sourceNodeModules, targetNodeModules, renderer));
+
+      // Write out all the transformed files.
+      outputFiles.forEach(file => this.writeFile(file));
     });
   }
 
@@ -121,6 +122,27 @@ export class PackageTransformer {
       src = dirname(src);
     }
     return src;
+  }
+
+  transformSourceFiles(
+      analyzedFiles: AnalyzedFile[], sourceNodeModules: string, targetNodeModules: string,
+      renderer: Renderer): FileInfo[] {
+    const outputFiles: FileInfo[] = [];
+
+    analyzedFiles.forEach(analyzedFile => {
+      // Tranform the source file based on the recorded changes.
+      const targetPath =
+          resolve(targetNodeModules, relative(sourceNodeModules, analyzedFile.sourceFile.fileName));
+      const {source, map} = renderer.renderFile(analyzedFile, targetPath);
+
+      // Add the transformed file (and source map, if available) to the list of output files.
+      outputFiles.push(source);
+      if (map) {
+        outputFiles.push(map);
+      }
+    });
+
+    return outputFiles;
   }
 
   writeFile(file: FileInfo): void {
