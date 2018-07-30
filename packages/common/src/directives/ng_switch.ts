@@ -75,8 +75,7 @@ export class SwitchView {
  */
 @Directive({selector: '[ngSwitch]'})
 export class NgSwitch {
-  // TODO(issue/24571): remove '!'.
-  private _defaultViews !: SwitchView[];
+  private _defaultViews: SwitchView[] = [];
   private _defaultUsed = false;
   private _caseCount = 0;
   private _lastCaseCheckIndex = 0;
@@ -105,6 +104,19 @@ export class NgSwitch {
   /** @internal */
   _matchCase(value: any): boolean {
     const matched = value == this._ngSwitch;
+    this._lastCasesMatched = this._lastCasesMatched || matched;
+    this._lastCaseCheckIndex++;
+    if (this._lastCaseCheckIndex === this._caseCount) {
+      this._updateDefaultCases(!this._lastCasesMatched);
+      this._lastCaseCheckIndex = 0;
+      this._lastCasesMatched = false;
+    }
+    return matched;
+  }
+
+  /** @internal */
+  _matchMultipleCase(value: any[]): boolean {
+    const matched = value.indexOf(this._ngSwitch) >= 0;
     this._lastCasesMatched = this._lastCasesMatched || matched;
     this._lastCaseCheckIndex++;
     if (this._lastCaseCheckIndex === this._caseCount) {
@@ -165,6 +177,50 @@ export class NgSwitchCase implements DoCheck {
   }
 
   ngDoCheck() { this._view.enforceState(this.ngSwitch._matchCase(this.ngSwitchCase)); }
+}
+
+/**
+ * @ngModule CommonModule
+ *
+ * @usageNotes
+ * ```
+ * <container-element [ngSwitch]="switch_expression">
+ *   <some-element
+ **ngSwitchMultipleCase="[match_expression_1,match_expression_2]">...</some-element>
+ * </container-element>
+ *```
+ * @description
+ *
+ * Creates a view that will be added/removed from the parent {@link NgSwitch} when one
+ * of the given expressions evaluate to respectively the same/different value as the switch
+ * expression.
+ *
+ * Insert the sub-tree when one of the expressions evaluates to the same value as the
+ * enclosing switch expression.
+ *
+ * If multiple match expressions match the switch expression value, all of them are displayed.
+ *
+ * See {@link NgSwitch} for more details and example.
+ *
+ *
+ */
+@Directive({selector: '[ngSwitchMultipleCase]'})
+export class NgSwitchMultipleCase implements DoCheck {
+  private _view: SwitchView;
+
+  @Input()
+  ngSwitchMultipleCase: any[] = [];
+
+  constructor(
+      viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>,
+      @Host() private ngSwitch: NgSwitch) {
+    ngSwitch._addCase();
+    this._view = new SwitchView(viewContainer, templateRef);
+  }
+
+  ngDoCheck() {
+    this._view.enforceState(this.ngSwitch._matchMultipleCase(this.ngSwitchMultipleCase));
+  }
 }
 
 /**

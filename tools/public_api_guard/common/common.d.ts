@@ -334,6 +334,12 @@ export declare class NgSwitchCase implements DoCheck {
     ngDoCheck(): void;
 }
 
+export declare class NgSwitchMultipleCase implements DoCheck {
+  ngSwitchMultipleCase: any[];
+  constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
+  ngDoCheck(): void;
+}
+
 export declare class NgSwitchDefault {
     constructor(viewContainer: ViewContainerRef, templateRef: TemplateRef<Object>, ngSwitch: NgSwitch);
 }

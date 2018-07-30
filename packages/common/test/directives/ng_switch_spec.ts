@@ -36,6 +36,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         const template = '<ul [ngSwitch]="switchValue">' +
             '<li *ngSwitchCase="\'a\'">when a</li>' +
             '<li *ngSwitchCase="\'b\'">when b</li>' +
+            '<li *ngSwitchMultipleCase="[\'c\', \'d\']">when c or d</li>' +
             '</ul>';
 
         fixture = createTestComponent(template);
@@ -47,11 +48,18 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
         getComponent().switchValue = 'b';
         detectChangesAndExpectText('when b');
+
+        getComponent().switchValue = 'c';
+        detectChangesAndExpectText('when c or d');
+
+        getComponent().switchValue = 'd';
+        detectChangesAndExpectText('when c or d');
       });
 
       it('should switch amongst when values with fallback to default', () => {
         const template = '<ul [ngSwitch]="switchValue">' +
             '<li *ngSwitchCase="\'a\'">when a</li>' +
+            '<li *ngSwitchMultipleCase="[\'b\', \'c\']">when b or c</li>' +
             '<li *ngSwitchDefault>when default</li>' +
             '</ul>';
 
@@ -62,9 +70,15 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         detectChangesAndExpectText('when a');
 
         getComponent().switchValue = 'b';
-        detectChangesAndExpectText('when default');
+        detectChangesAndExpectText('when b or c');
 
         getComponent().switchValue = 'c';
+        detectChangesAndExpectText('when b or c');
+
+        getComponent().switchValue = 'd';
+        detectChangesAndExpectText('when default');
+
+        getComponent().switchValue = 'e';
         detectChangesAndExpectText('when default');
       });
 
@@ -74,6 +88,8 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
             '<li *ngSwitchCase="\'b\'">when b1;</li>' +
             '<li *ngSwitchCase="\'a\'">when a2;</li>' +
             '<li *ngSwitchCase="\'b\'">when b2;</li>' +
+            '<li *ngSwitchMultipleCase="[\'a\',\'b\']">when a or b 1;</li>' +
+            '<li *ngSwitchMultipleCase="[\'a\',\'b\']">when a or b 2;</li>' +
             '<li *ngSwitchDefault>when default1;</li>' +
             '<li *ngSwitchDefault>when default2;</li>' +
             '</ul>';
@@ -82,10 +98,10 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         detectChangesAndExpectText('when default1;when default2;');
 
         getComponent().switchValue = 'a';
-        detectChangesAndExpectText('when a1;when a2;');
+        detectChangesAndExpectText('when a1;when a2;when a or b 1;when a or b 2;');
 
         getComponent().switchValue = 'b';
-        detectChangesAndExpectText('when b1;when b2;');
+        detectChangesAndExpectText('when b1;when b2;when a or b 1;when a or b 2;');
       });
     });
 
@@ -129,6 +145,7 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
 
         const template = '<div [ngSwitch]="switchValue">' +
             '<div *ngSwitchCase="\'a\'" test="aCase"></div>' +
+            '<div *ngSwitchMultipleCase="[\'b\',\'c\']" test="bcCase"></div>' +
             '<div *ngSwitchDefault test="defaultCase"></div>' +
             '</div>';
 
@@ -141,6 +158,12 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
         fixture.detectChanges();
 
         expect(log).toEqual(['aCase']);
+
+        fixture.componentInstance.switchValue = 'b';
+
+        fixture.detectChanges();
+
+        expect(log).toEqual(['aCase', 'bcCase']);
       });
 
       it('should create the default case if there is no other case', () => {

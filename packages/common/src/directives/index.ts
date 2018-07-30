@@ -14,7 +14,7 @@ import {NgForOf, NgForOfContext} from './ng_for_of';
 import {NgIf, NgIfContext} from './ng_if';
 import {NgPlural, NgPluralCase} from './ng_plural';
 import {NgStyle} from './ng_style';
-import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
+import {NgSwitch, NgSwitchCase, NgSwitchDefault, NgSwitchMultipleCase} from './ng_switch';
 import {NgTemplateOutlet} from './ng_template_outlet';
 
 export {
@@ -30,6 +30,7 @@ export {
   NgSwitch,
   NgSwitchCase,
   NgSwitchDefault,
+  NgSwitchMultipleCase,
   NgTemplateOutlet
 };
 
@@ -48,6 +49,7 @@ export const COMMON_DIRECTIVES: Provider[] = [
   NgStyle,
   NgSwitch,
   NgSwitchCase,
+  NgSwitchMultipleCase,
   NgSwitchDefault,
   NgPlural,
   NgPluralCase,
