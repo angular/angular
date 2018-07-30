@@ -44,24 +44,25 @@ export class PackageTransformer {
   transform(packagePath: string, format: string): void {
     const sourceNodeModules = this.findNodeModulesPath(packagePath);
     const targetNodeModules = sourceNodeModules.replace(/node_modules$/, 'node_modules_ngtsc');
-    const entryPointPaths = getEntryPoints(packagePath, format);
-    entryPointPaths.forEach(entryPointPath => {
+    const entryPoints = getEntryPoints(packagePath, format);
+
+    entryPoints.forEach(entryPoint => {
       const options: ts.CompilerOptions = {
         allowJs: true,
         maxNodeModuleJsDepth: Infinity,
-        rootDir: entryPointPath,
+        rootDir: entryPoint.entryFileName,
       };
 
       const host = ts.createCompilerHost(options);
-      const packageProgram = ts.createProgram([entryPointPath], options, host);
-      const entryPointFile = packageProgram.getSourceFile(entryPointPath) !;
+      const packageProgram = ts.createProgram([entryPoint.entryFileName], options, host);
       const typeChecker = packageProgram.getTypeChecker();
-
       const reflectionHost = this.getHost(format, packageProgram);
+
       const parser = this.getFileParser(format, packageProgram, reflectionHost);
       const analyzer = new Analyzer(typeChecker, reflectionHost);
       const renderer = this.getRenderer(format, packageProgram, reflectionHost);
 
+      const entryPointFile = packageProgram.getSourceFile(entryPoint.entryFileName) !;
       const parsedFiles = parser.parseFile(entryPointFile);
       parsedFiles.forEach(parsedFile => {
         const analyzedFile = analyzer.analyzeFile(parsedFile);
