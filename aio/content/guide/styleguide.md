@@ -4492,7 +4492,7 @@ There are a few cases where you give a component an attribute, such as when you 
 <!--
 ### Extract templates and styles to their own files
 -->
-### 템플릿과 스타일은 개별 파일로 분리
+### 템플릿과 스타일은 개별 파일로 분리하기
 
 <!--
 #### Style 05-04
@@ -5001,7 +5001,10 @@ helps instantly identify which members of the component serve which purpose.
 
 {@a 05-16}
 
+<!--
 ### Don't prefix _output_ properties
+-->
+### _출력_ 프로퍼티에 접두사를 붙이지 마세요.
 
 <!--
 #### Style 05-16
@@ -5011,9 +5014,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name events without the prefix `on`.
-
+-->
+출력 프로퍼티로 이벤트를 보낼 때 이 이벤트 이름에 `on`을 **붙이지 마세요.**
 
 </div>
 
@@ -5022,9 +5026,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** name event handler methods with the prefix `on` followed by the event name.
-
+-->
+`on` 접두사는 해당 이벤트를 받는 이벤트 핸들러 메소드 이름에 **붙이세요.**
 
 </div>
 
@@ -5033,9 +5038,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why">
 
 
-
+<!--
 **Why?** This is consistent with built-in events such as button clicks.
-
+-->
+**왜?** 버튼 클릭과 같은 내장 이벤트를 처리할 때도 이 방식을 사용합니다.
 
 </div>
 
@@ -5047,7 +5053,7 @@ helps instantly identify which members of the component serve which purpose.
 <!--
 **Why?** Angular allows for an [alternative syntax](guide/template-syntax#binding-syntax) `on-*`. If the event itself was prefixed with `on` this would result in an `on-onEvent` binding expression.
 -->
-**Why?** Angular allows for an [alternative syntax](guide/template-syntax#바인딩-문법) `on-*`. If the event itself was prefixed with `on` this would result in an `on-onEvent` binding expression.
+**왜?** Angular에서 제공하는 문법 중 `on-*`을 붙이는 문법은 [이벤트 바인딩을 사용하는 방법](guide/template-syntax#바인딩-문법) 중 하나입니다. 그래서 이벤트 이름에 `on`을 붙이면, 이 이벤트를 바인딩할 때 `on-onEvent`와 같은 표현을 사용해야 합니다.
 
 </div>
 
@@ -5090,7 +5096,10 @@ helps instantly identify which members of the component serve which purpose.
 
 {@a 05-17}
 
+<!--
 ### Put presentation logic in the component class
+-->
+### 뷰에 사용하는 로직은 컴포넌트 클래스에 작성하기
 
 <!--
 #### Style 05-17
@@ -5100,9 +5109,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** put presentation logic in the component class, and not in the template.
-
+-->
+뷰에 사용하는 로직은 템플릿이 아니라 컴포넌트 클래스에 **작성하세요.**
 
 </div>
 
@@ -5111,9 +5121,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Logic will be contained in one place (the component class) instead of being spread in two places.
-
+-->
+**왜?** 컴포넌트를 처리하는 로직은 템플릿과 클래스에 나눠서 작성하는 것보다 컴포넌트 클래스 한 곳에 작성하는 것이 좋습니다.
 
 </div>
 
@@ -5122,9 +5133,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Keeping the component's presentation logic in the class instead of the template improves testability, maintainability, and reusability.
-
+-->
+**왜?** 뷰와 관련된 로직을 템플릿에 두지 않고 클래스에 두면 컴포넌트를 테스트하기 편하며, 유지보수하기도 편하고 재사용하기에도 유리합니다.
 
 </div>
 
