@@ -102,7 +102,7 @@ export interface AnimationPlayer {
     play(): void;
     reset(): void;
     restart(): void;
-    setPosition(p: any /** TODO #9100 */): void;
+    setPosition(position: any /** TODO #9100 */): void;
 }
 
 export interface AnimationQueryMetadata extends AnimationMetadata {
@@ -191,7 +191,7 @@ export declare class NoopAnimationPlayer implements AnimationPlayer {
     play(): void;
     reset(): void;
     restart(): void;
-    setPosition(p: number): void;
+    setPosition(position: number): void;
 }
 
 export declare function query(selector: string, animation: AnimationMetadata | AnimationMetadata[], options?: AnimationQueryOptions | null): AnimationQueryMetadata;
