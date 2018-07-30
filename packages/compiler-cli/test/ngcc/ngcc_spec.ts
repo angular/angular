@@ -6,25 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import {cat, find} from 'shelljs';
+import {join} from 'path';
 
 import {mainNgcc} from '../../src/ngcc/src/main';
 
 import {TestSupport, isInBazel, setup} from '../test_support';
-
-function setupNodeModules(support: TestSupport): void {
-  const corePath = path.join(process.env.TEST_SRCDIR, 'angular/packages/core/npm_package');
-  const commonPath = path.join(process.env.TEST_SRCDIR, 'angular/packages/common/npm_package');
-
-  const nodeModulesPath = path.join(support.basePath, 'node_modules');
-  const angularCoreDirectory = path.join(nodeModulesPath, '@angular/core');
-  const angularCommonDirectory = path.join(nodeModulesPath, '@angular/common');
-
-  // fs.symlinkSync(corePath, angularCoreDirectory);
-  // fs.symlinkSync(commonPath, angularCommonDirectory);
-}
 
 describe('ngcc behavioral tests', () => {
   if (!isInBazel()) {
@@ -32,99 +18,61 @@ describe('ngcc behavioral tests', () => {
     return;
   }
 
-  let basePath: string;
-  let outDir: string;
-  let write: (fileName: string, content: string) => void;
-  let errorSpy: jasmine.Spy&((s: string) => void);
+  // Temporary local debugging aid. Set to `true` to turn on.
+  const preserveOutput = false;
+  const onSpecCompleted = (format: string) => {
+    if (preserveOutput) {
+      const {tmpdir} = require('os');
+      const {cp, mkdir, rm, set} = require('shelljs');
 
-  function shouldExist(fileName: string) {
-    if (!fs.existsSync(path.resolve(outDir, fileName))) {
-      throw new Error(`Expected ${fileName} to be emitted (outDir: ${outDir})`);
+      const tempRootDir = join(tmpdir(), 'ngcc-spec', format);
+      const outputDir = 'node_modules_ngtsc';
+
+      set('-e');
+      rm('-rf', tempRootDir);
+      mkdir('-p', tempRootDir);
+      cp('-R', join(support.basePath, outputDir), tempRootDir);
+
+      global.console.log(`Copied '${outputDir}' to '${tempRootDir}'.`);
     }
-  }
+  };
 
-  function shouldNotExist(fileName: string) {
-    if (fs.existsSync(path.resolve(outDir, fileName))) {
-      throw new Error(`Did not expect ${fileName} to be emitted (outDir: ${outDir})`);
-    }
-  }
-
-  function getContents(fileName: string): string {
-    shouldExist(fileName);
-    const modulePath = path.resolve(outDir, fileName);
-    return fs.readFileSync(modulePath, 'utf8');
-  }
-
-  function writeConfig(
-      tsconfig: string =
-          '{"extends": "./tsconfig-base.json", "angularCompilerOptions": {"enableIvy": "ngtsc"}}') {
-    write('tsconfig.json', tsconfig);
-  }
-
-  beforeEach(() => {
-    errorSpy = jasmine.createSpy('consoleError').and.callFake(console.error);
-    const support = setup();
-    basePath = support.basePath;
-    outDir = path.join(basePath, 'built');
-    process.chdir(basePath);
-    write = (fileName: string, content: string) => { support.write(fileName, content); };
-
-    setupNodeModules(support);
-  });
+  let support: TestSupport;
+  beforeEach(() => support = setup());
 
   it('should run ngcc without errors for fesm2015', () => {
-    const nodeModulesPath = path.join(basePath, 'node_modules');
-    console.error(nodeModulesPath);
-    const commonPath = path.join(nodeModulesPath, '@angular/common');
-    const exitCode = mainNgcc([commonPath, 'fesm2015']);
+    const commonPath = join(support.basePath, 'node_modules/@angular/common');
+    const format = 'fesm2015';
 
-    console.warn(find('node_modules_ngtsc').filter(p => p.endsWith('.js') || p.endsWith('map')));
+    expect(mainNgcc([commonPath, format])).toBe(0);
 
-    console.warn(cat('node_modules_ngtsc/@angular/common/fesm2015/common.js').stdout);
-    console.warn(cat('node_modules_ngtsc/@angular/common/fesm2015/common.js.map').stdout);
-
-    expect(exitCode).toBe(0);
+    onSpecCompleted(format);
   });
 
   it('should run ngcc without errors for fesm5', () => {
-    const nodeModulesPath = path.join(basePath, 'node_modules');
-    console.error(nodeModulesPath);
-    const commonPath = path.join(nodeModulesPath, '@angular/common');
-    const exitCode = mainNgcc([commonPath, 'fesm5']);
+    const commonPath = join(support.basePath, 'node_modules/@angular/common');
+    const format = 'fesm5';
 
-    console.warn(find('node_modules_ngtsc').filter(p => p.endsWith('.js') || p.endsWith('map')));
+    expect(mainNgcc([commonPath, format])).toBe(0);
 
-    console.warn(cat('node_modules_ngtsc/@angular/common/fesm5/common.js').stdout);
-    console.warn(cat('node_modules_ngtsc/@angular/common/fesm5/common.js.map').stdout);
-
-    expect(exitCode).toBe(0);
+    onSpecCompleted(format);
   });
 
   it('should run ngcc without errors for esm2015', () => {
-    const nodeModulesPath = path.join(basePath, 'node_modules');
-    console.error(nodeModulesPath);
-    const commonPath = path.join(nodeModulesPath, '@angular/common');
-    const exitCode = mainNgcc([commonPath, 'esm2015']);
+    const commonPath = join(support.basePath, 'node_modules/@angular/common');
+    const format = 'esm2015';
 
-    console.warn(find('node_modules_ngtsc').filter(p => p.endsWith('.js') || p.endsWith('map')));
+    expect(mainNgcc([commonPath, format])).toBe(0);
 
-    console.warn(cat('node_modules_ngtsc/@angular/common/esm2015/src/directives/ng_if.js').stdout);
-    console.warn(cat('node_modules_ngtsc/@angular/common/esm2015/http/src/module.js').stdout);
-
-    expect(exitCode).toBe(0);
+    onSpecCompleted(format);
   });
 
   it('should run ngcc without errors for esm5', () => {
-    const nodeModulesPath = path.join(basePath, 'node_modules');
-    console.error(nodeModulesPath);
-    const commonPath = path.join(nodeModulesPath, '@angular/common');
-    const exitCode = mainNgcc([commonPath, 'esm5']);
+    const commonPath = join(support.basePath, 'node_modules/@angular/common');
+    const format = 'esm5';
 
-    console.warn(find('node_modules_ngtsc').filter(p => p.endsWith('.js') || p.endsWith('map')));
+    expect(mainNgcc([commonPath, format])).toBe(0);
 
-    console.warn(cat('node_modules_ngtsc/@angular/common/esm5/src/directives/ng_if.js').stdout);
-    console.warn(cat('node_modules_ngtsc/@angular/common/esm5/http/src/module.js').stdout);
-
-    expect(exitCode).toBe(0);
+    onSpecCompleted(format);
   });
 });
