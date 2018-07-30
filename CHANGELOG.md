@@ -1,3 +1,23 @@
+<a name="6.4.2"></a>
+## [6.4.2 chalk-window](https://github.com/angular/material2/compare/6.4.1...6.4.2) (2018-07-30)
+
+
+### Bug Fixes
+
+* **autocomplete:** remove aria-owns attribute while closed ([#12333](https://github.com/angular/material2/issues/12333)) ([2122b18](https://github.com/angular/material2/commit/2122b18)), closes [#12332](https://github.com/angular/material2/issues/12332)
+* **card:** incorrectly inverting inset divider in rtl ([#12285](https://github.com/angular/material2/issues/12285)) ([8a2dc60](https://github.com/angular/material2/commit/8a2dc60))
+* **progress-bar:** query animation not working inside routes with named outlets ([#12350](https://github.com/angular/material2/issues/12350)) ([0c526d3](https://github.com/angular/material2/commit/0c526d3)), closes [#12014](https://github.com/angular/material2/issues/12014) [#12338](https://github.com/angular/material2/issues/12338)
+* **snack-bar:** prevent content from overriding configured aria-live message ([#12294](https://github.com/angular/material2/issues/12294)) ([b46689e](https://github.com/angular/material2/commit/b46689e))
+* **ng-update:** support parenthesized directive metadata ([#12314](https://github.com/angular/material2/issues/12314)) ([66416f5](https://github.com/angular/material2/commit/66416f5))
+
+
+### Performance Improvements
+
+* **table:** leaking reference through mostRecentCellOutlet ([#12269](https://github.com/angular/material2/issues/12269)) ([7c8e892](https://github.com/angular/material2/commit/7c8e892)), closes [#12259](https://github.com/angular/material2/issues/12259)
+* **tree:** leaking reference through mostRecentTreeNode ([#12334](https://github.com/angular/material2/issues/12334)) ([b6f7205](https://github.com/angular/material2/commit/b6f7205)), closes [#12269](https://github.com/angular/material2/issues/12269)
+
+
+
 <a name="6.4.1"></a>
 ## [6.4.1 elm-electrode](https://github.com/angular/material2/compare/6.4.0...6.4.1) (2018-07-23)
 
