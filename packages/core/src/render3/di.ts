@@ -11,7 +11,7 @@
 
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {InjectionToken} from '../di/injection_token';
-import {InjectFlags, Injector, inject, setCurrentInjector} from '../di/injector';
+import {InjectFlags, Injector, NullInjector, inject, setCurrentInjector} from '../di/injector';
 import * as viewEngine from '../linker';
 import {Type} from '../type';
 
@@ -552,9 +552,11 @@ export const QUERY_READ_FROM_NODE =
       ngDevMode && assertNodeOfPossibleTypes(node, TNodeType.Container, TNodeType.Element);
       if (directiveIdx > -1) {
         return node.view[DIRECTIVES] ![directiveIdx];
-      } else if (node.tNode.type === TNodeType.Element) {
+      }
+      if (node.tNode.type === TNodeType.Element) {
         return getOrCreateElementRef(injector);
-      } else if (node.tNode.type === TNodeType.Container) {
+      }
+      if (node.tNode.type === TNodeType.Container) {
         return getOrCreateTemplateRef(injector);
       }
       throw new Error('fail');
@@ -600,10 +602,31 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine.ViewContainer
 
     addToViewTree(vcRefHost.view, hostTNode.index as number, lContainer);
 
-    di.viewContainerRef = new ViewContainerRef(lContainerNode);
+    di.viewContainerRef = new ViewContainerRef(lContainerNode, vcRefHost);
   }
 
   return di.viewContainerRef;
+}
+
+class NodeInjector implements Injector {
+  constructor(private _lInjector: LInjector) {}
+
+  get(token: any): any {
+    if (token === viewEngine.TemplateRef) {
+      return getOrCreateTemplateRef(this._lInjector);
+    }
+    if (token === viewEngine.ViewContainerRef) {
+      return getOrCreateContainerRef(this._lInjector);
+    }
+    if (token === viewEngine.ElementRef) {
+      return getOrCreateElementRef(this._lInjector);
+    }
+    if (token === viewEngine_ChangeDetectorRef) {
+      return getOrCreateChangeDetectorRef(this._lInjector, null);
+    }
+
+    return getOrCreateInjectable(this._lInjector, token);
+  }
 }
 
 /**
@@ -612,14 +635,25 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine.ViewContainer
  */
 class ViewContainerRef implements viewEngine.ViewContainerRef {
   private _viewRefs: viewEngine.ViewRef[] = [];
-  // TODO(issue/24571): remove '!'.
-  element !: viewEngine.ElementRef;
-  // TODO(issue/24571): remove '!'.
-  injector !: Injector;
-  // TODO(issue/24571): remove '!'.
-  parentInjector !: Injector;
 
-  constructor(private _lContainerNode: LContainerNode) {}
+  constructor(
+      private _lContainerNode: LContainerNode, private _hostNode: LElementNode|LContainerNode) {}
+
+  get element(): ElementRef {
+    const injector = getOrCreateNodeInjectorForNode(this._hostNode);
+    return getOrCreateElementRef(injector);
+  }
+
+  get injector(): Injector {
+    const injector = getOrCreateNodeInjectorForNode(this._hostNode);
+    return new NodeInjector(injector);
+  }
+
+  /** @deprecated No replacement */
+  get parentInjector(): Injector {
+    const parentLInjector = getParentLNode(this._hostNode).nodeInjector;
+    return parentLInjector ? new NodeInjector(parentLInjector) : new NullInjector();
+  }
 
   clear(): void {
     const lContainer = this._lContainerNode.data;
@@ -651,7 +685,7 @@ class ViewContainerRef implements viewEngine.ViewContainerRef {
       ngModuleRef?: viewEngine.NgModuleRef<any>|undefined): viewEngine.ComponentRef<C> {
     const contextInjector = injector || this.parentInjector;
     if (!ngModuleRef && contextInjector) {
-      ngModuleRef = contextInjector.get(viewEngine.NgModuleRef);
+      ngModuleRef = contextInjector.get(viewEngine.NgModuleRef, null);
     }
 
     const componentRef =
