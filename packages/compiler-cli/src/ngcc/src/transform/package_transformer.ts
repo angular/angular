@@ -5,19 +5,22 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {writeFileSync} from 'fs';
+import {readFileSync, writeFileSync} from 'fs';
 import {dirname, relative, resolve} from 'path';
 import {mkdir} from 'shelljs';
 import * as ts from 'typescript';
 
+import {DtsFileTransformer} from '../../../ngtsc/transform';
+
 import {AnalyzedFile, Analyzer} from '../analyzer';
+import {IMPORT_PREFIX} from '../constants';
 import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Esm2015FileParser} from '../parsing/esm2015_parser';
 import {Esm5FileParser} from '../parsing/esm5_parser';
 import {FileParser} from '../parsing/file_parser';
-import {getEntryPoints} from '../parsing/utils';
+import {EntryPoint, getEntryPoints} from '../parsing/utils';
 import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
@@ -25,16 +28,18 @@ import {FileInfo, Renderer} from '../rendering/renderer';
 
 /**
  * A Package is stored in a directory on disk and that directory can contain one or more package
- formats - e.g. fesm2015, UMD, etc.
+ * formats - e.g. fesm2015, UMD, etc. Additionally, each package provides typings (`.d.ts` files).
  *
  * Each of these formats exposes one or more entry points, which are source files that need to be
  * parsed to identify the decorated exported classes that need to be analyzed and compiled by one or
  * more `DecoratorHandler` objects.
  *
- * Each entry point to a package is identified by a `SourceFile` that can be parsed and analyzed
- * to identify classes that need to be transformed; and then finally rendered and written to disk.
-
+ * Each entry point to a package is identified by a `SourceFile` that can be parsed and analyzed to
+ * identify classes that need to be transformed; and then finally rendered and written to disk.
  * The actual file which needs to be transformed depends upon the package format.
+ *
+ * Along with the source files, the corresponding source maps (either inline or external) and
+ * `.d.ts` files are transformed accordingly.
  *
  * - Flat file packages have all the classes in a single file.
  * - Other packages may re-export classes from other non-entry point files.
@@ -72,6 +77,14 @@ export class PackageTransformer {
       // Transform the source files and source maps.
       outputFiles.push(...this.transformSourceFiles(
           analyzedFiles, sourceNodeModules, targetNodeModules, renderer));
+
+      // Transform the `.d.ts` files (if necessary).
+      // TODO(gkalpak): What about `.d.ts` source maps? (See
+      // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#new---declarationmap.)
+      if (format === 'esm2015') {
+        outputFiles.push(...this.transformDtsFiles(
+            analyzedFiles, sourceNodeModules, targetNodeModules, entryPoint));
+      }
 
       // Write out all the transformed files.
       outputFiles.forEach(file => this.writeFile(file));
@@ -122,6 +135,36 @@ export class PackageTransformer {
       src = dirname(src);
     }
     return src;
+  }
+
+  transformDtsFiles(
+      analyzedFiles: AnalyzedFile[], sourceNodeModules: string, targetNodeModules: string,
+      entryPoint: EntryPoint): FileInfo[] {
+    const outputFiles: FileInfo[] = [];
+
+    analyzedFiles.forEach(analyzedFile => {
+      // Create a `DtsFileTransformer` for the source file and record the generated fields, which
+      // will allow the corresponding `.d.ts` file to be transformed later.
+      const dtsTransformer = new DtsFileTransformer(null, IMPORT_PREFIX);
+      analyzedFile.analyzedClasses.forEach(
+          analyzedClass =>
+              dtsTransformer.recordStaticField(analyzedClass.name, analyzedClass.compilation));
+
+      // Find the corresponding `.d.ts` file.
+      const sourceFileName = analyzedFile.sourceFile.fileName;
+      const originalDtsFileName = entryPoint.getDtsFileNameFor(sourceFileName);
+      const originalDtsContents = readFileSync(originalDtsFileName, 'utf8');
+
+      // Tranform the `.d.ts` file based on the recorded source file changes.
+      const transformedDtsFileName =
+          resolve(targetNodeModules, relative(sourceNodeModules, originalDtsFileName));
+      const transformedDtsContents = dtsTransformer.transform(originalDtsContents, sourceFileName);
+
+      // Add the transformed `.d.ts` file to the list of output files.
+      outputFiles.push({path: transformedDtsFileName, contents: transformedDtsContents});
+    });
+
+    return outputFiles;
   }
 
   transformSourceFiles(
