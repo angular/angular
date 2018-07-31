@@ -10,6 +10,7 @@ import {ConstantPool, R3DirectiveMetadata, WrappedNodeExpr, compileComponentFrom
 
 import {Component, Directive, HostBinding, HostListener, Input, Output} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
+import {ViewEncapsulation} from '../../metadata/view';
 import {Type} from '../../type';
 import {stringify} from '../../util';
 
@@ -73,6 +74,8 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
               pipes: new Map(),
               viewQueries: [],
               wrapDirectivesInClosure: false,
+              styles: metadata.styles || [],
+              encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated
             },
             constantPool, makeBindingParser());
         const preStatements = [...constantPool.statements, ...res.statements];
