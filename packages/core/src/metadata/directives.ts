@@ -347,7 +347,7 @@ export interface Directive {
  */
 export const Directive: DirectiveDecorator = makeDecorator(
     'Directive', (dir: Directive = {}) => dir, undefined, undefined,
-    (type: Type<any>, meta: Directive) => (R3_COMPILE_DIRECTIVE || (() => {}))(type, meta));
+    (type: Type<any>, meta: Directive) => R3_COMPILE_DIRECTIVE(type, meta));
 
 /**
  * Component decorator interface
@@ -631,8 +631,7 @@ export interface Component extends Directive {
  */
 export const Component: ComponentDecorator = makeDecorator(
     'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
-    Directive, undefined,
-    (type: Type<any>, meta: Component) => (R3_COMPILE_COMPONENT || (() => {}))(type, meta));
+    Directive, undefined, (type: Type<any>, meta: Component) => R3_COMPILE_COMPONENT(type, meta));
 
 /**
  * Type of the Pipe decorator / constructor function.
@@ -680,7 +679,7 @@ export interface Pipe {
  */
 export const Pipe: PipeDecorator = makeDecorator(
     'Pipe', (p: Pipe) => ({pure: true, ...p}), undefined, undefined,
-    (type: Type<any>, meta: Pipe) => (R3_COMPILE_PIPE || (() => {}))(type, meta));
+    (type: Type<any>, meta: Pipe) => R3_COMPILE_PIPE(type, meta));
 
 
 /**
