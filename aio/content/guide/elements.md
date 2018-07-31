@@ -158,3 +158,9 @@ For comparison, the demo shows both methods. One button adds the popup using the
 
   </code-pane>
 </code-tabs>
+
+<!--
+  StackBlitz transpiles code to ES5. The live example will not work without a polyfill.
+  Only offer a `.zip` to download for now.
+-->
+You can download the full code for the example <live-example downloadOnly>here</live-example>.
