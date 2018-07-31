@@ -74,6 +74,4 @@ export function ngDevModeResetPerfCounters() {
  */
 if (typeof ngDevMode === 'undefined' || ngDevMode) {
   ngDevModeResetPerfCounters();
-  // In ie console is not present unless devtools are open.
-  console && console.warn('Angular is running in the development mode.');
 }
