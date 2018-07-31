@@ -2,7 +2,7 @@
 
 const path = require('path');
 const fs = require('fs');
-const GitHubApi = require('github');
+const GitHubApi = require('@octokit/rest');
 const github = new GitHubApi();
 
 
@@ -30,6 +30,14 @@ const intervalMinutes = 10;
 /** Instead of querying github for PR numbers, manually provide the PR numbers to be presubmit */
 const explicitPullRequests = [];
 
+/** Options that will be passed to the octokit Github API when querying Github for PR numbers. */
+const githubSearchOptions = {
+  // Use the maximum of allowed items per Github API query. 100 pull requests should be
+  // enough to continuously run presubmits through night.
+  per_page: 100,
+  q: 'repo:angular/material2 is:open type:pr label:"pr: merge ready" -label:"pr: merge safe"',
+};
+
 /** END OF CONFIGURATION. */
 
 
@@ -41,17 +49,9 @@ if (explicitPullRequests.length) {
   writeScheduleScript(explicitPullRequests.map(n => ({number: n})));
 } else {
   // Fetch PRs that are merge-ready but not merge-safe
-  github.search.issues({
-    per_page: 100,
-    q: 'repo:angular/material2 is:open type:pr label:"pr: merge ready" -label:"pr: merge safe"',
-  }, (error, response) => {
-    if (response) {
-      writeScheduleScript(response.data.items);
-    } else {
-      console.error('Fetching merge-ready PRs failed.');
-      console.error(error);
-    }
-  });
+  github.search.issues(githubSearchOptions)
+    .then(response => writeScheduleScript(response.data.items))
+    .catch(error => console.error('Fetching merge-ready PRs failed.', error));
 }
 
 
