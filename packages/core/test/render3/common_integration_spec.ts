@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {AttributeMarker, defineComponent} from '../../src/render3/index';
-import {bind, container, elementEnd, elementProperty, elementStart, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, elementEnd, elementProperty, elementStart, getCurrentView, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, restoreView, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
@@ -337,13 +337,17 @@ describe('@angular/common integration', () => {
 
       function pTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
-          const row = nextContext().$implicit as any;
-          const app = nextContext();
+          const state = getCurrentView();
           elementStart(0, 'p');
           {
             elementStart(1, 'span');
             {
-              listener('click', () => { app.onClick(row.value, app.name); });
+              listener('click', () => {
+                restoreView(state);
+                const row = nextContext().$implicit as any;
+                const app = nextContext();
+                app.onClick(row.value, app.name);
+              });
             }
             elementEnd();
             text(2);
