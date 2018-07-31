@@ -12,9 +12,7 @@ import {R3_COMPILE_COMPONENT, R3_COMPILE_DIRECTIVE, R3_COMPILE_PIPE} from '../iv
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
 import {fillProperties} from '../util/property';
-
 import {ViewEncapsulation} from './view';
-
 
 
 /**
