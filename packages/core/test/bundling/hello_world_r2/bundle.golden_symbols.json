@@ -366,7 +366,7 @@
     "name": "CSS_STRIPPABLE_COMMENT_REGEXP"
   },
   {
-    "name": "CUSTOM_ELEMENTS_SCHEMA$1"
+    "name": "CUSTOM_ELEMENTS_SCHEMA"
   },
   {
     "name": "CastExpr"
@@ -570,10 +570,10 @@
     "name": "EMPTY"
   },
   {
-    "name": "EMPTY_ARRAY"
+    "name": "EMPTY_ARRAY$3"
   },
   {
-    "name": "EMPTY_ARRAY$2"
+    "name": "EMPTY_ARRAY$4"
   },
   {
     "name": "EMPTY_CONTEXT"
@@ -711,7 +711,7 @@
     "name": "GET_PROPERTY_NAME"
   },
   {
-    "name": "GET_PROPERTY_NAME$1"
+    "name": "GET_PROPERTY_NAME$2"
   },
   {
     "name": "GOOG_GET_MSG"
@@ -1020,7 +1020,7 @@
     "name": "NOT_FOUND_CHECK_ONLY_ELEMENT_INJECTOR"
   },
   {
-    "name": "NO_ERRORS_SCHEMA$1"
+    "name": "NO_ERRORS_SCHEMA"
   },
   {
     "name": "NO_NEW_LINE"
@@ -1233,10 +1233,13 @@
     "name": "QUOTED_KEYS"
   },
   {
-    "name": "QueryList"
+    "name": "QueryList$1"
   },
   {
     "name": "Quote"
+  },
+  {
+    "name": "R3_COMPILE_INJECTABLE$1"
   },
   {
     "name": "ReadKeyExpr"
@@ -1575,7 +1578,7 @@
     "name": "USE_VALUE"
   },
   {
-    "name": "USE_VALUE$1"
+    "name": "USE_VALUE$3"
   },
   {
     "name": "UnsubscriptionError"
@@ -1584,7 +1587,7 @@
     "name": "UrlResolver"
   },
   {
-    "name": "VERSION"
+    "name": "VERSION$1"
   },
   {
     "name": "VERSION$2"
@@ -1599,7 +1602,7 @@
     "name": "VariableAst"
   },
   {
-    "name": "Version"
+    "name": "Version$1"
   },
   {
     "name": "ViewAction"
@@ -2145,7 +2148,7 @@
     "name": "_removeDotSegments"
   },
   {
-    "name": "_renderCompCount"
+    "name": "_renderCompCount$1"
   },
   {
     "name": "_resolveProviders"
@@ -2346,7 +2349,7 @@
     "name": "camelCaseToDashCase"
   },
   {
-    "name": "checkAndUpdateBinding"
+    "name": "checkAndUpdateBinding$1"
   },
   {
     "name": "checkAndUpdateDirectiveDynamic"
@@ -2422,6 +2425,12 @@
   },
   {
     "name": "compareCharCodeCaseInsensitive"
+  },
+  {
+    "name": "compileNgModuleFactory"
+  },
+  {
+    "name": "compileNgModuleFactory__PRE_NGCC__"
   },
   {
     "name": "componentFactoryName"
@@ -2568,7 +2577,7 @@
     "name": "createOptional"
   },
   {
-    "name": "createOutput$1"
+    "name": "createOutput"
   },
   {
     "name": "createOutputContext"
@@ -2601,7 +2610,7 @@
     "name": "createPureExpression"
   },
   {
-    "name": "createQuery"
+    "name": "createQuery$1"
   },
   {
     "name": "createRendererType2"
@@ -2874,7 +2883,7 @@
     "name": "flatten"
   },
   {
-    "name": "flatten$2"
+    "name": "flatten$3"
   },
   {
     "name": "flattenAndDedupeArray"
@@ -3063,7 +3072,7 @@
     "name": "inlineInterpolate"
   },
   {
-    "name": "interpolate"
+    "name": "interpolate$1"
   },
   {
     "name": "interpretStatements"
@@ -3372,10 +3381,10 @@
     "name": "nodeValue"
   },
   {
-    "name": "noop"
+    "name": "noop$1"
   },
   {
-    "name": "noop$1"
+    "name": "noop$3"
   },
   {
     "name": "noopScope"
@@ -3393,7 +3402,7 @@
     "name": "normalizeNgContentSelect"
   },
   {
-    "name": "not$1"
+    "name": "not"
   },
   {
     "name": "nullSafeIsEquivalent"
@@ -3663,7 +3672,7 @@
     "name": "stringify"
   },
   {
-    "name": "stringify$2"
+    "name": "stringify$1"
   },
   {
     "name": "stringifyType"
