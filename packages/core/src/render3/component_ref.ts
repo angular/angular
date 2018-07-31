@@ -23,7 +23,7 @@ import {ComponentDefInternal, ComponentType, RenderFlags} from './interfaces/def
 import {LElementNode, TNode, TNodeType} from './interfaces/node';
 import {RElement, domRendererFactory3} from './interfaces/renderer';
 import {CONTEXT, FLAGS, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
-import {ViewRef} from './view_ref';
+import {RootViewRef, ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
   resolveComponentFactory<T>(component: Type<T>): viewEngine_ComponentFactory<T> {
@@ -190,16 +190,7 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
       hostNode: RElement) {
     super();
     this.instance = instance;
-    /* TODO(jasonaden): This is incomplete, to be adjusted in follow-up PR. Notes from Kara:When
-     * ViewRef.detectChanges is called from ApplicationRef.tick, it will call detectChanges at the
-     * component instance level. I suspect this means that lifecycle hooks and host bindings on the
-     * given component won't work (as these are always called at the level above a component).
-     *
-     * In render2, ViewRef.detectChanges uses the root view instance for view checks, not the
-     * component instance. So passing in the root view (1 level above the component) is sufficient.
-     * We might  want to think about creating a fake component for the top level? Or overwrite
-     * detectChanges with a function that calls tickRootContext? */
-    this.hostView = this.changeDetectorRef = new ViewRef(rootView, instance);
+    this.hostView = this.changeDetectorRef = new RootViewRef<T>(rootView);
     this.hostView._lViewNode = createLNode(-1, TNodeType.View, null, null, null, rootView);
     this.injector = injector;
     this.location = new ElementRef(hostNode);
