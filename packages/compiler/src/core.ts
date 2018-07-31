@@ -154,7 +154,8 @@ export const createSelf = makeMetadataFactory('Self');
 export const createSkipSelf = makeMetadataFactory('SkipSelf');
 export const createHost = makeMetadataFactory('Host');
 
-export interface Type extends Function { new (...args: any[]): any; }
+export interface Type extends Function { prototype: any; }
+
 export const Type = Function;
 
 export enum SecurityContext {

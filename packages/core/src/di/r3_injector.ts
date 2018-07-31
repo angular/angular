@@ -7,7 +7,7 @@
  */
 
 import {OnDestroy} from '../metadata/lifecycle_hooks';
-import {Type} from '../type';
+import {Constructor, Type} from '../type';
 import {stringify} from '../util';
 
 import {InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef} from './defs';
@@ -336,7 +336,7 @@ function injectableDefRecord(token: Type<any>| InjectionToken<any>): Record<any>
     }
     // TODO(alxhub): there should probably be a strict mode which throws here instead of assuming a
     // no-args constructor.
-    return makeRecord(() => new (token as Type<any>)());
+    return makeRecord(() => new (token as Constructor<any>)());
   }
   return makeRecord(injectableDef.factory);
 }
@@ -358,7 +358,7 @@ function providerToRecord(provider: SingleProvider): Record<any> {
     } else {
       const classRef = (provider as StaticClassProvider | ClassProvider).useClass || token;
       if (hasDeps(provider)) {
-        factory = () => new (classRef)(...injectArgs(provider.deps));
+        factory = () => new (classRef as Constructor<any>)(...injectArgs(provider.deps));
       } else {
         return injectableDefRecord(classRef);
       }

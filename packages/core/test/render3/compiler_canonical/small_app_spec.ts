@@ -101,7 +101,8 @@ class ToDoAppComponent {
 
 // NON-NORMATIVE
 (ToDoAppComponent.ngComponentDef as r3.ComponentDefInternal<any>).directiveDefs = () =>
-    [ToDoItemComponent.ngComponentDef, (NgForOf as r3.DirectiveType<NgForOf<any>>).ngDirectiveDef];
+    [ToDoItemComponent.ngComponentDef,
+     (NgForOf as any as r3.DirectiveType<NgForOf<any>>).ngDirectiveDef];
 // /NON-NORMATIVE
 
 @Component({

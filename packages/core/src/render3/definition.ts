@@ -296,13 +296,13 @@ export function defineComponent<T>(componentDefinition: {
     declaredInputs: declaredInputs,
     outputs: invertObject(componentDefinition.outputs),
     exportAs: componentDefinition.exportAs || null,
-    onInit: type.prototype.ngOnInit || null,
-    doCheck: type.prototype.ngDoCheck || null,
-    afterContentInit: type.prototype.ngAfterContentInit || null,
-    afterContentChecked: type.prototype.ngAfterContentChecked || null,
-    afterViewInit: type.prototype.ngAfterViewInit || null,
-    afterViewChecked: type.prototype.ngAfterViewChecked || null,
-    onDestroy: type.prototype.ngOnDestroy || null,
+    onInit: (type.prototype as any).ngOnInit || null,
+    doCheck: (type.prototype as any).ngDoCheck || null,
+    afterContentInit: (type.prototype as any).ngAfterContentInit || null,
+    afterContentChecked: (type.prototype as any).ngAfterContentChecked || null,
+    afterViewInit: (type.prototype as any).ngAfterViewInit || null,
+    afterViewChecked: (type.prototype as any).ngAfterViewChecked || null,
+    onDestroy: (type.prototype as any).ngOnDestroy || null,
     onPush: componentDefinition.changeDetection === ChangeDetectionStrategy.OnPush,
     directiveDefs: directiveTypes ?
         () => (typeof directiveTypes === 'function' ? directiveTypes() : directiveTypes)
@@ -660,7 +660,7 @@ export function definePipe<T>(pipeDef: {
     name: pipeDef.name,
     factory: pipeDef.factory,
     pure: pipeDef.pure !== false,
-    onDestroy: pipeDef.type.prototype.ngOnDestroy || null
+    onDestroy: (pipeDef.type.prototype as any).ngOnDestroy || null
   }) as never;
 }
 

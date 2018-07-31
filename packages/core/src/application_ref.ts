@@ -465,7 +465,7 @@ export class ApplicationRef {
 
     // Create a factory associated with the current module if it's not bound to some other
     const ngModule = componentFactory instanceof ComponentFactoryBoundToModule ?
-        null :
+        undefined :
         this._injector.get(NgModuleRef);
     const selectorOrNode = rootSelectorOrNode || componentFactory.selector;
     const compRef = componentFactory.create(Injector.NULL, [], selectorOrNode, ngModule);

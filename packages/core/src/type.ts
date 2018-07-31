@@ -22,4 +22,6 @@ export function isType(v: any): v is Type<any> {
   return typeof v === 'function';
 }
 
-export interface Type<T> extends Function { new (...args: any[]): T; }
+export interface Type<T> extends Function { prototype: T; }
+
+export interface Constructor<T> extends Type<T> { new (...args: any[]): T; }

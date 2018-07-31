@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Type, isType} from '../type';
+import {Constructor, Type, isType} from '../type';
 import {global, stringify} from '../util';
 import {ANNOTATIONS, PARAMETERS, PROP_METADATA} from '../util/decorators';
 
@@ -29,7 +29,7 @@ export class ReflectionCapabilities implements PlatformReflectionCapabilities {
 
   isReflectionEnabled(): boolean { return true; }
 
-  factory<T>(t: Type<T>): (args: any[]) => T { return (...args: any[]) => new t(...args); }
+  factory<T>(t: Constructor<T>): (args: any[]) => T { return (...args: any[]) => new t(...args); }
 
   /** @internal */
   _zipTypesAndAnnotations(paramTypes: any[], paramAnnotations: any[]): any[][] {

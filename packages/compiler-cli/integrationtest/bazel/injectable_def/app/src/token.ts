@@ -18,7 +18,7 @@ export class TokenModule {
 
 export const TOKEN = new InjectionToken('test', {
   providedIn: TokenModule,
-  factory: () => new Service(inject(Dep)),
+  factory: () => new Service(inject(Dep), inject(AbstractDep)),
 });
 
 
@@ -49,6 +49,11 @@ export class Dep {
   readonly data = 'fromToken';
 }
 
+@Injectable({providedIn: 'root', useValue: {value: 42}})
+export abstract class AbstractDep {
+  abstract value: number;
+}
+
 export class Service {
-  constructor(readonly dep: Dep) {}
+  constructor(readonly dep: Dep, unused: AbstractDep) {}
 }
