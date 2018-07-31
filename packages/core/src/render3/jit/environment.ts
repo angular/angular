@@ -57,6 +57,8 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵf7': r3.f7,
   'ɵf8': r3.f8,
   'ɵfV': r3.fV,
+  'ɵgV': r3.gV,
+  'ɵrV': r3.rV,
   'ɵi1': r3.i1,
   'ɵi2': r3.i2,
   'ɵi3': r3.i3,

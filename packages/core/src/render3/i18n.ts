@@ -7,7 +7,7 @@
  */
 
 import {assertEqual, assertLessThan} from './assert';
-import {NO_CHANGE, bindingUpdated, bindingUpdated2, bindingUpdated4, createLNode, getPreviousOrParentNode, getRenderer, getViewData, load, resetApplicationState} from './instructions';
+import {NO_CHANGE, _getViewData, bindingUpdated, bindingUpdated2, bindingUpdated4, createLNode, getPreviousOrParentNode, getRenderer, load, resetApplicationState} from './instructions';
 import {RENDER_PARENT} from './interfaces/container';
 import {LContainerNode, LNode, TContainerNode, TElementNode, TNodeType} from './interfaces/node';
 import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
@@ -250,7 +250,7 @@ function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
     ngDevMode.rendererMoveNode++;
   }
 
-  const viewData = getViewData();
+  const viewData = _getViewData();
 
   appendChild(parentNode, node.native || null, viewData);
 
@@ -291,7 +291,7 @@ function appendI18nNode(node: LNode, parentNode: LNode, previousNode: LNode) {
  * @param instructions The list of instructions to apply on the current view.
  */
 export function i18nApply(startIndex: number, instructions: I18nInstruction[]): void {
-  const viewData = getViewData();
+  const viewData = _getViewData();
   if (ngDevMode) {
     assertEqual(viewData[BINDING_INDEX], -1, 'i18nApply should be called before any binding');
   }

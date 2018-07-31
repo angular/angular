@@ -63,6 +63,9 @@ export {
   elementStyleProp as sp,
   elementStylingApply as sa,
 
+  getCurrentView as gV,
+  restoreView as rV,
+
   listener as L,
   store as st,
   load as ld,

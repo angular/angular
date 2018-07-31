@@ -522,6 +522,9 @@
     "name": "getCurrentSanitizer"
   },
   {
+    "name": "getCurrentView"
+  },
+  {
     "name": "getInitialIndex"
   },
   {
@@ -762,6 +765,9 @@
     "name": "readElementValue"
   },
   {
+    "name": "reference"
+  },
+  {
     "name": "refreshChildComponents"
   },
   {
@@ -799,6 +805,9 @@
   },
   {
     "name": "resolveRendererType2"
+  },
+  {
+    "name": "restoreView"
   },
   {
     "name": "sameHostView"

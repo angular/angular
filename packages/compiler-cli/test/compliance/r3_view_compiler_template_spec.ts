@@ -55,12 +55,14 @@ describe('compiler compliance: template', () => {
       function MyComponent_ul_li_div_Template_1(rf, ctx) {
         
         if (rf & 1) {
-          const $inner$ = ctx.$implicit;
-          const $middle$ = $i0$.ɵx().$implicit;
-          const $outer$ = $i0$.ɵx().$implicit;
-          const $myComp$ = $i0$.ɵx();
+          const $s$ = $i0$.ɵgV();
           $i0$.ɵE(0, "div");
           $i0$.ɵL("click", function MyComponent_ul_li_div_Template_1_div_click_listener($event){
+            $i0$.ɵrV($s$);
+            const $inner$ = ctx.$implicit;
+            const $middle$ = $i0$.ɵx().$implicit;
+            const $outer$ = $i0$.ɵx().$implicit;
+            const $myComp$ = $i0$.ɵx();
             return $myComp$.onClick($outer$, $middle$, $inner$);
           });
           $i0$.ɵT(1);
