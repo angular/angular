@@ -255,13 +255,13 @@ export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T
    * Defines the set of injectable providers that are visible to a Directive and its content DOM
    * children.
    */
-  readonly providers?: Provider[];
+  readonly providers: Provider[]|null;
 
   /**
    * Defines the set of injectable providers that are visible to a Directive and its view DOM
    * children only.
    */
-  readonly viewProviders?: Provider[];
+  readonly viewProviders: Provider[]|null;
 
   /**
    * Registry of directives and components that may be found in this view.

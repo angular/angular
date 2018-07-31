@@ -9,8 +9,9 @@
 import './ng_dev_mode';
 
 import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {Provider, ViewEncapsulation} from '../core';
+import {Provider} from '../di/provider';
 import {NgModuleDef, NgModuleDefInternal} from '../metadata/ng_module';
+import {ViewEncapsulation} from '../metadata/view';
 import {Type} from '../type';
 
 import {BaseDef, ComponentDefFeature, ComponentDefInternal, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveType, DirectiveTypesOrFactory, PipeDefInternal, PipeType, PipeTypesOrFactory} from './interfaces/definition';
@@ -266,7 +267,8 @@ export function defineComponent<T>(componentDefinition: {
   const pipeTypes = componentDefinition.pipes !;
   const directiveTypes = componentDefinition.directives !;
   const declaredInputs: {[key: string]: string} = {} as any;
-  const encapsulation = componentDefinition.encapsulation;
+  const encapsulation = componentDefinition.encapsulation || ViewEncapsulation.Emulated;
+  const styles: string[] = componentDefinition.styles || EMPTY_ARRAY;
   const def: ComponentDefInternal<any> = {
     type: type,
     diPublic: null,
@@ -304,9 +306,10 @@ export function defineComponent<T>(componentDefinition: {
     data: componentDefinition.data || EMPTY,
     // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in the
     // next line. Also `None` should be 0 not 2.
-    encapsulation: encapsulation == null ? 2 /* ViewEncapsulation.None */ : encapsulation,
-    id: `c${_renderCompCount++}`,
-    styles: EMPTY_ARRAY,
+    encapsulation,
+    providers: EMPTY_ARRAY,
+    viewProviders: EMPTY_ARRAY,
+    id: `c${_renderCompCount++}`, styles,
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));

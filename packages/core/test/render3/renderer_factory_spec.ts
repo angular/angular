@@ -32,6 +32,7 @@ describe('renderer factory lifecycle', () => {
   class SomeComponent {
     static ngComponentDef = defineComponent({
       type: SomeComponent,
+      encapsulation: ViewEncapsulation.None,
       selectors: [['some-component']],
       consts: 1,
       vars: 0,
@@ -48,6 +49,7 @@ describe('renderer factory lifecycle', () => {
   class SomeComponentWhichThrows {
     static ngComponentDef = defineComponent({
       type: SomeComponentWhichThrows,
+      encapsulation: ViewEncapsulation.None,
       selectors: [['some-component-with-Error']],
       consts: 0,
       vars: 0,
@@ -128,6 +130,7 @@ describe('animation renderer factory', () => {
   class SomeComponent {
     static ngComponentDef = defineComponent({
       type: SomeComponent,
+      encapsulation: ViewEncapsulation.None,
       selectors: [['some-component']],
       consts: 1,
       vars: 0,
@@ -258,6 +261,7 @@ describe('Renderer2 destruction hooks', () => {
     class SimpleComponent {
       static ngComponentDef = defineComponent({
         type: SimpleComponent,
+        encapsulation: ViewEncapsulation.None,
         selectors: [['simple']],
         consts: 1,
         vars: 0,
