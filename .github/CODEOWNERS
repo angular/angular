@@ -3,11 +3,11 @@
 /src/lib/autocomplete/**                           @crisbeto
 /src/lib/badge/**                                  @amcdnl
 /src/lib/bottom-sheet/**                           @jelbourn @crisbeto
-/src/lib/button-toggle/**                          @tinayuangao
-/src/lib/button/**                                 @tinayuangao
+/src/lib/button-toggle/**                          @jelbourn
+/src/lib/button/**                                 @jelbourn @josephperrott
 /src/lib/card/**                                   @jelbourn
-/src/lib/checkbox/**                               @tinayuangao @devversion
-/src/lib/chips/**                                  @tinayuangao
+/src/lib/checkbox/**                               @jelbourn @devversion @josephperrott
+/src/lib/chips/**                                  @jelbourn
 /src/lib/datepicker/**                             @mmalerba
 /src/lib/dialog/**                                 @jelbourn @crisbeto
 /src/lib/divider/**                                @jelbourn @crisbeto
@@ -22,7 +22,7 @@
 /src/lib/prebuilt-themes/**                        @jelbourn
 /src/lib/progress-bar/**                           @jelbourn @crisbeto @josephperrott
 /src/lib/progress-spinner/**                       @jelbourn @crisbeto @josephperrott
-/src/lib/radio/**                                  @tinayuangao @devversion
+/src/lib/radio/**                                  @jelbourn @devversion
 /src/lib/schematics/**                             @amcdnl
 /src/lib/select/**                                 @crisbeto
 /src/lib/sidenav/**                                @mmalerba
@@ -35,7 +35,7 @@
 /src/lib/tabs/**                                   @andrewseguin
 /src/lib/toolbar/**                                @devversion
 /src/lib/tooltip/**                                @andrewseguin
-/src/lib/tree/**                                   @tinayuangao
+/src/lib/tree/**                                   @jelbourn @andrewseguin
 
 # Angular Material core
 /src/lib/core/*                                    @jelbourn
@@ -49,7 +49,7 @@
 /src/lib/core/option/**                            @crisbeto
 /src/lib/core/placeholder/**                       @mmalerba
 /src/lib/core/ripple/**                            @devversion
-/src/lib/core/selection/**                         @tinayuangao @jelbourn
+/src/lib/core/selection/**                         @jelbourn
 /src/lib/core/selection/pseudo*/**                 @crisbeto @jelbourn
 /src/lib/core/style/**                             @jelbourn
 /src/lib/core/testing/**                           @jelbourn
@@ -75,7 +75,7 @@
 /src/cdk/table/**                                  @andrewseguin
 /src/cdk/testing/**                                @devversion
 /src/cdk/text-field/**                             @mmalerba
-/src/cdk/tree/**                                   @tinayuangao
+/src/cdk/tree/**                                   @jelbourn @andrewseguin
 
 # Moment adapter package
 /src/material-moment-adapter/**                    @mmalerba
@@ -95,16 +95,16 @@
 
 # Demo app
 /src/demo-app/*                                    @jelbourn
-/src/demo-app/a11y/**                              @tinayuangao
+/src/demo-app/a11y/**                              @jelbourn
 /src/demo-app/autocomplete/**                      @crisbeto
 /src/demo-app/badge/**                             @amcdnl
 /src/demo-app/baseline/**                          @mmalerba
 /src/demo-app/bottom-sheet/**                      @jelbourn @crisbeto
-/src/demo-app/button-toggle/**                     @tinayuangao
-/src/demo-app/button/**                            @tinayuangao
+/src/demo-app/button-toggle/**                     @jelbourn
+/src/demo-app/button/**                            @jelbourn
 /src/demo-app/card/**                              @jelbourn
-/src/demo-app/checkbox/**                          @tinayuangao @devversion
-/src/demo-app/chips/**                             @tinayuangao
+/src/demo-app/checkbox/**                          @jelbourn @devversion
+/src/demo-app/chips/**                             @jelbourn
 /src/demo-app/connected-overlay/**                 @jelbourn @crisbeto
 /src/demo-app/dataset/**                           @andrewseguin
 /src/demo-app/datepicker/**                        @mmalerba
@@ -129,7 +129,7 @@
 /src/demo-app/portal/**                            @jelbourn
 /src/demo-app/progress-bar/**                      @jelbourn @crisbeto @josephperrott
 /src/demo-app/progress-spinner/**                  @jelbourn @crisbeto @josephperrott
-/src/demo-app/radio/**                             @tinayuangao @devversion
+/src/demo-app/radio/**                             @jelbourn @devversion
 /src/demo-app/ripple/**                            @devversion
 /src/demo-app/screen-type/**                       @josephperrott
 /src/demo-app/select/**                            @crisbeto
@@ -142,17 +142,17 @@
 /src/demo-app/tabs/**                              @andrewseguin
 /src/demo-app/toolbar/**                           @devversion
 /src/demo-app/tooltip/**                           @andrewseguin
-/src/demo-app/tree/**                              @tinayuangao
+/src/demo-app/tree/**                              @jelbourn
 /src/demo-app/typography/**                        @crisbeto
 /src/demo-app/virtual-scroll/**                    @mmalerba
 
 # E2E app
 /e2e/*                                             @jelbourn
 /e2e/components/block-scroll-strategy-e2e.spec.ts  @andrewseguin @crisbeto
-/e2e/components/button-e2e.spec.ts                 @tinayuangao
-/e2e/components/button-toggle-e2e.spec.ts          @tinayuangao
+/e2e/components/button-e2e.spec.ts                 @jelbourn
+/e2e/components/button-toggle-e2e.spec.ts          @jelbourn
 /e2e/components/card-e2e.spec.ts                   @jelbourn
-/e2e/components/checkbox-e2e.spec.ts               @tinayuangao @devversion
+/e2e/components/checkbox-e2e.spec.ts               @jelbourn @devversion
 /e2e/components/dialog-e2e.spec.ts                 @jelbourn @crisbeto
 /e2e/components/expansion-e2e.spec.ts              @josephperrott @jelbourn
 /e2e/components/fullscreen-e2e.spec.ts             @jelbourn
@@ -163,7 +163,7 @@
 /e2e/components/menu-e2e.spec.ts                   @crisbeto
 /e2e/components/progress-bar-e2e.spec.ts           @jelbourn @crisbeto @josephperrott
 /e2e/components/progress-spinner-e2e.spec.ts       @jelbourn @crisbeto @josephperrott
-/e2e/components/radio-e2e.spec.ts                  @tinayuangao @devversion
+/e2e/components/radio-e2e.spec.ts                  @jelbourn @devversion
 /e2e/components/sidenav-e2e.spec.ts                @mmalerba
 /e2e/components/slide-toggle-e2e.spec.ts           @devversion
 /e2e/components/stepper-e2e.spec.ts                @mmalerba
@@ -173,8 +173,8 @@
 /e2e/util/**                                       @jelbourn
 /src/e2e-app/*                                     @jelbourn
 /src/e2e-app/block-scroll-strategy/**              @andrewseguin @crisbeto
-/src/e2e-app/button/**                             @tinayuangao
-/src/e2e-app/checkbox/**                           @tinayuangao @devversion
+/src/e2e-app/button/**                             @jelbourn
+/src/e2e-app/checkbox/**                           @jelbourn @devversion
 /src/e2e-app/dialog/**                             @jelbourn @crisbeto
 /src/e2e-app/e2e-app/**                            @jelbourn
 /src/e2e-app/fullscreen/**                         @jelbourn
@@ -184,7 +184,7 @@
 /src/e2e-app/menu/**                               @crisbeto
 /src/e2e-app/progress-bar/**                       @jelbourn @crisbeto @josephperrott
 /src/e2e-app/progress-spinner/**                   @jelbourn @crisbeto @josephperrott
-/src/e2e-app/radio/**                              @tinayuangao @devversion
+/src/e2e-app/radio/**                              @jelbourn @devversion
 /src/e2e-app/sidenav/**                            @mmalerba
 /src/e2e-app/slide-toggle/**                       @devversion
 /src/e2e-app/tabs/**                               @andrewseguin
