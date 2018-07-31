@@ -41,6 +41,7 @@ export default function(): Rule {
 
     const allTsConfigPaths = getTsConfigPaths(tree);
     const allUpdateTasks = [];
+
     for (const tsconfig of allTsConfigPaths) {
       // Run the update tslint rules.
       allUpdateTasks.push(context.addTask(new TslintFixTask({
@@ -119,12 +120,13 @@ function getTsConfigPaths(tree: Tree): string[] {
 
   // Add any tsconfig directly referenced in a build or test task of the angular.json workspace.
   const workspace = getWorkspace(tree);
+
   for (const project of Object.values(workspace.projects)) {
     if (project && project.architect) {
       for (const taskName of ['build', 'test']) {
         const task = project.architect[taskName];
         if (task && task.options && task.options.tsConfig) {
-          const tsConfigOption = project.architect.tsConfig;
+          const tsConfigOption = task.options.tsConfig;
           if (typeof tsConfigOption === 'string') {
             tsconfigPaths.push(tsConfigOption);
           } else if (Array.isArray(tsConfigOption)) {

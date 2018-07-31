@@ -8,16 +8,12 @@ describe('material-nav-schematic', () => {
     runner = new SchematicTestRunner('schematics', migrationCollection);
   });
 
-  describe('migration v5 to v6', () => {
+  it('should remove the temp directory', () => {
+    const tree = runner.runSchematic('migration-01', {}, createTestApp());
+    const files = tree.files;
 
-    it('should remove the temp directory', () => {
-      const tree = runner.runSchematic('migration-01', {}, createTestApp());
-      const files = tree.files;
-
-      expect(files.find(file => file.includes('angular_material_temp_schematics')))
-        .toBeFalsy('Expected the temporary directory for the schematics to be deleted');
-    });
-
+    expect(files.find(file => file.includes('angular_material_temp_schematics')))
+      .toBeFalsy('Expected the temporary directory for the schematics to be deleted');
   });
 
 });
