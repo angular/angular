@@ -69,3 +69,7 @@ general:
   branches:
     only:
       - master
+      # 5.2.x, 6.0.x, etc
+      - /\d+\.\d+\.x/
+      # 5.x, 6.x, etc
+      - /\d+\.x/
