@@ -56,7 +56,7 @@ task('schematics:build', tsBuildTask(join(schematicsDir, 'tsconfig.json')));
  * Task that will build the material package. Special treatment for this package includes:
  * - Copying all prebuilt themes into the package
  * - Bundling theming scss into a single theming file
- * - Copying schematics code into the packatge
+ * - Copying schematics code into the package
  */
 task('material:prepare-release', sequenceTask(
   ['material:build', 'schematics:build'],
