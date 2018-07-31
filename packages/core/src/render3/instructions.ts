@@ -108,9 +108,29 @@ export function getCurrentSanitizer(): Sanitizer|null {
   return viewData && viewData[SANITIZER];
 }
 
-export function getViewData(): LViewData {
+/**
+ * Returns the current LViewData instance.
+ *
+ * Used in conjunction with the restoreView() instruction to save a snapshot
+ * of the current view and restore it when listeners are invoked. This allows
+ * walking the declaration view tree in listeners to get vars from parent views.
+ */
+export function getCurrentView(): LViewData {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return viewData;
+}
+
+/**
+ * Restores `contextViewData` to the given LViewData instance.
+ *
+ * Used in conjunction with the getCurrentView() instruction to save a snapshot
+ * of the current view and restore it when listeners are invoked. This allows
+ * walking the declaration view tree in listeners to get vars from parent views.
+ *
+ * @param viewToRestore The LViewData instance to restore.
+ */
+export function restoreView(viewToRestore: LViewData) {
+  contextViewData = viewToRestore;
 }
 
 /** Used to set the parent property when nodes are created. */
@@ -583,9 +603,9 @@ export function renderEmbeddedTemplate<T>(
  * @param level The relative level of the view from which to grab context compared to contextVewData
  * @returns context
  */
-export function nextContext(level: number = 1): any {
+export function nextContext<T = any>(level: number = 1): T {
   contextViewData = walkUpViews(level, contextViewData !);
-  return contextViewData[CONTEXT];
+  return contextViewData[CONTEXT] as T;
 }
 
 export function renderComponentOrTemplate<T>(

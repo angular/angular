@@ -233,7 +233,7 @@ describe('event listeners', () => {
   it('should destroy listeners in views with renderer2', () => {
 
     /**
-     * % if (ctx.showing) {
+       * % if (ctx.showing) {
        *  <button (click)="onClick()"> Click me </button>
        * % }
      */
@@ -292,7 +292,7 @@ describe('event listeners', () => {
   it('should destroy listeners in for loops', () => {
 
     /**
-     * % for (let i = 0; i < ctx.buttons; i++) {
+       * % for (let i = 0; i < ctx.buttons; i++) {
        *  <button (click)="onClick(i)"> Click me </button>
        * % }
      */
@@ -353,7 +353,7 @@ describe('event listeners', () => {
   it('should destroy listeners in for loops with renderer2', () => {
 
     /**
-     * % for (let i = 0; i < ctx.buttons; i++) {
+       * % for (let i = 0; i < ctx.buttons; i++) {
        *  <button (click)="onClick(i)"> Click me </button>
        * % }
      */
@@ -449,7 +449,7 @@ describe('event listeners', () => {
   it('should destroy listeners in nested views', () => {
 
     /**
-     * % if (showing) {
+       * % if (showing) {
        *    Hello
        *    % if (button) {
        *      <button (click)="onClick()"> Click </button>
@@ -511,7 +511,7 @@ describe('event listeners', () => {
   it('should destroy listeners in component views', () => {
 
     /**
-     * % if (showing) {
+       * % if (showing) {
        *    Hello
        *    <comp></comp>
        *    <comp></comp>
