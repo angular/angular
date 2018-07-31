@@ -3,25 +3,25 @@
 _Angular elements_ are Angular components packaged as _custom elements_, a web standard for defining new HTML elements in a framework-agnostic way.
 
 [Custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) are a Web Platform feature currently supported by Chrome, Opera, and Safari, and available in other browsers through polyfills (see [Browser Support](#browser-support)).
-A custom element extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code. 
+A custom element extends HTML by allowing you to define a tag whose content is created and controlled by JavaScript code.
 The browser maintains a `CustomElementRegistry` of defined custom elements (also called Web Components), which maps an instantiable JavaScript class to an HTML tag.
 
-The `@angular/elements` package exports a `createCustomElement()` API that provides a bridge from Angular's component interface and change detection functionality to the built-in DOM API. 
+The `@angular/elements` package exports a `createCustomElement()` API that provides a bridge from Angular's component interface and change detection functionality to the built-in DOM API.
 
-Transforming a component to a custom element makes all of the required Angular infrastructure available to the browser. 
-Creating a custom element is simple and straightforward, and automatically connects your component-defined view with change detection and data binding, mapping Angular functionality to the corresponding native HTML equivalents. 
+Transforming a component to a custom element makes all of the required Angular infrastructure available to the browser.
+Creating a custom element is simple and straightforward, and automatically connects your component-defined view with change detection and data binding, mapping Angular functionality to the corresponding native HTML equivalents.
 
 <div class="alert is-helpful">
 
-    We are working on custom elements that can be used by web apps built on other frameworks. 
-    A minimal, self-contained version of the Angular framework will be injected as a service to support the component's change-detection and data-binding functionality. 
+    We are working on custom elements that can be used by web apps built on other frameworks.
+    A minimal, self-contained version of the Angular framework will be injected as a service to support the component's change-detection and data-binding functionality.
     For more about the direction of development, check out this [video presentation](https://www.youtube.com/watch?v=Z1gLFPLVJjY&t=4s).
 
 </div>
 
 ## Using custom elements
 
-Custom elements bootstrap themselves - they start automatically when they are added to the DOM, and are automatically destroyed when removed from the DOM. Once a custom element is added to the DOM for any page, it looks and behaves like any other HTML element, and does not require any special knowledge of Angular terms or usage conventions.  
+Custom elements bootstrap themselves - they start automatically when they are added to the DOM, and are automatically destroyed when removed from the DOM. Once a custom element is added to the DOM for any page, it looks and behaves like any other HTML element, and does not require any special knowledge of Angular terms or usage conventions.
 
 - <b>Easy dynamic content in an Angular app</b>
 
@@ -33,14 +33,14 @@ Custom elements bootstrap themselves - they start automatically when they are ad
 
 ### How it works
 
-Use the `createCustomElement()` function to convert a component into a class that can be registered with the browser as a custom element. 
-After you register your configured class with the browser's custom-element registry, you can use the new element just like a built-in HTML element in content that you add directly into the DOM: 
+Use the `createCustomElement()` function to convert a component into a class that can be registered with the browser as a custom element.
+After you register your configured class with the browser's custom-element registry, you can use the new element just like a built-in HTML element in content that you add directly into the DOM:
 
 ```
 <my-popup message="Use Angular!"></my-popup>
 ```
 
-When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM. The content is provided by the component's template, which  uses Angular template syntax, and is rendered using the component and DOM data. Input properties in the component correspond to input attributes for the element. 
+When your custom element is placed on a page, the browser creates an instance of the registered class and adds it to the DOM. The content is provided by the component's template, which  uses Angular template syntax, and is rendered using the component and DOM data. Input properties in the component correspond to input attributes for the element.
 
 <figure>
 
@@ -52,25 +52,25 @@ When your custom element is placed on a page, the browser creates an instance of
 
 ## Transforming components to custom elements
 
-Angular provides the `createCustomElement()` function for converting an Angular component, 
-together with its dependencies, to a custom element. The function collects the component's 
-observable properties, along with the Angular functionality the browser needs to 
-create and destroy instances, and to detect and respond to changes. 
+Angular provides the `createCustomElement()` function for converting an Angular component,
+together with its dependencies, to a custom element. The function collects the component's
+observable properties, along with the Angular functionality the browser needs to
+create and destroy instances, and to detect and respond to changes.
 
-The conversion process implements the `NgElementConstructor` interface, and creates a 
-constructor class that is configured to produce a self-bootstrapping instance of your component. 
+The conversion process implements the `NgElementConstructor` interface, and creates a
+constructor class that is configured to produce a self-bootstrapping instance of your component.
 
-Use a JavaScript function, `customElements.define()`,  to register the configured constructor 
-and its associated custom-element tag with the browser's `CustomElementRegistry`. 
+Use a JavaScript function, `customElements.define()`,  to register the configured constructor
+and its associated custom-element tag with the browser's `CustomElementRegistry`.
 When the browser encounters the tag for the registered element, it uses the constructor to create a custom-element instance.
 
 <figure>
 
-<img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">  
+<img src="generated/images/guide/elements/createElement.png" alt="Transform a component to a custom element" class="left">
 
 </figure>
 
-### Mapping 
+### Mapping
 
 A custom element _hosts_ an Angular component, providing a bridge between the data and logic defined in the component and standard DOM APIs. Component properties and logic maps directly into HTML attributes and the browser's event system.
 
@@ -80,13 +80,13 @@ A custom element _hosts_ an Angular component, providing a bridge between the da
 
 
 For more information, see Web Component documentation for [Creating custom events](https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Creating_and_triggering_events#Creating_custom_events).
- 
+
 
 {@a browser-support}
 
 ## Browser support for custom elements
 
-The recently-developed [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) Web Platform feature is currently supported natively in a number of browsers. Support is pending or planned in other browsers. 
+The recently-developed [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Using_custom_elements) Web Platform feature is currently supported natively in a number of browsers. Support is pending or planned in other browsers.
 
 <table>
 <tr>
@@ -111,7 +111,7 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 </tr>
 <tr>
   <td>Edge</td>
-  <td>Working on an implementation. <br>    
+  <td>Working on an implementation. <br>
 
   </td>
 </tr>
@@ -120,7 +120,7 @@ The recently-developed [custom elements](https://developer.mozilla.org/en-US/doc
 In browsers that support Custom Elements natively, the specification requires developers use ES2015 classes to define Custom Elements - developers can opt-in to this by setting the `target: "es2015"` property in their project's `tsconfig.json`. As Custom Element and ES2015 support may not be available in all browsers, developers can instead choose to use a polyfill to support older browsers and ES5 code.
 
 Use the [Angular CLI](https://cli.angular.io/) to automatically set up your project with the correct polyfill: `ng add @angular/elements --name=*your_project_name*`.
-- For more information about polyfills, see [polyfill documentation](https://www.webcomponents.org/polyfills). 
+- For more information about polyfills, see [polyfill documentation](https://www.webcomponents.org/polyfills).
 
 - For more information about Angular browser support, see [Browser Support](guide/browser-support).
 
@@ -131,12 +131,12 @@ Previously, when you wanted to add a component to an app at runtime, you had to 
 
 Using an Angular custom element makes the process much simpler and more transparent, by providing all of the infrastructure and framework automatically&mdash;all you have to do is define the kind of event handling you want. (You do still have to exclude the component from compilation, if you are not going to use it in your app.)
 
-The Popup Service example app defines a component that you can either load dynamically or convert to a custom element. 
+The Popup Service example app (shown below) defines a component that you can either load dynamically or convert to a custom element.
 
-- `popup.component.ts`  defines a simple pop-up element that displays an input message, with some animation and styling. 
+- `popup.component.ts` defines a simple pop-up element that displays an input message, with some animation and styling.
 - `popup.service.ts` creates an injectable service that provides two different ways to invoke the PopupComponent; as a dynamic component, or as a custom element. Notice how much more setup is required for the dynamic-loading method.
 - `app.module.ts` adds the PopupComponent in the module's `entryComponents` list, to exclude it from compilation and avoid startup warnings or errors.
-- `app.component.ts` defines the app's root component, which uses the PopupService to add the pop-up to the DOM at run time. When the app runs, the root component's constructor converts PopupComponent to a custom element. 
+- `app.component.ts` defines the app's root component, which uses the PopupService to add the pop-up to the DOM at run time. When the app runs, the root component's constructor converts PopupComponent to a custom element.
 
 For comparison, the demo shows both methods. One button adds the popup using the dynamic-loading method, and the other uses the custom element. You can see that the result is the same; only the preparation is different.
 
