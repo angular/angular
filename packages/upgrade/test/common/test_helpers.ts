@@ -15,6 +15,10 @@ const ng1Versions = [
   },
   {
     label: '1.6',
+    files: ['angular-1.6/angular.js', 'angular-mocks-1.6/angular-mocks.js'],
+  },
+  {
+    label: '1.7',
     files: ['angular/angular.js', 'angular-mocks/angular-mocks.js'],
   },
 ];
@@ -73,7 +77,7 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
         // In these tests we are loading different versions of AngularJS on the same window.
         // AngularJS leaves an "expandoId" property on `document`, which can trick subsequent
         // `window.angular` instances into believing an app is already bootstrapped.
-        win.angular.element(document).removeData();
+        win.angular.element.cleanData([document]);
 
         // Remove AngularJS to leave a clean state for subsequent tests.
         setNg1(undefined);
