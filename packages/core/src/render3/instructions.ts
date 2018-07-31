@@ -22,7 +22,7 @@ import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LEleme
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_VIEW, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_VIEW, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
@@ -108,9 +108,38 @@ export function getCurrentSanitizer(): Sanitizer|null {
   return viewData && viewData[SANITIZER];
 }
 
-export function getViewData(): LViewData {
+/**
+ * Returns the current OpaqueViewState instance.
+ *
+ * Used in conjunction with the restoreView() instruction to save a snapshot
+ * of the current view and restore it when listeners are invoked. This allows
+ * walking the declaration view tree in listeners to get vars from parent views.
+ */
+export function getCurrentView(): OpaqueViewState {
+  return (viewData as any) as OpaqueViewState;
+}
+
+/**
+ * Internal function that returns the current LViewData instance.
+ *
+ * The getCurrentView() instruction should be used for anything public.
+ */
+export function _getViewData(): LViewData {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return viewData;
+}
+
+/**
+ * Restores `contextViewData` to the given OpaqueViewState instance.
+ *
+ * Used in conjunction with the getCurrentView() instruction to save a snapshot
+ * of the current view and restore it when listeners are invoked. This allows
+ * walking the declaration view tree in listeners to get vars from parent views.
+ *
+ * @param viewToRestore The LViewData instance to restore.
+ */
+export function restoreView(viewToRestore: OpaqueViewState) {
+  contextViewData = (viewToRestore as any) as LViewData;
 }
 
 /** Used to set the parent property when nodes are created. */
@@ -583,9 +612,9 @@ export function renderEmbeddedTemplate<T>(
  * @param level The relative level of the view from which to grab context compared to contextVewData
  * @returns context
  */
-export function nextContext(level: number = 1): any {
+export function nextContext<T = any>(level: number = 1): T {
   contextViewData = walkUpViews(level, contextViewData !);
-  return contextViewData[CONTEXT];
+  return contextViewData[CONTEXT] as T;
 }
 
 export function renderComponentOrTemplate<T>(

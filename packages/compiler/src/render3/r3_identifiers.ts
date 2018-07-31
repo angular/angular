@@ -53,6 +53,10 @@ export class Identifiers {
 
   static bind: o.ExternalReference = {name: 'ɵb', moduleName: CORE};
 
+  static getCurrentView: o.ExternalReference = {name: 'ɵgV', moduleName: CORE};
+
+  static restoreView: o.ExternalReference = {name: 'ɵrV', moduleName: CORE};
+
   static interpolation1: o.ExternalReference = {name: 'ɵi1', moduleName: CORE};
   static interpolation2: o.ExternalReference = {name: 'ɵi2', moduleName: CORE};
   static interpolation3: o.ExternalReference = {name: 'ɵi3', moduleName: CORE};
