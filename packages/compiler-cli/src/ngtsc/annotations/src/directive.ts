@@ -261,6 +261,22 @@ function isStringArrayOrDie(value: any, name: string): value is string[] {
   return true;
 }
 
+export function parseFieldArrayValue(
+    directive: Map<string, ts.Expression>, field: string, reflector: ReflectionHost,
+    checker: ts.TypeChecker): null|string[] {
+  if (!directive.has(field)) {
+    return null;
+  }
+
+  // Resolve the field of interest from the directive metadata to a string[].
+  const value = staticallyResolve(directive.get(field) !, reflector, checker);
+  if (!isStringArrayOrDie(value, field)) {
+    throw new Error(`Failed to resolve @Directive.${field}`);
+  }
+
+  return value;
+}
+
 /**
  * Interpret property mapping fields on the decorator (e.g. inputs or outputs) and return the
  * correctly shaped metadata object.
@@ -268,14 +284,9 @@ function isStringArrayOrDie(value: any, name: string): value is string[] {
 function parseFieldToPropertyMapping(
     directive: Map<string, ts.Expression>, field: string, reflector: ReflectionHost,
     checker: ts.TypeChecker): {[field: string]: string} {
-  if (!directive.has(field)) {
+  const metaValues = parseFieldArrayValue(directive, field, reflector, checker);
+  if (!metaValues) {
     return EMPTY_OBJECT;
-  }
-
-  // Resolve the field of interest from the directive metadata to a string[].
-  const metaValues = staticallyResolve(directive.get(field) !, reflector, checker);
-  if (!isStringArrayOrDie(metaValues, field)) {
-    throw new Error(`Failed to resolve @Directive.${field}`);
   }
 
   return metaValues.reduce(

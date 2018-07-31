@@ -16,6 +16,8 @@ import {LifecycleHooks} from '../../lifecycle_reflector';
 import * as o from '../../output/output_ast';
 import {typeSourceSpan} from '../../parse_util';
 import {CssSelector, SelectorMatcher} from '../../selector';
+import {ShadowCss} from '../../shadow_css';
+import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {OutputContext, error} from '../../util';
 import {compileFactoryFunction, dependenciesFromGlobalMetadata} from '../r3_factory';
@@ -26,6 +28,8 @@ import {typeWithParameters} from '../util';
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {BindingScope, TemplateDefinitionBuilder, renderFlagCheckIfStmt} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
+
+const EMPTY_ARRAY: any[] = [];
 
 function baseDirectiveFields(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
@@ -218,6 +222,15 @@ export function compileComponentFromMetadata(
     definitionMap.set('pipes', o.literalArr(Array.from(pipesUsed)));
   }
 
+  // e.g. `styles: [str1, str2]`
+  if (meta.styles && meta.styles.length) {
+    const styleValues = meta.encapsulation == core.ViewEncapsulation.Emulated ?
+        compileStyles(meta.styles, CONTENT_ATTR, HOST_ATTR) :
+        meta.styles;
+    const strings = styleValues.map(str => o.literal(str));
+    definitionMap.set('styles', o.literalArr(strings));
+  }
+
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
   const selectorForType = (meta.selector || '').replace(/\n/g, '');
@@ -287,6 +300,9 @@ export function compileComponentFromRender2(
     pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
     viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
     wrapDirectivesInClosure: false,
+    styles: (summary.template && summary.template.styles) || EMPTY_ARRAY,
+    encapsulation:
+        (summary.template && summary.template.encapsulation) || core.ViewEncapsulation.Emulated
   };
   const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
 
@@ -623,4 +639,9 @@ export function parseHostBindings(host: {[key: string]: string}): {
   });
 
   return {attributes, listeners, properties, animations};
+}
+
+function compileStyles(styles: string[], selector: string, hostSelector: string): string[] {
+  const shadowCss = new ShadowCss();
+  return styles.map(style => { return shadowCss !.shimCssText(style, selector, hostSelector); });
 }

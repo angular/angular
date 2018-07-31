@@ -7,8 +7,10 @@
  */
 
 import {Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
+import {ViewEncapsulation} from '../../src/metadata';
 import {templateRefExtractor} from '../../src/render3/di';
 import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, loadDirective, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
@@ -261,6 +263,7 @@ describe('ViewContainerRef', () => {
              testDir !: TestDirective;
              static ngComponentDef = defineComponent({
                type: TestComponent,
+               encapsulation: ViewEncapsulation.None,
                selectors: [['test-cmp']],
                factory: () => new TestComponent(),
                consts: 4,
@@ -332,6 +335,7 @@ describe('ViewContainerRef', () => {
              testDir !: TestDirective;
              static ngComponentDef = defineComponent({
                type: TestComponent,
+               encapsulation: ViewEncapsulation.None,
                selectors: [['test-cmp']],
                consts: 4,
                vars: 0,
@@ -393,6 +397,7 @@ describe('ViewContainerRef', () => {
 
           static ngComponentDef = defineComponent({
             type: Child,
+            encapsulation: ViewEncapsulation.None,
             selectors: [['child']],
             factory: () => new Child(),
             consts: 1,
@@ -442,6 +447,7 @@ describe('ViewContainerRef', () => {
         class SomeComponent {
           static ngComponentDef = defineComponent({
             type: SomeComponent,
+            encapsulation: ViewEncapsulation.None,
             selectors: [['some-comp']],
             factory: () => new SomeComponent(),
             consts: 6,
@@ -509,6 +515,7 @@ describe('ViewContainerRef', () => {
 
              static ngComponentDef = defineComponent({
                type: Child,
+               encapsulation: ViewEncapsulation.None,
                selectors: [['child']],
                factory: () => child = new Child(),
                consts: 2,
@@ -593,6 +600,7 @@ describe('ViewContainerRef', () => {
 
           static ngComponentDef = defineComponent({
             type: LoopComp,
+            encapsulation: ViewEncapsulation.None,
             selectors: [['loop-comp']],
             factory: () => new LoopComp(),
             consts: 1,
@@ -906,6 +914,7 @@ describe('ViewContainerRef', () => {
       class EmbeddedComponent {
         static ngComponentDef = defineComponent({
           type: EmbeddedComponent,
+          encapsulation: ViewEncapsulation.None,
           selectors: [['embedded-cmp']],
           factory: () => new EmbeddedComponent(),
           consts: 1,
@@ -991,6 +1000,7 @@ describe('ViewContainerRef', () => {
       class EmbeddedComponentWithNgContent {
         static ngComponentDef = defineComponent({
           type: EmbeddedComponentWithNgContent,
+          encapsulation: ViewEncapsulation.None,
           selectors: [['embedded-cmp-with-ngcontent']],
           factory: () => new EmbeddedComponentWithNgContent(),
           consts: 3,
@@ -1030,6 +1040,7 @@ describe('ViewContainerRef', () => {
         class Reprojector {
           static ngComponentDef = defineComponent({
             type: Reprojector,
+            encapsulation: ViewEncapsulation.None,
             selectors: [['reprojector']],
             factory: () => new Reprojector(),
             consts: 2,
@@ -1150,6 +1161,7 @@ describe('ViewContainerRef', () => {
       class Child {
         static ngComponentDef = defineComponent({
           type: Child,
+          encapsulation: ViewEncapsulation.None,
           selectors: [['child']],
           factory: () => new Child(),
           consts: 2,
@@ -1177,6 +1189,7 @@ describe('ViewContainerRef', () => {
         name: string = 'bar';
         static ngComponentDef = defineComponent({
           type: Parent,
+          encapsulation: ViewEncapsulation.None,
           selectors: [['parent']],
           factory: () => new Parent(),
           consts: 5,
@@ -1227,6 +1240,7 @@ describe('ViewContainerRef', () => {
         show: boolean = true;
         static ngComponentDef = defineComponent({
           type: ChildWithView,
+          encapsulation: ViewEncapsulation.None,
           selectors: [['child-with-view']],
           factory: () => new ChildWithView(),
           consts: 3,
@@ -1269,6 +1283,7 @@ describe('ViewContainerRef', () => {
         name: string = 'bar';
         static ngComponentDef = defineComponent({
           type: Parent,
+          encapsulation: ViewEncapsulation.None,
           selectors: [['parent']],
           factory: () => new Parent(),
           consts: 7,
@@ -1317,6 +1332,7 @@ describe('ViewContainerRef', () => {
       class ChildWithSelector {
         static ngComponentDef = defineComponent({
           type: ChildWithSelector,
+          encapsulation: ViewEncapsulation.None,
           selectors: [['child-with-selector']],
           factory: () => new ChildWithSelector(),
           consts: 4,
@@ -1350,6 +1366,7 @@ describe('ViewContainerRef', () => {
              name: string = 'bar';
              static ngComponentDef = defineComponent({
                type: Parent,
+               encapsulation: ViewEncapsulation.None,
                selectors: [['parent']],
                factory: () => new Parent(),
                consts: 5,
@@ -1402,6 +1419,7 @@ describe('ViewContainerRef', () => {
              name: string = 'bar';
              static ngComponentDef = defineComponent({
                type: Parent,
+               encapsulation: ViewEncapsulation.None,
                selectors: [['parent']],
                factory: () => new Parent(),
                consts: 5,
@@ -1468,6 +1486,7 @@ describe('ViewContainerRef', () => {
 
       static ngComponentDef = defineComponent({
         type: ComponentWithHooks,
+        encapsulation: ViewEncapsulation.None,
         selectors: [['hooks']],
         factory: () => new ComponentWithHooks(),
         consts: 1,
@@ -1602,6 +1621,7 @@ describe('ViewContainerRef', () => {
       class SomeComponent {
         static ngComponentDef = defineComponent({
           type: SomeComponent,
+          encapsulation: ViewEncapsulation.None,
           selectors: [['some-comp']],
           factory: () => new SomeComponent(),
           consts: 2,

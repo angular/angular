@@ -26,6 +26,7 @@ describe('component', () => {
 
     static ngComponentDef = defineComponent({
       type: CounterComponent,
+      encapsulation: ViewEncapsulation.None,
       selectors: [['counter']],
       consts: 1,
       vars: 1,
@@ -72,6 +73,7 @@ describe('component', () => {
       constructor(public myService: MyService) {}
       static ngComponentDef = defineComponent({
         type: MyComponent,
+        encapsulation: ViewEncapsulation.None,
         selectors: [['my-component']],
         factory: () => new MyComponent(directiveInject(MyService)),
         consts: 1,
@@ -139,6 +141,7 @@ describe('component with a container', () => {
     items !: string[];
     static ngComponentDef = defineComponent({
       type: WrapperComponent,
+      encapsulation: ViewEncapsulation.None,
       selectors: [['wrapper']],
       consts: 1,
       vars: 0,
@@ -188,6 +191,7 @@ describe('encapsulation', () => {
   class WrapperComponent {
     static ngComponentDef = defineComponent({
       type: WrapperComponent,
+      encapsulation: ViewEncapsulation.None,
       selectors: [['wrapper']],
       consts: 1,
       vars: 0,
@@ -224,6 +228,7 @@ describe('encapsulation', () => {
   class LeafComponent {
     static ngComponentDef = defineComponent({
       type: LeafComponent,
+      encapsulation: ViewEncapsulation.None,
       selectors: [['leaf']],
       consts: 2,
       vars: 0,
@@ -334,6 +339,7 @@ describe('recursive components', () => {
 
     static ngComponentDef = defineComponent({
       type: TreeComponent,
+      encapsulation: ViewEncapsulation.None,
       selectors: [['tree-comp']],
       factory: () => new TreeComponent(),
       consts: 3,
@@ -395,6 +401,7 @@ describe('recursive components', () => {
 
     static ngComponentDef = defineComponent({
       type: NgIfTree,
+      encapsulation: ViewEncapsulation.None,
       selectors: [['ng-if-tree']],
       factory: () => new NgIfTree(),
       consts: 3,
@@ -534,6 +541,7 @@ describe('recursive components', () => {
       minifiedName !: string;
       static ngComponentDef = defineComponent({
         type: TestInputsComponent,
+        encapsulation: ViewEncapsulation.None,
         selectors: [['test-inputs']],
         inputs: {minifiedName: 'unminifiedName'},
         consts: 0,

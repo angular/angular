@@ -15,7 +15,7 @@ import {filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} f
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {ResourceLoader} from './api';
-import {extractDirectiveMetadata, extractQueriesFromDecorator, queriesFromFields} from './directive';
+import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
 import {SelectorScopeRegistry} from './selector_scope';
 import {isAngularCore, unwrapExpression} from './util';
 
@@ -135,11 +135,24 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
       viewQueries.push(...queriesFromDecorator.view);
     }
 
+    let styles: string[]|null = null;
+    if (component.has('styles')) {
+      styles = parseFieldArrayValue(component, 'styles', this.reflector, this.checker);
+    }
+
+    let encapsulation: number = 0;
+    if (component.has('encapsulation')) {
+      encapsulation = parseInt(staticallyResolve(
+          component.get('encapsulation') !, this.reflector, this.checker) as string);
+    }
+
     return {
       analysis: {
         ...metadata,
         template,
         viewQueries,
+        encapsulation,
+        styles: styles || [],
 
         // These will be replaced during the compilation step, after all `NgModule`s have been
         // analyzed and the full compilation scope for the component can be realized.
