@@ -32,6 +32,7 @@ ts_library(
     name = "test_lib",
     testonly = 1,
     srcs = glob(["*.spec.ts"]),
+    tsconfig = "//src:tsconfig.json",
     deps = [":hello-world"],
 )
 
