@@ -70,6 +70,8 @@ export {
   f7 as ɵf7,
   f8 as ɵf8,
   fV as ɵfV,
+  gV as ɵgV,
+  rV as ɵrV,
   cR as ɵcR,
   cr as ɵcr,
   qR as ɵqR,

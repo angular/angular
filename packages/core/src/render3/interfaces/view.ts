@@ -40,6 +40,14 @@ export const CONTAINER_INDEX = 14;
 export const CONTENT_QUERIES = 15;
 export const DECLARATION_VIEW = 16;
 
+// This interface replaces the real LViewData interface if it is an arg or a
+// return value of a public instruction. This ensures we don't need to expose
+// the actual interface, which should be kept private.
+export interface OpaqueViewState {
+  '__brand__': 'Brand for OpaqueViewState that nothing will match';
+}
+
+
 /**
  * `LViewData` stores all of the information needed to process the instructions as
  * they are invoked from the template. Each embedded view and component view has its
