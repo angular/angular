@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {isDevMode} from '../application_ref';
+import {isDevMode} from '../is_dev_mode';
 import {_sanitizeUrl} from './url_sanitizer';
 
 

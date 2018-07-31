@@ -9,59 +9,50 @@
 import {Observable, Observer, Subscription, merge} from 'rxjs';
 import {share} from 'rxjs/operators';
 
-import {ErrorHandler} from '../src/error_handler';
-import {scheduleMicroTask, stringify} from '../src/util';
-import {isPromise} from '../src/util/lang';
-
 import {ApplicationInitStatus} from './application_init';
 import {APP_BOOTSTRAP_LISTENER, PLATFORM_INITIALIZER} from './application_tokens';
 import {Console} from './console';
 import {Injectable, InjectionToken, Injector, StaticProvider} from './di';
+import {ErrorHandler} from './error_handler';
+import {isDevMode} from './is_dev_mode';
 import {CompilerFactory, CompilerOptions} from './linker/compiler';
 import {ComponentFactory, ComponentRef} from './linker/component_factory';
 import {ComponentFactoryBoundToModule, ComponentFactoryResolver} from './linker/component_factory_resolver';
 import {InternalNgModuleRef, NgModuleFactory, NgModuleRef} from './linker/ng_module_factory';
 import {InternalViewRef, ViewRef} from './linker/view_ref';
 import {WtfScopeFn, wtfCreateScope, wtfLeave} from './profile/profile';
+import {assertNgModuleType} from './render3/assert';
+import {NgModuleFactory as R3NgModuleFactory} from './render3/ng_module_ref';
 import {Testability, TestabilityRegistry} from './testability/testability';
 import {Type} from './type';
+import {scheduleMicroTask, stringify} from './util';
+import {isPromise} from './util/lang';
 import {NgZone, NoopNgZone} from './zone/ng_zone';
 
-let _devMode: boolean = true;
-let _runModeLocked: boolean = false;
 let _platform: PlatformRef;
+
+let compileNgModuleFactory:
+    <M>(injector: Injector, options: CompilerOptions, moduleType: Type<M>) =>
+        Promise<NgModuleFactory<M>> = compileNgModuleFactory__PRE_NGCC__;
+
+function compileNgModuleFactory__PRE_NGCC__<M>(
+    injector: Injector, options: CompilerOptions,
+    moduleType: Type<M>): Promise<NgModuleFactory<M>> {
+  const compilerFactory: CompilerFactory = injector.get(CompilerFactory);
+  const compiler = compilerFactory.createCompiler([options]);
+  return compiler.compileModuleAsync(moduleType);
+}
+
+function compileNgModuleFactory__POST_NGCC__<M>(
+    injector: Injector, options: CompilerOptions,
+    moduleType: Type<M>): Promise<NgModuleFactory<M>> {
+  ngDevMode && assertNgModuleType(moduleType);
+  return Promise.resolve(new R3NgModuleFactory(moduleType));
+}
 
 export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultipleToken');
 
-/**
- * Disable Angular's development mode, which turns off assertions and other
- * checks within the framework.
- *
- * One important assertion this disables verifies that a change detection pass
- * does not result in additional changes to any bindings (also known as
- * unidirectional data flow).
- *
- *
- */
-export function enableProdMode(): void {
-  if (_runModeLocked) {
-    throw new Error('Cannot enable prod mode after platform setup.');
-  }
-  _devMode = false;
-}
 
-/**
- * Returns whether Angular is in development mode. After called once,
- * the value is locked and won't change any more.
- *
- * By default, this is true, unless a user calls `enableProdMode` before calling this.
- *
- * @experimental APIs related to application bootstrap are currently under review.
- */
-export function isDevMode(): boolean {
-  _runModeLocked = true;
-  return _devMode;
-}
 
 /**
  * A token for third-party components that can register themselves with NgProbe.
@@ -267,12 +258,9 @@ export class PlatformRef {
   bootstrapModule<M>(
       moduleType: Type<M>, compilerOptions: (CompilerOptions&BootstrapOptions)|
       Array<CompilerOptions&BootstrapOptions> = []): Promise<NgModuleRef<M>> {
-    const compilerFactory: CompilerFactory = this.injector.get(CompilerFactory);
     const options = optionsReducer({}, compilerOptions);
-    const compiler = compilerFactory.createCompiler([options]);
-
-    return compiler.compileModuleAsync(moduleType)
-        .then((moduleFactory) => this.bootstrapModuleFactory(moduleFactory, options));
+    return compileNgModuleFactory(this.injector, options, moduleType)
+        .then(moduleFactory => this.bootstrapModuleFactory(moduleFactory, options));
   }
 
   private _moduleDoBootstrap(moduleRef: InternalNgModuleRef<any>): void {

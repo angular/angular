@@ -7,8 +7,6 @@
  */
 
 import {ApplicationRef} from '../application_ref';
-import {InjectorDef, InjectorType, defineInjector} from '../di/defs';
-import {convertInjectableProviderToFactory} from '../di/injectable';
 import {Provider} from '../di/provider';
 import {R3_COMPILE_NGMODULE} from '../ivy_switch';
 import {Type} from '../type';
@@ -323,19 +321,6 @@ export interface NgModule {
   jit?: true;
 }
 
-function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule): void {
-  let imports = (metadata && metadata.imports) || [];
-  if (metadata && metadata.exports) {
-    imports = [...imports, metadata.exports];
-  }
-
-  moduleType.ngInjectorDef = defineInjector({
-    factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
-    providers: metadata && metadata.providers,
-    imports: imports,
-  });
-}
-
 /**
  * @Annotation
  */
@@ -352,7 +337,7 @@ export const NgModule: NgModuleDecorator = makeDecorator(
      * * The `imports` and `exports` options bring in members from other modules, and make
      * this module's members available to others.
      */
-    (type: Type<any>, meta: NgModule) => (R3_COMPILE_NGMODULE || preR3NgModuleCompile)(type, meta));
+    (type: Type<any>, meta: NgModule) => R3_COMPILE_NGMODULE(type, meta));
 
 /**
  * @description

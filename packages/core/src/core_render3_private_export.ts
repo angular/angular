@@ -120,8 +120,9 @@ export {
   I18nInstruction as ɵI18nInstruction,
   I18nExpInstruction as ɵI18nExpInstruction,
   WRAP_RENDERER_FACTORY2 as ɵWRAP_RENDERER_FACTORY2,
-  Render3DebugRendererFactory2 as ɵRender3DebugRendererFactory2,
 } from './render3/index';
+
+export {  Render3DebugRendererFactory2 as ɵRender3DebugRendererFactory2 } from './render3/debug';
 
 
 export {

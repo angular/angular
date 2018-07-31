@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {devModeEqual} from '../change_detection/change_detection';
+import {devModeEqual} from '../change_detection/change_detection_util';
 import {assertLessThan} from './assert';
 import {LElementNode} from './interfaces/node';
 import {HEADER_OFFSET, LViewData} from './interfaces/view';
