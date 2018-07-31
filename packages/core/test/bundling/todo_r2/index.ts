@@ -9,7 +9,8 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, Injectable, NgModule, ɵNgModuleFactory as NgModuleFactory} from '@angular/core';
+import {BrowserModule, platformBrowser} from '@angular/platform-browser';
 
 class Todo {
   editing: boolean;
@@ -59,7 +60,13 @@ class TodoStore {
 @Component({
   selector: 'todo-app',
   // TODO(misko): make this work with `[(ngModel)]`
-  encapsulation: ViewEncapsulation.None,
+  styles: [`
+    .todo-list li.completed label {
+      color: #d9d9d9;
+      text-decoration: line-through;
+      font-weight:bold;
+    }
+  `],
   template: `
   <section class="todoapp">
     <header class="header">
@@ -113,7 +120,7 @@ class TodoStore {
 class ToDoAppComponent {
   newTodoText = '';
 
-  constructor(public todoStore: TodoStore) {}
+  constructor(public todoStore: TodoStore) { (window as any).toDoAppComponent = this; }
 
   stopEditing(todo: Todo, editedTitle: string) {
     todo.title = editedTitle;
@@ -149,9 +156,10 @@ class ToDoAppComponent {
   }
 }
 
-@NgModule({declarations: [ToDoAppComponent], imports: [CommonModule]})
+@NgModule({declarations: [ToDoAppComponent], imports: [CommonModule, BrowserModule]})
 class ToDoAppModule {
+  ngDoBootstrap(app: any) { app.bootstrap(ToDoAppComponent); }
 }
 
-// TODO(misko): create cleaner way to publish component into global location for tests.
-(window as any).toDoAppComponent = renderComponent(ToDoAppComponent);
+(window as any).waitForApp =
+    platformBrowser().bootstrapModuleFactory(new NgModuleFactory(ToDoAppModule), {ngZone: 'noop'});

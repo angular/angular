@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InitialStylingFlags} from '@angular/compiler/src/core';
+import {InitialStylingFlags, ViewEncapsulation} from '@angular/compiler/src/core';
 import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
 
 import {compile, expectEmit} from './mock_compile';
@@ -16,6 +16,89 @@ describe('compiler compliance: styling', () => {
     compileAngular: false,
     compileFakeCore: true,
     compileAnimations: false,
+  });
+
+  describe('@Component.styles', () => {
+    it('should pass in the component metadata styles into the component definition and shim them using style encapsulation',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: "my-component",
+                  styles: ["div.foo { color: red; }", ":host p:nth-child(even) { --webkit-transition: 1s linear all; }"],
+                  template: "..."
+                })
+                export class MyComponent {
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+           }
+         };
+
+         const template =
+             'styles: ["div.foo[_ngcontent-%COMP%] { color: red; }", "[_nghost-%COMP%]   p[_ngcontent-%COMP%]:nth-child(even) { --webkit-transition: 1s linear all; }"]';
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+
+    it('should pass in styles, but skip shimming the styles if the view encapsulation signals not to',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: "my-component",
+                  encapsulation: ${ViewEncapsulation.None},
+                  styles: ["div.tall { height: 123px; }", ":host.small p { height:5px; }"],
+                  template: "..."
+                })
+                export class MyComponent {
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+           }
+         };
+
+         const template = 'div.tall { height: 123px; }", ":host.small p { height:5px; }';
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
+
+    it('should pass in the component metadata styles into the component definition but skip shimming when style encapsulation is set to native',
+       () => {
+         const files = {
+           app: {
+             'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  encapsulation: ${ViewEncapsulation.Native},
+                  selector: "my-component",
+                  styles: ["div.cool { color: blue; }", ":host.nice p { color: gold; }"],
+                  template: "..."
+                })
+                export class MyComponent {
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+           }
+         };
+
+         const template = 'div.cool { color: blue; }", ":host.nice p { color: gold; }';
+         const result = compile(files, angularFiles);
+         expectEmit(result.source, template, 'Incorrect template');
+       });
   });
 
   describe('[style] and [style.prop]', () => {
