@@ -7,6 +7,7 @@ import {copyFiles} from './copy-files';
 import {createEntryPointPackageJson} from './entry-point-package-json';
 import {inlinePackageMetadataFiles} from './metadata-inlining';
 import {createMetadataReexportFile} from './metadata-reexport';
+import {insertPackageJsonVersionStamp} from './package-version-stamp';
 import {createTypingsReexportFile} from './typings-reexport';
 import {replaceVersionPlaceholders} from './version-placeholders';
 
@@ -48,6 +49,8 @@ export function composeRelease(buildPackage: BuildPackage) {
   copyFiles(sourceDir, 'package.json', releasePath);
 
   replaceVersionPlaceholders(releasePath);
+  insertPackageJsonVersionStamp(join(releasePath, 'package.json'));
+
   createTypingsReexportFile(releasePath, './typings/index', name);
   createMetadataReexportFile(releasePath, './typings/index', name, importAsName);
 
