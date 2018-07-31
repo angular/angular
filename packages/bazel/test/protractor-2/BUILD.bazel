@@ -51,6 +51,6 @@ protractor_web_test_suite(
     configuration = ":conf.js",
     data = ["//packages/bazel/src/protractor/utils"],
     on_prepare = ":on-prepare.js",
-    server = ":prodserver",
+    server = ":devserver",
     deps = [":ts_spec"],
 )
