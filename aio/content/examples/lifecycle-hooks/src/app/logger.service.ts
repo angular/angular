@@ -18,7 +18,7 @@ export class LoggerService {
     }
   }
 
-  clear() { this.logs = []; }
+  clear() { this.logs.length = 0; }
 
   // schedules a view refresh to ensure display catches up
   tick() {  this.tick_then(() => { }); }
