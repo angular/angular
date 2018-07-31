@@ -9,7 +9,7 @@
     "name": "BLOOM_MASK"
   },
   {
-    "name": "CIRCULAR$2"
+    "name": "CIRCULAR$1"
   },
   {
     "name": "CLEANUP"
@@ -45,7 +45,7 @@
     "name": "EMPTY$1"
   },
   {
-    "name": "EMPTY_ARRAY$2"
+    "name": "EMPTY_ARRAY"
   },
   {
     "name": "ElementRef"

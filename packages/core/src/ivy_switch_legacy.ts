@@ -6,9 +6,116 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-export const ivyEnabled = false;
-export const R3_COMPILE_COMPONENT: ((type: any, meta: any) => void)|null = null;
-export const R3_COMPILE_DIRECTIVE: ((type: any, meta: any) => void)|null = null;
-export const R3_COMPILE_INJECTABLE: ((type: any, meta: any) => void)|null = null;
-export const R3_COMPILE_NGMODULE: ((type: any, meta: any) => void)|null = null;
-export const R3_COMPILE_PIPE: ((type: any, meta: any) => void)|null = null;
+import {InjectableType, InjectorType, defineInjectable, defineInjector} from './di/defs';
+import {InjectableProvider} from './di/injectable';
+import {inject, injectArgs} from './di/injector';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './di/provider';
+import * as ivyOn from './ivy_switch_on';
+import {NgModule} from './metadata';
+import {ReflectionCapabilities} from './reflection/reflection_capabilities';
+import {Type} from './type';
+import {getClosureSafeProperty} from './util/property';
+
+function noop() {}
+
+export interface DirectiveCompiler { (type: any, meta: any): void; }
+
+const R3_COMPILE_COMPONENT__POST_NGCC__ = ivyOn.R3_COMPILE_COMPONENT;
+const R3_COMPILE_DIRECTIVE__POST_NGCC__ = ivyOn.R3_COMPILE_DIRECTIVE;
+const R3_COMPILE_INJECTABLE__POST_NGCC__ = ivyOn.R3_COMPILE_INJECTABLE;
+const R3_COMPILE_NGMODULE__POST_NGCC__ = ivyOn.R3_COMPILE_NGMODULE;
+const R3_COMPILE_PIPE__POST_NGCC__ = ivyOn.R3_COMPILE_PIPE;
+const ivyEnable__POST_NGCC__ = ivyOn.ivyEnabled;
+
+const compileComponentQueue: any[] = [];
+const compileDirectiveQueue: any[] = [];
+const compileInjectableQueue: any[] = [];
+const compileNgModuleQueue: any[] = [];
+const compilePipeQueue: any[] = [];
+
+const R3_COMPILE_COMPONENT__PRE_NGCC__: DirectiveCompiler = noop;
+const R3_COMPILE_DIRECTIVE__PRE_NGCC__: DirectiveCompiler = noop;
+const R3_COMPILE_INJECTABLE__PRE_NGCC__: DirectiveCompiler = preR3InjectableCompile;
+const R3_COMPILE_NGMODULE__PRE_NGCC__: DirectiveCompiler = preR3NgModuleCompile;
+const R3_COMPILE_PIPE__PRE_NGCC__: DirectiveCompiler = noop;
+const ivyEnable__PRE_NGCC__ = false;
+
+export const ivyEnabled = ivyEnable__PRE_NGCC__;
+export let R3_COMPILE_COMPONENT: DirectiveCompiler = R3_COMPILE_COMPONENT__PRE_NGCC__;
+export let R3_COMPILE_DIRECTIVE: DirectiveCompiler = R3_COMPILE_DIRECTIVE__PRE_NGCC__;
+export let R3_COMPILE_INJECTABLE: DirectiveCompiler = R3_COMPILE_INJECTABLE__PRE_NGCC__;
+export let R3_COMPILE_NGMODULE: DirectiveCompiler = R3_COMPILE_NGMODULE__PRE_NGCC__;
+export let R3_COMPILE_PIPE: DirectiveCompiler = R3_COMPILE_PIPE__PRE_NGCC__;
+
+
+////////////////////////////////////////////////////////////
+// Glue code which should be removed after Ivy is default //
+////////////////////////////////////////////////////////////
+
+function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule): void {
+  let imports = (metadata && metadata.imports) || [];
+  if (metadata && metadata.exports) {
+    imports = [...imports, metadata.exports];
+  }
+
+  moduleType.ngInjectorDef = defineInjector({
+    factory: convertInjectableProviderToFactory(moduleType, {useClass: moduleType}),
+    providers: metadata && metadata.providers,
+    imports: imports,
+  });
+}
+
+const GET_PROPERTY_NAME = {} as any;
+const USE_VALUE = getClosureSafeProperty<ValueProvider>(
+    {provide: String, useValue: GET_PROPERTY_NAME}, GET_PROPERTY_NAME);
+const EMPTY_ARRAY: any[] = [];
+
+function convertInjectableProviderToFactory(type: Type<any>, provider?: InjectableProvider): () =>
+    any {
+  if (!provider) {
+    const reflectionCapabilities = new ReflectionCapabilities();
+    const deps = reflectionCapabilities.parameters(type);
+    // TODO - convert to flags.
+    return () => new type(...injectArgs(deps as any[]));
+  }
+
+  if (USE_VALUE in provider) {
+    const valueProvider = (provider as ValueSansProvider);
+    return () => valueProvider.useValue;
+  } else if ((provider as ExistingSansProvider).useExisting) {
+    const existingProvider = (provider as ExistingSansProvider);
+    return () => inject(existingProvider.useExisting);
+  } else if ((provider as FactorySansProvider).useFactory) {
+    const factoryProvider = (provider as FactorySansProvider);
+    return () => factoryProvider.useFactory(...injectArgs(factoryProvider.deps || EMPTY_ARRAY));
+  } else if ((provider as StaticClassSansProvider | ClassSansProvider).useClass) {
+    const classProvider = (provider as StaticClassSansProvider | ClassSansProvider);
+    let deps = (provider as StaticClassSansProvider).deps;
+    if (!deps) {
+      const reflectionCapabilities = new ReflectionCapabilities();
+      deps = reflectionCapabilities.parameters(type);
+    }
+    return () => new classProvider.useClass(...injectArgs(deps));
+  } else {
+    let deps = (provider as ConstructorSansProvider).deps;
+    if (!deps) {
+      const reflectionCapabilities = new ReflectionCapabilities();
+      deps = reflectionCapabilities.parameters(type);
+    }
+    return () => new type(...injectArgs(deps !));
+  }
+}
+
+/**
+ * Supports @Injectable() in JIT mode for Render2.
+ */
+function preR3InjectableCompile(
+    injectableType: InjectableType<any>,
+    options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
+  if (options && options.providedIn !== undefined && injectableType.ngInjectableDef === undefined) {
+    injectableType.ngInjectableDef = defineInjectable({
+      providedIn: options.providedIn,
+      factory: convertInjectableProviderToFactory(injectableType, options),
+    });
+  }
+}

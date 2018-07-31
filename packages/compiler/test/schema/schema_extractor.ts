@@ -38,7 +38,9 @@ const MISSING_FROM_CHROME: {[el: string]: string[]} = {
   ':svg:cursor^:svg:': [],
 };
 
-const _G: any = global;
+const _G: any = typeof window != 'undefined' && window || typeof global != 'undefined' && global ||
+    typeof self != 'undefined' && self;
+
 const document: any = typeof _G['document'] == 'object' ? _G['document'] : null;
 
 export function extractSchema(): Map<string, string[]>|null {
