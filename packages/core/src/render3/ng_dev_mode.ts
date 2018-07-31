@@ -35,32 +35,43 @@ declare global {
 
 
 declare let global: any;
-export const ngDevModeResetPerfCounters: () => void =
-    (typeof ngDevMode == 'undefined' && (function(global: {ngDevMode: NgDevModePerfCounters}) {
-       function ngDevModeResetPerfCounters() {
-         global['ngDevMode'] = {
-           firstTemplatePass: 0,
-           tNode: 0,
-           tView: 0,
-           rendererCreateTextNode: 0,
-           rendererSetText: 0,
-           rendererCreateElement: 0,
-           rendererAddEventListener: 0,
-           rendererSetAttribute: 0,
-           rendererRemoveAttribute: 0,
-           rendererSetProperty: 0,
-           rendererSetClassName: 0,
-           rendererAddClass: 0,
-           rendererRemoveClass: 0,
-           rendererSetStyle: 0,
-           rendererRemoveStyle: 0,
-           rendererDestroy: 0,
-           rendererDestroyNode: 0,
-           rendererMoveNode: 0,
-           rendererRemoveNode: 0,
-         };
-       }
-       ngDevModeResetPerfCounters();
-       return ngDevModeResetPerfCounters;
-     })(typeof window != 'undefined' && window || typeof self != 'undefined' && self ||
-        typeof global != 'undefined' && global)) as() => void;
+
+const __global: {ngDevMode: NgDevModePerfCounters | boolean} =
+    typeof window != 'undefined' && window || typeof self != 'undefined' && self ||
+    typeof global != 'undefined' && global;
+
+export function ngDevModeResetPerfCounters() {
+  __global.ngDevMode = {
+    firstTemplatePass: 0,
+    tNode: 0,
+    tView: 0,
+    rendererCreateTextNode: 0,
+    rendererSetText: 0,
+    rendererCreateElement: 0,
+    rendererAddEventListener: 0,
+    rendererSetAttribute: 0,
+    rendererRemoveAttribute: 0,
+    rendererSetProperty: 0,
+    rendererSetClassName: 0,
+    rendererAddClass: 0,
+    rendererRemoveClass: 0,
+    rendererSetStyle: 0,
+    rendererRemoveStyle: 0,
+    rendererDestroy: 0,
+    rendererDestroyNode: 0,
+    rendererMoveNode: 0,
+    rendererRemoveNode: 0,
+  };
+}
+
+/**
+ * This checks to see if the `ngDevMode` has been set. If yes,
+ * than we honor it, otherwise we default to dev mode with additional checks.
+ *
+ * The idea is that unless we are doing production build where we explicitly
+ * set `ngDevMode == false` we should be helping the developer by providing
+ * as much early warning and errors as possible.
+ */
+if (typeof ngDevMode === 'undefined' || ngDevMode) {
+  ngDevModeResetPerfCounters();
+}
