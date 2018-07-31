@@ -5161,12 +5161,17 @@ helps instantly identify which members of the component serve which purpose.
 -->
 <a href="#toc">맨 위로</a>
 
-
+<!--
 ## Directives
+-->
+## 디렉티브
 
 {@a 06-01}
 
+<!--
 ### Use directives to enhance an element
+-->
+### 디렉티브는 엘리먼트를 확장하는 용도로 사용하세요.
 
 <!--
 #### Style 06-01
@@ -5176,9 +5181,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use attribute directives when you have presentation logic without a template.
-
+-->
+어트리뷰트 디렉티브는 템플릿에 필요한 로직을 구현할 때 **사용하세요.**
 
 </div>
 
@@ -5187,9 +5193,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Attribute directives don't have an associated template.
-
+-->
+**왜?** 어트리뷰트 디렉티브에는 템플릿이 없습니다.
 
 </div>
 
@@ -5198,9 +5205,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** An element may have more than one attribute directive applied.
-
+-->
+**왜?** 엘리먼트 하나에는 여러 개의 어트리뷰트 디렉티브가 적용될 수도 있습니다.
 
 </div>
 
@@ -5227,7 +5235,10 @@ helps instantly identify which members of the component serve which purpose.
 
 {@a 06-03}
 
+<!--
 ### _HostListener_/_HostBinding_ decorators versus _host_ metadata
+-->
+### _HostListener_/_HostBinding_ 데코레이터 vs. _host_ 메타데이터
 
 <!--
 #### Style 06-03
@@ -5237,10 +5248,11 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** preferring the `@HostListener` and `@HostBinding` to the
 `host` property of the `@Directive` and `@Component` decorators.
-
+-->
+`@Directive`나 `@Component` 데코레이터의 `host` 프로퍼티를 활용할 수 있는 로직은 `@HostListener`와 `@HostBinding`을 사용하는 것을 권장합니다.
 
 </div>
 
@@ -5249,9 +5261,10 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** be consistent in your choice.
-
+-->
+코드의 일관성을 **유지하세요.**
 
 </div>
 
@@ -5260,12 +5273,14 @@ helps instantly identify which members of the component serve which purpose.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** The property associated with `@HostBinding` or the method associated with `@HostListener`
 can be modified only in a single place&mdash;in the directive's class.
 If you use the `host` metadata property, you must modify both the property/method declaration in the 
 directive's class and the metadata in the decorator associated with the directive.
-
+-->
+**왜?** `@HostBinding`과 연결된 프로퍼티나 `@HostListener`에 연결된 메소드는 이 데코레이터가 지정된 디렉티브 클래스 안 어디에나 선언하기만 하면 됩니다.
+하지만 `host` 메타데이터 프로퍼티를 사용하면, 이렇게 프로퍼티나 메소드를 데코레이터와 클래스 모드 양쪽에 선언해야 합니다.
 
 </div>
 
@@ -5276,16 +5291,18 @@ directive's class and the metadata in the decorator associated with the directiv
 </code-example>
 
 
-
+<!--
 Compare with the less preferred `host` metadata alternative.
-
+-->
+권장하지 않는 `host` 메타데이터를 사용하면 같은 내용을 어떻게 구현할 수 있는지 확인해 보세요.
 
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** The `host` metadata is only one term to remember and doesn't require extra ES imports.
-
+-->
+**왜?** `host` 메타데이터를 사용하는 것도 이벤트를 바인딩하는 방법 중 하나지만, 효율적인 방법을 선택하는 것이 좋습니다.
 
 </div>
 
