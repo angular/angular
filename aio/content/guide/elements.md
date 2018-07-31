@@ -158,3 +158,22 @@ For comparison, the demo shows both methods. One button adds the popup using the
 
   </code-pane>
 </code-tabs>
+
+
+## Getting the typings right
+
+`document.createElement()` will return an `HTMLElement` which means TypeScript does not know it is a special element that implements the `NgElement` interface. This happens when you call `document.createElement()` with an unknown node name, such as `popup-element` in case of the example. `NgElement` extends `HTMLElement` and adds some additional properties (such as `ngElementStrategy`).
+
+You can cast the return value of `createElement()`, like this:
+```
+const popupEl = document.createElement('popup-element') as NgElement & WithProperties<PopupComponent>;
+```
+
+Or you could get `createElement()` to always return the correct type for your custom elements by overloading it.
+```
+declare global {
+  interface HTMLElementTagNameMap {
+    'popup-element': NgElement & WithProperties<{message: 'string}>;
+  }
+}
+```
