@@ -14,9 +14,9 @@ import {compile, expectEmit} from './mock_compile';
   */
 describe('compiler compliance: listen()', () => {
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   it('should create listener instruction on element', () => {
@@ -63,7 +63,6 @@ describe('compiler compliance: listen()', () => {
       app: {
         'spec.ts': `
               import {Component, NgModule} from '@angular/core';
-              import {CommonModule} from '@angular/common';
 
               @Component({
                 selector: 'my-component',
@@ -80,7 +79,7 @@ describe('compiler compliance: listen()', () => {
                 onClick2(name: any) {}
               }
 
-              @NgModule({declarations: [MyComponent], imports: [CommonModule]})
+              @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
       }
