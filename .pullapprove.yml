@@ -192,7 +192,7 @@ groups:
         - "aio/content/images/guide/feature-modules/"
         - "aio/content/guide/lazy-loading-ngmodules.md"
         - "aio/content/examples/lazy-loading-ngmodules/"
-        - "aio/content/images/guide/lazy-loading-ngmodules
+        - "aio/content/images/guide/lazy-loading-ngmodules"
     users:
       - mhevery #primary
       - jasonaden
