@@ -43,6 +43,15 @@
     display: none;
   }
 
+  // Clear Safari's decorations for search fields.
+  &,
+  &::-webkit-search-cancel-button,
+  &::-webkit-search-decoration,
+  &::-webkit-search-results-button,
+  &::-webkit-search-results-decoration {
+    -webkit-appearance: none;
+  }
+
   // Also clear Safari's autofill icons. Note that this can't be in the
   // same selector as the IE ones, otherwise Safari will ignore it.
   &::-webkit-contacts-auto-fill-button,
