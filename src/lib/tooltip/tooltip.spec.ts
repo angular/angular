@@ -512,21 +512,24 @@ describe('MatTooltip', () => {
     it('should keep the overlay direction in sync with the trigger direction', fakeAsync(() => {
       dir.value = 'rtl';
       tooltipDirective.show();
-      tick();
+      tick(0);
       fixture.detectChanges();
+      tick(500);
 
       let tooltipWrapper =
           overlayContainerElement.querySelector('.cdk-overlay-connected-position-bounding-box')!;
       expect(tooltipWrapper.getAttribute('dir')).toBe('rtl', 'Expected tooltip to be in RTL.');
 
       tooltipDirective.hide(0);
-      tick();
+      tick(0);
       fixture.detectChanges();
+      tick(500);
 
       dir.value = 'ltr';
       tooltipDirective.show();
-      tick();
+      tick(0);
       fixture.detectChanges();
+      tick(500);
 
       tooltipWrapper =
           overlayContainerElement.querySelector('.cdk-overlay-connected-position-bounding-box')!;
