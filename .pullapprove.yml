@@ -420,7 +420,7 @@ groups:
         - "aio/content/guide/service-worker-intro.md"
         - "aio/content/images/guide/service-worker/"
     users:
-      - gkalpak#primary
+      - gkalpak #primary
       - alxhub
       - IgorMinar
       - mhevery #fallback
@@ -499,25 +499,25 @@ groups:
       - mhevery #fallback
 
   docs/observables:
-      conditions:
-        files:
-          - "aio/content/examples/observables/"
-          - "aio/content/images/guide/observables/"
-          - "aio/content/guide/observables.md"
-          - "aio/content/guide/comparing-observables.md"
-          - "aio/content/examples/observables-in-angular/"
-          - "aio/content/images/guide/observables-in-angular/"
-          - "aio/content/guide/observables-in-angular.md"
-          - "aio/content/examples/practical-observable-usage/"
-          - "aio/content/guide/practical-observable-usage.md"
-          - "aio/content/examples/rx-library/"
-          - "aio/content/guide/rx-library.md"
-      users:
-        - jasonaden
-        - benlesh
-        - IgorMinar
-        - mhevery
-        - jenniferfell #docs only
+    conditions:
+      files:
+        - "aio/content/examples/observables/"
+        - "aio/content/images/guide/observables/"
+        - "aio/content/guide/observables.md"
+        - "aio/content/guide/comparing-observables.md"
+        - "aio/content/examples/observables-in-angular/"
+        - "aio/content/images/guide/observables-in-angular/"
+        - "aio/content/guide/observables-in-angular.md"
+        - "aio/content/examples/practical-observable-usage/"
+        - "aio/content/guide/practical-observable-usage.md"
+        - "aio/content/examples/rx-library/"
+        - "aio/content/guide/rx-library.md"
+    users:
+      - jasonaden
+      - benlesh
+      - IgorMinar
+      - mhevery
+      - jenniferfell #docs only
 
   docs/packaging:
     conditions:
