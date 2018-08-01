@@ -152,16 +152,14 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
   const rootSelectorOrNode = view.root.selectorOrNode;
   const renderer = view.renderer;
   let el: any;
+  let parentEl: any;
   if (view.parent || !rootSelectorOrNode) {
     if (elDef.name) {
       el = renderer.createElement(elDef.name, elDef.ns);
     } else {
       el = renderer.createComment('');
     }
-    const parentEl = getParentRenderElement(view, renderHost, def);
-    if (parentEl) {
-      renderer.appendChild(parentEl, el);
-    }
+    parentEl = getParentRenderElement(view, renderHost, def);
   } else {
     el = renderer.selectRootElement(rootSelectorOrNode);
   }
@@ -170,6 +168,9 @@ export function createElement(view: ViewData, renderHost: any, def: NodeDef): El
       const [ns, name, value] = elDef.attrs[i];
       renderer.setAttribute(el, name, value, ns);
     }
+  }
+  if (parentEl) {
+    renderer.appendChild(parentEl, el);
   }
   return el;
 }

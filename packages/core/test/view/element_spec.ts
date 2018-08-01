@@ -8,11 +8,12 @@
 
 import {ErrorHandler, SecurityContext, getDebugNode} from '@angular/core';
 import {getDebugContext} from '@angular/core/src/errors';
-import {BindingFlags, NodeFlags, Services, ViewData, ViewDefinition, asElementData, elementDef} from '@angular/core/src/view/index';
+import {RendererFactory2} from '@angular/core/src/render/api';
+import {BindingFlags, NodeFlags, Services, ViewData, ViewDefinition, asElementData, elementDef, rootRenderNodes} from '@angular/core/src/view/index';
 import {TestBed} from '@angular/core/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 
-import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDynamic, compViewDef, createAndGetRootNodes, isBrowser, recordNodeToRemove} from './helper';
+import {ARG_TYPE_VALUES, callMostRecentEventListenerHandler, checkNodeInlineOrDynamic, compViewDef, createAndGetRootNodes, createRootView, isBrowser, recordNodeToRemove} from './helper';
 
 
 
@@ -59,6 +60,24 @@ const removeEventListener = '__zone_symbol__removeEventListener' as 'removeEvent
                           ])).rootNodes;
         expect(rootNodes.length).toBe(1);
         expect(getDOM().getAttribute(rootNodes[0], 'title')).toBe('a');
+      });
+
+      it('should set fixed attributes before mounting to parent', () => {
+        const calls: string[] = [];
+        const spyRenderer = {
+          createElement: () => calls.push('createElement'),
+          setAttribute: () => calls.push('setAttribute'),
+          appendChild: () => calls.push('appendChild'),
+        };
+        const spyRendererFactory = {createRenderer: () => spyRenderer};
+        TestBed.overrideProvider(RendererFactory2, {useValue: spyRendererFactory});
+
+        createAndGetRootNodes(compViewDef([
+          elementDef(0, NodeFlags.None, null, null, 1, 'div'),
+          elementDef(1, NodeFlags.None, null, null, 0, 'span', [['title', 'a']]),
+        ]));
+
+        expect(calls).toEqual(['createElement', 'createElement', 'setAttribute', 'appendChild']);
       });
 
       it('should add debug information to the renderer', () => {
