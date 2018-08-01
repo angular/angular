@@ -133,65 +133,65 @@ groups:
       files:
         - "packages/core/*"
         - "aio/content/guide/bootstrapping.md"
-        - "aio/content/examples/bootstrapping/"
+        - "aio/content/examples/bootstrapping/*"
         - "aio/content/guide/attribute-directives.md"
-        - "aio/content/examples/attribute-directives/"
-        - "aio/content/images/guide/attribute-directives/"
+        - "aio/content/examples/attribute-directives/*"
+        - "aio/content/images/guide/attribute-directives/*"
         - "aio/content/guide/structural-directives.md"
-        - "aio/content/examples/structural-directives/"
-        - "aio/content/images/guide/structural-directives/"
+        - "aio/content/examples/structural-directives/*"
+        - "aio/content/images/guide/structural-directives/*"
         - "aio/content/guide/dynamic-component-loader.md"
-        - "aio/content/examples/dynamic-component-loader/"
-        - "aio/content/images/guide/dynamic-component-loader/"
+        - "aio/content/examples/dynamic-component-loader/*"
+        - "aio/content/images/guide/dynamic-component-loader/*"
         - "aio/content/guide/template-syntax.md"
-        - "aio/content/examples/template-syntax/"
-        - "aio/content/images/guide/template-syntax/"
+        - "aio/content/examples/template-syntax/*"
+        - "aio/content/images/guide/template-syntax/*"
         - "aio/content/guide/dependency-injection.md"
-        - "aio/content/examples/dependency-injection/"
-        - "aio/content/images/guide/dependency-injection/"
+        - "aio/content/examples/dependency-injection/*"
+        - "aio/content/images/guide/dependency-injection/*"
         - "aio/content/guide/dependency-injection-in-action.md"
-        - "aio/content/examples/dependency-injection-in-action/"
-        - "aio/content/images/guide/dependency-injection-in-action/"
+        - "aio/content/examples/dependency-injection-in-action/*"
+        - "aio/content/images/guide/dependency-injection-in-action/*"
         - "aio/content/guide/hierarchical-dependency-injection.md"
-        - "aio/content/examples/hierarchical-dependency-injection/"
+        - "aio/content/examples/hierarchical-dependency-injection/*"
         - "aio/content/guide/singleton-services.md"
         - "aio/content/guide/dependency-injection-pattern.md"
         - "aio/content/guide/providers.md"
-        - "aio/content/examples/providers/"
+        - "aio/content/examples/providers/*"
         - "aio/content/guide/component-interaction.md"
-        - "aio/content/examples/component-interaction/"
-        - "aio/content/images/guide/component-interaction/"
+        - "aio/content/examples/component-interaction/*"
+        - "aio/content/images/guide/component-interaction/*"
         - "aio/content/guide/component-styles.md"
-        - "aio/content/examples/component-styles/"
+        - "aio/content/examples/component-styles/*"
         - "aio/content/guide/lifecycle-hooks.md"
-        - "aio/content/examples/lifecycle-hooks/"
-        - "aio/content/images/guide/lifecycle-hooks/"
-        - "aio/content/examples/ngcontainer/"
-        - "aio/content/images/guide/ngcontainer/"
+        - "aio/content/examples/lifecycle-hooks/*"
+        - "aio/content/images/guide/lifecycle-hooks/*"
+        - "aio/content/examples/ngcontainer/*"
+        - "aio/content/images/guide/ngcontainer/*"
         - "aio/content/guide/pipes.md"
-        - "aio/content/examples/pipes/"
-        - "aio/content/images/guide/pipes/"
+        - "aio/content/examples/pipes/*"
+        - "aio/content/images/guide/pipes/*"
         - "aio/content/guide/entry-components.md"
         - "aio/content/guide/set-document-title.md"
-        - "aio/content/examples/set-document-title/"
-        - "aio/content/images/guide/set-document-title/"
+        - "aio/content/examples/set-document-title/*"
+        - "aio/content/images/guide/set-document-title/*"
         - "aio/content/guide/ngmodules.md"
-        - "aio/content/examples/ngmodules/"
-        - "aio/content/examples/ngmodule/"
-        - "aio/content/images/guide/ngmodule/"
+        - "aio/content/examples/ngmodules/*"
+        - "aio/content/examples/ngmodule/*"
+        - "aio/content/images/guide/ngmodule/*"
         - "aio/content/guide/ngmodule-faq.md"
-        - "aio/content/examples/ngmodule-faq/"
+        - "aio/content/examples/ngmodule-faq/*"
         - "aio/content/guide/module-types.md"
         - "aio/content/guide/sharing-ngmodules.md"
         - "aio/content/guide/frequent-ngmodules.md"
-        - "aio/content/images/guide/frequent-ngmodules/"
+        - "aio/content/images/guide/frequent-ngmodules/*"
         - "aio/content/guide/ngmodule-api.md"
         - "aio/content/guide/ngmodule-vs-jsmodule.md"
         - "aio/content/guide/feature-modules.md"
-        - "aio/content/examples/feature-modules/"
-        - "aio/content/images/guide/feature-modules/"
+        - "aio/content/examples/feature-modules/*"
+        - "aio/content/images/guide/feature-modules/*"
         - "aio/content/guide/lazy-loading-ngmodules.md"
-        - "aio/content/examples/lazy-loading-ngmodules/"
+        - "aio/content/examples/lazy-loading-ngmodules/*"
         - "aio/content/images/guide/lazy-loading-ngmodules"
     users:
       - mhevery #primary
@@ -207,8 +207,8 @@ groups:
         - "packages/animations/*"
         - "packages/platform-browser/animations/*"
         - "aio/content/guide/animations.md"
-        - "aio/content/examples/animations/"
-        - "aio/content/images/guide/animations/"
+        - "aio/content/examples/animations/*"
+        - "aio/content/images/guide/animations/*"
     users:
       - matsko #primary
       - mhevery #fallback
@@ -220,7 +220,7 @@ groups:
       files:
         - "packages/compiler/src/i18n/*"
         - "aio/content/guide/i18n.md"
-        - "aio/content/examples/i18n/"
+        - "aio/content/examples/i18n/*"
     users:
       - vicb #primary
       - alxhub
@@ -282,17 +282,17 @@ groups:
       files:
         - "packages/forms/*"
         - "aio/content/guide/forms.md"
-        - "aio/content/examples/forms/"
-        - "aio/content/images/guide/forms/"
+        - "aio/content/examples/forms/*"
+        - "aio/content/images/guide/forms/*"
         - "aio/content/guide/form-validation.md"
-        - "aio/content/examples/form-validation/"
-        - "aio/content/images/guide/form-validation/"
+        - "aio/content/examples/form-validation/*"
+        - "aio/content/images/guide/form-validation/*"
         - "aio/content/guide/dynamic-form.md"
-        - "aio/content/examples/dynamic-form/"
-        - "aio/content/images/guide/dynamic-form/"
+        - "aio/content/examples/dynamic-form/*"
+        - "aio/content/images/guide/dynamic-form/*"
         - "aio/content/guide/reactive-forms.md"
-        - "aio/content/examples/reactive-forms/"
-        - "aio/content/images/guide/reactive-forms/"
+        - "aio/content/examples/reactive-forms/*"
+        - "aio/content/images/guide/reactive-forms/*"
     users:
       - kara #primary
       - IgorMinar #fallback
@@ -305,8 +305,8 @@ groups:
         - "packages/common/http/*"
         - "packages/http/*"
         - "aio/content/guide/http.md"
-        - "aio/content/examples/http/"
-        - "aio/content/images/guide/http/"
+        - "aio/content/examples/http/*"
+        - "aio/content/images/guide/http/*"
     users:
       - alxhub #primary
       - IgorMinar
@@ -318,7 +318,7 @@ groups:
       files:
         - "packages/language-service/*"
         - "aio/content/guide/language-service.md"
-        - "aio/content/images/guide/language-service/"
+        - "aio/content/images/guide/language-service/*"
     users:
       - kyliau #primary
       # needs secondary
@@ -332,8 +332,8 @@ groups:
       files:
         - "packages/router/*"
         - "aio/content/guide/router.md"
-        - "aio/content/examples/router/"
-        - "aio/content/images/guide/router/"
+        - "aio/content/examples/router/*"
+        - "aio/content/images/guide/router/*"
     users:
       - jasonaden #primary
       - vicb
@@ -344,10 +344,10 @@ groups:
   testing:
     conditions:
       files:
-        - "*/testing/*
+        - "*/testing/*"
         - "aio/content/guide/testing.md"
-        - "aio/content/examples/testing/"
-        - "aio/content/images/guide/testing/"
+        - "aio/content/examples/testing/*"
+        - "aio/content/images/guide/testing/*"
     users:
       - vikerman
       - IgorMinar #fallback
@@ -359,14 +359,14 @@ groups:
       files:
         - "packages/upgrade/*"
         - "aio/content/guide/upgrade.md"
-        - "aio/content/examples/upgrade-module/"
-        - "aio/content/images/guide/upgrade/"
-        - "aio/content/examples/upgrade-phonecat-1-typescript/"
-        - "aio/content/examples/upgrade-phonecat-2-hybrid/"
-        - "aio/content/examples/upgrade-phonecat-3-final/"
+        - "aio/content/examples/upgrade-module/*"
+        - "aio/content/images/guide/upgrade/*"
+        - "aio/content/examples/upgrade-phonecat-1-typescript/*"
+        - "aio/content/examples/upgrade-phonecat-2-hybrid/*"
+        - "aio/content/examples/upgrade-phonecat-3-final/*"
         - "aio/content/guide/upgrade-performance.md"
         - "aio/content/guide/ajs-quick-reference.md"
-        - "aio/content/examples/ajs-quick-reference/"
+        - "aio/content/examples/ajs-quick-reference/*"
     users:
       - petebacondarwin #primary
       - gkalpak
@@ -389,7 +389,7 @@ groups:
       files:
         - "packages/platform-server/*"
         - "aio/content/guide/universal.md"
-        - "aio/content/examples/universal/"
+        - "aio/content/examples/universal/*"
     users:
       - vikerman #primary
       - alxhub #secondary
@@ -413,12 +413,12 @@ groups:
       files:
         - "packages/service-worker/*"
         - "aio/content/guide/service-worker-getting-started.md"
-        - "aio/content/examples/service-worker-getting-started/"
+        - "aio/content/examples/service-worker-getting-started/*"
         - "aio/content/guide/service-worker-communications.md"
         - "aio/content/guide/service-worker-config.md"
         - "aio/content/guide/service-worker-devops.md"
         - "aio/content/guide/service-worker-intro.md"
-        - "aio/content/images/guide/service-worker/"
+        - "aio/content/images/guide/service-worker/*"
     users:
       - gkalpak #primary
       - alxhub
@@ -430,8 +430,8 @@ groups:
     conditions:
       files:
         - "packages/elements/*"
-        - "aio/content/examples/elements/"
-        - "aio/content/images/guide/elements/"
+        - "aio/content/examples/elements/*"
+        - "aio/content/images/guide/elements/*"
         - "aio/content/guide/elements.md"
     users:
       - andrewseguin #primary
@@ -501,16 +501,16 @@ groups:
   docs/observables:
     conditions:
       files:
-        - "aio/content/examples/observables/"
-        - "aio/content/images/guide/observables/"
+        - "aio/content/examples/observables/*"
+        - "aio/content/images/guide/observables/*"
         - "aio/content/guide/observables.md"
         - "aio/content/guide/comparing-observables.md"
-        - "aio/content/examples/observables-in-angular/"
-        - "aio/content/images/guide/observables-in-angular/"
+        - "aio/content/examples/observables-in-angular/*"
+        - "aio/content/images/guide/observables-in-angular/*"
         - "aio/content/guide/observables-in-angular.md"
-        - "aio/content/examples/practical-observable-usage/"
+        - "aio/content/examples/practical-observable-usage/*"
         - "aio/content/guide/practical-observable-usage.md"
-        - "aio/content/examples/rx-library/"
+        - "aio/content/examples/rx-library/*"
         - "aio/content/guide/rx-library.md"
     users:
       - jasonaden
@@ -526,7 +526,7 @@ groups:
         - "aio/content/guide/browser-support.md"
         - "aio/content/guide/typescript-configuration.md"
         - "aio/content/guide/setup-systemjs-anatomy.md"
-        - "aio/content/examples/setup/"
+        - "aio/content/examples/setup/*"
         - "aio/content/guide/setup.md"
         - "aio/content/guide/deployment.md"
         - "aio/content/guide/releases.md"
