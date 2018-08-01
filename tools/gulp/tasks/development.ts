@@ -97,8 +97,14 @@ task('stage-deploy:devapp', ['build:devapp'], () => {
 task('deploy:devapp', ['stage-deploy:devapp'], () => {
   return firebaseTools.deploy({cwd: projectDir, only: 'hosting'})
     // Firebase tools opens a persistent websocket connection and the process will never exit.
-    .then(() => { console.log('Successfully deployed the demo-app to firebase'); process.exit(0); })
-    .catch((err: any) => { console.log(err); process.exit(1); });
+    .then(() => {
+      console.log('Successfully deployed the demo-app to firebase');
+      process.exit(0);
+    })
+    .catch((err: any) => {
+      console.log(err);
+      process.exit(1);
+    });
 });
 
 /*
@@ -119,7 +125,7 @@ task(':watch:devapp', () => {
   watchFiles(join(cdkPackage.sourceDir, '**/*'), ['cdk:build-no-bundles']);
 
   // Material package watchers.
-  watchFiles(join(materialPackage.sourceDir, '**/!(*-theme).scss'), ['material:build-no-bundles']);
+  watchFiles(join(materialPackage.sourceDir, '**/!(*-theme.scss)'), ['material:build-no-bundles']);
   watchFiles(join(materialPackage.sourceDir, '**/*-theme.scss'), [':build:devapp:scss']);
 
   // Moment adapter package watchers
