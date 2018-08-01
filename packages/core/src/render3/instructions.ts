@@ -706,7 +706,7 @@ export function element(
  * @param attrs Set of attributes to be used when matching directives.
  * @param localRefs A set of local reference bindings on the element.
  *
- * Even if this instruction accepts a set of attributes no actual attribute values are propoagted to
+ * Even if this instruction accepts a set of attributes no actual attribute values are propagated to
  * the DOM (as a comment node can't have attributes). Attributes are here only for directive
  * matching purposes and setting initial inputs of directives.
  */
