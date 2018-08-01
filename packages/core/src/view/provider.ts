@@ -13,6 +13,7 @@ import {TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef} from '../linker/view_container_ref';
 import {Renderer as RendererV1, Renderer2} from '../render/api';
 import {stringify} from '../util';
+import {isObservable} from '../util/lang';
 
 import {createChangeDetectorRef, createInjector, createRendererV1} from './refs';
 import {BindingDef, BindingFlags, DepDef, DepFlags, NodeDef, NodeFlags, OutputDef, OutputType, ProviderData, QueryValueType, Services, ViewData, ViewFlags, ViewState, asElementData, asProviderData, shouldCallLifecycleInitHook} from './types';
@@ -138,7 +139,7 @@ export function createDirectiveInstance(view: ViewData, def: NodeDef): any {
     for (let i = 0; i < def.outputs.length; i++) {
       const output = def.outputs[i];
       const outputObservable = instance[output.propName !];
-      if (typeof outputObservable === 'object') {
+      if (isObservable(outputObservable)) {
         const subscription = outputObservable.subscribe(
             eventHandlerClosure(view, def.parent !.nodeIndex, output.eventName));
         view.disposables ![def.outputIndex + i] = subscription.unsubscribe.bind(subscription);
