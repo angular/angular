@@ -6,16 +6,17 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ElementRef} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
-import {defineComponent, defineDirective} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {AttributeMarker, defineComponent, defineDirective, injectElementRef} from '../../src/render3/index';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
-import {ComponentFixture, containerEl, renderToHtml} from './render_util';
+import {ComponentFixture, TemplateFixture, containerEl, createComponent, renderToHtml} from './render_util';
 
 describe('render3 integration test', () => {
 
@@ -414,6 +415,206 @@ describe('render3 integration test', () => {
           .toEqual('<comp><div>text</div></comp>');
       expect(renderToHtml(Template, {condition: false}, defs)).toEqual('<comp></comp>');
 
+    });
+
+  });
+
+  describe('ng-container', () => {
+
+    it('should insert as a child of a regular element', () => {
+
+      /**
+       * <div>before|<ng-container>Greetings<span></span></ng-container>|after</div>
+       */
+      function Template() {
+        elementStart(0, 'div');
+        {
+          text(1, 'before|');
+          elementContainerStart(2);
+          {
+            text(3, 'Greetings');
+            element(4, 'span');
+          }
+          elementContainerEnd();
+          text(5, '|after');
+        }
+        elementEnd();
+      }
+
+      const fixture = new TemplateFixture(Template);
+      expect(fixture.html).toEqual('<div>before|Greetings<span></span>|after</div>');
+    });
+
+    it('should add and remove DOM nodes when ng-container is a child of a regular element', () => {
+      /**
+       * {% if (value) { %}
+       * <div>
+       *  <ng-container>content</ng-container>
+       * </div>
+       * {% } %}
+       */
+      const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags, ctx: {value: any}) {
+        if (rf & RenderFlags.Create) {
+          container(0);
+        }
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(0);
+          if (ctx.value) {
+            let rf1 = embeddedViewStart(0);
+            {
+              if (rf1 & RenderFlags.Create) {
+                elementStart(0, 'div');
+                {
+                  elementContainerStart(1);
+                  { text(2, 'content'); }
+                  elementContainerEnd();
+                }
+                elementEnd();
+              }
+            }
+            embeddedViewEnd();
+          }
+          containerRefreshEnd();
+        }
+      });
+
+      const fixture = new ComponentFixture(TestCmpt);
+      expect(fixture.html).toEqual('');
+
+      fixture.component.value = true;
+      fixture.update();
+      expect(fixture.html).toEqual('<div>content</div>');
+
+      fixture.component.value = false;
+      fixture.update();
+      expect(fixture.html).toEqual('');
+    });
+
+    it('should add and remove DOM nodes when ng-container is a child of an embedded view (JS block)', () => {
+      /**
+       * {% if (value) { %}
+       *  <ng-container>content</ng-container>
+       * {% } %}
+       */
+      const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags, ctx: {value: any}) {
+        if (rf & RenderFlags.Create) {
+          container(0);
+        }
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(0);
+          if (ctx.value) {
+            let rf1 = embeddedViewStart(0);
+            {
+              if (rf1 & RenderFlags.Create) {
+                elementContainerStart(0);
+                { text(1, 'content'); }
+                elementContainerEnd();
+              }
+            }
+            embeddedViewEnd();
+          }
+          containerRefreshEnd();
+        }
+      });
+
+      const fixture = new ComponentFixture(TestCmpt);
+      expect(fixture.html).toEqual('');
+
+      fixture.component.value = true;
+      fixture.update();
+      expect(fixture.html).toEqual('content');
+
+      fixture.component.value = false;
+      fixture.update();
+      expect(fixture.html).toEqual('');
+    });
+
+    it('should render at the component view root', () => {
+      /**
+       * <ng-container>component template</ng-container>
+       */
+      const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
+        if (rf & RenderFlags.Create) {
+          elementContainerStart(0);
+          { text(1, 'component template'); }
+          elementContainerEnd();
+        }
+      });
+
+      function App() { element(0, 'test-cmpt'); }
+
+      const fixture = new TemplateFixture(App, () => {}, [TestCmpt]);
+      expect(fixture.html).toEqual('<test-cmpt>component template</test-cmpt>');
+    });
+
+    it('should support directives and inject ElementRef', () => {
+
+      class Directive {
+        constructor(public elRef: ElementRef) {}
+
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          selectors: [['', 'dir', '']],
+          factory: () => new Directive(injectElementRef()),
+        });
+      }
+
+      let directive: Directive;
+
+      /**
+       * <div><ng-container dir></ng-container></div>
+       */
+      function Template() {
+        elementStart(0, 'div');
+        {
+          elementContainerStart(1, [AttributeMarker.SelectOnly, 'dir']);
+          elementContainerEnd();
+          directive = loadDirective<Directive>(0);
+        }
+        elementEnd();
+      }
+
+      const fixture = new TemplateFixture(Template, () => {}, [Directive]);
+      expect(fixture.html).toEqual('<div></div>');
+      expect(directive !.elRef.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
+    });
+
+    it('should not set any attributes', () => {
+
+      /**
+       * <div><ng-container id="foo"></ng-container></div>
+       */
+      function Template() {
+        elementStart(0, 'div');
+        {
+          elementContainerStart(1, ['id', 'foo']);
+          elementContainerEnd();
+        }
+        elementEnd();
+      }
+
+      const fixture = new TemplateFixture(Template);
+      expect(fixture.html).toEqual('<div></div>');
+    });
+
+    it('should throw when trying to add event listener', () => {
+
+      /**
+       * <div><ng-container (click)="..."></ng-container></div>
+       */
+      function Template() {
+        elementStart(0, 'div');
+        {
+          elementContainerStart(1);
+          {
+            listener('click', function() {});
+          }
+          elementContainerEnd();
+        }
+        elementEnd();
+      }
+
+      expect(() => { new TemplateFixture(Template); }).toThrow();
     });
 
   });

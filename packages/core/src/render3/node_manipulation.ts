@@ -9,7 +9,7 @@
 import {assertDefined} from './assert';
 import {callHooks} from './hooks';
 import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
-import {LContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
+import {LContainerNode, LElementContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
@@ -38,11 +38,14 @@ export function getChildLNode(node: LNode): LNode|null {
 }
 
 /** Retrieves the parent LNode of a given node. */
-export function getParentLNode(node: LContainerNode | LElementNode | LTextNode | LProjectionNode):
-    LElementNode|LViewNode;
+export function getParentLNode(
+    node: LContainerNode | LElementNode | LElementContainerNode | LTextNode |
+    LProjectionNode): LElementNode|LElementContainerNode|LViewNode;
 export function getParentLNode(node: LViewNode): LContainerNode|null;
-export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null;
-export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNode|null {
+export function getParentLNode(node: LNode): LElementNode|LElementContainerNode|LContainerNode|
+    LViewNode|null;
+export function getParentLNode(node: LNode): LElementNode|LElementContainerNode|LContainerNode|
+    LViewNode|null {
   if (node.tNode.index === -1 && node.tNode.type === TNodeType.View) {
     // This is a dynamically created view inside a dynamic container.
     // If the host index is -1, the view has not yet been inserted, so it has no parent.
@@ -51,6 +54,15 @@ export function getParentLNode(node: LNode): LElementNode|LContainerNode|LViewNo
   }
   const parent = node.tNode.parent;
   return readElementValue(parent ? node.view[parent.index] : node.view[HOST_NODE]);
+}
+
+/**
+ * Retrieves render parent LElementNode for a given view.
+ * Might be null if a view is not yet attatched to any container.
+ */
+function getRenderParent(viewNode: LViewNode): LElementNode|null {
+  const container = getParentLNode(viewNode);
+  return container ? container.data[RENDER_PARENT] : null;
 }
 
 const enum WalkLNodeTreeAction {
@@ -518,9 +530,10 @@ function executePipeOnDestroys(viewData: LViewData): void {
  */
 export function canInsertNativeNode(parent: LNode, currentView: LViewData): boolean {
   // We can only insert into a Component or View. Any other type should be an Error.
-  ngDevMode && assertNodeOfPossibleTypes(parent, TNodeType.Element, TNodeType.View);
+  ngDevMode && assertNodeOfPossibleTypes(
+                   parent, TNodeType.Element, TNodeType.ElementContainer, TNodeType.View);
 
-  if (parent.tNode.type === TNodeType.Element) {
+  if (parent.tNode.type === TNodeType.Element || parent.tNode.type === TNodeType.ElementContainer) {
     // Parent is an element.
     if (parent.view !== currentView) {
       // If the Parent view is not the same as current view than we are inserting across
@@ -562,6 +575,20 @@ export function canInsertNativeNode(parent: LNode, currentView: LViewData): bool
 }
 
 /**
+ * Inserts a native node before another native node for a given parent using {@link Renderer3}.
+ * This is a utility function that can be used when native nodes were determined - it abstracs an
+ * actual renderer being used.
+ */
+function nativeInsertBefore(
+    renderer: Renderer3, parent: RElement, child: RNode, beforeNode: RNode | null): void {
+  if (isProceduralRenderer(renderer)) {
+    renderer.insertBefore(parent, child, beforeNode);
+  } else {
+    parent.insertBefore(child, beforeNode, true);
+  }
+}
+
+/**
  * Appends the `child` element to the `parent`.
  *
  * The element insertion might be delayed {@link canInsertNativeNode}.
@@ -581,9 +608,16 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: LVi
       const index = views.indexOf(parent as LViewNode);
       const beforeNode =
           index + 1 < views.length ? (getChildLNode(views[index + 1]) !).native : container.native;
-      isProceduralRenderer(renderer) ?
-          renderer.insertBefore(renderParent !.native, child, beforeNode) :
-          renderParent !.native.insertBefore(child, beforeNode, true);
+      nativeInsertBefore(renderer, renderParent !.native, child, beforeNode);
+    } else if (parent.tNode.type === TNodeType.ElementContainer) {
+      const beforeNode = parent.native;
+      const grandParent = getParentLNode(parent) as LElementNode | LViewNode;
+      if (grandParent.tNode.type === TNodeType.View) {
+        const renderParent = getRenderParent(grandParent as LViewNode);
+        nativeInsertBefore(renderer, renderParent !.native, child, beforeNode);
+      } else {
+        nativeInsertBefore(renderer, (grandParent as LElementNode).native, child, beforeNode);
+      }
     } else {
       isProceduralRenderer(renderer) ? renderer.appendChild(parent.native !as RElement, child) :
                                        parent.native !.appendChild(child);
@@ -621,8 +655,9 @@ export function removeChild(parent: LNode, child: RNode | null, currentView: LVi
  * @param currentView Current LView
  */
 export function appendProjectedNode(
-    node: LElementNode | LTextNode | LContainerNode, currentParent: LElementNode | LViewNode,
-    currentView: LViewData, renderParent: LElementNode): void {
+    node: LElementNode | LElementContainerNode | LTextNode | LContainerNode,
+    currentParent: LElementNode | LElementContainerNode | LViewNode, currentView: LViewData,
+    renderParent: LElementNode): void {
   appendChild(currentParent, node.native, currentView);
   if (node.tNode.type === TNodeType.Container) {
     // The node we are adding is a container and we are adding it to an element which
