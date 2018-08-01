@@ -47,6 +47,11 @@ $mat-chip-remove-size: 18px;
 
   @include cdk-high-contrast {
     outline: solid 1px;
+
+    &:focus {
+      // Use 2px here since the dotted outline is a little thinner.
+      outline: dotted 2px;
+    }
   }
 
   &.mat-chip-with-trailing-icon.mat-chip-with-avatar,
