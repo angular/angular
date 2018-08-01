@@ -16,7 +16,8 @@ import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
-import {ComponentFixture, TemplateFixture, containerEl, renderToHtml} from './render_util';
+import {NgIf} from './common_with_def';
+import {ComponentFixture, TemplateFixture, containerEl, createComponent, renderToHtml} from './render_util';
 
 describe('render3 integration test', () => {
 
@@ -443,6 +444,154 @@ describe('render3 integration test', () => {
 
       const fixture = new TemplateFixture(Template);
       expect(fixture.html).toEqual('<div>before|Greetings<span></span>|after</div>');
+    });
+
+    it('should add and remove DOM nodes when ng-container is a child of a regular element', () => {
+      /**
+       * {% if (value) { %}
+       * <div>
+       *  <ng-container>content</ng-container>
+       * </div>
+       * {% } %}
+       */
+      const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags, ctx: {value: any}) {
+        if (rf & RenderFlags.Create) {
+          container(0);
+        }
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(0);
+          if (ctx.value) {
+            let rf1 = embeddedViewStart(0);
+            {
+              if (rf1 & RenderFlags.Create) {
+                elementStart(0, 'div');
+                {
+                  elementContainerStart(1);
+                  { text(2, 'content'); }
+                  elementContainerEnd();
+                }
+                elementEnd();
+              }
+            }
+            embeddedViewEnd();
+          }
+          containerRefreshEnd();
+        }
+      });
+
+      const fixture = new ComponentFixture(TestCmpt);
+      expect(fixture.html).toEqual('');
+
+      fixture.component.value = true;
+      fixture.update();
+      expect(fixture.html).toEqual('<div>content</div>');
+
+      fixture.component.value = false;
+      fixture.update();
+      expect(fixture.html).toEqual('');
+    });
+
+    it('should add and remove DOM nodes when ng-container is a child of an embedded view (JS block)',
+       () => {
+         /**
+          * {% if (value) { %}
+          *  <ng-container>content</ng-container>
+          * {% } %}
+          */
+         const TestCmpt =
+             createComponent('test-cmpt', function(rf: RenderFlags, ctx: {value: any}) {
+               if (rf & RenderFlags.Create) {
+                 container(0);
+               }
+               if (rf & RenderFlags.Update) {
+                 containerRefreshStart(0);
+                 if (ctx.value) {
+                   let rf1 = embeddedViewStart(0);
+                   {
+                     if (rf1 & RenderFlags.Create) {
+                       elementContainerStart(0);
+                       { text(1, 'content'); }
+                       elementContainerEnd();
+                     }
+                   }
+                   embeddedViewEnd();
+                 }
+                 containerRefreshEnd();
+               }
+             });
+
+         const fixture = new ComponentFixture(TestCmpt);
+         expect(fixture.html).toEqual('');
+
+         fixture.component.value = true;
+         fixture.update();
+         expect(fixture.html).toEqual('content');
+
+         fixture.component.value = false;
+         fixture.update();
+         expect(fixture.html).toEqual('');
+       });
+
+    it('should add and remove DOM nodes when ng-container is a child of an embedded view (ViewContainerRef)',
+       () => {
+
+         function ngIfTemplate(rf: RenderFlags, ctx: any) {
+           if (rf & RenderFlags.Create) {
+             elementContainerStart(0);
+             { text(1, 'content'); }
+             elementContainerEnd();
+           }
+         }
+
+         /**
+          * <ng-container *ngIf="value">content</ng-container>
+          */
+         // equivalent to:
+         /**
+          * <ng-template [ngIf]="value">
+          *  <ng-container>
+          *    content
+          *  </ng-container>
+          * </ng-template>
+          */
+         const TestCmpt =
+             createComponent('test-cmpt', function(rf: RenderFlags, ctx: {value: any}) {
+               if (rf & RenderFlags.Create) {
+                 container(0, ngIfTemplate, null, [AttributeMarker.SelectOnly, 'ngIf']);
+               }
+               if (rf & RenderFlags.Update) {
+                 elementProperty(0, 'ngIf', bind(ctx.value));
+               }
+             }, [NgIf]);
+
+         const fixture = new ComponentFixture(TestCmpt);
+         expect(fixture.html).toEqual('');
+
+         fixture.component.value = true;
+         fixture.update();
+         expect(fixture.html).toEqual('content');
+
+         fixture.component.value = false;
+         fixture.update();
+         expect(fixture.html).toEqual('');
+       });
+
+    it('should render at the component view root', () => {
+      /**
+       * <ng-container>component template</ng-container>
+       */
+      const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
+        if (rf & RenderFlags.Create) {
+          elementContainerStart(0);
+          { text(1, 'component template'); }
+          elementContainerEnd();
+        }
+      });
+
+      function App() { element(0, 'test-cmpt'); }
+
+      const fixture = new TemplateFixture(App, () => {}, [TestCmpt]);
+      expect(fixture.html).toEqual('<test-cmpt>component template</test-cmpt>');
     });
 
     it('should support directives and inject ElementRef', () => {

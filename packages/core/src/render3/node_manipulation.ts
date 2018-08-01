@@ -56,6 +56,15 @@ export function getParentLNode(node: LNode): LElementNode|LElementContainerNode|
   return readElementValue(parent ? node.view[parent.index] : node.view[HOST_NODE]);
 }
 
+/**
+ * Retrieves render parent LElementNode for a given view.
+ * Might be null if a view is not yet attatched to any container.
+ */
+function getRenderParent(viewNode: LViewNode): LElementNode|null {
+  const container = getParentLNode(viewNode);
+  return container ? container.data[RENDER_PARENT] : null;
+}
+
 const enum WalkLNodeTreeAction {
   /** node insert in the native environment */
   Insert = 0,
@@ -566,6 +575,20 @@ export function canInsertNativeNode(parent: LNode, currentView: LViewData): bool
 }
 
 /**
+ * Inserts a native node before another native node for a given parent using {@link Renderer3}.
+ * This is a utility function that can be used when native nodes were determined - it abstracts an
+ * actual renderer being used.
+ */
+function nativeInsertBefore(
+    renderer: Renderer3, parent: RElement, child: RNode, beforeNode: RNode | null): void {
+  if (isProceduralRenderer(renderer)) {
+    renderer.insertBefore(parent, child, beforeNode);
+  } else {
+    parent.insertBefore(child, beforeNode, true);
+  }
+}
+
+/**
  * Appends the `child` element to the `parent`.
  *
  * The element insertion might be delayed {@link canInsertNativeNode}.
@@ -585,15 +608,16 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: LVi
       const index = views.indexOf(parent as LViewNode);
       const beforeNode =
           index + 1 < views.length ? (getChildLNode(views[index + 1]) !).native : container.native;
-      isProceduralRenderer(renderer) ?
-          renderer.insertBefore(renderParent !.native, child, beforeNode) :
-          renderParent !.native.insertBefore(child, beforeNode, true);
+      nativeInsertBefore(renderer, renderParent !.native, child, beforeNode);
     } else if (parent.tNode.type === TNodeType.ElementContainer) {
       const beforeNode = parent.native;
-      const renderParent = getParentLNode(parent) as LElementNode;
-      isProceduralRenderer(renderer) ?
-          renderer.insertBefore(renderParent !.native, child, beforeNode) :
-          renderParent !.native.insertBefore(child, beforeNode, true);
+      const grandParent = getParentLNode(parent) as LElementNode | LViewNode;
+      if (grandParent.tNode.type === TNodeType.View) {
+        const renderParent = getRenderParent(grandParent as LViewNode);
+        nativeInsertBefore(renderer, renderParent !.native, child, beforeNode);
+      } else {
+        nativeInsertBefore(renderer, (grandParent as LElementNode).native, child, beforeNode);
+      }
     } else {
       isProceduralRenderer(renderer) ? renderer.appendChild(parent.native !as RElement, child) :
                                        parent.native !.appendChild(child);
