@@ -177,6 +177,9 @@
     "name": "getRenderFlags"
   },
   {
+    "name": "getRenderParent"
+  },
+  {
     "name": "getRootView"
   },
   {
@@ -199,6 +202,9 @@
   },
   {
     "name": "namespaceHTML"
+  },
+  {
+    "name": "nativeInsertBefore"
   },
   {
     "name": "readElementValue"

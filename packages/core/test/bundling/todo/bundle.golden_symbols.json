@@ -591,6 +591,9 @@
     "name": "getRenderFlags"
   },
   {
+    "name": "getRenderParent"
+  },
+  {
     "name": "getRenderer"
   },
   {
@@ -727,6 +730,9 @@
   },
   {
     "name": "namespaceHTML"
+  },
+  {
+    "name": "nativeInsertBefore"
   },
   {
     "name": "nextContext"
