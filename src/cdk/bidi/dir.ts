@@ -41,9 +41,9 @@ export class Dir implements Directionality, AfterContentInit, OnDestroy {
   /** @docs-private */
   @Input()
   get dir(): Direction { return this._dir; }
-  set dir(v: Direction) {
+  set dir(value: Direction) {
     const old = this._dir;
-    this._dir = v;
+    this._dir = (value === 'ltr' || value === 'rtl') ? value : 'ltr';
     if (old !== this._dir && this._isInitialized) {
       this.change.emit(this._dir);
     }

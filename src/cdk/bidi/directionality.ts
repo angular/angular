@@ -33,7 +33,8 @@ export class Directionality implements OnDestroy {
       // but getComputedStyle return either "ltr" or "rtl". avoiding getComputedStyle for now
       const bodyDir = _document.body ? _document.body.dir : null;
       const htmlDir = _document.documentElement ? _document.documentElement.dir : null;
-      this.value = (bodyDir || htmlDir || 'ltr') as Direction;
+      const value = bodyDir || htmlDir;
+      this.value = (value === 'ltr' || value === 'rtl') ? value : 'ltr';
     }
   }
 
