@@ -134,9 +134,11 @@ export interface LViewData extends Array<any> {
   [CLEANUP]: any[]|null;
 
   /**
-   * - For embedded views, the context with which to render the template.
+   * - For dynamic views, this is the context with which to render the template (e.g.
+   *   `NgForContext`), or `{}` if not defined explicitly.
    * - For root view of the root component the context contains change detection data.
-   * - `null` otherwise.
+   * - For non-root components, the context is the component instance,
+   * - For inline views, the context is null.
    */
   [CONTEXT]: {}|RootContext|null;
 
