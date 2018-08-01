@@ -36,50 +36,43 @@ function transformFactorySourceFile(
     return file;
   }
 
-
   const {moduleSymbolNames, sourceFilePath} = factoryMap.get(file.fileName) !;
 
   const clone = ts.getMutableClone(file);
-  clone.statements = ts.createNodeArray([
-    ...file.statements.map(stmt => {
-      if (coreImportsFrom !== null && ts.isImportDeclaration(stmt) &&
-          ts.isStringLiteral(stmt.moduleSpecifier) &&
-          stmt.moduleSpecifier.text === '@angular/core') {
-        const path = relativePathBetween(sourceFilePath, coreImportsFrom.fileName);
-        if (path !== null) {
-          return ts.updateImportDeclaration(
-              stmt, stmt.decorators, stmt.modifiers, stmt.importClause,
-              ts.createStringLiteral(path));
-        } else {
+
+  const transformedStatements = file.statements.map(stmt => {
+    if (coreImportsFrom !== null && ts.isImportDeclaration(stmt) &&
+        ts.isStringLiteral(stmt.moduleSpecifier) && stmt.moduleSpecifier.text === '@angular/core') {
+      const path = relativePathBetween(sourceFilePath, coreImportsFrom.fileName);
+      if (path !== null) {
+        return ts.updateImportDeclaration(
+            stmt, stmt.decorators, stmt.modifiers, stmt.importClause, ts.createStringLiteral(path));
+      } else {
+        return ts.createNotEmittedStatement(stmt);
+      }
+    } else if (ts.isVariableStatement(stmt) && stmt.declarationList.declarations.length === 1) {
+      const decl = stmt.declarationList.declarations[0];
+      if (ts.isIdentifier(decl.name)) {
+        const match = STRIP_NG_FACTORY.exec(decl.name.text);
+        if (match === null || !moduleSymbolNames.has(match[1])) {
+          // Remove the given factory as it wasn't actually for an NgModule.
           return ts.createNotEmittedStatement(stmt);
         }
-      } else if (ts.isVariableStatement(stmt) && stmt.declarationList.declarations.length === 1) {
-        const decl = stmt.declarationList.declarations[0];
-        if (ts.isIdentifier(decl.name)) {
-          const match = STRIP_NG_FACTORY.exec(decl.name.text);
-          if (match === null || !moduleSymbolNames.has(match[1])) {
-            return updateDeclToNull(stmt, decl);
-          }
-        }
-        return stmt;
-      } else {
-        return stmt;
       }
-    }),
-    // Regardless of the above contents, add an export to ensure the resulting module is non-empty.
-    ts.createVariableStatement(
+      return stmt;
+    } else {
+      return stmt;
+    }
+  });
+  if (!transformedStatements.some(ts.isVariableStatement)) {
+    // If the resulting file has no factories, include an empty export to
+    // satisfy closure compiler.
+    transformedStatements.push(ts.createVariableStatement(
         [ts.createModifier(ts.SyntaxKind.ExportKeyword)],
         ts.createVariableDeclarationList(
             [ts.createVariableDeclaration('ɵNonEmptyModule', undefined, ts.createTrue())],
-            ts.NodeFlags.Const)),
-  ]);
+            ts.NodeFlags.Const)));
+  }
+  clone.statements = ts.createNodeArray(transformedStatements);
   return clone;
-}
-
-function updateDeclToNull(
-    stmt: ts.VariableStatement, decl: ts.VariableDeclaration): ts.VariableStatement {
-  return ts.updateVariableStatement(
-      stmt, stmt.modifiers, ts.updateVariableDeclarationList(stmt.declarationList, [
-        ts.updateVariableDeclaration(decl, decl.name, decl.type, ts.createNull()),
-      ], ));
 }

@@ -12,7 +12,8 @@ import * as ts from 'typescript';
 const TS_DTS_SUFFIX = /(\.d)?\.ts$/;
 
 /**
- * Generates ts.SourceFiles which are
+ * Generates ts.SourceFiles which contain variable declarations for NgFactories for every exported
+ * class of an input ts.SourceFile.
  */
 export class FactoryGenerator {
   factoryFor(original: ts.SourceFile, genFilePath: string): ts.SourceFile {

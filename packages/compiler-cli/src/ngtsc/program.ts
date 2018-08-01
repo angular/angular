@@ -24,7 +24,7 @@ export class NgtscProgram implements api.Program {
   private compilation: IvyCompilation|undefined = undefined;
   private factoryToSourceInfo: Map<string, FactoryInfo>|null = null;
   private sourceToFactorySymbols: Map<string, Set<string>>|null = null;
-
+  private host: ts.CompilerHost;
   private _coreImportsFrom: ts.SourceFile|null|undefined = undefined;
   private _reflector: TypeScriptReflectionHost|undefined = undefined;
   private _isCore: boolean|undefined = undefined;
@@ -32,12 +32,12 @@ export class NgtscProgram implements api.Program {
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
-      private host: api.CompilerHost, oldProgram?: api.Program) {
+      host: api.CompilerHost, oldProgram?: api.Program) {
     this.resourceLoader = host.readResource !== undefined ?
         new HostResourceLoader(host.readResource.bind(host)) :
         new FileResourceLoader();
     const shouldGenerateFactories = options.allowEmptyCodegenFiles || false;
-    let tsHost: ts.CompilerHost = host;
+    this.host = host;
     let rootFiles = [...rootNames];
     if (shouldGenerateFactories) {
       const generator = new FactoryGenerator();
@@ -50,11 +50,11 @@ export class NgtscProgram implements api.Program {
         this.sourceToFactorySymbols !.set(sourceFilePath, moduleSymbolNames);
         this.factoryToSourceInfo !.set(factoryPath, {sourceFilePath, moduleSymbolNames});
       });
-      tsHost = new GeneratedFactoryHostWrapper(host, generator, factoryFileMap);
+      this.host = new GeneratedFactoryHostWrapper(host, generator, factoryFileMap);
     }
 
     this.tsProgram =
-        ts.createProgram(rootFiles, options, tsHost, oldProgram && oldProgram.getTsProgram());
+        ts.createProgram(rootFiles, options, this.host, oldProgram && oldProgram.getTsProgram());
   }
 
   getTsProgram(): ts.Program { return this.tsProgram; }
