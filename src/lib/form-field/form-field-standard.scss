@@ -42,6 +42,11 @@ $mat-form-field-standard-padding-top: 0.75em !default;
   &.mat-form-field-disabled .mat-form-field-underline {
     background-position: 0;
     background-color: transparent;
+
+    @include cdk-high-contrast {
+      border-top-style: dotted;
+      border-top-width: 2px;
+    }
   }
 
   // Note that we need this specific of a selector because we don't want
