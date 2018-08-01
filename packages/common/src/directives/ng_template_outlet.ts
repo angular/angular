@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, EmbeddedViewRef, Input, OnChanges, Optional, SimpleChange, SimpleChanges, TemplateRef, ViewContainerRef} from '@angular/core';
 
 /**
  * @ngModule CommonModule
@@ -19,9 +19,15 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChange
  * `[ngTemplateOutletContext]` should be an object, the object's keys will be available for binding
  * by the local template `let` declarations.
  *
+ * If no template is provided, the internal template is used instead. This can be useful for
+ * setting up context in a sub-template.
+ *
  * @usageNotes
  * ```
  * <ng-container *ngTemplateOutlet="templateRefExp; context: contextExp"></ng-container>
+ * <ng-container *ngTemplateOutletContext="contextExp">
+ *   <!-- template defined locally here -->
+ * </ng-container>
  * ```
  *
  * Using the key `$implicit` in the context object will set its value as default.
@@ -31,7 +37,7 @@ import {Directive, EmbeddedViewRef, Input, OnChanges, SimpleChange, SimpleChange
  * {@example common/ngTemplateOutlet/ts/module.ts region='NgTemplateOutlet'}
  *
  */
-@Directive({selector: '[ngTemplateOutlet]'})
+@Directive({selector: '[ngTemplateOutlet],[ngTemplateOutletContext]'})
 export class NgTemplateOutlet implements OnChanges {
   // TODO(issue/24571): remove '!'.
   private _viewRef !: EmbeddedViewRef<any>;
@@ -42,7 +48,9 @@ export class NgTemplateOutlet implements OnChanges {
   // TODO(issue/24571): remove '!'.
   @Input() public ngTemplateOutlet !: TemplateRef<any>;
 
-  constructor(private _viewContainerRef: ViewContainerRef) {}
+  constructor(
+      private _viewContainerRef: ViewContainerRef,
+      @Optional() private _templateRef: TemplateRef<any>) {}
 
   ngOnChanges(changes: SimpleChanges) {
     const recreateView = this._shouldRecreateView(changes);
@@ -52,9 +60,9 @@ export class NgTemplateOutlet implements OnChanges {
         this._viewContainerRef.remove(this._viewContainerRef.indexOf(this._viewRef));
       }
 
-      if (this.ngTemplateOutlet) {
+      if (this.ngTemplateOutlet || this._templateRef) {
         this._viewRef = this._viewContainerRef.createEmbeddedView(
-            this.ngTemplateOutlet, this.ngTemplateOutletContext);
+            this.ngTemplateOutlet || this._templateRef, this.ngTemplateOutletContext);
       }
     } else {
       if (this._viewRef && this.ngTemplateOutletContext) {

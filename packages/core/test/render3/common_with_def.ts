@@ -37,7 +37,7 @@ NgForOf.ngDirectiveDef = defineDirective({
 (NgTemplateOutlet as any).ngDirectiveDef = defineDirective({
   type: NgTemplateOutletDef,
   selectors: [['', 'ngTemplateOutlet', '']],
-  factory: () => new NgTemplateOutletDef(injectViewContainerRef()),
+  factory: () => new NgTemplateOutletDef(injectViewContainerRef(), injectTemplateRef()),
   features: [NgOnChangesFeature],
   inputs:
       {ngTemplateOutlet: 'ngTemplateOutlet', ngTemplateOutletContext: 'ngTemplateOutletContext'}

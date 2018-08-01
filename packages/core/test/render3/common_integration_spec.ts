@@ -882,7 +882,11 @@ describe('@angular/common integration', () => {
                   text(0, 'from tpl');
                 }
               }, undefined, undefined, ['tpl', '']);
-              container(2, undefined, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+              container(2, (rf2: RenderFlags) => {
+                if (rf2 & RenderFlags.Create) {
+                  text(0, '');
+                }
+              }, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
             }
             if (rf & RenderFlags.Update) {
               const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));

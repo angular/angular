@@ -41,10 +41,10 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
          detectChangesAndExpectText('bar');
        }));
 
-    it('should do nothing if templateRef is `null`', async(() => {
-         const template = `<ng-container [ngTemplateOutlet]="null"></ng-container>`;
+    it('should include internal template if templateRef is `null`', async(() => {
+         const template = `<ng-template [ngTemplateOutlet]="null">Internal text</ng-template>`;
          fixture = createTestComponent(template);
-         detectChangesAndExpectText('');
+         detectChangesAndExpectText('Internal text');
        }));
 
     it('should insert content specified by TemplateRef', async(() => {

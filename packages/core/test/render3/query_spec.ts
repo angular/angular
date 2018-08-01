@@ -1212,7 +1212,8 @@ describe('query', () => {
             selectors: [['my-app']],
             /**
              * <ng-template #tpl><span #foo id="from_tpl">from tpl</span></ng-template>
-             * <ng-template [ngTemplateOutlet]="show ? tpl : null"></ng-template>
+             * <ng-template [ngTemplateOutlet]="show ? tpl : null"><span
+             * id="internal"></span></ng-template>
              */
             template: (rf: RenderFlags, myApp: MyApp) => {
               if (rf & RenderFlags.Create) {
@@ -1221,7 +1222,11 @@ describe('query', () => {
                     element(0, 'span', ['id', 'from_tpl'], ['foo', '']);
                   }
                 }, undefined, undefined, ['tpl', '']);
-                container(3, undefined, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+                container(3, (rf3: RenderFlags) => {
+                  if (rf3 & RenderFlags.Create) {
+                    element(0, 'span', ['id', 'internal'], ['foo', '']);
+                  }
+                }, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
               }
               if (rf & RenderFlags.Update) {
                 const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(1)));
@@ -1245,7 +1250,8 @@ describe('query', () => {
         const fixture = new ComponentFixture(MyApp);
         const qList = fixture.component.query;
 
-        expect(qList.length).toBe(0);
+        expect(qList.length).toBe(1);
+        expect(qList.first.nativeElement.id).toBe('internal');
 
         fixture.component.show = true;
         fixture.update();
@@ -1254,7 +1260,8 @@ describe('query', () => {
 
         fixture.component.show = false;
         fixture.update();
-        expect(qList.length).toBe(0);
+        expect(qList.length).toBe(1);
+        expect(qList.first.nativeElement.id).toBe('internal');
       });
 
     });
