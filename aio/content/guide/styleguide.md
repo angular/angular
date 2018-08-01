@@ -4245,7 +4245,7 @@ Yet there is a real danger of that happening accidentally if the `CoreModule` pr
 <!--
 ### Prevent re-import of the core module
 -->
-### 코어 모듈을 다시 로드하지 말기
+### 코어 모듈을 중복 로드하지 말기
 
 <!--
 #### Style 04-12
@@ -5302,7 +5302,7 @@ Compare with the less preferred `host` metadata alternative.
 <!--
 **Why?** The `host` metadata is only one term to remember and doesn't require extra ES imports.
 -->
-**왜?** `host` 메타데이터를 사용하는 것도 이벤트를 바인딩하는 방법 중 하나지만, 효율적인 방법을 선택하는 것이 좋습니다.
+**왜?** `host` 메타데이터를 사용하는 것도 이벤트를 바인딩하는 방법 중 하나지만, 더 효율적인 방법을 선택하는 것이 좋습니다.
 
 </div>
 
@@ -5319,12 +5319,17 @@ Compare with the less preferred `host` metadata alternative.
 -->
 <a href="#toc">맨 위로</a>
 
-
+<!--
 ## Services
+-->
+## 서비스
 
 {@a 07-01}
 
+<!--
 ### Services are singletons
+-->
+### 서비스는 싱글턴이어야 합니다.
 
 <!--
 #### Style 07-01
@@ -5334,9 +5339,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use services as singletons within the same injector. Use them for sharing data and functionality.
-
+-->
+서비스는 같은 인젝터를 사용해서 싱글턴으로 **사용하세요.** 서비스는 데이터와 함수를 공유하는 방식으로 사용해야 합니다.
 
 </div>
 
@@ -5345,9 +5351,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-why">
 
 
-
+<!--
 **Why?** Services are ideal for sharing methods across a feature area or an app.
-
+-->
+**왜?** 서비스는 여러 컴포넌트에 사용되는 기능을 한 곳에 모아두기 위해 만드는 것입니다.
 
 </div>
 
@@ -5356,9 +5363,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Services are ideal for sharing stateful in-memory data.
-
+-->
+**왜?** 서비스는 인-메모리 데이터를 공유하는 방식으로 사용하는 것이 가장 좋습니다.
 
 </div>
 
@@ -5377,7 +5385,10 @@ Compare with the less preferred `host` metadata alternative.
 
 {@a 07-02}
 
+<!--
 ### Single responsibility
+-->
+### 단일 책임 원칙
 
 <!--
 #### Style 07-02
@@ -5387,9 +5398,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** create services with a single responsibility that is encapsulated by its context.
-
+-->
+서비스에는 그 서비스를 구현하는 목적에 해당하는 기능만 **구현하세요.**
 
 </div>
 
@@ -5398,9 +5410,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** create a new service once the service begins to exceed that singular purpose.
-
+-->
+기존에 있는 서비스의 범위에 벗어나는 기능이 필요할 때 새로운 서비스를 **만드세요.**
 
 </div>
 
@@ -5409,9 +5422,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-why">
 
 
-
+<!--
 **Why?** When a service has multiple responsibilities, it becomes difficult to test.
-
+-->
+**왜?** 서비스에 여러 용도의 기능을 구현하면 테스트하기 힘들어 집니다.
 
 </div>
 
@@ -5420,9 +5434,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** When a service has multiple responsibilities, every component or service that injects it now carries the weight of them all.
-
+-->
+**왜?** 서비스에 여러 용도의 기능을 구현하면, 컴포넌트나 다른 서비스에 이 서비스를 의존성으로 주입할 때 모든 기능을 한 번에 가지고 다녀야 합니다.
 
 </div>
 
@@ -5433,7 +5448,10 @@ Compare with the less preferred `host` metadata alternative.
 
 {@a 07-03}
 
+<!--
 ### Providing a service
+-->
+### 서비스 프로바이더
 
 <!--
 #### Style 07-03
@@ -5443,9 +5461,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** provide a service with the app root injector in the `@Injectable` decorator of the service.
-
+-->
+서비스는 `@Injectable` 데코레이터를 사용해서 애플리케이션 최상위 인젝터에 **등록하세요.**
 
 </div>
 
@@ -5454,9 +5473,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-why">
 
 
-
+<!--
 **Why?** The Angular injector is hierarchical.
-
+-->
+**왜?** Angular 인젝터는 계층에 따라 구성됩니다.
 
 </div>
 
@@ -5465,10 +5485,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-why">
 
 
-
+<!--
 **Why?** When you provide the service to a root injector, that instance of the service is shared and available in every class that needs the service. This is ideal when a service is sharing methods or state.
-
-
+-->
+**왜?** 애플리케이션 최상위 인젝터에 서비스 프로바이더를 등록하면, 이 서비스의 인스턴스는 모든 클래스에 공유되며, 서비스의 스테이트나 메소드를 함께 활용할 수 있습니다. 서비스는 이런 방식으로 사용하는 것이 가장 좋습니다.
 
 </div>
 
@@ -5477,8 +5497,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-why">
 
 
-
+<!--
 **Why?** When you register a service in the `@Injectable` decorator of the service, optimization tools such as those used by the CLI's production builds can perform tree shaking and remove services that aren't used by your app.
+-->
+**왜?** `@Injectable` 데코레이터를 사용해서 서비스를 등록하면, CLI와 같은 툴로 빌드할 때 앱에서 실제로 사용하지 않는 서비스를 트리 셰이킹으로 모두 제거할 수 있습니다.
 
 </div>
 
@@ -5487,9 +5509,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** This is not ideal when two different components need different instances of a service. In this scenario it would be better to provide the service at the component level that needs the new and separate instance.
-
+-->
+**왜?** 같은 서비스를 의존성으로 주입받는 두 컴포넌트가 서로 다른 인스턴스를 사용하는 것은 서비스를 구현의도에 맞게 사용하는 방법이 아닙니다. 이 방식은 두 컴포넌트가 사용하는 서비스의 인스턴스를 명확하게 분리할 필요가 있을 때만 사용하는 방식입니다.
 
 </div>
 
@@ -5505,7 +5528,10 @@ Compare with the less preferred `host` metadata alternative.
 
 {@a 07-04}
 
+<!--
 ### Use the @Injectable() class decorator
+-->
+### @Injectable() 클래스 데코레이터를 사용하세요.
 
 <!--
 #### Style 07-04
@@ -5515,9 +5541,10 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use the `@Injectable()` class decorator instead of the `@Inject` parameter decorator when using types as tokens for the dependencies of a service.
-
+-->
+서비스를 토큰으로 참조할 때 `@Inject` 파라미터 데코레이터 대신 `@Injectable()` 클래스 데코레이터를 **사용하세요.**
 
 </div>
 
@@ -5526,10 +5553,11 @@ Compare with the less preferred `host` metadata alternative.
 <div class="s-why">
 
 
-
+<!--
 **Why?** The Angular Dependency Injection (DI) mechanism resolves a service's own
 dependencies based on the declared types of that service's constructor parameters.
-
+-->
+**왜?** 서비스에도 의존성으로 주입하는 객체가 있을 수 있습니다. 이 때 Angular 의존성 주입 메커니즘에 따라 올바른 의존성 객체를 주입하려면, 서비스 생성자에 의존성 객체의 타입을 명시해야 합니다.
 
 </div>
 
@@ -5538,9 +5566,10 @@ dependencies based on the declared types of that service's constructor parameter
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** When a service accepts only dependencies associated with type tokens, the `@Injectable()` syntax is much less verbose compared to using `@Inject()` on each individual constructor parameter.
-
+-->
+**왜?** 서비스를 토큰으로 주입하는 경우를 생각해보면, 생성자의 인자마다 `@Inject()`를 지정하는 것보다 `@Injectable()`로 서비스를 등록하고 토큰으로 바로 주입받는 것이 훨씬 간단합니다.
 
 </div>
 
@@ -5565,12 +5594,17 @@ dependencies based on the declared types of that service's constructor parameter
 -->
 <a href="#toc">맨 위로</a>
 
-
+<!--
 ## Data Services
+-->
+## 데이터 서비스
 
 {@a 08-01}
 
+<!--
 ### Talk to the server through a service
+-->
+### 서버와 통신할 때는 서비스를 사용하세요.
 
 <!--
 #### Style 08-01
@@ -5580,9 +5614,10 @@ dependencies based on the declared types of that service's constructor parameter
 <div class="s-rule do">
 
 
-
+<!--
 **Do** refactor logic for making data operations and interacting with data to a service.
-
+-->
+데이터를 가져오거나 변형하는 로직은 서비스에 **작성하세요.**
 
 </div>
 
@@ -5591,9 +5626,10 @@ dependencies based on the declared types of that service's constructor parameter
 <div class="s-rule do">
 
 
-
+<!--
 **Do** make data services responsible for XHR calls, local storage, stashing in memory, or any other data operations.
-
+-->
+XHR 통신으로 데이터를 가져오거나 로컬 스토리지, 메모리에 데이터를 저장하는 로직은 서비스에 **작성하세요.**
 
 </div>
 
@@ -5602,9 +5638,10 @@ dependencies based on the declared types of that service's constructor parameter
 <div class="s-why">
 
 
-
+<!--
 **Why?** The component's responsibility is for the presentation and gathering of information for the view. It should not care how it gets the data, just that it knows who to ask for it. Separating the data services moves the logic on how to get it to the data service, and lets the component be simpler and more focused on the view.
-
+-->
+**왜?** 컴포넌트는 화면을 담당하며, 화면에 표시된 정보를 모으는 것까지만 컴포넌트의 역할입니다. 어딘가에서 데이터를 가져오는 로직은 컴포넌트가 담당하는 것이 아니며, 이 역할을 담당하는 무언가를 사용하기만 할 뿐입니다. 데이터를 처리하는 로직은 모두 서비스로 옮기고, 컴포넌트는 화면을 담당하는 역할에 집중하도록 하세요.
 
 </div>
 
@@ -5613,9 +5650,10 @@ dependencies based on the declared types of that service's constructor parameter
 <div class="s-why">
 
 
-
+<!--
 **Why?** This makes it easier to test (mock or real) the data calls when testing a component that uses a data service.
-
+-->
+**왜?** 데이터를 가져오는 로직을 컴포넌트에서 제거하면 목업 서비스를 활용할 수 있기 때문에 테스트하기 더 편합니다.
 
 </div>
 
@@ -5624,15 +5662,19 @@ dependencies based on the declared types of that service's constructor parameter
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** The details of data management, such as headers, HTTP methods,
 caching, error handling, and retry logic, are irrelevant to components
 and other data consumers.
+-->
+**왜?** 헤더를 지정하거나 HTTP 메소드를 선택하는 로직, 캐싱, 에러 처리, 실패했을 때 재시도하는 로직 등 데이터를 처리하는 로직은 컴포넌트와 직접적인 연관이 없습니다.
 
+<!--
 A data service encapsulates these details. It's easier to evolve these
 details inside the service without affecting its consumers. And it's
 easier to test the consumers with mock service implementations.
-
+-->
+이 로직들은 데이터 서비스 안쪽에 구현하는 것이 좋습니다. 그러면 데이터를 사용하는 쪽과 관계없이 로직을 수정하거나 확장할 수 있으며, 컴포넌트에 목업 서비스를 주입해서 테스트하기도 편해집니다.
 
 </div>
 
