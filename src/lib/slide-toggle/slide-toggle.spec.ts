@@ -1,7 +1,14 @@
 import {MutationObserverFactory} from '@angular/cdk/observers';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {Component} from '@angular/core';
-import {ComponentFixture, fakeAsync, flushMicrotasks, TestBed, tick} from '@angular/core/testing';
+import {
+  ComponentFixture,
+  fakeAsync,
+  flush,
+  flushMicrotasks,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
 import {defaultRippleAnimationConfig} from '@angular/material/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
@@ -773,7 +780,7 @@ describe('MatSlideToggle with forms', () => {
       expect(slideToggleElement.classList).toContain('mat-checked');
     }));
 
-    it('should have the correct control state initially and after interaction', () => {
+    it('should have the correct control state initially and after interaction', fakeAsync(() => {
       // The control should start off valid, pristine, and untouched.
       expect(slideToggleModel.valid).toBe(true);
       expect(slideToggleModel.pristine).toBe(true);
@@ -795,13 +802,31 @@ describe('MatSlideToggle with forms', () => {
       // also turn touched.
       dispatchFakeEvent(inputElement, 'blur');
       fixture.detectChanges();
+      flushMicrotasks();
 
       expect(slideToggleModel.valid).toBe(true);
       expect(slideToggleModel.pristine).toBe(false);
       expect(slideToggleModel.touched).toBe(true);
-    });
+    }));
 
-    it('should not set the control to touched when changing the state programmatically', () => {
+    it('should not throw an error when disabling while focused', fakeAsync(() => {
+      expect(() => {
+        // Focus the input element because after disabling, the `blur` event should automatically
+        // fire and not result in a changed after checked exception. Related: #12323
+        inputElement.focus();
+
+        // Flush the two nested timeouts from the FocusMonitor that are being created on `focus`.
+        flush();
+
+        slideToggle.disabled = true;
+        fixture.detectChanges();
+        flushMicrotasks();
+      }).not.toThrow();
+    }));
+
+    it('should not set the control to touched when changing the state programmatically',
+        fakeAsync(() => {
+
       // The control should start off with being untouched.
       expect(slideToggleModel.touched).toBe(false);
 
@@ -815,10 +840,11 @@ describe('MatSlideToggle with forms', () => {
       // also turn touched.
       dispatchFakeEvent(inputElement, 'blur');
       fixture.detectChanges();
+      flushMicrotasks();
 
       expect(slideToggleModel.touched).toBe(true);
       expect(slideToggleElement.classList).toContain('mat-checked');
-    });
+    }));
 
     it('should not set the control to touched when changing the model', fakeAsync(() => {
       // The control should start off with being untouched.
