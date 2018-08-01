@@ -531,9 +531,9 @@ groups:
         - "aio/content/guide/deployment.md"
         - "aio/content/guide/releases.md"
         - "aio/content/guide/updating.md"
-      users:
-        - IgorMinar #primary
-        - alexeagle
-        - hansl
-        - mhevery #fallback
-        - jenniferfell #docs only
+    users:
+      - IgorMinar #primary
+      - alexeagle
+      - hansl
+      - mhevery #fallback
+      - jenniferfell #docs only
