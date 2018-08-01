@@ -40,7 +40,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * ```
  * Count: {{items.length}}
  * <ul>
- *   <li *ngFor="let  item of items">{{item}}</li>
+ *   <li *ngFor="let item of items">{{item}}</li>
  * </ul>
  * ```
  *
