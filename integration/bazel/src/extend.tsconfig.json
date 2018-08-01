@@ -1,0 +1,4 @@
+// For testing extending tsconfig.json
+{
+  "extends": "./tsconfig"
+}

@@ -5,6 +5,11 @@ load(
     "@build_bazel_rules_typescript//internal:build_defs.bzl",
     _tsc_wrapped_tsconfig = "tsc_wrapped_tsconfig",
 )
+
+load("@build_bazel_rules_typescript//internal:ts_config.bzl",
+    _TsConfigInfo = "TsConfigInfo",
+)
+
 load(
     "@build_bazel_rules_typescript//internal:common/compilation.bzl",
     _COMMON_ATTRIBUTES = "COMMON_ATTRIBUTES",
@@ -22,6 +27,7 @@ load(
 NodeModuleInfo = _NodeModuleInfo
 collect_node_modules_aspect = _collect_node_modules_aspect
 tsc_wrapped_tsconfig = _tsc_wrapped_tsconfig
+TsConfigInfo = _TsConfigInfo
 COMMON_ATTRIBUTES = _COMMON_ATTRIBUTES
 COMMON_OUTPUTS = _COMMON_OUTPUTS
 compile_ts = _compile_ts

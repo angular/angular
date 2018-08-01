@@ -1,9 +1,16 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@angular//:index.bzl", "ng_module")
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_config")
 
 # Allow targets under sub-packages to reference the tsconfig.json file
 exports_files(["tsconfig.json"])
+
+ts_config(
+    name = "tsconfig",
+    src = "extend.tsconfig.json",
+    deps = ["tsconfig.json"],
+)
 
 ng_module(
     name = "src",
@@ -15,6 +22,7 @@ ng_module(
         "@angular//packages/platform-browser",
         "@npm//@types",
     ],
+    tsconfig = ":tsconfig",
 )
 
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")

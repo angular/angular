@@ -14,6 +14,7 @@ load(
     "DEPS_ASPECTS",
     "NodeModuleInfo",
     "collect_node_modules_aspect",
+    "TsConfigInfo",
     "compile_ts",
     "ts_providers_dict_to_struct",
     "tsc_wrapped_tsconfig",
@@ -402,6 +403,8 @@ def _compile_action(ctx, inputs, outputs, messages_out, tsconfig_file, node_opts
     # If the user supplies a tsconfig.json file, the Angular compiler needs to read it
     if hasattr(ctx.attr, "tsconfig") and ctx.file.tsconfig:
         file_inputs.append(ctx.file.tsconfig)
+        if TsConfigInfo in ctx.attr.tsconfig:
+            file_inputs.extend(ctx.attr.tsconfig[TsConfigInfo].deps)
 
     # Also include files from npm fine grained deps as action_inputs.
     # These deps are identified by the NodeModuleInfo provider.
