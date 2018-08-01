@@ -5,15 +5,20 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {devModeEqual} from '../change_detection/change_detection';
 import {assertLessThan} from './assert';
 import {LElementNode} from './interfaces/node';
 import {HEADER_OFFSET, LViewData} from './interfaces/view';
 
-
 /**
-* Must use this method for CD (instead of === ) since NaN !== NaN
-*/
-export function isDifferent(a: any, b: any): boolean {
+ * Returns wether the values are different from a change detection stand point.
+ *
+ * Constraints are relaxed in checkNoChanges mode. See `devModeEqual` for details.
+ */
+export function isDifferent(a: any, b: any, checkNoChangesMode: boolean): boolean {
+  if (ngDevMode && checkNoChangesMode) {
+    return !devModeEqual(a, b);
+  }
   // NaN is the only value that is not equal to itself so the first
   // test checks if both a and b are not NaN
   return !(a !== a && b !== b) && a !== b;
