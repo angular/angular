@@ -8,7 +8,7 @@
 
 import {BidiModule} from '@angular/cdk/bidi';
 import {PortalModule} from '@angular/cdk/portal';
-import {ScrollDispatchModule, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
+import {ScrollingModule, VIEWPORT_RULER_PROVIDER} from '@angular/cdk/scrolling';
 import {NgModule, Provider} from '@angular/core';
 import {OVERLAY_KEYBOARD_DISPATCHER_PROVIDER} from './keyboard/overlay-keyboard-dispatcher';
 import {Overlay} from './overlay';
@@ -22,8 +22,8 @@ import {OverlayPositionBuilder} from './position/overlay-position-builder';
 
 
 @NgModule({
-  imports: [BidiModule, PortalModule, ScrollDispatchModule],
-  exports: [CdkConnectedOverlay, CdkOverlayOrigin, ScrollDispatchModule],
+  imports: [BidiModule, PortalModule, ScrollingModule],
+  exports: [CdkConnectedOverlay, CdkOverlayOrigin, ScrollingModule],
   declarations: [CdkConnectedOverlay, CdkOverlayOrigin],
   providers: [
     Overlay,

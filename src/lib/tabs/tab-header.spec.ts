@@ -1,7 +1,7 @@
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {END, ENTER, HOME, LEFT_ARROW, RIGHT_ARROW, SPACE} from '@angular/cdk/keycodes';
 import {PortalModule} from '@angular/cdk/portal';
-import {ScrollDispatchModule, ViewportRuler} from '@angular/cdk/scrolling';
+import {ScrollingModule, ViewportRuler} from '@angular/cdk/scrolling';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {CommonModule} from '@angular/common';
 import {Component, ViewChild} from '@angular/core';
@@ -30,7 +30,7 @@ describe('MatTabHeader', () => {
   beforeEach(async(() => {
     dir = 'ltr';
     TestBed.configureTestingModule({
-      imports: [CommonModule, PortalModule, MatRippleModule, ScrollDispatchModule],
+      imports: [CommonModule, PortalModule, MatRippleModule, ScrollingModule],
       declarations: [
         MatTabHeader,
         MatInkBar,
