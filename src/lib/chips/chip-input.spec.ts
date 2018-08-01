@@ -5,6 +5,8 @@ import {createKeyboardEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
+import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatChipInput, MatChipInputEvent} from './chip-input';
 import {MatChipsModule} from './index';
 import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
@@ -20,7 +22,7 @@ describe('MatChipInput', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      imports: [MatChipsModule, PlatformModule],
+      imports: [PlatformModule, MatChipsModule, MatFormFieldModule, NoopAnimationsModule],
       declarations: [TestChipInput],
       providers: [{
         provide: Directionality, useFactory: () => {
@@ -64,6 +66,22 @@ describe('MatChipInput', () => {
 
       expect(inputNativeElement.getAttribute('placeholder')).toBe('bound placeholder');
     });
+
+    it('should propagate the dynamic `placeholder` value to the form field', () => {
+      fixture.componentInstance.placeholder = 'add a chip';
+      fixture.detectChanges();
+
+      const label: HTMLElement = fixture.nativeElement.querySelector('.mat-form-field-label');
+
+      expect(label).toBeTruthy();
+      expect(label.textContent).toContain('add a chip');
+
+      fixture.componentInstance.placeholder = 'or don\'t';
+      fixture.detectChanges();
+
+      expect(label.textContent).toContain('or don\'t');
+    });
+
   });
 
   describe('[addOnBlur]', () => {
@@ -117,7 +135,7 @@ describe('MatChipInput', () => {
       TestBed
         .resetTestingModule()
         .configureTestingModule({
-          imports: [MatChipsModule, PlatformModule],
+          imports: [MatChipsModule, MatFormFieldModule, PlatformModule, NoopAnimationsModule],
           declarations: [TestChipInput],
           providers: [{
             provide: MAT_CHIPS_DEFAULT_OPTIONS,
@@ -146,12 +164,14 @@ describe('MatChipInput', () => {
 
 @Component({
   template: `
-    <mat-chip-list #chipList>
-    </mat-chip-list>
-    <input matInput [matChipInputFor]="chipList"
-              [matChipInputAddOnBlur]="addOnBlur"
-              (matChipInputTokenEnd)="add($event)"
-              [placeholder]="placeholder" />
+    <mat-form-field>
+      <mat-chip-list #chipList>
+      </mat-chip-list>
+      <input matInput [matChipInputFor]="chipList"
+                [matChipInputAddOnBlur]="addOnBlur"
+                (matChipInputTokenEnd)="add($event)"
+                [placeholder]="placeholder" />
+    </mat-form-field>
   `
 })
 class TestChipInput {

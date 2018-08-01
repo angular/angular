@@ -7,7 +7,7 @@
  */
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {Directive, ElementRef, EventEmitter, Input, Output, Inject} from '@angular/core';
+import {Directive, ElementRef, EventEmitter, Input, Output, Inject, OnChanges} from '@angular/core';
 import {MatChipList} from './chip-list';
 import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
 
@@ -41,7 +41,7 @@ let nextUniqueId = 0;
     '[attr.placeholder]': 'placeholder || null',
   }
 })
-export class MatChipInput {
+export class MatChipInput implements OnChanges {
   /** Whether the control is focused. */
   focused: boolean = false;
   _chipList: MatChipList;
@@ -76,11 +76,7 @@ export class MatChipInput {
   @Output('matChipInputTokenEnd')
   chipEnd: EventEmitter<MatChipInputEvent> = new EventEmitter<MatChipInputEvent>();
 
-  /**
-   * The input's placeholder text.
-   * @deprecated Bind to the `placeholder` attribute directly.
-   * @breaking-change 7.0.0
-   */
+  /** The input's placeholder text. */
   @Input() placeholder: string = '';
 
   /** Unique id for the input. */
@@ -96,6 +92,10 @@ export class MatChipInput {
     protected _elementRef: ElementRef,
     @Inject(MAT_CHIPS_DEFAULT_OPTIONS) private _defaultOptions: MatChipsDefaultOptions) {
     this._inputElement = this._elementRef.nativeElement as HTMLInputElement;
+  }
+
+  ngOnChanges() {
+    this._chipList.stateChanges.next();
   }
 
   /** Utility method to make host definition/tests more clear. */
