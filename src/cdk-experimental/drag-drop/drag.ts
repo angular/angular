@@ -462,7 +462,7 @@ export class CdkDrag<T = any> implements OnDestroy {
     // we need to trigger a style recalculation in order for the `cdk-drag-animating` class to
     // apply its style, we take advantage of the available info to figure out whether we need to
     // bind the event in the first place.
-    const duration = this._getTransitionDurationInMs(this._preview);
+    const duration = getTransitionDurationInMs(this._preview);
 
     if (duration === 0) {
       return Promise.resolve();
@@ -547,16 +547,24 @@ export class CdkDrag<T = any> implements OnDestroy {
 
     this._placeholder = this._placeholderRef = null!;
   }
-
-  /** Gets the `transition-duration` of an element in milliseconds. */
-  private _getTransitionDurationInMs(element: HTMLElement): number {
-    const rawDuration = getComputedStyle(element).getPropertyValue('transition-duration');
-
-    // Some browsers will return it in seconds, whereas others will return milliseconds.
-    const multiplier = rawDuration.toLowerCase().indexOf('ms') > -1 ? 1 : 1000;
-    return parseFloat(rawDuration) * multiplier;
-  }
 }
+
+/** Parses a CSS time value to milliseconds. */
+function parseCssTimeUnitsToMs(value: string): number {
+  // Some browsers will return it in seconds, whereas others will return milliseconds.
+  const multiplier = value.toLowerCase().indexOf('ms') > -1 ? 1 : 1000;
+  return parseFloat(value) * multiplier;
+}
+
+/** Gets the transition duration, including the delay, of an element in milliseconds. */
+function getTransitionDurationInMs(element: HTMLElement): number {
+  const computedStyle = getComputedStyle(element);
+  const rawDuration = computedStyle.getPropertyValue('transition-duration');
+  const rawDelay = computedStyle.getPropertyValue('transition-delay');
+
+  return parseCssTimeUnitsToMs(rawDuration) + parseCssTimeUnitsToMs(rawDelay);
+}
+
 
 /** Point on the page or within an element. */
 interface Point {
