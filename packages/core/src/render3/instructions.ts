@@ -2739,7 +2739,7 @@ export function bindingUpdated(value: any): boolean {
 
   if (bindingIndex >= viewData.length) {
     viewData[viewData[BINDING_INDEX]++] = value;
-  } else if (isDifferent(viewData[bindingIndex], value)) {
+  } else if (isDifferent(viewData[bindingIndex], value, checkNoChangesMode)) {
     throwErrorIfNoChangesMode(creationMode, checkNoChangesMode, viewData[bindingIndex], value);
     viewData[viewData[BINDING_INDEX]++] = value;
   } else {

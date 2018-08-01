@@ -12,25 +12,58 @@ describe('util', () => {
 
   describe('isDifferent', () => {
 
-    it('should mark non-equal arguments as different', () => {
-      expect(isDifferent({}, {})).toBeTruthy();
-      expect(isDifferent('foo', 'bar')).toBeTruthy();
-      expect(isDifferent(0, 1)).toBeTruthy();
+    describe('checkNoChangeMode = false', () => {
+      it('should mark non-equal arguments as different', () => {
+        expect(isDifferent({}, {}, false)).toBeTruthy();
+        expect(isDifferent('foo', 'bar', false)).toBeTruthy();
+        expect(isDifferent(0, 1, false)).toBeTruthy();
+      });
+
+      it('should not mark equal arguments as different', () => {
+        const obj = {};
+        expect(isDifferent(obj, obj, false)).toBeFalsy();
+        expect(isDifferent('foo', 'foo', false)).toBeFalsy();
+        expect(isDifferent(1, 1, false)).toBeFalsy();
+      });
+
+      it('should not mark NaN as different',
+         () => { expect(isDifferent(NaN, NaN, false)).toBeFalsy(); });
+
+      it('should mark NaN with other values as different', () => {
+        expect(isDifferent(NaN, 'foo', false)).toBeTruthy();
+        expect(isDifferent(5, NaN, false)).toBeTruthy();
+      });
     });
 
-    it('should not mark equal arguments as different', () => {
-      const obj = {};
-      expect(isDifferent(obj, obj)).toBeFalsy();
-      expect(isDifferent('foo', 'foo')).toBeFalsy();
-      expect(isDifferent(1, 1)).toBeFalsy();
+    describe('checkNoChangeMode = true', () => {
+      // Assert relaxed constraint in checkNoChangeMode
+      it('should not mark non-equal arrays, object and function as different', () => {
+        expect(isDifferent([], [], true)).toBeFalsy();
+        expect(isDifferent(() => 0, () => 0, true)).toBeFalsy();
+        expect(isDifferent({}, {}, true)).toBeFalsy();
+      });
+
+      it('should mark non-equal arguments as different', () => {
+        expect(isDifferent('foo', 'bar', true)).toBeTruthy();
+        expect(isDifferent(0, 1, true)).toBeTruthy();
+      });
+
+      it('should not mark equal arguments as different', () => {
+        const obj = {};
+        expect(isDifferent(obj, obj, false)).toBeFalsy();
+        expect(isDifferent('foo', 'foo', false)).toBeFalsy();
+        expect(isDifferent(1, 1, false)).toBeFalsy();
+      });
+
+      it('should not mark NaN as different',
+         () => { expect(isDifferent(NaN, NaN, false)).toBeFalsy(); });
+
+      it('should mark NaN with other values as different', () => {
+        expect(isDifferent(NaN, 'foo', false)).toBeTruthy();
+        expect(isDifferent(5, NaN, false)).toBeTruthy();
+      });
     });
 
-    it('should not mark NaN as different', () => { expect(isDifferent(NaN, NaN)).toBeFalsy(); });
-
-    it('should mark NaN with other values as different', () => {
-      expect(isDifferent(NaN, 'foo')).toBeTruthy();
-      expect(isDifferent(5, NaN)).toBeTruthy();
-    });
   });
 
   describe('flatten', () => {
