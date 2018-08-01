@@ -11,9 +11,9 @@ import {compile, expectEmit} from './mock_compile';
 
 describe('r3_view_compiler', () => {
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   describe('hello world', () => {
@@ -47,7 +47,6 @@ describe('r3_view_compiler', () => {
       app: {
         'example.ts': `
         import {Component, OnInit, OnDestroy, ElementRef, Input, NgModule} from '@angular/core';
-        import {CommonModule} from '@angular/common';
 
         @Component({
           selector: 'my-app',
@@ -83,7 +82,6 @@ describe('r3_view_compiler', () => {
 
         @NgModule({
           declarations: [TodoComponent, MyApp],
-          imports: [CommonModule]
         })
         export class TodoModule{}
         `

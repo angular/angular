@@ -47,9 +47,11 @@ export type ModuleWithProviders<T> = any;
 export class ChangeDetectorRef {}
 export class ElementRef {}
 export class Injector {}
-export class TemplateRef {}
+export class TemplateRef<T = any> {}
 export class ViewContainerRef {}
 
 export function forwardRef<T>(fn: () => T): T {
   return fn();
 }
+
+export interface SimpleChanges { [propName: string]: any; }
