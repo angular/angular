@@ -11,9 +11,9 @@ import {compile, expectEmit} from './mock_compile';
 
 describe('compiler compliance: dependency injection', () => {
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   it('should create factory methods', () => {
@@ -21,7 +21,6 @@ describe('compiler compliance: dependency injection', () => {
       app: {
         'spec.ts': `
               import {Component, NgModule, Injectable, Attribute, Host, SkipSelf, Self, Optional} from '@angular/core';
-              import {CommonModule} from '@angular/common';
 
               @Injectable()
               export class MyService {}
@@ -42,7 +41,7 @@ describe('compiler compliance: dependency injection', () => {
                 ) {}
               }
 
-              @NgModule({declarations: [MyComponent], imports: [CommonModule], providers: [MyService]})
+              @NgModule({declarations: [MyComponent], providers: [MyService]})
               export class MyModule {}
           `
       }

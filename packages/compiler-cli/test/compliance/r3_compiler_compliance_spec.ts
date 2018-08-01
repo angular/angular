@@ -17,9 +17,9 @@ import {compile, expectEmit} from './mock_compile';
 describe('compiler compliance', () => {
 
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
     compileAnimations: false,
-    compileCommon: true,
+    compileFakeCore: true,
   });
 
   describe('elements', () => {
@@ -1287,7 +1287,6 @@ describe('compiler compliance', () => {
         app: {
           'spec.ts': `
               import {Component, NgModule} from '@angular/core';
-              import {CommonModule} from '@angular/common';
 
               @Component({
                 selector: 'my-component',
@@ -1301,7 +1300,7 @@ describe('compiler compliance', () => {
               })
               export class MyComponent {}
 
-              @NgModule({declarations: [MyComponent], imports: [CommonModule]})
+              @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
         }

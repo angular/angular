@@ -13,9 +13,9 @@ const TRANSLATION_NAME_REGEXP = /^MSG_[A-Z0-9]+/;
 
 describe('i18n support in the view compiler', () => {
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   describe('single text nodes', () => {

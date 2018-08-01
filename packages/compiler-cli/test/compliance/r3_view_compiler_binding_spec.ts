@@ -11,9 +11,9 @@ import {compile, expectEmit} from './mock_compile';
 
 describe('compiler compliance: bindings', () => {
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: false,
   });
 
   describe('text bindings', () => {
