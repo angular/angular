@@ -89,15 +89,8 @@ Registering the provider in the `@Injectable` metadata also allows Angular to op
 
 <div class="alert is-helpful">
 
-If you need to, you can register providers at different levels: 
-in the `HeroesComponent`, in the `AppComponent`, in the `AppModule`. 
-For instance, you could have told the CLI to provide the service at the module level automatically by appending `--module=app`.
-
-<code-example language="sh" class="code-shell">
-  ng generate service hero --module=app
-</code-example>
-
-To learn more about providers and injectors, see the [Dependency Injection guide](guide/dependency-injection).
+To learn more about providers, see the [Providers section](guide/providers).
+To learn more about injectors, see the [Dependency Injection guide](guide/dependency-injection).
 
 </div>
 
