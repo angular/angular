@@ -81,6 +81,33 @@ describe('LiveAnnouncer', () => {
       tick(100);
       expect(spy).toHaveBeenCalled();
     }));
+
+    it('should ensure that there is only one live element at a time', fakeAsync(() => {
+      announcer.ngOnDestroy();
+      fixture.destroy();
+
+      TestBed.resetTestingModule().configureTestingModule({
+        imports: [A11yModule],
+        declarations: [TestApp],
+      });
+
+      const extraElement = document.createElement('div');
+      extraElement.classList.add('cdk-live-announcer-element');
+      document.body.appendChild(extraElement);
+
+      inject([LiveAnnouncer], (la: LiveAnnouncer) => {
+        announcer = la;
+        ariaLiveElement = getLiveElement();
+        fixture = TestBed.createComponent(TestApp);
+      })();
+
+      announcer.announce('Hey Google');
+      tick(100);
+
+      expect(document.body.querySelectorAll('.cdk-live-announcer-element').length)
+          .toBe(1, 'Expected only one live announcer element in the DOM.');
+    }));
+
   });
 
   describe('with a custom element', () => {
