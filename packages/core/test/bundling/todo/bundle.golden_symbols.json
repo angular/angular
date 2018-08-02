@@ -597,6 +597,9 @@
     "name": "getRenderer"
   },
   {
+    "name": "getRendererFactory"
+  },
+  {
     "name": "getRootView"
   },
   {
