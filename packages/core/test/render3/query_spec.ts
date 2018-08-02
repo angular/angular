@@ -1708,12 +1708,19 @@ describe('query', () => {
   describe('content', () => {
 
     it('should support content queries for directives', () => {
-      let withContentInstance: WithContentDirective;
+      let withContentInstance: WithContentDirective|null = null;
 
       class WithContentDirective {
         // @ContentChildren('foo') foos;
-        // TODO(issue/24571): remove '!'.
         foos !: QueryList<ElementRef>;
+        contentInitQuerySnapshot = 0;
+        contentCheckedQuerySnapshot = 0;
+
+        ngAfterContentInit() { this.contentInitQuerySnapshot = this.foos ? this.foos.length : 0; }
+
+        ngAfterContentChecked() {
+          this.contentCheckedQuerySnapshot = this.foos ? this.foos.length : 0;
+        }
 
         static ngComponentDef = defineDirective({
           type: WithContentDirective,
@@ -1746,7 +1753,18 @@ describe('query', () => {
       }, [WithContentDirective]);
 
       const fixture = new ComponentFixture(AppComponent);
-      expect(withContentInstance !.foos.length).toBe(1);
+      expect(withContentInstance !.foos.length)
+          .toBe(1, `Expected content query to match <span #foo>.`);
+
+      expect(withContentInstance !.contentInitQuerySnapshot)
+          .toBe(
+              1,
+              `Expected content query results to be available when ngAfterContentInit was called.`);
+
+      expect(withContentInstance !.contentCheckedQuerySnapshot)
+          .toBe(
+              1,
+              `Expected content query results to be available when ngAfterContentChecked was called.`);
     });
 
     // https://stackblitz.com/edit/angular-wlenwd?file=src%2Fapp%2Fapp.component.ts
