@@ -1675,7 +1675,7 @@ describe('query', () => {
 
       class WithContentDirective {
         // @ContentChildren('foo') foos;
-        foos: QueryList<ElementRef> = null !;
+        foos !: QueryList<ElementRef>;
         contentInitQuerySnapshot = 0;
         contentCheckedQuerySnapshot = 0;
 
