@@ -7,7 +7,6 @@
  */
 
 import {flatten, sanitizeIdentifier} from '../../compile_metadata';
-import {CompileReflector} from '../../compile_reflector';
 import {BindingForm, BuiltinFunctionCall, LocalResolver, convertActionBinding, convertPropertyBinding} from '../../compiler_util/expression_converter';
 import {ConstantPool} from '../../constant_pool';
 import * as core from '../../core';
@@ -24,14 +23,14 @@ import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
 import {CssSelector, SelectorMatcher} from '../../selector';
 import {BindingParser} from '../../template_parser/binding_parser';
-import {OutputContext, error} from '../../util';
+import {error} from '../../util';
 import * as t from '../r3_ast';
 import {Identifiers as R3} from '../r3_identifiers';
 import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
 import {parseStyle} from './styling';
-import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, getQueryPredicate, invalid, mapToExpression, noop, temporaryAllocator, trimTrailingNulls, unsupported} from './util';
+import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, invalid, mapToExpression, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
   switch (type) {
@@ -699,6 +698,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       o.TYPED_NULL_EXPR,
     ];
 
+    // Match directives on both attributes and bound properties
     const attributeNames: o.Expression[] = [];
     const attributeMap: {[name: string]: string} = {};
 
@@ -707,7 +707,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       attributeMap[a.name] = a.value;
     });
 
-    // Match directives on template attributes
+    template.inputs.forEach(i => {
+      attributeNames.push(asLiteral(i.name), asLiteral(''));
+      attributeMap[i.name] = '';
+    });
+
     if (this.directiveMatcher) {
       const selector = createCssSelector('ng-template', attributeMap);
       this.directiveMatcher.match(
