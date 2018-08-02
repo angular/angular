@@ -96,13 +96,20 @@ export const CIRCULAR = '__CIRCULAR__';
  * Renderer2.
  */
 let renderer: Renderer3;
-let rendererFactory: RendererFactory3;
-let currentElementNode: LElementNode|null = null;
 
 export function getRenderer(): Renderer3 {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return renderer;
 }
+
+let rendererFactory: RendererFactory3;
+
+export function getRendererFactory(): RendererFactory3 {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  return rendererFactory;
+}
+
+let currentElementNode: LElementNode|null = null;
 
 export function getCurrentSanitizer(): Sanitizer|null {
   return viewData && viewData[SANITIZER];
