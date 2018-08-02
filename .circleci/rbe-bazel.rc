@@ -34,9 +34,9 @@ build --action_env=BAZEL_DO_NOT_DETECT_CPP_TOOLCHAIN=1
 # "exec_compatible_with").
 # More about platforms: https://docs.bazel.build/versions/master/platforms.html
 build --extra_toolchains=@bazel_toolchains//configs/ubuntu16_04_clang/1.0/bazel_0.15.0/cpp:cc-toolchain-clang-x86_64-default
-build --extra_execution_platforms=@bazel_toolchains//configs/ubuntu16_04_clang/1.0:rbe_ubuntu1604
-build --host_platform=@bazel_toolchains//configs/ubuntu16_04_clang/1.0:rbe_ubuntu1604
-build --platforms=@bazel_toolchains//configs/ubuntu16_04_clang/1.0:rbe_ubuntu1604
+build --extra_execution_platforms=//tools:rbe_ubuntu1604-angular
+build --host_platform=//tools:rbe_ubuntu1604-angular
+build --platforms=//tools:rbe_ubuntu1604-angular
 
 # Set various strategies so that all actions execute remotely. Mixing remote
 # and local execution will lead to errors unless the toolchain and remote

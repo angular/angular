@@ -1,1 +1,32 @@
 exports_files(["tsconfig.json"])
+
+# The toolchain container used for execution is defined in the target indicated
+# by "extra_execution_platforms", "host_platform" and "platforms".
+# If you are using your own toolchain container, you need to create a platform
+# target with "constraint_values" that allow for the toolchain specified with
+# "extra_toolchains" to be selected (given constraints defined in
+# "exec_compatible_with").
+# More about platforms: https://docs.bazel.build/versions/master/platforms.html
+platform(
+    name = "rbe_ubuntu1604-angular",
+    constraint_values = [
+        "@bazel_tools//platforms:x86_64",
+        "@bazel_tools//platforms:linux",
+        "@bazel_tools//tools/cpp:clang",
+        "@bazel_toolchains//constraints:xenial",
+    ],
+    # We are currently using the docker container image provided by RBE. Once
+    # Angular has the billing account setup, we should start using/maintaining
+    # our own docker container image.
+    remote_execution_properties = """
+        properties: {
+            name: "container-image"
+            value:"docker://gcr.io/asci-toolchain/nosla-ubuntu16_04-webtest@sha256:55fae2e51ecf38fec9778ab93a9b4edd7d318eeb5f420602450d3b509b52edf9"
+        }
+        properties: {
+            name: "dockerAddCapabilities"
+            value: "SYS_ADMIN"
+        }
+        """,
+    visibility = ["//visibility:public"],
+)
