@@ -1,3 +1,26 @@
+<a name="7.0.0-beta.0"></a>
+# [7.0.0-beta.0](https://github.com/angular/angular/compare/6.1.0...7.0.0-beta.0) (2018-08-02)
+
+
+### Bug Fixes
+
+* **bazel:** allow compile_strategy to be (privately) imported ([#25080](https://github.com/angular/angular/issues/25080)) ([0d1d589](https://github.com/angular/angular/commit/0d1d589))
+* **compiler:** update compiler to flatten nested template fns ([#24943](https://github.com/angular/angular/issues/24943)) ([fe14f18](https://github.com/angular/angular/commit/fe14f18))
+* **compiler-cli:** correct realPath to realpath. ([#25023](https://github.com/angular/angular/issues/25023)) ([01e6dab](https://github.com/angular/angular/commit/01e6dab))
+* **core:** throw error message when @Output not initialized ([#19116](https://github.com/angular/angular/issues/19116)) ([adf510f](https://github.com/angular/angular/commit/adf510f)), closes [#3664](https://github.com/angular/angular/issues/3664)
+
+
+### Features
+
+* **compiler:** add "original" placeholder value on extracted XMB ([#25079](https://github.com/angular/angular/issues/25079)) ([e99d860](https://github.com/angular/angular/commit/e99d860))
+
+
+### BREAKING CHANGES
+
+* **ivy:** ViewContainerRef.parentInjector is deprecated without replacement
+
+
+
 <a name="6.1.0"></a>
 # [6.1.0](https://github.com/angular/angular/compare/6.0.0-rc.5...6.1.0) (2018-07-25)
 
