@@ -10,10 +10,7 @@ ts_library(
     module_name = "@angular/bazel",
     node_modules = "@ngdeps//typescript:typescript__typings",
     tsconfig = ":tsconfig.json",
-    visibility = [
-        "//packages/bazel:__pkg__",
-        "//packages/bazel/test/ngc-wrapped:__subpackages__",
-    ],
+    visibility = ["//visibility:public"],
     deps = [
         # BEGIN-INTERNAL
         # Only needed when compiling within the Angular repo.
