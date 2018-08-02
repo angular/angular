@@ -301,12 +301,15 @@ function refreshDescendantViews() {
     executeInitHooks(viewData, tView, creationMode);
   }
   refreshDynamicEmbeddedViews(viewData);
+
+  // Content query results must be refreshed before content hooks are called.
+  refreshContentQueries(tView);
+
   if (!checkNoChangesMode) {
     executeHooks(directives !, tView.contentHooks, tView.contentCheckHooks, creationMode);
   }
 
   setHostBindings(tView.hostBindings);
-  refreshContentQueries(tView);
   refreshChildComponents(tView.components);
 }
 
