@@ -5683,10 +5683,15 @@ easier to test the consumers with mock service implementations.
 -->
 <a href="#toc">맨 위로</a>
 
-
+<!--
 ## Lifecycle hooks
+-->
+## 라이프싸이클 후킹
 
+<!--
 Use Lifecycle hooks to tap into important events exposed by Angular.
+-->
+Angular 컴포넌트가 실행되는 각 이벤트 시점을 활용하려면 라이프싸이클 후킹 함수를 사용하세요.
 
 <!--
 <a href="#toc">Back to top</a>
@@ -5695,7 +5700,10 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 
 {@a 09-01}
 
+<!--
 ### Implement lifecycle hook interfaces
+-->
+### 라이프싸이클 후킹 인터페이스 구현
 
 <!--
 #### Style 09-01
@@ -5705,9 +5713,10 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 <div class="s-rule do">
 
 
-
+<!--
 **Do** implement the lifecycle hook interfaces.
-
+-->
+라이프싸이클 후킹 인터페이스를 **구현하세요.**
 
 </div>
 
@@ -5716,10 +5725,11 @@ Use Lifecycle hooks to tap into important events exposed by Angular.
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** Lifecycle interfaces prescribe typed method
 signatures. use those signatures to flag spelling and syntax mistakes.
-
+-->
+**왜?** 라이프싸이클 인터페이스는 Angular 컴포넌트의 이벤트 시점을 활용할 수 있는 메소드를 미리 정의해 둔 것입니다. 이 메소드를 그대로 활용하면 오타를 내거나 문법을 잘못 사용하는 실수를 방지할 수 있습니다.
 
 </div>
 
@@ -5744,10 +5754,15 @@ signatures. use those signatures to flag spelling and syntax mistakes.
 -->
 <a href="#toc">맨 위로</a>
 
-
+<!--
 ## Appendix
+-->
+## 부록
 
+<!--
 Useful tools and tips for Angular.
+-->
+Angular 애플리케이션을 개발할 때 활용할 수 있는 툴과 팁을 알아봅시다.
 
 <!--
 <a href="#toc">Back to top</a>
@@ -5758,15 +5773,19 @@ Useful tools and tips for Angular.
 
 ### Codelyzer
 
+<!--
 #### Style A-01
+-->
+#### 스타일 A-01
 
 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use [codelyzer](https://www.npmjs.com/package/codelyzer) to follow this guide.
-
+-->
+이 가이드 문서를 활용할 때 [codelyzer](https://www.npmjs.com/package/codelyzer)를 **활용하세요.**
 
 </div>
 
@@ -5775,9 +5794,10 @@ Useful tools and tips for Angular.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** adjusting the rules in codelyzer to suit your needs.
-
+-->
+codelyzer 룰은 필요한대로 수정해서 사용하는 것을 **권장합니다.**
 
 </div>
 
@@ -5788,17 +5808,23 @@ Useful tools and tips for Angular.
 
 {@a A-02}
 
+<!--
 ### File templates and snippets
+-->
+### 파일 템플릿과 자동 완성 플러그인(snippet)
 
+<!--
 #### Style A-02
-
+-->
+#### 스타일 A-02
 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** use file templates or snippets to help follow consistent styles and patterns. Here are templates and/or snippets for some of the web development editors and IDEs.
-
+-->
+코딩 스타일을 일관되게 유지하려면 파일 템플릿이나 자동완성 기능을 활용하세요. 템플릿, 코드 자동 완성 툴이나 IDE는 다음과 같은 것이 있습니다.
 
 </div>
 
@@ -5807,19 +5833,29 @@ Useful tools and tips for Angular.
 <div class="s-rule consider">
 
 
-
+<!--
 **Consider** using [snippets](https://marketplace.visualstudio.com/items?itemName=johnpapa.Angular2) for [Visual Studio Code](https://code.visualstudio.com/) that follow these styles and guidelines.
+-->
+[Visual Studio Code](https://code.visualstudio.com/)을 사용한다면 [이 기능](https://marketplace.visualstudio.com/items?itemName=johnpapa.Angular2)을 사용하는 것을 **권장합니다.**
 
 <a href="https://marketplace.visualstudio.com/items?itemName=johnpapa.Angular2">
   <img src="generated/images/guide/styleguide/use-extension.gif" alt="Use Extension">
 </a>
 
+<!--
 **Consider** using [snippets](https://atom.io/packages/angular-2-typescript-snippets) for [Atom](https://atom.io/) that follow these styles and guidelines.
+-->
+[Atom](https://atom.io/)을 사용한다면 [이 기능](https://atom.io/packages/angular-2-typescript-snippets)을 사용하는 것을 **권장합니다.**
 
+<!--
 **Consider** using [snippets](https://github.com/orizens/sublime-angular2-snippets) for [Sublime Text](http://www.sublimetext.com/) that follow these styles and guidelines.
+-->
+[Sublime Text](http://www.sublimetext.com/)를 사용한다면 [이 기능](https://github.com/orizens/sublime-angular2-snippets)을 사용하는 것을 **권장합니다.**
 
+<!--
 **Consider** using [snippets](https://github.com/mhartington/vim-angular2-snippets) for [Vim](http://www.vim.org/) that follow these styles and guidelines.
-
+-->
+[Vim](http://www.vim.org/)을 사용한다면 [이 기능](https://github.com/mhartington/vim-angular2-snippets)을 사용하는 것을 **권장합니다.**
 
 </div>
 
