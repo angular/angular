@@ -3318,7 +3318,8 @@ describe('MatSelect', () => {
 
         let panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
 
-        expect(panelLeft).toBeGreaterThan(0, `Expected select panel to be inside the viewport.`);
+        expect(panelLeft)
+            .toBeGreaterThanOrEqual(0, `Expected select panel to be inside the viewport.`);
 
         fixture.componentInstance.select.close();
         fixture.detectChanges();
@@ -3330,7 +3331,7 @@ describe('MatSelect', () => {
 
         panelLeft = document.querySelector('.mat-select-panel')!.getBoundingClientRect().left;
 
-        expect(panelLeft).toBeGreaterThan(0,
+        expect(panelLeft).toBeGreaterThanOrEqual(0,
             `Expected select panel continue being inside the viewport.`);
       }));
     });
