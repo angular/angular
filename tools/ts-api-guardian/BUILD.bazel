@@ -62,4 +62,5 @@ jasmine_node_test(
         ":ts-api-guardian",
     ],
     node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
+    tags = ["local"],
 )
