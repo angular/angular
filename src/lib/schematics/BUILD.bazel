@@ -11,7 +11,7 @@ filegroup(
 ts_library(
   name = "schematics",
   module_name = "@angular/material/schematics",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts", "**/files/**/*"]),
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts", "update/test-cases/**/*.ts", "**/files/**/*"]),
   tsconfig = ":tsconfig.json",
 )
 
@@ -27,7 +27,7 @@ npm_package(
 jasmine_node_test(
   name = "unit_tests",
   srcs = [":schematics_test_sources"],
-  data = [":schematics_assets"],
+  data = [":schematics_assets", ":schematics_test_cases"],
   deps = [":copy-collection-file", ":copy-migration-file"],
 )
 
@@ -36,6 +36,12 @@ ts_library(
   srcs = glob(["**/*.spec.ts"], exclude=["**/files/**/*"]),
   deps = [":schematics"],
   tsconfig = ":tsconfig.json",
+  testonly = True,
+)
+
+filegroup(
+  name = "schematics_test_cases",
+  srcs = glob(["update/test-cases/**/*_input.ts", "update/test-cases/**/*_expected_output.ts"]),
   testonly = True,
 )
 

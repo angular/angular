@@ -119,7 +119,7 @@
     }, "src/+(lib|cdk|material-experimental|cdk-experimental)/**/!(*.spec).ts"],
     "require-license-banner": [
       true,
-      "src/+(lib|cdk|material-experimental|cdk-experimental|demo-app)/**/!(*.spec).ts"
+      "src/+(lib|cdk|material-experimental|cdk-experimental|demo-app)/**/!(*.spec|*.fixture).ts"
     ],
     "missing-rollup-globals": [
       true,
@@ -130,9 +130,10 @@
     "no-unescaped-html-tag": true
   },
   "linterOptions": {
-    // Exclude schematic template files that can't be linted.
     "exclude": [
+      // Exclude schematic template files and test cases that can't be linted.
       "src/lib/schematics/**/files/**/*",
+      "src/lib/schematics/update/test-cases/**/*",
       // TODO(paul) re-renable specs once the devkit schematics properly work with Bazel and we
       // can remove the `xit` calls.
       "src/lib/schematics/**/*.spec.ts"

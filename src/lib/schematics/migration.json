@@ -11,11 +11,6 @@
       "description": "Performs cleanup after ng-update.",
       "factory": "./update/update#postUpdate",
       "private": true
-    },
-    "ng-post-post-update": {
-      "description": "Logs completion message for ng-update after ng-post-update.",
-      "factory": "./update/update#postPostUpdate",
-      "private": true
     }
   }
 }
