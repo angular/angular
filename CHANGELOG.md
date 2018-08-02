@@ -1,7 +1,6 @@
 <a name="7.0.0-beta.0"></a>
 # [7.0.0-beta.0](https://github.com/angular/angular/compare/6.1.0...7.0.0-beta.0) (2018-08-02)
 
-
 ### Bug Fixes
 
 * **bazel:** allow compile_strategy to be (privately) imported ([#25080](https://github.com/angular/angular/issues/25080)) ([0d1d589](https://github.com/angular/angular/commit/0d1d589))
@@ -15,9 +14,11 @@
 * **compiler:** add "original" placeholder value on extracted XMB ([#25079](https://github.com/angular/angular/issues/25079)) ([e99d860](https://github.com/angular/angular/commit/e99d860))
 
 
-### BREAKING CHANGES
 
-* **ivy:** ViewContainerRef.parentInjector is deprecated without replacement
+<a name="6.1.1"></a>
+## [6.1.1](https://github.com/angular/angular/compare/6.1.0...6.1.1) (2018-08-02)
+
+* **compiler-cli:** correct tsickle dependency version to fix typescript 2.9 compatibility ([fec29fa](https://github.com/angular/angular/commit/317c7087c56b72aa74cd6d6a8f719e6e7fec29fa))
 
 
 
