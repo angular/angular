@@ -10,8 +10,11 @@ import {Injector, Type} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {ComponentNgElementStrategyFactory} from './component-factory-strategy';
+import {NgElementPropertyStrategy} from './element-property-strategy';
 import {NgElementStrategy, NgElementStrategyFactory} from './element-strategy';
+import {PropertyNameNgElementPropertyStrategy} from './property-name-element-property-strategy';
 import {createCustomEvent, getComponentInputs, getDefaultAttributeToPropertyInputs} from './utils';
+
 
 /**
  * Prototype for a class constructor based on an Angular component
@@ -100,6 +103,15 @@ export interface NgElementConfig {
    * The strategy controls how the tranformation is performed.
    */
   strategyFactory?: NgElementStrategyFactory;
+  /**
+   * An optional custom strategy for exposing the component's @Inputs to the
+   * Custom Element by way of property getters/setters.
+   * In the default implementaton, properties added to the Element
+   * match the property names on the component.
+   * Example: Given @Input('foo') bar: string, expose bar as a property on
+   * the element.
+   */
+  propertyStrategy?: NgElementPropertyStrategy;
 }
 
 /**
@@ -129,6 +141,8 @@ export function createCustomElement<P>(
   const strategyFactory =
       config.strategyFactory || new ComponentNgElementStrategyFactory(component, config.injector);
 
+  const propertyStrategy = config.propertyStrategy || new PropertyNameNgElementPropertyStrategy();
+
   const attributeToPropertyInputs = getDefaultAttributeToPropertyInputs(inputs);
 
   class NgElementImpl extends NgElement {
@@ -143,25 +157,30 @@ export function createCustomElement<P>(
       // Do not assume this strategy has been created.
       // TODO(andrewseguin): Add e2e tests that cover cases where the constructor isn't called. For
       // now this is tested using a Google internal test suite.
-      this.ngElementStrategy = strategyFactory.create(injector || config.injector);
+      this.upgradeElement(injector);
     }
 
     attributeChangedCallback(
         attrName: string, oldValue: string|null, newValue: string, namespace?: string): void {
-      if (!this.ngElementStrategy) {
-        this.ngElementStrategy = strategyFactory.create(config.injector);
-      }
+      this.upgradeElement();
 
       const propName = attributeToPropertyInputs[attrName] !;
       this.ngElementStrategy.setInputValue(propName, newValue);
     }
 
     connectedCallback(): void {
-      if (!this.ngElementStrategy) {
-        this.ngElementStrategy = strategyFactory.create(config.injector);
-      }
+      this.upgradeElement();
 
       this.ngElementStrategy.connect(this);
+
+      // It's possible for properties to be set on this (the element) before
+      // we have initialized. In that case, it would be set directly rather
+      // than through our setter.
+      // When this has happened, clear the own property and pass its value
+      // through to the prototype's property setter.
+      for (const {propName, templateName} of inputs) {
+        propertyStrategy.updateExistingInputProperty(this, propName, templateName);
+      }
 
       // Listen for events from the strategy and dispatch them as custom events
       this.ngElementEventsSubscription = this.ngElementStrategy.events.subscribe(e => {
@@ -180,18 +199,19 @@ export function createCustomElement<P>(
         this.ngElementEventsSubscription = null;
       }
     }
+
+    private upgradeElement(injector?: Injector) {
+      if (!this.ngElementStrategy) {
+        this.ngElementStrategy = strategyFactory.create(injector || config.injector);
+      }
+    }
   }
 
   // Add getters and setters to the prototype for each property input. If the config does not
   // contain property inputs, use all inputs by default.
-  inputs.map(({propName}) => propName).forEach(property => {
-    Object.defineProperty(NgElementImpl.prototype, property, {
-      get: function() { return this.ngElementStrategy.getInputValue(property); },
-      set: function(newValue: any) { this.ngElementStrategy.setInputValue(property, newValue); },
-      configurable: true,
-      enumerable: true,
-    });
-  });
+  for (const {propName, templateName} of inputs) {
+    propertyStrategy.defineElementInputProperty(NgElementImpl.prototype, propName, templateName);
+  }
 
   return (NgElementImpl as any) as NgElementConstructor<P>;
 }

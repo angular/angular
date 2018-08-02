@@ -11,29 +11,40 @@ import {BrowserModule} from '@angular/platform-browser';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {Subject} from 'rxjs';
 
-import {NgElementConstructor, createCustomElement} from '../src/create-custom-element';
+import {NgElement, NgElementConstructor, createCustomElement} from '../src/create-custom-element';
 import {NgElementStrategy, NgElementStrategyEvent, NgElementStrategyFactory} from '../src/element-strategy';
+import {TemplateNameNgElementPropertyStrategy} from '../src/template-name-element-property-strategy';
 
 type WithFooBar = {
   fooFoo: string,
-  barBar: string
+  barBar: string,
+};
+
+type WithRenamedFooBar = {
+  fooFoo: string,
+  barbar: string,
 };
 
 if (typeof customElements !== 'undefined') {
   describe('createCustomElement', () => {
     let NgElementCtor: NgElementConstructor<WithFooBar>;
-    let strategy: TestStrategy;
     let strategyFactory: TestStrategyFactory;
     let injector: Injector;
+    let preInitTestElement: NgElement&WithFooBar;
 
     beforeAll(done => {
       destroyPlatform();
+
+      preInitTestElement = document.createElement('test-element') as NgElement & WithFooBar;
+      preInitTestElement.fooFoo = 'initial-fooFoo';
+      preInitTestElement.barBar = 'initial-barBar';
+
       platformBrowserDynamic()
           .bootstrapModule(TestModule)
           .then(ref => {
             injector = ref.injector;
+
             strategyFactory = new TestStrategyFactory();
-            strategy = strategyFactory.testStrategy;
 
             NgElementCtor = createCustomElement(TestComponent, {injector, strategyFactory});
 
@@ -44,14 +55,34 @@ if (typeof customElements !== 'undefined') {
           .then(done, done.fail);
     });
 
-    afterAll(() => destroyPlatform());
+    afterAll(() => {
+      document.body.removeChild(preInitTestElement);
+      destroyPlatform();
+    });
 
     it('should use a default strategy for converting component inputs', () => {
       expect(NgElementCtor.observedAttributes).toEqual(['foo-foo', 'barbar']);
     });
 
+    it('reads and clears own property values if set before init', () => {
+      document.body.appendChild(preInitTestElement);
+      const strategy = strategyFactory.mostRecentTestStrategy;
+
+      expect(preInitTestElement.fooFoo).toBe('initial-fooFoo');
+      expect(strategy.getInputValue('fooFoo')).toBe('initial-fooFoo');
+      expect(preInitTestElement.barBar).toBe('initial-barBar');
+      expect(strategy.getInputValue('barBar')).toBe('initial-barBar');
+
+      preInitTestElement.fooFoo = 'updated-fooFoo';
+
+      expect(strategy.getInputValue('fooFoo')).toBe('updated-fooFoo');
+      expect(strategy.getInputValue('fooFoo')).toBe('updated-fooFoo');
+    });
+
     it('should send input values from attributes when connected', () => {
       const element = new NgElementCtor(injector);
+      const strategy = strategyFactory.mostRecentTestStrategy;
+
       element.setAttribute('foo-foo', 'value-foo-foo');
       element.setAttribute('barbar', 'value-barbar');
       element.connectedCallback();
@@ -63,6 +94,7 @@ if (typeof customElements !== 'undefined') {
 
     it('should listen to output events after connected', () => {
       const element = new NgElementCtor(injector);
+      const strategy = strategyFactory.mostRecentTestStrategy;
       element.connectedCallback();
 
       let eventValue: any = null;
@@ -74,6 +106,7 @@ if (typeof customElements !== 'undefined') {
 
     it('should not listen to output events after disconnected', () => {
       const element = new NgElementCtor(injector);
+      const strategy = strategyFactory.mostRecentTestStrategy;
       element.connectedCallback();
       element.disconnectedCallback();
       expect(strategy.disconnectCalled).toBe(true);
@@ -87,8 +120,52 @@ if (typeof customElements !== 'undefined') {
 
     it('should properly set getters/setters on the element', () => {
       const element = new NgElementCtor(injector);
+      const strategy = strategyFactory.mostRecentTestStrategy;
+
       element.fooFoo = 'foo-foo-value';
       element.barBar = 'barBar-value';
+
+      expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
+      expect(strategy.inputs.get('barBar')).toBe('barBar-value');
+    });
+  });
+
+  describe('createCustomElement with TemplateNameNgElementPropertyStrategy', () => {
+    let NgElementCtor: NgElementConstructor<WithRenamedFooBar>;
+    let strategyFactory: TestStrategyFactory;
+    let injector: Injector;
+
+    beforeAll(done => {
+      destroyPlatform();
+
+      platformBrowserDynamic()
+          .bootstrapModule(TestModule)
+          .then(ref => {
+            injector = ref.injector;
+
+            strategyFactory = new TestStrategyFactory();
+
+            NgElementCtor = createCustomElement(TestComponent, {
+              injector,
+              strategyFactory,
+              propertyStrategy: new TemplateNameNgElementPropertyStrategy()
+            });
+
+            // The `@webcomponents/custom-elements/src/native-shim.js` polyfill allows us to create
+            // new instances of the NgElement which extends HTMLElement, as long as we define it.
+            customElements.define('test-element-templatename', NgElementCtor);
+          })
+          .then(done, done.fail);
+    });
+
+    afterAll(() => { destroyPlatform(); });
+
+    it('should properly set getters/setters on the element', () => {
+      const element = new NgElementCtor(injector);
+      const strategy = strategyFactory.mostRecentTestStrategy;
+
+      element.fooFoo = 'foo-foo-value';
+      element.barbar = 'barBar-value';  // barBar is renamed to barbar in @Input('barbar)
 
       expect(strategy.inputs.get('fooFoo')).toBe('foo-foo-value');
       expect(strategy.inputs.get('barBar')).toBe('barBar-value');
@@ -136,7 +213,10 @@ export class TestStrategy implements NgElementStrategy {
 }
 
 export class TestStrategyFactory implements NgElementStrategyFactory {
-  testStrategy = new TestStrategy();
+  mostRecentTestStrategy !: TestStrategy;
 
-  create(): NgElementStrategy { return this.testStrategy; }
+  create(): NgElementStrategy {
+    this.mostRecentTestStrategy = new TestStrategy();
+    return this.mostRecentTestStrategy;
+  }
 }
