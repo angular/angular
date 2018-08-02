@@ -9,10 +9,8 @@
 import {BindingType} from '../../src/expression_parser/ast';
 import {Lexer} from '../../src/expression_parser/lexer';
 import {Parser} from '../../src/expression_parser/parser';
-import {visitAll} from '../../src/ml_parser/ast';
 import {HtmlParser} from '../../src/ml_parser/html_parser';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../src/ml_parser/interpolation_config';
-import {ParseError} from '../../src/parse_util';
 import * as t from '../../src/render3/r3_ast';
 import {Render3ParseResult, htmlAstToRender3Ast} from '../../src/render3/r3_template_transform';
 import {BindingParser} from '../../src/template_parser/binding_parser';
@@ -281,6 +279,22 @@ describe('R3 template transform', () => {
       expectFromHtml('<ng-template let-a="b"></ng-template>').toEqual([
         ['Template'],
         ['Variable', 'a', 'b'],
+      ]);
+    });
+
+    it('should parse attributes', () => {
+      expectFromHtml('<ng-template k1="v1" k2="v2"></ng-template>').toEqual([
+        ['Template'],
+        ['TextAttribute', 'k1', 'v1'],
+        ['TextAttribute', 'k2', 'v2'],
+      ]);
+    });
+
+    it('should parse bound attributes', () => {
+      expectFromHtml('<ng-template [k1]="v1" [k2]="v2"></ng-template>').toEqual([
+        ['Template'],
+        ['BoundAttribute', BindingType.Property, 'k1', 'v1'],
+        ['BoundAttribute', BindingType.Property, 'k2', 'v2'],
       ]);
     });
   });
