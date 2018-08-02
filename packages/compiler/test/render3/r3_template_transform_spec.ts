@@ -300,6 +300,15 @@ describe('R3 template transform', () => {
   });
 
   describe('inline templates', () => {
+    it('should support attribute and bound attributes', () => {
+      expectFromHtml('<div *ngFor="item of items"></div>').toEqual([
+        ['Template'],
+        ['BoundAttribute', BindingType.Property, 'ngFor', 'item'],
+        ['BoundAttribute', BindingType.Property, 'ngForOf', 'items'],
+        ['Element', 'div'],
+      ]);
+    });
+
     it('should parse variables via let ...', () => {
       expectFromHtml('<div *ngIf="let a=b"></div>').toEqual([
         ['Template'],
@@ -312,7 +321,6 @@ describe('R3 template transform', () => {
     it('should parse variables via as ...', () => {
       expectFromHtml('<div *ngIf="expr as local"></div>').toEqual([
         ['Template'],
-        ['TextAttribute', 'ngIf', 'expr '],
         ['BoundAttribute', BindingType.Property, 'ngIf', 'expr'],
         ['Variable', 'local', 'ngIf'],
         ['Element', 'div'],
@@ -439,7 +447,6 @@ describe('R3 template transform', () => {
 
     it('should parse ngProjectAs as an attribute', () => {
       const res = parse('<ng-content ngProjectAs="a"></ng-content>');
-      const selectors = [''];
       expect(res.hasNgContent).toEqual(true);
       expect(res.ngContentSelectors).toEqual([]);
       expectFromR3Nodes(res.nodes).toEqual([
