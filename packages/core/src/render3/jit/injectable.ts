@@ -22,11 +22,9 @@ import {convertDependencies, reflectDependencies} from './util';
  * Compile an Angular injectable according to its `Injectable` metadata, and patch the resulting
  * `ngInjectableDef` onto the injectable type.
  */
-export function compileInjectable(type: Type<any>, meta?: Injectable): void {
-  // TODO(alxhub): handle JIT of bare @Injectable().
-  if (!meta) {
-    return;
-  }
+export function compileInjectable(type: Type<any>, srcMeta?: Injectable): void {
+  // Allow the compilation of a class with a `@Injectable()` decorator without parameters
+  const meta: Injectable = srcMeta || {providedIn: null};
 
   let def: any = null;
   Object.defineProperty(type, NG_INJECTABLE_DEF, {

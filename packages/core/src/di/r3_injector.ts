@@ -394,10 +394,6 @@ function isFactoryProvider(value: SingleProvider): value is FactoryProvider {
   return !!(value as FactoryProvider).useFactory;
 }
 
-function isClassProvider(value: SingleProvider): value is ClassProvider {
-  return !!(value as ClassProvider).useClass;
-}
-
 function isTypeProvider(value: SingleProvider): value is TypeProvider {
   return typeof value === 'function';
 }

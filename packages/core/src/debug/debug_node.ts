@@ -17,19 +17,13 @@ export class EventListener {
  * @experimental All debugging apis are currently experimental.
  */
 export class DebugNode {
-  nativeNode: any;
-  listeners: EventListener[];
-  // TODO(issue/24571): remove '!'.
-  parent !: DebugElement | null;
+  listeners: EventListener[] = [];
+  parent: DebugElement|null = null;
 
-  constructor(nativeNode: any, parent: DebugNode|null, private _debugContext: DebugContext) {
-    this.nativeNode = nativeNode;
+  constructor(public nativeNode: any, parent: DebugNode|null, private _debugContext: DebugContext) {
     if (parent && parent instanceof DebugElement) {
       parent.addChild(this);
-    } else {
-      this.parent = null;
     }
-    this.listeners = [];
   }
 
   get injector(): Injector { return this._debugContext.injector; }
@@ -47,22 +41,16 @@ export class DebugNode {
  * @experimental All debugging apis are currently experimental.
  */
 export class DebugElement extends DebugNode {
-  // TODO(issue/24571): remove '!'.
   name !: string;
-  properties: {[key: string]: any};
-  attributes: {[key: string]: string | null};
-  classes: {[key: string]: boolean};
-  styles: {[key: string]: string | null};
-  childNodes: DebugNode[];
+  properties: {[key: string]: any} = {};
+  attributes: {[key: string]: string | null} = {};
+  classes: {[key: string]: boolean} = {};
+  styles: {[key: string]: string | null} = {};
+  childNodes: DebugNode[] = [];
   nativeElement: any;
 
   constructor(nativeNode: any, parent: any, _debugContext: DebugContext) {
     super(nativeNode, parent, _debugContext);
-    this.properties = {};
-    this.attributes = {};
-    this.classes = {};
-    this.styles = {};
-    this.childNodes = [];
     this.nativeElement = nativeNode;
   }
 
