@@ -129,6 +129,17 @@ describe('MatChipInput', () => {
       expect(testChipInput.add).toHaveBeenCalled();
     });
 
+    it('emits accepts the custom separator keys in a Set', () => {
+      let COMMA_EVENT = createKeyboardEvent('keydown', COMMA, inputNativeElement);
+      spyOn(testChipInput, 'add');
+
+      chipInputDirective.separatorKeyCodes = new Set([COMMA]);
+      fixture.detectChanges();
+
+      chipInputDirective._keydown(COMMA_EVENT);
+      expect(testChipInput.add).toHaveBeenCalled();
+    });
+
     it('emits (chipEnd) when the separator keys are configured globally', () => {
       fixture.destroy();
 

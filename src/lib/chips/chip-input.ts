@@ -68,9 +68,8 @@ export class MatChipInput implements OnChanges {
    *
    * Defaults to `[ENTER]`.
    */
-  // TODO(tinayuangao): Support Set here
   @Input('matChipInputSeparatorKeyCodes')
-  separatorKeyCodes: number[] = this._defaultOptions.separatorKeyCodes;
+  separatorKeyCodes: number[] | Set<number> = this._defaultOptions.separatorKeyCodes;
 
   /** Emitted when a chip is to be added. */
   @Output('matChipInputTokenEnd')
@@ -126,7 +125,7 @@ export class MatChipInput implements OnChanges {
     if (!this._inputElement.value && !!event) {
       this._chipList._keydown(event);
     }
-    if (!event || this.separatorKeyCodes.indexOf(event.keyCode) > -1) {
+    if (!event || this._isSeparatorKey(event.keyCode)) {
       this.chipEnd.emit({ input: this._inputElement, value: this._inputElement.value });
 
       if (event) {
@@ -141,5 +140,13 @@ export class MatChipInput implements OnChanges {
   }
 
   /** Focuses the input. */
-  focus(): void { this._inputElement.focus(); }
+  focus(): void {
+    this._inputElement.focus();
+  }
+
+  /** Checks whether a keycode is one of the configured separators. */
+  private _isSeparatorKey(keyCode: number) {
+    const separators = this.separatorKeyCodes;
+    return Array.isArray(separators) ? separators.indexOf(keyCode) > -1 : separators.has(keyCode);
+  }
 }
