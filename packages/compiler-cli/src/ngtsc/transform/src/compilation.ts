@@ -38,6 +38,10 @@ export class IvyCompilation {
   private analysis = new Map<ts.Declaration, EmitFieldOperation<any>>();
 
   /**
+   * Tracks factory information which needs to be generated.
+   */
+
+  /**
    * Tracks the `DtsFileTransformer`s for each TS file that needs .d.ts transformations.
    */
   private dtsMap = new Map<string, DtsFileTransformer>();
@@ -55,7 +59,8 @@ export class IvyCompilation {
    */
   constructor(
       private handlers: DecoratorHandler<any>[], private checker: ts.TypeChecker,
-      private reflector: ReflectionHost, private coreImportsFrom: ts.SourceFile|null) {}
+      private reflector: ReflectionHost, private coreImportsFrom: ts.SourceFile|null,
+      private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
 
 
   analyzeSync(sf: ts.SourceFile): void { return this.analyze(sf, false); }
@@ -104,6 +109,11 @@ export class IvyCompilation {
 
           if (analysis.diagnostics !== undefined) {
             this._diagnostics.push(...analysis.diagnostics);
+          }
+
+          if (analysis.factorySymbolName !== undefined && this.sourceToFactorySymbols !== null &&
+              this.sourceToFactorySymbols.has(sf.fileName)) {
+            this.sourceToFactorySymbols.get(sf.fileName) !.add(analysis.factorySymbolName);
           }
         };
 

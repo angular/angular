@@ -116,6 +116,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
       analysis: {
           ngModuleDef, ngInjectorDef,
       },
+      factorySymbolName: node.name !== undefined ? node.name.text : undefined,
     };
   }
 
