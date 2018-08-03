@@ -1,6 +1,13 @@
 import {DataSource} from '@angular/cdk/collections';
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, flushMicrotasks, TestBed} from '@angular/core/testing';
+import {
+  async,
+  ComponentFixture,
+  fakeAsync,
+  flushMicrotasks,
+  TestBed,
+  tick,
+} from '@angular/core/testing';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {MatPaginator, MatPaginatorModule} from '../paginator/index';
@@ -22,6 +29,7 @@ describe('MatTable', () => {
         MatTableWithSortApp,
         MatTableWithPaginatorApp,
         StickyTableApp,
+        TableWithNgContainerRow,
       ],
     }).compileComponents();
   }));
@@ -126,6 +134,16 @@ describe('MatTable', () => {
     const stuckCellElement = fixture.nativeElement.querySelector('.mat-table th')!;
     expect(stuckCellElement.classList).toContain('mat-table-sticky');
   });
+
+  // Note: needs to be fakeAsync so it catches the error.
+  it('should not throw when a row definition is on an ng-container', fakeAsync(() => {
+    const fixture = TestBed.createComponent(TableWithNgContainerRow);
+
+    expect(() => {
+      fixture.detectChanges();
+      tick();
+    }).not.toThrow();
+  }));
 
   describe('with MatTableDataSource and sort/pagination/filter', () => {
     let tableElement: HTMLElement;
@@ -749,6 +767,27 @@ class MatTableWithPaginatorApp implements OnInit {
     this.dataSource!.paginator = this.paginator;
   }
 }
+
+@Component({
+  template: `
+    <mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="column_a">
+        <mat-header-cell *matHeaderCellDef>Column A</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.a}}</mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="columnsToRender"></mat-header-row>
+      <ng-container *matRowDef="let row; columns: columnsToRender">
+        <mat-row></mat-row>
+      </ng-container>
+    </mat-table>
+  `
+})
+class TableWithNgContainerRow {
+  dataSource: FakeDataSource | null = new FakeDataSource();
+  columnsToRender = ['column_a'];
+}
+
 
 function getElements(element: Element, query: string): Element[] {
   return [].slice.call(element.querySelectorAll(query));
