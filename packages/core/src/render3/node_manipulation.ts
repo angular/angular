@@ -7,7 +7,7 @@
  */
 
 import {assertDefined} from './assert';
-import {callHooks} from './hooks';
+import {executeHooks} from './hooks';
 import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {LContainerNode, LElementContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
@@ -494,20 +494,13 @@ function removeListeners(viewData: LViewData): void {
 }
 
 /** Calls onDestroy hooks for this view */
-function executeOnDestroys(view: LViewData): void {
-  const tView = view[TVIEW];
-  let destroyHooks: HookData|null;
-  if (tView != null && (destroyHooks = tView.destroyHooks) != null) {
-    callHooks(view[DIRECTIVES] !, destroyHooks);
-  }
+function executeOnDestroys(viewData: LViewData): void {
+  executeHooks(viewData[DIRECTIVES] !, viewData[TVIEW].destroyHooks);
 }
 
 /** Calls pipe destroy hooks for this view */
 function executePipeOnDestroys(viewData: LViewData): void {
-  const pipeDestroyHooks = viewData[TVIEW] && viewData[TVIEW].pipeDestroyHooks;
-  if (pipeDestroyHooks) {
-    callHooks(viewData !, pipeDestroyHooks);
-  }
+  executeHooks(viewData, viewData[TVIEW].pipeDestroyHooks);
 }
 
 /**

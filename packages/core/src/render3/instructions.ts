@@ -284,7 +284,7 @@ export function enterView(newView: LViewData, host: LElementNode | LViewNode | n
 export function leaveView(newView: LViewData, creationOnly?: boolean): void {
   if (!creationOnly) {
     if (!checkNoChangesMode) {
-      executeHooks(directives !, tView.viewHooks, tView.viewCheckHooks, creationMode);
+      executeHooks(directives !, creationMode ? tView.viewHooks : tView.viewCheckHooks);
     }
     // Views are clean and in update mode after being checked, so these bits are cleared
     viewData[FLAGS] &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
@@ -313,7 +313,7 @@ function refreshDescendantViews() {
   refreshContentQueries(tView);
 
   if (!checkNoChangesMode) {
-    executeHooks(directives !, tView.contentHooks, tView.contentCheckHooks, creationMode);
+    executeHooks(directives !, creationMode ? tView.contentHooks : tView.contentCheckHooks);
   }
 
   setHostBindings(tView.hostBindings);
@@ -357,7 +357,7 @@ function refreshChildComponents(components: number[] | null): void {
 export function executeInitAndContentHooks(): void {
   if (!checkNoChangesMode) {
     executeInitHooks(viewData, tView, creationMode);
-    executeHooks(directives !, tView.contentHooks, tView.contentCheckHooks, creationMode);
+    executeHooks(directives !, creationMode ? tView.contentHooks : tView.contentCheckHooks);
   }
 }
 
@@ -883,9 +883,9 @@ export function resolveDirective(
 
 /** Stores index of component's host element so it will be queued for view refresh during CD. */
 function queueComponentIndexForCheck(): void {
-  if (firstTemplatePass) {
-    (tView.components || (tView.components = [])).push(viewData.length - 1);
-  }
+  ngDevMode &&
+      assertEqual(firstTemplatePass, true, 'Should only be called in first template pass.');
+  (tView.components || (tView.components = [])).push(viewData.length - 1);
 }
 
 /** Stores index of directive and host element so it will be queued for binding refresh during CD.
