@@ -330,7 +330,7 @@ describe('compiler compliance: template', () => {
               })
               export class MyComponent {}
 
-              @NgModule({declarations: [MyComponent], imports: [CommonModule]})
+              @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
       }
