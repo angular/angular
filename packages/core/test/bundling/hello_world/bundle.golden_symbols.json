@@ -6,6 +6,9 @@
     "name": "BINDING_INDEX"
   },
   {
+    "name": "BLOOM_MASK"
+  },
+  {
     "name": "CLEAN_PROMISE"
   },
   {
@@ -45,6 +48,9 @@
     "name": "NEXT"
   },
   {
+    "name": "NG_ELEMENT_ID"
+  },
+  {
     "name": "NG_HOST_SYMBOL"
   },
   {
@@ -52,6 +58,9 @@
   },
   {
     "name": "PARENT"
+  },
+  {
+    "name": "PublicFeature"
   },
   {
     "name": "QUERIES"
@@ -96,6 +105,9 @@
     "name": "baseDirectiveCreate"
   },
   {
+    "name": "bloomAdd"
+  },
+  {
     "name": "callHooks"
   },
   {
@@ -138,6 +150,12 @@
     "name": "detectChangesInternal"
   },
   {
+    "name": "diPublic"
+  },
+  {
+    "name": "diPublicInInjector"
+  },
+  {
     "name": "domRendererFactory3"
   },
   {
@@ -168,10 +186,19 @@
     "name": "getLViewChild"
   },
   {
+    "name": "getOrCreateNodeInjector"
+  },
+  {
+    "name": "getOrCreateNodeInjectorForNode"
+  },
+  {
     "name": "getOrCreateTView"
   },
   {
     "name": "getParentLNode"
+  },
+  {
+    "name": "getPreviousOrParentNode"
   },
   {
     "name": "getRenderFlags"
@@ -205,6 +232,9 @@
   },
   {
     "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nextNgElementId"
   },
   {
     "name": "readElementValue"

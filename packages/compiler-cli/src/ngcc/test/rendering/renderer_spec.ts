@@ -123,7 +123,7 @@ describe('Renderer', () => {
              .toBe(analyzedFile.analyzedClasses[0]);
          expect(renderer.addDefinitions.calls.first().args[2])
              .toEqual(
-                 `A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory() { return new A(); } });`);
+                 `A.ngDirectiveDef = ɵngcc0.ɵdefineDirective({ type: A, selectors: [["", "a", ""]], factory: function A_Factory() { return new A(); }, features: [ɵngcc0.ɵPublicFeature] });`);
        });
 
     it('should call removeDecorators with the source code, a map of class decorators that have been analyzed',

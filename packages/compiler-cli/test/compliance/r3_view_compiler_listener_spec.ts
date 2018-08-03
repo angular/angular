@@ -71,7 +71,7 @@ describe('compiler compliance: listen()', () => {
                     <div (click)="onClick(foo)"></div>
                     <button (click)="onClick2(bar)"></button>
                   </div>
-                  
+
                 \`
               })
               export class MyComponent {
@@ -87,7 +87,7 @@ describe('compiler compliance: listen()', () => {
 
     const template = `
         const $c0$ = ["ngIf",""];
-        
+
         function MyComponent_div_Template_0(rf, ctx) {
           if (rf & 1) {
             const $s$ = $r3$.ɵgV();
@@ -132,7 +132,7 @@ describe('compiler compliance: listen()', () => {
             import {Component, NgModule} from '@angular/core';
 
             @Component({
-              selector: 'my-component', 
+              selector: 'my-component',
               template: \`
                 <button (click)="onClick(user.value)">Save</button>
                 <input #user>
@@ -153,9 +153,10 @@ describe('compiler compliance: listen()', () => {
           type: MyComponent,
           selectors: [["my-component"]],
           factory: function MyComponent_Factory() { return new MyComponent(); },
+          features: [$r3$.ɵPublicFeature],
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
-              $r3$.ɵE(0, "button"); 
+              $r3$.ɵE(0, "button");
                 $r3$.ɵL("click", function MyComponent_Template_button_click_listener($event) {
                    const $user$ = $r3$.ɵr(3);
                    return ctx.onClick($user$.value);
