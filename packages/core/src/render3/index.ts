@@ -11,7 +11,6 @@ import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe
 import {InheritDefinitionFeature} from './features/inherit_definition_feature';
 import {NgOnChangesFeature} from './features/ng_onchanges_feature';
 import {PublicFeature} from './features/public_feature';
-import {I18nExpInstruction, I18nInstruction, i18nExpMapping, i18nInterpolation1, i18nInterpolation2, i18nInterpolation3, i18nInterpolation4, i18nInterpolation5, i18nInterpolation6, i18nInterpolation7, i18nInterpolation8, i18nInterpolationV} from './i18n';
 import {ComponentDef, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
 
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef} from './component_ref';
