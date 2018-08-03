@@ -120,6 +120,9 @@
     "name": "PARENT"
   },
   {
+    "name": "PublicFeature"
+  },
+  {
     "name": "QUERIES"
   },
   {
@@ -333,6 +336,9 @@
     "name": "bindingUpdated"
   },
   {
+    "name": "bloomAdd"
+  },
+  {
     "name": "bloomFindPossibleInjector"
   },
   {
@@ -433,6 +439,12 @@
   },
   {
     "name": "detectChangesInternal"
+  },
+  {
+    "name": "diPublic"
+  },
+  {
+    "name": "diPublicInInjector"
   },
   {
     "name": "directiveCreate"
@@ -739,6 +751,9 @@
   },
   {
     "name": "nextContext"
+  },
+  {
+    "name": "nextNgElementId"
   },
   {
     "name": "pointers"
