@@ -540,9 +540,29 @@ export function renderTemplate<T>(
   }
   const hostView = host.data !;
   ngDevMode && assertDefined(hostView, 'Host node should have an LView defined in host.data.');
-  renderComponentOrTemplate(host, hostView, context, template);
+  refreshTemplate(host, hostView, context, template);
   return host;
 }
+
+export function refreshTemplate<T>(
+    node: LElementNode, hostView: LViewData, componentOrContext: T,
+    template: ComponentTemplate<T>) {
+  const oldView = enterView(hostView, node);
+  try {
+    if (rendererFactory.begin) {
+      rendererFactory.begin();
+    }
+    namespaceHTML();
+    template(getRenderFlags(hostView), componentOrContext);
+    refreshDescendantViews();
+  } finally {
+    if (rendererFactory.end) {
+      rendererFactory.end();
+    }
+    leaveView(oldView);
+  }
+}
+
 
 /**
  * Used for creating the LViewNode of a dynamic embedded view,
@@ -628,34 +648,6 @@ export function renderEmbeddedTemplate<T>(
 export function nextContext<T = any>(level: number = 1): T {
   contextViewData = walkUpViews(level, contextViewData !);
   return contextViewData[CONTEXT] as T;
-}
-
-export function renderComponentOrTemplate<T>(
-    node: LElementNode, hostView: LViewData, componentOrContext: T,
-    template?: ComponentTemplate<T>) {
-  const oldView = enterView(hostView, node);
-  try {
-    if (rendererFactory.begin) {
-      rendererFactory.begin();
-    }
-    if (template) {
-      namespaceHTML();
-      template(getRenderFlags(hostView), componentOrContext !);
-      refreshDescendantViews();
-    } else {
-      executeInitAndContentHooks();
-
-      // Element was stored at 0 in data and directive was stored at 0 in directives
-      // in renderComponent()
-      setHostBindings(_ROOT_DIRECTIVE_INDICES);
-      componentRefresh(HEADER_OFFSET);
-    }
-  } finally {
-    if (rendererFactory.end) {
-      rendererFactory.end();
-    }
-    leaveView(oldView);
-  }
 }
 
 /**
@@ -2309,7 +2301,7 @@ function tickRootContext(rootContext: RootContext) {
     const hostNode = _getComponentHostLElementNode(rootComponent);
 
     ngDevMode && assertDefined(hostNode.data, 'Component host node should be attached to an LView');
-    renderComponentOrTemplate(hostNode, getRootView(rootComponent), rootComponent);
+    refreshRootView(hostNode, getRootView(rootComponent));
   }
 }
 
@@ -2319,7 +2311,6 @@ function tickRootContext(rootContext: RootContext) {
  *
  * @param component any component
  */
-
 export function getRootView(component: any): LViewData {
   ngDevMode && assertDefined(component, 'component');
   const lElementNode = _getComponentHostLElementNode(component);
@@ -2328,6 +2319,26 @@ export function getRootView(component: any): LViewData {
     lViewData = lViewData[PARENT] !;
   }
   return lViewData;
+}
+
+function refreshRootView<T>(node: LElementNode, hostView: LViewData) {
+  const oldView = enterView(hostView, node);
+  try {
+    if (rendererFactory.begin) {
+      rendererFactory.begin();
+    }
+    executeInitAndContentHooks();
+
+    // Element was stored at 0 in data and directive was stored at 0 in directives
+    // in renderComponent()
+    setHostBindings(_ROOT_DIRECTIVE_INDICES);
+    componentRefresh(HEADER_OFFSET);
+  } finally {
+    if (rendererFactory.end) {
+      rendererFactory.end();
+    }
+    leaveView(oldView);
+  }
 }
 
 /**
