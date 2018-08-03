@@ -11,9 +11,9 @@ import {compile, expectEmit} from './mock_compile';
 
 describe('compiler compliance: template', () => {
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   it('should correctly bind to context in nested template', () => {
@@ -21,7 +21,6 @@ describe('compiler compliance: template', () => {
       app: {
         'spec.ts': `
               import {Component, NgModule} from '@angular/core';
-              import {CommonModule} from '@angular/common';
 
               @Component({
                 selector: 'my-component',
@@ -43,7 +42,7 @@ describe('compiler compliance: template', () => {
                 onClick(outer: any, middle: any, inner: any) { }
               }
 
-              @NgModule({declarations: [MyComponent], imports: [CommonModule]})
+              @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
       }
@@ -122,7 +121,6 @@ describe('compiler compliance: template', () => {
       app: {
         'spec.ts': `
               import {Component, NgModule} from '@angular/core';
-              import {CommonModule} from '@angular/common';
 
               @Component({
                 selector: 'my-component',
@@ -133,7 +131,7 @@ describe('compiler compliance: template', () => {
               })
               export class MyComponent {}
 
-              @NgModule({declarations: [MyComponent], imports: [CommonModule]})
+              @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
       }
@@ -174,7 +172,6 @@ describe('compiler compliance: template', () => {
       app: {
         'spec.ts': `
               import {Component, NgModule} from '@angular/core';
-              import {CommonModule} from '@angular/common';
 
               @Component({
                 selector: 'my-component',
@@ -187,7 +184,7 @@ describe('compiler compliance: template', () => {
               })
               export class MyComponent {}
 
-              @NgModule({declarations: [MyComponent], imports: [CommonModule]})
+              @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
       }
@@ -243,7 +240,6 @@ describe('compiler compliance: template', () => {
       app: {
         'spec.ts': `
               import {Component, NgModule} from '@angular/core';
-              import {CommonModule} from '@angular/common';
 
               @Component({
                 selector: 'my-component',
@@ -258,7 +254,7 @@ describe('compiler compliance: template', () => {
               })
               export class MyComponent {}
 
-              @NgModule({declarations: [MyComponent], imports: [CommonModule]})
+              @NgModule({declarations: [MyComponent]})
               export class MyModule {}
           `
       }

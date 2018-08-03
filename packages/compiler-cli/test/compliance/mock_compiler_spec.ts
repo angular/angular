@@ -14,9 +14,9 @@ describe('mock_compiler', () => {
   // This produces a MockDirectory of the file needed to compile an Angular application.
   // This setup is performed in a beforeAll which populates the map returned.
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   describe('compiling', () => {

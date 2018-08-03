@@ -13,9 +13,9 @@ import {compile, expectEmit} from './mock_compile';
 
 describe('compiler compliance: styling', () => {
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   describe('[style] and [style.prop]', () => {
