@@ -32,6 +32,9 @@ cdk-virtual-scroll-viewport {
   display: block;
   position: relative;
   overflow: auto;
+  contain: strict;
+  transform: translateZ(0);
+  will-change: scroll-position;
 }
 
 // Wrapper element for the rendered content. This element will be transformed to push the rendered
@@ -40,7 +43,8 @@ cdk-virtual-scroll-viewport {
   position: absolute;
   top: 0;
   left: 0;
-  will-change: contents, transform;
+  contain: content;
+  will-change: transform;
 }
 
 .cdk-virtual-scroll-orientation-horizontal .cdk-virtual-scroll-content-wrapper {
@@ -57,5 +61,17 @@ cdk-virtual-scroll-viewport {
 // set if it were rendered all at once. This ensures that the scrollable content region is the
 // correct size.
 .cdk-virtual-scroll-spacer {
-  will-change: height, width;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 1px;
+  width: 1px;
+  transform-origin: 0 0;
+  will-change: transform;
+
+  [dir='rtl'] & {
+    right: 0;
+    left: auto;
+    transform-origin: 100% 0;
+  }
 }
