@@ -87,12 +87,13 @@ describe('compiler compliance: styling', () => {
          const template = `
           const _c0 = ["opacity","width","height",${InitialStylingFlags.VALUES_MODE},"opacity","1"];
           …
-          MyComponent.ngComponentDef = i0.ɵdefineComponent({
+          MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
               factory:function MyComponent_Factory(){
                 return new MyComponent();
               },
+              features: [$r3$.ɵPublicFeature],
               template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵE(0, "div");
@@ -143,21 +144,22 @@ describe('compiler compliance: styling', () => {
               }
           }
 
-          MyComponent.ngComponentDef = i0.ɵdefineComponent({
+          MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
             type: MyComponent,
             selectors: [["my-component"]],
             factory: function MyComponent_Factory() {
               return new MyComponent();
             },
+            features: [$r3$.ɵPublicFeature],
             template: function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
-                i0.ɵE(0, "div");
-                i0.ɵs(null, _c0, i0.ɵzss);
-                i0.ɵe();
+                $r3$.ɵE(0, "div");
+                $r3$.ɵs(null, _c0, $r3$.ɵzss);
+                $r3$.ɵe();
               }
               if (rf & 2) {
-                i0.ɵsp(0, 0, ctx.myImage);
-                i0.ɵsa(0);
+                $r3$.ɵsp(0, 0, ctx.myImage);
+                $r3$.ɵsa(0);
               }
             }
           });
@@ -237,12 +239,13 @@ describe('compiler compliance: styling', () => {
          const template = `
           const _c0 = ["grape","apple","orange",${InitialStylingFlags.VALUES_MODE},"grape",true];
           …
-          MyComponent.ngComponentDef = i0.ɵdefineComponent({
+          MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
               factory:function MyComponent_Factory(){
                 return new MyComponent();
               },
+              features: [$r3$.ɵPublicFeature],
               template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵE(0, "div");
@@ -290,12 +293,13 @@ describe('compiler compliance: styling', () => {
           const _c0 = ["foo",${InitialStylingFlags.VALUES_MODE},"foo",true];
           const _c1 = ["width",${InitialStylingFlags.VALUES_MODE},"width","100px"];
           …
-          MyComponent.ngComponentDef = i0.ɵdefineComponent({
+          MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
               type: MyComponent,
               selectors:[["my-component"]],
               factory:function MyComponent_Factory(){
                 return new MyComponent();
               },
+              features: [$r3$.ɵPublicFeature],
               template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵE(0, "div");
