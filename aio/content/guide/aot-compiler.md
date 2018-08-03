@@ -248,6 +248,17 @@ for experimentation and testing of Render3 style code generation.
 
 *Note*: Is it not recommended to use this option as it is not yet feature complete with the Render2 code generation.
 
+### defaultEncapsulation
+
+Enables setting a global default view encapsulation when using the AOT compiler.
+
+Valid values are: "None" | "Native" | "Emulated" | "ShadowDom"
+
+*(values extracted from @angular/core/ViewEncapsulation enum)*
+
+By default it will use "Emulated"
+
+
 
 ## Angular Metadata and AOT
 

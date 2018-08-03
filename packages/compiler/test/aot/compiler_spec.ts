@@ -613,6 +613,20 @@ describe('compiler (unbundled Angular)', () => {
     });
   });
 
+  xdescribe('ViewEncapsulation', () => {
+    // how do i run these tests?
+    it('should support default view encapsulation', () => {
+      const {genFiles} = compile([ENCAPSULATED, angularFiles], {defaultEncapsulation: 'None'});
+      const file = genFiles.find(f => /app\.component\.ts/.test(f.genFileUrl));
+      expect(/_nghost-/.test(file.source !)).toBe(false);
+    });
+    it('should support Emulated encapsulation for the child component', () => {
+      const {genFiles} = compile([ENCAPSULATED, angularFiles], {defaultEncapsulation: 'None'});
+      const file = genFiles.find(f => /app\.child\.component\.ts/.test(f.genFileUrl));
+      expect(/_nghost-/.test(file.source !)).toBe(true);
+    });
+  });
+
   function inheritanceWithSummariesSpecs(getAngularSummaryFiles: () => MockDirectory) {
     function compileParentAndChild(
         {parentClassDecorator, parentModuleDecorator, childClassDecorator, childModuleDecorator}: {
@@ -915,6 +929,20 @@ describe('compiler (bundled Angular)', () => {
     });
   });
 
+  xdescribe('ViewEncapsulation', () => {
+    // how do i run these tests?
+    it('should support default view encapsulation', () => {
+      const {genFiles} = compile([ENCAPSULATED, angularFiles], {defaultEncapsulation: 'None'});
+      const file = genFiles.find(f => /app\.component\.ts/.test(f.genFileUrl));
+      expect(/_nghost-/.test(file.source !)).toBe(false);
+    });
+    it('should support Emulated encapsulation for the child component', () => {
+      const {genFiles} = compile([ENCAPSULATED, angularFiles], {defaultEncapsulation: 'None'});
+      const file = genFiles.find(f => /app\.child\.component\.ts/.test(f.genFileUrl));
+      expect(/_nghost-/.test(file.source !)).toBe(true);
+    });
+  });
+
   describe('Bundled library', () => {
     let libraryFiles: MockDirectory;
 
@@ -954,6 +982,46 @@ describe('compiler (bundled Angular)', () => {
     it('should compile', () => compile([LIBRARY_USING_APP, libraryFiles, angularFiles]));
   });
 });
+
+const ENCAPSULATED: MockDirectory = {
+  encapsulation: {
+    app: {
+      'app.component.ts': `
+        import {Component} from '@angular/core';
+        @Component({
+          template: '<app-child-component></app-child-component>',
+          styles: 'h1 { font-size: 16px };'
+        })
+        export class AppComponent { }
+      `,
+      'app.child.component.ts': `
+        import {Component, ViewEncapsulation} from '@angular/core';
+        @Component({
+          selector:'app-child-component'
+          template: '<h1>Hello {{name}}</h1>',
+          styles: 'h1 { font-size: 14px };',
+          encapsulation: ViewEncapsulation.Emulated
+        })
+        export class AppChildComponent {
+          name = 'Angular';
+        }
+      `,
+      'app.module.ts': `
+        import { NgModule } from '@angular/core';
+        import { toString } from './utils';
+
+        import { AppComponent }  from './app.component';
+        import { AppChildComponent }  from './app.child.component';
+
+        @NgModule({
+          declarations: [ AppComponent, AppChildComponent ],
+          bootstrap:    [ AppComponent ]
+        })
+        export class AppModule { }
+      `
+    }
+  }
+};
 
 
 const QUICKSTART: MockDirectory = {

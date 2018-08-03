@@ -73,8 +73,23 @@ export function createAotCompiler(
     htmlParser = new I18NHtmlParser(
         new HtmlParser(), translations, options.i18nFormat, options.missingTranslation, console);
   }
+  let encapsulation: ViewEncapsulation;
+  switch (options.defaultEncapsulation) {
+    case 'None':
+      encapsulation = ViewEncapsulation.None;
+      break;
+    case 'Native':
+      encapsulation = ViewEncapsulation.Native;
+      break;
+    case 'ShadowDom':
+      encapsulation = ViewEncapsulation.ShadowDom;
+      break;
+    default:
+      encapsulation = ViewEncapsulation.Emulated;
+      break;
+  }
   const config = new CompilerConfig({
-    defaultEncapsulation: ViewEncapsulation.Emulated,
+    defaultEncapsulation: encapsulation,
     useJit: false,
     missingTranslation: options.missingTranslation,
     preserveWhitespaces: options.preserveWhitespaces,

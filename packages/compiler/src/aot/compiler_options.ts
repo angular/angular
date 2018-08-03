@@ -19,4 +19,5 @@ export interface AotCompilerOptions {
   allowEmptyCodegenFiles?: boolean;
   strictInjectionParameters?: boolean;
   enableIvy?: boolean|'ngtsc'|'tsc';
+  defaultEncapsulation?: 'None'|'Native'|'Emulated'|'ShadowDom';
 }

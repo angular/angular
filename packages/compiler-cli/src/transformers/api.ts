@@ -194,6 +194,12 @@ export interface CompilerOptions extends ts.CompilerOptions {
    */
   enableIvy?: boolean|'ngtsc'|'tsc';
 
+  /**
+   * Enables setting a global default view encapsulation when using the AOT compiler.
+   * Valid values are: "None" | "Native" | "Emulated" | "ShadowDom"
+   * Defaults to "Emulated"
+   */
+  defaultEncapsulation?: 'None'|'Native'|'Emulated'|'ShadowDom';
   /** @internal */
   collectAllErrors?: boolean;
 }
