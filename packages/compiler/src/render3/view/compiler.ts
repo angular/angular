@@ -67,6 +67,9 @@ function baseDirectiveFields(
   // e.g. `features: [NgOnChangesFeature]`
   const features: o.Expression[] = [];
 
+  // TODO: add `PublicFeature` so that directives get registered to the DI - make this configurable
+  features.push(o.importExpr(R3.PublicFeature));
+
   if (meta.usesInheritance) {
     features.push(o.importExpr(R3.InheritDefinitionFeature));
   }
