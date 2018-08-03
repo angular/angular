@@ -772,13 +772,9 @@ export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine.TemplateRef
 }
 
 class TemplateRef<T> implements viewEngine.TemplateRef<T> {
-  readonly elementRef: viewEngine.ElementRef;
-
   constructor(
-      private _declarationParentView: LViewData, elementRef: viewEngine.ElementRef,
-      private _tView: TView, private _renderer: Renderer3, private _queries: LQueries|null) {
-    this.elementRef = elementRef;
-  }
+      private _declarationParentView: LViewData, readonly elementRef: viewEngine.ElementRef,
+      private _tView: TView, private _renderer: Renderer3, private _queries: LQueries|null) {}
 
   createEmbeddedView(context: T, containerNode?: LContainerNode, index?: number):
       viewEngine.EmbeddedViewRef<T> {
