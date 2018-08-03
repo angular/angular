@@ -99,7 +99,7 @@ export function renderComponent<T>(
   const componentDef =
       (componentType as ComponentType<T>).ngComponentDef as ComponentDefInternal<T>;
   if (componentDef.type != componentType) componentDef.type = componentType;
-  let component: T;
+
   // The first index of the first selector is the tag name.
   const componentTag = componentDef.selectors ![0] ![0] as string;
   const hostNode = locateHostElement(rendererFactory, opts.host || componentTag);
@@ -113,6 +113,7 @@ export function renderComponent<T>(
 
   const oldView = enterView(rootView, null !);
   let elementNode: LElementNode;
+  let component: T;
   try {
     if (rendererFactory.begin) rendererFactory.begin();
 
@@ -120,8 +121,8 @@ export function renderComponent<T>(
     elementNode = hostElement(componentTag, hostNode, componentDef, sanitizer);
 
     // Create directive instance with factory() and store at index 0 in directives array
-    rootContext.components.push(
-        component = baseDirectiveCreate(0, componentDef.factory(), componentDef) as T);
+    component = baseDirectiveCreate(0, componentDef.factory() as T, componentDef);
+    rootContext.components.push(component);
 
     (elementNode.data as LViewData)[CONTEXT] = component;
     initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data !);
