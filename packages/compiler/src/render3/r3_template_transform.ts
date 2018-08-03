@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ParsedEvent, ParsedProperty, ParsedVariable, ParserError} from '../expression_parser/ast';
+import {ParsedEvent, ParsedProperty, ParsedVariable} from '../expression_parser/ast';
 import * as html from '../ml_parser/ast';
 import {replaceNgsp} from '../ml_parser/html_whitespaces';
 import {isNgTemplate} from '../ml_parser/tags';
@@ -15,6 +15,7 @@ import {isStyleUrlResolvable} from '../style_url_resolver';
 import {BindingParser} from '../template_parser/binding_parser';
 import {PreparsedElementType, preparseElement} from '../template_parser/template_preparser';
 import {syntaxError} from '../util';
+
 import * as t from './r3_ast';
 
 
@@ -43,7 +44,6 @@ const IDENT_PROPERTY_IDX = 9;
 const IDENT_EVENT_IDX = 10;
 
 const TEMPLATE_ATTR_PREFIX = '*';
-const CLASS_ATTR = 'class';
 // Default selector used by `<ng-content>` if none specified
 const DEFAULT_CONTENT_SELECTOR = '*';
 
@@ -107,15 +107,12 @@ class HtmlAstToIvyAst implements html.Visitor {
     // Whether the element is a `<ng-template>`
     const isTemplateElement = isNgTemplate(element.name);
 
-    const matchableAttributes: [string, string][] = [];
     const parsedProperties: ParsedProperty[] = [];
     const boundEvents: t.BoundEvent[] = [];
     const variables: t.Variable[] = [];
     const references: t.Reference[] = [];
     const attributes: t.TextAttribute[] = [];
 
-    const templateMatchableAttributes: [string, string][] = [];
-    let inlineTemplateSourceSpan: ParseSourceSpan;
     const templateParsedProperties: ParsedProperty[] = [];
     const templateVariables: t.Variable[] = [];
 
@@ -130,6 +127,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       let isTemplateBinding = false;
 
       if (normalizedName.startsWith(TEMPLATE_ATTR_PREFIX)) {
+        // *-attributes
         if (elementHasInlineTemplate) {
           this.reportError(
               `Can't have multiple template bindings on one element. Use only one attribute prefixed with *`,
@@ -140,25 +138,21 @@ class HtmlAstToIvyAst implements html.Visitor {
         const templateValue = attribute.value;
         const templateKey = normalizedName.substring(TEMPLATE_ATTR_PREFIX.length);
 
-        inlineTemplateSourceSpan = attribute.valueSpan || attribute.sourceSpan;
-
         const parsedVariables: ParsedVariable[] = [];
         this.bindingParser.parseInlineTemplateBinding(
-            templateKey, templateValue, attribute.sourceSpan, templateMatchableAttributes,
-            templateParsedProperties, parsedVariables);
+            templateKey, templateValue, attribute.sourceSpan, [], templateParsedProperties,
+            parsedVariables);
         templateVariables.push(
             ...parsedVariables.map(v => new t.Variable(v.name, v.value, v.sourceSpan)));
       } else {
         // Check for variables, events, property bindings, interpolation
         hasBinding = this.parseAttribute(
-            isTemplateElement, attribute, matchableAttributes, parsedProperties, boundEvents,
-            variables, references);
+            isTemplateElement, attribute, [], parsedProperties, boundEvents, variables, references);
       }
 
       if (!hasBinding && !isTemplateBinding) {
         // don't include the bindings as attributes as well in the AST
         attributes.push(this.visitAttribute(attribute) as t.TextAttribute);
-        matchableAttributes.push([attribute.name, attribute.value]);
       }
     }
 
@@ -176,44 +170,37 @@ class HtmlAstToIvyAst implements html.Visitor {
 
       const selector = preparsedElement.selectAttr;
 
-      let attributes: t.TextAttribute[] = element.attrs.map(attribute => {
-        return new t.TextAttribute(
-            attribute.name, attribute.value, attribute.sourceSpan, attribute.valueSpan);
-      });
+      let attributes: t.TextAttribute[] =
+          element.attrs.map(attribute => this.visitAttribute(attribute));
 
       const selectorIndex =
           selector === DEFAULT_CONTENT_SELECTOR ? 0 : this.ngContentSelectors.push(selector);
       parsedElement = new t.Content(selectorIndex, attributes, element.sourceSpan);
     } else if (isTemplateElement) {
       // `<ng-template>`
-      const boundAttributes = this.createBoundAttributes(element.name, parsedProperties);
+      const attrs = this.extractAttributes(element.name, parsedProperties);
+
       parsedElement = new t.Template(
-          attributes, boundAttributes, children, references, variables, element.sourceSpan,
+          attributes, attrs.bound, children, references, variables, element.sourceSpan,
           element.startSourceSpan, element.endSourceSpan);
     } else {
-      const boundAttributes = this.createBoundAttributes(element.name, parsedProperties);
+      const attrs = this.extractAttributes(element.name, parsedProperties);
 
       parsedElement = new t.Element(
-          element.name, attributes, boundAttributes, boundEvents, children, references,
+          element.name, attributes, attrs.bound, boundEvents, children, references,
           element.sourceSpan, element.startSourceSpan, element.endSourceSpan);
     }
 
     if (elementHasInlineTemplate) {
-      const attributes: t.TextAttribute[] = [];
-
-      templateMatchableAttributes.forEach(
-          ([name, value]) =>
-              attributes.push(new t.TextAttribute(name, value, inlineTemplateSourceSpan)));
-
-      const boundAttributes = this.createBoundAttributes('ng-template', templateParsedProperties);
+      const attrs = this.extractAttributes('ng-template', templateParsedProperties);
       parsedElement = new t.Template(
-          attributes, boundAttributes, [parsedElement], [], templateVariables, element.sourceSpan,
+          attrs.literal, attrs.bound, [parsedElement], [], templateVariables, element.sourceSpan,
           element.startSourceSpan, element.endSourceSpan);
     }
     return parsedElement;
   }
 
-  visitAttribute(attribute: html.Attribute): t.Node {
+  visitAttribute(attribute: html.Attribute): t.TextAttribute {
     return new t.TextAttribute(
         attribute.name, attribute.value, attribute.sourceSpan, attribute.valueSpan);
   }
@@ -230,11 +217,22 @@ class HtmlAstToIvyAst implements html.Visitor {
 
   visitExpansionCase(expansionCase: html.ExpansionCase): null { return null; }
 
-  private createBoundAttributes(elementName: string, properties: ParsedProperty[]):
-      t.BoundAttribute[] {
-    return properties.filter(prop => !prop.isLiteral)
-        .map(prop => this.bindingParser.createBoundElementProperty(elementName, prop))
-        .map(prop => t.BoundAttribute.fromBoundElementProperty(prop));
+  // convert view engine `ParsedProperty` to a format suitable for IVY
+  private extractAttributes(elementName: string, properties: ParsedProperty[]):
+      {bound: t.BoundAttribute[], literal: t.TextAttribute[]} {
+    const bound: t.BoundAttribute[] = [];
+    const literal: t.TextAttribute[] = [];
+
+    properties.forEach(prop => {
+      if (prop.isLiteral) {
+        literal.push(new t.TextAttribute(prop.name, prop.expression.source || '', prop.sourceSpan));
+      } else {
+        const bep = this.bindingParser.createBoundElementProperty(elementName, prop);
+        bound.push(t.BoundAttribute.fromBoundElementProperty(bep));
+      }
+    });
+
+    return {bound, literal};
   }
 
   private parseAttribute(
