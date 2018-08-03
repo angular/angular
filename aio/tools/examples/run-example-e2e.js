@@ -68,7 +68,7 @@ function runE2e() {
 // that they should run under. Then run each app/spec collection sequentially.
 function findAndRunE2eTests(filter, outputFile, shard) {
 
-  const shardParts = shard ? shard.split('/') : [0,1];
+  const shardParts = shard ? shard.split('/') : [0, 1];
   const shardModulo = parseInt(shardParts[0], 10);
   const shardDivider = parseInt(shardParts[1], 10);
 
@@ -82,10 +82,16 @@ function findAndRunE2eTests(filter, outputFile, shard) {
   const status = { passed: [], failed: [] };
   return getE2eSpecs(EXAMPLES_PATH, filter)
     .then(e2eSpecPaths => {
+      console.log('All e2e specs:');
+      logSpecs(e2eSpecPaths);
+
       Object.keys(e2eSpecPaths).forEach(key => {
         const value = e2eSpecPaths[key];
         e2eSpecPaths[key] = value.filter((p, index) => index % shardDivider === shardModulo);
       });
+
+      console.log(`E2e specs for shard ${shardParts.join('/')}:`);
+      logSpecs(e2eSpecPaths);
 
       return e2eSpecPaths.systemjs.reduce((promise, specPath) => {
         return promise.then(() => {
@@ -311,6 +317,18 @@ function loadExampleConfig(exampleFolder) {
   } catch (e) { }
 
   return config;
+}
+
+// Log the specs (for debugging purposes).
+// `e2eSpecPaths` is of type: `{[type: string]: string[]}`
+// (where `type` is `systemjs`, `cli, etc.)
+function logSpecs(e2eSpecPaths) {
+  Object.keys(e2eSpecPaths).forEach(type => {
+    const paths = e2eSpecPaths[type];
+
+    console.log(`  ${type.toUpperCase()}:`);
+    console.log(paths.map(p => `    ${p}`).join('\n'));
+  });
 }
 
 runE2e();
