@@ -73,11 +73,11 @@ Typically you don’t interact with the compiler directly; rather, you use it in
 
 **@angular/forms**: support for both [template-driven](guide/forms) and [reactive forms](guide/reactive-forms).
 
-**@angular/http**: Angular's old, soon-to-be-deprecated, HTTP client.
+**@angular/http**: Angular's old, deprecated, HTTP client.
 
 **@angular/platform-browser**: Everything DOM and browser related, especially
 the pieces that help render into the DOM.
-This package also includes the `bootstrapStatic()` method
+This package also includes the `bootstrapModuleFactory()` method
 for bootstrapping applications for production builds that pre-compile with [AOT](guide/aot-compiler).
 
 **@angular/platform-browser-dynamic**: Includes [Providers](api/core/Provider)
