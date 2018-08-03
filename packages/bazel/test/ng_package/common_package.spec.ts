@@ -15,7 +15,6 @@ shx.cd(path.join(process.env['TEST_SRCDIR'], 'angular', 'packages', 'common', 'n
 describe('@angular/common ng_package', () => {
   describe('should have the locales files', () => {
     it('/locales', () => {
-      debugger
       const files = shx.ls('locales').stdout.split('\n');
       expect(files.some(n => n.endsWith('.d.ts'))).toBe(true, `.d.ts files don't exist`);
       expect(files.some(n => n.endsWith('.js'))).toBe(true, `.js files don't exist`);
