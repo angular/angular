@@ -123,7 +123,7 @@ export function getCurrentSanitizer(): Sanitizer|null {
  * walking the declaration view tree in listeners to get vars from parent views.
  */
 export function getCurrentView(): OpaqueViewState {
-  return (viewData as any) as OpaqueViewState;
+  return viewData as any as OpaqueViewState;
 }
 
 /**
@@ -143,10 +143,10 @@ export function _getViewData(): LViewData {
  * of the current view and restore it when listeners are invoked. This allows
  * walking the declaration view tree in listeners to get vars from parent views.
  *
- * @param viewToRestore The LViewData instance to restore.
+ * @param viewToRestore The OpaqueViewState instance to restore.
  */
 export function restoreView(viewToRestore: OpaqueViewState) {
-  contextViewData = (viewToRestore as any) as LViewData;
+  contextViewData = viewToRestore as any as LViewData;
 }
 
 /** Used to set the parent property when nodes are created. */
