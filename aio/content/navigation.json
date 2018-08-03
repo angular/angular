@@ -429,6 +429,11 @@
               "tooltip": "Inside the local development environment for SystemJS."
             },
             {
+              "url": "guide/third-party-lib",
+              "title": "Third Party Library",
+              "tooltip": "Create a third party library with support for AoT, JiT and Tree Shaking."
+            },
+            {
               "url": "guide/browser-support",
               "title": "Browser Support",
               "tooltip": "Browser support and polyfills guide."
