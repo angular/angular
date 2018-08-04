@@ -10,7 +10,7 @@ This style guide presents preferred conventions and, as importantly, explains wh
 -->
 Angular 문법, 코딩 컨벤션, 애플리케이션 구조에 대한 가이드를 찾고 계신가요?
 바로 여기에 있습니다!
-이 코딩 스타일 가이드는 많은 개발자들이 선호하는 코딩 스타일을 소개하면서, 그 이유도 함께 소개합니다.
+이 문서에서는 많은 개발자들이 선호하는 코딩 스타일을 소개하면서, 왜 그렇게 사용하는지 이유도 함께 소개합니다.
 
 
 {@a toc}
@@ -93,14 +93,14 @@ If you fully understand the meaning behind the guideline and have a good reason 
 Some code examples display a file that has one or more similarly named companion files.
 For example, `hero.component.ts` and `hero.component.html`.
 -->
-일부 예제에서는 파일 하나를 언급하거나, 관련된 파일을 함께 언급하는 경우가 있습니다.
-예를 들면 `hero.component.ts` 파일을 설명하면서 `hero.component.html` 파일을 설명하는 경우가 있습니다.
+일부 예제에서는 스타일을 설명하면서 하나 이상의 파일을 함께 언급하는 경우가 있습니다.
+예를 들면 `hero.component.ts` 파일을 설명하면서 `hero.component.html` 파일을 함께 설명하는 경우가 그렇습니다.
 
 <!--
 The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent those various files. Using this shortcut makes this guide's file structures easier to read and more terse.
 -->
 이 문서는 연관된 파일을 간단하게 표시하기 위해 `hero.component.ts|html|css|spec`라는 표현을 사용합니다.
-이 표현을 사용하면 파일 구조를 좀 더 이해하기 편할 것입니다.
+컴포넌트 구성 파일은 한 폴더에 작성하며 확장자만 다르기 때문에, 이렇게 표현해도 쉽게 이해할 있을 것입니다.
 
 {@a single-responsibility}
 
@@ -108,7 +108,7 @@ The guideline uses the shortcut `hero.component.ts|html|css|spec` to represent t
 <!--
 ## Single responsibility
 -->
-## 단일 책임 (Single responsibility)
+## 단일 책임 원칙 (Single responsibility)
 
 <!--
 Apply the
@@ -187,7 +187,7 @@ collisions with teams in source control.
 <!--
 **Why?** A single component can be the default export for its file which facilitates lazy loading with the router.
 -->
-**왜?** 한 파일에 컴포넌트 하나만 정의되면, 라우터로 지연로딩할 때 기본 export 항목으로 지정할 수 있습니다.
+**왜?** 한 파일에 컴포넌트를 하나만 정의하면, 기본 export 항목을 지정해서 라우터로 지연로딩할 때  활용할 수 있습니다.
 
 </div>
 
@@ -195,7 +195,7 @@ collisions with teams in source control.
 <!--
 The key is to make the code more reusable, easier to read, and less mistake prone.
 -->
-요점은 코드를 좀 더 재사용성하기 편하게, 읽기 쉽게, 실수를 최대한 방지하게 하는 것입니다.
+요점은 코드를 좀 더 재사용성하기 편하게, 읽기 쉽게, 실수가 발생할 여지를 최대한 줄이는 것입니다.
 
 <!--
 The following *negative* example defines the `AppComponent`, bootstraps the app,
@@ -213,7 +213,7 @@ defines the `Hero` model object, and loads heroes from the server all in the sam
 It is a better practice to redistribute the component and its
 supporting classes into their own, dedicated files.
 -->
-이런 코드는 각각의 역할에 맞게 개별 파일로 작성하는 것이 더 좋습니다.
+이 코드는 각각의 역할에 맞게 개별 파일로 작성하는 것이 더 좋습니다.
 
 <code-tabs>
 
@@ -252,7 +252,8 @@ supporting classes into their own, dedicated files.
 As the app grows, this rule becomes even more important.
 <a href="#toc">Back to top</a>
 -->
-앱이 복잡해 질수록 이 규칙은 점점 더 중요해집니다.
+앱이 규모가 커지면서 복잡해 질수록 이 규칙은 점점 더 중요해집니다.
+
 <a href="#toc">맨 위로</a>
 
 {@a 01-02}
@@ -365,7 +366,7 @@ As the app grows, this rule becomes even more important.
 <!--
 Naming conventions are hugely important to maintainability and readability. This guide recommends naming conventions for the file name and the symbol name.
 -->
-명명 규칙은 앱의 유지보수성이나 가독성 측면에서 아주 중요합니다. 이번 가이드에서는 파일의 이름이나 심볼 이름에 대한 명명 규칙을 제안합니다.
+명명 규칙은 앱의 유지보수성이나 가독성 측면에서 아주 중요합니다. 이번 가이드에서는 파일의 이름이나 심볼 이름에 대한 명명 규칙을 소개합니다.
 
 
 {@a 02-01}
@@ -410,7 +411,7 @@ Naming conventions are hugely important to maintainability and readability. This
 <!--
 **Why?** Naming conventions help provide a consistent way to find content at a glance. Consistency within the project is vital. Consistency with a team is important. Consistency across a company provides tremendous efficiency.
 -->
-**왜?** 명명 규칙은 파일의 내용을 쉽게 파악하는 데에도 도움이 됩니다. 그래서 파일의 이름은 일관된 규칙으로 정해져야 합니다. 프로젝트나 팀에 관련된 일관성이라도 좋습니다. 회사 전체에 일관된 명명 규칙을 사용한다면 더 효율적입니다.
+**왜?** 명명 규칙을 명확하게 정하면 파일의 이름만 봐도 내용을 쉽게 파악할 수 있습니다. 그래서 파일의 이름은 일관된 규칙으로 정해져야 하며, 프로젝트나 팀에서 정한 일관성이라도 좋습니다. 회사 전체에 일관된 명명 규칙을 사용한다면 더 효율적입니다.
 
 </div>
 
@@ -537,7 +538,7 @@ Invent additional type names if you must but take care not to create too many.
 **Why?** Unabbreviated type names such as `.service` are descriptive and unambiguous.
 Abbreviations such as `.srv`, `.svc`, and `.serv` can be confusing.
 -->
-**왜?** `.service`와 같이 단어는 축약하지 않는 것이 좋습니다. `.srv`, `.svc`, `.serv`와 같은 단어는 혼란을 줄 수 있습니다.
+**왜?** 타입에 사용하는 단어는 축약하지 않는 것이 좋습니다. `.srv`, `.svc`, `.serv`와 같은 단어는 혼란을 줄 수 있습니다.
 
 </div>
 
@@ -1088,7 +1089,7 @@ As always, strive for consistency.
 <!--
 **Why?** Follows a familiar convention from other technology platforms.
 -->
-**왜?** Angular 애플리케이션을 시작하는 로직은 실행 환경에 따라 달라질 수 있습니다. 이 로직은 플랫폼에 따라 다르게 구현하기 때문에 분리하는 것이 좋습니다.
+**왜?** Angular 애플리케이션을 시작하는 로직은 애플리케이션을 실행하는 환경에 따라 달라질 수 있습니다. 이 로직은 플랫폼에 따라 다르게 구현할 수도 있기 때문에 애플리케이션 로직과 분리하는 것이 좋습니다.
 
 </div>
 
@@ -1131,8 +1132,10 @@ As always, strive for consistency.
 
 <div class="s-why-last">
 
-
+<!--
 **Why?** Keeps the element names consistent with the specification for [Custom Elements](https://www.w3.org/TR/custom-elements/).
+-->
+**왜?** 엘리먼트 이름은 [커스텀 엘리먼트](https://www.w3.org/TR/custom-elements/) 표준을 따르는 것이 좋습니다.
 
 </div>
 
@@ -1197,7 +1200,7 @@ As always, strive for consistency.
 For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the prefix `admin` represents an admin feature area.
 -->
 컴포넌트 셀렉터에는 커스텀 접두사를 **사용하세요.**
-예를 들어 **T**our **o**f **H**eroes 프로젝트에서는 `toh`를 접두사로 사용할 수 있으며, 관리자용 기능이 구현되어 있는 곳에서는 `admin`을 접두사로 사용할 수 있습니다.
+예를 들어 프로젝트 이름이 **T**our **o**f **H**eroes 라면 `toh`를 접두사로 사용할 수 있으며, 관리자용 기능이 구현되어 있는 곳에서는 `admin`을 접두사로 사용할 수 있습니다.
 
 </div>
 
@@ -1233,7 +1236,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <!--
 **Why?** Makes it easier to promote and share the component in other apps.
 -->
-**왜?** 다른 앱에서 로드하는 컴포넌트를 구현한다면, 사용하기 편하고 잘 구분되는 이름을 사용하는 것이 좋습니다.
+**왜?** 커스텀 컴포넌트가 다른 애플리케이션에도 활용될 수 있는 경우를 생각해보면, 사용하기 편하고 잘 구분되는 이름을 사용하는 것이 좋습니다.
 
 </div>
 
@@ -1281,21 +1284,31 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 02-06}
 
+<!--
 ### Directive selectors
+-->
+### 디렉티브 셀렉터
 
+<!--
 #### Style 02-06
+-->
+#### 스타일 02-06
 
 
 <div class="s-rule do">
 
 
-
+<!--
 **Do** Use lower camel case for naming the selectors of directives.
-
+-->
+디렉티브의 셀렉터는 소문자로 시작하는 캐멀 케이스를 **사용하세요.**
 
 </div>
 
@@ -1304,9 +1317,10 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why">
 
 
-
+<!--
 **Why?** Keeps the names of the properties defined in the directives that are bound to the view consistent with the attribute names.
-
+-->
+**왜?** 디렉티브에 정의된 프로퍼티 이름이 뷰에서 어떻게 활용되는지 생각해 보세요. 디렉티브의 셀렉터는 HTML문서에서 어트리뷰트로 사용됩니다.
 
 </div>
 
@@ -1315,13 +1329,17 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** The Angular HTML parser is case sensitive and recognizes lower camel case.
-
+-->
+**왜?** Angular HTML 파서는 대소문자를 구별하기 때문에 소문자 캐멀 케이스도 활용할 수 있습니다.
 
 </div>
 
+<!--
 <a href="#toc">Back to top</a>
+-->
+<a href="#toc">맨 위로</a>
 
 {@a 02-08}
 
@@ -1341,7 +1359,7 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <!--
 **Do** use a custom prefix for the selector of directives (e.g, the prefix `toh` from **T**our **o**f **H**eroes).
 -->
-커스텀 디렉티브의 셀렉터에는 접두사를 **사용하세요.** 예를 들어 **T**our **o**f **H**eroes 라면 `toh`를 접두사로 사용할 수 있습니다.
+커스텀 디렉티브의 셀렉터에는 접두사를 **사용하세요.** 예를 들어 프로젝트 이름이 **T**our **o**f **H**eroes 라면 `toh`를 접두사로 사용할 수 있습니다.
 
 </div>
 
@@ -2167,7 +2185,7 @@ By convention, upper camel case indicates a constructable asset.
 **Why?** TypeScript helps enforce that intent by requiring immediate initialization and by
 preventing subsequent re-assignment.
 -->
-**왜?** 이렇게 하면 TypeScript 컴파일러의 검사 로직이 동작하는데, 변수를 생성하면서 값을 초기화해야 하고 값이 재할당되는 것을 언어 레벨에서 방지할 수 있습니다.
+**왜?** 이렇게 하면 TypeScript 컴파일러의 검사 로직이 동작하기 때문에, 상수를 선언할 때 값을 초기화해야 하고 값이 재할당되는 것을 언어 레벨에서 방지할 수 있습니다.
 
 </div>
 
@@ -2600,7 +2618,7 @@ Use the naming conventions for files in this guide.
 <!--
 ### _LIFT_
 -->
-#### _LIST 규칙_
+#### _LIFT 규칙_
 
 <!--
 #### Style 04-01
@@ -2616,11 +2634,11 @@ Use the naming conventions for files in this guide.
 keep the **F**lattest structure you can, and
 **T**ry to be DRY.
 -->
-애플리케이션 구조는 _LIST 규칙_ 에 맞게 **마련하세요.**
+애플리케이션 구조는 _LIFT 규칙_ 에 맞게 **마련하세요.**
 코드는 빠르게 접근할 수 있는 곳에 위치해야 하며(**L**ocate),
 파일 이름만 봐도 무슨 내용인지 확인할 수 있어야 하고(**I**dentify),
 최대한 단순한 구조여야 하며(**F**lattest),
-불필요하게 반복하는 내용을 줄이세요.(**T**ry to be DRY).
+불필요하게 반복하는 내용이 적어야 합니다.(**T**ry to be DRY).
 
 </div>
 
@@ -3657,11 +3675,12 @@ module are referenced across the entire application.
 <div class="s-rule avoid">
 
 
-
+<!--
 **Consider** _not_ providing services in shared modules. Services are usually
 singletons that are provided once for the entire application or
 in a particular feature module. There are exceptions, however. For example, in the sample code that follows, notice that the `SharedModule` provides `FilterTextService`. This is acceptable here because the service is stateless;that is, the consumers of the service aren't impacted by new instances.
-
+-->
+공통 모듈에서는 서비스 프로바이더를 제공하지 않는 것을 **권장합니다.** 서비스는 일반적으로 싱글턴이며, 전체 애플리케이션이나 특정 기능 모듈에 딱 하나만 존재해야 합니다. 하지만 스테이트를 처리하지 않는 서비스는 예외입니다. 아래 예제에서 `SharedModule`은 `FilterTextService`를 제공하고 있는데, 이 서비스 안에는 스테이트와 관련된 로직이 아무것도 없으며 단순하게 유틸리티로써 사용될 뿐입니다. 인스턴스의 영향을 받지 않는 서비스라면 이런 방식으로 사용하는 것도 문제 없습니다.
 
 </div>
 
@@ -3675,7 +3694,7 @@ in a particular feature module. There are exceptions, however. For example, in t
 for example, `CommonModule` and `FormsModule`.
 -->
 애플리케이션에 자주 사용하는 모듈은 `SharedModule`에서 로드하고 모듈 외부로 공개하는 것이 좋습니다.
-예를 들면 `CommonModule`이나 `FormsModule`이 해당됩니다.
+예를 들면 `CommonModule`이나 `FormsModule`이 그렇습니다.
 
 </div>
 
@@ -3897,7 +3916,7 @@ Yet there is a real danger of that happening if the `SharedModule` provides a se
 **Consider** collecting numerous, auxiliary, single-use classes inside a core module
 to simplify the apparent structure of a feature module.
 -->
-기능 모듈의 구조를 간단하게 하기 위해 보조 역할을 하는 클래스, 한 번만 사용하는 클래스는 코어 모듈에 모아두는 것을 **권장합니다.**
+보조 역할을 하는 클래스, 한 번만 사용하는 클래스는 기능 모듈의 구조를 간단하게 하기 위해 코어 기능 모듈에 모아두는 것을 **권장합니다.**
 
 </div>
 
@@ -4429,11 +4448,14 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 <div class="s-why">
 
 
-
+<!--
 **Why?** components have templates containing HTML and optional Angular template syntax.
 They display content.
 Developers place components on the page as they would native HTML elements and web components.
-
+-->
+**왜?** 컴포넌트에는 HTML 문법으로 작성된 템플릿이 있으며, Angular에서 제공하는 템플릿 문법이 이 템플릿에 사용되기도 합니다.
+컴포넌트의 역할은 컴포넌트의 내용을 화면을 표시하는 것입니다.
+따라서 네이티브 HTML 엘리먼트나 웹 컴포넌트와 동일한 계층을 사용해서 엘리먼트 셀렉터로 지정하는 것이 좋습니다.
 
 </div>
 
@@ -4442,15 +4464,19 @@ Developers place components on the page as they would native HTML elements and w
 <div class="s-why-last">
 
 
-
+<!--
 **Why?** It is easier to recognize that a symbol is a component by looking at the template's html.
-
+-->
+**왜?** 컴포넌트 셀렉터를 엘리먼트로 지정하면, 템플릿을 봤을 때 어떤 것이 컴포넌트인지 쉽게 확인할 수 있습니다.
 
 </div>
 
 <div class="alert is-helpful">
 
+<!--
 There are a few cases where you give a component an attribute, such as when you want to augment a built-in element. For example, [Material Design](https://material.angular.io/components/button/overview) uses this technique with `<button mat-button>`. However, you wouldn't use this technique on a custom element.
+-->
+기본 엘리먼트에 추가 기능을 덧붙이는 아주 특이한 경우라면 어트리뷰트 셀렉터를 컴포넌트 셀렉터로 활용할 수도 있습니다. [Material Design](https://material.angular.io/components/button/overview)이 이 방식을 활용하고 있는데, 이 라이브러리는 버튼을 매터리얼 디자인으로 전환하기 위해 `<button mat-button>`과 같은 표현 방식을 사용합니다. 물론 어트리뷰트 셀렉터를 사용하는 대신 커스텀 엘리먼트로 구현해도 됩니다.
 
 </div>
 
