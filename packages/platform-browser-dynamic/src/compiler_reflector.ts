@@ -13,9 +13,8 @@ export const MODULE_SUFFIX = '';
 const builtinExternalReferences = createBuiltinExternalReferencesMap();
 
 export class JitReflector implements CompileReflector {
-  private reflectionCapabilities: ReflectionCapabilities;
-  private builtinExternalReferences = new Map<ExternalReference, any>();
-  constructor() { this.reflectionCapabilities = new ReflectionCapabilities(); }
+  private reflectionCapabilities: ReflectionCapabilities = new ReflectionCapabilities();
+
   componentModuleUrl(type: any, cmpMetadata: Component): string {
     const moduleId = cmpMetadata.moduleId;
 

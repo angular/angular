@@ -158,6 +158,8 @@ export class Identifiers {
   static InheritDefinitionFeature:
       o.ExternalReference = {name: 'ɵInheritDefinitionFeature', moduleName: CORE};
 
+  static PublicFeature: o.ExternalReference = {name: 'ɵPublicFeature', moduleName: CORE};
+
   static listener: o.ExternalReference = {name: 'ɵL', moduleName: CORE};
 
   // Reserve slots for pure functions

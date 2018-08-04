@@ -319,7 +319,6 @@ describe('compiler compliance: template', () => {
       app: {
         'spec.ts': `
               import {Component, NgModule} from '@angular/core';
-              import {CommonModule} from '@angular/common';
 
               @Component({
                 selector: 'my-component',
