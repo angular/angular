@@ -550,7 +550,7 @@ export declare class NgZone {
     readonly onStable: EventEmitter<any>;
     readonly onUnstable: EventEmitter<any>;
     constructor({ enableLongStackTrace }: {
-        enableLongStackTrace?: boolean;
+        enableLongStackTrace?: boolean | undefined;
     });
     run<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;
     runGuarded<T>(fn: (...args: any[]) => T, applyThis?: any, applyArgs?: any[]): T;

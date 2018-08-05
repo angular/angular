@@ -83,7 +83,7 @@ function createTestSupportFor(basePath: string) {
       'lib': [
         path.resolve(basePath, 'node_modules/typescript/lib/lib.es6.d.ts'),
       ],
-      ...overrideOptions,
+      'paths': {'@angular/*': ['./node_modules/@angular/*']}, ...overrideOptions,
     };
   }
 
