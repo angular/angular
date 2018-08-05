@@ -11,7 +11,7 @@
     "test": "test"
   },
   "peerDependencies": {
-    "typescript": "^2.6.1"
+    "typescript": "^3.0.1"
   },
   "dependencies": {
     "chalk": "^2.3.1",
@@ -21,7 +21,7 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "jasmine": "^3.1.0",
-    "typescript": "~2.6.2"
+    "typescript": "~3.0.1"
   },
   "repository": {},
   "keywords": [
