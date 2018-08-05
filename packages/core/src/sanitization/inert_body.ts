@@ -80,7 +80,7 @@ export class InertBodyHelper {
     const xhr = new XMLHttpRequest();
     xhr.responseType = 'document';
     xhr.open('GET', 'data:text/html;charset=utf-8,' + html, false);
-    xhr.send(null);
+    xhr.send(undefined);
     const body: HTMLBodyElement = xhr.response.body;
     body.removeChild(body.firstChild !);
     return body;

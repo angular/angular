@@ -27,7 +27,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
   let oldLS: ts.LanguageService = info.languageService;
 
   function tryCall<T>(fileName: string | undefined, callback: () => T): T {
-    if (fileName && !oldLS.getProgram().getSourceFile(fileName)) {
+    if (fileName && !oldLS.getProgram() !.getSourceFile(fileName)) {
       return undefined as any as T;
     }
     try {
@@ -84,10 +84,11 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       getCompletionsAtPosition: tryFilenameTwoCall(ls.getCompletionsAtPosition),
       getCompletionEntryDetails: tryFilenameFiveCall(ls.getCompletionEntryDetails),
       getCompletionEntrySymbol: tryFilenameThreeCall(ls.getCompletionEntrySymbol),
+      getJsxClosingTagAtPosition: tryFilenameOneCall(ls.getJsxClosingTagAtPosition),
       getQuickInfoAtPosition: tryFilenameOneCall(ls.getQuickInfoAtPosition),
       getNameOrDottedNameSpan: tryFilenameTwoCall(ls.getNameOrDottedNameSpan),
       getBreakpointStatementAtPosition: tryFilenameOneCall(ls.getBreakpointStatementAtPosition),
-      getSignatureHelpItems: tryFilenameOneCall(ls.getSignatureHelpItems),
+      getSignatureHelpItems: tryFilenameTwoCall(ls.getSignatureHelpItems),
       getRenameInfo: tryFilenameOneCall(ls.getRenameInfo),
       findRenameLocations: tryFilenameThreeCall(ls.findRenameLocations),
       getDefinitionAtPosition: tryFilenameOneCall(ls.getDefinitionAtPosition),
@@ -229,32 +230,33 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
     return base;
   };
 
-  proxy.getQuickInfoAtPosition = function(fileName: string, position: number): ts.QuickInfo {
-    let base = oldLS.getQuickInfoAtPosition(fileName, position);
-    // TODO(vicb): the tags property has been removed in TS 2.2
-    tryOperation('get quick info', () => {
-      const ours = ls.getHoverAt(fileName, position);
-      if (ours) {
-        const displayParts: ts.SymbolDisplayPart[] = [];
-        for (const part of ours.text) {
-          displayParts.push({kind: part.language || 'angular', text: part.text});
-        }
-        const tags = base && (<any>base).tags;
-        base = <any>{
-          displayParts,
-          documentation: [],
-          kind: 'angular',
-          kindModifiers: 'what does this do?',
-          textSpan: {start: ours.span.start, length: ours.span.end - ours.span.start},
-        };
-        if (tags) {
-          (<any>base).tags = tags;
-        }
-      }
-    });
+  proxy.getQuickInfoAtPosition = function(fileName: string, position: number): ts.QuickInfo |
+      undefined {
+        let base = oldLS.getQuickInfoAtPosition(fileName, position);
+        // TODO(vicb): the tags property has been removed in TS 2.2
+        tryOperation('get quick info', () => {
+          const ours = ls.getHoverAt(fileName, position);
+          if (ours) {
+            const displayParts: ts.SymbolDisplayPart[] = [];
+            for (const part of ours.text) {
+              displayParts.push({kind: part.language || 'angular', text: part.text});
+            }
+            const tags = base && (<any>base).tags;
+            base = <any>{
+              displayParts,
+              documentation: [],
+              kind: 'angular',
+              kindModifiers: 'what does this do?',
+              textSpan: {start: ours.span.start, length: ours.span.end - ours.span.start},
+            };
+            if (tags) {
+              (<any>base).tags = tags;
+            }
+          }
+        });
 
-    return base;
-  };
+        return base;
+      };
 
   proxy.getSemanticDiagnostics = function(fileName: string) {
     let result = oldLS.getSemanticDiagnostics(fileName);
@@ -263,7 +265,7 @@ export function create(info: any /* ts.server.PluginCreateInfo */): ts.LanguageS
       info.project.projectService.logger.info(`Computing Angular semantic diagnostics...`);
       const ours = ls.getDiagnostics(fileName);
       if (ours && ours.length) {
-        const file = oldLS.getProgram().getSourceFile(fileName);
+        const file = oldLS.getProgram() !.getSourceFile(fileName);
         if (file) {
           base.push.apply(base, ours.map(d => diagnosticToDiagnostic(d, file)));
         }
