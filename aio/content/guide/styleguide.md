@@ -5278,7 +5278,7 @@ helps instantly identify which members of the component serve which purpose.
 **Consider** preferring the `@HostListener` and `@HostBinding` to the
 `host` property of the `@Directive` and `@Component` decorators.
 -->
-`@Directive`나 `@Component` 데코레이터의 `host` 프로퍼티를 활용할 수 있는 로직은 `@HostListener`와 `@HostBinding`을 사용하는 것을 권장합니다.
+`@Directive`나 `@Component` 데코레이터의 `host` 프로퍼티를 활용할 수 있는 로직은 `@HostListener`와 `@HostBinding`으로 사용하는 것을 권장합니다.
 
 </div>
 
@@ -5595,7 +5595,7 @@ dependencies based on the declared types of that service's constructor parameter
 <!--
 **Why?** When a service accepts only dependencies associated with type tokens, the `@Injectable()` syntax is much less verbose compared to using `@Inject()` on each individual constructor parameter.
 -->
-**왜?** 서비스를 토큰으로 주입하는 경우를 생각해보면, 생성자의 인자마다 `@Inject()`를 지정하는 것보다 `@Injectable()`로 서비스를 등록하고 토큰으로 바로 주입받는 것이 훨씬 간단합니다.
+**왜?** 서비스를 토큰으로 주입하는 경우를 생각해보면, 생성자의 인자마다 `@Inject()`를 지정하는 것보다 `@Injectable()`로 서비스를 등록하고 토큰으로 바로 지정하는 것이 훨씬 간단합니다.
 
 </div>
 
@@ -5667,7 +5667,7 @@ XHR 통신으로 데이터를 가져오거나 로컬 스토리지, 메모리에 
 <!--
 **Why?** The component's responsibility is for the presentation and gathering of information for the view. It should not care how it gets the data, just that it knows who to ask for it. Separating the data services moves the logic on how to get it to the data service, and lets the component be simpler and more focused on the view.
 -->
-**왜?** 컴포넌트는 화면을 담당하며, 화면에 표시된 정보를 모으는 것까지만 컴포넌트의 역할입니다. 어딘가에서 데이터를 가져오는 로직은 컴포넌트가 담당하는 것이 아니며, 이 역할을 담당하는 무언가를 사용하기만 할 뿐입니다. 데이터를 처리하는 로직은 모두 서비스로 옮기고, 컴포넌트는 화면을 담당하는 역할에 집중하도록 하세요.
+**왜?** 컴포넌트는 화면을 담당하며, 화면에 표시된 정보를 모으는 것까지만 컴포넌트의 역할입니다. 어딘가에서 데이터를 가져오는 로직은 컴포넌트가 담당하는 것이 아니며, 이 역할을 담당하는 무언가를 활용하기만 할 뿐입니다. 데이터를 처리하는 로직은 모두 서비스로 옮기고, 컴포넌트는 화면을 담당하는 역할에 집중하도록 하세요.
 
 </div>
 
