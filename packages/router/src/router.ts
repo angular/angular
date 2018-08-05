@@ -1040,6 +1040,7 @@ class ActivateRoutes {
           const config = parentLoadedConfig(future.snapshot);
           const cmpFactoryResolver = config ? config.module.componentFactoryResolver : null;
 
+          context.attachRef = null;
           context.route = future;
           context.resolver = cmpFactoryResolver;
           if (context.outlet) {
