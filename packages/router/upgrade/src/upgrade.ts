@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {APP_BOOTSTRAP_LISTENER, ComponentRef, InjectionToken} from '@angular/core';
+import {LocationStrategy} from '@angular/common';
+import {APP_BOOTSTRAP_LISTENER} from '@angular/core';
 import {Router} from '@angular/router';
 import {UpgradeModule} from '@angular/upgrade/static';
 
@@ -68,11 +69,18 @@ export function setUpLocationSync(ngUpgrade: UpgradeModule) {
   }
 
   const router: Router = ngUpgrade.injector.get(Router);
+  const locationStrategy: LocationStrategy = ngUpgrade.injector.get(LocationStrategy);
+  // remove last slash char to ensure navigated url bellow starting with slash
+  const baseHref = locationStrategy.getBaseHref().replace(/\/+$/, '');
   const url = document.createElement('a');
 
   ngUpgrade.$injector.get('$rootScope')
       .$on('$locationChangeStart', (_: any, next: string, __: string) => {
         url.href = next;
+        let {pathname} = url;
+        if (baseHref && !pathname.indexOf(baseHref)) {
+          pathname = pathname.slice(baseHref.length);
+        }
         router.navigateByUrl(url.pathname + url.search + url.hash);
       });
 }
