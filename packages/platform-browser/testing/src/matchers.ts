@@ -7,8 +7,9 @@
  */
 
 
-import {ɵglobal as global} from '@angular/core';
-import {ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {Type, ɵglobal as global} from '@angular/core';
+import {ComponentFixture} from '@angular/core/testing';
+import {By, ɵgetDOM as getDOM} from '@angular/platform-browser';
 
 
 
@@ -78,6 +79,11 @@ export interface NgMatchers<T = any> extends jasmine.Matchers<T> {
    * {@example testing/ts/matchers.ts region='toContainError'}
    */
   toContainError(expected: any): boolean;
+
+  /**
+   * Expect a component of the given type to show.
+   */
+  toContainComponent(expectedComponentType: Type<any>, expectationFailOutput?: any): boolean;
 
   /**
    * Invert the matchers.
@@ -233,6 +239,29 @@ _global.beforeEach(function() {
                   missedMethods.join(', ');
             }
           };
+        }
+      };
+    },
+
+    toContainComponent: function() {
+      return {
+        compare: function(actualFixture: any, expectedComponentType: Type<any>) {
+          const failOutput = arguments[2];
+          const msgFn = (msg: string): string => [msg, failOutput].filter(Boolean).join(', ');
+
+          // verify correct actual type
+          if (!(actualFixture instanceof ComponentFixture)) {
+            return {
+              pass: false,
+              message: msgFn(
+                  `Expected actual to be of type \'ComponentFixture\' [actual=${actualFixture.constructor.name}]`)
+            };
+          }
+
+          const found = !!actualFixture.debugElement.query(By.directive(expectedComponentType));
+          return found ?
+              {pass: true} :
+              {pass: false, message: msgFn(`Expected ${expectedComponentType.name} to show`)};
         }
       };
     }
