@@ -40,7 +40,7 @@ describe('Collector', () => {
       'interface-reference.ts'
     ]);
     service = ts.createLanguageService(host, documentRegistry);
-    program = service.getProgram();
+    program = service.getProgram() !;
     collector = new MetadataCollector({quotedNames: true});
   });
 
@@ -1128,7 +1128,7 @@ describe('Collector', () => {
   function override(fileName: string, content: string) {
     host.overrideFile(fileName, content);
     host.addFile(fileName);
-    program = service.getProgram();
+    program = service.getProgram() !;
   }
 
   function collectSource(content: string): ModuleMetadata {

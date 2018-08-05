@@ -39,7 +39,7 @@ describe('symbol query', () => {
     const host = new MockLanguageServiceHost(
         ['/quickstart/app/app.component.ts'], QUICKSTART, '/quickstart');
     const service = ts.createLanguageService(host, registry);
-    program = service.getProgram();
+    program = service.getProgram() !;
     checker = program.getTypeChecker();
     sourceFile = program.getSourceFile('/quickstart/app/app.component.ts') !;
     const options: CompilerOptions = Object.create(host.getCompilationSettings());
