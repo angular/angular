@@ -44,16 +44,16 @@ export interface NavigationExtras {
    *
    * ```
    * [{
-  *   path: 'parent',
-  *   component: ParentComponent,
-  *   children: [{
-  *     path: 'list',
-  *     component: ListComponent
-  *   },{
-  *     path: 'child',
-  *     component: ChildComponent
-  *   }]
-  * }]
+   *   path: 'parent',
+   *   component: ParentComponent,
+   *   children: [{
+   *     path: 'list',
+   *     component: ListComponent
+   *   },{
+   *     path: 'child',
+   *     component: ChildComponent
+   *   }]
+   * }]
    * ```
    *
    * Navigate to list route from child route:
@@ -369,12 +369,12 @@ export class Router {
   get url(): string { return this.serializeUrl(this.currentUrlTree); }
 
   /** @internal */
-  triggerEvent(e: Event): void { (this.events as Subject<Event>).next(e); }
+  triggerEvent(event: Event): void { (this.events as Subject<Event>).next(event); }
 
   /**
    * Resets the configuration used for navigation and generating links.
    *
-   * ### Usage
+   * **Usage**
    *
    * ```
    * router.resetConfig([
@@ -409,7 +409,7 @@ export class Router {
    * When given an activate route, applies the given commands starting from the route.
    * When not given a route, applies the given command starting from the root.
    *
-   * ### Usage
+   * **Usage**
    *
    * ```
    * // create /team/33/user/11
@@ -481,7 +481,7 @@ export class Router {
    * - resolves to 'false' when navigation fails,
    * - is rejected when an error happens.
    *
-   * ### Usage
+   * **Usage**
    *
    * ```
    * router.navigateByUrl("/team/33/user/11");
@@ -510,7 +510,7 @@ export class Router {
    * - resolves to 'false' when navigation fails,
    * - is rejected when an error happens.
    *
-   * ### Usage
+   * **Usage**
    *
    * ```
    * router.navigate(['team', 33, 'user', 11], {relativeTo: route});

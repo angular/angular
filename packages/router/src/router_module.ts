@@ -225,7 +225,7 @@ export function provideForRootGuard(router: Router): any {
  *
  * Registers routes.
  *
- * ### Example
+ * **Example**
  *
  * ```
  * @NgModule({
