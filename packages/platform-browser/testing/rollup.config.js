@@ -11,6 +11,7 @@ const sourcemaps = require('rollup-plugin-sourcemaps');
 
 const globals = {
   '@angular/core': 'ng.core',
+  '@angular/core/testing': 'ng.core.testing',
   '@angular/common': 'ng.common',
   '@angular/platform-browser': 'ng.platformBrowser'
 };
