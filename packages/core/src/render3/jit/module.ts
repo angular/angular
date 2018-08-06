@@ -104,7 +104,7 @@ export function patchComponentDefWithScope<C, M>(
  * on modules with components that have not fully compiled yet, but the result should not be used
  * until they have.
  */
-export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveScopes {
+function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveScopes {
   if (!isNgModule(moduleType)) {
     throw new Error(`${moduleType.name} does not have an ngModuleDef`);
   }
@@ -139,7 +139,7 @@ export function transitiveScopesFor<T>(moduleType: Type<T>): NgModuleTransitiveS
   });
 
   def.imports.forEach(<I>(imported: Type<I>) => {
-    let importedTyped = imported as Type<I>& {
+    const importedTyped = imported as Type<I>& {
       // If imported is an @NgModule:
       ngModuleDef?: NgModuleDefInternal<I>;
     };

@@ -22,7 +22,7 @@ import {isViewDebugError, viewDestroyedError, viewWrappedDebugError} from './err
 import {resolveDep} from './provider';
 import {dirtyParentQueries, getQueryValue} from './query';
 import {createInjector, createNgModuleRef, getComponentViewDefinitionFactory} from './refs';
-import {ArgumentType, BindingFlags, CheckType, DebugContext, DepDef, ElementData, NgModuleDefinition, NgModuleProviderDef, NodeDef, NodeFlags, NodeLogger, ProviderOverride, RootData, Services, ViewData, ViewDefinition, ViewState, asElementData, asPureExpressionData} from './types';
+import {ArgumentType, BindingFlags, CheckType, DebugContext, ElementData, NgModuleDefinition, NodeDef, NodeFlags, NodeLogger, ProviderOverride, RootData, Services, ViewData, ViewDefinition, ViewState, asElementData, asPureExpressionData} from './types';
 import {NOOP, isComponentView, renderNode, resolveDefinition, splitDepsDsl, viewParentEl} from './util';
 import {checkAndUpdateNode, checkAndUpdateView, checkNoChangesNode, checkNoChangesView, createComponentView, createEmbeddedView, createRootView, destroyView} from './view';
 
@@ -509,6 +509,7 @@ class DebugContext_ implements DebugContext {
   private nodeDef: NodeDef;
   private elView: ViewData;
   private elDef: NodeDef;
+
   constructor(public view: ViewData, public nodeIndex: number|null) {
     if (nodeIndex == null) {
       this.nodeIndex = nodeIndex = 0;
@@ -528,13 +529,18 @@ class DebugContext_ implements DebugContext {
     this.elDef = elDef;
     this.elView = elView;
   }
+
   private get elOrCompView() {
     // Has to be done lazily as we use the DebugContext also during creation of elements...
     return asElementData(this.elView, this.elDef.nodeIndex).componentView || this.view;
   }
+
   get injector(): Injector { return createInjector(this.elView, this.elDef); }
+
   get component(): any { return this.elOrCompView.component; }
+
   get context(): any { return this.elOrCompView.context; }
+
   get providerTokens(): any[] {
     const tokens: any[] = [];
     if (this.elDef) {
@@ -549,6 +555,7 @@ class DebugContext_ implements DebugContext {
     }
     return tokens;
   }
+
   get references(): {[key: string]: any} {
     const references: {[key: string]: any} = {};
     if (this.elDef) {
@@ -565,14 +572,17 @@ class DebugContext_ implements DebugContext {
     }
     return references;
   }
+
   get componentRenderElement() {
     const elData = findHostElement(this.elOrCompView);
     return elData ? elData.renderElement : undefined;
   }
+
   get renderNode(): any {
     return this.nodeDef.flags & NodeFlags.TypeText ? renderNode(this.view, this.nodeDef) :
                                                      renderNode(this.elView, this.elDef);
   }
+
   logError(console: Console, ...values: any[]) {
     let logViewDef: ViewDefinition;
     let logNodeIndex: number;
