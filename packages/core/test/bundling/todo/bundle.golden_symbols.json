@@ -354,6 +354,12 @@
     "name": "callHooks"
   },
   {
+    "name": "canInsertNativeChildOfElement"
+  },
+  {
+    "name": "canInsertNativeChildOfView"
+  },
+  {
     "name": "canInsertNativeNode"
   },
   {
