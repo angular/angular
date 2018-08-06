@@ -79,6 +79,9 @@ function baseDirectiveFields(
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
   }
+  if (meta.exportAs !== null) {
+    definitionMap.set('exportAs', o.literal(meta.exportAs));
+  }
 
   return {definitionMap, statements: result.statements};
 }
@@ -279,6 +282,7 @@ function directiveMetadataFromGlobalMetadata(
     inputs: directive.inputs,
     outputs: directive.outputs,
     usesInheritance: false,
+    exportAs: null,
   };
 }
 
