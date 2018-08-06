@@ -142,6 +142,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
         // analyzed and the full compilation scope for the component can be realized.
         pipes: EMPTY_MAP,
         directives: EMPTY_MAP,
+        wrapDirectivesInClosure: false,
       }
     };
   }
@@ -155,7 +156,9 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during compile() the whole compilation unit has been
       // fully analyzed.
-      analysis = {...analysis, ...scope};
+      const {directives, pipes, containsForwardDecls} = scope;
+      const wrapDirectivesInClosure: boolean = !!containsForwardDecls;
+      analysis = {...analysis, directives, pipes, wrapDirectivesInClosure};
     }
 
     const res = compileComponentFromMetadata(analysis, pool, makeBindingParser());
