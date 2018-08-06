@@ -30,8 +30,6 @@ import {StylingContext, allocStylingContext, createStylingContextTemplate, rende
 import {assertDataInRangeInternal, isDifferent, loadElementInternal, loadInternal, stringify} from './util';
 import {ViewRef} from './view_ref';
 
-
-
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
  * component's host node (LElement) as the value. This is used in methods like detectChanges to
@@ -127,16 +125,6 @@ export function getCurrentView(): OpaqueViewState {
 }
 
 /**
- * Internal function that returns the current LViewData instance.
- *
- * The getCurrentView() instruction should be used for anything public.
- */
-export function _getViewData(): LViewData {
-  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
-  return viewData;
-}
-
-/**
  * Restores `contextViewData` to the given OpaqueViewState instance.
  *
  * Used in conjunction with the getCurrentView() instruction to save a snapshot
@@ -206,6 +194,16 @@ export function getCreationMode(): boolean {
  * any local variables that need to be stored between invocations.
  */
 let viewData: LViewData;
+
+/**
+ * Internal function that returns the current LViewData instance.
+ *
+ * The getCurrentView() instruction should be used for anything public.
+ */
+export function _getViewData(): LViewData {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  return viewData;
+}
 
 /**
  * The last viewData retrieved by nextContext().

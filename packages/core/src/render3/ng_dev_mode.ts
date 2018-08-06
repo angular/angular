@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
 declare global {
   const ngDevMode: null|NgDevModePerfCounters;
   interface NgDevModePerfCounters {
@@ -32,8 +31,6 @@ declare global {
     rendererCreateComment: number;
   }
 }
-
-
 
 declare let global: any;
 

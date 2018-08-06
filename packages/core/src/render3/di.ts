@@ -605,7 +605,7 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine.ViewContainer
   return di.viewContainerRef;
 }
 
-class NodeInjector implements Injector {
+export class NodeInjector implements Injector {
   constructor(private _lInjector: LInjector) {}
 
   get(token: any): any {
