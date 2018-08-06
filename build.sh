@@ -8,8 +8,8 @@ source ${currentDir}/scripts/ci/_travis-fold.sh
 # TODO(i): wrap into subshell, so that we don't pollute CWD, but not yet to minimize diff collision with Jason
 cd ${currentDir}
 
-PACKAGES=(core
-  compiler
+PACKAGES=(compiler
+  core
   common
   animations
   platform-browser
@@ -27,7 +27,8 @@ PACKAGES=(core
   service-worker
   elements)
 
-TSC_PACKAGES=(compiler-cli
+TSC_PACKAGES=(compiler
+  compiler-cli
   language-service
   benchpress)
 
@@ -239,7 +240,13 @@ compilePackage() {
   # For TSC_PACKAGES items
   if containsElement "${3}" "${TSC_PACKAGES[@]}"; then
     echo "======      [${3}]: COMPILING: ${TSC} -p ${1}/tsconfig-build.json"
+    local package_name=$(basename "${2}")
     $TSC -p ${1}/tsconfig-build.json
+    if [[ "${3}" = "compiler" ]]; then
+      if [[ "${package_name}" = "testing" ]]; then
+        echo "$(cat ${LICENSE_BANNER}) ${N} export * from './${package_name}/${package_name}'" > ${2}/../${package_name}.d.ts
+      fi
+    fi
   else
     echo "======      [${3}]: COMPILING: ${NGC} -p ${1}/tsconfig-build.json"
     local package_name=$(basename "${2}")
