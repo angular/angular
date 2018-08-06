@@ -25,10 +25,15 @@ export declare interface PublicTestability {
 // Angular internal, not intended for public API.
 export interface PendingMacrotask {
   source: string;
-  isPeriodic: boolean;
-  delay?: number;
   creationLocation: Error;
-  xhr?: XMLHttpRequest;
+  runCount?: number;
+  data: TaskData;
+}
+
+export interface TaskData {
+  target?: XMLHttpRequest;
+  delay?: number;
+  isPeriodic?: boolean;
 }
 
 // Angular internal, not intended for public API.
@@ -152,17 +157,14 @@ export class Testability implements PublicTestability {
       return [];
     }
 
+    // Copy the tasks data so that we don't leak tasks.
     return this.taskTrackingZone.macroTasks.map((t: Task) => {
       return {
         source: t.source,
-        isPeriodic: t.data.isPeriodic,
-        delay: t.data.delay,
         // From TaskTrackingZone:
         // https://github.com/angular/zone.js/blob/master/lib/zone-spec/task-tracking.ts#L40
         creationLocation: (t as any).creationLocation as Error,
-        // Added by Zones for XHRs
-        // https://github.com/angular/zone.js/blob/master/lib/browser/browser.ts#L133
-        xhr: (t.data as any).target
+        data: t.data
       };
     });
   }
