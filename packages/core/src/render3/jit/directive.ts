@@ -168,6 +168,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     },
     typeSourceSpan: null !,
     usesInheritance: !extendsDirectlyFromObject(type),
+    exportAs: metadata.exportAs || null,
   };
 }
 

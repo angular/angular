@@ -131,6 +131,16 @@ export function extractDirectiveMetadata(
       member => !member.isStatic && member.kind === ClassMemberKind.Method &&
           member.name === 'ngOnChanges');
 
+  // Parse exportAs.
+  let exportAs: string|null = null;
+  if (directive.has('exportAs')) {
+    const resolved = staticallyResolve(directive.get('exportAs') !, reflector, checker);
+    if (typeof resolved !== 'string') {
+      throw new Error(`exportAs must be a string`);
+    }
+    exportAs = resolved;
+  }
+
   // Detect if the component inherits from another class
   const usesInheritance = clazz.heritageClauses !== undefined &&
       clazz.heritageClauses.some(hc => hc.token === ts.SyntaxKind.ExtendsKeyword);
@@ -144,7 +154,7 @@ export function extractDirectiveMetadata(
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, selector,
     type: new WrappedNodeExpr(clazz.name !),
     typeArgumentCount: (clazz.typeParameters || []).length,
-    typeSourceSpan: null !, usesInheritance,
+    typeSourceSpan: null !, usesInheritance, exportAs,
   };
   return {decoratedElements, decorator: directive, metadata};
 }
