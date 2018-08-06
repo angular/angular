@@ -153,7 +153,7 @@ Note that Bazel has a `--stamp` argument to `bazel build`, but this has no effec
 Bazel supports fetching action results from a cache, allowing a clean build to pick up artifacts from prior builds.
 This makes builds incremental, even on CI.
 It works because Bazel assigns a content-based hash to all action inputs, which is used as the cache key for the action outputs.
-Thanks the the hermeticity property, we can skip executing an action if the inputs hash is already present in the cache.
+Thanks to the hermeticity property, we can skip executing an action if the inputs hash is already present in the cache.
 
 Of course, non-hermeticity in an action can cause problems.
 At worst, you can fetch a broken artifact from the cache, making your build non-reproducible.
