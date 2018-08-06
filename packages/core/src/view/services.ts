@@ -663,8 +663,7 @@ export function getCurrentDebugContext(): DebugContext|null {
   return _currentView ? new DebugContext_(_currentView, _currentNodeIndex) : null;
 }
 
-
-class DebugRendererFactory2 implements RendererFactory2 {
+export class DebugRendererFactory2 implements RendererFactory2 {
   constructor(private delegate: RendererFactory2) {}
 
   createRenderer(element: any, renderData: RendererType2|null): Renderer2 {
@@ -690,9 +689,21 @@ class DebugRendererFactory2 implements RendererFactory2 {
   }
 }
 
-
-class DebugRenderer2 implements Renderer2 {
+export class DebugRenderer2 implements Renderer2 {
   readonly data: {[key: string]: any};
+
+  /**
+   * Factory function used to create a `DebugContext` when a node is created.
+   *
+   * The `DebugContext` allows to retrieve information about the nodes that are useful in tests.
+   *
+   * The factory is configurable so that the `DebugRenderer2` could instantiate either a View Engine
+   * or a Render context.
+   */
+  debugContextFactory: () => DebugContext | null = getCurrentDebugContext;
+
+  private get debugContext() { return this.debugContextFactory(); }
+
   constructor(private delegate: Renderer2) { this.data = this.delegate.data; }
 
   destroyNode(node: any) {
@@ -706,7 +717,7 @@ class DebugRenderer2 implements Renderer2 {
 
   createElement(name: string, namespace?: string): any {
     const el = this.delegate.createElement(name, namespace);
-    const debugCtx = getCurrentDebugContext();
+    const debugCtx = this.debugContext;
     if (debugCtx) {
       const debugEl = new DebugElement(el, null, debugCtx);
       debugEl.name = name;
@@ -717,7 +728,7 @@ class DebugRenderer2 implements Renderer2 {
 
   createComment(value: string): any {
     const comment = this.delegate.createComment(value);
-    const debugCtx = getCurrentDebugContext();
+    const debugCtx = this.debugContext;
     if (debugCtx) {
       indexDebugNode(new DebugNode(comment, null, debugCtx));
     }
@@ -726,7 +737,7 @@ class DebugRenderer2 implements Renderer2 {
 
   createText(value: string): any {
     const text = this.delegate.createText(value);
-    const debugCtx = getCurrentDebugContext();
+    const debugCtx = this.debugContext;
     if (debugCtx) {
       indexDebugNode(new DebugNode(text, null, debugCtx));
     }
@@ -764,7 +775,7 @@ class DebugRenderer2 implements Renderer2 {
 
   selectRootElement(selectorOrNode: string|any): any {
     const el = this.delegate.selectRootElement(selectorOrNode);
-    const debugCtx = getCurrentDebugContext();
+    const debugCtx = this.debugContext;
     if (debugCtx) {
       indexDebugNode(new DebugElement(el, null, debugCtx));
     }

@@ -18,6 +18,7 @@ jasmine_node_test(
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
         "//packages/common:npm_package",
+        "//packages/compiler:npm_package",
         "//packages/core:npm_package",
         "//packages/forms:npm_package",
     ],
