@@ -15,7 +15,6 @@
  * it will be easy to implement such API.
  */
 
-import {ViewEncapsulation} from '../../metadata/view';
 import {RendererStyleFlags2, RendererType2} from '../../render/api';
 
 
