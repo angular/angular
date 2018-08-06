@@ -96,6 +96,12 @@ export interface R3DirectiveMetadata {
    * Whether or not the component or directive inherits from another class
    */
   usesInheritance: boolean;
+
+  /**
+   * Reference name under which to export the directive's type in a template,
+   * if any.
+   */
+  exportAs: string|null;
 }
 
 /**
