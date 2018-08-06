@@ -4970,6 +4970,8 @@ Useful tools and tips for Angular.
 
 **Consider** using [snippets](https://github.com/mhartington/vim-angular2-snippets) for [Vim](http://www.vim.org/) that follow these styles and guidelines.
 
+**Consider** using bundled [snippets](https://github.com/JetBrains/intellij-plugins/tree/master/AngularJS) in WebStorm that follow these styles and guidelines.
+
 
 </div>
 
