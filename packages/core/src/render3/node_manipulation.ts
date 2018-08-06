@@ -145,7 +145,7 @@ function walkLNodeTree(
       nextNode = head ? (componentHost.data as LViewData)[PARENT] ![head.index] : null;
     } else {
       // Otherwise look at the first child
-      nextNode = getChildLNode(node as LViewNode);
+      nextNode = getChildLNode(node as LViewNode | LElementContainerNode);
     }
 
     if (nextNode === null) {
@@ -532,6 +532,16 @@ function canInsertNativeChildOfElement(parent: LElementNode, currentView: LViewD
   return false;
 }
 
+/**
+ * We might delay insertion of children for a given view if it is disconnected.
+ * This might happen for 2 main reason:
+ * - view is not inserted into any container (view was created but not iserted yet)
+ * - view is inserted into a container but the container itself is not inserted into the DOM
+ * (container might be part of projection or child of a view that is not inserted yet).
+ *
+ * In other words we can insert children of a given view this view was inserted into a container and
+ * the container itself has it render parent determined.
+ */
 function canInsertNativeChildOfView(parent: LViewNode): boolean {
   ngDevMode && assertNodeType(parent, TNodeType.View);
 
@@ -635,7 +645,10 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: LVi
       nativeInsertBefore(renderer, renderParent !.native, child, beforeNode);
     } else if (parent.tNode.type === TNodeType.ElementContainer) {
       const beforeNode = parent.native;
-      const grandParent = getParentLNode(parent) as LElementNode | LViewNode;
+      let grandParent = getParentLNode(parent as LElementContainerNode);
+      while (grandParent.tNode.type === TNodeType.ElementContainer) {
+        grandParent = getParentLNode(grandParent as LElementContainerNode);
+      }
       if (grandParent.tNode.type === TNodeType.View) {
         const renderParent = getRenderParent(grandParent as LViewNode);
         nativeInsertBefore(renderer, renderParent !.native, child, beforeNode);
