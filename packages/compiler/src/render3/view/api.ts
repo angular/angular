@@ -144,6 +144,13 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
    * scope of the compilation.
    */
   directives: Map<string, o.Expression>;
+
+  /**
+   * Whether to wrap the 'directives' array, if one is generated, in a closure.
+   *
+   * This is done when the directives contain forward references.
+   */
+  wrapDirectivesInClosure: boolean;
 }
 
 /**

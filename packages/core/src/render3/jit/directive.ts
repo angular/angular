@@ -73,6 +73,7 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
               directives: new Map(),
               pipes: new Map(),
               viewQueries: [],
+              wrapDirectivesInClosure: false,
             },
             constantPool, makeBindingParser());
         const preStatements = [...constantPool.statements, ...res.statements];

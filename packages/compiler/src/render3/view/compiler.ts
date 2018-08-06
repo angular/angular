@@ -165,7 +165,11 @@ export function compileComponentFromMetadata(
 
   // e.g. `directives: [MyDirective]`
   if (directivesUsed.size) {
-    definitionMap.set('directives', o.literalArr(Array.from(directivesUsed)));
+    let directivesExpr: o.Expression = o.literalArr(Array.from(directivesUsed));
+    if (meta.wrapDirectivesInClosure) {
+      directivesExpr = o.fn([], [new o.ReturnStatement(directivesExpr)]);
+    }
+    definitionMap.set('directives', directivesExpr);
   }
 
   // e.g. `pipes: [MyPipe]`
@@ -241,6 +245,7 @@ export function compileComponentFromRender2(
     directives: typeMapToExpressionMap(directiveTypeBySel, outputCtx),
     pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
     viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
+    wrapDirectivesInClosure: false,
   };
   const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
 
