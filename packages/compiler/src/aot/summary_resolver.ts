@@ -120,6 +120,16 @@ export class AotSummaryResolver implements SummaryResolver<StaticSymbol> {
       summaries.forEach((summary) => this.summaryCache.set(summary.symbol, summary));
       if (moduleName) {
         this.knownFileNameToModuleNames.set(filePath, moduleName);
+        if (filePath.endsWith('.d.ts')) {
+          // Also add entries to map the ngfactory & ngsummary files to their module names.
+          // This is necessary to resolve ngfactory & ngsummary files to their AMD module
+          // names when building angular with Bazel from source downstream.
+          // See https://github.com/bazelbuild/rules_typescript/pull/223 for context.
+          this.knownFileNameToModuleNames.set(
+              filePath.replace(/\.d\.ts$/, '.ngfactory.d.ts'), moduleName + '.ngfactory');
+          this.knownFileNameToModuleNames.set(
+              filePath.replace(/\.d\.ts$/, '.ngsummary.d.ts'), moduleName + '.ngsummary');
+        }
       }
       importAs.forEach((importAs) => { this.importAs.set(importAs.symbol, importAs.importAs); });
     }
