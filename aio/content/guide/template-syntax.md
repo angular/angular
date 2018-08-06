@@ -854,7 +854,7 @@ Class binding syntax resembles property binding.
 Instead of an element property between brackets, start with the prefix `class`,
 optionally followed by a dot (`.`) and the name of a CSS class: `[class.class-name]`.
 
-The following examples show how to add and remove the application's "special" class
+The following examples show how to add and remove classes
 with class bindings.  Here's how to set the attribute without binding:
 
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-1" title="src/app/app.component.html" linenums="false">
