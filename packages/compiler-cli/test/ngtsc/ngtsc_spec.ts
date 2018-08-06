@@ -640,4 +640,21 @@ describe('ngtsc behavioral tests', () => {
     expect(emptyFactory).toContain(`import * as i0 from '@angular/core';`);
     expect(emptyFactory).toContain(`export var ɵNonEmptyModule = true;`);
   });
+
+  it('should compile a banana-in-a-box inside of a template', () => {
+    writeConfig();
+    write('test.ts', `
+        import {Component} from '@angular/core';
+
+        @Component({
+          template: '<div *tmpl [(bananaInABox)]="prop"></div>',
+          selector: 'test'
+        })
+        class TestCmp {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+  });
 });
