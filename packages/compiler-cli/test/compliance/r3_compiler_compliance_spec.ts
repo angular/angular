@@ -1002,7 +1002,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵEe(1, "div", $e0_attrs$);
               }
             },
-            directives:[SomeDirective]
+            directives: function () { return [SomeDirective]; }
           });`;
 
         const result = compile(files, angularFiles);
@@ -1582,7 +1582,7 @@ describe('compiler compliance', () => {
                   }
                   if (rf & 2) { $r3$.ɵp(1,"forOf",$r3$.ɵb(ctx.items)); }
                 },
-                directives: [ForOfDirective]
+                directives: function() { return [ForOfDirective]; }
               });
             `;
 
@@ -1660,7 +1660,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵp(1, "forOf", $r3$.ɵb(ctx.items));
               }
             },
-            directives: [ForOfDirective]
+            directives: function() { return [ForOfDirective]; }
           });
         `;
 
@@ -1758,7 +1758,7 @@ describe('compiler compliance', () => {
                 $r3$.ɵp(1, "forOf", $r3$.ɵb(ctx.items));
               }
             },
-            directives: [ForOfDirective]
+            directives: function () { return [ForOfDirective]; }
           });`;
 
         const result = compile(files, angularFiles);
