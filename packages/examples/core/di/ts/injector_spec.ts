@@ -60,7 +60,7 @@ class MockRootScopeInjector implements Injector {
       class MyDep {}
       const injector = new MockRootScopeInjector(ReflectiveInjector.resolveAndCreate([MyDep]));
 
-      // #docregion ShakeableInjectionToken
+      // #docregion ShakableInjectionToken
       class MyService {
         constructor(readonly myDep: MyDep) {}
       }
