@@ -42,6 +42,8 @@ export function getParentLNode(
     node: LContainerNode | LElementNode | LElementContainerNode | LTextNode |
     LProjectionNode): LElementNode|LElementContainerNode|LViewNode;
 export function getParentLNode(node: LViewNode): LContainerNode|null;
+export function getParentLNode(node: LElementContainerNode): LElementNode|LElementContainerNode|
+    LViewNode;
 export function getParentLNode(node: LNode): LElementNode|LElementContainerNode|LContainerNode|
     LViewNode|null;
 export function getParentLNode(node: LNode): LElementNode|LElementContainerNode|LContainerNode|
@@ -510,6 +512,46 @@ function executePipeOnDestroys(viewData: LViewData): void {
   }
 }
 
+function canInsertNativeChildOfElement(parent: LElementNode, currentView: LViewData): boolean {
+  if (parent.view !== currentView) {
+    // If the Parent view is not the same as current view than we are inserting across
+    // Views. This happens when we insert a root element of the component view into
+    // the component host element and it should always be eager.
+    return true;
+  }
+  // Parent elements can be a component which may have projection.
+  if (parent.data === null) {
+    // Parent is a regular non-component element. We should eagerly insert into it
+    // since we know that this relationship will never be broken.
+    return true;
+  }
+
+  // Parent is a Component. Component's content nodes are not inserted immediately
+  // because they will be projected, and so doing insert at this point would be wasteful.
+  // Since the projection would than move it to its final destination.
+  return false;
+}
+
+function canInsertNativeChildOfView(parent: LViewNode): boolean {
+  ngDevMode && assertNodeType(parent, TNodeType.View);
+
+  // Because we are inserting into a `View` the `View` may be disconnected.
+  const grandParentContainer = getParentLNode(parent) as LContainerNode;
+  if (grandParentContainer == null) {
+    // The `View` is not inserted into a `Container` we have to delay insertion.
+    return false;
+  }
+  ngDevMode && assertNodeType(grandParentContainer, TNodeType.Container);
+  if (grandParentContainer.data[RENDER_PARENT] == null) {
+    // The parent `Container` itself is disconnected. So we have to delay.
+    return false;
+  }
+
+  // The parent `Container` is in inserted state, so we can eagerly insert into
+  // this location.
+  return true;
+}
+
 /**
  * Returns whether a native element can be inserted into the given parent.
  *
@@ -533,44 +575,26 @@ export function canInsertNativeNode(parent: LNode, currentView: LViewData): bool
   ngDevMode && assertNodeOfPossibleTypes(
                    parent, TNodeType.Element, TNodeType.ElementContainer, TNodeType.View);
 
-  if (parent.tNode.type === TNodeType.Element || parent.tNode.type === TNodeType.ElementContainer) {
-    // Parent is an element.
-    if (parent.view !== currentView) {
-      // If the Parent view is not the same as current view than we are inserting across
-      // Views. This happens when we insert a root element of the component view into
-      // the component host element and it should always be eager.
-      return true;
+  if (parent.tNode.type === TNodeType.Element) {
+    // Parent is a regular element or a component
+    return canInsertNativeChildOfElement(parent as LElementNode, currentView);
+  } else if (parent.tNode.type === TNodeType.ElementContainer) {
+    // Parent is an element container (ng-container).
+    // Its grand-parent might be an element, view or a sequence of ng-container parents.
+    let grandParent = getParentLNode(parent);
+    while (grandParent !== null && grandParent.tNode.type === TNodeType.ElementContainer) {
+      grandParent = getParentLNode(grandParent);
     }
-    // Parent elements can be a component which may have projection.
-    if (parent.data === null) {
-      // Parent is a regular non-component element. We should eagerly insert into it
-      // since we know that this relationship will never be broken.
-      return true;
-    } else {
-      // Parent is a Component. Component's content nodes are not inserted immediately
-      // because they will be projected, and so doing insert at this point would be wasteful.
-      // Since the projection would than move it to its final destination.
+    if (grandParent === null) {
       return false;
+    } else if (grandParent.tNode.type === TNodeType.Element) {
+      return canInsertNativeChildOfElement(grandParent as LElementNode, currentView);
+    } else {
+      return canInsertNativeChildOfView(grandParent as LViewNode);
     }
   } else {
     // Parent is a View.
-    ngDevMode && assertNodeType(parent, TNodeType.View);
-
-    // Because we are inserting into a `View` the `View` may be disconnected.
-    const grandParentContainer = getParentLNode(parent) as LContainerNode;
-    if (grandParentContainer == null) {
-      // The `View` is not inserted into a `Container` we have to delay insertion.
-      return false;
-    }
-    ngDevMode && assertNodeType(grandParentContainer, TNodeType.Container);
-    if (grandParentContainer.data[RENDER_PARENT] == null) {
-      // The parent `Container` itself is disconnected. So we have to delay.
-      return false;
-    } else {
-      // The parent `Container` is in inserted state, so we can eagerly insert into
-      // this location.
-      return true;
-    }
+    return canInsertNativeChildOfView(parent as LViewNode);
   }
 }
 

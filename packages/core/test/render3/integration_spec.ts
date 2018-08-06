@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ElementRef} from '@angular/core';
+import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
-import {AttributeMarker, defineComponent, defineDirective, injectElementRef} from '../../src/render3/index';
+import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
+import {AttributeMarker, defineComponent, defineDirective, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
@@ -572,6 +573,62 @@ describe('render3 integration test', () => {
          expect(fixture.html).toEqual('content');
 
          fixture.component.value = false;
+         fixture.update();
+         expect(fixture.html).toEqual('');
+       });
+
+    // https://stackblitz.com/edit/angular-tfhcz1?file=src%2Fapp%2Fapp.component.ts
+    it('should add and remove DOM nodes when ng-container is a child of a delayed embedded view',
+       () => {
+
+         class TestDirective {
+           constructor(private _tplRef: TemplateRef<any>, private _vcRef: ViewContainerRef) {}
+
+           createAndInsert() { this._vcRef.insert(this._tplRef.createEmbeddedView({})); }
+
+           clear() { this._vcRef.clear(); }
+
+           static ngDirectiveDef = defineDirective({
+             type: TestDirective,
+             selectors: [['', 'testDirective', '']],
+             factory: () => new TestDirective(injectTemplateRef(), injectViewContainerRef()),
+           });
+         }
+
+
+         function embeddedTemplate(rf: RenderFlags, ctx: any) {
+           if (rf & RenderFlags.Create) {
+             elementContainerStart(0);
+             { text(1, 'content'); }
+             elementContainerEnd();
+           }
+         }
+
+         let testDirective: TestDirective;
+
+
+         `<ng-template testDirective>
+            <ng-container>
+              content
+            </ng-container>
+          </ng-template>`;
+         const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
+           if (rf & RenderFlags.Create) {
+             container(0, embeddedTemplate, null, [AttributeMarker.SelectOnly, 'testDirective']);
+           }
+           if (rf & RenderFlags.Update) {
+             testDirective = loadDirective<TestDirective>(0);
+           }
+         }, [TestDirective]);
+
+         const fixture = new ComponentFixture(TestCmpt);
+         expect(fixture.html).toEqual('');
+
+         testDirective !.createAndInsert();
+         fixture.update();
+         expect(fixture.html).toEqual('content');
+
+         testDirective !.clear();
          fixture.update();
          expect(fixture.html).toEqual('');
        });
