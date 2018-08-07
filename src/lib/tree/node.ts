@@ -21,7 +21,8 @@ import {
   Input,
   IterableDiffers,
   OnDestroy,
-  QueryList
+  QueryList,
+  TemplateRef,
 } from '@angular/core';
 import {CanDisable, HasTabIndex, mixinDisabled, mixinTabIndex} from '@angular/material/core';
 import {MatTreeNodeOutlet} from './outlet';
@@ -70,6 +71,15 @@ export class MatTreeNode<T> extends _MatTreeNodeMixinBase<T>
 })
 export class MatTreeNodeDef<T> extends CdkTreeNodeDef<T> {
   @Input('matTreeNode') data: T;
+
+  // TODO(andrewseguin): Remove this explicitly set constructor when the compiler knows how to
+  // properly build the es6 version of the class. Currently sets ctorParameters to empty due to a
+  // fixed bug.
+  // https://github.com/angular/tsickle/pull/760 - tsickle PR that fixed this
+  // https://github.com/angular/angular/pull/23531 - updates compiler-cli to fixed version
+  constructor(template: TemplateRef<any>) {
+    super(template);
+  }
 }
 
 /**
