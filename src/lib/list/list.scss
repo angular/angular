@@ -209,6 +209,7 @@ $mat-list-item-inset-divider-offset: 72px;
 .mat-list, .mat-nav-list, .mat-selection-list {
   padding-top: $mat-list-top-padding;
   display: block;
+  -webkit-tap-highlight-color: transparent;
 
   .mat-subheader {
     @include mat-subheader-spacing($mat-list-top-padding, $mat-list-base-height);
@@ -228,8 +229,9 @@ $mat-list-item-inset-divider-offset: 72px;
 }
 
 
-.mat-list[dense], .mat-nav-list[dense], .mat-selection-list[dense] {
-
+.mat-list[dense],
+.mat-nav-list[dense],
+.mat-selection-list[dense] {
   padding-top: $mat-dense-top-padding;
   display: block;
 
@@ -265,4 +267,17 @@ $mat-list-item-inset-divider-offset: 72px;
 .mat-list-option:not(.mat-list-item-disabled) {
   cursor: pointer;
   outline: none;
+}
+
+
+// Disable the hover styles on non-hover devices. Since this is more of a progressive
+// enhancement and not all desktop browsers support this kind of media query, we can't
+// use something like `@media (hover)`.
+@media (hover: none) {
+  .mat-list-option,
+  .mat-nav-list .mat-list-item {
+    &:hover {
+      background: none;
+    }
+  }
 }
