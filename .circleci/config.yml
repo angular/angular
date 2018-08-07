@@ -180,12 +180,20 @@ jobs:
       - checkout:
           <<: *post_checkout
       # See remote cache documentation in /docs/BAZEL.md
-      - run: .circleci/setup_cache.sh
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
-      - *setup-bazel-remote-cache
-
       - run: bazel run @nodejs//:yarn
-      - run: scripts/build-packages-dist.sh
+      - run:
+          # RBE is enabled by appending rbe-bazel.rc.
+          name: Enable RBE
+          command: 'sudo bash -c "cat .circleci/rbe-bazel.rc >> /etc/bazel.bazelrc"'
+      - run:
+          name: "Setup GCP environment"
+          command: 'openssl aes-256-cbc -d -in .circleci/gcp_token -k "${CIRCLE_PROJECT_REPONAME}" -out /home/circleci/.gcp_credentials'
+      - run:
+          name: build-packages-dist
+          command: scripts/build-packages-dist.sh
+          environment:
+            GOOGLE_APPLICATION_CREDENTIALS: /home/circleci/.gcp_credentials
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
