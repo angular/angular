@@ -3629,7 +3629,68 @@ withEachNg1Version(() => {
              ng2ComponentAInstance.destroyIt = true;
              $digest(adapter);
 
-             expect(scopeDestroyListener).toHaveBeenCalled();
+             expect(scopeDestroyListener).toHaveBeenCalledTimes(1);
+           });
+         }));
+
+      it('should emit `$destroy` on `$element`', async(() => {
+           const elementDestroyListener = jasmine.createSpy('elementDestroyListener');
+           let ng2ComponentAInstance: Ng2ComponentA;
+
+           // Define `ng1Component`
+           const ng1Component: angular.IComponent = {
+             controller: class {
+               constructor($element: angular.IAugmentedJQuery) {
+                 $element.on !('$destroy', elementDestroyListener);
+               }
+             }
+           };
+
+           // Define `Ng1ComponentFacade`
+           @Directive({selector: 'ng1'})
+           class Ng1ComponentFacade extends UpgradeComponent {
+             constructor(elementRef: ElementRef, injector: Injector) {
+               super('ng1', elementRef, injector);
+             }
+           }
+
+           // Define `Ng2Component`
+           @Component({selector: 'ng2A', template: '<ng2B *ngIf="!destroyIt"></ng2B>'})
+           class Ng2ComponentA {
+             destroyIt = false;
+
+             constructor() { ng2ComponentAInstance = this; }
+           }
+
+           @Component({selector: 'ng2B', template: '<ng1></ng1>'})
+           class Ng2ComponentB {
+           }
+
+           // Define `ng1Module`
+           const ng1Module = angular.module('ng1Module', [])
+                                 .component('ng1', ng1Component)
+                                 .directive('ng2A', downgradeComponent({component: Ng2ComponentA}));
+
+           // Define `Ng2Module`
+           @NgModule({
+             declarations: [Ng1ComponentFacade, Ng2ComponentA, Ng2ComponentB],
+             entryComponents: [Ng2ComponentA],
+             imports: [BrowserModule, UpgradeModule]
+           })
+           class Ng2Module {
+             ngDoBootstrap() {}
+           }
+
+           // Bootstrap
+           const element = html(`<ng2-a></ng2-a>`);
+
+           bootstrap(platformBrowserDynamic(), Ng2Module, element, ng1Module).then(adapter => {
+             expect(elementDestroyListener).not.toHaveBeenCalled();
+
+             ng2ComponentAInstance.destroyIt = true;
+             $digest(adapter);
+
+             expect(elementDestroyListener).toHaveBeenCalledTimes(1);
            });
          }));
 

@@ -127,6 +127,7 @@ export type IAugmentedJQuery = Node[] & {
   controller?: (name: string) => any;
   isolateScope?: () => IScope;
   injector?: () => IInjectorService;
+  triggerHandler?: (eventTypeOrObject: string | Event, extraParameters?: any[]) => IAugmentedJQuery;
   remove?: () => void;
   removeData?: () => void;
 };
