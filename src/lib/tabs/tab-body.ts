@@ -173,7 +173,7 @@ export class MatTabBody implements OnInit, OnDestroy {
    * special position states that transition the tab from the left or right before centering.
    */
   ngOnInit() {
-    if (this._position == 'center' && this.origin !== undefined) {
+    if (this._position == 'center' && this.origin != null) {
       this._position = this._computePositionFromOrigin();
     }
   }

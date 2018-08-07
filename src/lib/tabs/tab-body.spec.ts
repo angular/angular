@@ -33,19 +33,33 @@ describe('MatTabBody', () => {
   describe('when initialized as center', () => {
     let fixture: ComponentFixture<SimpleTabBodyApp>;
 
+    it('should be center position if origin is unchanged', () => {
+      fixture = TestBed.createComponent(SimpleTabBodyApp);
+      fixture.componentInstance.position = 0;
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.tabBody._position).toBe('center');
+    });
+
+    it('should be center position if origin is explicitly set to null', () => {
+      fixture = TestBed.createComponent(SimpleTabBodyApp);
+      fixture.componentInstance.position = 0;
+
+      // It can happen that the `origin` is explicitly set to null through the Angular input
+      // binding. This test should ensure that the body does properly such origin value.
+      // The `MatTab` class sets the origin by default to null. See related issue: #12455
+      fixture.componentInstance.origin = null;
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.tabBody._position).toBe('center');
+    });
+
     describe('in LTR direction', () => {
+
       beforeEach(() => {
         dir = 'ltr';
         fixture = TestBed.createComponent(SimpleTabBodyApp);
       });
-
-      it('should be center position without origin', () => {
-        fixture.componentInstance.position = 0;
-        fixture.detectChanges();
-
-        expect(fixture.componentInstance.tabBody._position).toBe('center');
-      });
-
       it('should be left-origin-center position with negative or zero origin', () => {
         fixture.componentInstance.position = 0;
         fixture.componentInstance.origin = 0;
@@ -176,7 +190,7 @@ describe('MatTabBody', () => {
 class SimpleTabBodyApp implements AfterContentInit {
   content: TemplatePortal;
   position: number;
-  origin: number;
+  origin: number | null;
 
   @ViewChild(MatTabBody) tabBody: MatTabBody;
   @ViewChild(TemplateRef) template: TemplateRef<any>;
