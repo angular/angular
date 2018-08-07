@@ -708,6 +708,14 @@ export function appendProjectedNode(
     for (let i = 0; i < views.length; i++) {
       addRemoveViewFromContainer(node as LContainerNode, views[i], true, node.native);
     }
+  } else if (node.tNode.type === TNodeType.ElementContainer) {
+    let ngContainerChild = getChildLNode(node as LElementContainerNode);
+    while (ngContainerChild) {
+      appendProjectedNode(
+          ngContainerChild as LElementNode | LElementContainerNode | LTextNode | LContainerNode,
+          currentParent, currentView, renderParent);
+      ngContainerChild = getNextLNode(ngContainerChild);
+    }
   }
   if (node.dynamicLContainerNode) {
     node.dynamicLContainerNode.data[RENDER_PARENT] = renderParent;
