@@ -19,9 +19,9 @@ import {DtsFileTransformer} from './declaration';
  * Record of an adapter which decided to emit a static field, and the analysis it performed to
  * prepare for that operation.
  */
-interface EmitFieldOperation<T> {
-  adapter: DecoratorHandler<T>;
-  analysis: AnalysisOutput<T>;
+interface EmitFieldOperation<A, M> {
+  adapter: DecoratorHandler<A, M>;
+  analysis: AnalysisOutput<A>;
   decorator: Decorator;
 }
 
@@ -36,7 +36,7 @@ export class IvyCompilation {
    * Tracks classes which have been analyzed and found to have an Ivy decorator, and the
    * information recorded about them for later compilation.
    */
-  private analysis = new Map<ts.Declaration, EmitFieldOperation<any>>();
+  private analysis = new Map<ts.Declaration, EmitFieldOperation<any, any>>();
 
   /**
    * Tracks factory information which needs to be generated.
@@ -59,7 +59,7 @@ export class IvyCompilation {
    * `null` in most cases.
    */
   constructor(
-      private handlers: DecoratorHandler<any>[], private checker: ts.TypeChecker,
+      private handlers: DecoratorHandler<any, any>[], private checker: ts.TypeChecker,
       private reflector: ReflectionHost, private coreImportsFrom: ts.SourceFile|null,
       private sourceToFactorySymbols: Map<string, Set<string>>|null) {}
 
@@ -78,15 +78,14 @@ export class IvyCompilation {
 
     const analyzeClass = (node: ts.Declaration): void => {
       // The first step is to reflect the decorators.
-      const decorators = this.reflector.getDecoratorsOfDeclaration(node);
-      if (decorators === null) {
-        return;
-      }
+      const classDecorators = this.reflector.getDecoratorsOfDeclaration(node);
+
       // Look through the DecoratorHandlers to see if any are relevant.
       this.handlers.forEach(adapter => {
+
         // An adapter is relevant if it matches one of the decorators on the class.
-        const decorator = adapter.detect(decorators);
-        if (decorator === undefined) {
+        const metadata = adapter.detect(node, classDecorators);
+        if (metadata === undefined) {
           return;
         }
 
@@ -97,14 +96,15 @@ export class IvyCompilation {
             throw new Error('TODO.Diagnostic: Class has multiple Angular decorators.');
           }
 
-          // Run analysis on the decorator. This will produce either diagnostics, an
+          // Run analysis on the metadata. This will produce either diagnostics, an
           // analysis result, or both.
-          const analysis = adapter.analyze(node, decorator);
+          const analysis = adapter.analyze(node, metadata);
 
           if (analysis.analysis !== undefined) {
             this.analysis.set(node, {
               adapter,
-              analysis: analysis.analysis, decorator,
+              analysis: analysis.analysis,
+              decorator: metadata,
             });
           }
 
@@ -119,7 +119,7 @@ export class IvyCompilation {
         };
 
         if (preanalyze && adapter.preanalyze !== undefined) {
-          const preanalysis = adapter.preanalyze(node, decorator);
+          const preanalysis = adapter.preanalyze(node, metadata);
           if (preanalysis !== undefined) {
             promises.push(preanalysis.then(() => completeAnalysis()));
           } else {

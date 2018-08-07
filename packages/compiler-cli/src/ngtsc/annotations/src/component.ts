@@ -24,7 +24,7 @@ const EMPTY_MAP = new Map<string, Expression>();
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
-export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMetadata> {
+export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMetadata, Decorator> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean,
@@ -33,7 +33,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
 
 
-  detect(decorators: Decorator[]): Decorator|undefined {
+  detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
+    if (!decorators) {
+      return undefined;
+    }
     return decorators.find(
         decorator => decorator.name === 'Component' && (this.isCore || isAngularCore(decorator)));
   }

@@ -1837,4 +1837,227 @@ describe('compiler compliance', () => {
       });
     });
   });
+
+  describe('inherited bare classes', () => {
+    it('should add ngBaseDef if one or more @Input is present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Input} from '@angular/core';
+            export class BaseClass {
+              @Input()
+              input1 = 'test';
+
+              @Input('alias2')
+              input2 = 'whatever';
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: \`<div>{{input1}} {{input2}}</div>\`
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      // ...
+      BaseClass.ngBaseDef = i0.ɵdefineBase({
+        inputs: {
+          input1: "input1",
+          input2: ["alias2", "input2"]
+        }
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
+    it('should add ngBaseDef if one or more @Output is present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Output, EventEmitter} from '@angular/core';
+            export class BaseClass {
+              @Output()
+              output1 = new EventEmitter<string>();
+
+              @Output()
+              output2 = new EventEmitter<string>();
+
+              clicked() {
+                this.output1.emit('test');
+                this.output2.emit('test');
+              }
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: \`<button (click)="clicked()">Click Me</button>\`
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      // ...
+      BaseClass.ngBaseDef = i0.ɵdefineBase({
+        outputs: {
+          output1: "output1",
+          output2: "output2"
+        }
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
+    it('should add ngBaseDef if a mixture of @Input and @Output props are present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Input, Output, EventEmitter} from '@angular/core';
+            export class BaseClass {
+              @Output()
+              output1 = new EventEmitter<string>();
+
+              @Output()
+              output2 = new EventEmitter<string>();
+
+              @Input()
+              input1 = 'test';
+
+              @Input('whatever')
+              input2 = 'blah';
+
+              clicked() {
+                this.output1.emit('test');
+                this.output2.emit('test');
+              }
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: \`<button (click)="clicked()">Click Me</button>\`
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const expectedOutput = `
+      // ...
+      BaseClass.ngBaseDef = i0.ɵdefineBase({
+        inputs: {
+          input1: "input1",
+          input2: ["whatever", "input2"]
+        },
+        outputs: {
+          output1: "output1",
+          output2: "output2"
+        }
+      });
+      // ...
+      `;
+      const result = compile(files, angularFiles);
+      debugger;
+      expectEmit(result.source, expectedOutput, 'Invalid base definition');
+    });
+
+    it('should NOT add ngBaseDef if @Component is present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule, Output, EventEmitter} from '@angular/core';
+            @Component({
+              selector: 'whatever',
+              template: '<button (click)="clicked()">Click {{input1}}</button>'
+            })
+            export class BaseClass {
+              @Output()
+              output1 = new EventEmitter<string>();
+
+              @Input()
+              input1 = 'whatever';
+
+              clicked() {
+                this.output1.emit('test');
+              }
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: \`<div>What is this developer doing?</div>\`
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const result = compile(files, angularFiles);
+      expect(result.source.indexOf('ngBaseDef')).toBe(-1);
+    });
+
+    it('should NOT add ngBaseDef if @Directive is present', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, Directive, NgModule, Output, EventEmitter} from '@angular/core';
+            @Directive({
+              selector: 'whatever',
+            })
+            export class BaseClass {
+              @Output()
+              output1 = new EventEmitter<string>();
+
+              @Input()
+              input1 = 'whatever';
+
+              clicked() {
+                this.output1.emit('test');
+              }
+            }
+
+            @Component({
+              selector: 'my-component',
+              template: '<button (click)="clicked()">Click {{input1}}</button>'
+            })
+            export class MyComponent extends BaseClass {
+            }
+
+            @NgModule({
+              declarations: [MyComponent]
+            })
+            export class MyModule {}
+          `
+        }
+      };
+      const result = compile(files, angularFiles);
+      expect(result.source.indexOf('ngBaseDef')).toBe(-1);
+    });
+  });
 });
