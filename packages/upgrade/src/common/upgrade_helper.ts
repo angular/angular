@@ -124,6 +124,7 @@ export class UpgradeHelper {
       controllerInstance.$onDestroy();
     }
     $scope.$destroy();
+    this.$element.triggerHandler !('$destroy');
   }
 
   prepareTransclusion(): angular.ILinkFn|undefined {
