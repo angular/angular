@@ -8,7 +8,7 @@
 
 import {Compiler, Injectable, Injector, NgModuleFactoryLoader, NgModuleRef, OnDestroy} from '@angular/core';
 import {Observable, Subscription, from, of } from 'rxjs';
-import {catchError, concatMap, filter, map, mergeAll, mergeMap} from 'rxjs/operators';
+import { catchError, concatMap, filter, map, mergeAll, mergeMap, take } from 'rxjs/operators';
 
 import {LoadedRouterConfig, Route, Routes} from './config';
 import {Event, NavigationEnd, RouteConfigLoadEnd, RouteConfigLoadStart} from './events';
@@ -87,7 +87,7 @@ export class RouterPreloader implements OnDestroy {
   setUpPreloading(): void {
     this.subscription =
         this.router.events
-            .pipe(filter((e: Event) => e instanceof NavigationEnd), concatMap(() => this.preload()))
+            .pipe(filter((e: Event) => e instanceof NavigationEnd), take(1), concatMap(() => this.preload()))
             .subscribe(() => {});
   }
 
@@ -117,6 +117,9 @@ export class RouterPreloader implements OnDestroy {
       } else if (route.children) {
         res.push(this.processRoutes(ngModule, route.children));
       }
+    }
+    if (res.length === 0) {
+      res.push(of(null));
     }
     return from(res).pipe(mergeAll(), map((_) => void 0));
   }
