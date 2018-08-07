@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, ExternalExpr, ExternalReference} from '@angular/compiler';
+import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ReflectionHost} from '../../host';
@@ -33,6 +33,7 @@ export interface ModuleData {
 export interface CompilationScope<T> {
   directives: Map<string, T>;
   pipes: Map<string, T>;
+  containsForwardDecls?: boolean;
 }
 
 /**
@@ -146,7 +147,7 @@ export class SelectorScopeRegistry {
 
       // The scope as cached is in terms of References, not Expressions. Converting between them
       // requires knowledge of the context file (in this case, the component node's source file).
-      return convertScopeToExpressions(scope, node.getSourceFile());
+      return convertScopeToExpressions(scope, node);
     }
 
     // This is the first time the scope for this module is being computed.
@@ -179,7 +180,7 @@ export class SelectorScopeRegistry {
     this._compilationScopeCache.set(node, scope);
 
     // Convert References to Expressions in the context of the component's source file.
-    return convertScopeToExpressions(scope, node.getSourceFile());
+    return convertScopeToExpressions(scope, node);
   }
 
   /**
@@ -390,8 +391,31 @@ function convertReferenceMap(
 }
 
 function convertScopeToExpressions(
-    scope: CompilationScope<Reference>, context: ts.SourceFile): CompilationScope<Expression> {
-  const directives = convertReferenceMap(scope.directives, context);
-  const pipes = convertReferenceMap(scope.pipes, context);
-  return {directives, pipes};
+    scope: CompilationScope<Reference>, context: ts.Declaration): CompilationScope<Expression> {
+  const sourceContext = ts.getOriginalNode(context).getSourceFile();
+  const directives = convertReferenceMap(scope.directives, sourceContext);
+  const pipes = convertReferenceMap(scope.pipes, sourceContext);
+  let containsForwardDecls = false;
+  directives.forEach(expr => {
+    containsForwardDecls =
+        containsForwardDecls || isExpressionForwardReference(expr, context, sourceContext);
+  });
+  !containsForwardDecls && pipes.forEach(expr => {
+    containsForwardDecls =
+        containsForwardDecls || isExpressionForwardReference(expr, context, sourceContext);
+  });
+  return {directives, pipes, containsForwardDecls};
+}
+
+function isExpressionForwardReference(
+    expr: Expression, context: ts.Declaration, contextSource: ts.SourceFile): boolean {
+  if (isWrappedTsNodeExpr(expr)) {
+    const node = ts.getOriginalNode(expr.node);
+    return node.getSourceFile() === contextSource && context.pos < node.pos;
+  }
+  return false;
+}
+
+function isWrappedTsNodeExpr(expr: Expression): expr is WrappedNodeExpr<ts.Node> {
+  return expr instanceof WrappedNodeExpr;
 }

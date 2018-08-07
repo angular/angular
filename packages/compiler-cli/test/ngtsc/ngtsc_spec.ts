@@ -640,4 +640,36 @@ describe('ngtsc behavioral tests', () => {
     expect(emptyFactory).toContain(`import * as i0 from '@angular/core';`);
     expect(emptyFactory).toContain(`export var ɵNonEmptyModule = true;`);
   });
+
+  it('should wrap "directives" in component metadata in a closure when forward references are present',
+     () => {
+       writeConfig();
+       write('test.ts', `
+        import {Component, NgModule} from '@angular/core';
+
+        @Component({
+          selector: 'cmp-a',
+          template: '<cmp-b></cmp-b>',
+        })
+        class CmpA {}
+
+        @Component({
+          selector: 'cmp-b',
+          template: 'This is B',
+        })
+        class CmpB {}
+
+        @NgModule({
+          declarations: [CmpA, CmpB],
+        })
+        class Module {}
+    `);
+
+       const exitCode = main(['-p', basePath], errorSpy);
+       expect(errorSpy).not.toHaveBeenCalled();
+       expect(exitCode).toBe(0);
+
+       const jsContents = getContents('test.js');
+       expect(jsContents).toContain('directives: function () { return [CmpB]; }');
+     });
 });
