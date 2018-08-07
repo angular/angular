@@ -97,6 +97,7 @@
     // Custom Rules
     "ts-loader": true,
     "no-exposed-todo": true,
+    "no-import-spacing": true,
     "setters-after-getters": true,
     "rxjs-imports": true,
     "no-host-decorator-in-concrete": [
