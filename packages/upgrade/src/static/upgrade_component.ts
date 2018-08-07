@@ -217,10 +217,7 @@ export class UpgradeComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
     if (isFunction(this.unregisterDoCheckWatcher)) {
       this.unregisterDoCheckWatcher();
     }
-    if (this.controllerInstance && isFunction(this.controllerInstance.$onDestroy)) {
-      this.controllerInstance.$onDestroy();
-    }
-    this.$componentScope.$destroy();
+    this.helper.onDestroy(this.$componentScope, this.controllerInstance);
   }
 
   private initializeBindings(directive: angular.IDirective) {
