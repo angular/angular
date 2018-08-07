@@ -12,7 +12,7 @@ import {Input, TemplateRef, ViewContainerRef, ViewRef} from '../../src/core';
 import {defineDirective} from '../../src/render3/definition';
 import {injectTemplateRef, injectViewContainerRef} from '../../src/render3/di';
 import {AttributeMarker, detectChanges} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, projection, projectionDef, text} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, projection, projectionDef, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -1165,6 +1165,92 @@ describe('content projection', () => {
             '<parent-comp>' +
             '<projection-comp>Before<div>A</div>**DEF**<p>123</p>After</projection-comp>' +
             '<projection-comp>Before<div>B</div><p>456</p>After</projection-comp></parent-comp>');
+  });
+
+  it('should project ng-container at the content root', () => {
+
+    `<ng-content></ng-content>`;
+    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef();
+        projection(0);
+      }
+    });
+
+    `<child>
+      <ng-container>
+        <ng-container>
+          content
+        </ng-container>
+      </ng-container>  
+    </child>`;
+    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'child');
+        {
+          elementContainerStart(1);
+          {
+            elementContainerStart(2);
+            { text(3, 'content'); }
+            elementContainerEnd();
+          }
+          elementContainerEnd();
+        }
+        elementEnd();
+      }
+    }, [Child]);
+
+    const parent = renderComponent(Parent);
+    expect(toHtml(parent)).toEqual('<child>content</child>');
+  });
+
+  it('should re-project ng-container at the content root', () => {
+
+    `<ng-content></ng-content>`;
+    const GrandChild = createComponent('grand-child', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef();
+        projection(0);
+      }
+    });
+
+    `<grand-child>
+      <ng-content></ng-content>
+    </grand-child>`;
+    const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        projectionDef();
+        elementStart(0, 'grand-child');
+        { projection(1); }
+        elementEnd();
+      }
+    }, [GrandChild]);
+
+    `<child>
+      <ng-container>
+        <ng-container>
+          content
+        </ng-container>
+      </ng-container>  
+    </child>`;
+    const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        elementStart(0, 'child');
+        {
+          elementContainerStart(1);
+          {
+            elementContainerStart(2);
+            { text(3, 'content'); }
+            elementContainerEnd();
+          }
+          elementContainerEnd();
+        }
+        elementEnd();
+      }
+    }, [Child]);
+
+    const parent = renderComponent(Parent);
+    expect(toHtml(parent)).toEqual('<child><grand-child>content</grand-child></child>');
   });
 
   describe('with selectors', () => {
