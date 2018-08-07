@@ -651,6 +651,108 @@ describe('render3 integration test', () => {
       expect(fixture.html).toEqual('<test-cmpt>component template</test-cmpt>');
     });
 
+    it('should render inside another ng-container', () => {
+      /**
+       * <ng-container>
+       *   <ng-container>
+       *     <ng-container>
+       *       content
+       *     </ng-container>
+       *   </ng-container>
+       * </ng-container>
+       */
+      const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
+        if (rf & RenderFlags.Create) {
+          elementContainerStart(0);
+          {
+            elementContainerStart(1);
+            {
+              elementContainerStart(2);
+              { text(3, 'content'); }
+              elementContainerEnd();
+            }
+            elementContainerEnd();
+          }
+          elementContainerEnd();
+        }
+      });
+
+      function App() { element(0, 'test-cmpt'); }
+
+      const fixture = new TemplateFixture(App, () => {}, [TestCmpt]);
+      expect(fixture.html).toEqual('<test-cmpt>content</test-cmpt>');
+    });
+
+    it('should render inside another ng-container at the root of a delayed view', () => {
+
+      class TestDirective {
+        constructor(private _tplRef: TemplateRef<any>, private _vcRef: ViewContainerRef) {}
+
+        createAndInsert() { this._vcRef.insert(this._tplRef.createEmbeddedView({})); }
+
+        clear() { this._vcRef.clear(); }
+
+        static ngDirectiveDef = defineDirective({
+          type: TestDirective,
+          selectors: [['', 'testDirective', '']],
+          factory: () => new TestDirective(injectTemplateRef(), injectViewContainerRef()),
+        });
+      }
+
+      let testDirective: TestDirective;
+
+      function embeddedTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementContainerStart(0);
+          {
+            elementContainerStart(1);
+            {
+              elementContainerStart(2);
+              { text(3, 'content'); }
+              elementContainerEnd();
+            }
+            elementContainerEnd();
+          }
+          elementContainerEnd();
+        }
+      }
+
+      `<ng-template testDirective>
+        <ng-container>
+          <ng-container>
+            <ng-container>
+              content
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-template>`;
+      const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
+        if (rf & RenderFlags.Create) {
+          container(0, embeddedTemplate, null, [AttributeMarker.SelectOnly, 'testDirective']);
+        }
+        if (rf & RenderFlags.Update) {
+          testDirective = loadDirective<TestDirective>(0);
+        }
+      }, [TestDirective]);
+
+      function App() { element(0, 'test-cmpt'); }
+
+      const fixture = new ComponentFixture(TestCmpt);
+      expect(fixture.html).toEqual('');
+
+      testDirective !.createAndInsert();
+      fixture.update();
+      expect(fixture.html).toEqual('content');
+
+      testDirective !.createAndInsert();
+      fixture.update();
+      expect(fixture.html).toEqual('contentcontent');
+
+      testDirective !.clear();
+      fixture.update();
+      expect(fixture.html).toEqual('');
+    });
+
     it('should support directives and inject ElementRef', () => {
 
       class Directive {
