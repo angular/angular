@@ -374,7 +374,7 @@ button</button>
 
 <div>
 <!-- #docregion event-binding-3 -->
-<!-- `myClick` is an event on the custom `ClickDirective` -->
+<!-- `myClick` 이벤트는 `ClickDirective`에서 보내는 이벤트입니다. -->
 <!-- #docregion myClick -->
 <div (myClick)="clickMessage=$event" clickable>click with myClick</div>
 <!-- #enddocregion myClick -->
@@ -687,9 +687,9 @@ bindon-ngModel
 <input #phone placeholder="phone number">
 <!-- #enddocregion ref-var -->
 
-<!-- lots of other elements -->
+<!-- 기타 엘리먼트 -->
 
-<!-- phone refers to the input element; pass its `value` to an event handler -->
+<!-- phone은 input 엘리먼트를 가리킵니다. 그래서 엘리먼트의 `value` 값을 다음과 같이 전달할 수 있습니다. -->
 <button (click)="callPhone(phone.value)">Call</button>
 <!-- #enddocregion ref-phone -->
 
@@ -732,7 +732,7 @@ bindon-ngModel
 <!-- #enddocregion pipes-1 -->
 
 <!-- #docregion pipes-2 -->
-<!-- Pipe chaining: convert title to uppercase, then to lowercase -->
+<!-- 파이프 체이닝: 제목을 대문자로 변환하고, 다시 소문자로 변환합니다. -->
 <div>
   Title through a pipe chain:
   {{title | uppercase | lowercase}}
@@ -740,7 +740,7 @@ bindon-ngModel
 <!-- #enddocregion pipes-2 -->
 
 <!-- #docregion pipes-3 -->
-<!-- pipe with configuration argument => "February 25, 1970" -->
+<!-- 파이프에 인자를 전달할 수도 있습니다 => 결과) "February 25, 1970" -->
 <div>Birthdate: {{currentHero?.birthdate | date:'longDate'}}</div>
 <!-- #enddocregion pipes-3 -->
 
@@ -787,7 +787,7 @@ See console log:
 -->
 
 <!-- #docregion safe-4 -->
-<!--No hero, div not displayed, no error -->
+<!-- 히어로 객체가 유효하지 않으면 div가 표시되지 않으며, 에러도 발생하지 않습니다. -->
 <div *ngIf="nullHero">The null hero's name is {{nullHero.name}}</div>
 <!-- #enddocregion safe-4 -->
 
@@ -799,7 +799,7 @@ The null hero's name is {{nullHero && nullHero.name}}
 
 <div>
   <!-- #docregion safe-6 -->
-  <!-- No hero, no problem! -->
+  <!-- 히어로 객체가 유효하지 않아도 괜찮습니다! -->
   The null hero's name is {{nullHero?.name}}
   <!-- #enddocregion safe-6 -->
 </div>
@@ -812,7 +812,7 @@ The null hero's name is {{nullHero && nullHero.name}}
 
 <div>
   <!-- #docregion non-null-assertion-1 -->
-  <!--No hero, no text -->
+  <!-- 히어로 객체가 유효하지 않으면 표시되지 않습니다. -->
   <div *ngIf="hero">
     The hero's name is {{hero!.name}}
   </div>
@@ -826,7 +826,7 @@ The null hero's name is {{nullHero && nullHero.name}}
 
 <div>
   <!-- #docregion any-type-cast-function-1 -->
-  <!-- Accessing an undeclared member -->
+  <!-- 선언되지 않은 타입 참조하기 -->
   <div>
     The hero's marker is {{$any(hero).marker}}
   </div>
@@ -835,7 +835,7 @@ The null hero's name is {{nullHero && nullHero.name}}
 
 <div>
   <!-- #docregion any-type-cast-function-2 -->
-  <!-- Accessing an undeclared member -->
+  <!-- 선언되지 않은 타입 참조하기 -->
   <div>
     Undeclared members is {{$any(this).member}}
   </div>
