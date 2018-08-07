@@ -35,8 +35,8 @@ import {CdkDragDropRegistry} from './drag-drop-registry';
 import {Subject, merge} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
-// TODO: add auto-scrolling functionality.
-// TODO: add an API for moving a draggable up/down the
+// TODO(crisbeto): add auto-scrolling functionality.
+// TODO(crisbeto): add an API for moving a draggable up/down the
 // list programmatically. Useful for keyboard controls.
 
 /** Element that can be moved inside a CdkDrop container. */
@@ -236,7 +236,7 @@ export class CdkDrag<T = any> implements OnDestroy {
 
   /** Handler that is invoked when the user moves their pointer after they've initiated a drag. */
   private _pointerMove = (event: MouseEvent | TouchEvent) => {
-    // TODO: this should start dragging after a certain threshold,
+    // TODO(crisbeto): this should start dragging after a certain threshold,
     // otherwise we risk interfering with clicks on the element.
     if (!this._dragDropRegistry.isDragging(this)) {
       return;
@@ -279,8 +279,6 @@ export class CdkDrag<T = any> implements OnDestroy {
 
   /** Cleans up the DOM artifacts that were added to facilitate the element being dragged. */
   private _cleanupDragArtifacts() {
-    const currentIndex = this._getElementIndexInDom(this._placeholder);
-
     // Restore the element's visibility and insert it at its old position in the DOM.
     // It's important that we maintain the position, because moving the element around in the DOM
     // can throw off `NgFor` which does smart diffing and re-creates elements only when necessary,
@@ -298,6 +296,8 @@ export class CdkDrag<T = any> implements OnDestroy {
 
     // Re-enter the NgZone since we bound `document` events on the outside.
     this._ngZone.run(() => {
+      const currentIndex = this.dropContainer.getItemIndex(this);
+
       this.ended.emit({source: this});
       this.dropped.emit({
         item: this,
@@ -328,7 +328,7 @@ export class CdkDrag<T = any> implements OnDestroy {
         // Notify the new container that the item has entered.
         this.entered.emit({ item: this, container: newContainer });
         this.dropContainer = newContainer;
-        this.dropContainer.enter(this);
+        this.dropContainer.enter(this, x, y);
       });
     }
 
@@ -384,37 +384,6 @@ export class CdkDrag<T = any> implements OnDestroy {
 
     placeholder.classList.add('cdk-drag-placeholder');
     return placeholder;
-  }
-
-  /** Gets the index of an element, based on its index in the DOM. */
-  private _getElementIndexInDom(element: HTMLElement): number {
-    // Note: we may be able to figure this in memory while sorting, but doing so won't be very
-    // reliable when transferring between containers, because the new container doesn't have
-    // the proper indices yet. Also this will work better for the case where the consumer
-    // isn't using an `ngFor` to render the list.
-    if (!element.parentElement) {
-      return -1;
-    }
-
-    // Avoid accessing `children` and `children.length` too much since they're a "live collection".
-    let index = 0;
-    const siblings = element.parentElement.children;
-    const siblingsLength = siblings.length;
-    const draggableElements = this.dropContainer._draggables
-        .filter(item => item !== this)
-        .map(item => item.element.nativeElement);
-
-    // Loop through the sibling elements to find out the index of the
-    // current one, while skipping any elements that aren't draggable.
-    for (let i = 0; i < siblingsLength; i++) {
-      if (siblings[i] === element) {
-        return index;
-      } else if (draggableElements.indexOf(siblings[i] as HTMLElement) > -1) {
-        index++;
-      }
-    }
-
-    return -1;
   }
 
   /**

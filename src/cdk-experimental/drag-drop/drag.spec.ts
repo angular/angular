@@ -562,7 +562,7 @@ describe('CdkDrag', () => {
         // Add a few pixels to the left offset so we get some overlap.
         dispatchMouseEvent(document, 'mousemove', elementRect.left + 5, elementRect.top);
         fixture.detectChanges();
-        expect(getElementIndex(placeholder)).toBe(i);
+        expect(getElementIndexByPosition(placeholder, 'left')).toBe(i);
       }
 
       dispatchMouseEvent(document, 'mouseup');
@@ -590,7 +590,7 @@ describe('CdkDrag', () => {
         // Remove a few pixels from the right offset so we get some overlap.
         dispatchMouseEvent(document, 'mousemove', elementRect.right - 5, elementRect.top);
         fixture.detectChanges();
-        expect(getElementIndex(placeholder)).toBe(Math.min(i + 1, items.length - 1));
+        expect(getElementIndexByPosition(placeholder, 'left')).toBe(i);
       }
 
       dispatchMouseEvent(document, 'mouseup');
@@ -658,6 +658,31 @@ describe('CdkDrag', () => {
       expect(placeholder).toBeTruthy();
       expect(placeholder.classList).toContain('custom-placeholder');
       expect(placeholder.textContent!.trim()).toContain('Custom placeholder');
+    }));
+
+    it('should clear the `transform` value from siblings when item is dropped`', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const dragItems = fixture.componentInstance.dragItems;
+      const firstItem = dragItems.first;
+      const thirdItem = dragItems.toArray()[2].element.nativeElement;
+      const thirdItemRect = thirdItem.getBoundingClientRect();
+
+      dispatchMouseEvent(firstItem.element.nativeElement, 'mousedown');
+      fixture.detectChanges();
+
+      dispatchMouseEvent(document, 'mousemove', thirdItemRect.left + 1, thirdItemRect.top + 1);
+      fixture.detectChanges();
+
+      expect(thirdItem.style.transform).toBeTruthy();
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+      fixture.detectChanges();
+
+      expect(thirdItem.style.transform).toBeFalsy();
     }));
 
   });
@@ -1151,9 +1176,15 @@ function dragElementViaTouch(fixture: ComponentFixture<any>,
   fixture.detectChanges();
 }
 
-/** Gets the index of a DOM element inside its parent. */
-function getElementIndex(element: HTMLElement) {
-  return element.parentElement ? Array.from(element.parentElement.children).indexOf(element) : -1;
+/** Gets the index of an element among its siblings, based on their position on the page. */
+function getElementIndexByPosition(element: HTMLElement, direction: 'top' | 'left') {
+  if (!element.parentElement) {
+    return -1;
+  }
+
+  return Array.from(element.parentElement.children)
+      .sort((a, b) => a.getBoundingClientRect()[direction] - b.getBoundingClientRect()[direction])
+      .indexOf(element);
 }
 
 /**
@@ -1193,7 +1224,7 @@ function assertDownwardSorting(fixture: ComponentFixture<any>, items: Element[])
     // Add a few pixels to the top offset so we get some overlap.
     dispatchMouseEvent(document, 'mousemove', elementRect.left, elementRect.top + 5);
     fixture.detectChanges();
-    expect(getElementIndex(placeholder)).toBe(i);
+    expect(getElementIndexByPosition(placeholder, 'top')).toBe(i);
   }
 
   dispatchMouseEvent(document, 'mouseup');
@@ -1222,7 +1253,7 @@ function assertUpwardSorting(fixture: ComponentFixture<any>, items: Element[]) {
     // Remove a few pixels from the bottom offset so we get some overlap.
     dispatchMouseEvent(document, 'mousemove', elementRect.left, elementRect.bottom - 5);
     fixture.detectChanges();
-    expect(getElementIndex(placeholder)).toBe(Math.min(i + 1, items.length - 1));
+    expect(getElementIndexByPosition(placeholder, 'top')).toBe(i);
   }
 
   dispatchMouseEvent(document, 'mouseup');

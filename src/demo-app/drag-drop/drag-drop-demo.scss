@@ -38,8 +38,8 @@
   justify-content: space-between;
   box-sizing: border-box;
 
-  .cdk-drop-dragging & {
-    transition: transform 500ms ease;
+  .cdk-drop-dragging &:not(.cdk-drag-placeholder) {
+    transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
   }
 
   .horizontal & {
@@ -65,11 +65,11 @@
 }
 
 .cdk-drag-animating {
-  transition: transform 500ms ease;
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
 
 .cdk-drag-placeholder {
-  opacity: 0.5;
+  opacity: 0;
 }
 
 .wrapper {

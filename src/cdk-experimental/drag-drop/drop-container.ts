@@ -30,8 +30,10 @@ export interface CdkDropContainer<T = any> {
   /**
    * Emits an event to indicate that the user moved an item into the container.
    * @param item Item that was moved into the container.
+   * @param xOffset Position of the item along the X axis.
+   * @param yOffset Position of the item along the Y axis.
    */
-  enter(item: CdkDrag): void;
+  enter(item: CdkDrag, xOffset: number, yOffset: number): void;
 
   /**
    * Removes an item from the container after it was dragged into another container by the user.
