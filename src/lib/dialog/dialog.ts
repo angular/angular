@@ -85,7 +85,7 @@ export class MatDialog {
   /**
    * Stream that emits when a dialog has been opened.
    * @deprecated Use `afterOpened` instead.
-   * @deletion-target 8.0.0
+   * @breaking-change 8.0.0
    */
   get afterOpen(): Subject<MatDialogRef<any>> {
     return this.afterOpened;
