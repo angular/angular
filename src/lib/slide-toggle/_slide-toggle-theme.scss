@@ -90,6 +90,6 @@
 
 @mixin mat-slide-toggle-typography($config) {
   .mat-slide-toggle-content {
-    @include mat-typography-level-to-styles($config, body-1);
+    font-family: mat-font-family($config);
   }
 }
