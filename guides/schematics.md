@@ -5,25 +5,25 @@ creating Material applications easier.
 Schematics come packaged with Angular Material, so once you have
 installed the npm package, they will be available via the Angular CLI.
 
-If you run it will automatically install Angular Material for you
+Using the command below will automatically install Angular Material for you
 and run the install schematic.
 
 ```
 ng add @angular/material
 ```
 
-The install schematic will help you quickly add Material to a new project. 
+The install schematic will help you to quickly add Material to a new project. 
 This schematic will:
 
-- Ensure project dependencies in `package.json`
-- Ensure project dependencies in your app module
-- Adds Prebuilt or Setup Custom Theme
-- Adds Roboto fonts to your index.html
+- Ensure project dependencies are placed in `package.json`
+- Ensure project dependencies are placed in your app module
+- Add Prebuilt or Setup Custom Theme
+- Add Roboto fonts to your index.html
 - Apply simple CSS reset to body
 
 
 ## Generator Schematics
-In addition to the install schematic Angular Material has three schematics it comes packaged with:
+In addition to the install schematic, Angular Material has three schematics it comes packaged with:
 
 - Navigation
 - Dashboard
@@ -31,7 +31,7 @@ In addition to the install schematic Angular Material has three schematics it co
 
 ### Navigation Schematic
 The navigation schematic will create a new component that includes
-a toolbar with the app name and the side nav responsive based on Material
+a toolbar with the app name and a responsive side nav based on Material
 breakpoints.
 
 ```
