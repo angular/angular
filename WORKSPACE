@@ -38,6 +38,13 @@ http_archive(
     sha256 = "feba3278c13cde8d67e341a837f69a029f698d7a27ddbb2a202be7a10b22142a",
 )
 
+http_archive(
+    name = "io_bazel_rules_sass",
+    url = "https://github.com/bazelbuild/rules_sass/archive/0.1.0.zip",
+    strip_prefix = "rules_sass-0.1.0",
+    sha256 = "b243c4d64f054c174051785862ab079050d90b37a1cef7da93821c6981cb9ad4",
+)
+
 # This commit matches the version of buildifier in angular/ngcontainer
 # If you change this, also check if it matches the version in the angular/ngcontainer
 # version in /.circleci/config.yml
@@ -56,6 +63,14 @@ http_archive(
     url = "https://github.com/bazelbuild/bazel/archive/968f87900dce45a7af749a965b72dbac51b176b3.zip",
     strip_prefix = "bazel-968f87900dce45a7af749a965b72dbac51b176b3",
     sha256 = "e373d2ae24955c1254c495c9c421c009d88966565c35e4e8444c082cb1f0f48f",
+)
+
+http_archive(
+    name = "io_bazel_skydoc",
+    # TODO: switch to upstream when https://github.com/bazelbuild/skydoc/pull/103 is merged
+    url = "https://github.com/alexeagle/skydoc/archive/fe2e9f888d28e567fef62ec9d4a93c425526d701.zip",
+    strip_prefix = "skydoc-fe2e9f888d28e567fef62ec9d4a93c425526d701",
+    sha256 = "7bfb5545f59792a2745f2523b9eef363f9c3e7274791c030885e7069f8116016",
 )
 
 # We have a source dependency on the Devkit repository, because it's built with
@@ -144,3 +159,12 @@ yarn_install(
     package_json = "//tools/http-server:package.json",
     yarn_lock = "//tools/http-server:yarn.lock",
 )
+
+##################################
+# Skylark documentation generation
+
+load("@io_bazel_rules_sass//sass:sass_repositories.bzl", "sass_repositories")
+sass_repositories()
+
+load("@io_bazel_skydoc//skylark:skylark.bzl", "skydoc_repositories")
+skydoc_repositories()
