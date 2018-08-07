@@ -122,7 +122,7 @@ describe('MatDialog', () => {
     const dialogRef = dialog.open(PizzaMsg, {viewContainerRef: testViewContainerRef});
     const spy = jasmine.createSpy('afterOpen spy');
 
-    dialogRef.afterOpen().subscribe(spy);
+    dialogRef.afterOpened().subscribe(spy);
 
     viewContainerFixture.detectChanges();
 
@@ -225,7 +225,7 @@ describe('MatDialog', () => {
           .not.toBeNull('dialog container exists when beforeClose is called');
     });
 
-    dialogRef.beforeClose().subscribe(beforeCloseHandler);
+    dialogRef.beforeClosed().subscribe(beforeCloseHandler);
     dialogRef.close('Bulbasaur');
     viewContainerFixture.detectChanges();
     flush();
@@ -328,7 +328,7 @@ describe('MatDialog', () => {
   }));
 
   it('should notify the observers if a dialog has been opened', () => {
-    dialog.afterOpen.subscribe(ref => {
+    dialog.afterOpened.subscribe(ref => {
       expect(dialog.open(PizzaMsg, {
         viewContainerRef: testViewContainerRef
       })).toBe(ref);

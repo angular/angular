@@ -66,7 +66,7 @@ export class DialogDemo {
   openJazz() {
     this.dialogRef = this.dialog.open(JazzDialog, this.config);
 
-    this.dialogRef.beforeClose().subscribe((result: string) => {
+    this.dialogRef.beforeClosed().subscribe((result: string) => {
       this.lastBeforeCloseResult = result;
     });
     this.dialogRef.afterClosed().subscribe((result: string) => {

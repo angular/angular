@@ -53,10 +53,10 @@ export class Dialog {
       this._afterAllClosed : this._afterAllClosed.pipe(startWith(undefined)));
 
   /** Stream that emits when a dialog is opened. */
-  get afterOpen(): Subject<DialogRef<any>> {
-    return this._parentDialog ? this._parentDialog.afterOpen : this._afterOpen;
+  get afterOpened(): Subject<DialogRef<any>> {
+    return this._parentDialog ? this._parentDialog.afterOpened : this._afterOpened;
   }
-  _afterOpen: Subject<DialogRef<any>> = new Subject();
+  _afterOpened: Subject<DialogRef<any>> = new Subject();
 
   /** Stream that emits when a dialog is opened. */
   get openDialogs(): DialogRef<any>[] {
@@ -130,14 +130,17 @@ export class Dialog {
   private registerDialogRef(dialogRef: DialogRef<any>): void {
     this.openDialogs.push(dialogRef);
 
-    let dialogOpenSub = dialogRef.afterOpen().subscribe(() => {
-      this.afterOpen.next(dialogRef);
+    const dialogOpenSub = dialogRef.afterOpened().subscribe(() => {
+      this.afterOpened.next(dialogRef);
       dialogOpenSub.unsubscribe();
     });
 
-    let dialogCloseSub = dialogRef.afterClosed().subscribe(() => {
-      let dialogIdx = this._openDialogs.indexOf(dialogRef);
-      if (dialogIdx !== -1) { this._openDialogs.splice(dialogIdx, 1); }
+    const dialogCloseSub = dialogRef.afterClosed().subscribe(() => {
+      let dialogIndex = this._openDialogs.indexOf(dialogRef);
+
+      if (dialogIndex > -1) {
+        this._openDialogs.splice(dialogIndex, 1);
+      }
 
       if (!this._openDialogs.length) {
         this._afterAllClosedBase.next();

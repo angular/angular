@@ -69,7 +69,7 @@ export const MAT_DIALOG_SCROLL_STRATEGY_PROVIDER = {
 export class MatDialog {
   private _openDialogsAtThisLevel: MatDialogRef<any>[] = [];
   private readonly _afterAllClosedAtThisLevel = new Subject<void>();
-  private readonly _afterOpenAtThisLevel = new Subject<MatDialogRef<any>>();
+  private readonly _afterOpenedAtThisLevel = new Subject<MatDialogRef<any>>();
   private _ariaHiddenElements = new Map<Element, string|null>();
 
   /** Keeps track of the currently-open dialogs. */
@@ -78,8 +78,17 @@ export class MatDialog {
   }
 
   /** Stream that emits when a dialog has been opened. */
+  get afterOpened(): Subject<MatDialogRef<any>> {
+    return this._parentDialog ? this._parentDialog.afterOpened : this._afterOpenedAtThisLevel;
+  }
+
+  /**
+   * Stream that emits when a dialog has been opened.
+   * @deprecated Use `afterOpened` instead.
+   * @deletion-target 8.0.0
+   */
   get afterOpen(): Subject<MatDialogRef<any>> {
-    return this._parentDialog ? this._parentDialog.afterOpen : this._afterOpenAtThisLevel;
+    return this.afterOpened;
   }
 
   get _afterAllClosed() {
@@ -134,7 +143,7 @@ export class MatDialog {
 
     this.openDialogs.push(dialogRef);
     dialogRef.afterClosed().subscribe(() => this._removeOpenDialog(dialogRef));
-    this.afterOpen.next(dialogRef);
+    this.afterOpened.next(dialogRef);
 
     return dialogRef;
   }
