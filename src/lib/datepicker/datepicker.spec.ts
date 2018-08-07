@@ -1,4 +1,4 @@
-import {ENTER, ESCAPE, RIGHT_ARROW, UP_ARROW} from '@angular/cdk/keycodes';
+import {ENTER, ESCAPE, RIGHT_ARROW, UP_ARROW, DOWN_ARROW} from '@angular/cdk/keycodes';
 import {Overlay, OverlayContainer, ScrollDispatcher} from '@angular/cdk/overlay';
 import {
   createKeyboardEvent,
@@ -432,12 +432,63 @@ describe('MatDatepicker', () => {
         expect(testComponent.datepicker.opened).toBe(false);
       }));
 
+      it('should open the datpeicker using ALT + DOWN_ARROW', fakeAsync(() => {
+        expect(testComponent.datepicker.opened).toBe(false);
+
+        const event = createKeyboardEvent('keydown', DOWN_ARROW);
+        Object.defineProperty(event, 'altKey', {get: () => true});
+
+        dispatchEvent(fixture.nativeElement.querySelector('input'), event);
+        fixture.detectChanges();
+        flush();
+
+        expect(testComponent.datepicker.opened).toBe(true);
+        expect(event.defaultPrevented).toBe(true);
+      }));
+
     });
 
     describe('datepicker with too many inputs', () => {
       it('should throw when multiple inputs registered', fakeAsync(() => {
-        let fixture = createComponent(MultiInputDatepicker, [MatNativeDateModule]);
+        const fixture = createComponent(MultiInputDatepicker, [MatNativeDateModule]);
         expect(() => fixture.detectChanges()).toThrow();
+      }));
+    });
+
+    describe('datepicker that is assigned to input at a later point', () => {
+      it('should not throw on ALT + DOWN_ARROW for input without datepicker', fakeAsync(() => {
+        const fixture = createComponent(DelayedDatepicker, [MatNativeDateModule]);
+        fixture.detectChanges();
+
+        expect(() => {
+          const event = createKeyboardEvent('keydown', DOWN_ARROW);
+          Object.defineProperty(event, 'altKey', {get: () => true});
+          dispatchEvent(fixture.nativeElement.querySelector('input'), event);
+          fixture.detectChanges();
+          flush();
+        }).not.toThrow();
+      }));
+
+      it('should handle value changes when a datepicker is assigned after init', fakeAsync(() => {
+        const fixture = createComponent(DelayedDatepicker, [MatNativeDateModule]);
+        const testComponent: DelayedDatepicker = fixture.componentInstance;
+        const toSelect = new Date(2017, JAN, 1);
+
+        fixture.detectChanges();
+
+        expect(testComponent.datepickerInput.value).toBeNull();
+        expect(testComponent.datepicker._selected).toBeNull();
+
+        testComponent.assignedDatepicker = testComponent.datepicker;
+        fixture.detectChanges();
+
+        testComponent.assignedDatepicker.select(toSelect);
+        fixture.detectChanges();
+        flush();
+        fixture.detectChanges();
+
+        expect(testComponent.datepickerInput.value).toEqual(toSelect);
+        expect(testComponent.datepicker._selected).toEqual(toSelect);
       }));
     });
 
@@ -1787,3 +1838,18 @@ class DatepickerWithCustomHeader {
   `,
 })
 class CustomHeaderForDatepicker {}
+
+
+
+@Component({
+  template: `
+    <input [matDatepicker]="assignedDatepicker" [value]="date">
+    <mat-datepicker #d [touchUi]="touch"></mat-datepicker>
+  `,
+})
+class DelayedDatepicker {
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
+  @ViewChild(MatDatepickerInput) datepickerInput: MatDatepickerInput<Date>;
+  date: Date | null;
+  assignedDatepicker: MatDatepicker<Date>;
+}

@@ -9,7 +9,6 @@
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {DOWN_ARROW} from '@angular/cdk/keycodes';
 import {
-  AfterContentInit,
   Directive,
   ElementRef,
   EventEmitter,
@@ -92,21 +91,27 @@ export class MatDatepickerInputEvent<D> {
   },
   exportAs: 'matDatepickerInput',
 })
-export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAccessor, OnDestroy,
-    Validator {
+export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, Validator {
   /** The datepicker that this input is associated with. */
   @Input()
   set matDatepicker(value: MatDatepicker<D>) {
-    this.registerDatepicker(value);
+    if (!value) {
+      return;
+    }
+
+    this._datepicker = value;
+    this._datepicker._registerInput(this);
+    this._datepickerSubscription.unsubscribe();
+
+    this._datepickerSubscription = this._datepicker._selectedChanged.subscribe((selected: D) => {
+      this.value = selected;
+      this._cvaOnChange(selected);
+      this._onTouched();
+      this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
+      this.dateChange.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
+    });
   }
   _datepicker: MatDatepicker<D>;
-
-  private registerDatepicker(value: MatDatepicker<D>) {
-    if (value) {
-      this._datepicker = value;
-      this._datepicker._registerInput(this);
-    }
-  }
 
   /** Function that can be used to filter out dates within the datepicker. */
   @Input()
@@ -252,18 +257,6 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
     });
   }
 
-  ngAfterContentInit() {
-    if (this._datepicker) {
-      this._datepickerSubscription = this._datepicker._selectedChanged.subscribe((selected: D) => {
-        this.value = selected;
-        this._cvaOnChange(selected);
-        this._onTouched();
-        this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
-        this.dateChange.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
-      });
-    }
-  }
-
   ngOnDestroy() {
     this._datepickerSubscription.unsubscribe();
     this._localeSubscription.unsubscribe();
@@ -318,7 +311,7 @@ export class MatDatepickerInput<D> implements AfterContentInit, ControlValueAcce
   }
 
   _onKeydown(event: KeyboardEvent) {
-    if (event.altKey && event.keyCode === DOWN_ARROW) {
+    if (this._datepicker && event.altKey && event.keyCode === DOWN_ARROW) {
       this._datepicker.open();
       event.preventDefault();
     }
