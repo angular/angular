@@ -119,6 +119,13 @@ export class UpgradeHelper {
     return this.compileHtml(template);
   }
 
+  onDestroy($scope: angular.IScope, controllerInstance?: any) {
+    if (controllerInstance && isFunction(controllerInstance.$onDestroy)) {
+      controllerInstance.$onDestroy();
+    }
+    $scope.$destroy();
+  }
+
   prepareTransclusion(): angular.ILinkFn|undefined {
     const transclude = this.directive.transclude;
     const contentChildNodes = this.extractChildNodes();
