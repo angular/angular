@@ -17,14 +17,14 @@
   <mat-form-field color="accent">
     <mat-label>Min date</mat-label>
     <input matInput [matDatepicker]="minDatePicker" [(ngModel)]="minDate"
-        [disabled]="inputDisabled">
+        [disabled]="inputDisabled" [max]="maxDate">
     <mat-datepicker-toggle matSuffix [for]="minDatePicker"></mat-datepicker-toggle>
     <mat-datepicker #minDatePicker [touchUi]="touch" [disabled]="datepickerDisabled"></mat-datepicker>
   </mat-form-field>
   <mat-form-field color="accent">
     <mat-label>Max date</mat-label>
     <input matInput [matDatepicker]="maxDatePicker" [(ngModel)]="maxDate"
-        [disabled]="inputDisabled">
+        [disabled]="inputDisabled" [min]="minDate">
     <mat-datepicker-toggle matSuffix [for]="maxDatePicker"></mat-datepicker-toggle>
     <mat-datepicker #maxDatePicker [touchUi]="touch" [disabled]="datepickerDisabled"></mat-datepicker>
   </mat-form-field>
