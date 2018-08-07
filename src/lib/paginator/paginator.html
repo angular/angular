@@ -30,6 +30,7 @@
             (click)="firstPage()"
             [attr.aria-label]="_intl.firstPageLabel"
             [matTooltip]="_intl.firstPageLabel"
+            [matTooltipDisabled]="!hasPreviousPage()"
             [matTooltipPosition]="'above'"
             [disabled]="!hasPreviousPage()"
             *ngIf="showFirstLastButtons">
@@ -42,6 +43,7 @@
             (click)="previousPage()"
             [attr.aria-label]="_intl.previousPageLabel"
             [matTooltip]="_intl.previousPageLabel"
+            [matTooltipDisabled]="!hasPreviousPage()"
             [matTooltipPosition]="'above'"
             [disabled]="!hasPreviousPage()">
       <svg class="mat-paginator-icon" viewBox="0 0 24 24" focusable="false">
@@ -53,6 +55,7 @@
             (click)="nextPage()"
             [attr.aria-label]="_intl.nextPageLabel"
             [matTooltip]="_intl.nextPageLabel"
+            [matTooltipDisabled]="!hasNextPage()"
             [matTooltipPosition]="'above'"
             [disabled]="!hasNextPage()">
       <svg class="mat-paginator-icon" viewBox="0 0 24 24" focusable="false">
@@ -64,6 +67,7 @@
             (click)="lastPage()"
             [attr.aria-label]="_intl.lastPageLabel"
             [matTooltip]="_intl.lastPageLabel"
+            [matTooltipDisabled]="!hasNextPage()"
             [matTooltipPosition]="'above'"
             [disabled]="!hasNextPage()"
             *ngIf="showFirstLastButtons">
