@@ -8,6 +8,7 @@
 
 // clang-format off
 export {
+  defineBase as ɵdefineBase,
   defineComponent as ɵdefineComponent,
   defineDirective as ɵdefineDirective,
   definePipe as ɵdefinePipe,
@@ -97,6 +98,7 @@ export {
   st as ɵst,
   ld as ɵld,
   Pp as ɵPp,
+  BaseDef as ɵBaseDef,
   ComponentDef as ɵComponentDef,
   ComponentDefInternal as ɵComponentDefInternal,
   DirectiveDef as ɵDirectiveDef,

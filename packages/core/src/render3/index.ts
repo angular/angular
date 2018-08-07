@@ -11,7 +11,7 @@ import {defineBase, defineComponent, defineDirective, defineNgModule, definePipe
 import {InheritDefinitionFeature} from './features/inherit_definition_feature';
 import {NgOnChangesFeature} from './features/ng_onchanges_feature';
 import {PublicFeature} from './features/public_feature';
-import {ComponentDef, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
+import {BaseDef, ComponentDef, ComponentDefInternal, ComponentTemplate, ComponentType, DirectiveDef, DirectiveDefFlags, DirectiveDefInternal, DirectiveType, PipeDef} from './interfaces/definition';
 
 export {ComponentFactory, ComponentFactoryResolver, ComponentRef, WRAP_RENDERER_FACTORY2} from './component_ref';
 export {Render3DebugRendererFactory2} from './debug';
@@ -152,6 +152,7 @@ export {
 // clang-format on
 
 export {
+  BaseDef,
   ComponentDef,
   ComponentDefInternal,
   ComponentTemplate,
