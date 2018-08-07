@@ -211,6 +211,7 @@ describe('MatButtonToggle without forms', () => {
         ButtonToggleWithAriaLabel,
         ButtonToggleWithAriaLabelledby,
         RepeatedButtonTogglesWithPreselectedValue,
+        ButtonToggleWithTabindex,
       ],
     });
 
@@ -686,6 +687,26 @@ describe('MatButtonToggle without forms', () => {
     });
   });
 
+  describe('with tabindex ', () => {
+    it('should forward the tabindex to the underlying button', () => {
+      const fixture = TestBed.createComponent(ButtonToggleWithTabindex);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('.mat-button-toggle button');
+
+      expect(button.getAttribute('tabindex')).toBe('3');
+    });
+
+    it('should clear the tabindex from the host element', () => {
+      const fixture = TestBed.createComponent(ButtonToggleWithTabindex);
+      fixture.detectChanges();
+
+      const host = fixture.nativeElement.querySelector('.mat-button-toggle');
+
+      expect(host.hasAttribute('tabindex')).toBe(false);
+    });
+  });
+
   it('should not throw on init when toggles are repeated and there is an initial value', () => {
     const fixture = TestBed.createComponent(RepeatedButtonTogglesWithPreselectedValue);
 
@@ -855,3 +876,10 @@ class RepeatedButtonTogglesWithPreselectedValue {
   possibleValues = ['One', 'Two', 'Three'];
   value = 'Two';
 }
+
+
+@Component({
+  template: `<mat-button-toggle tabindex="3"></mat-button-toggle>`
+})
+class ButtonToggleWithTabindex {}
+

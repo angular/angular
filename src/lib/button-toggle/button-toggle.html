@@ -1,6 +1,7 @@
 <button #button class="mat-button-toggle-button"
         type="button"
         [id]="buttonId"
+        [attr.tabindex]="disabled ? -1 : tabIndex"
         [attr.aria-pressed]="checked"
         [disabled]="disabled || null"
         [attr.name]="name || null"

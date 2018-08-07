@@ -26,6 +26,7 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
+  Attribute,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -330,6 +331,8 @@ export const _MatButtonToggleMixinBase = mixinDisableRipple(MatButtonToggleBase)
     '[class.mat-button-toggle-checked]': 'checked',
     '[class.mat-button-toggle-disabled]': 'disabled',
     'class': 'mat-button-toggle',
+    // Clear out the native tabindex here since we forward it to the underlying button
+    '[attr.tabindex]': 'null',
     '[attr.id]': 'id',
   }
 })
@@ -370,6 +373,9 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   /** MatButtonToggleGroup reads this to assign its own value. */
   @Input() value: any;
 
+  /** Tabindex for the toggle. */
+  @Input() tabIndex: number | null;
+
   /** Whether the button is checked. */
   @Input()
   get checked(): boolean {
@@ -404,9 +410,13 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
   constructor(@Optional() toggleGroup: MatButtonToggleGroup,
               private _changeDetectorRef: ChangeDetectorRef,
               private _elementRef: ElementRef<HTMLElement>,
-              private _focusMonitor: FocusMonitor) {
+              private _focusMonitor: FocusMonitor,
+              // @breaking-change 8.0.0 `defaultTabIndex` to be made a required parameter.
+              @Attribute('tabindex') defaultTabIndex: string) {
     super();
 
+    const parsedTabIndex = Number(defaultTabIndex);
+    this.tabIndex = (parsedTabIndex || parsedTabIndex === 0) ? parsedTabIndex : null;
     this.buttonToggleGroup = toggleGroup;
   }
 
