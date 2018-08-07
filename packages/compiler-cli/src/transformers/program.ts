@@ -14,7 +14,7 @@ import * as ts from 'typescript';
 
 import {TypeCheckHost, translateDiagnostics} from '../diagnostics/translate_diagnostics';
 import {compareVersions} from '../diagnostics/typescript_version';
-import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata/index';
+import {MetadataCollector, ModuleMetadata, createBundleIndexHost} from '../metadata';
 import {NgtscProgram} from '../ngtsc/program';
 
 import {CompilerHost, CompilerOptions, CustomTransformers, DEFAULT_ERROR_CODE, Diagnostic, DiagnosticMessageChain, EmitFlags, LazyRoute, LibrarySummary, Program, SOURCE, TsEmitArguments, TsEmitCallback, TsMergeEmitResultsCallback} from './api';

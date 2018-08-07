@@ -19,11 +19,15 @@ import {getConstructorDependencies, isAngularCore} from './util';
 /**
  * Adapts the `compileIvyInjectable` compiler for `@Injectable` decorators to the Ivy compiler.
  */
-export class InjectableDecoratorHandler implements DecoratorHandler<R3InjectableMetadata> {
+export class InjectableDecoratorHandler implements
+    DecoratorHandler<R3InjectableMetadata, Decorator> {
   constructor(private reflector: ReflectionHost, private isCore: boolean) {}
 
-  detect(decorator: Decorator[]): Decorator|undefined {
-    return decorator.find(
+  detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
+    if (!decorators) {
+      return undefined;
+    }
+    return decorators.find(
         decorator => decorator.name === 'Injectable' && (this.isCore || isAngularCore(decorator)));
   }
 

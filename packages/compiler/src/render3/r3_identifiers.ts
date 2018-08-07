@@ -115,6 +115,13 @@ export class Identifiers {
 
   static directiveInject: o.ExternalReference = {name: 'ɵdirectiveInject', moduleName: CORE};
 
+  static defineBase: o.ExternalReference = {name: 'ɵdefineBase', moduleName: CORE};
+
+  static BaseDef: o.ExternalReference = {
+    name: 'ɵBaseDef',
+    moduleName: CORE,
+  };
+
   static defineComponent: o.ExternalReference = {name: 'ɵdefineComponent', moduleName: CORE};
 
   static ComponentDef: o.ExternalReference = {

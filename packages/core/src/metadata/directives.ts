@@ -780,6 +780,11 @@ const initializeBaseDef = (target: any): void => {
 };
 
 /**
+ * Used to get the minified alias of ngBaseDef
+ */
+const NG_BASE_DEF = Object.keys({ngBaseDef: true})[0];
+
+/**
  * Does the work of creating the `ngBaseDef` property for the @Input and @Output decorators.
  * @param key "inputs" or "outputs"
  */
@@ -787,7 +792,7 @@ const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any
     (target: any, name: string, ...args: any[]) => {
       const constructor = target.constructor;
 
-      if (!constructor.hasOwnProperty('ngBaseDef')) {
+      if (!constructor.hasOwnProperty(NG_BASE_DEF)) {
         initializeBaseDef(target);
       }
 

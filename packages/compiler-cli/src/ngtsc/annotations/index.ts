@@ -7,6 +7,7 @@
  */
 
 export {ResourceLoader} from './src/api';
+export {BaseDefDecoratorHandler} from './src/base_def';
 export {ComponentDecoratorHandler} from './src/component';
 export {DirectiveDecoratorHandler} from './src/directive';
 export {InjectableDecoratorHandler} from './src/injectable';
