@@ -2,6 +2,7 @@ package(default_visibility = ["//visibility:public"])
 
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
 load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package", "jasmine_node_test")
+load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
 
 filegroup(
   name = "schematics_assets",
@@ -20,6 +21,7 @@ npm_package(
   name = "npm_package",
   srcs = [":schematics_assets"],
   deps = [":schematics"],
+  replacements = VERSION_PLACEHOLDER_REPLACEMENTS,
 )
 
 ### Testing rules

@@ -3,7 +3,7 @@ import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {getProjectFromWorkspace} from '../utils/get-project';
 import {getFileContent} from '@schematics/angular/utility/test';
 import {collectionPath, createTestApp} from '../utils/testing';
-import {getConfig, getAppFromConfig, getWorkspace} from '@schematics/angular/utility/config';
+import {getWorkspace} from '@schematics/angular/utility/config';
 import {getIndexHtmlPath} from '../utils/ast';
 import {normalize} from '@angular-devkit/core';
 
@@ -19,9 +19,12 @@ describe('material-install-schematic', () => {
   it('should update package.json', () => {
     const tree = runner.runSchematic('ng-add', {}, appTree);
     const packageJson = JSON.parse(getFileContent(tree, '/package.json'));
+    const angularCoreVersion = packageJson.dependencies['@angular/core'];
 
     expect(packageJson.dependencies['@angular/material']).toBeDefined();
     expect(packageJson.dependencies['@angular/cdk']).toBeDefined();
+    expect(packageJson.dependencies['@angular/animations']).toBe(angularCoreVersion,
+      'Expected the @angular/animations package to have the same version as @angular/core.');
   });
 
   it('should add default theme', () => {

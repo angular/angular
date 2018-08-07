@@ -64,12 +64,12 @@ task('material:prepare-release', sequenceTask(
 ));
 
 task('material:copy-schematics', () => {
-  src(schematicsGlobs).pipe(dest(join(releasePath, 'schematics')));
+  return src(schematicsGlobs).pipe(dest(join(releasePath, 'schematics')));
 });
 
 /** Copies all prebuilt themes into the release package under `prebuilt-themes/` */
 task('material:copy-prebuilt-themes', () => {
-  src(prebuiltThemeGlob)
+  return src(prebuiltThemeGlob)
     .pipe(gulpRename({dirname: ''}))
     .pipe(dest(join(releasePath, 'prebuilt-themes')));
 });
