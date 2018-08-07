@@ -2132,6 +2132,96 @@ withEachNg1Version(() => {
            }));
       });
 
+      describe('destroying the upgraded component', () => {
+        it('should destroy `componentScope`', fakeAsync(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const scopeDestroyListener = jasmine.createSpy('scopeDestroyListener');
+             let ng2ComponentInstance: Ng2Component;
+
+             @Component({selector: 'ng2', template: '<div *ngIf="!ng2Destroy"><ng1></ng1></div>'})
+             class Ng2Component {
+               ng2Destroy: boolean = false;
+               constructor() { ng2ComponentInstance = this; }
+             }
+
+             // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
+             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be on
+             // the queue at the end of the test, causing it to fail.
+             // Mocking animations (via `ngAnimateMock`) avoids the issue.
+             angular.module('ng1', ['ngAnimateMock'])
+                 .component('ng1', {
+                   controller: function($scope: angular.IScope) {
+                     $scope.$on('$destroy', scopeDestroyListener);
+                   },
+                 })
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [adapter.upgradeNg1Component('ng1'), Ng2Component],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html('<ng2></ng2>');
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               const $rootScope = ref.ng1RootScope as any;
+
+               expect(scopeDestroyListener).not.toHaveBeenCalled();
+
+               ng2ComponentInstance.ng2Destroy = true;
+               tick();
+               $rootScope.$digest();
+
+               expect(scopeDestroyListener).toHaveBeenCalledTimes(1);
+             });
+           }));
+
+        it('should emit `$destroy` on `$element`', fakeAsync(() => {
+             const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
+             const elementDestroyListener = jasmine.createSpy('elementDestroyListener');
+             let ng2ComponentInstance: Ng2Component;
+
+             @Component({selector: 'ng2', template: '<div *ngIf="!ng2Destroy"><ng1></ng1></div>'})
+             class Ng2Component {
+               ng2Destroy: boolean = false;
+               constructor() { ng2ComponentInstance = this; }
+             }
+
+             // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
+             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be on
+             // the queue at the end of the test, causing it to fail.
+             // Mocking animations (via `ngAnimateMock`) avoids the issue.
+             angular.module('ng1', ['ngAnimateMock'])
+                 .component('ng1', {
+                   controller: function($element: angular.IAugmentedJQuery) {
+                     $element.on !('$destroy', elementDestroyListener);
+                   },
+                 })
+                 .directive('ng2', adapter.downgradeNg2Component(Ng2Component));
+
+             @NgModule({
+               declarations: [adapter.upgradeNg1Component('ng1'), Ng2Component],
+               imports: [BrowserModule],
+             })
+             class Ng2Module {
+             }
+
+             const element = html('<ng2></ng2>');
+             adapter.bootstrap(element, ['ng1']).ready((ref) => {
+               const $rootScope = ref.ng1RootScope as any;
+
+               expect(elementDestroyListener).not.toHaveBeenCalled();
+
+               ng2ComponentInstance.ng2Destroy = true;
+               tick();
+               $rootScope.$digest();
+
+               expect(elementDestroyListener).toHaveBeenCalledTimes(1);
+             });
+           }));
+      });
+
       describe('linking', () => {
         it('should run the pre-linking after instantiating the controller', async(() => {
              const adapter: UpgradeAdapter = new UpgradeAdapter(forwardRef(() => Ng2Module));
