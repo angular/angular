@@ -33,9 +33,6 @@ import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 /** Default color palette for round buttons (mat-fab and mat-mini-fab) */
 const DEFAULT_ROUND_BUTTON_COLOR = 'accent';
 
-/** Default color palette for flat buttons (mat-flat-button) */
-const DEFAULT_FLAT_BUTTON_COLOR = 'primary';
-
 /**
  * List of classes to add to MatButton instances based on host attributes to
  * style as different variants.
@@ -113,8 +110,6 @@ export class MatButton extends _MatButtonMixinBase
 
     if (this.isRoundButton) {
       this.color = DEFAULT_ROUND_BUTTON_COLOR;
-    } else if (this._hasHostAttributes('mat-flat-button')) {
-      this.color = DEFAULT_FLAT_BUTTON_COLOR;
     }
   }
 
