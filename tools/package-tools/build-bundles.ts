@@ -112,14 +112,18 @@ export class PackageBundler {
       context: 'this',
       external: Object.keys(rollupGlobals),
       input: config.entry,
-      onwarn: (message: string) => {
+      onwarn: (warning: any) => {
         // TODO(jelbourn): figure out *why* rollup warns about certain symbols not being found
         // when those symbols don't appear to be in the input file in the first place.
-        if (/but never used/.test(message)) {
+        if (/but never used/.test(warning.message)) {
           return false;
         }
 
-        console.warn(message);
+        if (warning.code === 'CIRCULAR_DEPENDENCY') {
+          throw Error(warning.message);
+        }
+
+        console.warn(warning.message);
       },
       plugins: [
         rollupRemoveLicensesPlugin,
