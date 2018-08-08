@@ -201,7 +201,6 @@ export function defineComponent<T>(componentDefinition: {
    */
   styles?: string[];
 
-
   /**
    * The strategy that the default change detector uses to detect changes.
    * When set, takes effect the next time change detection is triggered.

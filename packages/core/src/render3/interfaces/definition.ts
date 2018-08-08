@@ -201,7 +201,6 @@ export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T
    */
   readonly styles: string[];
 
-
   /**
    * Query-related instructions for a component.
    */
