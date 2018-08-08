@@ -46,6 +46,7 @@ const CORE_SUPPORTED_SYMBOLS = new Set<string>([
   'ɵInjectableDef',
   'ɵInjectorDef',
   'ɵNgModuleDef',
+  'ɵNgModuleFactory',
 ]);
 
 export class ImportManager {
