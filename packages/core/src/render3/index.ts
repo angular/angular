@@ -57,6 +57,9 @@ export {
   elementProperty as p,
   elementStart as E,
 
+  elementContainerStart as EC,
+  elementContainerEnd as eC,
+
   elementStyling as s,
   elementStylingMap as sm,
   elementStyleProp as sp,
