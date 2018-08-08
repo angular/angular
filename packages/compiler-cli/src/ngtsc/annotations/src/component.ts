@@ -146,9 +146,8 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3ComponentMetadata): CompileResult {
-    const pool = new ConstantPool();
-
+  compile(node: ts.ClassDeclaration, analysis: R3ComponentMetadata, pool: ConstantPool):
+      CompileResult {
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
     const scope = this.scopeRegistry.lookupCompilationScope(node);
@@ -163,7 +162,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     return {
       name: 'ngComponentDef',
       initializer: res.expression,
-      statements: pool.statements,
+      statements: [],
       type: res.type,
     };
   }
