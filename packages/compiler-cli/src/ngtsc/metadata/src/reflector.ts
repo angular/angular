@@ -132,6 +132,11 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return ts.isClassDeclaration(node);
   }
 
+  hasBaseClass(node: ts.Declaration): boolean {
+    return ts.isClassDeclaration(node) && node.heritageClauses !== undefined &&
+        node.heritageClauses.some(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
+  }
+
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
     // Resolve the identifier to a Symbol, and return the declaration of that.
     let symbol: ts.Symbol|undefined = this.checker.getSymbolAtLocation(id);
