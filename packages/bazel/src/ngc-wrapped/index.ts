@@ -127,7 +127,11 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
 
   // Disable downleveling and Closure annotation if in Ivy mode.
   if (isInIvyMode) {
-    compilerOpts.annotateForClosureCompiler = false;
+    // In pass-through mode for TypeScript, we want to turn off decorator transpilation entirely.
+    // This causes ngc to be have exactly like tsc.
+    if (compilerOpts.enableIvy === 'tsc') {
+      compilerOpts.annotateForClosureCompiler = false;
+    }
     compilerOpts.annotationsAs = 'decorators';
   }
 
