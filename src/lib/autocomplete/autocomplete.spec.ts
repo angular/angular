@@ -1508,40 +1508,46 @@ describe('MatAutocomplete', () => {
 
     it('should fall back to above position when requested if options are added while ' +
         'the panel is open', fakeAsync(() => {
-      let fixture = createComponent(AutocompleteWithOnPushDelay);
+      let fixture = createComponent(SimpleAutocomplete);
+      fixture.componentInstance.states = fixture.componentInstance.states.slice(0, 1);
+      fixture.componentInstance.filteredStates = fixture.componentInstance.states.slice();
       fixture.detectChanges();
 
       let inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
       let inputReference = fixture.debugElement.query(By.css('.mat-form-field-flex')).nativeElement;
 
       // Push the element down so it has a little bit of space, but not enough to render.
-      inputReference.style.bottom = '10px';
+      inputReference.style.bottom = '75px';
       inputReference.style.position = 'fixed';
 
-      // Focus the input to load the deferred options.
       dispatchFakeEvent(inputEl, 'focusin');
-      tick(1000);
-
       fixture.detectChanges();
-      tick();
+      zone.simulateZoneExit();
+      fixture.detectChanges();
 
-      const inputBottom = inputReference.getBoundingClientRect().bottom;
-      const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
-      const panelTop = panel.getBoundingClientRect().top;
+      let panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
+      let inputRect = inputReference.getBoundingClientRect();
+      let panelRect = panel.getBoundingClientRect();
 
-      expect(Math.floor(inputBottom))
-        .toEqual(Math.floor(panelTop),
+      expect(Math.floor(panelRect.top))
+        .toBe(Math.floor(inputRect.bottom),
           `Expected panel top to be below input before repositioning.`);
+
+      for (let i = 0; i < 20; i++) {
+        fixture.componentInstance.filteredStates.push({code: 'FK', name: 'Fake State'});
+        fixture.detectChanges();
+      }
 
       // Request a position update now that there are too many suggestions to fit in the viewport.
       fixture.componentInstance.trigger.updatePosition();
 
-      const inputTop = inputReference.getBoundingClientRect().top;
-      const panelBottom = panel.getBoundingClientRect().bottom;
+      inputRect = inputReference.getBoundingClientRect();
+      panelRect = panel.getBoundingClientRect();
 
-      expect(Math.floor(inputTop))
-        .toEqual(Math.floor(panelBottom),
+      expect(Math.floor(panelRect.bottom))
+        .toBe(Math.floor(inputRect.top),
           `Expected panel to fall back to above position after repositioning.`);
+      tick();
     }));
 
     it('should not throw if a panel reposition is requested while the panel is closed', () => {
