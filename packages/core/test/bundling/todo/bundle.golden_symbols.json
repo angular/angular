@@ -45,7 +45,7 @@
     "name": "EMPTY$1"
   },
   {
-    "name": "EMPTY_RENDERER_TYPE_ID"
+    "name": "EMPTY_ARRAY$2"
   },
   {
     "name": "ElementRef"
@@ -183,9 +183,6 @@
     "name": "TodoStore"
   },
   {
-    "name": "UNDEFINED_RENDERER_TYPE_ID"
-  },
-  {
     "name": "VIEWS"
   },
   {
@@ -193,9 +190,6 @@
   },
   {
     "name": "ViewContainerRef$1"
-  },
-  {
-    "name": "ViewEncapsulation$1"
   },
   {
     "name": "ViewRef"
@@ -835,9 +829,6 @@
   },
   {
     "name": "resolveDirective"
-  },
-  {
-    "name": "resolveRendererType2"
   },
   {
     "name": "restoreView"

@@ -158,24 +158,22 @@ describe('animation renderer factory', () => {
         }
       },
       factory: () => new SomeComponentWithAnimation,
-      rendererType: createRendererType2({
-        encapsulation: ViewEncapsulation.None,
-        styles: [],
-        data: {
-          animation: [{
-            type: 7,
-            name: 'myAnimation',
-            definitions: [{
-              type: 1,
-              expr: '* => on',
-              animation:
-                  [{type: 4, styles: {type: 6, styles: {opacity: 1}, offset: null}, timings: 10}],
-              options: null
-            }],
-            options: {}
-          }]
-        }
-      }),
+      encapsulation: ViewEncapsulation.None,
+      styles: [],
+      data: {
+        animation: [{
+          type: 7,
+          name: 'myAnimation',
+          definitions: [{
+            type: 1,
+            expr: '* => on',
+            animation:
+                [{type: 4, styles: {type: 6, styles: {opacity: 1}, offset: null}, timings: 10}],
+            options: null
+          }],
+          options: {}
+        }]
+      },
     });
   }
 
