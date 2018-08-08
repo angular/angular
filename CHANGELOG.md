@@ -135,7 +135,7 @@
 
 * **bazel:** turn on preserve-symlinks ([#24881](https://github.com/angular/angular/issues/24881)) ([c438b5e](https://github.com/angular/angular/commit/c438b5e))
 
-### BREAKING CHANGES
+### Angular Labs (experimental feature) breaking change
 
 * **bazel:** Use of @angular/bazel rules now requires calling ng_setup_workspace() in your WORKSPACE file.
 
