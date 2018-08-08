@@ -401,6 +401,73 @@ describe('query', () => {
            expect(qList.first.nativeElement).toEqual(elToQuery);
          });
 
+      /**
+       * BREAKING CHANGE: this tests asserts different behaviour as compared to Renderer2 when it
+       * comes to descendants: false option and <ng-container>.
+       *
+       * Previous behaviour: queries with descendants: false would descend into <ng-container>.
+       * New behaviour: queries with descendants: false would NOT descend into <ng-container>.
+       *
+       * Reasoning: the Renderer2 behaviour is inconsistent and hard to explain to users when it
+       * comes to descendants: false interpretation (see
+       * https://github.com/angular/angular/issues/14769#issuecomment-356609267) so we are changing
+       * it in ngIvy.
+       *
+       * In ngIvy implementation queries with the descendants: false option are interpreted as
+       * "don't descend" into children of a given element when looking for matches. In other words
+       * only direct children of a given component / directive are checked for matches. This applies
+       * to both regular elements (ex. <div>) and grouping elements (<ng-container>,
+       * <ng-template>)).
+       *
+       * Grouping elements (<ng-container>, <ng-template>) are treated as regular elements since we
+       * can query for <ng-container> and <ng-template>, so they behave like regular elements from
+       * this point of view.
+       */
+      it('should not descend into <ng-container> when descendants: false', () => {
+        let elToQuery;
+
+        /**
+          * <ng-container>
+          *    <div #foo></div>
+          * </ng-container>
+          * class Cmpt {
+          *  @ViewChildren('foo') deep;
+          *  @ViewChildren('foo', {descendants: false}) shallow;
+          * }
+          */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                elementContainerStart(2);
+                {
+                  element(3, 'div', null, ['foo', '']);
+                  elToQuery = loadElement(3).native;
+                }
+                elementContainerEnd();
+              }
+            },
+            [], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, ['foo'], true, QUERY_READ_ELEMENT_REF);
+                query(1, ['foo'], false, QUERY_READ_ELEMENT_REF);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.deep = tmp as QueryList<any>);
+                queryRefresh(tmp = load<QueryList<any>>(1)) &&
+                    (ctx.shallow = tmp as QueryList<any>);
+              }
+            });
+
+        const fixture = new ComponentFixture(Cmpt);
+        const deepQList = fixture.component.deep;
+        const shallowQList = fixture.component.shallow;
+        expect(deepQList.length).toBe(1);
+        expect(shallowQList.length).toBe(0);
+      });
+
       it('should read ViewContainerRef from element nodes when explicitly asked for', () => {
         /**
          * <div #foo></div>
