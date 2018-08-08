@@ -604,6 +604,26 @@ describe('ngtsc behavioral tests', () => {
     expect(jsContents).not.toMatch(/import \* as i[0-9] from ['"].\/test['"]/);
   });
 
+  it('should generate exportAs declarations', () => {
+    writeConfig();
+    write('test.ts', `
+        import {Component, Directive} from '@angular/core';
+
+        @Directive({
+          selector: '[test]',
+          exportAs: 'foo',
+        })
+        class Dir {}
+    `);
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+
+    const jsContents = getContents('test.js');
+    expect(jsContents).toContain(`exportAs: "foo"`);
+  });
+
   it('should generate correct factory stubs for a test module', () => {
     writeConfig({'allowEmptyCodegenFiles': true});
 
