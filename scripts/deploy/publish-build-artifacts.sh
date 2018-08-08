@@ -58,23 +58,22 @@ publishPackage() {
 
   echo "Starting cloning process of ${repoUrl} into ${repoDir}.."
 
-  # Clone the repository and only fetch the last commit to download less unused data.
-  git clone ${repoUrl} ${repoDir} --depth 1
+  if [[ $(git ls-remote --heads ${repoUrl} ${branchName}) ]]; then
+    echo "Branch ${branchName} already exists. Cloning that branch."
+    git clone ${repoUrl} ${repoDir} --depth 1 --branch ${branchName}
 
-  echo "Successfully cloned ${repoUrl} into ${repoDir}."
-
-  # Create the build commit and push the changes to the repository.
-  cd ${repoDir}
-
-  echo "Switched into the repository directory (${repoDir})."
-
-  if [[ $(git ls-remote --heads origin ${branchName}) ]]; then
-    git checkout ${branchName}
-    echo "Switched to ${branchName} branch."
+    cd ${repoDir}
+    echo "Cloned repository and switched into the repository directory (${repoDir})."
   else
-    echo "Branch ${branchName} does not exist on ${packageRepo} yet. Creating ${branchName}.."
+    echo "Branch ${branchName} does not exist on ${packageRepo} yet."
+    echo "Cloning default branch and creating branch '${branchName}' on top of it."
+
+    git clone ${repoUrl} ${repoDir} --depth 1
+    cd ${repoDir}
+
+    echo "Cloned repository and switched into directory. Creating new branch now.."
+
     git checkout -b ${branchName}
-    echo "Branch created and checked out."
   fi
 
   # Copy the build files to the repository
