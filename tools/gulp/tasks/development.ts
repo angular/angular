@@ -2,7 +2,12 @@ import {task, dest} from 'gulp';
 import {tsBuildTask, copyTask, serverTask} from '../util/task_helpers';
 import {join} from 'path';
 import {
-  buildConfig, copyFiles, buildScssPipeline, sequenceTask, watchFiles
+  buildConfig,
+  buildScssPipeline,
+  copyFiles,
+  inlineResourcesForDirectory,
+  sequenceTask,
+  watchFiles,
 } from 'material2-build-tools';
 import {
   cdkPackage,
@@ -49,6 +54,7 @@ const tsconfigPath = join(appDir, 'tsconfig-build.json');
 task(':build:devapp:ts', tsBuildTask(tsconfigPath));
 task(':build:devapp:assets', copyTask(assetsGlob, outDir));
 task(':build:devapp:scss', () => buildScssPipeline(appDir).pipe(dest(outDir)));
+task(':build:devapp:inline-resources', () => inlineResourcesForDirectory(outDir));
 
 task(':serve:devapp', serverTask(outDir, true));
 
@@ -62,7 +68,10 @@ task('build:devapp', sequenceTask(
   // The examples module needs to be manually built before building examples package because
   // when using the `no-bundles` task, the package-specific pre-build tasks won't be executed.
   'material-examples:build-no-bundles',
-  [':build:devapp:assets', ':build:devapp:scss', ':build:devapp:ts']
+  [':build:devapp:assets', ':build:devapp:scss', ':build:devapp:ts'],
+  // Inline all component resources because otherwise SystemJS tries to load HTML, CSS and
+  // JavaScript files which makes loading the demo-app extremely slow.
+  ':build:devapp:inline-resources',
 ));
 
 task('serve:devapp', ['build:devapp'], sequenceTask([':serve:devapp', ':watch:devapp']));
@@ -115,8 +124,8 @@ task('deploy:devapp', ['stage-deploy:devapp'], () => {
 
 task(':watch:devapp', () => {
   watchFiles(join(appDir, '**/*.ts'), [':build:devapp:ts']);
-  watchFiles(join(appDir, '**/*.scss'), [':build:devapp:scss']);
-  watchFiles(join(appDir, '**/*.html'), [':build:devapp:assets']);
+  watchFiles(join(appDir, '**/*.scss'), [':watch:devapp:rebuild-scss']);
+  watchFiles(join(appDir, '**/*.html'), [':watch:devapp:rebuild-html']);
 
   // Custom watchers for all packages that are used inside of the demo-app. This is necessary
   // because we only want to build the changed package (using the build-no-bundles task).
@@ -143,3 +152,9 @@ task(':watch:devapp', () => {
   // Example package watchers.
   watchFiles(join(examplesPackage.sourceDir, '**/*'), ['material-examples:build-no-bundles']);
 });
+
+task(':watch:devapp:rebuild-scss', sequenceTask(':build:devapp:scss',
+   ':build:devapp:inline-resources'));
+
+task(':watch:devapp:rebuild-html', sequenceTask(':build:devapp:assets',
+  ':build:devapp:inline-resources'));

@@ -4,6 +4,7 @@ export * from './build-bundles';
 export * from './build-release';
 export * from './build-package';
 export * from './copy-files';
+export * from './inline-resources';
 
 // Expose gulp utilities.
 export * from './gulp/build-tasks-gulp';
