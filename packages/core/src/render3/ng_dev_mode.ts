@@ -41,8 +41,8 @@ const __global: {ngDevMode: NgDevModePerfCounters | boolean} =
     typeof window != 'undefined' && window || typeof self != 'undefined' && self ||
     typeof global != 'undefined' && global;
 
-export function ngDevModeResetPerfCounters() {
-  __global.ngDevMode = {
+export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
+  return __global.ngDevMode = {
     firstTemplatePass: 0,
     tNode: 0,
     tView: 0,
@@ -75,5 +75,5 @@ export function ngDevModeResetPerfCounters() {
  * as much early warning and errors as possible.
  */
 if (typeof ngDevMode === 'undefined' || ngDevMode) {
-  ngDevModeResetPerfCounters();
+  __global.ngDevMode = ngDevModeResetPerfCounters();
 }
