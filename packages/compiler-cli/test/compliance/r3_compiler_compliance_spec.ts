@@ -222,6 +222,76 @@ describe('compiler compliance', () => {
       expectEmit(result.source, template, 'Incorrect template');
     });
 
+    it('should support <ng-container>', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: \`<ng-container><span>in a </span>container</ng-container>\`
+              })
+              export class MyComponent {}
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      // The template should look like this (where IDENT is a wild card for an identifier):
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            if (rf & 1) {
+              i0.ɵEC(0);
+              i0.ɵE(1, "span");
+              i0.ɵT(2, "in a ");
+              i0.ɵe();
+              i0.ɵT(3, "container");
+              i0.ɵeC();
+            }
+          }
+        `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should generate elementContainerStart/End instructions for empty <ng-container>', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: \`<ng-container></ng-container>\`
+              })
+              export class MyComponent {}
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+        }
+      };
+
+      // The template should look like this (where IDENT is a wild card for an identifier):
+      const template = `
+          …
+          template: function MyComponent_Template(rf, ctx) {
+            if (rf & 1) {
+              i0.ɵEC(0);
+              i0.ɵeC();
+            }
+          }
+        `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
     it('should bind to element properties', () => {
       const files = {
         app: {
