@@ -1,3 +1,13 @@
+<a name="6.1.2"></a>
+## [6.1.2](https://github.com/angular/angular/compare/6.1.1...6.1.2) (2018-08-08)
+
+
+### Bug Fixes
+
+* **router:** take base uri into account in `setUpLocationSync()` ([#20244](https://github.com/angular/angular/issues/20244)) ([ae9b4e6](https://github.com/angular/angular/commit/ae9b4e6)), closes [#20061](https://github.com/angular/angular/issues/20061)
+* add mappings for ngfactory & ngsummary files to their module names in aot summary resolver ([#25335](https://github.com/angular/angular/issues/25335)) ([054fbbe](https://github.com/angular/angular/commit/054fbbe))
+
+
 <a name="7.0.0-beta.0"></a>
 # [7.0.0-beta.0](https://github.com/angular/angular/compare/6.1.0...7.0.0-beta.0) (2018-08-02)
 
