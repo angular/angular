@@ -270,7 +270,7 @@ export function defineComponent<T>(componentDefinition: {
     selectors: componentDefinition.selectors,
     viewQuery: componentDefinition.viewQuery || null,
     features: componentDefinition.features || null,
-    data: EMPTY,
+    data: componentDefinition.data || EMPTY,
     // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in the
     // next line. Also `None` should be 0 not 2.
     encapsulation: encapsulation == null ? 2 /* ViewEncapsulation.None */ : encapsulation,
