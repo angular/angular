@@ -1,3 +1,21 @@
+<a name="7.0.0-beta.1"></a>
+# [7.0.0-beta.1](https://github.com/angular/angular/compare/7.0.0-beta.0...7.0.0-beta.1) (2018-08-08)
+
+
+### Bug Fixes
+
+* **compiler-cli:** use the oldProgram option in watch mode ([#21364](https://github.com/angular/angular/issues/21364)) ([c6e5b97](https://github.com/angular/angular/commit/c6e5b97)), closes [#21361](https://github.com/angular/angular/issues/21361)
+* **core:** In Testability.whenStable update callback, pass more complete ([#25010](https://github.com/angular/angular/issues/25010)) ([16c03c0](https://github.com/angular/angular/commit/16c03c0))
+* add mappings for ngfactory & ngsummary files to their module names in aot summary resolver ([#25335](https://github.com/angular/angular/issues/25335)) ([02e201a](https://github.com/angular/angular/commit/02e201a))
+* **router:** take base uri into account in `setUpLocationSync()` ([#20244](https://github.com/angular/angular/issues/20244)) ([ba1e25f](https://github.com/angular/angular/commit/ba1e25f)), closes [#20061](https://github.com/angular/angular/issues/20061)
+
+
+### Features
+
+* **core:** add DoBootstrap interface. ([#24558](https://github.com/angular/angular/issues/24558)) ([732026c](https://github.com/angular/angular/commit/732026c)), closes [#24557](https://github.com/angular/angular/issues/24557)
+
+
+
 <a name="6.1.2"></a>
 ## [6.1.2](https://github.com/angular/angular/compare/6.1.1...6.1.2) (2018-08-08)
 
