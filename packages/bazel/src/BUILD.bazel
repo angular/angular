@@ -19,6 +19,7 @@ nodejs_binary(
     # dependency @build_bazel_rules_nodejs_rollup_deps. We don't need any
     # additional npm dependencies when we run rollup or uglify.
     entry_point = "build_bazel_rules_nodejs_rollup_deps/node_modules/rollup/bin/rollup",
+    install_source_map_support = False,
     node_modules = "@build_bazel_rules_nodejs_rollup_deps//:node_modules",
 )
 
@@ -26,4 +27,5 @@ nodejs_binary(
     name = "modify_tsconfig",
     data = ["modify_tsconfig.js"],
     entry_point = "angular/packages/bazel/src/modify_tsconfig.js",
+    install_source_map_support = False,
 )
