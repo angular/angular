@@ -23,18 +23,18 @@ import {performWatchCompilation, createPerformWatchHost} from './perform_watch'
 
 export function main(
     args: string[], consoleError: (s: string) => void = console.error,
-    config?: NgcParsedConfiguration): number {
+    config?: NgcParsedConfiguration, readResource?: (path: string) => Promise<string>): number {
   let {project, rootNames, options, errors: configErrors, watch, emitFlags} =
       config || readNgcCommandLineAndConfiguration(args);
   if (configErrors.length) {
     return reportErrorsAndExit(configErrors, /*options*/ undefined, consoleError);
   }
   if (watch) {
-    const result = watchMode(project, options, consoleError);
+    const result = watchMode(project, options, consoleError, readResource);
     return reportErrorsAndExit(result.firstCompileResult, options, consoleError);
   }
   const {diagnostics: compileDiags} = performCompilation(
-      {rootNames, options, emitFlags, emitCallback: createEmitCallback(options)});
+      {rootNames, options, emitFlags, emitCallback: createEmitCallback(options), readResource});
   return reportErrorsAndExit(compileDiags, options, consoleError);
 }
 
@@ -154,10 +154,11 @@ function reportErrorsAndExit(
 }
 
 export function watchMode(
-    project: string, options: api.CompilerOptions, consoleError: (s: string) => void) {
+    project: string, options: api.CompilerOptions, consoleError: (s: string) => void,
+    readResource?: (path: string) => Promise<string>) {
   return performWatchCompilation(createPerformWatchHost(project, diagnostics => {
-    consoleError(formatDiagnostics(diagnostics));
-  }, options, options => createEmitCallback(options)));
+                                   consoleError(formatDiagnostics(diagnostics));
+                                 }, options, options => createEmitCallback(options)), readResource);
 }
 
 // CLI entry point

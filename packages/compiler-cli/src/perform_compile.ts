@@ -186,12 +186,13 @@ export function exitCodeFromResult(diags: Diagnostics | undefined): number {
 }
 
 export function performCompilation({rootNames, options, host, oldProgram, emitCallback,
-                                    mergeEmitResultsCallback,
+                                    mergeEmitResultsCallback, readResource,
                                     gatherDiagnostics = defaultGatherDiagnostics,
                                     customTransformers, emitFlags = api.EmitFlags.Default}: {
   rootNames: string[],
   options: api.CompilerOptions,
   host?: api.CompilerHost,
+  readResource?: (path: string) => Promise<string>,
   oldProgram?: api.Program,
   emitCallback?: api.TsEmitCallback,
   mergeEmitResultsCallback?: api.TsMergeEmitResultsCallback,
@@ -205,6 +206,7 @@ export function performCompilation({rootNames, options, host, oldProgram, emitCa
   try {
     if (!host) {
       host = ng.createCompilerHost({options});
+      if (readResource) host.readResource = readResource;
     }
 
     program = ng.createProgram({rootNames, host, options, oldProgram});

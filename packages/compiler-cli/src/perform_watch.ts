@@ -106,7 +106,8 @@ interface CacheEntry {
 /**
  * The logic in this function is adapted from `tsc.ts` from TypeScript.
  */
-export function performWatchCompilation(host: PerformWatchHost):
+export function performWatchCompilation(
+    host: PerformWatchHost, readResource?: (path: string) => Promise<string>):
     {close: () => void, ready: (cb: () => void) => void, firstCompileResult: Diagnostics} {
   let cachedProgram: api.Program|undefined;            // Program cached from last compilation
   let cachedCompilerHost: api.CompilerHost|undefined;  // CompilerHost cached from last compilation
@@ -158,6 +159,7 @@ export function performWatchCompilation(host: PerformWatchHost):
     const startTime = Date.now();
     if (!cachedCompilerHost) {
       cachedCompilerHost = host.createCompilerHost(cachedOptions.options);
+      if (readResource) cachedCompilerHost.readResource = readResource;
       const originalWriteFileCallback = cachedCompilerHost.writeFile;
       cachedCompilerHost.writeFile = function(
           fileName: string, data: string, writeByteOrderMark: boolean,
