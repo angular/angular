@@ -143,7 +143,6 @@ export function flushFallback(maxTurns?: number): number {
  */
 export function discardPeriodicTasksFallback(): void {
   const zoneSpec = _getFakeAsyncZoneSpec();
-  const pendingTimers = zoneSpec.pendingPeriodicTimers;
   zoneSpec.pendingPeriodicTimers.length = 0;
 }
 
