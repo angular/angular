@@ -16,10 +16,25 @@ import {coerceArray} from '@angular/cdk/coercion';
 export interface BreakpointState {
   /** Whether the breakpoint is currently matching. */
   matches: boolean;
+  /**
+   * A key boolean pair for each query provided to the observe method,
+   * with its current matched state.
+   */
+  breakpoints: {
+    [key: string]: boolean;
+  };
+}
+
+/** The current state of a layout breakpoint. */
+interface InternalBreakpointState {
+  /** Whether the breakpoint is currently matching. */
+  matches: boolean;
+  /** The media query being to be matched */
+  query: string;
 }
 
 interface Query {
-  observable: Observable<BreakpointState>;
+  observable: Observable<InternalBreakpointState>;
   mql: MediaQueryList;
 }
 
@@ -27,9 +42,9 @@ interface Query {
 @Injectable({providedIn: 'root'})
 export class BreakpointObserver implements OnDestroy {
   /**  A map of all media queries currently being listened for. */
-  private _queries: Map<string, Query> = new Map();
+  private _queries = new Map<string, Query>();
   /** A subject for all other observables to takeUntil based on. */
-  private _destroySubject: Subject<{}> = new Subject();
+  private _destroySubject = new Subject<void>();
 
   constructor(private mediaMatcher: MediaMatcher, private zone: NgZone) {}
 
@@ -59,10 +74,16 @@ export class BreakpointObserver implements OnDestroy {
     const queries = splitQueries(coerceArray(value));
     const observables = queries.map(query => this._registerQuery(query).observable);
 
-    return combineLatest(observables).pipe(map((breakpointStates: BreakpointState[]) => {
-      return {
-        matches: breakpointStates.some(state => state && state.matches)
+    return combineLatest(observables).pipe(map((breakpointStates: InternalBreakpointState[]) => {
+      const response: BreakpointState = {
+        matches: false,
+        breakpoints: {},
       };
+      breakpointStates.forEach((state: InternalBreakpointState) => {
+        response.matches = response.matches || state.matches;
+        response.breakpoints[state.query] = state.matches;
+      });
+      return response;
     }));
   }
 
@@ -90,11 +111,11 @@ export class BreakpointObserver implements OnDestroy {
       .pipe(
         takeUntil(this._destroySubject),
         startWith(mql),
-        map((nextMql: MediaQueryList) => ({matches: nextMql.matches}))
+        map((nextMql: MediaQueryList) => ({query, matches: nextMql.matches}))
       );
 
     // Add the MediaQueryList to the set of queries.
-    const output = {observable: queryObservable, mql: mql};
+    const output = {observable: queryObservable, mql};
     this._queries.set(query, output);
     return output;
   }

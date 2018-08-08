@@ -34,7 +34,7 @@ describe('BreakpointObserver', () => {
   });
 
   it('retrieves the whether a query is currently matched', () => {
-    let query = 'everything starts as true in the FakeMediaMatcher';
+    const query = 'everything starts as true in the FakeMediaMatcher';
     expect(breakpointManager.isMatched(query)).toBeTruthy();
   });
 
@@ -61,15 +61,15 @@ describe('BreakpointObserver', () => {
   });
 
   it('accepts an array of queries', () => {
-    let queries = ['1 query', '2 query', 'red query', 'blue query'];
+    const queries = ['1 query', '2 query', 'red query', 'blue query'];
     breakpointManager.observe(queries);
     expect(mediaMatcher.queryCount).toBe(queries.length);
   });
 
   it('completes all events when the breakpoint manager is destroyed', () => {
-    let firstTest = jasmine.createSpy('test1');
+    const firstTest = jasmine.createSpy('test1');
     breakpointManager.observe('test1').subscribe(undefined, undefined, firstTest);
-    let secondTest = jasmine.createSpy('test2');
+    const secondTest = jasmine.createSpy('test2');
     breakpointManager.observe('test2').subscribe(undefined, undefined, secondTest);
 
     expect(firstTest).not.toHaveBeenCalled();
@@ -82,8 +82,8 @@ describe('BreakpointObserver', () => {
   });
 
   it('emits an event on the observable when values change', () => {
-    let query = '(width: 999px)';
-    let queryMatchState: boolean = false;
+    const query = '(width: 999px)';
+    let queryMatchState = false;
     breakpointManager.observe(query).subscribe((state: BreakpointState) => {
       queryMatchState = state.matches;
     });
@@ -93,14 +93,31 @@ describe('BreakpointObserver', () => {
     expect(queryMatchState).toBeFalsy();
   });
 
+  it('emits an event on the observable with the matching state of all queries provided', () => {
+    const queryOne = '(width: 999px)';
+    const queryTwo = '(width: 700px)';
+    let state: BreakpointState = {matches: false, breakpoints: {}};
+    breakpointManager.observe([queryOne, queryTwo]).subscribe((breakpoint: BreakpointState) => {
+      state = breakpoint;
+    });
+
+    mediaMatcher.setMatchesQuery(queryOne, false);
+    mediaMatcher.setMatchesQuery(queryTwo, false);
+    expect(state.breakpoints).toEqual({[queryOne]: false, [queryTwo]: false});
+
+    mediaMatcher.setMatchesQuery(queryOne, true);
+    mediaMatcher.setMatchesQuery(queryTwo, false);
+    expect(state.breakpoints).toEqual({[queryOne]: true, [queryTwo]: false});
+  });
+
   it('emits a true matches state when the query is matched', () => {
-    let query = '(width: 999px)';
+    const query = '(width: 999px)';
     mediaMatcher.setMatchesQuery(query, true);
     expect(breakpointManager.isMatched(query)).toBeTruthy();
   });
 
   it('emits a false matches state when the query is not matched', () => {
-    let query = '(width: 999px)';
+    const query = '(width: 999px)';
     mediaMatcher.setMatchesQuery(query, false);
     expect(breakpointManager.isMatched(query)).toBeTruthy();
   });
@@ -130,7 +147,7 @@ export class FakeMediaQueryList implements MediaQueryList {
 @Injectable()
 export class FakeMediaMatcher {
   /** A map of match media queries. */
-  private queries: Map<string, FakeMediaQueryList> = new Map();
+  private queries = new Map<string, FakeMediaQueryList>();
 
   /** The number of distinct queries created in the media matcher during a test. */
   get queryCount(): number {
@@ -139,7 +156,7 @@ export class FakeMediaMatcher {
 
   /** Fakes the match media response to be controlled in tests. */
   matchMedia(query: string): FakeMediaQueryList {
-    let mql = new FakeMediaQueryList(true, query);
+    const mql = new FakeMediaQueryList(true, query);
     this.queries.set(query, mql);
     return mql;
   }
