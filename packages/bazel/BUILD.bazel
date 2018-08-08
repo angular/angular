@@ -14,6 +14,7 @@ npm_package(
         "package.json",
         "//packages/bazel/src:package_assets",
     ],
+    packages = ["//packages/bazel/docs"],
     # Re-host //packages/bazel/ which is just // in the public distro
     replacements = {
         "//packages/bazel/": "//",
