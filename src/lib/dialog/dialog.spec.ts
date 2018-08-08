@@ -1009,6 +1009,37 @@ describe('MatDialog', () => {
             .toBe('MAT-DIALOG-CONTAINER', 'Expected dialog container to be focused.');
       }));
 
+    it('should be able to disable focus restoration', fakeAsync(() => {
+      // Create a element that has focus before the dialog is opened.
+      const button = document.createElement('button');
+      button.id = 'dialog-trigger';
+      document.body.appendChild(button);
+      button.focus();
+
+      const dialogRef = dialog.open(PizzaMsg, {
+        viewContainerRef: testViewContainerRef,
+        restoreFocus: false
+      });
+
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      flushMicrotasks();
+
+      expect(document.activeElement.id)
+          .not.toBe('dialog-trigger', 'Expected the focus to change when dialog was opened.');
+
+      dialogRef.close();
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      tick(500);
+
+      expect(document.activeElement.id).not.toBe('dialog-trigger',
+          'Expected focus not to have been restored.');
+
+      document.body.removeChild(button);
+    }));
+
+
   });
 
   describe('dialog content elements', () => {
