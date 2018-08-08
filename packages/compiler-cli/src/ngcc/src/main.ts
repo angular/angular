@@ -9,14 +9,19 @@ import {resolve} from 'path';
 import {PackageTransformer} from './transform/package_transformer';
 
 export function mainNgcc(args: string[]): number {
-  const packagePath = resolve(args[0]);
-  const format = args[1] || 'fesm2015';
+  const packagePaths = args[0] ? [resolve(args[0])] : [];
+  const formats = args[1] ? [args[1]] : ['fesm2015', 'esm2015', 'fesm5', 'esm5'];
 
   // TODO: find all the package types to transform
   // TODO: error/warning logging/handling etc
 
   const transformer = new PackageTransformer();
-  transformer.transform(packagePath, format);
+  packagePaths.forEach(packagePath => {
+    formats.forEach(format => {
+      console.warn(`Compiling ${packagePath}:${format}`);
+      transformer.transform(packagePath, format);
+    });
+  });
 
   return 0;
 }
