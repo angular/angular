@@ -27,7 +27,7 @@ export interface DirectiveDecorator {
    * runtime.
    *
    * Directive classes, like component classes, can implement
-   * [life-cycle hoooks](guide/lifecycle-hooks) to influence their configuration and behavior.
+   * [life-cycle hooks](guide/lifecycle-hooks) to influence their configuration and behavior.
    *
    *
    * @usageNotes
