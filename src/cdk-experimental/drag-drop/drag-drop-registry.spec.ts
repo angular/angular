@@ -6,7 +6,7 @@ import {
   createTouchEvent,
   dispatchTouchEvent,
 } from '@angular/cdk/testing';
-import {CdkDragDropRegistry} from './drag-drop-registry';
+import {DragDropRegistry} from './drag-drop-registry';
 import {DragDropModule} from './drag-drop-module';
 import {CdkDrag} from './drag';
 import {CdkDrop} from './drop';
@@ -14,7 +14,7 @@ import {CdkDrop} from './drop';
 describe('DragDropRegistry', () => {
   let fixture: ComponentFixture<SimpleDropZone>;
   let testComponent: SimpleDropZone;
-  let registry: CdkDragDropRegistry;
+  let registry: DragDropRegistry<CdkDrag, CdkDrop>;
 
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
@@ -26,7 +26,7 @@ describe('DragDropRegistry', () => {
     testComponent = fixture.componentInstance;
     fixture.detectChanges();
 
-    inject([CdkDragDropRegistry], (c: CdkDragDropRegistry) => {
+    inject([DragDropRegistry], (c: DragDropRegistry<CdkDrag, CdkDrop>) => {
       registry = c;
     })();
   }));
@@ -59,7 +59,7 @@ describe('DragDropRegistry', () => {
     registry.startDragging(firstItem, createMouseEvent('mousedown'));
     expect(registry.isDragging(firstItem)).toBe(true);
 
-    registry.remove(firstItem);
+    registry.removeDragItem(firstItem);
     expect(registry.isDragging(firstItem)).toBe(false);
   });
 
@@ -130,7 +130,7 @@ describe('DragDropRegistry', () => {
   });
 
   it('should not throw when trying to register the same container again', () => {
-    expect(() => registry.register(testComponent.dropInstances.first)).not.toThrow();
+    expect(() => registry.registerDropContainer(testComponent.dropInstances.first)).not.toThrow();
   });
 
   it('should throw when trying to register a different container with the same id', () => {

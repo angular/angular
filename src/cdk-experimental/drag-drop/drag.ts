@@ -31,7 +31,7 @@ import {CdkDragStart, CdkDragEnd, CdkDragExit, CdkDragEnter, CdkDragDrop} from '
 import {CdkDragPreview} from './drag-preview';
 import {CdkDragPlaceholder} from './drag-placeholder';
 import {ViewportRuler} from '@angular/cdk/overlay';
-import {CdkDragDropRegistry} from './drag-drop-registry';
+import {DragDropRegistry} from './drag-drop-registry';
 import {Subject, merge} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
@@ -138,10 +138,10 @@ export class CdkDrag<T = any> implements OnDestroy {
     private _ngZone: NgZone,
     private _viewContainerRef: ViewContainerRef,
     private _viewportRuler: ViewportRuler,
-    private _dragDropRegistry: CdkDragDropRegistry,
+    private _dragDropRegistry: DragDropRegistry<CdkDrag<T>, CdkDropContainer>,
     @Optional() private _dir: Directionality) {
       this._document = document;
-      _dragDropRegistry.register(this);
+      _dragDropRegistry.registerDragItem(this);
     }
 
   /**
@@ -165,7 +165,7 @@ export class CdkDrag<T = any> implements OnDestroy {
     }
 
     this._nextSibling = null;
-    this._dragDropRegistry.remove(this);
+    this._dragDropRegistry.removeDragItem(this);
     this._destroyed.next();
     this._destroyed.complete();
   }

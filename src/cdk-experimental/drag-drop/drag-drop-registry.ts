@@ -10,8 +10,6 @@ import {Injectable, NgZone, OnDestroy, Inject} from '@angular/core';
 import {DOCUMENT} from '@angular/common';
 import {supportsPassiveEventListeners} from '@angular/cdk/platform';
 import {Subject} from 'rxjs';
-import {CdkDrop} from './drop';
-import {CdkDrag} from './drag';
 
 /** Event options that can be used to bind an active event. */
 const activeEventOptions = supportsPassiveEventListeners() ? {passive: false} : false;
@@ -20,35 +18,38 @@ const activeEventOptions = supportsPassiveEventListeners() ? {passive: false} : 
 type PointerEventHandler = (event: TouchEvent | MouseEvent) => void;
 
 /**
- * Service that keeps track of all the `CdkDrag` and `CdkDrop` instances, and
- * manages global event listeners on the `document`.
+ * Service that keeps track of all the drag item and drop container
+ * instances, and manages global event listeners on the `document`.
  * @docs-private
  */
+// Note: this class is generic, rather than referencing CdkDrag and CdkDrop directly, in order to
+// avoid circular imports. If we were to reference them here, importing the registry into the
+// classes that are registering themselves will introduce a circular import.
 @Injectable({providedIn: 'root'})
-export class CdkDragDropRegistry implements OnDestroy {
+export class DragDropRegistry<I, C extends {id: string}> implements OnDestroy {
   private _document: Document;
 
-  /** Registered `CdkDrop` instances. */
-  private _dropInstances = new Set<CdkDrop>();
+  /** Registered drop container instances. */
+  private _dropInstances = new Set<C>();
 
-  /** Registered `CdkDrag` instances. */
-  private _dragInstances = new Set<CdkDrag>();
+  /** Registered drag item instances. */
+  private _dragInstances = new Set<I>();
 
-  /** `CdkDrag` instances that are currently being dragged. */
-  private _activeDragInstances = new Set<CdkDrag>();
+  /** Drag item instances that are currently being dragged. */
+  private _activeDragInstances = new Set<I>();
 
   /** Keeps track of the event listeners that we've bound to the `document`. */
   private _globalListeners = new Map<string, {handler: PointerEventHandler, options?: any}>();
 
   /**
    * Emits the `touchmove` or `mousemove` events that are dispatched
-   * while the user is dragging a `CdkDrag` instance.
+   * while the user is dragging a drag item instance.
    */
   readonly pointerMove: Subject<TouchEvent | MouseEvent> = new Subject<TouchEvent | MouseEvent>();
 
   /**
    * Emits the `touchend` or `mouseup` events that are dispatched
-   * while the user is dragging a `CdkDrag` instance.
+   * while the user is dragging a drag item instance.
    */
   readonly pointerUp: Subject<TouchEvent | MouseEvent> = new Subject<TouchEvent | MouseEvent>();
 
@@ -58,52 +59,44 @@ export class CdkDragDropRegistry implements OnDestroy {
     this._document = _document;
   }
 
-  /** Adds a `CdkDrop` instance to the registry. */
-  register(drop: CdkDrop);
-
-  /** Adds a `CdkDrag` instance to the registry. */
-  register(drag: CdkDrag);
-
-  register(instance: CdkDrop | CdkDrag) {
-    if (instance instanceof CdkDrop) {
-      if (!this._dropInstances.has(instance)) {
-        if (this.getDropContainer(instance.id)) {
-          throw Error(`Drop instance with id "${instance.id}" has already been registered.`);
-        }
-
-        this._dropInstances.add(instance);
+  /** Adds a drop container to the registry. */
+  registerDropContainer(drop: C) {
+    if (!this._dropInstances.has(drop)) {
+      if (this.getDropContainer(drop.id)) {
+        throw Error(`Drop instance with id "${drop.id}" has already been registered.`);
       }
-    } else {
-      this._dragInstances.add(instance);
 
-      if (this._dragInstances.size === 1) {
-        this._ngZone.runOutsideAngular(() => {
-          // The event handler has to be explicitly active, because
-          // newer browsers make it passive by default.
-          this._document.addEventListener('touchmove', this._preventScrollListener,
-              activeEventOptions);
-        });
-      }
+      this._dropInstances.add(drop);
     }
   }
 
-  /** Removes a `CdkDrop` instance from the registry. */
-  remove(drop: CdkDrop);
+  /** Adds a drag item instance to the registry. */
+  registerDragItem(drag: I) {
+    this._dragInstances.add(drag);
 
-  /** Removes a `CdkDrag` instance from the registry. */
-  remove(drag: CdkDrag);
+    if (this._dragInstances.size === 1) {
+      this._ngZone.runOutsideAngular(() => {
+        // The event handler has to be explicitly active, because
+        // newer browsers make it passive by default.
+        this._document.addEventListener('touchmove', this._preventScrollListener,
+            activeEventOptions);
+      });
+    }
+  }
 
-  remove(instance: CdkDrop | CdkDrag) {
-    if (instance instanceof CdkDrop) {
-      this._dropInstances.delete(instance);
-    } else {
-      this._dragInstances.delete(instance);
-      this.stopDragging(instance);
+  /** Removes a drop container from the registry. */
+  removeDropContainer(drop: C) {
+    this._dropInstances.delete(drop);
+  }
 
-      if (this._dragInstances.size === 0) {
-        this._document.removeEventListener('touchmove', this._preventScrollListener,
-            activeEventOptions as any);
-      }
+  /** Removes a drag item instance from the registry. */
+  removeDragItem(drag: I) {
+    this._dragInstances.delete(drag);
+    this.stopDragging(drag);
+
+    if (this._dragInstances.size === 0) {
+      this._document.removeEventListener('touchmove', this._preventScrollListener,
+          activeEventOptions as any);
     }
   }
 
@@ -112,7 +105,7 @@ export class CdkDragDropRegistry implements OnDestroy {
    * @param drag Drag instance which is being dragged.
    * @param event Event that initiated the dragging.
    */
-  startDragging(drag: CdkDrag, event: TouchEvent | MouseEvent) {
+  startDragging(drag: I, event: TouchEvent | MouseEvent) {
     this._activeDragInstances.add(drag);
 
     if (this._activeDragInstances.size === 1) {
@@ -134,8 +127,8 @@ export class CdkDragDropRegistry implements OnDestroy {
     }
   }
 
-  /** Stops dragging a `CdkDrag` instance. */
-  stopDragging(drag: CdkDrag) {
+  /** Stops dragging a drag item instance. */
+  stopDragging(drag: I) {
     this._activeDragInstances.delete(drag);
 
     if (this._activeDragInstances.size === 0) {
@@ -143,19 +136,19 @@ export class CdkDragDropRegistry implements OnDestroy {
     }
   }
 
-  /** Gets whether a `CdkDrag` instance is currently being dragged. */
-  isDragging(drag: CdkDrag) {
+  /** Gets whether a drag item instance is currently being dragged. */
+  isDragging(drag: I) {
     return this._activeDragInstances.has(drag);
   }
 
-  /** Gets a `CdkDrop` instance by its id. */
-  getDropContainer<T = any>(id: string): CdkDrop<T> | undefined {
+  /** Gets a drop container by its id. */
+  getDropContainer(id: string): C | undefined {
     return Array.from(this._dropInstances).find(instance => instance.id === id);
   }
 
   ngOnDestroy() {
-    this._dragInstances.forEach(instance => this.remove(instance));
-    this._dropInstances.forEach(instance => this.remove(instance));
+    this._dragInstances.forEach(instance => this.removeDragItem(instance));
+    this._dropInstances.forEach(instance => this.removeDropContainer(instance));
     this._clearGlobalListeners();
     this.pointerMove.complete();
     this.pointerUp.complete();

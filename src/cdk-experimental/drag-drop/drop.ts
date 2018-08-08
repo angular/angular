@@ -23,7 +23,7 @@ import {
 import {CdkDrag} from './drag';
 import {CdkDragExit, CdkDragEnter, CdkDragDrop} from './drag-events';
 import {CDK_DROP_CONTAINER} from './drop-container';
-import {CdkDragDropRegistry} from './drag-drop-registry';
+import {DragDropRegistry} from './drag-drop-registry';
 
 /** Counter used to generate unique ids for drop zones. */
 let _uniqueIdCounter = 0;
@@ -85,14 +85,14 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
 
   constructor(
     public element: ElementRef<HTMLElement>,
-    private _dragDropRegistry: CdkDragDropRegistry) {}
+    private _dragDropRegistry: DragDropRegistry<CdkDrag, CdkDrop<T>>) {}
 
   ngOnInit() {
-    this._dragDropRegistry.register(this);
+    this._dragDropRegistry.registerDropContainer(this);
   }
 
   ngOnDestroy() {
-    this._dragDropRegistry.remove(this);
+    this._dragDropRegistry.removeDropContainer(this);
   }
 
   /** Whether an item in the container is being dragged. */

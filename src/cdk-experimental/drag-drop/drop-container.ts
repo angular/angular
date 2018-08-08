@@ -13,6 +13,9 @@ export interface CdkDropContainer<T = any> {
   /** Arbitrary data to attach to all events emitted by this container. */
   data: T;
 
+  /** Unique ID for the drop zone. */
+  id: string;
+
   /** Direction in which the list is oriented. */
   orientation: 'horizontal' | 'vertical';
 
