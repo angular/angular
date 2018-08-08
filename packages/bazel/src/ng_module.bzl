@@ -175,6 +175,8 @@ def _expected_outs(ctx):
                 metadata = [".metadata.json"]
             else:
                 devmode_js = [".js"]
+                if not _is_bazel():
+                    devmode_js += ".ngfactory.js"
                 summaries = []
                 metadata = []
         elif include_ng_files and short_path.endswith(".css"):
