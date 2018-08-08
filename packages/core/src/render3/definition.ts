@@ -6,17 +6,22 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import './ng_dev_mode';
+
 import {ChangeDetectionStrategy} from '../change_detection/constants';
-import {Provider} from '../core';
+import {Provider, ViewEncapsulation} from '../core';
 import {NgModuleDef, NgModuleDefInternal} from '../metadata/ng_module';
-import {RendererType2} from '../render/api';
 import {Type} from '../type';
-import {resolveRendererType2} from '../view/util';
 
 import {BaseDef, ComponentDefFeature, ComponentDefInternal, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveType, DirectiveTypesOrFactory, PipeDefInternal, PipeType, PipeTypesOrFactory} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 
+const EMPTY: {} = {};
+const EMPTY_ARRAY: any[] = [];
+ngDevMode && Object.freeze(EMPTY);
+ngDevMode && Object.freeze(EMPTY_ARRAY);
+let _renderCompCount = 0;
 
 /**
  * Create a component definition object.
@@ -180,8 +185,28 @@ export function defineComponent<T>(componentDefinition: {
    */
   features?: ComponentDefFeature[];
 
-  rendererType?: RendererType2;
+  /**
+   * Defines template and style encapsulation options available for Component's {@link Component}.
+   */
+  encapsulation?: ViewEncapsulation;
 
+  /**
+   * Defines arbitrary developer-defined data to be stored on a renderer instance.
+   * This is useful for renderers that delegate to other renderers.
+   *
+   * see: animation
+   */
+  data?: {[kind: string]: any};
+
+  /**
+   * A set of styles that the component needs to be present for component to render correctly.
+   */
+  styles?: string[];
+
+  /**
+   * The strategy that the default change detector uses to detect changes.
+   * When set, takes effect the next time change detection is triggered.
+   */
   changeDetection?: ChangeDetectionStrategy;
 
   /**
@@ -215,6 +240,7 @@ export function defineComponent<T>(componentDefinition: {
   const pipeTypes = componentDefinition.pipes !;
   const directiveTypes = componentDefinition.directives !;
   const declaredInputs: {[key: string]: string} = {} as any;
+  const encapsulation = componentDefinition.encapsulation;
   const def: ComponentDefInternal<any> = {
     type: type,
     diPublic: null,
@@ -227,7 +253,6 @@ export function defineComponent<T>(componentDefinition: {
     inputs: invertObject(componentDefinition.inputs, declaredInputs),
     declaredInputs: declaredInputs,
     outputs: invertObject(componentDefinition.outputs),
-    rendererType: resolveRendererType2(componentDefinition.rendererType) || null,
     exportAs: componentDefinition.exportAs || null,
     onInit: type.prototype.ngOnInit || null,
     doCheck: type.prototype.ngDoCheck || null,
@@ -247,6 +272,12 @@ export function defineComponent<T>(componentDefinition: {
     selectors: componentDefinition.selectors,
     viewQuery: componentDefinition.viewQuery || null,
     features: componentDefinition.features || null,
+    data: componentDefinition.data || EMPTY,
+    // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in the
+    // next line. Also `None` should be 0 not 2.
+    encapsulation: encapsulation == null ? 2 /* ViewEncapsulation.None */ : encapsulation,
+    id: `c${_renderCompCount++}`,
+    styles: EMPTY_ARRAY,
   };
   const feature = componentDefinition.features;
   feature && feature.forEach((fn) => fn(def));
@@ -273,16 +304,14 @@ export function extractPipeDef(type: PipeType<any>): PipeDefInternal<any> {
 export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T, any, any, any>>): never {
   const res: NgModuleDefInternal<T> = {
     type: def.type,
-    bootstrap: def.bootstrap || [],
-    declarations: def.declarations || [],
-    imports: def.imports || [],
-    exports: def.exports || [],
+    bootstrap: def.bootstrap || EMPTY_ARRAY,
+    declarations: def.declarations || EMPTY_ARRAY,
+    imports: def.imports || EMPTY_ARRAY,
+    exports: def.exports || EMPTY_ARRAY,
     transitiveCompileScopes: null,
   };
   return res as never;
 }
-
-const EMPTY = {};
 
 /**
  * Inverts an inputs or outputs lookup such that the keys, which were the

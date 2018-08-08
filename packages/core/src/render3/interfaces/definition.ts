@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '../../core';
-import {RendererType2} from '../../render/api';
+import {Provider, ViewEncapsulation} from '../../core';
 import {Type} from '../../type';
 import {CssSelectorList} from './projection';
 
@@ -188,9 +187,19 @@ export type ComponentDefInternal<T> = ComponentDef<T, string>;
  */
 export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T, Selector> {
   /**
+   * Runtime unique component ID.
+   */
+  id: string;
+
+  /**
    * The View template of the component.
    */
   readonly template: ComponentTemplate<T>;
+
+  /**
+   * A set of styles that the component needs to be present for component to render correctly.
+   */
+  readonly styles: string[];
 
   /**
    * Query-related instructions for a component.
@@ -198,9 +207,21 @@ export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T
   readonly viewQuery: ComponentQuery<T>|null;
 
   /**
-   * Renderer type data of the component.
+   * The view encapsulation type, which determines how styles are applied to
+   * DOM elements. One of
+   * - `Emulated` (default): Emulate native scoping of styles.
+   * - `Native`: Use the native encapsulation mechanism of the renderer.
+   * - `ShadowDom`: Use modern [ShadowDOM](https://w3c.github.io/webcomponents/spec/shadow/) and
+   *   create a ShadowRoot for component's host element.
+   * - `None`: Do not provide any template or style encapsulation.
    */
-  readonly rendererType: RendererType2|null;
+  readonly encapsulation: ViewEncapsulation;
+
+  /**
+   * Defines arbitrary developer-defined data to be stored on a renderer instance.
+   * This is useful for renderers that delegate to other renderers.
+   */
+  readonly data: {[kind: string]: any};
 
   /** Whether or not this component's ChangeDetectionStrategy is OnPush */
   readonly onPush: boolean;
