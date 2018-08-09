@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import './ng_dev_mode';
+
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider, ViewEncapsulation} from '../core';
 import {NgModuleDef, NgModuleDefInternal} from '../metadata/ng_module';
