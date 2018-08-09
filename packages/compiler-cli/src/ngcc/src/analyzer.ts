@@ -9,8 +9,7 @@ import {ConstantPool} from '@angular/compiler';
 import * as fs from 'fs';
 import * as ts from 'typescript';
 
-import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from '../../ngtsc/annotations';
-import {BaseDefDecoratorHandler} from '../../ngtsc/annotations/src/base_def';
+import {BaseDefDecoratorHandler, ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from '../../ngtsc/annotations';
 import {Decorator} from '../../ngtsc/host';
 import {CompileResult, DecoratorHandler} from '../../ngtsc/transform';
 
@@ -34,7 +33,7 @@ export interface AnalyzedFile {
 
 export interface MatchingHandler<A, M> {
   handler: DecoratorHandler<A, M>;
-  decorator: Decorator;
+  match: M;
 }
 
 /**
@@ -80,9 +79,10 @@ export class Analyzer {
       |undefined {
     const matchingHandlers =
         this.handlers
-            .map(
-                handler =>
-                    ({handler, decorator: handler.detect(clazz.declaration, clazz.decorators)}))
+            .map(handler => ({
+                   handler,
+                   decorator: handler.detect(clazz.declaration, clazz.decorators),
+                 }))
             .filter(isMatchingHandler);
 
     if (matchingHandlers.length > 1) {
@@ -105,5 +105,5 @@ export class Analyzer {
 
 function isMatchingHandler<A, M>(handler: Partial<MatchingHandler<A, M>>):
     handler is MatchingHandler<A, M> {
-  return !!handler.decorator;
+  return !!handler.match;
 }

@@ -32,7 +32,7 @@ export class BaseDefDecoratorHandler implements
       |undefined {
     if (containsNgTopLevelDecorator(decorators)) {
       // If the class is already decorated by @Component or @Directive let that
-      // decorator handle this. BaseDef is unnecessary.
+      // DecoratorHandler handle this. BaseDef is unnecessary.
       return undefined;
     }
 
@@ -67,10 +67,16 @@ export class BaseDefDecoratorHandler implements
       metadata.inputs.forEach(({decorator, property}) => {
         const propName = property.name;
         const args = decorator.args;
-        const value: string|[string, string] = args && args.length >= 1 ?
-            [staticallyResolve(args[0], this.reflector, this.checker) as string, propName] :
-            propName;
-
+        let value: string|[string, string];
+        if (args && args.length > 0) {
+          const resolvedValue = staticallyResolve(args[0], this.reflector, this.checker);
+          if (typeof resolvedValue !== 'string') {
+            throw new TypeError('Input alias does not resolve to a string value');
+          }
+          value = [resolvedValue, propName];
+        } else {
+          value = propName;
+        }
         inputs[propName] = value;
       });
     }
@@ -80,9 +86,16 @@ export class BaseDefDecoratorHandler implements
       metadata.outputs.forEach(({decorator, property}) => {
         const propName = property.name;
         const args = decorator.args;
-        const value = args && args.length >= 1 ?
-            staticallyResolve(args[0], this.reflector, this.checker) as string :
-            propName;
+        let value: string;
+        if (args && args.length > 0) {
+          const resolvedValue = staticallyResolve(args[0], this.reflector, this.checker);
+          if (typeof resolvedValue !== 'string') {
+            throw new TypeError('Output alias does not resolve to a string value');
+          }
+          value = resolvedValue;
+        } else {
+          value = propName;
+        }
         outputs[propName] = value;
       });
     }

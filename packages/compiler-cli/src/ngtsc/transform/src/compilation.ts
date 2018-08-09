@@ -22,7 +22,7 @@ import {DtsFileTransformer} from './declaration';
 interface EmitFieldOperation<A, M> {
   adapter: DecoratorHandler<A, M>;
   analysis: AnalysisOutput<A>;
-  decorator: Decorator;
+  metadata: M;
 }
 
 /**
@@ -104,7 +104,7 @@ export class IvyCompilation {
             this.analysis.set(node, {
               adapter,
               analysis: analysis.analysis,
-              decorator: metadata,
+              metadata: metadata,
             });
           }
 
@@ -185,7 +185,7 @@ export class IvyCompilation {
       return undefined;
     }
 
-    return this.analysis.get(original) !.decorator;
+    return this.analysis.get(original) !.metadata;
   }
 
   /**

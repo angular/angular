@@ -1979,7 +1979,6 @@ describe('compiler compliance', () => {
       // ...
       `;
       const result = compile(files, angularFiles);
-      debugger;
       expectEmit(result.source, expectedOutput, 'Invalid base definition');
     });
 
@@ -2019,7 +2018,7 @@ describe('compiler compliance', () => {
         }
       };
       const result = compile(files, angularFiles);
-      expect(result.source.indexOf('ngBaseDef')).toBe(-1);
+      expect(result.source).not.toContain('ngBaseDef');
     });
 
     it('should NOT add ngBaseDef if @Directive is present', () => {
@@ -2057,7 +2056,7 @@ describe('compiler compliance', () => {
         }
       };
       const result = compile(files, angularFiles);
-      expect(result.source.indexOf('ngBaseDef')).toBe(-1);
+      expect(result.source).not.toContain('ngBaseDef');
     });
   });
 });
