@@ -678,6 +678,9 @@
     "name": "isComponent"
   },
   {
+    "name": "isContentQueryHost"
+  },
+  {
     "name": "isContextDirty"
   },
   {

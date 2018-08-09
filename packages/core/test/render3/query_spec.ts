@@ -49,7 +49,7 @@ function isViewContainerRef(candidate: any): boolean {
 }
 
 describe('query', () => {
-  it('should project query children', () => {
+  it('should match projected query children', () => {
     const Child = createComponent('child', function(rf: RenderFlags, ctx: any) {});
 
     let child1 = null;
@@ -1617,7 +1617,9 @@ describe('query', () => {
       it('should support combination of deep and shallow queries', () => {
         /**
          * % if (exp) { ">
-         *    <div #foo></div>
+         *   <div #foo>
+         *     <div #foo></div>
+         *   </div>
          * % }
          * <span #foo></span>
          * class Cmpt {
@@ -1639,7 +1641,9 @@ describe('query', () => {
                     let rf0 = embeddedViewStart(0);
                     {
                       if (rf0 & RenderFlags.Create) {
-                        element(0, 'div', null, ['foo', '']);
+                        elementStart(0, 'div', null, ['foo', '']);
+                        { element(2, 'div', null, ['foo', '']); }
+                        elementEnd();
                       }
                     }
                     embeddedViewEnd();
@@ -1671,8 +1675,12 @@ describe('query', () => {
 
         cmptInstance.exp = true;
         detectChanges(cmptInstance);
-        expect(deep.length).toBe(2);
-        expect(shallow.length).toBe(1);
+        expect(deep.length).toBe(3);
+
+        // embedded % if blocks should behave the same way as *ngIf, namely they
+        // should match shallow queries on the first level of elements underneath
+        // the embedded view boundary.
+        expect(shallow.length).toBe(2);
 
         cmptInstance.exp = false;
         detectChanges(cmptInstance);
@@ -1773,43 +1781,66 @@ describe('query', () => {
   });
 
   describe('content', () => {
+    let withContentInstance: WithContentDirective|null;
+    let shallowCompInstance: ShallowComp|null;
 
-    it('should support content queries for directives', () => {
-      let withContentInstance: WithContentDirective|null = null;
+    beforeEach(() => {
+      withContentInstance = null;
+      shallowCompInstance = null;
+    });
 
-      class WithContentDirective {
-        // @ContentChildren('foo') foos;
-        foos !: QueryList<ElementRef>;
-        contentInitQuerySnapshot = 0;
-        contentCheckedQuerySnapshot = 0;
+    class WithContentDirective {
+      // @ContentChildren('foo')
+      foos !: QueryList<ElementRef>;
+      contentInitQuerySnapshot = 0;
+      contentCheckedQuerySnapshot = 0;
 
-        ngAfterContentInit() { this.contentInitQuerySnapshot = this.foos ? this.foos.length : 0; }
+      ngAfterContentInit() { this.contentInitQuerySnapshot = this.foos ? this.foos.length : 0; }
 
-        ngAfterContentChecked() {
-          this.contentCheckedQuerySnapshot = this.foos ? this.foos.length : 0;
-        }
-
-        static ngComponentDef = defineDirective({
-          type: WithContentDirective,
-          selectors: [['', 'with-content', '']],
-          factory: () => new WithContentDirective(),
-          contentQueries:
-              () => { registerContentQuery(query(null, ['foo'], true, QUERY_READ_FROM_NODE)); },
-          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
-            let tmp: any;
-            withContentInstance = loadDirective<WithContentDirective>(dirIndex);
-            queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
-                (withContentInstance.foos = tmp);
-          }
-        });
+      ngAfterContentChecked() {
+        this.contentCheckedQuerySnapshot = this.foos ? this.foos.length : 0;
       }
 
+      static ngComponentDef = defineDirective({
+        type: WithContentDirective,
+        selectors: [['', 'with-content', '']],
+        factory: () => new WithContentDirective(),
+        contentQueries:
+            () => { registerContentQuery(query(null, ['foo'], true, QUERY_READ_FROM_NODE)); },
+        contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+          let tmp: any;
+          withContentInstance = loadDirective<WithContentDirective>(dirIndex);
+          queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
+              (withContentInstance.foos = tmp);
+        }
+      });
+    }
+
+    class ShallowComp {
+      // @ContentChildren('foo', {descendants: false})
+      foos !: QueryList<ElementRef>;
+
+      static ngComponentDef = defineComponent({
+        type: ShallowComp,
+        selectors: [['shallow-comp']],
+        factory: () => new ShallowComp(),
+        template: function(rf: RenderFlags, ctx: any) {},
+        contentQueries:
+            () => { registerContentQuery(query(null, ['foo'], false, QUERY_READ_FROM_NODE)); },
+        contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+          let tmp: any;
+          shallowCompInstance = loadDirective<ShallowComp>(dirIndex);
+          queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
+              (shallowCompInstance.foos = tmp);
+        }
+      });
+    }
+
+    it('should support content queries for directives', () => {
       /**
        * <div with-content>
        *   <span #foo></span>
        * </div>
-       * class Cmpt {
-       * }
        */
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
@@ -1834,37 +1865,65 @@ describe('query', () => {
               `Expected content query results to be available when ngAfterContentChecked was called.`);
     });
 
-    // https://stackblitz.com/edit/angular-wlenwd?file=src%2Fapp%2Fapp.component.ts
-    it('should support view and content queries matching the same element', () => {
-      let withContentComponentInstance: WithContentComponent;
+    it('should support content query matches on directive hosts', () => {
+      /**
+       * <div with-content #foo>
+       * </div>
+       */
+      const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'div', ['with-content', ''], ['foo', '']);
+        }
+      }, [WithContentDirective]);
 
-      class WithContentComponent {
-        // @ContentChildren('foo') foos;
-        // TODO(issue/24571): remove '!'.
-        foos !: QueryList<ElementRef>;
+      const fixture = new ComponentFixture(AppComponent);
+      expect(withContentInstance !.foos.length)
+          .toBe(1, `Expected content query to match <div with-content #foo>.`);
+    });
 
-        static ngComponentDef = defineComponent({
-          type: WithContentComponent,
-          selectors: [['with-content']],
-          factory: () => new WithContentComponent(),
-          contentQueries:
-              () => { registerContentQuery(query(null, ['foo'], true, QUERY_READ_FROM_NODE)); },
-          template: (rf: RenderFlags, ctx: WithContentComponent) => {
-            // intentionally left empty, don't need anything for this test
-          },
-          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
-            let tmp: any;
-            withContentComponentInstance = loadDirective<WithContentComponent>(dirIndex);
-            queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
-                (withContentComponentInstance.foos = tmp);
-          },
-        });
+    it('should match shallow content queries in views inserted / removed by ngIf', () => {
+      function IfTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'div', null, ['foo', '']);
+        }
       }
 
       /**
-       * <with-content>
+       * <shallow-comp>
+       *    <div *ngIf="showing" #foo></div>
+       * </shallow-comp>
+       */
+      const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'shallow-comp');
+          { container(1, IfTemplate, null, [AttributeMarker.SelectOnly, 'ngIf', '']); }
+          elementEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(1, 'ngIf', bind(ctx.showing));
+        }
+      }, [ShallowComp, NgIf]);
+
+      const fixture = new ComponentFixture(AppComponent);
+      const qList = shallowCompInstance !.foos;
+      expect(qList.length).toBe(0);
+
+      fixture.component.showing = true;
+      fixture.update();
+      expect(qList.length).toBe(1);
+
+      fixture.component.showing = false;
+      fixture.update();
+      expect(qList.length).toBe(0);
+    });
+
+
+    // https://stackblitz.com/edit/angular-wlenwd?file=src%2Fapp%2Fapp.component.ts
+    it('should support view and content queries matching the same element', () => {
+      /**
+       * <div with-content>
        *   <div #foo></div>
-       * </with-content>
+       * </div>
        * <div id="after" #bar></div>
        * class Cmpt {
        *  @ViewChildren('foo, bar') foos;
@@ -1874,13 +1933,13 @@ describe('query', () => {
           'app-component',
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
-              elementStart(1, 'with-content');
+              elementStart(1, 'div', ['with-content', '']);
               { element(2, 'div', null, ['foo', '']); }
               elementEnd();
               element(4, 'div', ['id', 'after'], ['bar', '']);
             }
           },
-          [WithContentComponent], [],
+          [WithContentDirective], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               query(0, ['foo', 'bar'], true, QUERY_READ_FROM_NODE);
@@ -1895,14 +1954,48 @@ describe('query', () => {
       const viewQList = fixture.component.foos;
 
       expect(viewQList.length).toBe(2);
-      expect(withContentComponentInstance !.foos.length).toBe(1);
-      expect(viewQList.first.nativeElement)
-          .toBe(withContentComponentInstance !.foos.first.nativeElement);
+      expect(withContentInstance !.foos.length).toBe(1);
+      expect(viewQList.first.nativeElement).toBe(withContentInstance !.foos.first.nativeElement);
       expect(viewQList.last.nativeElement.id).toBe('after');
     });
 
-    it('should report results to appropriate queries where content queries are nested', () => {
+    it('should not report deep content query matches found above content children', () => {
+      /**
+       * <div with-content>
+       *   <div #foo id="yes"></div>    <-- should match content query
+       * </div>
+       * <div #foo></div>              <-- should not match content query
+       * class AppComponent {
+       *  @ViewChildren('bar') bars: QueryList<ElementRef>;
+       * }
+       */
+      const AppComponent = createComponent(
+          'app-component',
+          function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              elementStart(1, 'div', ['with-content', '']);
+              { element(2, 'div', ['id', 'yes'], ['foo', '']); }
+              elementEnd();
+              element(4, 'div', null, ['foo', '']);
+            }
+          },
+          [WithContentDirective], [],
+          function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              query(0, ['bar'], true, QUERY_READ_FROM_NODE);
+            }
+            if (rf & RenderFlags.Update) {
+              let tmp: any;
+              queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.bars = tmp as QueryList<any>);
+            }
+          });
 
+      const fixture = new ComponentFixture(AppComponent);
+      expect(withContentInstance !.foos.length).toBe(1);
+      expect(withContentInstance !.foos.first.nativeElement.id).toEqual('yes');
+    });
+
+    it('should report results to appropriate queries where deep content queries are nested', () => {
       class QueryDirective {
         fooBars: any;
         static ngDirectiveDef = defineDirective({
@@ -1962,6 +2055,63 @@ describe('query', () => {
       expect(inInstance !.fooBars.length).toBe(1);
     });
 
+
+    it('should support nested shallow content queries ', () => {
+      let outInstance: QueryDirective;
+      let inInstance: QueryDirective;
+
+      class QueryDirective {
+        fooBars: any;
+        static ngDirectiveDef = defineDirective({
+          type: QueryDirective,
+          selectors: [['', 'query', '']],
+          exportAs: 'query',
+          factory: () => new QueryDirective(),
+          contentQueries: () => {
+            // @ContentChildren('foo, bar, baz', {descendants: true}) fooBars:
+            // QueryList<ElementRef>;
+            registerContentQuery(query(null, ['foo'], false, QUERY_READ_FROM_NODE));
+          },
+          contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
+            let tmp: any;
+            const instance = loadDirective<QueryDirective>(dirIndex);
+            queryRefresh(tmp = loadQueryList<ElementRef>(queryStartIdx)) &&
+                (instance.fooBars = tmp);
+          },
+        });
+      }
+
+      const AppComponent = createComponent(
+          'app-component',
+          /**
+           * <div query #out="query">
+           *   <div query #in="query" #foo>
+           *     <span #foo></span>
+           *   </div>
+           * </div>
+           */
+          function(rf: RenderFlags, ctx: any) {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div', ['query', ''], ['out', 'query']);
+              {
+                elementStart(2, 'div', ['query', ''], ['in', 'query', 'foo', '']);
+                { element(5, 'span', ['id', 'bar'], ['foo', '']); }
+                elementEnd();
+              }
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              outInstance = load<QueryDirective>(1);
+              inInstance = load<QueryDirective>(3);
+            }
+          },
+          [QueryDirective]);
+
+      const fixture = new ComponentFixture(AppComponent);
+      expect(outInstance !.fooBars.length).toBe(1);
+      expect(inInstance !.fooBars.length).toBe(2);
+    });
+
     it('should respect shallow flag on content queries when mixing deep and shallow queries',
        () => {
          class ShallowQueryDirective {
@@ -2012,6 +2162,9 @@ describe('query', () => {
              /**
               * <div shallow-query #shallow="shallow-query" deep-query #deep="deep-query">
                *   <span #foo></span>
+              *    <div>
+              *        <span #foo></span>
+              *    </div>
               * </div>
               */
              function(rf: RenderFlags, ctx: any) {
@@ -2019,7 +2172,12 @@ describe('query', () => {
                  elementStart(
                      0, 'div', [AttributeMarker.SelectOnly, 'shallow-query', 'deep-query'],
                      ['shallow', 'shallow-query', 'deep', 'deep-query']);
-                 { element(3, 'span', ['id', 'foo'], ['foo', '']); }
+                 {
+                   element(3, 'span', null, ['foo', '']);
+                   elementStart(5, 'div');
+                   { element(6, 'span', null, ['foo', '']); }
+                   elementEnd();
+                 }
                  elementEnd();
                }
                if (rf & RenderFlags.Update) {
@@ -2031,7 +2189,7 @@ describe('query', () => {
 
          const fixture = new ComponentFixture(AppComponent);
          expect(shallowInstance !.foos.length).toBe(1);
-         expect(deepInstance !.foos.length).toBe(1);
+         expect(deepInstance !.foos.length).toBe(2);
        });
   });
 });
