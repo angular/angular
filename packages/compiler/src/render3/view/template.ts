@@ -17,7 +17,7 @@ import * as html from '../../ml_parser/ast';
 import {HtmlParser} from '../../ml_parser/html_parser';
 import {WhitespaceVisitor} from '../../ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG} from '../../ml_parser/interpolation_config';
-import {splitNsName} from '../../ml_parser/tags';
+import {isNgContainer as checkIsNgContainer, splitNsName} from '../../ml_parser/tags';
 import * as o from '../../output/output_ast';
 import {ParseError, ParseSourceSpan} from '../../parse_util';
 import {DomElementSchemaRegistry} from '../../schema/dom_element_schema_registry';
@@ -276,6 +276,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     let i18nMeta: string = '';
 
     const [namespaceKey, elementName] = splitNsName(element.name);
+    const isNgContainer = checkIsNgContainer(element.name);
 
     // Elements inside i18n sections are replaced with placeholders
     // TODO(vicb): nested elements are a WIP in this phase
@@ -314,11 +315,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           selector, (sel: CssSelector, staticType: any) => { this.directives.add(staticType); });
     }
 
-    // Element creation mode
-    const parameters: o.Expression[] = [
-      o.literal(elementIndex),
-      o.literal(elementName),
-    ];
+    // Regular element or ng-container creation mode
+    const parameters: o.Expression[] = [o.literal(elementIndex)];
+    if (!isNgContainer) {
+      parameters.push(o.literal(elementName));
+    }
 
     // Add the attributes
     const attributes: o.Expression[] = [];
@@ -487,13 +488,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     const implicit = o.variable(CONTEXT_NAME);
 
-    const createSelfClosingInstruction =
-        !hasStylingInstructions && element.children.length === 0 && element.outputs.length === 0;
+    const createSelfClosingInstruction = !hasStylingInstructions && !isNgContainer &&
+        element.children.length === 0 && element.outputs.length === 0;
 
     if (createSelfClosingInstruction) {
       this.creationInstruction(element.sourceSpan, R3.element, trimTrailingNulls(parameters));
     } else {
-      this.creationInstruction(element.sourceSpan, R3.elementStart, trimTrailingNulls(parameters));
+      this.creationInstruction(
+          element.sourceSpan, isNgContainer ? R3.elementContainerStart : R3.elementStart,
+          trimTrailingNulls(parameters));
 
       // initial styling for static style="..." attributes
       if (hasStylingInstructions) {
@@ -671,7 +674,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     if (!createSelfClosingInstruction) {
       // Finish element construction mode.
-      this.creationInstruction(element.endSourceSpan || element.sourceSpan, R3.elementEnd);
+      this.creationInstruction(
+          element.endSourceSpan || element.sourceSpan,
+          isNgContainer ? R3.elementContainerEnd : R3.elementEnd);
     }
 
     // Restore the state before exiting this node
