@@ -9,6 +9,7 @@
 import {existsSync, readFileSync, readdirSync, statSync} from 'fs';
 import * as mockFs from 'mock-fs';
 import {join} from 'path';
+const Module = require('module');
 
 import {mainNgcc} from '../../src/ngcc/src/main';
 
@@ -22,34 +23,31 @@ describe('ngcc main()', () => {
   afterEach(restoreRealFileSystem);
 
   it('should run ngcc without errors for fesm2015', () => {
-    const commonPath = join('/node_modules/@angular/common');
     const format = 'fesm2015';
-    expect(mainNgcc([format, commonPath])).toBe(0);
+    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
   });
 
   it('should run ngcc without errors for fesm5', () => {
-    const commonPath = join('/node_modules/@angular/common');
     const format = 'fesm5';
-    expect(mainNgcc([format, commonPath])).toBe(0);
+    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
   });
 
   it('should run ngcc without errors for esm2015', () => {
-    const commonPath = join('/node_modules/@angular/common');
     const format = 'esm2015';
-    expect(mainNgcc([format, commonPath])).toBe(0);
+    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
   });
 
   it('should run ngcc without errors for esm5', () => {
-    const commonPath = join('/node_modules/@angular/common');
     const format = 'esm5';
-    expect(mainNgcc([format, commonPath])).toBe(0);
+    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
   });
 });
 
 
 function createMockFileSystem() {
-  const packagesPath = join(process.env.TEST_SRCDIR, 'angular/packages');
+  const packagesPath = join(process.env.TEST_SRCDIR !, 'angular/packages');
   mockFs({'/node_modules/@angular': loadPackages(packagesPath)});
+  spyOn(Module, '_resolveFilename').and.callFake(mockResolve);
 }
 
 function restoreRealFileSystem() {
@@ -104,4 +102,24 @@ interface Directory {
 
 function isInBazel() {
   return process.env.TEST_SRCDIR != null;
+}
+
+function mockResolve(p: string): string|null {
+  if (existsSync(p)) {
+    const stat = statSync(p);
+    if (stat.isFile()) {
+      return p;
+    } else if (stat.isDirectory()) {
+      const pIndex = mockResolve(p + '/index');
+      if (pIndex && existsSync(pIndex)) {
+        return pIndex;
+      }
+    }
+  }
+  for (const ext of ['.js', '.d.ts']) {
+    if (existsSync(p + ext)) {
+      return p + ext;
+    }
+  }
+  return null;
 }
