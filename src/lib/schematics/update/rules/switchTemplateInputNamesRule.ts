@@ -13,7 +13,7 @@ import {findInputsOnElementWithAttr, findInputsOnElementWithTag} from '../html/a
 import {inputNames} from '../material/data/input-names';
 import {ExternalResource} from '../tslint/component-file';
 import {ComponentWalker} from '../tslint/component-walker';
-import {findAll} from '../typescript/literal';
+import {findAllSubstringIndices} from '../typescript/literal';
 
 /**
  * Rule that walks through every component decorator and updates their inline or external
@@ -62,7 +62,7 @@ export class SwitchTemplateInputNamesWalker extends ComponentWalker {
             templateContent, name.replace, name.whitelist.elements));
       }
       if (!name.whitelist) {
-        offsets = offsets.concat(findAll(templateContent, name.replace));
+        offsets = offsets.concat(findAllSubstringIndices(templateContent, name.replace));
       }
       this.createReplacementsForOffsets(node, name, offsets).forEach(replacement => {
         replacements.push({

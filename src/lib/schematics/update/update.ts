@@ -26,25 +26,30 @@ export default function(): Rule {
     for (const tsconfig of allTsConfigPaths) {
       // Run the update tslint rules.
       tslintFixTasks.push(context.addTask(new TslintFixTask({
-        rulesDirectory: path.join(__dirname, 'rules/'),
+        rulesDirectory: [
+          path.join(__dirname, 'rules/'),
+          path.join(__dirname, 'rules/attribute-selectors'),
+        ],
         rules: {
           // Automatic fixes.
           'switch-identifiers': true,
           'switch-property-names': true,
-          'switch-string-literal-attribute-selectors': true,
           'switch-string-literal-css-names': true,
           'switch-string-literal-element-selectors': true,
-          'switch-stylesheet-attribute-selectors': true,
           'switch-stylesheet-css-names': true,
           'switch-stylesheet-element-selectors': true,
           'switch-stylesheet-input-names': true,
           'switch-stylesheet-output-names': true,
-          'switch-template-attribute-selectors': true,
           'switch-template-css-names': true,
           'switch-template-element-selectors': true,
           'switch-template-export-as-names': true,
           'switch-template-input-names': true,
           'switch-template-output-names': true,
+
+          // Attribute selector update rules.
+          'attribute-selectors-string-literal': true,
+          'attribute-selectors-stylesheet': true,
+          'attribute-selectors-template': true,
 
           // Additional issues we can detect but not automatically fix.
           'check-class-declaration-misc': true,

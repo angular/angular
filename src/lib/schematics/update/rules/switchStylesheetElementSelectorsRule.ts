@@ -12,7 +12,7 @@ import {IOptions, Replacement, RuleFailure, Rules} from 'tslint';
 import {elementSelectors} from '../material/data/element-selectors';
 import {ExternalResource} from '../tslint/component-file';
 import {ComponentWalker} from '../tslint/component-walker';
-import {findAll} from '../typescript/literal';
+import {findAllSubstringIndices} from '../typescript/literal';
 import * as ts from 'typescript';
 
 /**
@@ -65,7 +65,7 @@ export class SwitchStylesheetElementSelectorsWalker extends ComponentWalker {
 
     elementSelectors.forEach(selector => {
       this.createReplacementsForOffsets(node, selector,
-          findAll(stylesheetContent, selector.replace)).forEach(replacement => {
+          findAllSubstringIndices(stylesheetContent, selector.replace)).forEach(replacement => {
             replacements.push({
               message: `Found deprecated element selector "${red(selector.replace)}" which has` +
                   ` been renamed to "${green(selector.replaceWith)}"`,

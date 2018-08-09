@@ -12,7 +12,7 @@ import * as ts from 'typescript';
 import {exportAsNames} from '../material/data/export-as-names';
 import {ExternalResource} from '../tslint/component-file';
 import {ComponentWalker} from '../tslint/component-walker';
-import {findAll} from '../typescript/literal';
+import {findAllSubstringIndices} from '../typescript/literal';
 
 /**
  * Rule that walks through every component decorator and updates their inline or external
@@ -52,14 +52,15 @@ export class SwitchTemplateExportAsNamesWalker extends ComponentWalker {
     const replacements: {message: string, replacement: Replacement}[] = [];
 
     exportAsNames.forEach(name => {
-      this.createReplacementsForOffsets(node, name, findAll(templateContent, name.replace))
-          .forEach(replacement => {
-            replacements.push({
-              message: `Found deprecated exportAs reference "${red(name.replace)}" which has been` +
-              ` renamed to "${green(name.replaceWith)}"`,
-              replacement
-            });
-          });
+      const foundOffsets = findAllSubstringIndices(templateContent, name.replace);
+
+      this.createReplacementsForOffsets(node, name, foundOffsets).forEach(replacement => {
+        replacements.push({
+          message: `Found deprecated exportAs reference "${red(name.replace)}" which has been` +
+          ` renamed to "${green(name.replaceWith)}"`,
+          replacement
+        });
+      });
     });
 
     return replacements;

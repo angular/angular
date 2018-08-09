@@ -13,7 +13,7 @@ import * as ts from 'typescript';
 import {cssNames} from '../material/data/css-names';
 import {ExternalResource} from '../tslint/component-file';
 import {ComponentWalker} from '../tslint/component-walker';
-import {findAll} from '../typescript/literal';
+import {findAllSubstringIndices} from '../typescript/literal';
 
 /**
  * Rule that walks through every component decorator and updates their inline or external
@@ -64,14 +64,15 @@ export class SwitchStylesheetCssNamesWalker extends ComponentWalker {
 
     cssNames.forEach(name => {
       if (!name.whitelist || name.whitelist.css) {
-        this.createReplacementsForOffsets(node, name, findAll(stylesheetContent, name.replace))
-            .forEach(replacement => {
-              replacements.push({
-                message: `Found CSS class "${red(name.replace)}" which has been renamed to` +
-                    ` "${green(name.replaceWith)}"`,
-                replacement
-              });
-            });
+        const foundOffsets = findAllSubstringIndices(stylesheetContent, name.replace);
+
+        this.createReplacementsForOffsets(node, name, foundOffsets).forEach(replacement => {
+          replacements.push({
+            message: `Found CSS class "${red(name.replace)}" which has been renamed to` +
+              ` "${green(name.replaceWith)}"`,
+            replacement
+          });
+        });
       }
     });
 

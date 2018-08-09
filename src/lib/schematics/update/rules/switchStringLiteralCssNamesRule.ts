@@ -10,7 +10,7 @@ import {green, red} from 'chalk';
 import {Replacement, RuleFailure, Rules, RuleWalker} from 'tslint';
 import * as ts from 'typescript';
 import {cssNames} from '../material/data/css-names';
-import {findAll} from '../typescript/literal';
+import {findAllSubstringIndices} from '../typescript/literal';
 
 /**
  * Rule that walks through every string literal, which includes the outdated Material name and
@@ -34,7 +34,7 @@ export class SwitchStringLiteralCssNamesWalker extends RuleWalker {
     cssNames.forEach(name => {
       if (!name.whitelist || name.whitelist.strings) {
         this.createReplacementsForOffsets(stringLiteral, name,
-            findAll(stringLiteralText, name.replace)).forEach(replacement => {
+            findAllSubstringIndices(stringLiteralText, name.replace)).forEach(replacement => {
           this.addFailureAtNode(
               stringLiteral,
               `Found deprecated CSS class "${red(name.replace)}" which has been renamed to` +
