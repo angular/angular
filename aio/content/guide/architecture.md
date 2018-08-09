@@ -51,7 +51,7 @@ The `@Component()` decorator identifies the class immediately below it as a comp
 
 A template combines HTML with Angular markup that can modify HTML elements before they are displayed.
 Template *directives* provide program logic, and *binding markup* connects your application data and the DOM.
-There are tow types of data binding:
+There are two types of data binding:
 
 * *Event binding* lets your app respond to user input in the target environment by updating your application data.
 * *Property binding* lets you interpolate values that are computed from your application data into the HTML.
