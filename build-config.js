@@ -13,7 +13,7 @@ const buildVersion = packageJson.version;
  * Required Angular version for all Angular Material packages. This version will be used
  * as the peer dependency version for Angular in all release packages.
  */
-const angularVersion = '>=6.0.0-beta.0 <7.0.0';
+const angularVersion = packageJson.requiredAngularVersion;
 
 /** License that will be placed inside of all created bundles. */
 const buildLicense = `/**

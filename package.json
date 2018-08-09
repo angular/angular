@@ -7,6 +7,10 @@
     "type": "git",
     "url": "https://github.com/angular/material2.git"
   },
+  "license": "MIT",
+  "engines": {
+    "node": ">= 5.4.1"
+  },
   "scripts": {
     "postinstall": "ngc -p angular.tsconfig.json",
     "build": "gulp :publish:build-releases",
@@ -21,10 +25,7 @@
     "api": "gulp api-docs"
   },
   "version": "6.4.2",
-  "license": "MIT",
-  "engines": {
-    "node": ">= 5.4.1"
-  },
+  "requiredAngularVersion": ">=6.0.0 <7.0.0",
   "dependencies": {
     "@angular/animations": "6.0.0",
     "@angular/common": "6.0.0",
