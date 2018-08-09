@@ -6,24 +6,28 @@
     "ng-add": {
       "description": "Adds Angular Material to the application without affecting any templates",
       "factory": "./install",
+      "schema": "./install/schema.json",
       "aliases": ["material-shell"]
     },
     // Create a dashboard component
     "dashboard": {
       "description": "Create a card-based dashboard component",
       "factory": "./dashboard/index",
+      "schema": "./dashboard/schema.json",
       "aliases": ["material-dashboard"]
     },
     // Creates a table component
     "table": {
       "description": "Create a component that displays data with a data-table",
       "factory": "./table/index",
+      "schema": "./table/schema.json",
       "aliases": ["material-table"]
     },
     // Creates toolbar and navigation components
     "nav": {
       "description": "Create a component with a responsive sidenav for navigation",
       "factory": "./nav/index",
+      "schema": "./nav/schema.json",
       // TODO(devversion): re-add `materialNav` alias if we have the latest schematics version
       // that includes https://github.com/angular/angular-cli/pull/11390
       "aliases": [ "material-nav"]
@@ -31,12 +35,14 @@
     // Create a file tree component
     "tree": {
       "description": "Create a file tree component.",
-      "factory": "./tree/index"
+      "factory": "./tree/index",
+      "schema": "./tree/schema.json"
     },
     // Creates a address form component
     "addressForm": {
       "description": "Create a component with a address form",
       "factory": "./address-form/index",
+      "schema": "./address-form/schema.json",
       "aliases": ["address-form"]
     }
   }

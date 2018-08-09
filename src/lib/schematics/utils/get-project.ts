@@ -15,7 +15,7 @@ import {WorkspaceProject, WorkspaceSchema} from '@schematics/angular/utility/con
 export function getProjectFromWorkspace(workspace: WorkspaceSchema,
                                         projectName?: string): WorkspaceProject {
 
-  let project = workspace.projects[projectName || workspace.defaultProject];
+  const project = workspace.projects[projectName || workspace.defaultProject!];
 
   if (!project) {
     throw new Error(`Could not find project in workspace: ${projectName}`);

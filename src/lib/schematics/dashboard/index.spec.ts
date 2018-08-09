@@ -1,5 +1,5 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {createTestApp, collectionPath} from '../utils/testing';
+import {collectionPath, createTestApp} from '../test-setup/test-app';
 import {getFileContent} from '@schematics/angular/utility/test';
 import {Schema} from './schema';
 
@@ -18,10 +18,7 @@ describe('material-dashboard-schematic', () => {
     runner = new SchematicTestRunner('schematics', collectionPath);
   });
 
-  // TODO(devversion): Temporarily disabled because @angular-devkit/schematics is not able to
-  // find the template files for the schematic. As soon as we find a way to properly reference
-  // those files, we can re-enable this test.
-  xit('should create dashboard files and add them to module', () => {
+  it('should create dashboard files and add them to module', () => {
     const tree = runner.runSchematic('dashboard', { ...options }, createTestApp());
     const files = tree.files;
 

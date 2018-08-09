@@ -2,7 +2,8 @@ import {getSystemPath, normalize, virtualFs} from '@angular-devkit/core';
 import {TempScopedNodeJsSyncHost} from '@angular-devkit/core/node/testing';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {readFileSync} from 'fs';
-import {createTestApp, migrationCollection, runPostScheduledTasks} from '../../utils/testing';
+import {runPostScheduledTasks} from '../../test-setup/post-scheduled-tasks';
+import {createTestApp, migrationCollection} from '../../test-setup/test-app';
 
 describe('test cases', () => {
 

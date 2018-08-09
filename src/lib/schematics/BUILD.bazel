@@ -12,7 +12,12 @@ filegroup(
 ts_library(
   name = "schematics",
   module_name = "@angular/material/schematics",
-  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts", "update/test-cases/**/*.ts", "**/files/**/*"]),
+  srcs = glob(["**/*.ts"], exclude=[
+    "**/*.spec.ts",
+    "**/files/**/*",
+    "test-setup/**/*",
+    "update/test-cases/**/*",
+  ]),
   tsconfig = ":tsconfig.json",
 )
 
@@ -30,12 +35,11 @@ jasmine_node_test(
   name = "unit_tests",
   srcs = [":schematics_test_sources"],
   data = [":schematics_assets", ":schematics_test_cases"],
-  deps = [":copy-collection-file", ":copy-migration-file"],
 )
 
 ts_library(
   name = "schematics_test_sources",
-  srcs = glob(["**/*.spec.ts"], exclude=["**/files/**/*"]),
+  srcs = glob(["**/*.spec.ts", "test-setup/**/*.ts"], exclude=["**/files/**/*"]),
   deps = [":schematics"],
   tsconfig = ":tsconfig.json",
   testonly = True,
@@ -44,25 +48,5 @@ ts_library(
 filegroup(
   name = "schematics_test_cases",
   srcs = glob(["update/test-cases/**/*_input.ts", "update/test-cases/**/*_expected_output.ts"]),
-  testonly = True,
-)
-
-# Workaround for https://github.com/bazelbuild/rules_typescript/issues/154
-genrule(
-  name = "copy-collection-file",
-  srcs = ["collection.json"],
-  outs = ["test-collection.json"],
-  cmd = "cp $< $@",
-  output_to_bindir = True,
-  testonly = True,
-)
-
-# Workaround for https://github.com/bazelbuild/rules_typescript/issues/154
-genrule(
-  name = "copy-migration-file",
-  srcs = ["migration.json"],
-  outs = ["test-migration.json"],
-  cmd = "cp $< $@",
-  output_to_bindir = True,
   testonly = True,
 )

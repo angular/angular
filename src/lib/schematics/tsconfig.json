@@ -16,6 +16,8 @@
   },
   "exclude": [
     "**/*.spec.ts",
+    // Exclude the test-setup utility files. Those should not be part of the output.
+    "test-setup/**/*",
     // Exclude template files that will be copied by the schematics. Those are not valid TS.
     "*/files/**/*",
     // Exclude all test-case files because those should not be included in the schematics output.

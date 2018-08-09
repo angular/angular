@@ -1,7 +1,7 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {Schema} from './schema';
 import {getFileContent} from '@schematics/angular/utility/test';
-import {collectionPath, createTestApp} from '../utils/testing';
+import {collectionPath, createTestApp} from '../test-setup/test-app';
 
 describe('material-table-schematic', () => {
   let runner: SchematicTestRunner;
@@ -19,10 +19,7 @@ describe('material-table-schematic', () => {
     runner = new SchematicTestRunner('schematics', collectionPath);
   });
 
-  // TODO(devversion): Temporarily disabled because @angular-devkit/schematics is not able to
-  // find the template files for the schematic. As soon as we find a way to properly reference
-  // those files, we can re-enable this test.
-  xit('should create table files and add them to module', () => {
+  it('should create table files and add them to module', () => {
     const tree = runner.runSchematic('table', { ...options }, createTestApp());
     const files = tree.files;
 

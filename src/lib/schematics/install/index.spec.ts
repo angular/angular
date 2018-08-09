@@ -2,7 +2,7 @@ import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
 import {getProjectFromWorkspace} from '../utils/get-project';
 import {getFileContent} from '@schematics/angular/utility/test';
-import {collectionPath, createTestApp} from '../utils/testing';
+import {collectionPath, createTestApp} from '../test-setup/test-app';
 import {getWorkspace} from '@schematics/angular/utility/config';
 import {getIndexHtmlPath} from '../utils/ast';
 import {normalize} from '@angular-devkit/core';

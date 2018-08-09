@@ -134,10 +134,7 @@
     "exclude": [
       // Exclude schematic template files and test cases that can't be linted.
       "src/lib/schematics/**/files/**/*",
-      "src/lib/schematics/update/test-cases/**/*",
-      // TODO(paul) re-renable specs once the devkit schematics properly work with Bazel and we
-      // can remove the `xit` calls.
-      "src/lib/schematics/**/*.spec.ts"
+      "src/lib/schematics/update/test-cases/**/*"
     ]
   }
 }
