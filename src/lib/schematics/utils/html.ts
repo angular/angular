@@ -7,7 +7,7 @@
  */
 
 import {Tree, SchematicsException} from '@angular-devkit/schematics';
-import * as parse5 from 'parse5';
+import {parse as parseHtml, DefaultTreeDocument, DefaultTreeElement} from 'parse5';
 import {getIndexHtmlPath} from './ast';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {WorkspaceProject} from '@schematics/angular/utility/config';
@@ -17,27 +17,25 @@ import {WorkspaceProject} from '@schematics/angular/utility/config';
  * @param src the src path of the html file to parse
  */
 export function getHeadTag(src: string) {
-  const document = parse5.parse(src,
-    {sourceCodeLocationInfo: true}) as parse5.AST.Default.Document;
+  const document = parseHtml(src, {sourceCodeLocationInfo: true}) as DefaultTreeDocument;
 
-  let head;
-  const visit = (nodes: parse5.AST.Default.Node[]) => {
+  let head: DefaultTreeElement;
+  const visitNodes = nodes => {
     nodes.forEach(node => {
-      const element = <parse5.AST.Default.Element>node;
-      if (element.tagName === 'head') {
-        head = element;
+      if (node.tagName === 'head') {
+        head = node;
       } else {
-        if (element.childNodes) {
-          visit(element.childNodes);
+        if (node.childNodes) {
+          visitNodes(node.childNodes);
         }
       }
     });
   };
 
-  visit(document.childNodes);
+  visitNodes(document.childNodes);
 
   if (!head) {
-    throw new SchematicsException('Head element not found!');
+    throw new SchematicsException('Head element could not be found!');
   }
 
   return {

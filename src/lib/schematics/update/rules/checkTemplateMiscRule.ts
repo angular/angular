@@ -9,9 +9,10 @@
 import {bold, green, red} from 'chalk';
 import {RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
+import {findInputsOnElementWithTag, findOutputsOnElementWithTag} from '../html/angular';
 import {ExternalResource} from '../tslint/component-file';
 import {ComponentWalker} from '../tslint/component-walker';
-import {findAll, findAllInputsInElWithTag, findAllOutputsInElWithTag} from '../typescript/literal';
+import {findAll} from '../typescript/literal';
 
 /**
  * Rule that walks through every component decorator and updates their inline or external
@@ -55,7 +56,7 @@ export class CheckTemplateMiscWalker extends ComponentWalker {
     })));
 
     failures = failures.concat(
-        findAllOutputsInElWithTag(templateContent, 'selectionChange', ['mat-list-option'])
+        findOutputsOnElementWithTag(templateContent, 'selectionChange', ['mat-list-option'])
             .map(offset => ({
               start: offset,
               end: offset + 'selectionChange'.length,
@@ -65,7 +66,7 @@ export class CheckTemplateMiscWalker extends ComponentWalker {
             })));
 
     failures = failures.concat(
-        findAllOutputsInElWithTag(templateContent, 'selectedChanged', ['mat-datepicker'])
+      findOutputsOnElementWithTag(templateContent, 'selectedChanged', ['mat-datepicker'])
             .map(offset => ({
               start: offset,
               end: offset + 'selectionChange'.length,
@@ -75,7 +76,7 @@ export class CheckTemplateMiscWalker extends ComponentWalker {
             })));
 
     failures = failures.concat(
-        findAllInputsInElWithTag(templateContent, 'selected', ['mat-button-toggle-group'])
+        findInputsOnElementWithTag(templateContent, 'selected', ['mat-button-toggle-group'])
             .map(offset => ({
               start: offset,
               end: offset + 'selected'.length,

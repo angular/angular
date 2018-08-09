@@ -9,10 +9,11 @@
 import {green, red} from 'chalk';
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
+import {findInputsOnElementWithAttr, findInputsOnElementWithTag} from '../html/angular';
 import {inputNames} from '../material/data/input-names';
 import {ExternalResource} from '../tslint/component-file';
 import {ComponentWalker} from '../tslint/component-walker';
-import {findAll, findAllInputsInElWithAttr, findAllInputsInElWithTag} from '../typescript/literal';
+import {findAll} from '../typescript/literal';
 
 /**
  * Rule that walks through every component decorator and updates their inline or external
@@ -53,11 +54,11 @@ export class SwitchTemplateInputNamesWalker extends ComponentWalker {
     inputNames.forEach(name => {
       let offsets: number[] = [];
       if (name.whitelist && name.whitelist.attributes && name.whitelist.attributes.length) {
-        offsets = offsets.concat(findAllInputsInElWithAttr(
+        offsets = offsets.concat(findInputsOnElementWithAttr(
             templateContent, name.replace, name.whitelist.attributes));
       }
       if (name.whitelist && name.whitelist.elements && name.whitelist.elements.length) {
-        offsets = offsets.concat(findAllInputsInElWithTag(
+        offsets = offsets.concat(findInputsOnElementWithTag(
             templateContent, name.replace, name.whitelist.elements));
       }
       if (!name.whitelist) {

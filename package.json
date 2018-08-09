@@ -64,6 +64,7 @@
     "@types/merge2": "^0.3.30",
     "@types/minimist": "^1.2.0",
     "@types/node": "^7.0.21",
+    "@types/parse5": "^5.0.0",
     "@types/run-sequence": "^0.0.29",
     "autoprefixer": "^6.7.6",
     "axe-webdriverjs": "^1.1.1",
