@@ -1263,7 +1263,7 @@ But it is occasionally necessary.
 For example, you can't call `async` or `fakeAsync` when testing
 code that involves the `intervalTimer()` or the RxJS `delay()` operator.
 
-Here are two mover versions of the previous test, written with `done()`.
+Here are two more versions of the previous test, written with `done()`.
 The first one subscribes to the `Observable` exposed to the template by the component's `quote` property.
 
 <code-example
