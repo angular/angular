@@ -1059,4 +1059,4 @@ There is a small window between the `AfterContent...` and `AfterView...` hooks t
 -->
 Angular는 *AfterView* 후킹을 실행하기 전에 *AfterContent* 후킹을 실행합니다.
 그래서 자식 컴포넌트의 컴포넌트 뷰 구성이 끝나는 시점은 프로젝션될 컨텐츠가 준비된 이후입니다.
-이 과정에서 컴포넌트의 호스트 뷰가 프로젝션될 컨텐츠에 의해 갱신되기 때문에 `AfterContent`와 `AfterView` 후킹 사이에는 약간의 차이가 있고, 이 때문에 이전에 사용했던 JavaScript 실행 싸이클을 조정하는 로직은 이 경우에 필요하지 않습니다.
+이 과정에서 컴포넌트의 호스트 뷰가 프로젝션될 컨텐츠에 의해 갱신되기 때문에 `AfterContent`와 `AfterView` 후킹 사이에는 약간의 차이가 있기 때문에, 이전처럼 JavaScript 실행 싸이클을 조정하는 로직이 필요하지 않습니다.

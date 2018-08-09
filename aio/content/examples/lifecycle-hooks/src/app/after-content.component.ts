@@ -33,7 +33,7 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
   private prevHero = '';
   comment = '';
 
-  // Query for a CONTENT child of type `ChildComponent`
+  // `ChildComponent` 타입의 컨텐츠 차일드를 참조합니다.
   @ContentChild(ChildComponent) contentChild: ChildComponent;
 
 // #enddocregion hooks
@@ -43,13 +43,13 @@ export class AfterContentComponent implements AfterContentChecked, AfterContentI
 
 // #docregion hooks
   ngAfterContentInit() {
-    // contentChild is set after the content has been initialized
+    // contentChild는 컨텐츠가 모두 초기화된 이후에 값이 할당됩니다.
     this.logIt('AfterContentInit');
     this.doSomething();
   }
 
   ngAfterContentChecked() {
-    // contentChild is updated after the content has been checked
+    // 컨텐츠에서 변화감지 로직이 동작하면 contentChild가 갱신됩니다.
     if (this.prevHero === this.contentChild.hero) {
       this.logIt('AfterContentChecked (no change)');
     } else {
