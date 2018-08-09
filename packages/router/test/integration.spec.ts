@@ -8,7 +8,7 @@
 
 import {CommonModule, Location} from '@angular/common';
 import {SpyLocation} from '@angular/common/testing';
-import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Injectable, NgModule, NgModuleFactoryLoader, NgModuleRef, NgZone, ɵConsole as Console, ɵNoopNgZone as NoopNgZone} from '@angular/core';
 import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
@@ -20,10 +20,13 @@ import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
 
 describe('Integration', () => {
+  const noopConsole: Console = {log() {}, warn() {}};
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports:
-          [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}]), TestModule]
+          [RouterTestingModule.withRoutes([{path: 'simple', component: SimpleCmp}]), TestModule],
+      providers: [{provide: Console, useValue: noopConsole}]
     });
   });
 
@@ -152,6 +155,50 @@ describe('Integration', () => {
           */
          expect(router.url).toEqual('/b?b=true');
        })));
+  });
+
+  describe('navigation warning', () => {
+    let warnings: string[] = [];
+
+    class MockConsole {
+      warn(message: string) { warnings.push(message); }
+    }
+
+    beforeEach(() => {
+      warnings = [];
+      TestBed.overrideProvider(Console, {useValue: new MockConsole()});
+    });
+
+    describe('with NgZone enabled', () => {
+      it('should warn when triggered outside Angular zone',
+         fakeAsync(inject([Router, NgZone], (router: Router, ngZone: NgZone) => {
+           ngZone.runOutsideAngular(() => { router.navigateByUrl('/simple'); });
+
+           expect(warnings.length).toBe(1);
+           expect(warnings[0])
+               .toBe(
+                   `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
+         })));
+
+      it('should not warn when triggered inside Angular zone',
+         fakeAsync(inject([Router, NgZone], (router: Router, ngZone: NgZone) => {
+           ngZone.run(() => { router.navigateByUrl('/simple'); });
+
+           expect(warnings.length).toBe(0);
+         })));
+    });
+
+    describe('with NgZone disabled', () => {
+      beforeEach(() => { TestBed.overrideProvider(NgZone, {useValue: new NoopNgZone()}); });
+
+      it('should not warn when triggered outside Angular zone',
+         fakeAsync(inject([Router, NgZone], (router: Router, ngZone: NgZone) => {
+
+           ngZone.runOutsideAngular(() => { router.navigateByUrl('/simple'); });
+
+           expect(warnings.length).toBe(0);
+         })));
+    });
   });
 
   describe('should execute navigations serially', () => {
