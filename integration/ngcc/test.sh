@@ -1,10 +1,11 @@
 #!/bin/bash
 
-set -x
+set -e -x
 
 PATH=$PATH:$(npm bin)
 
-ivy-ngcc node_modules/@angular/common
-cp -r node_modules_ngtsc/* node_modules/
+ivy-ngcc fesm2015,esm2015
 ngc -p tsconfig-app.json
 
+# Look for correct output
+grep "directives: \[\S*\.NgIf\]" dist/src/main.js > /dev/null
