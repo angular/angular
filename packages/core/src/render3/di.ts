@@ -584,14 +584,9 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine.ViewContainer
     const hostParent = getParentLNode(vcRefHost) !;
     const lContainer = createLContainer(hostParent, vcRefHost.view, true);
     const comment = vcRefHost.view[RENDERER].createComment(ngDevMode ? 'container' : '');
-    const lContainerNode: LContainerNode = createLNodeObject(
-        TNodeType.Container, vcRefHost.view, hostParent, comment, lContainer, null);
+    const lContainerNode: LContainerNode =
+        createLNodeObject(TNodeType.Container, vcRefHost.view, hostParent, comment, lContainer);
     appendChild(hostParent, comment, vcRefHost.view);
-
-
-    if (vcRefHost.queries) {
-      lContainerNode.queries = vcRefHost.queries.container();
-    }
 
     const hostTNode = vcRefHost.tNode as TElementNode | TContainerNode;
     if (!hostTNode.dynamicContainerNode) {

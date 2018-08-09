@@ -42,8 +42,11 @@ export const enum TNodeFlags {
   /** This bit is set if the node has been projected */
   isProjected = 0b00000000000000000010000000000000,
 
+  /** This bit is set if the node has any content queries */
+  hasContentQuery = 0b00000000000000000100000000000000,
+
   /** The index of the first directive on this node is encoded on the most significant bits  */
-  DirectiveStartingIndexShift = 14,
+  DirectiveStartingIndexShift = 15,
 }
 
 /**
@@ -88,13 +91,6 @@ export interface LNode {
 
   /** The injector associated with this node. Necessary for DI. */
   nodeInjector: LInjector|null;
-
-  /**
-   * Optional set of queries that track query-related events for this node.
-   *
-   * If present the node creation/updates are reported to the `LQueries`.
-   */
-  queries: LQueries|null;
 
   /**
    * Pointer to the corresponding TNode object, which stores static
