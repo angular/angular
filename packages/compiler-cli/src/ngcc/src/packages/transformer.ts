@@ -24,8 +24,8 @@ import {FileParser} from '../parsing/file_parser';
 import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
-
-import {checkMarkerFile, findAllPackageJsonFiles, getEntryPoints, writeMarkerFile} from './utils';
+import {checkMarkerFile, writeMarkerFile} from './build_marker';
+import {EntryPoint, EntryPointFormat} from './entry_point';
 
 
 /**
@@ -47,67 +47,68 @@ import {checkMarkerFile, findAllPackageJsonFiles, getEntryPoints, writeMarkerFil
  * - Other packages may re-export classes from other non-entry point files.
  * - Some formats may contain multiple "modules" in a single file.
  */
-export class PackageTransformer {
-  transform(packagePath: string, format: string, targetPath: string = 'node_modules'): void {
-    const sourceNodeModules = this.findNodeModulesPath(packagePath);
-    const targetNodeModules = resolve(sourceNodeModules, '..', targetPath);
-    const packageJsonPaths =
-        findAllPackageJsonFiles(packagePath)
-            // Ignore paths that have been built already
-            .filter(packageJsonPath => !checkMarkerFile(packageJsonPath, format));
-    const entryPoints = getEntryPoints(packageJsonPaths, format);
+export class Transformer {
+  constructor(private sourcePath: string, private targetPath: string) {}
 
-    entryPoints.forEach(entryPoint => {
-      const outputFiles: FileInfo[] = [];
-      const options: ts.CompilerOptions = {
-        allowJs: true,
-        maxNodeModuleJsDepth: Infinity,
-        rootDir: entryPoint.entryFileName,
-      };
+  transform(entryPoint: EntryPoint, format: EntryPointFormat): void {
+    if (checkMarkerFile(entryPoint, format)) {
+      return;
+    }
 
-      // Create the TS program and necessary helpers.
-      // TODO : create a custom compiler host that reads from .bak files if available.
-      const host = ts.createCompilerHost(options);
-      let rootDirs: string[]|undefined = undefined;
-      if (options.rootDirs !== undefined) {
-        rootDirs = options.rootDirs;
-      } else if (options.rootDir !== undefined) {
-        rootDirs = [options.rootDir];
-      } else {
-        rootDirs = [host.getCurrentDirectory()];
-      }
-      const packageProgram = ts.createProgram([entryPoint.entryFileName], options, host);
-      const typeChecker = packageProgram.getTypeChecker();
-      const dtsMapper = new DtsMapper(entryPoint.entryRoot, entryPoint.dtsEntryRoot);
-      const reflectionHost = this.getHost(format, packageProgram, dtsMapper);
+    const outputFiles: FileInfo[] = [];
+    const options: ts.CompilerOptions = {
+      allowJs: true,
+      maxNodeModuleJsDepth: Infinity,
+      rootDir: entryPoint.path,
+    };
 
-      const parser = this.getFileParser(format, packageProgram, reflectionHost);
-      const analyzer = new Analyzer(typeChecker, reflectionHost, rootDirs);
-      const renderer = this.getRenderer(format, packageProgram, reflectionHost);
+    // Create the TS program and necessary helpers.
+    // TODO : create a custom compiler host that reads from .bak files if available.
+    const host = ts.createCompilerHost(options);
+    let rootDirs: string[]|undefined = undefined;
+    if (options.rootDirs !== undefined) {
+      rootDirs = options.rootDirs;
+    } else if (options.rootDir !== undefined) {
+      rootDirs = [options.rootDir];
+    } else {
+      rootDirs = [host.getCurrentDirectory()];
+    }
+    const entryPointFilePath = entryPoint[format];
+    if (!entryPointFilePath) {
+      throw new Error(
+          `Missing entry point file for format, ${format}, in package, ${entryPoint.path}.`);
+    }
+    const packageProgram = ts.createProgram([entryPointFilePath], options, host);
+    const typeChecker = packageProgram.getTypeChecker();
+    const dtsMapper = new DtsMapper(dirname(entryPointFilePath), dirname(entryPoint.typings));
+    const reflectionHost = this.getHost(format, packageProgram, dtsMapper);
 
-      // Parse and analyze the files.
-      const entryPointFile = packageProgram.getSourceFile(entryPoint.entryFileName) !;
-      const parsedFiles = parser.parseFile(entryPointFile);
-      const analyzedFiles = parsedFiles.map(parsedFile => analyzer.analyzeFile(parsedFile));
+    const parser = this.getFileParser(format, packageProgram, reflectionHost);
+    const analyzer = new Analyzer(typeChecker, reflectionHost, rootDirs);
+    const renderer = this.getRenderer(format, packageProgram, reflectionHost);
 
-      // Transform the source files and source maps.
-      outputFiles.push(...this.transformSourceFiles(
-          analyzedFiles, sourceNodeModules, targetNodeModules, renderer));
+    // Parse and analyze the files.
+    const entryPointFile = packageProgram.getSourceFile(entryPointFilePath) !;
+    const parsedFiles = parser.parseFile(entryPointFile);
+    const analyzedFiles = parsedFiles.map(parsedFile => analyzer.analyzeFile(parsedFile));
 
-      // Transform the `.d.ts` files (if necessary).
-      // TODO(gkalpak): What about `.d.ts` source maps? (See
-      // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#new---declarationmap.)
-      if (format === 'esm2015') {
-        outputFiles.push(...this.transformDtsFiles(
-            analyzedFiles, sourceNodeModules, targetNodeModules, dtsMapper));
-      }
+    // Transform the source files and source maps.
+    outputFiles.push(
+        ...this.transformSourceFiles(analyzedFiles, this.sourcePath, this.targetPath, renderer));
 
-      // Write out all the transformed files.
-      outputFiles.forEach(file => this.writeFile(file));
-    });
+    // Transform the `.d.ts` files (if necessary).
+    // TODO(gkalpak): What about `.d.ts` source maps? (See
+    // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#new---declarationmap.)
+    if (format === 'esm2015') {
+      outputFiles.push(
+          ...this.transformDtsFiles(analyzedFiles, this.sourcePath, this.targetPath, dtsMapper));
+    }
 
-    // Write the built-with-ngcc markers
-    packageJsonPaths.forEach(packageJsonPath => { writeMarkerFile(packageJsonPath, format); });
+    // Write out all the transformed files.
+    outputFiles.forEach(file => this.writeFile(file));
+
+    // Write the built-with-ngcc marker
+    writeMarkerFile(entryPoint, format);
   }
 
   getHost(format: string, program: ts.Program, dtsMapper: DtsMapper): NgccReflectionHost {
@@ -148,13 +149,6 @@ export class PackageTransformer {
       default:
         throw new Error(`Renderer for "${format}" not yet implemented.`);
     }
-  }
-
-  findNodeModulesPath(src: string): string {
-    while (src && !/node_modules$/.test(src)) {
-      src = dirname(src);
-    }
-    return src;
   }
 
   transformDtsFiles(
