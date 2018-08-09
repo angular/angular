@@ -12,6 +12,8 @@ import {mainNgcc} from '../../src/ngcc/src/main';
 
 import {TestSupport, isInBazel, setup} from '../test_support';
 
+const OUTPUT_PATH = 'node_modules_ngtsc';
+
 describe('ngcc behavioral tests', () => {
   if (!isInBazel()) {
     // These tests should be excluded from the non-Bazel build.
@@ -26,7 +28,7 @@ describe('ngcc behavioral tests', () => {
       const {cp, mkdir, rm, set} = require('shelljs');
 
       const tempRootDir = join(tmpdir(), 'ngcc-spec', format);
-      const outputDir = 'node_modules_ngtsc';
+      const outputDir = OUTPUT_PATH;
 
       set('-e');
       rm('-rf', tempRootDir);
@@ -44,7 +46,7 @@ describe('ngcc behavioral tests', () => {
     const commonPath = join(support.basePath, 'node_modules/@angular/common');
     const format = 'fesm2015';
 
-    expect(mainNgcc([commonPath, format])).toBe(0);
+    expect(mainNgcc([format, commonPath, OUTPUT_PATH])).toBe(0);
 
     onSpecCompleted(format);
   });
@@ -53,7 +55,7 @@ describe('ngcc behavioral tests', () => {
     const commonPath = join(support.basePath, 'node_modules/@angular/common');
     const format = 'fesm5';
 
-    expect(mainNgcc([commonPath, format])).toBe(0);
+    expect(mainNgcc([format, commonPath, OUTPUT_PATH])).toBe(0);
 
     onSpecCompleted(format);
   });
@@ -62,7 +64,7 @@ describe('ngcc behavioral tests', () => {
     const commonPath = join(support.basePath, 'node_modules/@angular/common');
     const format = 'esm2015';
 
-    expect(mainNgcc([commonPath, format])).toBe(0);
+    expect(mainNgcc([format, commonPath, OUTPUT_PATH])).toBe(0);
 
     onSpecCompleted(format);
   });
@@ -71,7 +73,7 @@ describe('ngcc behavioral tests', () => {
     const commonPath = join(support.basePath, 'node_modules/@angular/common');
     const format = 'esm5';
 
-    expect(mainNgcc([commonPath, format])).toBe(0);
+    expect(mainNgcc([format, commonPath, OUTPUT_PATH])).toBe(0);
 
     onSpecCompleted(format);
   });
