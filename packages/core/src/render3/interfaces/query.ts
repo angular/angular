@@ -15,9 +15,10 @@ export interface LQueries {
   /**
    * The parent LQueries instance.
    *
-   * When there is a content query, a new LQueries instance is created to avoid mutating any existing
-   * Lqueries. After we are done searching content children, the parent property allows us to traverse
-   * back up to the original LQueries instance to continue to search for matches in the main view.
+   * When there is a content query, a new LQueries instance is created to avoid mutating any
+   * existing LQueries. After we are done searching content children, the parent property allows
+   * us to traverse back up to the original LQueries instance to continue to search for matches
+   * in the main view.
    */
   parent: LQueries|null;
 

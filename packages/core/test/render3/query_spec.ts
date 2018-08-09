@@ -2094,8 +2094,7 @@ describe('query', () => {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'div', ['query', ''], ['out', 'query']);
               {
-                elementStart(
-                    2, 'div', ['query', ''], ['in', 'query', 'foo', '']);
+                elementStart(2, 'div', ['query', ''], ['in', 'query', 'foo', '']);
                 { element(5, 'span', ['id', 'bar'], ['foo', '']); }
                 elementEnd();
               }

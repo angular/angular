@@ -156,13 +156,12 @@ function copyQueriesToContainer(query: LQuery<any>| null): LQuery<any>|null {
     const containerValues: any[] = [];  // prepare room for views
     query.values.push(containerValues);
     const clonedQuery: LQuery<any> = {
-      next: null,
+      next: result,
       list: query.list,
       predicate: query.predicate,
       values: containerValues,
       containerValues: null
     };
-    clonedQuery.next = result;
     result = clonedQuery;
     query = query.next;
   }
@@ -175,13 +174,12 @@ function copyQueriesToView(query: LQuery<any>| null): LQuery<any>|null {
 
   while (query) {
     const clonedQuery: LQuery<any> = {
-      next: null,
+      next: result,
       list: query.list,
       predicate: query.predicate,
       values: [],
       containerValues: query.values
     };
-    clonedQuery.next = result;
     result = clonedQuery;
     query = query.next;
   }
