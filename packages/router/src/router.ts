@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, Injector, NgModuleFactoryLoader, NgModuleRef, Type, isDevMode} from '@angular/core';
+import {Compiler, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Optional, Type, isDevMode, ɵConsole as Console} from '@angular/core';
 import {BehaviorSubject, Observable, Subject, Subscription, of } from 'rxjs';
 import {concatMap, map, mergeMap} from 'rxjs/operators';
 
@@ -224,6 +224,8 @@ export class Router {
   private navigationId: number = 0;
   private configLoader: RouterConfigLoader;
   private ngModule: NgModuleRef<any>;
+  private console: Console;
+  private isNgZoneEnabled: boolean = false;
 
   public readonly events: Observable<Event> = new Subject<Event>();
   public readonly routerState: RouterState;
@@ -314,6 +316,9 @@ export class Router {
     const onLoadEnd = (r: Route) => this.triggerEvent(new RouteConfigLoadEnd(r));
 
     this.ngModule = injector.get(NgModuleRef);
+    this.console = injector.get(Console);
+    const ngZone = injector.get(NgZone);
+    this.isNgZoneEnabled = ngZone instanceof NgZone;
 
     this.resetConfig(config);
     this.currentUrlTree = createEmptyUrlTree();
@@ -495,6 +500,11 @@ export class Router {
    */
   navigateByUrl(url: string|UrlTree, extras: NavigationExtras = {skipLocationChange: false}):
       Promise<boolean> {
+    if (isDevMode() && this.isNgZoneEnabled && !NgZone.isInAngularZone()) {
+      this.console.warn(
+          `Navigation triggered outside Angular zone, did you forget to call 'ngZone.run()'?`);
+    }
+
     const urlTree = url instanceof UrlTree ? url : this.parseUrl(url);
     const mergedTree = this.urlHandlingStrategy.merge(urlTree, this.rawUrlTree);
 
