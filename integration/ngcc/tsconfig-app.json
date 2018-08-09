@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "lib": ["es2015", "dom"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "outDir": "dist",
+    "types": ["node"],
+    "rootDir": "."
+  },
+  "files": [
+    "src/main.ts"
+  ],
+  "angularCompilerOptions": {
+    "enableIvy": "ngtsc"
+  }
+}
