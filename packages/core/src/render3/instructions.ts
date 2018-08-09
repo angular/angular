@@ -274,6 +274,7 @@ export function enterView(newView: LViewData, host: LElementNode | LViewNode | n
   }
 
   viewData = contextViewData = newView;
+  oldView && (oldView[QUERIES] = currentQueries);
   currentQueries = newView && newView[QUERIES];
 
   return oldView;

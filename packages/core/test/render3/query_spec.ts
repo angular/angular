@@ -11,7 +11,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {EventEmitter} from '../..';
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
-import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges, injectViewContainerRef} from '../../src/render3/index';
+import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, loadElement, loadQueryList, registerContentQuery} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
@@ -1778,6 +1778,52 @@ describe('query', () => {
       expect(t.html).toEqual('');
       expect((queryInstance !.changes as EventEmitter<any>).closed).toBeTruthy();
     });
+  });
+
+  it('should restore queries if view changes', () => {
+    class SomeDir {
+      constructor(public vcr: ViewContainerRef, public temp: TemplateRef<any>) {
+        this.vcr.createEmbeddedView(this.temp);
+      }
+
+      static ngDirectiveDef = defineDirective({
+        type: SomeDir,
+        selectors: [['', 'someDir', '']],
+        factory: () => new SomeDir(injectViewContainerRef(), injectTemplateRef())
+      });
+    }
+
+    function template(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        element(0, 'div');
+      }
+    }
+
+    /**
+     * <div *someDir></div>
+     * <div #foo></div>
+     */
+    const AppComponent = createComponent(
+        'app',
+        function(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            container(1, template, null, [AttributeMarker.SelectOnly, 'someDir']);
+            element(2, 'div', null, ['foo', '']);
+          }
+        },
+        [SomeDir], [],
+        function(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            query(0, ['foo'], true, QUERY_READ_FROM_NODE);
+          }
+          if (rf & RenderFlags.Update) {
+            let tmp: any;
+            queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+          }
+        });
+
+    const fixture = new ComponentFixture(AppComponent);
+    expect(fixture.component.query.length).toBe(1);
   });
 
   describe('content', () => {
