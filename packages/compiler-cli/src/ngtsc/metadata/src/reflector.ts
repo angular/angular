@@ -159,6 +159,13 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     };
   }
 
+  getGenericArityOfClass(clazz: ts.Declaration): number|null {
+    if (!ts.isClassDeclaration(clazz)) {
+      return null;
+    }
+    return clazz.typeParameters !== undefined ? clazz.typeParameters.length : 0;
+  }
+
   /**
    * Resolve a `ts.Symbol` to its declaration, keeping track of the `viaModule` along the way.
    *
