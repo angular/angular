@@ -20,8 +20,8 @@ export class DynamicFlatNode {
 
 
 /**
- * Database for dynamic data. When expanding a node in the tree, the data source will need to fetch
- * the descendants data from the database.
+ * Database for dynamic data. When expanding a node in the tree, the data
+ * source will need to fetch the descendants data from the database.
  */
 export class DynamicDatabase {
   dataMap = new Map([
@@ -47,12 +47,11 @@ export class DynamicDatabase {
     return this.dataMap.has(node);
   }
 }
+
 /**
- * File database, it can build a tree structured Json object from string.
- * Each node in Json object represents a file or a directory. For a file, it has filename and type.
- * For a directory, it has filename and children (a list of files or directories).
- * The input will be a json object string, and the output is a list of `FileNode` with nested
- * structure.
+ * Plant database that can build a tree-structured JSON object from a string. Each node in the
+ * object represents a plant or a group of plants. The input will be a JSON object string, and
+ * the output is a list of `FileNode`-s with a nested structure.
  */
 @Injectable()
 export class DynamicDataSource {
@@ -81,11 +80,11 @@ export class DynamicDataSource {
   /** Handle expand/collapse behaviors */
   handleTreeControl(change: SelectionChange<DynamicFlatNode>) {
     if (change.added) {
-      change.added.forEach((node) => this.toggleNode(node, true));
+      change.added.forEach(node => this.toggleNode(node, true));
     }
     if (change.removed) {
       // Use reverse to remove from bottom to top
-      change.removed.reverse().forEach((node) => this.toggleNode(node, false));
+      change.removed.slice().reverse().forEach(node => this.toggleNode(node, false));
     }
   }
 
