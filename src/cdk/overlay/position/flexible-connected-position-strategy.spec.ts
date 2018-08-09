@@ -1154,7 +1154,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
     it('should align to the trigger if the overlay is wider than the viewport, but the trigger ' +
       'is still within the viewport', () => {
         originElement.style.top = '200px';
-        originElement.style.left = '200px';
+        originElement.style.left = '150px';
 
         positionStrategy.withPositions([
           {
