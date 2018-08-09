@@ -12,10 +12,14 @@
   "dependencies": {
     "reflect-metadata": "^0.1.2",
     "minimist": "^1.2.0",
+    "canonical-path": "0.0.2",
     "chokidar": "^1.4.2",
     "convert-source-map": "^1.5.1",
+    "dependency-graph": "^0.7.2",
     "magic-string": "^0.25.0",
-    "source-map": "^0.6.1"
+    "shelljs": "^0.8.1",
+    "source-map": "^0.6.1",
+    "yargs": "9.0.1"
   },
   "peerDependencies": {
     "@angular/compiler": "0.0.0-PLACEHOLDER",

@@ -22,33 +22,29 @@ describe('ngcc main()', () => {
   afterEach(restoreRealFileSystem);
 
   it('should run ngcc without errors for fesm2015', () => {
-    const commonPath = join('/node_modules/@angular/common');
     const format = 'fesm2015';
-    expect(mainNgcc([format, commonPath])).toBe(0);
+    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
   });
 
   it('should run ngcc without errors for fesm5', () => {
-    const commonPath = join('/node_modules/@angular/common');
     const format = 'fesm5';
-    expect(mainNgcc([format, commonPath])).toBe(0);
+    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
   });
 
   it('should run ngcc without errors for esm2015', () => {
-    const commonPath = join('/node_modules/@angular/common');
     const format = 'esm2015';
-    expect(mainNgcc([format, commonPath])).toBe(0);
+    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
   });
 
   it('should run ngcc without errors for esm5', () => {
-    const commonPath = join('/node_modules/@angular/common');
     const format = 'esm5';
-    expect(mainNgcc([format, commonPath])).toBe(0);
+    expect(mainNgcc(['-f', format, '-s', '/node_modules'])).toBe(0);
   });
 });
 
 
 function createMockFileSystem() {
-  const packagesPath = join(process.env.TEST_SRCDIR, 'angular/packages');
+  const packagesPath = join(process.env.TEST_SRCDIR !, 'angular/packages');
   mockFs({'/node_modules/@angular': loadPackages(packagesPath)});
 }
 
