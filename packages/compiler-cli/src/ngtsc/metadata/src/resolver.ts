@@ -17,7 +17,7 @@ import * as ts from 'typescript';
 
 import {ClassMemberKind, ReflectionHost} from '../../host';
 
-const TS_DTS_EXTENSION = /(\.d)?\.ts$/;
+const TS_DTS_JS_EXTENSION = /(\.d)?\.ts|\.js$/;
 
 /**
  * Represents a value which cannot be determined statically.
@@ -147,7 +147,7 @@ export class ResolvedReference<T extends ts.Node = ts.Node> extends Reference<T>
       // TODO(alxhub): investigate the need to map such paths via the Host for proper g3 support.
       let relative =
           path.posix.relative(path.dirname(context.fileName), this.node.getSourceFile().fileName)
-              .replace(TS_DTS_EXTENSION, '');
+              .replace(TS_DTS_JS_EXTENSION, '');
 
       // path.relative() does not include the leading './'.
       if (!relative.startsWith('.')) {

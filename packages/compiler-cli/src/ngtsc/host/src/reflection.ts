@@ -411,4 +411,12 @@ export interface ReflectionHost {
   isClass(node: ts.Node): boolean;
 
   hasBaseClass(node: ts.Declaration): boolean;
+
+  /**
+   * Get the number of generic type parameters of a given class.
+   *
+   * @returns the number of type parameters of the class, if known, or `null` if the declaration
+   * is not a class or has an unknown number of type parameters.
+   */
+  getGenericArityOfClass(clazz: ts.Declaration): number|null;
 }

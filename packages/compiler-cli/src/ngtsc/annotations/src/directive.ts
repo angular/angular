@@ -156,7 +156,7 @@ export function extractDirectiveMetadata(
     inputs: {...inputsFromMeta, ...inputsFromFields},
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, selector,
     type: new WrappedNodeExpr(clazz.name !),
-    typeArgumentCount: (clazz.typeParameters || []).length,
+    typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
     typeSourceSpan: null !, usesInheritance, exportAs,
   };
   return {decoratedElements, decorator: directive, metadata};
