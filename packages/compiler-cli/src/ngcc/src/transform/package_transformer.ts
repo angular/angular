@@ -5,9 +5,9 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {readFileSync, writeFileSync} from 'fs';
+import {existsSync, readFileSync, writeFileSync} from 'fs';
 import {dirname, relative, resolve} from 'path';
-import {mkdir} from 'shelljs';
+import {mkdir, mv} from 'shelljs';
 import * as ts from 'typescript';
 
 import {DtsFileTransformer} from '../../../ngtsc/transform';
@@ -49,9 +49,9 @@ import {getEntryPoints} from './utils';
  * - Some formats may contain multiple "modules" in a single file.
  */
 export class PackageTransformer {
-  transform(packagePath: string, format: string): void {
+  transform(packagePath: string, format: string, targetPath: string = 'node_modules'): void {
     const sourceNodeModules = this.findNodeModulesPath(packagePath);
-    const targetNodeModules = sourceNodeModules.replace(/node_modules$/, 'node_modules_ngtsc');
+    const targetNodeModules = resolve(sourceNodeModules, '..', targetPath);
     const entryPoints = getEntryPoints(packagePath, format);
 
     entryPoints.forEach(entryPoint => {
@@ -63,6 +63,7 @@ export class PackageTransformer {
       };
 
       // Create the TS program and necessary helpers.
+      // TODO : create a custom compiler host that reads from .bak files if available.
       const host = ts.createCompilerHost(options);
       const packageProgram = ts.createProgram([entryPoint.entryFileName], options, host);
       const typeChecker = packageProgram.getTypeChecker();
@@ -195,6 +196,10 @@ export class PackageTransformer {
 
   writeFile(file: FileInfo): void {
     mkdir('-p', dirname(file.path));
+    const backPath = file.path + '.bak';
+    if (existsSync(file.path) && !existsSync(backPath)) {
+      mv(file.path, backPath);
+    }
     writeFileSync(file.path, file.contents, 'utf8');
   }
 }
