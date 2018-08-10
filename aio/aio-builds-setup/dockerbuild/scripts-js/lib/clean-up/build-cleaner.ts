@@ -24,7 +24,7 @@ export class BuildCleaner {
   }
 
   // Methods - Public
-  public async cleanUp() {
+  public async cleanUp(): Promise<void> {
     try {
       this.logger.log('Cleaning up builds and downloads');
       const openPrs = await this.getOpenPrNumbers();
@@ -38,17 +38,17 @@ export class BuildCleaner {
     }
   }
 
-  public async cleanBuilds(openPrs: number[]) {
+  public async cleanBuilds(openPrs: number[]): Promise<void> {
     const existingBuilds = await this.getExistingBuildNumbers();
     await this.removeUnnecessaryBuilds(existingBuilds, openPrs);
   }
 
-  public async cleanDownloads(openPrs: number[]) {
+  public async cleanDownloads(openPrs: number[]): Promise<void> {
     const existingDownloads = await this.getExistingDownloads();
     await this.removeUnnecessaryDownloads(existingDownloads, openPrs);
   }
 
-  public getExistingBuildNumbers() {
+  public getExistingBuildNumbers(): Promise<number[]> {
     return new Promise<number[]>((resolve, reject) => {
       fs.readdir(this.buildsDir, (err, files) => {
         if (err) {
@@ -65,14 +65,14 @@ export class BuildCleaner {
     });
   }
 
-  public async getOpenPrNumbers() {
+  public async getOpenPrNumbers(): Promise<number[]> {
     const api = new GithubApi(this.githubToken);
     const githubPullRequests = new GithubPullRequests(api, this.githubOrg, this.githubRepo);
     const prs = await githubPullRequests.fetchAll('open');
     return prs.map(pr => pr.number);
   }
 
-  public removeDir(dir: string) {
+  public removeDir(dir: string): void {
     try {
       if (shell.test('-d', dir)) {
         shell.chmod('-R', 'a+w', dir);
@@ -83,7 +83,7 @@ export class BuildCleaner {
     }
   }
 
-  public removeUnnecessaryBuilds(existingBuildNumbers: number[], openPrNumbers: number[]) {
+  public removeUnnecessaryBuilds(existingBuildNumbers: number[], openPrNumbers: number[]): void {
     const toRemove = existingBuildNumbers.filter(num => !openPrNumbers.includes(num));
 
     this.logger.log(`Existing builds: ${existingBuildNumbers.length}`);
@@ -100,7 +100,7 @@ export class BuildCleaner {
       forEach(dir => this.removeDir(dir));
   }
 
-  public getExistingDownloads() {
+  public getExistingDownloads(): Promise<string[]> {
     const artifactFile = path.basename(this.artifactPath);
     return new Promise<string[]>((resolve, reject) => {
       fs.readdir(this.downloadsDir, (err, files) => {
@@ -113,7 +113,7 @@ export class BuildCleaner {
     });
   }
 
-  public removeUnnecessaryDownloads(existingDownloads: string[], openPrNumbers: number[]) {
+  public removeUnnecessaryDownloads(existingDownloads: string[], openPrNumbers: number[]): void {
     const toRemove = existingDownloads.filter(filePath => {
       const {pr} = getPrInfoFromDownloadPath(filePath);
       return !openPrNumbers.includes(pr);

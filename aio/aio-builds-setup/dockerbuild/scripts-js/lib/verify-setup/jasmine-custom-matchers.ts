@@ -6,7 +6,7 @@ import {computeShortSha} from '../common/utils';
 import {SHA} from './constants';
 import {helper} from './helper';
 
-function checkFile(filePath: string, remove: boolean) {
+function checkFile(filePath: string, remove: boolean): boolean {
   const exists = existsSync(filePath);
   if (exists && remove) {
     // if we expected the file to exist then we remove it to prevent leftover file errors
@@ -15,7 +15,7 @@ function checkFile(filePath: string, remove: boolean) {
   return exists;
 }
 
-function getArtifactPath(prNum: number, sha: string = SHA) {
+function getArtifactPath(prNum: number, sha: string = SHA): string {
   return `${AIO_DOWNLOADS_DIR}/${prNum}-${computeShortSha(sha)}-aio-snapshot.tgz`;
 }
 
@@ -35,8 +35,8 @@ function checkFiles(prNum: number, isPublic: boolean, sha: string, isLegacy: boo
   return { existingFiles, missingFiles };
 }
 
-class ToExistAsAFile {
-  public compare(actual: string, remove = true) {
+class ToExistAsAFile implements jasmine.CustomMatcher {
+  public compare(actual: string, remove = true): jasmine.CustomMatcherResult {
     const pass = checkFile(actual, remove);
     return {
       message: `Expected file at "${actual}" ${pass ? 'not' : ''} to exist`,
@@ -45,8 +45,8 @@ class ToExistAsAFile {
   }
 }
 
-class ToExistAsAnArtifact {
-  public compare(actual: {prNum: number, sha?: string}, remove = true) {
+class ToExistAsAnArtifact implements jasmine.CustomMatcher {
+  public compare(actual: {prNum: number, sha?: string}, remove = true): jasmine.CustomMatcherResult {
     const { prNum, sha = SHA } = actual;
     const filePath = getArtifactPath(prNum, sha);
     const pass = checkFile(filePath, remove);
@@ -57,8 +57,9 @@ class ToExistAsAnArtifact {
   }
 }
 
-class ToExistAsABuild {
-  public compare(actual: {prNum: number, isPublic?: boolean, sha?: string, isLegacy?: boolean}, remove = true) {
+class ToExistAsABuild implements jasmine.CustomMatcher {
+  public compare(actual: {prNum: number, isPublic?: boolean, sha?: string, isLegacy?: boolean}, remove = true):
+      jasmine.CustomMatcherResult  {
     const {prNum, isPublic = true, sha = SHA, isLegacy = false} = actual;
     const {missingFiles} = checkFiles(prNum, isPublic, sha, isLegacy, remove);
     return {
@@ -67,7 +68,8 @@ class ToExistAsABuild {
       pass: missingFiles.length === 0,
     };
   }
-  public negativeCompare(actual: {prNum: number, isPublic?: boolean, sha?: string, isLegacy?: boolean}) {
+  public negativeCompare(actual: {prNum: number, isPublic?: boolean, sha?: string, isLegacy?: boolean}):
+      jasmine.CustomMatcherResult  {
     const {prNum, isPublic = true, sha = SHA, isLegacy = false} = actual;
     const { existingFiles } = checkFiles(prNum, isPublic, sha, isLegacy, false);
     return {

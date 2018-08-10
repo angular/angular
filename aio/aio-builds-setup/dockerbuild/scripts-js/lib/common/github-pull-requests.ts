@@ -38,7 +38,7 @@ export class GithubPullRequests {
    * @param body The body of the comment to post.
    * @returns A promise that resolves when the comment has been posted.
    */
-  public addComment(pr: number, body: string) {
+  public addComment(pr: number, body: string): Promise<any> {
     assert(pr > 0, `Invalid PR number: ${pr}`);
     assert(!!body, `Invalid or empty comment body: ${body}`);
     return this.api.post<any>(`/repos/${this.repoSlug}/issues/${pr}/comments`, null, {body});
@@ -49,7 +49,7 @@ export class GithubPullRequests {
    * @param pr The number of the PR for which to request info.
    * @returns A promise that is resolves with information about the specified PR.
    */
-  public fetch(pr: number) {
+  public fetch(pr: number): Promise<PullRequest> {
     assert(pr > 0, `Invalid PR number: ${pr}`);
     // Using the `/issues/` URL, because the `/pulls/` one does not provide labels.
     return this.api.get<PullRequest>(`/repos/${this.repoSlug}/issues/${pr}`);
@@ -60,7 +60,7 @@ export class GithubPullRequests {
    * @param state Only retrieve PRs that have this state.
    * @returns A promise that is resolved with information about the requested PRs.
    */
-  public fetchAll(state: PullRequestState = 'all') {
+  public fetchAll(state: PullRequestState = 'all'): Promise<PullRequest[]> {
     const pathname = `/repos/${this.repoSlug}/pulls`;
     const params = {state};
 
@@ -72,7 +72,7 @@ export class GithubPullRequests {
    * @param pr The number of the PR for which to request files.
    * @returns A promise that resolves to an array of file information
    */
-  public fetchFiles(pr: number) {
+  public fetchFiles(pr: number): Promise<FileInfo[]> {
     assert(pr > 0, `Invalid PR number: ${pr}`);
     return this.api.get<FileInfo[]>(`/repos/${this.repoSlug}/pulls/${pr}/files`);
   }

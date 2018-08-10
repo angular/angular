@@ -56,7 +56,7 @@ export class GithubApi {
   }
 
   // Methods - Protected
-  protected buildPath(pathname: string, params?: RequestParamsOrNull) {
+  protected buildPath(pathname: string, params?: RequestParamsOrNull): string {
     if (params == null) {
       return pathname;
     }
@@ -67,7 +67,7 @@ export class GithubApi {
     return `${pathname}${joiner}${search}`;
   }
 
-  protected request<T>(method: string, path: string, data: any = null) {
+  protected request<T>(method: string, path: string, data: any = null): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       const options = {
         headers: {...this.requestHeaders},
@@ -101,7 +101,7 @@ export class GithubApi {
     });
   }
 
-  protected serializeSearchParams(params: RequestParams) {
+  protected serializeSearchParams(params: RequestParams): string {
     return Object.keys(params).
       filter(key => params[key] != null).
       map(key => `${key}=${encodeURIComponent(String(params[key]))}`).

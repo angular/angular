@@ -13,7 +13,7 @@ import {BuildCleaner} from './build-cleaner';
 _main();
 
 // Functions
-function _main() {
+function _main(): void {
   const buildCleaner = new BuildCleaner(
     AIO_BUILDS_DIR,
     AIO_GITHUB_ORGANIZATION,
