@@ -165,7 +165,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     return {
       name: 'ngComponentDef',
       initializer: res.expression,
-      statements: [],
+      statements: res.statements,
       type: res.type,
     };
   }
