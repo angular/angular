@@ -119,7 +119,7 @@ export class BuildCreator extends EventEmitter {
     });
   }
 
-  protected getCandidatePrDirs(pr: number, isPublic: boolean) {
+  protected getCandidatePrDirs(pr: number, isPublic: boolean): {oldPrDir: string, newPrDir: string} {
     const hiddenPrDir = path.join(this.buildsDir, HIDDEN_DIR_PREFIX + pr);
     const publicPrDir = path.join(this.buildsDir, `${pr}`);
 
