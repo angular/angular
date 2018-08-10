@@ -27,7 +27,7 @@
     "name": "EMPTY$1"
   },
   {
-    "name": "EMPTY_RENDERER_TYPE_ID"
+    "name": "EMPTY_ARRAY$2"
   },
   {
     "name": "FLAGS"
@@ -78,13 +78,7 @@
     "name": "TVIEW"
   },
   {
-    "name": "UNDEFINED_RENDERER_TYPE_ID"
-  },
-  {
     "name": "VIEWS"
-  },
-  {
-    "name": "ViewEncapsulation$1"
   },
   {
     "name": "_CLEAN_PROMISE"
@@ -268,9 +262,6 @@
   },
   {
     "name": "resetApplicationState"
-  },
-  {
-    "name": "resolveRendererType2"
   },
   {
     "name": "setHostBindings"
