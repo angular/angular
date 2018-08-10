@@ -367,10 +367,10 @@ describe('compiler compliance', () => {
             $r3$.ɵrS(10);
           }
           if (rf & 2) {
-            $r3$.ɵp(0, "ternary", $r3$.ɵb((ctx.cond ? $r3$.ɵf1(2, _c0, ctx.a): _c1)));
-            $r3$.ɵp(0, "pipe", $r3$.ɵb($r3$.ɵpb3(6, 1, ctx.value, 1, 2)));
-            $r3$.ɵp(0, "and", $r3$.ɵb((ctx.cond && $r3$.ɵf1(4, _c0, ctx.b))));
-            $r3$.ɵp(0, "or", $r3$.ɵb((ctx.cond || $r3$.ɵf1(6, _c0, ctx.c))));
+            $r3$.ɵp(0, "ternary", $r3$.ɵb((ctx.cond ? $r3$.ɵf1(6, _c0, ctx.a): _c1)));
+            $r3$.ɵp(0, "pipe", $r3$.ɵb($r3$.ɵpb3(1, 4, ctx.value, 1, 2)));
+            $r3$.ɵp(0, "and", $r3$.ɵb((ctx.cond && $r3$.ɵf1(8, _c0, ctx.b))));
+            $r3$.ɵp(0, "or", $r3$.ɵb((ctx.cond || $r3$.ɵf1(10, _c0, ctx.c))));
           }
         }
       `;
