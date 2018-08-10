@@ -181,8 +181,10 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
   } else {
     const baseFactory = o.variable(`ɵ${meta.name}_BaseFactory`);
     const getInheritedFactory = o.importExpr(R3.getInheritedFactory);
-    const baseFactoryStmt = baseFactory.set(getInheritedFactory.callFn([meta.type]))
-                                .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
+    const baseFactoryStmt =
+        baseFactory.set(getInheritedFactory.callFn([meta.type])).toDeclStmt(o.INFERRED_TYPE, [
+          o.StmtModifier.Exported, o.StmtModifier.Final
+        ]);
     statements.push(baseFactoryStmt);
 
     // There is no constructor, use the base class' factory to construct typeForCtor.
@@ -206,8 +208,10 @@ export function compileFactoryFunction(meta: R3FactoryMetadata):
     if (meta.delegate.isEquivalent(meta.type)) {
       throw new Error(`Illegal state: compiling factory that delegates to itself`);
     }
-    const delegateFactoryStmt = delegateFactory.set(getFactoryOf.callFn([meta.delegate]))
-                                    .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
+    const delegateFactoryStmt =
+        delegateFactory.set(getFactoryOf.callFn([meta.delegate])).toDeclStmt(o.INFERRED_TYPE, [
+          o.StmtModifier.Exported, o.StmtModifier.Final
+        ]);
 
     statements.push(delegateFactoryStmt);
     const r = makeConditionalFactory(delegateFactory.callFn([]));
