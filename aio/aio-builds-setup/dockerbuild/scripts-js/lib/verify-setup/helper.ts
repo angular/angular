@@ -42,7 +42,7 @@ class Helper {
   }
 
   // Methods - Public
-  public cleanUp() {
+  public cleanUp(): void {
     while (this.cleanUpFns.length) {
       // Clean-up fns remove themselves from the list.
       this.cleanUpFns[0]();
@@ -66,7 +66,7 @@ class Helper {
     }
   }
 
-  public createDummyBuild(pr: number, sha: string, isPublic = true, force = false, legacy = false) {
+  public createDummyBuild(pr: number, sha: string, isPublic = true, force = false, legacy = false): CleanUpFn {
     const prDir = this.getPrDir(pr, isPublic);
     const shaDir = this.getShaDir(prDir, sha, legacy);
     const idxPath = path.join(shaDir, 'index.html');
@@ -101,7 +101,7 @@ class Helper {
     });
   }
 
-  public runForAllSupportedSchemes(suiteFactory: TestSuiteFactory) {
+  public runForAllSupportedSchemes(suiteFactory: TestSuiteFactory): void {
     Object.keys(this.portPerScheme).forEach(scheme => suiteFactory(scheme, this.portPerScheme[scheme]));
   }
 
@@ -137,13 +137,13 @@ class Helper {
   }
 
   public writeBuildFile(pr: number, sha: string, relFilePath: string, content: string, isPublic = true,
-                        legacy = false) {
+                        legacy = false): void {
     const shaDir = this.getShaDir(this.getPrDir(pr, isPublic), sha, legacy);
     const absFilePath = path.join(shaDir, relFilePath);
     this.writeFile(absFilePath, {content}, true);
   }
 
-  public writeFile(filePath: string, {content, size}: FileSpecs, force = false) {
+  public writeFile(filePath: string, {content, size}: FileSpecs, force = false): void {
     if (!force && fs.existsSync(filePath)) {
       throw new Error(`Refusing to overwrite existing file '${filePath}'.`);
     }
@@ -206,7 +206,18 @@ export function makeCurl(baseUrl: string) {
   };
 }
 
-export function payload(buildNum: number) {
+export interface PayloadData {
+  data: {
+    payload: {
+      build_num: number,
+      build_parameters: {
+        CIRCLE_JOB: string;
+      };
+    };
+  };
+}
+
+export function payload(buildNum: number): PayloadData {
   return {
     data: {
       payload: {

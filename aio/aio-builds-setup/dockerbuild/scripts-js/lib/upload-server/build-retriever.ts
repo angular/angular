@@ -30,7 +30,7 @@ export class BuildRetriever {
    * @param buildNum The number of the build for which to retrieve the info.
    * @returns The Github org, repo, PR and latest SHA for the specified build.
    */
-  public async getGithubInfo(buildNum: number) {
+  public async getGithubInfo(buildNum: number): Promise<GithubInfo> {
     const buildInfo = await this.api.getBuildInfo(buildNum);
     const githubInfo: GithubInfo = {
       org: buildInfo.username,
@@ -50,7 +50,7 @@ export class BuildRetriever {
    * @param artifactPath the path on CircleCI where the artifact was stored.
    * @returns A promise to the file path where the downloaded file was stored.
    */
-  public async downloadBuildArtifact(buildNum: number, pr: number, sha: string, artifactPath: string) {
+  public async downloadBuildArtifact(buildNum: number, pr: number, sha: string, artifactPath: string): Promise<string> {
     try {
       const outPath = computeArtifactDownloadPath(this.downloadDir, pr, sha, artifactPath);
       const downloadExists = await new Promise(resolve => fs.exists(outPath, exists => resolve(exists)));
@@ -73,7 +73,7 @@ export class BuildRetriever {
   }
 }
 
-function getPrfromBranch(branch: string) {
+function getPrfromBranch(branch: string): number {
   // CircleCI only exposes PR numbers via the `branch` field :-(
   const match = /^pull\/(\d+)$/.exec(branch);
   if (!match) {
