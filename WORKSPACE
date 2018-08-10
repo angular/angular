@@ -20,16 +20,16 @@ http_archive(
 
 http_archive(
     name = "io_bazel_rules_webtesting",
-    url = "https://github.com/bazelbuild/rules_webtesting/archive/7ffe970bbf380891754487f66c3d680c087d67f2.zip",
-    strip_prefix = "rules_webtesting-7ffe970bbf380891754487f66c3d680c087d67f2",
-    sha256 = "4fb0dca8c9a90547891b7ef486592775a523330fc4555c88cd8f09270055c2ce",
+    url = "https://github.com/bazelbuild/rules_webtesting/archive/0.2.1.zip",
+    strip_prefix = "rules_webtesting-0.2.1",
+    sha256 = "7d490aadff9b5262e5251fa69427ab2ffd1548422467cb9f9e1d110e2c36f0fa",
 )
 
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/1d9a4b0087f307e31af91e2b221a6447288994c6.zip",
-    strip_prefix = "rules_typescript-1d9a4b0087f307e31af91e2b221a6447288994c6",
-    sha256 = "e17ac3f33d5d3cd2a0c385c4fd28b814d0ad46c6c67ccaef97160be99d7a24eb",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/0.16.0.zip",
+    strip_prefix = "rules_typescript-0.16.0",
+    sha256 = "e65c5639a42e2f6d3f9d2bda62487d6b42734830dda45be1620c3e2b1115070c",
 )
 
 http_archive(
