@@ -71,6 +71,8 @@ Before you submit your Pull Request (PR) consider the following guidelines:
 
 1. Search [GitHub](https://github.com/angular/angular/pulls) for an open or closed PR
   that relates to your submission. You don't want to duplicate effort.
+1. Be sure that an issue describes the problem you're fixing, or documents the design for the feature you'd like to add.
+  Discussing the design up front helps to ensure that we're ready to accept your work.
 1. Please sign our [Contributor License Agreement (CLA)](#cla) before sending PRs.
   We cannot accept code without this. Make sure you sign with the primary email address of the Git identity that has been granted access to the Angular repository.
 1. Fork the angular/angular repo.
