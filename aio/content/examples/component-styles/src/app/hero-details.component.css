@@ -1,5 +1,5 @@
 /* #docregion import */
-/* The AOT compiler needs the `./` to show that this is local */
+/* AOT 컴파일러를 사용한다면 이 파일이 로컬에 있다는 것을 지정하기 위해 주소가 `./`로 시작되어야 합니다. */
 @import './hero-details-box.css';
 /* #enddocregion import */
 

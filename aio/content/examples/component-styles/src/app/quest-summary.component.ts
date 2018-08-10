@@ -14,7 +14,7 @@ export class QuestSummaryComponent { }
 // #enddocregion
 /*
   // #docregion encapsulation.native
-  // warning: few browsers support shadow DOM encapsulation at this time
+  // 주의: 현재 shadow DOM을 지원하는 브라우저는 많지 않습니다.
   encapsulation: ViewEncapsulation.Native
   // #enddocregion encapsulation.native
 */

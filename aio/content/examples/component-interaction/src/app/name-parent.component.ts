@@ -9,7 +9,7 @@ import { Component } from '@angular/core';
   `
 })
 export class NameParentComponent {
-  // Displays 'Mr. IQ', '<no name set>', 'Bombasto'
+  // 'Mr. IQ', '<빈 값>', 'Bombasto'를 표시합니다.
   names = ['Mr. IQ', '   ', '  Bombasto  '];
 }
 // #enddocregion

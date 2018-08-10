@@ -248,7 +248,7 @@ The child component exposes an `EventEmitter` property with which it `emits` eve
 The parent binds to that event property and reacts to those events.
 -->
 자식 컴포넌트에서 어떤 이벤트가 발생하면 이 이벤트는 `EventEmitter` 타입으로 짖어한 프로퍼티를 통해 부모 컴포넌트에게 보낼 수 있습니다.
-그러면 부모 컴포넌트는 이 이벤트를 바인딩해서 원ㄴ하는 로직을 실행할 수 있습니다.
+그러면 부모 컴포넌트는 이 이벤트를 바인딩해서 원하는 로직을 실행할 수 있습니다.
 
 <!--
 The child's `EventEmitter` property is an ***output property***,
