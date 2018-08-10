@@ -782,13 +782,17 @@ export function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {
 }
 
 export function getInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
-  debugger;
   const proto = Object.getPrototypeOf(type.prototype).constructor as Type<any>;
   const factory = getFactoryOf<T>(proto);
-  if (factory === null) {
-    throw new Error(`Type ${proto.name} does not support inheritance`);
+  if (factory !== null) {
+    return factory;
+  } else {
+    // There is no factory defined. Either this was improper usage of inheritance
+    // (no Angular decorator on the superclass) or there is no constructor at all
+    // in the inheritance chain. Since the two cases cannot be distinguished, the
+    // latter has to be assumed.
+    return (t) => new t();
   }
-  return factory;
 }
 
 class TemplateRef<T> implements viewEngine.TemplateRef<T> {
