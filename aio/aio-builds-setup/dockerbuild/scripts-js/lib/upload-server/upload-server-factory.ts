@@ -156,7 +156,7 @@ export class UploadServerFactory {
     return middleware;
   }
 
-  public static createBuildCreator(prs: GithubPullRequests, buildsDir: string, domainName: string) {
+  public static createBuildCreator(prs: GithubPullRequests, buildsDir: string, domainName: string): BuildCreator {
     const buildCreator = new BuildCreator(buildsDir);
     const postPreviewsComment = (pr: number, shas: string[]) => {
       const body = shas.
