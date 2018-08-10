@@ -11,7 +11,7 @@
       expirationDate="2018-09-01"
       [dismissOnContentClick]="true"
       (dismissed)="notificationDismissed()">
-      <a href="https://github.com/angular/angular" target="_blank">
+      <a href="https://github.com/angular/angular" target="_blank" (click)="githubStarClicked()">
         <span class="message">Give our repo a star if you love Angular as much as we do!</span>
         <div class="action-button action-button-github">
           <mat-icon class="icon" svgIcon="star_rate" aria-label="GitHub Star Icon"> </mat-icon>

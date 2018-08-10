@@ -5,6 +5,7 @@ import { MatSidenav } from '@angular/material/sidenav';
 import { CurrentNodes, NavigationService, NavigationNode, VersionInfo } from 'app/navigation/navigation.service';
 import { DocumentService, DocumentContents } from 'app/documents/document.service';
 import { Deployment } from 'app/shared/deployment.service';
+import { GaService } from 'app/shared/ga.service';
 import { LocationService } from 'app/shared/location.service';
 import { NotificationComponent } from 'app/layout/notification/notification.component';
 import { ScrollService } from 'app/shared/scroll.service';
@@ -99,6 +100,7 @@ export class AppComponent implements OnInit {
     public deployment: Deployment,
     private documentService: DocumentService,
     private hostElement: ElementRef,
+    private gaService: GaService,
     private locationService: LocationService,
     private navigationService: NavigationService,
     private scrollService: ScrollService,
@@ -298,6 +300,10 @@ export class AppComponent implements OnInit {
       // - aio/src/app/layout/notification/notification.component.ts
       setTimeout(() => this.notificationAnimating = false, 250);
     this.updateHostClasses();
+  }
+
+  githubStarClicked() {
+    this.gaService.sendEvent('Github Star Button', 'click', 'Summer 2018 - Star Campaign');
   }
 
   updateHostClasses() {
