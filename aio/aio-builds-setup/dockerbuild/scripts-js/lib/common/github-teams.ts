@@ -24,7 +24,7 @@ export class GithubTeams {
    * Request information about all the organisation's teams in GitHub.
    * @returns A promise that is resolved with information about the teams.
    */
-  public fetchAll() {
+  public fetchAll(): Promise<Team[]> {
     return this.api.getPaginated<Team>(`/orgs/${this.githubOrg}/teams`);
   }
 
@@ -34,7 +34,7 @@ export class GithubTeams {
    * @param teamIds The team to check for the username.
    * @returns a Promise that resolves to `true` if the username is a member of the team.
    */
-  public async isMemberById(username: string, teamIds: number[]) {
+  public async isMemberById(username: string, teamIds: number[]): Promise<boolean> {
 
     const getMembership = async (teamId: number) => {
       try {
@@ -60,7 +60,7 @@ export class GithubTeams {
    * @param teamSlugs A collection of slugs that represent the teams to check for the the username.
    * @returns a Promise that resolves to `true` if the usernane is a member of at least one of the specified teams.
    */
-  public async isMemberBySlug(username: string, teamSlugs: string[]) {
+  public async isMemberBySlug(username: string, teamSlugs: string[]): Promise<boolean> {
     try {
       const teams = await this.fetchAll();
       const teamIds = teams.filter(team => teamSlugs.includes(team.slug)).map(team => team.id);

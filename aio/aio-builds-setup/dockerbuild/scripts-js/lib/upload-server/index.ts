@@ -21,7 +21,7 @@ import {UploadServerFactory} from './upload-server-factory';
 _main();
 
 // Functions
-function _main() {
+function _main(): void {
   UploadServerFactory
     .create({
       buildArtifactPath: AIO_ARTIFACT_PATH,

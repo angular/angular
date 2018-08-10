@@ -55,7 +55,7 @@ export class CircleCiApi {
    * @param buildNumber The CircleCI build number that generated the artifact.
    * @returns A promise to the info about the build
    */
-  public async getBuildInfo(buildNumber: number) {
+  public async getBuildInfo(buildNumber: number): Promise<BuildInfo> {
     try {
       const baseUrl = `${CIRCLE_CI_API_URL}/${this.githubOrg}/${this.githubRepo}/${buildNumber}`;
       const response = await fetch(`${baseUrl}?${this.tokenParam}`);
@@ -73,7 +73,7 @@ export class CircleCiApi {
    * @param artifactPath The path, within the build to the artifact.
    * @returns A promise to the URL that can be requested to download the actual build artifact file.
    */
-  public async getBuildArtifactUrl(buildNumber: number, artifactPath: string) {
+  public async getBuildArtifactUrl(buildNumber: number, artifactPath: string): Promise<string> {
     const baseUrl = `${CIRCLE_CI_API_URL}/${this.githubOrg}/${this.githubRepo}/${buildNumber}`;
     try {
       const response = await fetch(`${baseUrl}/artifacts?${this.tokenParam}`);

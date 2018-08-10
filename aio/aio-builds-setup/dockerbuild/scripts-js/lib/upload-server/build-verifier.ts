@@ -24,7 +24,7 @@ export class BuildVerifier {
    * @param pr The number of the PR to check
    * @param significantFilePattern A regex that selects files that are significant.
    */
-  public async getSignificantFilesChanged(pr: number, significantFilePattern: RegExp) {
+  public async getSignificantFilesChanged(pr: number, significantFilePattern: RegExp): Promise<boolean> {
     const files = await this.prs.fetchFiles(pr);
     return files.some(file => significantFilePattern.test(file.filename));
   }
@@ -40,7 +40,7 @@ export class BuildVerifier {
            (await this.teams.isMemberBySlug(prInfo.user.login, this.allowedTeamSlugs));
   }
 
-  protected hasLabel(prInfo: PullRequest, label: string) {
+  protected hasLabel(prInfo: PullRequest, label: string): boolean {
     return prInfo.labels.some(labelObj => labelObj.name === label);
   }
 }

@@ -7,7 +7,7 @@ import {UploadError} from './upload-error';
  * @param res The response to configure as an error.
  * @param err The error that needs to be reported.
  */
-export async function respondWithError(res: express.Response, err: any) {
+export async function respondWithError(res: express.Response, err: any): Promise<void> {
   if (!(err instanceof UploadError)) {
     err = new UploadError(500, String((err && err.message) || err));
   }
