@@ -58,7 +58,10 @@ To use reactive forms, import `ReactiveFormsModule` from the `@angular/forms` pa
 -->
 반응형 폼을 사용하려면 `@angular/forms`에서 제공하는 `ReactiveFormsModule`을 로드하고 NgModule의 `imports` 배열에 추가해야 합니다.
 
+<!--
 <code-example path="reactive-forms/src/app/app.module.ts" region="imports" title="src/app/app.module.ts (excerpt)">
+-->
+<code-example path="reactive-forms/src/app/app.module.ts" region="imports" title="src/app/app.module.ts (일부)">
 
 </code-example>
 
@@ -138,31 +141,55 @@ The `FormControl` assigned to `name` is displayed once the component is added to
   <img src="generated/images/guide/reactive-forms/name-editor-1.png" alt="Name Editor">
 </figure>
 
+<!--
 ## Managing control values
+-->
+## 폼 컨트롤 다루기
 
+<!--
 Reactive forms give you access to the form control state and value at a point in time. You can manipulate 
 the current state and value through the component class or the component template. The following examples display the value of a `FormControl` and change it.
+-->
+반응형 폼을 사용하면 현재 폼 컨트롤의 상태와 값을 간단하게 확인할 수 있습니다. 폼 컨트롤의 상태와 현재 값은 컴포넌트 클래스나 컴포넌트 템플릿에서 자유롭게 활용할 수 있으며, 이번에는 `FormControl`의 현재 값을 확인하는 예제를 살펴봅시다.
 
 {@a display-value}
 
+<!--
 ### Display the control’s value
+-->
+### 폼 컨트롤의 값 표시하기
 
+<!--
 Every `FormControl` provides its current value as an observable through the `valueChanges` property. You can listen to changes in the form’s value in the template using the `AsyncPipe` or in the component class using the `subscribe()` method. The `value` property also gives you a snapshot of the current value. 
+-->
+`FormControl`은 `valueChanges` 프로퍼티로 값이 변경되는 것을 옵저버블 형태로 전달합니다. 이 옵저버블은 템플릿에서 `AsyncPipe`를 사용해서 표시할 수도 있고, 컴포넌트 클래스에서 `subscribe()` 메소드를 사용해서 구독할 수도 있습니다. 그리고 `value` 프로퍼티는 폼 컨트롤의 현재 값을 표현합니다.
 
+<!--
 Display the current value using interpolation in the template as shown in the following example.
+-->
+폼 컨트롤의 값을 템플릿에 표시하려면 다음과 같이 문자열 바인딩을 사용하면 간단합니다.
 
+<!--
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="display-value" linenums="false" title="src/app/name-editor/name-editor.component.html (control value)">
+-->
+<code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="display-value" linenums="false" title="src/app/name-editor/name-editor.component.html (폼 컨트롤의 값 표시)">
 
 </code-example>
 
+<!--
 The displayed value changes as you update the form control element.
+-->
+그리고 이 값은 폼 컨트롤 엘리먼트의 값이 변경될 때마다 자동으로 갱신됩니다.
 
+<!--
 Reactive forms also provide access to more information about a given control through properties and methods provided with each instance. These properties and methods of the underlying [AbstractControl](api/forms/AbstractControl) are used to control form state and determine when to display messages when handling validation. For more information, see [Simple Form Validation](#simple-form-validation) later in this guide.
+-->
+반응형 폼을 사용하면 폼 컨트롤에서 제공하는 프로퍼티나 메소드를 사용해서 인스턴스에 대한 정보를 다양하게 확인할 수 있습니다. 프로퍼티나 메소드는 [AbstractControl](api/forms/AbstractControl)에 정의되어 있으며, 이 정보를 확인해서 유효성을 검증하거나 에러 메시지를 표시하는 용도로도 활용할 수 있습니다. 더 자세한 내용은 이 문서의 뒤쪽에 나오는 [폼 유효성 검사하기 - 기본](#폼-유효성-검사하기-기본) 섹션을 참고하세요.
 
 <!--
 Read about other `FormControl` properties and methods in the [Reactive Forms API](#reactive-forms-api) section.
 -->
-Read about other `FormControl` properties and methods in the [반응형 폼 API](#반응형-폼-api) section.
+`FormControl`에 선언된 프로퍼티와 메소드에 대해 더 알아보려면 [반응형 폼 API](#반응형-폼-api) 섹션을 참고하세요.
 
 ### Replace the form control value
 
@@ -256,7 +283,10 @@ Add a `button` to the bottom of the form to trigger the form submission.
 
 <div class="alert is-helpful">
 
+<!--
 *Note:* The button in the snippet above also has a `disabled` binding attached to it to disable the button when the `profileForm` is invalid. You aren't performing any validation yet, so the button is always enabled. Simple form validation is covered later in the [Form Validation](#simple-form-validation) section.
+-->
+*Note:* The button in the snippet above also has a `disabled` binding attached to it to disable the button when the `profileForm` is invalid. You aren't performing any validation yet, so the button is always enabled. Simple form validation is covered later in the [Form Validation](#폼-유효성-검사하기-기본) section.
 
 </div>
 
@@ -384,7 +414,11 @@ Compare the two paths to achieve the same result.
 
 </code-tabs>
 
+{@a 폼-유효성-검사하기-기본}
+<!--
 ## Simple form validation
+-->
+## 폼 유효성 검사하기 - 기본
 
 Form validation is necessary when receiving user input through forms. This section covers adding a single validator to a form control and displaying the overall form status. Form validation is covered more extensively in the [Form Validation](guide/form-validation) guide.
 
