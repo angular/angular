@@ -1,38 +1,76 @@
+<!--
 # Reactive forms
+-->
+# 반응형 폼 (Reactive forms)
 
+<!--
 _Reactive forms_ provide a model-driven approach to handling form inputs whose values change over time. This guide shows you how to create and update a simple form control, progress to using multiple controls in a group, validate form values, and implement more advanced forms.
-
+-->
+_반응형 폼_ 은 화면에 있는 입력 필드의 값이 변경될 때마다 원하는 로직이 실행하게 하는 모델-드리븐 방식의 폼입니다. 이 문서에서는 폼 컨트롤을 만드는 방법부터 시작해서 폼 컨트롤의 값을 갱신하는 방법, 폼 컨트롤 여러개를 그룹으로 묶어서 한 번에 처리하는 방법, 폼 컨트롤의 유효성을 검사하는 방법, 그 외에 폼과 관련된 고급 활용 기술도 함께 다룹니다.
 
 
 {@a toc}
 
+<!--
 Try the <live-example title="Reactive Forms in Stackblitz">Reactive Forms live-example</live-example>.
+-->
+이 문서에서 다루는 예제는 <live-example title="Reactive Forms in Stackblitz">Reactive Forms live-example</live-example>에서 직접 실행하거나 다운받아 확인할 수 있습니다.
 
 {@a intro}
 
+<!--
 ## Introduction to reactive forms
+-->
+## 반응형 폼 소개
 
+<!--
 Reactive forms use an explicit and immutable approach to managing the state of a form at a given point in time. Each change to the form state returns a new state, which maintains the integrity of the model between changes. Reactive forms are built around observable streams, where form inputs and values are provided as streams of input values, also while giving you synchronous access to the data. This approach allows your templates to take advantage of these streams of form state changes, rather than to be dependent to them.
+-->
+반응형 폼은 명시적인 방법으로, 그리고 이뮤터블을 처리하는 것과 비슷하게 폼의 상태를 관리하는 방식입니다. 폼 값이 변경되면 이 폼은 폼이 변경되기 전의 정보와 함께 새로운 상태를 표현하는 객체를 반환합니다. 반응형 폼은 옵저버블 스트림을 활용하는 방식으로 만들어졌기 때문에, 폼에 값이 입력되거나 입력된 값이 전달되는 것도 옵저버블로 전달됩니다. 따라서 폼이 변경된 것을 실시간으로 확인하고 필요한 동작을 할 수 있습니다. 이 방식을 활용하면 반응형 폼을 활용하는 템플릿을 좀 더 간편하게 구현할 수 있습니다.
 
+<!--
 Reactive forms also allow for easier testing because you have an assurance that your data is consistent and predictable when requested. Consumers outside your templates have access to the same streams, where they can manipulate that data safely.
+-->
+반응형 폼을 사용하면 데이터가 의도치 않게 변경되지 않으며, 현재 상태를 쉽게 예측할 수 있기 때문에 테스트하기도 편합니다. 폼을 활용하는 템플릿에서도 폼에 접근할 수 있으며, 폼 값을 변경하는 것도 물론 가능합니다.
 
+<!--
 Reactive forms differ from template-driven forms in distinct ways. Reactive forms provide more predictability with synchronous access to the data model, immutability with observable operators, and change tracking through observable streams. If you prefer direct access to modify data in your template, template-driven forms are less explicit because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. See the [Appendix](#appendix) for detailed comparisons between the two paradigms.
+-->
+반응형 폼은 템플릿 기반의 폼과 많은 점이 다릅니다. 반응형 폼은 실시간으로 데이터 모델에 접근할 수 있는 방법을 제공하며, 옵저버블 연산자를 활용할 수도 있고, 옵저버블 스트림을 통해 값이 어떻게 변경되는 지도 검사할 수 있습니다. 하지만 템플릿에서 데이터를 직접 수정하는 것을 선호한다면, 템플릿에서 디렉티브를 사용해서 데이터를 수정하는 것이 명시적이라고 생각할 수도 있습니다. 두 방식이 어떻게 다른지 좀 더 자세하게 확인하려면 [부록](#부록)을 참고하세요.
 
+<!--
 ## Getting started
+-->
+## 시작하기
 
+<!--
 This section describes the key steps to add a single form control. The example allows a user to enter their name into an input field, captures that input value, and displays the current value of the form control element.
+-->
+이 섹션에서는 폼 컨트롤을 활용하기 위해 필요한 준비 단계를 설명합니다. 사용자가 이름을 입력할 수 있는 입력 필드를 추가하고, 값이 입력되는 것을 확인하며, 폼 컨트롤 엘리먼트에 저장된 현재 값을 표현하는 방법도 알아봅니다.
 
+<!--
 ### Step 1 - Register the `ReactiveFormsModule`
+-->
+### 1단계 - `ReactiveFormsModule` 등록하기
 
+<!--
 To use reactive forms, import `ReactiveFormsModule` from the `@angular/forms` package and add it to your NgModule's `imports` array.
+-->
+반응형 폼을 사용하려면 `@angular/forms`에서 제공하는 `ReactiveFormsModule`을 로드하고 NgModule의 `imports` 배열에 추가해야 합니다.
 
 <code-example path="reactive-forms/src/app/app.module.ts" region="imports" title="src/app/app.module.ts (excerpt)">
 
 </code-example>
 
+<!--
 ### Step 2 - Import and create a new form control 
+-->
+### 2단계 - 폼 컨트롤 로드하고 인스턴스 생성하기
 
+<!--
 Generate a component for the control.
+-->
+다음 명령을 실행해서 폼 컨트롤이 위치할 컴포넌트를 생성합니다.
 
 <code-example language="sh" class="code-shell">
 
@@ -40,17 +78,29 @@ Generate a component for the control.
 
 </code-example>
 
+<!--
 The `FormControl` is the most basic building block when using reactive forms. To register a single form control, import the `FormControl` class into your component and create a new instance of `FormControl` to save as a class property.
+-->
+`FormControl`은 반응형 폼을 사용할 때 가장 기본적으로 사용하는 심볼입니다. 폼 컨트롤을 사용하려면 먼저 컴포넌트 코드에 `FormControl` 클래스를 로드하고, `FormControl`을 인스턴스로 생성하는 코드를 클래스 프로퍼티로 선언합니다.
 
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="create-control" title="src/app/name-editor/name-editor.component.ts">
 
 </code-example>
 
+<!--
 The constructor of the `FormControl` can be used to set its initial value, which in this case is set to an empty string. By creating these controls in your component class, you get immediate access to listen, update, and validate the state of the form input. 
+-->
+그러면 `FormControl`의 생성자가 실행되면서 인자로 전달한 빈 문자열이 초기값으로 설정됩니다. 이렇게 클래스 프로퍼티에 폼 컨트롤을 선언하면 폼에서 입력되는 이벤트나 값, 유효성 검사 결과를 간단하게 확인할 수 있습니다.
 
+<!--
 ### Step 3 - Register the control in the template
+-->
+### 3단계 - 템플릿에 폼 컨트롤 연결하기
 
+<!--
 After you create the control in the component class, you must associate it with a form control element in the template. Update the template with the form control using the `formControl` binding provided by the `FormControlDirective` included in the `ReactiveFormsModule`.
+-->
+이렇게 컴포넌트 클래스에 폼 컨트롤을 추가하고 나면, 컴포넌트 템플릿에도 폼 컨트롤을 연결해야 이 폼 컨트롤을 사용할 수 있습니다. 그래서 `FormControlDirective`를 의미하는 `formControl`을 입력 필드에 지정하면 템플릿과 컴포넌트의 폼 컨트롤을 연결할 수 있습니다. 이 디렉티브는 `ReactiveFormsModule`에서 제공하는 디렉티브입니다.
 
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="control-binding" linenums="false" title="src/app/name-editor/name-editor.component.html">
 
@@ -58,15 +108,27 @@ After you create the control in the component class, you must associate it with 
 
 <div class="alert is-helpful">
 
+<!--
 *Note*: For a more detailed list of classes and directives provided by the `ReactiveFormsModule`, see the [Reactive Forms API](#reactive-forms-api) section.
+-->
+*참고* : `ReactiveFormsModule`에서 제공하는 클래스나 디렉티브에 대해 좀 더 알아보려면 [반응형 폼 API](#반응형-폼-api) 섹션을 참고하세요.
 
 </div>
 
+<!--
 Using the template binding syntax, the form control is now registered to the `name` input element in the template. The form control and DOM element communicate with each other: the view reflects changes in the model, and the model reflects changes in the view.
+-->
+이렇게 템플릿 바인딩 문법을 사용하면 템플릿에 있는 `name` 입력 필드가 폼 컨트롤과 연결됩니다. 이제 폼 컨트롤과 DOM 엘리먼트는 서로 연동되는데, 화면에서 값이 변경되면 모델값도 변경되고, 모델의 값이 변경되면 화면의 값도 변경됩니다.
 
+<!--
 #### Display the component
+-->
+#### 화면에 컴포넌트 표시하기
 
+<!--
 The `FormControl` assigned to `name` is displayed once the component is added to a template. 
+-->
+이제 `NameEditorComponent`를 템플릿에 추가하면 다음과 같은 입력 필드가 화면에 표시됩니다.
 
 <code-example path="reactive-forms/src/app/app.component.1.html" region="app-name-editor" linenums="false" title="src/app/app.component.html (name editor)">
 
@@ -97,7 +159,10 @@ The displayed value changes as you update the form control element.
 
 Reactive forms also provide access to more information about a given control through properties and methods provided with each instance. These properties and methods of the underlying [AbstractControl](api/forms/AbstractControl) are used to control form state and determine when to display messages when handling validation. For more information, see [Simple Form Validation](#simple-form-validation) later in this guide.
 
+<!--
 Read about other `FormControl` properties and methods in the [Reactive Forms API](#reactive-forms-api) section.
+-->
+Read about other `FormControl` properties and methods in the [반응형 폼 API](#반응형-폼-api) section.
 
 ### Replace the form control value
 
@@ -451,11 +516,17 @@ Initially, the form only contains one `Alias` field. Click the `Add Alias` butto
 
 {@a appendix}
 
+<!--
 ## Appendix
+-->
+## 부록
 
 {@a reactive-forms-api}
 
+<!--
 ### Reactive forms API
+-->
+### 반응형 폼 API
 
 Listed below are the base classes and services used to create and manage form controls.
 
