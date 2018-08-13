@@ -1,5 +1,5 @@
-<a name="6.4.4"></a>
-## [6.4.4 mithril-magnet](https://github.com/angular/material2/compare/6.4.3...6.4.4) (2018-08-13)
+<a name="6.4.5"></a>
+## [6.4.5 mithril-magnet](https://github.com/angular/material2/compare/6.4.3...6.4.4) (2018-08-13)
 
 
 ### Bug Fixes

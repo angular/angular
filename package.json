@@ -24,7 +24,7 @@
     "docs": "gulp docs",
     "api": "gulp api-docs"
   },
-  "version": "6.4.4",
+  "version": "6.4.5",
   "requiredAngularVersion": ">=6.0.0 <7.0.0",
   "dependencies": {
     "@angular/animations": "6.0.0",
