@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
+import {Component} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
-import {renderComponent, toHtml} from '../render_util';
+import {ComponentFixture} from '../render_util';
 
 /// See: `normative.md`
 describe('local references', () => {
   type $RenderFlags$ = $r3$.ɵRenderFlags;
 
-  // TODO(misko): currently disabled until local refs are working
-  xit('should translate DOM structure', () => {
+  it('should translate DOM structure', () => {
     type $MyComponent$ = MyComponent;
 
-    @Component({selector: 'my-component', template: `<input #user>Hello {{user.value}}!`})
+    @Component(
+        {selector: 'my-component', template: `<input #user value="World">Hello, {{user.value}}!`})
     class MyComponent {
       // NORMATIVE
       static ngComponentDef = $r3$.ɵdefineComponent({
@@ -28,19 +28,19 @@ describe('local references', () => {
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           let l1_user: any;
           if (rf & 1) {
-            $r3$.ɵEe(0, 'input', null, ['user', '']);
+            $r3$.ɵEe(0, 'input', ['value', 'World'], ['user', '']);
             $r3$.ɵT(2);
           }
           if (rf & 2) {
-            l1_user = $r3$.ɵld<any>(1);
-            $r3$.ɵt(2, $r3$.ɵi1('Hello ', l1_user.value, '!'));
+            l1_user = $r3$.ɵr<any>(1);
+            $r3$.ɵt(2, $r3$.ɵi1('Hello, ', l1_user.value, '!'));
           }
         }
       });
       // NORMATIVE
     }
 
-    expect(toHtml(renderComponent(MyComponent)))
-        .toEqual('<div class="my-app" title="Hello">Hello <b>World</b>!</div>');
+    const fixture = new ComponentFixture(MyComponent);
+    expect(fixture.html).toEqual(`<input value="World">Hello, World!`);
   });
 });
