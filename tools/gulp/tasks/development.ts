@@ -153,8 +153,10 @@ task(':watch:devapp', () => {
   watchFiles(join(examplesPackage.sourceDir, '**/*'), ['material-examples:build-no-bundles']);
 });
 
-task(':watch:devapp:rebuild-scss', sequenceTask(':build:devapp:scss',
+// Note that we need to rebuild the TS here, because the resource inlining
+// won't work if the file's resources have been inlined already.
+task(':watch:devapp:rebuild-scss', sequenceTask([':build:devapp:scss', ':build:devapp:ts'],
    ':build:devapp:inline-resources'));
 
-task(':watch:devapp:rebuild-html', sequenceTask(':build:devapp:assets',
+task(':watch:devapp:rebuild-html', sequenceTask([':build:devapp:assets', ':build:devapp:ts'],
   ':build:devapp:inline-resources'));
