@@ -28,7 +28,7 @@ to specify which end of the main content to place the side content on. `position
 `start` or `end` which places the side content on the left or right respectively in left-to-right
 languages. If the `position` is not set, the default value of `start` will be assumed. A
 `<mat-sidenav-container>` can have up to two `<mat-sidenav>` elements total, but only one for any
-given side.
+given side. The `<mat-sidenav>` must be placed as an immediate child of the `<mat-sidenav-container>`.
 
 The main content should be wrapped in a `<mat-sidenav-content>`. If no `<mat-sidenav-content>` is
 specified for a `<mat-sidenav-container>`, one will be created implicitly and all of the content
