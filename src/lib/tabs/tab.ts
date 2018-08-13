@@ -73,11 +73,8 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
     return this._contentPortal;
   }
 
-  /** Emits whenever the label changes. */
-  readonly _labelChange = new Subject<void>();
-
-  /** Emits whenever the disable changes */
-  readonly _disableChange = new Subject<void>();
+  /** Emits whenever the internal state of the tab changes. */
+  readonly _stateChanges = new Subject<void>();
 
   /**
    * The relatively indexed position where 0 represents the center, negative is left, and positive
@@ -101,18 +98,13 @@ export class MatTab extends _MatTabMixinBase implements OnInit, CanDisable, OnCh
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.hasOwnProperty('textLabel')) {
-      this._labelChange.next();
-    }
-
-    if (changes.hasOwnProperty('disabled')) {
-      this._disableChange.next();
+    if (changes.hasOwnProperty('textLabel') || changes.hasOwnProperty('disabled')) {
+      this._stateChanges.next();
     }
   }
 
   ngOnDestroy(): void {
-    this._disableChange.complete();
-    this._labelChange.complete();
+    this._stateChanges.complete();
   }
 
   ngOnInit(): void {

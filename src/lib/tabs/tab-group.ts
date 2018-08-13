@@ -165,18 +165,27 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
 
     // If there is a change in selected index, emit a change event. Should not trigger if
     // the selected index has not yet been initialized.
-    if (this._selectedIndex != indexToSelect && this._selectedIndex != null) {
-      const tabChangeEvent = this._createChangeEvent(indexToSelect);
-      this.selectedTabChange.emit(tabChangeEvent);
-      // Emitting this value after change detection has run
-      // since the checked content may contain this variable'
-      Promise.resolve().then(() => this.selectedIndexChange.emit(indexToSelect));
+    if (this._selectedIndex != indexToSelect) {
+      const isFirstRun = this._selectedIndex == null;
+
+      if (!isFirstRun) {
+        this.selectedTabChange.emit(this._createChangeEvent(indexToSelect));
+      }
+
+      // Changing these values after change detection has run
+      // since the checked content may contain references to them.
+      Promise.resolve().then(() => {
+        this._tabs.forEach((tab, index) => tab.isActive = index === indexToSelect);
+
+        if (!isFirstRun) {
+          this.selectedIndexChange.emit(indexToSelect);
+        }
+      });
     }
 
     // Setup the position for each tab and optionally setup an origin on the next selected tab.
     this._tabs.forEach((tab: MatTab, index: number) => {
       tab.position = index - indexToSelect;
-      tab.isActive = index === indexToSelect;
 
       // If there is already a selected tab, then set up an origin for the next selected tab
       // if it doesn't have one already.
@@ -256,11 +265,8 @@ export class MatTabGroup extends _MatTabGroupMixinBase implements AfterContentIn
       this._tabLabelSubscription.unsubscribe();
     }
 
-    this._tabLabelSubscription = merge(
-        ...this._tabs.map(tab => tab._disableChange),
-        ...this._tabs.map(tab => tab._labelChange)).subscribe(() => {
-      this._changeDetectorRef.markForCheck();
-    });
+    this._tabLabelSubscription = merge(...this._tabs.map(tab => tab._stateChanges))
+      .subscribe(() => this._changeDetectorRef.markForCheck());
   }
 
   /** Clamps the given index to the bounds of 0 and the tabs length. */

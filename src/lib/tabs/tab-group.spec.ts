@@ -4,6 +4,7 @@ import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/co
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule, NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {CommonModule} from '@angular/common';
 import {Observable} from 'rxjs';
 import {MatTab, MatTabGroup, MatTabHeaderPosition, MatTabsModule} from './index';
 
@@ -11,7 +12,7 @@ import {MatTab, MatTabGroup, MatTabHeaderPosition, MatTabsModule} from './index'
 describe('MatTabGroup', () => {
   beforeEach(fakeAsync(() => {
     TestBed.configureTestingModule({
-      imports: [MatTabsModule, NoopAnimationsModule],
+      imports: [MatTabsModule, CommonModule, NoopAnimationsModule],
       declarations: [
         SimpleTabsTestApp,
         SimpleDynamicTabsTestApp,
@@ -21,6 +22,7 @@ describe('MatTabGroup', () => {
         TabGroupWithSimpleApi,
         TemplateTabs,
         TabGroupWithAriaInputs,
+        TabGroupWithIsActiveBinding,
       ],
     });
 
@@ -195,8 +197,9 @@ describe('MatTabGroup', () => {
         .toBe(0, 'Expected no ripple to show up on label mousedown.');
     });
 
-    it('should set the isActive flag on each of the tabs', () => {
+    it('should set the isActive flag on each of the tabs', fakeAsync(() => {
       fixture.detectChanges();
+      tick();
 
       const tabs = fixture.componentInstance.tabs.toArray();
 
@@ -206,11 +209,12 @@ describe('MatTabGroup', () => {
 
       fixture.componentInstance.selectedIndex = 2;
       fixture.detectChanges();
+      tick();
 
       expect(tabs[0].isActive).toBe(false);
       expect(tabs[1].isActive).toBe(false);
       expect(tabs[2].isActive).toBe(true);
-    });
+    }));
 
     it('should fire animation done event', fakeAsync(() => {
       fixture.detectChanges();
@@ -567,7 +571,21 @@ describe('MatTabGroup', () => {
       const child = fixture.debugElement.query(By.css('.child'));
       expect(child.nativeElement).toBeDefined();
     }));
-   });
+  });
+
+  describe('special cases', () => {
+    it('should not throw an error when binding isActive to the view', fakeAsync(() => {
+      const fixture = TestBed.createComponent(TabGroupWithIsActiveBinding);
+
+      expect(() => {
+        fixture.detectChanges();
+        tick();
+        fixture.detectChanges();
+      }).not.toThrow();
+
+      expect(fixture.nativeElement.textContent).toContain('pizza is active');
+    }));
+  });
 
   /**
    * Checks that the `selectedIndex` has been updated; checks that the label and body have their
@@ -827,4 +845,18 @@ class NestedTabs {}
 class TabGroupWithAriaInputs {
   ariaLabel: string;
   ariaLabelledby: string;
+}
+
+
+@Component({
+  template: `
+    <mat-tab-group>
+      <mat-tab label="Junk food" #pizza> Pizza, fries </mat-tab>
+      <mat-tab label="Vegetables"> Broccoli, spinach </mat-tab>
+    </mat-tab-group>
+
+    <div *ngIf="pizza.isActive">pizza is active</div>
+  `
+})
+class TabGroupWithIsActiveBinding {
 }
