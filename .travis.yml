@@ -5,7 +5,7 @@ sudo: false
 node_js:
   # Use the explicit NodeJS LTS version 8.9.4 to avoid any automatic upgrade of the version.
   # This ensures that all Travis jobs run consistently and don't have different Node versions.
-  - '8.9.4'
+  - '8.11.3'
 
 addons:
   jwt:
@@ -39,9 +39,6 @@ jobs:
       if: type = push
     - env: "DEPLOY_MODE=dashboard"
       if: type = cron
-    # Closure Compiler CI check is temporarily disabled until a new version of
-    # the tool is released with https://github.com/google/closure-compiler/pull/2600
-    # - env: "MODE=closure-compiler"
 env:
   global:
   - LOGS_DIR=/tmp/angular-material2-build/logs
@@ -53,6 +50,7 @@ env:
 
 before_install:
   - source ./scripts/ci/travis-env.sh
+  - if [[ "$TRAVIS_EVENT_TYPE" == "cron" ]]; then ./scripts/install-angular-snapshot.sh --only-save; fi
 
 install:
   - npm install
