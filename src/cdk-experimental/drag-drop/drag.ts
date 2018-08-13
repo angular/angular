@@ -27,12 +27,19 @@ import {DOCUMENT} from '@angular/common';
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkDragHandle} from './drag-handle';
 import {CdkDropContainer, CDK_DROP_CONTAINER} from './drop-container';
-import {CdkDragStart, CdkDragEnd, CdkDragExit, CdkDragEnter, CdkDragDrop} from './drag-events';
+import {
+  CdkDragStart,
+  CdkDragEnd,
+  CdkDragExit,
+  CdkDragEnter,
+  CdkDragDrop,
+  CdkDragMove,
+} from './drag-events';
 import {CdkDragPreview} from './drag-preview';
 import {CdkDragPlaceholder} from './drag-placeholder';
 import {ViewportRuler} from '@angular/cdk/overlay';
 import {DragDropRegistry} from './drag-drop-registry';
-import {Subject, merge} from 'rxjs';
+import {Subject, merge, Observable} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 
 // TODO(crisbeto): add auto-scrolling functionality.
@@ -97,6 +104,15 @@ export class CdkDrag<T = any> implements OnDestroy {
   /** Cached scroll position on the page when the element was picked up. */
   private _scrollPosition: {top: number, left: number};
 
+  /** Emits when the item is being moved. */
+  private _moveEvents = new Subject<CdkDragMove<T>>();
+
+  /**
+   * Amount of subscriptions to the move event. Used to avoid
+   * hitting the zone if the consumer didn't subscribe to it.
+   */
+  private _moveEventSubscriptions = 0;
+
   /** Elements that can be used to drag the draggable item. */
   @ContentChildren(CdkDragHandle) _handles: QueryList<CdkDragHandle>;
 
@@ -128,6 +144,20 @@ export class CdkDrag<T = any> implements OnDestroy {
   /** Emits when the user drops the item inside a container. */
   @Output('cdkDragDropped') dropped: EventEmitter<CdkDragDrop<any>> =
       new EventEmitter<CdkDragDrop<any>>();
+
+  /**
+   * Emits as the user is dragging the item. Use with caution,
+   * because this event will fire for every pixel that the user has dragged.
+   */
+  @Output('cdkDragMoved') moved: Observable<CdkDragMove<T>> = Observable.create(observer => {
+    const subscription = this._moveEvents.subscribe(observer);
+    this._moveEventSubscriptions++;
+
+    return () => {
+      subscription.unsubscribe();
+      this._moveEventSubscriptions--;
+    };
+  });
 
   constructor(
     /** Element that the draggable is attached to. */
@@ -166,6 +196,7 @@ export class CdkDrag<T = any> implements OnDestroy {
 
     this._nextSibling = null;
     this._dragDropRegistry.removeDragItem(this);
+    this._moveEvents.complete();
     this._destroyed.next();
     this._destroyed.complete();
   }
@@ -245,14 +276,30 @@ export class CdkDrag<T = any> implements OnDestroy {
     this._hasMoved = true;
     event.preventDefault();
 
+    const pointerPosition = this._getPointerPositionOnPage(event);
+
     if (this.dropContainer) {
-      this._updateActiveDropContainer(event);
+      this._updateActiveDropContainer(pointerPosition);
     } else {
       const activeTransform = this._activeTransform;
-      const {x: pageX, y: pageY} = this._getPointerPositionOnPage(event);
-      activeTransform.x = pageX - this._pickupPositionOnPage.x + this._passiveTransform.x;
-      activeTransform.y = pageY - this._pickupPositionOnPage.y + this._passiveTransform.y;
+      activeTransform.x =
+          pointerPosition.x - this._pickupPositionOnPage.x + this._passiveTransform.x;
+      activeTransform.y =
+          pointerPosition.y - this._pickupPositionOnPage.y + this._passiveTransform.y;
       this._setTransform(this.element.nativeElement, activeTransform.x, activeTransform.y);
+    }
+
+    // Since this event gets fired for every pixel while dragging, we only
+    // want to fire it if the consumer opted into it. Also we have to
+    // re-enter the zone becaus we run all of the events on the outside.
+    if (this._moveEventSubscriptions > 0) {
+      this._ngZone.run(() => {
+        this._moveEvents.next({
+          source: this,
+          pointerPosition,
+          event
+        });
+      });
     }
   }
 
@@ -314,19 +361,17 @@ export class CdkDrag<T = any> implements OnDestroy {
    * Updates the item's position in its drop container, or moves it
    * into a new one, depending on its current drag position.
    */
-  private _updateActiveDropContainer(event: MouseEvent | TouchEvent) {
-    const {x, y} = this._getPointerPositionOnPage(event);
-
+  private _updateActiveDropContainer({x, y}: Point) {
     // Drop container that draggable has been moved into.
     const newContainer = this.dropContainer._getSiblingContainerFromPosition(x, y);
 
     if (newContainer) {
       this._ngZone.run(() => {
         // Notify the old container that the item has left.
-        this.exited.emit({ item: this, container: this.dropContainer });
+        this.exited.emit({item: this, container: this.dropContainer});
         this.dropContainer.exit(this);
         // Notify the new container that the item has entered.
-        this.entered.emit({ item: this, container: newContainer });
+        this.entered.emit({item: this, container: newContainer});
         this.dropContainer = newContainer;
         this.dropContainer.enter(this, x, y);
       });

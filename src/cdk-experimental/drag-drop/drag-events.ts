@@ -55,3 +55,13 @@ export interface CdkDragDrop<T, O = T> {
   /** Container from which the item was picked up. Can be the same as the `container`. */
   previousContainer: CdkDropContainer<O>;
 }
+
+/** Event emitted as the user is dragging a draggable item. */
+export interface CdkDragMove<T = any> {
+  /** Item that is being dragged. */
+  source: CdkDrag<T>;
+  /** Position of the user's pointer on the page. */
+  pointerPosition: {x: number, y: number};
+  /** Native event that is causing the dragging. */
+  event: MouseEvent | TouchEvent;
+}

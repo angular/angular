@@ -1,12 +1,13 @@
 import {
+  AfterViewInit,
   Component,
+  ElementRef,
+  NgZone,
+  Provider,
+  QueryList,
   Type,
   ViewChild,
-  ElementRef,
   ViewChildren,
-  QueryList,
-  AfterViewInit,
-  Provider,
   ViewEncapsulation,
 } from '@angular/core';
 import {TestBed, ComponentFixture, fakeAsync, flush, tick} from '@angular/core/testing';
@@ -201,6 +202,50 @@ describe('CdkDrag', () => {
       // go into an infinite loop trying to stringify the event, if the test fails.
       expect(event).toEqual({source: fixture.componentInstance.dragInstance});
     }));
+
+    it('should emit when the user is moving the drag element', () => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+
+      const spy = jasmine.createSpy('move spy');
+      const subscription = fixture.componentInstance.dragInstance.moved.subscribe(spy);
+
+      dragElementViaMouse(fixture, fixture.componentInstance.dragElement.nativeElement, 5, 10);
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      dragElementViaMouse(fixture, fixture.componentInstance.dragElement.nativeElement, 10, 20);
+      expect(spy).toHaveBeenCalledTimes(2);
+
+      subscription.unsubscribe();
+    });
+
+    it('should emit to `moved` inside the NgZone', () => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+
+      const spy = jasmine.createSpy('move spy');
+      const subscription = fixture.componentInstance.dragInstance.moved
+          .subscribe(() => spy(NgZone.isInAngularZone()));
+
+      dragElementViaMouse(fixture, fixture.componentInstance.dragElement.nativeElement, 10, 20);
+      expect(spy).toHaveBeenCalledWith(true);
+
+      subscription.unsubscribe();
+    });
+
+    it('should complete the `moved` stream on destroy', () => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+
+      const spy = jasmine.createSpy('move spy');
+      const subscription = fixture.componentInstance.dragInstance.moved
+          .subscribe(undefined, undefined, spy);
+
+      fixture.destroy();
+      expect(spy).toHaveBeenCalled();
+      subscription.unsubscribe();
+    });
+
   });
 
   describe('draggable with a handle', () => {
