@@ -448,7 +448,7 @@ describe('MatTabGroup', () => {
       expect(component._tabs.toArray()[0].isActive).toBe(true);
     });
 
-    it('should be able to select a new tab after creation', () => {
+    it('should be able to select a new tab after creation', fakeAsync(() => {
       fixture.detectChanges();
       const component: MatTabGroup =
         fixture.debugElement.query(By.css('mat-tab-group')).componentInstance;
@@ -457,10 +457,11 @@ describe('MatTabGroup', () => {
       fixture.componentInstance.selectedIndex = 3;
 
       fixture.detectChanges();
+      tick();
 
       expect(component.selectedIndex).toBe(3);
       expect(component._tabs.toArray()[3].isActive).toBe(true);
-    });
+    }));
 
     it('should not fire `selectedTabChange` when the amount of tabs changes', fakeAsync(() => {
       fixture.detectChanges();
