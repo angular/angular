@@ -19,7 +19,7 @@ import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
 const EMPTY: {} = {};
 const EMPTY_ARRAY: any[] = [];
-if (typeof ngDevMode !== 'undefined') {
+if (typeof ngDevMode !== 'undefined' && ngDevMode) {
   Object.freeze(EMPTY);
   Object.freeze(EMPTY_ARRAY);
 }
