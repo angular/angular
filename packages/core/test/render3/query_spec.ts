@@ -510,7 +510,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(1, undefined, undefined, undefined, ['foo', '']);
+                container(1, null, null, null, ['foo', '']);
               }
             },
             [], [],
@@ -542,7 +542,7 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   container(1, undefined, undefined, undefined, ['foo', '']);
+                   container(1, null, null, null, ['foo', '']);
                  }
                },
                [], [],
@@ -577,7 +577,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(1, undefined, undefined, undefined, ['foo', '']);
+                container(1, null, null, null, ['foo', '']);
               }
             },
             [], [],
@@ -609,7 +609,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(1, undefined, undefined, undefined, ['foo', '']);
+                container(1, null, null, null, ['foo', '']);
               }
             },
             [], [],
@@ -1129,7 +1129,7 @@ describe('query', () => {
                      }
                    }, null, []);
 
-                   container(5, undefined, null, [AttributeMarker.SelectOnly, 'vc']);
+                   container(5, null, null, [AttributeMarker.SelectOnly, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
@@ -1221,8 +1221,8 @@ describe('query', () => {
                      }
                    }, null, []);
 
-                   container(2, undefined, null, [AttributeMarker.SelectOnly, 'vc']);
-                   container(3, undefined, null, [AttributeMarker.SelectOnly, 'vc']);
+                   container(2, null, null, [AttributeMarker.SelectOnly, 'vc']);
+                   container(3, null, null, [AttributeMarker.SelectOnly, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
@@ -1288,7 +1288,7 @@ describe('query', () => {
                     element(0, 'span', ['id', 'from_tpl'], ['foo', '']);
                   }
                 }, undefined, undefined, ['tpl', '']);
-                container(3, undefined, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+                container(3, null, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
               }
               if (rf & RenderFlags.Update) {
                 const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(1)));

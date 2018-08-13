@@ -1838,8 +1838,8 @@ export function createLContainer(
  * @param localRefs A set of local reference bindings on the element.
  */
 export function container(
-    index: number, template?: ComponentTemplate<any>, tagName?: string | null, attrs?: TAttributes,
-    localRefs?: string[] | null): void {
+    index: number, template?: ComponentTemplate<any>| null, tagName?: string | null,
+    attrs?: TAttributes | null, localRefs?: string[] | null): void {
   ngDevMode &&
       assertEqual(
           viewData[BINDING_INDEX], -1, 'container nodes should be created before any bindings');
