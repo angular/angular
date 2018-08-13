@@ -6,33 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/** Cached result of whether the user's browser supports passive event listeners. */
-let supportsPassiveEvents: boolean;
-
-/**
- * Checks whether the user's browser supports passive event listeners.
- * See: https://github.com/WICG/EventListenerOptions/blob/gh-pages/explainer.md
- */
-export function supportsPassiveEventListeners(): boolean {
-  if (supportsPassiveEvents == null && typeof window !== 'undefined') {
-    try {
-      window.addEventListener('test', null!, Object.defineProperty({}, 'passive', {
-        get: () => supportsPassiveEvents = true
-      }));
-    } finally {
-      supportsPassiveEvents = supportsPassiveEvents || false;
-    }
-  }
-
-  return supportsPassiveEvents;
-}
-
-/** Check whether the browser supports scroll behaviors. */
-export function supportsScrollBehavior(): boolean {
-  return !!(document && document.documentElement && document.documentElement.style &&
-      'scrollBehavior' in document.documentElement.style);
-}
-
 /** Cached result Set of input types support by the current browser. */
 let supportedInputTypes: Set<string>;
 
