@@ -161,13 +161,35 @@
 
       summary {
         height: inherit;
-        padding: 0 8px 8px;
+        padding: 0 0 8px;
 
         h4 {
           margin: 0;
         }
+
+        .show-all {
+          display: initial;
+        }
+        .collapse-all {
+          display: none;
+        }
       }
-  }
+
+      &[open] > summary {
+        .show-all {
+          display: none;
+        }
+        .collapse-all {
+          display: initial;
+        }
+      }
+    }
+
+    details.overload {
+      box-shadow: none;
+      margin: 0;
+    }
+
 
     .from-constructor, .read-only-property {
       font-size: 12px;
@@ -248,7 +270,11 @@ details {
     padding: 16px 24px;
   }
 
-  &[open] > i.material-icons {
-    @include rotate(180deg); // Rotate the icon
+  // Rotate the icon
+  summary i.material-icons.expand {
+    @include rotate(0deg);
+  }
+  &[open] > summary i.material-icons.expand {
+    @include rotate(180deg);
   }
 }
