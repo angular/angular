@@ -6,8 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, ElementRef, OnInit, OnDestroy, NgZone} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import {Directive, ElementRef, NgZone, OnDestroy, OnInit} from '@angular/core';
+import {fromEvent, Observable, Subject} from 'rxjs';
+import {takeUntil} from 'rxjs/operators';
 import {ScrollDispatcher} from './scroll-dispatcher';
 
 
@@ -20,36 +21,32 @@ import {ScrollDispatcher} from './scroll-dispatcher';
   selector: '[cdk-scrollable], [cdkScrollable]'
 })
 export class CdkScrollable implements OnInit, OnDestroy {
-  private _elementScrolled: Subject<Event> = new Subject();
-  private _scrollListener = (event: Event) => this._elementScrolled.next(event);
+  private _destroyed = new Subject();
+
+  private _elementScrolled: Observable<Event> = Observable.create(observer =>
+      this._ngZone.runOutsideAngular(() =>
+          fromEvent(this._elementRef.nativeElement, 'scroll').pipe(takeUntil(this._destroyed))
+              .subscribe(observer)));
 
   constructor(private _elementRef: ElementRef,
               private _scroll: ScrollDispatcher,
               private _ngZone: NgZone) {}
 
   ngOnInit() {
-    this._ngZone.runOutsideAngular(() => {
-      this.getElementRef().nativeElement.addEventListener('scroll', this._scrollListener);
-    });
-
     this._scroll.register(this);
   }
 
   ngOnDestroy() {
     this._scroll.deregister(this);
-
-    if (this._scrollListener) {
-      this.getElementRef().nativeElement.removeEventListener('scroll', this._scrollListener);
-    }
-
-    this._elementScrolled.complete();
+    this._destroyed.next();
+    this._destroyed.complete();
   }
 
   /**
    * Returns observable that emits when a scroll event is fired on the host element.
    */
-  elementScrolled(): Observable<any> {
-    return this._elementScrolled.asObservable();
+  elementScrolled(): Observable<Event> {
+    return this._elementScrolled;
   }
 
   getElementRef(): ElementRef {
