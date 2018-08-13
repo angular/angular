@@ -324,5 +324,47 @@ describe('Format date', () => {
       expect(formatDate(3001, 'm:ss.SS', 'en')).toEqual('0:03.00');
       expect(formatDate(3001, 'm:ss.SSS', 'en')).toEqual('0:03.001');
     });
+
+    it('should return the correct week of the year', () => {
+      expect(formatDate('2018-03-11', 'w', 'en')).toEqual('10');
+      expect(formatDate('2011-01-02', 'w', 'en')).toEqual('52');
+      expect(formatDate('2017-07-17T00:00:00.000Z', 'w', 'en', '+0000')).toEqual('29');
+      expect(formatDate('2017-07-23T23:59:59.000Z', 'w', 'en', '+0000')).toEqual('29');
+      expect(formatDate('2021-01-04T00:00:00.000Z', 'w', 'en', '+0000')).toEqual('1');
+      expect(formatDate('2015-12-31', 'w', 'en')).toEqual('53');
+      expect(formatDate('2021-02-22', 'w', 'en')).toEqual('8');
+
+      // Set date to Monday of the first week of 2017
+      let testDate = new Date('2017-01-02T00:00:01.000Z');
+      const maxDate = new Date('2018-01-01T00:00:00.000Z');
+      const DAY_IN_MS = 86400000;
+      let n = 1;
+      while (testDate < maxDate) {
+        expect(formatDate(testDate, 'w', 'en', '+0000')).toEqual(n.toString());
+        // Set date to Sunday 23:59:59 of the same week
+        testDate = new Date(testDate.getTime() + 7 * DAY_IN_MS - 2000);
+        // Set date to Monday 00:00:01 of the next week
+        expect(formatDate(testDate, 'w', 'en', '+0000')).toEqual(n.toString());
+        testDate = new Date(testDate.getTime() + 2000);
+        n++;
+      }
+    });
+
+    it('should return the correct week of the month', () => {
+      // Set date to Monday of the first week of 2017
+      let testDate = new Date('2017-01-02T00:00:01.000Z');
+      const maxDate = new Date('2017-01-30T00:00:00.000Z');
+      const DAY_IN_MS = 86400000;
+      let n = 1;
+      while (testDate < maxDate) {
+        expect(formatDate(testDate, 'W', 'en', '+0000')).toEqual(n.toString());
+        // Set date to Sunday 23:59:59 of the same week
+        testDate = new Date(testDate.getTime() + 7 * DAY_IN_MS - 2000);
+        // Set date to Monday 00:00:01 of the next week
+        expect(formatDate(testDate, 'W', 'en', '+0000')).toEqual(n.toString());
+        testDate = new Date(testDate.getTime() + 2000);
+        n++;
+      }
+    });
   });
 });

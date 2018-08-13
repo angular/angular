@@ -344,32 +344,27 @@ function timeZoneGetter(width: ZoneWidth): DateFormatter {
 
 const JANUARY = 0;
 const THURSDAY = 4;
-function getFirstThursdayOfYear(year: number) {
-  const firstDayOfYear = (new Date(year, JANUARY, 1)).getDay();
-  return new Date(
-      year, 0, 1 + ((firstDayOfYear <= THURSDAY) ? THURSDAY : THURSDAY + 7) - firstDayOfYear);
-}
+const MS_PER_DAY = 86400000;
 
-function getThursdayThisWeek(datetime: Date) {
-  return new Date(
-      datetime.getFullYear(), datetime.getMonth(),
-      datetime.getDate() + (THURSDAY - datetime.getDay()));
-}
-
+/**
+ * Returns the week number of the year or the week number of the month according to
+ * [ISO 8601](https://en.wikipedia.org/wiki/ISO_week_date): weeks start on Monday and the first week
+ * of the year is the one with 4th of January.
+ *
+ * @param size Number of digits to return, 1 (not zero padded) or 2 (zero padded)
+ * @param monthBased Whether we want the week number of the year (default) or of the month
+ */
 function weekGetter(size: number, monthBased = false): DateFormatter {
-  return function(date: Date, locale: string) {
-    let result;
-    if (monthBased) {
-      const nbDaysBefore1stDayOfMonth =
-          new Date(date.getFullYear(), date.getMonth(), 1).getDay() - 1;
-      const today = date.getDate();
-      result = 1 + Math.floor((today + nbDaysBefore1stDayOfMonth) / 7);
-    } else {
-      const firstThurs = getFirstThursdayOfYear(date.getFullYear());
-      const thisThurs = getThursdayThisWeek(date);
-      const diff = thisThurs.getTime() - firstThurs.getTime();
-      result = 1 + Math.round(diff / 6.048e8);  // 6.048e8 ms per week
-    }
+  return function(d: Date, locale: string) {
+    // Get the current day number as an ISO weekday (Monday = 0)
+    const isoDay = (d.getDay() + 6) % 7 + 1;
+    // Set the date to Thursday of the current week because week 1 has the 1st Thursday of the year
+    d = new Date(d);
+    d.setDate(d.getDate() + THURSDAY - isoDay);
+    const start = new Date(d.getFullYear(), monthBased ? d.getMonth() : JANUARY, 1).getTime();
+    // There might be +-1 hour shift in the result due to the daylight saving, but it doesn't affect
+    // the end result because we use Math.round().
+    const result = Math.floor(Math.round((d.getTime() - start) / MS_PER_DAY) / 7) + 1;
 
     return padNumber(result, size, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
   };

@@ -75,9 +75,9 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *  |                    | LLL         | Abbreviated                                                   | Sep                                                        |
  *  |                    | LLLL        | Wide                                                          | September                                                  |
  *  |                    | LLLLL       | Narrow                                                        | S                                                          |
- *  | Week of year       | w           | Numeric: minimum digits                                       | 1... 53                                                    |
+ *  | Week of year²      | w           | Numeric: minimum digits                                       | 1... 53                                                    |
  *  |                    | ww          | Numeric: 2 digits + zero padded                               | 01... 53                                                   |
- *  | Week of month      | W           | Numeric: 1 digit                                              | 1... 5                                                     |
+ *  | Week of month²     | W           | Numeric: 1 digit                                              | 1... 5                                                     |
  *  | Day of month       | d           | Numeric: minimum digits                                       | 1                                                          |
  *  |                    | dd          | Numeric: 2 digits + zero padded                               | 01                                                          |
  *  | Week day           | E, EE & EEE | Abbreviated                                                   | Tue                                                        |
@@ -113,6 +113,9 @@ import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
  *  |                    | OOOO        | Long localized GMT format                                     | GMT-08:00                                                  |
  *
  * Note that timezone correction is not applied to an ISO string that has no time component, such as "2016-09-19"
+ *
+ * ² Follows [ISO 8601 Week Date](https://en.wikipedia.org/wiki/ISO_week_date) rules where weeks
+ * start on Monday and the first week of the year is the one with 4th of January.
  *
  * ### Format examples
  *
