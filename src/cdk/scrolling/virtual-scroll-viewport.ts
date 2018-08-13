@@ -23,7 +23,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {animationFrameScheduler, fromEvent, Observable, Subject} from 'rxjs';
-import {sample, sampleTime, takeUntil} from 'rxjs/operators';
+import {sampleTime, takeUntil} from 'rxjs/operators';
 import {CdkVirtualForOf} from './virtual-for-of';
 import {VIRTUAL_SCROLL_STRATEGY, VirtualScrollStrategy} from './virtual-scroll-strategy';
 
@@ -55,9 +55,6 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
   /** Emits when the rendered range changes. */
   private _renderedRangeSubject = new Subject<ListRange>();
 
-  /** Emits when a change detection cycle completes. */
-  private _changeDetectionComplete = new Subject<void>();
-
   /** The direction the viewport scrolls. */
   @Input() orientation: 'horizontal' | 'vertical' = 'vertical';
 
@@ -66,10 +63,9 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
   // depending on how the strategy calculates the scrolled index, it may come at a cost to
   // performance.
   /** Emits when the index of the first element visible in the viewport changes. */
-  @Output() scrolledIndexChange: Observable<number> =
-      Observable.create(observer => this._scrollStrategy.scrolledIndexChange
-          .pipe(sample(this._changeDetectionComplete))
-          .subscribe(observer));
+  @Output() scrolledIndexChange: Observable<number> = Observable.create(observer =>
+      this._scrollStrategy.scrolledIndexChange.subscribe(index =>
+          Promise.resolve().then(() => this._ngZone.run(() => observer.next(index)))));
 
   /** The element that wraps the rendered content. */
   @ViewChild('contentWrapper') _contentWrapper: ElementRef<HTMLElement>;
@@ -159,7 +155,6 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
     // Complete all subjects
     this._renderedRangeSubject.complete();
     this._detachedSubject.complete();
-    this._changeDetectionComplete.complete();
     this._destroyed.complete();
   }
 
@@ -386,7 +381,5 @@ export class CdkVirtualScrollViewport implements OnInit, OnDestroy {
     for (const fn of runAfterChangeDetection) {
       fn();
     }
-
-    this._ngZone.run(() => this._changeDetectionComplete.next());
   }
 }

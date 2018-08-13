@@ -226,7 +226,7 @@ describe('CdkVirtualScrollViewport', () => {
 
       const maxOffset =
           testComponent.itemSize * testComponent.items.length - testComponent.viewportSize;
-      for (let offset = 0; offset <= maxOffset; offset += 10) {
+      for (let offset = 1; offset <= maxOffset; offset += 10) {
         triggerScroll(viewport, offset);
         fixture.detectChanges();
         flush();
@@ -252,7 +252,7 @@ describe('CdkVirtualScrollViewport', () => {
 
       const maxOffset =
           testComponent.itemSize * testComponent.items.length - testComponent.viewportSize;
-      for (let offset = maxOffset; offset >= 0; offset -= 10) {
+      for (let offset = maxOffset - 1; offset >= 0; offset -= 10) {
         triggerScroll(viewport, offset);
         fixture.detectChanges();
         flush();
@@ -274,7 +274,8 @@ describe('CdkVirtualScrollViewport', () => {
     }));
 
     it('should render buffer element at the end when scrolled to the top', fakeAsync(() => {
-      testComponent.bufferSize = 1;
+      testComponent.minBufferPx = testComponent.itemSize;
+      testComponent.maxBufferPx = testComponent.itemSize;
       finishInit(fixture);
 
       expect(viewport.getRenderedRange()).toEqual({start: 0, end: 5},
@@ -284,7 +285,8 @@ describe('CdkVirtualScrollViewport', () => {
 
     it('should render buffer element at the start and end when scrolled to the middle',
         fakeAsync(() => {
-          testComponent.bufferSize = 1;
+          testComponent.minBufferPx = testComponent.itemSize;
+          testComponent.maxBufferPx = testComponent.itemSize;
           finishInit(fixture);
           triggerScroll(viewport, testComponent.itemSize * 2);
           fixture.detectChanges();
@@ -296,7 +298,8 @@ describe('CdkVirtualScrollViewport', () => {
         }));
 
     it('should render buffer element at the start when scrolled to the bottom', fakeAsync(() => {
-      testComponent.bufferSize = 1;
+      testComponent.minBufferPx = testComponent.itemSize;
+      testComponent.maxBufferPx = testComponent.itemSize;
       finishInit(fixture);
       triggerScroll(viewport, testComponent.itemSize * 6);
       fixture.detectChanges();
@@ -333,7 +336,8 @@ describe('CdkVirtualScrollViewport', () => {
       expect(viewport.getRenderedRange())
           .toEqual({start: 2, end: 6}, 'should render 4 50px items to fill 200px space');
 
-      testComponent.bufferSize = 1;
+      testComponent.minBufferPx = testComponent.itemSize;
+      testComponent.maxBufferPx = testComponent.itemSize;
       fixture.detectChanges();
       flush();
 
@@ -368,7 +372,7 @@ describe('CdkVirtualScrollViewport', () => {
 
       const maxOffset =
           testComponent.itemSize * testComponent.items.length - testComponent.viewportSize;
-      for (let offset = 0; offset <= maxOffset; offset += 10) {
+      for (let offset = 1; offset <= maxOffset; offset += 10) {
         triggerScroll(viewport, offset);
         fixture.detectChanges();
         flush();
@@ -395,7 +399,7 @@ describe('CdkVirtualScrollViewport', () => {
 
       const maxOffset =
           testComponent.itemSize * testComponent.items.length - testComponent.viewportSize;
-      for (let offset = maxOffset; offset >= 0; offset -= 10) {
+      for (let offset = maxOffset - 1; offset >= 0; offset -= 10) {
         triggerScroll(viewport, offset);
         fixture.detectChanges();
         flush();
@@ -551,6 +555,35 @@ describe('CdkVirtualScrollViewport', () => {
       // create a new view for each one.
       expect(testComponent.virtualForViewContainer.createEmbeddedView).toHaveBeenCalledTimes(5);
     }));
+
+    it('should render up to maxBufferPx when buffer dips below minBufferPx', fakeAsync(() => {
+      testComponent.minBufferPx = testComponent.itemSize;
+      testComponent.maxBufferPx = testComponent.itemSize * 2;
+      finishInit(fixture);
+
+      expect(viewport.getRenderedRange())
+          .toEqual({start: 0, end: 6}, 'should have 2 buffer items initially');
+
+      triggerScroll(viewport, 50);
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.getRenderedRange())
+          .toEqual({start: 0, end: 6}, 'should not render additional buffer yet');
+
+      triggerScroll(viewport, 51);
+      fixture.detectChanges();
+      flush();
+
+      expect(viewport.getRenderedRange())
+          .toEqual({start: 0, end: 8}, 'should render 2 more buffer items');
+    }));
+
+    it('should throw if maxBufferPx is less than minBufferPx', fakeAsync(() => {
+      testComponent.minBufferPx = 100;
+      testComponent.maxBufferPx = 99;
+      expect(() => finishInit(fixture)).toThrow();
+    }));
   });
 });
 
@@ -583,9 +616,9 @@ function triggerScroll(viewport: CdkVirtualScrollViewport, offset?: number) {
 @Component({
   template: `
     <cdk-virtual-scroll-viewport
-        [itemSize]="itemSize" [bufferSize]="bufferSize" [orientation]="orientation"
-        [style.height.px]="viewportHeight" [style.width.px]="viewportWidth"
-        (scrolledIndexChange)="scrolledToIndex = $event">
+        [itemSize]="itemSize" [minBufferPx]="minBufferPx" [maxBufferPx]="maxBufferPx"
+        [orientation]="orientation" [style.height.px]="viewportHeight"
+        [style.width.px]="viewportWidth" (scrolledIndexChange)="scrolledToIndex = $event">
       <div class="item"
            *cdkVirtualFor="let item of items; let i = index; trackBy: trackBy; \
                            templateCacheSize: templateCacheSize"
@@ -614,7 +647,8 @@ class FixedSizeVirtualScroll {
   @Input() viewportSize = 200;
   @Input() viewportCrossSize = 100;
   @Input() itemSize = 50;
-  @Input() bufferSize = 0;
+  @Input() minBufferPx = 0;
+  @Input() maxBufferPx = 0;
   @Input() items = Array(10).fill(0).map((_, i) => i);
   @Input() trackBy;
   @Input() templateCacheSize = 20;

@@ -40,6 +40,12 @@ describe('CdkVirtualScrollViewport', () => {
           'should render 4 items to fill 200px space based on 50px estimate from first item');
     }));
 
+    it('should throw if maxBufferPx is less than minBufferPx', fakeAsync(() => {
+      testComponent.minBufferPx = 100;
+      testComponent.maxBufferPx = 99;
+      expect(() => finishInit(fixture)).toThrow();
+    }));
+
     // TODO(mmalerba): Add test that it corrects the initial render if it didn't render enough,
     // once it actually does that.
   });
@@ -61,7 +67,7 @@ function finishInit(fixture: ComponentFixture<any>) {
 @Component({
   template: `
     <cdk-virtual-scroll-viewport
-        autosize [minBufferPx]="minBufferSize" [addBufferPx]="addBufferSize"
+        autosize [minBufferPx]="minBufferPx" [maxBufferPx]="maxBufferPx"
         [orientation]="orientation" [style.height.px]="viewportHeight"
         [style.width.px]="viewportWidth">
       <div class="item" *cdkVirtualFor="let size of items; let i = index" [style.height.px]="size"
@@ -88,8 +94,8 @@ class AutoSizeVirtualScroll {
   @Input() orientation = 'vertical';
   @Input() viewportSize = 200;
   @Input() viewportCrossSize = 100;
-  @Input() minBufferSize = 0;
-  @Input() addBufferSize = 0;
+  @Input() minBufferPx = 0;
+  @Input() maxBufferPx = 0;
   @Input() items = Array(10).fill(50);
 
   get viewportWidth() {
