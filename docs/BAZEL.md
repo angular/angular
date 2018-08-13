@@ -74,8 +74,6 @@ If you're experiencing problems with seemingly unrelated tests failing, it may b
 
 See also: [`//tools/bazel.rc`](https://github.com/angular/angular/blob/master/tools/bazel.rc) where `--define=ivy=false` is defined as default.
 
-See also: [`./src/ivy_switch.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch.ts) for more details.
-
 - `--config=debug`: build and launch in debug mode (see [debugging](#debugging) instructions below)
 - `--define=compile=<option>` Controls if ivy or legacy mode is enabled. This is done by generating the [`src/ivy_switch.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch.ts) file from [`ivy_switch_legacy.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_legacy.ts) (default), [`ivy_switch_jit.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_jit.ts), or [`ivy_switch_local.ts`](https://github.com/angular/angular/blob/master/packages/core/src/ivy_switch_local.ts).
     - `legacy`: (default behavior) compile against View Engine, e.g. `--define=compile=legacy`
