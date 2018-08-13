@@ -291,11 +291,9 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
       })
       .sort((a, b) => a.clientRect.top - b.clientRect.top);
 
-    // TODO(crisbeto): add filter here that ensures that the
-    // current container isn't being passed to itself.
     this._positionCache.siblings = this.connectedTo
       .map(drop => typeof drop === 'string' ? this._dragDropRegistry.getDropContainer(drop)! : drop)
-      .filter(Boolean)
+      .filter(drop => drop && drop !== this)
       .map(drop => ({drop, clientRect: drop.element.nativeElement.getBoundingClientRect()}));
   }
 
