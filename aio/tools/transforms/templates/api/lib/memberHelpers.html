@@ -124,7 +124,11 @@
           <summary>
             <div class="icon-action-header">
                 <h4 class="no-anchor">Overloads</h4>
-                <a>Show All <i class="material-icons">expand_more</i></a>
+                <a>
+                  <span class="show-all">Show All</span>
+                  <span class="collapse-all">Collapse All</span>
+                  <i class="material-icons expand">expand_more</i>
+                </a>
               </div>
           </summary>
           <div class="detail-contents">
@@ -133,14 +137,17 @@
               <hr class="hr-margin fullwidth">
             {% endif %}
             {% for overload in method.overloads %}
-              <div>
-                <h5 class="icon-action-header no-anchor">
-                  <span>Overload #{$ loop.index $} of {$ method.overloads.length $}</span>
-                  <i class="material-icons">expand_more</i></h5>
+              <details class="overload"{% if loop.first %} open{% endif %}>
+                <summary>
+                  <div class="icon-action-header">
+                    <h5 class="no-anchor">Overload #{$ loop.index $} of {$ method.overloads.length $}</h5>
+                    <a><i class="material-icons expand">expand_more</i></a>
+                  </div>
+                </summary>
                 {$ renderOverloadInfo(overload, cssClass + '-overload', method) $}
                 {% if not loop.last %}<hr class="hr-margin">{% endif %}
+              </details>
               {% endfor %}
-              </div>
           </div>
         </details>
       </td>
