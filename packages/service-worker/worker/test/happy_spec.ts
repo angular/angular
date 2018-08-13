@@ -28,6 +28,7 @@ const dist =
         .addFile('/lazy/unchanged1.txt', 'this is unchanged (1)')
         .addFile('/lazy/unchanged2.txt', 'this is unchanged (2)')
         .addUnhashedFile('/unhashed/a.txt', 'this is unhashed', {'Cache-Control': 'max-age=10'})
+        .addUnhashedFile('/unhashed/b.txt', 'this is unhashed b', {'Cache-Control': 'no-cache'})
         .build();
 
 const distUpdate =
@@ -618,6 +619,13 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
         server.assertSawRequestFor('/unhashed/a.txt');
         expect(await makeRequest(scope, '/unhashed/a.txt')).toEqual('this is unhashed');
+        server.assertNoOtherRequests();
+      });
+
+      async_it(`doesn't error when 'Cache-Control' is 'no-cache'`, async() => {
+        expect(await makeRequest(scope, '/unhashed/b.txt')).toEqual('this is unhashed b');
+        server.assertSawRequestFor('/unhashed/b.txt');
+        expect(await makeRequest(scope, '/unhashed/b.txt')).toEqual('this is unhashed b');
         server.assertNoOtherRequests();
       });
 
