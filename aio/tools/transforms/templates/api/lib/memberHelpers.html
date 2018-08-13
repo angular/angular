@@ -54,7 +54,7 @@
 </div>{% endif %}
 
 <h6 class="no-anchor">Parameters</h6>
-{$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter') $}
+{$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter', true) $}
 
 {% if overload.type or overload.returns.type %}
 <h6 class="no-anchor">Returns</h6>
@@ -157,7 +157,7 @@
   {% if method.description -%}
     <tr>
       <td class="description">
-        {$ method.description | marked({ h3: 'h4' }) $}
+        {$ method.description | marked({ h3: 'h5' }) $}
       </td>
     </tr>
   {%- endif %}
@@ -165,7 +165,8 @@
   {% if method.usageNotes -%}
     <tr>
       <td class="usage-notes">
-        {$ method.usageNotes | marked({ h3: 'h4' }) $}
+        <h4 id="{$ method.anchor $}-usage-notes">Usage Notes</h4>
+        {$ method.usageNotes | marked({ h3: 'h5' }) $}
       </td>
     </tr>
   {%- endif %}
