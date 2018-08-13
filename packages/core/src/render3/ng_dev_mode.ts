@@ -37,9 +37,9 @@ declare global {
 
 declare let global: any;
 
-const __global: {ngDevMode: NgDevModePerfCounters | boolean} =
-    typeof window != 'undefined' && window || typeof self != 'undefined' && self ||
-    typeof global != 'undefined' && global;
+const __global: {ngDevMode: NgDevModePerfCounters | boolean} = this ||
+    typeof global != 'undefined' && global || typeof self != 'undefined' && self ||
+    typeof window != 'undefined' && window;
 
 export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
   // Make sure to refer to ngDevMode as ['ngDevMode'] for clousre.
