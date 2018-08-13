@@ -1,6 +1,6 @@
 {% extends 'base.template.html' -%}
 
-{% macro listItems(items, title) %}
+{% macro listItems(items, title, overridePath) %}
   {% if items.length %}
   <section class="export-list">
     <h3>{$ title $}</h3>
@@ -8,7 +8,7 @@
       {% for item in items %}
       <tr>
         <td><code class="code-anchor">
-          <a href="{$ item.path $}">{$ item.name $}</a></code></td>
+          <a href="{$ overridePath or item.path $}">{$ item.name $}</a></code></td>
         <td>{% if item.shortDescription %}{$ item.shortDescription | marked $}{% endif %}</td>
       </tr>
       {% endfor %}
@@ -24,12 +24,13 @@
 
   {% include "includes/see-also.html" %}
 
+  {% if doc.isPrimaryPackage %}
   <h2>Entry points</h2>
-  {$ listItems([doc.packageInfo.primary], 'Primary') $}
+  {$ listItems([doc.packageInfo.primary], 'Primary', '#primary-entry-point-exports') $}
   {$ listItems(doc.packageInfo.secondary, 'Secondary') $}
+  {% endif %}
 
-
-  <h2>Exports</h2>
+  <h2>{% if doc.isPrimaryPackage %}Primary entry{% else %}Entry{% endif %} point exports</h2>
   {$ listItems(doc.classes, 'Classes') $}
   {$ listItems(doc.decorators, 'Decorators') $}
   {$ listItems(doc.functions, 'Functions') $}
