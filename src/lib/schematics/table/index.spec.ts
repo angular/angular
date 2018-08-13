@@ -6,13 +6,9 @@ import {collectionPath, createTestApp} from '../test-setup/test-app';
 describe('material-table-schematic', () => {
   let runner: SchematicTestRunner;
 
-  const options: Schema = {
+  const baseOptions: Schema = {
     name: 'foo',
     project: 'material',
-    changeDetection: 'Default',
-    styleext: 'css',
-    spec: true,
-    export: false,
   };
 
   beforeEach(() => {
@@ -20,7 +16,7 @@ describe('material-table-schematic', () => {
   });
 
   it('should create table files and add them to module', () => {
-    const tree = runner.runSchematic('table', { ...options }, createTestApp());
+    const tree = runner.runSchematic('table', baseOptions, createTestApp());
     const files = tree.files;
 
     expect(files).toContain('/projects/material/src/app/foo/foo.component.css');
@@ -45,8 +41,20 @@ describe('material-table-schematic', () => {
     expect(componentContent).toContain('FooDataSource');
   });
 
+  it('should support passing the style extension option', () => {
+    const tree = runner.runSchematic('table', {styleext: 'scss', ...baseOptions}, createTestApp());
+
+    expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
+  });
+
+  it('should fallback to the default angular:component style extension', () => {
+    const tree = runner.runSchematic('table', baseOptions, createTestApp({style: 'less'}));
+
+    expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.less');
+  });
+
   it('should add table imports to module', () => {
-    const tree = runner.runSchematic('table', { ...options }, createTestApp());
+    const tree = runner.runSchematic('table', baseOptions, createTestApp());
     const moduleContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
 
     expect(moduleContent).toContain('MatTableModule');

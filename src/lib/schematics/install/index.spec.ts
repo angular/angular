@@ -41,7 +41,11 @@ describe('material-install-schematic', () => {
       './node_modules/@angular/material/prebuilt-themes/indigo-pink.css');
   });
 
-  it('should add custom theme', () => {
+  it('should support adding a custom theme', () => {
+    // TODO(devversion): currently a "custom" theme does only work for projects using SCSS.
+    // TODO(devversion): Throw an error if a custom theme is being installed in a CSS project.
+    appTree = createTestApp({style: 'scss'});
+
     const tree = runner.runSchematic('ng-add', {theme: 'custom'}, appTree);
 
     const workspace = getWorkspace(tree);

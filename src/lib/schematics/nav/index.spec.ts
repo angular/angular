@@ -6,13 +6,9 @@ import {collectionPath, createTestApp} from '../test-setup/test-app';
 describe('material-nav-schematic', () => {
   let runner: SchematicTestRunner;
 
-  const options: Schema = {
+  const baseOptions: Schema = {
     name: 'foo',
     project: 'material',
-    changeDetection: 'Default',
-    styleext: 'css',
-    spec: true,
-    export: false,
   };
 
   beforeEach(() => {
@@ -20,7 +16,7 @@ describe('material-nav-schematic', () => {
   });
 
   it('should create nav files and add them to module', () => {
-    const tree = runner.runSchematic('nav', { ...options }, createTestApp());
+    const tree = runner.runSchematic('nav', baseOptions, createTestApp());
     const files = tree.files;
 
     expect(files).toContain('/projects/material/src/app/foo/foo.component.css');
@@ -34,7 +30,7 @@ describe('material-nav-schematic', () => {
   });
 
   it('should add nav imports to module', () => {
-    const tree = runner.runSchematic('nav', { ...options }, createTestApp());
+    const tree = runner.runSchematic('nav', baseOptions, createTestApp());
     const moduleContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
 
     expect(moduleContent).toContain('LayoutModule');
@@ -50,4 +46,15 @@ describe('material-nav-schematic', () => {
       `MatListModule } from '@angular/material';`);
   });
 
+  it('should support passing the style extension option', () => {
+    const tree = runner.runSchematic('nav', {styleext: 'scss', ...baseOptions}, createTestApp());
+
+    expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
+  });
+
+  it('should fallback to the default angular:component style extension', () => {
+    const tree = runner.runSchematic('nav', baseOptions, createTestApp({style: 'less'}));
+
+    expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.less');
+  });
 });

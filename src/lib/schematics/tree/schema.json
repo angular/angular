@@ -58,8 +58,7 @@
     },
     "styleext": {
       "description": "The file extension to be used for style files.",
-      "type": "string",
-      "default": "css"
+      "type": "string"
     },
     "spec": {
       "type": "boolean",

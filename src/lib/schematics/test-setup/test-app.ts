@@ -16,7 +16,7 @@ export const collectionPath = join(__dirname, '..', 'collection.json');
 export const migrationCollection = join(__dirname, '..', 'migration.json');
 
 /** Create a base app used for testing. */
-export function createTestApp(): UnitTestTree {
+export function createTestApp(appOptions = {}): UnitTestTree {
   const baseRunner = new SchematicTestRunner('material-schematics', collectionPath);
 
   const workspaceTree = baseRunner.runExternalSchematic('@schematics/angular', 'workspace', {
@@ -25,12 +25,6 @@ export function createTestApp(): UnitTestTree {
     newProjectRoot: 'projects',
   });
 
-  return baseRunner.runExternalSchematic('@schematics/angular', 'application', {
-    name: 'material',
-    inlineStyle: false,
-    inlineTemplate: false,
-    routing: false,
-    style: 'scss',
-    skipTests: false,
-  }, workspaceTree);
+  return baseRunner.runExternalSchematic('@schematics/angular', 'application',
+      {...appOptions, name: 'material'}, workspaceTree);
 }

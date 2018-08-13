@@ -5,13 +5,10 @@ import {Schema} from './schema';
 
 describe('material-dashboard-schematic', () => {
   let runner: SchematicTestRunner;
-  const options: Schema = {
+
+  const baseOptions: Schema = {
     name: 'foo',
     project: 'material',
-    changeDetection: 'Default',
-    styleext: 'css',
-    spec: true,
-    export: false,
   };
 
   beforeEach(() => {
@@ -19,7 +16,7 @@ describe('material-dashboard-schematic', () => {
   });
 
   it('should create dashboard files and add them to module', () => {
-    const tree = runner.runSchematic('dashboard', { ...options }, createTestApp());
+    const tree = runner.runSchematic('dashboard', baseOptions, createTestApp());
     const files = tree.files;
 
     expect(files).toContain('/projects/material/src/app/foo/foo.component.css');
@@ -33,7 +30,7 @@ describe('material-dashboard-schematic', () => {
   });
 
   it('should add dashboard imports to module', () => {
-    const tree = runner.runSchematic('dashboard', { ...options }, createTestApp());
+    const tree = runner.runSchematic('dashboard', baseOptions, createTestApp());
     const moduleContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
 
     expect(moduleContent).toContain('MatGridListModule');
@@ -45,6 +42,19 @@ describe('material-dashboard-schematic', () => {
     expect(moduleContent).toContain(
       // tslint:disable-next-line
       `import { MatGridListModule, MatCardModule, MatMenuModule, MatIconModule, MatButtonModule } from '@angular/material';`);
+  });
+
+  it('should support passing the style extension option', () => {
+    const tree = runner.runSchematic(
+        'dashboard', {styleext: 'scss', ...baseOptions}, createTestApp());
+
+    expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
+  });
+
+  it('should fallback to the default angular:component style extension', () => {
+    const tree = runner.runSchematic('dashboard', baseOptions, createTestApp({style: 'less'}));
+
+    expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.less');
   });
 
 });
