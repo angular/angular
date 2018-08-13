@@ -135,7 +135,7 @@
             {% for overload in method.overloads %}
               <div>
                 <h5 class="icon-action-header no-anchor">
-                  <span>Overload #_ of {$ method.overloads.length $}</span>
+                  <span>Overload #{$ loop.index $} of {$ method.overloads.length $}</span>
                   <i class="material-icons">expand_more</i></h5>
                 {$ renderOverloadInfo(overload, cssClass + '-overload', method) $}
                 {% if not loop.last %}<hr class="hr-margin">{% endif %}
