@@ -21,10 +21,7 @@
         <a id="{$ parameter.anchor $}"></a>
         <code>{$ parameter.name $}</code>
       </td>
-      <td class="param-type">
-          <a><span><code>{$ parameter.type $}</code></span></a>
-      </td>
-      {% if showType %}<td class="param-type"><code>{$ parameter.type $}</code></td>{% endif %}
+      {% if showType %}<td class="param-type"><code>{% if r/^\{/.test(parameter.type) and r/\}$/.test(parameter.type) and parameter.type.length > 20 %}object{% else %}{$ parameter.type $}{% endif %}</code></td>{% endif %}
       <td class="param-description">
       {% marked %}
       {% if (parameter.shortDescription | trim) or (parameter.description | trim) %}{$ parameter.shortDescription + '\n\n' + parameter.description $}
