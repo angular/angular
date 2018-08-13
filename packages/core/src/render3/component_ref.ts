@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef as ViewEngineChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {ChangeDetectorRef as ViewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
 import {InjectionToken} from '../di/injection_token';
 import {Injector, inject} from '../di/injector';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
@@ -201,7 +201,7 @@ export class ComponentRef<T> extends viewEngine_ComponentRef<T> {
   injector: Injector;
   instance: T;
   hostView: ViewRef<T>;
-  changeDetectorRef: ViewEngineChangeDetectorRef;
+  changeDetectorRef: ViewEngine_ChangeDetectorRef;
   componentType: Type<T>;
 
   constructor(

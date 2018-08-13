@@ -115,16 +115,13 @@ export class CompileMetadataResolver {
     return this.getGeneratedClass(dirType, cpl.hostViewClassName(dirType));
   }
 
-  getHostComponentType(dirType: any): StaticSymbol|Type {
+  getHostComponentType(dirType: any): StaticSymbol|cpl.ProxyClass {
     const name = `${cpl.identifierName({reference: dirType})}_Host`;
     if (dirType instanceof StaticSymbol) {
       return this._staticSymbolCache.get(dirType.filePath, name);
-    } else {
-      const HostClass = <any>function HostClass() {};
-      HostClass.overriddenName = name;
-
-      return HostClass;
     }
+
+    return this._createProxyClass(dirType, name);
   }
 
   private getRendererType(dirType: any): StaticSymbol|object {
