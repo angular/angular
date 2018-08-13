@@ -1,6 +1,6 @@
 {% import "lib/githubLinks.html" as github -%}
 {% set comma = joiner(',') %}
-{% set slash = joiner('/') %}
+{% set breadcrumbDelimiter = joiner('&gt;') %}
 <article>
   {$ github.githubLinks(doc, versionInfo) $}
   <div class="breadcrumb">
@@ -14,7 +14,7 @@
         ]
       }
     </script>
-    {% for crumb in doc.breadCrumbs %}{% if not loop.last %} {$ slash() $} {% if crumb.path %}<a href="{$ crumb.path $}">{$ crumb.text $}</a>{% else %}{$ crumb.text $}{% endif %}{% endif %}{% endfor %}
+    {% for crumb in doc.breadCrumbs %}{% if not loop.last %} {$ breadcrumbDelimiter() $} {% if crumb.path %}<a href="{$ crumb.path $}">{$ crumb.text $}</a>{% else %}{$ crumb.text $}{% endif %}{% endif %}{% endfor %}
   </div>
   <header class="api-header">
     <h1>{$ doc.name $}</h1>
