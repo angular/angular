@@ -17,7 +17,7 @@ yarn add @angular/material @angular/cdk @angular/animations
 ```
 
 
-#### Alternative: Snapshot Build
+#### Alternative 1: Snapshot Build
 
 A snapshot build with the latest changes from master is also available. Note that this snapshot
 build should not be considered stable and may break between releases.
@@ -30,6 +30,13 @@ npm install --save angular/material2-builds angular/cdk-builds angular/animation
 #### Yarn
 ```bash
 yarn add angular/material2-builds angular/cdk-builds angular/animations-builds
+```
+#### Alternative 2: Angular Devkit 6+
+
+Using the Angular CLI `ng add` command will update your Angular project with the correct dependencies, perform configuration changes and execute initialization code. 
+
+```bash
+ng add @angular/material
 ```
 
 ### Step 2: Configure animations
