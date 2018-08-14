@@ -37,15 +37,23 @@ declare global {
 
 declare let global: any;
 
-// NOTE: The order here matters: Checking window, then global, then self is important.
-//   checking them in another order can result in errors in some Node environments.
-const __global: {ngDevMode: NgDevModePerfCounters | boolean} =
-    typeof window != 'undefined' && window || typeof global != 'undefined' && global ||
-    typeof self != 'undefined' && self;
+declare var WorkerGlobalScope: any;
+// CommonJS / Node have global context exposed as "global" variable.
+// We don't want to include the whole node.d.ts this this compilation unit so we'll just fake
+// the global "global" var for now.
+
+function getRoot(window: any, global: any, self: any) {
+  return this || window || global || self;
+}
+
+const _root = getRoot(
+    typeof window !== 'undefined' && window, typeof global !== 'undefined' && global,
+    typeof self !== 'undefined' && typeof WorkerGlobalScope !== 'undefined' &&
+        self instanceof WorkerGlobalScope && self);
 
 export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
   // Make sure to refer to ngDevMode as ['ngDevMode'] for clousre.
-  return __global['ngDevMode'] = {
+  return _root['ngDevMode'] = {
     firstTemplatePass: 0,
     tNode: 0,
     tView: 0,
@@ -79,5 +87,5 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
  */
 if (typeof ngDevMode === 'undefined' || ngDevMode) {
   // Make sure to refer to ngDevMode as ['ngDevMode'] for clousre.
-  __global['ngDevMode'] = ngDevModeResetPerfCounters();
+  _root['ngDevMode'] = ngDevModeResetPerfCounters();
 }
