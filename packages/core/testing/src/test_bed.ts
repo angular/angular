@@ -12,13 +12,91 @@ import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {TestBedRender3, _getTestBedRender3} from './r3_test_bed';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedConstructor, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 
 const UNDEFINED = new Object();
 
 
 let _nextRootElementId = 0;
+
+export interface TestBed {
+  platform: PlatformRef;
+
+  ngModule: Type<any>|Type<any>[];
+
+  /**
+   * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
+   * angular module. These are common to every test in the suite.
+   *
+   * This may only be called once, to set up the common providers for the current test
+   * suite on the current platform. If you absolutely need to change the providers,
+   * first use `resetTestEnvironment`.
+   *
+   * Test modules and platforms for individual platforms are available from
+   * '@angular/<platform_name>/testing'.
+   *
+   * @experimental
+   */
+  initTestEnvironment(
+      ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): void;
+
+  /**
+   * Reset the providers for the test injector.
+   *
+   * @experimental
+   */
+  resetTestEnvironment(): void;
+
+  resetTestingModule(): void;
+
+  configureCompiler(config: {providers?: any[], useJit?: boolean}): void;
+
+  configureTestingModule(moduleDef: TestModuleMetadata): void;
+
+  compileComponents(): Promise<any>;
+
+  get(token: any, notFoundValue?: any): any;
+
+  execute(tokens: any[], fn: Function, context?: any): any;
+
+  overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): void;
+
+  overrideComponent(component: Type<any>, override: MetadataOverride<Component>): void;
+
+  overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): void;
+
+  overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): void;
+
+  /**
+   * Overwrites all providers for the given token with the given provider definition.
+   */
+  overrideProvider(token: any, provider: {
+    useFactory: Function,
+    deps: any[],
+  }): void;
+  overrideProvider(token: any, provider: {useValue: any;}): void;
+  overrideProvider(token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}):
+      void;
+
+  /**
+   * Overwrites all providers for the given token with the given provider definition.
+   *
+   * @deprecated as it makes all NgModules lazy. Introduced only for migrating off of it.
+   */
+  deprecatedOverrideProvider(token: any, provider: {
+    useFactory: Function,
+    deps: any[],
+  }): void;
+  deprecatedOverrideProvider(token: any, provider: {useValue: any;}): void;
+  deprecatedOverrideProvider(
+      token: any, provider: {useFactory?: Function, useValue?: any, deps?: any[]}): void;
+
+
+  overrideTemplateUsingTestingModule(component: Type<any>, template: string): void;
+
+  createComponent<T>(component: Type<T>): ComponentFixture<T>;
+}
 
 /**
  * @description
@@ -30,7 +108,7 @@ let _nextRootElementId = 0;
  * Note: Use `TestBed` in tests. It will be set to either `TestBedViewEngine` or `TestBedRender3`
  * according to the compiler used.
  */
-export class TestBedViewEngine implements Injector {
+export class TestBedViewEngine implements Injector, TestBed {
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
    * angular module. These are common to every test in the suite.
@@ -59,27 +137,27 @@ export class TestBedViewEngine implements Injector {
    */
   static resetTestEnvironment(): void { _getTestBedViewEngine().resetTestEnvironment(); }
 
-  static resetTestingModule(): typeof TestBed {
+  static resetTestingModule(): TestBedConstructor {
     _getTestBedViewEngine().resetTestingModule();
-    return TestBed;
+    return TestBedViewEngine as any as TestBedConstructor;
   }
 
   /**
    * Allows overriding default compiler providers and settings
    * which are defined in test_injector.js
    */
-  static configureCompiler(config: {providers?: any[]; useJit?: boolean;}): typeof TestBed {
+  static configureCompiler(config: {providers?: any[]; useJit?: boolean;}): TestBedConstructor {
     _getTestBedViewEngine().configureCompiler(config);
-    return TestBed;
+    return TestBedViewEngine as any as TestBedConstructor;
   }
 
   /**
    * Allows overriding default providers, directives, pipes, modules of the test injector,
    * which are defined in test_injector.js
    */
-  static configureTestingModule(moduleDef: TestModuleMetadata): typeof TestBed {
+  static configureTestingModule(moduleDef: TestModuleMetadata): TestBedConstructor {
     _getTestBedViewEngine().configureTestingModule(moduleDef);
-    return TestBed;
+    return TestBedViewEngine as any as TestBedConstructor;
   }
 
   /**
@@ -89,31 +167,32 @@ export class TestBedViewEngine implements Injector {
    */
   static compileComponents(): Promise<any> { return getTestBed().compileComponents(); }
 
-  static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): typeof TestBed {
+  static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>):
+      TestBedConstructor {
     _getTestBedViewEngine().overrideModule(ngModule, override);
-    return TestBed;
+    return TestBedViewEngine as any as TestBedConstructor;
   }
 
   static overrideComponent(component: Type<any>, override: MetadataOverride<Component>):
-      typeof TestBed {
+      TestBedConstructor {
     _getTestBedViewEngine().overrideComponent(component, override);
-    return TestBed;
+    return TestBedViewEngine as any as TestBedConstructor;
   }
 
   static overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>):
-      typeof TestBed {
+      TestBedConstructor {
     _getTestBedViewEngine().overrideDirective(directive, override);
-    return TestBed;
+    return TestBedViewEngine as any as TestBedConstructor;
   }
 
-  static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): typeof TestBed {
+  static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedConstructor {
     _getTestBedViewEngine().overridePipe(pipe, override);
-    return TestBed;
+    return TestBedViewEngine as any as TestBedConstructor;
   }
 
-  static overrideTemplate(component: Type<any>, template: string): typeof TestBed {
+  static overrideTemplate(component: Type<any>, template: string): TestBedConstructor {
     _getTestBedViewEngine().overrideComponent(component, {set: {template, templateUrl: null !}});
-    return TestBed;
+    return TestBedViewEngine as any as TestBedConstructor;
   }
 
   /**
@@ -123,9 +202,9 @@ export class TestBedViewEngine implements Injector {
    * Note: This works for JIT and AOTed components as well.
    */
   static overrideTemplateUsingTestingModule(component: Type<any>, template: string):
-      typeof TestBed {
+      TestBedConstructor {
     _getTestBedViewEngine().overrideTemplateUsingTestingModule(component, template);
-    return TestBed;
+    return TestBedViewEngine as any as TestBedConstructor;
   }
 
   /**
@@ -136,15 +215,15 @@ export class TestBedViewEngine implements Injector {
   static overrideProvider(token: any, provider: {
     useFactory: Function,
     deps: any[],
-  }): typeof TestBed;
-  static overrideProvider(token: any, provider: {useValue: any;}): typeof TestBed;
+  }): TestBedConstructor;
+  static overrideProvider(token: any, provider: {useValue: any;}): TestBedConstructor;
   static overrideProvider(token: any, provider: {
     useFactory?: Function,
     useValue?: any,
     deps?: any[],
-  }): typeof TestBed {
+  }): TestBedConstructor {
     _getTestBedViewEngine().overrideProvider(token, provider as any);
-    return TestBed;
+    return TestBedViewEngine as any as TestBedConstructor;
   }
 
   /**
@@ -161,9 +240,9 @@ export class TestBedViewEngine implements Injector {
     useFactory?: Function,
     useValue?: any,
     deps?: any[],
-  }): typeof TestBed {
+  }): TestBedConstructor {
     _getTestBedViewEngine().deprecatedOverrideProvider(token, provider as any);
-    return TestBed;
+    return TestBedViewEngine as any as TestBedConstructor;
   }
 
   static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
@@ -559,7 +638,9 @@ export class TestBedViewEngine implements Injector {
  * Note: Use `TestBed` in tests. It will be set to either `TestBedViewEngine` or `TestBedRender3`
  * according to the compiler used.
  */
-export const TestBed = ivyEnabled ? TestBedRender3 : TestBedViewEngine;
+export const TestBed: TestBedConstructor = ivyEnabled ?
+    TestBedRender3 as any as TestBedConstructor :
+    TestBedViewEngine as any as TestBedConstructor;
 
 /**
  * Returns a singleton of the applicable `TestBed`.
@@ -568,8 +649,7 @@ export const TestBed = ivyEnabled ? TestBedRender3 : TestBedViewEngine;
  *
  * @experimental
  */
-export const getTestBed: () => TestBedRender3 | TestBedViewEngine =
-    ivyEnabled ? _getTestBedRender3 : _getTestBedViewEngine;
+export const getTestBed: () => TestBed = ivyEnabled ? _getTestBedRender3 : _getTestBedViewEngine;
 
 let testBed: TestBedViewEngine;
 

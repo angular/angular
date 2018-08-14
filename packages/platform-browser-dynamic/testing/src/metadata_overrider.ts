@@ -6,5 +6,5 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-// `MetadataOverrider` has been moved to core to allow using it from the render3 TestBed
-export {MetadataOverrider} from '@angular/core/testing';
+// `MetadataOverrider` has been moved to core/testing to allow using it from the render3 TestBed
+export {ɵMetadataOverrider as MetadataOverrider} from '@angular/core/testing';
