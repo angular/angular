@@ -119,13 +119,14 @@ export class CdkDrag<T = any> implements OnDestroy {
   /** Element that will be used as a template to create the draggable item's preview. */
   @ContentChild(CdkDragPreview) _previewTemplate: CdkDragPreview;
 
-  /**
-   * Template for placeholder element rendered to show where a draggable would be dropped.
-   */
+  /** Template for placeholder element rendered to show where a draggable would be dropped. */
   @ContentChild(CdkDragPlaceholder) _placeholderTemplate: CdkDragPlaceholder;
 
   /** Arbitrary data to attach to this drag instance. */
   @Input() data: T;
+
+  /** Locks the position of the dragged element along the specified axis. */
+  @Input('cdkDragLockAxis') lockAxis: 'x' | 'y';
 
   /** Emits when the user starts dragging the item. */
   @Output('cdkDragStarted') started: EventEmitter<CdkDragStart> = new EventEmitter<CdkDragStart>();
@@ -276,7 +277,7 @@ export class CdkDrag<T = any> implements OnDestroy {
     this._hasMoved = true;
     event.preventDefault();
 
-    const pointerPosition = this._getPointerPositionOnPage(event);
+    const pointerPosition = this._getConstrainedPointerPosition(event);
 
     if (this.dropContainer) {
       this._updateActiveDropContainer(pointerPosition);
@@ -361,7 +362,7 @@ export class CdkDrag<T = any> implements OnDestroy {
    * Updates the item's position in its drop container, or moves it
    * into a new one, depending on its current drag position.
    */
-  private _updateActiveDropContainer({x, y}: Point) {
+  private _updateActiveDropContainer({x, y}) {
     // Drop container that draggable has been moved into.
     const newContainer = this.dropContainer._getSiblingContainerFromPosition(x, y);
 
@@ -529,6 +530,20 @@ export class CdkDrag<T = any> implements OnDestroy {
       x: point.pageX - this._scrollPosition.left,
       y: point.pageY - this._scrollPosition.top
     };
+  }
+
+  /** Gets the pointer position on the page, accounting for any position constraints. */
+  private _getConstrainedPointerPosition(event: MouseEvent | TouchEvent): Point {
+    const point = this._getPointerPositionOnPage(event);
+    const dropContainerLock = this.dropContainer ? this.dropContainer.lockAxis : null;
+
+    if (this.lockAxis === 'x' || dropContainerLock === 'x') {
+      point.y = this._pickupPositionOnPage.y;
+    } else if (this.lockAxis === 'y' || dropContainerLock === 'y') {
+      point.x = this._pickupPositionOnPage.x;
+    }
+
+    return point;
   }
 
   /** Determines whether an event is a touch event. */

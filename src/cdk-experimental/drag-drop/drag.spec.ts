@@ -246,6 +246,38 @@ describe('CdkDrag', () => {
       subscription.unsubscribe();
     });
 
+    it('should be able to lock dragging along the x axis', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+      fixture.componentInstance.dragInstance.lockAxis = 'x';
+
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy();
+
+      dragElementViaMouse(fixture, dragElement, 50, 100);
+      expect(dragElement.style.transform).toBe('translate3d(50px, 0px, 0px)');
+
+      dragElementViaMouse(fixture, dragElement, 100, 200);
+      expect(dragElement.style.transform).toBe('translate3d(150px, 0px, 0px)');
+    }));
+
+    it('should be able to lock dragging along the y axis', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+      fixture.componentInstance.dragInstance.lockAxis = 'y';
+
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragElement.style.transform).toBeFalsy();
+
+      dragElementViaMouse(fixture, dragElement, 50, 100);
+      expect(dragElement.style.transform).toBe('translate3d(0px, 100px, 0px)');
+
+      dragElementViaMouse(fixture, dragElement, 100, 200);
+      expect(dragElement.style.transform).toBe('translate3d(0px, 300px, 0px)');
+    }));
+
   });
 
   describe('draggable with a handle', () => {
@@ -690,6 +722,65 @@ describe('CdkDrag', () => {
       expect(preview.style.transform).toBe('translate3d(50px, 50px, 0px)');
     }));
 
+    it('should lock position inside a drop container along the x axis', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
+      fixture.detectChanges();
+
+      const item = fixture.componentInstance.dragItems.toArray()[1];
+      const element = item.element.nativeElement;
+
+      item.lockAxis = 'x';
+
+      dispatchMouseEvent(element, 'mousedown', 50, 50);
+      fixture.detectChanges();
+
+      dispatchMouseEvent(element, 'mousemove', 100, 100);
+      fixture.detectChanges();
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+
+      expect(preview.style.transform).toBe('translate3d(100px, 50px, 0px)');
+    }));
+
+    it('should lock position inside a drop container along the y axis', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
+      fixture.detectChanges();
+
+      const item = fixture.componentInstance.dragItems.toArray()[1];
+      const element = item.element.nativeElement;
+
+      item.lockAxis = 'y';
+
+      dispatchMouseEvent(element, 'mousedown', 50, 50);
+      fixture.detectChanges();
+
+      dispatchMouseEvent(element, 'mousemove', 100, 100);
+      fixture.detectChanges();
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+
+      expect(preview.style.transform).toBe('translate3d(50px, 100px, 0px)');
+    }));
+
+    it('should inherit the position locking from the drop container', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
+      fixture.detectChanges();
+
+      const element = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      fixture.componentInstance.dropInstance.lockAxis = 'x';
+
+      dispatchMouseEvent(element, 'mousedown', 50, 50);
+      fixture.detectChanges();
+
+      dispatchMouseEvent(element, 'mousemove', 100, 100);
+      fixture.detectChanges();
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+
+      expect(preview.style.transform).toBe('translate3d(100px, 50px, 0px)');
+    }));
+
     it('should be able to customize the placeholder', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZoneWithCustomPlaceholder);
       fixture.detectChanges();
@@ -1103,6 +1194,7 @@ export class DraggableInHorizontalDropZone {
   `
 })
 export class DraggableInDropZoneWithCustomPreview {
+  @ViewChild(CdkDrop) dropInstance: CdkDrop;
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   items = ['Zero', 'One', 'Two', 'Three'];
 }

@@ -19,6 +19,9 @@ export interface CdkDropContainer<T = any> {
   /** Direction in which the list is oriented. */
   orientation: 'horizontal' | 'vertical';
 
+  /** Locks the position of the draggable elements inside the container along the specified axis. */
+  lockAxis: 'x' | 'y';
+
   /** Starts dragging an item. */
   start(): void;
 

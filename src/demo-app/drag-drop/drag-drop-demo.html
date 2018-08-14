@@ -4,6 +4,7 @@
     <cdk-drop
       #one
       (dropped)="drop($event)"
+      [lockAxis]="axisLock"
       [data]="todo"
       [connectedTo]="[two]">
       <div *ngFor="let item of todo" cdkDrag>
@@ -18,6 +19,7 @@
     <cdk-drop
       #two
       (dropped)="drop($event)"
+      [lockAxis]="axisLock"
       [data]="done"
       [connectedTo]="[one]">
       <div *ngFor="let item of done" cdkDrag>
@@ -34,6 +36,7 @@
     <cdk-drop
       orientation="horizontal"
       (dropped)="drop($event)"
+      [lockAxis]="axisLock"
       [data]="horizontalData">
       <div *ngFor="let item of horizontalData" cdkDrag>
         {{item}}
@@ -43,6 +46,11 @@
   </div>
 </div>
 
+<div class="list">
+  <h2>Free dragging</h2>
+  <div cdkDrag class="free-draggable" [cdkDragLockAxis]="axisLock">Drag me around</div>
+</div>
+
 <div>
   <h2>Data</h2>
   <pre>{{todo.join(', ')}}</pre>
@@ -50,7 +58,14 @@
   <pre>{{horizontalData.join(', ')}}</pre>
 </div>
 
-<div class="list">
-  <h2>Free dragging</h2>
-  <div cdkDrag class="free-draggable">Drag me around</div>
+<div>
+  <h2>Axis locking</h2>
+  <mat-form-field>
+    <mat-label>Lock position along axis</mat-label>
+    <mat-select [(ngModel)]="axisLock">
+      <mat-option>None</mat-option>
+      <mat-option value="x">X axis</mat-option>
+      <mat-option value="y">Y axis</mat-option>
+    </mat-select>
+  </mat-form-field>
 </div>

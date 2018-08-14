@@ -19,6 +19,7 @@ import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk-expe
   encapsulation: ViewEncapsulation.None,
 })
 export class DragAndDropDemo {
+  axisLock: 'x' | 'y';
   todo = [
     'Come up with catchy start-up name',
     'Add "blockchain" to name',

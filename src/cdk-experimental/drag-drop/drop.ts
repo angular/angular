@@ -69,6 +69,9 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    */
   @Input() id: string = `cdk-drop-${_uniqueIdCounter++}`;
 
+  /** Locks the position of the draggable elements inside the container along the specified axis. */
+  @Input() lockAxis: 'x' | 'y';
+
   /** Emits when the user drops an item inside the container. */
   @Output() dropped: EventEmitter<CdkDragDrop<T, any>> = new EventEmitter<CdkDragDrop<T, any>>();
 
