@@ -7,9 +7,9 @@
  */
 
 import {Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
-import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
+import {templateRefExtractor} from '../../src/render3/di';
 import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, load, loadDirective, nextContext, projection, projectionDef, reserveSlots, template, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, loadDirective, nextContext, projection, projectionDef, reference, reserveSlots, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
@@ -41,6 +41,9 @@ describe('ViewContainerRef', () => {
   }
 
   describe('API', () => {
+    /**
+     * {{name}}
+     */
     function embeddedTemplate(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         text(0);
@@ -56,28 +59,30 @@ describe('ViewContainerRef', () => {
     }
 
     /**
-     * <ng-template #foo>
-     *   {{name}}
-     * </ng-template>
-     * <p vcref="" [tplRef]="foo">
-     * </p>
+     * <ng-template #tplRef>{{name}}</ng-template>
+     * <p vcref [tplRef]="tplRef"></p>
      */
     function createTemplate() {
-      template(0, embeddedTemplate);
-      element(1, 'p', ['vcref', '']);
+      template(0, embeddedTemplate, null, null, ['tplRef', ''], templateRefExtractor);
+      element(2, 'p', ['vcref', '']);
     }
 
     function updateTemplate() {
-      const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-      elementProperty(1, 'tplRef', bind(tplRef));
+      const tplRef = reference(1);
+      elementProperty(2, 'tplRef', bind(tplRef));
     }
 
     describe('createEmbeddedView (incl. insert)', () => {
       it('should work on elements', () => {
+        /**
+         * <ng-template #tplRef>{{name}}</ng-template>
+         * <header vcref [tplRef]="tplRef"></header>
+         * <footer></footer>
+         */
         function createTemplate() {
-          template(0, embeddedTemplate);
-          element(1, 'header', ['vcref', '']);
-          element(2, 'footer');
+          template(0, embeddedTemplate, null, null, ['tplRef', ''], templateRefExtractor);
+          element(2, 'header', ['vcref', '']);
+          element(3, 'footer');
         }
 
         const fixture = new TemplateFixture(createTemplate, updateTemplate, [DirectiveWithVCRef]);
@@ -104,10 +109,15 @@ describe('ViewContainerRef', () => {
         const HeaderComponent =
             createComponent('header-cmp', function(rf: RenderFlags, ctx: any) {});
 
+        /**
+         * <ng-template #tplRef>{{name}}</ng-template>
+         * <header-cmp vcref [tplRef]="tplRef"></header-cmp>
+         * <footer></footer>
+         */
         function createTemplate() {
-          template(0, embeddedTemplate);
-          element(1, 'header-cmp', ['vcref', '']);
-          element(2, 'footer');
+          template(0, embeddedTemplate, null, [], ['tplRef', ''], templateRefExtractor);
+          element(2, 'header-cmp', ['vcref', '']);
+          element(3, 'footer');
         }
 
         const fixture = new TemplateFixture(
@@ -135,10 +145,15 @@ describe('ViewContainerRef', () => {
         let firstDir: DirectiveWithVCRef;
         let secondDir: DirectiveWithVCRef;
 
+        /**
+         * <ng-template #tplRef>{{name}}</ng-template>
+         * <div vcref [tplRef]="tplRef"></div>
+         * <div vcref [tplRef]="tplRef"></div>
+         */
         function createTemplate() {
-          template(0, embeddedTemplate);
-          element(1, 'div', ['vcref', '']);
+          template(0, embeddedTemplate, null, null, ['tplRef', ''], templateRefExtractor);
           element(2, 'div', ['vcref', '']);
+          element(3, 'div', ['vcref', '']);
 
           // for testing only:
           firstDir = loadDirective(0);
@@ -146,10 +161,9 @@ describe('ViewContainerRef', () => {
         }
 
         function update() {
-          // Hack until we can create local refs to templates
-          const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-          elementProperty(1, 'tplRef', bind(tplRef));
+          const tplRef = reference(1);
           elementProperty(2, 'tplRef', bind(tplRef));
+          elementProperty(3, 'tplRef', bind(tplRef));
         }
 
         const fixture = new TemplateFixture(createTemplate, update, [DirectiveWithVCRef]);
@@ -162,16 +176,18 @@ describe('ViewContainerRef', () => {
       });
 
       it('should work on templates', () => {
+        /**
+         * <ng-template vcref #tplRef>{{name}}</ng-template>
+         * <footer></footer>
+         */
         function createTemplate() {
-          template(0, embeddedTemplate, null, ['vcref', '']);
-          element(1, 'footer');
+          template(0, embeddedTemplate, null, ['vcref', ''], ['tplRef', ''], templateRefExtractor);
+          element(2, 'footer');
         }
 
         function updateTemplate() {
-          const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+          const tplRef = reference(1);
           elementProperty(0, 'tplRef', bind(tplRef));
-          containerRefreshStart(0);
-          containerRefreshEnd();
         }
 
         const fixture = new TemplateFixture(createTemplate, updateTemplate, [DirectiveWithVCRef]);
@@ -419,18 +435,18 @@ describe('ViewContainerRef', () => {
                   if (rf & RenderFlags.Update) {
                     elementProperty(0, 'name', bind(pipeBind1(1, 2, 'C')));
                   }
-                });
-                pipe(1, 'starPipe');
-                element(2, 'child', ['vcref', '']);
-                pipe(3, 'starPipe');
-                element(4, 'child');
+                }, null, [], ['foo', ''], templateRefExtractor);
+                pipe(2, 'starPipe');
+                element(3, 'child', ['vcref', '']);
+                pipe(4, 'starPipe');
+                element(5, 'child');
                 reserveSlots(4);
               }
               if (rf & RenderFlags.Update) {
-                const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-                elementProperty(2, 'tplRef', bind(tplRef));
-                elementProperty(2, 'name', bind(pipeBind1(1, 2, 'A')));
-                elementProperty(4, 'name', bind(pipeBind1(1, 4, 'B')));
+                const tplRef = reference(1);
+                elementProperty(3, 'tplRef', bind(tplRef));
+                elementProperty(3, 'name', bind(pipeBind1(2, 2, 'A')));
+                elementProperty(5, 'name', bind(pipeBind1(4, 4, 'B')));
               }
             },
             directives: [Child, DirectiveWithVCRef],
@@ -508,15 +524,13 @@ describe('ViewContainerRef', () => {
             */
            const Parent = createComponent('parent', function(rf: RenderFlags, parent: any) {
              if (rf & RenderFlags.Create) {
-               template(0, fooTemplate);
-               elementStart(1, 'child');
-               elementEnd();
+               template(0, fooTemplate, null, null, ['foo', ''], templateRefExtractor);
+               element(2, 'child');
              }
 
              if (rf & RenderFlags.Update) {
-               // Hack until we have local refs for templates
-               const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-               elementProperty(1, 'tpl', bind(tplRef));
+               const tplRef = reference(1);
+               elementProperty(2, 'tpl', bind(tplRef));
              }
 
            }, [Child]);
@@ -599,33 +613,29 @@ describe('ViewContainerRef', () => {
          */
         const Parent = createComponent('parent', function(rf: RenderFlags, parent: any) {
           if (rf & RenderFlags.Create) {
-            template(0, rowTemplate);
-            elementStart(1, 'loop-comp');
-            elementEnd();
+            template(0, rowTemplate, null, null, ['rowTemplate', ''], templateRefExtractor);
+            element(2, 'loop-comp');
           }
 
           if (rf & RenderFlags.Update) {
-            // Hack until we have local refs for templates
-            const rowTemplateRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-            elementProperty(1, 'tpl', bind(rowTemplateRef));
-            elementProperty(1, 'rows', bind(parent.rows));
+            const rowTemplateRef = reference(1);
+            elementProperty(2, 'tpl', bind(rowTemplateRef));
+            elementProperty(2, 'rows', bind(parent.rows));
           }
 
         }, [LoopComp]);
 
         function rowTemplate(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            template(0, cellTemplate);
-            elementStart(1, 'loop-comp');
-            elementEnd();
+            template(0, cellTemplate, null, null, ['cellTemplate', ''], templateRefExtractor);
+            element(2, 'loop-comp');
           }
 
           if (rf & RenderFlags.Update) {
             const row = ctx.$implicit as any;
-            // Hack until we have local refs for templates
-            const cellTemplateRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-            elementProperty(1, 'tpl', bind(cellTemplateRef));
-            elementProperty(1, 'rows', bind(row.data));
+            const cellTemplateRef = reference(1);
+            elementProperty(2, 'tpl', bind(cellTemplateRef));
+            elementProperty(2, 'rows', bind(row.data));
           }
         }
 
@@ -1131,18 +1141,20 @@ describe('ViewContainerRef', () => {
           factory: () => new Parent(),
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
-              template(0, embeddedTemplate);
-              elementStart(1, 'child');
-              elementStart(2, 'header', ['vcref', '']);
-              text(3, 'blah');
-              elementEnd();
+              template(0, embeddedTemplate, null, null, ['foo', ''], templateRefExtractor);
+              elementStart(2, 'child');
+              {
+                elementStart(3, 'header', ['vcref', '']);
+                { text(4, 'blah'); }
+                elementEnd();
+              }
               elementEnd();
             }
             let tplRef: any;
             if (rf & RenderFlags.Update) {
-              tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-              elementProperty(2, 'tplRef', bind(tplRef));
-              elementProperty(2, 'name', bind(cmp.name));
+              tplRef = reference(1);
+              elementProperty(3, 'tplRef', bind(tplRef));
+              elementProperty(3, 'name', bind(cmp.name));
             }
           },
           directives: [Child, DirectiveWithVCRef]
@@ -1217,19 +1229,19 @@ describe('ViewContainerRef', () => {
           factory: () => new Parent(),
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
-              template(0, embeddedTemplate);
-              elementStart(1, 'child-with-view');
-              text(2, 'Before projected');
-              elementStart(3, 'header', ['vcref', '']);
-              text(4, 'blah');
+              template(0, embeddedTemplate, null, undefined, ['foo', ''], templateRefExtractor);
+              elementStart(2, 'child-with-view');
+              text(3, 'Before projected');
+              elementStart(4, 'header', ['vcref', '']);
+              text(5, 'blah');
               elementEnd();
-              text(5, 'After projected-');
+              text(6, 'After projected-');
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
-              const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-              elementProperty(3, 'tplRef', bind(tplRef));
-              elementProperty(3, 'name', bind(cmp.name));
+              const tplRef = reference(1);
+              elementProperty(4, 'tplRef', bind(tplRef));
+              elementProperty(4, 'name', bind(cmp.name));
             }
           },
           directives: [ChildWithView, DirectiveWithVCRef]
@@ -1294,17 +1306,17 @@ describe('ViewContainerRef', () => {
                template: (rf: RenderFlags, cmp: Parent) => {
                  let tplRef: any;
                  if (rf & RenderFlags.Create) {
-                   template(0, embeddedTemplate);
-                   elementStart(1, 'child-with-selector');
-                   elementStart(2, 'header', ['vcref', '']);
-                   text(3, 'blah');
+                   template(0, embeddedTemplate, null, null, ['foo', ''], templateRefExtractor);
+                   elementStart(2, 'child-with-selector');
+                   elementStart(3, 'header', ['vcref', '']);
+                   text(4, 'blah');
                    elementEnd();
                    elementEnd();
                  }
                  if (rf & RenderFlags.Update) {
-                   tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-                   elementProperty(2, 'tplRef', bind(tplRef));
-                   elementProperty(2, 'name', bind(cmp.name));
+                   tplRef = reference(1);
+                   elementProperty(3, 'tplRef', bind(tplRef));
+                   elementProperty(3, 'name', bind(cmp.name));
                  }
                },
                directives: [ChildWithSelector, DirectiveWithVCRef]
@@ -1343,17 +1355,17 @@ describe('ViewContainerRef', () => {
                template: (rf: RenderFlags, cmp: Parent) => {
                  let tplRef: any;
                  if (rf & RenderFlags.Create) {
-                   template(0, embeddedTemplate);
-                   elementStart(1, 'child-with-selector');
-                   elementStart(2, 'footer', ['vcref', '']);
-                   text(3, 'blah');
+                   template(0, embeddedTemplate, null, null, ['foo', ''], templateRefExtractor);
+                   elementStart(2, 'child-with-selector');
+                   elementStart(3, 'footer', ['vcref', '']);
+                   text(4, 'blah');
                    elementEnd();
                    elementEnd();
                  }
                  if (rf & RenderFlags.Update) {
-                   tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-                   elementProperty(2, 'tplRef', bind(tplRef));
-                   elementProperty(2, 'name', bind(cmp.name));
+                   tplRef = reference(1);
+                   elementProperty(3, 'tplRef', bind(tplRef));
+                   elementProperty(3, 'name', bind(cmp.name));
                  }
                },
                directives: [ChildWithSelector, DirectiveWithVCRef]
@@ -1440,15 +1452,15 @@ describe('ViewContainerRef', () => {
                 if (rf & RenderFlags.Update) {
                   elementProperty(0, 'name', bind('C'));
                 }
-              });
-              element(1, 'hooks', ['vcref', '']);
-              element(2, 'hooks');
+              }, null, [], ['foo', ''], templateRefExtractor);
+              element(2, 'hooks', ['vcref', '']);
+              element(3, 'hooks');
             }
             if (rf & RenderFlags.Update) {
-              const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
-              elementProperty(1, 'tplRef', bind(tplRef));
-              elementProperty(1, 'name', bind('A'));
-              elementProperty(2, 'name', bind('B'));
+              const tplRef = reference(1);
+              elementProperty(2, 'tplRef', bind(tplRef));
+              elementProperty(2, 'name', bind('A'));
+              elementProperty(3, 'name', bind('B'));
             }
           },
           directives: [ComponentWithHooks, DirectiveWithVCRef]

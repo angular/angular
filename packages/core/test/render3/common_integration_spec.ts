@@ -8,8 +8,7 @@
 
 import {NgForOfContext} from '@angular/common';
 
-import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
-import {AttributeMarker, defineComponent} from '../../src/render3/index';
+import {AttributeMarker, defineComponent, templateRefExtractor} from '../../src/render3/index';
 import {bind, template, elementEnd, elementProperty, elementStart, getCurrentView, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, restoreView, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
@@ -881,11 +880,11 @@ describe('@angular/common integration', () => {
                 if (rf1 & RenderFlags.Create) {
                   text(0, 'from tpl');
                 }
-              }, undefined, undefined, ['tpl', '']);
+              }, undefined, undefined, ['tpl', ''], templateRefExtractor);
               template(2, null, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
             }
             if (rf & RenderFlags.Update) {
-              const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(0)));
+              const tplRef = load(1);
               elementProperty(2, 'ngTemplateOutlet', bind(myApp.showing ? tplRef : null));
             }
           },
