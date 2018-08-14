@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 const {Cc, Ci, Cu} = require('chrome');
 const os = Cc['@mozilla.org/observer-service;1'].getService(Ci.nsIObserverService);
 const ParserUtil = require('./parser_util');

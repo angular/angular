@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import {LocationChangeEvent, LocationChangeListener, PlatformLocation} from '@angular/common';
 import {Inject, Injectable, Optional} from '@angular/core';
 import {DOCUMENT, ɵgetDOM as getDOM} from '@angular/platform-browser';

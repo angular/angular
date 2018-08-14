@@ -6,7 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import {SourceMap} from '@angular/compiler';
+
 const b64 = require('base64-js');
 const SourceMapConsumer = require('source-map').SourceMapConsumer;
 

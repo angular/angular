@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import {StaticSymbolResolverHost} from '@angular/compiler';
 import {CompilerOptions, MetadataCollector, MetadataReaderCache, MetadataReaderHost, createMetadataReaderCache, readMetadata} from '@angular/compiler-cli/src/language_services';
 import * as path from 'path';

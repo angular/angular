@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import {PLATFORM_ID} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 

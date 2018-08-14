@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 const SVG_PREFIX = ':svg:';
 
 // Element | Node interfaces

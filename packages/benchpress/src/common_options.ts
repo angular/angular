@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import {InjectionToken} from '@angular/core';
 import * as fs from 'fs';
 

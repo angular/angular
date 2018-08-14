@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import {ParseLocation, ParseSourceFile, ParseSourceSpan} from '@angular/compiler';
 import * as o from '@angular/compiler/src/output/output_ast';
 import * as ts from 'typescript';

@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import * as ng from '@angular/compiler-cli';
 import * as fs from 'fs';
 import * as path from 'path';

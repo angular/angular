@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import {AotSummaryResolver, AotSummaryResolverHost, CompileSummaryKind, CompileTypeSummary, ResolvedStaticSymbol, StaticSymbol, StaticSymbolCache, StaticSymbolResolver} from '@angular/compiler';
 import {deserializeSummaries, serializeSummaries} from '@angular/compiler/src/aot/summary_serializer';
 import {ConstantPool} from '@angular/compiler/src/constant_pool';

@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import {StaticProvider} from '@angular/core';
 
 import {WebDriverAdapter} from '../web_driver_adapter';
-
 
 /**
  * Adapter for the selenium-webdriver.

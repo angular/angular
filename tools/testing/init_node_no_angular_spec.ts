@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 // This hack is needed to get jasmine, node and zone working inside bazel.
 // 1) we load `jasmine-core` which contains the ENV: it, describe etc...
 const jasmineCore: any = require('jasmine-core');
