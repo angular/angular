@@ -48,7 +48,7 @@ export abstract class GenericBrowserDomAdapter extends DomAdapter {
           this._transitionEnd = transEndEventNames[key];
         }
       });
-    } catch (e) {
+    } catch {
       this._animationPrefix = null;
       this._transitionEnd = null;
     }

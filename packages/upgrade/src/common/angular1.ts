@@ -250,7 +250,7 @@ try {
   if (window.hasOwnProperty('angular')) {
     angular = (<any>window).angular;
   }
-} catch (e) {
+} catch {
   // ignore in CJS mode.
 }
 

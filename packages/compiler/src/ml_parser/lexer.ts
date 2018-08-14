@@ -334,7 +334,7 @@ class _Tokenizer {
       try {
         const charCode = parseInt(strNum, isHex ? 16 : 10);
         return String.fromCharCode(charCode);
-      } catch (e) {
+      } catch {
         const entity = this._input.substring(start.offset + 1, this._index - 1);
         throw this._createError(_unknownEntityErrorMsg(entity), this._getSpan(start));
       }
