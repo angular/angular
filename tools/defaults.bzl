@@ -5,7 +5,8 @@ load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library", _ts
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//packages/bazel/src:ng_module.bzl", _internal_global_ng_module = "internal_global_ng_module")
 
-DEFAULT_TSCONFIG = "//packages:tsconfig-build.json"
+DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
+DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test.json"
 DEFAULT_NODE_MODULES = "@angular_deps//:node_modules"
 
 # Packages which are versioned together on npm
@@ -39,27 +40,36 @@ PKG_GROUP_REPLACEMENTS = {
     ]""" % ",\n      ".join(["\"%s\"" % s for s in ANGULAR_SCOPED_PACKAGES]),
 }
 
-def ts_library(tsconfig = None, node_modules = DEFAULT_NODE_MODULES, **kwargs):
+def ts_library(tsconfig = None, node_modules = DEFAULT_NODE_MODULES, testonly = False, **kwargs):
     if not tsconfig:
-        tsconfig = DEFAULT_TSCONFIG
-    _ts_library(tsconfig = tsconfig, node_modules = node_modules, **kwargs)
+        if testonly:
+            tsconfig = DEFAULT_TSCONFIG_TEST
+        else:
+            tsconfig = DEFAULT_TSCONFIG_BUILD
+    _ts_library(tsconfig = tsconfig, node_modules = node_modules, testonly = testonly, **kwargs)
 
-def ng_module(name, tsconfig = None, entry_point = None, node_modules = DEFAULT_NODE_MODULES, **kwargs):
+def ng_module(name, tsconfig = None, entry_point = None, node_modules = DEFAULT_NODE_MODULES, testonly = False, **kwargs):
     if not tsconfig:
-        tsconfig = DEFAULT_TSCONFIG
+        if testonly:
+            tsconfig = DEFAULT_TSCONFIG_TEST
+        else:
+            tsconfig = DEFAULT_TSCONFIG_BUILD
     if not entry_point:
         entry_point = "public_api.ts"
-    _ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, node_modules = node_modules, **kwargs)
+    _ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, node_modules = node_modules, testonly = testonly, **kwargs)
 
 # ivy_ng_module behaves like ng_module, and under --define=compile=legacy it runs ngc with global
 # analysis but produces Ivy outputs. Under other compile modes, it behaves as ng_module.
 # TODO(alxhub): remove when ngtsc supports the same use cases.
-def ivy_ng_module(name, tsconfig = None, entry_point = None, **kwargs):
+def ivy_ng_module(name, tsconfig = None, entry_point = None, testonly = False, **kwargs):
     if not tsconfig:
-        tsconfig = DEFAULT_TSCONFIG
+        if testonly:
+            tsconfig = DEFAULT_TSCONFIG_TEST
+        else:
+            tsconfig = DEFAULT_TSCONFIG_BUILD
     if not entry_point:
         entry_point = "public_api.ts"
-    _internal_global_ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, **kwargs)
+    _internal_global_ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, testonly = testonly, **kwargs)
 
 def ng_package(name, readme_md = None, license_banner = None, **kwargs):
     if not readme_md:

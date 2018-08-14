@@ -37,6 +37,7 @@ jasmine_node_test(
 
 ts_library(
     name = "example_spec_lib",
+    testonly = True,
     srcs = ["example_package.spec.ts"],
     deps = ["//packages:types"],
 )
@@ -55,6 +56,7 @@ jasmine_node_test(
 
 nodejs_binary(
     name = "example_package.accept",
+    testonly = True,
     data = [
         "example_package.golden",
         ":example_spec_lib",
