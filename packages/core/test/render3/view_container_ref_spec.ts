@@ -163,7 +163,7 @@ describe('ViewContainerRef', () => {
 
       it('should work on containers', () => {
         function createTemplate() {
-          container(0, embeddedTemplate, undefined, ['vcref', '']);
+          container(0, embeddedTemplate, null, ['vcref', '']);
           element(1, 'footer');
         }
 
@@ -246,8 +246,8 @@ describe('ViewContainerRef', () => {
                template: (rf: RenderFlags, cmp: TestComponent) => {
                  if (rf & RenderFlags.Create) {
                    text(0, 'before|');
-                   container(1, EmbeddedTemplateA, undefined, ['testdir', '']);
-                   container(2, EmbeddedTemplateB, undefined, ['testdir', '']);
+                   container(1, EmbeddedTemplateA, null, ['testdir', '']);
+                   container(2, EmbeddedTemplateB, null, ['testdir', '']);
                    text(3, '|after');
                  }
                },
@@ -315,7 +315,7 @@ describe('ViewContainerRef', () => {
                template: (rf: RenderFlags, cmp: TestComponent) => {
                  if (rf & RenderFlags.Create) {
                    text(0, 'before|');
-                   container(1, EmbeddedTemplateA, undefined, ['testdir', '']);
+                   container(1, EmbeddedTemplateA, null, ['testdir', '']);
                    container(2);
                    text(3, '|after');
                  }
@@ -1074,7 +1074,7 @@ describe('ViewContainerRef', () => {
 
       it('should work on containers', () => {
         function createTemplate() {
-          container(0, embeddedTemplate, undefined, ['vcref', '']);
+          container(0, embeddedTemplate, null, ['vcref', '']);
           element(1, 'footer');
         }
 
