@@ -28,6 +28,7 @@ export {
   injectAttribute as ɵinjectAttribute,
   getFactoryOf as ɵgetFactoryOf,
   getInheritedFactory as ɵgetInheritedFactory,
+  templateRefExtractor as ɵtemplateRefExtractor,
   PublicFeature as ɵPublicFeature,
   InheritDefinitionFeature as ɵInheritDefinitionFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,

@@ -524,3 +524,16 @@ export type InitialInputs = string[];
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
+
+/**
+ * Type representing a set of LNodes that can have local refs (`#foo`) placed on them.
+ */
+export type LNodeWithLocalRefs = LContainerNode | LElementNode | LElementContainerNode;
+
+/**
+ * Type for a function that extracts a value for a local refs.
+ * Example:
+ * - `<div #nativeDivEl>` - `nativeDivEl` should point to the native `<div>` element;
+ * - `<ng-template #tplRef>` - `tplRef` should point to the `TemplateRef` instance;
+ */
+export type LocalRefExtractor = (lNode: LNodeWithLocalRefs) => any;
