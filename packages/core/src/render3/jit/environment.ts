@@ -18,6 +18,7 @@ import * as sanitization from '../../sanitization/sanitization';
  * This should be kept up to date with the public exports of @angular/core.
  */
 export const angularCoreEnv: {[name: string]: Function} = {
+  'ɵdefineBase': r3.defineBase,
   'ɵdefineComponent': r3.defineComponent,
   'ɵdefineDirective': r3.defineDirective,
   'defineInjectable': defineInjectable,

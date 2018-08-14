@@ -26,12 +26,15 @@ export interface NgModuleAnalysis {
  *
  * TODO(alxhub): handle injector side of things as well.
  */
-export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalysis> {
+export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalysis, Decorator> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
 
-  detect(decorators: Decorator[]): Decorator|undefined {
+  detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
+    if (!decorators) {
+      return undefined;
+    }
     return decorators.find(
         decorator => decorator.name === 'NgModule' && (this.isCore || isAngularCore(decorator)));
   }
