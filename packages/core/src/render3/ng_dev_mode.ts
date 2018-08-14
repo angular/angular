@@ -39,7 +39,7 @@ declare let global: any;
 
 declare var WorkerGlobalScope: any;
 // CommonJS / Node have global context exposed as "global" variable.
-// We don't want to include the whole node.d.ts this this compilation unit so we'll just fake
+// We don't want to include the whole node.d.ts this compilation unit so we'll just fake
 // the global "global" var for now.
 
 function getRoot(window: any, global: any, self: any) {
