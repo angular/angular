@@ -157,7 +157,7 @@ export class SelectorScopeRegistry {
     // Process the declaration scope of the module, and lookup the selector of every declared type.
     // The initial value of ngModuleImportedFrom is 'null' which signifies that the NgModule
     // was not imported from a .d.ts source.
-    this.lookupScopes(module !, /* ngModuleImportedFrom */ null).compilation.forEach(ref => {
+    this.lookupScopesOrDie(module !, /* ngModuleImportedFrom */ null).compilation.forEach(ref => {
       const node = ts.getOriginalNode(ref.node) as ts.Declaration;
 
       // Either the node represents a directive or a pipe. Look for both.
@@ -183,6 +183,15 @@ export class SelectorScopeRegistry {
     return convertScopeToExpressions(scope, node);
   }
 
+  private lookupScopesOrDie(node: ts.Declaration, ngModuleImportedFrom: string|null):
+      SelectorScopes {
+    const result = this.lookupScopes(node, ngModuleImportedFrom);
+    if (result === null) {
+      throw new Error(`Module not found: ${reflectIdentifierOfDeclaration(node)}`);
+    }
+    return result;
+  }
+
   /**
    * Lookup `SelectorScopes` for a given module.
    *
@@ -190,7 +199,8 @@ export class SelectorScopeRegistry {
    * (`ngModuleImportedFrom`) then all of its declarations are exported at that same path, as well
    * as imports and exports from other modules that are relatively imported.
    */
-  private lookupScopes(node: ts.Declaration, ngModuleImportedFrom: string|null): SelectorScopes {
+  private lookupScopes(node: ts.Declaration, ngModuleImportedFrom: string|null): SelectorScopes
+      |null {
     let data: ModuleData|null = null;
 
     // Either this module was analyzed directly, or has a precompiled ngModuleDef.
@@ -206,7 +216,7 @@ export class SelectorScopeRegistry {
     }
 
     if (data === null) {
-      throw new Error(`Module not registered: ${reflectNameOfDeclaration(node)}`);
+      return null;
     }
 
     return {
@@ -214,18 +224,19 @@ export class SelectorScopeRegistry {
         ...data.declarations,
         // Expand imports to the exported scope of those imports.
         ...flatten(data.imports.map(
-            ref =>
-                this.lookupScopes(ref.node as ts.Declaration, absoluteModuleName(ref)).exported)),
+            ref => this.lookupScopesOrDie(ref.node as ts.Declaration, absoluteModuleName(ref))
+                       .exported)),
         // And include the compilation scope of exported modules.
         ...flatten(
-            data.exports.filter(ref => this._moduleToData.has(ref.node as ts.Declaration))
-                .map(
-                    ref => this.lookupScopes(ref.node as ts.Declaration, absoluteModuleName(ref))
-                               .exported))
+            data.exports
+                .map(ref => this.lookupScopes(ref.node as ts.Declaration, absoluteModuleName(ref)))
+                .filter((scope: SelectorScopes | null): scope is SelectorScopes => scope !== null)
+                .map(scope => scope.exported))
       ],
       exported: flatten(data.exports.map(ref => {
-        if (this._moduleToData.has(ref.node as ts.Declaration)) {
-          return this.lookupScopes(ref.node as ts.Declaration, absoluteModuleName(ref)).exported;
+        const scope = this.lookupScopes(ref.node as ts.Declaration, absoluteModuleName(ref));
+        if (scope !== null) {
+          return scope.exported;
         } else {
           return [ref];
         }
