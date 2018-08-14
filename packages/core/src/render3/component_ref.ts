@@ -87,7 +87,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     const rendererFactory =
         ngModule ? ngModule.injector.get(RendererFactory2) : domRendererFactory3;
     const hostNode = isInternalRootView ?
-        elementCreate(this.selector, rendererFactory.createRenderer(null, this.componentDef)) :
+        elementCreate(
+            this.selector, rendererFactory.createRenderer(null, this.componentDef.rendererType)) :
         locateHostElement(rendererFactory, rootSelectorOrNode);
 
     // The first index of the first selector is the tag name.
@@ -99,7 +100,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootView: LViewData = createLViewData(
-        rendererFactory.createRenderer(hostNode, this.componentDef),
+        rendererFactory.createRenderer(hostNode, this.componentDef.rendererType),
         createTView(-1, null, null, null, null), rootContext,
         this.componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
     rootView[INJECTOR] = ngModule && ngModule.injector || null;

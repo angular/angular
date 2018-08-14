@@ -37,15 +37,12 @@ declare global {
 
 declare let global: any;
 
-// NOTE: The order here matters: Checking window, then global, then self is important.
-//   checking them in another order can result in errors in some Node environments.
 const __global: {ngDevMode: NgDevModePerfCounters | boolean} =
-    typeof window != 'undefined' && window || typeof global != 'undefined' && global ||
-    typeof self != 'undefined' && self;
+    typeof window != 'undefined' && window || typeof self != 'undefined' && self ||
+    typeof global != 'undefined' && global;
 
 export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
-  // Make sure to refer to ngDevMode as ['ngDevMode'] for clousre.
-  return __global['ngDevMode'] = {
+  return __global.ngDevMode = {
     firstTemplatePass: 0,
     tNode: 0,
     tView: 0,
@@ -78,6 +75,5 @@ export function ngDevModeResetPerfCounters(): NgDevModePerfCounters {
  * as much early warning and errors as possible.
  */
 if (typeof ngDevMode === 'undefined' || ngDevMode) {
-  // Make sure to refer to ngDevMode as ['ngDevMode'] for clousre.
-  __global['ngDevMode'] = ngDevModeResetPerfCounters();
+  __global.ngDevMode = ngDevModeResetPerfCounters();
 }
