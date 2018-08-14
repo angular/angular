@@ -12,11 +12,11 @@ import {NgClass} from './ng_class';
 import {NgComponentOutlet} from './ng_component_outlet';
 import {NgForOf, NgForOfContext} from './ng_for_of';
 import {NgIf, NgIfContext} from './ng_if';
+import {NgLet, NgLetContext} from './ng_let';
 import {NgPlural, NgPluralCase} from './ng_plural';
 import {NgStyle} from './ng_style';
 import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
 import {NgTemplateOutlet} from './ng_template_outlet';
-import {NgLet, NgLetContext} from './ng_let';
 
 export {
   NgClass,
@@ -25,15 +25,15 @@ export {
   NgForOfContext,
   NgIf,
   NgIfContext,
+  NgLet,
+  NgLetContext,
   NgPlural,
   NgPluralCase,
   NgStyle,
   NgSwitch,
   NgSwitchCase,
   NgSwitchDefault,
-  NgTemplateOutlet,
-  NgLet,
-  NgLetContext
+  NgTemplateOutlet
 };
 
 
@@ -43,16 +43,6 @@ export {
  * application.
  */
 export const COMMON_DIRECTIVES: Provider[] = [
-  NgClass,
-  NgComponentOutlet,
-  NgForOf,
-  NgIf,
-  NgTemplateOutlet,
-  NgStyle,
-  NgSwitch,
-  NgSwitchCase,
-  NgSwitchDefault,
-  NgPlural,
-  NgPluralCase,
-  NgLet
+  NgClass, NgComponentOutlet, NgForOf, NgIf, NgTemplateOutlet, NgStyle, NgSwitch, NgSwitchCase,
+  NgSwitchDefault, NgPlural, NgPluralCase, NgLet
 ];
