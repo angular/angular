@@ -69,26 +69,26 @@ class ToDoAppComponent {
         const ToDoAppComponent_NgForOf_Template = function ToDoAppComponent_NgForOf_Template(
             rf: $RenderFlags$, ctx1: NgForOfContext<ToDo>) {
           if (rf & 1) {
-            r3.E(0, 'todo');
-            r3.L('archive', ctx.onArchive.bind(ctx));
-            r3.e();
+            r3.elementStart(0, 'todo');
+            r3.listener('archive', ctx.onArchive.bind(ctx));
+            r3.elementEnd();
           }
           if (rf & 2) {
-            r3.p(0, 'todo', r3.b(ctx1.$implicit));
+            r3.elementProperty(0, 'todo', r3.bind(ctx1.$implicit));
           }
         };
-        r3.E(0, 'h1');
-        r3.T(1, 'ToDo Application');
-        r3.e();
-        r3.E(2, 'div');
-        r3.C(3, ToDoAppComponent_NgForOf_Template, '', ['ngForOf', '']);
-        r3.e();
-        r3.E(4, 'span');
-        r3.T(5);
-        r3.e();
+        r3.elementStart(0, 'h1');
+        r3.text(1, 'ToDo Application');
+        r3.elementEnd();
+        r3.elementStart(2, 'div');
+        r3.container(3, ToDoAppComponent_NgForOf_Template, '', ['ngForOf', '']);
+        r3.elementEnd();
+        r3.elementStart(4, 'span');
+        r3.text(5);
+        r3.elementEnd();
       }
       if (rf & 2) {
-        r3.t(5, r3.i1('count: ', ctx.appState.todos.length, ''));
+        r3.textBinding(5, r3.interpolation1('count: ', ctx.appState.todos.length, ''));
       }
     }
   });
@@ -133,22 +133,22 @@ class ToDoItemComponent {
     factory: function ToDoItemComponent_Factory() { return new ToDoItemComponent(); },
     template: function ToDoItemComponent_Template(rf: $RenderFlags$, ctx: ToDoItemComponent) {
       if (rf & 1) {
-        r3.E(0, 'div');
-        r3.E(1, 'input', e1_attrs);
-        r3.L('click', ctx.onCheckboxClick.bind(ctx));
-        r3.e();
-        r3.E(2, 'span');
-        r3.T(3);
-        r3.e();
-        r3.E(4, 'button');
-        r3.L('click', ctx.onArchiveClick.bind(ctx));
-        r3.T(5, 'archive');
-        r3.e();
-        r3.e();
+        r3.elementStart(0, 'div');
+        r3.elementStart(1, 'input', e1_attrs);
+        r3.listener('click', ctx.onCheckboxClick.bind(ctx));
+        r3.elementEnd();
+        r3.elementStart(2, 'span');
+        r3.text(3);
+        r3.elementEnd();
+        r3.elementStart(4, 'button');
+        r3.listener('click', ctx.onArchiveClick.bind(ctx));
+        r3.text(5, 'archive');
+        r3.elementEnd();
+        r3.elementEnd();
       }
       if (rf & 2) {
-        r3.p(1, 'value', r3.b(ctx.todo.done));
-        r3.t(3, r3.b(ctx.todo.text));
+        r3.elementProperty(1, 'value', r3.bind(ctx.todo.done));
+        r3.textBinding(3, r3.bind(ctx.todo.text));
       }
     },
     inputs: {todo: 'todo'},
