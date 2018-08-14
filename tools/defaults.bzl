@@ -5,7 +5,6 @@ load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library", _ts
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//packages/bazel/src:ng_module.bzl", _internal_global_ng_module = "internal_global_ng_module")
 
-DEFAULT_TSCONFIG = "//packages:tsconfig-build.json"
 DEFAULT_NODE_MODULES = "@angular_deps//:node_modules"
 
 # Packages which are versioned together on npm
@@ -40,13 +39,9 @@ PKG_GROUP_REPLACEMENTS = {
 }
 
 def ts_library(tsconfig = None, node_modules = DEFAULT_NODE_MODULES, **kwargs):
-    if not tsconfig:
-        tsconfig = DEFAULT_TSCONFIG
     _ts_library(tsconfig = tsconfig, node_modules = node_modules, **kwargs)
 
 def ng_module(name, tsconfig = None, entry_point = None, node_modules = DEFAULT_NODE_MODULES, **kwargs):
-    if not tsconfig:
-        tsconfig = DEFAULT_TSCONFIG
     if not entry_point:
         entry_point = "public_api.ts"
     _ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, node_modules = node_modules, **kwargs)
@@ -55,8 +50,6 @@ def ng_module(name, tsconfig = None, entry_point = None, node_modules = DEFAULT_
 # analysis but produces Ivy outputs. Under other compile modes, it behaves as ng_module.
 # TODO(alxhub): remove when ngtsc supports the same use cases.
 def ivy_ng_module(name, tsconfig = None, entry_point = None, **kwargs):
-    if not tsconfig:
-        tsconfig = DEFAULT_TSCONFIG
     if not entry_point:
         entry_point = "public_api.ts"
     _internal_global_ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, **kwargs)
