@@ -289,6 +289,16 @@ export declare class NgIfContext {
     ngIf: any;
 }
 
+export declare class NgLet {
+    ngLet: any;
+    constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgLetContext>);
+}
+
+export declare class NgLetContext {
+    $implicit: any;
+    ngLet: any;
+}
+
 /** @experimental */
 export declare class NgLocaleLocalization extends NgLocalization {
     /** @deprecated */ protected deprecatedPluralFn?: ((locale: string, value: string | number) => Plural) | null | undefined;
