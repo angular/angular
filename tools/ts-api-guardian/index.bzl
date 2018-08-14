@@ -50,6 +50,7 @@ def ts_api_guardian_test(name, golden, actual, data = [], **kwargs):
 
     nodejs_binary(
         name = name + ".accept",
+        testonly = True,
         data = data,
         node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
         entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
