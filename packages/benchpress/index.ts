@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 // Must be imported first, because Angular decorators throw on load.
 import 'reflect-metadata';
 
