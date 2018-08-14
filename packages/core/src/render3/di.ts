@@ -27,7 +27,7 @@ import {addToViewTree, assertPreviousIsParent, createEmbeddedViewNode, createLCo
 import {VIEWS} from './interfaces/container';
 import {DirectiveDefInternal, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {AttributeMarker, LContainerNode, LElementContainerNode, LElementNode, LNode, LViewNode, TContainerNode, TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {AttributeMarker, LContainerNode, LElementContainerNode, LElementNode, LNode, LNodeWithLocalRefs, LViewNode, TContainerNode, TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {LQueries, QueryReadType} from './interfaces/query';
 import {Renderer3} from './interfaces/renderer';
 import {DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
@@ -813,4 +813,12 @@ class TemplateRef<T> implements viewEngine_TemplateRef<T> {
     viewRef._lViewNode = viewNode;
     return viewRef;
   }
+}
+
+/**
+ * Retrieves `TemplateRef` instance from `Injector` when a local reference is placed on the
+ * `<ng-template>` element.
+ */
+export function templateRefExtractor(lNode: LNodeWithLocalRefs) {
+  return getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(lNode));
 }

@@ -18,10 +18,10 @@ import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} fro
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {ComponentDefInternal, ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementContainerNode, LElementNode, LNode, LNodeWithLocalRefs, LProjectionNode, LTextNode, LViewNode, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {ProceduralRenderer3, RComment, RElement, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
+import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {BINDING_INDEX, CLEANUP, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_VIEW, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
@@ -734,7 +734,7 @@ export function elementContainerStart(
       createLNode(index, TNodeType.ElementContainer, native, null, attrs || null, null);
 
   appendChild(getParentLNode(node), native, viewData);
-  createDirectivesAndLocals(localRefs);
+  createDirectivesAndLocals(node, localRefs);
 }
 
 /** Mark the end of the <ng-container>. */
@@ -784,7 +784,7 @@ export function elementStart(
     setUpAttributes(native, attrs);
   }
   appendChild(getParentLNode(node), native, viewData);
-  createDirectivesAndLocals(localRefs);
+  createDirectivesAndLocals(node, localRefs);
 }
 
 /**
@@ -809,21 +809,27 @@ export function elementCreate(name: string, overriddenRenderer?: Renderer3): REl
   return native;
 }
 
+function nativeNodeLocalRefExtractor(lNode: LNodeWithLocalRefs): RNode {
+  return lNode.native;
+}
+
 /**
  * Creates directive instances and populates local refs.
  *
- * @param localRefs Local refs of the current node
+ * @param lNode LNode for which directive and locals should be created
+ * @param localRefs Local refs of the node in question
+ * @param localRefExtractor mapping function that extracts local ref value from LNode
  */
-function createDirectivesAndLocals(localRefs?: string[] | null) {
-  const node = previousOrParentNode;
-
+function createDirectivesAndLocals(
+    lNode: LNodeWithLocalRefs, localRefs: string[] | null | undefined,
+    localRefExtractor: LocalRefExtractor = nativeNodeLocalRefExtractor) {
   if (firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
-    cacheMatchingDirectivesForNode(node.tNode, tView, localRefs || null);
+    cacheMatchingDirectivesForNode(lNode.tNode, tView, localRefs || null);
   } else {
     instantiateDirectivesDirectly();
   }
-  saveResolvedLocalsInData();
+  saveResolvedLocalsInData(lNode, localRefExtractor);
 }
 
 /**
@@ -976,12 +982,13 @@ function saveNameToExportMap(
  * Takes a list of local names and indices and pushes the resolved local variable values
  * to LViewData in the same order as they are loaded in the template with load().
  */
-function saveResolvedLocalsInData(): void {
-  const localNames = previousOrParentNode.tNode.localNames;
+function saveResolvedLocalsInData(
+    lNode: LNodeWithLocalRefs, localRefExtractor: LocalRefExtractor): void {
+  const localNames = lNode.tNode.localNames;
   if (localNames) {
     for (let i = 0; i < localNames.length; i += 2) {
       const index = localNames[i + 1] as number;
-      const value = index === -1 ? previousOrParentNode.native : directives ![index];
+      const value = index === -1 ? localRefExtractor(lNode) : directives ![index];
       viewData.push(value);
     }
   }
@@ -1838,10 +1845,13 @@ export function createLContainer(
  * @param tagName The name of the container element, if applicable
  * @param attrs The attrs attached to the container, if applicable
  * @param localRefs A set of local reference bindings on the element.
+ * @param localRefExtractor A function which extracts local-refs values from the template.
+ *        Defaults to the current element associated with the local-ref.
  */
 export function template(
     index: number, templateFn: ComponentTemplate<any>| null, tagName?: string | null,
-    attrs?: TAttributes | null, localRefs?: string[] | null) {
+    attrs?: TAttributes | null, localRefs?: string[] | null,
+    localRefExtractor?: LocalRefExtractor) {
   // TODO: consider a separate node type for templates
   const node = containerInternal(index, tagName || null, attrs || null, localRefs || null);
   if (firstTemplatePass) {
@@ -1849,7 +1859,7 @@ export function template(
         createTView(-1, templateFn, tView.directiveRegistry, tView.pipeRegistry, null);
   }
 
-  createDirectivesAndLocals(localRefs);
+  createDirectivesAndLocals(node, localRefs, localRefExtractor);
   currentQueries && (currentQueries = currentQueries.addNode(node));
   queueLifecycleHooks(node.tNode.flags, tView);
   isParent = false;

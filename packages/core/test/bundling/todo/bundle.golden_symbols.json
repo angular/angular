@@ -753,6 +753,9 @@
     "name": "nativeInsertBefore"
   },
   {
+    "name": "nativeNodeLocalRefExtractor"
+  },
+  {
     "name": "nextContext"
   },
   {
