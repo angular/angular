@@ -204,9 +204,8 @@ describe('encapsulation', () => {
         }
       },
       factory: () => new EncapsulatedComponent,
-      encapsulation: ViewEncapsulation.Emulated,
-      styles: [],
-      data: {},
+      rendererType:
+          createRendererType2({encapsulation: ViewEncapsulation.Emulated, styles: [], data: {}}),
       directives: () => [LeafComponent]
     });
   }
@@ -251,9 +250,8 @@ describe('encapsulation', () => {
           }
         },
         factory: () => new WrapperComponentWith,
-        encapsulation: ViewEncapsulation.Emulated,
-        styles: [],
-        data: {},
+        rendererType:
+            createRendererType2({encapsulation: ViewEncapsulation.Emulated, styles: [], data: {}}),
         directives: () => [LeafComponentwith]
       });
     }
@@ -270,9 +268,8 @@ describe('encapsulation', () => {
           }
         },
         factory: () => new LeafComponentwith,
-        encapsulation: ViewEncapsulation.Emulated,
-        styles: [],
-        data: {},
+        rendererType:
+            createRendererType2({encapsulation: ViewEncapsulation.Emulated, styles: [], data: {}}),
       });
     }
 
