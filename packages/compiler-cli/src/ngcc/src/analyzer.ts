@@ -77,13 +77,12 @@ export class Analyzer {
 
   protected analyzeClass(file: ts.SourceFile, pool: ConstantPool, clazz: ParsedClass): AnalyzedClass
       |undefined {
-    const matchingHandlers =
-        this.handlers
-            .map(handler => ({
-                   handler,
-                   decorator: handler.detect(clazz.declaration, clazz.decorators),
-                 }))
-            .filter(isMatchingHandler);
+    const matchingHandlers = this.handlers
+                                 .map(handler => ({
+                                        handler,
+                                        match: handler.detect(clazz.declaration, clazz.decorators),
+                                      }))
+                                 .filter(isMatchingHandler);
 
     if (matchingHandlers.length > 1) {
       throw new Error('TODO.Diagnostic: Class has multiple Angular decorators.');
@@ -93,8 +92,8 @@ export class Analyzer {
       return undefined;
     }
 
-    const {handler, decorator} = matchingHandlers[0];
-    const {analysis, diagnostics} = handler.analyze(clazz.declaration, decorator);
+    const {handler, match} = matchingHandlers[0];
+    const {analysis, diagnostics} = handler.analyze(clazz.declaration, match);
     let compilation = handler.compile(clazz.declaration, analysis, pool);
     if (!Array.isArray(compilation)) {
       compilation = [compilation];
