@@ -10,11 +10,14 @@
 
 /// <reference types="hammerjs" />
 /// <reference types="jasmine" />
-/// <reference types="node" />
 /// <reference types="zone.js" />
 /// <reference path="./es6-subset.d.ts" />
 /// <reference path="./goog.d.ts" />
 /// <reference path="./system.d.ts" />
+
+// Do not included `reference types="node"` here as we don't
+// want node types to be included everywhere as they conflict
+// with browser definitions for functions like setTimeout()
 
 declare let isNode: boolean;
 declare let isBrowser: boolean;

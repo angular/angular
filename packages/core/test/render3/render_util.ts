@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {Injector} from '../../src/di/injector';

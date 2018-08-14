@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import {ɵwhenRendered as whenRendered} from '@angular/core';
 import {withBody} from '@angular/private/testing';
 import * as fs from 'fs';

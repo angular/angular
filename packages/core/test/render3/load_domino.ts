@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 // Needed to run animation tests
 require('zone.js/dist/zone-node.js');
 

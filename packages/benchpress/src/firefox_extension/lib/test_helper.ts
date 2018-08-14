@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 const q = require('q');
 const FirefoxProfile = require('firefox-profile');
 const jpm = require('jpm/lib/xpi');

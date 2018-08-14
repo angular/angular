@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as fs from 'fs';
-import * as ts from 'typescript';
+/// <reference types="node" />
 
+import * as ts from 'typescript';
 
 export interface Symbol { name: string; }
 

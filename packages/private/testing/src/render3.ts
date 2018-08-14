@@ -35,6 +35,9 @@
 * @param blockFn function to wrap. The function can return promise or be `async`.
 * @experimental
 */
+
+/// <reference types="node" />
+
 export function withBody<T extends Function>(html: string, blockFn: T): T {
   return function(done: DoneFn) {
     ensureDocument();

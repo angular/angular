@@ -11,6 +11,8 @@
  * values where possible and returning a `DynamicValue` signal when not.
  */
 
+/// <reference types="node" />
+
 import {Expression, ExternalExpr, ExternalReference, WrappedNodeExpr} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
