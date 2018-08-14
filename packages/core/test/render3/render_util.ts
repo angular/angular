@@ -13,7 +13,7 @@ import {CreateComponentOptions} from '../../src/render3/component';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {ComponentTemplate, ComponentType, DirectiveDefInternal, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
 import {NG_HOST_SYMBOL, renderTemplate} from '../../src/render3/instructions';
-import {DirectiveDefList, DirectiveDefListOrFactory, DirectiveTypesOrFactory, PipeDefInternal, PipeDefList, PipeDefListOrFactory, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
+import {DirectiveDefList, DirectiveTypesOrFactory, PipeDefInternal, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {LElementNode} from '../../src/render3/interfaces/node';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {Sanitizer} from '../../src/sanitization/security';

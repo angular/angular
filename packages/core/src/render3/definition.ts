@@ -16,7 +16,6 @@ import {Type} from '../type';
 import {BaseDef, ComponentDefFeature, ComponentDefInternal, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveType, DirectiveTypesOrFactory, PipeDefInternal, PipeType, PipeTypesOrFactory} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
-
 const EMPTY: {} = {};
 const EMPTY_ARRAY: any[] = [];
 if (typeof ngDevMode !== 'undefined' && ngDevMode) {

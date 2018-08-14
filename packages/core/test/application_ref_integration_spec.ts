@@ -6,44 +6,33 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationModule, ApplicationRef, DoCheck, InjectFlags, InjectorType, Input, OnInit, PlatformRef, TestabilityRegistry, Type, defineInjector, inject, ɵE as elementStart, ɵNgModuleDef as NgModuleDef, ɵRenderFlags as RenderFlags, ɵT as text, ɵdefineComponent as defineComponent, ɵe as elementEnd, ɵi1 as interpolation1, ɵt as textBinding} from '@angular/core';
+import {ApplicationRef, Component, DoCheck, NgModule, OnInit, TestabilityRegistry, ɵivyEnabled as ivyEnabled} from '@angular/core';
 import {getTestBed} from '@angular/core/testing';
-import {BrowserModule, EVENT_MANAGER_PLUGINS, platformBrowser} from '@angular/platform-browser';
+import {BrowserModule} from '@angular/platform-browser';
 import {withBody} from '@angular/private/testing';
 
-import {BROWSER_MODULE_PROVIDERS} from '../../platform-browser/src/browser';
-import {APPLICATION_MODULE_PROVIDERS} from '../src/application_module';
 import {NgModuleFactory} from '../src/render3/ng_module_ref';
 
-describe('ApplicationRef bootstrap', () => {
-  class HelloWorldComponent implements OnInit, DoCheck {
+ivyEnabled && describe('ApplicationRef bootstrap', () => {
+  @Component({
+    selector: 'hello-world',
+    template: '<div>Hello {{ name }}</div>',
+  })
+  class HelloWorldComponent implements OnInit,
+      DoCheck {
     log: string[] = [];
     name = 'World';
-    static ngComponentDef = defineComponent({
-      type: HelloWorldComponent,
-      selectors: [['hello-world']],
-      factory: () => new HelloWorldComponent(),
-      template: function(rf: RenderFlags, ctx: HelloWorldComponent): void {
-        if (rf & RenderFlags.Create) {
-          elementStart(0, 'div');
-          text(1);
-          elementEnd();
-        }
-        if (rf & RenderFlags.Update) {
-          textBinding(1, interpolation1('Hello ', ctx.name, ''));
-        }
-      }
-    });
 
     ngOnInit(): void { this.log.push('OnInit'); }
-
     ngDoCheck(): void { this.log.push('DoCheck'); }
   }
 
+  @NgModule({
+    declarations: [HelloWorldComponent],
+    bootstrap: [HelloWorldComponent],
+    imports: [BrowserModule],
+  })
   class MyAppModule {
-    static ngInjectorDef =
-        defineInjector({factory: () => new MyAppModule(), imports: [BrowserModule]});
-    static ngModuleDef = defineNgModule({bootstrap: [HelloWorldComponent]});
   }
 
   it('should bootstrap hello world', withBody('<hello-world></hello-world>', async() => {
@@ -66,29 +55,3 @@ describe('ApplicationRef bootstrap', () => {
      }));
 
 });
-
-/////////////////////////////////////////////////////////
-
-// These go away when Compiler is ready
-
-(BrowserModule as any as InjectorType<BrowserModule>).ngInjectorDef = defineInjector({
-  factory: function BrowserModule_Factory() {
-    return new BrowserModule(inject(BrowserModule, InjectFlags.Optional | InjectFlags.SkipSelf));
-  },
-  imports: [ApplicationModule],
-  providers: BROWSER_MODULE_PROVIDERS
-});
-
-(ApplicationModule as any as InjectorType<ApplicationModule>).ngInjectorDef = defineInjector({
-  factory: function ApplicationModule_Factory() {
-    return new ApplicationModule(inject(ApplicationRef));
-  },
-  providers: APPLICATION_MODULE_PROVIDERS
-});
-
-export function defineNgModule({bootstrap}: {bootstrap?: Type<any>[]}):
-    NgModuleDef<any, any, any, any> {
-  return ({ bootstrap: bootstrap || [], } as any);
-}
-
-/////////////////////////////////////////////////////////
