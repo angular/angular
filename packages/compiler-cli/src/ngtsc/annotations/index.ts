@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 export {ResourceLoader} from './src/api';
 export {BaseDefDecoratorHandler} from './src/base_def';
 export {ComponentDecoratorHandler} from './src/component';

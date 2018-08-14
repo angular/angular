@@ -13,6 +13,7 @@ UTILS = [
 
 ts_library(
     name = "test_utils",
+    testonly = True,
     srcs = UTILS,
     visibility = [
         "//packages/compiler-cli/test:__subpackages__",
