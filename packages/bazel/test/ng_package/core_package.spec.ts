@@ -229,13 +229,7 @@ describe('@angular/core ng_package', () => {
         expect(shx.cat('testing.metadata.json'))
             .toContain(`"exports":[{"from":"./testing/testing"}],"flatModuleIndexRedirect":true`);
       });
-
-      it('should have an \'actual\' metadata.json file', () => {
-        expect(shx.cat('testing/testing.metadata.json'))
-            .toContain(`"metadata":{"async":{"__symbolic":"function"},`);
-      });
     });
-
 
     describe('fesm2015', () => {
       it('should have a fesm15 file in the /fesm2015 directory',

@@ -11,7 +11,8 @@ import {Component, Directive, Injector, NgModule, Pipe, PlatformRef, Provider, R
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {ComponentResolver, DirectiveResolver, NgModuleResolver, PipeResolver, Resolver} from './resolvers';
-import {ComponentFixtureAutoDetect, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
+import {TestBed} from './test_bed';
+import {ComponentFixtureAutoDetect, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 
 let _nextRootElementId = 0;
 
@@ -25,7 +26,7 @@ let _nextRootElementId = 0;
  * Note: Use `TestBed` in tests. It will be set to either `TestBedViewEngine` or `TestBedRender3`
  * according to the compiler used.
  */
-export class TestBedRender3 {
+export class TestBedRender3 implements Injector, TestBed {
   /**
    * Initialize the environment for testing with a compiler factory, a PlatformRef, and an
    * angular module. These are common to every test in the suite.
@@ -40,8 +41,7 @@ export class TestBedRender3 {
    * @experimental
    */
   static initTestEnvironment(
-      ngModule: Type<any>|Type<any>[], platform: PlatformRef,
-      aotSummaries?: () => any[]): TestBedRender3 {
+      ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed {
     const testBed = _getTestBedRender3();
     testBed.initTestEnvironment(ngModule, platform, aotSummaries);
     return testBed;
@@ -54,18 +54,18 @@ export class TestBedRender3 {
    */
   static resetTestEnvironment(): void { _getTestBedRender3().resetTestEnvironment(); }
 
-  static configureCompiler(config: {providers?: any[]; useJit?: boolean;}): typeof TestBedRender3 {
+  static configureCompiler(config: {providers?: any[]; useJit?: boolean;}): TestBedStatic {
     _getTestBedRender3().configureCompiler(config);
-    return TestBedRender3;
+    return TestBedRender3 as any as TestBedStatic;
   }
 
   /**
    * Allows overriding default providers, directives, pipes, modules of the test injector,
    * which are defined in test_injector.js
    */
-  static configureTestingModule(moduleDef: TestModuleMetadata): typeof TestBedRender3 {
+  static configureTestingModule(moduleDef: TestModuleMetadata): TestBedStatic {
     _getTestBedRender3().configureTestingModule(moduleDef);
-    return TestBedRender3;
+    return TestBedRender3 as any as TestBedStatic;
   }
 
   /**
@@ -75,32 +75,31 @@ export class TestBedRender3 {
    */
   static compileComponents(): Promise<any> { return _getTestBedRender3().compileComponents(); }
 
-  static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>):
-      typeof TestBedRender3 {
+  static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedStatic {
     _getTestBedRender3().overrideModule(ngModule, override);
-    return TestBedRender3;
+    return TestBedRender3 as any as TestBedStatic;
   }
 
   static overrideComponent(component: Type<any>, override: MetadataOverride<Component>):
-      typeof TestBedRender3 {
+      TestBedStatic {
     _getTestBedRender3().overrideComponent(component, override);
-    return TestBedRender3;
+    return TestBedRender3 as any as TestBedStatic;
   }
 
   static overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>):
-      typeof TestBedRender3 {
+      TestBedStatic {
     _getTestBedRender3().overrideDirective(directive, override);
-    return TestBedRender3;
+    return TestBedRender3 as any as TestBedStatic;
   }
 
-  static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): typeof TestBedRender3 {
+  static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedStatic {
     _getTestBedRender3().overridePipe(pipe, override);
-    return TestBedRender3;
+    return TestBedRender3 as any as TestBedStatic;
   }
 
-  static overrideTemplate(component: Type<any>, template: string): typeof TestBedRender3 {
+  static overrideTemplate(component: Type<any>, template: string): TestBedStatic {
     _getTestBedRender3().overrideComponent(component, {set: {template, templateUrl: null !}});
-    return TestBedRender3;
+    return TestBedRender3 as any as TestBedStatic;
   }
 
   /**
@@ -109,10 +108,9 @@ export class TestBedRender3 {
    *
    * Note: This works for JIT and AOTed components as well.
    */
-  static overrideTemplateUsingTestingModule(component: Type<any>, template: string):
-      typeof TestBedRender3 {
+  static overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBedStatic {
     _getTestBedRender3().overrideTemplateUsingTestingModule(component, template);
-    return TestBedRender3;
+    return TestBedRender3 as any as TestBedStatic;
   }
 
   overrideTemplateUsingTestingModule(component: Type<any>, template: string): void {
@@ -122,15 +120,15 @@ export class TestBedRender3 {
   static overrideProvider(token: any, provider: {
     useFactory: Function,
     deps: any[],
-  }): typeof TestBedRender3;
-  static overrideProvider(token: any, provider: {useValue: any;}): typeof TestBedRender3;
+  }): TestBedStatic;
+  static overrideProvider(token: any, provider: {useValue: any;}): TestBedStatic;
   static overrideProvider(token: any, provider: {
     useFactory?: Function,
     useValue?: any,
     deps?: any[],
-  }): typeof TestBedRender3 {
+  }): TestBedStatic {
     _getTestBedRender3().overrideProvider(token, provider);
-    return TestBedRender3;
+    return TestBedRender3 as any as TestBedStatic;
   }
 
   /**
@@ -147,7 +145,7 @@ export class TestBedRender3 {
     useFactory?: Function,
     useValue?: any,
     deps?: any[],
-  }): typeof TestBedRender3 {
+  }): TestBedStatic {
     throw new Error('Render3TestBed.deprecatedOverrideProvider is not implemented');
   }
 
@@ -159,9 +157,9 @@ export class TestBedRender3 {
     return _getTestBedRender3().createComponent(component);
   }
 
-  static resetTestingModule(): typeof TestBedRender3 {
+  static resetTestingModule(): TestBedStatic {
     _getTestBedRender3().resetTestingModule();
-    return TestBedRender3;
+    return TestBedRender3 as any as TestBedStatic;
   }
 
   // Properties
