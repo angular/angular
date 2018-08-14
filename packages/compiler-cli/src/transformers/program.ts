@@ -975,6 +975,7 @@ function getAotCompilerOptions(options: CompilerOptions): AotCompilerOptions {
     fullTemplateTypeCheck: options.fullTemplateTypeCheck,
     allowEmptyCodegenFiles: options.allowEmptyCodegenFiles,
     enableIvy: options.enableIvy,
+    defaultEncapsulation: options.defaultEncapsulation
   };
 }
 
