@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 import * as path from 'path';
 
 const TS_DTS_EXTENSION = /(\.d)?\.ts$/;

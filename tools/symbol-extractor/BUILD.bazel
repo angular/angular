@@ -5,6 +5,7 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
 
 ts_library(
     name = "lib",
+    testonly = True,
     srcs = glob(
         ["**/*.ts"],
         exclude = [

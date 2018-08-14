@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+/// <reference types="node" />
+
 export {FactoryGenerator} from './src/generator';
 export {GeneratedFactoryHostWrapper} from './src/host';
 export {FactoryInfo, generatedFactoryTransform} from './src/transform';

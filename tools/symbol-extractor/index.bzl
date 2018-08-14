@@ -28,6 +28,7 @@ def js_expected_symbol_test(name, src, golden, **kwargs):
 
     nodejs_binary(
         name = name + ".accept",
+        testonly = True,
         data = all_data,
         entry_point = entry_point,
         templated_args = ["$(location %s)" % src, "$(location %s)" % golden, "--accept"],
