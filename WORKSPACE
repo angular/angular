@@ -3,46 +3,20 @@ workspace(name = "angular")
 #
 # Download Bazel toolchain dependencies as needed by build actions
 #
-
-http_archive(
-    name = "build_bazel_rules_nodejs",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.11.4.zip"],
-    strip_prefix = "rules_nodejs-0.11.4",
-    sha256 = "c31c4ead696944a50fad2b3ee9dfbbeffe31a8dcca0b21b9bf5b3e6c6b069801",
-)
-
-http_archive(
-    name = "bazel_skylib",
-    urls = ["https://github.com/bazelbuild/bazel-skylib/archive/0.3.1.zip"],
-    strip_prefix = "bazel-skylib-0.3.1",
-    sha256 = "95518adafc9a2b656667bbf517a952e54ce7f350779d0dd95133db4eb5c27fb1",
-)
-
-http_archive(
-    name = "io_bazel_rules_webtesting",
-    url = "https://github.com/bazelbuild/rules_webtesting/archive/7ffe970bbf380891754487f66c3d680c087d67f2.zip",
-    strip_prefix = "rules_webtesting-7ffe970bbf380891754487f66c3d680c087d67f2",
-    sha256 = "4fb0dca8c9a90547891b7ef486592775a523330fc4555c88cd8f09270055c2ce",
-)
-
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/1d9a4b0087f307e31af91e2b221a6447288994c6.zip",
-    strip_prefix = "rules_typescript-1d9a4b0087f307e31af91e2b221a6447288994c6",
-    sha256 = "e17ac3f33d5d3cd2a0c385c4fd28b814d0ad46c6c67ccaef97160be99d7a24eb",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/0.16.1.zip",
+    strip_prefix = "rules_typescript-0.16.1",
+    sha256 = "5b2b0bc63cfcffe7bf97cad2dad3b26a73362f806de66207051f66c87956a995",
 )
-
-http_archive(
-    name = "io_bazel_rules_go",
-    url = "https://github.com/bazelbuild/rules_go/releases/download/0.10.3/rules_go-0.10.3.tar.gz",
-    sha256 = "feba3278c13cde8d67e341a837f69a029f698d7a27ddbb2a202be7a10b22142a",
-)
+load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
+rules_typescript_dependencies()
 
 http_archive(
     name = "io_bazel_rules_sass",
-    url = "https://github.com/bazelbuild/rules_sass/archive/0.1.0.zip",
-    strip_prefix = "rules_sass-0.1.0",
-    sha256 = "b243c4d64f054c174051785862ab079050d90b37a1cef7da93821c6981cb9ad4",
+    url = "https://github.com/bazelbuild/rules_sass/archive/1.11.0.zip",
+    strip_prefix = "rules_sass-1.11.0",
+    sha256 = "dbe9fb97d5a7833b2a733eebc78c9c1e3880f676ac8af16e58ccf2139cbcad03",
 )
 
 # This commit matches the version of buildifier in angular/ngcontainer

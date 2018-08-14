@@ -20,6 +20,11 @@ alias(
     actual = "@angular_deps//:node_modules",
 )
 
+alias(
+    name = "tsconfig.json",
+    actual = "//packages:tsconfig-build.json",
+)
+
 filegroup(
     name = "web_test_bootstrap_scripts",
     # do not sort
