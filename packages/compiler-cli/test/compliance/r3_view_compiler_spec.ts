@@ -112,7 +112,8 @@ describe('r3_view_compiler', () => {
         }
       };
 
-      const bV_call = `$r3$.ɵiV([" ",ctx.list[0]," ",ctx.list[1]," ",ctx.list[2]," ",ctx.list[3],
+      const bV_call =
+          `$r3$.ɵinterpolationV([" ",ctx.list[0]," ",ctx.list[1]," ",ctx.list[2]," ",ctx.list[3],
         " ",ctx.list[4]," ",ctx.list[5]," ",ctx.list[6]," ",ctx.list[7]," ",ctx.list[8],
         " "])`;
       const result = compile(files, angularFiles);

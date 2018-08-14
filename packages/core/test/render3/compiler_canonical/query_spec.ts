@@ -57,18 +57,19 @@ describe('queries', () => {
         template: function ViewQueryComponent_Template(
             rf: $RenderFlags$, ctx: $ViewQueryComponent$) {
           if (rf & 1) {
-            $r3$.ɵEe(2, 'div', $e1_attrs$);
+            $r3$.ɵelement(2, 'div', $e1_attrs$);
           }
         },
         viewQuery: function ViewQueryComponent_Query(rf: $RenderFlags$, ctx: $ViewQueryComponent$) {
           if (rf & 1) {
-            $r3$.ɵQ(0, SomeDirective, false);
-            $r3$.ɵQ(1, SomeDirective, false);
+            $r3$.ɵquery(0, SomeDirective, false);
+            $r3$.ɵquery(1, SomeDirective, false);
           }
           if (rf & 2) {
             let $tmp$: any;
-            $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(0)) && (ctx.someDir = $tmp$.first);
-            $r3$.ɵqR($tmp$ = $r3$.ɵld<QueryList<any>>(1)) &&
+            $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵload<QueryList<any>>(0)) &&
+                (ctx.someDir = $tmp$.first);
+            $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵload<QueryList<any>>(1)) &&
                 (ctx.someDirList = $tmp$ as QueryList<any>);
           }
         }
@@ -110,23 +111,25 @@ describe('queries', () => {
         selectors: [['content-query-component']],
         factory: function ContentQueryComponent_Factory() { return new ContentQueryComponent(); },
         contentQueries: function ContentQueryComponent_ContentQueries() {
-          $r3$.ɵQr($r3$.ɵQ(null, SomeDirective, false));
-          $r3$.ɵQr($r3$.ɵQ(null, SomeDirective, false));
+          $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false));
+          $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false));
         },
         contentQueriesRefresh: function ContentQueryComponent_ContentQueriesRefresh(
             dirIndex: $number$, queryStartIndex: $number$) {
           let $tmp$: any;
-          const $instance$ = $r3$.ɵd<ContentQueryComponent>(dirIndex);
-          $r3$.ɵqR($tmp$ = $r3$.ɵql<any>(queryStartIndex)) && ($instance$.someDir = $tmp$.first);
-          $r3$.ɵqR($tmp$ = $r3$.ɵql<any>(queryStartIndex + 1)) && ($instance$.someDirList = $tmp$);
+          const $instance$ = $r3$.ɵloadDirective<ContentQueryComponent>(dirIndex);
+          $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵloadQueryList<any>(queryStartIndex)) &&
+              ($instance$.someDir = $tmp$.first);
+          $r3$.ɵqueryRefresh($tmp$ = $r3$.ɵloadQueryList<any>(queryStartIndex + 1)) &&
+              ($instance$.someDirList = $tmp$);
         },
         template: function ContentQueryComponent_Template(
             rf: $number$, ctx: $ContentQueryComponent$) {
           if (rf & 1) {
-            $r3$.ɵpD();
-            $r3$.ɵE(0, 'div');
-            $r3$.ɵP(1);
-            $r3$.ɵe();
+            $r3$.ɵprojectionDef();
+            $r3$.ɵelementStart(0, 'div');
+            $r3$.ɵprojection(1);
+            $r3$.ɵelementEnd();
           }
         }
       });
@@ -151,10 +154,10 @@ describe('queries', () => {
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'content-query-component');
-            contentQueryComp = $r3$.ɵd<ContentQueryComponent>(0);
-            $r3$.ɵEe(1, 'div', $e2_attrs$);
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'content-query-component');
+            contentQueryComp = $r3$.ɵloadDirective<ContentQueryComponent>(0);
+            $r3$.ɵelement(1, 'div', $e2_attrs$);
+            $r3$.ɵelementEnd();
           }
         }
       });
