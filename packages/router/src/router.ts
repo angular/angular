@@ -17,6 +17,7 @@ import {createUrlTree} from './create_url_tree';
 import {ActivationEnd, ChildActivationEnd, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, NavigationTrigger, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RoutesRecognized} from './events';
 import {applyRedirects} from './operators/apply_redirects';
 import {beforePreactivation} from './operators/before_preactivation';
+import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
 import {setupPreactivation} from './operators/setup_preactivation';
 import {PreActivation} from './pre_activation';
@@ -735,21 +736,24 @@ export class Router {
                            map(preActivation => ({...p, preActivation})))),
           tap(p => preActivation = p.preActivation));
 
-      const preactivationCheckGuards$ =
-          preactivationSetup$.pipe(mergeMap((p): Observable<NavStreamValue> => {
-            if (typeof p === 'boolean' || this.navigationId !== id) return of (false);
-            const {appliedUrl, snapshot} = p;
-
-            this.triggerEvent(new GuardsCheckStart(
-                id, this.serializeUrl(url), this.serializeUrl(appliedUrl), snapshot));
-
-            return preActivation.checkGuards().pipe(map((shouldActivate: boolean) => {
-              this.triggerEvent(new GuardsCheckEnd(
-                  id, this.serializeUrl(url), this.serializeUrl(appliedUrl), snapshot,
-                  shouldActivate));
-              return {appliedUrl: appliedUrl, snapshot: snapshot, shouldActivate: shouldActivate};
-            }));
-          }));
+      const preactivationCheckGuards$: Observable<NavStreamValue> =
+          preactivationSetup$.pipe(mergeMap(
+              p => this.navigationId !== id ? of (false) : of (p.appliedUrl)
+                       .pipe(
+                           tap(_ => this.triggerEvent(new GuardsCheckStart(
+                                   id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
+                                   p.snapshot))),
+                           checkGuards(
+                               this.rootContexts, this.routerState.snapshot, this.ngModule.injector,
+                               preActivation),
+                           tap(shouldActivate => this.triggerEvent(new GuardsCheckEnd(
+                                   id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
+                                   p.snapshot, shouldActivate))),
+                           map(shouldActivate => ({
+                                 appliedUrl: p.appliedUrl,
+                                 snapshot: p.snapshot,
+                                 shouldActivate: shouldActivate
+                               })))));
 
       const preactivationResolveData$ =
           preactivationCheckGuards$.pipe(mergeMap((p): Observable<NavStreamValue> => {
