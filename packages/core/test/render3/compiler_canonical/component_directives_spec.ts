@@ -34,7 +34,7 @@ describe('components & directives', () => {
         factory: function ChildComponent_Factory() { return new ChildComponent(); },
         template: function ChildComponent_Template(rf: $RenderFlags$, ctx: $ChildComponent$) {
           if (rf & 1) {
-            $r3$.ɵT(0, 'child-view');
+            $r3$.ɵtext(0, 'child-view');
           }
         }
       });
@@ -69,8 +69,8 @@ describe('components & directives', () => {
         factory: () => new MyComponent(),
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵEe(0, 'child', $e0_attrs$);
-            $r3$.ɵT(1, '!');
+            $r3$.ɵelement(0, 'child', $e0_attrs$);
+            $r3$.ɵtext(1, '!');
           }
         }
       });
@@ -100,7 +100,8 @@ describe('components & directives', () => {
         selectors: [['', 'hostBindingDir', '']],
         factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
-          $r3$.ɵp(elIndex, 'id', $r3$.ɵb($r3$.ɵd<HostBindingDir>(dirIndex).dirId));
+          $r3$.ɵelementProperty(
+              elIndex, 'id', $r3$.ɵbind($r3$.ɵloadDirective<HostBindingDir>(dirIndex).dirId));
         }
       });
       // /NORMATIVE
@@ -121,7 +122,7 @@ describe('components & directives', () => {
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵEe(0, 'div', $e0_attrs$);
+            $r3$.ɵelement(0, 'div', $e0_attrs$);
           }
         }
       });
@@ -149,7 +150,8 @@ describe('components & directives', () => {
         type: HostListenerDir,
         factory: function HostListenerDir_Factory() {
           const $dir$ = new HostListenerDir();
-          $r3$.ɵL('click', function HostListenerDir_click_Handler(event: any) { $dir$.onClick(); });
+          $r3$.ɵlistener(
+              'click', function HostListenerDir_click_Handler(event: any) { $dir$.onClick(); });
           return $dir$;
         },
       });
@@ -171,9 +173,9 @@ describe('components & directives', () => {
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'button', $e0_attrs$);
-            $r3$.ɵT(1, 'Click');
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'button', $e0_attrs$);
+            $r3$.ɵtext(1, 'Click');
+            $r3$.ɵelementEnd();
           }
         }
       });
@@ -218,7 +220,7 @@ describe('components & directives', () => {
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵEe(0, 'div', $e0_attrs$);
+            $r3$.ɵelement(0, 'div', $e0_attrs$);
           }
         }
       });
@@ -245,7 +247,9 @@ describe('components & directives', () => {
         selectors: [['', 'hostBindingDir', '']],
         factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
-          $r3$.ɵa(elIndex, 'aria-label', $r3$.ɵb($r3$.ɵd<HostBindingDir>(dirIndex).label));
+          $r3$.ɵelementAttribute(
+              elIndex, 'aria-label',
+              $r3$.ɵbind($r3$.ɵloadDirective<HostBindingDir>(dirIndex).label));
         }
       });
       // /NORMATIVE
@@ -266,7 +270,7 @@ describe('components & directives', () => {
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵEe(0, 'div', $e0_attrs$);
+            $r3$.ɵelement(0, 'div', $e0_attrs$);
           }
         }
       });
@@ -302,9 +306,9 @@ describe('components & directives', () => {
         factory: function MyComp_Factory() { return new MyComp(); },
         template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
           if (rf & 1) {
-            $r3$.ɵT(0);
+            $r3$.ɵtext(0);
           }
-          $r3$.ɵt(0, $r3$.ɵb(ctx.name));
+          $r3$.ɵtextBinding(0, $r3$.ɵbind(ctx.name));
         },
         inputs: {name: 'name'},
         changeDetection: ChangeDetectionStrategy.OnPush
@@ -327,10 +331,10 @@ describe('components & directives', () => {
         factory: function MyApp_Factory() { return new MyApp(); },
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵEe(0, 'my-comp');
+            $r3$.ɵelement(0, 'my-comp');
           }
           if (rf & 2) {
-            $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name));
+            $r3$.ɵelementProperty(0, 'name', $r3$.ɵbind(ctx.name));
           }
         }
       });
@@ -378,24 +382,24 @@ describe('components & directives', () => {
         factory: () => new MyComponent(),
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'ul', null, $e0_locals$);
-            $r3$.ɵC(2, C1, '', ['if', '']);
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'ul', null, $e0_locals$);
+            $r3$.ɵcontainer(2, C1, '', ['if', '']);
+            $r3$.ɵelementEnd();
           }
-          let $foo$ = $r3$.ɵld<any>(1);
+          let $foo$ = $r3$.ɵload<any>(1);
           if (rf & 2) {
-            $r3$.ɵcR(2);
-            $r3$.ɵcr();
+            $r3$.ɵcontainerRefreshStart(2);
+            $r3$.ɵcontainerRefreshEnd();
           }
 
           function C1(rf1: $RenderFlags$, ctx1: $any$) {
             if (rf1 & 1) {
-              $r3$.ɵE(0, 'li');
-              $r3$.ɵT(1);
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'li');
+              $r3$.ɵtext(1);
+              $r3$.ɵelementEnd();
             }
             if (rf1 & 2) {
-              $r3$.ɵt(1, $r3$.ɵi2('', ctx.salutation, ' ', $foo$, ''));
+              $r3$.ɵtextBinding(1, $r3$.ɵinterpolation2('', ctx.salutation, ' ', $foo$, ''));
             }
           }
         }
@@ -426,10 +430,10 @@ describe('components & directives', () => {
         factory: function MyArrayComp_Factory() { return new MyArrayComp(); },
         template: function MyArrayComp_Template(rf: $RenderFlags$, ctx: $MyArrayComp$) {
           if (rf & 1) {
-            $r3$.ɵT(0);
+            $r3$.ɵtext(0);
           }
           if (rf & 2) {
-            $r3$.ɵt(0, $r3$.ɵi2('', ctx.names[0], ' ', ctx.names[1], ''));
+            $r3$.ɵtextBinding(0, $r3$.ɵinterpolation2('', ctx.names[0], ' ', ctx.names[1], ''));
           }
         },
         inputs: {names: 'names'}
@@ -457,10 +461,10 @@ describe('components & directives', () => {
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'my-array-comp');
+              $r3$.ɵelement(0, 'my-array-comp');
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'names', rf & 1 ? $e0_arr$ : $r3$.ɵNC);
+              $r3$.ɵelementProperty(0, 'names', rf & 1 ? $e0_arr$ : $r3$.ɵNO_CHANGE);
             }
           }
         });
@@ -501,11 +505,12 @@ describe('components & directives', () => {
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'my-array-comp');
-              $r3$.ɵrS(1);
+              $r3$.ɵelement(0, 'my-array-comp');
+              $r3$.ɵreserveSlots(1);
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'names', $r3$.ɵb(ctx.someFn($r3$.ɵf0(1, $e0_ff$))));
+              $r3$.ɵelementProperty(
+                  0, 'names', $r3$.ɵbind(ctx.someFn($r3$.ɵpureFunction0(1, $e0_ff$))));
             }
           }
         });
@@ -535,13 +540,13 @@ describe('components & directives', () => {
           factory: function MyComp_Factory() { return new MyComp(); },
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
             if (rf & 1) {
-              $r3$.ɵT(0);
+              $r3$.ɵtext(0);
             }
             if (rf & 2) {
               // clang-format wants to break this line by changing the second 'ɵ' to an invalid
               // unicode sequence.
               // clang-format off
-              $r3$.ɵt(0, $r3$.ɵb(ctx.num));
+              $r3$.ɵtextBinding(0, $r3$.ɵbind(ctx.num));
               // clang-format on
             }
           },
@@ -567,11 +572,12 @@ describe('components & directives', () => {
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'my-comp');
-              $r3$.ɵrS(1);
+              $r3$.ɵelement(0, 'my-comp');
+              $r3$.ɵreserveSlots(1);
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'num', $r3$.ɵb($r3$.ɵf0(1, $e0_ff$).length + 1));
+              $r3$.ɵelementProperty(
+                  0, 'num', $r3$.ɵbind($r3$.ɵpureFunction0(1, $e0_ff$).length + 1));
             }
           }
         });
@@ -610,11 +616,12 @@ describe('components & directives', () => {
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'my-array-comp');
-              $r3$.ɵrS(2);
+              $r3$.ɵelement(0, 'my-array-comp');
+              $r3$.ɵreserveSlots(2);
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'names', $r3$.ɵb($r3$.ɵf1(2, $e0_ff$, ctx.customName)));
+              $r3$.ɵelementProperty(
+                  0, 'names', $r3$.ɵbind($r3$.ɵpureFunction1(2, $e0_ff$, ctx.customName)));
             }
           }
         });
@@ -658,32 +665,32 @@ describe('components & directives', () => {
           factory: function MyComp_Factory() { return new MyComp(); },
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
             if (rf & 1) {
-              $r3$.ɵT(0);
-              $r3$.ɵT(1);
-              $r3$.ɵT(2);
-              $r3$.ɵT(3);
-              $r3$.ɵT(4);
-              $r3$.ɵT(5);
-              $r3$.ɵT(6);
-              $r3$.ɵT(7);
-              $r3$.ɵT(8);
-              $r3$.ɵT(9);
-              $r3$.ɵT(10);
-              $r3$.ɵT(11);
+              $r3$.ɵtext(0);
+              $r3$.ɵtext(1);
+              $r3$.ɵtext(2);
+              $r3$.ɵtext(3);
+              $r3$.ɵtext(4);
+              $r3$.ɵtext(5);
+              $r3$.ɵtext(6);
+              $r3$.ɵtext(7);
+              $r3$.ɵtext(8);
+              $r3$.ɵtext(9);
+              $r3$.ɵtext(10);
+              $r3$.ɵtext(11);
             }
             if (rf & 2) {
-              $r3$.ɵt(0, $r3$.ɵb(ctx.names[0]));
-              $r3$.ɵt(1, $r3$.ɵb(ctx.names[1]));
-              $r3$.ɵt(2, $r3$.ɵb(ctx.names[2]));
-              $r3$.ɵt(3, $r3$.ɵb(ctx.names[3]));
-              $r3$.ɵt(4, $r3$.ɵb(ctx.names[4]));
-              $r3$.ɵt(5, $r3$.ɵb(ctx.names[5]));
-              $r3$.ɵt(6, $r3$.ɵb(ctx.names[6]));
-              $r3$.ɵt(7, $r3$.ɵb(ctx.names[7]));
-              $r3$.ɵt(8, $r3$.ɵb(ctx.names[8]));
-              $r3$.ɵt(9, $r3$.ɵb(ctx.names[9]));
-              $r3$.ɵt(10, $r3$.ɵb(ctx.names[10]));
-              $r3$.ɵt(11, $r3$.ɵb(ctx.names[11]));
+              $r3$.ɵtextBinding(0, $r3$.ɵbind(ctx.names[0]));
+              $r3$.ɵtextBinding(1, $r3$.ɵbind(ctx.names[1]));
+              $r3$.ɵtextBinding(2, $r3$.ɵbind(ctx.names[2]));
+              $r3$.ɵtextBinding(3, $r3$.ɵbind(ctx.names[3]));
+              $r3$.ɵtextBinding(4, $r3$.ɵbind(ctx.names[4]));
+              $r3$.ɵtextBinding(5, $r3$.ɵbind(ctx.names[5]));
+              $r3$.ɵtextBinding(6, $r3$.ɵbind(ctx.names[6]));
+              $r3$.ɵtextBinding(7, $r3$.ɵbind(ctx.names[7]));
+              $r3$.ɵtextBinding(8, $r3$.ɵbind(ctx.names[8]));
+              $r3$.ɵtextBinding(9, $r3$.ɵbind(ctx.names[9]));
+              $r3$.ɵtextBinding(10, $r3$.ɵbind(ctx.names[10]));
+              $r3$.ɵtextBinding(11, $r3$.ɵbind(ctx.names[11]));
             }
           },
           inputs: {names: 'names'}
@@ -721,13 +728,13 @@ describe('components & directives', () => {
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(rf: $RenderFlags$, c: $any$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'my-comp');
-              $r3$.ɵrS(10);
+              $r3$.ɵelement(0, 'my-comp');
+              $r3$.ɵreserveSlots(10);
             }
             if (rf & 2) {
-              $r3$.ɵp(
+              $r3$.ɵelementProperty(
                   0, 'names',
-                  $r3$.ɵb($r3$.ɵfV(
+                  $r3$.ɵbind($r3$.ɵpureFunctionV(
                       10, $e0_ff$, [c.n0, c.n1, c.n2, c.n3, c.n4, c.n5, c.n6, c.n7, c.n8])));
             }
           }
@@ -764,16 +771,16 @@ describe('components & directives', () => {
           factory: function ObjectComp_Factory() { return new ObjectComp(); },
           template: function ObjectComp_Template(rf: $RenderFlags$, ctx: $ObjectComp$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'p');
-              $r3$.ɵT(1);
-              $r3$.ɵe();
-              $r3$.ɵE(2, 'p');
-              $r3$.ɵT(3);
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'p');
+              $r3$.ɵtext(1);
+              $r3$.ɵelementEnd();
+              $r3$.ɵelementStart(2, 'p');
+              $r3$.ɵtext(3);
+              $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵt(1, $r3$.ɵb(ctx.config['duration']));
-              $r3$.ɵt(3, $r3$.ɵb(ctx.config.animation));
+              $r3$.ɵtextBinding(1, $r3$.ɵbind(ctx.config['duration']));
+              $r3$.ɵtextBinding(3, $r3$.ɵbind(ctx.config.animation));
             }
           },
           inputs: {config: 'config'}
@@ -800,11 +807,12 @@ describe('components & directives', () => {
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'object-comp');
-              $r3$.ɵrS(2);
+              $r3$.ɵelement(0, 'object-comp');
+              $r3$.ɵreserveSlots(2);
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'config', $r3$.ɵb($r3$.ɵf1(2, $e0_ff$, ctx.name)));
+              $r3$.ɵelementProperty(
+                  0, 'config', $r3$.ɵbind($r3$.ɵpureFunction1(2, $e0_ff$, ctx.name)));
             }
           }
         });
@@ -841,20 +849,20 @@ describe('components & directives', () => {
           factory: function NestedComp_Factory() { return new NestedComp(); },
           template: function NestedComp_Template(rf: $RenderFlags$, ctx: $NestedComp$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'p');
-              $r3$.ɵT(1);
-              $r3$.ɵe();
-              $r3$.ɵE(2, 'p');
-              $r3$.ɵT(3);
-              $r3$.ɵe();
-              $r3$.ɵE(4, 'p');
-              $r3$.ɵT(5);
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'p');
+              $r3$.ɵtext(1);
+              $r3$.ɵelementEnd();
+              $r3$.ɵelementStart(2, 'p');
+              $r3$.ɵtext(3);
+              $r3$.ɵelementEnd();
+              $r3$.ɵelementStart(4, 'p');
+              $r3$.ɵtext(5);
+              $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵt(1, $r3$.ɵb(ctx.config.animation));
-              $r3$.ɵt(3, $r3$.ɵb(ctx.config.actions[0].opacity));
-              $r3$.ɵt(5, $r3$.ɵb(ctx.config.actions[1].duration));
+              $r3$.ɵtextBinding(1, $r3$.ɵbind(ctx.config.animation));
+              $r3$.ɵtextBinding(3, $r3$.ɵbind(ctx.config.actions[0].opacity));
+              $r3$.ɵtextBinding(5, $r3$.ɵbind(ctx.config.actions[1].duration));
             }
           },
           inputs: {config: 'config'}
@@ -886,14 +894,16 @@ describe('components & directives', () => {
           factory: function MyApp_Factory() { return new MyApp(); },
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'nested-comp');
-              $r3$.ɵrS(7);
+              $r3$.ɵelement(0, 'nested-comp');
+              $r3$.ɵreserveSlots(7);
             }
             if (rf & 2) {
-              $r3$.ɵp(
-                  0, 'config', $r3$.ɵb($r3$.ɵf2(
-                                   7, $e0_ff_2$, ctx.name,
-                                   $r3$.ɵf1(4, $e0_ff_1$, $r3$.ɵf1(2, $e0_ff$, ctx.duration)))));
+              $r3$.ɵelementProperty(
+                  0, 'config',
+                  $r3$.ɵbind($r3$.ɵpureFunction2(
+                      7, $e0_ff_2$, ctx.name,
+                      $r3$.ɵpureFunction1(
+                          4, $e0_ff_1$, $r3$.ɵpureFunction1(2, $e0_ff$, ctx.duration)))));
             }
           }
         });

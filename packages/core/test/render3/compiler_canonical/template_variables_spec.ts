@@ -99,26 +99,26 @@ describe('template variables', () => {
         factory: function MyComponent_Factory() { return new MyComponent(); },
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'ul');
-            $r3$.ɵC(1, MyComponent_ForOfDirective_Template_1, '', ['forOf', '']);
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'ul');
+            $r3$.ɵcontainer(1, MyComponent_ForOfDirective_Template_1, '', ['forOf', '']);
+            $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
-            $r3$.ɵcR(1);
-            $r3$.ɵcr();
+            $r3$.ɵelementProperty(1, 'forOf', $r3$.ɵbind(ctx.items));
+            $r3$.ɵcontainerRefreshStart(1);
+            $r3$.ɵcontainerRefreshEnd();
           }
 
           function MyComponent_ForOfDirective_Template_1(rf: $RenderFlags$, ctx1: $any$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'li');
-              $r3$.ɵT(1);
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'li');
+              $r3$.ɵtext(1);
+              $r3$.ɵelementEnd();
             }
             let $l0_item$: any;
             if (rf & 2) {
               $l0_item$ = ctx1.$implicit;
-              $r3$.ɵt(1, $r3$.ɵi1('', $l0_item$.name, ''));
+              $r3$.ɵtextBinding(1, $r3$.ɵinterpolation1('', $l0_item$.name, ''));
             }
           }
         }
@@ -173,47 +173,49 @@ describe('template variables', () => {
         factory: function MyComponent_Factory() { return new MyComponent(); },
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'ul');
-            $r3$.ɵC(1, MyComponent_ForOfDirective_Template_1, '', ['forOf', '']);
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'ul');
+            $r3$.ɵcontainer(1, MyComponent_ForOfDirective_Template_1, '', ['forOf', '']);
+            $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵp(1, 'forOf', $r3$.ɵb(ctx.items));
-            $r3$.ɵcR(1);
-            $r3$.ɵcr();
+            $r3$.ɵelementProperty(1, 'forOf', $r3$.ɵbind(ctx.items));
+            $r3$.ɵcontainerRefreshStart(1);
+            $r3$.ɵcontainerRefreshEnd();
           }
 
           function MyComponent_ForOfDirective_Template_1(rf1: $RenderFlags$, ctx1: $any$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'li');
-              $r3$.ɵE(1, 'div');
-              $r3$.ɵT(2);
-              $r3$.ɵe();
-              $r3$.ɵE(3, 'ul');
-              $r3$.ɵC(4, MyComponent_ForOfDirective_ForOfDirective_Template_3, '', ['forOf', '']);
-              $r3$.ɵe();
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'li');
+              $r3$.ɵelementStart(1, 'div');
+              $r3$.ɵtext(2);
+              $r3$.ɵelementEnd();
+              $r3$.ɵelementStart(3, 'ul');
+              $r3$.ɵcontainer(
+                  4, MyComponent_ForOfDirective_ForOfDirective_Template_3, '', ['forOf', '']);
+              $r3$.ɵelementEnd();
+              $r3$.ɵelementEnd();
             }
             let $l0_item$: any;
             if (rf & 2) {
               $l0_item$ = ctx1.$implicit;
-              $r3$.ɵp(4, 'forOf', $r3$.ɵb($l0_item$.infos));
-              $r3$.ɵt(2, $r3$.ɵi1('', $l0_item$.name, ''));
-              $r3$.ɵcR(4);
-              $r3$.ɵcr();
+              $r3$.ɵelementProperty(4, 'forOf', $r3$.ɵbind($l0_item$.infos));
+              $r3$.ɵtextBinding(2, $r3$.ɵinterpolation1('', $l0_item$.name, ''));
+              $r3$.ɵcontainerRefreshStart(4);
+              $r3$.ɵcontainerRefreshEnd();
             }
 
             function MyComponent_ForOfDirective_ForOfDirective_Template_3(
                 rf2: $number$, ctx2: $any$) {
               if (rf & 1) {
-                $r3$.ɵE(0, 'li');
-                $r3$.ɵT(1);
-                $r3$.ɵe();
+                $r3$.ɵelementStart(0, 'li');
+                $r3$.ɵtext(1);
+                $r3$.ɵelementEnd();
               }
               let $l0_info$: any;
               if (rf & 2) {
                 $l0_info$ = ctx2.$implicit;
-                $r3$.ɵt(1, $r3$.ɵi2(' ', $l0_item$.name, ': ', $l0_info$.description, ' '));
+                $r3$.ɵtextBinding(
+                    1, $r3$.ɵinterpolation2(' ', $l0_item$.name, ': ', $l0_info$.description, ' '));
               }
             }
           }

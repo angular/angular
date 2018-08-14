@@ -49,13 +49,13 @@ describe('i18n support in the view compiler', () => {
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
           …
-          $r3$.ɵT(1, $msg_1$);
+          $r3$.ɵtext(1, $msg_1$);
           …
-          $r3$.ɵT(3,"&");
+          $r3$.ɵtext(3,"&");
           …
-          $r3$.ɵT(5, $msg_2$);
+          $r3$.ɵtext(5, $msg_2$);
           …
-          $r3$.ɵT(7, $msg_2$);
+          $r3$.ɵtext(7, $msg_2$);
           …
         }
       }
@@ -103,9 +103,9 @@ describe('i18n support in the view compiler', () => {
       …
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $r3$.ɵE(0, "div", $c1$);
-          $r3$.ɵT(1, $msg_2$);
-          $r3$.ɵe();
+          $r3$.ɵelementStart(0, "div", $c1$);
+          $r3$.ɵtext(1, $msg_2$);
+          $r3$.ɵelementEnd();
         }
       }
       `;
@@ -148,7 +148,7 @@ describe('i18n support in the view compiler', () => {
       …
       template: function MyComponent_Template(rf, ctx) {
         if (rf & 1) {
-          $r3$.ɵEe(0, "div", $c1$);
+          $r3$.ɵelement(0, "div", $c1$);
         }
       }
     `;
