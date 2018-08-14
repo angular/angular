@@ -126,8 +126,8 @@ describe('@angular/core ng_package', () => {
         expect(shx.cat('fesm5/core.js')).not.toContain('@fileoverview added by tsickle');
       });
 
-      it('should have annotations rather than decorators',
-         () => { expect(shx.cat('fesm5/core.js')).not.toContain('__decorate'); });
+      it('should have decorators',
+         () => { expect(shx.cat('fesm5/core.js')).toContain('__decorate'); });
 
       it('should load tslib from external bundle', () => {
         expect(shx.cat('fesm5/core.js')).not.toContain('function __extends');
