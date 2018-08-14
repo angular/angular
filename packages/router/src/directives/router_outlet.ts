@@ -17,6 +17,7 @@ import {PRIMARY_OUTLET} from '../shared';
  * @description
  *
  * Acts as a placeholder that Angular dynamically fills based on the current router state.
+ * Router Outlet is a Directive that can used load Component dynamically based on the current url
  *
  * ```
  * <router-outlet></router-outlet>
