@@ -65,6 +65,8 @@ export class HttpClient {
   /**
    * Construct a request which interprets the body as an `ArrayBuffer` and returns it.
    *
+   * @param options This is an anonymous type with a signature described in the
+   * [usage notes](#request-usage-notes).
    * @return an `Observable` of the body as an `ArrayBuffer`.
    */
   request(method: string, url: string, options: {
@@ -298,13 +300,20 @@ export class HttpClient {
    * fires the request through the chain of registered interceptors and on to the
    * server.
    *
-   * This method can be called in one of two ways. Either an `HttpRequest`
-   * instance can be passed directly as the only parameter, or a method can be
-   * passed as the first parameter, a string URL as the second, and an
-   * options hash as the third.
+   * @usageNotes
+   *
+   * This method can be called in one of two ways.
+   *
+   * * An `HttpRequest` instance can be passed directly as the only parameter.
+   * * A method can be passed as the first parameter, a string URL as the second, and
+   *   an options hash as the third.
+   *
+   * ### HttpRequest object
    *
    * If a `HttpRequest` object is passed directly, an `Observable` of the
    * raw `HttpEvent` stream will be returned.
+   *
+   * ### URL and options
    *
    * If a request is instead built by providing a URL, the options object
    * determines the return type of `request()`. In addition to configuring
