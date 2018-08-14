@@ -16,6 +16,7 @@ import {NgPlural, NgPluralCase} from './ng_plural';
 import {NgStyle} from './ng_style';
 import {NgSwitch, NgSwitchCase, NgSwitchDefault} from './ng_switch';
 import {NgTemplateOutlet} from './ng_template_outlet';
+import {NgLet, NgLetContext} from './ng_let';
 
 export {
   NgClass,
@@ -30,7 +31,9 @@ export {
   NgSwitch,
   NgSwitchCase,
   NgSwitchDefault,
-  NgTemplateOutlet
+  NgTemplateOutlet,
+  NgLet,
+  NgLetContext
 };
 
 
@@ -51,4 +54,5 @@ export const COMMON_DIRECTIVES: Provider[] = [
   NgSwitchDefault,
   NgPlural,
   NgPluralCase,
+  NgLet
 ];
