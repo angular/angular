@@ -6,25 +6,25 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵC as C, ɵE as E, ɵRenderFlags as RenderFlags, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as _detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵs as s, ɵsa as sa, ɵsm as sm, ɵsp as sp, ɵt as t, ɵv as v} from '@angular/core';
+import {ɵRenderFlags, ɵbind, ɵcontainer, ɵcontainerRefreshEnd, ɵcontainerRefreshStart, ɵdefineComponent, ɵdetectChanges, ɵelementEnd, ɵelementProperty, ɵelementStart, ɵelementStyling as s, ɵelementStylingProp, ɵembeddedViewEnd, ɵembeddedViewStart, ɵinterpolation1, ɵtext, ɵtextBinding as ɵtextBinding} from '@angular/core';
 
 import {TreeNode, buildTree, emptyTree} from '../util';
 
 export function destroyDom(component: TreeComponent) {
   component.data = emptyTree;
-  _detectChanges(component);
+  ɵdetectChanges(component);
 }
 
 export function createDom(component: TreeComponent) {
   component.data = buildTree();
-  _detectChanges(component);
+  ɵdetectChanges(component);
 }
 
 const numberOfChecksEl = document.getElementById('numberOfChecks') !;
 let detectChangesRuns = 0;
 export function detectChanges(component: TreeComponent) {
   for (let i = 0; i < 10; i++) {
-    _detectChanges(component);
+    ɵdetectChanges(component);
   }
   detectChangesRuns += 10;
   numberOfChecksEl.textContent = `${detectChangesRuns}`;
@@ -35,55 +35,55 @@ export class TreeComponent {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
-  static ngComponentDef = defineComponent({
+  static ngComponentDef = ɵdefineComponent({
     type: TreeComponent,
     selectors: [['tree']],
-    template: function(rf: RenderFlags, ctx: TreeComponent) {
-      if (rf & RenderFlags.Create) {
-        E(0, 'span');
+    template: function(rf: ɵRenderFlags, ctx: TreeComponent) {
+      if (rf & ɵRenderFlags.Create) {
+        ɵelementStart(0, 'span');
         s(null, c0);
-        { T(1); }
-        e();
-        C(2);
-        C(3);
+        { ɵtext(1); }
+        ɵelementEnd();
+        ɵcontainer(2);
+        ɵcontainer(3);
       }
-      if (rf & RenderFlags.Update) {
-        sp(0, 0, ctx.data.depth % 2 ? '' : 'grey');
-        t(1, i1(' ', ctx.data.value, ' '));
-        cR(2);
+      if (rf & ɵRenderFlags.Update) {
+        ɵelementStylingProp(0, 0, ctx.data.depth % 2 ? '' : 'grey');
+        ɵtextBinding(1, ɵinterpolation1(' ', ctx.data.value, ' '));
+        ɵcontainerRefreshStart(2);
         {
           if (ctx.data.left != null) {
-            let rf0 = V(0);
+            let rf0 = ɵembeddedViewStart(0);
             {
-              if (rf0 & RenderFlags.Create) {
-                E(0, 'tree');
-                e();
+              if (rf0 & ɵRenderFlags.Create) {
+                ɵelementStart(0, 'tree');
+                ɵelementEnd();
               }
-              if (rf0 & RenderFlags.Update) {
-                p(0, 'data', b(ctx.data.left));
+              if (rf0 & ɵRenderFlags.Update) {
+                ɵelementProperty(0, 'data', ɵbind(ctx.data.left));
               }
             }
-            v();
+            ɵembeddedViewEnd();
           }
         }
-        cr();
-        cR(3);
+        ɵcontainerRefreshEnd();
+        ɵcontainerRefreshStart(3);
         {
           if (ctx.data.right != null) {
-            let rf0 = V(0);
+            let rf0 = ɵembeddedViewStart(0);
             {
-              if (rf0 & RenderFlags.Create) {
-                E(0, 'tree');
-                e();
+              if (rf0 & ɵRenderFlags.Create) {
+                ɵelementStart(0, 'tree');
+                ɵelementEnd();
               }
-              if (rf0 & RenderFlags.Update) {
-                p(0, 'data', b(ctx.data.right));
+              if (rf0 & ɵRenderFlags.Update) {
+                ɵelementProperty(0, 'data', ɵbind(ctx.data.right));
               }
             }
-            v();
+            ɵembeddedViewEnd();
           }
         }
-        cr();
+        ɵcontainerRefreshEnd();
       }
     },
     factory: () => new TreeComponent,
@@ -96,10 +96,10 @@ export class TreeFunction {
   data: TreeNode = emptyTree;
 
   /** @nocollapse */
-  static ngComponentDef = defineComponent({
+  static ngComponentDef = ɵdefineComponent({
     type: TreeFunction,
     selectors: [['tree']],
-    template: function(rf: RenderFlags, ctx: TreeFunction) {
+    template: function(rf: ɵRenderFlags, ctx: TreeFunction) {
       // bit of a hack
       TreeTpl(rf, ctx.data);
     },
@@ -109,39 +109,39 @@ export class TreeFunction {
 }
 
 const c1 = ['background-color'];
-export function TreeTpl(rf: RenderFlags, ctx: TreeNode) {
-  if (rf & RenderFlags.Create) {
-    E(0, 'tree');
+export function TreeTpl(rf: ɵRenderFlags, ctx: TreeNode) {
+  if (rf & ɵRenderFlags.Create) {
+    ɵelementStart(0, 'tree');
     {
-      E(1, 'span');
+      ɵelementStart(1, 'span');
       s(null, c1);
-      { T(2); }
-      e();
-      C(3);
-      C(4);
+      { ɵtext(2); }
+      ɵelementEnd();
+      ɵcontainer(3);
+      ɵcontainer(4);
     }
-    e();
+    ɵelementEnd();
   }
-  if (rf & RenderFlags.Update) {
-    sp(1, 0, ctx.depth % 2 ? '' : 'grey');
-    t(2, i1(' ', ctx.value, ' '));
-    cR(3);
+  if (rf & ɵRenderFlags.Update) {
+    ɵelementStylingProp(1, 0, ctx.depth % 2 ? '' : 'grey');
+    ɵtextBinding(2, ɵinterpolation1(' ', ctx.value, ' '));
+    ɵcontainerRefreshStart(3);
     {
       if (ctx.left != null) {
-        let rf0 = V(0);
+        let rf0 = ɵembeddedViewStart(0);
         { TreeTpl(rf0, ctx.left); }
-        v();
+        ɵembeddedViewEnd();
       }
     }
-    cr();
-    cR(4);
+    ɵcontainerRefreshEnd();
+    ɵcontainerRefreshStart(4);
     {
       if (ctx.right != null) {
-        let rf0 = V(0);
+        let rf0 = ɵembeddedViewStart(0);
         { TreeTpl(rf0, ctx.right); }
-        v();
+        ɵembeddedViewEnd();
       }
     }
-    cr();
+    ɵcontainerRefreshEnd();
   }
 }

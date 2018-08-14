@@ -71,12 +71,12 @@ describe('lifecycle hooks', () => {
       factory: function SimpleLayout_Factory() { return simpleLayout = new SimpleLayout(); },
       template: function SimpleLayout_Template(rf: $RenderFlags$, ctx: $SimpleLayout$) {
         if (rf & 1) {
-          $r3$.ɵEe(0, 'lifecycle-comp');
-          $r3$.ɵEe(1, 'lifecycle-comp');
+          $r3$.ɵelement(0, 'lifecycle-comp');
+          $r3$.ɵelement(1, 'lifecycle-comp');
         }
         if (rf & 2) {
-          $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
-          $r3$.ɵp(1, 'name', $r3$.ɵb(ctx.name2));
+          $r3$.ɵelementProperty(0, 'name', $r3$.ɵbind(ctx.name1));
+          $r3$.ɵelementProperty(1, 'name', $r3$.ɵbind(ctx.name2));
         }
       }
     });

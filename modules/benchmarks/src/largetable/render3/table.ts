@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ɵC as C, ɵE as E, ɵRenderFlags as RenderFlags, ɵT as T, ɵV as V, ɵb as b, ɵcR as cR, ɵcr as cr, ɵdefineComponent as defineComponent, ɵdetectChanges as detectChanges, ɵe as e, ɵi1 as i1, ɵp as p, ɵs as s, ɵsa as sa, ɵsm as sm, ɵsp as sp, ɵt as t, ɵv as v} from '@angular/core';
+import {ɵRenderFlags, ɵbind, ɵcontainer, ɵcontainerRefreshEnd, ɵcontainerRefreshStart, ɵdefineComponent, ɵdetectChanges, ɵelementEnd, ɵelementStart, ɵelementStyling, ɵelementStylingProp, ɵembeddedViewEnd, ɵembeddedViewStart, ɵtext, ɵtextBinding as ɵtextBinding} from '@angular/core';
 import {ComponentDefInternal} from '@angular/core/src/render3/interfaces/definition';
 
 import {TableCell, buildTable, emptyTable} from '../util';
@@ -16,57 +16,57 @@ export class LargeTableComponent {
   data: TableCell[][] = emptyTable;
 
   /** @nocollapse */
-  static ngComponentDef: ComponentDefInternal<LargeTableComponent> = defineComponent({
+  static ngComponentDef: ComponentDefInternal<LargeTableComponent> = ɵdefineComponent({
     type: LargeTableComponent,
     selectors: [['largetable']],
-    template: function(rf: RenderFlags, ctx: LargeTableComponent) {
-      if (rf & RenderFlags.Create) {
-        E(0, 'table');
+    template: function(rf: ɵRenderFlags, ctx: LargeTableComponent) {
+      if (rf & ɵRenderFlags.Create) {
+        ɵelementStart(0, 'table');
         {
-          E(1, 'tbody');
-          { C(2); }
-          e();
+          ɵelementStart(1, 'tbody');
+          { ɵcontainer(2); }
+          ɵelementEnd();
         }
-        e();
+        ɵelementEnd();
       }
-      if (rf & RenderFlags.Update) {
-        cR(2);
+      if (rf & ɵRenderFlags.Update) {
+        ɵcontainerRefreshStart(2);
         {
           for (let row of ctx.data) {
-            let rf1 = V(1);
+            let rf1 = ɵembeddedViewStart(1);
             {
-              if (rf1 & RenderFlags.Create) {
-                E(0, 'tr');
-                C(1);
-                e();
+              if (rf1 & ɵRenderFlags.Create) {
+                ɵelementStart(0, 'tr');
+                ɵcontainer(1);
+                ɵelementEnd();
               }
-              if (rf1 & RenderFlags.Update) {
-                cR(1);
+              if (rf1 & ɵRenderFlags.Update) {
+                ɵcontainerRefreshStart(1);
                 {
                   for (let cell of row) {
-                    let rf2 = V(2);
+                    let rf2 = ɵembeddedViewStart(2);
                     {
-                      if (rf2 & RenderFlags.Create) {
-                        E(0, 'td');
-                        s(null, c0);
-                        { T(1); }
-                        e();
+                      if (rf2 & ɵRenderFlags.Create) {
+                        ɵelementStart(0, 'td');
+                        ɵelementStyling(null, c0);
+                        { ɵtext(1); }
+                        ɵelementEnd();
                       }
-                      if (rf2 & RenderFlags.Update) {
-                        sp(0, 0, null, cell.row % 2 ? '' : 'grey');
-                        t(1, b(cell.value));
+                      if (rf2 & ɵRenderFlags.Update) {
+                        ɵelementStylingProp(0, 0, null, cell.row % 2 ? '' : 'grey');
+                        ɵtextBinding(1, ɵbind(cell.value));
                       }
                     }
-                    v();
+                    ɵembeddedViewEnd();
                   }
                 }
-                cr();
+                ɵcontainerRefreshEnd();
               }
             }
-            v();
+            ɵembeddedViewEnd();
           }
         }
-        cr();
+        ɵcontainerRefreshEnd();
       }
     },
     factory: () => new LargeTableComponent(),
@@ -76,10 +76,10 @@ export class LargeTableComponent {
 
 export function destroyDom(component: LargeTableComponent) {
   component.data = emptyTable;
-  detectChanges(component);
+  ɵdetectChanges(component);
 }
 
 export function createDom(component: LargeTableComponent) {
   component.data = buildTable();
-  detectChanges(component);
+  ɵdetectChanges(component);
 }

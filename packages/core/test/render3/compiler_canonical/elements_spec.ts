@@ -39,13 +39,13 @@ describe('elements', () => {
         factory: () => new MyComponent(),
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'div', $e0_attrs$);
-            $r3$.ɵT(1, 'Hello ');
-            $r3$.ɵE(2, 'b');
-            $r3$.ɵT(3, 'World');
-            $r3$.ɵe();
-            $r3$.ɵT(4, '!');
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'div', $e0_attrs$);
+            $r3$.ɵtext(1, 'Hello ');
+            $r3$.ɵelementStart(2, 'b');
+            $r3$.ɵtext(3, 'World');
+            $r3$.ɵelementEnd();
+            $r3$.ɵtext(4, '!');
+            $r3$.ɵelementEnd();
           }
         }
       });
@@ -92,13 +92,14 @@ describe('elements', () => {
           let $tmp$: any;
           let $tmp_2$: any;
           if (rf & 1) {
-            $r3$.ɵEe(0, 'div', $e0_attrs$, $e0_locals$);
-            $r3$.ɵT(3);
+            $r3$.ɵelement(0, 'div', $e0_attrs$, $e0_locals$);
+            $r3$.ɵtext(3);
           }
           if (rf & 2) {
-            $tmp$ = $r3$.ɵld(1);
-            $tmp_2$ = $r3$.ɵld(2);
-            $r3$.ɵt(3, $r3$.ɵi2(' ', $tmp$.value, ' - ', $tmp_2$.tagName, ''));
+            $tmp$ = $r3$.ɵload(1);
+            $tmp_2$ = $r3$.ɵload(2);
+            $r3$.ɵtextBinding(
+                3, $r3$.ɵinterpolation2(' ', $tmp$.value, ' - ', $tmp_2$.tagName, ''));
           }
         }
       });
@@ -134,14 +135,15 @@ describe('elements', () => {
         factory: function ListenerComp_Factory() { return new ListenerComp(); },
         template: function ListenerComp_Template(rf: $RenderFlags$, ctx: $ListenerComp$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'button');
-            $r3$.ɵL('click', function ListenerComp_click_Handler() { return ctx.onClick(); });
-            $r3$.ɵL('keypress', function ListenerComp_keypress_Handler($event: $any$) {
+            $r3$.ɵelementStart(0, 'button');
+            $r3$.ɵlistener(
+                'click', function ListenerComp_click_Handler() { return ctx.onClick(); });
+            $r3$.ɵlistener('keypress', function ListenerComp_keypress_Handler($event: $any$) {
               ctx.onPress($event);
               return ctx.onPress2($event);
             });
-            $r3$.ɵT(1, 'Click');
-            $r3$.ɵe();
+            $r3$.ɵtext(1, 'Click');
+            $r3$.ɵelementEnd();
           }
         }
       });
@@ -188,13 +190,13 @@ describe('elements', () => {
         factory: () => new MyComponent(),
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'div', $e0_attrs$);
-            $r3$.ɵT(1, 'Hello ');
-            $r3$.ɵE(2, 'b');
-            $r3$.ɵT(3, 'World');
-            $r3$.ɵe();
-            $r3$.ɵT(4, '!');
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'div', $e0_attrs$);
+            $r3$.ɵtext(1, 'Hello ');
+            $r3$.ɵelementStart(2, 'b');
+            $r3$.ɵtext(3, 'World');
+            $r3$.ɵelementEnd();
+            $r3$.ɵtext(4, '!');
+            $r3$.ɵelementEnd();
           }
         }
       });
@@ -220,10 +222,10 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'div');
+              $r3$.ɵelement(0, 'div');
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someProperty));
+              $r3$.ɵelementProperty(0, 'id', $r3$.ɵbind(ctx.someProperty));
             }
           }
         });
@@ -251,10 +253,10 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'div');
+              $r3$.ɵelement(0, 'div');
             }
             if (rf & 2) {
-              $r3$.ɵa(0, 'title', $r3$.ɵb(ctx.someAttribute));
+              $r3$.ɵelementAttribute(0, 'title', $r3$.ɵbind(ctx.someAttribute));
             }
           }
         });
@@ -283,13 +285,13 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵs(c1);
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'div');
+              $r3$.ɵelementStyling(c1);
+              $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵcp(0, 0, ctx.someFlag);
-              $r3$.ɵsa(0);
+              $r3$.ɵelementClassProp(0, 0, ctx.someFlag);
+              $r3$.ɵelementStylingApply(0);
             }
           }
         });
@@ -322,14 +324,14 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵs(null, c0);
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'div');
+              $r3$.ɵelementStyling(null, c0);
+              $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵsp(0, 0, ctx.someColor);
-              $r3$.ɵsp(0, 1, ctx.someWidth, 'px');
-              $r3$.ɵsa(0);
+              $r3$.ɵelementStylingProp(0, 0, ctx.someColor);
+              $r3$.ɵelementStylingProp(0, 1, ctx.someWidth, 'px');
+              $r3$.ɵelementStylingApply(0);
             }
           }
         });
@@ -373,14 +375,14 @@ describe('elements', () => {
           factory: function MyComponent_Factory() { return new MyComponent(); },
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵs(c0, c1);
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'div');
+              $r3$.ɵelementStyling(c0, c1);
+              $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵp(0, 'id', $r3$.ɵb(ctx.someString + 1));
-              $r3$.ɵcp(0, 0, ctx.someString == 'initial');
-              $r3$.ɵsa(0);
+              $r3$.ɵelementProperty(0, 'id', $r3$.ɵbind(ctx.someString + 1));
+              $r3$.ɵelementClassProp(0, 0, ctx.someString == 'initial');
+              $r3$.ɵelementStylingApply(0);
             }
           }
         });
@@ -411,13 +413,13 @@ describe('elements', () => {
           factory: function StyleComponent_Factory() { return new StyleComponent(); },
           template: function StyleComponent_Template(rf: $RenderFlags$, ctx: $StyleComponent$) {
             if (rf & 1) {
-              $r3$.ɵE(0, 'div');
-              $r3$.ɵs();
-              $r3$.ɵe();
+              $r3$.ɵelementStart(0, 'div');
+              $r3$.ɵelementStyling();
+              $r3$.ɵelementEnd();
             }
             if (rf & 2) {
-              $r3$.ɵsm(0, ctx.classExp, ctx.styleExp);
-              $r3$.ɵsa(0);
+              $r3$.ɵelementStylingMap(0, ctx.classExp, ctx.styleExp);
+              $r3$.ɵelementStylingApply(0);
             }
           }
         });
