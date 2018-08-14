@@ -150,7 +150,7 @@ export class BrowserViewportScroller implements ViewportScroller {
   private supportScrollRestoration(): boolean {
     try {
       return !!this.window && !!this.window.scrollTo;
-    } catch (e) {
+    } catch {
       return false;
     }
   }

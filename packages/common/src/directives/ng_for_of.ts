@@ -149,7 +149,7 @@ export class NgForOf<T> implements DoCheck {
       if (!this._differ && value) {
         try {
           this._differ = this._differs.find(value).create(this.ngForTrackBy);
-        } catch (e) {
+        } catch {
           throw new Error(
               `Cannot find a differ supporting object '${value}' of type '${getTypeNameForDebugging(value)}'. NgFor only supports binding to Iterables such as Arrays.`);
         }
