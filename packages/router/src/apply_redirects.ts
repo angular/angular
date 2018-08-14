@@ -174,7 +174,7 @@ class ApplyRedirects {
   private expandSegmentAgainstRoute(
       ngModule: NgModuleRef<any>, segmentGroup: UrlSegmentGroup, routes: Route[], route: Route,
       paths: UrlSegment[], outlet: string, allowRedirects: boolean): Observable<UrlSegmentGroup> {
-    if (getOutlet(route) !== outlet) {
+    if (getOutlet(route) !== outlet && !isLazyRootWithEmptyPath(route)) {
       return noMatch(segmentGroup);
     }
 
@@ -518,6 +518,10 @@ function isEmptyPathRedirect(
   }
 
   return r.path === '' && r.redirectTo !== undefined;
+}
+
+function isLazyRootWithEmptyPath(route: Route): boolean {
+  return !!route.loadChildren && route.path === '' && getOutlet(route) === PRIMARY_OUTLET;
 }
 
 function getOutlet(route: Route): string {
