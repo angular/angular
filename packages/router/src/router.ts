@@ -31,6 +31,7 @@ import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_st
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
 import {forEach} from './utils/collection';
 import {TreeNode, nodeChildrenAsMap} from './utils/tree';
+import { afterPreactivation } from './operators/after_preactivation';
 
 
 
@@ -769,17 +770,13 @@ export class Router {
             of (p)
       ));
 
-      const preactivationDone$ =
-          preactivationResolveData$.pipe(mergeMap((p): Observable<NavStreamValue> => {
-            if (typeof p === 'boolean' || this.navigationId !== id) return of (false);
-            return this.hooks
-                .afterPreactivation(p.snapshot, {
-                  navigationId: id,
-                  appliedUrlTree: url,
-                  rawUrlTree: rawUrl, skipLocationChange, replaceUrl,
-                })
-                .pipe(map(() => p));
-          }));
+      const preactivationDone$: Observable<NavStreamValue> =
+          preactivationResolveData$.pipe(mergeMap(p =>
+            typeof p === 'boolean' || this.navigationId !== id ? of (false) :
+            of (p).pipe(
+              afterPreactivation(this.hooks.afterPreactivation, id, url, rawUrl, skipLocationChange, replaceUrl),
+              map(() => p))
+            ));
 
 
       // create router state
