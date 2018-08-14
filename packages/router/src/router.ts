@@ -19,6 +19,7 @@ import {applyRedirects} from './operators/apply_redirects';
 import {beforePreactivation} from './operators/before_preactivation';
 import {checkGuards} from './operators/check_guards';
 import {recognize} from './operators/recognize';
+import {resolveData} from './operators/resolve_data';
 import {setupPreactivation} from './operators/setup_preactivation';
 import {PreActivation} from './pre_activation';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
@@ -730,39 +731,43 @@ export class Router {
 
       const preactivationCheckGuards$: Observable<NavStreamValue> =
           preactivationSetup$.pipe(mergeMap(
-              p => this.navigationId !== id ? of (false) : of (p.appliedUrl)
-                       .pipe(
-                           tap(_ => this.triggerEvent(new GuardsCheckStart(
-                                   id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
-                                   p.snapshot))),
-                           checkGuards(
-                               this.rootContexts, this.routerState.snapshot, this.ngModule.injector,
-                               preActivation),
-                           tap(shouldActivate => this.triggerEvent(new GuardsCheckEnd(
-                                   id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
-                                   p.snapshot, shouldActivate))),
-                           map(shouldActivate => ({
-                                 appliedUrl: p.appliedUrl,
-                                 snapshot: p.snapshot,
-                                 shouldActivate: shouldActivate
-                               })))));
+              p => this.navigationId !== id ?
+                  of (false) :
+                  of (p.appliedUrl)
+                      .pipe(
+                          tap(_ => this.triggerEvent(new GuardsCheckStart(
+                                  id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
+                                  p.snapshot))),
+                          checkGuards(
+                              this.rootContexts, this.routerState.snapshot, this.ngModule.injector,
+                              preActivation),
+                          tap(shouldActivate => this.triggerEvent(new GuardsCheckEnd(
+                                  id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
+                                  p.snapshot, shouldActivate))),
+                          map(shouldActivate => ({
+                                appliedUrl: p.appliedUrl,
+                                snapshot: p.snapshot,
+                                shouldActivate: shouldActivate
+                              })))));
 
-      const preactivationResolveData$ =
-          preactivationCheckGuards$.pipe(mergeMap((p): Observable<NavStreamValue> => {
-            if (typeof p === 'boolean' || this.navigationId !== id) return of (false);
-
-            if (p.shouldActivate && preActivation.isActivating()) {
-              this.triggerEvent(new ResolveStart(
-                  id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl), p.snapshot));
-              return preActivation.resolveData(this.paramsInheritanceStrategy).pipe(map(() => {
-                this.triggerEvent(new ResolveEnd(
-                    id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl), p.snapshot));
-                return p;
-              }));
-            } else {
-              return of (p);
-            }
-          }));
+      const preactivationResolveData$: Observable<NavStreamValue> = preactivationCheckGuards$.pipe(mergeMap(p =>
+        // TODO(jasonaden): This should be simplified so there's one route to cancelling navigation, which would
+        // unravel the stream. This would get rid of all these imperative checks in the middle of navigation.
+        typeof p === 'boolean' || this.navigationId !== id ?
+            of (false) :
+            p.shouldActivate && preActivation.isActivating() ?
+            of (p.appliedUrl)
+                    .pipe(
+                        tap(_ => this.triggerEvent(new ResolveStart(
+                                id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
+                                p.snapshot))),
+                        resolveData(preActivation, this.paramsInheritanceStrategy),
+                        tap(_ => this.triggerEvent(new ResolveEnd(
+                                id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
+                                p.snapshot))),
+                        map(_ => p)) :
+            of (p)
+      ));
 
       const preactivationDone$ =
           preactivationResolveData$.pipe(mergeMap((p): Observable<NavStreamValue> => {
