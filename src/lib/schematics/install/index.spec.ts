@@ -1,10 +1,10 @@
 import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
+import {getIndexHtmlPath} from './fonts/project-index-html';
 import {getProjectFromWorkspace} from '../utils/get-project';
 import {getFileContent} from '@schematics/angular/utility/test';
 import {collectionPath, createTestApp} from '../test-setup/test-app';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import {getIndexHtmlPath} from '../utils/ast';
 import {normalize} from '@angular-devkit/core';
 
 describe('material-install-schematic', () => {
@@ -65,9 +65,15 @@ describe('material-install-schematic', () => {
     const project = getProjectFromWorkspace(workspace);
 
     const indexPath = getIndexHtmlPath(project);
-    const buffer: any = tree.read(indexPath);
-    const indexSrc = buffer.toString();
+    const buffer = tree.read(indexPath)!;
+    const htmlContent = buffer.toString();
 
-    expect(indexSrc.indexOf('fonts.googleapis.com')).toBeGreaterThan(-1);
+    // Ensure that the indentation has been determined properly. We want to make sure that
+    // the created links properly align with the existing HTML. Default CLI projects use an
+    // indentation of two columns.
+    expect(htmlContent).toContain(
+      '  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"');
+    expect(htmlContent).toContain(
+      '  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"');
   });
 });

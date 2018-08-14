@@ -6,13 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {normalize} from '@angular-devkit/core';
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {addImportToModule} from '@schematics/angular/utility/ast-utils';
 import {InsertChange} from '@schematics/angular/utility/change';
-import {WorkspaceProject, getWorkspace} from '@schematics/angular/utility/config';
-import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
+import {getWorkspace, WorkspaceProject} from '@schematics/angular/utility/config';
 import {findModuleFromOptions as internalFindModule} from '@schematics/angular/utility/find-module';
+import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
 import * as ts from 'typescript';
 
 
@@ -59,41 +58,6 @@ export function addModuleImportToModule(
   });
 
   host.commitUpdate(recorder);
-}
-
-/** Gets the app index.html file */
-export function getIndexHtmlPath(project: WorkspaceProject): string {
-  const buildTarget = project.architect.build.options;
-
-  if (buildTarget.index && buildTarget.index.endsWith('index.html')) {
-    return buildTarget.index;
-  }
-
-  throw new SchematicsException('No index.html file was found.');
-}
-
-/** Get the root stylesheet file. */
-export function getStylesPath(project: WorkspaceProject): string {
-  const buildTarget = project.architect['build'];
-
-  if (buildTarget.options && buildTarget.options.styles && buildTarget.options.styles.length) {
-    const styles = buildTarget.options.styles.map(s => typeof s === 'string' ? s : s.input);
-
-    // First, see if any of the assets is called "styles.(le|sc|c)ss", which is the default
-    // "main" style sheet.
-    const defaultMainStylePath = styles.find(a => /styles\.(c|le|sc)ss/.test(a));
-    if (defaultMainStylePath) {
-      return normalize(defaultMainStylePath);
-    }
-
-    // If there was no obvious default file, use the first style asset.
-    const fallbackStylePath = styles.find(a => /\.(c|le|sc)ss/.test(a));
-    if (fallbackStylePath) {
-      return normalize(fallbackStylePath);
-    }
-  }
-
-  throw new SchematicsException('No style files could be found into which a theme could be added');
 }
 
 /** Wraps the internal find module from options with undefined path handling  */

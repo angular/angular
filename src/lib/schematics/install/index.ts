@@ -15,16 +15,16 @@ import {
   Tree,
 } from '@angular-devkit/schematics';
 import {NodePackageInstallTask} from '@angular-devkit/schematics/tasks';
-import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import {materialVersion, requiredAngularVersion} from './version-names';
-import {addModuleImportToRootModule, getStylesPath} from '../utils/ast';
-import {getProjectFromWorkspace} from '../utils/get-project';
-import {addHeadLink} from '../utils/html';
-import {addPackageToPackageJson, getPackageVersionFromPackageJson} from '../utils/package';
-import {Schema} from './schema';
-import {addThemeToAppStyles} from './theming';
 import * as parse5 from 'parse5';
+import {addModuleImportToRootModule} from '../utils/ast';
+import {getProjectFromWorkspace} from '../utils/get-project';
+import {addPackageToPackageJson, getPackageVersionFromPackageJson} from '../utils/package-json';
+import {getProjectStyleFile} from '../utils/project-style-file';
+import {addFontsToIndex} from './fonts/material-fonts';
+import {Schema} from './schema';
+import {addThemeToAppStyles} from './theming/theming';
+import {materialVersion, requiredAngularVersion} from './version-names';
 
 /**
  * Scaffolds the basics of a Angular Material application, this includes:
@@ -43,7 +43,7 @@ export default function(options: Schema): Rule {
     addThemeToAppStyles(options),
     addAnimationRootConfig(options),
     addFontsToIndex(options),
-    addBodyMarginToStyles(options),
+    addMaterialAppStyles(options),
   ]);
 }
 
@@ -66,56 +66,48 @@ function addMaterialToPackageJson() {
   };
 }
 
-/** Add browser animation module to app.module */
+/** Add browser animation module to the app module file. */
 function addAnimationRootConfig(options: Schema) {
   return (host: Tree) => {
     const workspace = getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
 
-    addModuleImportToRootModule(
-        host,
-        'BrowserAnimationsModule',
-        '@angular/platform-browser/animations',
-        project);
+    addModuleImportToRootModule(host, 'BrowserAnimationsModule',
+      '@angular/platform-browser/animations', project);
 
     return host;
   };
 }
 
-/** Adds fonts to the index.ext file */
-function addFontsToIndex(options: Schema) {
+/**
+ * Adds custom Material styles to the project style file. The custom CSS sets up the Roboto font
+ * and reset the default browser body margin.
+ */
+function addMaterialAppStyles(options: Schema) {
   return (host: Tree) => {
     const workspace = getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
+    const styleFilePath = getProjectStyleFile(project);
+    const buffer = host.read(styleFilePath);
 
-    const fonts = [
-      'https://fonts.googleapis.com/css?family=Roboto:300,400,500',
-      'https://fonts.googleapis.com/icon?family=Material+Icons',
-    ];
-
-    fonts.forEach(f => addHeadLink(host, project, `\n<link href="${f}" rel="stylesheet">`));
-    return host;
-  };
-}
-
-/** Add 0 margin to body in styles.ext */
-function addBodyMarginToStyles(options: Schema) {
-  return (host: Tree) => {
-    const workspace = getWorkspace(host);
-    const project = getProjectFromWorkspace(workspace, options.project);
-
-    const stylesPath = getStylesPath(project);
-
-    const buffer = host.read(stylesPath);
-    if (buffer) {
-      const src = buffer.toString();
-      const insertion = new InsertChange(stylesPath, src.length,
-        `\nhtml, body { height: 100%; }\nbody { margin: 0; font-family: 'Roboto', sans-serif; }\n`);
-      const recorder = host.beginUpdate(stylesPath);
-      recorder.insertLeft(insertion.pos, insertion.toAdd);
-      host.commitUpdate(recorder);
-    } else {
-      console.warn(`Skipped body reset; could not find file: ${stylesPath}`);
+    if (!buffer) {
+      return console.warn(`Could not find styles file: "${styleFilePath}". Skipping styles ` +
+        `generation. Please consider manually adding the "Roboto" font and resetting the ` +
+        `body margin.`);
     }
+
+    const htmlContent = buffer.toString();
+    const insertion = '\n' +
+      `html, body { height: 100%; }\n` +
+      `body { margin: 0; font-family: 'Roboto', sans-serif; }\n`;
+
+    if (htmlContent.includes(insertion)) {
+      return;
+    }
+
+    const recorder = host.beginUpdate(styleFilePath);
+
+    recorder.insertLeft(htmlContent.length, insertion);
+    host.commitUpdate(recorder);
   };
 }

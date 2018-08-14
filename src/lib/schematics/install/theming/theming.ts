@@ -9,10 +9,10 @@
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace, WorkspaceProject, WorkspaceSchema} from '@schematics/angular/utility/config';
-import {getStylesPath} from '../utils/ast';
-import {getProjectFromWorkspace} from '../utils/get-project';
+import {getProjectFromWorkspace} from '../../utils/get-project';
+import {getProjectStyleFile} from '../../utils/project-style-file';
+import {Schema} from '../schema';
 import {createCustomTheme} from './custom-theme';
-import {Schema} from './schema';
 
 
 /** Add pre-built styles to the main project style file. */
@@ -38,7 +38,7 @@ export function addThemeToAppStyles(options: Schema): (host: Tree) => Tree {
 
 /** Insert a custom theme to styles.scss file. */
 function insertCustomTheme(project: WorkspaceProject, projectName: string, host: Tree) {
-  const stylesPath = getStylesPath(project);
+  const stylesPath = getProjectStyleFile(project);
   const buffer = host.read(stylesPath);
 
   if (buffer) {
