@@ -1,8 +1,8 @@
 import * as express from 'express';
-import {UploadError} from '../../lib/upload-server/upload-error';
-import {respondWithError, throwRequestError} from '../../lib/upload-server/utils';
+import {PreviewServerError} from '../../lib/preview-server/preview-error';
+import {respondWithError, throwRequestError} from '../../lib/preview-server/utils';
 
-describe('upload-server/utils', () => {
+describe('preview-server/utils', () => {
   describe('respondWithError', () => {
     let endSpy: jasmine.Spy;
     let statusSpy: jasmine.Spy;
@@ -15,12 +15,12 @@ describe('upload-server/utils', () => {
     });
 
     it('should set the status on the response', () => {
-      respondWithError(response, new UploadError(505, 'TEST MESSAGE'));
+      respondWithError(response, new PreviewServerError(505, 'TEST MESSAGE'));
       expect(statusSpy).toHaveBeenCalledWith(505);
       expect(endSpy).toHaveBeenCalledWith('TEST MESSAGE', jasmine.any(Function));
     });
 
-    it('should convert non-UploadError errors to 500 UploadErrors', () => {
+    it('should convert non-PreviewServerError errors to 500 PreviewServerErrors', () => {
       respondWithError(response, new Error('OTHER MESSAGE'));
       expect(statusSpy).toHaveBeenCalledWith(500);
       expect(endSpy).toHaveBeenCalledWith('OTHER MESSAGE', jasmine.any(Function));
@@ -39,7 +39,7 @@ describe('upload-server/utils', () => {
         throwRequestError(505, 'ERROR MESSAGE', request);
       } catch (error) {
         caught = true;
-        expect(error).toEqual(jasmine.any(UploadError));
+        expect(error).toEqual(jasmine.any(PreviewServerError));
         expect(error.status).toEqual(505);
         expect(error.message).toEqual(`ERROR MESSAGE in request: POST some.domain.com/path "The request body"`);
       }

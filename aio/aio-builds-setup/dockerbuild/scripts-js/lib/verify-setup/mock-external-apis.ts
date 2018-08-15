@@ -6,9 +6,9 @@ import {createLogger, getEnvVar} from '../common/utils';
 import {BuildNums, PrNums, SHA} from './constants';
 
 // We are using the `nock` library to fake responses from REST requests, when testing.
-// This is necessary, because the test upload-server runs as a separate node process to
+// This is necessary, because the test preview-server runs as a separate node process to
 // the test harness, so we do not have direct access to the code (e.g. for mocking).
-// (See also 'lib/verify-setup/start-test-upload-server.ts'.)
+// (See also 'lib/verify-setup/start-test-preview-server.ts'.)
 
 // Each of the potential requests to an external API (e.g. Github or CircleCI) are mocked
 // below and return a suitable response. This is quite complicated to setup since the

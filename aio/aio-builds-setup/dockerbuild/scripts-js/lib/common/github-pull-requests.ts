@@ -1,5 +1,5 @@
-import {assert, assertNotMissingOrEmpty} from '../common/utils';
 import {GithubApi} from './github-api';
+import {assert, assertNotMissingOrEmpty} from './utils';
 
 export interface PullRequest {
   number: number;
