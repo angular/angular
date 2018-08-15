@@ -12,7 +12,7 @@ import {AsyncTestCompleter} from './async_test_completer';
 import {ComponentFixture} from './component_fixture';
 import {MetadataOverride} from './metadata_override';
 import {TestBedRender3, _getTestBedRender3} from './r3_test_bed';
-import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedConstructor, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
+import {ComponentFixtureAutoDetect, ComponentFixtureNoNgZone, TestBedStatic, TestComponentRenderer, TestModuleMetadata} from './test_bed_common';
 import {TestingCompiler, TestingCompilerFactory} from './test_compiler';
 
 const UNDEFINED = new Object();
@@ -137,27 +137,27 @@ export class TestBedViewEngine implements Injector, TestBed {
    */
   static resetTestEnvironment(): void { _getTestBedViewEngine().resetTestEnvironment(); }
 
-  static resetTestingModule(): TestBedConstructor {
+  static resetTestingModule(): TestBedStatic {
     _getTestBedViewEngine().resetTestingModule();
-    return TestBedViewEngine as any as TestBedConstructor;
+    return TestBedViewEngine as any as TestBedStatic;
   }
 
   /**
    * Allows overriding default compiler providers and settings
    * which are defined in test_injector.js
    */
-  static configureCompiler(config: {providers?: any[]; useJit?: boolean;}): TestBedConstructor {
+  static configureCompiler(config: {providers?: any[]; useJit?: boolean;}): TestBedStatic {
     _getTestBedViewEngine().configureCompiler(config);
-    return TestBedViewEngine as any as TestBedConstructor;
+    return TestBedViewEngine as any as TestBedStatic;
   }
 
   /**
    * Allows overriding default providers, directives, pipes, modules of the test injector,
    * which are defined in test_injector.js
    */
-  static configureTestingModule(moduleDef: TestModuleMetadata): TestBedConstructor {
+  static configureTestingModule(moduleDef: TestModuleMetadata): TestBedStatic {
     _getTestBedViewEngine().configureTestingModule(moduleDef);
-    return TestBedViewEngine as any as TestBedConstructor;
+    return TestBedViewEngine as any as TestBedStatic;
   }
 
   /**
@@ -167,32 +167,31 @@ export class TestBedViewEngine implements Injector, TestBed {
    */
   static compileComponents(): Promise<any> { return getTestBed().compileComponents(); }
 
-  static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>):
-      TestBedConstructor {
+  static overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedStatic {
     _getTestBedViewEngine().overrideModule(ngModule, override);
-    return TestBedViewEngine as any as TestBedConstructor;
+    return TestBedViewEngine as any as TestBedStatic;
   }
 
   static overrideComponent(component: Type<any>, override: MetadataOverride<Component>):
-      TestBedConstructor {
+      TestBedStatic {
     _getTestBedViewEngine().overrideComponent(component, override);
-    return TestBedViewEngine as any as TestBedConstructor;
+    return TestBedViewEngine as any as TestBedStatic;
   }
 
   static overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>):
-      TestBedConstructor {
+      TestBedStatic {
     _getTestBedViewEngine().overrideDirective(directive, override);
-    return TestBedViewEngine as any as TestBedConstructor;
+    return TestBedViewEngine as any as TestBedStatic;
   }
 
-  static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedConstructor {
+  static overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedStatic {
     _getTestBedViewEngine().overridePipe(pipe, override);
-    return TestBedViewEngine as any as TestBedConstructor;
+    return TestBedViewEngine as any as TestBedStatic;
   }
 
-  static overrideTemplate(component: Type<any>, template: string): TestBedConstructor {
+  static overrideTemplate(component: Type<any>, template: string): TestBedStatic {
     _getTestBedViewEngine().overrideComponent(component, {set: {template, templateUrl: null !}});
-    return TestBedViewEngine as any as TestBedConstructor;
+    return TestBedViewEngine as any as TestBedStatic;
   }
 
   /**
@@ -201,10 +200,9 @@ export class TestBedViewEngine implements Injector, TestBed {
    *
    * Note: This works for JIT and AOTed components as well.
    */
-  static overrideTemplateUsingTestingModule(component: Type<any>, template: string):
-      TestBedConstructor {
+  static overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBedStatic {
     _getTestBedViewEngine().overrideTemplateUsingTestingModule(component, template);
-    return TestBedViewEngine as any as TestBedConstructor;
+    return TestBedViewEngine as any as TestBedStatic;
   }
 
   /**
@@ -215,15 +213,15 @@ export class TestBedViewEngine implements Injector, TestBed {
   static overrideProvider(token: any, provider: {
     useFactory: Function,
     deps: any[],
-  }): TestBedConstructor;
-  static overrideProvider(token: any, provider: {useValue: any;}): TestBedConstructor;
+  }): TestBedStatic;
+  static overrideProvider(token: any, provider: {useValue: any;}): TestBedStatic;
   static overrideProvider(token: any, provider: {
     useFactory?: Function,
     useValue?: any,
     deps?: any[],
-  }): TestBedConstructor {
+  }): TestBedStatic {
     _getTestBedViewEngine().overrideProvider(token, provider as any);
-    return TestBedViewEngine as any as TestBedConstructor;
+    return TestBedViewEngine as any as TestBedStatic;
   }
 
   /**
@@ -240,9 +238,9 @@ export class TestBedViewEngine implements Injector, TestBed {
     useFactory?: Function,
     useValue?: any,
     deps?: any[],
-  }): TestBedConstructor {
+  }): TestBedStatic {
     _getTestBedViewEngine().deprecatedOverrideProvider(token, provider as any);
-    return TestBedViewEngine as any as TestBedConstructor;
+    return TestBedViewEngine as any as TestBedStatic;
   }
 
   static get(token: any, notFoundValue: any = Injector.THROW_IF_NOT_FOUND) {
@@ -638,9 +636,8 @@ export class TestBedViewEngine implements Injector, TestBed {
  * Note: Use `TestBed` in tests. It will be set to either `TestBedViewEngine` or `TestBedRender3`
  * according to the compiler used.
  */
-export const TestBed: TestBedConstructor = ivyEnabled ?
-    TestBedRender3 as any as TestBedConstructor :
-    TestBedViewEngine as any as TestBedConstructor;
+export const TestBed: TestBedStatic =
+    ivyEnabled ? TestBedRender3 as any as TestBedStatic : TestBedViewEngine as any as TestBedStatic;
 
 /**
  * Returns a singleton of the applicable `TestBed`.

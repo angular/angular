@@ -46,7 +46,7 @@ export type TestModuleMetadata = {
 /**
  * Static methods implemented by the `TestBedViewEngine` and `TestBedRender3`
  */
-export interface TestBedConstructor {
+export interface TestBedStatic {
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
 
@@ -57,19 +57,19 @@ export interface TestBedConstructor {
    */
   resetTestEnvironment(): void;
 
-  resetTestingModule(): TestBedConstructor;
+  resetTestingModule(): TestBedStatic;
 
   /**
    * Allows overriding default compiler providers and settings
    * which are defined in test_injector.js
    */
-  configureCompiler(config: {providers?: any[]; useJit?: boolean;}): TestBedConstructor;
+  configureCompiler(config: {providers?: any[]; useJit?: boolean;}): TestBedStatic;
 
   /**
    * Allows overriding default providers, directives, pipes, modules of the test injector,
    * which are defined in test_injector.js
    */
-  configureTestingModule(moduleDef: TestModuleMetadata): TestBedConstructor;
+  configureTestingModule(moduleDef: TestModuleMetadata): TestBedStatic;
 
   /**
    * Compile components with a `templateUrl` for the test's NgModule.
@@ -78,17 +78,15 @@ export interface TestBedConstructor {
    */
   compileComponents(): Promise<any>;
 
-  overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedConstructor;
+  overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedStatic;
 
-  overrideComponent(component: Type<any>, override: MetadataOverride<Component>):
-      TestBedConstructor;
+  overrideComponent(component: Type<any>, override: MetadataOverride<Component>): TestBedStatic;
 
-  overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>):
-      TestBedConstructor;
+  overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): TestBedStatic;
 
-  overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedConstructor;
+  overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedStatic;
 
-  overrideTemplate(component: Type<any>, template: string): TestBedConstructor;
+  overrideTemplate(component: Type<any>, template: string): TestBedStatic;
 
   /**
    * Overrides the template of the given component, compiling the template
@@ -96,7 +94,7 @@ export interface TestBedConstructor {
    *
    * Note: This works for JIT and AOTed components as well.
    */
-  overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBedConstructor;
+  overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBedStatic;
 
   /**
    * Overwrites all providers for the given token with the given provider definition.
@@ -106,13 +104,13 @@ export interface TestBedConstructor {
   overrideProvider(token: any, provider: {
     useFactory: Function,
     deps: any[],
-  }): TestBedConstructor;
-  overrideProvider(token: any, provider: {useValue: any;}): TestBedConstructor;
+  }): TestBedStatic;
+  overrideProvider(token: any, provider: {useValue: any;}): TestBedStatic;
   overrideProvider(token: any, provider: {
     useFactory?: Function,
     useValue?: any,
     deps?: any[],
-  }): TestBedConstructor;
+  }): TestBedStatic;
 
   /**
    * Overwrites all providers for the given token with the given provider definition.
@@ -128,7 +126,7 @@ export interface TestBedConstructor {
     useFactory?: Function,
     useValue?: any,
     deps?: any[],
-  }): TestBedConstructor;
+  }): TestBedStatic;
 
   get(token: any, notFoundValue?: any): any;
 

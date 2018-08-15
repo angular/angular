@@ -57,21 +57,21 @@ export declare type MetadataOverride<T> = {
 /** @experimental */
 export declare function resetFakeAsyncZone(): void;
 
-export declare const TestBed: TestBedConstructor;
+export declare const TestBed: TestBedStatic;
 
-export interface TestBedConstructor {
+export interface TestBedStatic {
     compileComponents(): Promise<any>;
     configureCompiler(config: {
         providers?: any[];
         useJit?: boolean;
-    }): TestBedConstructor;
-    configureTestingModule(moduleDef: TestModuleMetadata): TestBedConstructor;
+    }): TestBedStatic;
+    configureTestingModule(moduleDef: TestModuleMetadata): TestBedStatic;
     createComponent<T>(component: Type<T>): ComponentFixture<T>;
     deprecatedOverrideProvider(token: any, provider: {
         useFactory?: Function;
         useValue?: any;
         deps?: any[];
-    }): TestBedConstructor;
+    }): TestBedStatic;
     deprecatedOverrideProvider(token: any, provider: {
         useValue: any;
     }): void;
@@ -81,26 +81,26 @@ export interface TestBedConstructor {
     }): void;
     get(token: any, notFoundValue?: any): any;
     initTestEnvironment(ngModule: Type<any> | Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
-    overrideComponent(component: Type<any>, override: MetadataOverride<Component>): TestBedConstructor;
-    overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): TestBedConstructor;
-    overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedConstructor;
-    overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedConstructor;
+    overrideComponent(component: Type<any>, override: MetadataOverride<Component>): TestBedStatic;
+    overrideDirective(directive: Type<any>, override: MetadataOverride<Directive>): TestBedStatic;
+    overrideModule(ngModule: Type<any>, override: MetadataOverride<NgModule>): TestBedStatic;
+    overridePipe(pipe: Type<any>, override: MetadataOverride<Pipe>): TestBedStatic;
     overrideProvider(token: any, provider: {
         useValue: any;
-    }): TestBedConstructor;
+    }): TestBedStatic;
     overrideProvider(token: any, provider: {
         useFactory?: Function;
         useValue?: any;
         deps?: any[];
-    }): TestBedConstructor;
+    }): TestBedStatic;
     overrideProvider(token: any, provider: {
         useFactory: Function;
         deps: any[];
-    }): TestBedConstructor;
-    overrideTemplate(component: Type<any>, template: string): TestBedConstructor;
-    overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBedConstructor;
+    }): TestBedStatic;
+    overrideTemplate(component: Type<any>, template: string): TestBedStatic;
+    overrideTemplateUsingTestingModule(component: Type<any>, template: string): TestBedStatic;
     /** @experimental */ resetTestEnvironment(): void;
-    resetTestingModule(): TestBedConstructor;
+    resetTestingModule(): TestBedStatic;
 }
 
 /** @experimental */
