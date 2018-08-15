@@ -721,14 +721,14 @@ export class Router {
           preactivationSetup$.pipe(mergeMap(
               p => this.navigationId !== id ?
                   of (false) :
-                  of (p.appliedUrl)
+                  of (p.snapshot)
                       .pipe(
                           tap(_ => this.triggerEvent(new GuardsCheckStart(
                                   id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
                                   p.snapshot))),
                           checkGuards(
                               this.rootContexts, this.routerState.snapshot, this.ngModule.injector,
-                              preActivation),
+                              preActivation, (evt: Event) => this.triggerEvent(evt)),
                           tap(shouldActivate => this.triggerEvent(new GuardsCheckEnd(
                                   id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
                                   p.snapshot, shouldActivate))),
@@ -744,12 +744,13 @@ export class Router {
         typeof p === 'boolean' || this.navigationId !== id ?
             of (false) :
             p.shouldActivate && preActivation.isActivating() ?
-            of (p.appliedUrl)
+            of (p.snapshot)
                     .pipe(
-                        tap(_ => this.triggerEvent(new ResolveStart(
+                        tap(snapshot => this.triggerEvent(new ResolveStart(
                                 id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
-                                p.snapshot))),
-                        resolveData(preActivation, this.paramsInheritanceStrategy),
+                                snapshot))),
+                        resolveData(this.rootContexts, this.routerState.snapshot, this.paramsInheritanceStrategy, this.ngModule.injector),
+                        // resolveData(preActivation, this.paramsInheritanceStrategy),
                         tap(_ => this.triggerEvent(new ResolveEnd(
                                 id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
                                 p.snapshot))),
