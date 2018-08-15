@@ -7,11 +7,11 @@ import {CircleCiApi} from '../../lib/common/circle-ci-api';
 import {GithubApi} from '../../lib/common/github-api';
 import {GithubPullRequests} from '../../lib/common/github-pull-requests';
 import {GithubTeams} from '../../lib/common/github-teams';
-import {BuildCreator} from '../../lib/upload-server/build-creator';
-import {ChangedPrVisibilityEvent, CreatedBuildEvent} from '../../lib/upload-server/build-events';
-import {BuildRetriever, GithubInfo} from '../../lib/upload-server/build-retriever';
-import {BuildVerifier} from '../../lib/upload-server/build-verifier';
-import {UploadServerConfig, UploadServerFactory} from '../../lib/upload-server/upload-server-factory';
+import {BuildCreator} from '../../lib/preview-server/build-creator';
+import {ChangedPrVisibilityEvent, CreatedBuildEvent} from '../../lib/preview-server/build-events';
+import {BuildRetriever, GithubInfo} from '../../lib/preview-server/build-retriever';
+import {BuildVerifier} from '../../lib/preview-server/build-verifier';
+import {PreviewServerConfig, PreviewServerFactory} from '../../lib/preview-server/preview-server-factory';
 
 interface CircleCiWebHookPayload {
   payload: {
@@ -23,8 +23,8 @@ interface CircleCiWebHookPayload {
 }
 
 // Tests
-describe('uploadServerFactory', () => {
-  const defaultConfig: UploadServerConfig = {
+describe('PreviewServerFactory', () => {
+  const defaultConfig: PreviewServerConfig = {
     buildArtifactPath: 'artifact/path.zip',
     buildsDir: 'builds/dir',
     circleCiToken: 'CIRCLE_CI_TOKEN',
@@ -40,8 +40,8 @@ describe('uploadServerFactory', () => {
   };
 
   // Helpers
-  const createUploadServer = (partialConfig: Partial<UploadServerConfig> = {}) =>
-    UploadServerFactory.create({...defaultConfig, ...partialConfig});
+  const createPreviewServer = (partialConfig: Partial<PreviewServerConfig> = {}) =>
+    PreviewServerFactory.create({...defaultConfig, ...partialConfig});
 
   beforeEach(() => {
     spyOn(console, 'error');
@@ -53,64 +53,64 @@ describe('uploadServerFactory', () => {
     let usfCreateMiddlewareSpy: jasmine.Spy;
 
     beforeEach(() => {
-      usfCreateMiddlewareSpy = spyOn(UploadServerFactory, 'createMiddleware').and.callThrough();
+      usfCreateMiddlewareSpy = spyOn(PreviewServerFactory, 'createMiddleware').and.callThrough();
     });
 
 
     it('should throw if \'buildsDir\' is missing or empty', () => {
-      expect(() => createUploadServer({buildsDir: ''})).
+      expect(() => createPreviewServer({buildsDir: ''})).
         toThrowError('Missing or empty required parameter \'buildsDir\'!');
     });
 
 
     it('should throw if \'domainName\' is missing or empty', () => {
-      expect(() => createUploadServer({domainName: ''})).
+      expect(() => createPreviewServer({domainName: ''})).
         toThrowError('Missing or empty required parameter \'domainName\'!');
     });
 
 
     it('should throw if \'githubToken\' is missing or empty', () => {
-      expect(() => createUploadServer({githubToken: ''})).
+      expect(() => createPreviewServer({githubToken: ''})).
         toThrowError('Missing or empty required parameter \'githubToken\'!');
     });
 
 
     it('should throw if \'githubOrg\' is missing or empty', () => {
-      expect(() => createUploadServer({githubOrg: ''})).
+      expect(() => createPreviewServer({githubOrg: ''})).
         toThrowError('Missing or empty required parameter \'githubOrg\'!');
     });
 
 
     it('should throw if \'githubTeamSlugs\' is missing or empty', () => {
-      expect(() => createUploadServer({githubTeamSlugs: []})).
+      expect(() => createPreviewServer({githubTeamSlugs: []})).
         toThrowError('Missing or empty required parameter \'allowedTeamSlugs\'!');
     });
 
 
     it('should throw if \'githubRepo\' is missing or empty', () => {
-      expect(() => createUploadServer({githubRepo: ''})).
+      expect(() => createPreviewServer({githubRepo: ''})).
         toThrowError('Missing or empty required parameter \'githubRepo\'!');
     });
 
 
     it('should throw if \'trustedPrLabel\' is missing or empty', () => {
-      expect(() => createUploadServer({trustedPrLabel: ''})).
+      expect(() => createPreviewServer({trustedPrLabel: ''})).
         toThrowError('Missing or empty required parameter \'trustedPrLabel\'!');
     });
 
 
     it('should return an http.Server', () => {
       const httpCreateServerSpy = spyOn(http, 'createServer').and.callThrough();
-      const server = createUploadServer();
+      const server = createPreviewServer();
 
       expect(server).toBe(httpCreateServerSpy.calls.mostRecent().returnValue);
     });
 
 
     it('should create and use an appropriate BuildCreator', () => {
-      const usfCreateBuildCreatorSpy = spyOn(UploadServerFactory, 'createBuildCreator').and.callThrough();
+      const usfCreateBuildCreatorSpy = spyOn(PreviewServerFactory, 'createBuildCreator').and.callThrough();
 
-      createUploadServer();
+      createPreviewServer();
       const buildRetriever = jasmine.any(BuildRetriever);
       const buildVerifier = jasmine.any(BuildVerifier);
       const prs = jasmine.any(GithubPullRequests);
@@ -124,7 +124,7 @@ describe('uploadServerFactory', () => {
     it('should create and use an appropriate middleware', () => {
       const httpCreateServerSpy = spyOn(http, 'createServer').and.callThrough();
 
-      createUploadServer();
+      createPreviewServer();
 
       const buildRetriever = jasmine.any(BuildRetriever);
       const buildVerifier = jasmine.any(BuildVerifier);
@@ -137,14 +137,14 @@ describe('uploadServerFactory', () => {
 
 
     it('should log the server address info on \'listening\'', () => {
-      const server = createUploadServer();
+      const server = createPreviewServer();
       server.address = () => ({address: 'foo', family: '', port: 1337});
 
       expect(console.info).not.toHaveBeenCalled();
 
       server.emit('listening');
       expect(console.info).toHaveBeenCalledWith(
-        jasmine.any(String), 'UploadServer:        ', 'Up and running (and listening on foo:1337)...');
+        jasmine.any(String), 'PreviewServer:       ', 'Up and running (and listening on foo:1337)...');
     });
 
   });
@@ -158,7 +158,7 @@ describe('uploadServerFactory', () => {
     beforeEach(() => {
       const api = new GithubApi(defaultConfig.githubToken);
       const prs = new GithubPullRequests(api, defaultConfig.githubOrg, defaultConfig.githubRepo);
-      buildCreator = UploadServerFactory.createBuildCreator(prs, defaultConfig.buildsDir, defaultConfig.domainName);
+      buildCreator = PreviewServerFactory.createBuildCreator(prs, defaultConfig.buildsDir, defaultConfig.domainName);
     });
 
     it('should pass the \'buildsDir\' to the BuildCreator', () => {
@@ -256,7 +256,7 @@ describe('uploadServerFactory', () => {
       buildVerifier = new BuildVerifier(prs, teams, defaultConfig.githubTeamSlugs, defaultConfig.trustedPrLabel);
       buildCreator = new BuildCreator(defaultConfig.buildsDir);
 
-      const middleware = UploadServerFactory.createMiddleware(buildRetriever, buildVerifier, buildCreator,
+      const middleware = PreviewServerFactory.createMiddleware(buildRetriever, buildVerifier, buildCreator,
                                                               defaultConfig);
       agent = supertest.agent(middleware);
     });
@@ -359,7 +359,7 @@ describe('uploadServerFactory', () => {
         await agent.post(URL).send(BASIC_PAYLOAD).expect(204);
         expect(getGithubInfoSpy).not.toHaveBeenCalled();
         expect(getSignificantFilesChangedSpy).not.toHaveBeenCalled();
-        expect(console.log).toHaveBeenCalledWith(jasmine.any(String), 'UploadServer:        ',
+        expect(console.log).toHaveBeenCalledWith(jasmine.any(String), 'PreviewServer:       ',
         'Build:12345, Job:lint -', 'Skipping preview processing because this is not the "aio_preview" job.');
         expect(downloadBuildArtifactSpy).not.toHaveBeenCalled();
         expect(getPrIsTrustedSpy).not.toHaveBeenCalled();
@@ -371,7 +371,7 @@ describe('uploadServerFactory', () => {
         await agent.post(URL).send(BASIC_PAYLOAD).expect(204);
         expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
         expect(getSignificantFilesChangedSpy).toHaveBeenCalledWith(PR, jasmine.any(RegExp));
-        expect(console.log).toHaveBeenCalledWith(jasmine.any(String), 'UploadServer:        ',
+        expect(console.log).toHaveBeenCalledWith(jasmine.any(String), 'PreviewServer:       ',
           'PR:777, Build:12345 - Skipping preview processing because this PR did not touch any significant files.');
         expect(downloadBuildArtifactSpy).not.toHaveBeenCalled();
         expect(getPrIsTrustedSpy).not.toHaveBeenCalled();

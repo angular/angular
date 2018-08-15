@@ -25,7 +25,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
 
   describe('for a new/non-existing PR', () => {
 
-    it('should be able to upload and serve a public build', async () => {
+    it('should be able to create and serve a public preview', async () => {
       const BUILD = BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
       const PR = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
 
@@ -44,7 +44,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
     });
 
 
-    it('should be able to upload but not serve a hidden build', async () => {
+    it('should be able to create but not serve a hidden preview', async () => {
       const BUILD = BuildNums.TRUST_CHECK_UNTRUSTED;
       const PR = PrNums.TRUST_CHECK_UNTRUSTED;
 
@@ -59,7 +59,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
     });
 
 
-    it('should reject an upload if verification fails', async () => {
+    it('should reject if verification fails', async () => {
       const BUILD = BuildNums.TRUST_CHECK_ERROR;
       const PR = PrNums.TRUST_CHECK_ERROR;
 
@@ -82,7 +82,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
 
   describe('for an existing PR', () => {
 
-    it('should be able to upload and serve a public build', async () => {
+    it('should be able to create and serve a public preview', async () => {
       const BUILD = BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
       const PR = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
 
@@ -108,7 +108,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
     });
 
 
-    it('should be able to upload but not serve a hidden build', async () => {
+    it('should be able to create but not serve a hidden preview', async () => {
       const BUILD = BuildNums.TRUST_CHECK_UNTRUSTED;
       const PR = PrNums.TRUST_CHECK_UNTRUSTED;
 
@@ -129,7 +129,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
     });
 
 
-    it('should reject an upload if verification fails', async () => {
+    it('should reject if verification fails', async () => {
       const BUILD = BuildNums.TRUST_CHECK_ERROR;
       const PR = PrNums.TRUST_CHECK_ERROR;
 
@@ -144,7 +144,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
     });
 
 
-    it('should not be able to overwrite an existing public build', async () => {
+    it('should not be able to overwrite an existing public preview', async () => {
       const BUILD = BuildNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
       const PR = PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER;
 
@@ -165,7 +165,7 @@ h.runForAllSupportedSchemes((scheme, port) => describe(`integration (on ${scheme
     });
 
 
-    it('should not be able to overwrite an existing hidden build', async () => {
+    it('should not be able to overwrite an existing hidden preview', async () => {
       const BUILD = BuildNums.TRUST_CHECK_UNTRUSTED;
       const PR = PrNums.TRUST_CHECK_UNTRUSTED;
       h.createDummyBuild(PR, SHA, false);
