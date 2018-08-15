@@ -2,7 +2,7 @@
 import {GithubApi} from '../../lib/common/github-api';
 import {GithubPullRequests, PullRequest} from '../../lib/common/github-pull-requests';
 import {GithubTeams} from '../../lib/common/github-teams';
-import {BuildVerifier} from '../../lib/upload-server/build-verifier';
+import {BuildVerifier} from '../../lib/preview-server/build-verifier';
 
 // Tests
 describe('BuildVerifier', () => {

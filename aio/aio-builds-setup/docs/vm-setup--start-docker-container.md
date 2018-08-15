@@ -31,7 +31,7 @@ sudo docker run \
   --detach \
 
   # Use the local DNS server.
-  # (This is necessary for mapping internal URLs, e.g. for the Node.js upload-server.)
+  # (This is necessary for mapping internal URLs, e.g. for the Node.js preview-server.)
   --dns 127.0.0.1 \
 
   # USe `<instance-name>` as an alias for the container.
@@ -50,7 +50,7 @@ sudo docker run \
   # (See [here](vm-setup--set-up-secrets.md) for more info.)
   --volume <host-secrets-dir>:/aio-secrets:ro \
 
-  # The uploaded build artifacts will stored to and served from this directory.
+  # The build artifacts and hosted previews will stored to and served from this directory.
   # (If you are using a persistent disk - as described [here](vm-setup--attach-persistent-disk.md) -
   #  this will be a directory inside the disk.)
   --volume <host-builds-dir>:/var/www/aio-builds \

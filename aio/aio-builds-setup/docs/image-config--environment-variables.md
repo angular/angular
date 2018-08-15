@@ -54,14 +54,14 @@ you don't need to specify values for those.
   build artifacts publicly served. This is useful for enabling previews for any PR (not only those
   from trusted authors).
 
-- `AIO_UPLOAD_HOSTNAME`:
-  The internal hostname for accessing the Node.js upload-server. This is used by nginx for
-  delegating upload requests and also for performing a periodic health-check.
+- `AIO_PREVIEW_SERVER_HOSTNAME`:
+  The internal hostname for accessing the Node.js preview-server. This is used by nginx for
+  delegating web-hook requests and also for performing a periodic health-check.
 
-- `AIO_UPLOAD_MAX_SIZE`:
-  The maximum allowed size for the uploaded gzip archive containing the build artifacts. Files
-  larger than this will be rejected.
+- `AIO_ARTIFACT_MAX_SIZE`:
+  The maximum allowed size for the gzip archive containing the build artifacts.
+  Files larger than this will be rejected.
 
-- `AIO_UPLOAD_PORT`:
-  The port number on which the Node.js upload-server listens for HTTP connections. This is used by
-  nginx for delegating upload requests and also for performing a periodic health-check.
+- `AIO_PREVIEW_SERVER_PORT`:
+  The port number on which the Node.js preview-server listens for HTTP connections. This is used by
+  nginx for delegating web-hook requests and also for performing a periodic health-check.
