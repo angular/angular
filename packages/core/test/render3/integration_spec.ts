@@ -11,6 +11,7 @@ import {RenderFlags} from '@angular/core/src/render3';
 
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {AttributeMarker, defineComponent, defineDirective, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {getViewFromDomNode} from '../../src/render3/inspection';
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
@@ -1272,6 +1273,42 @@ describe('render3 integration test', () => {
       expect(newElementData === oldElementData).toBe(true);
     });
 
+  });
+
+  describe('element discovery', () => {
+    it('should provide the element index that was created in the template given the matching DOM element',
+        () => {
+          class NormalComp {
+            static ngComponentDef = defineComponent({
+              type: NormalComp,
+              selectors: [['sanitize-this']],
+              factory: () => new NormalComp(),
+              template: (rf: RenderFlags, ctx: NormalComp) => {
+                if (rf & RenderFlags.Create) {
+                  element(0, 'div');
+                  element(1, 'div');
+                }
+                if (rf & RenderFlags.Update) {
+                  elementProperty(0, 'title', 'foo');
+                }
+              }
+            });
+          }
+
+          const fixture = new ComponentFixture(NormalComp);
+          fixture.update();
+
+          const host = fixture.hostElement;
+          const div1 = host.querySelector('div:first-child') !;
+          expect(getViewFromDomNode(div1) !.native).toBe(div1);
+          expect(getViewFromDomNode(div1) !.index).toBe(0);
+
+          const div2 = host.querySelector('div:last-child') !;
+          expect(getViewFromDomNode(div2) !.native).toBe(div2);
+          expect(getViewFromDomNode(div2) !.index).toBe(1);
+
+          expect(getViewFromDomNode(document.body)).toEqual(null);
+        });
   });
 
   describe('sanitization', () => {
