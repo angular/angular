@@ -369,6 +369,7 @@ export function executeInitAndContentHooks(): void {
 export function createLViewData<T>(
     renderer: Renderer3, tView: TView, context: T | null, flags: LViewFlags,
     sanitizer?: Sanitizer | null): LViewData {
+  // TODO(kara): create from blueprint
   return [
     tView,                                                                       // tView
     viewData,                                                                    // parent
@@ -2506,14 +2507,14 @@ export const NO_CHANGE = {} as NO_CHANGE;
  *  This function must be called before any binding related function is called
  *  (ie `bind()`, `interpolationX()`, `pureFunctionX()`)
  */
-function initBindings() {
-  ngDevMode && assertEqual(
-                   viewData[BINDING_INDEX], -1,
-                   'Binding index should not yet be set ' + viewData[BINDING_INDEX]);
+export function initBindings() {
+  // TODO(kara): remove this check when we have pre-filled array
   if (tView.bindingStartIndex === -1) {
     tView.bindingStartIndex = viewData.length;
   }
-  viewData[BINDING_INDEX] = tView.bindingStartIndex;
+  if (viewData[BINDING_INDEX] === -1) {
+    viewData[BINDING_INDEX] = tView.bindingStartIndex;
+  }
 }
 
 /**
@@ -2522,26 +2523,11 @@ function initBindings() {
  * @param value Value to diff
  */
 export function bind<T>(value: T): T|NO_CHANGE {
-  return bindingUpdated(value) ? value : NO_CHANGE;
+  initBindings();
+  return bindingUpdated(viewData[BINDING_INDEX]++, value) ? value : NO_CHANGE;
 }
 
-/**
- * Reserves slots for pure functions (`pureFunctionX` instructions)
- *
- * Bindings for pure functions are stored after the LNodes in the data array but before the binding.
- *
- *  ----------------------------------------------------------------------------
- *  |  LNodes ... | pure function bindings | regular bindings / interpolations |
- *  ----------------------------------------------------------------------------
- *                                         ^
- *                                         TView.bindingStartIndex
- *
- * Pure function instructions are given an offset from TView.bindingStartIndex.
- * Subtracting the offset from TView.bindingStartIndex gives the first index where the bindings
- * are stored.
- *
- * NOTE: reserveSlots instructions are only ever allowed at the very end of the creation block
- */
+// TODO(kara): Remove this when updating the compiler (cannot remove without breaking JIT test)
 export function reserveSlots(numSlots: number) {
   // Init the slots with a unique `NO_CHANGE` value so that the first change is always detected
   // whether it happens or not during the first change detection pass - pure functions checks
@@ -2551,29 +2537,6 @@ export function reserveSlots(numSlots: number) {
   // We need to initialize the binding in case a `pureFunctionX` kind of binding instruction is
   // called first in the update section.
   initBindings();
-}
-
-/**
- * Sets up the binding index before executing any `pureFunctionX` instructions.
- *
- * The index must be restored after the pure function is executed
- *
- * {@link reserveSlots}
- */
-export function moveBindingIndexToReservedSlot(offset: number): number {
-  const currentSlot = viewData[BINDING_INDEX];
-  viewData[BINDING_INDEX] = tView.bindingStartIndex - offset;
-  return currentSlot;
-}
-
-/**
- * Restores the binding index to the given value.
- *
- * This function is typically used to restore the index after a `pureFunctionX` has
- * been executed.
- */
-export function restoreBindingIndex(index: number): void {
-  viewData[BINDING_INDEX] = index;
 }
 
 /**
@@ -2591,12 +2554,12 @@ export function restoreBindingIndex(index: number): void {
 export function interpolationV(values: any[]): string|NO_CHANGE {
   ngDevMode && assertLessThan(2, values.length, 'should have at least 3 values');
   ngDevMode && assertEqual(values.length % 2, 1, 'should have an odd number of values');
-
+  initBindings();
   let different = false;
 
   for (let i = 1; i < values.length; i += 2) {
     // Check if bindings (odd indexes) have changed
-    bindingUpdated(values[i]) && (different = true);
+    bindingUpdated(viewData[BINDING_INDEX]++, values[i]) && (different = true);
   }
 
   if (!different) {
@@ -2620,15 +2583,17 @@ export function interpolationV(values: any[]): string|NO_CHANGE {
  * @param suffix static value used for concatenation only.
  */
 export function interpolation1(prefix: string, v0: any, suffix: string): string|NO_CHANGE {
-  const different = bindingUpdated(v0);
-
+  initBindings();
+  const different = bindingUpdated(viewData[BINDING_INDEX]++, v0);
   return different ? prefix + stringify(v0) + suffix : NO_CHANGE;
 }
 
 /** Creates an interpolation binding with 2 expressions. */
 export function interpolation2(
     prefix: string, v0: any, i0: string, v1: any, suffix: string): string|NO_CHANGE {
-  const different = bindingUpdated2(v0, v1);
+  initBindings();
+  const different = bindingUpdated2(viewData[BINDING_INDEX], v0, v1);
+  viewData[BINDING_INDEX] += 2;
 
   return different ? prefix + stringify(v0) + i0 + stringify(v1) + suffix : NO_CHANGE;
 }
@@ -2637,8 +2602,9 @@ export function interpolation2(
 export function interpolation3(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, suffix: string): string|
     NO_CHANGE {
-  let different = bindingUpdated2(v0, v1);
-  different = bindingUpdated(v2) || different;
+  initBindings();
+  const different = bindingUpdated3(viewData[BINDING_INDEX], v0, v1, v2);
+  viewData[BINDING_INDEX] += 3;
 
   return different ? prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + suffix :
                      NO_CHANGE;
@@ -2648,7 +2614,9 @@ export function interpolation3(
 export function interpolation4(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     suffix: string): string|NO_CHANGE {
-  const different = bindingUpdated4(v0, v1, v2, v3);
+  initBindings();
+  const different = bindingUpdated4(viewData[BINDING_INDEX], v0, v1, v2, v3);
+  viewData[BINDING_INDEX] += 4;
 
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) +
@@ -2660,8 +2628,10 @@ export function interpolation4(
 export function interpolation5(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, suffix: string): string|NO_CHANGE {
-  let different = bindingUpdated4(v0, v1, v2, v3);
-  different = bindingUpdated(v4) || different;
+  initBindings();
+  let different = bindingUpdated4(viewData[BINDING_INDEX], v0, v1, v2, v3);
+  different = bindingUpdated(viewData[BINDING_INDEX] + 4, v4) || different;
+  viewData[BINDING_INDEX] += 5;
 
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
@@ -2673,8 +2643,10 @@ export function interpolation5(
 export function interpolation6(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, suffix: string): string|NO_CHANGE {
-  let different = bindingUpdated4(v0, v1, v2, v3);
-  different = bindingUpdated2(v4, v5) || different;
+  initBindings();
+  let different = bindingUpdated4(viewData[BINDING_INDEX], v0, v1, v2, v3);
+  different = bindingUpdated2(viewData[BINDING_INDEX] + 4, v4, v5) || different;
+  viewData[BINDING_INDEX] += 6;
 
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
@@ -2687,9 +2659,10 @@ export function interpolation7(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, suffix: string): string|
     NO_CHANGE {
-  let different = bindingUpdated4(v0, v1, v2, v3);
-  different = bindingUpdated2(v4, v5) || different;
-  different = bindingUpdated(v6) || different;
+  initBindings();
+  let different = bindingUpdated4(viewData[BINDING_INDEX], v0, v1, v2, v3);
+  different = bindingUpdated3(viewData[BINDING_INDEX] + 4, v4, v5, v6) || different;
+  viewData[BINDING_INDEX] += 7;
 
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
@@ -2702,8 +2675,10 @@ export function interpolation8(
     prefix: string, v0: any, i0: string, v1: any, i1: string, v2: any, i2: string, v3: any,
     i3: string, v4: any, i4: string, v5: any, i5: string, v6: any, i6: string, v7: any,
     suffix: string): string|NO_CHANGE {
-  let different = bindingUpdated4(v0, v1, v2, v3);
-  different = bindingUpdated4(v4, v5, v6, v7) || different;
+  initBindings();
+  let different = bindingUpdated4(viewData[BINDING_INDEX], v0, v1, v2, v3);
+  different = bindingUpdated4(viewData[BINDING_INDEX] + 4, v4, v5, v6, v7) || different;
+  viewData[BINDING_INDEX] += 8;
 
   return different ?
       prefix + stringify(v0) + i0 + stringify(v1) + i1 + stringify(v2) + i2 + stringify(v3) + i3 +
@@ -2770,49 +2745,51 @@ export function loadElement(index: number): LElementNode {
   return loadElementInternal(index, viewData);
 }
 
-/** Gets the current binding value and increments the binding index. */
-export function consumeBinding(): any {
-  ngDevMode && assertDataInRange(viewData[BINDING_INDEX]);
+/** Gets the current binding value. */
+export function getBinding(bindingIndex: number): any {
+  ngDevMode && assertDataInRange(viewData[bindingIndex]);
   ngDevMode &&
-      assertNotEqual(
-          viewData[viewData[BINDING_INDEX]], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
-  return viewData[viewData[BINDING_INDEX]++];
+      assertNotEqual(viewData[bindingIndex], NO_CHANGE, 'Stored value should never be NO_CHANGE.');
+  return viewData[bindingIndex];
 }
 
 /** Updates binding if changed, then returns whether it was updated. */
-export function bindingUpdated(value: any): boolean {
+export function bindingUpdated(bindingIndex: number, value: any): boolean {
   ngDevMode && assertNotEqual(value, NO_CHANGE, 'Incoming value should never be NO_CHANGE.');
-  if (viewData[BINDING_INDEX] === -1) initBindings();
-  const bindingIndex = viewData[BINDING_INDEX];
 
   if (bindingIndex >= viewData.length) {
-    viewData[viewData[BINDING_INDEX]++] = value;
+    viewData[bindingIndex] = value;
   } else if (isDifferent(viewData[bindingIndex], value, checkNoChangesMode)) {
     throwErrorIfNoChangesMode(creationMode, checkNoChangesMode, viewData[bindingIndex], value);
-    viewData[viewData[BINDING_INDEX]++] = value;
+    viewData[bindingIndex] = value;
   } else {
-    viewData[BINDING_INDEX]++;
     return false;
   }
   return true;
 }
 
-/** Updates binding if changed, then returns the latest value. */
-export function checkAndUpdateBinding(value: any): any {
-  bindingUpdated(value);
-  return value;
+/** Updates binding and returns the value. */
+export function updateBinding(bindingIndex: number, value: any): any {
+  return viewData[bindingIndex] = value;
 }
 
 /** Updates 2 bindings if changed, then returns whether either was updated. */
-export function bindingUpdated2(exp1: any, exp2: any): boolean {
-  const different = bindingUpdated(exp1);
-  return bindingUpdated(exp2) || different;
+export function bindingUpdated2(bindingIndex: number, exp1: any, exp2: any): boolean {
+  const different = bindingUpdated(bindingIndex, exp1);
+  return bindingUpdated(bindingIndex + 1, exp2) || different;
+}
+
+/** Updates 3 bindings if changed, then returns whether any was updated. */
+export function bindingUpdated3(bindingIndex: number, exp1: any, exp2: any, exp3: any): boolean {
+  const different = bindingUpdated2(bindingIndex, exp1, exp2);
+  return bindingUpdated(bindingIndex + 2, exp3) || different;
 }
 
 /** Updates 4 bindings if changed, then returns whether any was updated. */
-export function bindingUpdated4(exp1: any, exp2: any, exp3: any, exp4: any): boolean {
-  const different = bindingUpdated2(exp1, exp2);
-  return bindingUpdated2(exp3, exp4) || different;
+export function bindingUpdated4(
+    bindingIndex: number, exp1: any, exp2: any, exp3: any, exp4: any): boolean {
+  const different = bindingUpdated2(bindingIndex, exp1, exp2);
+  return bindingUpdated2(bindingIndex + 2, exp3, exp4) || different;
 }
 
 export function getTView(): TView {
@@ -2854,22 +2831,6 @@ function assertDataNext(index: number, arr?: any[]) {
   if (arr == null) arr = viewData;
   assertEqual(
       arr.length, index, `index ${index} expected to be at the end of arr (length ${arr.length})`);
-}
-
-/**
- * On the first template pass, the reserved slots should be set `NO_CHANGE`.
- *
- * If not, they might not have been actually reserved.
- */
-export function assertReservedSlotInitialized(slotOffset: number, numSlots: number) {
-  if (firstTemplatePass) {
-    const startIndex = tView.bindingStartIndex - slotOffset;
-    for (let i = 0; i < numSlots; i++) {
-      assertEqual(
-          viewData[startIndex + i], NO_CHANGE,
-          'The reserved slots should be set to `NO_CHANGE` on first template pass');
-    }
-  }
 }
 
 export function _getComponentHostLElementNode<T>(component: T): LElementNode {
