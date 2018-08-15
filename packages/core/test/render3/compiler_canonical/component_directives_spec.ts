@@ -503,7 +503,6 @@ describe('components & directives', () => {
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-array-comp');
-              $r3$.ɵreserveSlots(1);
             }
             if (rf & 2) {
               $r3$.ɵelementProperty(
@@ -570,7 +569,6 @@ describe('components & directives', () => {
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-comp');
-              $r3$.ɵreserveSlots(1);
             }
             if (rf & 2) {
               $r3$.ɵelementProperty(
@@ -614,7 +612,6 @@ describe('components & directives', () => {
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-array-comp');
-              $r3$.ɵreserveSlots(2);
             }
             if (rf & 2) {
               $r3$.ɵelementProperty(
@@ -726,7 +723,6 @@ describe('components & directives', () => {
           template: function MyApp_Template(rf: $RenderFlags$, c: $any$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-comp');
-              $r3$.ɵreserveSlots(10);
             }
             if (rf & 2) {
               $r3$.ɵelementProperty(
@@ -805,7 +801,6 @@ describe('components & directives', () => {
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'object-comp');
-              $r3$.ɵreserveSlots(2);
             }
             if (rf & 2) {
               $r3$.ɵelementProperty(
@@ -892,7 +887,6 @@ describe('components & directives', () => {
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'nested-comp');
-              $r3$.ɵreserveSlots(7);
             }
             if (rf & 2) {
               $r3$.ɵelementProperty(

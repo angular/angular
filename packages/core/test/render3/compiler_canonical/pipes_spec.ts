@@ -88,7 +88,6 @@ describe('pipes', () => {
             $r3$.ɵtext(0);
             $r3$.ɵpipe(1, 'myPipe');
             $r3$.ɵpipe(2, 'myPurePipe');
-            $r3$.ɵreserveSlots(6);
           }
           if (rf & 2) {
             $r3$.ɵtextBinding(
@@ -150,6 +149,21 @@ describe('pipes', () => {
       // /NORMATIVE
     }
 
+    function MyApp_div_Template_4(rf: $RenderFlags$, ctx: any) {
+      if (rf & 1) {
+        $r3$.ɵelementStart(0, 'div');
+        $r3$.ɵtext(1);
+        $r3$.ɵpipe(2, 'myPurePipe');
+        $r3$.ɵelementEnd();
+        $r3$.ɵreserveSlots(3);
+      }
+      if (rf & 2) {
+        const $comp$ = $r3$.ɵnextContext();
+        $r3$.ɵtextBinding(
+          1, $r3$.ɵinterpolation1('', $r3$.ɵpipeBind2(2, 3, $comp$.name, $comp$.size), ''));
+      }
+    }
+
     @Component({
       template: `{{name | myPurePipe:size}}{{name | myPurePipe:size}}
        <div *oneTimeIf="more">{{name | myPurePipe:size}}</div>`
@@ -170,7 +184,7 @@ describe('pipes', () => {
             $r3$.ɵpipe(1, 'myPurePipe');
             $r3$.ɵtext(2);
             $r3$.ɵpipe(3, 'myPurePipe');
-            $r3$.ɵtemplate(4, C4, '', ['oneTimeIf', '']);
+            $r3$.ɵtemplate(4, MyApp_div_Template_4, '', ['oneTimeIf', '']);
             $r3$.ɵreserveSlots(6);
           }
           if (rf & 2) {
@@ -181,20 +195,6 @@ describe('pipes', () => {
             $r3$.ɵelementProperty(4, 'oneTimeIf', $r3$.ɵbind(ctx.more));
             $r3$.ɵcontainerRefreshStart(4);
             $r3$.ɵcontainerRefreshEnd();
-          }
-
-          function C4(rf: $RenderFlags$, ctx1: $any$) {
-            if (rf & 1) {
-              $r3$.ɵelementStart(0, 'div');
-              $r3$.ɵtext(1);
-              $r3$.ɵpipe(2, 'myPurePipe');
-              $r3$.ɵelementEnd();
-              $r3$.ɵreserveSlots(3);
-            }
-            if (rf & 2) {
-              $r3$.ɵtextBinding(
-                  1, $r3$.ɵinterpolation1('', $r3$.ɵpipeBind2(2, 3, ctx.name, ctx.size), ''));
-            }
           }
         }
       });
