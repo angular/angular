@@ -50,10 +50,6 @@ function compileNgModuleFactory__POST_NGCC__<M>(
   return Promise.resolve(new R3NgModuleFactory(moduleType));
 }
 
-export function enableIvyBootstrap() {
-  compileNgModuleFactory = compileNgModuleFactory__POST_NGCC__;
-}
-
 export const ALLOW_MULTIPLE_PLATFORMS = new InjectionToken<boolean>('AllowMultipleToken');
 
 
