@@ -40,23 +40,23 @@ purposes. Each command is backed by a corresponding script inside
   Initializes the container (mainly by starting the necessary services).
   _It is run (by default) when starting the container._
 
-- `aio-upload-server-prod`:
-  Spins up a Node.js upload-server instance.
+- `aio-preview-server-prod`:
+  Spins up a Node.js preview-server instance.
   _It is used in `aio-init` (see above) during initialization._
 
 
 ## Developer Commands
 
-- `aio-upload-server-test`:
-  Spins up a Node.js upload-server instance for tests.
+- `aio-preview-server-test`:
+  Spins up a Node.js preview-server instance for tests.
   _It is used in `aio-verify-setup` (see below) for running tests._
 
 - `aio-verify-setup`:
   Runs a suite of e2e-like tests, mainly verifying the correct (inter)operation of nginx and the
-  Node.js upload-server.
+  Node.js preview-server.
 
 - `aio-verify-setup-and-log`:
-  Runs the `aio-verify-setup` command but also then dumps the logs from the upload server, which
+  Runs the `aio-verify-setup` command but also then dumps the logs from the preview server, which
   gives additional useful debugging information. See the [debugging docs](misc--debug-docker-container.md)
   for more info.
 

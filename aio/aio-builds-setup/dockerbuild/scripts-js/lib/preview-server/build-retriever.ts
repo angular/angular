@@ -5,7 +5,7 @@ import {mkdir} from 'shelljs';
 import {promisify} from 'util';
 import {CircleCiApi} from '../common/circle-ci-api';
 import {assert, assertNotMissingOrEmpty, computeArtifactDownloadPath, createLogger} from '../common/utils';
-import {UploadError} from '../upload-server/upload-error';
+import {PreviewServerError} from './preview-error';
 
 export interface GithubInfo {
   org: string;
@@ -58,7 +58,7 @@ export class BuildRetriever {
         const url = await this.api.getBuildArtifactUrl(buildNum, artifactPath);
         const response = await fetch(url, {size: this.downloadSizeLimit});
         if (response.status !== 200) {
-          throw new UploadError(response.status, `Error ${response.status} - ${response.statusText}`);
+          throw new PreviewServerError(response.status, `Error ${response.status} - ${response.statusText}`);
         }
         const buffer = await response.buffer();
         mkdir('-p', dirname(outPath));
@@ -68,7 +68,7 @@ export class BuildRetriever {
     } catch (error) {
       this.logger.warn(error);
       const status = (error.type === 'max-size') ? 413 : 500;
-      throw new UploadError(status, `CircleCI artifact download failed (${error.message || error})`);
+      throw new PreviewServerError(status, `CircleCI artifact download failed (${error.message || error})`);
     }
   }
 }

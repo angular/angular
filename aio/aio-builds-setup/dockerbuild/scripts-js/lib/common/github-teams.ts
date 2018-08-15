@@ -1,5 +1,5 @@
-import {assertNotMissingOrEmpty} from '../common/utils';
 import {GithubApi} from './github-api';
+import {assertNotMissingOrEmpty} from './utils';
 
 export interface Team {
   id: number;
