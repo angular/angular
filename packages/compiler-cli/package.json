@@ -1,0 +1,55 @@
+{
+  "name": "@angular/compiler-cli",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - the compiler CLI for Node.js",
+  "main": "index.js",
+  "typings": "index.d.ts",
+  "bin": {
+    "ivy-ngcc": "./ngcc/main-ivy-ngcc.js",
+    "ngcc": "./ngcc/main-ngcc.js",
+    "ngc": "./src/main.js",
+    "ng-xi18n": "./src/extract_i18n.js"
+  },
+  "dependencies": {
+    "reflect-metadata": "^0.1.2",
+    "minimist": "^1.2.0",
+    "canonical-path": "1.0.0",
+    "chokidar": "^3.0.0",
+    "convert-source-map": "^1.5.1",
+    "dependency-graph": "^0.7.2",
+    "fs-extra": "4.0.2",
+    "magic-string": "^0.25.0",
+    "semver": "^6.3.0",
+    "source-map": "^0.6.1",
+    "sourcemap-codec": "^1.4.8",
+    "tslib": "^2.0.0",
+    "yargs": "15.3.0"
+  },
+  "peerDependencies": {
+    "@angular/compiler": "0.0.0-PLACEHOLDER",
+    "typescript": ">=3.9 <4.0"
+  },
+  "engines": {
+    "node": ">=10.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/compiler-cli"
+  },
+  "keywords": [
+    "angular",
+    "compiler"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/angular/issues"
+  },
+  "homepage": "https://github.com/angular/angular/tree/master/packages/compiler-cli",
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
+  }
+}

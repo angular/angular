@@ -1,0 +1,69 @@
+{
+  "cli-hello-world": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 1485,
+        "main-es2015": 141151,
+        "polyfills-es2015": 36571
+      }
+    }
+  },
+  "cli-hello-world-ivy-minimal": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 1485,
+        "main-es2015": 17362,
+        "polyfills-es2015": 36657
+      }
+    }
+  },
+  "cli-hello-world-ivy-compat": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 1485,
+        "main-es2015": 147573,
+        "polyfills-es2015": 36571
+      }
+    }
+  },
+  "cli-hello-world-ivy-i18n": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 1485,
+        "main-es2015": 136168,
+        "polyfills-es2015": 37248
+      }
+    }
+  },
+  "cli-hello-world-lazy": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 2289,
+        "main-es2015": 245351,
+        "polyfills-es2015": 36938,
+        "5-es2015": 751
+      }
+    }
+  },
+  "cli-hello-world-lazy-rollup": {
+    "master": {
+      "uncompressed": {
+        "runtime-es2015": 2289,
+        "main-es2015": 221897,
+        "polyfills-es2015": 36938,
+        "5-es2015": 779
+      }
+    }
+  },
+  "hello_world__closure": {
+    "master": {
+      "uncompressed": {
+        "bundle": "TODO(i): temporarily increase the payload size limit from 105779 - this is due to a closure issue related to ESM reexports that still needs to be investigated",
+        "bundle": "TODO(i): we should define ngDevMode to false in Closure, but --define only works in the global scope.",
+        "bundle": "TODO(i): (FW-2164) TS 3.9 new class shape seems to have broken Closure in big ways. The size went from 169991 to 252338",
+        "bundle": "TODO(i): after removal of tsickle from ngc-wrapped / ng_package, we had to switch to SIMPLE optimizations which increased the size from 252338 to 1198917, see PR#37221 and PR#37317 for more info",
+        "bundle": 1209659
+      }
+    }
+  }
+}

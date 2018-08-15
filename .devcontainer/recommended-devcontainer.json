@@ -1,0 +1,16 @@
+// Reference: https://code.visualstudio.com/docs/remote/containers#_devcontainerjson-reference
+{
+  "name": "Angular dev container",
+  "dockerFile": "Dockerfile",
+  "appPort": [4000, 4200, 4433, 5000, 8080, 9876],
+  "postCreateCommand": "yarn install",
+  "extensions": [
+    "devondcarew.bazel-code",
+    "gkalpak.aio-docs-utils",
+    "ms-vscode.vscode-typescript-tslint-plugin",
+    "xaver.clang-format",
+    // The following extensions are useful when working on angular.io (i.e. inside the `aio/` directory).
+    //"angular.ng-template",
+    //"dbaeumer.vscode-eslint",
+  ],
+}

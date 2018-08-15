@@ -1,0 +1,55 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "view_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/util",
+        "//packages/core/testing",
+        "//packages/platform-browser",
+        "//packages/private/testing",
+    ],
+)
+
+ts_library(
+    name = "view_node_only_lib",
+    testonly = True,
+    srcs = glob(["**/*_node_only_spec.ts"]),
+    deps = [
+        ":view_lib",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "view",
+    bootstrap = ["//tools/testing:node_es5"],
+    tags = [
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":view_lib",
+        ":view_node_only_lib",
+    ],
+)
+
+karma_web_test_suite(
+    name = "view_web",
+    tags = [
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":view_lib",
+    ],
+)

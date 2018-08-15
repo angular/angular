@@ -1,0 +1,48 @@
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver")
+load("//dev-infra/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ng_module(
+    name = "transplanted_views_lib",
+    srcs = glob(["*.ts"]),
+    generate_ve_shims = True,
+    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/change_detection:util_lib",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index_aot.ts",
+    deps = [
+        ":transplanted_views_lib",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "prodserver",
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
+    port = 4200,
+    static_files = ["index.html"],
+    deps = [":bundle.min_debug.js"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":prodserver",
+    deps = ["//modules/benchmarks/src/change_detection:perf_tests_lib"],
+)
+
+e2e_test(
+    name = "e2e",
+    server = ":prodserver",
+    deps = ["//modules/benchmarks/src/change_detection:e2e_tests_lib"],
+)

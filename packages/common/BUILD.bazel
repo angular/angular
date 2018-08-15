@@ -1,0 +1,63 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "common",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/common/http:package.json",
+        "//packages/common/http/testing:package.json",
+        "//packages/common/testing:package.json",
+        "//packages/common/upgrade:package.json",
+    ],
+    entry_point = ":index.ts",
+    nested_packages = ["//packages/common/locales:package"],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//integration:__pkg__",
+        "//packages/bazel/test/ng_package:__pkg__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/ngcc/test:__pkg__",
+        "//packages/compiler-cli/test:__pkg__",
+        "//packages/compiler-cli/test/diagnostics:__pkg__",
+        "//packages/compiler-cli/test/transformers:__pkg__",
+        "//packages/compiler/test:__pkg__",
+        "//packages/language-service/test:__pkg__",
+    ],
+    deps = [
+        "//packages/common",
+        "//packages/common/http",
+        "//packages/common/http/testing",
+        "//packages/common/testing",
+        "//packages/common/upgrade",
+    ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "common_api",
+    actualDir = "angular/packages/common/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/common",
+)

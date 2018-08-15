@@ -1,0 +1,34 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ts_library")
+
+ng_module(
+    name = "aot_routing_module",
+    testonly = True,
+    srcs = ["aot_router_module.ts"],
+    generate_ve_shims = True,
+    deps = [
+        "//packages/core",
+        "//packages/router",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "aot_test_lib",
+    testonly = True,
+    srcs = ["aot_router_bootstrap.spec.ts"],
+    deps = [
+        ":aot_routing_module",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/router",
+        "//packages/router/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_es5"],
+    deps = [
+        ":aot_test_lib",
+    ],
+)

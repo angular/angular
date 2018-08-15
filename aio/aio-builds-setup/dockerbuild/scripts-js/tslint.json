@@ -1,0 +1,24 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended"
+  ],
+  "jsRules": {},
+  "rules": {
+    "array-type": [true, "array"],
+    "arrow-parens": [true, "ban-single-arg-parens"],
+    "interface-name": [true, "never-prefix"],
+    "max-classes-per-file": [true, 4],
+    "no-consecutive-blank-lines": [true, 2],
+    "no-console": [false],
+    "no-focused-test": true,
+    "no-namespace": [true, "allow-declarations"],
+    "no-skipped-test": true,
+    "no-string-literal": false,
+    "quotemark": [true, "single"],
+    "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"]
+  },
+  "rulesDirectory": [
+    "node_modules/tslint-jasmine-noSkipOrFocus"
+  ]
+}

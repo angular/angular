@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<body>
+  <h2>Params</h2>
+  <form>
+    Copies:
+    <input type="number" name="copies" placeholder="copies" value="8">
+    <br>
+    <button>Apply</button>
+  </form>
+
+  <h2>Ng2 Large Form Benchmark</h2>
+  <p>
+    <button id="destroyDom">destroyDom</button>
+    <button id="createDom">createDom</button>
+    <button id="createDomProfile">profile createDom</button>
+  </p>
+
+  <div>
+    <app id="root">Loading...</app>
+  </div>
+
+  <!--load location for ts_devserver-->
+  <script src="/app_bundle.js"></script>
+</body>
+</html>

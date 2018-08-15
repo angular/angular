@@ -1,0 +1,43 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*_spec.ts",
+            "**/*_spec",
+        ],
+    ),
+    deps = [
+        "//packages:types",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = 1,
+    srcs = glob(
+        ["**/*_spec.ts"],
+        exclude = ["symbol_extractor_spec/**"],
+    ),
+    deps = [
+        ":lib",
+        "//packages:types",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = glob(["symbol_extractor_spec/**"]),
+    deps = [
+        ":test_lib",
+        "//tools/symbol-extractor/symbol_extractor_spec:es2015_class_output",
+        "//tools/symbol-extractor/symbol_extractor_spec:fixtures",
+    ],
+)

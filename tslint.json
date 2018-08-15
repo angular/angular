@@ -1,0 +1,104 @@
+{
+  "rulesDirectory": [
+    "dist/tools/tslint",
+    "node_modules/vrsource-tslint-rules/rules",
+    "node_modules/tslint-eslint-rules/dist/rules",
+    "node_modules/tslint-no-toplevel-property-access/rules"
+  ],
+  "rules": {
+    "file-header": [
+      true,
+      {
+        "match": "Copyright Google LLC",
+        "allow-single-line-comments": false
+      }
+    ],
+    "no-console": [
+      true,
+      "log"
+    ],
+    "no-construct": true,
+    "no-duplicate-imports": true,
+    "no-duplicate-variable": true,
+    "no-jasmine-focus": true,
+    "no-var-keyword": true,
+    "prefer-literal": [
+      true,
+      "object"
+    ],
+    "require-internal-with-underscore": true,
+    "no-toplevel-property-access": [
+      true,
+      "packages/animations/src/",
+      "packages/animations/browser/",
+      "packages/common/src/",
+      "packages/core/src/",
+      "packages/elements/src/",
+      "packages/forms/src/",
+      "packages/platform-browser/src/",
+      "packages/router/src/"
+    ],
+    "semicolon": [
+      true
+    ],
+    "variable-name": [
+      true,
+      "ban-keywords"
+    ],
+    "no-inner-declarations": [
+      true,
+      "function"
+    ],
+    "no-debugger": true
+  },
+  "jsRules": {
+    "file-header": [
+      true,
+      {
+        "match": "Copyright Google LLC",
+        "allow-single-line-comments": false
+      }
+    ],
+    "no-console": [
+      true,
+      "log"
+    ],
+    "no-duplicate-imports": true,
+    "no-duplicate-variable": true,
+    "no-jasmine-focus": true,
+    "require-internal-with-underscore": true,
+    "semicolon": [
+      true
+    ],
+    "variable-name": [
+      true,
+      "ban-keywords"
+    ],
+    "no-inner-declarations": [
+      true,
+      "function"
+    ]
+  },
+  "linterOptions": {
+    "exclude": [
+      "**/node_modules/**/*",
+      // Ignore AIO and integration tests.
+      "./aio/**/*",
+      "./integration/**/*",
+      // Ignore output directories
+      "./built/**/*",
+      "./dist/**/*",
+      "./bazel-out/**/*",
+      // Ignore special files
+      "**/*.externs.js",
+      // Ignore test files
+      "./packages/localize/**/test_files/**/*",
+      "./tools/ts-api-guardian/test/fixtures/**/*",
+      "./tools/public_api_guard/**/*.d.ts",
+      "./modules/benchmarks_external/**/*",
+      // Ignore zone.js directory
+      // TODO(JiaLiPassion): add zone.js back later
+      "./packages/zone.js/**/*"
+    ]
+  }
+}

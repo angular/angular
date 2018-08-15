@@ -1,0 +1,70 @@
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver", "ts_library")
+load("//dev-infra/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+
+ng_module(
+    name = "application_lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.perf-spec.ts"],
+    ),
+    generate_ve_shims = True,
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/core",
+        "//packages/localize/init",
+        "//packages/platform-browser",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "perf_lib",
+    testonly = 1,
+    srcs = ["expanding_rows.perf-spec.ts"],
+    tsconfig = "//modules/benchmarks:tsconfig-e2e.json",
+    deps = [
+        "//dev-infra/benchmark/driver-utilities",
+        "@npm//protractor",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index_aot.ts",
+    deps = [
+        ":application_lib",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "prodserver",
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
+    port = 4200,
+    static_files = ["index.html"],
+    deps = [":bundle.min_debug.js"],
+)
+
+ts_devserver(
+    name = "devserver",
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
+    entry_module = "angular/modules/benchmarks/src/expanding_rows/index_aot",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = ["index.html"],
+    deps = [":application_lib"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":prodserver",
+    deps = [
+        ":perf_lib",
+    ],
+)

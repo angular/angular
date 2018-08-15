@@ -1,0 +1,55 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver")
+load("//dev-infra/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
+
+ng_module(
+    name = "largetable_lib",
+    srcs = [
+        "index_aot.ts",
+        "table.ts",
+    ],
+    tags = ["ivy-only"],
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/largetable:util_lib",
+        "//packages:types",
+        "//packages/common",
+        "//packages/core",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index_aot.ts",
+    tags = ["ivy-only"],
+    deps = [
+        ":largetable_lib",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    port = 4200,
+    static_files = ["index.html"],
+    tags = ["ivy-only"],
+    deps = [
+        ":bundle.min_debug.js",
+    ],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    tags = ["ivy-only"],
+    deps = ["//modules/benchmarks/src/largetable:perf_tests_lib"],
+)
+
+e2e_test(
+    name = "e2e",
+    server = ":devserver",
+    tags = ["ivy-only"],
+    deps = ["//modules/benchmarks/src/largetable:e2e_tests_lib"],
+)

@@ -1,0 +1,39 @@
+{% macro paramList(params, truncateLines) -%}
+  {%- if params -%}
+    ({%- for param in params -%}
+      {$ param | escape | truncateCode(truncateLines) $}{% if not loop.last %}, {% endif %}
+    {%- endfor %})
+  {%- endif %}
+{%- endmacro -%}
+
+
+{% macro returnType(returnType) -%}
+  {%- if returnType %}: {$ returnType | escape $}{% endif -%}
+{%- endmacro -%}
+
+{%- macro renderParameters(parameters, containerClass, parameterClass, showType) -%}
+{%- if parameters.length -%}
+<table class="is-full-width list-table parameters-table {$ containerClass $}">
+  <tbody>
+  {% for parameter in parameters %}
+    <tr class="{$ parameterClass $}">
+      <td class="param-name">
+        <a id="{$ parameter.anchor $}"></a>
+        <code>{$ parameter.name $}</code>
+      </td>
+      {% if showType %}<td class="param-type"><code>{% if r/^\{/.test(parameter.type) and r/\}$/.test(parameter.type) and parameter.type.length > 20 %}object{% else %}{$ parameter.type $}{% endif %}</code></td>{% endif %}
+      <td class="param-description">
+      {% marked %}
+      {% if (parameter.shortDescription | trim) or (parameter.description | trim) %}{$ parameter.shortDescription + '\n\n' + parameter.description $}
+      {% endif %}
+
+      {% if parameter.isOptional or parameter.defaultValue !== undefined %}Optional. Default is `{$ parameter.defaultValue === undefined and 'undefined' or parameter.defaultValue $}`.{% endif %}
+      {% endmarked %}
+      </td>
+    </tr>{% endfor %}
+  </tbody>
+</table>
+{%- else -%}
+<p>There are no parameters.</p>
+{%- endif -%}
+{%- endmacro -%}

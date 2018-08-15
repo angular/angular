@@ -1,0 +1,11 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "tslint",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//packages/core/schematics:tsconfig.json",
+    visibility = [
+        "//packages/core/schematics/migrations/google3:__pkg__",
+    ],
+    deps = ["@npm//typescript"],
+)

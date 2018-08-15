@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+  <!-- Prevent the browser from requesting any favicon. -->
+  <link rel="icon" href="data:,">
+</head>
+<body>
+
+  <h2>Params</h2>
+  <form>
+    Depth:
+    <input type="number" name="depth" placeholder="depth" value="10">
+    <br>
+    <button>Apply</button>
+  </form>
+
+  <h2>Ng2 Next Tree Benchmark</h2>
+  <p>
+    <button id="destroyDom">destroyDom</button>
+    <button id="createDom">createDom</button>
+    <button id="detectChanges">detectChanges</button>
+    <button id="updateDomProfile">profile updateDom</button>
+    <button id="createDomProfile">profile createDom</button>
+    <button id="detectChangesProfile">profile detectChanges</button>
+  </p>
+
+  <div>
+    Change detection runs:<span id="numberOfChecks"></span>
+  </div>
+  <div>
+    <tree id="root">Loading...</tree>
+  </div>
+
+  <!--load location for ts_devserver-->
+  <script src="/app_bundle.js"></script>
+</body>
+</html>

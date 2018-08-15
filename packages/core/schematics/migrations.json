@@ -1,0 +1,49 @@
+{
+  "schematics": {
+    "migration-v8-move-document": {
+      "version": "8.0.0-beta",
+      "description": "@DOCUMENT migration. Migrates DOCUMENT Injection token from platform-browser imports to common import.",
+      "factory": "./migrations/move-document/index"
+    },
+    "migration-v8-static-queries": {
+      "version": "8.0.0-beta",
+      "description": "ViewChild and ContentChild to explicit query timing migration. In Angular version 8, developers need to explicitly specify the timing of ViewChild and ContentChild queries. Read more about this here: https://v8.angular.io/guide/static-query-migration",
+      "factory": "./migrations/static-queries/index"
+    },
+    "migration-v8-template-local-variables": {
+      "version": "8.0.0-beta",
+      "description": "Template Variable Assignment migration. Warns developers if values are assigned to template variables.",
+      "factory": "./migrations/template-var-assignment/index"
+    },
+    "migration-v9-renderer-to-renderer2": {
+      "version": "9.0.0-beta",
+      "description": "Renderer to Renderer2 migration. As of Angular 9, the Renderer class is no longer available. Renderer2 should be used instead. Read more about this here: https://v9.angular.io/guide/migration-renderer",
+      "factory": "./migrations/renderer-to-renderer2/index"
+    },
+    "migration-v9-undecorated-classes-with-di": {
+      "version": "9.0.0-beta",
+      "description": "Undecorated classes with DI migration. As of Angular 9, it is no longer supported to use Angular DI on a class that does not have an Angular decorator. Read more about this here: https://v9.angular.io/guide/migration-undecorated-classes",
+      "factory": "./migrations/undecorated-classes-with-di/index"
+    },
+    "migration-v9-dynamic-queries": {
+      "version": "9-beta",
+      "description": "Static flag migration. Removes the `static` flag from dynamic queries. As of Angular 9, the \"static\" flag defaults to false and is no longer required for your view and content queries. Read more about this here: https://v9.angular.io/guide/migration-dynamic-flag",
+      "factory": "./migrations/dynamic-queries/index"
+    },
+    "migration-v10-missing-injectable": {
+      "version": "10.0.0-beta",
+      "description": "Missing @Injectable and incomplete provider definition migration. As of Angular 9, enforcement of @Injectable decorators for DI is a bit stricter and incomplete provider definitions behave differently. Read more about this here: https://v9.angular.io/guide/migration-injectable",
+      "factory": "./migrations/missing-injectable/index"
+    },
+    "migration-v10-module-with-providers": {
+      "version": "10.0.0-beta",
+      "description": "ModuleWithProviders migration. As of Angular 10, the ModuleWithProviders type requires a generic. This migration adds the generic where it is missing. Read more about this here: https://v10.angular.io/guide/migration-module-with-providers",
+      "factory": "./migrations/module-with-providers/index"
+    },
+    "migration-v10-undecorated-classes-with-decorated-fields": {
+      "version": "10.0.0-beta",
+      "description": "Undecorated classes with Angular features migration. In version 10, classes that use Angular features and do not have an Angular decorator are no longer supported. Read more about this here: https://v10.angular.io/guide/migration-undecorated-classes",
+      "factory": "./migrations/undecorated-classes-with-decorated-fields/index"
+    }
+  }
+}

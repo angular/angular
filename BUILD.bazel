@@ -1,0 +1,49 @@
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "LICENSE",
+    "karma-js.conf.js",
+    "browser-providers.conf.js",
+    "scripts/ci/track-payload-size.sh",
+    "scripts/ci/payload-size.sh",
+    "scripts/ci/payload-size.js",
+    "package.json",
+])
+
+alias(
+    name = "tsconfig.json",
+    actual = "//packages:tsconfig-build.json",
+)
+
+filegroup(
+    name = "web_test_bootstrap_scripts",
+    # do not sort
+    srcs = [
+        "@npm//:node_modules/core-js/client/core.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:zone-testing.umd.js",
+        "//packages/zone.js/bundles:task-tracking.umd.js",
+        "//:test-events.js",
+        "//:third_party/shims_for_IE.js",
+        # Including systemjs because it defines `__eval`, which produces correct stack traces.
+        "@npm//:node_modules/systemjs/dist/system.src.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
+)
+
+filegroup(
+    name = "angularjs_scripts",
+    srcs = [
+        # We also declare the unminfied AngularJS files since these can be used for
+        # local debugging (e.g. see: packages/upgrade/test/common/test_helpers.ts)
+        "@npm//:node_modules/angular/angular.js",
+        "@npm//:node_modules/angular/angular.min.js",
+        "@npm//:node_modules/angular-1.5/angular.js",
+        "@npm//:node_modules/angular-1.5/angular.min.js",
+        "@npm//:node_modules/angular-1.6/angular.js",
+        "@npm//:node_modules/angular-1.6/angular.min.js",
+        "@npm//:node_modules/angular-mocks/angular-mocks.js",
+        "@npm//:node_modules/angular-mocks-1.5/angular-mocks.js",
+        "@npm//:node_modules/angular-mocks-1.6/angular-mocks.js",
+    ],
+)

@@ -1,0 +1,70 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "service-worker",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+genrule(
+    name = "ngsw_config_binary",
+    srcs = ["//packages/service-worker/cli:ngsw_config.js"],
+    outs = ["ngsw-config.js"],
+    cmd = "echo '#!/usr/bin/env node' > $@ && cat $< >> $@",
+)
+
+genrule(
+    name = "ngsw_worker_renamed",
+    srcs = ["//packages/service-worker/worker:ngsw_worker.js"],
+    outs = ["ngsw-worker.js"],
+    # Remove sourcemap since this file will be served in production site
+    # See https://github.com/angular/angular/issues/23596
+    cmd = "grep -v '//# sourceMappingURL' < $< > $@",
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/service-worker/config:package.json",
+    ],
+    data = [
+        "safety-worker.js",
+        ":ngsw_config_binary",
+        ":ngsw_worker_renamed",
+        "//packages/service-worker/config",
+        "//packages/service-worker/config:schema.json",
+    ],
+    entry_point = ":index.ts",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = ["//integration:__pkg__"],
+    deps = [
+        ":service-worker",
+        "//packages/service-worker/config",
+    ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "service-worker_api",
+    actualDir = "angular/packages/service-worker/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/service-worker",
+)

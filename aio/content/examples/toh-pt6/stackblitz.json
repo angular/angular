@@ -1,0 +1,10 @@
+{
+  "description": "Tour of Heroes: Part 6",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!**/*.[1,2].*"
+  ],
+  "file": "src/app/hero.service.ts",
+  "tags": ["tutorial", "tour", "heroes", "http"]
+}

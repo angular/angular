@@ -1,0 +1,49 @@
+load("//tools:defaults.bzl", "ng_module", "ts_devserver")
+load("//dev-infra/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+# Note that this benchmark has been designed for Angular with ViewEngine, but once ViewEngine is
+# removed, we should keep this benchmark and run it with Ivy (potentially rename it to "render3")
+ng_module(
+    name = "ng2",
+    srcs = glob(["*.ts"]),
+    generate_ve_shims = True,
+    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//packages/core",
+        "//packages/forms",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    bootstrap = [
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+    entry_module = "angular/modules/benchmarks/src/largeform/ng2/index",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = ["index.html"],
+    deps = [":ng2"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    deps = ["//modules/benchmarks/src/largeform:perf_tests_lib"],
+)
+
+e2e_test(
+    name = "e2e",
+    server = ":devserver",
+    deps = ["//modules/benchmarks/src/largeform:e2e_tests_lib"],
+)

@@ -1,0 +1,25 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler/test:test_utils",
+        "//packages/compiler/test/expression_parser/utils",
+        "//packages/compiler/testing",
+        "//packages/core",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_es5"],
+    deps = [
+        ":test_lib",
+    ],
+)

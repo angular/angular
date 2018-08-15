@@ -1,0 +1,140 @@
+[
+  {
+    "name": "CIRCULAR"
+  },
+  {
+    "name": "EMPTY_ARRAY"
+  },
+  {
+    "name": "INJECTOR"
+  },
+  {
+    "name": "INJECTOR_SCOPE"
+  },
+  {
+    "name": "Inject"
+  },
+  {
+    "name": "InjectFlags"
+  },
+  {
+    "name": "InjectionToken"
+  },
+  {
+    "name": "NEW_LINE"
+  },
+  {
+    "name": "NG_FACTORY_DEF"
+  },
+  {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
+    "name": "NG_INJECTOR_DEF"
+  },
+  {
+    "name": "NG_INJ_DEF"
+  },
+  {
+    "name": "NG_PROV_DEF"
+  },
+  {
+    "name": "NG_PROV_DEF_FALLBACK"
+  },
+  {
+    "name": "NOT_YET"
+  },
+  {
+    "name": "NULL_INJECTOR"
+  },
+  {
+    "name": "NullInjector"
+  },
+  {
+    "name": "Optional"
+  },
+  {
+    "name": "R3Injector"
+  },
+  {
+    "name": "ScopedService"
+  },
+  {
+    "name": "Self"
+  },
+  {
+    "name": "SkipSelf"
+  },
+  {
+    "name": "THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "USE_VALUE"
+  },
+  {
+    "name": "__forward_ref__"
+  },
+  {
+    "name": "_currentInjector"
+  },
+  {
+    "name": "deepForEach"
+  },
+  {
+    "name": "forwardRef"
+  },
+  {
+    "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getFactoryDef"
+  },
+  {
+    "name": "getInjectableDef"
+  },
+  {
+    "name": "getInjectorDef"
+  },
+  {
+    "name": "getNullInjector"
+  },
+  {
+    "name": "getOwnDefinition"
+  },
+  {
+    "name": "injectArgs"
+  },
+  {
+    "name": "injectableDefOrInjectorDefFactory"
+  },
+  {
+    "name": "isTypeProvider"
+  },
+  {
+    "name": "isValueProvider"
+  },
+  {
+    "name": "makeParamDecorator"
+  },
+  {
+    "name": "makeRecord"
+  },
+  {
+    "name": "resolveForwardRef"
+  },
+  {
+    "name": "setCurrentInjector"
+  },
+  {
+    "name": "stringify"
+  },
+  {
+    "name": "throwMixedMultiProviderError"
+  },
+  {
+    "name": "ɵɵdefineInjectable"
+  },
+  {
+    "name": "ɵɵinject"
+  }
+]

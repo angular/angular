@@ -1,0 +1,68 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_rollup_bundle", "ts_library")
+load("//tools/size-tracking:index.bzl", "js_size_tracking_test")
+
+ts_library(
+    name = "core_all",
+    srcs = ["index.ts"],
+    tags = ["ivy-only"],
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        ":core_all",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+js_size_tracking_test(
+    name = "size_test",
+    src = "angular/packages/core/test/bundling/core_all/bundle.min.js",
+    # Ensures that this target runs with "--config=ivy" (aka Ivy). This is necessary
+    # because we don't run this test on CI currently, but if we run it manually, we need to
+    # ensure that it runs with Ivy for proper size comparisons.
+    angular_ivy_enabled = "True",
+    data = [
+        "bundle.golden_size_map_ivy.json",
+        ":bundle",
+    ],
+    golden_file = "angular/packages/core/test/bundling/core_all/bundle.golden_size_map_ivy.json",
+    max_byte_diff = 250,
+    max_percentage_diff = 15,
+    source_map = "angular/packages/core/test/bundling/core_all/bundle.min.js.map",
+    tags = [
+        "ivy-only",
+        "manual",
+    ],
+)
+
+js_size_tracking_test(
+    name = "size_test_view_engine",
+    src = "angular/packages/core/test/bundling/core_all/bundle.min.js",
+    # Ensures that this target runs with `--config=view-engine`. This is
+    # necessary because we don't run this test on CI currently, but if we run it manually,
+    # we need to ensure that it runs with View Engine for proper size comparisons.
+    angular_ivy_enabled = "False",
+    data = [
+        "bundle.golden_size_map_view_engine.json",
+        ":bundle",
+    ],
+    golden_file = "angular/packages/core/test/bundling/core_all/bundle.golden_size_map_view_engine.json",
+    max_byte_diff = 250,
+    max_percentage_diff = 15,
+    source_map = "angular/packages/core/test/bundling/core_all/bundle.min.js.map",
+    tags = [
+        "manual",
+        "no-ivy-aot",
+    ],
+)

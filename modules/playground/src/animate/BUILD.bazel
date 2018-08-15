@@ -1,0 +1,29 @@
+load("//tools:defaults.bzl", "ng_module", "ts_devserver")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+ng_module(
+    name = "animate",
+    srcs = glob(["**/*.ts"]),
+    assets = glob(["**/*.css"]),
+    tsconfig = "//modules/playground:tsconfig-build.json",
+    deps = [
+        "//packages/animations",
+        "//packages/core",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "angular/modules/playground/src/animate/index",
+    port = 4200,
+    scripts = ["@npm//:node_modules/tslib/tslib.js"],
+    static_files = [
+        "index.html",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
+    deps = [":animate"],
+)

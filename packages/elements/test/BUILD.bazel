@@ -1,0 +1,57 @@
+load("//tools:defaults.bzl", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+load("//tools:utils.bzl", "transpile_js_to_es5")
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/elements/index.js",
+    deps = ["//packages/elements"],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["**/*.ts"]),
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/elements",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser-dynamic/testing",
+        "//packages/platform-browser/testing",
+        "@npm//rxjs",
+    ],
+)
+
+# This file is shipped as es2015 to npm. We have to transpile
+# it to es5 in order to run the tests against older browsers.
+transpile_js_to_es5(
+    name = "custom_elements_native_shim",
+    js_file = "@npm//:node_modules/@webcomponents/custom-elements/src/native-shim.js",
+)
+
+filegroup(
+    name = "elements_test_bootstrap_scripts",
+    testonly = True,
+    # do not sort
+    srcs = [
+        "@npm//:node_modules/core-js/client/core.js",
+        ":custom_elements_native_shim",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:zone-testing.umd.js",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test",
+    bootstrap = [
+        ":elements_test_bootstrap_scripts",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

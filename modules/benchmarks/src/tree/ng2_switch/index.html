@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+  <!-- Prevent the browser from requesting any favicon. -->
+  <link rel="icon" href="data:,">
+</head>
+<body>
+
+  <h2>Params</h2>
+  <form>
+    Depth:
+    <input type="number" name="depth" placeholder="depth" value="10">
+    <br>
+    <button>Apply</button>
+  </form>
+
+  <h2>Ng2 with NgSwitch Tree Benchmark</h2>
+  <p>
+    <button id="destroyDom">destroyDom</button>
+    <button id="createDom">createDom</button>
+    <button id="updateDomProfile">profile updateDom</button>
+    <button id="createDomProfile">profile createDom</button>
+  </p>
+
+  <div>
+    <tree id="root">Loading...</tree>
+  </div>
+
+  <!--load location for ts_devserver-->
+  <script src="/app_bundle.js"></script>
+</body>
+</html>

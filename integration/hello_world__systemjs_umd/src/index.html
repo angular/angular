@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Hello World</title>
+  <base href="/">
+  <script src="node_modules/core-js/client/shim.min.js"></script>
+  <script src="node_modules/zone.js/bundles/zone.umd.js"></script>
+  <script src="node_modules/systemjs/dist/system.src.js"></script>
+  <script src="systemjs.config.js"></script>
+  <script>
+    System.import('main.ts').catch(function (err) { console.error(err); });
+  </script>
+</head>
+
+<body>
+  <hello-world-app>Loading...</hello-world-app>
+</body>
+
+</html>

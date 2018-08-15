@@ -1,0 +1,19 @@
+{
+  "angularCompilerOptions": {
+    "skipTemplateCodegen": true,
+    "enableIvy": false
+  },
+
+  "compilerOptions": {
+    "baseUrl": ".",
+    "declaration": true,
+    "experimentalDecorators": true,
+    "lib": ["es6", "dom"],
+    "moduleResolution": "node",
+    "noImplicitAny": true,
+    "outDir": "../node_modules/third_party",
+    "rootDir": "",
+    "target": "es5",
+    "typeRoots": ["../node_modules/@types"]
+ }
+}

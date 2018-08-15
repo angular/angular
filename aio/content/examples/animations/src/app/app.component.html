@@ -1,0 +1,23 @@
+<h1>Animations</h1>
+
+Toggle All Animations <input type="checkbox" [checked]="!animationsDisabled" (click)="toggleAnimations()"/>
+
+<nav>
+  <a id="home" routerLink="/home" routerLinkActive="active">Home</a>
+  <a id="about" routerLink="/about" routerLinkActive="active">About</a>
+  <a id="open-close" routerLink="/open-close" routerLinkActive="active">Open/Close</a>
+  <a id="status" routerLink="/status" routerLinkActive="active">Status Slider</a>
+  <a id="toggle" routerLink="/toggle" routerLinkActive="active">Toggle Animations</a>
+  <a id="enter-leave" routerLink="/enter-leave" routerLinkActive="active">Enter/Leave</a>
+  <a id="auto" routerLink="/auto" routerLinkActive="active">Auto Calculation</a>
+  <a id="heroes" routerLink="/heroes" routerLinkActive="active">Filter/Stagger</a>
+  <a id="hero-groups" routerLink="/hero-groups" routerLinkActive="active">Hero Groups</a>
+  <a id="insert-remove" routerLink="/insert-remove" routerLinkActive="active">Insert/Remove</a>
+
+</nav>
+
+<!-- #docregion route-animations-outlet -->
+<div [@routeAnimations]="prepareRoute(outlet)">
+  <router-outlet #outlet="outlet"></router-outlet>
+</div>
+<!-- #enddocregion route-animations-outlet -->

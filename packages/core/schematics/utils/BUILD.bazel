@@ -1,0 +1,17 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "utils",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//packages/core/schematics:tsconfig.json",
+    visibility = ["//packages/core/schematics:__subpackages__"],
+    deps = [
+        "//packages/compiler",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@schematics/angular",
+        "@npm//@types/inquirer",
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)

@@ -1,0 +1,93 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "karma_web_test_suite", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+package(default_visibility = ["//visibility:public"])
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/core/index.js",
+    deps = ["//packages/core"],
+)
+
+circular_dependency_test(
+    name = "testing_circular_deps_test",
+    entry_point = "angular/packages/core/testing/index.js",
+    deps = ["//packages/core/testing"],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*_node_only_spec.ts",
+        ],
+    ),
+    # Visible to //:saucelabs_unit_tests_poc target
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//packages/animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+        "//packages/common",
+        "//packages/common/locales",
+        "//packages/compiler",
+        "//packages/compiler/testing",
+        "//packages/core",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/reflection",
+        "//packages/core/src/util",
+        "//packages/core/testing",
+        "//packages/localize/init",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+        "//packages/private/testing",
+        "//packages/router",
+        "//packages/router/testing",
+        "//packages/zone.js/lib:zone_d_ts",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "test_node_only_lib",
+    testonly = True,
+    srcs = glob(["**/*_node_only_spec.ts"]),
+    deps = [
+        ":test_lib",
+        "//packages/compiler",
+        "//packages/compiler/testing",
+        "//packages/core",
+        "//packages/core/src/compiler",
+        "//packages/core/testing",
+        "//packages/platform-server",
+        "//packages/platform-server/testing",
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_es5"],
+    shard_count = 4,
+    deps = [
+        ":test_lib",
+        ":test_node_only_lib",
+        "//packages/platform-server",
+        "//packages/platform-server/testing",
+        "//packages/zone.js/lib:zone_d_ts",
+        "@npm//base64-js",
+        "@npm//source-map",
+    ],
+)
+
+karma_web_test_suite(
+    name = "test_web",
+    deps = [
+        ":test_lib",
+    ],
+)

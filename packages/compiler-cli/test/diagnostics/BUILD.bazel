@@ -1,0 +1,51 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+# check_types_spec
+ts_library(
+    name = "check_types_lib",
+    testonly = True,
+    srcs = ["check_types_spec.ts"],
+    deps = [
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/test:test_utils",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "check_types",
+    timeout = "long",  # 900 seconds
+    bootstrap = ["//tools/testing:node_es5"],
+    data = [
+        "//packages/common:npm_package",
+        "//packages/core:npm_package",
+    ],
+    tags = [
+        # Disabled as these tests pertain to typechecking in the old ngc compiler. The Ivy ngtsc
+        # compiler has its own typechecking implementation and tests.
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":check_types_lib",
+        "//packages/core",
+    ],
+)
+
+# typescript_version_spec
+ts_library(
+    name = "typescript_version_lib",
+    testonly = True,
+    srcs = ["typescript_version_spec.ts"],
+    deps = [
+        "//packages/compiler-cli",
+        "//packages/compiler-cli/test:test_utils",
+    ],
+)
+
+jasmine_node_test(
+    name = "typescript_version",
+    bootstrap = ["//tools/testing:node_es5"],
+    deps = [
+        ":typescript_version_lib",
+    ],
+)

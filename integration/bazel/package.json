@@ -1,0 +1,52 @@
+{
+  "name": "angular-bazel",
+  "description": "example and integration test for building Angular apps with Bazel",
+  "version": "0.0.0",
+  "license": "MIT",
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/cdk": "8.0.1",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/forms": "file:../../dist/packages-dist/forms",
+    "@angular/material": "8.0.1",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "reflect-metadata": "0.1.12",
+    "rxjs": "file:../../node_modules/rxjs",
+    "tslib": "file:../../node_modules/tslib",
+    "zone.js": "file:../../dist/zone.js-dist"
+  },
+  "devDependencies": {
+    "@angular/bazel": "file:../../dist/packages-dist/bazel",
+    "@angular/compiler": "file:../../dist/packages-dist/compiler",
+    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
+    "@bazel/bazelisk": "file:../../node_modules/@bazel/bazelisk",
+    "@bazel/karma": "1.7.0",
+    "@bazel/protractor": "1.7.0",
+    "@bazel/rollup": "1.7.0",
+    "@bazel/terser": "1.7.0",
+    "@bazel/typescript": "1.7.0",
+    "@types/jasmine": "2.8.8",
+    "http-server": "0.12.0",
+    "karma": "4.4.1",
+    "karma-chrome-launcher": "3.1.0",
+    "karma-firefox-launcher": "1.2.0",
+    "karma-jasmine": "2.0.1",
+    "karma-requirejs": "1.1.0",
+    "karma-sourcemap-loader": "0.3.7",
+    "protractor": "5.4.2",
+    "requirejs": "2.3.6",
+    "rollup": "1.27.5",
+    "rollup-plugin-commonjs": "10.1.0",
+    "rollup-plugin-node-resolve": "5.2.0",
+    "rollup-plugin-sourcemaps": "0.4.2",
+    "terser": "4.4.0",
+    "typescript": "3.8.3"
+  },
+  "scripts": {
+    "test": "bazelisk build ... --noshow_progress && bazelisk test ...",
+    "postinstall": "ngcc"
+  }
+}

@@ -1,0 +1,33 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ts_devserver")
+
+ng_module(
+    name = "router_activated_route_examples",
+    srcs = glob(
+        ["**/*.ts"],
+    ),
+    generate_ve_shims = True,
+    deps = [
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/router",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "@angular/examples/router/activated-route/main",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = [
+        "//packages/examples:index.html",
+        "//packages/zone.js/bundles:zone.umd.js",
+    ],
+    deps = [":router_activated_route_examples"],
+)

@@ -1,0 +1,22 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "static-queries",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//packages/core/schematics:tsconfig.json",
+    visibility = [
+        "//packages/core/schematics:__pkg__",
+        "//packages/core/schematics/migrations/google3:__pkg__",
+        "//packages/core/schematics/test:__pkg__",
+    ],
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/core/schematics/utils",
+        "@npm//@angular-devkit/core",
+        "@npm//@angular-devkit/schematics",
+        "@npm//@types/node",
+        "@npm//rxjs",
+        "@npm//typescript",
+    ],
+)

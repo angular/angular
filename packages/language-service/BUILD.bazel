@@ -1,0 +1,52 @@
+load("//tools:defaults.bzl", "pkg_npm", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "language-service",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+        exclude = [
+            "src/ts_utils.ts",
+        ],
+    ),
+    deps = [
+        ":ts_utils",
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+        "//packages/core",
+        "@npm//@types/node",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "ts_utils",
+    srcs = ["src/ts_utils.ts"],
+    deps = [
+        "@npm//typescript",
+    ],
+)
+
+pkg_npm(
+    name = "npm_package",
+    srcs = ["package.json"],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//integration:__pkg__",
+    ],
+    deps = [
+        ":language-service",
+        # min bundle is not used at the moment; omit from package to speed up build
+        "//packages/language-service/bundles:language-service.js",
+        "//packages/language-service/bundles:ivy.js",
+    ],
+)

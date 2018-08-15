@@ -1,0 +1,66 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_test")
+load("//tools:defaults.bzl", "nodejs_binary")
+
+nodejs_binary(
+    name = "ngc_bin",
+    data = [
+        "//packages/compiler-cli",
+        "@npm//chokidar",
+        "@npm//reflect-metadata",
+    ],
+    entry_point = "//packages/compiler-cli:src/main.ts",
+)
+
+nodejs_binary(
+    name = "ng_xi18n",
+    data = [
+        "//packages/compiler-cli",
+        "@npm//chokidar",
+        "@npm//reflect-metadata",
+    ],
+    entry_point = "//packages/compiler-cli:src/extract_i18n.ts",
+)
+
+nodejs_test(
+    name = "integrationtest",
+    data = [
+        ":ngc_bin",
+        ":ng_xi18n",
+        "@nodejs//:node",
+        "@npm//domino",
+        "@npm//chokidar",
+        "@npm//fs-extra",
+        "@npm//source-map-support",
+        "@npm//shelljs",
+        "@npm//typescript",
+        "@npm//reflect-metadata",
+        "@npm//rxjs",
+        "@npm//tslib",
+        "@npm//jasmine/bin:jasmine",
+        "@npm//xhr2",
+        "@npm//@types/node",
+        "@npm//@types/jasmine",
+        # we need to reference zone.d.ts typing file from zone.js build target
+        # instead of npm because angular repo will not depends on npm zone.js
+        # any longer.
+        "//packages/zone.js/lib:zone_d_ts",
+        # we need to reference zone.js npm_package build target
+        # instead of npm because angular repo will not depends on npm zone.js
+        # any longer, so we need to build a zone.js npm release first.
+        "//packages/zone.js:npm_package",
+        "//packages/animations:npm_package",
+        "//packages/common:npm_package",
+        "//packages/compiler:npm_package",
+        "//packages/compiler-cli:npm_package",
+        "//packages/core:npm_package",
+        "//packages/forms:npm_package",
+        "//packages/platform-browser:npm_package",
+        "//packages/platform-browser-dynamic:npm_package",
+        "//packages/platform-server:npm_package",
+        "//packages/router:npm_package",
+    ] + glob(["**/*"]),
+    entry_point = "test.js",
+    tags = ["no-ivy-aot"],
+)

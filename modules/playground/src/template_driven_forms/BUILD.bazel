@@ -1,0 +1,31 @@
+load("//tools:defaults.bzl", "ng_module", "ts_devserver")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+ng_module(
+    name = "template_driven_forms",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//modules/playground:tsconfig-build.json",
+    deps = [
+        "//packages/core",
+        "//packages/forms",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    bootstrap = [
+        "//packages/zone.js/bundles:zone.umd.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
+    entry_module = "angular/modules/playground/src/template_driven_forms/index",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = ["index.html"],
+    deps = [":template_driven_forms"],
+)

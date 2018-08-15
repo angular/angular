@@ -1,0 +1,62 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "browser",
+    testonly = 1,
+    srcs = ["init_browser_spec.ts"],
+    deps = [
+        "//packages/compiler",
+        "//packages/core/testing",
+        "//packages/platform-browser-dynamic/testing",
+        "//packages/platform-browser/animations",
+    ],
+)
+
+ts_library(
+    name = "node",
+    testonly = 1,
+    srcs = ["init_node_spec.ts"],
+    deps = [
+        "//packages/compiler",
+        "//packages/core/testing",
+        "//packages/platform-server",
+        "//packages/platform-server/testing",
+        "//packages/zone.js/lib",
+        "@npm//domino",
+    ],
+)
+
+ts_library(
+    name = "node_no_angular",
+    testonly = 1,
+    srcs = ["init_node_no_angular_spec.ts"],
+    deps = [
+        "//packages:types",
+    ],
+)
+
+# A test to verify that jasmine_node_test targets fail as expected.
+# This is to catch any future regressions to jasmine_node_test where
+# tests pass silently without executing.
+# See https://github.com/bazelbuild/rules_nodejs/pull/1540 for an example
+# of a potential regression.
+jasmine_node_test(
+    name = "fail_test",
+    srcs = ["fail.spec.js"],
+    expected_exit_code = 55,
+)
+
+# A test to verify that jasmine_node_test targets fail as expected
+# when there is a bootstrap script set.
+# This is to catch any future regressions to jasmine_node_test where
+# tests pass silently without executing.
+# See https://github.com/bazelbuild/rules_nodejs/pull/1540 for an example
+# of a potential regression.
+jasmine_node_test(
+    name = "fail_bootstrap_test",
+    srcs = ["fail.spec.js"],
+    bootstrap = ["//tools/testing:node_es5"],
+    expected_exit_code = 55,
+)

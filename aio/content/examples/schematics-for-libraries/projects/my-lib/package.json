@@ -1,0 +1,27 @@
+// #docplaster
+// #docregion collection
+{
+  "name": "my-lib",
+  "version": "0.0.1",
+// #enddocregion collection
+  "scripts": {
+    "build": "../../node_modules/.bin/tsc -p tsconfig.schematics.json",
+    "copy:schemas": "cp --parents schematics/*/schema.json ../../dist/my-lib/",
+    "copy:files": "cp --parents -p schematics/*/files/** ../../dist/my-lib/",
+    "copy:collection": "cp schematics/collection.json ../../dist/my-lib/schematics/collection.json",
+    "postbuild": "npm run copy:schemas && npm run copy:files && npm run copy:collection"
+  },
+  "peerDependencies": {
+    "@angular/common": "^7.2.0",
+    "@angular/core": "^7.2.0"
+  },
+// #docregion collection
+  "schematics": "./schematics/collection.json",
+// #enddocregion collection
+// #docregion ng-add
+  "ng-add": {
+    "save": "devDependencies"
+  }
+// #enddocregion ng-add
+// #docregion collection
+}

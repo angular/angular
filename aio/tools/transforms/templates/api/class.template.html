@@ -1,0 +1,9 @@
+{% extends 'export-base.template.html' -%}
+
+{% block overview %}
+  {% include "includes/class-overview.html" %}
+{% endblock %}
+{% block details %}
+  {% include "includes/description.html" %}
+  {% include "includes/class-members.html" %}
+{% endblock %}

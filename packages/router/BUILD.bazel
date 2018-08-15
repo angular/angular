@@ -1,0 +1,55 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "router",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "@npm//rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/router/testing:package.json",
+        "//packages/router/upgrade:package.json",
+    ],
+    entry_point = ":index.ts",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//integration:__pkg__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/test:__pkg__",
+        "//packages/compiler-cli/test/transformers:__pkg__",
+    ],
+    deps = [
+        ":router",
+        "//packages/router/testing",
+        "//packages/router/upgrade",
+    ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "router_api",
+    actualDir = "angular/packages/router/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/router",
+)

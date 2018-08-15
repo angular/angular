@@ -1,0 +1,32 @@
+  <!doctype html>
+  <html>
+    <head>
+      <link rel="stylesheet" href="base.css">
+      <link rel="stylesheet" href="animation_world.css">
+      <title>Angular Hello World Example</title>
+    </head>
+    <body>
+      <!-- The Angular application will be bootstrapped into this element. -->
+      <animation-world></animation-world>
+
+      <!--
+        Script tag which bootstraps the application. Use `?debug` in URL to select
+        the debug version of the script.
+
+        There are two scripts sources: `bundle.min.js` and `bundle.min_debug.js` You can
+        switch between which bundle the browser loads to experiment with the application.
+
+        - `bundle.min.js`: Is what the site would serve to their users. It has gone
+          through rollup, build-optimizer, and uglify with tree shaking.
+        - `bundle.min_debug.js`: Is what the developer would like to see when debugging
+          the application. It has also done through full pipeline of rollup, build-optimizer,
+          and uglify, however special flags were passed to uglify to prevent inlining and
+          property renaming.
+      -->
+      <script>
+          document.write('<script src="' +
+            (document.location.search.endsWith('debug') ? '/bundle.min_debug.js' : '/bundle.min.js.br') +
+            '"></' + 'script>');
+      </script>
+    </body>
+  </html>

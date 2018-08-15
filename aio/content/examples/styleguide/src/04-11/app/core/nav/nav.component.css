@@ -1,0 +1,54 @@
+/*#docregion*/
+.mdl-layout__header {
+  display: flex;
+  position: fixed;
+  background-color: #222;
+}
+
+.nav-link {
+  padding: 0 1em;
+  width: 100px;
+  color: rgba(255,255,255,.6);
+  text-align: center;
+  text-decoration: none;
+}
+
+.nav-link.router-link-active {
+  color: rgba(255,255,255, 1);
+}
+
+.nav-link.router-link-active::after {
+    height: 3px;
+    width: 100%;
+    display: block;
+    content: " ";
+    bottom: 0;
+    left: 0;
+    position: inherit;
+    background: rgb(83,109,254);
+}
+
+.mdl-layout__header-row {
+  height: 56px;
+  padding: 0 16px 0 72px;
+  padding-left: 8px;
+  background-color: #222;
+}
+
+#reset-button {
+  position: fixed;
+  right: 2em;
+  top: 1em;
+}
+
+@media (max-width: 480px) {
+  #reset-button {
+    display: none
+  }
+}
+
+@media (max-width: 320px) {
+  a.nav-link {
+    font-size: 12px;
+  }
+}

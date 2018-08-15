@@ -1,0 +1,9 @@
+/var/log/aio/preview-server-*.log {
+  compress
+  copytruncate
+  delaycompress
+  missingok
+  monthly
+  notifempty
+  rotate 6
+}

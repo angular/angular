@@ -1,0 +1,228 @@
+<!-- #docplaster -->
+<!-- #docregion -->
+<h1>Structural Directives</h1>
+
+<p>Conditional display of hero</p>
+
+<blockquote>
+<!-- #docregion built-in, asterisk, ngif -->
+<div *ngIf="hero" class="name">{{hero.name}}</div>
+<!-- #enddocregion built-in, asterisk, ngif -->
+</blockquote>
+
+<p>List of heroes</p>
+<!-- #docregion built-in -->
+
+<ul>
+  <!-- #docregion ngfor-li -->
+  <li *ngFor="let hero of heroes">{{hero.name}}</li>
+  <!-- #enddocregion ngfor-li -->
+</ul>
+
+<!-- #enddocregion built-in -->
+
+<hr>
+
+<h2 id="ngIf">NgIf</h2>
+
+<!-- #docregion ngif-true -->
+<p *ngIf="true">
+  Expression is true and ngIf is true.
+  This paragraph is in the DOM.
+</p>
+<p *ngIf="false">
+  Expression is false and ngIf is false.
+  This paragraph is not in the DOM.
+</p>
+<!-- #enddocregion ngif-true -->
+
+<!-- #docregion display-none -->
+<p [style.display]="'block'">
+  Expression sets display to "block".
+  This paragraph is visible.
+</p>
+<p [style.display]="'none'">
+  Expression sets display to "none".
+  This paragraph is hidden but still in the DOM.
+</p>
+<!-- #enddocregion display-none -->
+
+<h4>NgIf with template</h4>
+<p>&lt;ng-template&gt; element</p>
+<!-- #docregion ngif-template -->
+<ng-template [ngIf]="hero">
+  <div class="name">{{hero.name}}</div>
+</ng-template>
+<!-- #enddocregion ngif-template -->
+
+<hr>
+
+<h2 id="ng-container">&lt;ng-container&gt;</h2>
+
+<h4>*ngIf with a &lt;ng-container&gt;</h4>
+
+<button (click)="hero = hero ? null : heroes[0]">Toggle hero</button>
+
+<!-- #docregion ngif-ngcontainer -->
+<p>
+  I turned the corner
+  <ng-container *ngIf="hero">
+    and saw {{hero.name}}. I waved
+  </ng-container>
+  and continued on my way.
+</p>
+<!-- #enddocregion ngif-ngcontainer -->
+<!-- #docregion ngif-span -->
+<p>
+  I turned the corner
+  <span *ngIf="hero">
+    and saw {{hero.name}}. I waved
+  </span>
+  and continued on my way.
+</p>
+<!-- #enddocregion ngif-span -->
+
+<p><i>&lt;select&gt; with &lt;span&gt;</i></p>
+<!-- #docregion select-span -->
+<div>
+  Pick your favorite hero
+  (<label><input type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
+</div>
+<select [(ngModel)]="hero">
+  <span *ngFor="let h of heroes">
+    <span *ngIf="showSad || h.emotion !== 'sad'">
+      <option [ngValue]="h">{{h.name}} ({{h.emotion}})</option>
+    </span>
+  </span>
+</select>
+<!-- #enddocregion select-span -->
+
+<p><i>&lt;select&gt; with &lt;ng-container&gt;</i></p>
+<!-- #docregion select-ngcontainer -->
+<div>
+  Pick your favorite hero
+  (<label><input type="checkbox" checked (change)="showSad = !showSad">show sad</label>)
+</div>
+<select [(ngModel)]="hero">
+  <ng-container *ngFor="let h of heroes">
+    <ng-container *ngIf="showSad || h.emotion !== 'sad'">
+      <option [ngValue]="h">{{h.name}} ({{h.emotion}})</option>
+    </ng-container>
+  </ng-container>
+</select>
+<!-- #enddocregion select-ngcontainer -->
+<br><br>
+
+<hr>
+
+<h2 id="ngFor">NgFor</h2>
+
+<div class="box">
+
+<p class="code">&lt;div *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackById" [class.odd]="odd"&gt;</p>
+<!--#docregion inside-ngfor -->
+<div *ngFor="let hero of heroes; let i=index; let odd=odd; trackBy: trackById" [class.odd]="odd">
+  ({{i}}) {{hero.name}}
+</div>
+
+<!--#enddocregion inside-ngfor -->
+<p class="code">&lt;ng-template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById"/&gt;</p>
+<!--#docregion inside-ngfor -->
+<ng-template ngFor let-hero [ngForOf]="heroes" let-i="index" let-odd="odd" [ngForTrackBy]="trackById">
+  <div [class.odd]="odd">({{i}}) {{hero.name}}</div>
+</ng-template>
+<!--#enddocregion inside-ngfor -->
+
+</div>
+<hr>
+
+<h2 id="ngSwitch">NgSwitch</h2>
+
+<div>Pick your favorite hero</div>
+<p>
+  <label *ngFor="let h of heroes">
+    <input type="radio" name="heroes" [(ngModel)]="hero" [value]="h">{{h.name}}
+  </label>
+  <label><input type="radio" name="heroes" (click)="hero = null">None of the above</label>
+</p>
+
+<h4>NgSwitch</h4>
+
+<!-- #docregion built-in , ngswitch -->
+<div [ngSwitch]="hero?.emotion">
+  <app-happy-hero    *ngSwitchCase="'happy'"    [hero]="hero"></app-happy-hero>
+  <app-sad-hero      *ngSwitchCase="'sad'"      [hero]="hero"></app-sad-hero>
+  <app-confused-hero *ngSwitchCase="'confused'" [hero]="hero"></app-confused-hero>
+  <app-unknown-hero  *ngSwitchDefault           [hero]="hero"></app-unknown-hero>
+</div>
+<!-- #enddocregion built-in, ngswitch -->
+
+<h4>NgSwitch with &lt;ng-template&gt;</h4>
+<!-- #docregion ngswitch-template -->
+<div [ngSwitch]="hero?.emotion">
+  <ng-template [ngSwitchCase]="'happy'">
+    <app-happy-hero [hero]="hero"></app-happy-hero>
+  </ng-template>
+  <ng-template [ngSwitchCase]="'sad'">
+    <app-sad-hero [hero]="hero"></app-sad-hero>
+  </ng-template>
+  <ng-template [ngSwitchCase]="'confused'">
+    <app-confused-hero [hero]="hero"></app-confused-hero>
+  </ng-template >
+  <ng-template ngSwitchDefault>
+    <app-unknown-hero [hero]="hero"></app-unknown-hero>
+  </ng-template>
+</div>
+<!-- #enddocregion ngswitch-template -->
+
+<hr>
+
+<h2>&lt;ng-template&gt;</h2>
+<!-- #docregion template-tag -->
+<p>Hip!</p>
+<ng-template>
+  <p>Hip!</p>
+</ng-template>
+<p>Hooray!</p>
+<!-- #enddocregion template-tag -->
+
+<hr>
+
+<h2 id="appUnless">UnlessDirective</h2>
+<p>
+  The condition is currently
+  <span [ngClass]="{ 'a': !condition, 'b': condition, 'unless': true }">{{condition}}</span>.
+  <button
+    (click)="condition = !condition"
+    [ngClass] = "{ 'a': condition, 'b': !condition }" >
+    Toggle condition to {{condition ? 'false' : 'true'}}
+  </button>
+</p>
+<!-- #docregion appUnless-->
+<p *appUnless="condition" class="unless a">
+  (A) This paragraph is displayed because the condition is false.
+</p>
+
+<p *appUnless="!condition" class="unless b">
+  (B) Although the condition is true,
+  this paragraph is displayed because appUnless is set to false.
+</p>
+<!-- #enddocregion appUnless-->
+
+
+<h4>UnlessDirective with template</h4>
+
+<!-- #docregion appUnless-1 -->
+<p *appUnless="condition">Show this sentence unless the condition is true.</p>
+<!-- #enddocregion appUnless-1 -->
+
+<p *appUnless="condition" class="code unless">
+  (A) &lt;p *appUnless="condition" class="code unless"&gt;
+</p>
+
+<ng-template [appUnless]="condition">
+  <p class="code unless">
+    (A) &lt;ng-template [appUnless]="condition"&gt;
+  </p>
+</ng-template>
+

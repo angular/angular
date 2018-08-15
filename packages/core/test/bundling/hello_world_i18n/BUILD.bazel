@@ -1,0 +1,38 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle")
+load("@npm//http-server:index.bzl", "http_server")
+
+ng_module(
+    name = "hello_world_i18n",
+    srcs = [
+        "index.ts",
+        "translations.ts",
+    ],
+    deps = [
+        "//packages/core",
+        "//packages/localize",
+        "//packages/localize/init",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    tags = ["ivy-only"],
+    deps = [
+        ":hello_world_i18n",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+http_server(
+    name = "prodserver",
+    data = [
+        "index.html",
+        ":bundle.min.js",
+        ":bundle.min_debug.js",
+    ],
+    tags = ["ivy-only"],
+)

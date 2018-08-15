@@ -1,0 +1,19 @@
+{
+  "name": "angular-side-effects",
+  "version": "0.0.0",
+  "license": "MIT",
+  "scripts": {
+    "test": "check-side-effects --test side-effects.json --pure-getters",
+    "update": "yarn test --update"
+  },
+  "dependencies": {
+    "@angular/animations": "file:../../dist/packages-dist/animations",
+    "@angular/common": "file:../../dist/packages-dist/common",
+    "@angular/core": "file:../../dist/packages-dist/core",
+    "@angular/elements": "file:../../dist/packages-dist/elements",
+    "@angular/forms": "file:../../dist/packages-dist/forms",
+    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/router": "file:../../dist/packages-dist/router",
+    "check-side-effects": "file:../../node_modules/check-side-effects"
+  }
+}

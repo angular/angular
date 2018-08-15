@@ -1,0 +1,154 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+
+import {AfterContentInit, ChangeDetectorRef, ContentChildren, Directive, ElementRef, Input, OnChanges, OnDestroy, Optional, QueryList, Renderer2, SimpleChanges} from '@angular/core';
+import {Subscription} from 'rxjs';
+
+import {Event, NavigationEnd} from '../events';
+import {Router} from '../router';
+
+import {RouterLink, RouterLinkWithHref} from './router_link';
+
+
+/**
+ *
+ * @description
+ *
+ * Tracks whether the linked route of an element is currently active, and allows you
+ * to specify one or more CSS classes to add to the element when the linked route
+ * is active.
+ *
+ * Use this directive to create a visual distinction for elements associated with an active route.
+ * For example, the following code highlights the word "Bob" when the the router
+ * activates the associated route:
+ *
+ * ```
+ * <a routerLink="/user/bob" routerLinkActive="active-link">Bob</a>
+ * ```
+ *
+ * Whenever the URL is either '/user' or '/user/bob', the "active-link" class is
+ * added to the anchor tag. If the URL changes, the class is removed.
+ *
+ * You can set more than one class using a space-separated string or an array.
+ * For example:
+ *
+ * ```
+ * <a routerLink="/user/bob" routerLinkActive="class1 class2">Bob</a>
+ * <a routerLink="/user/bob" [routerLinkActive]="['class1', 'class2']">Bob</a>
+ * ```
+ *
+ * To add the classes only when the URL matches the link exactly, add the option `exact: true`:
+ *
+ * ```
+ * <a routerLink="/user/bob" routerLinkActive="active-link" [routerLinkActiveOptions]="{exact:
+ * true}">Bob</a>
+ * ```
+ *
+ * To directly check the `isActive` status of the link, assign the `RouterLinkActive`
+ * instance to a template variable.
+ * For example, the following checks the status without assigning any CSS classes:
+ *
+ * ```
+ * <a routerLink="/user/bob" routerLinkActive #rla="routerLinkActive">
+ *   Bob {{ rla.isActive ? '(already open)' : ''}}
+ * </a>
+ * ```
+ *
+ * You can apply the `RouterLinkActive` directive to an ancestor of linked elements.
+ * For example, the following sets the active-link class on the `<div>`  parent tag
+ * when the URL is either '/user/jim' or '/user/bob'.
+ *
+ * ```
+ * <div routerLinkActive="active-link" [routerLinkActiveOptions]="{exact: true}">
+ *   <a routerLink="/user/jim">Jim</a>
+ *   <a routerLink="/user/bob">Bob</a>
+ * </div>
+ * ```
+ *
+ * @ngModule RouterModule
+ *
+ * @publicApi
+ */
+@Directive({
+  selector: '[routerLinkActive]',
+  exportAs: 'routerLinkActive',
+})
+export class RouterLinkActive implements OnChanges, OnDestroy, AfterContentInit {
+  // TODO(issue/24571): remove '!'.
+  @ContentChildren(RouterLink, {descendants: true}) links!: QueryList<RouterLink>;
+  // TODO(issue/24571): remove '!'.
+  @ContentChildren(RouterLinkWithHref, {descendants: true})
+  linksWithHrefs!: QueryList<RouterLinkWithHref>;
+
+  private classes: string[] = [];
+  private subscription: Subscription;
+  public readonly isActive: boolean = false;
+
+  @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
+
+  constructor(
+      private router: Router, private element: ElementRef, private renderer: Renderer2,
+      private readonly cdr: ChangeDetectorRef, @Optional() private link?: RouterLink,
+      @Optional() private linkWithHref?: RouterLinkWithHref) {
+    this.subscription = router.events.subscribe((s: Event) => {
+      if (s instanceof NavigationEnd) {
+        this.update();
+      }
+    });
+  }
+
+
+  ngAfterContentInit(): void {
+    this.links.changes.subscribe(_ => this.update());
+    this.linksWithHrefs.changes.subscribe(_ => this.update());
+    this.update();
+  }
+
+  @Input()
+  set routerLinkActive(data: string[]|string) {
+    const classes = Array.isArray(data) ? data : data.split(' ');
+    this.classes = classes.filter(c => !!c);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.update();
+  }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  private update(): void {
+    if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
+    Promise.resolve().then(() => {
+      const hasActiveLinks = this.hasActiveLinks();
+      if (this.isActive !== hasActiveLinks) {
+        (this as any).isActive = hasActiveLinks;
+        this.cdr.markForCheck();
+        this.classes.forEach((c) => {
+          if (hasActiveLinks) {
+            this.renderer.addClass(this.element.nativeElement, c);
+          } else {
+            this.renderer.removeClass(this.element.nativeElement, c);
+          }
+        });
+      }
+    });
+  }
+
+  private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {
+    return (link: RouterLink|RouterLinkWithHref) =>
+               router.isActive(link.urlTree, this.routerLinkActiveOptions.exact);
+  }
+
+  private hasActiveLinks(): boolean {
+    const isActiveCheckFn = this.isLinkActive(this.router);
+    return this.link && isActiveCheckFn(this.link) ||
+        this.linkWithHref && isActiveCheckFn(this.linkWithHref) ||
+        this.links.some(isActiveCheckFn) || this.linksWithHrefs.some(isActiveCheckFn);
+  }
+}

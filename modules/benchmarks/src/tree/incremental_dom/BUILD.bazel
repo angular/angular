@@ -1,0 +1,39 @@
+load("//tools:defaults.bzl", "ts_devserver", "ts_library")
+load("//dev-infra/benchmark/component_benchmark:benchmark_test.bzl", "benchmark_test")
+load("//modules/benchmarks:e2e_test.bzl", "e2e_test")
+
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+ts_library(
+    name = "incremental_dom",
+    srcs = glob(["*.ts"]),
+    tsconfig = "//modules/benchmarks:tsconfig-build.json",
+    deps = [
+        "//modules/benchmarks/src:util_lib",
+        "//modules/benchmarks/src/tree:util_lib",
+        "@npm//@types/node",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "angular/modules/benchmarks/src/tree/incremental_dom/index",
+    port = 4200,
+    static_files = [
+        "index.html",
+        "@npm//:node_modules/incremental-dom/dist/incremental-dom.js",
+    ],
+    deps = [":incremental_dom"],
+)
+
+benchmark_test(
+    name = "perf",
+    server = ":devserver",
+    deps = ["//modules/benchmarks/src/tree:perf_tests_lib"],
+)
+
+e2e_test(
+    name = "e2e",
+    server = ":devserver",
+    deps = ["//modules/benchmarks/src/tree:e2e_tests_lib"],
+)

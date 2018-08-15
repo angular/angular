@@ -1,0 +1,13 @@
+<!-- #docplaster -->
+
+<h2>Insert/Remove</h2>
+
+<nav>
+  <button (click)="toggle()">Toggle Insert/Remove</button>
+</nav>
+
+<!-- #docregion insert-remove-->
+<div @myInsertRemoveTrigger *ngIf="isShown" class="insert-remove-container">
+  <p>The box is inserted</p>
+</div>
+<!-- #enddocregion insert-remove-->

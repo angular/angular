@@ -1,0 +1,28 @@
+{% import 'lib/cli.html' as cli %}
+{% import "../lib/githubLinks.html" as github -%}
+
+<article>
+  {$ github.githubLinks(doc, cliVersionInfo) $}
+  {% include 'include/cli-breadcrumb.html' %}
+  {% include 'include/cli-header.html' %}
+
+  <aio-toc class="embedded"></aio-toc>
+
+  <div class="cli-body">
+    {$ doc.shortDescription | marked $}
+    {$ doc.description | marked $}
+    {$ cli.renderSyntax(doc) $}
+
+    {% if doc.longDescription.length %}
+    <h2 class="no-anchor">
+        {$ github.githubLinks(doc.longDescriptionDoc, cliVersionInfo) $}
+        Description
+    </h2>
+    {$ doc.longDescription | marked $}
+    {% endif%}
+
+    {$ cli.renderArguments(doc.positionalOptions, 2) $}
+    {$ cli.renderNamedOptions(doc.namedOptions, 2) $}
+    {$ cli.renderSubcommands(doc) $}
+  </div>
+</article>

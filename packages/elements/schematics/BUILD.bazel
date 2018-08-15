@@ -1,0 +1,26 @@
+load("//tools:defaults.bzl", "pkg_npm")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files([
+    "package.json",
+    "collection.json",
+])
+
+genrule(
+    name = "collection",
+    srcs = ["collection.json"],
+    outs = ["test-collection.json"],
+    cmd = "cp $< $@",
+    output_to_bindir = 1,
+)
+
+pkg_npm(
+    name = "npm_package",
+    srcs = [
+        "collection.json",
+    ],
+    deps = [
+        "//packages/elements/schematics/ng-add",
+    ],
+)

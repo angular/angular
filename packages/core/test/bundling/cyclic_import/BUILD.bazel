@@ -1,0 +1,83 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ng_rollup_bundle", "ts_library")
+load("//tools/symbol-extractor:index.bzl", "js_expected_symbol_test")
+load("@npm//http-server:index.bzl", "http_server")
+
+ng_module(
+    name = "cyclic_import",
+    srcs = [
+        "index.ts",
+        "trigger.ts",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        ":cyclic_import",
+        "//packages/core",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*_spec.ts"]),
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core/testing",
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        ":bundle.js",
+        ":bundle.min.js",
+        ":bundle.min.js.br",
+        ":bundle.min_debug.js",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+    deps = [":test_lib"],
+)
+
+js_expected_symbol_test(
+    name = "symbol_test",
+    src = ":bundle.min_debug.js",
+    golden = ":bundle.golden_symbols.json",
+    tags = [
+        "ivy-aot",
+        "ivy-only",
+    ],
+)
+
+http_server(
+    name = "devserver",
+    data = [
+        "index.html",
+        ":bundle.min.js",
+        ":bundle.min_debug.js",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+)

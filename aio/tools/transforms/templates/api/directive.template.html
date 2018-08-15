@@ -1,0 +1,28 @@
+{% import "lib/memberHelpers.html" as memberHelpers -%}
+{% extends 'class.template.html' -%}
+
+{% block overview %}{% endblock %}
+
+{% block details -%}
+  {% include "includes/ngmodule.html" %}
+  {% include "includes/selectors.html" %}
+
+  {$ memberHelpers.renderDirectiveProperties(doc, 'Properties') $}
+
+  {% include "includes/export-as.html" %}
+
+  {% if doc.description or doc.usageNotes %}
+  <section class="description">
+    <h2>Description</h2>
+    {$ (doc.description or '') | trimBlankLines | marked $}
+    {$ (doc.usageNotes or '') | trimBlankLines | marked $}
+  </section>
+  {% endif %}
+
+  {$ memberHelpers.renderProperties(doc.staticProperties, 'static-properties', 'static-property', 'Static properties') $}
+  {$ memberHelpers.renderMethodDetails(versionInfo, doc.staticMethods, 'static-methods', 'static-method', 'Static methods') $}
+  {$ memberHelpers.renderMethodDetails(versionInfo, doc.methods, 'instance-methods', 'instance-method', 'Methods') $}
+  {$ memberHelpers.renderDirectiveAncestors(doc, 'methods') $}
+  {% endblock %}
+
+{% block endNotes %}{% endblock %}

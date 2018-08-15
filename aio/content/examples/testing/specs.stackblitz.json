@@ -1,0 +1,23 @@
+{
+  "description": "Testing - specs",
+  "files":[
+    "src/expected.ts",
+    "src/index-specs.html",
+    "src/main-specs.ts",
+    "src/styles.css",
+    "src/test.css",
+    "src/tests.sb.ts",
+
+    "e2e/src/**/*.ts",
+
+    "src/app/**/*.css",
+    "src/app/**/*.html",
+    "src/app/**/*.ts",
+
+    "src/testing/**/*",
+
+    "src/**/*.spec.ts"
+  ],
+  "main": "src/index-specs.html",
+  "tags": ["testing"]
+}

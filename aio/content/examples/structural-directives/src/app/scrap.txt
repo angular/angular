@@ -1,0 +1,21 @@
+// interesting but unused code
+  heroChooser(picker: HTMLFieldSetElement) {
+    let choices = picker.children;
+    this.favoriteHero = undefined;
+    for (let i = 0; i < choices.length; i++) {
+      let choice = choices[i].children[0] as HTMLInputElement;
+      if (choice.checked) { this.favoriteHero = this.heroes[i]; }
+    }
+  }
+
+
+<h4>Switch with *ngFor repeated switchCases using &lt;ng-container&gt;</h4>
+<!-- #docregion NgSwitch-ngFor -->
+<div [ngSwitch]="hero.id">
+  Your favorite hero is ...
+  <ng-container *ngFor="let hero of heroes">
+    <ng-container *ngSwitchCase="hero.id">{{hero.name}}</ng-container>
+  </ng-container>
+  <ng-container *ngSwitchDefault>None of the above</ng-container>
+</div>
+<!-- #enddocregion NgSwitch-ngFor -->

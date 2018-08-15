@@ -1,0 +1,51 @@
+package(default_visibility = ["//modules/benchmarks:__subpackages__"])
+
+load("//tools:defaults.bzl", "ng_module", "ng_rollup_bundle", "ts_devserver")
+
+ng_module(
+    name = "application_lib",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*.spec.ts"],
+    ),
+    generate_ve_shims = True,
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    deps = [
+        ":application_lib",
+    ],
+)
+
+ts_devserver(
+    name = "prodserver",
+    static_files = [
+        ":bundle.min_debug.js",
+        ":bundle.min.js",
+        "//packages/zone.js/bundles:zone.umd.js",
+        "index.html",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "angular/modules/benchmarks/src/views/index",
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    serving_path = "/index.js",
+    static_files = [
+        "//packages/zone.js/bundles:zone.umd.js",
+        "index.html",
+    ],
+    deps = [":application_lib"],
+)

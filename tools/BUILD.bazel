@@ -1,0 +1,40 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@npm_bazel_typescript//:index.bzl", "ts_config")
+load("//tools:defaults.bzl", "nodejs_binary")
+
+exports_files([
+    "tsconfig.json",
+    "jasmine-seed-generator.js",
+])
+
+ts_config(
+    name = "tsconfig-test",
+    src = "tsconfig-test.json",
+    deps = ["tsconfig.json"],
+)
+
+nodejs_binary(
+    name = "inline-package-json-deps",
+    entry_point = "inline-package-json-deps.js",
+)
+
+platform(
+    name = "rbe_ubuntu1604-angular",
+    parents = ["@rbe_ubuntu1604_angular//config:platform"],
+    remote_execution_properties = """
+        {PARENT_REMOTE_EXECUTION_PROPERTIES}
+        properties: {
+            name: "dockerAddCapabilities"
+            value: "SYS_ADMIN"
+        }
+        properties: {
+            name: "dockerNetwork"
+            value: "standard"
+        }
+        properties: {
+            name: "Pool"
+            value: "default"
+        }
+        """,
+)

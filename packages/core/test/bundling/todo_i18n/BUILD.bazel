@@ -1,0 +1,118 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "ng_rollup_bundle", "ts_devserver", "ts_library")
+load("@npm//http-server:index.bzl", "http_server")
+
+ng_module(
+    name = "todo_i18n",
+    srcs = [
+        "index.ts",
+        "translations.ts",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/test/bundling/util:reflect_metadata",
+        "//packages/localize",
+        "//packages/localize/init",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "bundle",
+    entry_point = ":index.ts",
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        ":todo_i18n",
+        "//packages/common",
+        "//packages/core",
+        "//packages/core/test/bundling/util:reflect_metadata",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(["*_spec.ts"]),
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        "//packages:types",
+        "//packages/compiler",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/localize",
+        "//packages/localize/init",
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        ":bundle",
+        ":bundle.js",
+        ":bundle.min.js",
+        ":bundle.min_debug.js",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+    deps = [":test_lib"],
+)
+
+genrule(
+    name = "tslib",
+    srcs = [
+        "@npm//:node_modules/tslib/tslib.js",
+    ],
+    outs = [
+        "tslib.js",
+    ],
+    cmd = "cp $< $@",
+    tags = [
+        "ivy-only",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    entry_module = "@angular/core/test/bundling/todo_i18n",
+    scripts = [
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    # Use a serving_path that matches the common static index.html used
+    # in both devserver & prodserver
+    serving_path = "/bundle.min.js.br",
+    static_files = [
+        "index.html",
+        ":tslib",
+        "todo.css",
+        "base.css",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+    deps = [":todo_i18n"],
+)
+
+http_server(
+    name = "prodserver",
+    data = [
+        "base.css",
+        "index.html",
+        "todo.css",
+        ":bundle.min.js.br",
+        ":bundle.min_debug.js",
+    ],
+    tags = [
+        "ivy-only",
+    ],
+)

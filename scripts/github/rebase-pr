@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# TODO: Remove this deprecation warning after a reasonable period.
+
+echo "The rebase script has been replaced by the rebase script provided in ng-dev";
+echo "To run the rebase via ng-dev run the following command:"
+echo "  $ yarn -s ng-dev pr rebase <pr-number>"

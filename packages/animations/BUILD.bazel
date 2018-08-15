@@ -1,0 +1,51 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "animations",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/core",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/animations/browser:package.json",
+        "//packages/animations/browser/testing:package.json",
+    ],
+    entry_point = ":index.ts",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//integration:__pkg__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler/test:__pkg__",
+    ],
+    deps = [
+        ":animations",
+        "//packages/animations/browser",
+        "//packages/animations/browser/testing",
+    ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "animations_api",
+    actualDir = "angular/packages/animations/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/animations",
+)

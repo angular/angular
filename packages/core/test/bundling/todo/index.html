@@ -1,0 +1,43 @@
+<!doctype html>
+
+<html>
+
+<head>
+  <title>Angular Todo Example</title>
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="todo.css">
+  <style>
+    .done {
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- The Angular application will be bootstrapped into this element. -->
+  <todo-app></todo-app>
+
+  <!-- 
+      Script tag which bootstraps the application. Use `?debug` in URL to select
+      the debug version of the script.
+      
+      There are two scripts sources: `bundle.min.js` and `bundle.min_debug.js` You can 
+      switch between which bundle the browser loads to experiment with the application.
+
+      - `bundle.min.js`: Is what the site would serve to their users. It has gone
+        through rollup, build-optimizer, and uglify with tree shaking.
+        - In `devserver` mode `bundle.min.js` is a bit misnamed since it is concatenated
+          individual files which are not minified.
+      - `bundle.min_debug.js`: Is what the developer would like to see when debugging
+        the application. It has also gone through full pipeline of rollup, build-optimizer,
+        and uglify, however special flags were passed to uglify to prevent inlining and
+        property renaming.
+    -->
+  <script>
+    document.write('<script src="' +
+      (document.location.search.endsWith('debug') ? '/bundle.min_debug.js' : '/bundle.min.js.br') +
+      '"></' + 'script>');
+  </script>
+</body>
+
+</html>

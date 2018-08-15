@@ -1,0 +1,85 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "jasmine_node_test", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
+
+ng_module(
+    name = "core_examples",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = [
+            "**/*_spec.ts",
+            "**/*_howto.ts",
+        ],
+    ),
+    generate_ve_shims = True,
+    deps = [
+        "//packages/animations",
+        "//packages/core",
+        "//packages/forms",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/platform-browser/animations",
+        "//packages/router",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "core_tests_lib",
+    testonly = True,
+    srcs = glob(
+        ["**/*_spec.ts"],
+        exclude = ["**/e2e_test/*"],
+    ),
+    deps = [
+        "//packages/core",
+        "//packages/core/testing",
+    ],
+)
+
+ts_library(
+    name = "core_e2e_tests_lib",
+    testonly = True,
+    srcs = glob(["**/e2e_test/*_spec.ts"]),
+    tsconfig = "//packages/examples:tsconfig-e2e.json",
+    deps = [
+        "//packages/examples/test-utils",
+        "@npm//@types/jasminewd2",
+        "@npm//protractor",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    additional_root_paths = ["angular/packages/examples"],
+    bootstrap = [
+        "//packages/zone.js/bundles:zone.umd.js",
+        "//packages/zone.js/bundles:task-tracking.umd.js",
+    ],
+    entry_module = "@angular/examples/core/main",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = ["//packages/examples:index.html"],
+    deps = [":core_examples"],
+)
+
+protractor_web_test_suite(
+    name = "protractor_tests",
+    on_prepare = ":start-server.js",
+    server = ":devserver",
+    deps = [
+        ":core_e2e_tests_lib",
+        "@npm//selenium-webdriver",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_es5"],
+    deps = [
+        ":core_tests_lib",
+    ],
+)

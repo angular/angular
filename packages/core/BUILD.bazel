@@ -1,0 +1,76 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test", "ts_api_guardian_test_npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "core",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/core/src/compiler",
+        "//packages/core/src/di/interface",
+        "//packages/core/src/interface",
+        "//packages/core/src/reflection",
+        "//packages/core/src/util",
+        "//packages/localize",
+        "//packages/zone.js/lib:zone_d_ts",
+        "@npm//rxjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/core/testing:package.json",
+    ],
+    entry_point = ":index.ts",
+    nested_packages = [
+        "//packages/core/schematics:npm_package",
+    ],
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//integration:__pkg__",
+        "//packages/bazel/test/ng_package:__pkg__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/ngcc/test:__pkg__",
+        "//packages/compiler-cli/test:__pkg__",
+        "//packages/compiler-cli/test/diagnostics:__pkg__",
+        "//packages/compiler-cli/test/transformers:__pkg__",
+        "//packages/compiler/test:__pkg__",
+        "//packages/language-service/test:__pkg__",
+    ],
+    deps = [
+        ":core",
+        "//packages/core/testing",
+    ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "core_api",
+    actualDir = "angular/packages/core/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/core",
+)
+
+ts_api_guardian_test(
+    name = "ng_global_utils_api",
+    actual = "angular/packages/core/src/render3/global_utils_api.d.ts",
+    data = [
+        "//goldens:public-api",
+        "//packages/core",
+    ],
+    golden = "angular/goldens/public-api/core/global_utils.d.ts",
+)

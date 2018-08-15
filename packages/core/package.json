@@ -1,0 +1,27 @@
+{
+  "name": "@angular/core",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - the core framework",
+  "author": "angular",
+  "license": "MIT",
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
+  "peerDependencies": {
+    "rxjs": "^6.5.3",
+    "zone.js": "~0.10.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/core"
+  },
+  "ng-update": {
+    "migrations": "./schematics/migrations.json",
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "registry": "https://wombat-dressing-room.appspot.com"
+  }
+}

@@ -1,0 +1,60 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package", "pkg_npm")
+
+package(default_visibility = ["//packages/bazel/test:__subpackages__"])
+
+ng_module(
+    name = "example",
+    srcs = glob(["*.ts"]),
+    module_name = "example",
+    deps = [
+        "//packages/bazel/test/ng_package/example/secondary",
+        "@npm//@types",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "some-file.txt",
+    ],
+    data = [
+        ":arbitrary_bin_file",
+        ":arbitrary_genfiles_file",
+        ":extra-styles.css",
+        ":logo.png",
+    ],
+    entry_point = ":index.ts",
+    entry_point_name = "waffels",
+    nested_packages = [
+        ":arbitrary_npm_package",
+    ],
+    deps = [
+        ":example",
+        "//packages/bazel/test/ng_package/example/a11y",
+        "//packages/bazel/test/ng_package/example/imports",
+        "//packages/bazel/test/ng_package/example/secondary",
+    ],
+)
+
+# Use a genrule to create a file in bazel-genfiles to ensure that the genfiles output of
+# a rule can be passed through to the `data` of ng_package.
+genrule(
+    name = "arbitrary_genfiles_file",
+    outs = ["arbitrary_genfiles.txt"],
+    cmd = "echo Hello > $@",
+)
+
+# Use a genrule to create a file in bazel-bin to ensure that the bin output of
+# a rule can be passed through to the `data` of ng_package.
+genrule(
+    name = "arbitrary_bin_file",
+    outs = ["arbitrary_bin.txt"],
+    cmd = "echo World > $@",
+    output_to_bindir = True,
+)
+
+pkg_npm(
+    name = "arbitrary_npm_package",
+    srcs = [":arbitrary-npm-package-main.js"],
+)

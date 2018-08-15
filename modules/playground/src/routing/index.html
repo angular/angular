@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<title>Routing Example</title>
+<link rel="stylesheet" type="text/css" href="./css/gumby.css">
+<link rel="stylesheet" type="text/css" href="./css/app.css">
+<base href="/">
+
+<body>
+  <inbox-app>
+    Loading...
+  </inbox-app>
+</body>
+<!--
+  We are manually loading the scripts because we don't use ConcatJS for this example.
+  This is because we want to use SystemJS instead of RequireJS and want to support
+  lazy loading of routes. Read more in the "load-app.js" file.
+-->
+<script src="angular/packages/zone.js/bundles/zone.umd.js"></script>
+<script src="npm/node_modules/reflect-metadata/Reflect.js"></script>
+<script src="npm/node_modules/systemjs/dist/system.js"></script>
+<script src="angular/modules/playground/systemjs-config.js"></script>
+<script src="load-app.js"></script>
+
+</html>

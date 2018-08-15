@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# Clippy ascii art copied from https://github.com/gbigwood/Clippo
+echo -e "
+################################################
+/  \        _________________
+|  |       /                 \\
+@  @       | It looks like   |
+|| ||      | you are trying  |
+|| ||   <--| to merge a PR.  |
+|\_/|      \_________________/
+\___/
+
+A new merge script is available using `ng-dev`!
+
+To merge a pr using the new tooling run:
+
+$ yarn -s ng-dev pr merge <pr-number>
+
+
+This script has been fully deprecated as it no
+longer correctly determines branch targets due
+to how it determines the current version and
+defines patch branches.
+################################################"

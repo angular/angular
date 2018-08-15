@@ -1,0 +1,12 @@
+<nav>
+  <button (click)="toggleAnimations()">Toggle Animations</button>
+  <button (click)="toggle()">Toggle Open/Closed</button>
+</nav>
+<!-- #docregion toggle-animation -->
+<div [@.disabled]="isDisabled">
+  <div [@childAnimation]="isOpen ? 'open' : 'closed'"
+    class="open-close-container">
+    <p>The box is now {{ isOpen ? 'Open' : 'Closed' }}!</p>
+  </div>
+</div>
+<!-- #enddocregion toggle-animation -->

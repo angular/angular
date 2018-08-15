@@ -1,0 +1,23 @@
+{% import "lib/memberHelpers.html" as memberHelpers -%}
+{% import "lib/paramList.html" as params -%}
+
+<section class="{$ doc.docType $}-overview">
+  <code-example hideCopy="true" class="no-box api-heading{% if doc.deprecated %} deprecated-api-item{% endif %}">{{ {$ doc.valueParam.name $}_expression | <span class="kwd nocode">{$ doc.pipeName $}</span>
+    {%- for param in doc.pipeParams %}
+      {%- if param.isOptional or param.defaultValue !== undefined %} [{% endif %} : {$ param.name $}
+    {%- endfor %}
+    {%- for param in doc.pipeParams %}
+      {%- if param.isOptional or param.defaultValue !== undefined %} ]{% endif %}
+    {%- endfor %} }}</code-example>
+
+  {% include "includes/ngmodule.html" %}
+
+  {% if doc.valueParam.type %}
+  <h2>Input value</h2>
+  {$ params.renderParameters([doc.valueParam], 'pipe-parameters', 'pipe-parameter', true) $}
+  {% endif %}
+  {% if doc.pipeParams.length %}
+  <h2>Parameters</h2>
+  {$ params.renderParameters(doc.pipeParams, 'pipe-parameters', 'pipe-parameter', true) $}
+  {% endif %}
+</section>

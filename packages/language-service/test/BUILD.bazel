@@ -1,0 +1,135 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+load("//tools/circular_dependency_test:index.bzl", "circular_dependency_test")
+
+circular_dependency_test(
+    name = "circular_deps_test",
+    entry_point = "angular/packages/language-service/index.js",
+    deps = ["//packages/language-service"],
+)
+
+ts_library(
+    name = "test_utils_lib",
+    testonly = True,
+    srcs = [
+        "test_utils.ts",
+    ],
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/test:test_utils",
+        "//packages/language-service",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "features_test_lib",
+    testonly = True,
+    srcs = [
+        "completions_spec.ts",
+        "definitions_spec.ts",
+        "diagnostics_spec.ts",
+        "hover_spec.ts",
+        "references_spec.ts",
+    ],
+    data = [":project"],
+    deps = [
+        ":test_utils_lib",
+        "//packages/language-service",
+        "@npm//typescript",
+    ],
+)
+
+ts_library(
+    name = "infra_test_lib",
+    testonly = True,
+    srcs = [
+        "diagnostic_messages_spec.ts",
+        "global_symbols_spec.ts",
+        "html_info_spec.ts",
+        "language_service_spec.ts",
+        "reflector_host_spec.ts",
+        "ts_plugin_spec.ts",
+        "typescript_host_spec.ts",
+        "utils_spec.ts",
+    ],
+    data = [":project"],
+    deps = [
+        ":test_utils_lib",
+        "//packages/compiler",
+        "//packages/language-service",
+        "//packages/language-service:ts_utils",
+        "@npm//typescript",
+    ],
+)
+
+filegroup(
+    name = "project",
+    srcs = glob(["project/**/*"]),
+    visibility = ["//packages/language-service:__subpackages__"],
+)
+
+jasmine_node_test(
+    name = "test",
+    data = [
+        "//packages/common:npm_package",
+        "//packages/core:npm_package",
+        "//packages/forms:npm_package",
+    ],
+    tags = [
+        # the language service is not yet compatible with Ivy
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":features_test_lib",
+    ],
+)
+
+jasmine_node_test(
+    name = "infra_test",
+    data = [
+        "//packages/common:npm_package",
+        "//packages/core:npm_package",
+        "//packages/forms:npm_package",
+    ],
+    tags = [
+        # the language service is not yet compatible with Ivy
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":infra_test_lib",
+    ],
+)
+
+ts_library(
+    name = "diagnostics_lib",
+    testonly = True,
+    srcs = [
+        "expression_diagnostics_spec.ts",
+        "mocks.ts",
+        "typescript_symbols_spec.ts",
+    ],
+    deps = [
+        "//packages/compiler",
+        "//packages/compiler-cli/test:test_utils",
+        "//packages/core",
+        "//packages/language-service",
+        "@npm//typescript",
+    ],
+)
+
+jasmine_node_test(
+    name = "diagnostics",
+    data = [
+        "//packages/common:npm_package",
+        "//packages/core:npm_package",
+        "//packages/forms:npm_package",
+    ],
+    tags = [
+        # Disabled as these tests pertain to diagnostics in the old ngc compiler. The Ivy ngtsc
+        # compiler has its own tests for diagnostics.
+        "no-ivy-aot",
+    ],
+    deps = [
+        ":diagnostics_lib",
+    ],
+)

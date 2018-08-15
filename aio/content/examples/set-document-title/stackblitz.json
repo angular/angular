@@ -1,0 +1,10 @@
+{
+	"description": "Set The Document Title In Angular",
+	"files": [
+		"!**/*.d.ts",
+		"!**/*.js",
+		"!**/*.[1].*"
+	],
+	"file": "src/app/app.component.ts", 
+	"tags": [ "cookbook" ]
+}

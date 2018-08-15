@@ -1,0 +1,55 @@
+load("//tools:defaults.bzl", "ng_module", "ng_package", "ts_api_guardian_test_npm_package")
+
+package(default_visibility = ["//visibility:public"])
+
+ng_module(
+    name = "platform-browser",
+    srcs = glob(
+        [
+            "*.ts",
+            "src/**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages:types",
+        "//packages/common",
+        "//packages/core",
+        "//packages/zone.js/lib:zone_d_ts",
+        "@npm//@types/hammerjs",
+    ],
+)
+
+ng_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "//packages/platform-browser/animations:package.json",
+        "//packages/platform-browser/testing:package.json",
+    ],
+    entry_point = ":index.ts",
+    tags = [
+        "release-with-framework",
+    ],
+    # Do not add more to this list.
+    # Dependencies on the full npm_package cause long re-builds.
+    visibility = [
+        "//integration:__pkg__",
+        "//packages/compiler-cli/integrationtest:__pkg__",
+        "//packages/compiler-cli/test:__pkg__",
+    ],
+    deps = [
+        ":platform-browser",
+        "//packages/platform-browser/animations",
+        "//packages/platform-browser/testing",
+    ],
+)
+
+ts_api_guardian_test_npm_package(
+    name = "platform-browser_api",
+    actualDir = "angular/packages/platform-browser/npm_package",
+    data = [
+        ":npm_package",
+        "//goldens:public-api",
+    ],
+    goldenDir = "angular/goldens/public-api/platform-browser",
+)

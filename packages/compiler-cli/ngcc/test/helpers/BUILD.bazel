@@ -1,0 +1,17 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//packages/compiler-cli/ngcc:__subpackages__"])
+
+ts_library(
+    name = "helpers",
+    testonly = True,
+    srcs = glob([
+        "*.ts",
+    ]),
+    deps = [
+        "//packages/compiler-cli/ngcc",
+        "//packages/compiler-cli/src/ngtsc/file_system",
+        "//packages/compiler-cli/src/ngtsc/file_system/testing",
+        "@npm//typescript",
+    ],
+)

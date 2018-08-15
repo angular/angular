@@ -1,0 +1,9 @@
+<h3>{{title}}</h3>
+<div>Winner: <strong>{{heroOfTheMonth.name}}</strong></div>
+<div>Reason for award: <strong>{{heroOfTheMonth.description}}</strong></div>
+<div>Runners-up: <strong id="rups1">{{runnersUp}}</strong></div>
+
+<p>Logs:</p>
+<div id="logs">
+  <div *ngFor="let log of logs">{{log}}</div>
+</div>

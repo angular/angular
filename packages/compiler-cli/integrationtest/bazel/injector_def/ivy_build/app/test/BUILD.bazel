@@ -1,0 +1,32 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        "//packages/compiler-cli/integrationtest/bazel/injector_def/ivy_build/app",
+        "//packages/core",
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_es5"],
+    tags = [
+        "ivy-only",
+    ],
+    deps = [
+        ":test_lib",
+    ],
+)

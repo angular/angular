@@ -1,0 +1,6 @@
+{
+  "description": "Template Reference Variables",
+  "files": ["!**/*.d.ts", "!**/*.js", "!**/*.[1,2].*"],
+  "file": "src/app/app.component.ts",
+  "tags": ["Template Reference Variables"]
+}

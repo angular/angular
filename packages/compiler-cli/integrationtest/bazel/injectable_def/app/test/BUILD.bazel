@@ -1,0 +1,31 @@
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "test_lib",
+    testonly = True,
+    srcs = glob(
+        [
+            "**/*.ts",
+        ],
+    ),
+    deps = [
+        "//packages/compiler-cli/integrationtest/bazel/injectable_def/app",
+        "//packages/core",
+        "//packages/core/testing",
+        "//packages/platform-server",
+        "//packages/private/testing",
+    ],
+)
+
+jasmine_node_test(
+    name = "test",
+    bootstrap = ["//tools/testing:node_es5"],
+    deps = [
+        ":test_lib",
+        "//packages/platform-server",
+        "//packages/platform-server/testing",
+        "//packages/private/testing",
+    ],
+)

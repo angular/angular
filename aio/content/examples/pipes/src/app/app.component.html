@@ -1,0 +1,83 @@
+<a id="toc"></a>
+<h1>Pipes</h1>
+<a href="#happy-birthday1">Happy Birthday v1</a><br>
+<a href="#birthday-date-pipe">Birthday DatePipe</a><br>
+<a href="#happy-birthday2">Happy Birthday v2</a><br>
+<a href="#birthday-pipe-chaining">Birthday Pipe Chaining</a><br>
+<a href="#power-booster">Power Booster custom pipe</a><br>
+<a href="#power-boost-calc">Power Boost Calculator custom pipe with params</a><br>
+<a href="#flying-heroes">Flying Heroes filter pipe (pure)</a><br>
+<a href="#flying-heroes-impure">Flying Heroes filter pipe (impure)</a><br>
+<a href="#hero-message">Async Hero Message and AsyncPipe</a><br>
+<a href="#hero-list">Hero List with caching FetchJsonPipe</a><br>
+
+
+<hr>
+<a id="happy-birthday1"></a>
+<h2>Hero Birthday v1</h2>
+<app-hero-birthday></app-hero-birthday>
+
+<hr>
+<a id="birthday-date-pipe"></a>
+<h2>Birthday DatePipe</h2>
+<!-- #docregion hero-birthday-template -->
+<p>The hero's birthday is {{ birthday | date }}</p>
+<!-- #enddocregion hero-birthday-template-->
+
+<!-- #docregion format-birthday -->
+<p>The hero's birthday is {{ birthday | date:"MM/dd/yy" }} </p>
+<!-- #enddocregion format-birthday-->
+
+<hr>
+<a id="happy-birthday2"></a>
+<h2>Hero Birthday v2</h2>
+<app-hero-birthday2></app-hero-birthday2>
+
+<hr>
+<a id="birthday-pipe-chaining"></a>
+<h2>Birthday Pipe Chaining</h2>
+<p>
+<!-- #docregion chained-birthday -->
+  The chained hero's birthday is
+  {{ birthday | date | uppercase}}
+<!-- #enddocregion chained-birthday -->
+</p>
+
+<p>
+<!-- #docregion chained-parameter-birthday -->
+  The chained hero's birthday is
+  {{  birthday | date:'fullDate' | uppercase}}
+<!-- #enddocregion chained-parameter-birthday -->
+</p>
+<p>
+<!-- #docregion chained-parameter-birthday-parens -->
+  The chained hero's birthday is
+  {{ ( birthday | date:'fullDate' ) | uppercase}}
+<!-- #enddocregion chained-parameter-birthday-parens -->
+</p>
+<hr>
+<a id="power-booster"></a>
+<app-power-booster></app-power-booster>
+
+<hr>
+<a id="power-boost-calc"></a>
+<app-power-boost-calculator>loading</app-power-boost-calculator>
+
+<hr>
+<a id="flying-heroes"></a>
+<app-flying-heroes></app-flying-heroes>
+
+<hr>
+<a id="flying-heroes-impure"></a>
+<app-flying-heroes-impure></app-flying-heroes-impure>
+
+<hr>
+<a id="hero-message"></a>
+<!-- async examples at the top so can see them in action -->
+<app-hero-message></app-hero-message>
+
+<hr>
+<a id="hero-list"></a>
+<app-hero-list></app-hero-list>
+
+<div style="margin-top:12em;"></div>

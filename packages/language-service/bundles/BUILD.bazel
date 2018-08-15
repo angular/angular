@@ -1,0 +1,46 @@
+load("//dev-infra/benchmark/ng_rollup_bundle:ng_rollup_bundle.bzl", "ng_rollup_bundle")
+
+ng_rollup_bundle(
+    name = "language-service",
+    build_optimizer = False,
+    entry_point = "//packages/language-service:index.ts",
+    format = "amd",
+    globals = {
+        "fs": "fs",
+        "path": "path",
+        "typescript": "ts",
+        "typescript/lib/tsserverlibrary": "tss",
+    },
+    license_banner = ":banner",
+    visibility = ["//packages/language-service:__pkg__"],
+    deps = [
+        "//packages/language-service",
+        "@npm//rxjs",
+        "@npm//tslib",
+    ],
+)
+
+ng_rollup_bundle(
+    name = "ivy",
+    build_optimizer = False,
+    entry_point = "//packages/language-service/ivy:ts_plugin.ts",
+    format = "amd",
+    globals = {
+        "fs": "fs",
+        "path": "path",
+        "typescript": "ts",
+        "typescript/lib/tsserverlibrary": "tss",
+    },
+    license_banner = ":banner",
+    visibility = ["//packages/language-service:__pkg__"],
+    deps = [
+        "//packages/language-service/ivy",
+    ],
+)
+
+genrule(
+    name = "banner",
+    srcs = ["banner.js"],
+    outs = ["banner.txt"],
+    cmd = "cp $< $@",
+)

@@ -1,0 +1,19 @@
+load("//tools:defaults.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+ts_library(
+    name = "util_lib",
+    srcs = ["util.ts"],
+)
+
+ts_library(
+    name = "bootstrap",
+    srcs = [
+        "bootstrap_ng2.ts",
+        "bootstrap_plain.ts",
+    ],
+    deps = [
+        "//packages:types",
+    ],
+)

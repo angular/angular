@@ -1,0 +1,35 @@
+load("//tools:defaults.bzl", "ng_module", "ts_devserver")
+
+package(default_visibility = ["//modules/playground:__subpackages__"])
+
+ng_module(
+    name = "http",
+    srcs = glob(["**/*.ts"]),
+    tsconfig = "//modules/playground:tsconfig-build.json",
+    deps = [
+        "//packages/common/http",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "@npm//rxjs",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    bootstrap = [
+        "//packages/zone.js/bundles:zone.umd.js",
+        "@npm//:node_modules/reflect-metadata/Reflect.js",
+    ],
+    entry_module = "angular/modules/playground/src/http/index",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = [
+        "people.json",
+        "index.html",
+    ],
+    deps = [":http"],
+)

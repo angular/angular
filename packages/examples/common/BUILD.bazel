@@ -1,0 +1,57 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "ng_module", "protractor_web_test_suite", "ts_devserver", "ts_library")
+
+ng_module(
+    name = "common_examples",
+    srcs = glob(
+        ["**/*.ts"],
+        exclude = ["**/*_spec.ts"],
+    ),
+    generate_ve_shims = True,
+    deps = [
+        "//packages/common",
+        "//packages/core",
+        "//packages/platform-browser",
+        "//packages/platform-browser-dynamic",
+        "//packages/router",
+        "@npm//rxjs",
+    ],
+)
+
+ts_library(
+    name = "common_tests_lib",
+    testonly = True,
+    srcs = glob(["**/*_spec.ts"]),
+    tsconfig = "//packages/examples:tsconfig-e2e.json",
+    deps = [
+        "//packages/examples/test-utils",
+        "//packages/private/testing",
+        "@npm//@types/jasminewd2",
+        "@npm//protractor",
+    ],
+)
+
+ts_devserver(
+    name = "devserver",
+    additional_root_paths = ["angular/packages/examples"],
+    bootstrap = ["//packages/zone.js/bundles:zone.umd.js"],
+    entry_module = "@angular/examples/common/main",
+    port = 4200,
+    scripts = [
+        "@npm//:node_modules/tslib/tslib.js",
+        "//tools/rxjs:rxjs_umd_modules",
+    ],
+    static_files = ["//packages/examples:index.html"],
+    deps = [":common_examples"],
+)
+
+protractor_web_test_suite(
+    name = "protractor_tests",
+    on_prepare = ":start-server.js",
+    server = ":devserver",
+    deps = [
+        ":common_tests_lib",
+        "@npm//selenium-webdriver",
+    ],
+)

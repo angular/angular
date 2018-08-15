@@ -1,0 +1,28 @@
+<h2>Products</h2>
+
+<div *ngFor="let product of products">
+
+<!-- #docregion product-details -->
+  <h3>
+    <a [title]="product.name + ' details'">
+      {{ product.name }}
+    </a>
+  </h3>
+<!-- #enddocregion product-details -->
+
+  <p *ngIf="product.description">
+    Description: {{ product.description }}
+  </p>
+
+<!-- #docregion app-product-alerts -->
+  <button (click)="share()">
+    Share
+  </button>
+
+  <app-product-alerts
+    [product]="product">
+  </app-product-alerts>
+<!-- #enddocregion app-product-alerts -->
+
+</div>
+

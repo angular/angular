@@ -1,0 +1,12 @@
+{
+  "description": "Http",
+  "files":[
+    "!**/*.d.ts",
+    "!**/*.js",
+    "!src/testing/*.*",
+    "!src/index-specs.html",
+    "!src/main-specs.ts"
+  ],
+  "file": "src/app/app.component.ts", 
+  "tags": ["http"]
+}

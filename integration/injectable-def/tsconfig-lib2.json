@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "moduleResolution": "node",
+    "lib": ["es2015", "dom"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "outDir": "node_modules/lib2_built",
+    "types": [],
+    "rootDir": "."
+  },
+  "files": [
+    "src/lib2.ts"
+  ],
+  "angularCompilerOptions": {
+    "skipTemplateCodegen": true,
+    "flatModuleId": "lib2_built",
+    "flatModuleOutFile": "index.js",
+    "enableIvy": false,
+  }
+}

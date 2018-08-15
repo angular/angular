@@ -1,0 +1,11 @@
+{% import "lib/paramList.html" as params -%}
+{% import "lib/memberHelpers.html" as memberHelper -%}
+{% import "lib/descendants.html" as descendants -%}
+{% extends 'export-base.template.html' -%}
+
+{% block overview %}{% include "includes/interface-overview.html" %}{% endblock %}
+{% block details %}
+  {% include "includes/description.html" %}
+  {$ memberHelper.renderProperties(doc.properties, 'instance-properties', 'instance-property', 'Properties') $}
+  {$ memberHelper.renderMethodDetails(versionInfo, doc.methods, 'instance-methods', 'instance-method', 'Methods') $}
+{% endblock %}

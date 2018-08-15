@@ -1,0 +1,28 @@
+{
+  "name": "@angular/elements",
+  "version": "0.0.0-PLACEHOLDER",
+  "description": "Angular - library for using Angular Components as Custom Elements",
+  "author": "angular",
+  "license": "MIT",
+  "dependencies": {
+    "tslib": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@angular/core": "0.0.0-PLACEHOLDER",
+    "@angular/platform-browser": "0.0.0-PLACEHOLDER",
+    "rxjs": "^6.5.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.git",
+    "directory": "packages/elements"
+  },
+  "ng-update": {
+    "packageGroup": "NG_UPDATE_PACKAGE_GROUP"
+  },
+  "sideEffects": false,
+  "schematics": "./schematics/collection.json",
+  "publishConfig":{
+    "registry":"https://wombat-dressing-room.appspot.com"
+  }
+}
