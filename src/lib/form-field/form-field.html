@@ -5,13 +5,13 @@
     <!-- Outline used for outline appearance. -->
     <ng-container *ngIf="appearance == 'outline'">
       <div class="mat-form-field-outline">
-        <div class="mat-form-field-outline-start" [style.width.px]="_outlineGapStart"></div>
-        <div class="mat-form-field-outline-gap" [style.width.px]="_outlineGapWidth"></div>
+        <div class="mat-form-field-outline-start"></div>
+        <div class="mat-form-field-outline-gap"></div>
         <div class="mat-form-field-outline-end"></div>
       </div>
       <div class="mat-form-field-outline mat-form-field-outline-thick">
-        <div class="mat-form-field-outline-start" [style.width.px]="_outlineGapStart"></div>
-        <div class="mat-form-field-outline-gap" [style.width.px]="_outlineGapWidth"></div>
+        <div class="mat-form-field-outline-start"></div>
+        <div class="mat-form-field-outline-gap"></div>
         <div class="mat-form-field-outline-end"></div>
       </div>
     </ng-container>
@@ -27,6 +27,7 @@
         <!-- We add aria-owns as a workaround for an issue in JAWS & NVDA where the label isn't
              read if it comes before the control in the DOM. -->
         <label class="mat-form-field-label"
+               (cdkObserveContent)="updateOutlineGap()"
                [id]="_labelId"
                [attr.for]="_control.id"
                [attr.aria-owns]="_control.id"
