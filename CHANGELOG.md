@@ -1,3 +1,13 @@
+<a name="6.1.3"></a>
+## [6.1.3](https://github.com/angular/angular/compare/6.1.2...6.1.3) (2018-08-15)
+
+
+### Bug Fixes
+
+* **service-worker:** `Cache-Control: no-cache` on assets breaks service worker ([#25408](https://github.com/angular/angular/issues/25408)) ([1319ff4](https://github.com/angular/angular/commit/1319ff4)), closes [#25442](https://github.com/angular/angular/issues/25442)
+
+
+
 <a name="6.1.2"></a>
 ## [6.1.2](https://github.com/angular/angular/compare/6.1.1...6.1.2) (2018-08-08)
 
