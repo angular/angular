@@ -17,13 +17,13 @@ import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platfor
 
 import {DominoAdapter, parseDocument as parseDocumentDomino} from './domino_adapter';
 import {SERVER_HTTP_PROVIDERS} from './http';
+import {JsdomAdapter, parseDocument as parseDocumentJsdom} from './jsdom_adapter';
 import {ServerPlatformLocation} from './location';
 import {PlatformState} from './platform_state';
 import {ServerEventManagerPlugin} from './server_events';
 import {ServerRendererFactory2} from './server_renderer';
 import {ServerStylesHost} from './styles_host';
 import {INITIAL_CONFIG, PlatformConfig} from './tokens';
-import {JsdomAdapter, parseDocument as parseDocumentJsdom} from './jsdom_adapter';
 
 function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
@@ -34,10 +34,8 @@ export enum ServerDom {
   JSDOM,
 }
 
-export const SERVER_DOM = new InjectionToken<ServerDom>('Type of renderer to use for SSR', {
-  providedIn: 'root',
-  factory: () => ServerDom.Domino
-});
+export const SERVER_DOM = new InjectionToken<ServerDom>(
+    'Type of renderer to use for SSR', {providedIn: 'root', factory: () => ServerDom.Domino});
 
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: DOCUMENT, useFactory: _document, deps: [Injector, SERVER_DOM]},
@@ -53,7 +51,7 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
 ];
 
 function initDomAdapter(serverDom: ServerDom) {
-  switch(serverDom) {
+  switch (serverDom) {
     case ServerDom.Domino:
       return initDominoAdapter;
     case ServerDom.JSDOM:
@@ -109,7 +107,7 @@ export class ServerModule {
 function _document(injector: Injector, serverDom: ServerDom) {
   let config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
   let parseDocument: (html: string, url?: any) => Document;
-  switch(serverDom) {
+  switch (serverDom) {
     case ServerDom.JSDOM:
       parseDocument = parseDocumentJsdom;
       break;
