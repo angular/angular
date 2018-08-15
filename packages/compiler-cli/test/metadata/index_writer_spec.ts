@@ -19,7 +19,7 @@ describe('index_writer', () => {
     const bundle = bundler.getMetadataBundle();
     const result = privateEntriesToIndex('./index', bundle.privates);
     expect(result).toContain(`export * from './index';`);
-    expect(result).toContain(`export {PrivateOne as ɵelementAttribute} from './src/one';`);
-    expect(result).toContain(`export {PrivateTwo as ɵbind} from './src/two/index';`);
+    expect(result).toContain(`export {PrivateOne as ɵa} from './src/one';`);
+    expect(result).toContain(`export {PrivateTwo as ɵb} from './src/two/index';`);
   });
 });
