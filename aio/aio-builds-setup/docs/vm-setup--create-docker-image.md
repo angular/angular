@@ -27,7 +27,7 @@ The following commands would create a docker image from GitHub repo `foo/bar` to
 - `git clone https://github.com/foo/bar.git foobar`
 - Run:
   ```
-  ./foobar/aio-builds-setup/scripts/build.sh foobar-builds \
+  ./foobar/aio-builds-setup/scripts/create-image.sh foobar-builds \
     --build-arg AIO_REPO_SLUG=foo/bar \
     --build-arg AIO_DOMAIN_NAME=foobar-builds.io \
     --build-arg AIO_GITHUB_ORGANIZATION=foo \
