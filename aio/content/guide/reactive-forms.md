@@ -379,31 +379,58 @@ The `ProfileEditor` allows you to manage the `FormControl` instances for the `fi
   <img src="generated/images/guide/reactive-forms/profile-editor-1.png" alt="Profile Editor">
 </figure>
 
+<!--
 ## Nesting form groups
+-->
+## 중첩 폼 그룹
 
+<!--
 When building complex forms, managing the different areas of information is easier in smaller sections, and some groups of information naturally fall into the same group. Using a nested `FormGroup` allows you to break large forms groups into smaller, more manageable ones.
+-->
+복잡한 폼을 구현하다 보면, 폼 전체를 한 번에 다루는 것보다 관련된 입력 필드끼리 묶어서 관리하는 것이 좀 더 편합니다. 이 때 서로 연관된 정보가 자연스럽게 같은 그룹으로 묶이며, 아주 복잡한 폼이라면 `FormGroup` 안에 다시 `FormGroup`을 구현하는 것이 더 효과적인 경우도 있습니다.
 
+<!--
 ### Step 1 - Create a nested group
+-->
+### 1단계 - 중첩 그룹 만들기
 
+<!--
 An address is a good example of information that can be grouped together. A `FormGroup` can accept both `FormControl` and `FormGroup` instances as children. This makes composing complex form models easier to maintain and logically group together. To create a nested group in the `profileForm`, add a nested `address` `FormGroup`.
+-->
+주소를 입력받는 폼을 생각해 봅시다. `FormGroup`은 `FormControl`이나 `FormGroup` 인스턴스를 자식으로 가질 수 있습니다. 그래서 복잡한 폼 필드를 연관된 것끼리 묶어서 `FormGroup`으로 처리할 수 있으며, 이 내용을 적용하면 `profileForm` 안에 `address` `FormGroup`을 생성할 수 있습니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="nested-formgroup" linenums="false" title="src/app/profile-editor/profile-editor.component.ts (nested form group)">
 
 </code-example>
 
+<!--
 In this example, the `address group` combines the current `firstName` and `lastName` controls with the new `street`, `city`, `state` and `zip` controls. Even though the `address` `FormGroup` is a child of the overall `profileForm` `FormGroup`, the same rules still apply with value and status changes. Changes in status and value from the nested form group will propagate up to the parent form group, maintaining consistency with the overall model.
+-->
+이 예제에서 `firstName`과 `lastName`은 폼 컨트롤이지만 `address`는 `street`와 `city`, `state`, `zip`으로 이루어진 폼 그룹입니다. `address` `FormGroup`은 그 자체로도 `FormGroup`이지만 부모 그룹인 `profileForm` `FormGroup`의 자식으로 지정되어 있으며, 기존에 사용하던 폼 상태와 값이 변경되는 상황도 이전과 마찬가지로 참조할 수 있습니다. 그리고 자식 객체에서 발생하는 상태/값 변화는 부모 폼 그룹으로 전파되기 때문에, 전체 폼 그룹을 참조해도 개별 값이 변경되는 것을 감지할 수 있습니다.
 
+<!--
 ### Step 2 - Group the nested form in the template
+-->
+### 2단계 - 템플릿에서 중첩 폼 묶기
 
+<!--
 After you update the model in the component class, update the template to connect the `FormGroup` instance and its input elements.
+-->
+컴포넌트 클래스의 모델을 수정하고 나면, 템플릿에도 이 내용과 관련된 `FormGroup` 인스턴스와 입력 엘리먼트를 수정해야 합니다.
 
+<!--
 Add the `address` form group containing the `firstName` and `lastName` fields to the `ProfileEditor` template.
+-->
+`ProfileEditor` 템플릿에 다음과 같이 `address` 폼 그룹을 추가합니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroupname" linenums="false" title="src/app/profile-editor/profile-editor.component.html (template nested form group)">
 
 </code-example>
 
+<!--
 The `ProfileEditor` form is displayed as one group, but the model is broken down further to represent the logical grouping areas.
+-->
+그러면 `ProfileEditor` 폼에서 `address` 부분이 다시 한 번 그룹으로 묶여 다음과 같이 화면에 표시됩니다.
 
 <figure>
   <img src="generated/images/guide/reactive-forms/profile-editor-2.png" alt="Profile Editor Update">
@@ -411,7 +438,10 @@ The `ProfileEditor` form is displayed as one group, but the model is broken down
 
 <div class="alert is-helpful">
 
+<!--
 *Note*: Display the value for the `FormGroup` in the component template using the `value` property and the `JsonPipe`.
+-->
+*참고*: `FormGroup`의 내용을 컴포넌트 템플릿에 표시하려면 `value` 프로퍼티에 `JsonPipe`를 사용하면 됩니다.
 
 </div>
 
