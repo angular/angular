@@ -3614,6 +3614,30 @@ describe('Integration', () => {
              ]);
            })));
 
+    // https://github.com/angular/angular/issues/25431
+    it('should emit an error when the lazily-loaded config is not valid',
+       fakeAsync(inject(
+           [Router, Location, NgModuleFactoryLoader],
+           (router: Router, location: Location, loader: SpyNgModuleFactoryLoader) => {
+             @NgModule({imports: [RouterModule.forChild([{path: 'loaded'}])]})
+             class LoadedModule {
+             }
+
+             loader.stubbedModules = {expected: LoadedModule};
+
+             const fixture = createRoot(router, RootCmp);
+
+             router.resetConfig([{path: 'lazy', loadChildren: 'expected'}]);
+
+             let recordedError: any = null;
+             router.navigateByUrl('/lazy/loaded') !.catch(err => recordedError = err);
+             advance(fixture);
+
+             expect(recordedError.message)
+                 .toEqual(
+                     `Invalid configuration of route 'loaded'. One of the following must be provided: component, canActivate, redirectTo, children or loadChildren`);
+           })));
+
     it('should work with complex redirect rules',
        fakeAsync(inject(
            [Router, Location, NgModuleFactoryLoader],

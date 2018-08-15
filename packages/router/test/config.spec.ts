@@ -62,7 +62,7 @@ describe('config', () => {
     it('should validate children and report full path', () => {
       expect(() => validateConfig([{path: 'a', children: [{path: 'b'}]}]))
           .toThrowError(
-              `Invalid configuration of route 'a/b'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+              `Invalid configuration of route 'a/b'. One of the following must be provided: component, canActivate, redirectTo, children or loadChildren`);
     });
 
     it('should properly report deeply nested path', () => {
@@ -71,7 +71,7 @@ describe('config', () => {
                children: [{path: 'b', children: [{path: 'c', children: [{path: 'd'}]}]}]
              }]))
           .toThrowError(
-              `Invalid configuration of route 'a/b/c/d'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+              `Invalid configuration of route 'a/b/c/d'. One of the following must be provided: component, canActivate, redirectTo, children or loadChildren`);
     });
 
     it('should throw when redirectTo and loadChildren are used together', () => {
@@ -107,7 +107,13 @@ describe('config', () => {
     it('should throw when none of component and children or direct are missing', () => {
       expect(() => { validateConfig([{path: 'a'}]); })
           .toThrowError(
-              `Invalid configuration of route 'a'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+              `Invalid configuration of route 'a'. One of the following must be provided: component, canActivate, redirectTo, children or loadChildren`);
+    });
+
+    it('should not throw when component is missing but canActivate is provided', () => {
+      expect(() => { validateConfig([{path: 'a', canActivate: [{} as any]}]); })
+          .not.toThrowError(
+              `Invalid configuration of route 'a'. One of the following must be provided: component, canActivate, redirectTo, children or loadChildren`);
     });
 
     it('should throw when path starts with a slash', () => {

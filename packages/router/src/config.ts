@@ -437,9 +437,10 @@ function validateNode(route: Route, fullPath: string): void {
     throw new Error(
         `Invalid configuration of route '${fullPath}': path and matcher cannot be used together`);
   }
-  if (route.redirectTo === void 0 && !route.component && !route.children && !route.loadChildren) {
+  if (route.redirectTo === void 0 && !route.component && !route.canActivate && !route.children &&
+      !route.loadChildren) {
     throw new Error(
-        `Invalid configuration of route '${fullPath}'. One of the following must be provided: component, redirectTo, children or loadChildren`);
+        `Invalid configuration of route '${fullPath}'. One of the following must be provided: component, canActivate, redirectTo, children or loadChildren`);
   }
   if (route.path === void 0 && route.matcher === void 0) {
     throw new Error(
