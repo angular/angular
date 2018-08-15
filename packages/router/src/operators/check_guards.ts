@@ -6,22 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, Type} from '@angular/core';
-import {Observable, OperatorFunction} from 'rxjs';
-import {mergeMap} from 'rxjs/operators';
+import {MonoTypeOperatorFunction, Observable, from, of } from 'rxjs';
+import {map, mergeMap} from 'rxjs/operators';
 
-import {Route} from '../config';
-import {PreActivation} from '../pre_activation';
-import {recognize as recognizeFn} from '../recognize';
-import {ChildrenOutletContexts} from '../router_outlet_context';
-import {RouterStateSnapshot} from '../router_state';
-import {UrlTree} from '../url_tree';
+import {NavigationTransition} from '../router';
 
-export function checkGuards(
-    rootContexts: ChildrenOutletContexts, currentSnapshot: RouterStateSnapshot,
-    moduleInjector: Injector, preActivation: PreActivation): OperatorFunction<UrlTree, boolean> {
-  return function(source: Observable<UrlTree>) {
-    return source.pipe(
-        mergeMap((appliedUrl): Observable<boolean> => { return preActivation.checkGuards(); }));
+export function checkGuards(): MonoTypeOperatorFunction<NavigationTransition> {
+  return function(source: Observable<NavigationTransition>) {
+
+    return source.pipe(mergeMap(t => {
+      if (!t.preActivation) {
+        throw 'Initialized PreActivation required to check guards';
+      }
+      return t.preActivation.checkGuards().pipe(map(guardsResult => ({...t, guardsResult})));
+    }));
   };
 }
