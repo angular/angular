@@ -41,7 +41,7 @@ version: 2
 jobs:
   build:
     <<: *job_defaults
-    resource_class: large
+    resource_class: xlarge
     steps:
       - checkout:
           <<: *post_checkout
