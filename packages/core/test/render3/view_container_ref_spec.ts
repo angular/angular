@@ -9,7 +9,7 @@
 import {Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, NgModuleRef, Pipe, PipeTransform, RendererFactory2, TemplateRef, ViewContainerRef, createInjector, defineInjector, ɵAPP_ROOT as APP_ROOT, ɵNgModuleDef as NgModuleDef} from '../../src/core';
 import {templateRefExtractor} from '../../src/render3/di';
 import {AttributeMarker, NgOnChangesFeature, defineComponent, defineDirective, definePipe, injectComponentFactoryResolver, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, loadDirective, nextContext, projection, projectionDef, reference, reserveSlots, template, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation3, loadDirective, nextContext, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgModuleFactory} from '../../src/render3/ng_module_ref';
 import {pipe, pipeBind1} from '../../src/render3/pipe';
@@ -410,6 +410,16 @@ describe('ViewContainerRef', () => {
           });
         }
 
+        function SomeComponent_Template_0(rf: RenderFlags, ctx: any) {
+          if (rf & RenderFlags.Create) {
+            element(0, 'child');
+            pipe(1, 'starPipe');
+          }
+          if (rf & RenderFlags.Update) {
+            elementProperty(0, 'name', bind(pipeBind1(1, 2, 'C')));
+          }
+        }
+
         @Component({
           template: `
             <ng-template #foo>
@@ -426,21 +436,11 @@ describe('ViewContainerRef', () => {
             factory: () => new SomeComponent(),
             template: (rf: RenderFlags, cmp: SomeComponent) => {
               if (rf & RenderFlags.Create) {
-                template(0, (rf: RenderFlags, ctx: any) => {
-                  if (rf & RenderFlags.Create) {
-                    element(0, 'child');
-                    pipe(1, 'starPipe');
-                    reserveSlots(2);
-                  }
-                  if (rf & RenderFlags.Update) {
-                    elementProperty(0, 'name', bind(pipeBind1(1, 2, 'C')));
-                  }
-                }, null, [], ['foo', ''], templateRefExtractor);
+                template(0, SomeComponent_Template_0, null, [], ['foo', ''], templateRefExtractor);
                 pipe(2, 'starPipe');
                 element(3, 'child', ['vcref', '']);
                 pipe(4, 'starPipe');
                 element(5, 'child');
-                reserveSlots(4);
               }
               if (rf & RenderFlags.Update) {
                 const tplRef = reference(1);
