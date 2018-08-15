@@ -7,7 +7,7 @@ import * as shell from 'shelljs';
 import {HIDDEN_DIR_PREFIX} from '../common/constants';
 import {assertNotMissingOrEmpty, computeShortSha, createLogger} from '../common/utils';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from './build-events';
-import {UploadError} from './upload-error';
+import {PreviewServerError} from './preview-error';
 
 // Classes
 export class BuildCreator extends EventEmitter {
@@ -36,7 +36,7 @@ export class BuildCreator extends EventEmitter {
       then(([prDirExisted, shaDirExisted]) => {
         if (shaDirExisted) {
           const publicOrNot = isPublic ? 'public' : 'non-public';
-          throw new UploadError(409, `Request to overwrite existing ${publicOrNot} directory: ${shaDir}`);
+          throw new PreviewServerError(409, `Request to overwrite existing ${publicOrNot} directory: ${shaDir}`);
         }
 
         dirToRemoveOnError = prDirExisted ? shaDir : prDir;
@@ -52,8 +52,8 @@ export class BuildCreator extends EventEmitter {
           shell.rm('-rf', dirToRemoveOnError);
         }
 
-        if (!(err instanceof UploadError)) {
-          err = new UploadError(500, `Error while uploading to directory: ${shaDir}\n${err}`);
+        if (!(err instanceof PreviewServerError)) {
+          err = new PreviewServerError(500, `Error while creating preview at: ${shaDir}\n${err}`);
         }
 
         throw err;
@@ -71,7 +71,8 @@ export class BuildCreator extends EventEmitter {
           return false;
         } else if (targetVisPrDirExisted) {
           // Error: Directories for both visibilities exist.
-          throw new UploadError(409, `Request to move '${otherVisPrDir}' to existing directory '${targetVisPrDir}'.`);
+          throw new PreviewServerError(409,
+              `Request to move '${otherVisPrDir}' to existing directory '${targetVisPrDir}'.`);
         }
 
         // Visibility change: Moving `otherVisPrDir` to `targetVisPrDir`.
@@ -82,8 +83,8 @@ export class BuildCreator extends EventEmitter {
           then(() => true);
       }).
       catch(err => {
-        if (!(err instanceof UploadError)) {
-          err = new UploadError(500, `Error while making PR ${pr} ${makePublic ? 'public' : 'hidden'}.\n${err}`);
+        if (!(err instanceof PreviewServerError)) {
+          err = new PreviewServerError(500, `Error while making PR ${pr} ${makePublic ? 'public' : 'hidden'}.\n${err}`);
         }
 
         throw err;

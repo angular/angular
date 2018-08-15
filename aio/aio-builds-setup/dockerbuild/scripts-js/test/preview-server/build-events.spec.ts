@@ -1,5 +1,5 @@
 // Imports
-import {ChangedPrVisibilityEvent, CreatedBuildEvent} from '../../lib/upload-server/build-events';
+import {ChangedPrVisibilityEvent, CreatedBuildEvent} from '../../lib/preview-server/build-events';
 
 // Tests
 describe('ChangedPrVisibilityEvent', () => {

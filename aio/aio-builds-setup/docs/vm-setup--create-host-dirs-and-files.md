@@ -12,8 +12,8 @@ More info on how to create `secrets` directory and files can be found
 
 
 ## Create directory for build artifacts
-The uploaded build artifacts should be kept on a directory outside the docker container, so it is
-easier to replace the container without losing the uploaded builds. For portability across VMs a
+The build artifacts should be kept on a directory outside the docker container, so it is
+easier to replace the container without losing the builds. For portability across VMs a
 persistent disk can be used (as described [here](vm-setup--attach-persistent-disk.md)).
 
 **Note:** The directories created inside that directory will be owned by user `www-data`.
@@ -21,7 +21,7 @@ persistent disk can be used (as described [here](vm-setup--attach-persistent-dis
 
 ## Create SSL certificates (Optional for dev)
 The host VM can attach a directory containing the SSL certificate and key to be used by the nginx
-server for serving the uploaded build artifacts. More info on how to attach the directory when
+server for serving the hosted previews. More info on how to attach the directory when
 starting the container can be found [here](vm-setup--start-docker-container.md).
 
 In order for the container to be able to find the certificate and key, they should be named
@@ -61,15 +61,15 @@ The following log files are kept in this directory:
   used when running tests locally from inside the container, e.g. with the `aio-verify-setup`
   command. (See [here](overview--scripts-and-commands.md) for more info.)
 
-- `upload-server-{prod,test,verify-setup}-*.log`:
-  The logs produced by the Node.js upload-server while serving either:
+- `preview-server-{prod,test,verify-setup}-*.log`:
+  The logs produced by the Node.js preview-server while serving either:
   - `-prod`: "Production" files (g.g during normal operation).
-  - `-test`: "Test" files (e.g. when a test instance is started with the `aio-upload-server-test`
+  - `-test`: "Test" files (e.g. when a test instance is started with the `aio-preview-server-test`
              command).
   - `-verify-setup`: "Test" files, but while running `aio-verify-setup`.
 
   (See [here](overview--scripts-and-commands.md) for more info the commands mentioned above.)
 
 - `verify-setup.log`:
-  The output of the `aio-verify-setup` command (e.g. Jasmine output), except for upload-server
-  output which is logged to `upload-server-verify-setup-*.log` (see above).
+  The output of the `aio-verify-setup` command (e.g. Jasmine output), except for preview-server
+  output which is logged to `preview-server-verify-setup-*.log` (see above).

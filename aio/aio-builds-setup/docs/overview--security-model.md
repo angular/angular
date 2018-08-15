@@ -48,7 +48,7 @@ The implemented approach can be broken up to the following sub-tasks:
 5. Deploy the artifacts to the corresponding PR's directory.
 6. Prevent overwriting previously deployed artifacts (which ensures that the guarantees established
    during deployment will remain valid until the artifacts are removed).
-7. Prevent uploaded files from accessing anything outside their directory.
+7. Prevent hosted preview files from accessing anything outside their directory.
 
 
 ### Implementation details
@@ -56,7 +56,7 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
 
 0. **Receive notification from CircleCI of a completed build**
 
-  CircleCI is configured to trigger a webhook on our upload-server whenever a build completes.
+  CircleCI is configured to trigger a webhook on our preview-server whenever a build completes.
   The payload contains the number of the build that completed.
 
 1. **Verify that the build is valid and download the artifact.**
@@ -71,7 +71,7 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
    Next we make another call to the CircleCI API to get a list of the URLS for artifacts of that
    build. If there is one that matches the configured artifact path, we download the contents of the
    build artifact and store it in a local folder. This download has a maximum size limit to prevent
-   PRs from producing artifacts that are so large they would cause the upload server to crash.
+   PRs from producing artifacts that are so large they would cause the preview server to crash.
 
 2. **Fetch the PR's metadata, including author and labels**.
 
@@ -98,7 +98,7 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
    Once we have determined whether the PR is considered "trusted", we update its "visibility" (i.e.
    whether it is publicly accessible or not), based on the new verification status. For example, if
    a PR was initially considered "not trusted" but the check triggered by a new build determined
-   otherwise, the PR (and all the previously uploaded previews) are made public. It works the same
+   otherwise, the PR (and all the previously hosted previews) are made public. It works the same
    way if a PR has gone from "trusted" to "not trusted".
 
 5. **Deploy the artifacts to the corresponding PR's directory.**
@@ -117,23 +117,23 @@ This section describes how each of the aforementioned sub-tasks is accomplished:
    Express server) rejects builds that have already been handled.
    _Note: A PR can contain multiple builds; one for each SHA that was built on CircleCI._
 
-7. **Prevent uploaded files from accessing anything outside their directory.**
+7. **Prevent hosted preview files from accessing anything outside their directory.**
 
-   Nginx (which is used to serve the uploaded artifacts) has been configured to not follow symlinks
-   outside of the directory where the build artifacts are stored.
+   Nginx (which is used to serve the hosted preview) has been configured to not follow symlinks
+   outside of the directory where the preview files are stored.
 
 
 ## Assumptions / Things to keep in mind
 
 - Other than the initial webhook trigger, which provides a build number, all requests for data come
-  from the upload-server making requests to well defined API endpoints (e.g. CircleCI and Github).
-  This means that any secret access keys need only be stored on the upload-server and not on any of
+  from the preview-server making requests to well defined API endpoints (e.g. CircleCI and Github).
+  This means that any secret access keys need only be stored on the preview-server and not on any of
   the CI build infrastructure (e.g. CircleCI).
 
-- Each trusted PR author has full control over the content that is uploaded for their PRs. Part of
-  the security model relies on the trustworthiness of these authors.
+- Each trusted PR author has full control over the content that is hosted as a preview for their PRs.
+  Part of the security model relies on the trustworthiness of these authors.
 
-- Adding the specified label on a PR and marking it as trusted, gives the author full control over
-  the content that is uploaded for the specific PR (e.g. by pushing more commits to it). The user
-  adding the label is responsible for ensuring that this control is not abused and that the PR is
-  either closed (one way of another) or the access is revoked.
+- Adding the specified label on a PR to mark it as trusted, gives the author full control over
+  the content that is hosted for the specific PR preview (e.g. by pushing more commits to it).
+  The user adding the label is responsible for ensuring that this control is not abused and that
+  the PR is either closed (one way of another) or the access is revoked.

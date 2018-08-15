@@ -1,16 +1,16 @@
 // Imports
 import * as fs from 'fs';
 import {join} from 'path';
-import {AIO_UPLOAD_HOSTNAME, AIO_UPLOAD_PORT, AIO_WWW_USER} from '../common/env-variables';
+import {AIO_PREVIEW_SERVER_HOSTNAME, AIO_PREVIEW_SERVER_PORT, AIO_WWW_USER} from '../common/env-variables';
 import {computeShortSha} from '../common/utils';
 import {ALT_SHA, BuildNums, PrNums, SHA, SIMILAR_SHA} from './constants';
 import {helper as h, makeCurl, payload} from './helper';
 import {customMatchers} from './jasmine-custom-matchers';
 
 // Tests
-describe('upload-server', () => {
-  const hostname = AIO_UPLOAD_HOSTNAME;
-  const port = AIO_UPLOAD_PORT;
+describe('preview-server', () => {
+  const hostname = AIO_PREVIEW_SERVER_HOSTNAME;
+  const port = AIO_PREVIEW_SERVER_PORT;
   const host = `http://${hostname}:${port}`;
 
   beforeEach(() => jasmine.DEFAULT_TIMEOUT_INTERVAL = 5000);
@@ -122,7 +122,7 @@ describe('upload-server', () => {
 
       describe(`for ${label} builds`, () => {
 
-        it('should extract the contents of the uploaded file', async () => {
+        it('should extract the contents of the build artifact', async () => {
           await curl(payload(build))
             .then(h.verifyResponse(statusCode));
           expect(h.readBuildFile(prNum, SHA, 'index.html', isPublic))
@@ -148,7 +148,7 @@ describe('upload-server', () => {
           expect({ prNum, isPublic }).toExistAsABuild();
         });
 
-        it('should delete the uploaded file', async () => {
+        it('should delete the build artifact file', async () => {
           await curl(payload(build))
             .then(h.verifyResponse(statusCode));
           expect({ prNum, SHA }).not.toExistAsAnArtifact();

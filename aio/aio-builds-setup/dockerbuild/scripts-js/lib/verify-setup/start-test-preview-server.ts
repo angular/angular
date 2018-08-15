@@ -1,2 +1,2 @@
-import '../upload-server';
+import '../preview-server';
 import './mock-external-apis';

@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as nock from 'nock';
 import {BuildInfo, CircleCiApi} from '../../lib/common/circle-ci-api';
-import {BuildRetriever} from '../../lib/upload-server/build-retriever';
+import {BuildRetriever} from '../../lib/preview-server/build-retriever';
 
 describe('BuildRetriever', () => {
   const MAX_DOWNLOAD_SIZE = 10000;
