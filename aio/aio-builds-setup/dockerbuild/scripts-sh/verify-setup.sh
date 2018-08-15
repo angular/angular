@@ -2,7 +2,7 @@
 set -eu -o pipefail
 
 logFile=/var/log/aio/verify-setup.log
-uploadServerLogFile=/var/log/aio/upload-server-verify-setup.log
+previewServerLogFile=/var/log/aio/preview-server-verify-setup.log
 
 exec 3>&1
 exec >> $logFile
@@ -24,18 +24,18 @@ function countdown {
 
 function onExit {
   echo -e "Stopping Test Server"
-  aio-upload-server-test stop
+  aio-preview-server-test stop
   echo -e "Full logs in '$logFile'.\n" > /dev/fd/3
 }
 
 # Setup EXIT trap
 trap 'onExit' EXIT
 
-# Start an upload-server instance for testing
+# Start an preview-server instance for testing
 echo -e "Starting Test Server"
-aio-upload-server-test start --log $uploadServerLogFile
+aio-preview-server-test start --log $previewServerLogFile
 
-# Give the upload-server some time to start :(
+# Give the preview-server some time to start :(
 countdown "Starting" 5 > /dev/fd/3
 
 # Run the tests

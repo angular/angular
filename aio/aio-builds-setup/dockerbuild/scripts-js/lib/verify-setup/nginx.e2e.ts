@@ -266,7 +266,7 @@ describe(`nginx`, () => {
       });
 
 
-      it('should pass requests through to the upload server', done => {
+      it('should pass requests through to the preview server', done => {
         h.runCmd(`curl -iLX POST ${scheme}://${host}/circle-build`).
           then(h.verifyResponse(400, /Incorrect body content. Expected JSON/)).
           then(done);
@@ -304,7 +304,7 @@ describe(`nginx`, () => {
       });
 
 
-      it('should pass requests through to the upload server', done => {
+      it('should pass requests through to the preview server', done => {
         const cmdPrefix = `curl -iLX POST --header "Content-Type: application/json"`;
 
         const cmd1 = `${cmdPrefix} ${url}`;
