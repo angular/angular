@@ -728,7 +728,7 @@ export class Router {
                                   p.snapshot))),
                           checkGuards(
                               this.rootContexts, this.routerState.snapshot, this.ngModule.injector,
-                              preActivation, (evt: Event) => this.triggerEvent(evt)),
+                              (evt: Event) => this.triggerEvent(evt)),
                           tap(shouldActivate => this.triggerEvent(new GuardsCheckEnd(
                                   id, this.serializeUrl(url), this.serializeUrl(p.appliedUrl),
                                   p.snapshot, shouldActivate))),

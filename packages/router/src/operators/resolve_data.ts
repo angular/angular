@@ -6,19 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injector, Type} from '@angular/core';
+import {Injector} from '@angular/core';
 import {Observable, OperatorFunction, from, of } from 'rxjs';
 import {concatMap, last, map, mergeMap, reduce} from 'rxjs/operators';
 
-import {ResolveData, Route} from '../config';
-import {PreActivation} from '../pre_activation';
-import {recognize as recognizeFn} from '../recognize';
+import {ResolveData} from '../config';
 import {ChildrenOutletContexts} from '../router_outlet_context';
-import {ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, inheritedParamsDataResolve} from '../router_state';
-import {UrlTree} from '../url_tree';
+import {ActivatedRouteSnapshot, RouterStateSnapshot, inheritedParamsDataResolve} from '../router_state';
 import {wrapIntoObservable} from '../utils/collection';
-
-import {getAllRouteGuards, getToken} from './check_guards';
+import {extractRouteGuards, getToken} from '../utils/guards';
 
 export function resolveData(
     rootContexts: ChildrenOutletContexts, currentSnapshot: RouterStateSnapshot,
@@ -26,7 +22,7 @@ export function resolveData(
     moduleInjector: Injector): OperatorFunction<RouterStateSnapshot, any> {
   return function(source: Observable<RouterStateSnapshot>) {
     return source.pipe(mergeMap((futureSnapshot): Observable<any> => {
-      const checks = getAllRouteGuards(futureSnapshot, currentSnapshot, rootContexts);
+      const checks = extractRouteGuards(futureSnapshot, currentSnapshot, rootContexts);
 
       if (!checks.canActivateChecks.length) {
         return of (null);
