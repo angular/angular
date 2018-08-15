@@ -1,3 +1,14 @@
+<a name="7.0.0-beta.2"></a>
+# [7.0.0-beta.2](https://github.com/angular/angular/compare/7.0.0-beta.1...7.0.0-beta.2) (2018-08-15)
+
+
+### Bug Fixes
+
+* **bazel:** correct type concatenated to devmode_js ([#25467](https://github.com/angular/angular/issues/25467)) ([fb2c524](https://github.com/angular/angular/commit/fb2c524))
+* **service-worker:** `Cache-Control: no-cache` on assets breaks service worker ([#25408](https://github.com/angular/angular/issues/25408)) ([01ec5fd](https://github.com/angular/angular/commit/01ec5fd)), closes [#25442](https://github.com/angular/angular/issues/25442)
+
+
+
 <a name="7.0.0-beta.1"></a>
 # [7.0.0-beta.1](https://github.com/angular/angular/compare/7.0.0-beta.0...7.0.0-beta.1) (2018-08-08)
 
