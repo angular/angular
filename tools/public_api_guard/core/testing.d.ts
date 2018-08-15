@@ -60,6 +60,7 @@ export declare function resetFakeAsyncZone(): void;
 export declare const TestBed: TestBedStatic;
 
 export interface TestBedStatic {
+    new (...args: any[]): TestBed;
     compileComponents(): Promise<any>;
     configureCompiler(config: {
         providers?: any[];

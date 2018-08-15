@@ -47,6 +47,8 @@ export type TestModuleMetadata = {
  * Static methods implemented by the `TestBedViewEngine` and `TestBedRender3`
  */
 export interface TestBedStatic {
+  new (...args: any[]): TestBed;
+
   initTestEnvironment(
       ngModule: Type<any>|Type<any>[], platform: PlatformRef, aotSummaries?: () => any[]): TestBed;
 

@@ -7,7 +7,7 @@
  */
 
 import {Component, ComponentRef, Renderer2, RendererFactory2, RendererType2, destroyPlatform} from '@angular/core';
-import {TestBed, getTestBed} from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 import {platformBrowserDynamicTesting} from '@angular/platform-browser-dynamic/testing';
 import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {DomRendererFactory2} from '@angular/platform-browser/src/dom/dom_renderer';
@@ -43,7 +43,7 @@ let lastCreatedRenderer: Renderer2;
     beforeEach(() => {
       // UI side
       uiRenderStore = new RenderStore();
-      const uiInjector = getTestBed();
+      const uiInjector = new TestBed();
       uiInjector.platform = platformBrowserDynamicTesting();
       uiInjector.ngModule = BrowserTestingModule;
       uiInjector.configureTestingModule({
