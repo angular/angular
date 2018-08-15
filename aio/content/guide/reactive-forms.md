@@ -445,75 +445,141 @@ The `ProfileEditor` form is displayed as one group, but the model is broken down
 
 </div>
 
+<!--
 ## Partial model updates
+-->
+## 모델 일부만 갱신하기
 
+<!--
 When updating the value for a `FormGroup` that contains multiple controls, you may only want to update parts of the model instead of replacing its entire value. This section covers how to update specific parts of an `AbstractControl` model.
+-->
+`FormGroup`을 처리하면서 매번 전체 폼 값을 한 번에 갱신하는 것은 번거롭기 때문에, 일부 폼 컨트롤의 값만 변경하는 것이 더 편한 경우도 있습니다. 이번에는 `AbstractControl` 모델의 일부 값만 변경하는 방법을 알아봅시다.
 
+<!--
 ### Patch the model value
+-->
+### 모델 값 일부만 갱신하기
 
+<!--
 With a single control, you used the `setValue()` method to set the new value for an individual control. The `setValue()` method is more strict about adhering to the structure of the `FormGroup` and replaces the entire value for the control. The `patchValue()` method is more forgiving; it only replaces properties defined in the object that have changed in the form model, because you’re only providing partial updates. The strict checks in `setValue()` help catch errors in the nesting of complex forms, while `patchValue()` will fail silently in those cases.
+-->
+폼 컨트롤이 하나라면 `setValue()` 메소드를 사용해도 폼 컨트롤의 값을 간단하게 변경할 수 있습니다. 하지만 `FormGroup`에 `setValue()` 메소드를 실행하면 폼 그룹의 구조에 딱 맞게 값을 전달해야 하고, 값 전체를 한 번에 변경해야 합니다. 그래서 폼 값의 일부만 변경하는 경우라면 `patchValue()` 메소드를 사용하는 것이 더 간단합니다. 이 메소드는 인자로 전달된 객체에 해당하는 폼 컨트롤의 값만 변경하기 때문에, 폼 모델을 일부만 변경하는 역할을 합니다. 다만, `setValue()`를 사용했을 때 폼 그룹의 구조에 맞지 않은 객체를 전달하면 에러를 발생해서 알려주지만, `patchValue()`를 사용했을 때는 폼 그룹의 구조와 다른 객체가 전달되어도 에러를 표시하지 않습니다. 복잡한 폼에 `patchValue()`를 사용한다면 이 점에 주의해야 합니다.
 
+<!--
 In the `ProfileEditorComponent`, the `updateProfile` method with the following example below to update the first name and street address for the user.
+-->
+`ProfileEditorComponent`의 `updateProfile` 메소드를 다음과 같이 정의합니다. 이 메소드는 전체 폼 모델 중 `firstName` 값과 `address`의 `street` 값만 변경합니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="patch-value" title="src/app/profile-editor/profile-editor.component.ts (patch value)">
 
 </code-example>
 
+<!--
 Simulate an update by adding a button to the template to update the user profile on demand.
+-->
+그리고 이 메소드를 실행하는 버튼을 템플릿에 다음과 같이 추가합니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="patch-value" linenums="false" title="src/app/profile-editor/profile-editor.component.html (update value)">
 
 </code-example>
 
+<!--
 When the button is clicked, the `profileForm` model is updated with just the `firstName` and `street` being modified. Notice that the `street` is provided in an object inside the `address` property. This is necessary because the `patchValue()` method applies the update against the model structure. `PatchValue()` only updates properties that the form model defines.
+-->
+이제 이 버튼을 클릭하면 `profileForm` 모델 중 `firstName` 값과 `street` 값만 지정된 값으로 변경됩니다. 이 때 폼 그룹의 구조에 맞추기 위해 `street` 필드의 값은 `address` 객체에 `street` 프로퍼티 값으로 지정합니다. `patchValue()` 메소드는 전달된 인자 중에서 폼 모델의 구조에 맞는 값만 변경합니다.
 
+<!--
 ## Generating form controls with `FormBuilder`
+-->
+## `FormBuilder`로 폼 컨트롤 생성하기
 
+<!--
 Creating multiple form control instances manually can become very repetitive when dealing with multiple forms. The `FormBuilder` service provides convenience methods to handle generating controls. Underneath, the `FormBuilder` is creating and returning the instances in the same manner, but with much less work. The following section refactors the `ProfileEditor` component to use the `FormBuilder` instead of creating each `FormControl` and `FormGroup` by hand.
+-->
+폼 컨트롤을 매번 직접 생성하는데, 이런 폼이 여러개라면 폼을 구성하는 일은 귀찮은 일을 반복하는 일이 될 것입니다. 이런 경우에 `FormBuilder` 서비스를 사용하면 폼을 간단하게 구성할 수 있습니다. `FormBuilder`를 사용하면 인자로 전달하는 객체의 구조에 맞게 `FormControl` 인스턴스를 생성해서 반환합니다. 이번 섹션에서는 `ProfileEditor` 컴포넌트에 `FormControl`이나 `FromGroup`을 직접 생성했던 방식 대신, `FormBuilder`를 사용하는 방식으로 리팩토링 해봅시다.
 
+<!--
 ### Step 1 - Import the `FormBuilder` class
+-->
+### 1단계 - `FormBuilder` 클래스 로드하기
 
+<!--
 To use the `FormBuilder` service, import its class from the `@angular/forms` package.
+-->
+`FormBuilder` 서비스를 사용하려면 `@angular/forms` 패키지에서 이 클래스를 로드해야 합니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-builder-imports" title="src/app/profile-editor/profile-editor.component.ts (import)">
 
 </code-example>
 
+<!--
 ### Step 2 - Inject the `FormBuilder` service
+-->
+### 2단계 - `FormBuilder` 서비스를 의존성으로 주입하기
 
+<!--
 The FormBuilder is an injectable service that is provided with the `ReactiveFormsModule`. Inject this dependency by adding it to the component constructor.
+-->
+폼 빌더는 `ReactiveFormsModule`에서 제공하며, 의존성으로 주입할 수 있도록 서비스로 정의되어 있습니다. 다음과 같이 컴포넌트 생성자에 `FormBuilder` 서비스를 주입합니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="inject-form-builder" title="src/app/profile-editor/profile-editor.component.ts (constructor)">
 
 </code-example>
 
+<!--
 ### Step 3 - Generate form controls
+-->
+### 3단계 - 폼 컨트롤 생성하기
 
+<!--
 The `FormBuilder` service has three methods: `control()`, `group()`, and `array()`. These methods are factory methods for generating form controls in your component class including a `FormControl`, `FormGroup`, and `FormArray` respectively. 
+-->
+`FormBuilder` 서비스는 `control()`, `group()`, `array()` 메소드를 제공하는데, 이 메소드는 각각 `FormControl`, `FormGroup`, `FormArray`를 생성해서 반환하는 팩토리 메소드입니다.
 
+<!--
 Replace the creation of the `profileForm` by using the `group` method to create the controls.
+-->
+컴포넌트 클래스에서 `profileForm`을 생성하던 코드를 제거하고 `group()` 메소드를 사용하는 방식으로 다음과 같이 변경합니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-builder" title="src/app/profile-editor/profile-editor.component.ts (form builder)">
 
 </code-example>
 
+<!--
 In the example above, you use the `group()` method with the same names to define the properties in the model. Here, the value for each control name is an array containing the initial value as the first item.
+-->
+위 코드에서 `group()` 메소드에 전달하는 객체의 프로퍼티 이름은 폼 모델의 이름과 같습니다. 그리고 프로퍼티 값으로는 배열을 전달하는데, 폼 컨트롤의 초기값은 배열의 첫번째 항목으로 전달합니다.
 
 <div class="alert is-helpful">
 
+<!--
 *Note*: You can define the control with just the initial value, but if your controls need sync or async validation, add sync and async validators as the second and third items in the array.
+-->
+*참고*: 폼 컨트롤의 초기값만 지정한다면 배열을 사용하지 않아도 됩니다. 하지만 폼 컨트롤에 유효성 검사기를 지정하려면 프로퍼티 값에 배열을 사용해야 합니다. 이 때 동기 유효성 검사기는 두번째 인자로, 비동기 유효성 검사기는 세번째 인자로 지정합니다.
 
 </div>
 
+<!--
 Compare the two paths to achieve the same result.
+-->
+폼 컨트롤을 직접 생성하는 방식과, `FormBuilder`를 사용하는 방식이 어떻게 다른지 비교해 보세요.
 
 <code-tabs>
 
+  <!--
   <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup-compare" title="src/app/profile-editor/profile-editor.component.ts (instances)">
   
   </code-pane>
 
   <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="formgroup-compare" title="src/app/profile-editor/profile-editor.component.ts (form builder)">
+
+  </code-pane>
+  -->
+  <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="formgroup-compare" title="src/app/profile-editor/profile-editor.component.ts (직접 생성)">
+  
+  </code-pane>
+
+  <code-pane path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="formgroup-compare" title="src/app/profile-editor/profile-editor.component.ts (폼 빌더 사용)">
 
   </code-pane>
 
