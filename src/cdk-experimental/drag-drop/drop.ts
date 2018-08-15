@@ -72,6 +72,12 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
   /** Locks the position of the draggable elements inside the container along the specified axis. */
   @Input() lockAxis: 'x' | 'y';
 
+  /**
+   * Function that is used to determine whether an item
+   * is allowed to be moved into a drop container.
+   */
+  @Input() enterPredicate: (drag?: CdkDrag, drop?: CdkDrop) => boolean = () => true;
+
   /** Emits when the user drops an item inside the container. */
   @Output() dropped: EventEmitter<CdkDragDrop<T, any>> = new EventEmitter<CdkDragDrop<T, any>>();
 
@@ -252,16 +258,17 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
   /**
    * Figures out whether an item should be moved into a sibling
    * drop container, based on its current position.
+   * @param item Drag item that is being moved.
    * @param x Position of the item along the X axis.
    * @param y Position of the item along the Y axis.
    */
-  _getSiblingContainerFromPosition(x: number, y: number): CdkDrop | null {
+  _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number): CdkDrop | null {
     const result = this._positionCache.siblings.find(({clientRect}) => {
       const {top, bottom, left, right} = clientRect;
       return y >= top && y <= bottom && x >= left && x <= right;
     });
 
-    return result ? result.drop : null;
+    return result && result.drop.enterPredicate(item, this) ? result.drop : null;
   }
 
   /** Refreshes the position cache of the items and sibling containers. */

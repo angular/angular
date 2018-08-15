@@ -54,7 +54,7 @@ export interface CdkDropContainer<T = any> {
   getItemIndex(item: CdkDrag): number;
   _sortItem(item: CdkDrag, xOffset: number, yOffset: number): void;
   _draggables: QueryList<CdkDrag>;
-  _getSiblingContainerFromPosition(x: number, y: number): CdkDropContainer | null;
+  _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number): CdkDropContainer | null;
 }
 
 /**

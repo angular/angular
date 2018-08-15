@@ -942,6 +942,34 @@ describe('CdkDrag', () => {
         });
       }));
 
+    it('should not be able to transfer an item that does not match the `enterPredicate`',
+      fakeAsync(() => {
+        const fixture = createComponent(ConnectedDropZones);
+
+        fixture.detectChanges();
+        fixture.componentInstance.dropInstances.forEach(d => d.enterPredicate = () => false);
+        fixture.detectChanges();
+
+        const groups = fixture.componentInstance.groupedDragItems.slice();
+        const element = groups[0][1].element.nativeElement;
+        const dropInstances = fixture.componentInstance.dropInstances.toArray();
+        const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+        dragElementViaMouse(fixture, element, targetRect.left + 1, targetRect.top + 1);
+        flush();
+        fixture.detectChanges();
+
+        const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+        expect(event).toBeTruthy();
+        expect(event).toEqual({
+          previousIndex: 1,
+          currentIndex: 1,
+          item: groups[0][1],
+          container: dropInstances[0],
+          previousContainer: dropInstances[0]
+        });
+      }));
 
     it('should be able to start dragging after an item has been transferred', fakeAsync(() => {
       const fixture = createComponent(ConnectedDropZones);
@@ -1129,7 +1157,7 @@ export class StandaloneDraggableWithMultipleHandles {
       <div
         *ngFor="let item of items"
         cdkDrag
-        [data]="item"
+        [cdkDragData]="item"
         style="width: 100%; height: ${ITEM_HEIGHT}px; background: red;">{{item}}</div>
     </cdk-drop>
   `
@@ -1239,7 +1267,7 @@ export class DraggableInDropZoneWithCustomPlaceholder {
       [data]="todo"
       [connectedTo]="[doneZone]"
       (dropped)="droppedSpy($event)">
-      <div *ngFor="let item of todo" cdkDrag>{{item}}</div>
+      <div [cdkDragData]="item" *ngFor="let item of todo" cdkDrag>{{item}}</div>
     </cdk-drop>
 
     <cdk-drop
@@ -1247,7 +1275,7 @@ export class DraggableInDropZoneWithCustomPlaceholder {
       [data]="done"
       [connectedTo]="[todoZone]"
       (dropped)="droppedSpy($event)">
-      <div *ngFor="let item of done" cdkDrag>{{item}}</div>
+      <div [cdkDragData]="item" *ngFor="let item of done" cdkDrag>{{item}}</div>
     </cdk-drop>
   `
 })

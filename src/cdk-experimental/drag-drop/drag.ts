@@ -123,7 +123,7 @@ export class CdkDrag<T = any> implements OnDestroy {
   @ContentChild(CdkDragPlaceholder) _placeholderTemplate: CdkDragPlaceholder;
 
   /** Arbitrary data to attach to this drag instance. */
-  @Input() data: T;
+  @Input('cdkDragData') data: T;
 
   /** Locks the position of the dragged element along the specified axis. */
   @Input('cdkDragLockAxis') lockAxis: 'x' | 'y';
@@ -364,7 +364,7 @@ export class CdkDrag<T = any> implements OnDestroy {
    */
   private _updateActiveDropContainer({x, y}) {
     // Drop container that draggable has been moved into.
-    const newContainer = this.dropContainer._getSiblingContainerFromPosition(x, y);
+    const newContainer = this.dropContainer._getSiblingContainerFromPosition(this, x, y);
 
     if (newContainer) {
       this._ngZone.run(() => {
