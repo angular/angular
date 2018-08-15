@@ -56,23 +56,24 @@ echo "Starting deployment of the docs-content for ${buildVersionName} in ${branc
 # Remove the docs-content repository if the directory exists
 rm -Rf ${docsContentPath}
 
-# Clone the docs-content repository.
-git clone ${docsContentRepoUrl} ${docsContentPath} --depth 1
+echo "Starting cloning process of ${docsContentRepoUrl} into ${docsContentPath}.."
 
-echo "Successfully cloned docs-content repository."
+if [[ $(git ls-remote --heads ${docsContentRepoUrl} ${branchName}) ]]; then
+  echo "Branch ${branchName} already exists. Cloning that branch."
+  git clone ${docsContentRepoUrl} ${docsContentPath} --depth 1 --branch ${branchName}
 
-# Go into the repository directory.
-cd ${docsContentPath}
-
-echo "Switched into the repository directory."
-
-if [[ $(git ls-remote --heads origin ${branchName}) ]]; then
-  git checkout ${branchName}
-  echo "Switched to ${branchName} branch."
+  cd ${docsContentPath}
+  echo "Cloned repository and switched into the repository directory (${docsContentPath})."
 else
-  echo "Branch ${branchName} does not exist on the docs-content repo yet. Creating ${branchName}.."
+  echo "Branch ${branchName} does not exist yet."
+  echo "Cloning default branch and creating branch '${branchName}' on top of it."
+
+  git clone ${docsContentRepoUrl} ${docsContentPath} --depth 1
+  cd ${docsContentPath}
+
+  echo "Cloned repository and switched into directory. Creating new branch now.."
+
   git checkout -b ${branchName}
-  echo "Branch created and checked out."
 fi
 
 # Remove everything inside of the docs-content repository.
@@ -123,6 +124,6 @@ echo "Credentials for docs-content repository are now set up. Publishing.."
 git add -A
 git commit --allow-empty -m "${buildCommitMessage}"
 git tag "${buildTagName}"
-git push origin master --tags
+git push origin ${branchName} --tags
 
 echo "Published docs-content for ${buildVersionName} into ${branchName} successfully"
