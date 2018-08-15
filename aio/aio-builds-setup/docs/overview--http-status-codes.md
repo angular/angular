@@ -1,8 +1,8 @@
 # Overview - HTTP Status Codes
 
 
-This is a list of all the possible HTTP status codes returned by the nginx anf upload servers, along
-with a bried explanation of what they mean:
+This is a list of all the possible HTTP status codes returned by the nginx and preview servers, along
+with a brief explanation of what they mean:
 
 
 ## `http://*.ngbuilds.io/*`

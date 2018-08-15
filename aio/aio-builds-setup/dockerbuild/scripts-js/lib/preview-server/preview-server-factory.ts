@@ -16,7 +16,7 @@ import {respondWithError, throwRequestError} from './utils';
 const AIO_PREVIEW_JOB = 'aio_preview';
 
 // Interfaces - Types
-export interface UploadServerConfig {
+export interface PreviewServerConfig {
   downloadsDir: string;
   downloadSizeLimit: number;
   buildArtifactPath: string;
@@ -31,12 +31,12 @@ export interface UploadServerConfig {
   trustedPrLabel: string;
 }
 
-const logger = createLogger('UploadServer');
+const logger = createLogger('PreviewServer');
 
 // Classes
-export class UploadServerFactory {
+export class PreviewServerFactory {
   // Methods - Public
-  public static create(cfg: UploadServerConfig): http.Server {
+  public static create(cfg: PreviewServerConfig): http.Server {
     assertNotMissingOrEmpty('domainName', cfg.domainName);
 
     const circleCiApi = new CircleCiApi(cfg.githubOrg, cfg.githubRepo, cfg.circleCiToken);
@@ -46,9 +46,9 @@ export class UploadServerFactory {
 
     const buildRetriever = new BuildRetriever(circleCiApi, cfg.downloadSizeLimit, cfg.downloadsDir);
     const buildVerifier = new BuildVerifier(prs, teams, cfg.githubTeamSlugs, cfg.trustedPrLabel);
-    const buildCreator = UploadServerFactory.createBuildCreator(prs, cfg.buildsDir, cfg.domainName);
+    const buildCreator = PreviewServerFactory.createBuildCreator(prs, cfg.buildsDir, cfg.domainName);
 
-    const middleware = UploadServerFactory.createMiddleware(buildRetriever, buildVerifier, buildCreator, cfg);
+    const middleware = PreviewServerFactory.createMiddleware(buildRetriever, buildVerifier, buildCreator, cfg);
     const httpServer = http.createServer(middleware as any);
 
     httpServer.on('listening', () => {
@@ -60,7 +60,7 @@ export class UploadServerFactory {
   }
 
   public static createMiddleware(buildRetriever: BuildRetriever, buildVerifier: BuildVerifier,
-                                 buildCreator: BuildCreator, cfg: UploadServerConfig): express.Express {
+                                 buildCreator: BuildCreator, cfg: PreviewServerConfig): express.Express {
     const middleware = express();
     const jsonParser = bodyParser.json();
 
@@ -149,7 +149,7 @@ export class UploadServerFactory {
     middleware.all('*', req => throwRequestError(404, 'Unknown resource', req));
     middleware.use((err: any, _req: any, res: express.Response, _next: any) => {
       const statusText = http.STATUS_CODES[err.status] || '???';
-      logger.error(`Upload error: ${err.status} - ${statusText}:`, err.message);
+      logger.error(`Preview server error: ${err.status} - ${statusText}:`, err.message);
       respondWithError(res, err);
     });
 

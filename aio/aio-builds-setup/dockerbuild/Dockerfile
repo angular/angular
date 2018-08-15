@@ -38,12 +38,12 @@ ARG      AIO_SIGNIFICANT_FILES_PATTERN='^(?:aio|packages)/(?!.*[._]spec\\.[jt]s$
 ARG TEST_AIO_SIGNIFICANT_FILES_PATTERN=$AIO_SIGNIFICANT_FILES_PATTERN
 ARG      AIO_TRUSTED_PR_LABEL="aio: preview"
 ARG TEST_AIO_TRUSTED_PR_LABEL="aio: preview"
-ARG      AIO_UPLOAD_HOSTNAME=upload.localhost
-ARG TEST_AIO_UPLOAD_HOSTNAME=upload.localhost
-ARG      AIO_UPLOAD_MAX_SIZE=20971520
-ARG TEST_AIO_UPLOAD_MAX_SIZE=200
-ARG      AIO_UPLOAD_PORT=3000
-ARG TEST_AIO_UPLOAD_PORT=3001
+ARG      AIO_PREVIEW_SERVER_HOSTNAME=preview.localhost
+ARG TEST_AIO_PREVIEW_SERVER_HOSTNAME=preview.localhost
+ARG      AIO_ARTIFACT_MAX_SIZE=20971520
+ARG TEST_AIO_ARTIFACT_MAX_SIZE=200
+ARG      AIO_PREVIEW_SERVER_PORT=3000
+ARG TEST_AIO_PREVIEW_SERVER_PORT=3001
 
 ENV AIO_ARTIFACT_PATH=$AIO_ARTIFACT_PATH                          TEST_AIO_ARTIFACT_PATH=$TEST_AIO_ARTIFACT_PATH                          \
     AIO_BUILDS_DIR=$AIO_BUILDS_DIR                                TEST_AIO_BUILDS_DIR=$TEST_AIO_BUILDS_DIR                                \
@@ -60,9 +60,9 @@ ENV AIO_ARTIFACT_PATH=$AIO_ARTIFACT_PATH                          TEST_AIO_ARTIF
     AIO_SCRIPTS_SH_DIR=/usr/share/aio-scripts-sh                                                                                          \
     AIO_SIGNIFICANT_FILES_PATTERN=$AIO_SIGNIFICANT_FILES_PATTERN  TEST_AIO_SIGNIFICANT_FILES_PATTERN=$TEST_AIO_SIGNIFICANT_FILES_PATTERN  \
     AIO_TRUSTED_PR_LABEL=$AIO_TRUSTED_PR_LABEL                    TEST_AIO_TRUSTED_PR_LABEL=$TEST_AIO_TRUSTED_PR_LABEL                    \
-    AIO_UPLOAD_HOSTNAME=$AIO_UPLOAD_HOSTNAME                      TEST_AIO_UPLOAD_HOSTNAME=$TEST_AIO_UPLOAD_HOSTNAME                      \
-    AIO_UPLOAD_MAX_SIZE=$AIO_UPLOAD_MAX_SIZE                      TEST_AIO_UPLOAD_MAX_SIZE=$TEST_AIO_UPLOAD_MAX_SIZE                      \
-    AIO_UPLOAD_PORT=$AIO_UPLOAD_PORT                              TEST_AIO_UPLOAD_PORT=$TEST_AIO_UPLOAD_PORT                              \
+    AIO_PREVIEW_SERVER_HOSTNAME=$AIO_PREVIEW_SERVER_HOSTNAME                      TEST_AIO_PREVIEW_SERVER_HOSTNAME=$TEST_AIO_PREVIEW_SERVER_HOSTNAME                      \
+    AIO_ARTIFACT_MAX_SIZE=$AIO_ARTIFACT_MAX_SIZE                      TEST_AIO_ARTIFACT_MAX_SIZE=$TEST_AIO_ARTIFACT_MAX_SIZE                      \
+    AIO_PREVIEW_SERVER_PORT=$AIO_PREVIEW_SERVER_PORT                              TEST_AIO_PREVIEW_SERVER_PORT=$TEST_AIO_PREVIEW_SERVER_PORT                              \
     AIO_WWW_USER=www-data                                                                                                                 \
     NODE_ENV=production
 
@@ -108,9 +108,9 @@ RUN printenv | grep AIO_ >> /etc/environment
 # Set up dnsmasq
 COPY dnsmasq/dnsmasq.conf /etc/
 RUN sed -i "s|{{\$AIO_NGINX_HOSTNAME}}|$AIO_NGINX_HOSTNAME|g" /etc/dnsmasq.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$AIO_UPLOAD_HOSTNAME|g" /etc/dnsmasq.conf
+RUN sed -i "s|{{\$AIO_PREVIEW_SERVER_HOSTNAME}}|$AIO_PREVIEW_SERVER_HOSTNAME|g" /etc/dnsmasq.conf
 RUN sed -i "s|{{\$TEST_AIO_NGINX_HOSTNAME}}|$TEST_AIO_NGINX_HOSTNAME|g" /etc/dnsmasq.conf
-RUN sed -i "s|{{\$TEST_AIO_UPLOAD_HOSTNAME}}|$TEST_AIO_UPLOAD_HOSTNAME|g" /etc/dnsmasq.conf
+RUN sed -i "s|{{\$TEST_AIO_PREVIEW_SERVER_HOSTNAME}}|$TEST_AIO_PREVIEW_SERVER_HOSTNAME|g" /etc/dnsmasq.conf
 
 
 # Set up SSL/TLS certificates
@@ -134,9 +134,9 @@ RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$AIO_LOCALCERTS_DIR|g" /etc/nginx/conf.d/
 RUN sed -i "s|{{\$AIO_NGINX_LOGS_DIR}}|$AIO_NGINX_LOGS_DIR|g" /etc/nginx/conf.d/aio-builds-prod.conf
 RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$AIO_NGINX_PORT_HTTP|g" /etc/nginx/conf.d/aio-builds-prod.conf
 RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$AIO_NGINX_PORT_HTTPS|g" /etc/nginx/conf.d/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$AIO_UPLOAD_HOSTNAME|g" /etc/nginx/conf.d/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_MAX_SIZE}}|$AIO_UPLOAD_MAX_SIZE|g" /etc/nginx/conf.d/aio-builds-prod.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_PORT}}|$AIO_UPLOAD_PORT|g" /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_PREVIEW_SERVER_HOSTNAME}}|$AIO_PREVIEW_SERVER_HOSTNAME|g" /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_ARTIFACT_MAX_SIZE}}|$AIO_ARTIFACT_MAX_SIZE|g" /etc/nginx/conf.d/aio-builds-prod.conf
+RUN sed -i "s|{{\$AIO_PREVIEW_SERVER_PORT}}|$AIO_PREVIEW_SERVER_PORT|g" /etc/nginx/conf.d/aio-builds-prod.conf
 
 COPY nginx/aio-builds.conf /etc/nginx/conf.d/aio-builds-test.conf
 RUN sed -i "s|{{\$AIO_BUILDS_DIR}}|$TEST_AIO_BUILDS_DIR|g" /etc/nginx/conf.d/aio-builds-test.conf
@@ -145,9 +145,9 @@ RUN sed -i "s|{{\$AIO_LOCALCERTS_DIR}}|$TEST_AIO_LOCALCERTS_DIR|g" /etc/nginx/co
 RUN sed -i "s|{{\$AIO_NGINX_LOGS_DIR}}|$TEST_AIO_NGINX_LOGS_DIR|g" /etc/nginx/conf.d/aio-builds-test.conf
 RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTP}}|$TEST_AIO_NGINX_PORT_HTTP|g" /etc/nginx/conf.d/aio-builds-test.conf
 RUN sed -i "s|{{\$AIO_NGINX_PORT_HTTPS}}|$TEST_AIO_NGINX_PORT_HTTPS|g" /etc/nginx/conf.d/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_HOSTNAME}}|$TEST_AIO_UPLOAD_HOSTNAME|g" /etc/nginx/conf.d/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_MAX_SIZE}}|$TEST_AIO_UPLOAD_MAX_SIZE|g" /etc/nginx/conf.d/aio-builds-test.conf
-RUN sed -i "s|{{\$AIO_UPLOAD_PORT}}|$TEST_AIO_UPLOAD_PORT|g" /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_PREVIEW_SERVER_HOSTNAME}}|$TEST_AIO_PREVIEW_SERVER_HOSTNAME|g" /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_ARTIFACT_MAX_SIZE}}|$TEST_AIO_ARTIFACT_MAX_SIZE|g" /etc/nginx/conf.d/aio-builds-test.conf
+RUN sed -i "s|{{\$AIO_PREVIEW_SERVER_PORT}}|$TEST_AIO_PREVIEW_SERVER_PORT|g" /etc/nginx/conf.d/aio-builds-test.conf
 
 
 # Set up pm2

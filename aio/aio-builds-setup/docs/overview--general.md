@@ -3,7 +3,7 @@
 
 ## Objective
 Whenever a PR job is run on the CI infrastructure (e.g. CircleCI), we want to build `angular.io`
-and upload the build artifacts to a publicly accessible server so that collaborators (developers,
+and host the build artifacts on a publicly accessible server so that collaborators (developers,
 designers, authors, etc) can preview the changes without having to checkout and build the app
 locally.
 
@@ -40,31 +40,31 @@ container:
 - The CI script checks whether the PR has touched any files that might affect the angular.io app
   (currently the `aio/` or `packages/` directories, ignoring spec files).
 - The CI script gzips and stores the build artifacts in the CI infrastructure.
-- When the build completes CircleCI triggers a webhook on the upload-server.
+- When the build completes CircleCI triggers a webhook on the preview-server.
 
 More info on how to set things up on CI can be found [here](misc--integrate-with-ci.md).
 
 
 ### Hosting build artifacts
 
-- nginx receives the webhook trigger and passes it through to the upload server.
-- The upload-server makes a request to CircleCI for the URL of the AIO build artifacts.
-- The upload-server makes a request to this URL to receive the artifact - failing if the size
+- nginx receives the webhook trigger and passes it through to the preview server.
+- The preview-server makes a request to CircleCI for the URL of the AIO build artifacts.
+- The preview-server makes a request to this URL to receive the artifact - failing if the size
   exceeds the specified max file size - and stores it in a temporary location.
-- The upload-server runs several checks to determine whether the request should be accepted and
+- The preview-server runs several checks to determine whether the request should be accepted and
   whether it should be publicly accessible or stored for later verification (more details can be
   found [here](overview--security-model.md)).
-- The upload-server changes the "visibility" of the associated PR, if necessary. For example, if
+- The preview-server changes the "visibility" of the associated PR, if necessary. For example, if
   builds for the same PR had been previously deployed as non-public and the current build has been
   automatically verified, all previous builds are made public as well.
-  If the PR transitions from "non-public" to "public", the upload-server posts a comment on the
+  If the PR transitions from "non-public" to "public", the preview-server posts a comment on the
   corresponding PR on GitHub mentioning the SHAs and the links where the previews can be found.
-- The upload-server verifies that the uploaded file is not trying to overwrite an existing build.
-- The upload-server deploys the artifacts to a sub-directory named after the PR number and the first
+- The preview-server verifies that it is not trying to overwrite an existing build.
+- The preview-server deploys the artifacts to a sub-directory named after the PR number and the first
   few characters of the SHA: `<PR>/<SHA>/`
   (Non-publicly accessible PRs will be stored in a different location, but again derived from the PR
   number and SHA.)
-- If the PR is publicly accessible, the upload-server posts a comment on the corresponding PR on
+- If the PR is publicly accessible, the preview-server posts a comment on the corresponding PR on
   GitHub mentioning the SHA and the link where the preview can be found.
 
 More info on the possible HTTP status codes and their meaning can be found
@@ -73,24 +73,24 @@ More info on the possible HTTP status codes and their meaning can be found
 
 ### Updating PR visibility
 - nginx receives a natification that a PR has been updated and passes it through to the
-  upload-server. This could, for example, be sent by a GitHub webhook every time a PR's labels
+  preview-server. This could, for example, be sent by a GitHub webhook every time a PR's labels
   change.
   E.g.: `ngbuilds.io/pr-updated` (payload: `{"number":<PR>,"action":"labeled"}`)
 - The request contains the PR number (as `number`) and optionally the action that triggered the
   request (as `action`) in the payload.
-- The upload-server verifies the payload and determines whether the `action` (if specified) could
+- The preview-server verifies the payload and determines whether the `action` (if specified) could
   have led to PR visibility changes. Only requests that omit the `action` field altogether or
   specify an action that can affect visibility are further processed.
   (Currently, the only actions that are considered capable of affecting visibility are `labeled` and
   `unlabeled`.)
-- The upload-server re-checks and if necessary updates the PR's visibility.
+- The preview-server re-checks and if necessary updates the PR's visibility.
 
 More info on the possible HTTP status codes and their meaning can be found
 [here](overview--http-status-codes.md).
 
 
 ### Serving build artifacts
-- nginx receives a request for an uploaded resource on a subdomain corresponding to the PR and SHA.
+- nginx receives a request for a hosted preview resource on a subdomain corresponding to the PR and SHA.
   E.g.: `pr<PR>-<SHA>.ngbuilds.io/path/to/resource`
 - nginx maps the subdomain to the correct sub-directory and serves the resource.
   E.g.: `/<PR>/<SHA>/path/to/resource`
@@ -108,4 +108,4 @@ that do not correspond with an open PR.
 ### Health-check
 The docker service runs a periodic health-check that verifies the running conditions of the
 container. This includes verifying the status of specific system services, the responsiveness of
-nginx and the upload-server and internet connectivity.
+nginx and the preview-server and internet connectivity.
