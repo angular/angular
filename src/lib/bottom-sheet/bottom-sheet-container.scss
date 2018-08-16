@@ -25,17 +25,26 @@ $mat-bottom-sheet-container-horizontal-padding: 16px !default;
   }
 }
 
+// Applies a border radius to the bottom sheet. Should only be applied when it's not full-screen.
+%_mat-bottom-sheet-container-border-radius {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+
 .mat-bottom-sheet-container-medium {
+  @extend %_mat-bottom-sheet-container-border-radius;
   min-width: $_mat-bottom-sheet-width-increment * 6;
   max-width: calc(100vw - #{$_mat-bottom-sheet-width-increment * 2});
 }
 
 .mat-bottom-sheet-container-large {
+  @extend %_mat-bottom-sheet-container-border-radius;
   min-width: $_mat-bottom-sheet-width-increment * 8;
   max-width: calc(100vw - #{$_mat-bottom-sheet-width-increment * 4});
 }
 
 .mat-bottom-sheet-container-xlarge {
+  @extend %_mat-bottom-sheet-container-border-radius;
   min-width: $_mat-bottom-sheet-width-increment * 9;
   max-width: calc(100vw - #{$_mat-bottom-sheet-width-increment * 6});
 }
