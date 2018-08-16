@@ -9,7 +9,7 @@ $mat-slide-toggle-thumb-size: 20px !default;
 $mat-slide-toggle-bar-border-radius: 8px !default;
 $mat-slide-toggle-height: 24px !default;
 $mat-slide-toggle-spacing: 8px !default;
-$mat-slide-toggle-ripple-radius: 23px !default;
+$mat-slide-toggle-ripple-radius: 20px !default;
 $mat-slide-toggle-bar-width: 36px !default;
 $mat-slide-toggle-bar-height: 14px !default;
 $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-toggle-thumb-size;
@@ -189,6 +189,31 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   width: $mat-slide-toggle-ripple-radius * 2;
   z-index: 1;
   pointer-events: none;
+
+  .mat-ripple-element:not(.mat-slide-toggle-persistent-ripple) {
+    opacity: 0.16;
+  }
+}
+
+.mat-slide-toggle-persistent-ripple {
+  width: 100%;
+  height: 100%;
+  transform: none;
+
+  .mat-slide-toggle-bar:hover & {
+    opacity: 0.04;
+  }
+
+  .mat-slide-toggle.cdk-focused & {
+    opacity: 0.12;
+  }
+
+  // We do this here, rather than having a `:not(.mat-slide-toggle-disabled)`
+  // above in the `:hover`, because the `:not` will bump the specificity
+  // a lot and will cause it to overide the focus styles.
+  &, .mat-slide-toggle.mat-disabled .mat-slide-toggle-bar:hover & {
+    opacity: 0;
+  }
 }
 
 /** Custom styling to make the slide-toggle usable in high contrast mode. */

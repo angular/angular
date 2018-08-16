@@ -10,7 +10,6 @@ import {
   tick,
 } from '@angular/core/testing';
 import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/forms';
-import {defaultRippleAnimationConfig} from '@angular/material/core';
 import {By, HAMMER_GESTURE_CONFIG} from '@angular/platform-browser';
 import {BidiModule, Direction} from '@angular/cdk/bidi';
 import {TestGestureConfig} from '../slider/test-gesture-config';
@@ -271,26 +270,6 @@ describe('MatSlideToggle without forms', () => {
       subscription.unsubscribe();
     }));
 
-    it('should show a ripple when focused by a keyboard action', fakeAsync(() => {
-      expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected no ripples to be present.');
-
-      dispatchFakeEvent(inputElement, 'keydown');
-      dispatchFakeEvent(inputElement, 'focus');
-
-      tick(defaultRippleAnimationConfig.enterDuration);
-
-      expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length)
-          .toBe(1, 'Expected the focus ripple to be showing up.');
-
-      dispatchFakeEvent(inputElement, 'blur');
-
-      tick(defaultRippleAnimationConfig.exitDuration);
-
-      expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected focus ripple to be removed.');
-    }));
-
     it('should forward the required attribute', () => {
       testComponent.isRequired = true;
       fixture.detectChanges();
@@ -322,24 +301,27 @@ describe('MatSlideToggle without forms', () => {
     });
 
     it('should show ripples on label mousedown', () => {
-      expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
+      const rippleSelector = '.mat-ripple-element:not(.mat-slide-toggle-persistent-ripple)';
+
+      expect(slideToggleElement.querySelectorAll(rippleSelector).length).toBe(0);
 
       dispatchFakeEvent(labelElement, 'mousedown');
       dispatchFakeEvent(labelElement, 'mouseup');
 
-      expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length).toBe(1);
+      expect(slideToggleElement.querySelectorAll(rippleSelector).length).toBe(1);
     });
 
     it('should not show ripples when disableRipple is set', () => {
+      const rippleSelector = '.mat-ripple-element:not(.mat-slide-toggle-persistent-ripple)';
       testComponent.disableRipple = true;
       fixture.detectChanges();
 
-      expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
+      expect(slideToggleElement.querySelectorAll(rippleSelector).length).toBe(0);
 
       dispatchFakeEvent(labelElement, 'mousedown');
       dispatchFakeEvent(labelElement, 'mouseup');
 
-      expect(slideToggleElement.querySelectorAll('.mat-ripple-element').length).toBe(0);
+      expect(slideToggleElement.querySelectorAll(rippleSelector).length).toBe(0);
     });
   });
 

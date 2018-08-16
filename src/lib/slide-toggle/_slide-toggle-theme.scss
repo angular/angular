@@ -45,11 +45,10 @@
 
   // Ripple colors are based on the current palette and the state of the slide-toggle.
   // See https://material.google.com/components/selection-controls.html#selection-controls-switch
-  $ripple-checked-opacity: 0.12;
-  $ripple-unchecked-color: mat-color($foreground, base, if($is-dark, 0.12, 0.06));
-  $ripple-primary-color: mat-color($primary, $thumb-checked-hue, $ripple-checked-opacity);
-  $ripple-accent-color: mat-color($accent, $thumb-checked-hue, $ripple-checked-opacity);
-  $ripple-warn-color: mat-color($warn, $thumb-checked-hue, $ripple-checked-opacity);
+  $ripple-unchecked-color: mat-color($foreground, base);
+  $ripple-primary-color: mat-color($primary, $thumb-checked-hue);
+  $ripple-accent-color: mat-color($accent, $thumb-checked-hue);
+  $ripple-warn-color: mat-color($warn, $thumb-checked-hue);
 
   .mat-slide-toggle {
     @include _mat-slide-toggle-checked($accent, $thumb-checked-hue);
