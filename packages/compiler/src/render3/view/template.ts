@@ -899,9 +899,16 @@ export class BindingScope implements LocalResolver {
     declared: boolean;
   }
   > ();
-  private referenceNameIndex = 0;
 
-  static ROOT_SCOPE = new BindingScope().set('$event', o.variable('$event'));
+  private referenceNameIndex = 0;
+  private static _ROOT_SCOPE: BindingScope;
+
+  static get ROOT_SCOPE(): BindingScope {
+    if (!BindingScope._ROOT_SCOPE) {
+      BindingScope._ROOT_SCOPE = new BindingScope().set('$event', o.variable('$event'));
+    }
+    return BindingScope._ROOT_SCOPE;
+  }
 
   private constructor(
       private parent: BindingScope|null = null,
