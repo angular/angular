@@ -126,6 +126,7 @@ filegroup(
         "jasmine",
         "jasmine-core",
         "jasminewd2",
+        "jsdom",
         "json-schema",
         "json-schema-traverse",
         "json-stable-stringify",
