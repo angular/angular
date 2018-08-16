@@ -57,7 +57,13 @@ const IDENT_EVENT_IDX = 10;
 const TEMPLATE_ATTR_PREFIX = '*';
 const CLASS_ATTR = 'class';
 
-const TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
+let _TEXT_CSS_SELECTOR !: CssSelector;
+function TEXT_CSS_SELECTOR(): CssSelector {
+  if (!_TEXT_CSS_SELECTOR) {
+    _TEXT_CSS_SELECTOR = CssSelector.parse('*')[0];
+  }
+  return _TEXT_CSS_SELECTOR;
+}
 
 export class TemplateParseError extends ParseError {
   constructor(message: string, span: ParseSourceSpan, level: ParseErrorLevel) {
@@ -227,7 +233,7 @@ class TemplateParseVisitor implements html.Visitor {
   visitExpansionCase(expansionCase: html.ExpansionCase, context: any): any { return null; }
 
   visitText(text: html.Text, parent: ElementContext): any {
-    const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR) !;
+    const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR()) !;
     const valueNoNgsp = replaceNgsp(text.value);
     const expr = this._bindingParser.parseInterpolation(valueNoNgsp, text.sourceSpan !);
     return expr ? new t.BoundTextAst(expr, ngContentIndex, text.sourceSpan !) :
@@ -775,7 +781,7 @@ class NonBindableVisitor implements html.Visitor {
   }
 
   visitText(text: html.Text, parent: ElementContext): t.TextAst {
-    const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR) !;
+    const ngContentIndex = parent.findNgContentIndex(TEXT_CSS_SELECTOR()) !;
     return new t.TextAst(text.value, ngContentIndex, text.sourceSpan !);
   }
 

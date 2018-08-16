@@ -1078,8 +1078,14 @@ export class BindingScope implements LocalResolver {
   private map = new Map<string, BindingData>();
   private referenceNameIndex = 0;
   private restoreViewVariable: o.ReadVarExpr|null = null;
+  private static _ROOT_SCOPE: BindingScope;
 
-  static ROOT_SCOPE = new BindingScope().set(0, '$event', o.variable('$event'));
+  static get ROOT_SCOPE(): BindingScope {
+    if (!BindingScope._ROOT_SCOPE) {
+      BindingScope._ROOT_SCOPE = new BindingScope().set(0, '$event', o.variable('$event'));
+    }
+    return BindingScope._ROOT_SCOPE;
+  }
 
   private constructor(public bindingLevel: number = 0, private parent: BindingScope|null = null) {}
 
