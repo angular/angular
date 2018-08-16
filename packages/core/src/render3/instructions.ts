@@ -516,7 +516,7 @@ export function resetApplicationState() {
 /**
  *
  * @param hostNode Existing node to render into.
- * @param template Template function with the instructions.
+ * @param templateFn Template function with the instructions.
  * @param context to pass into the template.
  * @param providedRendererFactory renderer factory to use
  * @param host The host element node to use
@@ -524,14 +524,14 @@ export function resetApplicationState() {
  * @param pipes Pipe defs that should be used for matching
  */
 export function renderTemplate<T>(
-    hostNode: RElement, template: ComponentTemplate<T>, context: T,
+    hostNode: RElement, templateFn: ComponentTemplate<T>, context: T,
     providedRendererFactory: RendererFactory3, host: LElementNode | null,
     directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
     sanitizer?: Sanitizer | null): LElementNode {
   if (host == null) {
     resetApplicationState();
     rendererFactory = providedRendererFactory;
-    const tView = getOrCreateTView(template, directives || null, pipes || null, null);
+    const tView = getOrCreateTView(templateFn, directives || null, pipes || null, null);
     host = createLNode(
         -1, TNodeType.Element, hostNode, null, null,
         createLViewData(
@@ -540,7 +540,7 @@ export function renderTemplate<T>(
   }
   const hostView = host.data !;
   ngDevMode && assertDefined(hostView, 'Host node should have an LView defined in host.data.');
-  renderComponentOrTemplate(host, hostView, context, template);
+  renderComponentOrTemplate(host, hostView, context, templateFn);
   return host;
 }
 
@@ -632,15 +632,15 @@ export function nextContext<T = any>(level: number = 1): T {
 
 export function renderComponentOrTemplate<T>(
     node: LElementNode, hostView: LViewData, componentOrContext: T,
-    template?: ComponentTemplate<T>) {
+    templateFn?: ComponentTemplate<T>) {
   const oldView = enterView(hostView, node);
   try {
     if (rendererFactory.begin) {
       rendererFactory.begin();
     }
-    if (template) {
+    if (templateFn) {
       namespaceHTML();
-      template(getRenderFlags(hostView), componentOrContext !);
+      templateFn(getRenderFlags(hostView), componentOrContext !);
       refreshDescendantViews();
     } else {
       executeInitAndContentHooks();
@@ -991,13 +991,13 @@ function saveResolvedLocalsInData(): void {
  * Gets TView from a template function or creates a new TView
  * if it doesn't already exist.
  *
- * @param template The template from which to get static data
+ * @param templateFn The template from which to get static data
  * @param directives Directive defs that should be saved on TView
  * @param pipes Pipe defs that should be saved on TView
  * @returns TView
  */
 function getOrCreateTView(
-    template: ComponentTemplate<any>, directives: DirectiveDefListOrFactory | null,
+    templateFn: ComponentTemplate<any>, directives: DirectiveDefListOrFactory | null,
     pipes: PipeDefListOrFactory | null, viewQuery: ComponentQuery<any>| null): TView {
   // TODO(misko): reading `ngPrivateData` here is problematic for two reasons
   // 1. It is a megamorphic call on each invocation.
@@ -1006,8 +1006,8 @@ function getOrCreateTView(
   // Correct solution is to only put `ngPrivateData` on the Component template
   // and not on embedded templates.
 
-  return template.ngPrivateData ||
-      (template.ngPrivateData = createTView(-1, template, directives, pipes, viewQuery) as never);
+  return templateFn.ngPrivateData || (templateFn.ngPrivateData = createTView(
+                                          -1, templateFn, directives, pipes, viewQuery) as never);
 }
 
 /**
@@ -1018,13 +1018,13 @@ function getOrCreateTView(
  * @param pipes Registry of pipes for this view
  */
 export function createTView(
-    viewIndex: number, template: ComponentTemplate<any>| null,
+    viewIndex: number, templateFn: ComponentTemplate<any>| null,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
     viewQuery: ComponentQuery<any>| null): TView {
   ngDevMode && ngDevMode.tView++;
   return {
     id: viewIndex,
-    template: template,
+    template: templateFn,
     viewQuery: viewQuery,
     node: null !,
     data: HEADER_FILLER.slice(),  // Fill in to match HEADER_OFFSET in LViewData
@@ -1827,19 +1827,52 @@ export function createLContainer(
 }
 
 /**
- * Creates an LContainerNode.
+ * Creates an LContainerNode for an ng-template (dynamically-inserted view), e.g.
  *
- * Only `LViewNodes` can go into `LContainerNodes`.
+ * <ng-template #foo>
+ *    <div></div>
+ * </ng-template>
  *
  * @param index The index of the container in the data array
- * @param template Optional inline template
+ * @param templateFn Inline template
  * @param tagName The name of the container element, if applicable
  * @param attrs The attrs attached to the container, if applicable
  * @param localRefs A set of local reference bindings on the element.
  */
-export function container(
-    index: number, template?: ComponentTemplate<any>| null, tagName?: string | null,
-    attrs?: TAttributes | null, localRefs?: string[] | null): void {
+export function template(
+    index: number, templateFn: ComponentTemplate<any>| null, tagName?: string | null,
+    attrs?: TAttributes | null, localRefs?: string[] | null) {
+  // TODO: consider a separate node type for templates
+  const node = containerInternal(index, tagName || null, attrs || null, localRefs || null);
+  if (firstTemplatePass) {
+    node.tNode.tViews =
+        createTView(-1, templateFn, tView.directiveRegistry, tView.pipeRegistry, null);
+  }
+
+  createDirectivesAndLocals(localRefs);
+  currentQueries && (currentQueries = currentQueries.addNode(node));
+  queueLifecycleHooks(node.tNode.flags, tView);
+  isParent = false;
+}
+
+/**
+ * Creates an LContainerNode for inline views, e.g.
+ *
+ * % if (showing) {
+ *   <div></div>
+ * % }
+ *
+ * @param index The index of the container in the data array
+ */
+export function container(index: number): void {
+  const node = containerInternal(index, null, null, null);
+  firstTemplatePass && (node.tNode.tViews = []);
+  isParent = false;
+}
+
+function containerInternal(
+    index: number, tagName: string | null, attrs: TAttributes | null,
+    localRefs: string[] | null): LContainerNode {
   ngDevMode &&
       assertEqual(
           viewData[BINDING_INDEX], -1, 'container nodes should be created before any bindings');
@@ -1849,15 +1882,8 @@ export function container(
 
   ngDevMode && ngDevMode.rendererCreateComment++;
   const comment = renderer.createComment(ngDevMode ? 'container' : '');
-  const node =
-      createLNode(index, TNodeType.Container, comment, tagName || null, attrs || null, lContainer);
+  const node = createLNode(index, TNodeType.Container, comment, tagName, attrs, lContainer);
   appendChild(getParentLNode(node), comment, viewData);
-
-  if (firstTemplatePass) {
-    node.tNode.tViews = template ?
-        createTView(-1, template, tView.directiveRegistry, tView.pipeRegistry, null) :
-        [];
-  }
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
@@ -1868,13 +1894,8 @@ export function container(
     lContainer[QUERIES] = currentQueries.container();
   }
 
-  createDirectivesAndLocals(localRefs);
-
-  isParent = false;
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.Container);
-  // check if a given container node matches
-  currentQueries && (currentQueries = currentQueries.addNode(node));
-  queueLifecycleHooks(node.tNode.flags, tView);
+  return node;
 }
 
 /**
@@ -2409,13 +2430,13 @@ export function detectChangesInternal<T>(
     hostView: LViewData, hostNode: LElementNode, component: T) {
   const oldView = enterView(hostView, hostNode);
   const hostTView = hostView[TVIEW];
-  const template = hostTView.template !;
+  const templateFn = hostTView.template !;
   const viewQuery = hostTView.viewQuery;
 
   try {
     namespaceHTML();
     createViewQuery(viewQuery, hostView[FLAGS], component);
-    template(getRenderFlags(hostView), component);
+    templateFn(getRenderFlags(hostView), component);
     refreshDescendantViews();
     updateViewQuery(viewQuery, component);
   } finally {

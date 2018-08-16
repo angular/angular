@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 
 import {RenderFlags, directiveInject} from '../../src/render3';
 import {defineComponent} from '../../src/render3/definition';
-import {bind, container, element, elementAttribute, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, interpolation1, renderTemplate, text, textBinding} from '../../src/render3/instructions';
+import {bind, element, elementAttribute, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, elementStylingMap, interpolation1, renderTemplate, template, text, textBinding} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {AttributeMarker, LElementNode, LNode} from '../../src/render3/interfaces/node';
 import {RElement, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -306,7 +306,7 @@ describe('instructions', () => {
           factory: function ToDoAppComponent_Factory() { return new NestedLoops(); },
           template: function ToDoAppComponent_Template(rf: RenderFlags, ctx: NestedLoops) {
             if (rf & RenderFlags.Create) {
-              container(0, ToDoAppComponent_NgForOf_Template_0, null, _c0);
+              template(0, ToDoAppComponent_NgForOf_Template_0, null, _c0);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngForOf', bind(ctx.rows));
@@ -315,7 +315,7 @@ describe('instructions', () => {
                 rf: RenderFlags, ctx0: NgForOfContext<any>) {
               if (rf & RenderFlags.Create) {
                 elementStart(0, 'ul');
-                container(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, null, _c0);
+                template(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, null, _c0);
                 elementEnd();
               }
               if (rf & RenderFlags.Update) {
