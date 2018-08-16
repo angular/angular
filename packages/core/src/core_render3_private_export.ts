@@ -25,6 +25,7 @@ export {
   injectTemplateRef as ɵinjectTemplateRef,
   injectViewContainerRef as ɵinjectViewContainerRef,
   injectChangeDetectorRef as ɵinjectChangeDetectorRef,
+  injectRenderer2 as ɵinjectRenderer2,
   injectAttribute as ɵinjectAttribute,
   getFactoryOf as ɵgetFactoryOf,
   getInheritedFactory as ɵgetInheritedFactory,
