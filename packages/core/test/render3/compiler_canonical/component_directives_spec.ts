@@ -351,6 +351,19 @@ describe('components & directives', () => {
   xit('should support structural directives', () => {
     type $MyComponent$ = MyComponent;
 
+    function C1(rf1: $RenderFlags$, ctx1: $any$) {
+      if (rf1 & 1) {
+        $r3$.ɵelementStart(0, 'li');
+        $r3$.ɵtext(1);
+        $r3$.ɵelementEnd();
+      }
+      if (rf1 & 2) {
+        const $comp$ = $r3$.ɵnextContext();
+        const $foo$ = $r3$.ɵreference(1);
+        $r3$.ɵtextBinding(1, $r3$.ɵinterpolation2('', $comp$.salutation, ' ', $foo$, ''));
+      }
+    }
+
     const log: string[] = [];
     @Directive({
       selector: '[if]',
@@ -383,24 +396,8 @@ describe('components & directives', () => {
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'ul', null, $e0_locals$);
-            $r3$.ɵcontainer(2, C1, '', ['if', '']);
+            $r3$.ɵtemplate(2, C1, '', ['if', '']);
             $r3$.ɵelementEnd();
-          }
-          let $foo$ = $r3$.ɵload<any>(1);
-          if (rf & 2) {
-            $r3$.ɵcontainerRefreshStart(2);
-            $r3$.ɵcontainerRefreshEnd();
-          }
-
-          function C1(rf1: $RenderFlags$, ctx1: $any$) {
-            if (rf1 & 1) {
-              $r3$.ɵelementStart(0, 'li');
-              $r3$.ɵtext(1);
-              $r3$.ɵelementEnd();
-            }
-            if (rf1 & 2) {
-              $r3$.ɵtextBinding(1, $r3$.ɵinterpolation2('', ctx.salutation, ' ', $foo$, ''));
-            }
           }
         }
       });

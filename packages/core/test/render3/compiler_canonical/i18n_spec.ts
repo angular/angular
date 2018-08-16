@@ -112,7 +112,7 @@ describe('i18n', () => {
         template: (rf: $RenderFlags$, myApp: $MyApp$) => {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'ul');
-            $r3$.ɵcontainer(1, liTemplate, null, ['ngForOf', '']);
+            $r3$.ɵtemplate(1, liTemplate, null, ['ngForOf', '']);
             $r3$.ɵelementEnd();
             $r3$.ɵi18nApply(1, $i18n_1$[0]);
           }

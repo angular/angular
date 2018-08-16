@@ -95,6 +95,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵelementStylingMap': r3.elementStylingMap,
   'ɵelementStylingProp': r3.elementStyleProp,
   'ɵelementStylingApply': r3.elementStylingApply,
+  'ɵtemplate': r3.template,
   'ɵtext': r3.text,
   'ɵtextBinding': r3.textBinding,
   'ɵembeddedViewStart': r3.embeddedViewStart,

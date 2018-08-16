@@ -81,7 +81,7 @@ class ToDoAppComponent {
         r3.text(1, 'ToDo Application');
         r3.elementEnd();
         r3.elementStart(2, 'div');
-        r3.container(3, ToDoAppComponent_NgForOf_Template, '', ['ngForOf', '']);
+        r3.template(3, ToDoAppComponent_NgForOf_Template, '', ['ngForOf', '']);
         r3.elementEnd();
         r3.elementStart(4, 'span');
         r3.text(5);

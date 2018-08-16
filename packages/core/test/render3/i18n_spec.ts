@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 import {Component} from '../../src/core';
 import {defineComponent} from '../../src/render3/definition';
 import {I18nExpInstruction, I18nInstruction, i18nApply, i18nExpMapping, i18nInterpolation1, i18nInterpolation2, i18nInterpolation3, i18nInterpolation4, i18nInterpolation5, i18nInterpolation6, i18nInterpolation7, i18nInterpolation8, i18nInterpolationV, i18nMapping} from '../../src/render3/i18n';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
@@ -558,7 +558,7 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                container(1, liTemplate, null, ['ngForOf', '']);  // START_LI
+                template(1, liTemplate, null, ['ngForOf', '']);  // START_LI
                 // End of translated section 1
               }
               elementEnd();
@@ -645,8 +645,8 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                container(1, liTemplate, null, ['ngForOf', '']);     // START_LI_0
-                container(2, liTemplateBis, null, ['ngForOf', '']);  // START_LI_1
+                template(1, liTemplate, null, ['ngForOf', '']);     // START_LI_0
+                template(2, liTemplateBis, null, ['ngForOf', '']);  // START_LI_1
                 // End of translated section 1
               }
               elementEnd();
@@ -755,8 +755,8 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                container(1, liTemplate, null, ['ngForOf', '']);     // START_LI_0
-                container(2, liTemplateBis, null, ['ngForOf', '']);  // START_LI_1
+                template(1, liTemplate, null, ['ngForOf', '']);     // START_LI_0
+                template(2, liTemplateBis, null, ['ngForOf', '']);  // START_LI_1
                 // End of translated section 1
               }
               elementEnd();
@@ -866,7 +866,7 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                container(1, liTemplate, null, ['ngForOf', '']);  // START_LI
+                template(1, liTemplate, null, ['ngForOf', '']);  // START_LI
                 // End of translated section 1
               }
               elementEnd();
@@ -882,7 +882,7 @@ describe('Runtime i18n', () => {
                 // Start of translated section 2
                 elementStart(0, 'li');  // START_LI
                 {
-                  container(1, spanTemplate, null, ['ngForOf', '']);  // START_SPAN
+                  template(1, spanTemplate, null, ['ngForOf', '']);  // START_SPAN
                 }
                 elementEnd();
                 // End of translated section 2
@@ -979,9 +979,9 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                element(1, 'li');                                 // START_LI_0
-                container(2, liTemplate, null, ['ngForOf', '']);  // START_LI_1
-                elementStart(3, 'li');                            // START_LI_2
+                element(1, 'li');                                // START_LI_0
+                template(2, liTemplate, null, ['ngForOf', '']);  // START_LI_1
+                elementStart(3, 'li');                           // START_LI_2
                 { text(4, 'delete me'); }
                 elementEnd();
                 // End of translated section 1
@@ -1070,7 +1070,7 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                container(1, liTemplate, undefined, ['ngForOf', '']);  // START_LI
+                template(1, liTemplate, undefined, ['ngForOf', '']);  // START_LI
                 // End of translated section 1
               }
               elementEnd();

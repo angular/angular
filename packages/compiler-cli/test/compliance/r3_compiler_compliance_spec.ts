@@ -648,7 +648,7 @@ describe('compiler compliance', () => {
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "ul", null, $c1$);
-              $r3$.ɵcontainer(2, MyComponent_li_Template_2, null, $c2$);
+              $r3$.ɵtemplate(2, MyComponent_li_Template_2, null, $c2$);
               $r3$.ɵelementEnd();
             }
           },
@@ -1345,7 +1345,7 @@ describe('compiler compliance', () => {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵtext(1);
-            $r3$.ɵcontainer(2, MyComponent_div_span_Template_2, null, $c2$);
+            $r3$.ɵtemplate(2, MyComponent_div_span_Template_2, null, $c2$);
             $r3$.ɵelement(3, "span", null, $c4$);
             $r3$.ɵelementEnd();
           }
@@ -1366,7 +1366,7 @@ describe('compiler compliance', () => {
             if (rf & 1) {
               $r3$.ɵelement(0, "div", null, $c1$);
               $r3$.ɵtext(2);
-              $r3$.ɵcontainer(3, MyComponent_div_Template_3, null, $c2$);
+              $r3$.ɵtemplate(3, MyComponent_div_Template_3, null, $c2$);
               $r3$.ɵelement(4, "div", null, $c3$);
             }
             if (rf & 2) {
@@ -1430,7 +1430,7 @@ describe('compiler compliance', () => {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
           $i0$.ɵelement(1, "div", null, $c1$);
-          $i0$.ɵcontainer(3, MyComponent_div_span_Template_3, null, $c2$);
+          $i0$.ɵtemplate(3, MyComponent_div_span_Template_3, null, $c2$);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -1442,7 +1442,7 @@ describe('compiler compliance', () => {
       // ...
       template:function MyComponent_Template(rf, ctx){
         if (rf & 1) {
-          $i0$.ɵcontainer(0, MyComponent_div_Template_0, null, $c0$);
+          $i0$.ɵtemplate(0, MyComponent_div_Template_0, null, $c0$);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "ngForOf", $i0$.ɵbind(ctx.items));
@@ -1647,7 +1647,7 @@ describe('compiler compliance', () => {
                   if (rf & 1) {
                     $r3$.ɵnamespaceSVG();
                     $r3$.ɵelementStart(0,"svg");
-                    $r3$.ɵcontainer(1,MyComponent__svg_g_Template_1,null,$_c0$);
+                    $r3$.ɵtemplate(1,MyComponent__svg_g_Template_1,null,$_c0$);
                     $r3$.ɵelementEnd();
                   }
                   if (rf & 2) { $r3$.ɵelementProperty(1,"forOf",$r3$.ɵbind(ctx.items)); }
@@ -1723,7 +1723,7 @@ describe('compiler compliance', () => {
             template: function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "ul");
-                $r3$.ɵcontainer(1, MyComponent_li_Template_1, null, $_c0$);
+                $r3$.ɵtemplate(1, MyComponent_li_Template_1, null, $_c0$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
@@ -1801,7 +1801,7 @@ describe('compiler compliance', () => {
               $r3$.ɵtext(2);
               $r3$.ɵelementEnd();
               $r3$.ɵelementStart(3, "ul");
-              $r3$.ɵcontainer(4, MyComponent_li_li_Template_4, null, $c1$);
+              $r3$.ɵtemplate(4, MyComponent_li_li_Template_4, null, $c1$);
               $r3$.ɵelementEnd();
               $r3$.ɵelementEnd();
             }
@@ -1821,7 +1821,7 @@ describe('compiler compliance', () => {
             template: function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "ul");
-                $r3$.ɵcontainer(1, MyComponent_li_Template_1, null, $c1$);
+                $r3$.ɵtemplate(1, MyComponent_li_Template_1, null, $c1$);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {

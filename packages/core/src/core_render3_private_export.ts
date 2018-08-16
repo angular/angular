@@ -94,6 +94,7 @@ export {
   elementStylingApply as ɵelementStylingApply,
   elementClassProp as ɵelementClassProp,
   textBinding as ɵtextBinding,
+  template as ɵtemplate,
   embeddedViewEnd as ɵembeddedViewEnd,
   store as ɵstore,
   load as ɵload,

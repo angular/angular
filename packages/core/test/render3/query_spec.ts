@@ -12,7 +12,7 @@ import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {EventEmitter} from '../..';
 import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, loadElement, loadQueryList, registerContentQuery} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, loadElement, loadQueryList, registerContentQuery, template} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
 
@@ -510,7 +510,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(1, null, null, null, ['foo', '']);
+                template(1, null, null, null, ['foo', '']);
               }
             },
             [], [],
@@ -542,7 +542,7 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   container(1, null, null, null, ['foo', '']);
+                   template(1, null, null, null, ['foo', '']);
                  }
                },
                [], [],
@@ -577,7 +577,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(1, null, null, null, ['foo', '']);
+                template(1, null, null, null, ['foo', '']);
               }
             },
             [], [],
@@ -609,7 +609,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(1, null, null, null, ['foo', '']);
+                template(1, null, null, null, ['foo', '']);
               }
             },
             [], [],
@@ -987,7 +987,7 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(1, (rf1: RenderFlags, ctx1: any) => {
+                template(1, (rf1: RenderFlags, ctx1: any) => {
                   if (rf1 & RenderFlags.Create) {
                     element(0, 'div', null, ['foo', '']);
                   }
@@ -1041,7 +1041,7 @@ describe('query', () => {
             selectors: [['my-app']],
             template: function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                container(1, (rf1: RenderFlags, row: NgForOfContext<string>) => {
+                template(1, (rf1: RenderFlags, row: NgForOfContext<string>) => {
                   if (rf1 & RenderFlags.Create) {
                     element(0, 'div', null, ['foo', '']);
                   }
@@ -1109,7 +1109,7 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   container(1, (rf: RenderFlags, ctx: {idx: number}) => {
+                   template(1, (rf: RenderFlags, ctx: {idx: number}) => {
                      if (rf & RenderFlags.Create) {
                        element(0, 'div', null, ['foo', '']);
                      }
@@ -1120,7 +1120,7 @@ describe('query', () => {
 
                    element(2, 'div', ['id', 'middle'], ['foo', '']);
 
-                   container(4, (rf: RenderFlags, ctx: {idx: number}) => {
+                   template(4, (rf: RenderFlags, ctx: {idx: number}) => {
                      if (rf & RenderFlags.Create) {
                        element(0, 'div', null, ['foo', '']);
                      }
@@ -1129,7 +1129,7 @@ describe('query', () => {
                      }
                    }, null, []);
 
-                   container(5, null, null, [AttributeMarker.SelectOnly, 'vc']);
+                   template(5, null, null, [AttributeMarker.SelectOnly, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
@@ -1212,7 +1212,7 @@ describe('query', () => {
                template: function(rf: RenderFlags, ctx: any) {
                  let tmp: any;
                  if (rf & RenderFlags.Create) {
-                   container(1, (rf: RenderFlags, ctx: {idx: number, container_idx: number}) => {
+                   template(1, (rf: RenderFlags, ctx: {idx: number, container_idx: number}) => {
                      if (rf & RenderFlags.Create) {
                        element(0, 'div', null, ['foo', '']);
                      }
@@ -1221,8 +1221,8 @@ describe('query', () => {
                      }
                    }, null, []);
 
-                   container(2, null, null, [AttributeMarker.SelectOnly, 'vc']);
-                   container(3, null, null, [AttributeMarker.SelectOnly, 'vc']);
+                   template(2, null, null, [AttributeMarker.SelectOnly, 'vc']);
+                   template(3, null, null, [AttributeMarker.SelectOnly, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
@@ -1283,12 +1283,12 @@ describe('query', () => {
              */
             template: (rf: RenderFlags, myApp: MyApp) => {
               if (rf & RenderFlags.Create) {
-                container(1, (rf1: RenderFlags) => {
+                template(1, (rf1: RenderFlags) => {
                   if (rf1 & RenderFlags.Create) {
                     element(0, 'span', ['id', 'from_tpl'], ['foo', '']);
                   }
                 }, undefined, undefined, ['tpl', '']);
-                container(3, null, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+                template(3, null, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
               }
               if (rf & RenderFlags.Update) {
                 const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(1)));
@@ -1793,7 +1793,7 @@ describe('query', () => {
       });
     }
 
-    function template(rf: RenderFlags, ctx: any) {
+    function AppComponent_Template_1(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'div');
       }
@@ -1807,7 +1807,7 @@ describe('query', () => {
         'app',
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            container(1, template, null, [AttributeMarker.SelectOnly, 'someDir']);
+            template(1, AppComponent_Template_1, null, [AttributeMarker.SelectOnly, 'someDir']);
             element(2, 'div', null, ['foo', '']);
           }
         },
@@ -1942,7 +1942,7 @@ describe('query', () => {
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'shallow-comp');
-          { container(1, IfTemplate, null, [AttributeMarker.SelectOnly, 'ngIf', '']); }
+          { template(1, IfTemplate, null, [AttributeMarker.SelectOnly, 'ngIf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {

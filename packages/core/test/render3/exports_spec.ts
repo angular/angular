@@ -7,7 +7,7 @@
  */
 
 import {AttributeMarker, defineComponent, defineDirective} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation2, nextContext, reference, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementEnd, elementProperty, elementStart, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation2, nextContext, reference, template, text, textBinding} from '../../src/render3/instructions';
 import {InitialStylingFlags, RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -348,7 +348,7 @@ describe('exports', () => {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'input', ['value', 'one'], ['outerInput', '']);
           elementEnd();
-          container(2, outerTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(2, outerTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(2, 'ngIf', bind(app.outer));
@@ -362,7 +362,7 @@ describe('exports', () => {
             text(1);
             elementStart(2, 'input', ['value', 'two'], ['innerInput', '']);
             elementEnd();
-            container(4, innerTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
+            template(4, innerTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
           }
           elementEnd();
         }
