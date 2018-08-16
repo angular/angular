@@ -60,10 +60,8 @@ export interface Injectable { providedIn?: Type<any>|'root'|null; }
 * @Annotation
 */
 export const Injectable: InjectableDecorator = makeDecorator(
-    'Injectable', undefined, undefined, undefined, (type: Type<any>, meta: Injectable) => {
-      debugger;
-      return R3_COMPILE_INJECTABLE(type, meta);
-    });
+    'Injectable', undefined, undefined, undefined,
+    (type: Type<any>, meta: Injectable) => R3_COMPILE_INJECTABLE(type, meta));
 
 /**
  * Type representing injectable service.

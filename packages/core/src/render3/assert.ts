@@ -77,6 +77,7 @@ export function assertNgModuleType(
 }
 
 function throwError(msg: string): never {
+  // tslint:disable-next-line
   debugger;  // Left intentionally for better debugger experience.
   throw new Error(`ASSERTION ERROR: ${msg}`);
 }
