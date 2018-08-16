@@ -11,7 +11,7 @@ import {RenderFlags} from '@angular/core/src/render3';
 
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {AttributeMarker, defineComponent, defineDirective, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, text, textBinding} from '../../src/render3/instructions';
+import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, text, textBinding, template} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
 import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
@@ -558,7 +558,7 @@ describe('render3 integration test', () => {
          const TestCmpt =
              createComponent('test-cmpt', function(rf: RenderFlags, ctx: {value: any}) {
                if (rf & RenderFlags.Create) {
-                 container(0, ngIfTemplate, null, [AttributeMarker.SelectOnly, 'ngIf']);
+                 template(0, ngIfTemplate, null, [AttributeMarker.SelectOnly, 'ngIf']);
                }
                if (rf & RenderFlags.Update) {
                  elementProperty(0, 'ngIf', bind(ctx.value));
@@ -614,7 +614,7 @@ describe('render3 integration test', () => {
           </ng-template>`;
          const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
            if (rf & RenderFlags.Create) {
-             container(0, embeddedTemplate, null, [AttributeMarker.SelectOnly, 'testDirective']);
+             template(0, embeddedTemplate, null, [AttributeMarker.SelectOnly, 'testDirective']);
            }
            if (rf & RenderFlags.Update) {
              testDirective = loadDirective<TestDirective>(0);
@@ -728,7 +728,7 @@ describe('render3 integration test', () => {
       </ng-template>`;
       const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
-          container(0, embeddedTemplate, null, [AttributeMarker.SelectOnly, 'testDirective']);
+          template(0, embeddedTemplate, null, [AttributeMarker.SelectOnly, 'testDirective']);
         }
         if (rf & RenderFlags.Update) {
           testDirective = loadDirective<TestDirective>(0);

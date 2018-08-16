@@ -52,6 +52,8 @@ export class Identifiers {
 
   static nextContext: o.ExternalReference = {name: 'ɵnextContext', moduleName: CORE};
 
+  static templateCreate: o.ExternalReference = {name: 'ɵtemplate', moduleName: CORE};
+
   static text: o.ExternalReference = {name: 'ɵtext', moduleName: CORE};
 
   static textBinding: o.ExternalReference = {name: 'ɵtextBinding', moduleName: CORE};

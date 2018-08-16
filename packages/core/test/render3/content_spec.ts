@@ -12,7 +12,7 @@ import {Input, TemplateRef, ViewContainerRef, ViewRef} from '../../src/core';
 import {defineDirective} from '../../src/render3/definition';
 import {injectTemplateRef, injectViewContainerRef} from '../../src/render3/di';
 import {AttributeMarker, detectChanges} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, projection, projectionDef, text} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, loadDirective, projection, projectionDef, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgIf} from './common_with_def';
@@ -816,7 +816,7 @@ describe('content projection', () => {
       if (rf & RenderFlags.Create) {
         projectionDef();
         text(0, 'Before-');
-        container(1, IfTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        template(1, IfTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
         text(2, '-After');
       }
       if (rf & RenderFlags.Update) {
@@ -881,7 +881,7 @@ describe('content projection', () => {
       if (rf & RenderFlags.Create) {
         projectionDef();
         text(0, 'Before-');
-        container(1, IfTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        template(1, IfTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
         text(2, '-After');
       }
       if (rf & RenderFlags.Update) {
@@ -1807,13 +1807,15 @@ describe('content projection', () => {
 
       /**
        * <child>
-       *   <div *ngIf="true">content</div>
+       *   % if (true) {
+       *     <div>content</div>
+       *   % }
        * </child>
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: {value: any}) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'child');
-          { container(1, undefined, 'div'); }
+          { container(1, 'div'); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {

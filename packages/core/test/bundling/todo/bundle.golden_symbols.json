@@ -369,7 +369,7 @@
     "name": "componentRefresh"
   },
   {
-    "name": "container"
+    "name": "containerInternal"
   },
   {
     "name": "contextViewData"
@@ -895,6 +895,9 @@
   },
   {
     "name": "stringify$2"
+  },
+  {
+    "name": "template"
   },
   {
     "name": "text"
