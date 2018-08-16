@@ -211,6 +211,21 @@ describe('MatSelectionList without forms', () => {
       expect(ENTER_EVENT.defaultPrevented).toBe(true);
     });
 
+    it('should not be able to toggle a disabled option using SPACE', () => {
+      const testListItem = listOptions[1].nativeElement as HTMLElement;
+      const selectionModel = selectionList.componentInstance.selectedOptions;
+
+      expect(selectionModel.selected.length).toBe(0);
+
+      listOptions[1].componentInstance.disabled = true;
+
+      dispatchFakeEvent(testListItem, 'focus');
+      selectionList.componentInstance._keydown(createKeyboardEvent('keydown', SPACE, testListItem));
+      fixture.detectChanges();
+
+      expect(selectionModel.selected.length).toBe(0);
+    });
+
     it('should restore focus if active option is destroyed', () => {
       const manager = selectionList.componentInstance._keyManager;
 

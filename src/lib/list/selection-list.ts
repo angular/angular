@@ -410,12 +410,9 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
     switch (keyCode) {
       case SPACE:
       case ENTER:
-        if (!this.disabled) {
-          this._toggleSelectOnFocusedOption();
-
-          // Always prevent space from scrolling the page since the list has focus
-          event.preventDefault();
-        }
+        this._toggleFocusedOption();
+        // Always prevent space from scrolling the page since the list has focus
+        event.preventDefault();
         break;
       case HOME:
       case END:
@@ -434,7 +431,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
     if ((keyCode === UP_ARROW || keyCode === DOWN_ARROW) && event.shiftKey &&
         manager.activeItemIndex !== previousFocusIndex) {
-      this._toggleSelectOnFocusedOption();
+      this._toggleFocusedOption();
     }
   }
 
@@ -492,14 +489,14 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
     return this.options.filter(option => option.selected).map(option => option.value);
   }
 
-  /** Toggles the selected state of the currently focused option. */
-  private _toggleSelectOnFocusedOption(): void {
+  /** Toggles the state of the currently focused option if enabled. */
+  private _toggleFocusedOption(): void {
     let focusedIndex = this._keyManager.activeItemIndex;
 
     if (focusedIndex != null && this._isValidIndex(focusedIndex)) {
       let focusedOption: MatListOption = this.options.toArray()[focusedIndex];
 
-      if (focusedOption) {
+      if (focusedOption && !focusedOption.disabled) {
         focusedOption.toggle();
 
         // Emit a change event because the focused option changed its state through user
