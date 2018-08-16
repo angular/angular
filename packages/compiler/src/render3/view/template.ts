@@ -727,9 +727,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       parameters.push(this.constantPool.getConstLiteral(o.literalArr(attributeNames), true));
     }
 
-    // e.g. C(1, C1Template)
-    this.creationInstruction(
-        template.sourceSpan, R3.containerCreate, trimTrailingNulls(parameters));
+    // e.g. template(1, MyComp_Template_1)
+    this.creationInstruction(template.sourceSpan, R3.templateCreate, trimTrailingNulls(parameters));
 
     // e.g. p(1, 'forOf', ɵbind(ctx.items));
     const context = o.variable(CONTEXT_NAME);

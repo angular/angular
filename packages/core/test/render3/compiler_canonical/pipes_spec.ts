@@ -170,7 +170,7 @@ describe('pipes', () => {
             $r3$.ɵpipe(1, 'myPurePipe');
             $r3$.ɵtext(2);
             $r3$.ɵpipe(3, 'myPurePipe');
-            $r3$.ɵcontainer(4, C4, '', ['oneTimeIf', '']);
+            $r3$.ɵtemplate(4, C4, '', ['oneTimeIf', '']);
             $r3$.ɵreserveSlots(6);
           }
           if (rf & 2) {

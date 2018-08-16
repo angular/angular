@@ -73,6 +73,7 @@ export {
 
   text,
   textBinding,
+  template,
 
   reference,
 
