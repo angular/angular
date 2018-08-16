@@ -61,9 +61,6 @@ export class SymbolExtractor {
           // Left for easier debugging.
           // console.log('###', ts.SyntaxKind[child.kind], child.getText());
       }
-      if (symbols.length && symbols[symbols.length - 1].name == 'type') {
-        debugger;
-      }
     }
     visitor(source);
     symbols.sort(SymbolExtractor.symbolSort);
