@@ -6,9 +6,6 @@
     "name": "BINDING_INDEX"
   },
   {
-    "name": "BLOOM_MASK"
-  },
-  {
     "name": "CLEAN_PROMISE"
   },
   {
@@ -18,16 +15,7 @@
     "name": "CONTEXT"
   },
   {
-    "name": "ChangeDetectionStrategy"
-  },
-  {
     "name": "DIRECTIVES"
-  },
-  {
-    "name": "EMPTY$1"
-  },
-  {
-    "name": "EMPTY_ARRAY$2"
   },
   {
     "name": "FLAGS"
@@ -48,9 +36,6 @@
     "name": "NEXT"
   },
   {
-    "name": "NG_ELEMENT_ID"
-  },
-  {
     "name": "NG_HOST_SYMBOL"
   },
   {
@@ -60,16 +45,10 @@
     "name": "PARENT"
   },
   {
-    "name": "PublicFeature"
-  },
-  {
     "name": "QUERIES"
   },
   {
     "name": "RENDERER"
-  },
-  {
-    "name": "RENDER_PARENT"
   },
   {
     "name": "ROOT_DIRECTIVE_INDICES"
@@ -90,28 +69,10 @@
     "name": "_getComponentHostLElementNode"
   },
   {
-    "name": "_renderCompCount"
-  },
-  {
-    "name": "appendChild"
-  },
-  {
     "name": "baseDirectiveCreate"
   },
   {
-    "name": "bloomAdd"
-  },
-  {
     "name": "callHooks"
-  },
-  {
-    "name": "canInsertNativeChildOfElement"
-  },
-  {
-    "name": "canInsertNativeChildOfView"
-  },
-  {
-    "name": "canInsertNativeNode"
   },
   {
     "name": "checkNoChangesMode"
@@ -138,22 +99,10 @@
     "name": "createTView"
   },
   {
-    "name": "createTextNode"
-  },
-  {
     "name": "createViewQuery"
   },
   {
-    "name": "defineComponent"
-  },
-  {
     "name": "detectChangesInternal"
-  },
-  {
-    "name": "diPublic"
-  },
-  {
-    "name": "diPublicInInjector"
   },
   {
     "name": "domRendererFactory3"
@@ -171,25 +120,10 @@
     "name": "executeInitHooks"
   },
   {
-    "name": "extractDirectiveDef"
-  },
-  {
-    "name": "extractPipeDef"
-  },
-  {
     "name": "firstTemplatePass"
   },
   {
-    "name": "getChildLNode"
-  },
-  {
     "name": "getLViewChild"
-  },
-  {
-    "name": "getOrCreateNodeInjector"
-  },
-  {
-    "name": "getOrCreateNodeInjectorForNode"
   },
   {
     "name": "getOrCreateTView"
@@ -198,13 +132,7 @@
     "name": "getParentLNode"
   },
   {
-    "name": "getPreviousOrParentNode"
-  },
-  {
     "name": "getRenderFlags"
-  },
-  {
-    "name": "getRenderParent"
   },
   {
     "name": "getRootView"
@@ -214,9 +142,6 @@
   },
   {
     "name": "initChangeDetectorIfExisting"
-  },
-  {
-    "name": "invertObject"
   },
   {
     "name": "isProceduralRenderer"
@@ -229,12 +154,6 @@
   },
   {
     "name": "namespaceHTML"
-  },
-  {
-    "name": "nativeInsertBefore"
-  },
-  {
-    "name": "nextNgElementId"
   },
   {
     "name": "readElementValue"
@@ -268,12 +187,6 @@
   },
   {
     "name": "setUpAttributes"
-  },
-  {
-    "name": "stringify$2"
-  },
-  {
-    "name": "text"
   },
   {
     "name": "tickRootContext"
