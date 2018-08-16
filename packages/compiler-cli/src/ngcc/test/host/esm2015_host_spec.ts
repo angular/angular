@@ -530,7 +530,6 @@ describe('Esm2015ReflectionHost', () => {
       const host = new Esm2015ReflectionHost(program.getTypeChecker());
       const classNode =
           getDeclaration(program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isClassDeclaration);
-      debugger;
       const members = host.getMembersOfClass(classNode);
 
       const staticMethod = members.find(member => member.name === 'staticMethod') !;

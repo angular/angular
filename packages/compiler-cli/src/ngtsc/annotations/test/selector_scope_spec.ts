@@ -130,7 +130,6 @@ describe('SelectorScopeRegistry', () => {
 
     registry.registerSelector(ProgramCmp, 'program-cmp');
 
-    debugger;
     const scope = registry.lookupCompilationScope(ProgramCmp) !;
     expect(scope).toBeDefined();
     expect(scope.directives).toBeDefined();

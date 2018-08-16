@@ -414,7 +414,6 @@ describe('Esm5ReflectionHost', () => {
       const host = new Esm5ReflectionHost(program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isVariableDeclaration);
-      debugger;
       const decorators = host.getDecoratorsOfDeclaration(classNode) !;
 
       expect(decorators).toBeDefined();
@@ -584,7 +583,6 @@ describe('Esm5ReflectionHost', () => {
       const host = new Esm5ReflectionHost(program.getTypeChecker());
       const classNode = getDeclaration(
           program, SOME_DIRECTIVE_FILE.name, 'SomeDirective', ts.isVariableDeclaration);
-      debugger;
       const members = host.getMembersOfClass(classNode);
 
       const staticMethod = members.find(member => member.name === 'staticMethod') !;
