@@ -143,6 +143,21 @@ describe('ngInjectableDef Bazel Integration', () => {
     expect(TestBed.get(Service).value).toEqual(true);
   });
 
+  it('support inheritance to another Injectable', () => {
+    @Injectable({providedIn: 'root'})
+    class Parent {
+      name = 'parent';
+    }
+
+    @Injectable({providedIn: 'root'})
+    class Child extends Parent {
+      name = 'child';
+    }
+
+    TestBed.configureTestingModule({});
+    expect(TestBed.get(Child).name).toEqual('child');
+  });
+
   it('NgModule injector understands requests for INJECTABLE', () => {
     TestBed.configureTestingModule({
       providers: [{provide: 'foo', useValue: 'bar'}],
