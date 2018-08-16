@@ -502,11 +502,11 @@ describe('ngtsc behavioral tests', () => {
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
     const jsContents = getContents('test.js');
-    expect(jsContents).toContain(`i0.ɵQ(null, ["bar"], true, TemplateRef)`);
-    expect(jsContents).toContain(`i0.ɵQ(null, TemplateRef, false)`);
-    expect(jsContents).toContain(`i0.ɵQ(null, ["test2"], true)`);
-    expect(jsContents).toContain(`i0.ɵQ(0, ["accessor"], true)`);
-    expect(jsContents).toContain(`i0.ɵQ(1, ["test1"], true)`);
+    expect(jsContents).toContain(`i0.ɵquery(null, ["bar"], true, TemplateRef)`);
+    expect(jsContents).toContain(`i0.ɵquery(null, TemplateRef, false)`);
+    expect(jsContents).toContain(`i0.ɵquery(null, ["test2"], true)`);
+    expect(jsContents).toContain(`i0.ɵquery(0, ["accessor"], true)`);
+    expect(jsContents).toContain(`i0.ɵquery(1, ["test1"], true)`);
   });
 
   it('should handle queries that use forwardRef', () => {
@@ -529,8 +529,8 @@ describe('ngtsc behavioral tests', () => {
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
     const jsContents = getContents('test.js');
-    expect(jsContents).toContain(`i0.ɵQ(null, TemplateRef, true)`);
-    expect(jsContents).toContain(`i0.ɵQ(null, ViewContainerRef, true)`);
+    expect(jsContents).toContain(`i0.ɵquery(null, TemplateRef, true)`);
+    expect(jsContents).toContain(`i0.ɵquery(null, ViewContainerRef, true)`);
   });
 
   it('should generate host bindings for directives', () => {
@@ -562,12 +562,18 @@ describe('ngtsc behavioral tests', () => {
     expect(errorSpy).not.toHaveBeenCalled();
     expect(exitCode).toBe(0);
     const jsContents = getContents('test.js');
-    expect(jsContents).toContain(`i0.ɵp(elIndex, "attr.hello", i0.ɵb(i0.ɵd(dirIndex).foo));`);
-    expect(jsContents).toContain(`i0.ɵp(elIndex, "prop", i0.ɵb(i0.ɵd(dirIndex).bar));`);
     expect(jsContents)
-        .toContain('i0.ɵp(elIndex, "class.someclass", i0.ɵb(i0.ɵd(dirIndex).someClass))');
-    expect(jsContents).toContain('i0.ɵd(dirIndex).onClick($event)');
-    expect(jsContents).toContain('i0.ɵd(dirIndex).onChange(i0.ɵd(dirIndex).arg)');
+        .toContain(
+            `i0.ɵelementProperty(elIndex, "attr.hello", i0.ɵbind(i0.ɵloadDirective(dirIndex).foo));`);
+    expect(jsContents)
+        .toContain(
+            `i0.ɵelementProperty(elIndex, "prop", i0.ɵbind(i0.ɵloadDirective(dirIndex).bar));`);
+    expect(jsContents)
+        .toContain(
+            'i0.ɵelementProperty(elIndex, "class.someclass", i0.ɵbind(i0.ɵloadDirective(dirIndex).someClass))');
+    expect(jsContents).toContain('i0.ɵloadDirective(dirIndex).onClick($event)');
+    expect(jsContents)
+        .toContain('i0.ɵloadDirective(dirIndex).onChange(i0.ɵloadDirective(dirIndex).arg)');
   });
 
   it('should correctly recognize local symbols', () => {

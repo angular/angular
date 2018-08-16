@@ -436,7 +436,7 @@ function createContentQueriesRefreshFunction(meta: R3DirectiveMetadata): o.Expre
     // var $tmp$: any;
     const temporary = temporaryAllocator(statements, TEMPORARY_NAME);
 
-    // const $instance$ = $r3$.ɵd(dirIndex);
+    // const $instance$ = $r3$.ɵloadDirective(dirIndex);
     statements.push(
         directiveInstanceVar.set(o.importExpr(R3.loadDirective).callFn([o.variable('dirIndex')]))
             .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
@@ -478,7 +478,7 @@ function createViewQueriesFunction(
     const queryDefinition = createQueryDefinition(query, constantPool, i);
     createStatements.push(queryDefinition.toStmt());
 
-    // update, e.g. (r3.qR(tmp = r3.ɵld(0)) && (ctx.someDir = tmp));
+    // update, e.g. (r3.qR(tmp = r3.ɵload(0)) && (ctx.someDir = tmp));
     const temporary = tempAllocator();
     const getQueryList = o.importExpr(R3.load).callFn([o.literal(i)]);
     const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);

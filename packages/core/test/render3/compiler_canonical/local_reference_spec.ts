@@ -28,12 +28,12 @@ describe('local references', () => {
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           let l1_user: any;
           if (rf & 1) {
-            $r3$.ɵEe(0, 'input', ['value', 'World'], ['user', '']);
-            $r3$.ɵT(2);
+            $r3$.ɵelement(0, 'input', ['value', 'World'], ['user', '']);
+            $r3$.ɵtext(2);
           }
           if (rf & 2) {
-            l1_user = $r3$.ɵr<any>(1);
-            $r3$.ɵt(2, $r3$.ɵi1('Hello, ', l1_user.value, '!'));
+            l1_user = $r3$.ɵreference<any>(1);
+            $r3$.ɵtextBinding(2, $r3$.ɵinterpolation1('Hello, ', l1_user.value, '!'));
           }
         }
       });

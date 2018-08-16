@@ -36,10 +36,10 @@ describe('injection', () => {
           },
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
             if (rf & 1) {
-              $r3$.ɵT(0);
+              $r3$.ɵtext(0);
             }
             if (rf & 2) {
-              $r3$.ɵt(0, $r3$.ɵb(ctx.value));
+              $r3$.ɵtextBinding(0, $r3$.ɵbind(ctx.value));
             }
           }
         });
@@ -54,7 +54,7 @@ describe('injection', () => {
           /** <my-comp></my-comp> */
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'my-comp');
+              $r3$.ɵelement(0, 'my-comp');
             }
           },
           directives: () => [MyComp]
@@ -82,10 +82,10 @@ describe('injection', () => {
           factory: function MyComp_Factory() { return new MyComp($r3$.ɵinjectAttribute('title')); },
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
             if (rf & 1) {
-              $r3$.ɵT(0);
+              $r3$.ɵtext(0);
             }
             if (rf & 2) {
-              $r3$.ɵt(0, $r3$.ɵb(ctx.title));
+              $r3$.ɵtextBinding(0, $r3$.ɵbind(ctx.title));
             }
           }
         });
@@ -100,7 +100,7 @@ describe('injection', () => {
           /** <my-comp></my-comp> */
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
-              $r3$.ɵEe(0, 'my-comp', e0_attrs);
+              $r3$.ɵelement(0, 'my-comp', e0_attrs);
             }
           },
           directives: () => [MyComp]

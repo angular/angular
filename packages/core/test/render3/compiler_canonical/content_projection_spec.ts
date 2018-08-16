@@ -27,9 +27,9 @@ describe('content projection', () => {
         factory: () => new SimpleComponent(),
         template: function(rf: $RenderFlags$, ctx: $SimpleComponent$) {
           if (rf & 1) {
-            $r3$.ɵpD();
-            $r3$.ɵEe(0, 'div');
-            $r3$.ɵP(1);
+            $r3$.ɵprojectionDef();
+            $r3$.ɵelement(0, 'div');
+            $r3$.ɵprojection(1);
           }
         }
       });
@@ -56,11 +56,11 @@ describe('content projection', () => {
         factory: () => new ComplexComponent(),
         template: function(rf: $RenderFlags$, ctx: $ComplexComponent$) {
           if (rf & 1) {
-            $r3$.ɵpD($pD_0P$, $pD_0R$);
-            $r3$.ɵEe(0, 'div', ['id', 'first']);
-            $r3$.ɵP(1, 1);
-            $r3$.ɵEe(2, 'div', ['id', 'second']);
-            $r3$.ɵP(3, 2);
+            $r3$.ɵprojectionDef($pD_0P$, $pD_0R$);
+            $r3$.ɵelement(0, 'div', ['id', 'first']);
+            $r3$.ɵprojection(1, 1);
+            $r3$.ɵelement(2, 'div', ['id', 'second']);
+            $r3$.ɵprojection(3, 2);
           }
         }
       });
@@ -79,9 +79,9 @@ describe('content projection', () => {
         factory: () => new MyApp(),
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'simple');
-            $r3$.ɵT(1, 'content');
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'simple');
+            $r3$.ɵtext(1, 'content');
+            $r3$.ɵelementEnd();
           }
         },
         directives: () => [SimpleComponent]
