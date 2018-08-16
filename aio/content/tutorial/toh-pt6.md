@@ -13,11 +13,18 @@ When you're done with this page, the app should look like this <live-example></l
 
 `HttpClient` is Angular's mechanism for communicating with a remote server over HTTP. 
 
-To make `HttpClient` available everywhere in the app,
+To make `HttpClient` available everywhere in the app:
 
-* open the root `AppModule`, 
-* import the `HttpClientModule` symbol from `@angular/common/http`,
-* add it to the `@NgModule.imports` array.
+* open the root `AppModule` 
+* import the `HttpClientModule` symbol from `@angular/common/http`
+
+<code-example
+  path="toh-pt6/src/app/app.module.ts"
+  region="import-http-client"
+  title="src/app/app.module.ts (Http Client import)">
+</code-example>
+
+* add it to the `@NgModule.imports` array
 
 ## Simulate a data server
 
