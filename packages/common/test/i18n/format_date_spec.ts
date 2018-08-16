@@ -365,6 +365,9 @@ describe('Format date', () => {
         testDate = new Date(testDate.getTime() + 2000);
         n++;
       }
+
+      // 2017-01-01 is a Sunday and is part of the last week of December 2016
+      expect(formatDate('2017-01-01T00:00:00.000Z', 'W', 'en', '+0000')).toEqual('5');
     });
   });
 });

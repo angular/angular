@@ -351,6 +351,9 @@ const MS_PER_DAY = 86400000;
  * [ISO 8601](https://en.wikipedia.org/wiki/ISO_week_date): weeks start on Monday and the first week
  * of the year is the one with 4th of January.
  *
+ * Most of the code comes from [Closure
+ * `getWeekNumber`](https://github.com/google/closure-library/blob/master/closure/goog/date/date.js)
+ *
  * @param size Number of digits to return, 1 (not zero padded) or 2 (zero padded)
  * @param monthBased Whether we want the week number of the year (default) or of the month
  */
@@ -359,12 +362,13 @@ function weekGetter(size: number, monthBased = false): DateFormatter {
     // Get the current day number as an ISO weekday (Monday = 0)
     const isoDay = (d.getDay() + 6) % 7 + 1;
     // Set the date to Thursday of the current week because week 1 has the 1st Thursday of the year
-    d = new Date(d);
-    d.setDate(d.getDate() + THURSDAY - isoDay);
-    const start = new Date(d.getFullYear(), monthBased ? d.getMonth() : JANUARY, 1).getTime();
+    const thursday = new Date(d);
+    thursday.setDate(thursday.getDate() + THURSDAY - isoDay);
+    const start =
+        new Date(thursday.getFullYear(), monthBased ? thursday.getMonth() : JANUARY, 1).getTime();
     // There might be +-1 hour shift in the result due to the daylight saving, but it doesn't affect
     // the end result because we use Math.round().
-    const result = Math.floor(Math.round((d.getTime() - start) / MS_PER_DAY) / 7) + 1;
+    const result = Math.floor(Math.round((thursday.getTime() - start) / MS_PER_DAY) / 7) + 1;
 
     return padNumber(result, size, getLocaleNumberSymbol(locale, NumberSymbol.MinusSign));
   };
