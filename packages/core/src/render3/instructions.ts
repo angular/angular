@@ -15,6 +15,7 @@ import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
+import {getViewFromDomNode, linkDomNodeToView} from './inspection';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {ComponentDefInternal, ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
@@ -29,6 +30,7 @@ import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector
 import {StylingContext, allocStylingContext, createStylingContextTemplate, renderStyling as renderElementStyles, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling';
 import {assertDataInRangeInternal, isDifferent, loadElementInternal, loadInternal, stringify} from './util';
 import {ViewRef} from './view_ref';
+
 
 /**
  * Directive (D) sets a property on all component instances using this constant as a key and the
@@ -785,6 +787,8 @@ export function elementStart(
   }
   appendChild(getParentLNode(node), native, viewData);
   createDirectivesAndLocals(localRefs);
+
+  linkDomNodeToView(native, viewData);
 }
 
 /**
