@@ -1683,6 +1683,9 @@
     "name": "getOrCreateNodeInjectorForNode"
   },
   {
+    "name": "getOrCreateRenderer2"
+  },
+  {
     "name": "getOrCreateTView"
   },
   {
@@ -1807,6 +1810,9 @@
   },
   {
     "name": "injectElementRef"
+  },
+  {
+    "name": "injectRenderer2"
   },
   {
     "name": "injectTemplateRef"

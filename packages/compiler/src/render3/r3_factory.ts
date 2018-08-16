@@ -120,6 +120,11 @@ export enum R3ResolvedDependencyType {
    * The dependency is for `ChangeDetectorRef`.
    */
   ChangeDetectorRef = 6,
+
+  /**
+   * The dependency is for `Renderer2`.
+   */
+  Renderer2 = 7,
 }
 
 /**
@@ -285,6 +290,8 @@ function compileInjectDependency(
       return o.importExpr(R3.injectViewContainerRef).callFn([]);
     case R3ResolvedDependencyType.ChangeDetectorRef:
       return o.importExpr(R3.injectChangeDetectorRef).callFn([]);
+    case R3ResolvedDependencyType.Renderer2:
+      return o.importExpr(R3.injectRenderer2).callFn([]);
     default:
       return unsupported(
           `Unknown R3ResolvedDependencyType: ${R3ResolvedDependencyType[dep.resolved]}`);
@@ -305,6 +312,7 @@ export function dependenciesFromGlobalMetadata(
   const templateRef = reflector.resolveExternalReference(Identifiers.TemplateRef);
   const viewContainerRef = reflector.resolveExternalReference(Identifiers.ViewContainerRef);
   const injectorRef = reflector.resolveExternalReference(Identifiers.Injector);
+  const renderer2 = reflector.resolveExternalReference(Identifiers.Renderer2);
 
   // Iterate through the type's DI dependencies and produce `R3DependencyMetadata` for each of them.
   const deps: R3DependencyMetadata[] = [];
@@ -320,6 +328,8 @@ export function dependenciesFromGlobalMetadata(
         resolved = R3ResolvedDependencyType.ViewContainerRef;
       } else if (tokenRef === injectorRef) {
         resolved = R3ResolvedDependencyType.Injector;
+      } else if (tokenRef === renderer2) {
+        resolved = R3ResolvedDependencyType.Renderer2;
       } else if (dependency.isAttribute) {
         resolved = R3ResolvedDependencyType.Attribute;
       }

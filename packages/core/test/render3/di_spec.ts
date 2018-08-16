@@ -6,18 +6,21 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Optional, Self, SkipSelf, TemplateRef, ViewContainerRef, defineInjectable} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Optional, Renderer2, Self, SkipSelf, TemplateRef, ViewContainerRef, defineInjectable} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
-import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectRenderer2, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, loadDirective, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
+import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
+
 import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
+import {getRendererFactory2} from './imported_renderer2';
 import {ComponentFixture, createComponent, createDirective, renderComponent, toHtml} from './render_util';
 
 describe('di', () => {
@@ -1203,6 +1206,36 @@ describe('di', () => {
       expect(dir !.cdr).toBe(app.cdr);
       expect(dir !.cdr).toBe(dirSameInstance !.cdr);
     });
+  });
+
+  describe('Renderer2', () => {
+    let comp: MyComp;
+
+    class MyComp {
+      constructor(public renderer: Renderer2) {}
+
+      static ngComponentDef = defineComponent({
+        type: MyComp,
+        selectors: [['my-comp']],
+        factory: () => comp = new MyComp(injectRenderer2()),
+        consts: 1,
+        vars: 0,
+        template: function(rf: RenderFlags, ctx: MyComp) {
+          if (rf & RenderFlags.Create) {
+            text(0, 'Foo');
+          }
+        }
+      });
+    }
+
+    it('should inject the Renderer2 used by the application', () => {
+      const rendererFactory = getRendererFactory2(document);
+      new ComponentFixture(MyComp, {rendererFactory: rendererFactory});
+      expect(isProceduralRenderer(comp.renderer)).toBeTruthy();
+    });
+
+    it('should throw when injecting Renderer2 but the application is using Renderer3',
+       () => { expect(() => new ComponentFixture(MyComp)).toThrow(); });
   });
 
   describe('@Attribute', () => {

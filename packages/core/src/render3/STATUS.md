@@ -216,6 +216,7 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | `injectElementRef()`                |  ✅     |  ✅      |  ✅      |
 | `injectViewContainerRef()`          |  ✅     |  ✅      |  ✅      |
 | `injectTemplateRef()`               |  ✅     |  ✅      |  ✅      |
+| `injectRenderer2()`                 |  ✅     |  ✅      |  ✅      |
 | default `inject()` with no injector |  ❌     |  ❌      |  ❌      |
 | sanitization with no injector       |  ✅     |  ✅      |  ❌      |
 

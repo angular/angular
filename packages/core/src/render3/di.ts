@@ -19,6 +19,7 @@ import {NgModuleRef as viewEngine_NgModuleRef} from '../linker/ng_module_factory
 import {TemplateRef as viewEngine_TemplateRef} from '../linker/template_ref';
 import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_container_ref';
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, ViewRef as viewEngine_ViewRef} from '../linker/view_ref';
+import {Renderer2} from '../render';
 import {Type} from '../type';
 
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
@@ -29,7 +30,7 @@ import {DirectiveDefInternal, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
 import {AttributeMarker, LContainerNode, LElementContainerNode, LElementNode, LNode, LNodeWithLocalRefs, LViewNode, TContainerNode, TElementNode, TNodeFlags, TNodeType} from './interfaces/node';
 import {LQueries, QueryReadType} from './interfaces/query';
-import {Renderer3} from './interfaces/renderer';
+import {Renderer3, isProceduralRenderer} from './interfaces/renderer';
 import {DIRECTIVES, HOST_NODE, INJECTOR, LViewData, QUERIES, RENDERER, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {addRemoveViewFromContainer, appendChild, detachView, getChildLNode, getParentLNode, insertView, removeView} from './node_manipulation';
@@ -236,6 +237,10 @@ export function injectComponentFactoryResolver(): viewEngine_ComponentFactoryRes
 }
 const componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryResolver();
 
+
+export function injectRenderer2(): Renderer2 {
+  return getOrCreateRenderer2(getOrCreateNodeInjector());
+}
 /**
  * Inject static attribute value into directive constructor.
  *
@@ -318,6 +323,17 @@ function getOrCreateHostChangeDetector(currentNode: LViewNode | LElementNode):
           hostNode.data as LViewData,
           hostNode
               .view[DIRECTIVES] ![hostNode.tNode.flags >> TNodeFlags.DirectiveStartingIndexShift]);
+}
+
+
+
+function getOrCreateRenderer2(di: LInjector): Renderer2 {
+  const renderer = di.node.view[RENDERER];
+  if (isProceduralRenderer(renderer)) {
+    return renderer as Renderer2;
+  } else {
+    throw new Error('Cannot inject Renderer2 when the application uses Renderer3!');
+  }
 }
 
 /**
@@ -631,6 +647,9 @@ export class NodeInjector implements Injector {
     }
     if (token === viewEngine_ChangeDetectorRef) {
       return getOrCreateChangeDetectorRef(this._lInjector, null);
+    }
+    if (token === Renderer2) {
+      return getOrCreateRenderer2(this._lInjector);
     }
 
     return getOrCreateInjectable(this._lInjector, token);
