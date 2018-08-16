@@ -1440,9 +1440,6 @@
     "name": "SyncAsync"
   },
   {
-    "name": "TAG_DEFINITIONS"
-  },
-  {
     "name": "TAG_TO_PLACEHOLDER_NAMES"
   },
   {
@@ -1729,9 +1726,6 @@
   },
   {
     "name": "_DEFAULT_SOURCE_LANG$1"
-  },
-  {
-    "name": "_DEFAULT_TAG_DEFINITION"
   },
   {
     "name": "_DOCTYPE"
@@ -3508,6 +3502,9 @@
   },
   {
     "name": "refCount"
+  },
+  {
+    "name": "registerContext"
   },
   {
     "name": "registerModuleFactory"
