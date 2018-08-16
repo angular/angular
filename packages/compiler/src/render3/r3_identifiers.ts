@@ -116,6 +116,8 @@ export class Identifiers {
   static injectChangeDetectorRef:
       o.ExternalReference = {name: 'ɵinjectChangeDetectorRef', moduleName: CORE};
 
+  static injectRenderer2: o.ExternalReference = {name: 'ɵinjectRenderer2', moduleName: CORE};
+
   static directiveInject: o.ExternalReference = {name: 'ɵdirectiveInject', moduleName: CORE};
 
   static templateRefExtractor:

@@ -75,6 +75,9 @@ export function getConstructorDependencies(
           case 'ViewContainerRef':
             resolved = R3ResolvedDependencyType.ViewContainerRef;
             break;
+          case 'Renderer2':
+            resolved = R3ResolvedDependencyType.Renderer2;
+            break;
           default:
             // Leave as a Token or Attribute.
         }

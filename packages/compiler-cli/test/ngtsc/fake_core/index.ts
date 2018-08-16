@@ -49,6 +49,7 @@ export class ElementRef {}
 export class Injector {}
 export class TemplateRef<T = any> {}
 export class ViewContainerRef {}
+export class Renderer2 {}
 export class ɵNgModuleFactory<T> {
   constructor(public clazz: T) {}
 }
