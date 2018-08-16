@@ -37,6 +37,13 @@ export declare function renderModuleFactory<T>(moduleFactory: NgModuleFactory<T>
     extraProviders?: StaticProvider[];
 }): Promise<string>;
 
+export declare const SERVER_DOM: InjectionToken<ServerDom>;
+
+export declare enum ServerDom {
+    Domino = 0,
+    JSDOM = 1
+}
+
 /** @experimental */
 export declare class ServerModule {
 }

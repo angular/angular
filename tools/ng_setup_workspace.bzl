@@ -162,6 +162,7 @@ filegroup(
         "path-dirname",
         "path-is-absolute",
         "performance-now",
+        "pn",
         "posix-character-classes",
         "preserve",
         "process-nextick-args",
