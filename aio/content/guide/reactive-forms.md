@@ -591,47 +591,95 @@ Compare the two paths to achieve the same result.
 -->
 ## 폼 유효성 검사하기 - 기본
 
+<!--
 Form validation is necessary when receiving user input through forms. This section covers adding a single validator to a form control and displaying the overall form status. Form validation is covered more extensively in the [Form Validation](guide/form-validation) guide.
+-->
+사용자가 폼에 데이터를 입력했다면 폼 유효성 검사를 해야합니다. 이번 섹션에서는 폼 컨트롤에 유효성 검사기를 추가해보고, 폼 상태에 대한 메시지를 화면에 표시해 봅시다. 폼 유효성 검사에 대해서는 [폼 유효성 검사](guide/form-validation) 문서에서 자세하게 다룹니다.
 
+<!--
 ### Step 1 - Import a validator function
+-->
+### 1단계 - 유효성 검사 함수 로드하기
 
+<!--
 Reactive forms include a set of validator functions out of the box for common use cases. These functions receive a control to validate against and return an error object or null based on the validation check.
+-->
+반응형 폼 모듈은 다양한 유효성 검사 함수도 함께 제공합니다. 이 함수들은 폼 컨트롤 인스턴스를 인자로 받으며, 유효성 검사에 실패한 경우에 에러 객체를 반환하고 유효성 검사를 통과하면 null을 반환합니다.
 
+<!--
 Import the `Validators` class from the `@angular/forms` package.
+-->
+먼저, `@angular/forms` 패키지에서 `Validators` 클래스를 로드합니다.
 
+<!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="validator-imports" title="src/app/profile-editor/profile-editor.component.ts (import)">
+-->
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="validator-imports" title="src/app/profile-editor/profile-editor.component.ts (심볼 로드)">
 
 </code-example>
 
+<!--
 ### Step 2 - Make a field required
+-->
+### 2단계 - 필수 항목 지정하기
 
+<!--
 The most common validation is making a field required. This section describes how to add a required validation to the `firstName` control.
+-->
+폼 유효성 검사 중 가장 많이 사용하는 것은 입력 필드를 꼭 입력하도록 지정하는 것입니다. `firstName` 폼 컨트롤에 이 내용을 어떻게 적용하는지 알아봅시다.
 
+<!--
 In the `ProfileEditor` component, add the `Validators.required` static method as the second item in the array for the `firstName` control.
+-->
+`ProfileEditor` 컴포넌트에서 `firstName` 폼 컨트롤을 생성하던 배열의 두 번째 항목으로 `Validators.required`를 추가합니다.
 
+<!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="required-validator" title="src/app/profile-editor/profile-editor.component.ts (required validator)">
+-->
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="required-validator" title="src/app/profile-editor/profile-editor.component.ts (required 유효성 검사기)">
 
 </code-example>
 
+<!--
 HTML5 has a set of built-in attributes that can be used for native validation, including `required`, `minlength`, `maxlength`, and more. Although _optional_, you can take advantage of these as additional attributes on your form input elements. Add the `required` attribute to the `firstName` input element.
+-->
+HTML5에서도 어트리뷰트를 지정해서 네이티브 유효성 검사 로직을 활용할 수 있습니다. `required`나 `minlength`, `maxlength`와 같은 것이 이 내용에 해당됩니다. 입력 필드에 유효성 검사기를 지정하는 것은 선택사항이지만, 이 기능을 활성화하려면 다음과 같이 `firstName` `input` 엘리먼트에 `required` 어트리뷰트를 지정하기만 하면 됩니다.
 
+<!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" linenums="false" title="src/app/profile-editor/profile-editor.component.html (required attribute)">
+-->
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" linenums="false" title="src/app/profile-editor/profile-editor.component.html (required 어트리뷰트)">
 
 </code-example>
 
 <div class="alert is-important">
 
+<!--
 *Note:* These HTML5 validation attributes should be used _in combination with_ the built-in validators provided by Angular's reactive forms. Using these two validation practices in combination prevents errors about the expression being changed after the template has been checked.
+-->
+*참고:* HTML5 유효성 검사 어트리뷰트는 반드시 Angular 반응형 폼이 제공하는 관련 유효성 검사기와 _함께_ 사용해야 합니다. 양쪽 기능을 함께 사용해야 해당 기능이 정상적으로 동작하며, 템플릿 검사를 마친 이후에 상태가 다시 변경되는 에러도 방지할 수 있습니다.
 
 </div>
 
+<!--
 ### Display form status
+-->
+### 폼 상태 표시하기
 
+<!--
 Now that you’ve added a required field to the form control, its initial status is invalid. This invalid status propagates to the parent `FormGroup`, making its status invalid. You have access to the current status of the `FormGroup` through the `status` property on the instance.
+-->
+이제 폼 컨트롤을 필수 항목으로 지정했기 때문에, 초기값은 더이상 유효하지 않은 값이 됩니다. 그래서 폼 컨트롤의 유효성 검사 상태는 부모 폼 컨트롤인 `FormGroup`으로 전파되며, 결과적으로 `FormGroup` 전체가 유효성 검사를 통과하지 못한 것으로 처리됩니다. 그러면 `FormGroup`의 `status` 프로퍼티를 참조해서 이 폼의 상태가 어떤지 확인할 수 있습니다.
 
+<!--
 Display the current status of the `profileForm` using interpolation.
+-->
+`profileForm`의 상태를 표시하기 위해 다음과 같이 템플릿을 작성합니다.
 
+<!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" linenums="false" title="src/app/profile-editor/profile-editor.component.html (display status)">
+-->
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" linenums="false" title="src/app/profile-editor/profile-editor.component.html (폼 상태 표시)">
 
 </code-example>
 
@@ -639,9 +687,15 @@ Display the current status of the `profileForm` using interpolation.
   <img src="generated/images/guide/reactive-forms/profile-editor-3.png" alt="Profile Editor Validation">
 </figure>
 
+<!--
 The submit button is disabled because the `profileForm` is invalid due to the required `firstName` form control. After you fill out the `firstName` input, the form becomes valid and the submit button is enabled.
+-->
+`firstName` 폼 컨트롤이 필수항목으로 지정되었지만 유효성 검사를 통과하지 못했기 때문에 `profileForm` 전체가 유효하지 않은 것으로 판단되고, 이에 따라 제출 버튼도 비활성화 됩니다. `firstName` 입력 필드에 데이터를 입력하면 폼 전체의 유효성 검사가 통과되면서, 제출 버튼도 활성화될 것입니다.
 
+<!--
 For more on form validation, visit the [Form Validation](guide/form-validation) guide.
+-->
+폼 유효성 검사에 대해 더 자세하게 알아보려면 [폼 유효성 검사](guide/form-validation) 문서를 참고하세요.
 
 ## Dynamic controls using form arrays
 
