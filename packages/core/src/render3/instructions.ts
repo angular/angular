@@ -1842,7 +1842,8 @@ export function createLContainer(
 export function template(
     index: number, templateFn: ComponentTemplate<any>| null, tagName?: string | null,
     attrs?: TAttributes | null, localRefs?: string[] | null) {
-  const node = containerInternal(index, tagName, attrs, localRefs);
+  // TODO: consider a separate node type for templates
+  const node = containerInternal(index, tagName || null, attrs || null, localRefs || null);
   if (firstTemplatePass) {
     node.tNode.tViews =
         createTView(-1, templateFn, tView.directiveRegistry, tView.pipeRegistry, null);
@@ -1863,16 +1864,15 @@ export function template(
  *
  * @param index The index of the container in the data array
  */
-export function container(
-    index: number, tagName?: string | null, attrs?: TAttributes | null): void {
-  const node = containerInternal(index, tagName, attrs, null);
+export function container(index: number): void {
+  const node = containerInternal(index, null, null, null);
   firstTemplatePass && (node.tNode.tViews = []);
   isParent = false;
 }
 
 function containerInternal(
-    index: number, tagName?: string | null, attrs?: TAttributes | null,
-    localRefs?: string[] | null): LContainerNode {
+    index: number, tagName: string | null, attrs: TAttributes | null,
+    localRefs: string[] | null): LContainerNode {
   ngDevMode &&
       assertEqual(
           viewData[BINDING_INDEX], -1, 'container nodes should be created before any bindings');
@@ -1882,8 +1882,7 @@ function containerInternal(
 
   ngDevMode && ngDevMode.rendererCreateComment++;
   const comment = renderer.createComment(ngDevMode ? 'container' : '');
-  const node =
-      createLNode(index, TNodeType.Container, comment, tagName || null, attrs || null, lContainer);
+  const node = createLNode(index, TNodeType.Container, comment, tagName, attrs, lContainer);
   appendChild(getParentLNode(node), comment, viewData);
 
   // Containers are added to the current view tree instead of their embedded views

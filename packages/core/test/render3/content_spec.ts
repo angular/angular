@@ -1805,37 +1805,35 @@ describe('content projection', () => {
         }
       });
 
+      function IfTemplate(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementStart(0, 'div');
+          { text(1, 'content'); }
+          elementEnd();
+        }
+      }
+
       /**
        * <child>
-       *   % if (true) {
-       *     <div>content</div>
-       *   % }
+       *    <div *ngIf="value">content</div>
        * </child>
        */
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: {value: any}) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'child');
-          { container(1, 'div'); }
+          { template(1, IfTemplate, 'div', [AttributeMarker.SelectOnly, 'ngIf']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
-          containerRefreshStart(1);
-          {
-            if (true) {
-              let rf0 = embeddedViewStart(0);
-              if (rf0 & RenderFlags.Create) {
-                elementStart(0, 'div');
-                { text(1, 'content'); }
-                elementEnd();
-              }
-              embeddedViewEnd();
-            }
-          }
-          containerRefreshEnd();
+          elementProperty(1, 'ngIf', bind(ctx.value));
         }
-      }, [Child]);
-      const parent = renderComponent(Parent);
-      expect(toHtml(parent)).toEqual('<child><span><div>content</div></span></child>');
+      }, [Child, NgIf]);
+
+
+      const fixture = new ComponentFixture(Parent);
+      fixture.component.value = true;
+      fixture.update();
+      expect(fixture.html).toEqual('<child><span><div>content</div></span></child>');
     });
 
   });
