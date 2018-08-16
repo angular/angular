@@ -34,7 +34,9 @@ wait_for_tunnel
 if is_lint; then
   $(npm bin)/gulp ci:lint
 elif is_e2e; then
-  $(npm bin)/gulp ci:e2e
+  # Run e2e tests inside of Xvfb because we need to test the HTML Fullscreen API's that cannot
+  # be tested within Chrome headless.
+  xvfb-run -a --server-args='-screen 0, 1024x768x16' $(npm bin)/gulp ci:e2e
 elif is_aot; then
   $(npm bin)/gulp ci:aot
 elif is_payload; then
