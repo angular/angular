@@ -6,7 +6,7 @@
     "name": "CIRCULAR$1"
   },
   {
-    "name": "EMPTY_ARRAY$1"
+    "name": "EMPTY_ARRAY"
   },
   {
     "name": "GET_PROPERTY_NAME"
@@ -84,7 +84,7 @@
     "name": "forwardRef"
   },
   {
-    "name": "getClosureSafeProperty$1"
+    "name": "getClosureSafeProperty"
   },
   {
     "name": "getNullInjector"

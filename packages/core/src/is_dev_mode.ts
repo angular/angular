@@ -13,6 +13,9 @@
  * please see [BAZEL.md](./docs/BAZEL.md).
  */
 
+let _devMode: boolean = true;
+let _runModeLocked: boolean = false;
+
 
 /**
  * Returns whether Angular is in development mode. After called once,
@@ -22,10 +25,6 @@
  *
  * @experimental APIs related to application bootstrap are currently under review.
  */
-
-let _devMode: boolean = true;
-let _runModeLocked: boolean = false;
-
 export function isDevMode(): boolean {
   _runModeLocked = true;
   return _devMode;
@@ -38,8 +37,6 @@ export function isDevMode(): boolean {
  * One important assertion this disables verifies that a change detection pass
  * does not result in additional changes to any bindings (also known as
  * unidirectional data flow).
- *
- *
  */
 export function enableProdMode(): void {
   if (_runModeLocked) {
