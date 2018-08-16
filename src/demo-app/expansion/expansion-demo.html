@@ -1,6 +1,8 @@
 <h1>Single Expansion Panel</h1>
 
-<mat-expansion-panel class="demo-expansion-width" #myPanel>
+<mat-expansion-panel class="demo-expansion-width" #myPanel
+                     (afterExpand)="addEvent('afterExpand')"
+                     (afterCollapse)="addEvent('afterCollapse')">
   <mat-expansion-panel-header [expandedHeight]="expandedHeight" [collapsedHeight]="collapsedHeight">
     <mat-panel-description>This is a panel description.</mat-panel-description>
     <mat-panel-title>Panel Title</mat-panel-title>
@@ -29,6 +31,11 @@
 </mat-form-field>
 <br>
 
+<p>Expansion Panel Animation Events</p>
+<code class="demo-expansion-code">
+  <pre *ngFor="let event of events">{{event}}</pre>
+</code>
+
 <h1>matAccordion</h1>
 <div>
   <p>Accordion Options</p>
@@ -56,7 +63,7 @@
 </div>
 <br>
 <mat-accordion [displayMode]="displayMode" [multi]="multi"
-              class="demo-expansion-width">
+               class="demo-expansion-width">
   <mat-expansion-panel #panel1  [hideToggle]="hideToggle">
     <mat-expansion-panel-header>Section 1</mat-expansion-panel-header>
     <p>This is the content text that makes sense here.</p>

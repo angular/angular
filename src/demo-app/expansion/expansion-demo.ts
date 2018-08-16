@@ -26,4 +26,9 @@ export class ExpansionDemo {
   showPanel3 = true;
   expandedHeight: string;
   collapsedHeight: string;
+  events: string[] = [];
+
+  addEvent(eventName: string) {
+    this.events.push(`${eventName} - ${new Date().toISOString()}`);
+  }
 }

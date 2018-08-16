@@ -2,3 +2,16 @@
   width: 600px;
   display: block;
 }
+
+.demo-expansion-code {
+  background: #d3d3d3;
+  display: block;
+  height: 10em;
+  overflow: auto;
+  padding: 0 5px;
+  width: 400px;
+
+  pre {
+    margin: 0.25em 0;
+  }
+}
