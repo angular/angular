@@ -1,0 +1,301 @@
+#!/usr/bin/env bash
+
+press_any_key_to_continue() {
+  read -n 1 -s -r -p "Press any key to continue"
+}
+
+print_header() {
+  [[ $1 == 1 ]] && dry_run_text="**DRY RUN**" || dry_run_text=""
+
+  echo
+  echo
+  echo "Angular Release Script $dry_run_text"
+  echo
+  echo "http://go/ng2-release"
+  echo "http://go/ng2-caretaker"
+}
+
+ask() {
+  question=$1
+  answer="no"
+  echo
+  echo
+  read -r -p "$question [Y/n]" response
+  response=${response,,} # tolower
+  if [[ $response =~ ^(yes|y| ) ]] || [[ -z $response ]]; then
+    answer="yes"
+  fi
+}
+
+annoy() {
+  how_sure=""
+  annoy_count=1
+  if [ $# -gt 0 ]; then
+    annoy_count=$1
+  fi
+
+  for i in `seq 1 $annoy_count`; do
+    echo
+    echo "Are you$how_sure sure?"
+    press_any_key_to_continue
+    how_sure="$how_sure really"
+  done
+}
+
+annoy 4
+
+login_to_npm() {
+  echo
+  echo
+  echo "npm login info"
+  echo "username: angular"
+  echo "email: npm@angular.io"
+  echo "more instructions at http://go/ng2-release"
+  echo
+  if [ $dry_run == 1 ] ; then
+    echo "**DRY RUN** Logging into NPM"
+  else
+    npm login
+  fi
+}
+
+release_next() {
+  ask "Is the next branch master?"
+  if [ $answer == "yes" ]; then
+    releaseBranch=master
+  else
+    read -p "Name of the branch to release from (e.g. 7.0.x): " releaseBranch
+  fi
+
+  git fetch upstream --tags
+  git checkout $releaseBranch
+  git merge --ff-only upstream/$releaseBranch
+  rm -rf node_modules && yarn
+
+  ask "Is this a beta.0 or rc.0?"
+  if [ $answer == "yes" ]; then
+    echo "Please update the package.json to have the appropriate version"
+    press_any_key_to_continue
+    releaseVersion=`node -e "console.log(require('./package.json').version)"`
+  else
+    releaseVersion=`npm version prerelease --no-git-tag-version`
+  fi
+
+  display_prerelease_info
+
+  yarn gulp changelog
+
+  # LOL. Use my tools or else.
+  code ./CHANGELOG.md
+
+  echo
+  echo
+  echo "Verify the CHANGELOG.md looks correct"
+  echo "fix typos, correct any breaking changes instructions if unclear"
+  echo "remove any \"aio\" and \"docs-infra\" entries (we don't publish the changelog for angular.io changes)"
+  echo "remove any \"ivy\" specific entries (we don't publish the changelog for ivy changes)"
+  echo "Make sure to include a DEPRECATIONS section when needed"
+  press_any_key_to_continue
+  annoy
+
+  if [ $dry_run == 1 ]; then
+    echo
+    echo
+    echo "** DRY RUN ** Bazel build and release"
+  else
+    # BETA AND RC RELEASES ONLY
+    bazel clean
+    ./scripts/release/publish-next
+  fi
+
+  echo
+  echo
+  ./scripts/release/post-check-next
+
+  echo
+  echo
+  echo "Verify the published versions and dist-tags"
+  press_any_key_to_continue
+  annoy
+
+  if [ $dry_run == 1 ]; then
+    echo "** DRY RUN ** git push upstream ${releaseBranch}"
+    echo "** DRY RUN ** git push upstream ${releaseVersion}"
+  else
+    git push upstream ${releaseBranch}
+    git push upstream ${releaseVersion}
+  fi
+}
+
+display_prerelease_info() {
+  echo
+  echo
+  echo "************************************"
+  echo " You're about to release "
+  echo " branch:    $releaseBranch"
+  echo " version:   $releaseVersion"
+  echo "************************************"
+  press_any_key_to_continue
+}
+
+release_patch_to_latest() {
+  read -p "Name of the branch to release from (e.g. 6.1.x): " releaseBranch
+  git fetch upstream --tags
+  git checkout $releaseBranch
+  git merge --ff-only upstream/$releaseBranch
+  nvm use
+  rm -rf node_modules && yarn
+  releaseVersion=`npm version patch --no-git-tag-version`
+  releaseVersion=${releaseVersion#v}
+
+  display_prerelease_info
+
+  yarn gulp changelog
+
+  # If you don't have VS Code, too bad. :P
+  code ./CHANGELOG.md
+
+  echo
+  echo
+  echo "Verify CHANGELOG and make manual changes if necessary"
+  press_any_key_to_continue
+  annoy
+
+  if [ $dry_run == 1 ]; then
+    echo "** DRY RUN ** git commit -p -m \"release: cut the v${releaseVersion} release\""
+    echo "** DRY RUN ** git tag ${releaseVersion}"
+  else
+    git commit -p -m "release: cut the v${releaseVersion} release"
+    git tag ${releaseVersion}
+  fi
+
+  if [ $dry_run == 1 ]; then
+    echo "** DRY RUN ** Bazel clean, build and release script"
+  else
+    # LATEST releases only
+    bazel clean
+    bazel build //packages/core --symlink_prefix=
+    ./scripts/release/publish-latest
+  fi
+
+  ./scripts/release/post-check
+
+  echo
+  echo
+  echo "Verify published versions and dist-tags are appropriate above"
+  press_any_key_to_continue
+  annoy
+
+  if [ $dry_run == 1 ]; then
+    echo "** DRY RUN ** git push upstream ${releaseBranch}"
+    echo "** DRY RUN ** git push upstream ${releaseVersion}"
+  else
+    git push upstream ${releaseBranch}
+    git push upstream ${releaseVersion}
+  fi
+
+  echo
+  echo
+  echo "Go and copy the changes from the CHANGELOG.md into your clipboard"
+  press_any_key_to_continue
+  annoy 2
+
+  git checkout master
+  git merge --ff-only master
+
+  if [ $dry_run == 1 ]; then
+    echo "** DRY RUN ** git commit -p -m \"docs: release notes for the v${releaseVersion} release\""
+    echo "** DRY RUN ** git push upstream master"
+  else
+    git commit -p -m "docs: release notes for the v${releaseVersion} release"
+    git push upstream master
+  fi
+}
+
+release_major_or_minor() {
+  # WOMP WOMP
+  echo "NOT IMPLEMENTED YET, SORRY"
+}
+
+release_lts_5() {
+  echo "NOT IMPLEMENTED YET, SORRY"
+}
+
+release_lts_4() {
+  echo "NOT IMPLEMENTED YET, SORRY"
+}
+
+complete() {
+  echo "All done!"
+}
+
+release() {
+  print_header $dry_run
+
+  login_to_npm
+
+  ask "Would you like to release a PATCH to LATEST?"
+  if [ $answer == "yes" ]; then
+    release_patch_to_latest $dry_run
+  else
+    echo "Skipped: No patch release"
+  fi
+
+  ask "Would you like to release NEXT (beta/rc)?"
+  if [ $answer == "yes" ]; then
+    release_next $dry_run
+  else
+    echo "Skipped: No release of @next"
+  fi
+
+  ask "Would you like to do a MAJOR or MINOR release of LATEST?"
+  if [ $answer == "yes" ]; then
+    release_major_or_minor
+  else
+    echo "Skipped: No major or minor release"
+  fi
+
+  ask "Would you like to do an LTS 5.2.x release?"
+  if [ $answer == "yes" ]; then
+    release_lts_5 $dry_run
+  else
+    echo "Skipped: No release of LTS 5.2.x"
+  fi
+
+  ask "Would you like to do an LTS 4.4.x release?"
+  if [ $answer == "yes" ]; then
+    release_lts_4 $dry_run
+  else
+    echo "Skipped: No release of LTS 4.4.x"
+  fi
+
+  complete
+}
+
+show_help() {
+  echo
+  echo "Angular Release Script"
+  echo
+  echo "-d   Perform a dry run. Do not actually release or commit anything."
+  echo
+  echo
+}
+
+dry_run=0
+
+if [ $# -eq 1 ]
+then
+  if [ "$1" == "help" ]
+  then
+    show_help
+    exit 1
+  fi
+
+  if [ "$1" == "-d" ]
+  then
+    dry_run=1
+  fi
+fi
+
+release
+
