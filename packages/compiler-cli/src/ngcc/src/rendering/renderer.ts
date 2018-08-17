@@ -89,8 +89,12 @@ export abstract class Renderer {
         file.sourceFile);
 
     this.addImports(outputText, importManager.getAllImports(file.sourceFile.fileName, null));
-    // QUESTION: do we need to remove contructor param metadata and property decorators?
+
+    // TODO: remove contructor param metadata and property decorators (we need info from the
+    // handlers to do this)
     this.removeDecorators(outputText, decoratorsToRemove);
+
+    this.rewriteSwitchableDeclarations(outputText, file.sourceFile);
 
     return this.renderSourceAndMap(file, input, outputText, targetPath);
   }
@@ -102,6 +106,8 @@ export abstract class Renderer {
       output: MagicString, analyzedClass: AnalyzedClass, definitions: string): void;
   protected abstract removeDecorators(
       output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>): void;
+  protected abstract rewriteSwitchableDeclarations(
+      outputText: MagicString, sourceFile: ts.SourceFile): void;
 
   /**
    * Add the decorator nodes that are to be removed to a map

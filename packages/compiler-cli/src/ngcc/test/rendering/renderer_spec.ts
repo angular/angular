@@ -29,6 +29,9 @@ class TestRenderer extends Renderer {
   removeDecorators(output: MagicString, decoratorsToRemove: Map<ts.Node, ts.Node[]>) {
     output.prepend('\n// REMOVE DECORATORS\n');
   }
+  rewriteSwitchableDeclarations(output: MagicString, sourceFile: ts.SourceFile): void {
+    output.prepend('\n// REWRITTEN DECLARATIONS\n');
+  }
 }
 
 function createTestRenderer() {
@@ -68,7 +71,7 @@ describe('Renderer', () => {
     ]
   });
   const RENDERED_CONTENTS =
-      `\n// REMOVE DECORATORS\n\n// ADD IMPORTS\n\n// ADD CONSTANTS\n\n// ADD DEFINITIONS\n` +
+      `\n// REWRITTEN DECLARATIONS\n\n// REMOVE DECORATORS\n\n// ADD IMPORTS\n\n// ADD CONSTANTS\n\n// ADD DEFINITIONS\n` +
       INPUT_PROGRAM.contents;
   const OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
@@ -78,14 +81,14 @@ describe('Renderer', () => {
       'import { Directive } from \'@angular/core\';\nexport class A {\n    foo(x) {\n        return x;\n    }\n}\nA.decorators = [\n    { type: Directive, args: [{ selector: \'[a]\' }] }\n];\n'
     ],
     'names': [],
-    'mappings': ';;;;;;;;AAAA;;;;;;;;;'
+    'mappings': ';;;;;;;;;;AAAA;;;;;;;;;'
   });
 
   const MERGED_OUTPUT_PROGRAM_MAP = fromObject({
     'version': 3,
     'sources': ['/file.ts'],
     'names': [],
-    'mappings': ';;;;;;;;AAAA',
+    'mappings': ';;;;;;;;;;AAAA',
     'file': '/output_file.js',
     'sourcesContent': [
       'import { Directive } from \'@angular/core\';\nexport class A {\n    foo(x: string): string {\n        return x;\n    }\n    static decorators = [\n        { type: Directive, args: [{ selector: \'[a]\' }] }\n    ];\n}'
