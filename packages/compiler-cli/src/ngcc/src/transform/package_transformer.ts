@@ -25,9 +25,7 @@ import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
 
-import {getEntryPoints} from './utils';
-
-
+import {checkMarkerFile, findAllPackageJsonFiles, getEntryPoints, writeMarkerFile} from './utils';
 
 /**
  * A Package is stored in a directory on disk and that directory can contain one or more package
@@ -52,7 +50,11 @@ export class PackageTransformer {
   transform(packagePath: string, format: string, targetPath: string = 'node_modules'): void {
     const sourceNodeModules = this.findNodeModulesPath(packagePath);
     const targetNodeModules = resolve(sourceNodeModules, '..', targetPath);
-    const entryPoints = getEntryPoints(packagePath, format);
+    const packageJsonPaths =
+        findAllPackageJsonFiles(packagePath)
+            // Ignore paths that have been built already
+            .filter(packageJsonPath => !checkMarkerFile(packageJsonPath, format));
+    const entryPoints = getEntryPoints(packageJsonPaths, format);
 
     entryPoints.forEach(entryPoint => {
       const outputFiles: FileInfo[] = [];
@@ -102,6 +104,9 @@ export class PackageTransformer {
       // Write out all the transformed files.
       outputFiles.forEach(file => this.writeFile(file));
     });
+
+    // Write the built-with-ngcc markers
+    packageJsonPaths.forEach(packageJsonPath => { writeMarkerFile(packageJsonPath, format); });
   }
 
   getHost(format: string, program: ts.Program, dtsMapper: DtsMapper): NgccReflectionHost {
