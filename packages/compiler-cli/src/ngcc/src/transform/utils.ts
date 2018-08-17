@@ -6,11 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {readFileSync} from 'fs';
-import {dirname, relative, resolve} from 'path';
+import {existsSync, readFileSync, writeFileSync} from 'fs';
+import {dirname, resolve} from 'path';
 import {find} from 'shelljs';
 
 import {isDefined} from '../utils';
+
+export const NGCC_VERSION = '0.0.0-PLACEHOLDER';
 
 /**
  * Represents an entry point to a package or sub-package.
@@ -29,7 +31,7 @@ export class EntryPoint {
    * @param relativeEntryPath The relative path to the entry point file.
    * @param relativeDtsEntryPath The relative path to the `.d.ts` entry point file.
    */
-  constructor(packageRoot: string, relativeEntryPath: string, relativeDtsEntryPath: string) {
+  constructor(public packageRoot: string, relativeEntryPath: string, relativeDtsEntryPath: string) {
     this.entryFileName = resolve(packageRoot, relativeEntryPath);
     this.entryRoot = dirname(this.entryFileName);
     const dtsEntryFileName = resolve(packageRoot, relativeDtsEntryPath);
@@ -70,8 +72,7 @@ export function findAllPackageJsonFiles(rootDirectory: string): string[] {
  *
  * @returns A collection of `EntryPoint`s that correspond to entry points for the package.
  */
-export function getEntryPoints(packageDirectory: string, format: string): EntryPoint[] {
-  const packageJsonPaths = findAllPackageJsonFiles(packageDirectory);
+export function getEntryPoints(packageJsonPaths: string[], format: string): EntryPoint[] {
   const entryPoints =
       packageJsonPaths
           .map(packageJsonPath => {
@@ -85,4 +86,18 @@ export function getEntryPoints(packageDirectory: string, format: string): EntryP
           })
           .filter(isDefined);
   return entryPoints;
+}
+
+export function getMarkerPath(packageJsonPath: string, format: string) {
+  return resolve(dirname(packageJsonPath), `__modified_by_ngcc_for_${format}__`);
+}
+
+export function checkMarkerFile(packageJsonPath: string, format: string) {
+  const markerPath = getMarkerPath(packageJsonPath, format);
+  return existsSync(markerPath) && readFileSync(markerPath, 'utf8') === NGCC_VERSION;
+}
+
+export function writeMarkerFile(packageJsonPath: string, format: string) {
+  const markerPath = getMarkerPath(packageJsonPath, format);
+  writeFileSync(markerPath, NGCC_VERSION, 'utf8');
 }
