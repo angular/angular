@@ -46,6 +46,19 @@ export class C {}
 C.decorators = [
   { type: Directive, args: [{ selector: '[c]' }] },
 ];
+let compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;
+let badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;
+
+function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {
+  const compilerFactory = injector.get(CompilerFactory);
+  const compiler = compilerFactory.createCompiler([options]);
+  return compiler.compileModuleAsync(moduleType);
+}
+
+function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {
+  ngDevMode && assertNgModuleType(moduleType);
+  return Promise.resolve(new R3NgModuleFactory(moduleType));
+}
 // Some other content`
 };
 
@@ -82,6 +95,29 @@ export class A {}`);
     });
   });
 
+  describe('rewriteSwitchableDeclarations', () => {
+    it('should switch marked declaration initializers', () => {
+      const {renderer, program} = setup(PROGRAM);
+      const file = program.getSourceFile('some/file.js');
+      if (file === undefined) {
+        throw new Error(`Could not find source file`);
+      }
+      const output = new MagicString(PROGRAM.contents);
+      renderer.rewriteSwitchableDeclarations(output, file);
+      expect(output.toString())
+          .not.toContain(`let compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;`);
+      expect(output.toString())
+          .toContain(`let badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;`);
+      expect(output.toString())
+          .toContain(`let compileNgModuleFactory = compileNgModuleFactory__POST_NGCC__;`);
+      expect(output.toString())
+          .toContain(
+              `function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {`);
+      expect(output.toString())
+          .toContain(
+              `function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {`);
+    });
+  });
 
   describe('addDefinitions', () => {
     it('should insert the definitions directly after the class declaration', () => {
