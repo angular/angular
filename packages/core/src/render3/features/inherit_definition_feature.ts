@@ -8,7 +8,8 @@
 
 import {Type} from '../../type';
 import {fillProperties} from '../../util/property';
-import {ComponentDefInternal, DirectiveDefFeature, DirectiveDefInternal, RenderFlags} from '../interfaces/definition';
+import {ComponentDefInternal, ComponentTemplate, DirectiveDefFeature, DirectiveDefInternal, RenderFlags} from '../interfaces/definition';
+
 
 
 /**
@@ -74,14 +75,12 @@ export function InheritDefinitionFeature(
         const superViewQuery = superDef.viewQuery;
         if (superViewQuery) {
           if (prevViewQuery) {
-            // tslint:disable-next-line:no-any viewQuery is readonly, but we need to set it
-            (definition as any).viewQuery = <T>(rf: RenderFlags, ctx: T): void => {
+            definition.viewQuery = <T>(rf: RenderFlags, ctx: T): void => {
               superViewQuery(rf, ctx);
               prevViewQuery(rf, ctx);
             };
           } else {
-            // tslint:disable-next-line:no-any viewQuery is readonly, but we need to set it
-            (definition as any).viewQuery = superViewQuery;
+            definition.viewQuery = superViewQuery;
           }
         }
       }

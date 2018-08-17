@@ -48,7 +48,6 @@ describe('InheritDefinitionFeature', () => {
   });
 
   it('should inherit inputs', () => {
-    // tslint:disable-next-line:class-as-namespace
     class SuperDirective {
       static ngDirectiveDef = defineDirective({
         inputs: {
@@ -62,7 +61,6 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    // tslint:disable-next-line:class-as-namespace
     class SubDirective extends SuperDirective {
       static ngDirectiveDef = defineDirective({
         type: SubDirective,
@@ -93,7 +91,6 @@ describe('InheritDefinitionFeature', () => {
   });
 
   it('should inherit outputs', () => {
-    // tslint:disable-next-line:class-as-namespace
     class SuperDirective {
       static ngDirectiveDef = defineDirective({
         outputs: {
@@ -107,7 +104,6 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    // tslint:disable-next-line:class-as-namespace
     class SubDirective extends SuperDirective {
       static ngDirectiveDef = defineDirective({
         type: SubDirective,
@@ -143,7 +139,6 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    // tslint:disable-next-line:class-as-namespace
     class Class4 extends Class5 {
       input4 = 'hehe';
 
@@ -170,7 +165,6 @@ describe('InheritDefinitionFeature', () => {
       }) as any;
     }
 
-    // tslint:disable-next-line:class-as-namespace
     class Class1 extends Class2 {
       input1 = 'test';
       input2 = 'whatever';
@@ -217,7 +211,6 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    // tslint:disable-next-line:class-as-namespace
     class Class4 extends Class5 {
       output4 = 'hehe';
 
@@ -244,7 +237,6 @@ describe('InheritDefinitionFeature', () => {
       }) as any;
     }
 
-    // tslint:disable-next-line:class-as-namespace
     class Class1 extends Class2 {
       output1 = 'test';
       output2 = 'whatever';
@@ -275,7 +267,6 @@ describe('InheritDefinitionFeature', () => {
   it('should compose hostBindings', () => {
     const log: Array<[string, number, number]> = [];
 
-    // tslint:disable-next-line:class-as-namespace
     class SuperDirective {
       static ngDirectiveDef = defineDirective({
         type: SuperDirective,
@@ -287,7 +278,6 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    // tslint:disable-next-line:class-as-namespace
     class SubDirective extends SuperDirective {
       static ngDirectiveDef = defineDirective({
         type: SubDirective,
@@ -310,7 +300,6 @@ describe('InheritDefinitionFeature', () => {
   it('should compose viewQuery', () => {
     const log: Array<[string, RenderFlags, any]> = [];
 
-    // tslint:disable-next-line:class-as-namespace
     class SuperComponent {
       static ngComponentDef = defineComponent({
         type: SuperComponent,
@@ -323,7 +312,6 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    // tslint:disable-next-line:class-as-namespace
     class SubComponent extends SuperComponent {
       static ngComponentDef = defineComponent({
         type: SubComponent,
@@ -349,7 +337,6 @@ describe('InheritDefinitionFeature', () => {
   it('should compose contentQueries', () => {
     const log: string[] = [];
 
-    // tslint:disable-next-line:class-as-namespace
     class SuperDirective {
       static ngDirectiveDef = defineDirective({
         type: SuperDirective,
@@ -359,7 +346,6 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    // tslint:disable-next-line:class-as-namespace
     class SubDirective extends SuperDirective {
       static ngDirectiveDef = defineDirective({
         type: SubDirective,
@@ -380,7 +366,6 @@ describe('InheritDefinitionFeature', () => {
   it('should compose contentQueriesRefresh', () => {
     const log: Array<[string, number, number]> = [];
 
-    // tslint:disable-next-line:class-as-namespace
     class SuperDirective {
       static ngDirectiveDef = defineDirective({
         type: SuperDirective,
@@ -392,7 +377,6 @@ describe('InheritDefinitionFeature', () => {
       });
     }
 
-    // tslint:disable-next-line:class-as-namespace
     class SubDirective extends SuperDirective {
       static ngDirectiveDef = defineDirective({
         type: SubDirective,
@@ -413,7 +397,6 @@ describe('InheritDefinitionFeature', () => {
   });
 
   it('should throw if inheriting a component from a directive', () => {
-    // tslint:disable-next-line:class-as-namespace
     class SuperComponent {
       static ngComponentDef = defineComponent({
         type: SuperComponent,
@@ -426,7 +409,6 @@ describe('InheritDefinitionFeature', () => {
     }
 
     expect(() => {
-      // tslint:disable-next-line:class-as-namespace
       class SubDirective extends SuperComponent{static ngDirectiveDef = defineDirective({
                                                   type: SubDirective,
                                                   selectors: [['', 'subDir', '']],
@@ -439,7 +421,6 @@ describe('InheritDefinitionFeature', () => {
   it('should run inherited features', () => {
     const log: any[] = [];
 
-    // tslint:disable-next-line:class-as-namespace
     class SuperDirective {
       static ngDirectiveDef = defineDirective({
         type: SuperDirective,
