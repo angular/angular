@@ -417,10 +417,10 @@ def _devmode_compile_action(ctx, inputs, outputs, tsconfig_file, node_opts):
     compile_action_outputs = outputs + outs.devmode_js + outs.declarations + outs.summaries + outs.metadata
     _compile_action(ctx, inputs, compile_action_outputs, None, tsconfig_file, node_opts)
 
-def _ts_expected_outs(ctx, label):
-    # rules_typescript expects a function with two arguments, but our
-    # implementation doesn't use the label
-    _ignored = [label]
+def _ts_expected_outs(ctx, label, srcs_files = []):
+    # rules_typescript expects a function with two or more arguments, but our
+    # implementation doesn't use the label(and **kwargs).
+    _ignored = [label, srcs_files]
     return _expected_outs(ctx)
 
 def ng_module_impl(ctx, ts_compile_actions):
