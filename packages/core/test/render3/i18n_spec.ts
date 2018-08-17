@@ -10,7 +10,7 @@ import {NgForOfContext} from '@angular/common';
 import {Component} from '../../src/core';
 import {defineComponent} from '../../src/render3/definition';
 import {I18nExpInstruction, I18nInstruction, i18nApply, i18nExpMapping, i18nInterpolation1, i18nInterpolation2, i18nInterpolation3, i18nInterpolation4, i18nInterpolation5, i18nInterpolation6, i18nInterpolation7, i18nInterpolation8, i18nInterpolationV, i18nMapping} from '../../src/render3/i18n';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, projection, projectionDef, template, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, nextContext, projection, projectionDef, template, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {NgForOf} from './common_with_def';
 import {ComponentFixture, TemplateFixture} from './render_util';
@@ -60,7 +60,7 @@ describe('Runtime i18n', () => {
       i18nApply(1, i18n_1[0]);
     }
 
-    const fixture = new TemplateFixture(createTemplate);
+    const fixture = new TemplateFixture(createTemplate, () => {}, 5);
     expect(fixture.html).toEqual('<div><c>trad 1</c><a>trad 2<b>trad 3</b></a></div>');
   });
 
@@ -76,6 +76,7 @@ describe('Runtime i18n', () => {
         type: MyApp,
         factory: () => new MyApp(),
         selectors: [['my-app']],
+        consts: 3,
         // Initial template:
         // <div i18n>
         //  {{exp1}} {{exp2}}
@@ -134,6 +135,7 @@ describe('Runtime i18n', () => {
       static ngComponentDef = defineComponent({
         type: MyApp,
         factory: () => new MyApp(),
+        consts: 2,
         selectors: [['my-app']],
         // Initial template:
         // <div i18n>
@@ -191,6 +193,7 @@ describe('Runtime i18n', () => {
         type: MyApp,
         factory: () => new MyApp(),
         selectors: [['my-app']],
+        consts: 1,
         // Initial template:
         // <div i18n i18n-title title="{{exp1}}{{exp2}}"></div>
 
@@ -236,6 +239,7 @@ describe('Runtime i18n', () => {
         type: MyApp,
         factory: () => new MyApp(),
         selectors: [['my-app']],
+        consts: 8,
         // Initial template:
         // <div i18n i18n-title title="{{exp1}}{{exp2}}">
         //  {{exp1}}
@@ -332,6 +336,7 @@ describe('Runtime i18n', () => {
         type: MyApp,
         factory: () => new MyApp(),
         selectors: [['my-app']],
+        consts: 6,
         // Initial template:
         // <div>
         //  <a i18n>
@@ -426,6 +431,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 3,
           // Initial template:
           // before (
           // % if (condition) { // with i18n
@@ -452,7 +458,7 @@ describe('Runtime i18n', () => {
             if (rf & RenderFlags.Update) {
               containerRefreshStart(1);
               {
-                let rf0 = embeddedViewStart(0);
+                let rf0 = embeddedViewStart(0, 1);
                 if (rf0 & RenderFlags.Create) {
                   // Start of translated section 1
                   text(0);  // EXP_1
@@ -523,7 +529,7 @@ describe('Runtime i18n', () => {
         i18nApply(2, i18n_1[0]);
       }
 
-      const fixture = new TemplateFixture(createTemplate);
+      const fixture = new TemplateFixture(createTemplate, () => {}, 5);
       expect(fixture.html).toEqual('<div><a></a><b></b><d></d></div>');
     });
 
@@ -531,6 +537,22 @@ describe('Runtime i18n', () => {
       const MSG_DIV_SECTION_1 = `{$START_LI}valeur: {$EXP_1}!{$END_LI}`;
       // The indexes are based on each template function
       let i18n_1: I18nInstruction[][];
+
+      function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
+        if (rf1 & RenderFlags.Create) {
+          // This is a container so the whole template is a translated section
+          // Start of translated section 2
+          elementStart(0, 'li');  // START_LI
+          { text(1); }            // EXP_1
+          elementEnd();
+          // End of translated section 2
+          i18nApply(0, i18n_1[1]);
+        }
+        if (rf1 & RenderFlags.Update) {
+          textBinding(1, bind(row.$implicit));
+        }
+      }
+
       class MyApp {
         items: string[] = ['1', '2'];
 
@@ -538,6 +560,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 2,
           // Initial template:
           // <ul i18n>
           //   <li *ngFor="let item of items">value: {{item}}</li>
@@ -558,7 +581,7 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                template(1, liTemplate, null, ['ngForOf', '']);  // START_LI
+                template(1, liTemplate, 2, null, ['ngForOf', '']);  // START_LI
                 // End of translated section 1
               }
               elementEnd();
@@ -566,21 +589,6 @@ describe('Runtime i18n', () => {
             }
             if (rf & RenderFlags.Update) {
               elementProperty(1, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI
-                { text(1); }            // EXP_1
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
             }
           },
           directives: () => [NgForOf]
@@ -615,6 +623,37 @@ describe('Runtime i18n', () => {
           `{$START_LI_0}valeur: {$EXP_1}!{$END_LI_0}{$START_LI_1}valeur bis: {$EXP_2}!{$END_LI_1}`;
       // The indexes are based on each template function
       let i18n_1: I18nInstruction[][];
+
+      function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
+        if (rf1 & RenderFlags.Create) {
+          // This is a container so the whole template is a translated section
+          // Start of translated section 2
+          elementStart(0, 'li');  // START_LI_0
+          { text(1); }            // EXP_1
+          elementEnd();
+          // End of translated section 2
+          i18nApply(0, i18n_1[1]);
+        }
+        if (rf1 & RenderFlags.Update) {
+          textBinding(1, bind(row.$implicit));
+        }
+      }
+
+      function liTemplateBis(rf1: RenderFlags, row: NgForOfContext<string>) {
+        if (rf1 & RenderFlags.Create) {
+          // This is a container so the whole template is a translated section
+          // Start of translated section 3
+          elementStart(0, 'li');  // START_LI_1
+          { text(1); }            // EXP_2
+          elementEnd();
+          // End of translated section 3
+          i18nApply(0, i18n_1[2]);
+        }
+        if (rf1 & RenderFlags.Update) {
+          textBinding(1, bind(row.$implicit));
+        }
+      }
+
       class MyApp {
         items: string[] = ['1', '2'];
 
@@ -622,6 +661,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 3,
           // Initial template:
           // <ul i18n>
           //   <li *ngFor="let item of items">value: {{item}}</li>
@@ -645,8 +685,8 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                template(1, liTemplate, null, ['ngForOf', '']);     // START_LI_0
-                template(2, liTemplateBis, null, ['ngForOf', '']);  // START_LI_1
+                template(1, liTemplate, 2, null, ['ngForOf', '']);     // START_LI_0
+                template(2, liTemplateBis, 2, null, ['ngForOf', '']);  // START_LI_1
                 // End of translated section 1
               }
               elementEnd();
@@ -655,36 +695,6 @@ describe('Runtime i18n', () => {
             if (rf & RenderFlags.Update) {
               elementProperty(1, 'ngForOf', bind(myApp.items));
               elementProperty(2, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI_0
-                { text(1); }            // EXP_1
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
-            }
-
-            function liTemplateBis(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 3
-                elementStart(0, 'li');  // START_LI_1
-                { text(1); }            // EXP_2
-                elementEnd();
-                // End of translated section 3
-                i18nApply(0, i18n_1[2]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
             }
           },
           directives: () => [NgForOf]
@@ -725,6 +735,37 @@ describe('Runtime i18n', () => {
           `{$START_LI_1}valeur bis: {$EXP_2}!{$END_LI_1}{$START_LI_0}valeur: {$EXP_1}!{$END_LI_0}`;
       // The indexes are based on each template function
       let i18n_1: I18nInstruction[][];
+
+      function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
+        if (rf1 & RenderFlags.Create) {
+          // This is a container so the whole template is a translated section
+          // Start of translated section 2
+          elementStart(0, 'li');  // START_LI_0
+          { text(1); }            // EXP_1
+          elementEnd();
+          // End of translated section 2
+          i18nApply(0, i18n_1[1]);
+        }
+        if (rf1 & RenderFlags.Update) {
+          textBinding(1, bind(row.$implicit));
+        }
+      }
+
+      function liTemplateBis(rf1: RenderFlags, row: NgForOfContext<string>) {
+        if (rf1 & RenderFlags.Create) {
+          // This is a container so the whole template is a translated section
+          // Start of translated section 3
+          elementStart(0, 'li');  // START_LI_1
+          { text(1); }            // EXP_2
+          elementEnd();
+          // End of translated section 3
+          i18nApply(0, i18n_1[2]);
+        }
+        if (rf1 & RenderFlags.Update) {
+          textBinding(1, bind(row.$implicit));
+        }
+      }
+
       class MyApp {
         items: string[] = ['1', '2'];
 
@@ -732,6 +773,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 3,
           // Initial template:
           // <ul i18n>
           //   <li *ngFor="let item of items">value: {{item}}</li>
@@ -755,8 +797,8 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                template(1, liTemplate, null, ['ngForOf', '']);     // START_LI_0
-                template(2, liTemplateBis, null, ['ngForOf', '']);  // START_LI_1
+                template(1, liTemplate, 2, null, ['ngForOf', '']);     // START_LI_0
+                template(2, liTemplateBis, 2, null, ['ngForOf', '']);  // START_LI_1
                 // End of translated section 1
               }
               elementEnd();
@@ -765,36 +807,6 @@ describe('Runtime i18n', () => {
             if (rf & RenderFlags.Update) {
               elementProperty(1, 'ngForOf', bind(myApp.items));
               elementProperty(2, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI_0
-                { text(1); }            // EXP_1
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
-            }
-
-            function liTemplateBis(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 3
-                elementStart(0, 'li');  // START_LI_1
-                { text(1); }            // EXP_2
-                elementEnd();
-                // End of translated section 3
-                i18nApply(0, i18n_1[2]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
             }
           },
           directives: () => [NgForOf]
@@ -834,6 +846,40 @@ describe('Runtime i18n', () => {
       const MSG_DIV_SECTION_1 = `{$START_LI}{$START_SPAN}valeur: {$EXP_1}!{$END_SPAN}{$END_LI}`;
       // The indexes are based on each template function
       let i18n_1: I18nInstruction[][];
+
+      function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
+        if (rf1 & RenderFlags.Create) {
+          // This is a container so the whole template is a translated section
+          // Start of translated section 2
+          elementStart(0, 'li');  // START_LI
+          {
+            template(1, spanTemplate, 2, null, ['ngForOf', '']);  // START_SPAN
+          }
+          elementEnd();
+          // End of translated section 2
+          i18nApply(0, i18n_1[1]);
+        }
+        if (rf1 & RenderFlags.Update) {
+          const myApp = nextContext();
+          elementProperty(1, 'ngForOf', bind(myApp.items));
+        }
+      }
+
+      function spanTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
+        if (rf1 & RenderFlags.Create) {
+          // This is a container so the whole template is a translated section
+          // Start of translated section 3
+          elementStart(0, 'span');  // START_SPAN
+          { text(1); }              // EXP_1
+          elementEnd();
+          // End of translated section 3
+          i18nApply(0, i18n_1[2]);
+        }
+        if (rf1 & RenderFlags.Update) {
+          textBinding(1, bind(row.$implicit));
+        }
+      }
+
       class MyApp {
         items: string[] = ['1', '2'];
 
@@ -841,6 +887,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 2,
           // Initial template:
           // <ul i18n>
           //   <li *ngFor="let item of items">
@@ -866,7 +913,7 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                template(1, liTemplate, null, ['ngForOf', '']);  // START_LI
+                template(1, liTemplate, 2, null, ['ngForOf', '']);  // START_LI
                 // End of translated section 1
               }
               elementEnd();
@@ -874,38 +921,6 @@ describe('Runtime i18n', () => {
             }
             if (rf & RenderFlags.Update) {
               elementProperty(1, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI
-                {
-                  template(1, spanTemplate, null, ['ngForOf', '']);  // START_SPAN
-                }
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                elementProperty(1, 'ngForOf', bind(myApp.items));
-              }
-            }
-
-            function spanTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 3
-                elementStart(0, 'span');  // START_SPAN
-                { text(1); }              // EXP_1
-                elementEnd();
-                // End of translated section 3
-                i18nApply(0, i18n_1[2]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
             }
           },
           directives: () => [NgForOf]
@@ -947,6 +962,21 @@ describe('Runtime i18n', () => {
       // The indexes are based on each template function
       let i18n_1: I18nInstruction[][];
 
+      function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
+        if (rf1 & RenderFlags.Create) {
+          // This is a container so the whole template is a translated section
+          // Start of translated section 2
+          elementStart(0, 'li');  // START_LI_1
+          { text(1); }            // EXP_1
+          elementEnd();
+          // End of translated section 2
+          i18nApply(0, i18n_1[1]);
+        }
+        if (rf1 & RenderFlags.Update) {
+          textBinding(1, bind(row.$implicit));
+        }
+      }
+
       class MyApp {
         items: string[] = ['first', 'second'];
 
@@ -954,6 +984,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 5,
           // Initial template:
           // <ul i18n>
           //   <li>start</li>
@@ -979,9 +1010,9 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                element(1, 'li');                                // START_LI_0
-                template(2, liTemplate, null, ['ngForOf', '']);  // START_LI_1
-                elementStart(3, 'li');                           // START_LI_2
+                element(1, 'li');                                   // START_LI_0
+                template(2, liTemplate, 2, null, ['ngForOf', '']);  // START_LI_1
+                elementStart(3, 'li');                              // START_LI_2
                 { text(4, 'delete me'); }
                 elementEnd();
                 // End of translated section 1
@@ -991,21 +1022,6 @@ describe('Runtime i18n', () => {
             }
             if (rf & RenderFlags.Update) {
               elementProperty(2, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI_1
-                { text(1); }            // EXP_1
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
             }
           },
           directives: () => [NgForOf]
@@ -1042,6 +1058,20 @@ describe('Runtime i18n', () => {
       const MSG_DIV_SECTION_1 = `loop`;
       // The indexes are based on each template function
       let i18n_1: I18nInstruction[][];
+      function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
+        if (rf1 & RenderFlags.Create) {
+          // This is a container so the whole template is a translated section
+          // Start of translated section 2
+          elementStart(0, 'li');  // START_LI
+          { text(1); }            // EXP_1
+          elementEnd();
+          // End of translated section 2
+          i18nApply(0, i18n_1[1]);
+        }
+        if (rf1 & RenderFlags.Update) {
+          textBinding(1, bind(row.$implicit));
+        }
+      }
 
       class MyApp {
         items: string[] = ['first', 'second'];
@@ -1050,6 +1080,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 2,
           // Initial template:
           // <ul i18n>
           //   <li *ngFor="let item of items">value: {{item}}</li>
@@ -1070,7 +1101,7 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                template(1, liTemplate, undefined, ['ngForOf', '']);  // START_LI
+                template(1, liTemplate, 2, undefined, ['ngForOf', '']);  // START_LI
                 // End of translated section 1
               }
               elementEnd();
@@ -1078,21 +1109,6 @@ describe('Runtime i18n', () => {
             }
             if (rf & RenderFlags.Update) {
               elementProperty(1, 'ngForOf', bind(myApp.items));
-            }
-
-            function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
-              if (rf1 & RenderFlags.Create) {
-                // This is a container so the whole template is a translated section
-                // Start of translated section 2
-                elementStart(0, 'li');  // START_LI
-                { text(1); }            // EXP_1
-                elementEnd();
-                // End of translated section 2
-                i18nApply(0, i18n_1[1]);
-              }
-              if (rf1 & RenderFlags.Update) {
-                textBinding(1, bind(row.$implicit));
-              }
             }
           },
           directives: () => [NgForOf]
@@ -1131,6 +1147,7 @@ describe('Runtime i18n', () => {
           type: Child,
           selectors: [['child']],
           factory: () => new Child(),
+          consts: 2,
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
               projectionDef();
@@ -1169,6 +1186,7 @@ describe('Runtime i18n', () => {
           selectors: [['parent']],
           directives: [Child],
           factory: () => new Parent(),
+          consts: 4,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
               if (!i18n_1) {
@@ -1227,6 +1245,7 @@ describe('Runtime i18n', () => {
           type: Child,
           selectors: [['child']],
           factory: () => new Child(),
+          consts: 2,
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
               projectionDef();
@@ -1265,6 +1284,7 @@ describe('Runtime i18n', () => {
           selectors: [['parent']],
           directives: [Child],
           factory: () => new Parent(),
+          consts: 6,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
               if (!i18n_1) {
@@ -1314,6 +1334,7 @@ describe('Runtime i18n', () => {
           type: GrandChild,
           selectors: [['grand-child']],
           factory: () => new GrandChild(),
+          consts: 2,
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
               projectionDef();
@@ -1333,6 +1354,7 @@ describe('Runtime i18n', () => {
           selectors: [['child']],
           directives: [GrandChild],
           factory: () => new Child(),
+          consts: 2,
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
               projectionDef();
@@ -1360,6 +1382,7 @@ describe('Runtime i18n', () => {
           selectors: [['parent']],
           directives: [Child],
           factory: () => new Parent(),
+          consts: 2,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
               if (!i18n_1) {
@@ -1396,6 +1419,7 @@ describe('Runtime i18n', () => {
           type: Child,
           selectors: [['child']],
           factory: () => new Child(),
+          consts: 1,
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
               projectionDef([[['span']]], ['span']);
@@ -1425,6 +1449,7 @@ describe('Runtime i18n', () => {
           selectors: [['parent']],
           directives: [Child],
           factory: () => new Parent(),
+          consts: 3,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
               if (!i18n_1) {
@@ -1465,6 +1490,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 1,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}"></div>
 
@@ -1501,6 +1527,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 1,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}"></div>
 
@@ -1536,6 +1563,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 1,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}"></div>
 
@@ -1573,6 +1601,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 1,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}"></div>
 
@@ -1615,6 +1644,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 1,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}"></div>
 
@@ -1659,6 +1689,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 1,
           // Initial template:
           // <div i18n i18n-title
           // title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}{{exp7}}"></div>
@@ -1712,6 +1743,7 @@ describe('Runtime i18n', () => {
           type: MyApp,
           factory: () => new MyApp(),
           selectors: [['my-app']],
+          consts: 1,
           // Initial template:
           // <div i18n i18n-title
           // title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}{{exp7}}{{exp8}}"></div>

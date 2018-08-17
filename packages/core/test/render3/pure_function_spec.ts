@@ -23,6 +23,7 @@ describe('array literals', () => {
       type: MyComp,
       selectors: [['my-comp']],
       factory: function MyComp_Factory() { return myComp = new MyComp(); },
+      consts: 0,
       template: function MyComp_Template(rf: RenderFlags, ctx: MyComp) {},
       inputs: {names: 'names'}
     });
@@ -34,24 +35,27 @@ describe('array literals', () => {
     const e0_ff = (v: any) => ['Nancy', v, 'Bess'];
 
     /** <my-comp [names]="['Nancy', customName, 'Bess']"></my-comp> */
-    function Template(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'my-comp');
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'names', bind(pureFunction1(1, e0_ff, ctx.customName)));
       }
-    }
+    }, 1, directives);
 
-    renderToHtml(Template, {customName: 'Carson'}, directives);
+    const fixture = new ComponentFixture(App);
+    fixture.component.customName = 'Carson';
+    fixture.update();
     const firstArray = myComp !.names;
     expect(firstArray).toEqual(['Nancy', 'Carson', 'Bess']);
 
-    renderToHtml(Template, {customName: 'Carson'}, directives);
+    fixture.update();
     expect(myComp !.names).toEqual(['Nancy', 'Carson', 'Bess']);
     expect(firstArray).toBe(myComp !.names);
 
-    renderToHtml(Template, {customName: 'Hannah'}, directives);
+    fixture.component.customName = 'Hannah';
+    fixture.update();
     expect(myComp !.names).toEqual(['Nancy', 'Hannah', 'Bess']);
 
     // Identity must change if binding changes
@@ -60,7 +64,7 @@ describe('array literals', () => {
     // The property should not be set if the exp value is the same, so artificially
     // setting the property to ensure it's not overwritten.
     myComp !.names = ['should not be overwritten'];
-    renderToHtml(Template, {customName: 'Hannah'}, directives);
+    fixture.update();
     expect(myComp !.names).toEqual(['should not be overwritten']);
   });
 
@@ -82,12 +86,12 @@ describe('array literals', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        template(0, IfTemplate, null, [AttributeMarker.SelectOnly, 'ngIf']);
+        template(0, IfTemplate, 1, null, [AttributeMarker.SelectOnly, 'ngIf']);
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'ngIf', bind(ctx.showing));
       }
-    }, [MyComp, NgIf]);
+    }, 1, [MyComp, NgIf]);
 
     const fixture = new ComponentFixture(App);
     fixture.component.showing = true;
@@ -110,6 +114,7 @@ describe('array literals', () => {
         type: ManyPropComp,
         selectors: [['many-prop-comp']],
         factory: function ManyPropComp_Factory() { return manyPropComp = new ManyPropComp(); },
+        consts: 0,
         template: function ManyPropComp_Template(rf: RenderFlags, ctx: ManyPropComp) {},
         inputs: {names1: 'names1', names2: 'names2'}
       });
@@ -122,7 +127,7 @@ describe('array literals', () => {
      * <many-prop-comp [names1]="['Nancy', customName]" [names2]="[customName2]">
      * </many-prop-comp>
      */
-    function Template(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'many-prop-comp');
       }
@@ -130,14 +135,18 @@ describe('array literals', () => {
         elementProperty(0, 'names1', bind(pureFunction1(2, e0_ff, ctx.customName)));
         elementProperty(0, 'names2', bind(pureFunction1(4, e0_ff_1, ctx.customName2)));
       }
-    }
+    }, 1, [ManyPropComp]);
 
-    const defs = [ManyPropComp];
-    renderToHtml(Template, {customName: 'Carson', customName2: 'George'}, defs);
+    const fixture = new ComponentFixture(App);
+    fixture.component.customName = 'Carson';
+    fixture.component.customName2 = 'George';
+    fixture.update();
     expect(manyPropComp !.names1).toEqual(['Nancy', 'Carson']);
     expect(manyPropComp !.names2).toEqual(['George']);
 
-    renderToHtml(Template, {customName: 'George', customName2: 'Carson'}, defs);
+    fixture.component.customName = 'George';
+    fixture.component.customName2 = 'Carson';
+    fixture.update();
     expect(manyPropComp !.names1).toEqual(['Nancy', 'George']);
     expect(manyPropComp !.names2).toEqual(['Carson']);
   });
@@ -160,6 +169,7 @@ describe('array literals', () => {
         type: ParentComp,
         selectors: [['parent-comp']],
         factory: () => new ParentComp(),
+        consts: 1,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'my-comp');
@@ -174,21 +184,21 @@ describe('array literals', () => {
       });
     }
 
-    function Template(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'parent-comp');
         element(1, 'parent-comp');
       }
-    }
+    }, 2, [ParentComp]);
 
-    renderToHtml(Template, {}, [ParentComp]);
+    const fixture = new ComponentFixture(App);
     const firstArray = myComps[0].names;
     const secondArray = myComps[1].names;
     expect(firstArray).toEqual(['NANCY', 'Bess']);
     expect(secondArray).toEqual(['NANCY', 'Bess']);
     expect(firstArray).not.toBe(secondArray);
 
-    renderToHtml(Template, {}, [ParentComp]);
+    fixture.update();
     expect(firstArray).toEqual(['NANCY', 'Bess']);
     expect(secondArray).toEqual(['NANCY', 'Bess']);
     expect(firstArray).toBe(myComps[0].names);
@@ -199,34 +209,40 @@ describe('array literals', () => {
     const e0_ff = (v1: any, v2: any) => ['Nancy', v1, 'Bess', v2];
 
     /** <my-comp [names]="['Nancy', customName, 'Bess', customName2]"></my-comp> */
-    function Template(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'my-comp');
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'names', bind(pureFunction2(1, e0_ff, ctx.customName, ctx.customName2)));
       }
-    }
+    }, 1, directives);
 
-    renderToHtml(Template, {customName: 'Carson', customName2: 'Hannah'}, directives);
+    const fixture = new ComponentFixture(App);
+    fixture.component.customName = 'Carson';
+    fixture.component.customName2 = 'Hannah';
+    fixture.update();
     const firstArray = myComp !.names;
     expect(firstArray).toEqual(['Nancy', 'Carson', 'Bess', 'Hannah']);
 
-    renderToHtml(Template, {customName: 'Carson', customName2: 'Hannah'}, directives);
+    fixture.update();
     expect(myComp !.names).toEqual(['Nancy', 'Carson', 'Bess', 'Hannah']);
     expect(firstArray).toBe(myComp !.names);
 
-    renderToHtml(Template, {customName: 'George', customName2: 'Hannah'}, directives);
+    fixture.component.customName = 'George';
+    fixture.update();
     expect(myComp !.names).toEqual(['Nancy', 'George', 'Bess', 'Hannah']);
     expect(firstArray).not.toBe(myComp !.names);
 
-    renderToHtml(Template, {customName: 'Frank', customName2: 'Ned'}, directives);
+    fixture.component.customName = 'Frank';
+    fixture.component.customName2 = 'Ned';
+    fixture.update();
     expect(myComp !.names).toEqual(['Nancy', 'Frank', 'Bess', 'Ned']);
 
     // The property should not be set if the exp value is the same, so artificially
     // setting the property to ensure it's not overwritten.
     myComp !.names = ['should not be overwritten'];
-    renderToHtml(Template, {customName: 'Frank', customName2: 'Ned'}, directives);
+    fixture.update();
     expect(myComp !.names).toEqual(['should not be overwritten']);
   });
 
@@ -288,7 +304,7 @@ describe('array literals', () => {
       }
     }
 
-    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
+    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], 6, directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
@@ -296,7 +312,7 @@ describe('array literals', () => {
     expect(f7Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f8Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
 
-    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1', 'i1'], directives);
+    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1', 'i1'], 6, directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f1', 'g1', 'h1']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e1', 'f1', 'g1', 'h1']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd1', 'e1', 'f1', 'g1', 'h1']);
@@ -304,7 +320,7 @@ describe('array literals', () => {
     expect(f7Comp !.names).toEqual(['a', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
     expect(f8Comp !.names).toEqual(['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
 
-    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h2', 'i1'], directives);
+    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h2', 'i1'], 6, directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f1', 'g1', 'h2']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e1', 'f1', 'g1', 'h2']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd1', 'e1', 'f1', 'g1', 'h2']);
@@ -319,7 +335,7 @@ describe('array literals', () => {
          v8: any) => ['start', v0, v1, v2, v3, v4, v5, v6, v7, v8, 'end'];
     const e0_ff_1 = (v: any) => `modified_${v}`;
 
-    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
+    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], 1, directives);
     /**
      * <my-comp [names]="['start', v0, v1, v2, v3, `modified_${v4}`, v5, v6, v7, v8, 'end']">
      * </my-comp>
@@ -340,12 +356,12 @@ describe('array literals', () => {
       'start', 'a', 'b', 'c', 'd', 'modified_e', 'f', 'g', 'h', 'i', 'end'
     ]);
 
-    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], directives);
+    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], 1, directives);
     expect(myComp !.names).toEqual([
       'start', 'a1', 'b', 'c', 'd', 'modified_e', 'f', 'g', 'h', 'i', 'end'
     ]);
 
-    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e5', 'f', 'g', 'h', 'i'], directives);
+    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e5', 'f', 'g', 'h', 'i'], 1, directives);
     expect(myComp !.names).toEqual([
       'start', 'a1', 'b', 'c', 'd', 'modified_e5', 'f', 'g', 'h', 'i', 'end'
     ]);
@@ -363,6 +379,7 @@ describe('object literals', () => {
       type: ObjectComp,
       selectors: [['object-comp']],
       factory: function ObjectComp_Factory() { return objectComp = new ObjectComp(); },
+      consts: 0,
       template: function ObjectComp_Template(rf: RenderFlags, ctx: ObjectComp) {},
       inputs: {config: 'config'}
     });
@@ -374,24 +391,27 @@ describe('object literals', () => {
     const e0_ff = (v: any) => { return {duration: 500, animation: v}; };
 
     /** <object-comp [config]="{duration: 500, animation: name}"></object-comp> */
-    function Template(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'object-comp');
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'config', bind(pureFunction1(1, e0_ff, ctx.name)));
       }
-    }
+    }, 1, defs);
 
-    renderToHtml(Template, {name: 'slide'}, defs);
+    const fixture = new ComponentFixture(App);
+    fixture.component.name = 'slide';
+    fixture.update();
     const firstObj = objectComp !.config;
     expect(objectComp !.config).toEqual({duration: 500, animation: 'slide'});
 
-    renderToHtml(Template, {name: 'slide'}, defs);
+    fixture.update();
     expect(objectComp !.config).toEqual({duration: 500, animation: 'slide'});
     expect(firstObj).toBe(objectComp !.config);
 
-    renderToHtml(Template, {name: 'tap'}, defs);
+    fixture.component.name = 'tap';
+    fixture.update();
     expect(objectComp !.config).toEqual({duration: 500, animation: 'tap'});
 
     // Identity must change if binding changes
@@ -408,7 +428,7 @@ describe('object literals', () => {
      * duration: duration }]}">
      * </object-comp>
      */
-    function Template(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'object-comp');
       }
@@ -418,36 +438,43 @@ describe('object literals', () => {
                              5, e0_ff, ctx.name,
                              pureFunction1(3, e0_ff_1, pureFunction1(1, e0_ff_2, ctx.duration)))));
       }
-    }
+    }, 1, defs);
 
-    renderToHtml(Template, {name: 'slide', duration: 100}, defs);
+    const fixture = new ComponentFixture(App);
+    fixture.component.name = 'slide';
+    fixture.component.duration = 100;
+    fixture.update();
     expect(objectComp !.config).toEqual({
       animation: 'slide',
       actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 100}]
     });
     const firstConfig = objectComp !.config;
 
-    renderToHtml(Template, {name: 'slide', duration: 100}, defs);
+    fixture.update();
     expect(objectComp !.config).toEqual({
       animation: 'slide',
       actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 100}]
     });
     expect(objectComp !.config).toBe(firstConfig);
 
-    renderToHtml(Template, {name: 'slide', duration: 50}, defs);
+    fixture.component.duration = 50;
+    fixture.update();
     expect(objectComp !.config).toEqual({
       animation: 'slide',
       actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 50}]
     });
     expect(objectComp !.config).not.toBe(firstConfig);
 
-    renderToHtml(Template, {name: 'tap', duration: 50}, defs);
+    fixture.component.name = 'tap';
+    fixture.update();
     expect(objectComp !.config).toEqual({
       animation: 'tap',
       actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 50}]
     });
 
-    renderToHtml(Template, {name: 'drag', duration: 500}, defs);
+    fixture.component.name = 'drag';
+    fixture.component.duration = 500;
+    fixture.update();
     expect(objectComp !.config).toEqual({
       animation: 'drag',
       actions: [{opacity: 0, duration: 0}, {opacity: 1, duration: 500}]
@@ -456,7 +483,7 @@ describe('object literals', () => {
     // The property should not be set if the exp value is the same, so artificially
     // setting the property to ensure it's not overwritten.
     objectComp !.config = ['should not be overwritten'];
-    renderToHtml(Template, {name: 'drag', duration: 500}, defs);
+    fixture.update();
     expect(objectComp !.config).toEqual(['should not be overwritten']);
   });
 
@@ -477,7 +504,7 @@ describe('object literals', () => {
         containerRefreshStart(0);
         {
           for (let i = 0; i < 2; i++) {
-            let rf1 = embeddedViewStart(0);
+            let rf1 = embeddedViewStart(0, 1);
             if (rf1 & RenderFlags.Create) {
               elementStart(0, 'object-comp');
               objectComps.push(loadDirective(0));
@@ -498,12 +525,12 @@ describe('object literals', () => {
     const e0_ff = (v1: any, v2: any) => { return {opacity: v1, duration: v2}; };
 
     const configs = [{opacity: 0, duration: 500}, {opacity: 1, duration: 600}];
-    renderToHtml(Template, {configs}, defs);
+    renderToHtml(Template, {configs}, 1, defs);
     expect(objectComps[0].config).toEqual({opacity: 0, duration: 500});
     expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
 
     configs[0].duration = 1000;
-    renderToHtml(Template, {configs}, defs);
+    renderToHtml(Template, {configs}, 1, defs);
     expect(objectComps[0].config).toEqual({opacity: 0, duration: 1000});
     expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
   });

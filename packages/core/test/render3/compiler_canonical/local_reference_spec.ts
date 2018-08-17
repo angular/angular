@@ -25,6 +25,7 @@ describe('local references', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent,
+        consts: 3,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           let l1_user: any;
           if (rf & 1) {
@@ -60,11 +61,12 @@ describe('local references', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent,
+        consts: 3,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           let l1_tpl: any;
           if (rf & 1) {
             $r3$.ɵtemplate(
-                0, MyComponent_Template_0, null, null, ['tpl', ''], $r3$.ɵtemplateRefExtractor);
+                0, MyComponent_Template_0, 0, null, null, ['tpl', ''], $r3$.ɵtemplateRefExtractor);
             $r3$.ɵtext(2);
           }
           if (rf & 2) {

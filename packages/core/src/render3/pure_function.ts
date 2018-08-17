@@ -6,16 +6,16 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {bindingUpdated, bindingUpdated2, bindingUpdated4, updateBinding, getBinding, getCreationMode, getTView, initBindings, bindingUpdated3,} from './instructions';
+import {bindingUpdated, bindingUpdated2, bindingUpdated4, updateBinding, getBinding, getCreationMode, getTView, bindingUpdated3,} from './instructions';
 
 /**
  * Bindings for pure functions are stored after regular bindings.
  *
  *  ----------------------------------------------------------------------------
- *  |  LNodes ... | regular bindings / interpolations | pure function bindings
+ *  |  LNodes / local refs / pipes ... | regular bindings / interpolations | pure function bindings
  *  ----------------------------------------------------------------------------
- *                ^
- *        TView.bindingStartIndex
+ *                                     ^
+ *                          TView.bindingStartIndex
  *
  * Pure function instructions are given an offset from TView.bindingStartIndex.
  * Adding the offset to TView.bindingStartIndex gives the first index where the bindings
@@ -32,7 +32,7 @@ import {bindingUpdated, bindingUpdated2, bindingUpdated4, updateBinding, getBind
  * @returns value
  */
 export function pureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: any): T {
-  initBindings();  // TODO(kara): remove this check when we have pre-filled array
+  // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getTView().bindingStartIndex + slotOffset;
   return getCreationMode() ?
       updateBinding(bindingIndex, thisArg ? pureFn.call(thisArg) : pureFn()) :
@@ -51,7 +51,7 @@ export function pureFunction0<T>(slotOffset: number, pureFn: () => T, thisArg?: 
  */
 export function pureFunction1(
     slotOffset: number, pureFn: (v: any) => any, exp: any, thisArg?: any): any {
-  initBindings();  // TODO(kara): remove this check when we have pre-filled array
+  // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getTView().bindingStartIndex + slotOffset;
   return bindingUpdated(bindingIndex, exp) ?
       updateBinding(bindingIndex + 1, thisArg ? pureFn.call(thisArg, exp) : pureFn(exp)) :
@@ -72,7 +72,7 @@ export function pureFunction1(
 export function pureFunction2(
     slotOffset: number, pureFn: (v1: any, v2: any) => any, exp1: any, exp2: any,
     thisArg?: any): any {
-  initBindings();  // TODO(kara): remove this check when we have pre-filled array
+  // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getTView().bindingStartIndex + slotOffset;
   return bindingUpdated2(bindingIndex, exp1, exp2) ?
       updateBinding(
@@ -95,7 +95,7 @@ export function pureFunction2(
 export function pureFunction3(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any) => any, exp1: any, exp2: any, exp3: any,
     thisArg?: any): any {
-  initBindings();  // TODO(kara): remove this check when we have pre-filled array
+  // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getTView().bindingStartIndex + slotOffset;
   return bindingUpdated3(bindingIndex, exp1, exp2, exp3) ?
       updateBinding(
@@ -120,7 +120,7 @@ export function pureFunction3(
 export function pureFunction4(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any) => any, exp1: any, exp2: any,
     exp3: any, exp4: any, thisArg?: any): any {
-  initBindings();  // TODO(kara): remove this check when we have pre-filled array
+  // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getTView().bindingStartIndex + slotOffset;
   return bindingUpdated4(bindingIndex, exp1, exp2, exp3, exp4) ?
       updateBinding(
@@ -146,7 +146,7 @@ export function pureFunction4(
 export function pureFunction5(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any) => any, exp1: any,
     exp2: any, exp3: any, exp4: any, exp5: any, thisArg?: any): any {
-  initBindings();  // TODO(kara): remove this check when we have pre-filled array
+  // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getTView().bindingStartIndex + slotOffset;
   const different = bindingUpdated4(bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated(bindingIndex + 4, exp5) || different ?
@@ -174,7 +174,7 @@ export function pureFunction5(
 export function pureFunction6(
     slotOffset: number, pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any) => any,
     exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, thisArg?: any): any {
-  initBindings();  // TODO(kara): remove this check when we have pre-filled array
+  // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getTView().bindingStartIndex + slotOffset;
   const different = bindingUpdated4(bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated2(bindingIndex + 4, exp5, exp6) || different ?
@@ -204,7 +204,7 @@ export function pureFunction7(
     slotOffset: number,
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any) => any, exp1: any,
     exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, thisArg?: any): any {
-  initBindings();  // TODO(kara): remove this check when we have pre-filled array
+  // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getTView().bindingStartIndex + slotOffset;
   let different = bindingUpdated4(bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated3(bindingIndex + 4, exp5, exp6, exp7) || different ?
@@ -237,7 +237,7 @@ export function pureFunction8(
     pureFn: (v1: any, v2: any, v3: any, v4: any, v5: any, v6: any, v7: any, v8: any) => any,
     exp1: any, exp2: any, exp3: any, exp4: any, exp5: any, exp6: any, exp7: any, exp8: any,
     thisArg?: any): any {
-  initBindings();  // TODO(kara): remove this check when we have pre-filled array
+  // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   const bindingIndex = getTView().bindingStartIndex + slotOffset;
   const different = bindingUpdated4(bindingIndex, exp1, exp2, exp3, exp4);
   return bindingUpdated4(bindingIndex + 4, exp5, exp6, exp7, exp8) || different ?
@@ -263,7 +263,7 @@ export function pureFunction8(
  */
 export function pureFunctionV(
     slotOffset: number, pureFn: (...v: any[]) => any, exps: any[], thisArg?: any): any {
-  initBindings();  // TODO(kara): remove this check when we have pre-filled array
+  // TODO(kara): use bindingRoot instead of bindingStartIndex when implementing host bindings
   let bindingIndex = getTView().bindingStartIndex + slotOffset;
   let different = false;
   for (let i = 0; i < exps.length; i++) {
