@@ -10,9 +10,9 @@ import {NgForOfContext} from '@angular/common';
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 
 import {EventEmitter} from '../..';
-import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
+import {QUERY_READ_CONTAINER_REF, QUERY_READ_ELEMENT_REF, QUERY_READ_FROM_NODE, QUERY_READ_TEMPLATE_REF, templateRefExtractor} from '../../src/render3/di';
 import {AttributeMarker, QueryList, defineComponent, defineDirective, detectChanges, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, loadElement, loadQueryList, registerContentQuery, template} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, load, loadDirective, loadElement, loadQueryList, reference, registerContentQuery, template} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 import {query, queryRefresh} from '../../src/render3/query';
 
@@ -1116,25 +1116,25 @@ describe('query', () => {
                      if (rf & RenderFlags.Update) {
                        elementProperty(0, 'id', bind('foo1_' + ctx.idx));
                      }
-                   }, null, []);
+                   }, null, null, ['tpl1', ''], templateRefExtractor);
 
-                   element(2, 'div', ['id', 'middle'], ['foo', '']);
+                   element(3, 'div', ['id', 'middle'], ['foo', '']);
 
-                   template(4, (rf: RenderFlags, ctx: {idx: number}) => {
+                   template(5, (rf: RenderFlags, ctx: {idx: number}) => {
                      if (rf & RenderFlags.Create) {
                        element(0, 'div', null, ['foo', '']);
                      }
                      if (rf & RenderFlags.Update) {
                        elementProperty(0, 'id', bind('foo2_' + ctx.idx));
                      }
-                   }, null, []);
+                   }, null, null, ['tpl2', ''], templateRefExtractor);
 
-                   template(5, null, null, [AttributeMarker.SelectOnly, 'vc']);
+                   template(7, null, null, [AttributeMarker.SelectOnly, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
-                   tpl1 = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(1)));
-                   tpl2 = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(4)));
+                   tpl1 = reference(2);
+                   tpl2 = reference(6);
                  }
 
                },
@@ -1219,14 +1219,14 @@ describe('query', () => {
                      if (rf & RenderFlags.Update) {
                        elementProperty(0, 'id', bind('foo_' + ctx.container_idx + '_' + ctx.idx));
                      }
-                   }, null, []);
+                   }, null, [], ['tpl', ''], templateRefExtractor);
 
-                   template(2, null, null, [AttributeMarker.SelectOnly, 'vc']);
                    template(3, null, null, [AttributeMarker.SelectOnly, 'vc']);
+                   template(4, null, null, [AttributeMarker.SelectOnly, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
-                   tpl = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(1)));
+                   tpl = reference(2);
                  }
 
                },
@@ -1287,11 +1287,11 @@ describe('query', () => {
                   if (rf1 & RenderFlags.Create) {
                     element(0, 'span', ['id', 'from_tpl'], ['foo', '']);
                   }
-                }, undefined, undefined, ['tpl', '']);
+                }, undefined, undefined, ['tpl', ''], templateRefExtractor);
                 template(3, null, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
               }
               if (rf & RenderFlags.Update) {
-                const tplRef = getOrCreateTemplateRef(getOrCreateNodeInjectorForNode(load(1)));
+                const tplRef = reference(2);
                 elementProperty(3, 'ngTemplateOutlet', bind(myApp.show ? tplRef : null));
               }
             },
