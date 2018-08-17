@@ -20,3 +20,23 @@ export function isDefined<T>(value: T | undefined | null): value is T {
 export function getNameText(name: ts.PropertyName | ts.BindingName): string {
   return ts.isIdentifier(name) || ts.isLiteralExpression(name) ? name.text : name.getText();
 }
+
+/**
+ * Parse down the AST and capture all the nodes that satisfy the test.
+ * @param node The start node.
+ * @param test The function that tests whether a node should be included.
+ * @returns a collection of nodes that satisfy the test.
+ */
+export function findAll<T>(node: ts.Node, test: (node: ts.Node) => node is ts.Node & T): T[] {
+  const nodes: T[] = [];
+  findAllVisitor(node);
+  return nodes;
+
+  function findAllVisitor(n: ts.Node) {
+    if (test(n)) {
+      nodes.push(n);
+    } else {
+      n.forEachChild(child => findAllVisitor(child));
+    }
+  }
+}
