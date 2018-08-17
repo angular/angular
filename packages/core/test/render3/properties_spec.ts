@@ -8,26 +8,33 @@
 
 import {EventEmitter} from '@angular/core';
 
-import {defineComponent, defineDirective, tick} from '../../src/render3/index';
+import {AttributeMarker, defineComponent, defineDirective, tick} from '../../src/render3/index';
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, interpolation1, listener, loadDirective, reference, text, textBinding} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
+import {pureFunction1, pureFunction2} from '../../src/render3/pure_function';
 
-import {ComponentFixture, renderToHtml} from './render_util';
+import {ComponentFixture, TemplateFixture, createComponent, renderToHtml} from './render_util';
 
 describe('elementProperty', () => {
 
   it('should support bindings to properties', () => {
-    function Template(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'span');
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'id', bind(ctx));
+        elementProperty(0, 'id', bind(ctx.id));
       }
-    }
+    }, 1);
 
-    expect(renderToHtml(Template, 'testId')).toEqual('<span id="testId"></span>');
-    expect(renderToHtml(Template, 'otherId')).toEqual('<span id="otherId"></span>');
+    const fixture = new ComponentFixture(App);
+    fixture.component.id = 'testId';
+    fixture.update();
+    expect(fixture.html).toEqual('<span id="testId"></span>');
+
+    fixture.component.id = 'otherId';
+    fixture.update();
+    expect(fixture.html).toEqual('<span id="otherId"></span>');
   });
 
   it('should support creation time bindings to properties', () => {
@@ -48,22 +55,28 @@ describe('elementProperty', () => {
       }
     }
 
-    expect(renderToHtml(Template, 'cheapId')).toEqual('<span id="cheapId"></span>');
-    expect(renderToHtml(Template, 'expensiveId')).toEqual('<span id="cheapId"></span>');
+    expect(renderToHtml(Template, 'cheapId', 1)).toEqual('<span id="cheapId"></span>');
+    expect(renderToHtml(Template, 'expensiveId', 1)).toEqual('<span id="cheapId"></span>');
   });
 
   it('should support interpolation for properties', () => {
-    function Template(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'span');
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'id', interpolation1('_', ctx, '_'));
+        elementProperty(0, 'id', interpolation1('_', ctx.id, '_'));
       }
-    }
+    }, 1);
 
-    expect(renderToHtml(Template, 'testId')).toEqual('<span id="_testId_"></span>');
-    expect(renderToHtml(Template, 'otherId')).toEqual('<span id="_otherId_"></span>');
+    const fixture = new ComponentFixture(App);
+    fixture.component.id = 'testId';
+    fixture.update();
+    expect(fixture.html).toEqual('<span id="_testId_"></span>');
+
+    fixture.component.id = 'otherId';
+    fixture.update();
+    expect(fixture.html).toEqual('<span id="_otherId_"></span>');
   });
 
   it('should support host bindings on root component', () => {
@@ -74,6 +87,7 @@ describe('elementProperty', () => {
         type: HostBindingComp,
         selectors: [['host-binding-comp']],
         factory: () => new HostBindingComp(),
+        consts: 0,
         hostBindings: (dirIndex: number, elIndex: number) => {
           const instance = loadDirective(dirIndex) as HostBindingComp;
           elementProperty(elIndex, 'id', bind(instance.id));
@@ -152,7 +166,7 @@ describe('elementProperty', () => {
     it('should check input properties before setting (directives)', () => {
 
       /** <button myButton otherDir [id]="id" [disabled]="isDisabled">Click me</button> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'button', ['otherDir', '', 'myButton', '']);
           { text(1, 'Click me'); }
@@ -162,18 +176,20 @@ describe('elementProperty', () => {
           elementProperty(0, 'disabled', bind(ctx.isDisabled));
           elementProperty(0, 'id', bind(ctx.id));
         }
-      }
+      }, 2, deps);
 
-      const ctx: any = {isDisabled: true, id: 0};
-      expect(renderToHtml(Template, ctx, deps))
-          .toEqual(`<button mybutton="" otherdir="">Click me</button>`);
+      const fixture = new ComponentFixture(App);
+      fixture.component.isDisabled = true;
+      fixture.component.id = 0;
+      fixture.update();
+      expect(fixture.html).toEqual(`<button mybutton="" otherdir="">Click me</button>`);
       expect(button !.disabled).toEqual(true);
       expect(otherDir !.id).toEqual(0);
 
-      ctx.isDisabled = false;
-      ctx.id = 1;
-      expect(renderToHtml(Template, ctx, deps))
-          .toEqual(`<button mybutton="" otherdir="">Click me</button>`);
+      fixture.component.isDisabled = false;
+      fixture.component.id = 1;
+      fixture.update();
+      expect(fixture.html).toEqual(`<button mybutton="" otherdir="">Click me</button>`);
       expect(button !.disabled).toEqual(false);
       expect(otherDir !.id).toEqual(1);
     });
@@ -181,7 +197,7 @@ describe('elementProperty', () => {
     it('should support mixed element properties and input properties', () => {
 
       /** <button myButton [id]="id" [disabled]="isDisabled">Click me</button> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'button', ['myButton', '']);
           { text(1, 'Click me'); }
@@ -191,18 +207,20 @@ describe('elementProperty', () => {
           elementProperty(0, 'disabled', bind(ctx.isDisabled));
           elementProperty(0, 'id', bind(ctx.id));
         }
-      }
+      }, 2, deps);
 
-      const ctx: any = {isDisabled: true, id: 0};
 
-      expect(renderToHtml(Template, ctx, deps))
-          .toEqual(`<button id="0" mybutton="">Click me</button>`);
+      const fixture = new ComponentFixture(App);
+      fixture.component.isDisabled = true;
+      fixture.component.id = 0;
+      fixture.update();
+      expect(fixture.html).toEqual(`<button id="0" mybutton="">Click me</button>`);
       expect(button !.disabled).toEqual(true);
 
-      ctx.isDisabled = false;
-      ctx.id = 1;
-      expect(renderToHtml(Template, ctx, deps))
-          .toEqual(`<button id="1" mybutton="">Click me</button>`);
+      fixture.component.isDisabled = false;
+      fixture.component.id = 1;
+      fixture.update();
+      expect(fixture.html).toEqual(`<button id="1" mybutton="">Click me</button>`);
       expect(button !.disabled).toEqual(false);
     });
 
@@ -216,6 +234,7 @@ describe('elementProperty', () => {
         static ngComponentDef = defineComponent({
           type: Comp,
           selectors: [['comp']],
+          consts: 0,
           template: function(rf: RenderFlags, ctx: any) {},
           factory: () => comp = new Comp(),
           inputs: {id: 'id'}
@@ -223,27 +242,31 @@ describe('elementProperty', () => {
       }
 
       /** <comp [id]="id"></comp> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'comp');
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'id', bind(ctx.id));
         }
-      }
+      }, 1, [Comp]);
 
-      const deps = [Comp];
-      expect(renderToHtml(Template, {id: 1}, deps)).toEqual(`<comp></comp>`);
+      const fixture = new ComponentFixture(App);
+      fixture.component.id = 1;
+      fixture.update();
+      expect(fixture.html).toEqual(`<comp></comp>`);
       expect(comp !.id).toEqual(1);
 
-      expect(renderToHtml(Template, {id: 2}, deps)).toEqual(`<comp></comp>`);
+      fixture.component.id = 2;
+      fixture.update();
+      expect(fixture.html).toEqual(`<comp></comp>`);
       expect(comp !.id).toEqual(2);
     });
 
     it('should support two input properties with the same name', () => {
 
       /** <button myButton otherDisabledDir [disabled]="isDisabled">Click me</button> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'button', ['myButton', '', 'otherDisabledDir', '']);
           { text(1, 'Click me'); }
@@ -252,28 +275,29 @@ describe('elementProperty', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'disabled', bind(ctx.isDisabled));
         }
-      }
+      }, 2, deps);
 
-      const ctx: any = {isDisabled: true};
-      expect(renderToHtml(Template, ctx, deps))
-          .toEqual(`<button mybutton="" otherdisableddir="">Click me</button>`);
+      const fixture = new ComponentFixture(App);
+      fixture.component.isDisabled = true;
+      fixture.update();
+      expect(fixture.html).toEqual(`<button mybutton="" otherdisableddir="">Click me</button>`);
       expect(button !.disabled).toEqual(true);
       expect(otherDisabledDir !.disabled).toEqual(true);
 
-      ctx.isDisabled = false;
-      expect(renderToHtml(Template, ctx, deps))
-          .toEqual(`<button mybutton="" otherdisableddir="">Click me</button>`);
+      fixture.component.isDisabled = false;
+      fixture.update();
+      expect(fixture.html).toEqual(`<button mybutton="" otherdisableddir="">Click me</button>`);
       expect(button !.disabled).toEqual(false);
       expect(otherDisabledDir !.disabled).toEqual(false);
     });
 
     it('should set input property if there is an output first', () => {
       /** <button otherDir [id]="id" (click)="onClick()">Click me</button> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'button', ['otherDir', '']);
           {
-            listener('click', ctx.onClick.bind(ctx));
+            listener('click', () => ctx.onClick());
             text(1, 'Click me');
           }
           elementEnd();
@@ -281,18 +305,22 @@ describe('elementProperty', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'id', bind(ctx.id));
         }
-      }
+      }, 2, deps);
 
+      const fixture = new ComponentFixture(App);
       let counter = 0;
-      const ctx: any = {id: 1, onClick: () => counter++};
-      expect(renderToHtml(Template, ctx, deps)).toEqual(`<button otherdir="">Click me</button>`);
+      fixture.component.id = 1;
+      fixture.component.onClick = () => counter++;
+      fixture.update();
+      expect(fixture.html).toEqual(`<button otherdir="">Click me</button>`);
       expect(otherDir !.id).toEqual(1);
 
       otherDir !.clickStream.next();
       expect(counter).toEqual(1);
 
-      ctx.id = 2;
-      renderToHtml(Template, ctx, deps);
+      fixture.component.id = 2;
+      fixture.update();
+      fixture.html;
       expect(otherDir !.id).toEqual(2);
     });
 
@@ -305,7 +333,7 @@ describe('elementProperty', () => {
        *   <button otherDir [id]="id3">Click me too</button>   // inputs: {'id': [0, 'id']}
        * % }
        */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'button', ['idDir', '']);
           { text(1, 'Click me'); }
@@ -317,7 +345,7 @@ describe('elementProperty', () => {
           containerRefreshStart(2);
           {
             if (ctx.condition) {
-              let rf0 = embeddedViewStart(0);
+              let rf0 = embeddedViewStart(0, 2);
               if (rf0 & RenderFlags.Create) {
                 elementStart(0, 'button');
                 { text(1, 'Click me too'); }
@@ -328,7 +356,7 @@ describe('elementProperty', () => {
               }
               embeddedViewEnd();
             } else {
-              let rf1 = embeddedViewStart(1);
+              let rf1 = embeddedViewStart(1, 2);
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'button', ['otherDir', '']);
                 { text(1, 'Click me too'); }
@@ -342,13 +370,22 @@ describe('elementProperty', () => {
           }
           containerRefreshEnd();
         }
-      }
+      }, 3, deps);
 
-      expect(renderToHtml(Template, {condition: true, id1: 'one', id2: 'two', id3: 3}, deps))
+      const fixture = new ComponentFixture(App);
+      fixture.component.condition = true;
+      fixture.component.id1 = 'one';
+      fixture.component.id2 = 'two';
+      fixture.component.id3 = 3;
+      fixture.update();
+      expect(fixture.html)
           .toEqual(`<button iddir="">Click me</button><button id="two">Click me too</button>`);
       expect(idDir !.idNumber).toEqual('one');
 
-      expect(renderToHtml(Template, {condition: false, id1: 'four', id2: 'two', id3: 3}, deps))
+      fixture.component.condition = false;
+      fixture.component.id1 = 'four';
+      fixture.update();
+      expect(fixture.html)
           .toEqual(`<button iddir="">Click me</button><button otherdir="">Click me too</button>`);
       expect(idDir !.idNumber).toEqual('four');
       expect(otherDir !.id).toEqual(3);
@@ -393,47 +430,51 @@ describe('elementProperty', () => {
     it('should set input property based on attribute if existing', () => {
 
       /** <div role="button" myDir></div> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['role', 'button', 'myDir', '']);
         }
-      }
+      }, 1, deps);
 
-      expect(renderToHtml(Template, {}, deps)).toEqual(`<div mydir="" role="button"></div>`);
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual(`<div mydir="" role="button"></div>`);
       expect(myDir !.role).toEqual('button');
     });
 
     it('should set input property and attribute if both defined', () => {
 
       /** <div role="button" [role]="role" myDir></div> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['role', 'button', 'myDir', '']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'role', bind(ctx.role));
         }
-      }
+      }, 1, deps);
 
-      expect(renderToHtml(Template, {role: 'listbox'}, deps))
-          .toEqual(`<div mydir="" role="button"></div>`);
+      const fixture = new ComponentFixture(App);
+      fixture.component.role = 'listbox';
+      fixture.update();
+      expect(fixture.html).toEqual(`<div mydir="" role="button"></div>`);
       expect(myDir !.role).toEqual('listbox');
 
-      renderToHtml(Template, {role: 'button'}, deps);
+      fixture.component.role = 'button';
+      fixture.update();
       expect(myDir !.role).toEqual('button');
     });
 
     it('should set two directive input properties based on same attribute', () => {
 
       /** <div role="button" myDir myDirB></div> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['role', 'button', 'myDir', '', 'myDirB', '']);
         }
-      }
+      }, 1, deps);
 
-      expect(renderToHtml(Template, {}, deps))
-          .toEqual(`<div mydir="" mydirb="" role="button"></div>`);
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual(`<div mydir="" mydirb="" role="button"></div>`);
       expect(myDir !.role).toEqual('button');
       expect(dirB !.roleB).toEqual('button');
     });
@@ -441,14 +482,14 @@ describe('elementProperty', () => {
     it('should process two attributes on same directive', () => {
 
       /** <div role="button" dir="rtl" myDir></div> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['role', 'button', 'dir', 'rtl', 'myDir', '']);
         }
-      }
+      }, 1, deps);
 
-      expect(renderToHtml(Template, {}, deps))
-          .toEqual(`<div dir="rtl" mydir="" role="button"></div>`);
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual(`<div dir="rtl" mydir="" role="button"></div>`);
       expect(myDir !.role).toEqual('button');
       expect(myDir !.direction).toEqual('rtl');
     });
@@ -456,17 +497,19 @@ describe('elementProperty', () => {
     it('should process attributes and outputs properly together', () => {
 
       /** <div role="button" (change)="onChange()" myDir></div> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div', ['role', 'button', 'myDir', '']);
-          { listener('change', ctx.onChange.bind(ctx)); }
+          { listener('change', () => ctx.onChange()); }
           elementEnd();
         }
-      }
+      }, 1, deps);
 
+      const fixture = new ComponentFixture(App);
       let counter = 0;
-      expect(renderToHtml(Template, {onChange: () => counter++}, deps))
-          .toEqual(`<div mydir="" role="button"></div>`);
+      fixture.component.onChange = () => counter++;
+      fixture.update();
+      expect(fixture.html).toEqual(`<div mydir="" role="button"></div>`);
       expect(myDir !.role).toEqual('button');
 
       myDir !.changeStream.next();
@@ -479,14 +522,15 @@ describe('elementProperty', () => {
        * <div role="button" dir="rtl" myDir></div>
        * <div role="listbox" myDirB></div>
        */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['role', 'button', 'dir', 'rtl', 'myDir', '']);
           element(1, 'div', ['role', 'listbox', 'myDirB', '']);
         }
-      }
+      }, 2, deps);
 
-      expect(renderToHtml(Template, {}, deps))
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html)
           .toEqual(
               `<div dir="rtl" mydir="" role="button"></div><div mydirb="" role="listbox"></div>`);
       expect(myDir !.role).toEqual('button');
@@ -504,7 +548,7 @@ describe('elementProperty', () => {
        *   <div role="menu"></div>               // initialInputs: [null]
        * % }
        */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['role', 'listbox', 'myDir', '']);
           container(1);
@@ -513,13 +557,13 @@ describe('elementProperty', () => {
           containerRefreshStart(1);
           {
             if (ctx.condition) {
-              let rf1 = embeddedViewStart(0);
+              let rf1 = embeddedViewStart(0, 1);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'div', ['role', 'button', 'myDirB', '']);
               }
               embeddedViewEnd();
             } else {
-              let rf2 = embeddedViewStart(1);
+              let rf2 = embeddedViewStart(1, 1);
               if (rf2 & RenderFlags.Create) {
                 element(0, 'div', ['role', 'menu']);
               }
@@ -528,16 +572,20 @@ describe('elementProperty', () => {
           }
           containerRefreshEnd();
         }
-      }
+      }, 2, deps);
 
-      expect(renderToHtml(Template, {condition: true}, deps))
+      const fixture = new ComponentFixture(App);
+      fixture.component.condition = true;
+      fixture.update();
+      expect(fixture.html)
           .toEqual(`<div mydir="" role="listbox"></div><div mydirb="" role="button"></div>`);
       expect(myDir !.role).toEqual('listbox');
       expect(dirB !.roleB).toEqual('button');
       expect((dirB !as any).role).toBeUndefined();
 
-      expect(renderToHtml(Template, {condition: false}, deps))
-          .toEqual(`<div mydir="" role="listbox"></div><div role="menu"></div>`);
+      fixture.component.condition = false;
+      fixture.update();
+      expect(fixture.html).toEqual(`<div mydir="" role="listbox"></div><div role="menu"></div>`);
       expect(myDir !.role).toEqual('listbox');
     });
 
@@ -547,6 +595,7 @@ describe('elementProperty', () => {
         static ngComponentDef = defineComponent({
           type: Comp,
           selectors: [['comp']],
+          consts: 3,
           /** <div role="button" dir #dir="myDir"></div> {{ dir.role }} */
           template: function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
@@ -568,7 +617,7 @@ describe('elementProperty', () => {
        *     <comp></comp>
        * % }
        */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           container(0);
         }
@@ -576,7 +625,7 @@ describe('elementProperty', () => {
           containerRefreshStart(0);
           {
             for (let i = 0; i < 2; i++) {
-              let rf1 = embeddedViewStart(0);
+              let rf1 = embeddedViewStart(0, 1);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
               }
@@ -585,9 +634,10 @@ describe('elementProperty', () => {
           }
           containerRefreshEnd();
         }
-      }
+      }, 1, [Comp]);
 
-      expect(renderToHtml(Template, {}, [Comp]))
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html)
           .toEqual(
               `<comp><div mydir="" role="button"></div>button</comp><comp><div mydir="" role="button"></div>button</comp>`);
     });

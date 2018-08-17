@@ -17,7 +17,7 @@ describe('exports', () => {
   it('should support export of DOM element', () => {
 
     /** <input value="one" #myInput> {{ myInput.value }} */
-    function Template(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'input', ['value', 'one'], ['myInput', '']);
         text(2);
@@ -26,15 +26,27 @@ describe('exports', () => {
         const tmp = reference(1) as any;
         textBinding(2, tmp.value);
       }
-    }
+    }, 3);
 
-    expect(renderToHtml(Template, {})).toEqual('<input value="one">one');
+    const fixture = new ComponentFixture(App);
+    expect(fixture.html).toEqual('<input value="one">one');
   });
 
   it('should support basic export of component', () => {
+    class MyComponent {
+      name = 'Nancy';
+
+      static ngComponentDef = defineComponent({
+        type: MyComponent,
+        selectors: [['comp']],
+        consts: 0,
+        template: function() {},
+        factory: () => new MyComponent
+      });
+    }
 
     /** <comp #myComp></comp> {{ myComp.name }} */
-    function Template(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'comp', null, ['myComp', '']);
         text(2);
@@ -43,20 +55,10 @@ describe('exports', () => {
         const tmp = reference(1) as any;
         textBinding(2, tmp.name);
       }
-    }
+    }, 3, [MyComponent]);
 
-    class MyComponent {
-      name = 'Nancy';
-
-      static ngComponentDef = defineComponent({
-        type: MyComponent,
-        selectors: [['comp']],
-        template: function() {},
-        factory: () => new MyComponent
-      });
-    }
-
-    expect(renderToHtml(Template, {}, [MyComponent])).toEqual('<comp></comp>Nancy');
+    const fixture = new ComponentFixture(App);
+    expect(fixture.html).toEqual('<comp></comp>Nancy');
   });
 
   it('should support component instance fed into directive', () => {
@@ -68,6 +70,7 @@ describe('exports', () => {
       static ngComponentDef = defineComponent({
         type: MyComponent,
         selectors: [['comp']],
+        consts: 0,
         template: function() {},
         factory: () => new MyComponent
       });
@@ -88,7 +91,7 @@ describe('exports', () => {
     const defs = [MyComponent, MyDir];
 
     /** <comp #myComp></comp> <div [myDir]="myComp"></div> */
-    function Template(rf: RenderFlags, ctx: any) {
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
         element(0, 'comp', null, ['myComp', '']);
         element(2, 'div', ['myDir', '']);
@@ -97,26 +100,13 @@ describe('exports', () => {
         const tmp = reference(1) as any;
         elementProperty(2, 'myDir', bind(tmp));
       }
-    }
+    }, 3, defs);
 
-    renderToHtml(Template, {}, defs);
+    const fixture = new ComponentFixture(App);
     expect(myDir !.myDir).toEqual(myComponent !);
   });
 
   it('should work with directives with exportAs set', () => {
-
-    /** <div someDir #myDir="someDir"></div> {{ myDir.name }} */
-    function Template(rf: RenderFlags, ctx: any) {
-      if (rf & RenderFlags.Create) {
-        element(0, 'div', ['someDir', ''], ['myDir', 'someDir']);
-        text(2);
-      }
-      if (rf & RenderFlags.Update) {
-        const tmp = reference(1) as any;
-        textBinding(2, tmp.name);
-      }
-    }
-
     class SomeDir {
       name = 'Drew';
       static ngDirectiveDef = defineDirective({
@@ -127,7 +117,20 @@ describe('exports', () => {
       });
     }
 
-    expect(renderToHtml(Template, {}, [SomeDir])).toEqual('<div somedir=""></div>Drew');
+    /** <div someDir #myDir="someDir"></div> {{ myDir.name }} */
+    const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
+      if (rf & RenderFlags.Create) {
+        element(0, 'div', ['someDir', ''], ['myDir', 'someDir']);
+        text(2);
+      }
+      if (rf & RenderFlags.Update) {
+        const tmp = reference(1) as any;
+        textBinding(2, tmp.name);
+      }
+    }, 3, [SomeDir]);
+
+    const fixture = new ComponentFixture(App);
+    expect(fixture.html).toEqual('<div somedir=""></div>Drew');
   });
 
   it('should throw if export name is not found', () => {
@@ -137,7 +140,7 @@ describe('exports', () => {
       if (rf & RenderFlags.Create) {
         element(0, 'div', null, ['myDir', 'someDir']);
       }
-    });
+    }, 1);
 
     expect(() => {
       const fixture = new ComponentFixture(App);
@@ -147,7 +150,7 @@ describe('exports', () => {
   describe('forward refs', () => {
     it('should work with basic text bindings', () => {
       /** {{ myInput.value}} <input value="one" #myInput> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           text(0);
           element(1, 'input', ['value', 'one'], ['myInput', '']);
@@ -156,15 +159,16 @@ describe('exports', () => {
           const tmp = reference(2) as any;
           textBinding(0, bind(tmp.value));
         }
-      }
+      }, 3);
 
-      expect(renderToHtml(Template, {})).toEqual('one<input value="one">');
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('one<input value="one">');
     });
 
 
     it('should work with element properties', () => {
       /** <div [title]="myInput.value"</div> <input value="one" #myInput> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'div');
           element(1, 'input', ['value', 'one'], ['myInput', '']);
@@ -173,14 +177,15 @@ describe('exports', () => {
           const tmp = reference(2) as any;
           elementProperty(0, 'title', bind(tmp.value));
         }
-      }
+      }, 3);
 
-      expect(renderToHtml(Template, {})).toEqual('<div title="one"></div><input value="one">');
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('<div title="one"></div><input value="one">');
     });
 
     it('should work with element attrs', () => {
       /** <div [attr.aria-label]="myInput.value"</div> <input value="one" #myInput> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'div');
           element(1, 'input', ['value', 'one'], ['myInput', '']);
@@ -189,14 +194,15 @@ describe('exports', () => {
           const tmp = reference(2) as any;
           elementAttribute(0, 'aria-label', bind(tmp.value));
         }
-      }
+      }, 3);
 
-      expect(renderToHtml(Template, {})).toEqual('<div aria-label="one"></div><input value="one">');
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('<div aria-label="one"></div><input value="one">');
     });
 
     it('should work with element classes', () => {
       /** <div [class.red]="myInput.checked"</div> <input type="checkbox" checked #myInput> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
           elementStyling([InitialStylingFlags.VALUES_MODE, 'red', true]);
@@ -208,10 +214,10 @@ describe('exports', () => {
           elementClassProp(0, 0, tmp.checked);
           elementStylingApply(0);
         }
-      }
+      }, 3);
 
-      expect(renderToHtml(Template, {}))
-          .toEqual('<div class="red"></div><input checked="true" type="checkbox">');
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('<div class="red"></div><input checked="true" type="checkbox">');
     });
 
     it('should work with component refs', () => {
@@ -225,6 +231,7 @@ describe('exports', () => {
         static ngComponentDef = defineComponent({
           type: MyComponent,
           selectors: [['comp']],
+          consts: 0,
           template: function(rf: RenderFlags, ctx: MyComponent) {},
           factory: () => new MyComponent
         });
@@ -245,7 +252,7 @@ describe('exports', () => {
       }
 
       /** <div [myDir]="myComp"></div><comp #myComp></comp> */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['myDir', '']);
           element(1, 'comp', null, ['myComp', '']);
@@ -254,16 +261,32 @@ describe('exports', () => {
           const tmp = reference(2) as any;
           elementProperty(0, 'myDir', bind(tmp));
         }
-      }
+      }, 3, [MyComponent, MyDir]);
 
-      renderToHtml(Template, {}, [MyComponent, MyDir]);
+      const fixture = new ComponentFixture(App);
       expect(myDir !.myDir).toEqual(myComponent !);
     });
 
     it('should work with multiple forward refs', () => {
+      let myComponent: MyComponent;
+
+      class MyComponent {
+        name = 'Nancy';
+
+        constructor() { myComponent = this; }
+
+        static ngComponentDef = defineComponent({
+          type: MyComponent,
+          selectors: [['comp']],
+          consts: 0,
+          template: function() {},
+          factory: () => new MyComponent
+        });
+      }
+
       /** {{ myInput.value }} {{ myComp.name }} <comp #myComp></comp> <input value="one" #myInput>
        */
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           text(0);
           text(1);
@@ -276,28 +299,14 @@ describe('exports', () => {
           textBinding(0, bind(tmp2.value));
           textBinding(1, bind(tmp1.name));
         }
-      }
+      }, 6, [MyComponent]);
 
-      let myComponent: MyComponent;
-
-      class MyComponent {
-        name = 'Nancy';
-
-        constructor() { myComponent = this; }
-
-        static ngComponentDef = defineComponent({
-          type: MyComponent,
-          selectors: [['comp']],
-          template: function() {},
-          factory: () => new MyComponent
-        });
-      }
-      expect(renderToHtml(Template, {}, [MyComponent]))
-          .toEqual('oneNancy<comp></comp><input value="one">');
+      const fixture = new ComponentFixture(App);
+      expect(fixture.html).toEqual('oneNancy<comp></comp><input value="one">');
     });
 
     it('should work inside a view container', () => {
-      function Template(rf: RenderFlags, ctx: any) {
+      const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
           { container(1); }
@@ -307,7 +316,7 @@ describe('exports', () => {
           containerRefreshStart(1);
           {
             if (ctx.condition) {
-              let rf1 = embeddedViewStart(1);
+              let rf1 = embeddedViewStart(1, 2);
               {
                 if (rf1 & RenderFlags.Create) {
                   text(0);
@@ -323,12 +332,16 @@ describe('exports', () => {
           }
           containerRefreshEnd();
         }
-      }
+      }, 2);
 
-      expect(renderToHtml(Template, {
-        condition: true
-      })).toEqual('<div>one<input value="one"></div>');
-      expect(renderToHtml(Template, {condition: false})).toEqual('<div></div>');
+      const fixture = new ComponentFixture(App);
+      fixture.component.condition = true;
+      fixture.update();
+      expect(fixture.html).toEqual('<div>one<input value="one"></div>');
+
+      fixture.component.condition = false;
+      fixture.update();
+      expect(fixture.html).toEqual('<div></div>');
     });
 
     it('should support local refs in nested dynamic views', () => {
@@ -348,12 +361,12 @@ describe('exports', () => {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'input', ['value', 'one'], ['outerInput', '']);
           elementEnd();
-          template(2, outerTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(2, outerTemplate, 5, '', [AttributeMarker.SelectOnly, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(2, 'ngIf', bind(app.outer));
         }
-      }, [NgIf]);
+      }, 3, [NgIf]);
 
       function outerTemplate(rf: RenderFlags, outer: any) {
         if (rf & RenderFlags.Create) {
@@ -362,7 +375,7 @@ describe('exports', () => {
             text(1);
             elementStart(2, 'input', ['value', 'two'], ['innerInput', '']);
             elementEnd();
-            template(4, innerTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
+            template(4, innerTemplate, 2, '', [AttributeMarker.SelectOnly, 'ngIf']);
           }
           elementEnd();
         }
