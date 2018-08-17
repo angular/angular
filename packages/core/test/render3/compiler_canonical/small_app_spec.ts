@@ -38,6 +38,19 @@ class AppState {
   // /NORMATIVE
 }
 
+const ToDoAppComponent_NgForOf_Template = function ToDoAppComponent_NgForOf_Template(
+    rf: $RenderFlags$, ctx1: NgForOfContext<ToDo>) {
+  if (rf & 1) {
+    const $comp$ = r3.nextContext();
+    r3.elementStart(0, 'todo');
+    r3.listener('archive', $comp$.onArchive.bind($comp$));
+    r3.elementEnd();
+  }
+  if (rf & 2) {
+    r3.elementProperty(0, 'todo', r3.bind(ctx1.$implicit));
+  }
+};
+
 @Component({
   selector: 'todo-app',
   template: `
@@ -64,24 +77,14 @@ class ToDoAppComponent {
     factory: function ToDoAppComponent_Factory() {
       return new ToDoAppComponent(r3.directiveInject(AppState));
     },
+    consts: 6,
     template: function ToDoAppComponent_Template(rf: $RenderFlags$, ctx: ToDoAppComponent) {
       if (rf & 1) {
-        const ToDoAppComponent_NgForOf_Template = function ToDoAppComponent_NgForOf_Template(
-            rf: $RenderFlags$, ctx1: NgForOfContext<ToDo>) {
-          if (rf & 1) {
-            r3.elementStart(0, 'todo');
-            r3.listener('archive', ctx.onArchive.bind(ctx));
-            r3.elementEnd();
-          }
-          if (rf & 2) {
-            r3.elementProperty(0, 'todo', r3.bind(ctx1.$implicit));
-          }
-        };
         r3.elementStart(0, 'h1');
         r3.text(1, 'ToDo Application');
         r3.elementEnd();
         r3.elementStart(2, 'div');
-        r3.template(3, ToDoAppComponent_NgForOf_Template, '', ['ngForOf', '']);
+        r3.template(3, ToDoAppComponent_NgForOf_Template, 1, '', ['ngForOf', '']);
         r3.elementEnd();
         r3.elementStart(4, 'span');
         r3.text(5);
@@ -131,6 +134,7 @@ class ToDoItemComponent {
     type: ToDoItemComponent,
     selectors: [['todo']],
     factory: function ToDoItemComponent_Factory() { return new ToDoItemComponent(); },
+    consts: 6,
     template: function ToDoItemComponent_Template(rf: $RenderFlags$, ctx: ToDoItemComponent) {
       if (rf & 1) {
         r3.elementStart(0, 'div');

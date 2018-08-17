@@ -26,6 +26,7 @@ describe('i18n', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: () => new MyApp(),
+        consts: 2,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'div');
@@ -51,6 +52,7 @@ describe('i18n', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: () => new MyApp(),
+        consts: 2,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'div');
@@ -78,6 +80,7 @@ describe('i18n', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: () => new MyApp(),
+        consts: 2,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'div');
@@ -99,6 +102,18 @@ describe('i18n', () => {
     const $i18n_1$ = $r3$.ɵi18nMapping(
         $msg_1$, [{START_LI: 1}, {START_LI: 0}], [null, {EXP_1: 1}], ['START_LI']);
 
+    function liTemplate(rf1: $RenderFlags$, row: NgForOfContext<string>) {
+      if (rf1 & 1) {
+        $r3$.ɵelementStart(0, 'li');
+        $r3$.ɵtext(1);
+        $r3$.ɵelementEnd();
+        $r3$.ɵi18nApply(0, $i18n_1$[1]);
+      }
+      if (rf1 & 2) {
+        $r3$.ɵtextBinding(1, $r3$.ɵbind(row.$implicit));
+      }
+    }
+
     @Component({
       selector: 'my-app',
       template: `<ul i18n><li *ngFor="let item of items">value: {{item}}</li></ul>`
@@ -109,27 +124,16 @@ describe('i18n', () => {
         type: MyApp,
         factory: () => new MyApp(),
         selectors: [['my-app']],
+        consts: 2,
         template: (rf: $RenderFlags$, myApp: $MyApp$) => {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'ul');
-            $r3$.ɵtemplate(1, liTemplate, null, ['ngForOf', '']);
+            $r3$.ɵtemplate(1, liTemplate, 2, null, ['ngForOf', '']);
             $r3$.ɵelementEnd();
             $r3$.ɵi18nApply(1, $i18n_1$[0]);
           }
           if (rf & 2) {
             $r3$.ɵelementProperty(1, 'ngForOf', $r3$.ɵbind(myApp.items));
-          }
-
-          function liTemplate(rf1: $RenderFlags$, row: NgForOfContext<string>) {
-            if (rf1 & 1) {
-              $r3$.ɵelementStart(0, 'li');
-              $r3$.ɵtext(1);
-              $r3$.ɵelementEnd();
-              $r3$.ɵi18nApply(0, $i18n_1$[1]);
-            }
-            if (rf1 & 2) {
-              $r3$.ɵtextBinding(1, $r3$.ɵbind(row.$implicit));
-            }
           }
         },
         directives: () => [NgForOf]

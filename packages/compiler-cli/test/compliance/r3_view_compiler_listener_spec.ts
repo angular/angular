@@ -112,7 +112,7 @@ describe('compiler compliance: listen()', () => {
         // ...
         template: function MyComponent_Template(rf, ctx) {
           if (rf & 1) {
-            $r3$.ɵtemplate(0, MyComponent_div_Template_0, null, $c0$);
+            $r3$.ɵtemplate(0, MyComponent_div_Template_0, 3, null, $c0$);
           }
           if (rf & 2) {
             $i0$.ɵelementProperty(0, "ngIf", $i0$.ɵbind(ctx.showing));
@@ -154,6 +154,7 @@ describe('compiler compliance: listen()', () => {
           selectors: [["my-component"]],
           factory: function MyComponent_Factory(t) { return new (t || MyComponent)(); },
           features: [$r3$.ɵPublicFeature],
+          consts: 4,
           template: function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "button");

@@ -94,6 +94,7 @@ describe('compiler compliance: styling', () => {
                 return new (t || MyComponent)();
               },
               features: [$r3$.ɵPublicFeature],
+              consts: 1,
               template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵelementStart(0, "div");
@@ -151,6 +152,7 @@ describe('compiler compliance: styling', () => {
               return new (t || MyComponent)();
             },
             features: [$r3$.ɵPublicFeature],
+            consts: 1,
             template: function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "div");
@@ -246,6 +248,7 @@ describe('compiler compliance: styling', () => {
                 return new (t || MyComponent)();
               },
               features: [$r3$.ɵPublicFeature],
+              consts: 1,
               template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵelementStart(0, "div");
@@ -300,6 +303,7 @@ describe('compiler compliance: styling', () => {
                 return new (t || MyComponent)();
               },
               features: [$r3$.ɵPublicFeature],
+              consts: 1,
               template: function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵelementStart(0, "div");

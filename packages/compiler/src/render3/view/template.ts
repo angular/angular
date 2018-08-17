@@ -171,6 +171,10 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // resolving bindings.
     t.visitAll(this, nodes);
 
+    // Nested templates must be processed before creation instructions so template()
+    // instructions can be generated with the correct internal const count.
+    this._nestedTemplateFns.forEach(buildTemplateFn => buildTemplateFn());
+
     // Generate all the creation mode instructions (e.g. resolve bindings in listeners)
     const creationStatements = this._creationCodeFns.map((fn: () => o.Statement) => fn());
 
@@ -207,8 +211,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         this._prefixCode.push(phMap);
       }
     }
-
-    this._nestedTemplateFns.forEach(buildTemplateFn => buildTemplateFn());
 
     return o.fn(
         // i.e. (rf: RenderFlags, ctx: any)
@@ -727,9 +729,6 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       parameters.push(this.constantPool.getConstLiteral(o.literalArr(attributeNames), true));
     }
 
-    // e.g. template(1, MyComp_Template_1)
-    this.creationInstruction(template.sourceSpan, R3.templateCreate, trimTrailingNulls(parameters));
-
     // e.g. p(1, 'forOf', ɵbind(ctx.items));
     const context = o.variable(CONTEXT_NAME);
     template.inputs.forEach(input => {
@@ -755,6 +754,12 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       const templateFunctionExpr =
           templateVisitor.buildTemplateFunction(template.children, template.variables);
       this.constantPool.statements.push(templateFunctionExpr.toDeclStmt(templateName, null));
+    });
+
+    // e.g. template(1, MyComp_Template_1)
+    this.creationInstruction(template.sourceSpan, R3.templateCreate, () => {
+      parameters.splice(2, 0, o.literal(templateVisitor.getSlotCount()));
+      return trimTrailingNulls(parameters);
     });
   }
 
@@ -801,6 +806,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 
   private allocateDataSlot() { return this._dataIndex++; }
+
+  getSlotCount() { return this._dataIndex; }
+
   private bindingContext() { return `${this._bindingContext++}`; }
 
   // Bindings must only be resolved after all local refs have been visited, so all

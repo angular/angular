@@ -314,6 +314,7 @@ describe('InheritDefinitionFeature', () => {
         type: SuperComponent,
         template: () => {},
         selectors: [['', 'superDir', '']],
+        consts: 0,
         factory: () => new SuperComponent()
       });
     }
