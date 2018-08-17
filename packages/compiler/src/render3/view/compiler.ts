@@ -189,13 +189,15 @@ export function compileComponentFromMetadata(
   const pipesUsed = new Set<o.Expression>();
 
   const template = meta.template;
-  const templateFunctionExpression =
-      new TemplateDefinitionBuilder(
-          constantPool, BindingScope.ROOT_SCOPE, 0, templateTypeName, templateName,
-          meta.viewQueries, directiveMatcher, directivesUsed, meta.pipes, pipesUsed,
-          R3.namespaceHTML)
-          .buildTemplateFunction(
-              template.nodes, [], template.hasNgContent, template.ngContentSelectors);
+  const templateBuilder = new TemplateDefinitionBuilder(
+      constantPool, BindingScope.ROOT_SCOPE, 0, templateTypeName, templateName, meta.viewQueries,
+      directiveMatcher, directivesUsed, meta.pipes, pipesUsed, R3.namespaceHTML);
+
+  const templateFunctionExpression = templateBuilder.buildTemplateFunction(
+      template.nodes, [], template.hasNgContent, template.ngContentSelectors);
+
+  // e.g. `consts: 2`
+  definitionMap.set('consts', o.literal(templateBuilder.getSlotCount()));
 
   definitionMap.set('template', templateFunctionExpression);
 

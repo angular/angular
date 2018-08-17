@@ -41,6 +41,7 @@ describe('compiler sanitization', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: function MyComponent_Factory() { return new MyComponent(); },
+        consts: 2,
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'div');

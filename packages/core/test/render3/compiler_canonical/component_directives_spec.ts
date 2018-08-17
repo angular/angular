@@ -32,6 +32,7 @@ describe('components & directives', () => {
         type: ChildComponent,
         selectors: [['child']],
         factory: function ChildComponent_Factory() { return new ChildComponent(); },
+        consts: 1,
         template: function ChildComponent_Template(rf: $RenderFlags$, ctx: $ChildComponent$) {
           if (rf & 1) {
             $r3$.ɵtext(0, 'child-view');
@@ -67,6 +68,7 @@ describe('components & directives', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent(),
+        consts: 2,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
             $r3$.ɵelement(0, 'child', $e0_attrs$);
@@ -120,6 +122,7 @@ describe('components & directives', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
+        consts: 1,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelement(0, 'div', $e0_attrs$);
@@ -171,6 +174,7 @@ describe('components & directives', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
+        consts: 2,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'button', $e0_attrs$);
@@ -218,6 +222,7 @@ describe('components & directives', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
+        consts: 1,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelement(0, 'div', $e0_attrs$);
@@ -268,6 +273,7 @@ describe('components & directives', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
+        consts: 1,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelement(0, 'div', $e0_attrs$);
@@ -304,6 +310,7 @@ describe('components & directives', () => {
         type: MyComp,
         selectors: [['my-comp']],
         factory: function MyComp_Factory() { return new MyComp(); },
+        consts: 1,
         template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
           if (rf & 1) {
             $r3$.ɵtext(0);
@@ -329,6 +336,7 @@ describe('components & directives', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
+        consts: 1,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelement(0, 'my-comp');
@@ -393,10 +401,11 @@ describe('components & directives', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent(),
+        consts: 3,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'ul', null, $e0_locals$);
-            $r3$.ɵtemplate(2, C1, '', ['if', '']);
+            $r3$.ɵtemplate(2, C1, 2, '', ['if', '']);
             $r3$.ɵelementEnd();
           }
         }
@@ -425,6 +434,7 @@ describe('components & directives', () => {
         type: MyArrayComp,
         selectors: [['my-array-comp']],
         factory: function MyArrayComp_Factory() { return new MyArrayComp(); },
+        consts: 1,
         template: function MyArrayComp_Template(rf: $RenderFlags$, ctx: $MyArrayComp$) {
           if (rf & 1) {
             $r3$.ɵtext(0);
@@ -456,6 +466,7 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
+          consts: 1,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-array-comp');
@@ -500,6 +511,7 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
+          consts: 1,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-array-comp');
@@ -534,6 +546,7 @@ describe('components & directives', () => {
           type: MyComp,
           selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp(); },
+          consts: 1,
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
             if (rf & 1) {
               $r3$.ɵtext(0);
@@ -566,6 +579,7 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
+          consts: 1,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-comp');
@@ -609,6 +623,7 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
+          consts: 1,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-array-comp');
@@ -657,6 +672,7 @@ describe('components & directives', () => {
           type: MyComp,
           selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp(); },
+          consts: 12,
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
             if (rf & 1) {
               $r3$.ɵtext(0);
@@ -720,6 +736,7 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
+          consts: 1,
           template: function MyApp_Template(rf: $RenderFlags$, c: $any$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-comp');
@@ -762,6 +779,7 @@ describe('components & directives', () => {
           type: ObjectComp,
           selectors: [['object-comp']],
           factory: function ObjectComp_Factory() { return new ObjectComp(); },
+          consts: 4,
           template: function ObjectComp_Template(rf: $RenderFlags$, ctx: $ObjectComp$) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, 'p');
@@ -798,6 +816,7 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
+          consts: 1,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'object-comp');
@@ -839,6 +858,7 @@ describe('components & directives', () => {
           type: NestedComp,
           selectors: [['nested-comp']],
           factory: function NestedComp_Factory() { return new NestedComp(); },
+          consts: 6,
           template: function NestedComp_Template(rf: $RenderFlags$, ctx: $NestedComp$) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, 'p');
@@ -884,6 +904,7 @@ describe('components & directives', () => {
           type: MyApp,
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
+          consts: 1,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'nested-comp');

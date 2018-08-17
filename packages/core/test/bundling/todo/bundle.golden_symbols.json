@@ -642,9 +642,6 @@
     "name": "hostElement"
   },
   {
-    "name": "initBindings"
-  },
-  {
     "name": "initChangeDetectorIfExisting"
   },
   {

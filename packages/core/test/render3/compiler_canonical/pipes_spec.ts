@@ -83,6 +83,7 @@ describe('pipes', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
+        consts: 3,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵtext(0);
@@ -155,12 +156,11 @@ describe('pipes', () => {
         $r3$.ɵtext(1);
         $r3$.ɵpipe(2, 'myPurePipe');
         $r3$.ɵelementEnd();
-        $r3$.ɵreserveSlots(3);
       }
       if (rf & 2) {
         const $comp$ = $r3$.ɵnextContext();
         $r3$.ɵtextBinding(
-          1, $r3$.ɵinterpolation1('', $r3$.ɵpipeBind2(2, 3, $comp$.name, $comp$.size), ''));
+            1, $r3$.ɵinterpolation1('', $r3$.ɵpipeBind2(2, 3, $comp$.name, $comp$.size), ''));
       }
     }
 
@@ -178,14 +178,14 @@ describe('pipes', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
+        consts: 5,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵtext(0);
             $r3$.ɵpipe(1, 'myPurePipe');
             $r3$.ɵtext(2);
             $r3$.ɵpipe(3, 'myPurePipe');
-            $r3$.ɵtemplate(4, MyApp_div_Template_4, '', ['oneTimeIf', '']);
-            $r3$.ɵreserveSlots(6);
+            $r3$.ɵtemplate(4, MyApp_div_Template_4, 3, '', ['oneTimeIf', '']);
           }
           if (rf & 2) {
             $r3$.ɵtextBinding(

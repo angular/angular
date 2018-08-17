@@ -35,7 +35,7 @@ describe('directive', () => {
 
       function Template() { element(0, 'span', [AttributeMarker.SelectOnly, 'dir']); }
 
-      const fixture = new TemplateFixture(Template, () => {}, [Directive]);
+      const fixture = new TemplateFixture(Template, () => {}, 1, [Directive]);
       expect(fixture.html).toEqual('<span class="foo"></span>');
 
       directiveInstance !.klass = 'bar';
@@ -86,7 +86,7 @@ describe('directive', () => {
 
       function updateTemplate() { elementProperty(0, 'test', bind(false)); }
 
-      const fixture = new TemplateFixture(createTemplate, updateTemplate, [Directive]);
+      const fixture = new TemplateFixture(createTemplate, updateTemplate, 1, [Directive]);
 
       // the "test" attribute should not be reflected in the DOM as it is here only for directive
       // matching purposes
@@ -142,7 +142,7 @@ describe('directive', () => {
            elementProperty(0, 'prop2', bind(true));
          }
 
-         const fixture = new TemplateFixture(createTemplate, updateTemplate, [Directive]);
+         const fixture = new TemplateFixture(createTemplate, updateTemplate, 1, [Directive]);
 
          // the "test" attribute should not be reflected in the DOM as it is here only for directive
          // matching purposes
@@ -173,7 +173,7 @@ describe('directive', () => {
         elementEnd();
       }
 
-      const fixture = new TemplateFixture(createTemplate, () => {}, [Directive]);
+      const fixture = new TemplateFixture(createTemplate, () => {}, 1, [Directive]);
 
       // "out" should not be part of reflected attributes
       expect(fixture.html).toEqual('<span></span>');

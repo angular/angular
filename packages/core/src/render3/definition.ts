@@ -54,6 +54,15 @@ export function defineComponent<T>(componentDefinition: {
   factory: () => T;
 
   /**
+   * The number of nodes, local refs, and pipes in this component template.
+   *
+   * Used to calculate the length of the component's LViewData array, so we
+   * can pre-fill the array and set the binding start index.
+   */
+  // TODO(kara): remove queries from this count
+  consts: number;
+
+  /**
    * Static attributes to set on host element.
    *
    * Even indices: attribute name
@@ -245,6 +254,7 @@ export function defineComponent<T>(componentDefinition: {
   const def: ComponentDefInternal<any> = {
     type: type,
     diPublic: null,
+    consts: componentDefinition.consts,
     factory: componentDefinition.factory,
     template: componentDefinition.template || null !,
     hostBindings: componentDefinition.hostBindings || null,
