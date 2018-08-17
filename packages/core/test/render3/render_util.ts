@@ -59,7 +59,7 @@ export class TemplateFixture extends BaseFixture {
    *          `if (rf & RenderFlags.Update) { __here__ }`.
    */
   constructor(
-      private createBlock: () => void, private updateBlock: () => void = noop,
+      private createBlock: () => void, private updateBlock: () => void = noop, consts: number = 0,
       directives?: DirectiveTypesOrFactory|null, pipes?: PipeTypesOrFactory|null,
       sanitizer?: Sanitizer|null, rendererFactory?: RendererFactory3) {
     super();
@@ -74,7 +74,7 @@ export class TemplateFixture extends BaseFixture {
       if (rf & RenderFlags.Update) {
         this.updateBlock();
       }
-    }, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs, sanitizer);
+    }, consts, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs, sanitizer);
   }
 
   /**
@@ -84,7 +84,7 @@ export class TemplateFixture extends BaseFixture {
    */
   update(updateBlock?: () => void): void {
     renderTemplate(
-        this.hostNode.native, updateBlock || this.updateBlock, null !, this._rendererFactory,
+        this.hostNode.native, updateBlock || this.updateBlock, 0, null !, this._rendererFactory,
         this.hostNode, this._directiveDefs, this._pipeDefs, this._sanitizer);
   }
 }
@@ -170,10 +170,11 @@ export function resetDOM() {
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
 export function renderToHtml(
-    template: ComponentTemplate<any>, ctx: any, directives?: DirectiveTypesOrFactory | null,
-    pipes?: PipeTypesOrFactory | null, providedRendererFactory?: RendererFactory3 | null) {
+    template: ComponentTemplate<any>, ctx: any, consts: number = 0,
+    directives?: DirectiveTypesOrFactory | null, pipes?: PipeTypesOrFactory | null,
+    providedRendererFactory?: RendererFactory3 | null) {
   host = renderTemplate(
-      containerEl, template, ctx, providedRendererFactory || testRendererFactory, host,
+      containerEl, template, consts, ctx, providedRendererFactory || testRendererFactory, host,
       toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
   return toHtml(containerEl);
 }
@@ -228,14 +229,15 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
 }
 
 export function createComponent(
-    name: string, template: ComponentTemplate<any>, directives: DirectiveTypesOrFactory = [],
-    pipes: PipeTypesOrFactory = [],
+    name: string, template: ComponentTemplate<any>, consts: number = 0,
+    directives: DirectiveTypesOrFactory = [], pipes: PipeTypesOrFactory = [],
     viewQuery: ComponentTemplate<any>| null = null): ComponentType<any> {
   return class Component {
     value: any;
     static ngComponentDef = defineComponent({
       type: Component,
       selectors: [[name]],
+      consts: consts,
       factory: () => new Component,
       template: template,
       viewQuery: viewQuery,

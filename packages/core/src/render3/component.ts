@@ -18,7 +18,7 @@ import {CLEAN_PROMISE, ROOT_DIRECTIVE_INDICES, _getComponentHostLElementNode, ba
 import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {LViewData, LViewFlags, RootContext, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
+import {LViewData, LViewFlags, RootContext, BINDING_INDEX, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
 import {stringify} from './util';
 
 
@@ -107,11 +107,12 @@ export function renderComponent<T>(
 
   const rootView: LViewData = createLViewData(
       rendererFactory.createRenderer(hostNode, componentDef),
-      createTView(-1, null, null, null, null), rootContext,
+      createTView(-1, null, 1, null, null, null), rootContext,
       componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
   rootView[INJECTOR] = opts.injector || null;
 
   const oldView = enterView(rootView, null !);
+  rootView[BINDING_INDEX] = rootView[TVIEW].bindingStartIndex;
   let elementNode: LElementNode;
   let component: T;
   try {

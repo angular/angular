@@ -202,6 +202,15 @@ export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T
   readonly styles: string[];
 
   /**
+   * The number of nodes, local refs, and pipes in this component template.
+   *
+   * Used to calculate the length of the component's LViewData array, so we
+   * can pre-fill the array and set the binding start index.
+   */
+  // TODO(kara): remove queries from this count
+  consts: number;
+
+  /**
    * Query-related instructions for a component.
    */
   readonly viewQuery: ComponentQuery<T>|null;

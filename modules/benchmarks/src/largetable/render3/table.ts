@@ -19,6 +19,7 @@ export class LargeTableComponent {
   static ngComponentDef: ComponentDefInternal<LargeTableComponent> = ɵdefineComponent({
     type: LargeTableComponent,
     selectors: [['largetable']],
+    consts: 3,
     template: function(rf: ɵRenderFlags, ctx: LargeTableComponent) {
       if (rf & ɵRenderFlags.Create) {
         ɵelementStart(0, 'table');
@@ -33,7 +34,7 @@ export class LargeTableComponent {
         ɵcontainerRefreshStart(2);
         {
           for (let row of ctx.data) {
-            let rf1 = ɵembeddedViewStart(1);
+            let rf1 = ɵembeddedViewStart(1, 2);
             {
               if (rf1 & ɵRenderFlags.Create) {
                 ɵelementStart(0, 'tr');
@@ -44,7 +45,7 @@ export class LargeTableComponent {
                 ɵcontainerRefreshStart(1);
                 {
                   for (let cell of row) {
-                    let rf2 = ɵembeddedViewStart(2);
+                    let rf2 = ɵembeddedViewStart(2, 2);
                     {
                       if (rf2 & ɵRenderFlags.Create) {
                         ɵelementStart(0, 'td');

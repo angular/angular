@@ -22,7 +22,7 @@ import {baseDirectiveCreate, createLNode, createLViewData, createTView, elementC
 import {ComponentDefInternal, ComponentType, RenderFlags} from './interfaces/definition';
 import {LElementNode, TNode, TNodeType} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {CONTEXT, FLAGS, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
+import {BINDING_INDEX, CONTEXT, FLAGS, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
 import {RootViewRef, ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
@@ -121,12 +121,13 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootView: LViewData = createLViewData(
         rendererFactory.createRenderer(hostNode, this.componentDef),
-        createTView(-1, null, null, null, null), rootContext,
+        createTView(-1, null, 1, null, null, null), rootContext,
         this.componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
     rootView[INJECTOR] = ngModule && ngModule.injector || null;
 
     // rootView is the parent when bootstrapping
     const oldView = enterView(rootView, null !);
+    rootView[BINDING_INDEX] = rootView[TVIEW].bindingStartIndex;
 
     let component: T;
     let elementNode: LElementNode;

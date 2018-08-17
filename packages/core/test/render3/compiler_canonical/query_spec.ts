@@ -54,6 +54,7 @@ describe('queries', () => {
         type: ViewQueryComponent,
         selectors: [['view-query-component']],
         factory: function ViewQueryComponent_Factory() { return new ViewQueryComponent(); },
+        consts: 3,
         template: function ViewQueryComponent_Template(
             rf: $RenderFlags$, ctx: $ViewQueryComponent$) {
           if (rf & 1) {
@@ -110,6 +111,7 @@ describe('queries', () => {
         type: ContentQueryComponent,
         selectors: [['content-query-component']],
         factory: function ContentQueryComponent_Factory() { return new ContentQueryComponent(); },
+        consts: 2,
         contentQueries: function ContentQueryComponent_ContentQueries() {
           $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false));
           $r3$.ɵregisterContentQuery($r3$.ɵquery(null, SomeDirective, false));
@@ -152,6 +154,7 @@ describe('queries', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
+        consts: 2,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'content-query-component');

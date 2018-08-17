@@ -37,6 +37,7 @@ describe('elements', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent(),
+        consts: 5,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'div', $e0_attrs$);
@@ -88,6 +89,7 @@ describe('elements', () => {
         type: LocalRefComp,
         selectors: [['local-ref-comp']],
         factory: function LocalRefComp_Factory() { return new LocalRefComp(); },
+        consts: 4,
         template: function LocalRefComp_Template(rf: $RenderFlags$, ctx: $LocalRefComp$) {
           let $tmp$: any;
           let $tmp_2$: any;
@@ -133,6 +135,7 @@ describe('elements', () => {
         type: ListenerComp,
         selectors: [['listener-comp']],
         factory: function ListenerComp_Factory() { return new ListenerComp(); },
+        consts: 1,
         template: function ListenerComp_Template(rf: $RenderFlags$, ctx: $ListenerComp$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'button');
@@ -188,6 +191,7 @@ describe('elements', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent(),
+        consts: 5,
         template: function(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'div', $e0_attrs$);
@@ -220,6 +224,7 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
+          consts: 1,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'div');
@@ -251,6 +256,7 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
+          consts: 1,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'div');
@@ -283,6 +289,7 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
+          consts: 1,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, 'div');
@@ -322,6 +329,7 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
+          consts: 1,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, 'div');
@@ -373,6 +381,7 @@ describe('elements', () => {
           type: MyComponent,
           selectors: [['my-component']],
           factory: function MyComponent_Factory() { return new MyComponent(); },
+          consts: 1,
           template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, 'div');
@@ -411,6 +420,7 @@ describe('elements', () => {
           type: StyleComponent,
           selectors: [['style-comp']],
           factory: function StyleComponent_Factory() { return new StyleComponent(); },
+          consts: 1,
           template: function StyleComponent_Template(rf: $RenderFlags$, ctx: $StyleComponent$) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, 'div');

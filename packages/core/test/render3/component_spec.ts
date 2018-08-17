@@ -27,6 +27,7 @@ describe('component', () => {
     static ngComponentDef = defineComponent({
       type: CounterComponent,
       selectors: [['counter']],
+      consts: 1,
       template: function(rf: RenderFlags, ctx: CounterComponent) {
         if (rf & RenderFlags.Create) {
           text(0);
@@ -72,6 +73,7 @@ describe('component', () => {
         type: MyComponent,
         selectors: [['my-component']],
         factory: () => new MyComponent(directiveInject(MyService)),
+        consts: 1,
         template: function(fs: RenderFlags, ctx: MyComponent) {
           if (fs & RenderFlags.Create) {
             text(0);
@@ -114,7 +116,7 @@ describe('component with a container', () => {
       containerRefreshStart(0);
       {
         for (const item of ctx.items) {
-          const rf0 = embeddedViewStart(0);
+          const rf0 = embeddedViewStart(0, 1);
           {
             if (rf0 & RenderFlags.Create) {
               text(0);
@@ -136,6 +138,7 @@ describe('component with a container', () => {
     static ngComponentDef = defineComponent({
       type: WrapperComponent,
       selectors: [['wrapper']],
+      consts: 1,
       template: function ChildComponentTemplate(rf: RenderFlags, ctx: {items: string[]}) {
         if (rf & RenderFlags.Create) {
           container(0);
@@ -143,7 +146,7 @@ describe('component with a container', () => {
         if (rf & RenderFlags.Update) {
           containerRefreshStart(0);
           {
-            const rf0 = embeddedViewStart(0);
+            const rf0 = embeddedViewStart(0, 1);
             { showItems(rf0, {items: ctx.items}); }
             embeddedViewEnd();
           }
@@ -168,10 +171,10 @@ describe('component with a container', () => {
 
   it('should re-render on input change', () => {
     const ctx: {items: string[]} = {items: ['a']};
-    expect(renderToHtml(template, ctx, defs)).toEqual('<wrapper>a</wrapper>');
+    expect(renderToHtml(template, ctx, 1, defs)).toEqual('<wrapper>a</wrapper>');
 
     ctx.items = [...ctx.items, 'b'];
-    expect(renderToHtml(template, ctx, defs)).toEqual('<wrapper>ab</wrapper>');
+    expect(renderToHtml(template, ctx, 1, defs)).toEqual('<wrapper>ab</wrapper>');
   });
 
 });
@@ -183,6 +186,7 @@ describe('encapsulation', () => {
     static ngComponentDef = defineComponent({
       type: WrapperComponent,
       selectors: [['wrapper']],
+      consts: 1,
       template: function(rf: RenderFlags, ctx: WrapperComponent) {
         if (rf & RenderFlags.Create) {
           element(0, 'encapsulated');
@@ -197,6 +201,7 @@ describe('encapsulation', () => {
     static ngComponentDef = defineComponent({
       type: EncapsulatedComponent,
       selectors: [['encapsulated']],
+      consts: 2,
       template: function(rf: RenderFlags, ctx: EncapsulatedComponent) {
         if (rf & RenderFlags.Create) {
           text(0, 'foo');
@@ -215,6 +220,7 @@ describe('encapsulation', () => {
     static ngComponentDef = defineComponent({
       type: LeafComponent,
       selectors: [['leaf']],
+      consts: 2,
       template: function(rf: RenderFlags, ctx: LeafComponent) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
@@ -245,6 +251,7 @@ describe('encapsulation', () => {
       static ngComponentDef = defineComponent({
         type: WrapperComponentWith,
         selectors: [['wrapper']],
+        consts: 1,
         template: function(rf: RenderFlags, ctx: WrapperComponentWith) {
           if (rf & RenderFlags.Create) {
             element(0, 'leaf');
@@ -262,6 +269,7 @@ describe('encapsulation', () => {
       static ngComponentDef = defineComponent({
         type: LeafComponentwith,
         selectors: [['leaf']],
+        consts: 1,
         template: function(rf: RenderFlags, ctx: LeafComponentwith) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
@@ -320,6 +328,7 @@ describe('recursive components', () => {
       type: TreeComponent,
       selectors: [['tree-comp']],
       factory: () => new TreeComponent(),
+      consts: 3,
       template: (rf: RenderFlags, ctx: TreeComponent) => {
         if (rf & RenderFlags.Create) {
           text(0);
@@ -331,7 +340,7 @@ describe('recursive components', () => {
           containerRefreshStart(1);
           {
             if (ctx.data.left != null) {
-              let rf0 = embeddedViewStart(0);
+              let rf0 = embeddedViewStart(0, 1);
               if (rf0 & RenderFlags.Create) {
                 element(0, 'tree-comp');
               }
@@ -345,7 +354,7 @@ describe('recursive components', () => {
           containerRefreshStart(2);
           {
             if (ctx.data.right != null) {
-              let rf0 = embeddedViewStart(0);
+              let rf0 = embeddedViewStart(0, 1);
               if (rf0 & RenderFlags.Create) {
                 element(0, 'tree-comp');
               }
@@ -379,12 +388,13 @@ describe('recursive components', () => {
       type: NgIfTree,
       selectors: [['ng-if-tree']],
       factory: () => new NgIfTree(),
+      consts: 3,
       template: (rf: RenderFlags, ctx: NgIfTree) => {
 
         if (rf & RenderFlags.Create) {
           text(0);
-          template(1, IfTemplate, '', [AttributeMarker.SelectOnly, 'ngIf']);
-          template(2, IfTemplate2, '', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(1, IfTemplate, 1, '', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(2, IfTemplate2, 1, '', [AttributeMarker.SelectOnly, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           textBinding(0, bind(ctx.data.value));
@@ -453,7 +463,7 @@ describe('recursive components', () => {
       if (rf & RenderFlags.Update) {
         containerRefreshStart(0);
         if (!ctx.skipContent) {
-          const rf0 = embeddedViewStart(0);
+          const rf0 = embeddedViewStart(0, 1);
           if (rf0 & RenderFlags.Create) {
             elementStart(0, 'tree-comp');
             elementEnd();
@@ -462,7 +472,7 @@ describe('recursive components', () => {
         }
         containerRefreshEnd();
       }
-    }, [TreeComponent]);
+    }, 1, [TreeComponent]);
 
     const fixture = new ComponentFixture(App);
     expect(getRenderedText(fixture.component)).toEqual('6201534');
@@ -487,7 +497,7 @@ describe('recursive components', () => {
       if (rf & RenderFlags.Update) {
         containerRefreshStart(0);
         if (!ctx.skipContent) {
-          const rf0 = embeddedViewStart(0);
+          const rf0 = embeddedViewStart(0, 1);
           if (rf0 & RenderFlags.Create) {
             elementStart(0, 'ng-if-tree');
             elementEnd();
@@ -496,7 +506,7 @@ describe('recursive components', () => {
         }
         containerRefreshEnd();
       }
-    }, [NgIfTree]);
+    }, 1, [NgIfTree]);
 
     const fixture = new ComponentFixture(App);
     expect(getRenderedText(fixture.component)).toEqual('6201534');
@@ -516,6 +526,7 @@ describe('recursive components', () => {
         type: TestInputsComponent,
         selectors: [['test-inputs']],
         inputs: {minifiedName: 'unminifiedName'},
+        consts: 0,
         factory: () => new TestInputsComponent(),
         template: function(rf: RenderFlags, ctx: TestInputsComponent): void {
           // Template not needed for this test
