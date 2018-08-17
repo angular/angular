@@ -156,7 +156,7 @@ For the profile form, add two form control instances with the names `firstName` 
 
 </code-example>
 
-The individual form controls are now collected within a group. A `FormGroup` instance provides its model value as an object reduced from the values of each control in the group. A form control instance has the same properties (such as `value` and `untouched`) and methods (such as `setValue()`) as a form control instance.
+The individual form controls are now collected within a group. A `FormGroup` instance provides its model value as an object reduced from the values of each control in the group. A form group instance has the same properties (such as `value` and `untouched`) and methods (such as `setValue()`) as a form control instance.
 
 ### Step 2: Associating the FormGroup model and view
 
