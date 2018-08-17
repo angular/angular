@@ -548,6 +548,10 @@ Below are the polyfills which are used to test the framework itself. They are a 
 \* Figures are for minified and gzipped code,
 computed with the <a href="http://closure-compiler.appspot.com/home">closure compiler</a>.
 
+## LocationStrategy for Legacy Browser Support
+
+If you plan to support legacy browsers (IE9) that rely on the location URL changing to determine navigation, you'll need to switch your applications <a href="https://angular.io/api/common/LocationStrategy">LocationStrategy</a> from the default <a href="https://angular.io/api/common/PathLocationStrategy">PathLocationStrategy</a> to <a href="https://angular.io/api/common/HashLocationStrategy">HashLocationStrategy</a>. See the <a href="https://angular.io/guide/router">Routing & Navigation tutorial</a> to determine <a href="https://angular.io/guide/router#which-strategy-is-best">which strategy is best</a> for your application. You can <a href="https://angular.io/guide/router#hashlocationstrategy">modify your AppModule configuration</a> to use HashLocationStrategy.
+
 {@a non-cli}
 ## Polyfills for non-CLI users
 
