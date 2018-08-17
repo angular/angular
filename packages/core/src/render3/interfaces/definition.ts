@@ -221,7 +221,7 @@ export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T
   /**
    * Query-related instructions for a component.
    */
-  readonly viewQuery: ComponentQuery<T>|null;
+  viewQuery: ComponentQuery<T>|null;
 
   /**
    * The view encapsulation type, which determines how styles are applied to
