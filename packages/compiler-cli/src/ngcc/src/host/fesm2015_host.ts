@@ -10,9 +10,9 @@ import * as ts from 'typescript';
 
 import {ClassMember, ClassMemberKind, CtorParameter, Decorator} from '../../../ngtsc/host';
 import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/metadata';
-import {getNameText} from '../utils';
+import {findAll, getNameText} from '../utils';
 
-import {NgccReflectionHost} from './ngcc_host';
+import {NgccReflectionHost, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
 export const PROP_DECORATORS = 'propDecorators' as ts.__String;
@@ -196,6 +196,16 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
     return ts.isClassDeclaration(declaration) ?
         declaration.name && this.checker.getSymbolAtLocation(declaration.name) :
         undefined;
+  }
+
+  /**
+   * Search the given module for variable declarations in which the initializer
+   * is an identifier marked with the `PRE_NGCC_MARKER`.
+   * @param module The module in which to search for switchable declarations.
+   * @returns An array of variable declarations that match.
+   */
+  getSwitchableDeclarations(module: ts.Node): SwitchableVariableDeclaration[] {
+    return findAll(module, isSwitchableVariableDeclaration);
   }
 
   /**
