@@ -8,7 +8,7 @@
 
 import {Type} from '../../type';
 import {fillProperties} from '../../util/property';
-import {ComponentDefInternal, DirectiveDefFeature, DirectiveDefInternal} from '../interfaces/definition';
+import {ComponentDefInternal, DirectiveDefFeature, DirectiveDefInternal, RenderFlags} from '../interfaces/definition';
 
 
 /**
@@ -67,6 +67,53 @@ export function InheritDefinitionFeature(
           definition.hostBindings = superHostBindings;
         }
       }
+
+      // Merge View Queries
+      if (isComponentDef(definition) && isComponentDef(superDef)) {
+        const prevViewQuery = definition.viewQuery;
+        const superViewQuery = superDef.viewQuery;
+        if (superViewQuery) {
+          if (prevViewQuery) {
+            // tslint:disable-next-line:no-any viewQuery is readonly, but we need to set it
+            (definition as any).viewQuery = <T>(rf: RenderFlags, ctx: T): void => {
+              superViewQuery(rf, ctx);
+              prevViewQuery(rf, ctx);
+            };
+          } else {
+            // tslint:disable-next-line:no-any viewQuery is readonly, but we need to set it
+            (definition as any).viewQuery = superViewQuery;
+          }
+        }
+      }
+
+      // Merge Content Queries
+      const prevContentQueries = definition.contentQueries;
+      const superContentQueries = superDef.contentQueries;
+      if (superContentQueries) {
+        if (prevContentQueries) {
+          definition.contentQueries = () => {
+            superContentQueries();
+            prevContentQueries();
+          };
+        } else {
+          definition.contentQueries = superContentQueries;
+        }
+      }
+
+      // Merge Content Queries Refresh
+      const prevContentQueriesRefresh = definition.contentQueriesRefresh;
+      const superContentQueriesRefresh = superDef.contentQueriesRefresh;
+      if (superContentQueriesRefresh) {
+        if (prevContentQueriesRefresh) {
+          definition.contentQueriesRefresh = (directiveIndex: number, queryIndex: number) => {
+            superContentQueriesRefresh(directiveIndex, queryIndex);
+            prevContentQueriesRefresh(directiveIndex, queryIndex);
+          };
+        } else {
+          definition.contentQueriesRefresh = superContentQueriesRefresh;
+        }
+      }
+
 
       // Merge inputs and outputs
       fillProperties(definition.inputs, superDef.inputs);

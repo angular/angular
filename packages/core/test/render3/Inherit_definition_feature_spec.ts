@@ -8,7 +8,7 @@
 
 import {EventEmitter, Output} from '../../src/core';
 import {InheritDefinitionFeature} from '../../src/render3/features/inherit_definition_feature';
-import {DirectiveDefInternal, defineBase, defineComponent, defineDirective} from '../../src/render3/index';
+import {ComponentDefInternal, DirectiveDefInternal, RenderFlags, defineBase, defineComponent, defineDirective} from '../../src/render3/index';
 
 describe('InheritDefinitionFeature', () => {
   it('should inherit lifecycle hooks', () => {
@@ -303,6 +303,111 @@ describe('InheritDefinitionFeature', () => {
     const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
 
     subDef.hostBindings !(1, 2);
+
+    expect(log).toEqual([['super', 1, 2], ['sub', 1, 2]]);
+  });
+
+  it('should compose viewQuery', () => {
+    const log: Array<[string, RenderFlags, any]> = [];
+
+    // tslint:disable-next-line:class-as-namespace
+    class SuperComponent {
+      static ngComponentDef = defineComponent({
+        type: SuperComponent,
+        template: () => {},
+        selectors: [['', 'superDir', '']],
+        viewQuery: <T>(rf: RenderFlags, ctx: T) => {
+          log.push(['super', rf, ctx]);
+        },
+        factory: () => new SuperComponent(),
+      });
+    }
+
+    // tslint:disable-next-line:class-as-namespace
+    class SubComponent extends SuperComponent {
+      static ngComponentDef = defineComponent({
+        type: SubComponent,
+        template: () => {},
+        selectors: [['', 'subDir', '']],
+        viewQuery: (directiveIndex: number, elementIndex: number) => {
+          log.push(['sub', directiveIndex, elementIndex]);
+        },
+        factory: () => new SubComponent(),
+        features: [InheritDefinitionFeature]
+      });
+    }
+
+    const subDef = SubComponent.ngComponentDef as ComponentDefInternal<any>;
+
+    const context = {foo: 'bar'};
+
+    subDef.viewQuery !(1, context);
+
+    expect(log).toEqual([['super', 1, context], ['sub', 1, context]]);
+  });
+
+  it('should compose contentQueries', () => {
+    const log: string[] = [];
+
+    // tslint:disable-next-line:class-as-namespace
+    class SuperDirective {
+      static ngDirectiveDef = defineDirective({
+        type: SuperDirective,
+        selectors: [['', 'superDir', '']],
+        contentQueries: () => { log.push('super'); },
+        factory: () => new SuperDirective(),
+      });
+    }
+
+    // tslint:disable-next-line:class-as-namespace
+    class SubDirective extends SuperDirective {
+      static ngDirectiveDef = defineDirective({
+        type: SubDirective,
+        selectors: [['', 'subDir', '']],
+        contentQueries: () => { log.push('sub'); },
+        factory: () => new SubDirective(),
+        features: [InheritDefinitionFeature]
+      });
+    }
+
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+
+    subDef.contentQueries !();
+
+    expect(log).toEqual(['super', 'sub']);
+  });
+
+  it('should compose contentQueriesRefresh', () => {
+    const log: Array<[string, number, number]> = [];
+
+    // tslint:disable-next-line:class-as-namespace
+    class SuperDirective {
+      static ngDirectiveDef = defineDirective({
+        type: SuperDirective,
+        selectors: [['', 'superDir', '']],
+        contentQueriesRefresh: (directiveIndex: number, queryIndex: number) => {
+          log.push(['super', directiveIndex, queryIndex]);
+        },
+        factory: () => new SuperDirective(),
+      });
+    }
+
+    // tslint:disable-next-line:class-as-namespace
+    class SubDirective extends SuperDirective {
+      static ngDirectiveDef = defineDirective({
+        type: SubDirective,
+        selectors: [['', 'subDir', '']],
+        contentQueriesRefresh: (directiveIndex: number, queryIndex: number) => {
+          log.push(['sub', directiveIndex, queryIndex]);
+        },
+        factory: () => new SubDirective(),
+        features: [InheritDefinitionFeature]
+      });
+    }
+
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+
+    subDef.contentQueriesRefresh !(1, 2);
 
     expect(log).toEqual([['super', 1, 2], ['sub', 1, 2]]);
   });
