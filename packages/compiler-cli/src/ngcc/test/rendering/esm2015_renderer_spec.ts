@@ -27,49 +27,46 @@ function analyze(parser: Esm2015FileParser, analyzer: Analyzer, file: ts.SourceF
   return parsedFiles.map(file => analyzer.analyzeFile(file))[0];
 }
 
-
-describe('Esm2015Renderer', () => {
-
-  describe('addImports', () => {
-    it('should insert the given imports at the start of the source file', () => {
-      const PROGRAM = {
-        name: 'some/file.js',
-        contents: `
+const PROGRAM = {
+  name: 'some/file.js',
+  contents: `
 /* A copyright notice */
 import {Directive} from '@angular/core';
 export class A {}
 A.decorators = [
   { type: Directive, args: [{ selector: '[a]' }] },
-  { type: Other }
+  { type: OtherA }
+];
+export class B {}
+B.decorators = [
+  { type: OtherB },
+  { type: Directive, args: [{ selector: '[b]' }] }
+];
+export class C {}
+C.decorators = [
+  { type: Directive, args: [{ selector: '[c]' }] },
 ];
 // Some other content`
-      };
+};
+
+describe('Esm2015Renderer', () => {
+
+  describe('addImports', () => {
+    it('should insert the given imports at the start of the source file', () => {
       const {renderer} = setup(PROGRAM);
       const output = new MagicString(PROGRAM.contents);
       renderer.addImports(
           output, [{name: '@angular/core', as: 'i0'}, {name: '@angular/common', as: 'i1'}]);
-      expect(output.toString())
-          .toEqual(
-              `import * as i0 from '@angular/core';\n` +
-              `import * as i1 from '@angular/common';\n` + PROGRAM.contents);
+      expect(output.toString()).toContain(`import * as i0 from '@angular/core';
+import * as i1 from '@angular/common';
+
+/* A copyright notice */`);
     });
   });
 
 
   describe('addConstants', () => {
     it('should insert the given constants after imports in the source file', () => {
-      const PROGRAM = {
-        name: 'some/file.js',
-        contents: `
-/* A copyright notice */
-import {Directive} from '@angular/core';
-export class A {}
-A.decorators = [
-  { type: Directive, args: [{ selector: '[a]' }] },
-  { type: Other }
-];
-// Some other content`
-      };
       const {renderer, program} = setup(PROGRAM);
       const file = program.getSourceFile('some/file.js');
       if (file === undefined) {
@@ -88,32 +85,15 @@ export class A {}`);
 
   describe('addDefinitions', () => {
     it('should insert the definitions directly after the class declaration', () => {
-      const PROGRAM = {
-        name: 'some/file.js',
-        contents: `
-/* A copyright notice */
-import {Directive} from '@angular/core';
-export class A {}
-A.decorators = [
-  { type: Directive, args: [{ selector: '[a]' }] },
-  { type: Other }
-];
-// Some other content`
-      };
       const {analyzer, parser, program, renderer} = setup(PROGRAM);
       const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
       const output = new MagicString(PROGRAM.contents);
       renderer.addDefinitions(output, analyzedFile.analyzedClasses[0], 'SOME DEFINITION TEXT');
-      expect(output.toString()).toEqual(`
-/* A copyright notice */
-import {Directive} from '@angular/core';
+      expect(output.toString()).toContain(`
 export class A {}
 SOME DEFINITION TEXT
 A.decorators = [
-  { type: Directive, args: [{ selector: '[a]' }] },
-  { type: Other }
-];
-// Some other content`);
+`);
     });
 
   });
@@ -122,96 +102,58 @@ A.decorators = [
   describe('removeDecorators', () => {
 
     it('should delete the decorator (and following comma) that was matched in the analysis', () => {
-      const PROGRAM = {
-        name: 'some/file.js',
-        contents: `
-/* A copyright notice */
-import {Directive} from '@angular/core';
-export class A {}
-A.decorators = [
-  { type: Directive, args: [{ selector: '[a]' }] },
-  { type: Other }
-];
-// Some other content`
-      };
       const {analyzer, parser, program, renderer} = setup(PROGRAM);
       const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
       const output = new MagicString(PROGRAM.contents);
       const analyzedClass = analyzedFile.analyzedClasses[0];
+      const decorator = analyzedClass.decorators[0];
       const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-      decoratorsToRemove.set(
-          analyzedClass.decorators[0].node.parent !, [analyzedClass.decorators[0].node]);
+      decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
       renderer.removeDecorators(output, decoratorsToRemove);
-      expect(output.toString()).toEqual(`
-/* A copyright notice */
-import {Directive} from '@angular/core';
-export class A {}
-A.decorators = [
-  { type: Other }
-];
-// Some other content`);
+      expect(output.toString()).not.toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
+      expect(output.toString()).toContain(`{ type: OtherA }`);
+      expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
+      expect(output.toString()).toContain(`{ type: OtherB }`);
+      expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
     });
 
 
     it('should delete the decorator (but cope with no trailing comma) that was matched in the analysis',
        () => {
-         const PROGRAM = {
-           name: 'some/file.js',
-           contents: `
-/* A copyright notice */
-import {Directive} from '@angular/core';
-export class A {}
-A.decorators = [
-  { type: Other },
-  { type: Directive, args: [{ selector: '[a]' }] }
-];
-// Some other content`
-         };
          const {analyzer, parser, program, renderer} = setup(PROGRAM);
          const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
          const output = new MagicString(PROGRAM.contents);
-         const analyzedClass = analyzedFile.analyzedClasses[0];
+         const analyzedClass = analyzedFile.analyzedClasses[1];
+         const decorator = analyzedClass.decorators[1];
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-         decoratorsToRemove.set(
-             analyzedClass.decorators[0].node.parent !, [analyzedClass.decorators[1].node]);
+         decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
-         expect(output.toString()).toEqual(`
-/* A copyright notice */
-import {Directive} from '@angular/core';
-export class A {}
-A.decorators = [
-  { type: Other },
-];
-// Some other content`);
+         expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
+         expect(output.toString()).toContain(`{ type: OtherA }`);
+         expect(output.toString())
+             .not.toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
+         expect(output.toString()).toContain(`{ type: OtherB }`);
+         expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[c]' }] }`);
        });
 
 
     it('should delete the decorator (and its container if there are not other decorators left) that was matched in the analysis',
        () => {
-         const PROGRAM = {
-           name: 'some/file.js',
-           contents: `
-/* A copyright notice */
-import {Directive} from '@angular/core';
-export class A {}
-A.decorators = [
-  { type: Directive, args: [{ selector: '[a]' }] }
-];
-// Some other content`
-         };
          const {analyzer, parser, program, renderer} = setup(PROGRAM);
          const analyzedFile = analyze(parser, analyzer, program.getSourceFile(PROGRAM.name) !);
          const output = new MagicString(PROGRAM.contents);
-         const analyzedClass = analyzedFile.analyzedClasses[0];
+         const analyzedClass = analyzedFile.analyzedClasses[2];
+         const decorator = analyzedClass.decorators[0];
          const decoratorsToRemove = new Map<ts.Node, ts.Node[]>();
-         decoratorsToRemove.set(
-             analyzedClass.decorators[0].node.parent !, [analyzedClass.decorators[0].node]);
+         decoratorsToRemove.set(decorator.node.parent !, [decorator.node]);
          renderer.removeDecorators(output, decoratorsToRemove);
-         expect(output.toString()).toEqual(`
-/* A copyright notice */
-import {Directive} from '@angular/core';
-export class A {}
-// Some other content`);
+         expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[a]' }] },`);
+         expect(output.toString()).toContain(`{ type: OtherA }`);
+         expect(output.toString()).toContain(`{ type: Directive, args: [{ selector: '[b]' }] }`);
+         expect(output.toString()).toContain(`{ type: OtherB }`);
+         expect(output.toString()).not.toContain(`C.decorators = [
+  { type: Directive, args: [{ selector: '[c]' }] },
+];`);
        });
 
   });
