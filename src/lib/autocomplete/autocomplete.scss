@@ -3,18 +3,20 @@
 
 /**
  * The max-height of the panel, currently matching mat-select value.
- * TODO: Check value with MD team.
  */
 $mat-autocomplete-panel-max-height: 256px !default;
+$mat-autocomplete-panel-border-radius: 4px !default;
 
 .mat-autocomplete-panel {
-  @include mat-menu-base(8);
-  visibility: hidden;
+  @include mat-menu-base(4);
 
+  visibility: hidden;
   max-width: none;
   max-height: $mat-autocomplete-panel-max-height;
   position: relative;
   width: 100%;
+  border-bottom-left-radius: $mat-autocomplete-panel-border-radius;
+  border-bottom-right-radius: $mat-autocomplete-panel-border-radius;
 
   &.mat-autocomplete-visible {
     visibility: visible;
@@ -27,4 +29,10 @@ $mat-autocomplete-panel-max-height: 256px !default;
   @include cdk-high-contrast {
     outline: solid 1px;
   }
+}
+
+.mat-autocomplete-panel-above {
+  border-radius: 0;
+  border-top-left-radius: $mat-autocomplete-panel-border-radius;
+  border-top-right-radius: $mat-autocomplete-panel-border-radius;
 }

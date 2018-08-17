@@ -1377,6 +1377,7 @@ describe('MatAutocomplete', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
       zone.simulateZoneExit();
+      fixture.detectChanges();
 
       const inputBottom = inputReference.getBoundingClientRect().bottom;
       const panel = overlayContainerElement.querySelector('.mat-autocomplete-panel')!;
@@ -1384,6 +1385,7 @@ describe('MatAutocomplete', () => {
 
       expect(Math.floor(inputBottom))
           .toEqual(Math.floor(panelTop), `Expected panel top to match input bottom by default.`);
+      expect(panel.classList).not.toContain('mat-autocomplete-panel-above');
     }));
 
     it('should reposition the panel on scroll', () => {
@@ -1430,6 +1432,7 @@ describe('MatAutocomplete', () => {
       fixture.componentInstance.trigger.openPanel();
       fixture.detectChanges();
       zone.simulateZoneExit();
+      fixture.detectChanges();
 
       const inputTop = inputReference.getBoundingClientRect().top;
       const panel = overlayContainerElement.querySelector('.cdk-overlay-pane')!;
@@ -1437,6 +1440,9 @@ describe('MatAutocomplete', () => {
 
       expect(Math.floor(inputTop))
           .toEqual(Math.floor(panelBottom), `Expected panel to fall back to above position.`);
+
+      expect(panel.querySelector('.mat-autocomplete-panel')!.classList)
+          .toContain('mat-autocomplete-panel-above');
     }));
 
     it('should allow the panel to expand when the number of results increases', fakeAsync(() => {

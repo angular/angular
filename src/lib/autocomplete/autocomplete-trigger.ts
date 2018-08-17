@@ -589,6 +589,16 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
         {originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom'}
       ]);
 
+    // The overlay edge connected to the trigger should have squared corners, while
+    // the opposite end has rounded corners. We apply a CSS class to swap the
+    // border-radius based on the overlay position.
+    this._positionStrategy.positionChanges.subscribe(({connectionPair}) => {
+      if (this.autocomplete) {
+        this.autocomplete._classList['mat-autocomplete-panel-above'] =
+            connectionPair.originY === 'top';
+      }
+    });
+
     return this._positionStrategy;
   }
 
