@@ -157,6 +157,7 @@ jobs:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
+      - run: yarn install --frozen-lockfile --non-interactive
       - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH
       - store_artifacts:
           path: *aio_preview_artifact_path
