@@ -24,6 +24,7 @@ describe('array literals', () => {
       selectors: [['my-comp']],
       factory: function MyComp_Factory() { return myComp = new MyComp(); },
       consts: 0,
+      vars: 0,
       template: function MyComp_Template(rf: RenderFlags, ctx: MyComp) {},
       inputs: {names: 'names'}
     });
@@ -42,7 +43,7 @@ describe('array literals', () => {
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'names', bind(pureFunction1(1, e0_ff, ctx.customName)));
       }
-    }, 1, directives);
+    }, 1, 3, directives);
 
     const fixture = new ComponentFixture(App);
     fixture.component.customName = 'Carson';
@@ -86,12 +87,12 @@ describe('array literals', () => {
      */
     const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
-        template(0, IfTemplate, 1, null, [AttributeMarker.SelectOnly, 'ngIf']);
+        template(0, IfTemplate, 1, 3, null, [AttributeMarker.SelectOnly, 'ngIf']);
       }
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'ngIf', bind(ctx.showing));
       }
-    }, 1, [MyComp, NgIf]);
+    }, 1, 1, [MyComp, NgIf]);
 
     const fixture = new ComponentFixture(App);
     fixture.component.showing = true;
@@ -115,6 +116,7 @@ describe('array literals', () => {
         selectors: [['many-prop-comp']],
         factory: function ManyPropComp_Factory() { return manyPropComp = new ManyPropComp(); },
         consts: 0,
+        vars: 0,
         template: function ManyPropComp_Template(rf: RenderFlags, ctx: ManyPropComp) {},
         inputs: {names1: 'names1', names2: 'names2'}
       });
@@ -135,7 +137,7 @@ describe('array literals', () => {
         elementProperty(0, 'names1', bind(pureFunction1(2, e0_ff, ctx.customName)));
         elementProperty(0, 'names2', bind(pureFunction1(4, e0_ff_1, ctx.customName2)));
       }
-    }, 1, [ManyPropComp]);
+    }, 1, 6, [ManyPropComp]);
 
     const fixture = new ComponentFixture(App);
     fixture.component.customName = 'Carson';
@@ -170,6 +172,7 @@ describe('array literals', () => {
         selectors: [['parent-comp']],
         factory: () => new ParentComp(),
         consts: 1,
+        vars: 3,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'my-comp');
@@ -189,7 +192,7 @@ describe('array literals', () => {
         element(0, 'parent-comp');
         element(1, 'parent-comp');
       }
-    }, 2, [ParentComp]);
+    }, 2, 0, [ParentComp]);
 
     const fixture = new ComponentFixture(App);
     const firstArray = myComps[0].names;
@@ -216,7 +219,7 @@ describe('array literals', () => {
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'names', bind(pureFunction2(1, e0_ff, ctx.customName, ctx.customName2)));
       }
-    }, 1, directives);
+    }, 1, 4, directives);
 
     const fixture = new ComponentFixture(App);
     fixture.component.customName = 'Carson';
@@ -304,7 +307,7 @@ describe('array literals', () => {
       }
     }
 
-    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], 6, directives);
+    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], 6, 45, directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
@@ -312,7 +315,8 @@ describe('array literals', () => {
     expect(f7Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
     expect(f8Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
 
-    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1', 'i1'], 6, directives);
+    renderToHtml(
+        Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1', 'i1'], 6, 45, directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f1', 'g1', 'h1']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e1', 'f1', 'g1', 'h1']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd1', 'e1', 'f1', 'g1', 'h1']);
@@ -320,7 +324,8 @@ describe('array literals', () => {
     expect(f7Comp !.names).toEqual(['a', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
     expect(f8Comp !.names).toEqual(['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h1']);
 
-    renderToHtml(Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h2', 'i1'], 6, directives);
+    renderToHtml(
+        Template, ['a1', 'b1', 'c1', 'd1', 'e1', 'f1', 'g1', 'h2', 'i1'], 6, 45, directives);
     expect(f3Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e', 'f1', 'g1', 'h2']);
     expect(f4Comp !.names).toEqual(['a', 'b', 'c', 'd', 'e1', 'f1', 'g1', 'h2']);
     expect(f5Comp !.names).toEqual(['a', 'b', 'c', 'd1', 'e1', 'f1', 'g1', 'h2']);
@@ -335,7 +340,6 @@ describe('array literals', () => {
          v8: any) => ['start', v0, v1, v2, v3, v4, v5, v6, v7, v8, 'end'];
     const e0_ff_1 = (v: any) => `modified_${v}`;
 
-    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], 1, directives);
     /**
      * <my-comp [names]="['start', v0, v1, v2, v3, `modified_${v4}`, v5, v6, v7, v8, 'end']">
      * </my-comp>
@@ -352,16 +356,17 @@ describe('array literals', () => {
       }
     }
 
+    renderToHtml(Template, ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], 1, 13, directives);
     expect(myComp !.names).toEqual([
       'start', 'a', 'b', 'c', 'd', 'modified_e', 'f', 'g', 'h', 'i', 'end'
     ]);
 
-    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], 1, directives);
+    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'], 1, 13, directives);
     expect(myComp !.names).toEqual([
       'start', 'a1', 'b', 'c', 'd', 'modified_e', 'f', 'g', 'h', 'i', 'end'
     ]);
 
-    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e5', 'f', 'g', 'h', 'i'], 1, directives);
+    renderToHtml(Template, ['a1', 'b', 'c', 'd', 'e5', 'f', 'g', 'h', 'i'], 1, 13, directives);
     expect(myComp !.names).toEqual([
       'start', 'a1', 'b', 'c', 'd', 'modified_e5', 'f', 'g', 'h', 'i', 'end'
     ]);
@@ -380,6 +385,7 @@ describe('object literals', () => {
       selectors: [['object-comp']],
       factory: function ObjectComp_Factory() { return objectComp = new ObjectComp(); },
       consts: 0,
+      vars: 1,
       template: function ObjectComp_Template(rf: RenderFlags, ctx: ObjectComp) {},
       inputs: {config: 'config'}
     });
@@ -398,7 +404,7 @@ describe('object literals', () => {
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'config', bind(pureFunction1(1, e0_ff, ctx.name)));
       }
-    }, 1, defs);
+    }, 1, 3, defs);
 
     const fixture = new ComponentFixture(App);
     fixture.component.name = 'slide';
@@ -438,7 +444,7 @@ describe('object literals', () => {
                              5, e0_ff, ctx.name,
                              pureFunction1(3, e0_ff_1, pureFunction1(1, e0_ff_2, ctx.duration)))));
       }
-    }, 1, defs);
+    }, 1, 8, defs);
 
     const fixture = new ComponentFixture(App);
     fixture.component.name = 'slide';
@@ -504,7 +510,7 @@ describe('object literals', () => {
         containerRefreshStart(0);
         {
           for (let i = 0; i < 2; i++) {
-            let rf1 = embeddedViewStart(0, 1);
+            let rf1 = embeddedViewStart(0, 1, 0);
             if (rf1 & RenderFlags.Create) {
               elementStart(0, 'object-comp');
               objectComps.push(loadDirective(0));
@@ -525,12 +531,12 @@ describe('object literals', () => {
     const e0_ff = (v1: any, v2: any) => { return {opacity: v1, duration: v2}; };
 
     const configs = [{opacity: 0, duration: 500}, {opacity: 1, duration: 600}];
-    renderToHtml(Template, {configs}, 1, defs);
+    renderToHtml(Template, {configs}, 1, 4, defs);
     expect(objectComps[0].config).toEqual({opacity: 0, duration: 500});
     expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
 
     configs[0].duration = 1000;
-    renderToHtml(Template, {configs}, 1, defs);
+    renderToHtml(Template, {configs}, 1, 4, defs);
     expect(objectComps[0].config).toEqual({opacity: 0, duration: 1000});
     expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
   });

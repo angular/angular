@@ -58,7 +58,7 @@ describe('instructions', () => {
 
     it('should not update bindings when value does not change', () => {
       const idempotentUpdate = () => elementProperty(0, 'title', bind('Hello'));
-      const t = new TemplateFixture(createAnchor, idempotentUpdate, 1);
+      const t = new TemplateFixture(createAnchor, idempotentUpdate, 1, 1);
 
       t.update();
       expect(t.html).toEqual('<a title="Hello"></a>');
@@ -298,7 +298,7 @@ describe('instructions', () => {
       function ToDoAppComponent_NgForOf_Template_0(rf: RenderFlags, ctx0: NgForOfContext<any>) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'ul');
-          template(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, null, _c0);
+          template(1, ToDoAppComponent_NgForOf_NgForOf_Template_1, 2, 1, null, _c0);
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -333,9 +333,10 @@ describe('instructions', () => {
           selectors: [['nested-loops']],
           factory: function ToDoAppComponent_Factory() { return new NestedLoops(); },
           consts: 1,
+          vars: 1,
           template: function ToDoAppComponent_Template(rf: RenderFlags, ctx: NestedLoops) {
             if (rf & RenderFlags.Create) {
-              template(0, ToDoAppComponent_NgForOf_Template_0, 2, null, _c0);
+              template(0, ToDoAppComponent_NgForOf_Template_0, 2, 1, null, _c0);
             }
             if (rf & RenderFlags.Update) {
               elementProperty(0, 'ngForOf', bind(ctx.rows));
@@ -356,7 +357,7 @@ describe('instructions', () => {
   describe('sanitization injection compatibility', () => {
     it('should work for url sanitization', () => {
       const s = new LocalMockSanitizer(value => `${value}-sanitized`);
-      const t = new TemplateFixture(createAnchor, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createAnchor, undefined, 1, 0, null, null, s);
       const inputValue = 'http://foo';
       const outputValue = 'http://foo-sanitized';
 
@@ -367,7 +368,7 @@ describe('instructions', () => {
 
     it('should bypass url sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createAnchor, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createAnchor, undefined, 1, 0, null, null, s);
       const inputValue = s.bypassSecurityTrustUrl('http://foo');
       const outputValue = 'http://foo';
 
@@ -378,7 +379,7 @@ describe('instructions', () => {
 
     it('should bypass ivy-level url sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createAnchor, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createAnchor, undefined, 1, 0, null, null, s);
       const inputValue = bypassSanitizationTrustUrl('http://foo');
       const outputValue = 'http://foo-ivy';
 
@@ -389,7 +390,7 @@ describe('instructions', () => {
 
     it('should work for style sanitization', () => {
       const s = new LocalMockSanitizer(value => `color:blue`);
-      const t = new TemplateFixture(createDiv, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createDiv, undefined, 1, 0, null, null, s);
       const inputValue = 'color:red';
       const outputValue = 'color:blue';
 
@@ -400,7 +401,7 @@ describe('instructions', () => {
 
     it('should bypass style sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createDiv, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createDiv, undefined, 1, 0, null, null, s);
       const inputValue = s.bypassSecurityTrustStyle('color:maroon');
       const outputValue = 'color:maroon';
 
@@ -411,7 +412,7 @@ describe('instructions', () => {
 
     it('should bypass ivy-level style sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createDiv, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createDiv, undefined, 1, 0, null, null, s);
       const inputValue = bypassSanitizationTrustStyle('font-family:foo');
       const outputValue = 'font-family:foo-ivy';
 
@@ -422,7 +423,7 @@ describe('instructions', () => {
 
     it('should work for resourceUrl sanitization', () => {
       const s = new LocalMockSanitizer(value => `${value}-sanitized`);
-      const t = new TemplateFixture(createScript, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createScript, undefined, 1, 0, null, null, s);
       const inputValue = 'http://resource';
       const outputValue = 'http://resource-sanitized';
 
@@ -433,7 +434,7 @@ describe('instructions', () => {
 
     it('should bypass resourceUrl sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createScript, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createScript, undefined, 1, 0, null, null, s);
       const inputValue = s.bypassSecurityTrustResourceUrl('file://all-my-secrets.pdf');
       const outputValue = 'file://all-my-secrets.pdf';
 
@@ -444,7 +445,7 @@ describe('instructions', () => {
 
     it('should bypass ivy-level resourceUrl sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createScript, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createScript, undefined, 1, 0, null, null, s);
       const inputValue = bypassSanitizationTrustResourceUrl('file://all-my-secrets.pdf');
       const outputValue = 'file://all-my-secrets.pdf-ivy';
 
@@ -455,7 +456,7 @@ describe('instructions', () => {
 
     it('should work for script sanitization', () => {
       const s = new LocalMockSanitizer(value => `${value} //sanitized`);
-      const t = new TemplateFixture(createScript, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createScript, undefined, 1, 0, null, null, s);
       const inputValue = 'fn();';
       const outputValue = 'fn(); //sanitized';
 
@@ -466,7 +467,7 @@ describe('instructions', () => {
 
     it('should bypass script sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createScript, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createScript, undefined, 1, 0, null, null, s);
       const inputValue = s.bypassSecurityTrustScript('alert("bar")');
       const outputValue = 'alert("bar")';
 
@@ -477,7 +478,7 @@ describe('instructions', () => {
 
     it('should bypass ivy-level script sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createScript, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createScript, undefined, 1, 0, null, null, s);
       const inputValue = bypassSanitizationTrustScript('alert("bar")');
       const outputValue = 'alert("bar")-ivy';
 
@@ -488,7 +489,7 @@ describe('instructions', () => {
 
     it('should work for html sanitization', () => {
       const s = new LocalMockSanitizer(value => `${value} <!--sanitized-->`);
-      const t = new TemplateFixture(createDiv, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createDiv, undefined, 1, 0, null, null, s);
       const inputValue = '<header></header>';
       const outputValue = '<header></header> <!--sanitized-->';
 
@@ -499,7 +500,7 @@ describe('instructions', () => {
 
     it('should bypass html sanitization if marked by the service', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createDiv, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createDiv, undefined, 1, 0, null, null, s);
       const inputValue = s.bypassSecurityTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>';
 
@@ -510,7 +511,7 @@ describe('instructions', () => {
 
     it('should bypass ivy-level script sanitization if a custom sanitizer is used', () => {
       const s = new LocalMockSanitizer(value => '');
-      const t = new TemplateFixture(createDiv, undefined, 1, null, null, s);
+      const t = new TemplateFixture(createDiv, undefined, 1, 0, null, null, s);
       const inputValue = bypassSanitizationTrustHtml('<div onclick="alert(123)"></div>');
       const outputValue = '<div onclick="alert(123)"></div>-ivy';
 
@@ -575,5 +576,5 @@ function stripStyleWsCharacters(value: string): string {
 
 function createTemplateFixtureWithSanitizer(
     buildFn: () => any, consts: number, sanitizer: Sanitizer) {
-  return new TemplateFixture(buildFn, () => {}, consts, null, null, sanitizer);
+  return new TemplateFixture(buildFn, () => {}, consts, 0, null, null, sanitizer);
 }

@@ -20,6 +20,7 @@ export class LargeTableComponent {
     type: LargeTableComponent,
     selectors: [['largetable']],
     consts: 3,
+    vars: 0,
     template: function(rf: ɵRenderFlags, ctx: LargeTableComponent) {
       if (rf & ɵRenderFlags.Create) {
         ɵelementStart(0, 'table');
@@ -34,7 +35,7 @@ export class LargeTableComponent {
         ɵcontainerRefreshStart(2);
         {
           for (let row of ctx.data) {
-            let rf1 = ɵembeddedViewStart(1, 2);
+            let rf1 = ɵembeddedViewStart(1, 2, 0);
             {
               if (rf1 & ɵRenderFlags.Create) {
                 ɵelementStart(0, 'tr');
@@ -45,7 +46,7 @@ export class LargeTableComponent {
                 ɵcontainerRefreshStart(1);
                 {
                   for (let cell of row) {
-                    let rf2 = ɵembeddedViewStart(2, 2);
+                    let rf2 = ɵembeddedViewStart(2, 2, 1);
                     {
                       if (rf2 & ɵRenderFlags.Create) {
                         ɵelementStart(0, 'td');

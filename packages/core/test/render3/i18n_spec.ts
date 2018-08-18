@@ -77,6 +77,7 @@ describe('Runtime i18n', () => {
         factory: () => new MyApp(),
         selectors: [['my-app']],
         consts: 3,
+        vars: 2,
         // Initial template:
         // <div i18n>
         //  {{exp1}} {{exp2}}
@@ -136,6 +137,7 @@ describe('Runtime i18n', () => {
         type: MyApp,
         factory: () => new MyApp(),
         consts: 2,
+        vars: 1,
         selectors: [['my-app']],
         // Initial template:
         // <div i18n>
@@ -194,6 +196,7 @@ describe('Runtime i18n', () => {
         factory: () => new MyApp(),
         selectors: [['my-app']],
         consts: 1,
+        vars: 1,
         // Initial template:
         // <div i18n i18n-title title="{{exp1}}{{exp2}}"></div>
 
@@ -240,6 +243,7 @@ describe('Runtime i18n', () => {
         factory: () => new MyApp(),
         selectors: [['my-app']],
         consts: 8,
+        vars: 4,
         // Initial template:
         // <div i18n i18n-title title="{{exp1}}{{exp2}}">
         //  {{exp1}}
@@ -337,6 +341,7 @@ describe('Runtime i18n', () => {
         factory: () => new MyApp(),
         selectors: [['my-app']],
         consts: 6,
+        vars: 2,
         // Initial template:
         // <div>
         //  <a i18n>
@@ -432,6 +437,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 3,
+          vars: 0,
           // Initial template:
           // before (
           // % if (condition) { // with i18n
@@ -458,7 +464,7 @@ describe('Runtime i18n', () => {
             if (rf & RenderFlags.Update) {
               containerRefreshStart(1);
               {
-                let rf0 = embeddedViewStart(0, 1);
+                let rf0 = embeddedViewStart(0, 1, 1);
                 if (rf0 & RenderFlags.Create) {
                   // Start of translated section 1
                   text(0);  // EXP_1
@@ -561,6 +567,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 2,
+          vars: 1,
           // Initial template:
           // <ul i18n>
           //   <li *ngFor="let item of items">value: {{item}}</li>
@@ -581,7 +588,7 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                template(1, liTemplate, 2, null, ['ngForOf', '']);  // START_LI
+                template(1, liTemplate, 2, 1, null, ['ngForOf', '']);  // START_LI
                 // End of translated section 1
               }
               elementEnd();
@@ -662,6 +669,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 3,
+          vars: 2,
           // Initial template:
           // <ul i18n>
           //   <li *ngFor="let item of items">value: {{item}}</li>
@@ -685,8 +693,8 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                template(1, liTemplate, 2, null, ['ngForOf', '']);     // START_LI_0
-                template(2, liTemplateBis, 2, null, ['ngForOf', '']);  // START_LI_1
+                template(1, liTemplate, 2, 1, null, ['ngForOf', '']);     // START_LI_0
+                template(2, liTemplateBis, 2, 1, null, ['ngForOf', '']);  // START_LI_1
                 // End of translated section 1
               }
               elementEnd();
@@ -774,6 +782,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 3,
+          vars: 2,
           // Initial template:
           // <ul i18n>
           //   <li *ngFor="let item of items">value: {{item}}</li>
@@ -797,8 +806,8 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                template(1, liTemplate, 2, null, ['ngForOf', '']);     // START_LI_0
-                template(2, liTemplateBis, 2, null, ['ngForOf', '']);  // START_LI_1
+                template(1, liTemplate, 2, 1, null, ['ngForOf', '']);     // START_LI_0
+                template(2, liTemplateBis, 2, 1, null, ['ngForOf', '']);  // START_LI_1
                 // End of translated section 1
               }
               elementEnd();
@@ -853,7 +862,7 @@ describe('Runtime i18n', () => {
           // Start of translated section 2
           elementStart(0, 'li');  // START_LI
           {
-            template(1, spanTemplate, 2, null, ['ngForOf', '']);  // START_SPAN
+            template(1, spanTemplate, 2, 1, null, ['ngForOf', '']);  // START_SPAN
           }
           elementEnd();
           // End of translated section 2
@@ -888,6 +897,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 2,
+          vars: 1,
           // Initial template:
           // <ul i18n>
           //   <li *ngFor="let item of items">
@@ -913,7 +923,7 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                template(1, liTemplate, 2, null, ['ngForOf', '']);  // START_LI
+                template(1, liTemplate, 2, 1, null, ['ngForOf', '']);  // START_LI
                 // End of translated section 1
               }
               elementEnd();
@@ -985,6 +995,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 5,
+          vars: 1,
           // Initial template:
           // <ul i18n>
           //   <li>start</li>
@@ -1010,9 +1021,9 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                element(1, 'li');                                   // START_LI_0
-                template(2, liTemplate, 2, null, ['ngForOf', '']);  // START_LI_1
-                elementStart(3, 'li');                              // START_LI_2
+                element(1, 'li');                                      // START_LI_0
+                template(2, liTemplate, 2, 1, null, ['ngForOf', '']);  // START_LI_1
+                elementStart(3, 'li');                                 // START_LI_2
                 { text(4, 'delete me'); }
                 elementEnd();
                 // End of translated section 1
@@ -1081,6 +1092,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 2,
+          vars: 1,
           // Initial template:
           // <ul i18n>
           //   <li *ngFor="let item of items">value: {{item}}</li>
@@ -1101,7 +1113,7 @@ describe('Runtime i18n', () => {
               elementStart(0, 'ul');
               {
                 // Start of translated section 1
-                template(1, liTemplate, 2, undefined, ['ngForOf', '']);  // START_LI
+                template(1, liTemplate, 2, 1, undefined, ['ngForOf', '']);  // START_LI
                 // End of translated section 1
               }
               elementEnd();
@@ -1148,6 +1160,7 @@ describe('Runtime i18n', () => {
           selectors: [['child']],
           factory: () => new Child(),
           consts: 2,
+          vars: 0,
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
               projectionDef();
@@ -1187,6 +1200,7 @@ describe('Runtime i18n', () => {
           directives: [Child],
           factory: () => new Parent(),
           consts: 4,
+          vars: 2,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
               if (!i18n_1) {
@@ -1246,6 +1260,7 @@ describe('Runtime i18n', () => {
           selectors: [['child']],
           factory: () => new Child(),
           consts: 2,
+          vars: 0,
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
               projectionDef();
@@ -1285,6 +1300,7 @@ describe('Runtime i18n', () => {
           directives: [Child],
           factory: () => new Parent(),
           consts: 6,
+          vars: 2,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
               if (!i18n_1) {
@@ -1335,6 +1351,7 @@ describe('Runtime i18n', () => {
           selectors: [['grand-child']],
           factory: () => new GrandChild(),
           consts: 2,
+          vars: 0,
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
               projectionDef();
@@ -1355,6 +1372,7 @@ describe('Runtime i18n', () => {
           directives: [GrandChild],
           factory: () => new Child(),
           consts: 2,
+          vars: 0,
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
               projectionDef();
@@ -1383,6 +1401,7 @@ describe('Runtime i18n', () => {
           directives: [Child],
           factory: () => new Parent(),
           consts: 2,
+          vars: 0,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
               if (!i18n_1) {
@@ -1420,6 +1439,7 @@ describe('Runtime i18n', () => {
           selectors: [['child']],
           factory: () => new Child(),
           consts: 1,
+          vars: 0,
           template: (rf: RenderFlags, cmp: Child) => {
             if (rf & RenderFlags.Create) {
               projectionDef([[['span']]], ['span']);
@@ -1450,6 +1470,7 @@ describe('Runtime i18n', () => {
           directives: [Child],
           factory: () => new Parent(),
           consts: 3,
+          vars: 0,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
               if (!i18n_1) {
@@ -1491,6 +1512,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
+          vars: 1,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}"></div>
 
@@ -1528,6 +1550,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
+          vars: 1,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}"></div>
 
@@ -1564,6 +1587,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
+          vars: 1,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}"></div>
 
@@ -1602,6 +1626,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
+          vars: 1,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}"></div>
 
@@ -1645,6 +1670,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
+          vars: 1,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}"></div>
 
@@ -1690,6 +1716,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
+          vars: 1,
           // Initial template:
           // <div i18n i18n-title
           // title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}{{exp7}}"></div>
@@ -1744,6 +1771,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
+          vars: 1,
           // Initial template:
           // <div i18n i18n-title
           // title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}{{exp7}}{{exp8}}"></div>

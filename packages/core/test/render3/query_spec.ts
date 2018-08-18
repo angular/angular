@@ -77,7 +77,7 @@ describe('query', () => {
             child2 = loadDirective(1);
           }
         },
-        2, [Child], [],
+        4, 0, [Child], [],
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             query(0, Child, false);
@@ -115,7 +115,7 @@ describe('query', () => {
                 elToQuery = loadElement(1).native;
               }
             },
-            1, [Child], [],
+            2, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, Child, false, QUERY_READ_ELEMENT_REF);
@@ -152,7 +152,7 @@ describe('query', () => {
                 elementEnd();
               }
             },
-            1, [Child, OtherChild], [],
+            2, 0, [Child, OtherChild], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, Child, false, OtherChild);
@@ -185,7 +185,7 @@ describe('query', () => {
                 element(1, 'div', ['child', '']);
               }
             },
-            1, [Child, OtherChild], [],
+            2, 0, [Child, OtherChild], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, Child, false, OtherChild);
@@ -223,7 +223,7 @@ describe('query', () => {
                 element(3, 'div');
               }
             },
-            3, [], [],
+            4, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], false, QUERY_READ_FROM_NODE);
@@ -260,7 +260,7 @@ describe('query', () => {
                 element(5, 'div');
               }
             },
-            4, [], [],
+            6, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], false, QUERY_READ_FROM_NODE);
@@ -309,7 +309,7 @@ describe('query', () => {
                 el2ToQuery = loadElement(4).native;
               }
             },
-            5, [], [],
+            6, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo', 'bar'], undefined, QUERY_READ_FROM_NODE);
@@ -346,7 +346,7 @@ describe('query', () => {
                 element(3, 'div');
               }
             },
-            3, [], [],
+            4, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], false, QUERY_READ_ELEMENT_REF);
@@ -382,7 +382,7 @@ describe('query', () => {
                    elementContainerEnd();
                  }
                },
-               2, [], [],
+               3, 0, [], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    query(0, ['foo'], false, QUERY_READ_ELEMENT_REF);
@@ -447,7 +447,7 @@ describe('query', () => {
                 elementContainerEnd();
               }
             },
-            3, [], [],
+            5, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], true, QUERY_READ_ELEMENT_REF);
@@ -482,7 +482,7 @@ describe('query', () => {
                 element(1, 'div', null, ['foo', '']);
               }
             },
-            2, [], [],
+            3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], false, QUERY_READ_CONTAINER_REF);
@@ -510,10 +510,10 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(1, null, 0, null, null, ['foo', '']);
+                template(1, null, 0, 0, null, null, ['foo', '']);
               }
             },
-            2, [], [],
+            3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], false, QUERY_READ_CONTAINER_REF);
@@ -542,10 +542,10 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   template(1, null, 0, null, null, ['foo', '']);
+                   template(1, null, 0, 0, null, null, ['foo', '']);
                  }
                },
-               2, [], [],
+               3, 0, [], [],
                function(rf: RenderFlags, ctx: any) {
 
                  if (rf & RenderFlags.Create) {
@@ -577,10 +577,10 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(1, null, 0, null, null, ['foo', '']);
+                template(1, null, 0, 0, null, null, ['foo', '']);
               }
             },
-            2, [], [],
+            3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], undefined, QUERY_READ_FROM_NODE);
@@ -609,10 +609,10 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(1, null, 0, null, null, ['foo', '']);
+                template(1, null, 0, 0, null, null, ['foo', '']);
               }
             },
-            2, [], [],
+            3, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], false, QUERY_READ_TEMPLATE_REF);
@@ -649,7 +649,7 @@ describe('query', () => {
                 childInstance = loadDirective(0);
               }
             },
-            2, [Child], [],
+            3, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -675,6 +675,7 @@ describe('query', () => {
             selectors: [['child']],
             factory: () => childInstance = new Child(),
             consts: 0,
+            vars: 0,
             template: (rf: RenderFlags, ctx: Child) => {},
             exportAs: 'child'
           });
@@ -693,7 +694,7 @@ describe('query', () => {
                 element(1, 'child', null, ['foo', 'child']);
               }
             },
-            2, [Child], [],
+            3, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -731,7 +732,7 @@ describe('query', () => {
                    childInstance = loadDirective(0);
                  }
                },
-               2, [Child], [],
+               3, 0, [Child], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -771,7 +772,7 @@ describe('query', () => {
                 child2Instance = loadDirective(1);
               }
             },
-            3, [Child1, Child2], [],
+            4, 0, [Child1, Child2], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo', 'bar'], true, QUERY_READ_FROM_NODE);
@@ -810,7 +811,7 @@ describe('query', () => {
                 childInstance = loadDirective(0);
               }
             },
-            3, [Child], [],
+            5, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -854,7 +855,7 @@ describe('query', () => {
                 div = loadElement(1).native;
               }
             },
-            2, [Child], [],
+            3, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], undefined, QUERY_READ_ELEMENT_REF);
@@ -892,7 +893,7 @@ describe('query', () => {
                 childInstance = loadDirective(0);
               }
             },
-            3, [Child], [],
+            4, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo', 'bar'], undefined, QUERY_READ_FROM_NODE);
@@ -926,7 +927,7 @@ describe('query', () => {
                 element(1, 'div', ['foo', '']);
               }
             },
-            2, [Child], [],
+            3, 0, [Child], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], false, Child);
@@ -994,13 +995,13 @@ describe('query', () => {
             'cmpt',
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(1, Cmpt_Template_1, 2, null, ['ngIf', '']);
+                template(1, Cmpt_Template_1, 2, 0, null, ['ngIf', '']);
               }
               if (rf & RenderFlags.Update) {
                 elementProperty(1, 'ngIf', bind(ctx.value));
               }
             },
-            2, [NgIf], [],
+            3, 1, [NgIf], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -1051,10 +1052,11 @@ describe('query', () => {
             type: Cmpt,
             factory: () => new Cmpt(),
             selectors: [['my-app']],
-            consts: 2,
+            consts: 3,
+            vars: 1,
             template: function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
-                template(1, Cmpt_Template_1, 2, null, ['ngForOf', '']);
+                template(1, Cmpt_Template_1, 2, 1, null, ['ngForOf', '']);
               }
               if (rf & RenderFlags.Update) {
                 elementProperty(1, 'ngForOf', bind(ctx.value));
@@ -1132,10 +1134,12 @@ describe('query', () => {
                'cmpt',
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
-                   template(1, Cmpt_Template_1, 2, null, null, ['tpl1', ''], templateRefExtractor);
+                   template(
+                       1, Cmpt_Template_1, 2, 1, null, null, ['tpl1', ''], templateRefExtractor);
                    element(3, 'div', ['id', 'middle'], ['foo', '']);
-                   template(5, Cmpt_Template_5, 2, null, null, ['tpl2', ''], templateRefExtractor);
-                   template(7, null, 0, null, [AttributeMarker.SelectOnly, 'vc']);
+                   template(
+                       5, Cmpt_Template_5, 2, 1, null, null, ['tpl2', ''], templateRefExtractor);
+                   template(7, null, 0, 0, null, [AttributeMarker.SelectOnly, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
@@ -1144,7 +1148,7 @@ describe('query', () => {
                  }
 
                },
-               6, [ViewContainerManipulatorDirective], [],
+               7, 0, [ViewContainerManipulatorDirective], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -1224,13 +1228,14 @@ describe('query', () => {
                type: Cmpt,
                factory: () => new Cmpt(),
                selectors: [['my-app']],
-               consts: 4,
+               consts: 5,
+               vars: 0,
                template: function(rf: RenderFlags, ctx: any) {
                  let tmp: any;
                  if (rf & RenderFlags.Create) {
-                   template(1, Cmpt_Template_1, 2, null, [], ['tpl', ''], templateRefExtractor);
-                   template(3, null, 0, null, [AttributeMarker.SelectOnly, 'vc']);
-                   template(4, null, 0, null, [AttributeMarker.SelectOnly, 'vc']);
+                   template(1, Cmpt_Template_1, 2, 1, null, [], ['tpl', ''], templateRefExtractor);
+                   template(3, null, 0, 0, null, [AttributeMarker.SelectOnly, 'vc']);
+                   template(4, null, 0, 0, null, [AttributeMarker.SelectOnly, 'vc']);
                  }
 
                  if (rf & RenderFlags.Update) {
@@ -1291,7 +1296,8 @@ describe('query', () => {
             type: MyApp,
             factory: () => new MyApp(),
             selectors: [['my-app']],
-            consts: 4,
+            consts: 5,
+            vars: 1,
             /**
              * <ng-template #tpl><span #foo id="from_tpl"></span></ng-template>
              * <ng-template [ngTemplateOutlet]="show ? tpl : null"></ng-template>
@@ -1299,9 +1305,9 @@ describe('query', () => {
             template: (rf: RenderFlags, myApp: MyApp) => {
               if (rf & RenderFlags.Create) {
                 template(
-                    1, MyApp_Template_1, 2, undefined, undefined, ['tpl', ''],
+                    1, MyApp_Template_1, 2, 0, undefined, undefined, ['tpl', ''],
                     templateRefExtractor);
-                template(3, null, 0, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+                template(3, null, 0, 0, null, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
               }
               if (rf & RenderFlags.Update) {
                 const tplRef = reference(2);
@@ -1361,7 +1367,7 @@ describe('query', () => {
                 containerRefreshStart(1);
                 {
                   if (ctx.exp) {
-                    let rf1 = embeddedViewStart(1, 2);
+                    let rf1 = embeddedViewStart(1, 2, 0);
                     {
                       if (rf1 & RenderFlags.Create) {
                         element(0, 'div', null, ['foo', '']);
@@ -1374,7 +1380,7 @@ describe('query', () => {
                 containerRefreshEnd();
               }
             },
-            1, [], [],
+            2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -1426,7 +1432,7 @@ describe('query', () => {
                    containerRefreshStart(3);
                    {
                      if (ctx.exp) {
-                       let rf1 = embeddedViewStart(1, 2);
+                       let rf1 = embeddedViewStart(1, 2, 0);
                        {
                          if (rf1 & RenderFlags.Create) {
                            element(0, 'div', null, ['foo', '']);
@@ -1439,7 +1445,7 @@ describe('query', () => {
                    containerRefreshEnd();
                  }
                },
-               5, [], [],
+               6, 0, [], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -1493,7 +1499,7 @@ describe('query', () => {
                 containerRefreshStart(1);
                 {
                   if (ctx.exp1) {
-                    let rf0 = embeddedViewStart(0, 2);
+                    let rf0 = embeddedViewStart(0, 2, 0);
                     {
                       if (rf0 & RenderFlags.Create) {
                         element(0, 'div', null, ['foo', '']);
@@ -1503,7 +1509,7 @@ describe('query', () => {
                     embeddedViewEnd();
                   }
                   if (ctx.exp2) {
-                    let rf1 = embeddedViewStart(1, 2);
+                    let rf1 = embeddedViewStart(1, 2, 0);
                     {
                       if (rf1 & RenderFlags.Create) {
                         element(0, 'span', null, ['foo', '']);
@@ -1516,7 +1522,7 @@ describe('query', () => {
                 containerRefreshEnd();
               }
             },
-            1, [], [],
+            2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -1566,7 +1572,7 @@ describe('query', () => {
                 containerRefreshStart(1);
                 {
                   if (ctx.exp1) {
-                    let rf0 = embeddedViewStart(0, 3);
+                    let rf0 = embeddedViewStart(0, 3, 0);
                     {
                       if (rf0 & RenderFlags.Create) {
                         element(0, 'div', null, ['foo', '']);
@@ -1577,7 +1583,7 @@ describe('query', () => {
                         containerRefreshStart(2);
                         {
                           if (ctx.exp2) {
-                            let rf2 = embeddedViewStart(0, 2);
+                            let rf2 = embeddedViewStart(0, 2, 0);
                             {
                               if (rf2) {
                                 element(0, 'span', null, ['foo', '']);
@@ -1596,7 +1602,7 @@ describe('query', () => {
                 containerRefreshEnd();
               }
             },
-            1, [], [],
+            2, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -1651,7 +1657,7 @@ describe('query', () => {
                 containerRefreshStart(2);
                 {
                   if (ctx.exp) {
-                    let rf0 = embeddedViewStart(0, 4);
+                    let rf0 = embeddedViewStart(0, 4, 0);
                     {
                       if (rf0 & RenderFlags.Create) {
                         elementStart(0, 'div', null, ['foo', '']);
@@ -1665,7 +1671,7 @@ describe('query', () => {
                 containerRefreshEnd();
               }
             },
-            3, [], [],
+            5, 0, [], [],
             function(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -1746,7 +1752,7 @@ describe('query', () => {
               element(1, 'div', null, ['foo', '']);
             }
           },
-          1, [], [],
+          2, 0, [], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               query(0, ['foo'], false, QUERY_READ_FROM_NODE);
@@ -1764,7 +1770,7 @@ describe('query', () => {
         containerRefreshStart(0);
         {
           if (condition) {
-            let rf1 = embeddedViewStart(1, 1);
+            let rf1 = embeddedViewStart(1, 1, 0);
             {
               if (rf1 & RenderFlags.Create) {
                 element(0, 'some-component-with-query');
@@ -1782,7 +1788,8 @@ describe('query', () => {
        * %}
        */
       let condition = true;
-      const t = new TemplateFixture(createTemplate, updateTemplate, 1, [SimpleComponentWithQuery]);
+      const t =
+          new TemplateFixture(createTemplate, updateTemplate, 1, 0, [SimpleComponentWithQuery]);
       expect(t.html).toEqual('<some-component-with-query><div></div></some-component-with-query>');
       expect((queryInstance !.changes as EventEmitter<any>).closed).toBeFalsy();
 
@@ -1820,11 +1827,12 @@ describe('query', () => {
         'app',
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            template(1, AppComponent_Template_1, 1, null, [AttributeMarker.SelectOnly, 'someDir']);
+            template(
+                1, AppComponent_Template_1, 1, 0, null, [AttributeMarker.SelectOnly, 'someDir']);
             element(2, 'div', null, ['foo', '']);
           }
         },
-        3, [SomeDir], [],
+        4, 0, [SomeDir], [],
         function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             query(0, ['foo'], true, QUERY_READ_FROM_NODE);
@@ -1885,6 +1893,7 @@ describe('query', () => {
         factory: () => new ShallowComp(),
         template: function(rf: RenderFlags, ctx: any) {},
         consts: 0,
+        vars: 0,
         contentQueries:
             () => { registerContentQuery(query(null, ['foo'], false, QUERY_READ_FROM_NODE)); },
         contentQueriesRefresh: (dirIndex: number, queryStartIdx: number) => {
@@ -1908,7 +1917,7 @@ describe('query', () => {
           { element(1, 'span', null, ['foo', '']); }
           elementEnd();
         }
-      }, 3, [WithContentDirective]);
+      }, 3, 0, [WithContentDirective]);
 
       const fixture = new ComponentFixture(AppComponent);
       expect(withContentInstance !.foos.length)
@@ -1934,7 +1943,7 @@ describe('query', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['with-content', ''], ['foo', '']);
         }
-      }, 2, [WithContentDirective]);
+      }, 2, 0, [WithContentDirective]);
 
       const fixture = new ComponentFixture(AppComponent);
       expect(withContentInstance !.foos.length)
@@ -1956,13 +1965,13 @@ describe('query', () => {
       const AppComponent = createComponent('app-component', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'shallow-comp');
-          { template(1, IfTemplate, 2, null, [AttributeMarker.SelectOnly, 'ngIf', '']); }
+          { template(1, IfTemplate, 2, 0, null, [AttributeMarker.SelectOnly, 'ngIf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
           elementProperty(1, 'ngIf', bind(ctx.showing));
         }
-      }, 2, [ShallowComp, NgIf]);
+      }, 2, 1, [ShallowComp, NgIf]);
 
       const fixture = new ComponentFixture(AppComponent);
       const qList = shallowCompInstance !.foos;
@@ -1999,7 +2008,7 @@ describe('query', () => {
               element(4, 'div', ['id', 'after'], ['bar', '']);
             }
           },
-          5, [WithContentDirective], [],
+          6, 0, [WithContentDirective], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               query(0, ['foo', 'bar'], true, QUERY_READ_FROM_NODE);
@@ -2039,7 +2048,7 @@ describe('query', () => {
               element(4, 'div', null, ['foo', '']);
             }
           },
-          5, [WithContentDirective], [],
+          6, 0, [WithContentDirective], [],
           function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               query(0, ['bar'], true, QUERY_READ_FROM_NODE);
@@ -2108,7 +2117,7 @@ describe('query', () => {
               inInstance = load<QueryDirective>(5);
             }
           },
-          10, [QueryDirective]);
+          10, 0, [QueryDirective]);
 
       const fixture = new ComponentFixture(AppComponent);
       expect(outInstance !.fooBars.length).toBe(3);
@@ -2165,7 +2174,7 @@ describe('query', () => {
               inInstance = load<QueryDirective>(3);
             }
           },
-          7, [QueryDirective]);
+          7, 0, [QueryDirective]);
 
       const fixture = new ComponentFixture(AppComponent);
       expect(outInstance !.fooBars.length).toBe(1);
@@ -2245,7 +2254,7 @@ describe('query', () => {
                  deepInstance = load<DeepQueryDirective>(2);
                }
              },
-             8, [ShallowQueryDirective, DeepQueryDirective]);
+             8, 0, [ShallowQueryDirective, DeepQueryDirective]);
 
          const fixture = new ComponentFixture(AppComponent);
          expect(shallowInstance !.foos.length).toBe(1);

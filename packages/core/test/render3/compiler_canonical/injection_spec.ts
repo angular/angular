@@ -35,6 +35,7 @@ describe('injection', () => {
             return new MyComp($r3$.ɵinjectChangeDetectorRef());
           },
           consts: 1,
+          vars: 1,
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
             if (rf & 1) {
               $r3$.ɵtext(0);
@@ -53,6 +54,7 @@ describe('injection', () => {
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           consts: 1,
+          vars: 0,
           /** <my-comp></my-comp> */
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
@@ -83,6 +85,7 @@ describe('injection', () => {
           selectors: [['my-comp']],
           factory: function MyComp_Factory() { return new MyComp($r3$.ɵinjectAttribute('title')); },
           consts: 1,
+          vars: 1,
           template: function MyComp_Template(rf: $RenderFlags$, ctx: $MyComp$) {
             if (rf & 1) {
               $r3$.ɵtext(0);
@@ -101,6 +104,7 @@ describe('injection', () => {
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           consts: 1,
+          vars: 0,
           /** <my-comp></my-comp> */
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
@@ -154,6 +158,7 @@ describe('injection', () => {
                 $r3$.ɵdirectiveInject(ServiceA), $r3$.ɵdirectiveInject(ServiceB), inject(INJECTOR));
           },
           consts: 0,
+          vars: 0,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {},
           providers: [ServiceA],
           viewProviders: [ServiceB],

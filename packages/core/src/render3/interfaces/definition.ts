@@ -211,6 +211,14 @@ export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T
   consts: number;
 
   /**
+   * The number of bindings in this component template (including pure fn bindings).
+   *
+   * Used to calculate the length of the component's LViewData array, so we
+   * can pre-fill the array and set the host binding start index.
+   */
+  vars: number;
+
+  /**
    * Query-related instructions for a component.
    */
   readonly viewQuery: ComponentQuery<T>|null;

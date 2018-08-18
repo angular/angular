@@ -52,7 +52,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Update) {
           textBinding(1, interpolation1('Hello, ', ctx.name, '!'));
         }
-      }, 2);
+      }, 2, 1);
 
       const fixture = new ComponentFixture(App);
       fixture.component.name = 'World';
@@ -76,8 +76,8 @@ describe('render3 integration test', () => {
         }
       }
 
-      expect(renderToHtml(Template, 'benoit', 1)).toEqual('benoit');
-      expect(renderToHtml(Template, undefined, 1)).toEqual('');
+      expect(renderToHtml(Template, 'benoit', 1, 1)).toEqual('benoit');
+      expect(renderToHtml(Template, undefined, 1, 1)).toEqual('');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 0,
         tNode: 2,
@@ -96,8 +96,8 @@ describe('render3 integration test', () => {
         }
       }
 
-      expect(renderToHtml(Template, 'benoit', 1)).toEqual('benoit');
-      expect(renderToHtml(Template, null, 1)).toEqual('');
+      expect(renderToHtml(Template, 'benoit', 1, 1)).toEqual('benoit');
+      expect(renderToHtml(Template, null, 1, 1)).toEqual('');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 0,
         tNode: 2,
@@ -115,8 +115,8 @@ describe('render3 integration test', () => {
           textBinding(0, rf & RenderFlags.Create ? value : NO_CHANGE);
         }
       }
-      expect(renderToHtml(Template, 'once', 1)).toEqual('once');
-      expect(renderToHtml(Template, 'twice', 1)).toEqual('once');
+      expect(renderToHtml(Template, 'once', 1, 1)).toEqual('once');
+      expect(renderToHtml(Template, 'twice', 1, 1)).toEqual('once');
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 0,
         tNode: 2,
@@ -138,7 +138,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Update) {
           textBinding(1, bind(ctx.name));
         }
-      }, 3);
+      }, 3, 1);
 
       const fixture = new ComponentFixture(App);
       fixture.component.name = 'world';
@@ -164,7 +164,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Update) {
           textBinding(2, bind(ctx.name));
         }
-      }, 4);
+      }, 4, 1);
 
       const fixture = new ComponentFixture(App);
       fixture.component.name = 'world';
@@ -198,7 +198,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Update) {
           textBinding(4, interpolation1('Hello ', ctx.name, '!'));
         }
-      }, 5);
+      }, 5, 1);
 
       const fixture = new ComponentFixture(App);
       fixture.component.name = 'world';
@@ -225,7 +225,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Update) {
           elementAttribute(2, 'id', bind(ctx.id));
         }
-      }, 3);
+      }, 3, 1);
 
       const fixture = new ComponentFixture(App);
       fixture.component.id = 'foo';
@@ -261,6 +261,7 @@ describe('render3 integration test', () => {
         type: TodoComponent,
         selectors: [['todo']],
         consts: 3,
+        vars: 1,
         template: function TodoTemplate(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'p');
@@ -285,7 +286,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'todo');
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<todo><p>Todo one</p></todo>');
@@ -297,7 +298,7 @@ describe('render3 integration test', () => {
           element(0, 'todo');
           text(1, 'two');
         }
-      }, 2, defs);
+      }, 2, 0, defs);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<todo><p>Todo one</p></todo>two');
@@ -313,7 +314,7 @@ describe('render3 integration test', () => {
           element(0, 'todo');
           element(1, 'todo');
         }
-      }, 2, defs);
+      }, 2, 0, defs);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<todo><p>Todo one</p></todo><todo><p>Todo one</p></todo>');
@@ -328,6 +329,7 @@ describe('render3 integration test', () => {
           type: TodoComponentHostBinding,
           selectors: [['todo']],
           consts: 1,
+          vars: 1,
           template: function TodoComponentHostBindingTemplate(
               rf: RenderFlags, ctx: TodoComponentHostBinding) {
             if (rf & RenderFlags.Create) {
@@ -351,7 +353,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'todo');
         }
-      }, 1, [TodoComponentHostBinding]);
+      }, 1, 0, [TodoComponentHostBinding]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<todo title="one">one</todo>');
@@ -368,6 +370,7 @@ describe('render3 integration test', () => {
           selectors: [['host-attr-comp']],
           factory: () => new HostAttributeComp(),
           consts: 0,
+          vars: 0,
           template: (rf: RenderFlags, ctx: HostAttributeComp) => {},
           attributes: ['role', 'button']
         });
@@ -385,6 +388,7 @@ describe('render3 integration test', () => {
           type: MyComp,
           selectors: [['comp']],
           consts: 2,
+          vars: 1,
           template: function MyCompTemplate(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'p');
@@ -403,7 +407,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'comp');
         }
-      }, 1, [MyComp]);
+      }, 1, 0, [MyComp]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<comp><p>Bess</p></comp>');
@@ -422,6 +426,7 @@ describe('render3 integration test', () => {
           type: MyComp,
           selectors: [['comp']],
           consts: 1,
+          vars: 0,
           template: function MyCompTemplate(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
               container(0);
@@ -430,7 +435,7 @@ describe('render3 integration test', () => {
               containerRefreshStart(0);
               {
                 if (ctx.condition) {
-                  let rf1 = embeddedViewStart(0, 2);
+                  let rf1 = embeddedViewStart(0, 2, 0);
                   if (rf1 & RenderFlags.Create) {
                     elementStart(0, 'div');
                     { text(1, 'text'); }
@@ -455,7 +460,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'condition', bind(ctx.condition));
         }
-      }, 1, [MyComp]);
+      }, 1, 1, [MyComp]);
 
       const fixture = new ComponentFixture(App);
       fixture.component.condition = true;
@@ -509,7 +514,7 @@ describe('render3 integration test', () => {
         if (rf & RenderFlags.Update) {
           containerRefreshStart(0);
           if (ctx.value) {
-            let rf1 = embeddedViewStart(0, 3);
+            let rf1 = embeddedViewStart(0, 3, 0);
             {
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'div');
@@ -554,7 +559,7 @@ describe('render3 integration test', () => {
                if (rf & RenderFlags.Update) {
                  containerRefreshStart(0);
                  if (ctx.value) {
-                   let rf1 = embeddedViewStart(0, 2);
+                   let rf1 = embeddedViewStart(0, 2, 0);
                    {
                      if (rf1 & RenderFlags.Create) {
                        elementContainerStart(0);
@@ -605,12 +610,12 @@ describe('render3 integration test', () => {
          const TestCmpt =
              createComponent('test-cmpt', function(rf: RenderFlags, ctx: {value: any}) {
                if (rf & RenderFlags.Create) {
-                 template(0, ngIfTemplate, 2, null, [AttributeMarker.SelectOnly, 'ngIf']);
+                 template(0, ngIfTemplate, 2, 0, null, [AttributeMarker.SelectOnly, 'ngIf']);
                }
                if (rf & RenderFlags.Update) {
                  elementProperty(0, 'ngIf', bind(ctx.value));
                }
-             }, 1, [NgIf]);
+             }, 1, 1, [NgIf]);
 
          const fixture = new ComponentFixture(TestCmpt);
          expect(fixture.html).toEqual('');
@@ -661,12 +666,13 @@ describe('render3 integration test', () => {
           </ng-template>`;
          const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
            if (rf & RenderFlags.Create) {
-             template(0, embeddedTemplate, 2, null, [AttributeMarker.SelectOnly, 'testDirective']);
+             template(
+                 0, embeddedTemplate, 2, 0, null, [AttributeMarker.SelectOnly, 'testDirective']);
            }
            if (rf & RenderFlags.Update) {
              testDirective = loadDirective<TestDirective>(0);
            }
-         }, 1, [TestDirective]);
+         }, 1, 0, [TestDirective]);
 
          const fixture = new ComponentFixture(TestCmpt);
          expect(fixture.html).toEqual('');
@@ -694,7 +700,7 @@ describe('render3 integration test', () => {
 
       function App() { element(0, 'test-cmpt'); }
 
-      const fixture = new TemplateFixture(App, () => {}, 1, [TestCmpt]);
+      const fixture = new TemplateFixture(App, () => {}, 1, 0, [TestCmpt]);
       expect(fixture.html).toEqual('<test-cmpt>component template</test-cmpt>');
     });
 
@@ -726,7 +732,7 @@ describe('render3 integration test', () => {
 
       function App() { element(0, 'test-cmpt'); }
 
-      const fixture = new TemplateFixture(App, () => {}, 1, [TestCmpt]);
+      const fixture = new TemplateFixture(App, () => {}, 1, 0, [TestCmpt]);
       expect(fixture.html).toEqual('<test-cmpt>content</test-cmpt>');
     });
 
@@ -777,12 +783,12 @@ describe('render3 integration test', () => {
        */
       const TestCmpt = createComponent('test-cmpt', function(rf: RenderFlags) {
         if (rf & RenderFlags.Create) {
-          template(0, embeddedTemplate, 4, null, [AttributeMarker.SelectOnly, 'testDirective']);
+          template(0, embeddedTemplate, 4, 0, null, [AttributeMarker.SelectOnly, 'testDirective']);
         }
         if (rf & RenderFlags.Update) {
           testDirective = loadDirective<TestDirective>(0);
         }
-      }, 1, [TestDirective]);
+      }, 1, 0, [TestDirective]);
 
       function App() { element(0, 'test-cmpt'); }
 
@@ -829,7 +835,7 @@ describe('render3 integration test', () => {
         elementEnd();
       }
 
-      const fixture = new TemplateFixture(Template, () => {}, 2, [Directive]);
+      const fixture = new TemplateFixture(Template, () => {}, 2, 0, [Directive]);
       expect(fixture.html).toEqual('<div></div>');
       expect(directive !.elRef.nativeElement.nodeType).toBe(Node.COMMENT_NODE);
     });
@@ -893,7 +899,7 @@ describe('render3 integration test', () => {
         containerRefreshStart(0);
         {
           if (ctx.label != null) {
-            let rf1 = embeddedViewStart(0, 1);
+            let rf1 = embeddedViewStart(0, 1, 1);
             if (rf1 & RenderFlags.Create) {
               text(0);
             }
@@ -913,29 +919,31 @@ describe('render3 integration test', () => {
         container(1);
         container(2);
       }
-      containerRefreshStart(0);
-      {
-        const rf0 = embeddedViewStart(0, 1);
-        { showLabel(rf0, {label: ctx.tree.beforeLabel}); }
-        embeddedViewEnd();
-      }
-      containerRefreshEnd();
-      containerRefreshStart(1);
-      {
-        for (let subTree of ctx.tree.subTrees || []) {
-          const rf0 = embeddedViewStart(0, 1);
-          { showTree(rf0, {tree: subTree}); }
+      if (rf & RenderFlags.Update) {
+        containerRefreshStart(0);
+        {
+          const rf0 = embeddedViewStart(0, 1, 0);
+          { showLabel(rf0, {label: ctx.tree.beforeLabel}); }
           embeddedViewEnd();
         }
+        containerRefreshEnd();
+        containerRefreshStart(1);
+        {
+          for (let subTree of ctx.tree.subTrees || []) {
+            const rf0 = embeddedViewStart(0, 1, 0);
+            { showTree(rf0, {tree: subTree}); }
+            embeddedViewEnd();
+          }
+        }
+        containerRefreshEnd();
+        containerRefreshStart(2);
+        {
+          const rf0 = embeddedViewStart(0, 1, 0);
+          { showLabel(rf0, {label: ctx.tree.afterLabel}); }
+          embeddedViewEnd();
+        }
+        containerRefreshEnd();
       }
-      containerRefreshEnd();
-      containerRefreshStart(2);
-      {
-        const rf0 = embeddedViewStart(0, 1);
-        { showLabel(rf0, {label: ctx.tree.afterLabel}); }
-        embeddedViewEnd();
-      }
-      containerRefreshEnd();
     }
 
     class ChildComponent {
@@ -947,6 +955,7 @@ describe('render3 integration test', () => {
         selectors: [['child']],
         type: ChildComponent,
         consts: 3,
+        vars: 0,
         template: function ChildComponentTemplate(
             rf: RenderFlags, ctx: {beforeTree: Tree, afterTree: Tree}) {
           if (rf & RenderFlags.Create) {
@@ -955,20 +964,22 @@ describe('render3 integration test', () => {
             projection(1);
             container(2);
           }
-          containerRefreshStart(0);
-          {
-            const rf0 = embeddedViewStart(0, 1);
-            { showTree(rf0, {tree: ctx.beforeTree}); }
-            embeddedViewEnd();
+          if (rf & RenderFlags.Update) {
+            containerRefreshStart(0);
+            {
+              const rf0 = embeddedViewStart(0, 1, 0);
+              { showTree(rf0, {tree: ctx.beforeTree}); }
+              embeddedViewEnd();
+            }
+            containerRefreshEnd();
+            containerRefreshStart(2);
+            {
+              const rf0 = embeddedViewStart(0, 1, 0);
+              { showTree(rf0, {tree: ctx.afterTree}); }
+              embeddedViewEnd();
+            }
+            containerRefreshEnd();
           }
-          containerRefreshEnd();
-          containerRefreshStart(2);
-          {
-            const rf0 = embeddedViewStart(0, 1);
-            { showTree(rf0, {tree: ctx.afterTree}); }
-            embeddedViewEnd();
-          }
-          containerRefreshEnd();
         },
         factory: () => new ChildComponent,
         inputs: {beforeTree: 'beforeTree', afterTree: 'afterTree'}
@@ -986,7 +997,7 @@ describe('render3 integration test', () => {
         elementProperty(0, 'afterTree', bind(ctx.afterTree));
         containerRefreshStart(1);
         {
-          const rf0 = embeddedViewStart(0, 1);
+          const rf0 = embeddedViewStart(0, 1, 0);
           { showTree(rf0, {tree: ctx.projectedTree}); }
           embeddedViewEnd();
         }
@@ -1002,14 +1013,14 @@ describe('render3 integration test', () => {
         afterTree: {afterLabel: 'z'}
       };
       const defs = [ChildComponent];
-      expect(renderToHtml(parentTemplate, ctx, 2, defs)).toEqual('<child>apz</child>');
+      expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>apz</child>');
       ctx.projectedTree = {subTrees: [{}, {}, {subTrees: [{}, {}]}, {}]};
       ctx.beforeTree.subTrees !.push({afterLabel: 'b'});
-      expect(renderToHtml(parentTemplate, ctx, 2, defs)).toEqual('<child>abz</child>');
+      expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>abz</child>');
       ctx.projectedTree.subTrees ![1].afterLabel = 'h';
-      expect(renderToHtml(parentTemplate, ctx, 2, defs)).toEqual('<child>abhz</child>');
+      expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>abhz</child>');
       ctx.beforeTree.subTrees !.push({beforeLabel: 'c'});
-      expect(renderToHtml(parentTemplate, ctx, 2, defs)).toEqual('<child>abchz</child>');
+      expect(renderToHtml(parentTemplate, ctx, 2, 2, defs)).toEqual('<child>abchz</child>');
 
       // To check the context easily:
       // console.log(JSON.stringify(ctx));
@@ -1028,7 +1039,7 @@ describe('render3 integration test', () => {
           if (rf & RenderFlags.Update) {
             elementAttribute(0, 'title', bind(ctx.title));
           }
-        }, 1);
+        }, 1, 1);
 
         const fixture = new ComponentFixture(App);
         fixture.component.title = 'Hello';
@@ -1055,7 +1066,7 @@ describe('render3 integration test', () => {
           if (rf & RenderFlags.Update) {
             elementAttribute(0, 'title', bind(ctx.title));
           }
-        }, 1);
+        }, 1, 1);
 
         const fixture = new ComponentFixture(App);
         fixture.component.title = NaN;
@@ -1098,15 +1109,15 @@ describe('render3 integration test', () => {
           }
         }
         let args = ['(', 0, 'a', 1, 'b', 2, 'c', 3, 'd', 4, 'e', 5, 'f', 6, 'g', 7, ')'];
-        expect(renderToHtml(Template, args, 1))
+        expect(renderToHtml(Template, args, 1, 10))
             .toEqual(
                 '<b a="(0a1b2c3d4e5f6g7)" a0="0" a1="(0)" a2="(0a1)" a3="(0a1b2)" a4="(0a1b2c3)" a5="(0a1b2c3d4)" a6="(0a1b2c3d4e5)" a7="(0a1b2c3d4e5f6)" a8="(0a1b2c3d4e5f6g7)"></b>');
         args = args.reverse();
-        expect(renderToHtml(Template, args, 1))
+        expect(renderToHtml(Template, args, 1, 10))
             .toEqual(
                 '<b a=")7g6f5e4d3c2b1a0(" a0="7" a1=")7(" a2=")7g6(" a3=")7g6f5(" a4=")7g6f5e4(" a5=")7g6f5e4d3(" a6=")7g6f5e4d3c2(" a7=")7g6f5e4d3c2b1(" a8=")7g6f5e4d3c2b1a0("></b>');
         args = args.reverse();
-        expect(renderToHtml(Template, args, 1))
+        expect(renderToHtml(Template, args, 1, 10))
             .toEqual(
                 '<b a="(0a1b2c3d4e5f6g7)" a0="0" a1="(0)" a2="(0a1)" a3="(0a1b2)" a4="(0a1b2c3)" a5="(0a1b2c3d4)" a6="(0a1b2c3d4e5)" a7="(0a1b2c3d4e5f6)" a8="(0a1b2c3d4e5f6g7)"></b>');
       });
@@ -1125,7 +1136,7 @@ describe('render3 integration test', () => {
             containerRefreshStart(1);
             {
               if (true) {
-                let rf1 = embeddedViewStart(1, 1);
+                let rf1 = embeddedViewStart(1, 1, 0);
                 {
                   if (rf1 & RenderFlags.Create) {
                     elementStart(0, 'b');
@@ -1139,7 +1150,7 @@ describe('render3 integration test', () => {
             }
             containerRefreshEnd();
           }
-        }, 2);
+        }, 2, 1);
 
         const fixture = new ComponentFixture(App);
         fixture.component.title = 'Hello';
@@ -1182,7 +1193,7 @@ describe('render3 integration test', () => {
           if (rf & RenderFlags.Create) {
             element(0, 'div', ['hostBindingDir', '']);
           }
-        }, 1, [HostBindingDir]);
+        }, 1, 0, [HostBindingDir]);
 
         const fixture = new ComponentFixture(App);
         expect(fixture.html).toEqual(`<div aria-label="some label" hostbindingdir=""></div>`);
@@ -1335,7 +1346,7 @@ describe('render3 integration test', () => {
           containerRefreshStart(0);
           {
             if (ctx.condition) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'div');
               }
@@ -1377,6 +1388,7 @@ describe('render3 integration test', () => {
           selectors: [['sanitize-this']],
           factory: () => new SanitizationComp(),
           consts: 1,
+          vars: 1,
           template: (rf: RenderFlags, ctx: SanitizationComp) => {
             if (rf & RenderFlags.Create) {
               element(0, 'a');
