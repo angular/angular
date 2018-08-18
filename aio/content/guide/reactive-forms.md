@@ -697,13 +697,25 @@ For more on form validation, visit the [Form Validation](guide/form-validation) 
 -->
 폼 유효성 검사에 대해 더 자세하게 알아보려면 [폼 유효성 검사](guide/form-validation) 문서를 참고하세요.
 
+<!--
 ## Dynamic controls using form arrays
+-->
+## 폼 배열
 
+<!--
 A `FormArray` is an alternative to a `FormGroup` for managing  any number of unnamed controls. As with `FormGroup` instances, you can dynamically insert and remove controls from a `FormArray`, and the `FormArray` instance's value and validation status is calculated from its child controls. However, you don't need to define a key for each control by name, so this is a great option if you don't know the number of child values in advance. The following example shows you how to manage an array of _aliases_ in the `ProfileEditor`.
+-->
+폼 컨트롤의 개수가 변하는 경우라면 `FormGroup` 대신 `FormArray`를 사용할 수 있습니다. `FormArray`를 사용하면 `FormGroup`을 사용했던 것처럼 자식 폼 컨트롤을 동적으로 추가하고 제거할 수 있으며, 자식 폼 컨트롤의 모든 값과 유효성 검사 상태도 `FormArray`로 전파됩니다. 그리고 `FormGroup`과는 다르게, 각 폼 컨트롤에 이름을 지정해서 참조하는 방식을 사용하지 않습니다. 이번에는 `ProfileEditor`에 `FormArray`를 사용하는 예제를 보면서 폼 배열에 대해 알아봅시다.
 
+<!--
 ### Step 1 - Import the `FormArray`
+-->
+### 1단계 - `FormArray` 로드하기
 
+<!--
 Import the `FormArray` class from `@angular/forms` to use for type information. The `FormBuilder` service is ready to create a `FormArray` instance.
+-->
+먼저 `@angular/forms` 패키지에서 `FormArray` 클래스를 로드합니다. 이것은 컴포넌트 클래스에서 타입 참조를 위해 로드한 것이며, `FormBuilder`는 이 과정이 없어도 내부적으로 `FormArray` 타입을 지원합니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-array-imports" title="src/app/profile-editor/profile-editor.component.ts (import)">
 
