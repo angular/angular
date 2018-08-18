@@ -34,6 +34,7 @@ describe('renderer factory lifecycle', () => {
       type: SomeComponent,
       selectors: [['some-component']],
       consts: 1,
+      vars: 0,
       template: function(rf: RenderFlags, ctx: SomeComponent) {
         logs.push('component');
         if (rf & RenderFlags.Create) {
@@ -49,6 +50,7 @@ describe('renderer factory lifecycle', () => {
       type: SomeComponentWhichThrows,
       selectors: [['some-component-with-Error']],
       consts: 0,
+      vars: 0,
       template: function(rf: RenderFlags, ctx: SomeComponentWhichThrows) {
         throw(new Error('SomeComponentWhichThrows threw'));
       },
@@ -90,7 +92,7 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a template', () => {
-    renderToHtml(Template, {}, 1, null, null, rendererFactory);
+    renderToHtml(Template, {}, 1, 0, null, null, rendererFactory);
     expect(logs).toEqual(['create', 'begin', 'function', 'end']);
 
     logs = [];
@@ -99,12 +101,12 @@ describe('renderer factory lifecycle', () => {
   });
 
   it('should work with a template which contains a component', () => {
-    renderToHtml(TemplateWithComponent, {}, 2, directives, null, rendererFactory);
+    renderToHtml(TemplateWithComponent, {}, 2, 0, directives, null, rendererFactory);
     expect(logs).toEqual(
         ['create', 'begin', 'function_with_component', 'create', 'component', 'end']);
 
     logs = [];
-    renderToHtml(TemplateWithComponent, {}, 2, directives);
+    renderToHtml(TemplateWithComponent, {}, 2, 0, directives);
     expect(logs).toEqual(['begin', 'function_with_component', 'component', 'end']);
   });
 
@@ -128,6 +130,7 @@ describe('animation renderer factory', () => {
       type: SomeComponent,
       selectors: [['some-component']],
       consts: 1,
+      vars: 0,
       template: function(rf: RenderFlags, ctx: SomeComponent) {
         if (rf & RenderFlags.Create) {
           text(0, 'foo');
@@ -147,6 +150,7 @@ describe('animation renderer factory', () => {
       type: SomeComponentWithAnimation,
       selectors: [['some-component']],
       consts: 2,
+      vars: 1,
       template: function(rf: RenderFlags, ctx: SomeComponentWithAnimation) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
@@ -225,7 +229,7 @@ describe('Renderer2 destruction hooks', () => {
       containerRefreshStart(1);
       {
         if (condition) {
-          let rf1 = embeddedViewStart(1, 3);
+          let rf1 = embeddedViewStart(1, 3, 0);
           {
             if (rf1 & RenderFlags.Create) {
               element(0, 'span');
@@ -239,8 +243,8 @@ describe('Renderer2 destruction hooks', () => {
       containerRefreshEnd();
     }
 
-    const t =
-        new TemplateFixture(createTemplate, updateTemplate, 2, null, null, null, rendererFactory);
+    const t = new TemplateFixture(
+        createTemplate, updateTemplate, 2, 0, null, null, null, rendererFactory);
 
     expect(t.html).toEqual('<div><span></span><span></span><span></span></div>');
 
@@ -256,6 +260,7 @@ describe('Renderer2 destruction hooks', () => {
         type: SimpleComponent,
         selectors: [['simple']],
         consts: 1,
+        vars: 0,
         template: function(rf: RenderFlags, ctx: SimpleComponent) {
           if (rf & RenderFlags.Create) {
             element(0, 'span');
@@ -277,7 +282,7 @@ describe('Renderer2 destruction hooks', () => {
       containerRefreshStart(1);
       {
         if (condition) {
-          let rf1 = embeddedViewStart(1, 3);
+          let rf1 = embeddedViewStart(1, 3, 0);
           {
             if (rf1 & RenderFlags.Create) {
               element(0, 'simple');
@@ -292,7 +297,7 @@ describe('Renderer2 destruction hooks', () => {
     }
 
     const t = new TemplateFixture(
-        createTemplate, updateTemplate, 2, [SimpleComponent], null, null, rendererFactory);
+        createTemplate, updateTemplate, 2, 0, [SimpleComponent], null, null, rendererFactory);
 
     expect(t.html).toEqual(
         '<div><simple><span></span></simple><span></span><simple><span></span></simple></div>');

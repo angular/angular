@@ -84,6 +84,7 @@ describe('pipes', () => {
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         consts: 3,
+        vars: 7,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵtext(0);
@@ -94,7 +95,7 @@ describe('pipes', () => {
             $r3$.ɵtextBinding(
                 0,
                 $r3$.ɵinterpolation1(
-                    '', $r3$.ɵpipeBind2(1, 6, $r3$.ɵpipeBind2(2, 3, ctx.name, ctx.size), ctx.size),
+                    '', $r3$.ɵpipeBind2(1, 4, $r3$.ɵpipeBind2(2, 1, ctx.name, ctx.size), ctx.size),
                     ''));
           }
         }
@@ -160,7 +161,7 @@ describe('pipes', () => {
       if (rf & 2) {
         const $comp$ = $r3$.ɵnextContext();
         $r3$.ɵtextBinding(
-            1, $r3$.ɵinterpolation1('', $r3$.ɵpipeBind2(2, 3, $comp$.name, $comp$.size), ''));
+            1, $r3$.ɵinterpolation1('', $r3$.ɵpipeBind2(2, 1, $comp$.name, $comp$.size), ''));
       }
     }
 
@@ -179,13 +180,14 @@ describe('pipes', () => {
         selectors: [['my-app']],
         factory: function MyApp_Factory() { return new MyApp(); },
         consts: 5,
+        vars: 9,
         template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵtext(0);
             $r3$.ɵpipe(1, 'myPurePipe');
             $r3$.ɵtext(2);
             $r3$.ɵpipe(3, 'myPurePipe');
-            $r3$.ɵtemplate(4, MyApp_div_Template_4, 3, '', ['oneTimeIf', '']);
+            $r3$.ɵtemplate(4, MyApp_div_Template_4, 3, 4, '', ['oneTimeIf', '']);
           }
           if (rf & 2) {
             $r3$.ɵtextBinding(
@@ -193,8 +195,6 @@ describe('pipes', () => {
             $r3$.ɵtextBinding(
                 2, $r3$.ɵinterpolation1('', $r3$.ɵpipeBind2(3, 6, ctx.name, ctx.size), ''));
             $r3$.ɵelementProperty(4, 'oneTimeIf', $r3$.ɵbind(ctx.more));
-            $r3$.ɵcontainerRefreshStart(4);
-            $r3$.ɵcontainerRefreshEnd();
           }
         }
       });

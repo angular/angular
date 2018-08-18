@@ -27,6 +27,7 @@ describe('event listeners', () => {
       type: MyComp,
       selectors: [['comp']],
       consts: 2,
+      vars: 0,
       /** <button (click)="onClick()"> Click me </button> */
       template: function CompTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
@@ -67,6 +68,7 @@ describe('event listeners', () => {
       selectors: [['prevent-default-comp']],
       factory: () => new PreventDefaultComp(),
       consts: 2,
+      vars: 0,
       /** <button (click)="onClick($event)">Click</button> */
       template: (rf: RenderFlags, ctx: PreventDefaultComp) => {
         if (rf & RenderFlags.Create) {
@@ -200,7 +202,7 @@ describe('event listeners', () => {
         containerRefreshStart(0);
         {
           if (ctx.showing) {
-            if (embeddedViewStart(1, 2)) {
+            if (embeddedViewStart(1, 2, 0)) {
               elementStart(0, 'button');
               {
                 listener('click', function() { return ctx.onClick(); });
@@ -250,6 +252,7 @@ describe('event listeners', () => {
         selectors: [['app-comp']],
         factory: () => new AppComp(),
         consts: 1,
+        vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             container(0);
@@ -258,7 +261,7 @@ describe('event listeners', () => {
             containerRefreshStart(0);
             {
               if (ctx.showing) {
-                if (embeddedViewStart(0, 2)) {
+                if (embeddedViewStart(0, 2, 0)) {
                   elementStart(0, 'button');
                   {
                     listener('click', function() { return ctx.onClick(); });
@@ -310,6 +313,7 @@ describe('event listeners', () => {
         selectors: [['app-comp']],
         factory: () => new AppComp(),
         consts: 1,
+        vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             container(0);
@@ -318,7 +322,7 @@ describe('event listeners', () => {
             containerRefreshStart(0);
             {
               for (let i = 0; i < ctx.buttons; i++) {
-                if (embeddedViewStart(0, 2)) {
+                if (embeddedViewStart(0, 2, 0)) {
                   elementStart(0, 'button');
                   {
                     listener('click', function() { return ctx.onClick(i); });
@@ -372,6 +376,7 @@ describe('event listeners', () => {
         selectors: [['app-comp']],
         factory: () => new AppComp(),
         consts: 1,
+        vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             container(0);
@@ -380,7 +385,7 @@ describe('event listeners', () => {
             containerRefreshStart(0);
             {
               for (let i = 0; i < ctx.buttons; i++) {
-                if (embeddedViewStart(1, 2)) {
+                if (embeddedViewStart(1, 2, 0)) {
                   elementStart(0, 'button');
                   {
                     listener('click', function() { return ctx.onClick(i); });
@@ -442,7 +447,7 @@ describe('event listeners', () => {
       }
     }
 
-    renderToHtml(Template, {}, 2, [HostListenerDir]);
+    renderToHtml(Template, {}, 2, 0, [HostListenerDir]);
     const button = containerEl.querySelector('button') !;
     button.click();
     expect(events).toEqual(['click!']);
@@ -469,7 +474,7 @@ describe('event listeners', () => {
         containerRefreshStart(0);
         {
           if (ctx.showing) {
-            let rf1 = embeddedViewStart(0, 2);
+            let rf1 = embeddedViewStart(0, 2, 0);
             if (rf1 & RenderFlags.Create) {
               text(0, 'Hello');
               container(1);
@@ -478,7 +483,7 @@ describe('event listeners', () => {
               containerRefreshStart(1);
               {
                 if (ctx.button) {
-                  let rf1 = embeddedViewStart(0, 2);
+                  let rf1 = embeddedViewStart(0, 2, 0);
                   if (rf1 & RenderFlags.Create) {
                     elementStart(0, 'button');
                     {
@@ -533,7 +538,7 @@ describe('event listeners', () => {
         containerRefreshStart(0);
         {
           if (ctx.showing) {
-            let rf1 = embeddedViewStart(0, 3);
+            let rf1 = embeddedViewStart(0, 3, 0);
             if (rf1 & RenderFlags.Create) {
               text(0, 'Hello');
               element(1, 'comp');
@@ -547,7 +552,7 @@ describe('event listeners', () => {
     }
 
     const ctx = {showing: true};
-    renderToHtml(Template, ctx, 1, [MyComp]);
+    renderToHtml(Template, ctx, 1, 0, [MyComp]);
     const buttons = containerEl.querySelectorAll('button') !;
 
     buttons[0].click();
@@ -558,7 +563,7 @@ describe('event listeners', () => {
 
     // the child view listener should be removed when the parent view is removed
     ctx.showing = false;
-    renderToHtml(Template, ctx, 1, [MyComp]);
+    renderToHtml(Template, ctx, 1, 0, [MyComp]);
     buttons[0].click();
     buttons[1].click();
     expect(comps[0] !.counter).toEqual(1);
@@ -586,7 +591,7 @@ describe('event listeners', () => {
         containerRefreshStart(0);
         {
           if (ctx.condition) {
-            let rf1 = embeddedViewStart(0, 3);
+            let rf1 = embeddedViewStart(0, 3, 0);
             if (rf1 & RenderFlags.Create) {
               text(0, 'Hello');
               container(1);
@@ -596,7 +601,7 @@ describe('event listeners', () => {
               containerRefreshStart(1);
               {
                 if (ctx.sub1) {
-                  let rf1 = embeddedViewStart(0, 2);
+                  let rf1 = embeddedViewStart(0, 2, 0);
                   if (rf1 & RenderFlags.Create) {
                     elementStart(0, 'button');
                     {
@@ -612,7 +617,7 @@ describe('event listeners', () => {
               containerRefreshStart(2);
               {
                 if (ctx.sub2) {
-                  let rf1 = embeddedViewStart(0, 2);
+                  let rf1 = embeddedViewStart(0, 2, 0);
                   if (rf1 & RenderFlags.Create) {
                     elementStart(0, 'button');
                     {
