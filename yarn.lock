@@ -1894,7 +1894,7 @@ domain-browser@^1.1.1:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/domain-browser/-/domain-browser-1.2.0.tgz#3d31f50191a6749dd1375a7f522e823d42e54eda"
 
-domino@^2.1.0:
+domino@2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/domino/-/domino-2.1.0.tgz#653ba7d331441113b42e40ba05f24253ec86e02e"
 
