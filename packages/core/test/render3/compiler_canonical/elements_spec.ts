@@ -309,7 +309,11 @@ describe('elements', () => {
       }
 
       const comp = renderComponent(MyComponent);
-      expect(toHtml(comp)).toEqual('<div></div>');
+
+      // This is a fix for a change in how Domino renders this on the server in v2.1.0
+      const source = toHtml(comp);
+      const matches = source === '<div></div>' || source === '<div class=""></div>';
+      expect(matches).toBeTruthy();
 
       comp.someFlag = true;
       $r3$.ɵdetectChanges(comp);
