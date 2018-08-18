@@ -44,7 +44,7 @@ describe('di', () => {
           const tmp = reference(1) as any;
           textBinding(2, bind(tmp.value));
         }
-      }, 3, [Directive]);
+      }, 3, 1, [Directive]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<div dir="">Created</div>');
@@ -109,7 +109,7 @@ describe('di', () => {
           const tmp = reference(2) as any;
           textBinding(3, bind(tmp.value));
         }
-      }, 4, [DirA, DirB, DirC]);
+      }, 4, 1, [DirA, DirB, DirC]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<div dira=""><span dirb="" dirc="">DirADirB</span></div>');
@@ -131,7 +131,7 @@ describe('di', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['dirA', '', 'dirB', '']);
         }
-      }, 1, [DirA, DirB]);
+      }, 1, 0, [DirA, DirB]);
 
       new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'DirA (dep: DirB)']);
@@ -157,7 +157,7 @@ describe('di', () => {
           element(0, 'div', ['dirB', '']);
           element(1, 'div', ['dirA', '']);
         }
-      }, 2, [DirA, DirB]);
+      }, 2, 0, [DirA, DirB]);
 
       const fakeModuleInjector: any = {
         get: function(token: any) {
@@ -178,6 +178,7 @@ describe('di', () => {
           selectors: [['comp']],
           type: Comp,
           consts: 0,
+          vars: 0,
           factory: () => new Comp(directiveInject(DirB)),
           template: (ctx: any, fm: boolean) => {}
         });
@@ -188,7 +189,7 @@ describe('di', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'comp', ['dirB', '']);
         }
-      }, 1, [Comp, DirB]);
+      }, 1, 0, [Comp, DirB]);
 
       new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'Comp (dep: DirB)']);
@@ -214,17 +215,19 @@ describe('di', () => {
         if (rf & RenderFlags.Create) {
           container(0);
         }
-        containerRefreshStart(0);
-        {
-          for (let i = 0; i < 3; i++) {
-            if (embeddedViewStart(0, 1)) {
-              element(0, 'div', ['dirA', '', 'dirB', '']);
+        if (rf & RenderFlags.Update) {
+          containerRefreshStart(0);
+          {
+            for (let i = 0; i < 3; i++) {
+              if (embeddedViewStart(0, 1, 0)) {
+                element(0, 'div', ['dirA', '', 'dirB', '']);
+              }
+              embeddedViewEnd();
             }
-            embeddedViewEnd();
           }
+          containerRefreshEnd();
         }
-        containerRefreshEnd();
-      }, 1, [DirA, DirB]);
+      }, 1, 0, [DirA, DirB]);
 
       new ComponentFixture(App);
       expect(log).toEqual(
@@ -273,7 +276,7 @@ describe('di', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['dirA', '', 'dirB', '', 'dirC', '']);
         }
-      }, 1, [DirA, DirB, DirC]);
+      }, 1, 0, [DirA, DirB, DirC]);
 
       new ComponentFixture(App);
       expect(log).toEqual(['DirA', 'DirC', 'DirB (deps: DirA and DirC)']);
@@ -287,6 +290,7 @@ describe('di', () => {
           selectors: [['comp']],
           type: Comp,
           consts: 0,
+          vars: 0,
           factory: () => new Comp(directiveInject(DirD)),
           template: (ctx: any, fm: boolean) => {}
         });
@@ -333,7 +337,7 @@ describe('di', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'comp', ['dirA', '', 'dirB', '', 'dirC', '', 'dirD', '']);
         }
-      }, 1, [Comp, DirA, DirB, DirC, DirD]);
+      }, 1, 0, [Comp, DirA, DirB, DirC, DirD]);
 
       new ComponentFixture(App);
       expect(log).toEqual(
@@ -361,6 +365,7 @@ describe('di', () => {
           type: App,
           factory: () => new App(),
           consts: 1,
+          vars: 0,
           /** <div dirA dirB dirC></div> */
           template: (rf: RenderFlags, ctx: any) => {
             if (rf & RenderFlags.Create) {
@@ -410,14 +415,14 @@ describe('di', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['dirA', '', 'dirB', '']);
         }
-      }, 1, [DirA, DirB]);
+      }, 1, 0, [DirA, DirB]);
 
       /** <parent dirB></parent> */
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           element(0, 'parent', ['dirB', '']);
         }
-      }, 1, [Parent, DirB]);
+      }, 1, 0, [Parent, DirB]);
 
       new ComponentFixture(App);
       expect(log).toEqual(['DirB', 'DirB', 'DirA (dep: DirB - 2)']);
@@ -436,6 +441,7 @@ describe('di', () => {
           type: MyComponent,
           selectors: [['my-component']],
           consts: 1,
+          vars: 1,
           factory: () => new MyComponent(directiveInject(MyService)),
           template: function(rf: RenderFlags, ctx: MyComponent) {
             if (rf & RenderFlags.Create) {
@@ -479,7 +485,7 @@ describe('di', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['dir', '']);
         }
-      }, 1, [Dir, OtherDir]);
+      }, 1, 0, [Dir, OtherDir]);
 
       expect(() => new ComponentFixture(App)).toThrowError(/Injector: NOT_FOUND \[OtherDir\]/);
     });
@@ -514,7 +520,7 @@ describe('di', () => {
           element(0, 'div', ['other', '']);
           element(1, 'div', ['dir', '']);
         }
-      }, 2, [Dir, OtherDir]);
+      }, 2, 0, [Dir, OtherDir]);
 
       expect(() => new ComponentFixture(App)).toThrowError(/Injector: NOT_FOUND \[OtherDir\]/);
     });
@@ -548,7 +554,7 @@ describe('di', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['dirA', '', 'dirB', '']);
         }
-      }, 1, [DirA, DirB]);
+      }, 1, 0, [DirA, DirB]);
 
       expect(() => new ComponentFixture(App)).toThrowError(/Cannot instantiate cyclic dependency!/);
     });
@@ -570,7 +576,7 @@ describe('di', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['dir', '']);
         }
-      }, 1, [Dir]);
+      }, 1, 0, [Dir]);
 
       expect(() => new ComponentFixture(App)).toThrowError(/Cannot instantiate cyclic dependency!/);
     });
@@ -608,7 +614,7 @@ describe('di', () => {
           if (rf & RenderFlags.Create) {
             element(0, 'div', ['dirA', '']);
           }
-        }, 1, [DirA, DirB]);
+        }, 1, 0, [DirA, DirB]);
 
         expect(() => {
           new ComponentFixture(App);
@@ -638,7 +644,7 @@ describe('di', () => {
             element(0, 'div', ['dirB', '']);
             element(1, 'div', ['dirA', '']);
           }
-        }, 2, [DirA, DirB]);
+        }, 2, 0, [DirA, DirB]);
 
         expect(() => {
           new ComponentFixture(App);
@@ -664,14 +670,14 @@ describe('di', () => {
           if (rf & RenderFlags.Create) {
             element(0, 'div', ['dirA', '', 'dirB', 'self']);
           }
-        }, 1, [DirA, DirB]);
+        }, 1, 0, [DirA, DirB]);
 
         /* <comp dirB="parent"></comp> */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             element(0, 'comp', ['dirB', 'parent']);
           }
-        }, 1, [Comp, DirB]);
+        }, 1, 0, [Comp, DirB]);
 
         new ComponentFixture(App);
         expect(dirA !.dirB.value).toEqual('parent');
@@ -701,7 +707,7 @@ describe('di', () => {
             element(1, 'div', ['dirA', '']);
             elementEnd();
           }
-        }, 2, [DirA, DirB]);
+        }, 2, 0, [DirA, DirB]);
 
         expect(() => { new ComponentFixture(App); }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
       });
@@ -732,7 +738,7 @@ describe('di', () => {
             element(1, 'div', ['dirA', '', 'dirC', '']);
             elementEnd();
           }
-        }, 2, [DirA, DirB, DirC]);
+        }, 2, 0, [DirA, DirB, DirC]);
 
         expect(() => {
           (DirA as any)['__NG_ELEMENT_ID__'] = 1;
@@ -759,14 +765,14 @@ describe('di', () => {
           if (rf & RenderFlags.Create) {
             element(0, 'div', ['dirA', '']);
           }
-        }, 1, [DirA, DirB]);
+        }, 1, 0, [DirA, DirB]);
 
         /* <comp dirB></comp> */
         const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             element(0, 'comp', ['dirB', '']);
           }
-        }, 1, [Comp, DirB]);
+        }, 1, 0, [Comp, DirB]);
 
         expect(() => { new ComponentFixture(App); }).toThrowError(/Injector: NOT_FOUND \[DirB\]/);
 
@@ -822,7 +828,7 @@ describe('di', () => {
           const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp2.value, '-', tmp1.value, ''));
         }
-      }, 4, [Directive, DirectiveSameInstance]);
+      }, 4, 1, [Directive, DirectiveSameInstance]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<div dir="" dirsame="">ElementRef-true</div>');
@@ -866,7 +872,7 @@ describe('di', () => {
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           template(0, function() {
-          }, 0, undefined, ['dir', '', 'dirSame', ''], ['dir', 'dir', 'dirSame', 'dirSame']);
+          }, 0, 1, undefined, ['dir', '', 'dirSame', ''], ['dir', 'dir', 'dirSame', 'dirSame']);
           text(3);
         }
         if (rf & RenderFlags.Update) {
@@ -874,7 +880,7 @@ describe('di', () => {
           const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
         }
-      }, 4, [Directive, DirectiveSameInstance]);
+      }, 4, 1, [Directive, DirectiveSameInstance]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('TemplateRef-true');
@@ -927,7 +933,7 @@ describe('di', () => {
           const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
         }
-      }, 4, [Directive, DirectiveSameInstance]);
+      }, 4, 1, [Directive, DirectiveSameInstance]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<div dir="" dirsame="">ViewContainerRef-true</div>');
@@ -947,6 +953,7 @@ describe('di', () => {
         selectors: [['my-comp']],
         factory: () => comp = new MyComp(injectChangeDetectorRef()),
         consts: 1,
+        vars: 0,
         template: function(rf: RenderFlags, ctx: MyComp) {
           if (rf & RenderFlags.Create) {
             projectionDef();
@@ -1015,7 +1022,7 @@ describe('di', () => {
           const tmp = reference(1) as any;
           textBinding(2, bind(tmp.value));
         }
-      }, 3, directives);
+      }, 3, 1, directives);
 
       const app = renderComponent(MyApp);
       // ChangeDetectorRef is the token, ViewRef has historically been the constructor
@@ -1035,6 +1042,7 @@ describe('di', () => {
           type: MyApp,
           selectors: [['my-app']],
           consts: 3,
+          vars: 1,
           factory: () => new MyApp(injectChangeDetectorRef()),
           /** <div dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
           template: function(rf: RenderFlags, ctx: any) {
@@ -1068,6 +1076,7 @@ describe('di', () => {
           type: MyApp,
           selectors: [['my-app']],
           consts: 4,
+          vars: 1,
           factory: () => new MyApp(injectChangeDetectorRef()),
           /**
            * <my-comp>
@@ -1111,6 +1120,7 @@ describe('di', () => {
           selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
           consts: 1,
+          vars: 0,
           /**
            * % if (showing) {
            *   <div dir dirSameInstance #dir="dir"> {{ dir.value }} </div>
@@ -1124,7 +1134,7 @@ describe('di', () => {
               containerRefreshStart(0);
               {
                 if (ctx.showing) {
-                  let rf1 = embeddedViewStart(0, 3);
+                  let rf1 = embeddedViewStart(0, 3, 1);
                   if (rf1 & RenderFlags.Create) {
                     elementStart(0, 'div', ['dir', '', 'dirSame', ''], ['dir', 'dir']);
                     { text(2); }
@@ -1175,14 +1185,11 @@ describe('di', () => {
           selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
           consts: 1,
+          vars: 0,
           /** <div *myIf="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
           template: function(rf: RenderFlags, ctx: MyApp) {
             if (rf & RenderFlags.Create) {
-              template(0, C1, 3, null, ['myIf', 'showing']);
-            }
-            if (rf & RenderFlags.Update) {
-              containerRefreshStart(0);
-              containerRefreshEnd();
+              template(0, C1, 3, 1, null, ['myIf', 'showing']);
             }
           },
           directives: directives
@@ -1369,7 +1376,7 @@ describe('di', () => {
         if (rf & RenderFlags.Update) {
           containerRefreshStart(1);
           {
-            let rf1 = embeddedViewStart(0, 4);
+            let rf1 = embeddedViewStart(0, 4, 1);
             if (rf1 & RenderFlags.Create) {
               elementStart(
                   0, 'span', ['childDir', '', 'child2Dir', ''],
@@ -1386,7 +1393,7 @@ describe('di', () => {
           }
           containerRefreshEnd();
         }
-      }, 2, [ChildDirective, Child2Directive, ParentDirective]);
+      }, 2, 0, [ChildDirective, Child2Directive, ParentDirective]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html)
@@ -1401,7 +1408,7 @@ describe('di', () => {
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
       const contentView = createLViewData(
-          null !, createTView(-1, null, 0, null, null, null), null, LViewFlags.CheckAlways);
+          null !, createTView(-1, null, 0, 0, null, null, null), null, LViewFlags.CheckAlways);
       const oldView = enterView(contentView, null !);
       try {
         const parent = createLNode(0, TNodeType.Element, null, null, null, null);

@@ -27,6 +27,7 @@ describe('i18n', () => {
         selectors: [['my-app']],
         factory: () => new MyApp(),
         consts: 2,
+        vars: 0,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'div');
@@ -53,6 +54,7 @@ describe('i18n', () => {
         selectors: [['my-app']],
         factory: () => new MyApp(),
         consts: 2,
+        vars: 1,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'div');
@@ -81,6 +83,7 @@ describe('i18n', () => {
         selectors: [['my-app']],
         factory: () => new MyApp(),
         consts: 2,
+        vars: 1,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'div');
@@ -125,10 +128,11 @@ describe('i18n', () => {
         factory: () => new MyApp(),
         selectors: [['my-app']],
         consts: 2,
+        vars: 1,
         template: (rf: $RenderFlags$, myApp: $MyApp$) => {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'ul');
-            $r3$.ɵtemplate(1, liTemplate, 2, null, ['ngForOf', '']);
+            $r3$.ɵtemplate(1, liTemplate, 2, 1, null, ['ngForOf', '']);
             $r3$.ɵelementEnd();
             $r3$.ɵi18nApply(1, $i18n_1$[0]);
           }

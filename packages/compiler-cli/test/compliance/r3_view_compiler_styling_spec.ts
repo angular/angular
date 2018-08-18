@@ -95,7 +95,8 @@ describe('compiler compliance: styling', () => {
               },
               features: [$r3$.ɵPublicFeature],
               consts: 1,
-              template: function MyComponent_Template(rf, $ctx$) {
+              vars: 1,
+              template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵelementStart(0, "div");
                   $r3$.ɵelementStyling(null, _c0, $r3$.ɵzss);
@@ -153,7 +154,8 @@ describe('compiler compliance: styling', () => {
             },
             features: [$r3$.ɵPublicFeature],
             consts: 1,
-            template: function MyComponent_Template(rf, ctx) {
+            vars: 0,
+            template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "div");
                 $r3$.ɵelementStyling(null, _c0, $r3$.ɵzss);
@@ -249,7 +251,8 @@ describe('compiler compliance: styling', () => {
               },
               features: [$r3$.ɵPublicFeature],
               consts: 1,
-              template: function MyComponent_Template(rf, $ctx$) {
+              vars: 1,
+              template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵelementStart(0, "div");
                   $r3$.ɵelementStyling(_c0);
@@ -304,7 +307,8 @@ describe('compiler compliance: styling', () => {
               },
               features: [$r3$.ɵPublicFeature],
               consts: 1,
-              template: function MyComponent_Template(rf, $ctx$) {
+              vars: 2,
+              template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵelementStart(0, "div");
                   $r3$.ɵelementStyling(_c0, _c1);

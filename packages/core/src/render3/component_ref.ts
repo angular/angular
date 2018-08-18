@@ -121,7 +121,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     // Create the root view. Uses empty TView and ContentTemplate.
     const rootView: LViewData = createLViewData(
         rendererFactory.createRenderer(hostNode, this.componentDef),
-        createTView(-1, null, 1, null, null, null), rootContext,
+        createTView(-1, null, 1, 0, null, null, null), rootContext,
         this.componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
     rootView[INJECTOR] = ngModule && ngModule.injector || null;
 

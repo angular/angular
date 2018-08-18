@@ -45,7 +45,7 @@ describe('pipe', () => {
     }
 
     person.init('bob', null);
-    expect(renderToHtml(Template, person, 2, null, pipes)).toEqual('bob state:0');
+    expect(renderToHtml(Template, person, 2, 3, null, pipes)).toEqual('bob state:0');
   });
 
   it('should throw if pipe is not found', () => {
@@ -57,7 +57,7 @@ describe('pipe', () => {
       if (rf & RenderFlags.Update) {
         textBinding(0, interpolation1('', pipeBind1(1, 1, ctx.value), ''));
       }
-    }, 2, [], pipes);
+    }, 2, 3, [], pipes);
 
     expect(() => {
       const fixture = new ComponentFixture(App);
@@ -103,7 +103,7 @@ describe('pipe', () => {
         directive = loadDirective(0);
       }
     }
-    renderToHtml(Template, 'a', 2, [MyDir], [DoublePipe]);
+    renderToHtml(Template, 'a', 2, 3, [MyDir], [DoublePipe]);
     expect(directive !.dirProp).toEqual('aa');
   });
 
@@ -120,7 +120,7 @@ describe('pipe', () => {
     }
 
     person.init('value', new Address('two'));
-    expect(renderToHtml(Template, person, 2, null, pipes)).toEqual('value one two default');
+    expect(renderToHtml(Template, person, 2, 5, null, pipes)).toEqual('value one two default');
   });
 
   it('should support calling pipes with different number of arguments', () => {
@@ -138,7 +138,7 @@ describe('pipe', () => {
     }
 
     person.init('value', null);
-    expect(renderToHtml(Template, person, 3, null, pipes)).toEqual('value a b default 0 1 2');
+    expect(renderToHtml(Template, person, 3, 10, null, pipes)).toEqual('value a b default 0 1 2');
   });
 
   it('should do nothing when no change', () => {
@@ -164,11 +164,11 @@ describe('pipe', () => {
       }
     }
 
-    renderToHtml(Template, person, 2, null, [IdentityPipe], rendererFactory2);
+    renderToHtml(Template, person, 2, 3, null, [IdentityPipe], rendererFactory2);
     expect(renderLog.log).toEqual(['someProp=Megatron']);
 
     renderLog.clear();
-    renderToHtml(Template, person, 2, null, pipes, rendererFactory2);
+    renderToHtml(Template, person, 2, 3, null, pipes, rendererFactory2);
     expect(renderLog.log).toEqual([]);
   });
 
@@ -186,18 +186,18 @@ describe('pipe', () => {
 
       // change from undefined -> null
       person.name = null;
-      expect(renderToHtml(Template, person, 2, null, pipes)).toEqual('null state:0');
-      expect(renderToHtml(Template, person, 2, null, pipes)).toEqual('null state:0');
+      expect(renderToHtml(Template, person, 2, 3, null, pipes)).toEqual('null state:0');
+      expect(renderToHtml(Template, person, 2, 3, null, pipes)).toEqual('null state:0');
 
       // change from null -> some value
       person.name = 'bob';
-      expect(renderToHtml(Template, person, 2, null, pipes)).toEqual('bob state:1');
-      expect(renderToHtml(Template, person, 2, null, pipes)).toEqual('bob state:1');
+      expect(renderToHtml(Template, person, 2, 3, null, pipes)).toEqual('bob state:1');
+      expect(renderToHtml(Template, person, 2, 3, null, pipes)).toEqual('bob state:1');
 
       // change from some value -> some other value
       person.name = 'bart';
-      expect(renderToHtml(Template, person, 2, null, pipes)).toEqual('bart state:2');
-      expect(renderToHtml(Template, person, 2, null, pipes)).toEqual('bart state:2');
+      expect(renderToHtml(Template, person, 2, 3, null, pipes)).toEqual('bart state:2');
+      expect(renderToHtml(Template, person, 2, 3, null, pipes)).toEqual('bart state:2');
     });
   });
 
@@ -214,8 +214,8 @@ describe('pipe', () => {
       }
 
       person.name = 'bob';
-      expect(renderToHtml(Template, person, 2, null, pipes)).toEqual('bob state:0');
-      expect(renderToHtml(Template, person, 2, null, pipes)).toEqual('bob state:1');
+      expect(renderToHtml(Template, person, 2, 3, null, pipes)).toEqual('bob state:0');
+      expect(renderToHtml(Template, person, 2, 3, null, pipes)).toEqual('bob state:1');
     });
 
     it('should not cache impure pipes', () => {
@@ -236,7 +236,7 @@ describe('pipe', () => {
           containerRefreshStart(4);
           {
             for (let i of [1, 2]) {
-              let rf1 = embeddedViewStart(1, 2);
+              let rf1 = embeddedViewStart(1, 2, 0);
               {
                 if (rf1 & RenderFlags.Create) {
                   elementStart(0, 'div');
@@ -256,7 +256,7 @@ describe('pipe', () => {
       }
 
       const pipeInstances: CountingImpurePipe[] = [];
-      renderToHtml(Template, {}, 5, null, pipes, rendererFactory2);
+      renderToHtml(Template, {}, 5, 6, null, pipes, rendererFactory2);
       expect(pipeInstances.length).toEqual(4);
       expect(pipeInstances[0]).toBeAnInstanceOf(CountingImpurePipe);
       expect(pipeInstances[1]).toBeAnInstanceOf(CountingImpurePipe);
@@ -291,7 +291,7 @@ describe('pipe', () => {
           containerRefreshStart(0);
           {
             if (person.age > 20) {
-              let rf1 = embeddedViewStart(1, 2);
+              let rf1 = embeddedViewStart(1, 2, 3);
               {
                 if (rf1 & RenderFlags.Create) {
                   text(0);
@@ -310,20 +310,20 @@ describe('pipe', () => {
       const pipes = [PipeWithOnDestroy];
 
       person.age = 25;
-      renderToHtml(Template, person, 1, null, pipes);
+      renderToHtml(Template, person, 1, 0, null, pipes);
 
       person.age = 15;
-      renderToHtml(Template, person, 1, null, pipes);
+      renderToHtml(Template, person, 1, 0, null, pipes);
       expect(log).toEqual(['pipeWithOnDestroy - ngOnDestroy']);
 
       log = [];
       person.age = 30;
-      renderToHtml(Template, person, 1, null, pipes);
+      renderToHtml(Template, person, 1, 0, null, pipes);
       expect(log).toEqual([]);
 
       log = [];
       person.age = 10;
-      renderToHtml(Template, person, 1, null, pipes);
+      renderToHtml(Template, person, 1, 0, null, pipes);
       expect(log).toEqual(['pipeWithOnDestroy - ngOnDestroy']);
     });
   });

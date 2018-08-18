@@ -63,6 +63,14 @@ export function defineComponent<T>(componentDefinition: {
   consts: number;
 
   /**
+   * The number of bindings in this component template (including pure fn bindings).
+   *
+   * Used to calculate the length of the component's LViewData array, so we
+   * can pre-fill the array and set the host binding start index.
+   */
+  vars: number;
+
+  /**
    * Static attributes to set on host element.
    *
    * Even indices: attribute name
@@ -255,6 +263,7 @@ export function defineComponent<T>(componentDefinition: {
     type: type,
     diPublic: null,
     consts: componentDefinition.consts,
+    vars: componentDefinition.vars,
     factory: componentDefinition.factory,
     template: componentDefinition.template || null !,
     hostBindings: componentDefinition.hostBindings || null,
