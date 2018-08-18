@@ -17,13 +17,6 @@ if $CI; then
   # payload sizes on CI.
   yarn add --silent -D firebase-tools@3.12.0
   source ${basedir}/scripts/ci/payload-size.sh
-
-  # NB: we don't run build-packages-dist.sh because we expect that it was done
-  # by an earlier job in the CircleCI workflow.
-else
-  # Not on CircleCI so let's build the packages-dist directory.
-  # This should be fast on incremental re-build.
-  ${basedir}/scripts/build-packages-dist.sh
 fi
 
 # Workaround https://github.com/yarnpkg/yarn/issues/2165
@@ -36,29 +29,20 @@ rm_cache
 mkdir $cache
 trap rm_cache EXIT
 
-for testDir in $(ls | grep -v node_modules) ; do
+for testDir in $(ls | grep -v node_modules); do
   [[ -d "$testDir" ]] || continue
-  echo "#################################"
-  echo "Running integration test $testDir"
-  echo "#################################"
-  (
-    cd $testDir
-    rm -rf dist
 
-    yarn install --cache-folder ../$cache
-    yarn test || exit 1
-    # Track payload size for cli-hello-world and hello_world__closure and the render3 tests
-    if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__closure ]] || [[ $testDir == hello_world__render3__closure ]] || [[ $testDir == hello_world__render3__rollup ]] || [[ $testDir == hello_world__render3__cli ]]; then
-      if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__render3__cli ]]; then
-        yarn build
-      fi
-      #if $CI; then
-      #  trackPayloadSize "$testDir" "dist/*.js" true false "${basedir}/integration/_payload-limits.json"
-      #fi
+  # Track payload size for cli-hello-world and hello_world__closure and the render3 tests
+  if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__closure ]] || [[ $testDir == hello_world__render3__closure ]] || [[ $testDir == hello_world__render3__rollup ]] || [[ $testDir == hello_world__render3__cli ]]; then
+    if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__render3__cli ]]; then
+      doBuild='--build'
     fi
-    # remove the temporary node modules directory to keep the source folder clean.
-    rm -rf node_modules
-  )
+    #if $CI; then
+      # doTrack='--track'
+    #fi
+  fi
+
+  ./run_test.sh ${doBuild-} ${doTrack-} --cache $cache $testDir
 done
 
 #if $CI; then
