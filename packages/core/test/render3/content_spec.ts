@@ -42,7 +42,7 @@ describe('content projection', () => {
         { text(1, 'content'); }
         elementEnd();
       }
-    }, 2, [Child]);
+    }, 2, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>content</div></child>');
@@ -64,7 +64,7 @@ describe('content projection', () => {
         { text(1, 'content'); }
         elementEnd();
       }
-    }, 2, [Child]);
+    }, 2, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child>content</child>');
@@ -98,7 +98,7 @@ describe('content projection', () => {
         }
         elementEnd();
       }
-    }, 5, [Child]);
+    }, 5, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child>before<div>content</div>after</child>');
@@ -123,7 +123,7 @@ describe('content projection', () => {
         { projection(1); }
         elementEnd();
       }
-    }, 2, [GrandChild]);
+    }, 2, 0, [GrandChild]);
 
     /** <child><b>Hello</b>World!</child> */
     const Parent = createComponent('parent', function(rf: RenderFlags, ctx: any) {
@@ -137,7 +137,7 @@ describe('content projection', () => {
         }
         elementEnd();
       }
-    }, 4, [Child]);
+    }, 4, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent))
@@ -173,7 +173,7 @@ describe('content projection', () => {
         { element(1, 'projected-comp'); }
         elementEnd();
       }
-    }, 2, [Child, ProjectedComp]);
+    }, 2, 0, [Child, ProjectedComp]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent))
@@ -225,7 +225,7 @@ describe('content projection', () => {
         }
         elementEnd();
       }
-    }, 5, [Child, ProjectedComp]);
+    }, 5, 0, [Child, ProjectedComp]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent))
@@ -267,7 +267,7 @@ describe('content projection', () => {
         containerRefreshStart(2);
         {
           if (ctx.value) {
-            let rf0 = embeddedViewStart(0, 1);
+            let rf0 = embeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
               text(0, 'content');
             }
@@ -276,7 +276,7 @@ describe('content projection', () => {
         }
         containerRefreshEnd();
       }
-    }, 4, [Child]);
+    }, 4, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>()</div></child>');
@@ -316,7 +316,7 @@ describe('content projection', () => {
         containerRefreshStart(1);
         {
           if (ctx.value) {
-            let rf0 = embeddedViewStart(0, 1);
+            let rf0 = embeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
               text(0, 'content');
             }
@@ -325,7 +325,7 @@ describe('content projection', () => {
         }
         containerRefreshEnd();
       }
-    }, 2, [Child]);
+    }, 2, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child></child>');
@@ -375,13 +375,13 @@ describe('content projection', () => {
         containerRefreshStart(2);
         {
           if (ctx.value) {
-            let rf0 = embeddedViewStart(0, 1);
+            let rf0 = embeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
               text(0, 'content');
             }
             embeddedViewEnd();
           } else {
-            if (embeddedViewStart(1, 1)) {
+            if (embeddedViewStart(1, 1, 0)) {
               text(0, 'else');
             }
             embeddedViewEnd();
@@ -389,7 +389,7 @@ describe('content projection', () => {
         }
         containerRefreshEnd();
       }
-    }, 4, [Child]);
+    }, 4, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>(else)</div></child>');
@@ -424,7 +424,7 @@ describe('content projection', () => {
         containerRefreshStart(1);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 2);
+            let rf0 = embeddedViewStart(0, 2, 0);
             if (rf0 & RenderFlags.Create) {
               elementStart(0, 'span');
               projection(1);
@@ -435,7 +435,7 @@ describe('content projection', () => {
         }
         containerRefreshEnd();
       }
-    });
+    }, 2, 0);
 
     /**
      * <child>
@@ -457,7 +457,7 @@ describe('content projection', () => {
         // testing
         childCmptInstance = loadDirective(0);
       }
-    }, 4, [Child]);
+    }, 4, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div><span><div>text</div>content</span></div></child>');
@@ -489,7 +489,7 @@ describe('content projection', () => {
         containerRefreshStart(1);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 2);
+            let rf0 = embeddedViewStart(0, 2, 0);
             if (rf0 & RenderFlags.Create) {
               projection(0);
               text(1, 'text');
@@ -509,7 +509,7 @@ describe('content projection', () => {
         // testing
         childCmptInstance = loadDirective(0);
       }
-    }, 1, [Child]);
+    }, 1, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div>text</div></child>');
@@ -541,7 +541,7 @@ describe('content projection', () => {
            containerRefreshStart(1);
            {
              if (!ctx.skipContent) {
-               let rf0 = embeddedViewStart(0, 1);
+               let rf0 = embeddedViewStart(0, 1, 0);
                if (rf0 & RenderFlags.Create) {
                  projection(0);
                }
@@ -564,7 +564,7 @@ describe('content projection', () => {
            }
            elementEnd();
          }
-       }, 2, [Child]);
+       }, 2, 0, [Child]);
 
        const parent = renderComponent(Parent);
        expect(toHtml(parent)).toEqual('<child><div>content</div></child>');
@@ -599,7 +599,7 @@ describe('content projection', () => {
         containerRefreshStart(2);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 1);
+            let rf0 = embeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
               projection(0);
             }
@@ -633,7 +633,7 @@ describe('content projection', () => {
         containerRefreshStart(2);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 1);
+            let rf0 = embeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
               text(0, 'content');
             }
@@ -642,7 +642,7 @@ describe('content projection', () => {
         }
         containerRefreshEnd();
       }
-    }, 4, [Child]);
+    }, 4, 0, [Child]);
 
     const fixture = new ComponentFixture(Parent);
     expect(fixture.html)
@@ -675,7 +675,7 @@ describe('content projection', () => {
         containerRefreshStart(1);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 1);
+            let rf0 = embeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
               projection(0);
             }
@@ -710,7 +710,7 @@ describe('content projection', () => {
         containerRefreshStart(2);
         {
           if (!ctx.skipContent) {
-            let rf0 = embeddedViewStart(0, 1);
+            let rf0 = embeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
               projection(0);
             }
@@ -719,7 +719,7 @@ describe('content projection', () => {
         }
         containerRefreshEnd();
       }
-    }, 4, [Child]);
+    }, 4, 0, [Child]);
 
     let parent: any;
     /** <parent><p>text</p></parent> */
@@ -735,7 +735,7 @@ describe('content projection', () => {
         // testing
         parent = loadDirective(0);
       }
-    }, 3, [Parent]);
+    }, 3, 0, [Parent]);
 
     const fixture = new ComponentFixture(App);
     expect(fixture.html)
@@ -769,7 +769,7 @@ describe('content projection', () => {
            containerRefreshStart(1);
            {
              if (!ctx.skipContent) {
-               let rf0 = embeddedViewStart(0, 3);
+               let rf0 = embeddedViewStart(0, 3, 0);
                if (rf0 & RenderFlags.Create) {
                  text(0, 'before-');
                  projection(1);
@@ -794,7 +794,7 @@ describe('content projection', () => {
            }
            elementEnd();
          }
-       }, 2, [Child]);
+       }, 2, 0, [Child]);
 
        const parent = renderComponent(Parent);
        expect(toHtml(parent)).toEqual('<child><div>before-content-after</div></child>');
@@ -816,14 +816,14 @@ describe('content projection', () => {
       if (rf & RenderFlags.Create) {
         projectionDef();
         text(0, 'Before-');
-        template(1, IfTemplate, 1, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        template(1, IfTemplate, 1, 0, '', [AttributeMarker.SelectOnly, 'ngIf']);
         text(2, '-After');
       }
       if (rf & RenderFlags.Update) {
         elementProperty(1, 'ngIf', bind(ctx.showing));
       }
 
-    }, 3, [NgIf]);
+    }, 3, 1, [NgIf]);
 
     function IfTemplate(rf1: RenderFlags, ctx: any) {
       if (rf1 & RenderFlags.Create) {
@@ -853,7 +853,7 @@ describe('content projection', () => {
         // testing
         child = loadDirective(0);
       }
-    }, 4, [Child]);
+    }, 4, 0, [Child]);
 
     const fixture = new ComponentFixture(App);
     child !.showing = true;
@@ -881,14 +881,14 @@ describe('content projection', () => {
       if (rf & RenderFlags.Create) {
         projectionDef();
         text(0, 'Before-');
-        template(1, IfTemplate, 1, '', [AttributeMarker.SelectOnly, 'ngIf']);
+        template(1, IfTemplate, 1, 0, '', [AttributeMarker.SelectOnly, 'ngIf']);
         text(2, '-After');
       }
       if (rf & RenderFlags.Update) {
         elementProperty(1, 'ngIf', bind(ctx.showing));
       }
 
-    }, 3, [NgIf]);
+    }, 3, 1, [NgIf]);
 
     function IfTemplate(rf: RenderFlags, ctx: any) {
       if (rf & RenderFlags.Create) {
@@ -918,7 +918,7 @@ describe('content projection', () => {
         // testing
         child = loadDirective(0);
       }
-    }, 4, [Child]);
+    }, 4, 0, [Child]);
 
     const fixture = new ComponentFixture(App);
     child !.showing = true;
@@ -960,7 +960,7 @@ describe('content projection', () => {
         { text(1, 'content'); }
         elementEnd();
       }
-    }, 2, [Child]);
+    }, 2, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><div></div><span>content</span></child>');
@@ -997,7 +997,7 @@ describe('content projection', () => {
         containerRefreshStart(2);
         {
           if (ctx.show) {
-            let rf0 = embeddedViewStart(0, 1);
+            let rf0 = embeddedViewStart(0, 1, 0);
             if (rf0 & RenderFlags.Create) {
               projection(0);
             }
@@ -1020,7 +1020,7 @@ describe('content projection', () => {
         }
         elementEnd();
       }
-    }, 2, [Child]);
+    }, 2, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child>content<div></div></child>');
@@ -1073,7 +1073,7 @@ describe('content projection', () => {
         }
         elementEnd();
       }
-    }, 10, [ProjectionComp]);
+    }, 10, 0, [ProjectionComp]);
 
     const fixture = new ComponentFixture(AppComp);
     fixture.update();
@@ -1134,7 +1134,7 @@ describe('content projection', () => {
         }
         elementEnd();
       }
-    }, 11, [ProjectionComp]);
+    }, 11, 0, [ProjectionComp]);
 
     /**
      * <parent-comp>
@@ -1153,7 +1153,7 @@ describe('content projection', () => {
         { text(3, '**DEF**'); }
         elementEnd();
       }
-    }, 4, [ProjectionParent]);
+    }, 4, 0, [ProjectionParent]);
 
     const fixture = new ComponentFixture(AppComp);
     fixture.update();
@@ -1198,7 +1198,7 @@ describe('content projection', () => {
         }
         elementEnd();
       }
-    }, 4, [Child]);
+    }, 4, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child>content</child>');
@@ -1224,7 +1224,7 @@ describe('content projection', () => {
         { projection(1); }
         elementEnd();
       }
-    }, 2, [GrandChild]);
+    }, 2, 0, [GrandChild]);
 
     `<child>
       <ng-container>
@@ -1247,7 +1247,7 @@ describe('content projection', () => {
         }
         elementEnd();
       }
-    }, 4, [Child]);
+    }, 4, 0, [Child]);
 
     const parent = renderComponent(Parent);
     expect(toHtml(parent)).toEqual('<child><grand-child>content</grand-child></child>');
@@ -1293,7 +1293,7 @@ describe('content projection', () => {
           }
           elementEnd();
         }
-      }, 5, [Child]);
+      }, 5, 0, [Child]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -1331,7 +1331,7 @@ describe('content projection', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(1, 'title', bind('Some title'));
         }
-      }, 3, [Child]);
+      }, 3, 1, [Child]);
 
       const fixture = new ComponentFixture(Parent);
       expect(fixture.html).toEqual('<child><span title="Some title">Has title</span></child>');
@@ -1379,7 +1379,7 @@ describe('content projection', () => {
           }
           elementEnd();
         }
-      }, 5, [Child]);
+      }, 5, 0, [Child]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -1428,7 +1428,7 @@ describe('content projection', () => {
           }
           elementEnd();
         }
-      }, 5, [Child]);
+      }, 5, 0, [Child]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -1473,7 +1473,7 @@ describe('content projection', () => {
           }
           elementEnd();
         }
-      }, 5, [Child]);
+      }, 5, 0, [Child]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -1518,7 +1518,7 @@ describe('content projection', () => {
           }
           elementEnd();
         }
-      }, 6, [Child]);
+      }, 6, 0, [Child]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -1564,7 +1564,7 @@ describe('content projection', () => {
           }
           elementEnd();
         }
-      }, 6, [Child]);
+      }, 6, 0, [Child]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -1610,7 +1610,7 @@ describe('content projection', () => {
           }
           elementEnd();
         }
-      }, 4, [GrandChild]);
+      }, 4, 0, [GrandChild]);
 
       /**
        * <child>
@@ -1629,7 +1629,7 @@ describe('content projection', () => {
           }
           elementEnd();
         }
-      }, 3, [Child]);
+      }, 3, 0, [Child]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent))
@@ -1673,7 +1673,7 @@ describe('content projection', () => {
           }
           elementEnd();
         }
-      }, 4, [Card]);
+      }, 4, 0, [Card]);
 
       /**
        * <card-with-title>
@@ -1686,7 +1686,7 @@ describe('content projection', () => {
           { text(1, 'content'); }
           elementEnd();
         }
-      }, 2, [CardWithTitle]);
+      }, 2, 0, [CardWithTitle]);
 
       const app = renderComponent(App);
       expect(toHtml(app))
@@ -1731,7 +1731,7 @@ describe('content projection', () => {
           }
           elementEnd();
         }
-      }, 4, [Card]);
+      }, 4, 0, [Card]);
 
       /**
        * <card-with-title>
@@ -1744,7 +1744,7 @@ describe('content projection', () => {
           { text(1, 'content'); }
           elementEnd();
         }
-      }, 2, [CardWithTitle]);
+      }, 2, 0, [CardWithTitle]);
 
       const app = renderComponent(App);
       expect(toHtml(app))
@@ -1783,7 +1783,7 @@ describe('content projection', () => {
           }
           elementEnd();
         }
-      }, 5, [Child]);
+      }, 5, 0, [Child]);
 
       const parent = renderComponent(Parent);
       expect(toHtml(parent)).toEqual('<child><div>should project</div></child>');
@@ -1821,13 +1821,13 @@ describe('content projection', () => {
       const Parent = createComponent('parent', function(rf: RenderFlags, ctx: {value: any}) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'child');
-          { template(1, IfTemplate, 2, 'div', [AttributeMarker.SelectOnly, 'ngIf']); }
+          { template(1, IfTemplate, 2, 0, 'div', [AttributeMarker.SelectOnly, 'ngIf']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
           elementProperty(1, 'ngIf', bind(ctx.value));
         }
-      }, 2, [Child, NgIf]);
+      }, 2, 1, [Child, NgIf]);
 
 
       const fixture = new ComponentFixture(Parent);

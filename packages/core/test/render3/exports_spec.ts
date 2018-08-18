@@ -24,9 +24,9 @@ describe('exports', () => {
       }
       if (rf & RenderFlags.Update) {
         const tmp = reference(1) as any;
-        textBinding(2, tmp.value);
+        textBinding(2, bind(tmp.value));
       }
-    }, 3);
+    }, 3, 1);
 
     const fixture = new ComponentFixture(App);
     expect(fixture.html).toEqual('<input value="one">one');
@@ -40,6 +40,7 @@ describe('exports', () => {
         type: MyComponent,
         selectors: [['comp']],
         consts: 0,
+        vars: 0,
         template: function() {},
         factory: () => new MyComponent
       });
@@ -55,7 +56,7 @@ describe('exports', () => {
         const tmp = reference(1) as any;
         textBinding(2, tmp.name);
       }
-    }, 3, [MyComponent]);
+    }, 3, 1, [MyComponent]);
 
     const fixture = new ComponentFixture(App);
     expect(fixture.html).toEqual('<comp></comp>Nancy');
@@ -71,6 +72,7 @@ describe('exports', () => {
         type: MyComponent,
         selectors: [['comp']],
         consts: 0,
+        vars: 0,
         template: function() {},
         factory: () => new MyComponent
       });
@@ -100,7 +102,7 @@ describe('exports', () => {
         const tmp = reference(1) as any;
         elementProperty(2, 'myDir', bind(tmp));
       }
-    }, 3, defs);
+    }, 3, 1, defs);
 
     const fixture = new ComponentFixture(App);
     expect(myDir !.myDir).toEqual(myComponent !);
@@ -125,9 +127,9 @@ describe('exports', () => {
       }
       if (rf & RenderFlags.Update) {
         const tmp = reference(1) as any;
-        textBinding(2, tmp.name);
+        textBinding(2, bind(tmp.name));
       }
-    }, 3, [SomeDir]);
+    }, 3, 1, [SomeDir]);
 
     const fixture = new ComponentFixture(App);
     expect(fixture.html).toEqual('<div somedir=""></div>Drew');
@@ -159,7 +161,7 @@ describe('exports', () => {
           const tmp = reference(2) as any;
           textBinding(0, bind(tmp.value));
         }
-      }, 3);
+      }, 3, 1);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('one<input value="one">');
@@ -177,7 +179,7 @@ describe('exports', () => {
           const tmp = reference(2) as any;
           elementProperty(0, 'title', bind(tmp.value));
         }
-      }, 3);
+      }, 3, 1);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<div title="one"></div><input value="one">');
@@ -194,7 +196,7 @@ describe('exports', () => {
           const tmp = reference(2) as any;
           elementAttribute(0, 'aria-label', bind(tmp.value));
         }
-      }, 3);
+      }, 3, 1);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<div aria-label="one"></div><input value="one">');
@@ -232,6 +234,7 @@ describe('exports', () => {
           type: MyComponent,
           selectors: [['comp']],
           consts: 0,
+          vars: 0,
           template: function(rf: RenderFlags, ctx: MyComponent) {},
           factory: () => new MyComponent
         });
@@ -261,7 +264,7 @@ describe('exports', () => {
           const tmp = reference(2) as any;
           elementProperty(0, 'myDir', bind(tmp));
         }
-      }, 3, [MyComponent, MyDir]);
+      }, 3, 1, [MyComponent, MyDir]);
 
       const fixture = new ComponentFixture(App);
       expect(myDir !.myDir).toEqual(myComponent !);
@@ -279,6 +282,7 @@ describe('exports', () => {
           type: MyComponent,
           selectors: [['comp']],
           consts: 0,
+          vars: 0,
           template: function() {},
           factory: () => new MyComponent
         });
@@ -299,7 +303,7 @@ describe('exports', () => {
           textBinding(0, bind(tmp2.value));
           textBinding(1, bind(tmp1.name));
         }
-      }, 6, [MyComponent]);
+      }, 6, 2, [MyComponent]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('oneNancy<comp></comp><input value="one">');
@@ -316,7 +320,7 @@ describe('exports', () => {
           containerRefreshStart(1);
           {
             if (ctx.condition) {
-              let rf1 = embeddedViewStart(1, 2);
+              let rf1 = embeddedViewStart(1, 2, 1);
               {
                 if (rf1 & RenderFlags.Create) {
                   text(0);
@@ -361,12 +365,12 @@ describe('exports', () => {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'input', ['value', 'one'], ['outerInput', '']);
           elementEnd();
-          template(2, outerTemplate, 5, '', [AttributeMarker.SelectOnly, 'ngIf']);
+          template(2, outerTemplate, 5, 0, '', [AttributeMarker.SelectOnly, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(2, 'ngIf', bind(app.outer));
         }
-      }, 3, [NgIf]);
+      }, 3, 1, [NgIf]);
 
       function outerTemplate(rf: RenderFlags, outer: any) {
         if (rf & RenderFlags.Create) {
@@ -375,7 +379,7 @@ describe('exports', () => {
             text(1);
             elementStart(2, 'input', ['value', 'two'], ['innerInput', '']);
             elementEnd();
-            template(4, innerTemplate, 2, '', [AttributeMarker.SelectOnly, 'ngIf']);
+            template(4, innerTemplate, 2, 1, '', [AttributeMarker.SelectOnly, 'ngIf']);
           }
           elementEnd();
         }

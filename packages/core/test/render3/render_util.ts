@@ -60,21 +60,26 @@ export class TemplateFixture extends BaseFixture {
    */
   constructor(
       private createBlock: () => void, private updateBlock: () => void = noop, consts: number = 0,
-      directives?: DirectiveTypesOrFactory|null, pipes?: PipeTypesOrFactory|null,
-      sanitizer?: Sanitizer|null, rendererFactory?: RendererFactory3) {
+      private vars: number = 0, directives?: DirectiveTypesOrFactory|null,
+      pipes?: PipeTypesOrFactory|null, sanitizer?: Sanitizer|null,
+      rendererFactory?: RendererFactory3) {
     super();
     this._directiveDefs = toDefs(directives, extractDirectiveDef);
     this._pipeDefs = toDefs(pipes, extractPipeDef);
     this._sanitizer = sanitizer || null;
     this._rendererFactory = rendererFactory || domRendererFactory3;
-    this.hostNode = renderTemplate(this.hostElement, (rf: RenderFlags, ctx: any) => {
-      if (rf & RenderFlags.Create) {
-        this.createBlock();
-      }
-      if (rf & RenderFlags.Update) {
-        this.updateBlock();
-      }
-    }, consts, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs, sanitizer);
+    this.hostNode = renderTemplate(
+        this.hostElement,
+        (rf: RenderFlags, ctx: any) => {
+          if (rf & RenderFlags.Create) {
+            this.createBlock();
+          }
+          if (rf & RenderFlags.Update) {
+            this.updateBlock();
+          }
+        },
+        consts, vars, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs,
+        sanitizer);
   }
 
   /**
@@ -84,8 +89,8 @@ export class TemplateFixture extends BaseFixture {
    */
   update(updateBlock?: () => void): void {
     renderTemplate(
-        this.hostNode.native, updateBlock || this.updateBlock, 0, null !, this._rendererFactory,
-        this.hostNode, this._directiveDefs, this._pipeDefs, this._sanitizer);
+        this.hostNode.native, updateBlock || this.updateBlock, 0, null !, this.vars,
+        this._rendererFactory, this.hostNode, this._directiveDefs, this._pipeDefs, this._sanitizer);
   }
 }
 
@@ -170,12 +175,12 @@ export function resetDOM() {
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
 export function renderToHtml(
-    template: ComponentTemplate<any>, ctx: any, consts: number = 0,
+    template: ComponentTemplate<any>, ctx: any, consts: number = 0, vars: number = 0,
     directives?: DirectiveTypesOrFactory | null, pipes?: PipeTypesOrFactory | null,
     providedRendererFactory?: RendererFactory3 | null) {
   host = renderTemplate(
-      containerEl, template, consts, ctx, providedRendererFactory || testRendererFactory, host,
-      toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
+      containerEl, template, consts, vars, ctx, providedRendererFactory || testRendererFactory,
+      host, toDefs(directives, extractDirectiveDef), toDefs(pipes, extractPipeDef));
   return toHtml(containerEl);
 }
 
@@ -229,7 +234,7 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
 }
 
 export function createComponent(
-    name: string, template: ComponentTemplate<any>, consts: number = 0,
+    name: string, template: ComponentTemplate<any>, consts: number = 0, vars: number = 0,
     directives: DirectiveTypesOrFactory = [], pipes: PipeTypesOrFactory = [],
     viewQuery: ComponentTemplate<any>| null = null): ComponentType<any> {
   return class Component {
@@ -238,6 +243,7 @@ export function createComponent(
       type: Component,
       selectors: [[name]],
       consts: consts,
+      vars: vars,
       factory: () => new Component,
       template: template,
       viewQuery: viewQuery,

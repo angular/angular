@@ -93,6 +93,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // Number of slots to reserve for pureFunctions
   private _pureFunctionSlots = 0;
 
+  // Number of binding slots
+  private _bindingSlots = 0;
+
   constructor(
       private constantPool: ConstantPool, parentBindingScope: BindingScope, private level = 0,
       private contextName: string|null, private templateName: string|null,
@@ -175,11 +178,11 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // instructions can be generated with the correct internal const count.
     this._nestedTemplateFns.forEach(buildTemplateFn => buildTemplateFn());
 
-    // Generate all the creation mode instructions (e.g. resolve bindings in listeners)
-    const creationStatements = this._creationCodeFns.map((fn: () => o.Statement) => fn());
-
     // Generate all the update mode instructions (e.g. resolve property or text bindings)
     const updateStatements = this._updateCodeFns.map((fn: () => o.Statement) => fn());
+
+    // Generate all the creation mode instructions (e.g. resolve bindings in listeners)
+    const creationStatements = this._creationCodeFns.map((fn: () => o.Statement) => fn());
 
     // To count slots for the reserveSlots() instruction, all bindings must have been visited.
     if (this._pureFunctionSlots > 0) {
@@ -758,7 +761,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // e.g. template(1, MyComp_Template_1)
     this.creationInstruction(template.sourceSpan, R3.templateCreate, () => {
-      parameters.splice(2, 0, o.literal(templateVisitor.getSlotCount()));
+      parameters.splice(
+          2, 0, o.literal(templateVisitor.getConstCount()),
+          o.literal(templateVisitor.getVarCount()));
       return trimTrailingNulls(parameters);
     });
   }
@@ -807,7 +812,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private allocateDataSlot() { return this._dataIndex++; }
 
-  getSlotCount() { return this._dataIndex; }
+  getConstCount() { return this._dataIndex; }
+
+  getVarCount() { return this._bindingSlots + this._pureFunctionSlots; }
 
   private bindingContext() { return `${this._bindingContext++}`; }
 
@@ -838,6 +845,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   private convertPropertyBinding(implicit: o.Expression, value: AST, skipBindFn?: boolean):
       o.Expression {
+    if (!skipBindFn) this._bindingSlots++;
+
     const interpolationFn =
         value instanceof Interpolation ? interpolate : () => error('Unexpected interpolation');
 

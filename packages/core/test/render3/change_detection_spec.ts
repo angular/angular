@@ -30,6 +30,7 @@ describe('change detection', () => {
         selectors: [['my-comp']],
         factory: () => new MyComponent(),
         consts: 2,
+        vars: 1,
         template: (rf: RenderFlags, ctx: MyComponent) => {
           if (rf & RenderFlags.Create) {
             elementStart(0, 'span');
@@ -104,6 +105,7 @@ describe('change detection', () => {
         selectors: [['my-comp']],
         factory: () => comp = new MyComponent(),
         consts: 2,
+        vars: 1,
         /**
          * {{ doCheckCount }} - {{ name }}
          * <button (click)="onClick()"></button>
@@ -117,7 +119,9 @@ describe('change detection', () => {
             }
             elementEnd();
           }
-          textBinding(0, interpolation2('', ctx.doCheckCount, ' - ', ctx.name, ''));
+          if (rf & RenderFlags.Update) {
+            textBinding(0, interpolation2('', ctx.doCheckCount, ' - ', ctx.name, ''));
+          }
         },
         changeDetection: ChangeDetectionStrategy.OnPush,
         inputs: {name: 'name'}
@@ -132,6 +136,7 @@ describe('change detection', () => {
         selectors: [['my-app']],
         factory: () => new MyApp(),
         consts: 1,
+        vars: 1,
         /** <my-comp [name]="name"></my-comp> */
         template: (rf: RenderFlags, ctx: MyApp) => {
           if (rf & RenderFlags.Create) {
@@ -210,7 +215,7 @@ describe('change detection', () => {
           { listener('click', () => noop()); }
           elementEnd();
         }
-      }, 2, [MyComponent]);
+      }, 2, 0, [MyComponent]);
 
       const buttonParent = renderComponent(ButtonParent);
       expect(getRenderedText(buttonParent)).toEqual('1 - Nancy');
@@ -233,6 +238,7 @@ describe('change detection', () => {
           selectors: [['button-parent']],
           factory: () => parent = new ButtonParent(),
           consts: 2,
+          vars: 1,
           /** {{ doCheckCount }} - <my-comp></my-comp> */
           template: (rf: RenderFlags, ctx: ButtonParent) => {
             if (rf & RenderFlags.Create) {
@@ -252,7 +258,7 @@ describe('change detection', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'button-parent');
         }
-      }, 1, [ButtonParent]);
+      }, 1, 0, [ButtonParent]);
 
       const myButtonApp = renderComponent(MyButtonApp);
       expect(parent !.doCheckCount).toEqual(1);
@@ -293,6 +299,7 @@ describe('change detection', () => {
           selectors: [['my-comp']],
           factory: () => myComp = new MyComp(injectChangeDetectorRef()),
           consts: 1,
+          vars: 1,
           /** {{ name }} */
           template: (rf: RenderFlags, ctx: MyComp) => {
             if (rf & RenderFlags.Create) {
@@ -318,6 +325,7 @@ describe('change detection', () => {
           selectors: [['parent-comp']],
           factory: () => new ParentComp(injectChangeDetectorRef()),
           consts: 2,
+          vars: 1,
           /**
            * {{ doCheckCount}} -
            * <my-comp></my-comp>
@@ -405,7 +413,7 @@ describe('change detection', () => {
           if (rf & RenderFlags.Create) {
             element(0, 'my-comp', ['dir', '']);
           }
-        }, 1, [MyComp, Dir]);
+        }, 1, 0, [MyComp, Dir]);
 
         const app = renderComponent(MyApp);
         expect(getRenderedText(app)).toEqual('Nancy');
@@ -428,7 +436,7 @@ describe('change detection', () => {
           if (rf & RenderFlags.Update) {
             textBinding(1, bind(ctx.value));
           }
-        }, 2, [Dir]);
+        }, 2, 1, [Dir]);
 
         const app = renderComponent(MyApp);
         app.value = 'Frank';
@@ -452,6 +460,7 @@ describe('change detection', () => {
             selectors: [['my-app']],
             factory: () => new MyApp(injectChangeDetectorRef()),
             consts: 2,
+            vars: 1,
             /**
              * {{ name}}
              * % if (showing) {
@@ -468,7 +477,7 @@ describe('change detection', () => {
                 containerRefreshStart(1);
                 {
                   if (ctx.showing) {
-                    let rf0 = embeddedViewStart(0, 1);
+                    let rf0 = embeddedViewStart(0, 1, 0);
                     if (rf0 & RenderFlags.Create) {
                       element(0, 'div', ['dir', '']);
                     }
@@ -506,6 +515,7 @@ describe('change detection', () => {
             selectors: [['detect-changes-comp']],
             factory: () => new DetectChangesComp(injectChangeDetectorRef()),
             consts: 1,
+            vars: 1,
             /** {{ value }} */
             template: (rf: RenderFlags, ctx: DetectChangesComp) => {
               if (rf & RenderFlags.Create) {
@@ -538,6 +548,7 @@ describe('change detection', () => {
             selectors: [['detect-changes-comp']],
             factory: () => new DetectChangesComp(injectChangeDetectorRef()),
             consts: 1,
+            vars: 1,
             /** {{ doCheckCount }} */
             template: (rf: RenderFlags, ctx: DetectChangesComp) => {
               if (rf & RenderFlags.Create) {
@@ -567,6 +578,7 @@ describe('change detection', () => {
           selectors: [['my-app']],
           factory: () => new MyApp(injectChangeDetectorRef()),
           consts: 1,
+          vars: 0,
           /** <detached-comp></detached-comp> */
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
@@ -590,6 +602,7 @@ describe('change detection', () => {
           selectors: [['detached-comp']],
           factory: () => comp = new DetachedComp(injectChangeDetectorRef()),
           consts: 1,
+          vars: 1,
           /** {{ value }} */
           template: (rf: RenderFlags, ctx: DetachedComp) => {
             if (rf & RenderFlags.Create) {
@@ -690,6 +703,7 @@ describe('change detection', () => {
             selectors: [['on-push-comp']],
             factory: () => onPushComp = new OnPushComp(injectChangeDetectorRef()),
             consts: 1,
+            vars: 1,
             /** {{ value }} */
             template: (rf: RenderFlags, ctx: any) => {
               if (rf & RenderFlags.Create) {
@@ -712,7 +726,7 @@ describe('change detection', () => {
           if (rf & RenderFlags.Update) {
             elementProperty(0, 'value', bind(ctx.value));
           }
-        }, 1, [OnPushComp]);
+        }, 1, 1, [OnPushComp]);
 
         const app = renderComponent(OnPushApp);
         app.value = 'one';
@@ -750,6 +764,7 @@ describe('change detection', () => {
           selectors: [['on-push-comp']],
           factory: () => comp = new OnPushComp(injectChangeDetectorRef()),
           consts: 1,
+          vars: 1,
           /** {{ value }} */
           template: (rf: RenderFlags, ctx: OnPushComp) => {
             if (rf & RenderFlags.Create) {
@@ -771,6 +786,7 @@ describe('change detection', () => {
           selectors: [['on-push-parent']],
           factory: () => new OnPushParent(),
           consts: 2,
+          vars: 1,
           /**
            * {{ value }} -
            * <on-push-comp></on-push-comp>
@@ -840,6 +856,7 @@ describe('change detection', () => {
             selectors: [['embedded-view-parent']],
             factory: () => new EmbeddedViewParent(),
             consts: 2,
+            vars: 1,
             /**
              * {{ value }} -
              * % if (ctx.showing) {
@@ -856,7 +873,7 @@ describe('change detection', () => {
                 containerRefreshStart(1);
                 {
                   if (ctx.showing) {
-                    let rf0 = embeddedViewStart(0, 1);
+                    let rf0 = embeddedViewStart(0, 1, 0);
                     if (rf0 & RenderFlags.Create) {
                       element(0, 'on-push-comp');
                     }
@@ -916,6 +933,7 @@ describe('change detection', () => {
           selectors: [['no-changes-comp']],
           factory: () => comp = new NoChangesComp(injectChangeDetectorRef()),
           consts: 1,
+          vars: 1,
           template: (rf: RenderFlags, ctx: NoChangesComp) => {
             if (rf & RenderFlags.Create) {
               text(0);
@@ -937,6 +955,7 @@ describe('change detection', () => {
           selectors: [['app-comp']],
           factory: () => new AppComp(injectChangeDetectorRef()),
           consts: 2,
+          vars: 1,
           /**
            * {{ value }} -
            * <no-changes-comp></no-changes-comp>
@@ -999,6 +1018,7 @@ describe('change detection', () => {
             selectors: [['embedded-view-app']],
             factory: () => new EmbeddedViewApp(injectChangeDetectorRef()),
             consts: 1,
+            vars: 0,
             /**
              * % if (showing) {
              *  {{ value }}
@@ -1012,7 +1032,7 @@ describe('change detection', () => {
                 containerRefreshStart(0);
                 {
                   if (ctx.showing) {
-                    let rf0 = embeddedViewStart(0, 1);
+                    let rf0 = embeddedViewStart(0, 1, 1);
                     if (rf0 & RenderFlags.Create) {
                       text(0);
                     }
@@ -1083,6 +1103,7 @@ describe('change detection', () => {
         selectors: [['my-comp']],
         factory: () => new MyComponent(),
         consts: 1,
+        vars: 1,
         template: (rf: RenderFlags, ctx: MyComponent) => {
           if (rf & RenderFlags.Create) {
             text(0);

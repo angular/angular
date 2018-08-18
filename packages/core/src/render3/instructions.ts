@@ -526,14 +526,15 @@ export function resetApplicationState() {
  * @param pipes Pipe defs that should be used for matching
  */
 export function renderTemplate<T>(
-    hostNode: RElement, templateFn: ComponentTemplate<T>, consts: number, context: T,
+    hostNode: RElement, templateFn: ComponentTemplate<T>, consts: number, vars: number, context: T,
     providedRendererFactory: RendererFactory3, host: LElementNode | null,
     directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
     sanitizer?: Sanitizer | null): LElementNode {
   if (host == null) {
     resetApplicationState();
     rendererFactory = providedRendererFactory;
-    const tView = getOrCreateTView(templateFn, consts, directives || null, pipes || null, null);
+    const tView =
+        getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null);
     host = createLNode(
         -1, TNodeType.Element, hostNode, null, null,
         createLViewData(
@@ -1005,12 +1006,14 @@ function saveResolvedLocalsInData(
  * if it doesn't already exist.
  *
  * @param templateFn The template from which to get static data
+ * @param consts The number of nodes, local refs, and pipes in this view
+ * @param vars The number of bindings and pure function bindings in this view
  * @param directives Directive defs that should be saved on TView
  * @param pipes Pipe defs that should be saved on TView
  * @returns TView
  */
 function getOrCreateTView(
-    templateFn: ComponentTemplate<any>, consts: number,
+    templateFn: ComponentTemplate<any>, consts: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
     viewQuery: ComponentQuery<any>| null): TView {
   // TODO(misko): reading `ngPrivateData` here is problematic for two reasons
@@ -1022,7 +1025,7 @@ function getOrCreateTView(
 
   return templateFn.ngPrivateData ||
       (templateFn.ngPrivateData =
-           createTView(-1, templateFn, consts, directives, pipes, viewQuery) as never);
+           createTView(-1, templateFn, consts, vars, directives, pipes, viewQuery) as never);
 }
 
 /**
@@ -1035,7 +1038,7 @@ function getOrCreateTView(
  * @param pipes Registry of pipes for this view
  */
 export function createTView(
-    viewIndex: number, templateFn: ComponentTemplate<any>| null, consts: number,
+    viewIndex: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
     viewQuery: ComponentQuery<any>| null): TView {
   ngDevMode && ngDevMode.tView++;
@@ -1146,8 +1149,9 @@ export function hostElement(
   const node = createLNode(
       0, TNodeType.Element, rNode, null, null,
       createLViewData(
-          renderer, getOrCreateTView(
-                        def.template, def.consts, def.directiveDefs, def.pipeDefs, def.viewQuery),
+          renderer,
+          getOrCreateTView(
+              def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery),
           null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer));
 
   if (firstTemplatePass) {
@@ -1678,8 +1682,8 @@ export function directiveCreate<T>(
 
 function addComponentLogic<T>(
     directiveIndex: number, instance: T, def: ComponentDefInternal<T>): void {
-  const tView =
-      getOrCreateTView(def.template, def.consts, def.directiveDefs, def.pipeDefs, def.viewQuery);
+  const tView = getOrCreateTView(
+      def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery);
 
   // Only component views should be added to the view tree directly. Embedded views are
   // accessed through their containers because they may be removed / re-added later.
@@ -1857,6 +1861,7 @@ export function createLContainer(
  * @param index The index of the container in the data array
  * @param templateFn Inline template
  * @param consts The number of nodes, local refs, and pipes for this template
+ * @param vars The number of bindings for this template
  * @param tagName The name of the container element, if applicable
  * @param attrs The attrs attached to the container, if applicable
  * @param localRefs A set of local reference bindings on the element.
@@ -1864,15 +1869,15 @@ export function createLContainer(
  *        Defaults to the current element associated with the local-ref.
  */
 export function template(
-    index: number, templateFn: ComponentTemplate<any>| null, consts: number,
+    index: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
     tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null,
     localRefExtractor?: LocalRefExtractor) {
   // TODO: consider a separate node type for templates
   const node = containerInternal(index, tagName || null, attrs || null, localRefs || null);
 
   if (firstTemplatePass) {
-    node.tNode.tViews =
-        createTView(-1, templateFn, consts, tView.directiveRegistry, tView.pipeRegistry, null);
+    node.tNode.tViews = createTView(
+        -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null);
   }
 
   createDirectivesAndLocals(node, localRefs, localRefExtractor);
@@ -2025,7 +2030,7 @@ function scanForView(
  * @param viewBlockId The ID of this view
  * @return boolean Whether or not this view is in creation mode
  */
-export function embeddedViewStart(viewBlockId: number, consts: number): RenderFlags {
+export function embeddedViewStart(viewBlockId: number, consts: number, vars: number): RenderFlags {
   const container =
       (isParent ? previousOrParentNode : getParentLNode(previousOrParentNode)) as LContainerNode;
   ngDevMode && assertNodeType(container, TNodeType.Container);
@@ -2040,7 +2045,7 @@ export function embeddedViewStart(viewBlockId: number, consts: number): RenderFl
   } else {
     // When we create a new LView, we always reset the state of the instructions.
     const newView = createLViewData(
-        renderer, getOrCreateEmbeddedTView(viewBlockId, consts, container), null,
+        renderer, getOrCreateEmbeddedTView(viewBlockId, consts, vars, container), null,
         LViewFlags.CheckAlways, getCurrentSanitizer());
 
     if (lContainer[QUERIES]) {
@@ -2070,18 +2075,19 @@ export function embeddedViewStart(viewBlockId: number, consts: number): RenderFl
  *
  * @param viewIndex The index of the TView in TNode.tViews
  * @param consts The number of nodes, local refs, and pipes in this template
+ * @param vars The number of bindings and pure function bindings in this template
  * @param parent The parent container in which to look for the view's static data
  * @returns TView
  */
 function getOrCreateEmbeddedTView(
-    viewIndex: number, consts: number, parent: LContainerNode): TView {
+    viewIndex: number, consts: number, vars: number, parent: LContainerNode): TView {
   ngDevMode && assertNodeType(parent, TNodeType.Container);
   const containerTViews = (parent !.tNode as TContainerNode).tViews as TView[];
   ngDevMode && assertDefined(containerTViews, 'TView expected');
   ngDevMode && assertEqual(Array.isArray(containerTViews), true, 'TViews should be in an array');
   if (viewIndex >= containerTViews.length || containerTViews[viewIndex] == null) {
-    containerTViews[viewIndex] =
-        createTView(viewIndex, null, consts, tView.directiveRegistry, tView.pipeRegistry, null);
+    containerTViews[viewIndex] = createTView(
+        viewIndex, null, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null);
   }
   return containerTViews[viewIndex];
 }
