@@ -80,7 +80,7 @@
     "cors": "2.8.4",
     "dependency-graph": "^0.7.2",
     "diff": "^3.5.0",
-    "domino": "2.0.1",
+    "domino": "2.1.0",
     "entities": "1.1.1",
     "firefox-profile": "1.0.3",
     "fs-extra": "4.0.2",
