@@ -24,7 +24,7 @@ describe('JS control flow', () => {
         containerRefreshStart(1);
         {
           if (ctx.condition) {
-            let rf1 = embeddedViewStart(1, 2);
+            let rf1 = embeddedViewStart(1, 2, 1);
             {
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'span');
@@ -80,7 +80,7 @@ describe('JS control flow', () => {
         containerRefreshStart(1);
         {
           if (ctx.condition) {
-            let rf1 = embeddedViewStart(1, 2);
+            let rf1 = embeddedViewStart(1, 2, 0);
             {
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'span');
@@ -91,7 +91,7 @@ describe('JS control flow', () => {
                 containerRefreshStart(1);
                 {
                   if (ctx.condition2) {
-                    let rf2 = embeddedViewStart(2, 1);
+                    let rf2 = embeddedViewStart(2, 1, 0);
                     {
                       if (rf2 & RenderFlags.Create) {
                         text(0, 'Hello');
@@ -170,7 +170,7 @@ describe('JS control flow', () => {
       containerRefreshStart(0);
       {
         if (ctx.condition) {
-          let rf1 = embeddedViewStart(1, 2);
+          let rf1 = embeddedViewStart(1, 2, 0);
           {
             if (rf1 & RenderFlags.Create) {
               { container(0); }
@@ -180,7 +180,7 @@ describe('JS control flow', () => {
               containerRefreshStart(0);
               {
                 if (ctx.condition2) {
-                  let rf2 = embeddedViewStart(2, 1);
+                  let rf2 = embeddedViewStart(2, 1, 0);
                   {
                     if (rf2 & RenderFlags.Create) {
                       text(0, 'Hello');
@@ -193,7 +193,7 @@ describe('JS control flow', () => {
               containerRefreshStart(1);
               {
                 if (ctx.condition3) {
-                  let rf2 = embeddedViewStart(2, 1);
+                  let rf2 = embeddedViewStart(2, 1, 0);
                   {
                     if (rf2 & RenderFlags.Create) {
                       text(0, 'World');
@@ -236,21 +236,21 @@ describe('JS control flow', () => {
       if (rf & RenderFlags.Update) {
         containerRefreshStart(0);
         if (ctx.condition1) {
-          const rf1 = embeddedViewStart(1, 1);
+          const rf1 = embeddedViewStart(1, 1, 0);
           if (rf1 & RenderFlags.Create) {
             text(0, '1');
           }
           embeddedViewEnd();
         }  // can't have ; here due linting rules
         if (ctx.condition2) {
-          const rf2 = embeddedViewStart(2, 1);
+          const rf2 = embeddedViewStart(2, 1, 0);
           if (rf2 & RenderFlags.Create) {
             text(0, '2');
           }
           embeddedViewEnd();
         }  // can't have ; here due linting rules
         if (ctx.condition3) {
-          const rf3 = embeddedViewStart(3, 1);
+          const rf3 = embeddedViewStart(3, 1, 0);
           if (rf3 & RenderFlags.Create) {
             text(0, '3');
           }
@@ -284,7 +284,7 @@ describe('JS control flow', () => {
         containerRefreshStart(2);
         {
           if (ctx.condition1) {
-            let rf0 = embeddedViewStart(0, 1);
+            let rf0 = embeddedViewStart(0, 1, 0);
             {
               if (rf0 & RenderFlags.Create) {
                 container(0);
@@ -293,7 +293,7 @@ describe('JS control flow', () => {
                 containerRefreshStart(0);
                 {
                   if (ctx.condition2) {
-                    let rf0 = embeddedViewStart(0, 1);
+                    let rf0 = embeddedViewStart(0, 1, 0);
                     {
                       if (rf0 & RenderFlags.Create) {
                         text(0, 'world');
@@ -336,7 +336,7 @@ describe('JS control flow', () => {
         containerRefreshStart(1);
         {
           for (let i = 0; i < data.length; i++) {
-            let rf1 = embeddedViewStart(1, 2);
+            let rf1 = embeddedViewStart(1, 2, 1);
             {
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'li');
@@ -392,7 +392,7 @@ describe('JS control flow', () => {
         containerRefreshStart(1);
         {
           for (let i = 0; i < data[0].length; i++) {
-            let rf1 = embeddedViewStart(1, 2);
+            let rf1 = embeddedViewStart(1, 2, 0);
             {
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'li');
@@ -403,7 +403,7 @@ describe('JS control flow', () => {
                 containerRefreshStart(1);
                 {
                   data[1].forEach((value: string, ind: number) => {
-                    let rf2 = embeddedViewStart(2, 1);
+                    let rf2 = embeddedViewStart(2, 1, 1);
                     if (rf2 & RenderFlags.Create) {
                       text(0);
                     }
@@ -465,7 +465,7 @@ describe('JS control flow', () => {
         containerRefreshStart(2);
         {
           for (let i = 0; i < cafes.length; i++) {
-            let rf1 = embeddedViewStart(1, 4);
+            let rf1 = embeddedViewStart(1, 4, 1);
             {
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'h2');
@@ -479,7 +479,7 @@ describe('JS control flow', () => {
                 containerRefreshStart(2);
                 {
                   for (let j = 0; j < cafes[i].entrees.length; j++) {
-                    let rf2 = embeddedViewStart(2, 1);
+                    let rf2 = embeddedViewStart(2, 1, 1);
                     if (rf2 & RenderFlags.Create) {
                       text(0);
                     }
@@ -560,7 +560,7 @@ describe('JS control flow', () => {
         containerRefreshStart(2);
         {
           for (let i = 0; i < cafes.length; i++) {
-            let rf1 = embeddedViewStart(1, 4);
+            let rf1 = embeddedViewStart(1, 4, 1);
             {
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'h2');
@@ -574,7 +574,7 @@ describe('JS control flow', () => {
                 containerRefreshStart(2);
                 {
                   for (let j = 0; j < cafes[i].entrees.length; j++) {
-                    let rf1 = embeddedViewStart(1, 3);
+                    let rf1 = embeddedViewStart(1, 3, 1);
                     {
                       if (rf1 & RenderFlags.Create) {
                         elementStart(0, 'h3');
@@ -587,7 +587,7 @@ describe('JS control flow', () => {
                         containerRefreshStart(2);
                         {
                           for (let k = 0; k < cafes[i].entrees[j].foods.length; k++) {
-                            let rf2 = embeddedViewStart(1, 1);
+                            let rf2 = embeddedViewStart(1, 1, 1);
                             if (rf2 & RenderFlags.Create) {
                               text(0);
                             }
@@ -640,7 +640,7 @@ describe('JS control flow', () => {
         containerRefreshStart(1);
         {
           if (ctx.condition) {
-            let rf1 = embeddedViewStart(1, 2);
+            let rf1 = embeddedViewStart(1, 2, 0);
             {
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'span');
@@ -650,7 +650,7 @@ describe('JS control flow', () => {
             }
             embeddedViewEnd();
           } else {
-            let rf2 = embeddedViewStart(2, 2);
+            let rf2 = embeddedViewStart(2, 2, 0);
             {
               if (rf2) {
                 elementStart(0, 'div');
@@ -689,6 +689,7 @@ describe('JS control flow', () => {
         type: Comp,
         selectors: [['comp']],
         consts: 0,
+        vars: 0,
         factory: () => {
           log.push('comp!');
           return new Comp();
@@ -706,6 +707,7 @@ describe('JS control flow', () => {
         selectors: [['app']],
         factory: () => new App(),
         consts: 3,
+        vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             element(0, 'div');
@@ -716,7 +718,7 @@ describe('JS control flow', () => {
             containerRefreshStart(1);
             {
               if (ctx.condition) {
-                let rf1 = embeddedViewStart(0, 1);
+                let rf1 = embeddedViewStart(0, 1, 0);
                 if (rf1 & RenderFlags.Create) {
                   element(0, 'comp');
                 }
@@ -727,7 +729,7 @@ describe('JS control flow', () => {
             containerRefreshStart(2);
             {
               if (ctx.condition2) {
-                let rf1 = embeddedViewStart(0, 1);
+                let rf1 = embeddedViewStart(0, 1, 0);
                 if (rf1 & RenderFlags.Create) {
                   element(0, 'comp');
                 }
@@ -755,6 +757,7 @@ describe('JS control flow', () => {
         type: Comp,
         selectors: [['comp']],
         consts: 0,
+        vars: 0,
         factory: () => {
           log.push('comp!');
           return new Comp();
@@ -772,6 +775,7 @@ describe('JS control flow', () => {
         selectors: [['app']],
         factory: () => new App(),
         consts: 3,
+        vars: 0,
         template: function(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
             element(0, 'div');
@@ -782,7 +786,7 @@ describe('JS control flow', () => {
             containerRefreshStart(1);
             {
               if (ctx.condition) {
-                let rf1 = embeddedViewStart(0, 1);
+                let rf1 = embeddedViewStart(0, 1, 0);
                 if (rf1 & RenderFlags.Create) {
                   element(0, 'comp');
                 }
@@ -793,7 +797,7 @@ describe('JS control flow', () => {
             containerRefreshStart(2);
             {
               if (ctx.condition2) {
-                let rf1 = embeddedViewStart(0, 1);
+                let rf1 = embeddedViewStart(0, 1, 0);
                 if (rf1 & RenderFlags.Create) {
                   element(0, 'comp');
                 }
@@ -839,7 +843,7 @@ describe('JS for loop', () => {
         containerRefreshStart(1);
         {
           for (let i = 0; i < config.data1.length; i++) {
-            let rf2 = embeddedViewStart(1, 1);
+            let rf2 = embeddedViewStart(1, 1, 1);
             if (rf2 & RenderFlags.Create) {
               text(0);
             }
@@ -849,7 +853,7 @@ describe('JS for loop', () => {
             embeddedViewEnd();
           }
           for (let j = 0; j < config.data2.length; j++) {
-            let rf2 = embeddedViewStart(1, 1);
+            let rf2 = embeddedViewStart(1, 1, 1);
             if (rf2 & RenderFlags.Create) {
               text(0);
             }
@@ -910,14 +914,14 @@ describe('function calls', () => {
       if (rf & RenderFlags.Update) {
         containerRefreshStart(2);
         {
-          let rf0 = embeddedViewStart(0, 2);
+          let rf0 = embeddedViewStart(0, 2, 1);
           { spanify(rf0, {message: data[0]}); }
           embeddedViewEnd();
         }
         containerRefreshEnd();
         containerRefreshStart(3);
         {
-          let rf0 = embeddedViewStart(0, 2);
+          let rf0 = embeddedViewStart(0, 2, 1);
           { spanify(rf0, {message: data[1]}); }
           embeddedViewEnd();
         }

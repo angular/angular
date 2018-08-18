@@ -107,7 +107,7 @@ export function renderComponent<T>(
 
   const rootView: LViewData = createLViewData(
       rendererFactory.createRenderer(hostNode, componentDef),
-      createTView(-1, null, 1, null, null, null), rootContext,
+      createTView(-1, null, 1, 0, null, null, null), rootContext,
       componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
   rootView[INJECTOR] = opts.injector || null;
 

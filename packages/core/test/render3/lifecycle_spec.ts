@@ -7,7 +7,8 @@
  */
 
 import {OnDestroy, SimpleChanges} from '../../src/core';
-import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
+import {AttributeMarker, ComponentTemplate, LifecycleHooksFeature, NO_CHANGE, NgOnChangesFeature, defineComponent, defineDirective} from '../../src/render3/index';
+
 import {bind, container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementProperty, elementStart, embeddedViewEnd, embeddedViewStart, listener, markDirty, projection, projectionDef, store, template, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
@@ -60,6 +61,7 @@ describe('lifecycles', () => {
           type: Component,
           selectors: [[name]],
           consts: consts,
+          vars: 0,
           factory: () => new Component(),
           inputs: {val: 'val'}, template,
           directives: directives
@@ -86,7 +88,7 @@ describe('lifecycles', () => {
            if (rf & RenderFlags.Update) {
              elementProperty(0, 'val', bind(ctx.val));
            }
-         }, 1, directives);
+         }, 1, 1, directives);
 
          const fixture = new ComponentFixture(App);
          fixture.update();
@@ -115,7 +117,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'parent');
         }
-      }, 1, directives);
+      }, 1, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['parent', 'comp']);
@@ -137,7 +139,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val', 1);
           elementProperty(1, 'val', 2);
         }
-      }, 2, directives);
+      }, 2, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['parent1', 'parent2', 'comp1', 'comp2']);
@@ -158,7 +160,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (!ctx.skip) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
               }
@@ -167,7 +169,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, directives);
+      }, 1, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp']);
@@ -193,7 +195,7 @@ describe('lifecycles', () => {
           { elementStart(1, 'projected'); }
           elementEnd();
         }
-      }, 2, directives);
+      }, 2, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp', 'projected']);
@@ -223,7 +225,7 @@ describe('lifecycles', () => {
           elementProperty(2, 'val', 2);
           elementProperty(3, 'val', 2);
         }
-      }, 4, directives);
+      }, 4, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp1', 'projected1', 'comp2', 'projected2']);
@@ -235,7 +237,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'comp', ['dir', '']);
         }
-      }, 1, directives);
+      }, 1, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp', 'dir']);
@@ -250,7 +252,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['dir', '']);
         }
-      }, 1, directives);
+      }, 1, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['dir']);
@@ -279,7 +281,7 @@ describe('lifecycles', () => {
           containerRefreshStart(1);
           {
             for (let j = 2; j < 5; j++) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
               }
@@ -291,7 +293,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 3, directives);
+      }, 3, 0, directives);
 
       const fixture = new ComponentFixture(App);
       // onInit is called top to bottom, so top level comps (1 and 5) are called
@@ -319,7 +321,7 @@ describe('lifecycles', () => {
           containerRefreshStart(1);
           {
             for (let j = 2; j < 5; j++) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'parent');
               }
@@ -331,7 +333,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 3, directives);
+      }, 3, 0, directives);
 
       const fixture = new ComponentFixture(App);
       // onInit is called top to bottom, so top level comps (1 and 5) are called
@@ -354,10 +356,10 @@ describe('lifecycles', () => {
     });
 
     let Comp = createDoCheckComponent('comp', (rf: RenderFlags, ctx: any) => {});
-    let Parent = createDoCheckComponent('parent', getParentTemplate('comp'), 1, [Comp]);
+    let Parent = createDoCheckComponent('parent', getParentTemplate('comp'), 1, 1, [Comp]);
 
     function createDoCheckComponent(
-        name: string, template: ComponentTemplate<any>, consts: number = 0,
+        name: string, template: ComponentTemplate<any>, consts: number = 0, vars: number = 0,
         directives: any[] = []) {
       return class Component {
         ngDoCheck() {
@@ -372,6 +374,7 @@ describe('lifecycles', () => {
           selectors: [[name]],
           factory: () => new Component(), template,
           consts: consts,
+          vars: vars,
           directives: directives
         });
       };
@@ -392,7 +395,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'comp');
         }
-      }, 1, directives);
+      }, 1, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp']);
@@ -419,7 +422,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'parent');
         }
-      }, 1, directives);
+      }, 1, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['parent', 'comp']);
@@ -431,7 +434,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'comp');
         }
-      }, 1, directives);
+      }, 1, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(allEvents).toEqual(['init comp', 'check comp']);
@@ -446,7 +449,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'comp', ['dir', '']);
         }
-      }, 1, directives);
+      }, 1, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp', 'dir']);
@@ -461,7 +464,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['dir', '']);
         }
-      }, 1, directives);
+      }, 1, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['dir']);
@@ -498,7 +501,7 @@ describe('lifecycles', () => {
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'val', bind(ctx.val));
       }
-    }, 2, [Comp]);
+    }, 2, 1, [Comp]);
 
     let ProjectedComp = createAfterContentInitComp('projected', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
@@ -508,7 +511,7 @@ describe('lifecycles', () => {
     }, 1);
 
     function createAfterContentInitComp(
-        name: string, template: ComponentTemplate<any>, consts: number = 0,
+        name: string, template: ComponentTemplate<any>, consts: number = 0, vars: number = 0,
         directives: any[] = []) {
       return class Component {
         val: string = '';
@@ -523,6 +526,7 @@ describe('lifecycles', () => {
           selectors: [[name]],
           factory: () => new Component(),
           consts: consts,
+          vars: vars,
           inputs: {val: 'val'},
           template: template,
           directives: directives
@@ -554,7 +558,7 @@ describe('lifecycles', () => {
         containerRefreshStart(2);
         {
           for (let i = 2; i < 4; i++) {
-            let rf1 = embeddedViewStart(0, 2);
+            let rf1 = embeddedViewStart(0, 2, 0);
             if (rf1 & RenderFlags.Create) {
               elementStart(0, 'parent');
               { text(1, 'content'); }
@@ -580,7 +584,7 @@ describe('lifecycles', () => {
           { text(1, 'content'); }
           elementEnd();
         }
-      }, 2, directives);
+      }, 2, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp']);
@@ -612,7 +616,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (!ctx.skip) {
-              let rf1 = embeddedViewStart(0, 2);
+              let rf1 = embeddedViewStart(0, 2, 0);
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'comp');
                 { text(1, 'content'); }
@@ -623,7 +627,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, directives);
+      }, 1, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp']);
@@ -649,7 +653,7 @@ describe('lifecycles', () => {
           { text(1, 'content'); }
           elementEnd();
         }
-      }, 2, directives);
+      }, 2, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['parent', 'comp']);
@@ -675,7 +679,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val', 1);
           elementProperty(2, 'val', 2);
         }
-      }, 4, directives);
+      }, 4, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['parent1', 'parent2', 'comp1', 'comp2']);
@@ -702,7 +706,7 @@ describe('lifecycles', () => {
           }
           elementEnd();
         }
-      }, 3, directives);
+      }, 3, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['projected', 'parent', 'comp']);
@@ -745,7 +749,7 @@ describe('lifecycles', () => {
           elementProperty(3, 'val', 2);
           elementProperty(4, 'val', 2);
         }
-      }, 6, directives);
+      }, 6, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['projected1', 'parent1', 'projected2', 'parent2', 'comp1', 'comp2']);
@@ -775,7 +779,7 @@ describe('lifecycles', () => {
           containerRefreshStart(2);
           {
             for (let i = 2; i < 4; i++) {
-              let rf1 = embeddedViewStart(0, 2);
+              let rf1 = embeddedViewStart(0, 2, 0);
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'comp');
                 { text(1, 'content'); }
@@ -789,7 +793,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 5, directives);
+      }, 5, 0, directives);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp2', 'comp3', 'comp1', 'comp4']);
@@ -804,7 +808,7 @@ describe('lifecycles', () => {
        * <parent [val]="4">content</parent>
        */
 
-      renderToHtml(ForLoopWithChildrenTemplate, {}, 5, directives);
+      renderToHtml(ForLoopWithChildrenTemplate, {}, 5, 0, directives);
       expect(events).toEqual(
           ['parent2', 'comp2', 'parent3', 'comp3', 'parent1', 'parent4', 'comp1', 'comp4']);
     });
@@ -819,7 +823,7 @@ describe('lifecycles', () => {
             { text(1, 'content'); }
             elementEnd();
           }
-        }, 2, directives);
+        }, 2, 0, directives);
 
         const fixture = new ComponentFixture(App);
         expect(allEvents).toEqual(['comp init', 'comp check']);
@@ -846,7 +850,7 @@ describe('lifecycles', () => {
           if (rf & RenderFlags.Create) {
             element(0, 'comp', ['dir', '']);
           }
-        }, 1, directives);
+        }, 1, 0, directives);
 
         const fixture = new ComponentFixture(App);
         expect(events).toEqual(['comp', 'init', 'check']);
@@ -858,7 +862,7 @@ describe('lifecycles', () => {
           if (rf & RenderFlags.Create) {
             element(0, 'div', ['dir', '']);
           }
-        }, 1, directives);
+        }, 1, 0, directives);
 
         const fixture = new ComponentFixture(App);
         expect(events).toEqual(['init', 'check']);
@@ -883,7 +887,7 @@ describe('lifecycles', () => {
         elementEnd();
       }
     }, 2);
-    let Parent = createAfterViewInitComponent('parent', getParentTemplate('comp'), 1, [Comp]);
+    let Parent = createAfterViewInitComponent('parent', getParentTemplate('comp'), 1, 1, [Comp]);
 
     let ProjectedComp = createAfterViewInitComponent('projected', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
@@ -892,7 +896,8 @@ describe('lifecycles', () => {
     }, 1);
 
     function createAfterViewInitComponent(
-        name: string, template: ComponentTemplate<any>, consts: number, directives: any[] = []) {
+        name: string, template: ComponentTemplate<any>, consts: number, vars: number = 0,
+        directives: any[] = []) {
       return class Component {
         val: string = '';
         ngAfterViewInit() {
@@ -906,6 +911,7 @@ describe('lifecycles', () => {
           type: Component,
           selectors: [[name]],
           consts: consts,
+          vars: vars,
           factory: () => new Component(),
           inputs: {val: 'val'},
           template: template,
@@ -930,7 +936,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'comp');
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp']);
@@ -962,7 +968,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (!ctx.skip) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
               }
@@ -971,7 +977,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp']);
@@ -996,7 +1002,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'parent');
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp', 'parent']);
@@ -1018,7 +1024,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val', 1);
           elementProperty(1, 'val', 2);
         }
-      }, 2, defs);
+      }, 2, 0, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp1', 'comp2', 'parent1', 'parent2']);
@@ -1037,7 +1043,7 @@ describe('lifecycles', () => {
           { element(1, 'projected'); }
           elementEnd();
         }
-      }, 2, defs);
+      }, 2, 0, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['projected', 'comp']);
@@ -1067,7 +1073,7 @@ describe('lifecycles', () => {
           elementProperty(2, 'val', 2);
           elementProperty(3, 'val', 2);
         }
-      }, 4, defs);
+      }, 4, 0, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['projected1', 'comp1', 'projected2', 'comp2']);
@@ -1089,7 +1095,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val', bind(ctx.val));
           elementProperty(1, 'val', bind(ctx.val));
         }
-      }, 2, [Comp, ProjectedComp]);
+      }, 2, 2, [Comp, ProjectedComp]);
 
       /**
        * <parent [val]="1"></parent>
@@ -1104,7 +1110,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val', 1);
           elementProperty(1, 'val', 2);
         }
-      }, 2, [ParentComp]);
+      }, 2, 0, [ParentComp]);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['projected1', 'comp1', 'projected2', 'comp2', 'parent1', 'parent2']);
@@ -1130,7 +1136,7 @@ describe('lifecycles', () => {
           containerRefreshStart(1);
           {
             for (let i = 2; i < 4; i++) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
               }
@@ -1142,7 +1148,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 3, defs);
+      }, 3, 0, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['comp2', 'comp3', 'comp1', 'comp4']);
@@ -1169,7 +1175,7 @@ describe('lifecycles', () => {
           containerRefreshStart(1);
           {
             for (let i = 2; i < 4; i++) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'parent');
               }
@@ -1181,7 +1187,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 3, defs);
+      }, 3, 0, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(
@@ -1197,7 +1203,7 @@ describe('lifecycles', () => {
           if (rf & RenderFlags.Create) {
             element(0, 'comp');
           }
-        }, 1, defs);
+        }, 1, 0, defs);
 
         const fixture = new ComponentFixture(App);
         expect(allEvents).toEqual(['comp init', 'comp check']);
@@ -1224,7 +1230,7 @@ describe('lifecycles', () => {
           if (rf & RenderFlags.Update) {
             elementProperty(0, 'val', bind(ctx.myVal));
           }
-        }, 1, defs);
+        }, 1, 1, defs);
 
         const fixture = new ComponentFixture(App);
         expect(allEvents).toEqual(['comp init', 'comp check']);
@@ -1254,7 +1260,7 @@ describe('lifecycles', () => {
             containerRefreshStart(1);
             {
               for (let i = 2; i < 4; i++) {
-                let rf1 = embeddedViewStart(0, 1);
+                let rf1 = embeddedViewStart(0, 1, 0);
                 if (rf1 & RenderFlags.Create) {
                   element(0, 'parent');
                 }
@@ -1266,7 +1272,7 @@ describe('lifecycles', () => {
             }
             containerRefreshEnd();
           }
-        }, 3, defs);
+        }, 3, 0, defs);
 
         const fixture = new ComponentFixture(App);
         expect(allEvents).toEqual([
@@ -1286,7 +1292,7 @@ describe('lifecycles', () => {
           if (rf & RenderFlags.Create) {
             element(0, 'comp', ['dir', '']);
           }
-        }, 1, defs);
+        }, 1, 0, defs);
 
         const fixture = new ComponentFixture(App);
         expect(events).toEqual(['comp', 'init', 'check']);
@@ -1298,7 +1304,7 @@ describe('lifecycles', () => {
           if (rf & RenderFlags.Create) {
             element(0, 'div', ['dir', '']);
           }
-        }, 1, defs);
+        }, 1, 0, defs);
 
         const fixture = new ComponentFixture(App);
         expect(events).toEqual(['init', 'check']);
@@ -1317,10 +1323,10 @@ describe('lifecycles', () => {
         projection(0);
       }
     }, 1);
-    let Parent = createOnDestroyComponent('parent', getParentTemplate('comp'), 1, [Comp]);
+    let Parent = createOnDestroyComponent('parent', getParentTemplate('comp'), 1, 1, [Comp]);
 
     function createOnDestroyComponent(
-        name: string, template: ComponentTemplate<any>, consts: number = 0,
+        name: string, template: ComponentTemplate<any>, consts: number = 0, vars: number = 0,
         directives: any[] = []) {
       return class Component {
         val: string = '';
@@ -1331,6 +1337,7 @@ describe('lifecycles', () => {
           selectors: [[name]],
           factory: () => new Component(),
           consts: consts,
+          vars: vars,
           inputs: {val: 'val'},
           template: template,
           directives: directives
@@ -1342,7 +1349,7 @@ describe('lifecycles', () => {
       if (rf & RenderFlags.Create) {
         element(0, 'parent');
       }
-    }, 1, [Parent]);
+    }, 1, 0, [Parent]);
 
     const ProjectedComp = createOnDestroyComponent('projected', (rf: RenderFlags, ctx: any) => {});
 
@@ -1370,7 +1377,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (!ctx.skip) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
               }
@@ -1379,7 +1386,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
 
@@ -1395,7 +1402,6 @@ describe('lifecycles', () => {
        *   <comp [val]="2"></comp>
        * % }
        */
-
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           container(0);
@@ -1404,7 +1410,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (!ctx.skip) {
-              let rf1 = embeddedViewStart(0, 2);
+              let rf1 = embeddedViewStart(0, 2, 2);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
                 element(1, 'comp');
@@ -1418,7 +1424,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
 
@@ -1444,7 +1450,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (!ctx.skip) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'parent');
               }
@@ -1453,7 +1459,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
 
@@ -1471,7 +1477,6 @@ describe('lifecycles', () => {
        * grandparent template: <parent></parent>
        * parent template: <comp></comp>
        */
-
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           container(0);
@@ -1480,7 +1485,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (!ctx.skip) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'grandparent');
               }
@@ -1489,7 +1494,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
 
@@ -1517,7 +1522,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (!ctx.skip) {
-              let rf1 = embeddedViewStart(0, 4);
+              let rf1 = embeddedViewStart(0, 4, 0);
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'comp');
                 { element(1, 'projected'); }
@@ -1537,7 +1542,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
 
@@ -1566,7 +1571,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (ctx.condition) {
-              let rf1 = embeddedViewStart(0, 3);
+              let rf1 = embeddedViewStart(0, 3, 2);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
                 container(1);
@@ -1578,7 +1583,7 @@ describe('lifecycles', () => {
                 containerRefreshStart(1);
                 {
                   if (ctx.condition2) {
-                    let rf2 = embeddedViewStart(0, 1);
+                    let rf2 = embeddedViewStart(0, 1, 1);
                     if (rf2 & RenderFlags.Create) {
                       element(0, 'comp');
                     }
@@ -1595,7 +1600,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
       fixture.component.condition = true;
@@ -1659,7 +1664,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (ctx.condition) {
-              let rf1 = embeddedViewStart(0, 3);
+              let rf1 = embeddedViewStart(0, 3, 2);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
                 container(1);
@@ -1671,7 +1676,7 @@ describe('lifecycles', () => {
                 containerRefreshStart(1);
                 {
                   for (let j = 2; j < ctx.len; j++) {
-                    let rf2 = embeddedViewStart(0, 1);
+                    let rf2 = embeddedViewStart(0, 1, 1);
                     if (rf2 & RenderFlags.Create) {
                       element(0, 'comp');
                     }
@@ -1688,7 +1693,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
       fixture.component.condition = true;
@@ -1749,7 +1754,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (ctx.condition) {
-              let rf1 = embeddedViewStart(0, 5);
+              let rf1 = embeddedViewStart(0, 5, 0);
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'button');
                 {
@@ -1779,7 +1784,7 @@ describe('lifecycles', () => {
       }
 
       const ctx: {counter: number} = new App();
-      renderToHtml(Template, ctx, 1, defs);
+      renderToHtml(Template, ctx, 1, 0, defs);
 
       const buttons = containerEl.querySelectorAll('button') !;
       buttons[0].click();
@@ -1787,7 +1792,7 @@ describe('lifecycles', () => {
       buttons[1].click();
       expect(ctx.counter).toEqual(2);
 
-      renderToHtml(Template, {condition: false}, 1, defs);
+      renderToHtml(Template, {condition: false}, 1, 0, defs);
 
       buttons[0].click();
       buttons[1].click();
@@ -1801,7 +1806,6 @@ describe('lifecycles', () => {
        *   <comp></comp>
        * % }
        */
-
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           container(0);
@@ -1810,7 +1814,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (ctx.condition) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp', ['dir', '']);
               }
@@ -1819,7 +1823,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
       fixture.component.condition = true;
@@ -1838,7 +1842,6 @@ describe('lifecycles', () => {
        *   <div directive></div>
        * % }
        */
-
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           container(0);
@@ -1847,7 +1850,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (ctx.condition) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'div', ['dir', '']);
               }
@@ -1856,7 +1859,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
       fixture.component.condition = true;
@@ -1891,7 +1894,7 @@ describe('lifecycles', () => {
         elementProperty(0, 'val1', bind(ctx.a));
         elementProperty(0, 'publicName', bind(ctx.b));
       }
-    }, 1, [Comp]);
+    }, 1, 2, [Comp]);
     const ProjectedComp = createOnChangesComponent('projected', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
         text(0, 'content');
@@ -1900,7 +1903,7 @@ describe('lifecycles', () => {
 
 
     function createOnChangesComponent(
-        name: string, template: ComponentTemplate<any>, consts: number = 0,
+        name: string, template: ComponentTemplate<any>, consts: number = 0, vars: number = 0,
         directives: any[] = []) {
       return class Component {
         // @Input() val1: string;
@@ -1918,6 +1921,7 @@ describe('lifecycles', () => {
           factory: () => new Component(),
           features: [NgOnChangesFeature],
           consts: consts,
+          vars: vars,
           inputs: {a: 'val1', b: ['publicName', 'val2']}, template,
           directives: directives
         });
@@ -1955,7 +1959,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val1', bind(ctx.val1));
           elementProperty(0, 'publicName', bind(ctx.val2));
         }
-      }, 1, defs);
+      }, 1, 2, defs);
 
       const fixture = new ComponentFixture(App);
       events = [];
@@ -1984,7 +1988,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val1', bind(ctx.val1));
           elementProperty(0, 'publicName', bind(ctx.val2));
         }
-      }, 1, defs);
+      }, 1, 2, defs);
 
       const fixture = new ComponentFixture(App);
       events = [];
@@ -2017,7 +2021,7 @@ describe('lifecycles', () => {
           elementProperty(1, 'val1', bind(2));
           elementProperty(1, 'publicName', bind(2));
         }
-      }, 2, defs);
+      }, 2, 4, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
@@ -2044,7 +2048,7 @@ describe('lifecycles', () => {
           containerRefreshStart(0);
           {
             if (ctx.condition) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 2);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
               }
@@ -2057,7 +2061,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, defs);
+      }, 1, 0, defs);
 
       const fixture = new ComponentFixture(App);
       fixture.component.condition = true;
@@ -2094,7 +2098,7 @@ describe('lifecycles', () => {
           elementProperty(1, 'val1', bind(2));
           elementProperty(1, 'publicName', bind(2));
         }
-      }, 2, defs);
+      }, 2, 4, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
@@ -2131,7 +2135,7 @@ describe('lifecycles', () => {
           elementProperty(3, 'val1', bind(4));
           elementProperty(3, 'publicName', bind(4));
         }
-      }, 4, defs);
+      }, 4, 8, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
@@ -2152,7 +2156,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val1', bind(1));
           elementProperty(0, 'publicName', bind(1));
         }
-      }, 1, defs);
+      }, 1, 2, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
@@ -2176,7 +2180,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val1', bind(1));
           elementProperty(0, 'publicName', bind(1));
         }
-      }, 1, defs);
+      }, 1, 2, defs);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual(['dir - val1=1 val2=1 - changed=[val1,val2]']);
@@ -2208,7 +2212,7 @@ describe('lifecycles', () => {
           containerRefreshStart(1);
           {
             for (let j = 2; j < 5; j++) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 2);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
               }
@@ -2221,7 +2225,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 3, defs);
+      }, 3, 4, defs);
 
       const fixture = new ComponentFixture(App);
 
@@ -2259,7 +2263,7 @@ describe('lifecycles', () => {
           containerRefreshStart(1);
           {
             for (let j = 2; j < 5; j++) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 2);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'parent');
               }
@@ -2272,7 +2276,7 @@ describe('lifecycles', () => {
           }
           containerRefreshEnd();
         }
-      }, 3, defs);
+      }, 3, 4, defs);
 
       const fixture = new ComponentFixture(App);
 
@@ -2300,7 +2304,7 @@ describe('lifecycles', () => {
     beforeEach(() => { events = []; });
 
     function createAllHooksComponent(
-        name: string, template: ComponentTemplate<any>, consts: number = 0,
+        name: string, template: ComponentTemplate<any>, consts: number = 0, vars: number = 0,
         directives: any[] = []) {
       return class Component {
         val: string = '';
@@ -2321,6 +2325,7 @@ describe('lifecycles', () => {
           selectors: [[name]],
           factory: () => new Component(),
           consts: consts,
+          vars: vars,
           inputs: {val: 'val'}, template,
           features: [NgOnChangesFeature],
           directives: directives
@@ -2344,7 +2349,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val', 1);
           elementProperty(1, 'val', 2);
         }
-      }, 2, [Comp]);
+      }, 2, 0, [Comp]);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
@@ -2372,7 +2377,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'val', bind(ctx.val));
         }
-      }, 1, [Comp]);
+      }, 1, 1, [Comp]);
 
       /**
        * <parent [val]="1"></parent>
@@ -2387,7 +2392,7 @@ describe('lifecycles', () => {
           elementProperty(0, 'val', 1);
           elementProperty(1, 'val', 2);
         }
-      }, 2, [Parent]);
+      }, 2, 0, [Parent]);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
@@ -2430,7 +2435,7 @@ describe('lifecycles', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(1, 'val', bind(ctx.val));
         }
-      }, 2, [View]);
+      }, 2, 1, [View]);
 
       /**
        * <parent [val]="1">
@@ -2455,7 +2460,7 @@ describe('lifecycles', () => {
           elementProperty(2, 'val', bind(2));
           elementProperty(3, 'val', bind(2));
         }
-      }, 4, [Parent, Content]);
+      }, 4, 4, [Parent, Content]);
 
       const fixture = new ComponentFixture(App);
       expect(events).toEqual([
@@ -2514,7 +2519,7 @@ describe('lifecycles', () => {
 
       function conditionTpl(rf: RenderFlags, ctx: Cmpt) {
         if (rf & RenderFlags.Create) {
-          template(0, null, 0, null, [AttributeMarker.SelectOnly, 'onDestroyDirective']);
+          template(0, null, 0, 1, null, [AttributeMarker.SelectOnly, 'onDestroyDirective']);
         }
       }
 
@@ -2525,7 +2530,7 @@ describe('lifecycles', () => {
        */
       function cmptTpl(rf: RenderFlags, cmpt: Cmpt) {
         if (rf & RenderFlags.Create) {
-          template(0, conditionTpl, 1, null, [AttributeMarker.SelectOnly, 'ngIf']);
+          template(0, conditionTpl, 1, 1, null, [AttributeMarker.SelectOnly, 'ngIf']);
         }
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'ngIf', bind(cmpt.showing));
@@ -2539,6 +2544,7 @@ describe('lifecycles', () => {
           factory: () => new Cmpt(),
           selectors: [['cmpt']],
           consts: 1,
+          vars: 1,
           template: cmptTpl,
           directives: [NgIf, OnDestroyDirective]
         });

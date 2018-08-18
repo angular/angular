@@ -110,10 +110,11 @@ describe('template variables', () => {
         selectors: [['my-component']],
         factory: function MyComponent_Factory() { return new MyComponent(); },
         consts: 2,
+        vars: 1,
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'ul');
-            $r3$.ɵtemplate(1, MyComponent_ForOfDirective_Template_1, 2, '', ['forOf', '']);
+            $r3$.ɵtemplate(1, MyComponent_ForOfDirective_Template_1, 2, 1, '', ['forOf', '']);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
@@ -152,7 +153,7 @@ describe('template variables', () => {
         $r3$.ɵelementEnd();
         $r3$.ɵelementStart(3, 'ul');
         $r3$.ɵtemplate(
-            4, MyComponent_ForOfDirective_ForOfDirective_Template_3, 2, '', ['forOf', '']);
+            4, MyComponent_ForOfDirective_ForOfDirective_Template_3, 2, 1, '', ['forOf', '']);
         $r3$.ɵelementEnd();
         $r3$.ɵelementEnd();
       }
@@ -203,16 +204,15 @@ describe('template variables', () => {
         selectors: [['my-component']],
         factory: function MyComponent_Factory() { return new MyComponent(); },
         consts: 2,
+        vars: 1,
         template: function MyComponent_Template(rf: $RenderFlags$, ctx: $MyComponent$) {
           if (rf & 1) {
             $r3$.ɵelementStart(0, 'ul');
-            $r3$.ɵtemplate(1, MyComponent_ForOfDirective_Template_1, 5, '', ['forOf', '']);
+            $r3$.ɵtemplate(1, MyComponent_ForOfDirective_Template_1, 5, 2, '', ['forOf', '']);
             $r3$.ɵelementEnd();
           }
           if (rf & 2) {
             $r3$.ɵelementProperty(1, 'forOf', $r3$.ɵbind(ctx.items));
-            $r3$.ɵcontainerRefreshStart(1);
-            $r3$.ɵcontainerRefreshEnd();
           }
         }
       });

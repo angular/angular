@@ -78,13 +78,14 @@ class ToDoAppComponent {
       return new ToDoAppComponent(r3.directiveInject(AppState));
     },
     consts: 6,
+    vars: 1,
     template: function ToDoAppComponent_Template(rf: $RenderFlags$, ctx: ToDoAppComponent) {
       if (rf & 1) {
         r3.elementStart(0, 'h1');
         r3.text(1, 'ToDo Application');
         r3.elementEnd();
         r3.elementStart(2, 'div');
-        r3.template(3, ToDoAppComponent_NgForOf_Template, 1, '', ['ngForOf', '']);
+        r3.template(3, ToDoAppComponent_NgForOf_Template, 1, 1, '', ['ngForOf', '']);
         r3.elementEnd();
         r3.elementStart(4, 'span');
         r3.text(5);
@@ -135,6 +136,7 @@ class ToDoItemComponent {
     selectors: [['todo']],
     factory: function ToDoItemComponent_Factory() { return new ToDoItemComponent(); },
     consts: 6,
+    vars: 2,
     template: function ToDoItemComponent_Template(rf: $RenderFlags$, ctx: ToDoItemComponent) {
       if (rf & 1) {
         r3.elementStart(0, 'div');

@@ -25,7 +25,7 @@ describe('elementProperty', () => {
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'id', bind(ctx.id));
       }
-    }, 1);
+    }, 1, 1);
 
     const fixture = new ComponentFixture(App);
     fixture.component.id = 'testId';
@@ -67,7 +67,7 @@ describe('elementProperty', () => {
       if (rf & RenderFlags.Update) {
         elementProperty(0, 'id', interpolation1('_', ctx.id, '_'));
       }
-    }, 1);
+    }, 1, 1);
 
     const fixture = new ComponentFixture(App);
     fixture.component.id = 'testId';
@@ -88,6 +88,7 @@ describe('elementProperty', () => {
         selectors: [['host-binding-comp']],
         factory: () => new HostBindingComp(),
         consts: 0,
+        vars: 0,
         hostBindings: (dirIndex: number, elIndex: number) => {
           const instance = loadDirective(dirIndex) as HostBindingComp;
           elementProperty(elIndex, 'id', bind(instance.id));
@@ -176,7 +177,7 @@ describe('elementProperty', () => {
           elementProperty(0, 'disabled', bind(ctx.isDisabled));
           elementProperty(0, 'id', bind(ctx.id));
         }
-      }, 2, deps);
+      }, 2, 2, deps);
 
       const fixture = new ComponentFixture(App);
       fixture.component.isDisabled = true;
@@ -207,7 +208,7 @@ describe('elementProperty', () => {
           elementProperty(0, 'disabled', bind(ctx.isDisabled));
           elementProperty(0, 'id', bind(ctx.id));
         }
-      }, 2, deps);
+      }, 2, 2, deps);
 
 
       const fixture = new ComponentFixture(App);
@@ -235,6 +236,7 @@ describe('elementProperty', () => {
           type: Comp,
           selectors: [['comp']],
           consts: 0,
+          vars: 0,
           template: function(rf: RenderFlags, ctx: any) {},
           factory: () => comp = new Comp(),
           inputs: {id: 'id'}
@@ -249,7 +251,7 @@ describe('elementProperty', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'id', bind(ctx.id));
         }
-      }, 1, [Comp]);
+      }, 1, 1, [Comp]);
 
       const fixture = new ComponentFixture(App);
       fixture.component.id = 1;
@@ -275,7 +277,7 @@ describe('elementProperty', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'disabled', bind(ctx.isDisabled));
         }
-      }, 2, deps);
+      }, 2, 1, deps);
 
       const fixture = new ComponentFixture(App);
       fixture.component.isDisabled = true;
@@ -305,7 +307,7 @@ describe('elementProperty', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'id', bind(ctx.id));
         }
-      }, 2, deps);
+      }, 2, 1, deps);
 
       const fixture = new ComponentFixture(App);
       let counter = 0;
@@ -345,7 +347,7 @@ describe('elementProperty', () => {
           containerRefreshStart(2);
           {
             if (ctx.condition) {
-              let rf0 = embeddedViewStart(0, 2);
+              let rf0 = embeddedViewStart(0, 2, 1);
               if (rf0 & RenderFlags.Create) {
                 elementStart(0, 'button');
                 { text(1, 'Click me too'); }
@@ -356,7 +358,7 @@ describe('elementProperty', () => {
               }
               embeddedViewEnd();
             } else {
-              let rf1 = embeddedViewStart(1, 2);
+              let rf1 = embeddedViewStart(1, 2, 1);
               if (rf1 & RenderFlags.Create) {
                 elementStart(0, 'button', ['otherDir', '']);
                 { text(1, 'Click me too'); }
@@ -370,7 +372,7 @@ describe('elementProperty', () => {
           }
           containerRefreshEnd();
         }
-      }, 3, deps);
+      }, 3, 1, deps);
 
       const fixture = new ComponentFixture(App);
       fixture.component.condition = true;
@@ -434,7 +436,7 @@ describe('elementProperty', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['role', 'button', 'myDir', '']);
         }
-      }, 1, deps);
+      }, 1, 0, deps);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual(`<div mydir="" role="button"></div>`);
@@ -451,7 +453,7 @@ describe('elementProperty', () => {
         if (rf & RenderFlags.Update) {
           elementProperty(0, 'role', bind(ctx.role));
         }
-      }, 1, deps);
+      }, 1, 1, deps);
 
       const fixture = new ComponentFixture(App);
       fixture.component.role = 'listbox';
@@ -471,7 +473,7 @@ describe('elementProperty', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['role', 'button', 'myDir', '', 'myDirB', '']);
         }
-      }, 1, deps);
+      }, 1, 0, deps);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual(`<div mydir="" mydirb="" role="button"></div>`);
@@ -486,7 +488,7 @@ describe('elementProperty', () => {
         if (rf & RenderFlags.Create) {
           element(0, 'div', ['role', 'button', 'dir', 'rtl', 'myDir', '']);
         }
-      }, 1, deps);
+      }, 1, 0, deps);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual(`<div dir="rtl" mydir="" role="button"></div>`);
@@ -503,7 +505,7 @@ describe('elementProperty', () => {
           { listener('change', () => ctx.onChange()); }
           elementEnd();
         }
-      }, 1, deps);
+      }, 1, 0, deps);
 
       const fixture = new ComponentFixture(App);
       let counter = 0;
@@ -527,7 +529,7 @@ describe('elementProperty', () => {
           element(0, 'div', ['role', 'button', 'dir', 'rtl', 'myDir', '']);
           element(1, 'div', ['role', 'listbox', 'myDirB', '']);
         }
-      }, 2, deps);
+      }, 2, 0, deps);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html)
@@ -557,13 +559,13 @@ describe('elementProperty', () => {
           containerRefreshStart(1);
           {
             if (ctx.condition) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'div', ['role', 'button', 'myDirB', '']);
               }
               embeddedViewEnd();
             } else {
-              let rf2 = embeddedViewStart(1, 1);
+              let rf2 = embeddedViewStart(1, 1, 0);
               if (rf2 & RenderFlags.Create) {
                 element(0, 'div', ['role', 'menu']);
               }
@@ -572,7 +574,7 @@ describe('elementProperty', () => {
           }
           containerRefreshEnd();
         }
-      }, 2, deps);
+      }, 2, 0, deps);
 
       const fixture = new ComponentFixture(App);
       fixture.component.condition = true;
@@ -596,6 +598,7 @@ describe('elementProperty', () => {
           type: Comp,
           selectors: [['comp']],
           consts: 3,
+          vars: 1,
           /** <div role="button" dir #dir="myDir"></div> {{ dir.role }} */
           template: function(rf: RenderFlags, ctx: any) {
             if (rf & RenderFlags.Create) {
@@ -625,7 +628,7 @@ describe('elementProperty', () => {
           containerRefreshStart(0);
           {
             for (let i = 0; i < 2; i++) {
-              let rf1 = embeddedViewStart(0, 1);
+              let rf1 = embeddedViewStart(0, 1, 0);
               if (rf1 & RenderFlags.Create) {
                 element(0, 'comp');
               }
@@ -634,7 +637,7 @@ describe('elementProperty', () => {
           }
           containerRefreshEnd();
         }
-      }, 1, [Comp]);
+      }, 1, 0, [Comp]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html)
