@@ -721,67 +721,130 @@ Import the `FormArray` class from `@angular/forms` to use for type information. 
 
 </code-example>
 
+<!--
 ### Step 2 - Define a `FormArray`
+-->
+### 2단계 - `FormArray` 정의하기
 
+<!--
 You can initialize a `FormArray` with any number of controls, from zero to many, by defining them in an array. Add an `aliases` property to the `FormGroup` for the `profileForm` to define the `FormArray`.
+-->
+`FormArray`는 배열로 초기화하며, 이 때 배열의 길이는 어떠한 것이라도 가능합니다. `profileForm`에 `aliases` 프로퍼티를 추가하고, 이 프로퍼티를 `FormArray`로 정의해 봅시다.
 
+<!--
 Use the `FormBuilder.array()` method to define the array, and the `FormBuilder.control()` method to populate the array with an initial control.
+-->
+`FormBuilder`를 사용한다면 `array()` 메소드로 폼 배열을 정의할 수 있으며, `FormBuilder.control()` 메소드를 사용해서 기본 폼 컨트롤을 생성합니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases" title="src/app/profile-editor/profile-editor.component.ts (aliases form array)">
 
 </code-example>
 
+<!--
 The _aliases_ control in the `FormGroup` is now populated with a single control until more are added dynamically.
+-->
+그러면 _aliases_ 폼 컨트롤은 `FormGroup` 안에 폼 배열로 선언되며, 이후에 동적으로 추가되기 전까지는 폼 컨트롤 1개로 구성됩니다.
 
+<!--
 ### Step 3 - Access the `FormArray` control
+-->
+### 3단계 - `FormArray` 활용하기
 
+<!--
 Because a `FormArray` represents an undefined number of controls in array, accessing the control through a getter provides convenience and reusability. Use the _getter_ syntax to create an _aliases_ class property to retrieve the alias's `FormArray` control from the parent `FormGroup`.
+-->
+`FormArray`는 개수가 변하는 폼 컨트롤을 배열로 표현하기 때문에, _aliases_ 프로퍼티에 게터(_getter_)를 사용하는 것이 편합니다. 다음과 같이 게터 함수를 정의합니다.
 
+<!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases-getter" title="src/app/profile-editor/profile-editor.component.ts (aliases getter)">
+-->
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases-getter" title="src/app/profile-editor/profile-editor.component.ts (aliases 게터)">
 
 </code-example>
 
+<!--
 The getter provides easy access to the aliases `FormArray` instead of repeating the `profileForm.get()` method to get the instance.
+-->
+그러면 이제 `profileForm.get()` 메소드를 사용하지 않아도 이 게터 함수를 사용해서 `FormArray` 인스턴스에 편하게 접근할 수 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 *Note*: Because the returned control is of type `AbstractControl`, you provide an explicit type to access the `FormArray` specific syntax for the methods.
+-->
+*참고*: 폼 컨트롤을 참조하기 위해 `get()` 메소드를 사용하면 `AbstractControl` 타입으로 폼 컨트롤을 받습니다. 공통 메소드를 사용한다면 이대로 활용해도 되지만, `FormArray`에 해당되는 메소드를 사용하려면 타입 캐스팅을 해야 합니다.
 
 </div>
 
+<!--
 Define a method to dynamically insert an alias control into the alias's `FormArray`. The `FormArray.push()` method inserts the control as a new item in the array.
+-->
+이번에는 `FormArray`에 동적으로 폼 컨트롤을 추가하는 함수를 정의해 봅시다. 폼 배열에 새로운 폼 컨트롤을 추가할 때는 `FormArray.push()` 메소드를 사용합니다.
 
+<!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="add-alias" title="src/app/profile-editor/profile-editor.component.ts (add alias)">
+-->
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="add-alias" title="src/app/profile-editor/profile-editor.component.ts (항목 추가)">
 
 </code-example>
 
+<!--
 In the template, the controls are iterated over to display each control as a separate input field.
+-->
+그러면 이 함수가 실행될 때마다 폼 배열에 폼 컨트롤이 추가되고, 폼 배열에 있는 폼 컨트롤마다 템플릿에 표시됩니다.
 
+<!--
 ### Step 4 - Display the form array in the template
+-->
+### 4단계 - 템플릿에 폼 배열 표시하기
 
+<!--
 After you define the aliases `FormArray` in your model, you must add it to the template for user input. Similar to the `formGroupName` input provided by the `FormGroupNameDirective`, a `formArrayName` binds communication from the `FormArray` to the template with the `FormArrayNameDirective`. 
+-->
+폼 모델에 `FormArray`를 추가하고 나면 이 모델이 템플릿에 표시되도록 템플릿을 수정해야 합니다. 이때 이전 예제에서 `FormGroupNameDirective`를 `formGroupName` 어트리뷰트로 바인딩했던 것과 비슷하게, `FormArrayNameDirective`를 사용해서 `formArrayName` 어트리뷰트를 사용해서 `FormArray`를 템플릿에 바인딩 하면 됩니다.
 
+<!--
 Add the template HTML below after the closing `formGroupName` `<div>` element.
+-->
+`formGroupName` `<div>` 엘리먼트 뒤에 다음과 같은 템플릿을 추가합니다.
 
+<!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" linenums="false" title="src/app/profile-editor/profile-editor.component.html (aliases form array template)">
+-->
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" linenums="false" title="src/app/profile-editor/profile-editor.component.html (aliases 폼 배열의 템플릿)">
 
 </code-example>
 
+<!--
 The `*ngFor` directive iterates over each `FormControl` provided by the aliases `FormArray`. Because `FormArray` elements are unnamed, you assign the _index_ to the `i` variable and pass it to each control to bind it to the `formControlName` input. 
+-->
+그러면 `*ngFor` 디렉티브가 `aliases` `FormArray`에 있는 각각의 `FormControl`를 순회합니다. 이 때 `FormArray` 안에 있는 엘리먼트에는 이름을 지정하지 않았기 때문에, `*ngFor`의 인덱스를 템플릿 변수 `i`로 선언하고 `formControlName`을 사용해서 각 입력 필드에 연결해 줍니다.
 
 <figure>
   <img src="generated/images/guide/reactive-forms/profile-editor-4.png" alt="Profile Editor Aliases">
 </figure>
 
+<!--
 Each time a new `alias` is added, the `FormArray` is provided its control based on the index. This allows you to track each individual control when calculating the status and value of the root control.
+-->
+이제는 폼 배열의 개수가 변하더라도 각각의 폼 컨트롤은 인덱스로 관리됩니다. 이 폼 배열이나 전체 폼 그룹의 값, 상태를 확인할 때도 같은 인덱스를 활용할 수 있습니다.
 
+<!--
 #### Add an Alias
+-->
+#### 별칭 추가하기
 
+<!--
 Initially, the form only contains one `Alias` field. Click the `Add Alias` button, and another field appears. You can also validate the array of aliases reported by the form model displayed by the `Form Value` at the bottom of the template.
+-->
+이 폼의 `Alias` 필드는 기본적으로 폼 컨트롤이 하나 존재합니다. 그리고 `Add Alias` 버튼을 누르면 폼 컨트롤이 추가되며, 이렇게 추가된 폼 컨트롤의 유효성 상태도 템플릿 아래에 추가했던 `Form Value` 부분을 통해 확인할 수 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 *Note*: Instead of a `FormControl` for each alias, you could compose another `FormGroup` with additional fields. The process of defining a control for each item is the same.
+-->
+*참고*: _aliases_ 필드는 `FormControl` 단위로 추가할 수도 있지만 `FormGroup` 단위로 추가할 수도 있습니다. 폼 컨트롤을 정의하고 활용하는 방법은 같습니다.
 
 </div>
 
