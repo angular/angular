@@ -29,7 +29,7 @@ export class ComponentNgElementZoneStrategyFactory extends ComponentNgElementStr
 export class ComponentNgElementZoneStrategy extends ComponentNgElementStrategy {
   private readonly ngZone: NgZone;
 
-  constructor(componentFactory: ComponentFactory<any>, protected readonly injector: Injector) {
+  constructor(componentFactory: ComponentFactory<any>, injector: Injector) {
     super(componentFactory, injector);
     this.ngZone = this.injector.get<NgZone>(NgZone);
   }
