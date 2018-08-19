@@ -27,9 +27,9 @@ export class ComponentNgElementZoneStrategyFactory extends ComponentNgElementStr
  * @experimental
  */
 export class ComponentNgElementZoneStrategy extends ComponentNgElementStrategy {
-  private ngZone: NgZone;
+  private readonly ngZone: NgZone;
 
-  constructor(protected componentFactory: ComponentFactory<any>, protected injector: Injector) {
+  constructor(componentFactory: ComponentFactory<any>, protected readonly injector: Injector) {
     super(componentFactory, injector);
     this.ngZone = this.injector.get<NgZone>(NgZone);
   }

@@ -67,7 +67,9 @@ export class ComponentNgElementStrategy implements NgElementStrategy {
   /** Set of inputs that were not initially set when the component was created. */
   private readonly uninitializedInputs = new Set<string>();
 
-  constructor(protected componentFactory: ComponentFactory<any>, protected injector: Injector) {}
+  constructor(
+      protected readonly componentFactory: ComponentFactory<any>,
+      protected readonly injector: Injector) {}
 
   /**
    * Initializes a new component if one has not yet been created and cancels any scheduled
