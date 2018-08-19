@@ -940,7 +940,8 @@ function needsAdditionalRootNode(astNodes: TemplateAst[]): boolean {
 
 
 function elementBindingDef(inputAst: BoundElementPropertyAst, dirAst: DirectiveAst): o.Expression {
-  switch (inputAst.type) {
+  const inputType = inputAst.type;
+  switch (inputType) {
     case PropertyBindingType.Attribute:
       return o.literalArr([
         o.literal(BindingFlags.TypeElementAttribute), o.literal(inputAst.name),
@@ -965,6 +966,13 @@ function elementBindingDef(inputAst: BoundElementPropertyAst, dirAst: DirectiveA
       return o.literalArr([
         o.literal(BindingFlags.TypeElementStyle), o.literal(inputAst.name), o.literal(inputAst.unit)
       ]);
+    default:
+      // This default case is not needed by TypeScript compiler, as the switch is exhaustive.
+      // However Closure Compiler does not understand that and reports an error in typed mode.
+      // The `throw new Error` below works around the problem, and the unexpected: never variable
+      // makes sure tsc still checks this code is unreachable.
+      const unexpected: never = inputType;
+      throw new Error(`unexpected ${unexpected}`);
   }
 }
 

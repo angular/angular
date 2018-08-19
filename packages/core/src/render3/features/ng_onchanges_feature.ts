@@ -89,7 +89,9 @@ export function NgOnChangesFeature<T>(definition: DirectiveDefInternal<T>): void
           }
 
           if (setter) setter.call(this, value);
-        }
+        },
+        // Make the property configurable in dev mode to allow overriding in tests
+        configurable: !!ngDevMode
       });
     }
   }

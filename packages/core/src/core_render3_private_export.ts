@@ -15,6 +15,8 @@ export {
   detectChanges as ɵdetectChanges,
   renderComponent as ɵrenderComponent,
   ComponentType as ɵComponentType,
+  ComponentFactory as ɵRender3ComponentFactory,
+  ComponentRef as ɵRender3ComponentRef,
   DirectiveType as ɵDirectiveType,
   RenderFlags as ɵRenderFlags,
   directiveInject as ɵdirectiveInject,
@@ -29,6 +31,7 @@ export {
   InheritDefinitionFeature as ɵInheritDefinitionFeature,
   NgOnChangesFeature as ɵNgOnChangesFeature,
   NgModuleType as ɵNgModuleType,
+  NgModuleRef as ɵRender3NgModuleRef,
   CssSelectorList as ɵCssSelectorList,
   markDirty as ɵmarkDirty,
   NgModuleFactory as ɵNgModuleFactory,
@@ -95,6 +98,7 @@ export {
   ld as ɵld,
   Pp as ɵPp,
   ComponentDef as ɵComponentDef,
+  ComponentDefInternal as ɵComponentDefInternal,
   DirectiveDef as ɵDirectiveDef,
   PipeDef as ɵPipeDef,
   whenRendered as ɵwhenRendered,
@@ -112,14 +116,38 @@ export {
   iM as ɵiM,
   I18nInstruction as ɵI18nInstruction,
   I18nExpInstruction as ɵI18nExpInstruction,
+  WRAP_RENDERER_FACTORY2 as ɵWRAP_RENDERER_FACTORY2,
+  Render3DebugRendererFactory2 as ɵRender3DebugRendererFactory2,
 } from './render3/index';
-export {NgModuleDef as ɵNgModuleDef} from './metadata/ng_module';
+
+
+export {
+  compileNgModuleDefs as ɵcompileNgModuleDefs,
+  patchComponentDefWithScope as ɵpatchComponentDefWithScope,
+} from './render3/jit/module';
+
+export {
+  compileComponent as ɵcompileComponent,
+  compileDirective as ɵcompileDirective,
+} from './render3/jit/directive';
+
+export {
+  compilePipe as ɵcompilePipe,
+} from './render3/jit/pipe';
+
+export {
+  NgModuleDef as ɵNgModuleDef,
+  NgModuleDefInternal as ɵNgModuleDefInternal,
+  NgModuleTransitiveScopes as ɵNgModuleTransitiveScopes,
+} from './metadata/ng_module';
+
 export {
   sanitizeHtml as ɵsanitizeHtml,
   sanitizeStyle as ɵsanitizeStyle,
   sanitizeUrl as ɵsanitizeUrl,
   sanitizeResourceUrl as ɵsanitizeResourceUrl,
 } from './sanitization/sanitization';
+
 export {
   bypassSanitizationTrustHtml as ɵbypassSanitizationTrustHtml,
   bypassSanitizationTrustStyle as ɵbypassSanitizationTrustStyle,

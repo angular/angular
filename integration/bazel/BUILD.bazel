@@ -24,9 +24,8 @@ filegroup(
 
 ANGULAR_TESTING = [
     "node_modules/@angular/*/bundles/*-testing.umd.js",
-    # We use AOT, so the compiler and the dynamic platform-browser should be
-    # visible only in tests
-    "node_modules/@angular/compiler/bundles/*.umd.js",
+    # We use AOT, so the dynamic platform-browser should be visible only in tests
+    # NOTE that we still need to include the compiler because the core depends on it
     "node_modules/@angular/platform-browser-dynamic/bundles/*.umd.js",
 ]
 

@@ -43,6 +43,16 @@ export {
  * application.
  */
 export const COMMON_DIRECTIVES: Provider[] = [
-  NgClass, NgComponentOutlet, NgForOf, NgIf, NgTemplateOutlet, NgStyle, NgSwitch, NgSwitchCase,
-  NgSwitchDefault, NgPlural, NgPluralCase, NgLet
+  NgClass,
+  NgComponentOutlet,
+  NgForOf,
+  NgIf,
+  NgLet,
+  NgTemplateOutlet,
+  NgStyle,
+  NgSwitch,
+  NgSwitchCase,
+  NgSwitchDefault,
+  NgPlural,
+  NgPluralCase,
 ];

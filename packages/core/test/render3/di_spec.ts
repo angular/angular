@@ -1159,7 +1159,7 @@ describe('di', () => {
           /** <div *myIf="showing" dir dirSameInstance #dir="dir"> {{ dir.value }} </div> */
           template: function(rf: RenderFlags, ctx: MyApp) {
             if (rf & RenderFlags.Create) {
-              container(0, C1, undefined, ['myIf', 'showing']);
+              container(0, C1, null, ['myIf', 'showing']);
             }
             if (rf & RenderFlags.Update) {
               containerRefreshStart(0);
