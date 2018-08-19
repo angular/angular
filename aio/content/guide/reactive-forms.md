@@ -862,20 +862,32 @@ Initially, the form only contains one `Alias` field. Click the `Add Alias` butto
 -->
 ### 반응형 폼 API
 
+<!--
 Listed below are the base classes and services used to create and manage form controls.
+-->
+폼 컨트롤을 활용하면서 자주 사용하는 클래스와 서비스를 알아봅시다.
 
+<!--
 #### Classes
+-->
+#### 클래스
 
 <table>
 
   <tr>
 
     <th>
+      <!--
       Class
+      -->
+      클래스
     </th>
 
     <th>
+      <!--
       Description
+      -->
+      설명
     </th>
 
   </tr>
@@ -888,7 +900,10 @@ Listed below are the base classes and services used to create and manage form co
 
     <td>
 
+      <!--
       The abstract base class for the three concrete form control classes; `FormControl`, `FormGroup`, and `FormArray`. It provides their common behaviors and properties.
+      -->
+      폼 컨트롤을 표현하는 `FormControl`, `FormGroup`, `FormArray`의 추상 클래스입니다. 폼 컨트롤의 공통 기능과 프로퍼티를 정의합니다.
 
     </td>
 
@@ -902,7 +917,10 @@ Listed below are the base classes and services used to create and manage form co
 
     <td>
 
+      <!--
       Manages the value and validity status of an individual form control. It corresponds to an HTML form control such as an `<input>` or `<select>`.
+      -->
+      개별 폼 컨트롤의 값과 유효성 검사 상태를 관리하는 클래스입니다. 이 클래스는 HTML 문서의 `<input>`이나 `<select>` 엘리먼트와 연동됩니다.
 
     </td>
 
@@ -916,7 +934,10 @@ Listed below are the base classes and services used to create and manage form co
 
     <td>
 
+      <!--
       Manages the value and validity state of a group of `AbstractControl` instances. The group's properties include its child controls. The top-level form in your component is a `FormGroup`.
+      -->
+      연관된 `AbstractControl` 인스턴스를 그룹으로 관리할 때 사용하는 클래스입니다. 이 그룹은 자식 폼 컨트롤을 프로퍼티로 관리하며, 그룹에 접근해도 자식 폼 컨트롤의 값이나 유효성 검사 상태도 확인할 수 있습니다. 컴포넌트의 최상위 폼도 `FormGroup` 입니다.
 
     </td>
 
@@ -930,7 +951,10 @@ Listed below are the base classes and services used to create and manage form co
 
     <td>
 
+    <!--
     Manages the value and validity state of a numerically indexed array of `AbstractControl` instances.
+    -->
+    `AbstractControl`을 배열 형태로 관리할 때 사용하는 클래스입니다.
 
     </td>
 
@@ -944,7 +968,10 @@ Listed below are the base classes and services used to create and manage form co
 
     <td>
 
+      <!--
       An injectable service that provides factory methods for creating control instances.
+      -->
+      폼 컨트롤 인스턴스를 간편하게 만들때 사용하는 서비스입니다.
 
     </td>
 
@@ -952,7 +979,10 @@ Listed below are the base classes and services used to create and manage form co
 
 </table>
 
+<!--
 When importing the `ReactiveFormsModule`, you also gain access to directives to use in your templates for binding the data model to the forms declaratively.
+-->
+그리고 애플리케이션에 `ReactiveFormsModule`을 로드하면 템플릿에 다음과 같은 디렉티브를 자유롭게 사용할 수 있습니다. 이 디렉티브들은 데이터 모델과 폼을 바인딩할 때 사용합니다.
 
 #### Directives
 
