@@ -1,3 +1,16 @@
+<a name="6.4.6"></a>
+## [6.4.6 argon-aftershave](https://github.com/angular/material2/compare/6.4.5...6.4.6) (2018-08-20)
+
+
+### Bug Fixes
+
+* **cdk-text-field:** prevent keyframes from getting stripped by LibSass ([#12567](https://github.com/angular/material2/issues/12567)) ([4180e72](https://github.com/angular/material2/commit/4180e72))
+* **form-field:** update label gap for outline style ([#12555](https://github.com/angular/material2/issues/12555)) ([ffeb779](https://github.com/angular/material2/commit/ffeb779))
+* **progress-bar:** query state animation not working ([#11459](https://github.com/angular/material2/issues/11459)) ([948f655](https://github.com/angular/material2/commit/948f655)), closes [#11453](https://github.com/angular/material2/issues/11453)
+* **selection-list:** do not allow toggling disabled options ([#12617](https://github.com/angular/material2/issues/12617)) ([3c1995d](https://github.com/angular/material2/commit/3c1995d)), closes [#12608](https://github.com/angular/material2/issues/12608)
+* **tabs:** changed after checked error when using isActive in view ([#12206](https://github.com/angular/material2/issues/12206)) ([75632bd](https://github.com/angular/material2/commit/75632bd)), closes [#12197](https://github.com/angular/material2/issues/12197)
+
+
 <a name="6.4.5"></a>
 ## [6.4.5 mithril-magnet](https://github.com/angular/material2/compare/6.4.3...6.4.4) (2018-08-13)
 
