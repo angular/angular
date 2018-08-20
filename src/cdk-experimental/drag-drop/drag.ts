@@ -223,19 +223,23 @@ export class CdkDrag<T = any> implements OnDestroy {
   /** Handler for when the pointer is pressed down on the element or the handle. */
   private _pointerDown = (referenceElement: ElementRef<HTMLElement>,
                           event: MouseEvent | TouchEvent) => {
-    if (this._dragDropRegistry.isDragging(this)) {
+
+    const isDragging = this._dragDropRegistry.isDragging(this);
+
+    // Abort if the user is already dragging or is using a mouse button other than the primary one.
+    if (isDragging || (!this._isTouchEvent(event) && event.button !== 0)) {
       return;
     }
 
     const endedOrDestroyed = merge(this.ended, this._destroyed);
 
     this._dragDropRegistry.pointerMove
-        .pipe(takeUntil(endedOrDestroyed))
-        .subscribe(this._pointerMove);
+      .pipe(takeUntil(endedOrDestroyed))
+      .subscribe(this._pointerMove);
 
-        this._dragDropRegistry.pointerUp
-        .pipe(takeUntil(endedOrDestroyed))
-        .subscribe(this._pointerUp);
+    this._dragDropRegistry.pointerUp
+      .pipe(takeUntil(endedOrDestroyed))
+      .subscribe(this._pointerUp);
 
     this._dragDropRegistry.startDragging(this, event);
     this._initialContainer = this.dropContainer;

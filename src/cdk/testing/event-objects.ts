@@ -7,7 +7,7 @@
  */
 
 /** Creates a browser MouseEvent with the specified options. */
-export function createMouseEvent(type: string, x = 0, y = 0) {
+export function createMouseEvent(type: string, x = 0, y = 0, button = 0) {
   const event = document.createEvent('MouseEvent');
 
   event.initMouseEvent(type,
@@ -23,7 +23,7 @@ export function createMouseEvent(type: string, x = 0, y = 0) {
     false, /* altKey */
     false, /* shiftKey */
     false, /* metaKey */
-    0, /* button */
+    button, /* button */
     null /* relatedTarget */);
 
   return event;

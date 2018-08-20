@@ -12,7 +12,12 @@ import {
 } from '@angular/core';
 import {TestBed, ComponentFixture, fakeAsync, flush, tick} from '@angular/core/testing';
 import {DragDropModule} from './drag-drop-module';
-import {dispatchMouseEvent, dispatchTouchEvent} from '@angular/cdk/testing';
+import {
+  createMouseEvent,
+  dispatchEvent,
+  dispatchMouseEvent,
+  dispatchTouchEvent,
+} from '@angular/cdk/testing';
 import {Directionality} from '@angular/cdk/bidi';
 import {CdkDrag} from './drag';
 import {CdkDragDrop} from './drag-events';
@@ -95,6 +100,26 @@ describe('CdkDrag', () => {
 
           cleanup();
         }));
+
+      it('should not drag an element with the right mouse button', fakeAsync(() => {
+        const fixture = createComponent(StandaloneDraggable);
+        fixture.detectChanges();
+        const dragElement = fixture.componentInstance.dragElement.nativeElement;
+        const event = createMouseEvent('mousedown', 50, 100, 2);
+
+        expect(dragElement.style.transform).toBeFalsy();
+
+        dispatchEvent(dragElement, event);
+        fixture.detectChanges();
+
+        dispatchMouseEvent(document, 'mousemove', 50, 100);
+        fixture.detectChanges();
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+
+        expect(dragElement.style.transform).toBeFalsy();
+      }));
     });
 
     describe('touch dragging', () => {
