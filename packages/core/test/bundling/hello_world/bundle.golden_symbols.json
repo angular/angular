@@ -99,6 +99,9 @@
     "name": "baseDirectiveCreate"
   },
   {
+    "name": "bindingRootIndex"
+  },
+  {
     "name": "bloomAdd"
   },
   {
