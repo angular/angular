@@ -309,7 +309,7 @@ describe('elements', () => {
       }
 
       const comp = renderComponent(MyComponent);
-      expect(toHtml(comp)).toEqual('<div></div>');
+      expect(toHtml(comp)).toEqual('<div class=""></div>');
 
       comp.someFlag = true;
       $r3$.ɵdetectChanges(comp);
