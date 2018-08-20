@@ -21,4 +21,5 @@ def ng_setup_workspace():
     )
 
     # 0.16.0: minimal version required to work with ng_module
-    check_rules_typescript_version("0.16.0")
+    # 0.16.2: bazel type resolution for zone.js types
+    check_rules_typescript_version("0.16.2")

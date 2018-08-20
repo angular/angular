@@ -78,6 +78,9 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   trace !: (s: string) => void;
   // TODO(issue/24571): remove '!'.
   getDirectories !: (path: string) => string[];
+  resolveTypeReferenceDirectives?:
+      (names: string[],
+       containingFile: string) => (ts.ResolvedTypeReferenceDirective | undefined)[];
   directoryExists?: (directoryName: string) => boolean;
 
   constructor(
@@ -101,6 +104,10 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
     }
     if (context.getDefaultLibLocation) {
       this.getDefaultLibLocation = () => context.getDefaultLibLocation !();
+    }
+    if (context.resolveTypeReferenceDirectives) {
+      this.resolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
+          context.resolveTypeReferenceDirectives !(names, containingFile);
     }
     if (context.trace) {
       this.trace = s => context.trace !(s);
