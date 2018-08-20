@@ -304,6 +304,8 @@ describe('InheritDefinitionFeature', () => {
       static ngComponentDef = defineComponent({
         type: SuperComponent,
         template: () => {},
+        consts: 0,
+        vars: 0,
         selectors: [['', 'superDir', '']],
         viewQuery: <T>(rf: RenderFlags, ctx: T) => {
           log.push(['super', rf, ctx]);
@@ -316,6 +318,8 @@ describe('InheritDefinitionFeature', () => {
       static ngComponentDef = defineComponent({
         type: SubComponent,
         template: () => {},
+        consts: 0,
+        vars: 0,
         selectors: [['', 'subDir', '']],
         viewQuery: (directiveIndex: number, elementIndex: number) => {
           log.push(['sub', directiveIndex, elementIndex]);
