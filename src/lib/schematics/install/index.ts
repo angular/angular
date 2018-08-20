@@ -24,7 +24,7 @@ import {getProjectStyleFile} from '../utils/project-style-file';
 import {addFontsToIndex} from './fonts/material-fonts';
 import {Schema} from './schema';
 import {addThemeToAppStyles} from './theming/theming';
-import {materialVersion, requiredAngularVersion} from './version-names';
+import {materialVersion, requiredAngularVersionRange} from './version-names';
 
 /**
  * Scaffolds the basics of a Angular Material application, this includes:
@@ -55,10 +55,10 @@ function addMaterialToPackageJson() {
     // have the same version tag if possible.
     const ngCoreVersionTag = getPackageVersionFromPackageJson(host, '@angular/core');
 
-    addPackageToPackageJson(host, 'dependencies', '@angular/cdk', materialVersion);
-    addPackageToPackageJson(host, 'dependencies', '@angular/material', materialVersion);
+    addPackageToPackageJson(host, 'dependencies', '@angular/cdk', `^${materialVersion}`);
+    addPackageToPackageJson(host, 'dependencies', '@angular/material', `^${materialVersion}`);
     addPackageToPackageJson(host, 'dependencies', '@angular/animations',
-        ngCoreVersionTag || requiredAngularVersion);
+        ngCoreVersionTag || requiredAngularVersionRange);
 
     context.addTask(new NodePackageInstallTask());
 
