@@ -101,8 +101,5 @@ export function decorateDeprecatedDoc(doc: DeprecationDoc) {
 
   if (doc.isDeprecated && !doc.breakingChange) {
     console.warn('Warning: There is a deprecated item without a @breaking-change tag.', doc.id);
-  } else if  (doc.breakingChange && !doc.isDeprecated) {
-    console.warn('Warning: There is an item with a @breaking-change which is not deprecated.',
-      doc.id);
   }
 }
