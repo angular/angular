@@ -359,4 +359,45 @@ describe('compiler compliance: template', () => {
 
     expectEmit(result.source, template, 'Incorrect template');
   });
+
+  it('should support local refs on <ng-template>', () => {
+
+    const files = {
+      app: {
+        'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: '<ng-template #foo>some-content</ng-template>';
+              })
+              export class MyComponent {}
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+      }
+    };
+
+    const template = `
+      const _c0 = ["foo", ""];
+
+      function Template_0(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵtext(0, "some-content");
+        }
+      }
+
+      // ...
+
+      template: function MyComponent_Template(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵtemplate(0, Template_0, 1, null, null, _c0, i0.ɵtemplateRefExtractor);
+        }
+      }`;
+
+    const result = compile(files, angularFiles);
+
+    expectEmit(result.source, template, 'Incorrect template');
+  });
 });
