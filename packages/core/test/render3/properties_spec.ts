@@ -79,30 +79,379 @@ describe('elementProperty', () => {
     expect(fixture.html).toEqual('<span id="_otherId_"></span>');
   });
 
-  it('should support host bindings on root component', () => {
-    class HostBindingComp {
-      id = 'my-id';
+  describe('host', () => {
+    let nameComp !: NameComp;
+
+    class NameComp {
+      names !: string[];
 
       static ngComponentDef = defineComponent({
-        type: HostBindingComp,
-        selectors: [['host-binding-comp']],
-        factory: () => new HostBindingComp(),
+        type: NameComp,
+        selectors: [['name-comp']],
+        factory: function NameComp_Factory() { return nameComp = new NameComp(); },
         consts: 0,
         vars: 0,
-        hostBindings: (dirIndex: number, elIndex: number) => {
-          const instance = loadDirective(dirIndex) as HostBindingComp;
-          elementProperty(elIndex, 'id', bind(instance.id));
-        },
-        template: (rf: RenderFlags, ctx: HostBindingComp) => {}
+        template: function NameComp_Template(rf: RenderFlags, ctx: NameComp) {},
+        inputs: {names: 'names'}
       });
     }
 
-    const fixture = new ComponentFixture(HostBindingComp);
-    expect(fixture.hostElement.id).toBe('my-id');
+    it('should support host bindings in directives', () => {
+      let directiveInstance: Directive|undefined;
 
-    fixture.component.id = 'other-id';
-    tick(fixture.component);
-    expect(fixture.hostElement.id).toBe('other-id');
+      class Directive {
+        // @HostBinding('className')
+        klass = 'foo';
+
+        static ngDirectiveDef = defineDirective({
+          type: Directive,
+          selectors: [['', 'dir', '']],
+          factory: () => directiveInstance = new Directive,
+          hostVars: 1,
+          hostBindings: (directiveIndex: number, elementIndex: number) => {
+            elementProperty(
+                elementIndex, 'className', bind(loadDirective<Directive>(directiveIndex).klass));
+          }
+        });
+      }
+
+      function Template() { element(0, 'span', [AttributeMarker.SelectOnly, 'dir']); }
+
+      const fixture = new TemplateFixture(Template, () => {}, 1, 0, [Directive]);
+      expect(fixture.html).toEqual('<span class="foo"></span>');
+
+      directiveInstance !.klass = 'bar';
+      fixture.update();
+      expect(fixture.html).toEqual('<span class="bar"></span>');
+    });
+
+    it('should support host bindings on root component', () => {
+      class HostBindingComp {
+        // @HostBinding()
+        id = 'my-id';
+
+        static ngComponentDef = defineComponent({
+          type: HostBindingComp,
+          selectors: [['host-binding-comp']],
+          factory: () => new HostBindingComp(),
+          consts: 0,
+          vars: 0,
+          hostVars: 1,
+          hostBindings: (dirIndex: number, elIndex: number) => {
+            const instance = loadDirective(dirIndex) as HostBindingComp;
+            elementProperty(elIndex, 'id', bind(instance.id));
+          },
+          template: (rf: RenderFlags, ctx: HostBindingComp) => {}
+        });
+      }
+
+      const fixture = new ComponentFixture(HostBindingComp);
+      expect(fixture.hostElement.id).toBe('my-id');
+
+      fixture.component.id = 'other-id';
+      fixture.update();
+      expect(fixture.hostElement.id).toBe('other-id');
+    });
+
+    it('should support component with host bindings and array literals', () => {
+      const ff = (v: any) => ['Nancy', v, 'Ned'];
+
+      class HostBindingComp {
+        // @HostBinding()
+        id = 'my-id';
+
+        static ngComponentDef = defineComponent({
+          type: HostBindingComp,
+          selectors: [['host-binding-comp']],
+          factory: () => new HostBindingComp(),
+          consts: 0,
+          vars: 0,
+          hostVars: 1,
+          hostBindings: (dirIndex: number, elIndex: number) => {
+            const ctx = loadDirective(dirIndex) as HostBindingComp;
+            elementProperty(elIndex, 'id', bind(ctx.id));
+          },
+          template: (rf: RenderFlags, ctx: HostBindingComp) => {}
+        });
+      }
+
+      /**
+       * <name-comp [names]="['Nancy', name, 'Ned']"></name-comp>
+       * <host-binding-comp></host-binding-comp>
+       */
+      const AppComponent = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'name-comp');
+          element(1, 'host-binding-comp');
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'names', bind(pureFunction1(1, ff, ctx.name)));
+        }
+      }, 2, 3, [HostBindingComp, NameComp]);
+
+      const fixture = new ComponentFixture(AppComponent);
+      const hostBindingEl = fixture.hostElement.querySelector('host-binding-comp') as HTMLElement;
+      fixture.component.name = 'Betty';
+      fixture.update();
+      expect(hostBindingEl.id).toBe('my-id');
+      expect(nameComp.names).toEqual(['Nancy', 'Betty', 'Ned']);
+
+      const firstArray = nameComp.names;
+      fixture.update();
+      expect(firstArray).toBe(nameComp.names);
+
+      fixture.component.name = 'my-id';
+      fixture.update();
+      expect(hostBindingEl.id).toBe('my-id');
+      expect(nameComp.names).toEqual(['Nancy', 'my-id', 'Ned']);
+    });
+
+    // Note: This is a contrived example. For feature parity with render2, we should make sure it
+    // works in this way (see https://stackblitz.com/edit/angular-cbqpbe), but a more realistic
+    // example would be an animation host binding with a literal defining the animation config.
+    // When animation support is added, we should add another test for that case.
+    it('should support host bindings that contain array literals', () => {
+      const ff = (v: any) => ['red', v];
+      const ff2 = (v: any, v2: any) => [v, v2];
+      const ff3 = (v: any, v2: any) => [v, 'Nancy', v2];
+      let hostBindingComp !: HostBindingComp;
+
+      /**
+       * @Component({
+       *   ...
+       *   host: {
+       *     `[id]`: `['red', id]`,
+       *     `[dir]`: `dir`,
+       *     `[title]`: `[title, otherTitle]`
+       *   }
+       * })
+       *
+       */
+      class HostBindingComp {
+        id = 'blue';
+        dir = 'ltr';
+        title = 'my title';
+        otherTitle = 'other title';
+
+        static ngComponentDef = defineComponent({
+          type: HostBindingComp,
+          selectors: [['host-binding-comp']],
+          factory: () => hostBindingComp = new HostBindingComp(),
+          consts: 0,
+          vars: 0,
+          hostVars: 8,
+          hostBindings: (dirIndex: number, elIndex: number) => {
+            const ctx = loadDirective(dirIndex) as HostBindingComp;
+            // LViewData: [..., id, dir, title, ctx.id, pf1, ctx.title, ctx.otherTitle, pf2]
+            elementProperty(elIndex, 'id', bind(pureFunction1(3, ff, ctx.id)));
+            elementProperty(elIndex, 'dir', bind(ctx.dir));
+            elementProperty(
+                elIndex, 'title', bind(pureFunction2(5, ff2, ctx.title, ctx.otherTitle)));
+          },
+          template: (rf: RenderFlags, ctx: HostBindingComp) => {}
+        });
+      }
+
+      /**
+       * <name-comp [names]="[name, 'Nancy', otherName]"></name-comp>
+       * <host-binding-comp></host-binding-comp>
+       */
+      const AppComponent = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'name-comp');
+          element(1, 'host-binding-comp');
+        }
+        if (rf & RenderFlags.Update) {
+          elementProperty(0, 'names', bind(pureFunction2(1, ff3, ctx.name, ctx.otherName)));
+        }
+      }, 2, 4, [HostBindingComp, NameComp]);
+
+      const fixture = new ComponentFixture(AppComponent);
+      fixture.component.name = 'Frank';
+      fixture.component.otherName = 'Joe';
+      fixture.update();
+
+      const hostBindingEl = fixture.hostElement.querySelector('host-binding-comp') as HTMLElement;
+      expect(hostBindingEl.id).toBe('red,blue');
+      expect(hostBindingEl.dir).toBe('ltr');
+      expect(hostBindingEl.title).toBe('my title,other title');
+      expect(nameComp.names).toEqual(['Frank', 'Nancy', 'Joe']);
+
+      const firstArray = nameComp.names;
+      fixture.update();
+      expect(firstArray).toBe(nameComp.names);
+
+      hostBindingComp.id = 'green';
+      hostBindingComp.dir = 'rtl';
+      hostBindingComp.title = 'TITLE';
+      fixture.update();
+      expect(hostBindingEl.id).toBe('red,green');
+      expect(hostBindingEl.dir).toBe('rtl');
+      expect(hostBindingEl.title).toBe('TITLE,other title');
+    });
+
+    it('should support host bindings with literals from multiple directives', () => {
+      let hostBindingComp !: HostBindingComp;
+      let hostBindingDir !: HostBindingDir;
+
+      const ff = (v: any) => ['red', v];
+
+      /**
+       * @Component({
+       *   ...
+       *   host: {
+       *     '[id]': '['red', id]'
+       *   }
+       * })
+       *
+       */
+      class HostBindingComp {
+        id = 'blue';
+
+        static ngComponentDef = defineComponent({
+          type: HostBindingComp,
+          selectors: [['host-binding-comp']],
+          factory: () => hostBindingComp = new HostBindingComp(),
+          consts: 0,
+          vars: 0,
+          hostVars: 3,
+          hostBindings: (dirIndex: number, elIndex: number) => {
+            // LViewData: [..., id, ctx.id, pf1]
+            const ctx = loadDirective(dirIndex) as HostBindingComp;
+            elementProperty(elIndex, 'id', bind(pureFunction1(1, ff, ctx.id)));
+          },
+          template: (rf: RenderFlags, ctx: HostBindingComp) => {}
+        });
+      }
+
+      const ff1 = (v: any) => [v, 'other title'];
+
+      /**
+       * @Directive({
+       *   ...
+       *   host: {
+       *     '[title]': '[title, 'other title']'
+       *   }
+       * })
+       *
+       */
+      class HostBindingDir {
+        title = 'my title';
+
+        static ngDirectiveDef = defineDirective({
+          type: HostBindingDir,
+          selectors: [['', 'hostDir', '']],
+          factory: () => hostBindingDir = new HostBindingDir(),
+          hostVars: 3,
+          hostBindings: (dirIndex: number, elIndex: number) => {
+            // LViewData [..., title, ctx.title, pf1]
+            const ctx = loadDirective(dirIndex) as HostBindingDir;
+            elementProperty(elIndex, 'title', bind(pureFunction1(1, ff1, ctx.title)));
+          }
+        });
+      }
+
+      /**
+       * <host-binding-comp hostDir>
+       * </host-binding-comp>
+       */
+      const AppComponent = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'host-binding-comp', ['hostDir', '']);
+        }
+      }, 1, 0, [HostBindingComp, HostBindingDir]);
+
+      const fixture = new ComponentFixture(AppComponent);
+      const hostElement = fixture.hostElement.querySelector('host-binding-comp') as HTMLElement;
+      expect(hostElement.id).toBe('red,blue');
+      expect(hostElement.title).toBe('my title,other title');
+
+      hostBindingDir.title = 'blue';
+      fixture.update();
+      expect(hostElement.title).toBe('blue,other title');
+
+      hostBindingComp.id = 'green';
+      fixture.update();
+      expect(hostElement.id).toBe('red,green');
+    });
+
+    it('should support ternary expressions in host bindings', () => {
+      let hostBindingComp !: HostBindingComp;
+
+      const ff = (v: any) => ['red', v];
+      const ff1 = (v: any) => [v];
+
+      /**
+       * @Component({
+       *   ...
+       *   host: {
+       *     `[id]`: `condition ? ['red', id] : 'green'`,
+       *     `[title]`: `otherCondition ? [title] : 'other title'`
+       *   }
+       * })
+       *
+       */
+      class HostBindingComp {
+        condition = true;
+        otherCondition = true;
+        id = 'blue';
+        title = 'blue';
+
+        static ngComponentDef = defineComponent({
+          type: HostBindingComp,
+          selectors: [['host-binding-comp']],
+          factory: () => hostBindingComp = new HostBindingComp(),
+          consts: 0,
+          vars: 0,
+          hostVars: 6,
+          hostBindings: (dirIndex: number, elIndex: number) => {
+            // LViewData: [..., id, title, ctx.id, pf1, ctx.title, pf1]
+            const ctx = loadDirective(dirIndex) as HostBindingComp;
+            elementProperty(
+                elIndex, 'id', bind(ctx.condition ? pureFunction1(2, ff, ctx.id) : 'green'));
+            elementProperty(
+                elIndex, 'title',
+                bind(ctx.otherCondition ? pureFunction1(4, ff1, ctx.title) : 'other title'));
+          },
+          template: (rf: RenderFlags, ctx: HostBindingComp) => {}
+        });
+      }
+
+      /**
+       * <host-binding-comp></host-binding-comp>
+       * {{ name }}
+       */
+      const AppComponent = createComponent('app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          element(0, 'host-binding-comp');
+          text(1);
+        }
+        if (rf & RenderFlags.Update) {
+          textBinding(1, bind(ctx.name));
+        }
+      }, 2, 1, [HostBindingComp]);
+
+      const fixture = new ComponentFixture(AppComponent);
+      const hostElement = fixture.hostElement.querySelector('host-binding-comp') as HTMLElement;
+      fixture.component.name = 'Ned';
+      fixture.update();
+      expect(hostElement.id).toBe('red,blue');
+      expect(hostElement.title).toBe('blue');
+      expect(fixture.html)
+          .toEqual(`<host-binding-comp id="red,blue" title="blue"></host-binding-comp>Ned`);
+
+      hostBindingComp.condition = false;
+      hostBindingComp.title = 'TITLE';
+      fixture.update();
+      expect(hostElement.id).toBe('green');
+      expect(hostElement.title).toBe('TITLE');
+
+      hostBindingComp.otherCondition = false;
+      fixture.update();
+      expect(hostElement.id).toBe('green');
+      expect(hostElement.title).toBe('other title');
+    });
+
   });
 
   describe('input properties', () => {

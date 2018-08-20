@@ -239,6 +239,18 @@ let checkNoChangesMode = false;
 /** Whether or not this is the first time the current view has been processed. */
 let firstTemplatePass = true;
 
+/**
+ * The root index from which pure function instructions should calculate their binding
+ * indices. In component views, this is TView.bindingStartIndex. In a host binding
+ * context, this is the TView.hostBindingStartIndex + any hostVars before the given dir.
+ */
+let bindingRootIndex: number = -1;
+
+// top level variables should not be exported for performance reasons (PERF_NOTES.md)
+export function getBindingRoot() {
+  return bindingRootIndex;
+}
+
 const enum BindingDirection {
   Input,
   Output,
@@ -263,7 +275,7 @@ export function enterView(newView: LViewData, host: LElementNode | LViewNode | n
 
   creationMode = newView && (newView[FLAGS] & LViewFlags.CreationMode) === LViewFlags.CreationMode;
   firstTemplatePass = newView && tView.firstTemplatePass;
-
+  bindingRootIndex = newView && tView.bindingStartIndex;
   renderer = newView && newView[RENDERER];
 
   if (host != null) {
@@ -295,7 +307,7 @@ export function leaveView(newView: LViewData, creationOnly?: boolean): void {
     viewData[FLAGS] &= ~(LViewFlags.CreationMode | LViewFlags.Dirty);
   }
   viewData[FLAGS] |= LViewFlags.RunInit;
-  viewData[BINDING_INDEX] = -1;
+  viewData[BINDING_INDEX] = tView.bindingStartIndex;
   enterView(newView, null);
 }
 
@@ -329,11 +341,13 @@ function refreshDescendantViews() {
 /** Sets the host bindings for the current view. */
 export function setHostBindings(bindings: number[] | null): void {
   if (bindings != null) {
+    bindingRootIndex = viewData[BINDING_INDEX] = tView.hostBindingStartIndex;
     const defs = tView.directives !;
     for (let i = 0; i < bindings.length; i += 2) {
       const dirIndex = bindings[i];
       const def = defs[dirIndex] as DirectiveDefInternal<any>;
       def.hostBindings && def.hostBindings(dirIndex, bindings[i + 1]);
+      bindingRootIndex = viewData[BINDING_INDEX] = bindingRootIndex + def.hostVars;
     }
   }
 }
@@ -377,7 +391,7 @@ export function createLViewData<T>(
     null,                                                                        // queries
     flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit,  // flags
     null !,                                                                      // hostNode
-    -1,                                                                          // bindingIndex
+    tView.bindingStartIndex,                                                     // bindingIndex
     null,                                                                        // directives
     null,                                                                        // cleanupInstances
     context,                                                                     // context
@@ -600,7 +614,6 @@ export function renderEmbeddedTemplate<T>(
 
       oldView = enterView(viewNode.data !, viewNode);
       namespaceHTML();
-      viewData[BINDING_INDEX] = tView.bindingStartIndex;
       tView.template !(rf, context);
       if (rf & RenderFlags.Update) {
         refreshDescendantViews();
@@ -644,7 +657,6 @@ export function renderComponentOrTemplate<T>(
     }
     if (templateFn) {
       namespaceHTML();
-      viewData[BINDING_INDEX] = tView.bindingStartIndex;
       templateFn(getRenderFlags(hostView), componentOrContext !);
       refreshDescendantViews();
     } else {
@@ -1042,6 +1054,7 @@ export function createTView(
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
     viewQuery: ComponentQuery<any>| null): TView {
   ngDevMode && ngDevMode.tView++;
+  const bindingStartIndex = HEADER_OFFSET + consts;
   return {
     id: viewIndex,
     template: templateFn,
@@ -1049,7 +1062,8 @@ export function createTView(
     node: null !,
     data: HEADER_FILLER.slice(),  // Fill in to match HEADER_OFFSET in LViewData
     childIndex: -1,               // Children set in addToViewTree(), if any
-    bindingStartIndex: HEADER_OFFSET + consts,
+    bindingStartIndex: bindingStartIndex,
+    hostBindingStartIndex: bindingStartIndex + vars,
     directives: null,
     firstTemplatePass: true,
     initHooks: null,
@@ -2062,7 +2076,6 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
     }
     lContainer[ACTIVE_INDEX] !++;
   }
-  viewData[BINDING_INDEX] = tView.bindingStartIndex;
   return getRenderFlags(viewNode.data);
 }
 
@@ -2467,7 +2480,6 @@ export function detectChangesInternal<T>(
   const hostTView = hostView[TVIEW];
   const templateFn = hostTView.template !;
   const viewQuery = hostTView.viewQuery;
-  viewData[BINDING_INDEX] = tView.bindingStartIndex;
 
   try {
     namespaceHTML();

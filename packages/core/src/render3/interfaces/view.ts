@@ -290,6 +290,13 @@ export interface TView {
   bindingStartIndex: number;
 
   /**
+   * The index at which the data array begins to store host bindings for components
+   * or directives in its template. Saving this value ensures that we can set the
+   * binding root and binding index correctly before checking host bindings.
+   */
+  hostBindingStartIndex: number;
+
+  /**
    * Index of the host node of the first LView or LContainer beneath this LView in
    * the hierarchy.
    *
