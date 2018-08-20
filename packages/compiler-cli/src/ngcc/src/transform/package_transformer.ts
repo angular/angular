@@ -155,7 +155,7 @@ export class PackageTransformer {
       const originalDtsFileName = entryPoint.getDtsFileNameFor(sourceFileName);
       const originalDtsContents = readFileSync(originalDtsFileName, 'utf8');
 
-      // Tranform the `.d.ts` file based on the recorded source file changes.
+      // Transform the `.d.ts` file based on the recorded source file changes.
       const transformedDtsFileName =
           resolve(targetNodeModules, relative(sourceNodeModules, originalDtsFileName));
       const transformedDtsContents = dtsTransformer.transform(originalDtsContents, sourceFileName);
@@ -173,7 +173,7 @@ export class PackageTransformer {
     const outputFiles: FileInfo[] = [];
 
     analyzedFiles.forEach(analyzedFile => {
-      // Tranform the source file based on the recorded changes.
+      // Transform the source file based on the recorded changes.
       const targetPath =
           resolve(targetNodeModules, relative(sourceNodeModules, analyzedFile.sourceFile.fileName));
       const {source, map} = renderer.renderFile(analyzedFile, targetPath);
