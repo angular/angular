@@ -71,10 +71,10 @@ export class Element implements Node {
 
 export class Template implements Node {
   constructor(
-      public attributes: TextAttribute[], public inputs: BoundAttribute[], public children: Node[],
-      public references: Reference[], public variables: Variable[],
-      public sourceSpan: ParseSourceSpan, public startSourceSpan: ParseSourceSpan|null,
-      public endSourceSpan: ParseSourceSpan|null) {}
+      public attributes: TextAttribute[], public inputs: BoundAttribute[],
+      public outputs: BoundEvent[], public children: Node[], public references: Reference[],
+      public variables: Variable[], public sourceSpan: ParseSourceSpan,
+      public startSourceSpan: ParseSourceSpan|null, public endSourceSpan: ParseSourceSpan|null) {}
   visit<Result>(visitor: Visitor<Result>): Result { return visitor.visitTemplate(this); }
 }
 
@@ -167,6 +167,7 @@ export class TransformVisitor implements Visitor<Node> {
   visitTemplate(template: Template): Node {
     const newAttributes = transformAll(this, template.attributes);
     const newInputs = transformAll(this, template.inputs);
+    const newOutputs = transformAll(this, template.outputs);
     const newChildren = transformAll(this, template.children);
     const newReferences = transformAll(this, template.references);
     const newVariables = transformAll(this, template.variables);
@@ -174,8 +175,8 @@ export class TransformVisitor implements Visitor<Node> {
         newChildren != template.children || newVariables != template.variables ||
         newReferences != template.references) {
       return new Template(
-          newAttributes, newInputs, newChildren, newReferences, newVariables, template.sourceSpan,
-          template.startSourceSpan, template.endSourceSpan);
+          newAttributes, newInputs, newOutputs, newChildren, newReferences, newVariables,
+          template.sourceSpan, template.startSourceSpan, template.endSourceSpan);
     }
     return template;
   }

@@ -64,6 +64,10 @@ export function invalid<T>(arg: o.Expression | o.Statement | t.Node): never {
       `Invalid state: Visitor ${this.constructor.name} doesn't handle ${o.constructor.name}`);
 }
 
+export function isI18NAttribute(name: string): boolean {
+  return name === I18N_ATTR || name.startsWith(I18N_ATTR_PREFIX);
+}
+
 export function asLiteral(value: any): o.Expression {
   if (Array.isArray(value)) {
     return o.literalArr(value.map(asLiteral));

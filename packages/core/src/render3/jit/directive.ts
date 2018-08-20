@@ -85,8 +85,8 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
 
         // If component compilation is async, then the @NgModule annotation which declares the
         // component may execute and set an ngSelectorScope property on the component type. This
-        // allows the component to patch itself with directiveDefs from the module after it finishes
-        // compiling.
+        // allows the component to patch itself with directiveDefs from the module after it
+        // finishes compiling.
         if (hasSelectorScope(type)) {
           const scopes = transitiveScopesFor(type.ngSelectorScope);
           patchComponentDefWithScope(ngComponentDef, scopes);
