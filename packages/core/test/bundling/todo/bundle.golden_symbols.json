@@ -327,6 +327,9 @@
     "name": "bind"
   },
   {
+    "name": "bindingRootIndex"
+  },
+  {
     "name": "bindingUpdated"
   },
   {

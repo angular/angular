@@ -127,7 +127,6 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
     // rootView is the parent when bootstrapping
     const oldView = enterView(rootView, null !);
-    rootView[BINDING_INDEX] = rootView[TVIEW].bindingStartIndex;
 
     let component: T;
     let elementNode: LElementNode;
