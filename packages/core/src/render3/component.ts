@@ -112,7 +112,6 @@ export function renderComponent<T>(
   rootView[INJECTOR] = opts.injector || null;
 
   const oldView = enterView(rootView, null !);
-  rootView[BINDING_INDEX] = rootView[TVIEW].bindingStartIndex;
   let elementNode: LElementNode;
   let component: T;
   try {
