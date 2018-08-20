@@ -457,30 +457,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         o.TYPED_NULL_EXPR;
     parameters.push(attrArg);
 
-    if (element.references && element.references.length > 0) {
-      const references = flatten(element.references.map(reference => {
-        const slot = this.allocateDataSlot();
-        // Generate the update temporary.
-        const variableName = this._bindingScope.freshReferenceName();
-        const retrievalLevel = this.level;
-        const lhs = o.variable(variableName);
-        this._bindingScope.set(
-            retrievalLevel, reference.name, lhs, DeclarationPriority.DEFAULT,
-            (scope: BindingScope, relativeLevel: number) => {
-              // e.g. x(2);
-              const nextContextStmt =
-                  relativeLevel > 0 ? [generateNextContextExpr(relativeLevel).toStmt()] : [];
-
-              // e.g. const $foo$ = r(1);
-              const refExpr = lhs.set(o.importExpr(R3.reference).callFn([o.literal(slot)]));
-              return nextContextStmt.concat(refExpr.toConstDecl());
-            });
-        return [reference.name, reference.value];
-      }));
-      parameters.push(this.constantPool.getConstLiteral(asLiteral(references), true));
-    } else {
-      parameters.push(o.TYPED_NULL_EXPR);
-    }
+    // local refs (ex.: <div #foo #bar="baz">)
+    parameters.push(this.prepareRefsParameter(element.references));
 
     const wasInNamespace = this._namespace;
     const currentNamespace = this.getNamespaceInstruction(namespaceKey);
@@ -730,6 +708,14 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     if (attributeNames.length) {
       parameters.push(this.constantPool.getConstLiteral(o.literalArr(attributeNames), true));
+    } else {
+      parameters.push(o.TYPED_NULL_EXPR);
+    }
+
+    // local refs (ex.: <ng-template #foo>)
+    if (template.references && template.references.length) {
+      parameters.push(this.prepareRefsParameter(template.references));
+      parameters.push(o.importExpr(R3.templateRefExtractor));
     }
 
     // e.g. p(1, 'forOf', ɵbind(ctx.items));
@@ -857,6 +843,34 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const valExpr = convertedPropertyBinding.currValExpr;
     return value instanceof Interpolation || skipBindFn ? valExpr :
                                                           o.importExpr(R3.bind).callFn([valExpr]);
+  }
+
+  private prepareRefsParameter(references: t.Reference[]): o.Expression {
+    if (!references || references.length === 0) {
+      return o.TYPED_NULL_EXPR;
+    }
+
+    const refsParam = flatten(references.map(reference => {
+      const slot = this.allocateDataSlot();
+      // Generate the update temporary.
+      const variableName = this._bindingScope.freshReferenceName();
+      const retrievalLevel = this.level;
+      const lhs = o.variable(variableName);
+      this._bindingScope.set(
+          retrievalLevel, reference.name, lhs, DeclarationPriority.DEFAULT,
+          (scope: BindingScope, relativeLevel: number) => {
+            // e.g. x(2);
+            const nextContextStmt =
+                relativeLevel > 0 ? [generateNextContextExpr(relativeLevel).toStmt()] : [];
+
+            // e.g. const $foo$ = r(1);
+            const refExpr = lhs.set(o.importExpr(R3.reference).callFn([o.literal(slot)]));
+            return nextContextStmt.concat(refExpr.toConstDecl());
+          });
+      return [reference.name, reference.value];
+    }));
+
+    return this.constantPool.getConstLiteral(asLiteral(refsParam), true);
   }
 }
 

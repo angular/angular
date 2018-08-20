@@ -34,6 +34,7 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵinjectElementRef': r3.injectElementRef,
   'ɵinjectTemplateRef': r3.injectTemplateRef,
   'ɵinjectViewContainerRef': r3.injectViewContainerRef,
+  'ɵtemplateRefExtractor': r3.templateRefExtractor,
   'ɵNgOnChangesFeature': r3.NgOnChangesFeature,
   'ɵPublicFeature': r3.PublicFeature,
   'ɵInheritDefinitionFeature': r3.InheritDefinitionFeature,
