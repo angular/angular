@@ -1,11 +1,14 @@
-import {MethodMemberDoc} from 'dgeni-packages/typescript/api-doc-types/MethodMemberDoc';
+import {
+  ParameterContainer,
+  ParamTag,
+} from 'dgeni-packages/typescript/api-doc-types/ParameterContainer';
+import {ApiDoc} from 'dgeni-packages/typescript/api-doc-types/ApiDoc';
 
-export class NormalizedMethodMemberDoc extends MethodMemberDoc {
-  params?: MethodParameterInfo[];
+export interface NormalizedFunctionDoc extends ParameterContainer, ApiDoc {
+  params?: FunctionParameterInfo[];
 }
 
-export interface MethodParameterInfo {
-  name: string;
+export interface FunctionParameterInfo extends ParamTag {
   type: string;
   isOptional: boolean;
 }
@@ -20,9 +23,9 @@ export interface MethodParameterInfo {
  * We will use the `params` property to store the final normalized form since it is already
  * an object.
  */
-export function normalizeMethodParameters(method: NormalizedMethodMemberDoc) {
-  if (method.parameters) {
-    method.parameters.forEach(parameter => {
+export function normalizeFunctionParameters(doc: NormalizedFunctionDoc) {
+  if (doc.parameters) {
+    doc.parameters.forEach(parameter => {
       let [parameterName, parameterType] = parameter.split(':');
 
       // If the parameter is optional, the name here will contain a '?'. We store whether the
@@ -33,23 +36,22 @@ export function normalizeMethodParameters(method: NormalizedMethodMemberDoc) {
         parameterName = parameterName.replace('?', '');
       }
 
-      if (!method.params) {
-        method.params = [];
-      }
+      doc.params = doc.params || [];
 
       if (!parameterType) {
         console.warn(`Missing parameter type information (${parameterName}) in ` +
-          `${method.fileInfo.relativePath}:${method.startingLine}`);
+          `${doc.fileInfo.relativePath}:${doc.startingLine}`);
         return;
       }
 
-      const existingParameterInfo = method.params.find(p => p.name == parameterName);
+      const existingParameterInfo = doc.params.find(p => p.name == parameterName);
 
       if (!existingParameterInfo) {
-        method.params.push({
+        doc.params.push({
           name: parameterName,
           type: parameterType.trim(),
-          isOptional: isOptional
+          isOptional: isOptional,
+          description: ''
         });
       } else {
         existingParameterInfo.type = parameterType.trim();

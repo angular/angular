@@ -79,6 +79,20 @@
     {% endfor %}
   {%- endif -%}
 
+  {%- if doc.additionalFunctions.length -%}
+    <h3 id="additional_functions" class="docs-header-link docs-api-h3">
+      <span header-link="additional_functions"></span>
+      Additional functions
+    </h3>
+    {% for item in doc.additionalFunctions %}
+      {#
+        Since the function docs have a similar structure as method docs, we use
+        the method template.
+      #}
+      {$ method(item) $}
+    {% endfor %}
+  {%- endif -%}
+
   {%- if doc.additionalTypeAliases.length -%}
     <h3 id="additional_type_aliases" class="docs-header-link docs-api-h3">
       <span header-link="additional_type_aliases"></span>

@@ -3,7 +3,9 @@ import {ClassExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassExpor
 import {ClassLikeExportDoc} from 'dgeni-packages/typescript/api-doc-types/ClassLikeExportDoc';
 import {PropertyMemberDoc} from 'dgeni-packages/typescript/api-doc-types/PropertyMemberDoc';
 import {ParsedDecorator} from 'dgeni-packages/typescript/services/TsParser/getDecorators';
-import {NormalizedMethodMemberDoc} from './normalize-method-parameters';
+import {FunctionExportDoc} from 'dgeni-packages/typescript/api-doc-types/FunctionExportDoc';
+import {MethodMemberDoc} from 'dgeni-packages/typescript/api-doc-types/MethodMemberDoc';
+import {NormalizedFunctionDoc} from './normalize-function-parameters';
 
 /** Interface that describes categorized docs that can be deprecated. */
 export interface DeprecationDoc extends ApiDoc {
@@ -43,6 +45,9 @@ export interface CategorizedPropertyMemberDoc extends PropertyMemberDoc, Depreca
 }
 
 /** Extended Dgeni method-member document that simplifies logic for the Dgeni template. */
-export interface CategorizedMethodMemberDoc extends NormalizedMethodMemberDoc, DeprecationDoc {
-  showReturns: boolean;
-}
+export interface CategorizedMethodMemberDoc
+    extends NormalizedFunctionDoc, MethodMemberDoc, DeprecationDoc {}
+
+/** Extended Dgeni function export document that simplifies logic for the Dgeni template. */
+export interface CategorizedFunctionExportDoc
+    extends NormalizedFunctionDoc, FunctionExportDoc, DeprecationDoc {}

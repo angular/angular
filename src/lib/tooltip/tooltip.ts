@@ -52,7 +52,10 @@ export const SCROLL_THROTTLE_MS = 20;
 /** CSS class that will be attached to the overlay panel. */
 export const TOOLTIP_PANEL_CLASS = 'mat-tooltip-panel';
 
-/** Creates an error to be thrown if the user supplied an invalid tooltip position. */
+/**
+ * Creates an error to be thrown if the user supplied an invalid tooltip position.
+ * @docs-private
+ */
 export function getMatTooltipInvalidPositionError(position: string) {
   return Error(`Tooltip position "${position}" is invalid.`);
 }
@@ -87,6 +90,7 @@ export const MAT_TOOLTIP_DEFAULT_OPTIONS =
       factory: MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY
     });
 
+/** @docs-private */
 export function MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY(): MatTooltipDefaultOptions {
   return {
     showDelay: 0,
