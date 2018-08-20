@@ -5,7 +5,7 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+import {AttributeMarker} from '@angular/compiler/src/core';
 import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
@@ -73,9 +73,11 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
+      const $e0_attrs$ = [${AttributeMarker.SelectOnly}, "title"];
+      …
       template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
-          $i0$.ɵelement(0, "a");
+          $i0$.ɵelement(0, "a", $e0_attrs$);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "title", $i0$.ɵbind($ctx$.title));
@@ -105,9 +107,11 @@ describe('compiler compliance: bindings', () => {
       };
 
       const template = `
+      const $e0_attrs$ = [${AttributeMarker.SelectOnly}, "title"];
+      …
       template:function MyComponent_Template(rf, $ctx$){
         if (rf & 1) {
-          $i0$.ɵelement(0, "a");
+          $i0$.ɵelement(0, "a", $e0_attrs$);
         }
         if (rf & 2) {
           $i0$.ɵelementProperty(0, "title", $i0$.ɵinterpolation1("Hello ", $ctx$.name, ""));
