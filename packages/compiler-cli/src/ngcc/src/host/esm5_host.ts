@@ -65,9 +65,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
       if (!innerClassIdentifier) return undefined;
 
       return this.checker.getSymbolAtLocation(innerClassIdentifier);
-    }
-
-    if (ts.isFunctionDeclaration(node)) {
+    } else if (ts.isFunctionDeclaration(node)) {
       // It might be the function expression inside the IIFE. We need to go 5 levels up...
 
       // 1. IIFE body.
@@ -92,6 +90,7 @@ export class Esm5ReflectionHost extends Esm2015ReflectionHost {
 
       return this.getClassSymbol(outerNode);
     }
+
     return undefined;
   }
 
