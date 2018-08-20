@@ -42,8 +42,8 @@ exports.config = {
       args: process.env['TRAVIS'] ? ['--no-sandbox'] : [],
     },
 
-    // Enables concurrent testing in the Webdriver. Currently runs five e2e files in parallel.
+    // Enables concurrent testing in the Webdriver. Currently runs three e2e files in parallel.
     shardTestFiles: true,
-    maxInstances: 5,
+    maxInstances: 3,
   }
 };
