@@ -30,7 +30,7 @@ import {htmlAstToRender3Ast} from '../r3_template_transform';
 
 import {R3QueryMetadata} from './api';
 import {parseStyle} from './styling';
-import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, invalid, mapToExpression, trimTrailingNulls, unsupported} from './util';
+import {CONTEXT_NAME, I18N_ATTR, I18N_ATTR_PREFIX, ID_SEPARATOR, IMPLICIT_REFERENCE, MEANING_SEPARATOR, REFERENCE_PREFIX, RENDER_FLAGS, asLiteral, invalid, isI18NAttribute, mapToExpression, trimTrailingNulls, unsupported} from './util';
 
 function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefined {
   switch (type) {
@@ -317,11 +317,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }
 
     // Match directives on non i18n attributes
-    if (this.directiveMatcher) {
-      const selector = createCssSelector(element.name, outputAttrs);
-      this.directiveMatcher.match(
-          selector, (sel: CssSelector, staticType: any) => { this.directives.add(staticType); });
-    }
+    this.matchDirectives(element.name, element);
 
     // Regular element or ng-container creation mode
     const parameters: o.Expression[] = [o.literal(elementIndex)];
@@ -455,10 +451,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const hasStylingInstructions = initialStyleDeclarations.length || styleInputs.length ||
         initialClassDeclarations.length || classInputs.length;
 
-    const attrArg: o.Expression = attributes.length > 0 ?
-        this.constantPool.getConstLiteral(o.literalArr(attributes), true) :
-        o.TYPED_NULL_EXPR;
-    parameters.push(attrArg);
+    // add attributes for directive matching purposes
+    attributes.push(...this.prepareSelectOnlyAttrs(allOtherInputs, element.outputs));
+    parameters.push(this.toAttrsParam(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
     parameters.push(this.prepareRefsParameter(element.references));
@@ -690,31 +685,15 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       o.TYPED_NULL_EXPR,
     ];
 
-    // Match directives on both attributes and bound properties
-    const attributeNames: o.Expression[] = [];
-    const attributeMap: {[name: string]: string} = {};
+    // find directives matching on a given <ng-template> node
+    this.matchDirectives('ng-template', template);
 
-    template.attributes.forEach(a => {
-      attributeNames.push(asLiteral(a.name), asLiteral(''));
-      attributeMap[a.name] = a.value;
-    });
-
-    template.inputs.forEach(i => {
-      attributeNames.push(asLiteral(i.name), asLiteral(''));
-      attributeMap[i.name] = '';
-    });
-
-    if (this.directiveMatcher) {
-      const selector = createCssSelector('ng-template', attributeMap);
-      this.directiveMatcher.match(
-          selector, (cssSelector, staticType) => { this.directives.add(staticType); });
-    }
-
-    if (attributeNames.length) {
-      parameters.push(this.constantPool.getConstLiteral(o.literalArr(attributeNames), true));
-    } else {
-      parameters.push(o.TYPED_NULL_EXPR);
-    }
+    // prepare attributes parameter (including attributes used for directive matching)
+    const attrsExprs: o.Expression[] = [];
+    template.attributes.forEach(
+        (a: t.TextAttribute) => { attrsExprs.push(asLiteral(a.name), asLiteral(a.value)); });
+    attrsExprs.push(...this.prepareSelectOnlyAttrs(template.inputs, template.outputs));
+    parameters.push(this.toAttrsParam(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
     if (template.references && template.references.length) {
@@ -722,7 +701,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
       parameters.push(o.importExpr(R3.templateRefExtractor));
     }
 
-    // e.g. p(1, 'forOf', ɵbind(ctx.items));
+    // handle property bindings e.g. p(1, 'forOf', ɵbind(ctx.items));
     const context = o.variable(CONTEXT_NAME);
     template.inputs.forEach(input => {
       const value = input.value.visit(this._valueConverter);
@@ -857,6 +836,47 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const valExpr = convertedPropertyBinding.currValExpr;
     return value instanceof Interpolation || skipBindFn ? valExpr :
                                                           o.importExpr(R3.bind).callFn([valExpr]);
+  }
+
+  private matchDirectives(tagName: string, elOrTpl: t.Element|t.Template) {
+    if (this.directiveMatcher) {
+      const selector = createCssSelector(tagName, this.getAttrsForDirectiveMatching(elOrTpl));
+      this.directiveMatcher.match(
+          selector, (cssSelector, staticType) => { this.directives.add(staticType); });
+    }
+  }
+
+  private getAttrsForDirectiveMatching(elOrTpl: t.Element|t.Template): {[name: string]: string} {
+    const attributesMap: {[name: string]: string} = {};
+
+    elOrTpl.attributes.forEach(a => {
+      if (!isI18NAttribute(a.name)) {
+        attributesMap[a.name] = a.value;
+      }
+    });
+    elOrTpl.inputs.forEach(i => { attributesMap[i.name] = ''; });
+    elOrTpl.outputs.forEach(o => { attributesMap[o.name] = ''; });
+
+    return attributesMap;
+  }
+
+  private prepareSelectOnlyAttrs(inputs: t.BoundAttribute[], outputs: t.BoundEvent[]):
+      o.Expression[] {
+    const attrExprs: o.Expression[] = [];
+
+    if (inputs.length || outputs.length) {
+      attrExprs.push(o.literal(core.AttributeMarker.SelectOnly));
+      inputs.forEach((i: t.BoundAttribute) => { attrExprs.push(asLiteral(i.name)); });
+      outputs.forEach((o: t.BoundEvent) => { attrExprs.push(asLiteral(o.name)); });
+    }
+
+    return attrExprs;
+  }
+
+  private toAttrsParam(attrsExprs: o.Expression[]): o.Expression {
+    return attrsExprs.length > 0 ?
+        this.constantPool.getConstLiteral(o.literalArr(attrsExprs), true) :
+        o.TYPED_NULL_EXPR;
   }
 
   private prepareRefsParameter(references: t.Reference[]): o.Expression {

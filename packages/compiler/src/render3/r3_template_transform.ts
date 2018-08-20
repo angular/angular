@@ -181,7 +181,7 @@ class HtmlAstToIvyAst implements html.Visitor {
       const attrs = this.extractAttributes(element.name, parsedProperties);
 
       parsedElement = new t.Template(
-          attributes, attrs.bound, children, references, variables, element.sourceSpan,
+          attributes, attrs.bound, boundEvents, children, references, variables, element.sourceSpan,
           element.startSourceSpan, element.endSourceSpan);
     } else {
       const attrs = this.extractAttributes(element.name, parsedProperties);
@@ -193,9 +193,10 @@ class HtmlAstToIvyAst implements html.Visitor {
 
     if (elementHasInlineTemplate) {
       const attrs = this.extractAttributes('ng-template', templateParsedProperties);
+      // TODO(pk): test for this case
       parsedElement = new t.Template(
-          attrs.literal, attrs.bound, [parsedElement], [], templateVariables, element.sourceSpan,
-          element.startSourceSpan, element.endSourceSpan);
+          attrs.literal, attrs.bound, [], [parsedElement], [], templateVariables,
+          element.sourceSpan, element.startSourceSpan, element.endSourceSpan);
     }
     return parsedElement;
   }
