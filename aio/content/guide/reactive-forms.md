@@ -984,18 +984,27 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 -->
 그리고 애플리케이션에 `ReactiveFormsModule`을 로드하면 템플릿에 다음과 같은 디렉티브를 자유롭게 사용할 수 있습니다. 이 디렉티브들은 데이터 모델과 폼을 바인딩할 때 사용합니다.
 
+<!--
 #### Directives
+-->
+#### 디렉티브
 
 <table>
 
   <tr>
 
     <th>
+      <!--
       Directive
+      -->
+      디렉티브
     </th>
 
     <th>
+      <!--
       Description
+      -->
+      설명
     </th>
 
   </tr>
@@ -1008,7 +1017,10 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 
     <td>
 
+      <!--
       Syncs a standalone `FormControl` instance to a form control element.
+      -->
+      개별 `FormControl` 인스턴스와 폼 컨트롤 엘리먼트를 연결합니다.
 
     </td>
 
@@ -1022,7 +1034,10 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 
     <td>
 
+      <!--
       Syncs a `FormControl` in an existing `FormGroup` to a form control element by name.
+      -->
+      이름으로 기준으로 `FormGroup` 안에 있는 `FormControl`을 연결합니다.
 
     </td>
 
@@ -1036,7 +1051,10 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 
     <td>
 
+      <!--
       Syncs an existing `FormGroup` to a DOM element.
+      -->
+      `FormGroup`을 DOM 엘리먼트와 연결합니다.
 
     </td>
 
@@ -1050,7 +1068,10 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 
     <td>
 
+      <!--
       Syncs a nested `FormGroup` to a DOM element.
+      -->
+      중첩된 `FormGroup`을 DOM 엘리먼트와 연결합니다.
 
     </td>
 
@@ -1064,7 +1085,10 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 
     <td>
 
+      <!--
       Syncs a nested `FormArray` to a DOM element.
+      -->
+      `FormArray`를 DOM 엘리먼트와 연결합니다.
 
     </td>
 
@@ -1072,46 +1096,86 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 
 </table>
 
+<!--
 ### Comparison to template-driven forms
+-->
+## 템플릿 기반 폼과 비교
 
+<!--
 _Template-driven_ forms, introduced in the [Template-driven forms guide](guide/forms), take a completely different approach.
+-->
+반응형 폼을 구현하는 방식은 [템플릿 기반의 폼](guide/forms)을 구현하는 방식과 완전히 다릅니다.
 
+<!--
 * You place HTML form controls (such as `<input>` and `<select>`) in the component template and bind them to _data model_ properties in the component, using directives such as `ngModel`.
+-->
+* 반응형 폼을 구현할 때는 `<input>`이나 `<select>`와 같은 HTML 폼 컨트롤을 컴포넌트 템플릿에 선언하고 이 엘리먼트를 컴포넌트에 있는 프로퍼티 _데이터 모델_ 과 바인딩합니다. 이 때 `ngModel`과 같은 디렉티브를 사용합니다.
 
+<!--
 * You don't create Angular form control objects. Angular directives create them for you, using the information in your data bindings.
+-->
+* 반응형 폼을 구현할 때는 Angular 폼 컨트롤 객체를 직접 생성하지 않습니다. 폼 컨트롤 객체는 Angular 디렉티브가 생성하고, 개발자는 데이터 바인딩을 통해 폼 컨트롤의 정보를 확인할 뿐입니다.
 
+<!--
 * You don't push and pull data values. Angular handles that for you with `ngModel`. Angular updates the mutable _data model_ with user changes as they happen.
+-->
+* 반응형 폼에서는 데이터를 폼에 직접 반영하거나 폼에서 데이터를 직접 가져오지 않습니다. 이 동작은 Angular의 `ngModel`이 대신 수행하며, 사용자가 입력 필드의 값을 변경했을 때 자동으로 _데이터 모델_ 을 갱신합니다.
 
+<!--
 While this means less code in the component class,
 [template-driven forms are asynchronous](guide/reactive-forms#async-vs-sync "Async vs sync")
 which may complicate development in more advanced scenarios.
-
+-->
+템플릿 기반의 폼을 사용하면 컴포넌트 클래스에 상대적으로 적은 코드를 작성하기 때문에 더 간단해 보이리 수 있지만, [템플릿 기반의 폼은 비동기로 동작하기 때문에](guide/reactive-forms#async-vs-sync "Async vs sync") 복잡한 시나리오를 처리하기에는 적합하지 않습니다.
 
 {@a async-vs-sync}
 
 
+<!--
 ### Async vs. sync
+-->
+### 비동기 vs. 동기
 
+<!--
 Reactive forms are synchronous, and template-driven forms are asynchronous.
+-->
+반응형 폼은 동기 방식으로 동작하며, 템플릿 기반의 폼은 비동기로 동작합니다.
 
+<!--
 In reactive forms, you create the entire form control tree in code.
 You can immediately update a value or drill down through the descendants of the parent form
 because all controls are always available.
+-->
+반응형 폼을 사용할 떄는 폼 컨트롤의 전체 구조를 코드에 정의합니다.
+그래서 폼 컨트롤도 코드에서 자유롭게 접근할 수 있기 때문에 폼 컨트롤의 값을 변경하거나 폼 안쪽에 있는 폼 컨트롤에 접근하는 것도 자유롭습니다.
 
+<!--
 Template-driven forms delegate creation of their form controls to directives.
 To avoid "_changed after checked_" errors,
 these directives take more than one cycle to build the entire control tree.
 That means you must wait a tick before manipulating any of the controls
 from within the component class.
+-->
+하지만 템플릿 기반의 폼은 폼 컨트롤의 구조를 디렉티브로 정의합니다.
+그래서 "_값이 체크된 이후에 다시 변경되는_" 에러를 방지하기 위해, 템플릿 기반 폼의 디렉티브를 사용하면 실행 싸이클을 최소한 한 번 기다려야 합니다.
+컴포넌트 클래스에서 템플릿 기반의 폼 컨트롤을 처리할 때도 마찬가지입니다.
 
+<!--
 For example, if you inject the form control with a `@ViewChild(NgForm)` query and examine it in the
 [`ngAfterViewInit` lifecycle hook](guide/lifecycle-hooks#afterview "Lifecycle hooks guide: AfterView"),
 you'll discover that it has no children.
 You must wait a tick, using `setTimeout`, before you can
 extract a value from a control, test its validity, or set it to a new value.
+-->
+예를 들어 폼 컨트롤을 `@ViewChild(NgForm)` 쿼리로 참조하고, 이 프로퍼티를 [`ngAfterViewInit` 라이프싸이클 후킹 함수](guide/lifecycle-hooks#afterview "Lifecycle hooks guide: AfterView")에서 확인하면 이 프로퍼티는 빈 값이기 때문에 바로 사용할 수 없습니다.
+이런 경우에 폼 컨트롤의 값을 확인하거나 유효성을 검사할 때, 새로운 값을 지정할 때는 `setTimeout` 함수를 사용해서 한 싸이클 기다려야 합니다.
 
+<!--
 The asynchrony of template-driven forms also complicates unit testing.
 You must wrap your test block in `async()` or `fakeAsync()` to
 avoid looking for values in the form that aren't there yet.
 With reactive forms, everything is available when you expect it to be.
-
+-->
+템플릿 기반의 폼은 비동기로 동작하기 때문에 유닛 테스트를 적용하기도 어렵습니다.
+폼 컨트롤의 값이 제대로 지정된 것을 보장하려면 모든 테스트 코드에 `async()`나 `fakeAsync()`를 사용해야 하기 때문입니다.
+하지만 반응형 폼이라면 모든 것이 비동기이기 때문에 개발자가 예상한 대로 모두 동작합니다.
