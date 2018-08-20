@@ -2,12 +2,11 @@
 # yarn lockfile v1
 
 
-"@bazel/typescript@0.16.1":
-  version "0.16.1"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.16.1.tgz#5a5d145a17898bfadae8268cf942815424119412"
+"@bazel/typescript@0.16.2":
+  version "0.16.2"
+  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.16.2.tgz#42474e029b0c6fa42a058fc86e2f593b7a367d56"
   dependencies:
     protobufjs "5.0.0"
-    tsickle "0.32.1"
     tsutils "2.20.0"
 
 "@types/jasmine@file:../../node_modules/@types/jasmine":
@@ -852,16 +851,6 @@ tough-cookie@~2.4.3:
   dependencies:
     psl "^1.1.24"
     punycode "^1.4.1"
-
-tsickle@0.32.1:
-  version "0.32.1"
-  resolved "https://registry.yarnpkg.com/tsickle/-/tsickle-0.32.1.tgz#f16e94ba80b32fc9ebe320dc94fbc2ca7f3521a5"
-  dependencies:
-    jasmine-diff "^0.1.3"
-    minimist "^1.2.0"
-    mkdirp "^0.5.1"
-    source-map "^0.6.0"
-    source-map-support "^0.5.0"
 
 "tsickle@file:../../node_modules/tsickle":
   version "0.32.0"

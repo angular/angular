@@ -17,7 +17,16 @@ import {FactoryGenerator} from './generator';
 export class GeneratedFactoryHostWrapper implements ts.CompilerHost {
   constructor(
       private delegate: ts.CompilerHost, private generator: FactoryGenerator,
-      private factoryToSourceMap: Map<string, string>) {}
+      private factoryToSourceMap: Map<string, string>) {
+    if (delegate.resolveTypeReferenceDirectives) {
+      this.resolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
+          delegate.resolveTypeReferenceDirectives !(names, containingFile);
+    }
+  }
+
+  resolveTypeReferenceDirectives?:
+      (names: string[],
+       containingFile: string) => (ts.ResolvedTypeReferenceDirective | undefined)[];
 
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
