@@ -675,6 +675,60 @@ describe('CdkDrag', () => {
       flush();
     }));
 
+    it('should lay out the elements correctly, if an element skips multiple positions when ' +
+      'sorting vertically', fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.detectChanges();
+
+        const items = fixture.componentInstance.dragItems.map(i => i.element.nativeElement);
+        const draggedItem = items[0];
+        const {top, left} = draggedItem.getBoundingClientRect();
+
+        dispatchMouseEvent(draggedItem, 'mousedown', left, top);
+        fixture.detectChanges();
+
+        const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+        const targetRect = items[items.length - 1].getBoundingClientRect();
+
+        // Add a few pixels to the top offset so we get some overlap.
+        dispatchMouseEvent(document, 'mousemove', targetRect.left, targetRect.top + 5);
+        fixture.detectChanges();
+
+        expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
+            .toEqual(['One', 'Two', 'Three', 'Zero']);
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+      }));
+
+    it('should lay out the elements correctly, if an element skips multiple positions when ' +
+      'sorting horizontally', fakeAsync(() => {
+        const fixture = createComponent(DraggableInHorizontalDropZone);
+        fixture.detectChanges();
+
+        const items = fixture.componentInstance.dragItems.map(i => i.element.nativeElement);
+        const draggedItem = items[0];
+        const {top, left} = draggedItem.getBoundingClientRect();
+
+        dispatchMouseEvent(draggedItem, 'mousedown', left, top);
+        fixture.detectChanges();
+
+        const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+        const targetRect = items[items.length - 1].getBoundingClientRect();
+
+        // Add a few pixels to the left offset so we get some overlap.
+        dispatchMouseEvent(document, 'mousemove', targetRect.right - 5, targetRect.top);
+        fixture.detectChanges();
+
+        expect(getElementSibligsByPosition(placeholder, 'left').map(e => e.textContent!.trim()))
+            .toEqual(['One', 'Two', 'Three', 'Zero']);
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        flush();
+      }));
+
     it('should clean up the preview element if the item is destroyed mid-drag', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
@@ -1343,13 +1397,14 @@ function dragElementViaTouch(fixture: ComponentFixture<any>,
 
 /** Gets the index of an element among its siblings, based on their position on the page. */
 function getElementIndexByPosition(element: HTMLElement, direction: 'top' | 'left') {
-  if (!element.parentElement) {
-    return -1;
-  }
+  return getElementSibligsByPosition(element, direction).indexOf(element);
+}
 
-  return Array.from(element.parentElement.children)
-      .sort((a, b) => a.getBoundingClientRect()[direction] - b.getBoundingClientRect()[direction])
-      .indexOf(element);
+/** Gets the siblings of an element, sorted by their position on the page. */
+function getElementSibligsByPosition(element: HTMLElement, direction: 'top' | 'left') {
+  return element.parentElement ? Array.from(element.parentElement.children).sort((a, b) => {
+    return a.getBoundingClientRect()[direction] - b.getBoundingClientRect()[direction];
+  }) : [];
 }
 
 /**

@@ -24,6 +24,7 @@ import {CdkDrag} from './drag';
 import {CdkDragExit, CdkDragEnter, CdkDragDrop} from './drag-events';
 import {CDK_DROP_CONTAINER} from './drop-container';
 import {DragDropRegistry} from './drag-drop-registry';
+import {moveItemInArray} from './drag-utils';
 
 /** Counter used to generate unique ids for drop zones. */
 let _uniqueIdCounter = 0;
@@ -214,45 +215,59 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    */
   _sortItem(item: CdkDrag, xOffset: number, yOffset: number): void {
     const siblings = this._positionCache.items;
-    const isHorizontal = this.orientation === 'horizontal';
     const newIndex = this._getItemIndexFromPointerPosition(item, xOffset, yOffset);
-    const placeholder = item.getPlaceholderElement();
 
     if (newIndex === -1 && siblings.length > 0) {
       return;
     }
 
+    const isHorizontal = this.orientation === 'horizontal';
     const currentIndex = siblings.findIndex(currentItem => currentItem.drag === item);
-    const currentPosition = siblings[currentIndex];
-    const newPosition = siblings[newIndex];
+    const currentPosition = siblings[currentIndex].clientRect;
+    const newPosition = siblings[newIndex].clientRect;
+    const delta = currentIndex > newIndex ? 1 : -1;
 
-    // Figure out the offset necessary for the items to be swapped.
-    const offset = isHorizontal ?
-        currentPosition.clientRect.left - newPosition.clientRect.left :
-        currentPosition.clientRect.top - newPosition.clientRect.top;
-    const topAdjustment = isHorizontal ? 0 : offset;
-    const leftAdjustment = isHorizontal ? offset : 0;
+    // How many pixels the item's placeholder should be offset.
+    const itemOffset = isHorizontal ? newPosition.left - currentPosition.left :
+                                      newPosition.top - currentPosition.top;
 
-    // Since we've moved the items with a `transform`, we need to adjust their cached
-    // client rects to reflect their new position, as well as swap their positions in the cache.
-    // Note that we shouldn't use `getBoundingClientRect` here to update the cache, because the
-    // elements may be mid-animation which will give us a wrong result.
-    this._adjustClientRect(currentPosition.clientRect, -topAdjustment, -leftAdjustment);
-    currentPosition.offset -= offset;
-    siblings[currentIndex] = newPosition;
+    // How many pixels all the other items should be offset.
+    const siblingOffset = isHorizontal ? currentPosition.width * delta :
+                                         currentPosition.height * delta;
 
-    this._adjustClientRect(newPosition.clientRect, topAdjustment, leftAdjustment);
-    newPosition.offset += offset;
-    siblings[newIndex] = currentPosition;
+    // Save the previous order of the items before moving the item to its new index.
+    // We use this to check whether an item has been moved as a result of the sorting.
+    const oldOrder = siblings.slice();
 
-    // Swap the placeholder's position with the one of the target draggable.
-    placeholder.style.transform = isHorizontal ?
-        `translate3d(${currentPosition.offset}px, 0, 0)` :
-        `translate3d(0, ${currentPosition.offset}px, 0)`;
+    // Shuffle the array in place.
+    moveItemInArray(siblings, currentIndex, newIndex);
 
-    newPosition.drag.element.nativeElement.style.transform = isHorizontal ?
-        `translate3d(${newPosition.offset}px, 0, 0)` :
-        `translate3d(0, ${newPosition.offset}px, 0)`;
+    siblings.forEach((sibling, index) => {
+      // Don't do anything if the position hasn't changed.
+      if (oldOrder[index] === sibling) {
+        return;
+      }
+
+      const isDraggedItem = sibling.drag === item;
+      const offset = isDraggedItem ? itemOffset : siblingOffset;
+      const elementToOffset = isDraggedItem ? item.getPlaceholderElement() :
+                                              sibling.drag.element.nativeElement;
+
+      // Update the offset to reflect the new position.
+      sibling.offset += offset;
+
+      // Since we're moving the items with a `transform`, we need to adjust their cached
+      // client rects to reflect their new position, as well as swap their positions in the cache.
+      // Note that we shouldn't use `getBoundingClientRect` here to update the cache, because the
+      // elements may be mid-animation which will give us a wrong result.
+      if (isHorizontal) {
+        elementToOffset.style.transform = `translate3d(${sibling.offset}px, 0, 0)`;
+        this._adjustClientRect(sibling.clientRect, 0, offset);
+      } else {
+        elementToOffset.style.transform = `translate3d(0, ${sibling.offset}px, 0)`;
+        this._adjustClientRect(sibling.clientRect, offset, 0);
+      }
+    });
   }
 
   /**
@@ -321,8 +336,8 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
   /**
    * Updates the top/left positions of a `ClientRect`, as well as their bottom/right counterparts.
    * @param clientRect `ClientRect` that should be updated.
-   * @param top New value for the `top` position.
-   * @param left New value for the `left` position.
+   * @param top Amount to add to the `top` position.
+   * @param left Amount to add to the `left` position.
    */
   private _adjustClientRect(clientRect: ClientRect, top: number, left: number) {
     clientRect.top += top;
