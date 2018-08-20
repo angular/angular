@@ -12,9 +12,9 @@ http_archive(
 
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.16.1.zip",
-    strip_prefix = "rules_typescript-0.16.1",
-    sha256 = "5b2b0bc63cfcffe7bf97cad2dad3b26a73362f806de66207051f66c87956a995",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/0.16.2.zip",
+    strip_prefix = "rules_typescript-0.16.2",
+    sha256 = "31601b777840fbf600dbd1893ade0d1de37166e7ba52b90735b107cfb67e38c7",
 )
 load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
 rules_typescript_dependencies()
