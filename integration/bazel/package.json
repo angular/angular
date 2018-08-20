@@ -10,7 +10,7 @@
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@bazel/typescript": "0.16.1",
+    "@bazel/typescript": "0.16.2",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/source-map": "0.5.1",
     "http-server": "0.11.1",
