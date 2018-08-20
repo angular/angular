@@ -44,7 +44,7 @@
  * when the `live` property is set to false, and reattaches it when the property
  * becomes true.
  *
- * <code-example path="core/ts/change_detect/change-detection.ts" region="detach"></code-example>
+ * <code-example path="core/ts/change_detect/change-detection.ts" region="reattach"></code-example>
  *
  */
 export abstract class ChangeDetectorRef {
