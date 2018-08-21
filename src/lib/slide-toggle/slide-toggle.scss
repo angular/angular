@@ -21,14 +21,14 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   max-width: 100%;
 
   line-height: $mat-slide-toggle-height;
-
   white-space: nowrap;
+  outline: none;
 
   // Disable user selection to ensure that dragging is smooth without grabbing
   // some elements accidentally.
   @include user-select(none);
 
-  outline: none;
+  -webkit-tap-highlight-color: transparent;
 
   &.mat-checked {
     .mat-slide-toggle-thumb-container {
