@@ -191,7 +191,10 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   pointer-events: none;
 
   .mat-ripple-element:not(.mat-slide-toggle-persistent-ripple) {
-    opacity: 0.16;
+    // Although the specs describe an opacity of 16% for ripples if the slide-toggle is being
+    // pressed, we need to reduce the opacity a bit because besides the transient ripples,
+    // the persistent ripple will still show up and blend with the transient ripple.
+    opacity: 0.12;
   }
 }
 
