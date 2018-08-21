@@ -6,12 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {
-  CdkNestedTreeNode,
-  CdkTree,
-  CdkTreeNode,
-  CdkTreeNodeDef,
-} from '@angular/cdk/tree';
+import {CdkNestedTreeNode, CdkTree, CdkTreeNode, CdkTreeNodeDef} from '@angular/cdk/tree';
 import {
   AfterContentInit,
   Attribute,
@@ -22,11 +17,12 @@ import {
   IterableDiffers,
   OnDestroy,
   QueryList,
-  TemplateRef,
 } from '@angular/core';
 import {CanDisable, HasTabIndex, mixinDisabled, mixinTabIndex} from '@angular/material/core';
 import {MatTreeNodeOutlet} from './outlet';
 
+// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
+export const _CdkTreeNodeDef = CdkTreeNodeDef;
 
 export const _MatTreeNodeMixinBase = mixinTabIndex(mixinDisabled(CdkTreeNode));
 export const _MatNestedTreeNodeMixinBase = mixinTabIndex(mixinDisabled(CdkNestedTreeNode));
@@ -69,17 +65,8 @@ export class MatTreeNode<T> extends _MatTreeNodeMixinBase<T>
   ],
   providers: [{provide: CdkTreeNodeDef, useExisting: MatTreeNodeDef}]
 })
-export class MatTreeNodeDef<T> extends CdkTreeNodeDef<T> {
+export class MatTreeNodeDef<T> extends _CdkTreeNodeDef<T> {
   @Input('matTreeNode') data: T;
-
-  // TODO(andrewseguin): Remove this explicitly set constructor when the compiler knows how to
-  // properly build the es6 version of the class. Currently sets ctorParameters to empty due to a
-  // fixed bug.
-  // https://github.com/angular/tsickle/pull/760 - tsickle PR that fixed this
-  // https://github.com/angular/angular/pull/23531 - updates compiler-cli to fixed version
-  constructor(template: TemplateRef<any>) {
-    super(template);
-  }
 }
 
 /**

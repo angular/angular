@@ -35,6 +35,8 @@ import {MatAccordion} from './accordion';
 import {matExpansionAnimations} from './expansion-animations';
 import {MatExpansionPanelContent} from './expansion-panel-content';
 
+// TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
+export const _CdkAccordionItem = CdkAccordionItem;
 
 /** MatExpansionPanel's states. */
 export type MatExpansionPanelState = 'expanded' | 'collapsed';
@@ -70,7 +72,7 @@ let uniqueId = 0;
     '[class.mat-expansion-panel-spacing]': '_hasSpacing()',
   }
 })
-export class MatExpansionPanel extends CdkAccordionItem
+export class MatExpansionPanel extends _CdkAccordionItem
   implements AfterContentInit, OnChanges, OnDestroy {
   /** Whether the toggle indicator should be hidden. */
   @Input()
