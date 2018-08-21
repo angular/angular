@@ -322,8 +322,8 @@ describe('Portals', () => {
     let host: DomPortalOutlet;
     let injector: Injector;
     let appRef: ApplicationRef;
-
     let deps = [ComponentFactoryResolver, Injector, ApplicationRef];
+
     beforeEach(inject(deps, (dcl: ComponentFactoryResolver, i: Injector, ar: ApplicationRef) => {
       componentFactoryResolver = dcl;
       injector = i;
@@ -468,6 +468,21 @@ describe('Portals', () => {
 
       expect(spy).toHaveBeenCalled();
     });
+
+    it('should use the `ComponentFactoryResolver` from the portal, if available', () => {
+      const spy = jasmine.createSpy('resolveComponentFactorySpy');
+      const portal = new ComponentPortal(PizzaMsg, undefined, undefined, {
+        resolveComponentFactory: (...args: any[]) => {
+          spy();
+          return componentFactoryResolver.resolveComponentFactory
+              .apply(componentFactoryResolver, args);
+        }
+      });
+
+      host.attachComponentPortal(portal);
+      expect(spy).toHaveBeenCalled();
+    });
+
   });
 });
 

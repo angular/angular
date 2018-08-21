@@ -36,7 +36,8 @@ export class DomPortalOutlet extends BasePortalOutlet {
    * @returns Reference to the created component.
    */
   attachComponentPortal<T>(portal: ComponentPortal<T>): ComponentRef<T> {
-    let componentFactory = this._componentFactoryResolver.resolveComponentFactory(portal.component);
+    const resolver = portal.componentFactoryResolver || this._componentFactoryResolver;
+    const componentFactory = resolver.resolveComponentFactory(portal.component);
     let componentRef: ComponentRef<T>;
 
     // If the portal specifies a ViewContainerRef, we will use that as the attachment point
