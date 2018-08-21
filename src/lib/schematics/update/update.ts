@@ -29,18 +29,16 @@ export default function(): Rule {
         rulesDirectory: [
           path.join(__dirname, 'rules/'),
           path.join(__dirname, 'rules/attribute-selectors'),
+          path.join(__dirname, 'rules/class-names'),
+          path.join(__dirname, 'rules/css-names'),
         ],
         rules: {
           // Automatic fixes.
-          'switch-identifiers': true,
           'switch-property-names': true,
-          'switch-string-literal-css-names': true,
           'switch-string-literal-element-selectors': true,
-          'switch-stylesheet-css-names': true,
           'switch-stylesheet-element-selectors': true,
           'switch-stylesheet-input-names': true,
           'switch-stylesheet-output-names': true,
-          'switch-template-css-names': true,
           'switch-template-element-selectors': true,
           'switch-template-export-as-names': true,
           'switch-template-input-names': true,
@@ -51,9 +49,17 @@ export default function(): Rule {
           'attribute-selectors-stylesheet': true,
           'attribute-selectors-template': true,
 
+          // Class name update rules
+          'class-names-identifier': true,
+          'class-names-identifier-misc': true,
+
+          // CSS class name update rules
+          'css-names-string-literal': true,
+          'css-names-stylesheet': true,
+          'css-names-template': true,
+
           // Additional issues we can detect but not automatically fix.
           'check-class-declaration-misc': true,
-          'check-identifier-misc': true,
           'check-import-misc': true,
           'check-inheritance': true,
           'check-method-calls': true,

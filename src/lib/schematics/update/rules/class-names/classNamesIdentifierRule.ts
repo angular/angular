@@ -9,16 +9,16 @@
 import {green, red} from 'chalk';
 import {RuleFailure, Rules, RuleWalker} from 'tslint';
 import * as ts from 'typescript';
-import {classNames} from '../material/data/class-names';
+import {classNames} from '../../material/data/class-names';
 import {
   isMaterialExportDeclaration,
   isMaterialImportDeclaration,
-} from '../material/typescript-specifiers';
+} from '../../material/typescript-specifiers';
 import {
   isExportSpecifierNode,
   isImportSpecifierNode,
   isNamespaceImportNode,
-} from '../typescript/imports';
+} from '../../typescript/imports';
 
 /**
  * Rule that walks through every identifier that is part of Angular Material and replaces the
@@ -27,11 +27,11 @@ import {
 export class Rule extends Rules.AbstractRule {
 
   apply(sourceFile: ts.SourceFile): RuleFailure[] {
-    return this.applyWithWalker(new SwitchIdentifiersWalker(sourceFile, this.getOptions()));
+    return this.applyWithWalker(new Walker(sourceFile, this.getOptions()));
   }
 }
 
-export class SwitchIdentifiersWalker extends RuleWalker {
+export class Walker extends RuleWalker {
 
   /**
    * List of identifier names that have been imported from `@angular/material` or `@angular/cdk`

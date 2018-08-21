@@ -7,21 +7,22 @@
  */
 
 import {bold, red} from 'chalk';
-import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
+import {RuleFailure, Rules, RuleWalker} from 'tslint';
 import * as ts from 'typescript';
 
 /**
- * Rule that walks through every identifier that is part of Angular Material and replaces the
- * outdated name with the new one.
+ * Rule that looks for class name identifiers that have been removed but cannot be
+ * automatically migrated.
  */
-export class Rule extends Rules.TypedRule {
-  applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
-    return this.applyWithWalker(
-        new CheckIdentifierMiscWalker(sourceFile, this.getOptions(), program));
+export class Rule extends Rules.AbstractRule {
+
+  apply(sourceFile: ts.SourceFile): RuleFailure[] {
+    return this.applyWithWalker(new Walker(sourceFile, this.getOptions()));
   }
 }
 
-export class CheckIdentifierMiscWalker extends ProgramAwareRuleWalker {
+export class Walker extends RuleWalker {
+
   visitIdentifier(identifier: ts.Identifier) {
     if (identifier.getText() === 'MatDrawerToggleResult') {
       this.addFailureAtNode(

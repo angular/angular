@@ -15,8 +15,8 @@ export interface MaterialCssNameData {
   replaceWith: string;
   /** Whitelist where this replacement is made. If omitted it is made in all files. */
   whitelist?: {
-    /** Replace this name in CSS files. */
-    css?: boolean,
+    /** Replace this name in stylesheet files. */
+    stylesheet?: boolean,
     /** Replace this name in HTML files. */
     html?: boolean,
     /** Replace this name in TypeScript strings. */
@@ -31,10 +31,6 @@ export const cssNames = transformChanges<MaterialCssNameData>([
       {
         replace: 'mat-form-field-placeholder',
         replaceWith: 'mat-form-field-label'
-      },
-      {
-        replace: 'mat-form-field-placeholder-wrapper',
-        replaceWith: 'mat-form-field-label-wrapper'
       },
       {
         replace: 'mat-input-container',
@@ -96,13 +92,13 @@ export const cssNames = transformChanges<MaterialCssNameData>([
   },
 
   {
-    pr: 'https://github.com/angular/material2/pull/10325',
+    pr: 'https://github.com/angular/material2/pull/10430',
     changes: [
       {
         replace: '$mat-font-family',
         replaceWith: "Roboto, 'Helvetica Neue', sans-serif",
         whitelist: {
-          css: true
+          stylesheet: true
         }
       }
     ]
