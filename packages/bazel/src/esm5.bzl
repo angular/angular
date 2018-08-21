@@ -45,6 +45,13 @@ def _esm5_outputs_aspect(target, ctx):
     if not hasattr(target, "typescript"):
         return []
 
+    # Workaround for https://github.com/bazelbuild/rules_typescript/issues/211
+    # TODO(gmagolan): generate esm5 output from ts_proto_library and have that
+    # output work with esm5_outputs_aspect
+    if not hasattr(target.typescript, "replay_params"):
+        print("WARNING: no esm5 output from target %s//%s:%s available" % (target.label.workspace_root, target.label.package, target.label.name))
+        return []
+
     # We create a new tsconfig.json file that will have our compilation settings
     tsconfig = ctx.actions.declare_file("%s_esm5.tsconfig.json" % target.label.name)
 
