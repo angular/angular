@@ -10,12 +10,13 @@ import {PackageTransformer} from './transform/package_transformer';
 
 export function mainNgcc(args: string[]): number {
   const packagePath = resolve(args[0]);
+  const format = args[1] || 'fesm2015';
 
-  // TODO: find all the package tyoes to transform
+  // TODO: find all the package types to transform
   // TODO: error/warning logging/handling etc
 
   const transformer = new PackageTransformer();
-  transformer.transform(packagePath, 'fesm2015');
+  transformer.transform(packagePath, format);
 
   return 0;
 }

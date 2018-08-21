@@ -353,6 +353,38 @@ const EXPORTS_FILES = [
   },
 ];
 
+const FUNCTION_BODY_FILE = {
+  name: '/function_body.js',
+  contents: `
+    function foo(x) {
+      return x;
+    }
+    function bar(x, y = 42) {
+      return x + y;
+    }
+    function baz(x) {
+      let y;
+      if (y === void 0) { y = 42; }
+      return x;
+    }
+    let y;
+    function qux(x) {
+      if (x === void 0) { y = 42; }
+      return y;
+    }
+    function moo() {
+      let x;
+      if (x === void 0) { x = 42; }
+      return x;
+    }
+    let x;
+    function juu() {
+      if (x === void 0) { x = 42; }
+      return x;
+    }
+  `
+};
+
 describe('Esm2015ReflectionHost', () => {
 
   describe('getDecoratorsOfDeclaration()', () => {
@@ -701,7 +733,7 @@ describe('Esm2015ReflectionHost', () => {
     });
   });
 
-  describe('getConstructorParameters', () => {
+  describe('getConstructorParameters()', () => {
     it('should find the decorated constructor parameters', () => {
       const program = makeProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(program.getTypeChecker());
@@ -897,7 +929,69 @@ describe('Esm2015ReflectionHost', () => {
     });
   });
 
-  describe('getImportOfIdentifier', () => {
+  describe('getDefinitionOfFunction()', () => {
+    it('should return an object describing the function declaration passed as an argument', () => {
+      const program = makeProgram(FUNCTION_BODY_FILE);
+      const host = new Esm2015ReflectionHost(program.getTypeChecker());
+
+      const fooNode =
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'foo', ts.isFunctionDeclaration) !;
+      const fooDef = host.getDefinitionOfFunction(fooNode);
+      expect(fooDef.node).toBe(fooNode);
+      expect(fooDef.body !.length).toEqual(1);
+      expect(fooDef.body ![0].getText()).toEqual(`return x;`);
+      expect(fooDef.parameters.length).toEqual(1);
+      expect(fooDef.parameters[0].name).toEqual('x');
+      expect(fooDef.parameters[0].initializer).toBe(null);
+
+      const barNode =
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'bar', ts.isFunctionDeclaration) !;
+      const barDef = host.getDefinitionOfFunction(barNode);
+      expect(barDef.node).toBe(barNode);
+      expect(barDef.body !.length).toEqual(1);
+      expect(ts.isReturnStatement(barDef.body ![0])).toBeTruthy();
+      expect(barDef.body ![0].getText()).toEqual(`return x + y;`);
+      expect(barDef.parameters.length).toEqual(2);
+      expect(barDef.parameters[0].name).toEqual('x');
+      expect(fooDef.parameters[0].initializer).toBe(null);
+      expect(barDef.parameters[1].name).toEqual('y');
+      expect(barDef.parameters[1].initializer !.getText()).toEqual('42');
+
+      const bazNode =
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'baz', ts.isFunctionDeclaration) !;
+      const bazDef = host.getDefinitionOfFunction(bazNode);
+      expect(bazDef.node).toBe(bazNode);
+      expect(bazDef.body !.length).toEqual(3);
+      expect(bazDef.parameters.length).toEqual(1);
+      expect(bazDef.parameters[0].name).toEqual('x');
+      expect(bazDef.parameters[0].initializer).toBe(null);
+
+      const quxNode =
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'qux', ts.isFunctionDeclaration) !;
+      const quxDef = host.getDefinitionOfFunction(quxNode);
+      expect(quxDef.node).toBe(quxNode);
+      expect(quxDef.body !.length).toEqual(2);
+      expect(quxDef.parameters.length).toEqual(1);
+      expect(quxDef.parameters[0].name).toEqual('x');
+      expect(quxDef.parameters[0].initializer).toBe(null);
+
+      const mooNode =
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'moo', ts.isFunctionDeclaration) !;
+      const mooDef = host.getDefinitionOfFunction(mooNode);
+      expect(mooDef.node).toBe(mooNode);
+      expect(mooDef.body !.length).toEqual(3);
+      expect(mooDef.parameters).toEqual([]);
+
+      const juuNode =
+          getDeclaration(program, FUNCTION_BODY_FILE.name, 'juu', ts.isFunctionDeclaration) !;
+      const juuDef = host.getDefinitionOfFunction(juuNode);
+      expect(juuDef.node).toBe(juuNode);
+      expect(juuDef.body !.length).toEqual(2);
+      expect(juuDef.parameters).toEqual([]);
+    });
+  });
+
+  describe('getImportOfIdentifier()', () => {
     it('should find the import of an identifier', () => {
       const program = makeProgram(...IMPORTS_FILES);
       const host = new Esm2015ReflectionHost(program.getTypeChecker());
@@ -929,7 +1023,7 @@ describe('Esm2015ReflectionHost', () => {
     });
   });
 
-  describe('getDeclarationOfIdentifier', () => {
+  describe('getDeclarationOfIdentifier()', () => {
     it('should return the declaration of a locally defined identifier', () => {
       const program = makeProgram(SOME_DIRECTIVE_FILE);
       const host = new Esm2015ReflectionHost(program.getTypeChecker());
