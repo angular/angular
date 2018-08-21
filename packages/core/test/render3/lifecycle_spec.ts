@@ -41,7 +41,7 @@ describe('lifecycles', () => {
         elementEnd();
       }
     }, 2);
-    let Parent = createOnInitComponent('parent', getParentTemplate('comp'), 1, [Comp]);
+    let Parent = createOnInitComponent('parent', getParentTemplate('comp'), 1, 1, [Comp]);
     let ProjectedComp = createOnInitComponent('projected', (rf: RenderFlags, ctx: any) => {
       if (rf & RenderFlags.Create) {
         text(0, 'content');
@@ -49,7 +49,8 @@ describe('lifecycles', () => {
     }, 1);
 
     function createOnInitComponent(
-        name: string, template: ComponentTemplate<any>, consts: number, directives: any[] = []) {
+        name: string, template: ComponentTemplate<any>, consts: number, vars: number = 0,
+        directives: any[] = []) {
       return class Component {
         val: string = '';
         ngOnInit() {
@@ -61,7 +62,7 @@ describe('lifecycles', () => {
           type: Component,
           selectors: [[name]],
           consts: consts,
-          vars: 0,
+          vars: vars,
           factory: () => new Component(),
           inputs: {val: 'val'}, template,
           directives: directives

@@ -40,7 +40,7 @@ describe('instructions', () => {
 
   describe('bind', () => {
     it('should update bindings when value changes', () => {
-      const t = new TemplateFixture(createAnchor, () => {}, 1);
+      const t = new TemplateFixture(createAnchor, () => {}, 1, 1);
 
       t.update(() => elementProperty(0, 'title', bind('Hello')));
       expect(t.html).toEqual('<a title="Hello"></a>');

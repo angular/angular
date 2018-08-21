@@ -1148,7 +1148,7 @@ describe('query', () => {
                  }
 
                },
-               7, 0, [ViewContainerManipulatorDirective], [],
+               9, 0, [ViewContainerManipulatorDirective], [],
                function(rf: RenderFlags, ctx: any) {
                  if (rf & RenderFlags.Create) {
                    query(0, ['foo'], true, QUERY_READ_FROM_NODE);

@@ -828,7 +828,7 @@ describe('di', () => {
           const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp2.value, '-', tmp1.value, ''));
         }
-      }, 4, 1, [Directive, DirectiveSameInstance]);
+      }, 4, 2, [Directive, DirectiveSameInstance]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<div dir="" dirsame="">ElementRef-true</div>');
@@ -872,7 +872,7 @@ describe('di', () => {
       const App = createComponent('app', function(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           template(0, function() {
-          }, 0, 1, undefined, ['dir', '', 'dirSame', ''], ['dir', 'dir', 'dirSame', 'dirSame']);
+          }, 0, 0, undefined, ['dir', '', 'dirSame', ''], ['dir', 'dir', 'dirSame', 'dirSame']);
           text(3);
         }
         if (rf & RenderFlags.Update) {
@@ -880,7 +880,7 @@ describe('di', () => {
           const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
         }
-      }, 4, 1, [Directive, DirectiveSameInstance]);
+      }, 4, 2, [Directive, DirectiveSameInstance]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('TemplateRef-true');
@@ -933,7 +933,7 @@ describe('di', () => {
           const tmp2 = reference(2) as any;
           textBinding(3, interpolation2('', tmp1.value, '-', tmp2.value, ''));
         }
-      }, 4, 1, [Directive, DirectiveSameInstance]);
+      }, 4, 2, [Directive, DirectiveSameInstance]);
 
       const fixture = new ComponentFixture(App);
       expect(fixture.html).toEqual('<div dir="" dirsame="">ViewContainerRef-true</div>');
@@ -1217,7 +1217,7 @@ describe('di', () => {
           exist = injectAttribute('exist');
           nonExist = injectAttribute('nonExist');
         }
-      });
+      }, 1);
 
       new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
@@ -1376,7 +1376,7 @@ describe('di', () => {
         if (rf & RenderFlags.Update) {
           containerRefreshStart(1);
           {
-            let rf1 = embeddedViewStart(0, 4, 1);
+            let rf1 = embeddedViewStart(0, 4, 2);
             if (rf1 & RenderFlags.Create) {
               elementStart(
                   0, 'span', ['childDir', '', 'child2Dir', ''],
@@ -1408,7 +1408,7 @@ describe('di', () => {
   describe('getOrCreateNodeInjector', () => {
     it('should handle initial undefined state', () => {
       const contentView = createLViewData(
-          null !, createTView(-1, null, 0, 0, null, null, null), null, LViewFlags.CheckAlways);
+          null !, createTView(-1, null, 1, 0, null, null, null), null, LViewFlags.CheckAlways);
       const oldView = enterView(contentView, null !);
       try {
         const parent = createLNode(0, TNodeType.Element, null, null, null, null);
