@@ -36,7 +36,7 @@
     "@angular/platform-browser": "6.0.0",
     "@webcomponents/custom-elements": "^1.1.0",
     "core-js": "^2.4.1",
-    "rxjs": "6.0.0",
+    "rxjs": "^6.2.0",
     "systemjs": "0.19.43",
     "tsickle": "^0.27.2",
     "tslib": "^1.9.0",
