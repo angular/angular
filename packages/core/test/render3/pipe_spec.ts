@@ -236,7 +236,7 @@ describe('pipe', () => {
           containerRefreshStart(4);
           {
             for (let i of [1, 2]) {
-              let rf1 = embeddedViewStart(1, 2, 0);
+              let rf1 = embeddedViewStart(1, 2, 3);
               {
                 if (rf1 & RenderFlags.Create) {
                   elementStart(0, 'div');

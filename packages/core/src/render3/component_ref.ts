@@ -18,7 +18,7 @@ import {Type} from '../type';
 
 import {assertComponentType, assertDefined} from './assert';
 import {LifecycleHooksFeature, createRootContext} from './component';
-import {baseDirectiveCreate, createLNode, createLViewData, createTView, elementCreate, enterView, hostElement, initChangeDetectorIfExisting, locateHostElement, renderEmbeddedTemplate} from './instructions';
+import {adjustBlueprintForNewNode, baseDirectiveCreate, createLNode, createLViewData, createTView, elementCreate, enterView, hostElement, initChangeDetectorIfExisting, locateHostElement, renderEmbeddedTemplate} from './instructions';
 import {ComponentDefInternal, ComponentType, RenderFlags} from './interfaces/definition';
 import {LElementNode, TNode, TNodeType} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
@@ -156,6 +156,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
           let firstTNode: TNode|null = null;
           let previousTNode: TNode|null = null;
           for (let j = 0; j < nodeList.length; j++) {
+            adjustBlueprintForNewNode(rootView);
             const lNode =
                 createLNode(++index, TNodeType.Element, nodeList[j] as RElement, null, null);
             if (previousTNode) {

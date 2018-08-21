@@ -14,7 +14,7 @@ import {Sanitizer} from '../sanitization/security';
 
 import {assertComponentType, assertDefined} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, ROOT_DIRECTIVE_INDICES, _getComponentHostLElementNode, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings,} from './instructions';
+import {CLEAN_PROMISE, _getComponentHostLElementNode, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings, queueHostBindingForCheck,} from './instructions';
 import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
@@ -122,6 +122,9 @@ export function renderComponent<T>(
 
     // Create directive instance with factory() and store at index 0 in directives array
     component = baseDirectiveCreate(0, componentDef.factory() as T, componentDef);
+    if (componentDef.hostBindings) {
+      queueHostBindingForCheck(0, componentDef.hostVars);
+    }
     rootContext.components.push(component);
     (elementNode.data as LViewData)[CONTEXT] = component;
     initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data !);
@@ -129,7 +132,7 @@ export function renderComponent<T>(
     opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
 
     executeInitAndContentHooks();
-    setHostBindings(ROOT_DIRECTIVE_INDICES);
+    setHostBindings(rootView[TVIEW].hostBindings);
     detectChangesInternal(elementNode.data as LViewData, elementNode, component);
   } finally {
     leaveView(oldView);

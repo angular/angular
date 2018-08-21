@@ -91,7 +91,7 @@ describe('elements', () => {
         selectors: [['local-ref-comp']],
         factory: function LocalRefComp_Factory() { return new LocalRefComp(); },
         consts: 4,
-        vars: 1,
+        vars: 2,
         template: function LocalRefComp_Template(rf: $RenderFlags$, ctx: $LocalRefComp$) {
           if (rf & 1) {
             $r3$.ɵelement(0, 'div', $e0_attrs$, $e0_locals$);
@@ -135,7 +135,7 @@ describe('elements', () => {
         type: ListenerComp,
         selectors: [['listener-comp']],
         factory: function ListenerComp_Factory() { return new ListenerComp(); },
-        consts: 1,
+        consts: 2,
         vars: 0,
         template: function ListenerComp_Template(rf: $RenderFlags$, ctx: $ListenerComp$) {
           if (rf & 1) {

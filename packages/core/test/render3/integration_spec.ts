@@ -340,6 +340,7 @@ describe('render3 integration test', () => {
             }
           },
           factory: () => cmptInstance = new TodoComponentHostBinding,
+          hostVars: 1,
           hostBindings: function(directiveIndex: number, elementIndex: number): void {
             // host bindings
             elementProperty(
@@ -930,7 +931,7 @@ describe('render3 integration test', () => {
         containerRefreshStart(1);
         {
           for (let subTree of ctx.tree.subTrees || []) {
-            const rf0 = embeddedViewStart(0, 1, 0);
+            const rf0 = embeddedViewStart(0, 3, 0);
             { showTree(rf0, {tree: subTree}); }
             embeddedViewEnd();
           }
@@ -967,14 +968,14 @@ describe('render3 integration test', () => {
           if (rf & RenderFlags.Update) {
             containerRefreshStart(0);
             {
-              const rf0 = embeddedViewStart(0, 1, 0);
+              const rf0 = embeddedViewStart(0, 3, 0);
               { showTree(rf0, {tree: ctx.beforeTree}); }
               embeddedViewEnd();
             }
             containerRefreshEnd();
             containerRefreshStart(2);
             {
-              const rf0 = embeddedViewStart(0, 1, 0);
+              const rf0 = embeddedViewStart(0, 3, 0);
               { showTree(rf0, {tree: ctx.afterTree}); }
               embeddedViewEnd();
             }
@@ -997,7 +998,7 @@ describe('render3 integration test', () => {
         elementProperty(0, 'afterTree', bind(ctx.afterTree));
         containerRefreshStart(1);
         {
-          const rf0 = embeddedViewStart(0, 1, 0);
+          const rf0 = embeddedViewStart(0, 3, 0);
           { showTree(rf0, {tree: ctx.projectedTree}); }
           embeddedViewEnd();
         }
@@ -1109,15 +1110,15 @@ describe('render3 integration test', () => {
           }
         }
         let args = ['(', 0, 'a', 1, 'b', 2, 'c', 3, 'd', 4, 'e', 5, 'f', 6, 'g', 7, ')'];
-        expect(renderToHtml(Template, args, 1, 10))
+        expect(renderToHtml(Template, args, 1, 54))
             .toEqual(
                 '<b a="(0a1b2c3d4e5f6g7)" a0="0" a1="(0)" a2="(0a1)" a3="(0a1b2)" a4="(0a1b2c3)" a5="(0a1b2c3d4)" a6="(0a1b2c3d4e5)" a7="(0a1b2c3d4e5f6)" a8="(0a1b2c3d4e5f6g7)"></b>');
         args = args.reverse();
-        expect(renderToHtml(Template, args, 1, 10))
+        expect(renderToHtml(Template, args, 1, 54))
             .toEqual(
                 '<b a=")7g6f5e4d3c2b1a0(" a0="7" a1=")7(" a2=")7g6(" a3=")7g6f5(" a4=")7g6f5e4(" a5=")7g6f5e4d3(" a6=")7g6f5e4d3c2(" a7=")7g6f5e4d3c2b1(" a8=")7g6f5e4d3c2b1a0("></b>');
         args = args.reverse();
-        expect(renderToHtml(Template, args, 1, 10))
+        expect(renderToHtml(Template, args, 1, 54))
             .toEqual(
                 '<b a="(0a1b2c3d4e5f6g7)" a0="0" a1="(0)" a2="(0a1)" a3="(0a1b2)" a4="(0a1b2c3)" a5="(0a1b2c3d4)" a6="(0a1b2c3d4e5)" a7="(0a1b2c3d4e5f6)" a8="(0a1b2c3d4e5f6g7)"></b>');
       });
@@ -1136,14 +1137,16 @@ describe('render3 integration test', () => {
             containerRefreshStart(1);
             {
               if (true) {
-                let rf1 = embeddedViewStart(1, 1, 0);
+                let rf1 = embeddedViewStart(1, 1, 1);
                 {
                   if (rf1 & RenderFlags.Create) {
                     elementStart(0, 'b');
                     {}
                     elementEnd();
                   }
-                  elementAttribute(0, 'title', bind(ctx.title));
+                  if (rf1 & RenderFlags.Update) {
+                    elementAttribute(0, 'title', bind(ctx.title));
+                  }
                 }
                 embeddedViewEnd();
               }
@@ -1182,6 +1185,7 @@ describe('render3 integration test', () => {
             factory: function HostBindingDir_Factory() {
               return hostBindingDir = new HostBindingDir();
             },
+            hostVars: 1,
             hostBindings: function HostBindingDir_HostBindings(dirIndex: number, elIndex: number) {
               elementAttribute(
                   elIndex, 'aria-label', bind(loadDirective<HostBindingDir>(dirIndex).label));

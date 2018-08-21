@@ -57,6 +57,9 @@
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
+    "name": "NO_CHANGE"
+  },
+  {
     "name": "PARENT"
   },
   {
@@ -72,7 +75,7 @@
     "name": "RENDER_PARENT"
   },
   {
-    "name": "ROOT_DIRECTIVE_INDICES"
+    "name": "SANITIZER"
   },
   {
     "name": "TVIEW"
@@ -82,9 +85,6 @@
   },
   {
     "name": "_CLEAN_PROMISE"
-  },
-  {
-    "name": "_ROOT_DIRECTIVE_INDICES"
   },
   {
     "name": "_getComponentHostLElementNode"
@@ -142,6 +142,9 @@
   },
   {
     "name": "createTextNode"
+  },
+  {
+    "name": "createViewBlueprint"
   },
   {
     "name": "createViewQuery"
@@ -238,6 +241,9 @@
   },
   {
     "name": "nextNgElementId"
+  },
+  {
+    "name": "queueHostBindingForCheck"
   },
   {
     "name": "readElementValue"

@@ -103,6 +103,7 @@ describe('components & directives', () => {
         type: HostBindingDir,
         selectors: [['', 'hostBindingDir', '']],
         factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
+        hostVars: 1,
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵelementProperty(
               elIndex, 'id', $r3$.ɵbind($r3$.ɵloadDirective<HostBindingDir>(dirIndex).dirId));
@@ -256,6 +257,7 @@ describe('components & directives', () => {
         type: HostBindingDir,
         selectors: [['', 'hostBindingDir', '']],
         factory: function HostBindingDir_Factory() { return new HostBindingDir(); },
+        hostVars: 1,
         hostBindings: function HostBindingDir_HostBindings(dirIndex: $number$, elIndex: $number$) {
           $r3$.ɵelementAttribute(
               elIndex, 'aria-label',
@@ -446,7 +448,7 @@ describe('components & directives', () => {
         selectors: [['my-array-comp']],
         factory: function MyArrayComp_Factory() { return new MyArrayComp(); },
         consts: 1,
-        vars: 1,
+        vars: 2,
         template: function MyArrayComp_Template(rf: $RenderFlags$, ctx: $MyArrayComp$) {
           if (rf & 1) {
             $r3$.ɵtext(0);
@@ -479,7 +481,7 @@ describe('components & directives', () => {
           selectors: [['my-app']],
           factory: function MyApp_Factory() { return new MyApp(); },
           consts: 1,
-          vars: 1,
+          vars: 0,
           template: function MyApp_Template(rf: $RenderFlags$, ctx: $MyApp$) {
             if (rf & 1) {
               $r3$.ɵelement(0, 'my-array-comp');
