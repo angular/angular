@@ -427,6 +427,19 @@ describe('MatMenu', () => {
     expect(triggerEl.hasAttribute('aria-expanded')).toBe(false);
   });
 
+  it('should throw the correct error if the menu is not defined after init', () => {
+    const fixture = createComponent(SimpleMenu, [], [FakeIcon]);
+    fixture.detectChanges();
+
+    fixture.componentInstance.trigger.menu = null!;
+    fixture.detectChanges();
+
+    expect(() => {
+      fixture.componentInstance.trigger.openMenu();
+      fixture.detectChanges();
+    }).toThrowError(/must pass in an mat-menu instance/);
+  });
+
   describe('lazy rendering', () => {
     it('should be able to render the menu content lazily', fakeAsync(() => {
       const fixture = createComponent(SimpleLazyMenu);

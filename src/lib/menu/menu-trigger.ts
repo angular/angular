@@ -195,6 +195,8 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
       return;
     }
 
+    this._checkMenu();
+
     const overlayRef = this._createOverlay();
     this._setPosition(overlayRef.getConfig().positionStrategy as FlexibleConnectedPositionStrategy);
     overlayRef.attach(this._portal);
