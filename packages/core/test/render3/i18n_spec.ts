@@ -196,7 +196,7 @@ describe('Runtime i18n', () => {
         factory: () => new MyApp(),
         selectors: [['my-app']],
         consts: 1,
-        vars: 1,
+        vars: 2,
         // Initial template:
         // <div i18n i18n-title title="{{exp1}}{{exp2}}"></div>
 
@@ -1199,7 +1199,7 @@ describe('Runtime i18n', () => {
           selectors: [['parent']],
           directives: [Child],
           factory: () => new Parent(),
-          consts: 4,
+          consts: 7,
           vars: 2,
           template: (rf: RenderFlags, cmp: Parent) => {
             if (rf & RenderFlags.Create) {
@@ -1512,7 +1512,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
-          vars: 1,
+          vars: 4,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}"></div>
 
@@ -1550,7 +1550,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
-          vars: 1,
+          vars: 3,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}"></div>
 
@@ -1587,7 +1587,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
-          vars: 1,
+          vars: 4,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}"></div>
 
@@ -1626,7 +1626,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
-          vars: 1,
+          vars: 5,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}"></div>
 
@@ -1670,7 +1670,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
-          vars: 1,
+          vars: 6,
           // Initial template:
           // <div i18n i18n-title title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}"></div>
 
@@ -1716,7 +1716,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
-          vars: 1,
+          vars: 7,
           // Initial template:
           // <div i18n i18n-title
           // title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}{{exp7}}"></div>
@@ -1771,7 +1771,7 @@ describe('Runtime i18n', () => {
           factory: () => new MyApp(),
           selectors: [['my-app']],
           consts: 1,
-          vars: 1,
+          vars: 8,
           // Initial template:
           // <div i18n i18n-title
           // title="{{exp1}}{{exp2}}{{exp3}}{{exp4}}{{exp5}}{{exp6}}{{exp7}}{{exp8}}"></div>

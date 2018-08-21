@@ -109,7 +109,7 @@ describe('@angular/common integration', () => {
           template: (rf: RenderFlags, ctx: MyApp) => {
             if (rf & RenderFlags.Create) {
               elementStart(0, 'ul');
-              { template(1, liTemplate, 2, 1, undefined, ['ngForOf', '']); }
+              { template(1, liTemplate, 2, 3, undefined, ['ngForOf', '']); }
               elementEnd();
             }
             if (rf & RenderFlags.Update) {
@@ -246,7 +246,7 @@ describe('@angular/common integration', () => {
       function liTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'li');
-          { template(1, spanTemplate, 2, 1, null, ['ngForOf', '']); }
+          { template(1, spanTemplate, 2, 3, null, ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -335,7 +335,7 @@ describe('@angular/common integration', () => {
       function divTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
-          { template(1, pTemplate, 3, 1, null, ['ngForOf', '']); }
+          { template(1, pTemplate, 3, 2, null, ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -441,7 +441,7 @@ describe('@angular/common integration', () => {
       function innerDivTemplate(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'div');
-          { template(1, spanTemplate, 2, 1, null, ['ngForOf', '']); }
+          { template(1, spanTemplate, 2, 2, null, ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {
@@ -681,7 +681,7 @@ describe('@angular/common integration', () => {
       function itemTemplate7(rf: RenderFlags, ctx: any) {
         if (rf & RenderFlags.Create) {
           elementStart(0, 'span');
-          { template(1, itemTemplate8, 2, 1, null, ['ngForOf', '']); }
+          { template(1, itemTemplate8, 2, 10, null, ['ngForOf', '']); }
           elementEnd();
         }
         if (rf & RenderFlags.Update) {

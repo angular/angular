@@ -123,7 +123,7 @@ describe('ViewContainerRef', () => {
         }
 
         const fixture = new TemplateFixture(
-            createTemplate, updateTemplate, 3, 1, [HeaderComponent, DirectiveWithVCRef]);
+            createTemplate, updateTemplate, 4, 1, [HeaderComponent, DirectiveWithVCRef]);
         expect(fixture.html).toEqual('<header-cmp vcref=""></header-cmp><footer></footer>');
 
         createView('A');
@@ -643,7 +643,7 @@ describe('ViewContainerRef', () => {
 
         function rowTemplate(rf: RenderFlags, ctx: any) {
           if (rf & RenderFlags.Create) {
-            template(0, cellTemplate, 2, 1, null, null, ['cellTemplate', ''], templateRefExtractor);
+            template(0, cellTemplate, 2, 3, null, null, ['cellTemplate', ''], templateRefExtractor);
             element(2, 'loop-comp');
           }
 

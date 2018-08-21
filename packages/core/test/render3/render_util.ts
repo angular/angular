@@ -89,7 +89,7 @@ export class TemplateFixture extends BaseFixture {
    */
   update(updateBlock?: () => void): void {
     renderTemplate(
-        this.hostNode.native, updateBlock || this.updateBlock, 0, null !, this.vars,
+        this.hostNode.native, updateBlock || this.updateBlock, 0, this.vars, null !,
         this._rendererFactory, this.hostNode, this._directiveDefs, this._pipeDefs, this._sanitizer);
   }
 }

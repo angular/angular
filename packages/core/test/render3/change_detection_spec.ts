@@ -105,7 +105,7 @@ describe('change detection', () => {
         selectors: [['my-comp']],
         factory: () => comp = new MyComponent(),
         consts: 2,
-        vars: 1,
+        vars: 2,
         /**
          * {{ doCheckCount }} - {{ name }}
          * <button (click)="onClick()"></button>

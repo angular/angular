@@ -510,7 +510,7 @@ describe('object literals', () => {
         containerRefreshStart(0);
         {
           for (let i = 0; i < 2; i++) {
-            let rf1 = embeddedViewStart(0, 1, 0);
+            let rf1 = embeddedViewStart(0, 1, 4);
             if (rf1 & RenderFlags.Create) {
               elementStart(0, 'object-comp');
               objectComps.push(loadDirective(0));
@@ -531,12 +531,12 @@ describe('object literals', () => {
     const e0_ff = (v1: any, v2: any) => { return {opacity: v1, duration: v2}; };
 
     const configs = [{opacity: 0, duration: 500}, {opacity: 1, duration: 600}];
-    renderToHtml(Template, {configs}, 1, 4, defs);
+    renderToHtml(Template, {configs}, 1, 0, defs);
     expect(objectComps[0].config).toEqual({opacity: 0, duration: 500});
     expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
 
     configs[0].duration = 1000;
-    renderToHtml(Template, {configs}, 1, 4, defs);
+    renderToHtml(Template, {configs}, 1, 0, defs);
     expect(objectComps[0].config).toEqual({opacity: 0, duration: 1000});
     expect(objectComps[1].config).toEqual({opacity: 1, duration: 600});
   });
