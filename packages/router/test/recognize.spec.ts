@@ -826,8 +826,8 @@ describe('recognize', () => {
     it('should match auxillary route on root', () => {
       checkRecognize(
           [
-            { path: '', component: ComponentC, outlet: 'aux' },
-            { path: '', children:[{ path: '', loadChildren: 'lazy' }] }
+            {path: '', component: ComponentC, outlet: 'aux'},
+            {path: '', children:[{ path: '', loadChildren: 'lazy'}]}
           ],
           '', (s: RouterStateSnapshot) => {
             const c = (s as any).children((s as any).firstChild(s.root) !);
