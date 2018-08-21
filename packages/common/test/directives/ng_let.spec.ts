@@ -7,10 +7,9 @@
  */
 
 import {CommonModule} from '@angular/common';
-import {Component} from '@angular/core';
+import {Component, EventEmitter} from '@angular/core';
 import {ComponentFixture, TestBed, async} from '@angular/core/testing';
 import {By} from '@angular/platform-browser/src/dom/debug/by';
-import {getDOM} from '@angular/platform-browser/src/dom/dom_adapter';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 
 {
@@ -28,37 +27,45 @@ import {expect} from '@angular/platform-browser/testing/src/matchers';
       });
     });
 
-    it('should support binding to variable using let', async(() => {
-         const template = '<span *ngLet="booleanCondition let v">{{v}}</span>';
-
+    it('should support binding to observable using as', async(() => {
+         const template = '<span *ngLet="observableStringValue | async as val">{{val}}</span>';
          fixture = createTestComponent(template);
-
          fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('true');
+         expect(fixture.debugElement.queryAll(By.css('span')).length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('');
 
-         getComponent().booleanCondition = false;
+         getComponent().observableStringValue.emit('some string');
          fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('false');
+         expect(fixture.nativeElement).toHaveText('some string');
        }));
 
     it('should support binding to variable using as', async(() => {
-         const template = '<span *ngLet="booleanCondition as v">{{v}}</span>';
+         const template = '<span *ngLet="stringValue as val">{{val}}</span>';
+         fixture = createTestComponent(template);
+         fixture.detectChanges();
+         expect(fixture.debugElement.queryAll(By.css('span')).length).toEqual(1);
+         expect(fixture.nativeElement).toHaveText('some string');
+       }));
+
+    it('should support binding to variable using let', async(() => {
+         const template = '<span *ngLet="stringValue; let v">{{v}}</span>';
 
          fixture = createTestComponent(template);
 
          fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('true');
+         expect(fixture.nativeElement).toHaveText('some string');
 
-         getComponent().booleanCondition = false;
+         getComponent().stringValue = 'some other string';
          fixture.detectChanges();
-         expect(fixture.nativeElement).toHaveText('false');
+         expect(fixture.nativeElement).toHaveText('some other string');
        }));
   });
 }
 
 @Component({selector: 'test-cmp', template: ''})
 class TestComponent {
-  booleanCondition: boolean = true;
+  stringValue: string = 'some string';
+  observableStringValue: EventEmitter<any> = new EventEmitter();
 }
 
 function createTestComponent(template: string): ComponentFixture<TestComponent> {
