@@ -6,7 +6,7 @@ load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
 
 filegroup(
   name = "schematics_assets",
-  srcs = glob(["**/files/**/*"]) + ["README.md", "collection.json", "migration.json"],
+  srcs = glob(["**/files/**/*", "**/*.json"]) + ["README.md"],
 )
 
 ts_library(
