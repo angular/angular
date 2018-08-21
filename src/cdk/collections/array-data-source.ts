@@ -12,11 +12,11 @@ import {DataSource} from './data-source';
 
 /** DataSource wrapper for a native array. */
 export class ArrayDataSource<T> extends DataSource<T> {
-  constructor(private _data: T[] | Observable<T[]>) {
+  constructor(private _data: T[] | ReadonlyArray<T> | Observable<T[] | ReadonlyArray<T>>) {
     super();
   }
 
-  connect(): Observable<T[]> {
+  connect(): Observable<T[] | ReadonlyArray<T>> {
     return this._data instanceof Observable ? this._data : observableOf(this._data);
   }
 

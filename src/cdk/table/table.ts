@@ -149,7 +149,7 @@ export interface RenderRow<T> {
 })
 export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
   /** Latest data provided by the data source. */
-  protected _data: T[];
+  protected _data: T[] | ReadonlyArray<T>;
 
   /** Subject that emits when the component has been destroyed. */
   private _onDestroy = new Subject<void>();
@@ -769,7 +769,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     // If no data source has been set, there is nothing to observe for changes.
     if (!this.dataSource) { return; }
 
-    let dataStream: Observable<T[]> | undefined;
+    let dataStream: Observable<T[] | ReadonlyArray<T>> | undefined;
 
     // Check if the datasource is a DataSource object by observing if it has a connect function.
     // Cannot check this.dataSource['connect'] due to potential property renaming, nor can it

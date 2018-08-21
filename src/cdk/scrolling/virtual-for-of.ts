@@ -121,7 +121,7 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
   @Input() cdkVirtualForTemplateCacheSize: number = 20;
 
   /** Emits whenever the data in the current DataSource changes. */
-  dataStream: Observable<T[]> = this._dataSourceChanges
+  dataStream: Observable<T[] | ReadonlyArray<T>> = this._dataSourceChanges
       .pipe(
           // Start off with null `DataSource`.
           startWith(null!),
@@ -138,7 +138,7 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
   private _differ: IterableDiffer<T> | null = null;
 
   /** The most recent data emitted from the DataSource. */
-  private _data: T[];
+  private _data: T[] | ReadonlyArray<T>;
 
   /** The currently rendered items. */
   private _renderedItems: T[];
@@ -254,10 +254,13 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
   }
 
   /** Swap out one `DataSource` for another. */
-  private _changeDataSource(oldDs: DataSource<T> | null, newDs: DataSource<T>): Observable<T[]> {
+  private _changeDataSource(oldDs: DataSource<T> | null, newDs: DataSource<T>):
+    Observable<T[] | ReadonlyArray<T>> {
+
     if (oldDs) {
       oldDs.disconnect(this);
     }
+
     this._needsUpdate = true;
     return newDs.connect(this);
   }
