@@ -97,7 +97,7 @@ export interface NgElementConfig {
   injector: Injector;
   /**
    * An optional custom strategy factory to use instead of the default.
-   * The strategy controls how the tranformation is performed.
+   * The strategy controls how the transformation is performed.
    */
   strategyFactory?: NgElementStrategyFactory;
 }
