@@ -35,10 +35,6 @@ $mat-button-toggle-border-radius: 2px !default;
   }
 }
 
-.mat-button-toggle-disabled .mat-button-toggle-label-content {
-  cursor: default;
-}
-
 .mat-button-toggle {
   white-space: nowrap;
   position: relative;
@@ -65,7 +61,6 @@ $mat-button-toggle-border-radius: 2px !default;
   display: inline-block;
   line-height: $mat-button-toggle-height;
   padding: $mat-button-toggle-padding;
-  cursor: pointer;
 }
 
 .mat-button-toggle-label-content > * {
@@ -112,4 +107,10 @@ $mat-button-toggle-border-radius: 2px !default;
   margin: 0;
   font: inherit;
   outline: none;
+  width: 100%; // Stretch the button in case the consumer set a custom width.
+  cursor: pointer;
+
+  .mat-button-toggle-disabled & {
+    cursor: default;
+  }
 }
