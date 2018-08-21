@@ -39,7 +39,7 @@
     },
     "viewEncapsulation": {
       "description": "Specifies the view encapsulation strategy.",
-      "enum": ["Emulated", "Native", "None"],
+      "enum": ["Emulated", "None"],
       "type": "string",
       "alias": "v"
     },
