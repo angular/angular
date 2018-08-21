@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, Input, TemplateRef, ViewContainerRef, OnInit} from '@angular/core';
+import {Directive, Input, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
+
 
 
 /**
@@ -62,13 +63,9 @@ export class NgLet implements OnInit {
   }
 
   @Input()
-  set ngLet(value: any) {
-    this._context.$implicit = this._context.ngLet = value;
-  }
+  set ngLet(value: any) { this._context.$implicit = this._context.ngLet = value; }
 
-  ngOnInit() {
-    this._viewContainer.createEmbeddedView(this._templateRef, this._context);
-  }
+  ngOnInit() { this._viewContainer.createEmbeddedView(this._templateRef, this._context); }
 }
 
 export class NgLetContext {
