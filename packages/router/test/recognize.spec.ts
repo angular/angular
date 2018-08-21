@@ -827,7 +827,7 @@ describe('recognize', () => {
       checkRecognize(
           [
             {path: '', component: ComponentC, outlet: 'aux'},
-            {path: '', children: [{ path: '', loadChildren: 'lazy'}]}
+            {path: '', children: [{path: '', loadChildren: 'lazy'}]}
           ],
           '', (s: RouterStateSnapshot) => {
             const c = (s as any).children((s as any).firstChild(s.root) !);
