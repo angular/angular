@@ -39,7 +39,7 @@ export class BuildPackage {
   private bundler = new PackageBundler(this);
 
   /** Secondary entry-points partitioned by their build depth. */
-  private get secondaryEntryPointsByDepth(): string[][] {
+  get secondaryEntryPointsByDepth(): string[][] {
     this.cacheSecondaryEntryPoints();
     return this._secondaryEntryPointsByDepth;
   }

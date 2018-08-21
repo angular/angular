@@ -117,14 +117,14 @@ export class CdkStep implements OnChanges {
   /** Whether step is marked as completed. */
   @Input()
   get completed(): boolean {
-    return this._customCompleted == null ? this._defaultCompleted : this._customCompleted;
+    return this._customCompleted == null ? this._defaultCompleted() : this._customCompleted;
   }
   set completed(value: boolean) {
     this._customCompleted = coerceBooleanProperty(value);
   }
   private _customCompleted: boolean | null = null;
 
-  private get _defaultCompleted() {
+  private _defaultCompleted() {
     return this.stepControl ? this.stepControl.valid && this.interacted : this.interacted;
   }
 
