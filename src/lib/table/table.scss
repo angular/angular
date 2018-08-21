@@ -37,7 +37,9 @@ mat-row, mat-header-row, mat-footer-row {
   }
 }
 
-mat-cell:first-child, mat-header-cell:first-child, mat-footer-cell:first-child {
+// Note: we use `first-of-type`/`last-of-type` here in order to prevent extra
+// elements like ripples or badges from throwing off the layout (see #11165).
+mat-cell:first-of-type, mat-header-cell:first-of-type, mat-footer-cell:first-of-type {
   padding-left: $mat-row-horizontal-padding;
 
   [dir='rtl'] & {
@@ -46,7 +48,7 @@ mat-cell:first-child, mat-header-cell:first-child, mat-footer-cell:first-child {
   }
 }
 
-mat-cell:last-child, mat-header-cell:last-child, mat-footer-cell:last-child {
+mat-cell:last-of-type, mat-header-cell:last-of-type, mat-footer-cell:last-of-type {
   padding-right: $mat-row-horizontal-padding;
 
   [dir='rtl'] & {
@@ -89,10 +91,12 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
   border-bottom-style: solid;
 }
 
-th.mat-header-cell:first-child, td.mat-cell:first-child, td.mat-footer-cell:first-child {
+// Note: we use `first-of-type`/`last-of-type` here in order to prevent extra
+// elements like ripples or badges from throwing off the layout (see #11165).
+th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
   padding-left: $mat-row-horizontal-padding;
 }
 
-th.mat-header-cell:last-child, td.mat-cell:last-child, td.mat-footer-cell:last-child {
+th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type {
   padding-right: $mat-row-horizontal-padding;
 }
