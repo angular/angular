@@ -17,6 +17,7 @@ import {
   ContentChild,
   ContentChildren,
   Directive,
+  ElementRef,
   EventEmitter,
   forwardRef,
   Inject,
@@ -29,6 +30,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {FormControl, FormGroupDirective, NgForm} from '@angular/forms';
+import {DOCUMENT} from '@angular/common';
 import {ErrorStateMatcher} from '@angular/material/core';
 import {MatStepHeader} from './step-header';
 import {MatStepLabel} from './step-label';
@@ -147,8 +149,13 @@ export class MatHorizontalStepper extends MatStepper { }
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatVerticalStepper extends MatStepper {
-  constructor(@Optional() dir: Directionality, changeDetectorRef: ChangeDetectorRef) {
-    super(dir, changeDetectorRef);
+  constructor(
+    @Optional() dir: Directionality,
+    changeDetectorRef: ChangeDetectorRef,
+    // @breaking-change 8.0.0 `elementRef` and `_document` parameters to become required.
+    elementRef?: ElementRef<HTMLElement>,
+    @Inject(DOCUMENT) _document?: any) {
+    super(dir, changeDetectorRef, elementRef, _document);
     this._orientation = 'vertical';
   }
 }

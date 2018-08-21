@@ -259,6 +259,20 @@ describe('MatStepper', () => {
       expect(stepHeaderEl.focus).not.toHaveBeenCalled();
     });
 
+    it('should focus next step header if focus is inside the stepper', () => {
+      let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
+      let stepHeaderEl = fixture.debugElement.queryAll(By.css('mat-step-header'))[1].nativeElement;
+      let nextButtonNativeEl = fixture.debugElement
+          .queryAll(By.directive(MatStepperNext))[0].nativeElement;
+      spyOn(stepHeaderEl, 'focus');
+      nextButtonNativeEl.focus();
+      nextButtonNativeEl.click();
+      fixture.detectChanges();
+
+      expect(stepperComponent.selectedIndex).toBe(1);
+      expect(stepHeaderEl.focus).toHaveBeenCalled();
+    });
+
     it('should only be able to return to a previous step if it is editable', () => {
       let stepperComponent = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
 
