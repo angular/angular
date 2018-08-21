@@ -6,7 +6,7 @@
 <!--
 _Reactive forms_ provide a model-driven approach to handling form inputs whose values change over time. This guide shows you how to create and update a simple form control, progress to using multiple controls in a group, validate form values, and implement more advanced forms.
 -->
-_반응형 폼_ 은 화면에 있는 입력 필드의 값이 변경될 때마다 원하는 로직이 실행하게 하는 모델-드리븐 방식의 폼입니다. 이 문서에서는 폼 컨트롤을 만드는 방법부터 시작해서 폼 컨트롤의 값을 갱신하는 방법, 폼 컨트롤 여러개를 그룹으로 묶어서 한 번에 처리하는 방법, 폼 컨트롤의 유효성을 검사하는 방법, 그 외에 폼과 관련된 고급 활용 기술도 함께 다룹니다.
+_반응형 폼_ 은 화면에 있는 입력 필드의 값이 변경될 때마다 원하는 로직이 실행하게 하는 모델-드리븐 방식의 폼입니다. 이 문서에서는 폼 컨트롤을 만드는 방법부터 시작해서 폼 컨트롤의 값을 갱신하는 방법, 폼 컨트롤 여러개를 그룹으로 묶어서 한 번에 처리하는 방법, 폼 컨트롤의 유효성을 검사하는 방법, 그 외에 폼과 관련된 고급 활용 기술에 대해 다룹니다.
 
 
 {@a toc}
@@ -31,12 +31,12 @@ Reactive forms use an explicit and immutable approach to managing the state of a
 <!--
 Reactive forms also allow for easier testing because you have an assurance that your data is consistent and predictable when requested. Consumers outside your templates have access to the same streams, where they can manipulate that data safely.
 -->
-반응형 폼을 사용하면 데이터가 의도치 않게 변경되지 않으며, 현재 상태를 쉽게 예측할 수 있기 때문에 테스트하기도 편합니다. 폼을 활용하는 템플릿에서도 폼에 접근할 수 있으며, 폼 값을 변경하는 것도 물론 가능합니다.
+반응형 폼을 사용하면 데이터가 의도한 대로만 변경되며, 현재 상태를 쉽게 예측할 수 있기 때문에 테스트하기도 편합니다. 물론 템플릿에서 폼에 접근하거나 폼 값을 변경하는 것도 가능합니다.
 
 <!--
 Reactive forms differ from template-driven forms in distinct ways. Reactive forms provide more predictability with synchronous access to the data model, immutability with observable operators, and change tracking through observable streams. If you prefer direct access to modify data in your template, template-driven forms are less explicit because they rely on directives embedded in the template, along with mutable data to track changes asynchronously. See the [Appendix](#appendix) for detailed comparisons between the two paradigms.
 -->
-반응형 폼은 템플릿 기반의 폼과 많은 점이 다릅니다. 반응형 폼은 실시간으로 데이터 모델에 접근할 수 있는 방법을 제공하며, 옵저버블 연산자를 활용할 수도 있고, 옵저버블 스트림을 통해 값이 어떻게 변경되는 지도 검사할 수 있습니다. 하지만 템플릿에서 데이터를 직접 수정하는 것을 선호한다면, 템플릿에서 디렉티브를 사용해서 데이터를 수정하는 것이 명시적이라고 생각할 수도 있습니다. 두 방식이 어떻게 다른지 좀 더 자세하게 확인하려면 [부록](#부록)을 참고하세요.
+반응형 폼은 템플릿 기반의 폼과 많은 점이 다릅니다. 반응형 폼은 실시간으로 데이터 모델에 접근할 수 있으며, 옵저버블 연산자를 활용할 수도 있고, 옵저버블 스트림을 통해 값이 어떻게 변경되는 지도 검사할 수 있습니다. 하지만 템플릿에서 데이터를 직접 수정하는 것을 선호한다면, 템플릿에서 디렉티브를 사용해서 데이터를 수정하는 것이 명시적이라고 생각할 수도 있습니다. 두 방식이 어떻게 다른지 좀 더 자세하게 확인하려면 [부록](#부록)을 참고하세요.
 
 <!--
 ## Getting started
@@ -46,7 +46,7 @@ Reactive forms differ from template-driven forms in distinct ways. Reactive form
 <!--
 This section describes the key steps to add a single form control. The example allows a user to enter their name into an input field, captures that input value, and displays the current value of the form control element.
 -->
-이 섹션에서는 폼 컨트롤을 활용하기 위해 필요한 준비 단계를 설명합니다. 사용자가 이름을 입력할 수 있는 입력 필드를 추가하고, 값이 입력되는 것을 확인하며, 폼 컨트롤 엘리먼트에 저장된 현재 값을 표현하는 방법도 알아봅니다.
+이 섹션에서는 폼 컨트롤을 활용하기 위해 필요한 준비 과정을 설명합니다. 사용자가 이름을 입력할 수 있는 입력 필드를 추가하고, 값이 입력되는 것을 확인하며, 폼 컨트롤 엘리먼트에 저장된 현재 값을 표현하는 방법도 알아봅니다.
 
 <!--
 ### Step 1 - Register the `ReactiveFormsModule`
@@ -84,7 +84,7 @@ Generate a component for the control.
 <!--
 The `FormControl` is the most basic building block when using reactive forms. To register a single form control, import the `FormControl` class into your component and create a new instance of `FormControl` to save as a class property.
 -->
-`FormControl`은 반응형 폼을 사용할 때 가장 기본적으로 사용하는 심볼입니다. 폼 컨트롤을 사용하려면 먼저 컴포넌트 코드에 `FormControl` 클래스를 로드하고, `FormControl`을 인스턴스로 생성하는 코드를 클래스 프로퍼티로 선언합니다.
+`FormControl`은 반응형 폼을 사용할 때 가장 기본이 되는 심볼입니다. 폼 컨트롤을 사용하려면 먼저 컴포넌트 코드에 `FormControl` 클래스를 로드하고, `FormControl`을 인스턴스로 생성하는 코드를 클래스 프로퍼티로 선언합니다.
 
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.ts" region="create-control" title="src/app/name-editor/name-editor.component.ts">
 
@@ -103,7 +103,7 @@ The constructor of the `FormControl` can be used to set its initial value, which
 <!--
 After you create the control in the component class, you must associate it with a form control element in the template. Update the template with the form control using the `formControl` binding provided by the `FormControlDirective` included in the `ReactiveFormsModule`.
 -->
-이렇게 컴포넌트 클래스에 폼 컨트롤을 추가하고 나면, 컴포넌트 템플릿에도 폼 컨트롤을 연결해야 이 폼 컨트롤을 사용할 수 있습니다. 그래서 `FormControlDirective`를 의미하는 `formControl`을 입력 필드에 지정하면 템플릿과 컴포넌트의 폼 컨트롤을 연결할 수 있습니다. 이 디렉티브는 `ReactiveFormsModule`에서 제공하는 디렉티브입니다.
+컴포넌트 클래스에 폼 컨트롤을 추가하고 나면, 컴포넌트 템플릿에도 폼 컨트롤을 연결해야 이 폼 컨트롤을 사용할 수 있습니다. 그래서 `FormControlDirective`를 의미하는 `formControl`을 입력 필드에 지정하면 템플릿과 컴포넌트의 폼 컨트롤을 연결할 수 있습니다. 이 디렉티브는 `ReactiveFormsModule`에서 제공하는 디렉티브입니다.
 
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="control-binding" linenums="false" title="src/app/name-editor/name-editor.component.html">
 
@@ -167,7 +167,7 @@ Every `FormControl` provides its current value as an observable through the `val
 <!--
 Display the current value using interpolation in the template as shown in the following example.
 -->
-폼 컨트롤의 값을 템플릿에 표시하려면 다음과 같이 문자열 바인딩을 사용하면 간단합니다.
+폼 컨트롤의 값을 템플릿에 표시하려면 다음과 같이 문자열 바인딩을 사용하는 것이 간단합니다.
 
 <!--
 <code-example path="reactive-forms/src/app/name-editor/name-editor.component.html" region="display-value" linenums="false" title="src/app/name-editor/name-editor.component.html (control value)">
@@ -199,7 +199,7 @@ Read about other `FormControl` properties and methods in the [Reactive Forms API
 <!--
 Reactive forms have methods to change a control's value programmatically, which gives you the flexibility to update the control’s value without user interaction. The `FormControl` provides a `setValue()` method which updates the value of the form control and validates the structure of the value provided against the control’s structure. For example, when retrieving form data from a backend API or service, use the `setValue()` method to update the control to its new value, replacing the old value entirely. 
 -->
-반응형 폼을 사용하면 폼 컨트롤의 값을 코드에서 변경할 수 있습니다. 이 때 사용할 수 있는 메소드는 여러가지이며, 이 메소드들을 활용하면 사용자의 동작 없이도 폼 컨트롤의 값을 유연하게 변경할 수 있습니다. 이 중, `setValue()` 메소드를 사용하면 폼 컨트롤의 값을 한 번에 변경할 수 있으며, 이 때 폼 컨트롤의 구조에 맞지 않는 객체가 사용되는 것을 방지하는 유효성 검사도 함께 실행됩니다.
+반응형 폼을 사용하면 폼 컨트롤의 값을 코드에서 변경할 수 있습니다. 이 때 사용할 수 있는 메소드는 여러가지이며, 이 메소드들을 활용해서 사용자의 동작 없이도 폼 컨트롤의 값을 상황에 맞게 변경할 수 있습니다. 이 중, `setValue()` 메소드를 사용하면 폼 컨트롤의 값을 한 번에 변경할 수 있으며, 이 때 폼 컨트롤의 구조에 맞지 않는 객체가 사용되는 것을 방지하는 유효성 검사도 함께 실행됩니다.
 
 <!--
 The following example adds a method to the component class to update the value of the control to _Nancy_ using the `setValue()` method.
@@ -245,7 +245,7 @@ Because the form model is the source of truth for the control, when you click th
 <!--
 Just as a `FormControl` instance gives you control over a single input field, a `FormGroup` tracks the form state of a group of `FormControl` instances (for example, a form). Each control in `FormGroup` is tracked by name when creating the `FormGroup`. The following example shows how to manage multiple `FormControl` instances in a single group.
 -->
-단순하게 입력 필드 하나를 의미하는 `FormControl` 여러 개를 함께 묶으면 `FormGroup`으로 처리할 수 있습니다. 실제로 폼을 구성할 때도 `FormControl`을 개별 객체로 처리하지 않고 `FormGroup`으로 한 번에 처리하는 것이 효율적이며, `FormGroup`의 각 `FormControl`은 이름으로 구분합니다.
+입력 필드 하나를 의미하는 `FormControl` 여러 개를 함께 묶으면 `FormGroup`으로 처리할 수 있습니다. 실제로 폼을 구성할 때도 `FormControl`을 개별 객체로 처리하지 않고 `FormGroup`으로 한 번에 처리하는 것이 효율적이며, `FormGroup`의 자식 `FormControl`은 이름으로 구분합니다.
 
 <!--
 Generate a `ProfileEditor` component and import the `FormGroup` and `FormControl` classes from the `@angular/forms` package.
@@ -284,7 +284,7 @@ For the profile form, add two `FormControl` instances with the names `firstName`
 <!--
 The individual form controls are now collected within a group. The `FormGroup` provides its model value as an object reduced from the values of each control in the group. A `FormGroup` instance has the same properties (such as `value`, `untouched`) and methods (such as `setValue()`) as a `FormControl` instance.
 -->
-그러면 폼 컨트롤이 그룹으로 묶입니다. 폼 컨트롤을 그룹으로 묶으면 개별 컨트롤의 값을 참조하기 위해 번거롭게 참조할 필요 없이 `FormGroup`에서 제공하는 모델을 사용할 수 있습니다. `FormGroup` 인스턴스도 `FormControl` 인스턴스와 비슷하게 `value`나 `untouched` 프로퍼티나 `setValue()` 메소드를 제공합니다.
+그러면 폼 컨트롤이 그룹으로 묶입니다. 폼 컨트롤을 그룹으로 묶으면 폼 컨트롤의 값을 번거롭게 하나씩 참조할 필요 없이 `FormGroup`에서 제공하는 모델을 사용할 수 있습니다. `FormGroup` 인스턴스도 `FormControl` 인스턴스와 비슷하게 `value`나 `untouched` 프로퍼티, `setValue()` 메소드를 제공합니다.
 
 <!--
 ### Step 2 - Associate the `FormGroup` model and view
@@ -294,7 +294,7 @@ The individual form controls are now collected within a group. The `FormGroup` p
 <!--
 The `FormGroup` also tracks the status and changes of each of its controls, so if one of the control’s status or value changes, the parent control also emits a new status or value change. The model for the group is maintained from its members. After you define the model, you must  update the template to reflect the model in the view.
 -->
-`FormGroup`도 각각의 폼 컨트롤의 상태와 변화를 추적합니다. 그래서 폼 컨트롤 중 하나의 상태나 값이 변경되면 이 폼 컨트롤을 감싸고 있는 부모 폼 컨트롤도 새로운 상태나 값이 변했다고 알릴 수 있습니다. 이 폼 그룹이 관리하는 모델은 각각의 폼 컨트롤로 구성됩니다. 그래서 이 모델을 템플릿에 연결하면 폼 컨트롤을 처리했던 것과 비슷하게 폼 그룹을 처리할 수 있습니다.
+`FormGroup`도 각각의 폼 컨트롤의 상태와 변화를 추적합니다. 그래서 폼 컨트롤 중 하나의 상태나 값이 변경되면 이 폼 컨트롤을 감싸고 있는 부모 폼 컨트롤도 새로운 상태로 변경되고 값도 변경됩니다. 이 폼 그룹이 관리하는 모델은 각각의 폼 컨트롤로 구성됩니다. 그래서 이 모델을 템플릿에 연결하면 폼 컨트롤을 처리했던 것과 비슷하게 폼 그룹을 처리할 수 있습니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.html" region="formgroup" linenums="false" title="src/app/profile-editor/profile-editor.component.html (template form group)">
 
@@ -352,7 +352,7 @@ Add a `button` to the bottom of the form to trigger the form submission.
 <!--
 *Note:* The button in the snippet above also has a `disabled` binding attached to it to disable the button when the `profileForm` is invalid. You aren't performing any validation yet, so the button is always enabled. Simple form validation is covered later in the [Form Validation](#simple-form-validation) section.
 -->
-*참고:* 예제에 구현한 버튼에는 `profileForm`의 유효성 검사 결과가 유효하지 않을 때 `disabled` 어트리뷰트를 지정하도록 바인딩되어 있습니다. 아직 유효성 검사 로직은 아무것도 적용하지 않았기 때문에 버튼은 항상 활성화되어 있을 것이며, 이후에 [폼 유효성 검사하기](#폼-유효성-검사하기-기본) 섹션에서 이 내용을 다시 한 번 살펴봅니다.
+*참고:* 예제로 구현한 버튼은 `profileForm`의 유효성 검사 결과가 유효하지 않을 때 `disabled` 어트리뷰트를 지정하도록 바인딩되어 있습니다. 아직 유효성 검사 로직은 아무것도 적용하지 않았기 때문에 버튼은 항상 활성화되어 있을 것이며, 이후에 [폼 유효성 검사하기](#폼-유효성-검사하기-기본) 섹션에서 이 내용을 다시 한 번 살펴봅니다.
 
 </div>
 
@@ -382,7 +382,7 @@ The `ProfileEditor` allows you to manage the `FormControl` instances for the `fi
 <!--
 ## Nesting form groups
 -->
-## 중첩 폼 그룹
+## 중첩 폼 그룹 (Nesting form groups)
 
 <!--
 When building complex forms, managing the different areas of information is easier in smaller sections, and some groups of information naturally fall into the same group. Using a nested `FormGroup` allows you to break large forms groups into smaller, more manageable ones.
@@ -406,7 +406,7 @@ An address is a good example of information that can be grouped together. A `For
 <!--
 In this example, the `address group` combines the current `firstName` and `lastName` controls with the new `street`, `city`, `state` and `zip` controls. Even though the `address` `FormGroup` is a child of the overall `profileForm` `FormGroup`, the same rules still apply with value and status changes. Changes in status and value from the nested form group will propagate up to the parent form group, maintaining consistency with the overall model.
 -->
-이 예제에서 `firstName`과 `lastName`은 폼 컨트롤이지만 `address`는 `street`와 `city`, `state`, `zip`으로 이루어진 폼 그룹입니다. `address` `FormGroup`은 그 자체로도 `FormGroup`이지만 부모 그룹인 `profileForm` `FormGroup`의 자식으로 지정되어 있으며, 기존에 사용하던 폼 상태와 값이 변경되는 상황도 이전과 마찬가지로 참조할 수 있습니다. 그리고 자식 객체에서 발생하는 상태/값 변화는 부모 폼 그룹으로 전파되기 때문에, 전체 폼 그룹을 참조해도 개별 값이 변경되는 것을 감지할 수 있습니다.
+이 예제에서 `firstName`과 `lastName`은 폼 컨트롤이지만 `address`는 `street`와 `city`, `state`, `zip`으로 이루어진 폼 그룹입니다. `address` `FormGroup`은 그 자체로도 `FormGroup`이지만 부모 그룹인 `profileForm` `FormGroup`의 자식 폼 그룹이며, 기존에 사용하던 폼 상태와 값이 변경되는 상황도 이전과 마찬가지로 참조할 수 있습니다. 그리고 자식 객체에서 발생하는 상태/값 변화는 부모 폼 그룹으로 전파되기 때문에, 전체 폼 그룹을 참조해도 개별 값이 변경되는 것을 감지할 수 있습니다.
 
 <!--
 ### Step 2 - Group the nested form in the template
@@ -463,7 +463,7 @@ When updating the value for a `FormGroup` that contains multiple controls, you m
 <!--
 With a single control, you used the `setValue()` method to set the new value for an individual control. The `setValue()` method is more strict about adhering to the structure of the `FormGroup` and replaces the entire value for the control. The `patchValue()` method is more forgiving; it only replaces properties defined in the object that have changed in the form model, because you’re only providing partial updates. The strict checks in `setValue()` help catch errors in the nesting of complex forms, while `patchValue()` will fail silently in those cases.
 -->
-폼 컨트롤이 하나라면 `setValue()` 메소드를 사용해도 폼 컨트롤의 값을 간단하게 변경할 수 있습니다. 하지만 `FormGroup`에 `setValue()` 메소드를 실행하면 폼 그룹의 구조에 딱 맞게 값을 전달해야 하고, 값 전체를 한 번에 변경해야 합니다. 그래서 폼 값의 일부만 변경하는 경우라면 `patchValue()` 메소드를 사용하는 것이 더 간단합니다. 이 메소드는 인자로 전달된 객체에 해당하는 폼 컨트롤의 값만 변경하기 때문에, 폼 모델을 일부만 변경하는 역할을 합니다. 다만, `setValue()`를 사용했을 때 폼 그룹의 구조에 맞지 않은 객체를 전달하면 에러를 발생해서 알려주지만, `patchValue()`를 사용했을 때는 폼 그룹의 구조와 다른 객체가 전달되어도 에러를 표시하지 않습니다. 복잡한 폼에 `patchValue()`를 사용한다면 이 점에 주의해야 합니다.
+폼 컨트롤이 하나라면 `setValue()` 메소드를 사용해도 폼 컨트롤의 값을 간단하게 변경할 수 있습니다. 하지만 `FormGroup`에 `setValue()` 메소드를 실행하면 폼 그룹의 구조와 정확히 일치해야 하는 경우에만 값이 변경되고, 전체 구조를 한 번에 변경해야 합니다. 그래서 폼 값의 일부만 변경하는 경우라면 `patchValue()` 메소드를 사용하는 것이 더 편합니다. 이 메소드는 인자로 전달된 객체에 해당하는 폼 컨트롤의 값만 변경하기 때문에, 폼 모델을 일부만 변경하는 역할을 합니다. 다만, `setValue()`를 사용했을 때 폼 그룹의 구조에 맞지 않은 객체를 전달하면 에러를 발생해서 알려주지만, `patchValue()`를 사용했을 때는 폼 그룹의 구조와 다른 객체가 전달되어도 에러를 표시하지 않습니다. 복잡한 폼에 `patchValue()`를 사용한다면 이 점에 주의해야 합니다.
 
 <!--
 In the `ProfileEditorComponent`, the `updateProfile` method with the following example below to update the first name and street address for the user.
@@ -496,7 +496,7 @@ When the button is clicked, the `profileForm` model is updated with just the `fi
 <!--
 Creating multiple form control instances manually can become very repetitive when dealing with multiple forms. The `FormBuilder` service provides convenience methods to handle generating controls. Underneath, the `FormBuilder` is creating and returning the instances in the same manner, but with much less work. The following section refactors the `ProfileEditor` component to use the `FormBuilder` instead of creating each `FormControl` and `FormGroup` by hand.
 -->
-폼 컨트롤을 매번 직접 생성하는데, 이런 폼이 여러개라면 폼을 구성하는 일은 귀찮은 일을 반복하는 일이 될 것입니다. 이런 경우에 `FormBuilder` 서비스를 사용하면 폼을 간단하게 구성할 수 있습니다. `FormBuilder`를 사용하면 인자로 전달하는 객체의 구조에 맞게 `FormControl` 인스턴스를 생성해서 반환합니다. 이번 섹션에서는 `ProfileEditor` 컴포넌트에 `FormControl`이나 `FromGroup`을 직접 생성했던 방식 대신, `FormBuilder`를 사용하는 방식으로 리팩토링 해봅시다.
+폼 컨트롤을 매번 직접 생성하는데, 이런 폼이 여러개라면 폼을 구성하는 일은 귀찮은 일을 반복하는 일이 될 것입니다. 이런 경우에 `FormBuilder` 서비스를 사용하면 좀 더 편하게 폼을 구성할 수 있습니다. `FormBuilder`를 사용하면 인자로 전달하는 객체의 구조에 맞게 `FormControl` 인스턴스를 생성해서 반환합니다. 이번 섹션에서는 `ProfileEditor` 컴포넌트에 `FormControl`이나 `FromGroup`을 직접 생성했던 방식 대신, `FormBuilder`를 사용하는 방식으로 리팩토링 해봅시다.
 
 <!--
 ### Step 1 - Import the `FormBuilder` class
@@ -506,7 +506,7 @@ Creating multiple form control instances manually can become very repetitive whe
 <!--
 To use the `FormBuilder` service, import its class from the `@angular/forms` package.
 -->
-`FormBuilder` 서비스를 사용하려면 `@angular/forms` 패키지에서 이 클래스를 로드해야 합니다.
+`FormBuilder` 서비스를 사용하려면 `@angular/forms` 패키지에서 `FormBuilder` 클래스를 로드해야 합니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-builder-imports" title="src/app/profile-editor/profile-editor.component.ts (import)">
 
@@ -643,7 +643,7 @@ In the `ProfileEditor` component, add the `Validators.required` static method as
 <!--
 HTML5 has a set of built-in attributes that can be used for native validation, including `required`, `minlength`, `maxlength`, and more. Although _optional_, you can take advantage of these as additional attributes on your form input elements. Add the `required` attribute to the `firstName` input element.
 -->
-HTML5에서도 어트리뷰트를 지정해서 네이티브 유효성 검사 로직을 활용할 수 있습니다. `required`나 `minlength`, `maxlength`와 같은 것이 이 내용에 해당됩니다. 입력 필드에 유효성 검사기를 지정하는 것은 선택사항이지만, 이 기능을 활성화하려면 다음과 같이 `firstName` `input` 엘리먼트에 `required` 어트리뷰트를 지정하기만 하면 됩니다.
+HTML5에서도 `required`나 `minlength`, `maxlength`와 같은 어트리뷰트를 지정해서 네이티브 유효성 검사 로직을 활용할 수 있습니다. 입력 필드에 유효성 검사기를 지정하는 것은 선택사항이며, 이 기능을 활성화하려면 다음과 같이 `firstName` `input` 엘리먼트에 `required` 어트리뷰트를 지정하기만 하면 됩니다.
 
 <!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" linenums="false" title="src/app/profile-editor/profile-editor.component.html (required attribute)">
@@ -690,7 +690,7 @@ Display the current status of the `profileForm` using interpolation.
 <!--
 The submit button is disabled because the `profileForm` is invalid due to the required `firstName` form control. After you fill out the `firstName` input, the form becomes valid and the submit button is enabled.
 -->
-`firstName` 폼 컨트롤이 필수항목으로 지정되었지만 유효성 검사를 통과하지 못했기 때문에 `profileForm` 전체가 유효하지 않은 것으로 판단되고, 이에 따라 제출 버튼도 비활성화 됩니다. `firstName` 입력 필드에 데이터를 입력하면 폼 전체의 유효성 검사가 통과되면서, 제출 버튼도 활성화될 것입니다.
+`firstName` 폼 컨트롤이 필수항목으로 지정되었지만 유효성 검사를 통과하지 못했기 때문에 `profileForm` 전체가 유효하지 않은 것으로 판단되고, 이에 따라 _Submit_ 버튼도 비활성화 됩니다. `firstName` 입력 필드에 데이터를 입력하면 폼 전체의 유효성 검사가 통과되면서, 제출 버튼도 활성화될 것입니다.
 
 <!--
 For more on form validation, visit the [Form Validation](guide/form-validation) guide.
@@ -791,7 +791,7 @@ Define a method to dynamically insert an alias control into the alias's `FormArr
 <!--
 In the template, the controls are iterated over to display each control as a separate input field.
 -->
-그러면 이 함수가 실행될 때마다 폼 배열에 폼 컨트롤이 추가되고, 폼 배열에 있는 폼 컨트롤마다 템플릿에 표시됩니다.
+이제 이렇게 만든 폼 배열을 템플릿에 표시해 봅시다.
 
 <!--
 ### Step 4 - Display the form array in the template
@@ -982,7 +982,7 @@ Listed below are the base classes and services used to create and manage form co
 <!--
 When importing the `ReactiveFormsModule`, you also gain access to directives to use in your templates for binding the data model to the forms declaratively.
 -->
-그리고 애플리케이션에 `ReactiveFormsModule`을 로드하면 템플릿에 다음과 같은 디렉티브를 자유롭게 사용할 수 있습니다. 이 디렉티브들은 데이터 모델과 폼을 바인딩할 때 사용합니다.
+애플리케이션에 `ReactiveFormsModule`을 로드하면 템플릿에 다음과 같은 디렉티브를 자유롭게 사용할 수 있습니다. 이 디렉티브들은 데이터 모델과 폼을 바인딩할 때 사용합니다.
 
 <!--
 #### Directives
@@ -1114,7 +1114,7 @@ _Template-driven_ forms, introduced in the [Template-driven forms guide](guide/f
 <!--
 * You don't create Angular form control objects. Angular directives create them for you, using the information in your data bindings.
 -->
-* 반응형 폼을 구현할 때는 Angular 폼 컨트롤 객체를 직접 생성하지 않습니다. 폼 컨트롤 객체는 Angular 디렉티브가 생성하고, 개발자는 데이터 바인딩을 통해 폼 컨트롤의 정보를 확인할 뿐입니다.
+* 반응형 폼을 구현할 때는 Angular 폼 컨트롤 객체를 직접 생성하지 않습니다. 폼 컨트롤 객체는 Angular 디렉티브가 생성하고, 개발자는 데이터 바인딩을 통해 폼 컨트롤을 활용할 뿐입니다.
 
 <!--
 * You don't push and pull data values. Angular handles that for you with `ngModel`. Angular updates the mutable _data model_ with user changes as they happen.
@@ -1126,7 +1126,7 @@ While this means less code in the component class,
 [template-driven forms are asynchronous](guide/reactive-forms#async-vs-sync "Async vs sync")
 which may complicate development in more advanced scenarios.
 -->
-템플릿 기반의 폼을 사용하면 컴포넌트 클래스에 상대적으로 적은 코드를 작성하기 때문에 더 간단해 보이리 수 있지만, [템플릿 기반의 폼은 비동기로 동작하기 때문에](guide/reactive-forms#async-vs-sync "Async vs sync") 복잡한 시나리오를 처리하기에는 적합하지 않습니다.
+템플릿 기반의 폼을 사용하면 컴포넌트 클래스에 상대적으로 적은 코드를 작성하기 때문에 더 간단해 보일 수 있지만, [템플릿 기반의 폼은 비동기로 동작하기 때문에](guide/reactive-forms#async-vs-sync "Async vs sync") 복잡한 시나리오를 처리하기에는 적합하지 않습니다.
 
 {@a async-vs-sync}
 
@@ -1146,7 +1146,7 @@ In reactive forms, you create the entire form control tree in code.
 You can immediately update a value or drill down through the descendants of the parent form
 because all controls are always available.
 -->
-반응형 폼을 사용할 떄는 폼 컨트롤의 전체 구조를 코드에 정의합니다.
+반응형 폼을 사용할 때는 폼 컨트롤의 전체 구조를 코드에 정의합니다.
 그래서 폼 컨트롤도 코드에서 자유롭게 접근할 수 있기 때문에 폼 컨트롤의 값을 변경하거나 폼 안쪽에 있는 폼 컨트롤에 접근하는 것도 자유롭습니다.
 
 <!--
