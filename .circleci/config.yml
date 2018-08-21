@@ -49,9 +49,6 @@ jobs:
           key: *cache_key
 
       - run: bazel run @nodejs//:npm install
-      # For some reason, circleci needs the postinstall to be run explicitly.
-      # This may be unnecessary once rules_nodejs uses nodejs 8
-      - run: bazel run @nodejs//:npm run postinstall
       - run: bazel build src/...
       - run: bazel test src/...
       - save_cache:
