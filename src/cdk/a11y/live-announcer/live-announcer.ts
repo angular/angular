@@ -117,13 +117,11 @@ export class CdkAriaLive implements OnDestroy {
         this._subscription.unsubscribe();
         this._subscription = null;
       }
-    } else {
-      if (!this._subscription) {
-        this._subscription = this._ngZone.runOutsideAngular(
-            () => this._contentObserver.observe(this._elementRef.nativeElement).subscribe(
-                () => this._liveAnnouncer.announce(
-                    this._elementRef.nativeElement.innerText, this._politeness)));
-      }
+    } else if (!this._subscription) {
+      this._subscription = this._ngZone.runOutsideAngular(
+          () => this._contentObserver.observe(this._elementRef).subscribe(
+              () => this._liveAnnouncer.announce(
+                  this._elementRef.nativeElement.innerText, this._politeness)));
     }
   }
   private _politeness: AriaLivePoliteness = 'off';

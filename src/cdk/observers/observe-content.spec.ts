@@ -2,9 +2,6 @@ import {Component, ElementRef, ViewChild} from '@angular/core';
 import {async, ComponentFixture, fakeAsync, inject, TestBed, tick} from '@angular/core/testing';
 import {ContentObserver, MutationObserverFactory, ObserversModule} from './observe-content';
 
-// TODO(elad): `ProxyZone` doesn't seem to capture the events raised by
-// `MutationObserver` and needs to be investigated
-
 describe('Observe content directive', () => {
   describe('basic usage', () => {
     beforeEach(async(() => {
@@ -159,7 +156,7 @@ describe('ContentObserver injectable', () => {
       const fixture = TestBed.createComponent(UnobservedComponentWithTextContent);
       fixture.detectChanges();
 
-      contentObserver.observe(fixture.componentInstance.contentEl.nativeElement)
+      contentObserver.observe(fixture.componentInstance.contentEl)
           .subscribe(() => spy());
 
       expect(spy).not.toHaveBeenCalled();
@@ -177,9 +174,9 @@ describe('ContentObserver injectable', () => {
           const fixture = TestBed.createComponent(UnobservedComponentWithTextContent);
           fixture.detectChanges();
 
-          const sub1 = contentObserver.observe(fixture.componentInstance.contentEl.nativeElement)
+          const sub1 = contentObserver.observe(fixture.componentInstance.contentEl)
               .subscribe(() => spy());
-          contentObserver.observe(fixture.componentInstance.contentEl.nativeElement)
+          contentObserver.observe(fixture.componentInstance.contentEl)
               .subscribe(() => spy());
 
           expect(mof.create).toHaveBeenCalledTimes(1);
