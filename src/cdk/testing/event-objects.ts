@@ -42,7 +42,8 @@ export function createTouchEvent(type: string, pageX = 0, pageY = 0) {
   // the touch details.
   Object.defineProperties(event, {
     touches: {value: [touchDetails]},
-    targetTouches: {value: [touchDetails]}
+    targetTouches: {value: [touchDetails]},
+    changedTouches: {value: [touchDetails]}
   });
 
   return event;

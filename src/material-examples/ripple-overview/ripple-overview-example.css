@@ -5,6 +5,8 @@
   width: 300px;
   height: 300px;
   line-height: 300px;
+  -webkit-user-drag: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /** Styles to make the demo look better. */

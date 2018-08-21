@@ -264,8 +264,13 @@ export class RippleRenderer {
       this._lastTouchStartEvent = Date.now();
       this._isPointerDown = true;
 
-      this.fadeInRipple(
-          event.touches[0].clientX, event.touches[0].clientY, this._target.rippleConfig);
+      // Use `changedTouches` so we skip any touches where the user put
+      // their finger down, but used another finger to tap the element again.
+      const touches = event.changedTouches;
+
+      for (let i = 0; i < touches.length; i++) {
+        this.fadeInRipple(touches[i].clientX, touches[i].clientY, this._target.rippleConfig);
+      }
     }
   }
 
