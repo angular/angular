@@ -4,11 +4,9 @@ workspace(name = "bazel_integration_test")
 # Download Bazel toolchain dependencies as needed by build actions
 #
 
-http_archive(
+local_repository(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.16.1.zip",
-    strip_prefix = "rules_typescript-0.16.1",
-    sha256 = "5b2b0bc63cfcffe7bf97cad2dad3b26a73362f806de66207051f66c87956a995",
+    path = "node_modules/@bazel/typescript",
 )
 load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
 rules_typescript_dependencies()
@@ -26,7 +24,7 @@ http_archive(
 
 local_repository(
     name = "angular",
-    path = "node_modules/@angular/bazel",
+    path = "../..",
 )
 
 local_repository(

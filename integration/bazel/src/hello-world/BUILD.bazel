@@ -16,10 +16,9 @@ ng_module(
         exclude = ["*.spec.ts"],
     ),
     assets = [":hello-world-styles"],
-    tsconfig = "//src:tsconfig.json",
-    # FIXME(alexeagle): the rxjs dep should come from Angular, but if we use the
-    # npm distro of angular there is no ts_library rule to propagate the dep.
-    deps = ["@rxjs"],
+    deps = [
+        "@angular//packages/core",
+    ],
 )
 
 ng_package(
@@ -32,20 +31,27 @@ ts_library(
     name = "test_lib",
     testonly = 1,
     srcs = glob(["*.spec.ts"]),
-    tsconfig = "//src:tsconfig.json",
-    deps = [":hello-world"],
+    deps = [
+        ":hello-world",
+        "@angular//packages/core",
+        "@angular//packages/core/testing",
+        "@angular//packages/platform-browser",
+        "@angular//packages/platform-browser-dynamic/testing",
+    ],
 )
 
 ts_web_test_suite(
     name = "test",
-    bootstrap = ["//:node_modules/zone.js/dist/zone-testing-bundle.js"],
+    srcs = ["//:node_modules/tslib/tslib.js"],
+    bootstrap = [
+        "//:node_modules/zone.js/dist/zone-testing-bundle.js",
+        "//:node_modules/reflect-metadata/Reflect.js",
+    ],
     browsers = [
         "@io_bazel_rules_webtesting//browsers:chromium-local",
         "@io_bazel_rules_webtesting//browsers:firefox-local",
     ],
     deps = [
         ":test_lib",
-        "//:angular_bundles",
-        "//:angular_test_bundles",
     ],
 )
