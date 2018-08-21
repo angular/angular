@@ -50,6 +50,20 @@ describe('MatChipList', () => {
 
         expect(chipsValid).toBe(true);
       });
+
+      it('should toggle the chips disabled state based on whether it is disabled', () => {
+        expect(chips.toArray().every(chip => chip.disabled)).toBe(false);
+
+        chipListInstance.disabled = true;
+        fixture.detectChanges();
+
+        expect(chips.toArray().every(chip => chip.disabled)).toBe(true);
+
+        chipListInstance.disabled = false;
+        fixture.detectChanges();
+
+        expect(chips.toArray().every(chip => chip.disabled)).toBe(false);
+      });
     });
 
     describe('with selected chips', () => {
@@ -112,6 +126,27 @@ describe('MatChipList', () => {
         fixture.detectChanges();
 
         expect(manager.activeItemIndex).toBe(lastIndex);
+      });
+
+      it('should be able to become focused when disabled', () => {
+        expect(chipListInstance.focused).toBe(false, 'Expected list to not be focused.');
+
+        chipListInstance.disabled = true;
+        fixture.detectChanges();
+
+        chipListInstance.focus();
+        fixture.detectChanges();
+
+        expect(chipListInstance.focused).toBe(false, 'Expected list to continue not to be focused');
+      });
+
+      it('should remove the tabindex from the list if it is disabled', () => {
+        expect(chipListNativeElement.getAttribute('tabindex')).toBeTruthy();
+
+        chipListInstance.disabled = true;
+        fixture.detectChanges();
+
+        expect(chipListNativeElement.hasAttribute('tabindex')).toBeFalsy();
       });
 
       describe('on chip destroy', () => {

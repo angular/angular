@@ -38,6 +38,7 @@ let nextUniqueId = 0;
     '(focus)': '_focus()',
     '(input)': '_onInput()',
     '[id]': 'id',
+    '[attr.disabled]': 'disabled || null',
     '[attr.placeholder]': 'placeholder || null',
   }
 })
@@ -80,6 +81,12 @@ export class MatChipInput implements OnChanges {
 
   /** Unique id for the input. */
   @Input() id: string = `mat-chip-list-input-${nextUniqueId++}`;
+
+  /** Whether the input is disabled. */
+  @Input()
+  get disabled(): boolean { return this._disabled || (this._chipList && this._chipList.disabled); }
+  set disabled(value: boolean) { this._disabled = coerceBooleanProperty(value); }
+  private _disabled: boolean = false;
 
   /** Whether the input is empty. */
   get empty(): boolean { return !this._inputElement.value; }
