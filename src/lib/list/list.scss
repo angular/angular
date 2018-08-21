@@ -143,6 +143,10 @@ $mat-list-item-inset-divider-offset: 72px;
     height: $avatar-size;
     border-radius: 50%;
 
+    // Not supported in IE11, but we're using this as a
+    // progressive enhancement to get better image scaling.
+    object-fit: cover;
+
     ~ .mat-divider-inset {
       @include mat-inset-divider-offset($avatar-size, $mat-list-side-padding);
     }
