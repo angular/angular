@@ -142,6 +142,10 @@ $mat-slider-focus-ring-size: 30px !default;
   transition: transform $swift-ease-out-duration $swift-ease-out-timing-function,
               border-radius  $swift-ease-out-duration $swift-ease-out-timing-function,
               background-color  $swift-ease-out-duration $swift-ease-out-timing-function;
+
+  @include cdk-high-contrast {
+    outline: solid 1px;
+  }
 }
 
 .mat-slider-thumb-label-text {
@@ -338,6 +342,13 @@ $mat-slider-focus-ring-size: 30px !default;
   &.cdk-focused {
     .mat-slider-thumb-label {
       transform: rotate(45deg);
+    }
+
+    @include cdk-high-contrast {
+      .mat-slider-thumb-label,
+      .mat-slider-thumb-label-text {
+        transform: none;
+      }
     }
   }
 }
