@@ -821,6 +821,21 @@ describe('recognize', () => {
           });
     });
   });
+
+  describe('aux route with empty base path', () => {
+    it('should match auxillary route on root', () => {
+      checkRecognize(
+          [
+            { path: '', component: ComponentC, outlet: 'aux' },
+            { path: '', children:[{ path: '', loadChildren: 'lazy' }] }
+          ],
+          '', (s: RouterStateSnapshot) => {
+            const c = (s as any).children((s as any).firstChild(s.root) !);
+            checkActivatedRoute(c[0], '', {}, undefined !);
+            checkActivatedRoute(c[1], '', {}, ComponentC, 'aux');
+          });
+    });
+  });
 });
 
 function checkRecognize(
