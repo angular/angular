@@ -168,7 +168,7 @@ function getChildConfig(route: Route): Route[] {
     return route.children;
   }
 
-  if (route.loadChildren) {
+  if (route.loadChildren && route._loadedConfig) {
     return route._loadedConfig !.routes;
   }
 
