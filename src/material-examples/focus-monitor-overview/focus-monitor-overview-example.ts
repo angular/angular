@@ -27,12 +27,12 @@ export class FocusMonitorOverviewExample implements OnDestroy, OnInit {
               private ngZone: NgZone) {}
 
   ngOnInit() {
-    this.focusMonitor.monitor(this.element.nativeElement)
+    this.focusMonitor.monitor(this.element)
         .subscribe(origin => this.ngZone.run(() => {
           this.elementOrigin = this.formatOrigin(origin);
           this.cdr.markForCheck();
         }));
-    this.focusMonitor.monitor(this.subtree.nativeElement, true)
+    this.focusMonitor.monitor(this.subtree, true)
         .subscribe(origin => this.ngZone.run(() => {
           this.subtreeOrigin = this.formatOrigin(origin);
           this.cdr.markForCheck();
@@ -40,8 +40,8 @@ export class FocusMonitorOverviewExample implements OnDestroy, OnInit {
   }
 
   ngOnDestroy() {
-    this.focusMonitor.stopMonitoring(this.element.nativeElement);
-    this.focusMonitor.stopMonitoring(this.subtree.nativeElement);
+    this.focusMonitor.stopMonitoring(this.element);
+    this.focusMonitor.stopMonitoring(this.subtree);
   }
 
   formatOrigin(origin: FocusOrigin): string {

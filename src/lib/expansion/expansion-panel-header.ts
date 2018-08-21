@@ -83,7 +83,7 @@ export class MatExpansionPanelHeader implements OnDestroy {
     )
     .subscribe(() => this._changeDetectorRef.markForCheck());
 
-    _focusMonitor.monitor(_element.nativeElement);
+    _focusMonitor.monitor(_element);
   }
 
   /** Height of the header while the panel is expanded. */
@@ -133,7 +133,7 @@ export class MatExpansionPanelHeader implements OnDestroy {
 
   ngOnDestroy() {
     this._parentChangeSubscription.unsubscribe();
-    this._focusMonitor.stopMonitoring(this._element.nativeElement);
+    this._focusMonitor.stopMonitoring(this._element);
   }
 }
 

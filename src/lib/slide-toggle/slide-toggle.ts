@@ -194,7 +194,7 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
 
   ngAfterContentInit() {
     this._focusMonitor
-      .monitor(this._elementRef.nativeElement, true)
+      .monitor(this._elementRef, true)
       .subscribe(focusOrigin => {
         if (!focusOrigin) {
           // When a focused element becomes disabled, the browser *immediately* fires a blur event.
@@ -208,7 +208,7 @@ export class MatSlideToggle extends _MatSlideToggleMixinBase implements OnDestro
   }
 
   ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
+    this._focusMonitor.stopMonitoring(this._elementRef);
   }
 
   /** Method being called whenever the underlying input emits a change event. */

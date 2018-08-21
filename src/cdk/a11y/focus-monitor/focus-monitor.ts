@@ -88,14 +88,29 @@ export class FocusMonitor implements OnDestroy {
    * @returns An observable that emits when the focus state of the element changes.
    *     When the element is blurred, null will be emitted.
    */
-  monitor(element: HTMLElement, checkChildren: boolean = false): Observable<FocusOrigin> {
+  monitor(element: HTMLElement, checkChildren?: boolean): Observable<FocusOrigin>;
+
+  /**
+   * Monitors focus on an element and applies appropriate CSS classes.
+   * @param element The element to monitor
+   * @param checkChildren Whether to count the element as focused when its children are focused.
+   * @returns An observable that emits when the focus state of the element changes.
+   *     When the element is blurred, null will be emitted.
+   */
+  monitor(element: ElementRef<HTMLElement>, checkChildren?: boolean): Observable<FocusOrigin>;
+
+  monitor(element: HTMLElement | ElementRef<HTMLElement>,
+          checkChildren: boolean = false): Observable<FocusOrigin> {
     // Do nothing if we're not on the browser platform.
     if (!this._platform.isBrowser) {
       return observableOf(null);
     }
+
+    const nativeElement = this._getNativeElement(element);
+
     // Check if we're already monitoring this element.
-    if (this._elementInfo.has(element)) {
-      let cachedInfo = this._elementInfo.get(element);
+    if (this._elementInfo.has(nativeElement)) {
+      let cachedInfo = this._elementInfo.get(nativeElement);
       cachedInfo!.checkChildren = checkChildren;
       return cachedInfo!.subject.asObservable();
     }
@@ -106,21 +121,21 @@ export class FocusMonitor implements OnDestroy {
       checkChildren: checkChildren,
       subject: new Subject<FocusOrigin>()
     };
-    this._elementInfo.set(element, info);
+    this._elementInfo.set(nativeElement, info);
     this._incrementMonitoredElementCount();
 
     // Start listening. We need to listen in capture phase since focus events don't bubble.
-    let focusListener = (event: FocusEvent) => this._onFocus(event, element);
-    let blurListener = (event: FocusEvent) => this._onBlur(event, element);
+    let focusListener = (event: FocusEvent) => this._onFocus(event, nativeElement);
+    let blurListener = (event: FocusEvent) => this._onBlur(event, nativeElement);
     this._ngZone.runOutsideAngular(() => {
-      element.addEventListener('focus', focusListener, true);
-      element.addEventListener('blur', blurListener, true);
+      nativeElement.addEventListener('focus', focusListener, true);
+      nativeElement.addEventListener('blur', blurListener, true);
     });
 
     // Create an unlisten function for later.
     info.unlisten = () => {
-      element.removeEventListener('focus', focusListener, true);
-      element.removeEventListener('blur', blurListener, true);
+      nativeElement.removeEventListener('focus', focusListener, true);
+      nativeElement.removeEventListener('blur', blurListener, true);
     };
 
     return info.subject.asObservable();
@@ -130,15 +145,24 @@ export class FocusMonitor implements OnDestroy {
    * Stops monitoring an element and removes all focus classes.
    * @param element The element to stop monitoring.
    */
-  stopMonitoring(element: HTMLElement): void {
-    const elementInfo = this._elementInfo.get(element);
+  stopMonitoring(element: HTMLElement): void;
+
+  /**
+   * Stops monitoring an element and removes all focus classes.
+   * @param element The element to stop monitoring.
+   */
+  stopMonitoring(element: ElementRef<HTMLElement>): void;
+
+  stopMonitoring(element: HTMLElement | ElementRef<HTMLElement>): void {
+    const nativeElement = this._getNativeElement(element);
+    const elementInfo = this._elementInfo.get(nativeElement);
 
     if (elementInfo) {
       elementInfo.unlisten();
       elementInfo.subject.complete();
 
-      this._setClasses(element);
-      this._elementInfo.delete(element);
+      this._setClasses(nativeElement);
+      this._elementInfo.delete(nativeElement);
       this._decrementMonitoredElementCount();
     }
   }
@@ -370,6 +394,10 @@ export class FocusMonitor implements OnDestroy {
       this._unregisterGlobalListeners = () => {};
     }
   }
+
+  private _getNativeElement(element: HTMLElement | ElementRef<HTMLElement>): HTMLElement {
+    return element instanceof ElementRef ? element.nativeElement : element;
+  }
 }
 
 
@@ -391,13 +419,13 @@ export class CdkMonitorFocus implements OnDestroy {
 
   constructor(private _elementRef: ElementRef, private _focusMonitor: FocusMonitor) {
     this._monitorSubscription = this._focusMonitor.monitor(
-        this._elementRef.nativeElement,
+        this._elementRef,
         this._elementRef.nativeElement.hasAttribute('cdkMonitorSubtreeFocus'))
         .subscribe(origin => this.cdkFocusChange.emit(origin));
   }
 
   ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
+    this._focusMonitor.stopMonitoring(this._elementRef);
     this._monitorSubscription.unsubscribe();
   }
 }

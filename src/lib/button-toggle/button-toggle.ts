@@ -433,11 +433,11 @@ export class MatButtonToggle extends _MatButtonToggleMixinBase implements OnInit
       this.checked = true;
     }
 
-    this._focusMonitor.monitor(this._elementRef.nativeElement, true);
+    this._focusMonitor.monitor(this._elementRef, true);
   }
 
   ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
+    this._focusMonitor.stopMonitoring(this._elementRef);
   }
 
   /** Focuses the button. */

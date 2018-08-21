@@ -247,7 +247,7 @@ export class MatTabLink extends _MatTabLinkMixinBase
     }
 
     if (_focusMonitor) {
-      _focusMonitor.monitor(_elementRef.nativeElement);
+      _focusMonitor.monitor(_elementRef);
     }
   }
 
@@ -255,7 +255,7 @@ export class MatTabLink extends _MatTabLinkMixinBase
     this._tabLinkRipple._removeTriggerEvents();
 
     if (this._focusMonitor) {
-      this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
+      this._focusMonitor.stopMonitoring(this._elementRef);
     }
   }
 

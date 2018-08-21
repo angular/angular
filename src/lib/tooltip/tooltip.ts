@@ -234,7 +234,7 @@ export class MatTooltip implements OnDestroy {
       element.style['webkitUserDrag'] = '';
     }
 
-    _focusMonitor.monitor(element).pipe(takeUntil(this._destroyed)).subscribe(origin => {
+    _focusMonitor.monitor(_elementRef).pipe(takeUntil(this._destroyed)).subscribe(origin => {
       // Note that the focus monitor runs outside the Angular zone.
       if (!origin) {
         _ngZone.run(() => this.hide(0));
@@ -265,7 +265,7 @@ export class MatTooltip implements OnDestroy {
     this._destroyed.complete();
 
     this._ariaDescriber.removeDescription(this._elementRef.nativeElement, this.message);
-    this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
+    this._focusMonitor.stopMonitoring(this._elementRef);
   }
 
   /** Shows the tooltip after the delay in ms, defaults to tooltip-delay-show or 0ms if no input */

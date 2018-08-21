@@ -465,7 +465,7 @@ export class MatSlider extends _MatSliderMixinBase
 
   ngOnInit() {
     this._focusMonitor
-        .monitor(this._elementRef.nativeElement, true)
+        .monitor(this._elementRef, true)
         .subscribe((origin: FocusOrigin) => {
           this._isActive = !!origin && origin !== 'keyboard';
           this._changeDetectorRef.detectChanges();
@@ -478,7 +478,7 @@ export class MatSlider extends _MatSliderMixinBase
   }
 
   ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
+    this._focusMonitor.stopMonitoring(this._elementRef);
     this._dirChangeSubscription.unsubscribe();
   }
 

@@ -106,7 +106,7 @@ export class MatButton extends _MatButtonMixinBase
       }
     }
 
-    this._focusMonitor.monitor(this._elementRef.nativeElement, true);
+    this._focusMonitor.monitor(this._elementRef, true);
 
     if (this.isRoundButton) {
       this.color = DEFAULT_ROUND_BUTTON_COLOR;
@@ -114,7 +114,7 @@ export class MatButton extends _MatButtonMixinBase
   }
 
   ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this._elementRef.nativeElement);
+    this._focusMonitor.stopMonitoring(this._elementRef);
   }
 
   /** Focuses the button. */

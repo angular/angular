@@ -88,7 +88,7 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
       subscriber: '',
     });
 
-    fm.monitor(elRef.nativeElement, true).subscribe(origin => {
+    fm.monitor(elRef, true).subscribe(origin => {
       this.focused = !!origin;
       this.stateChanges.next();
     });
@@ -96,7 +96,7 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
 
   ngOnDestroy() {
     this.stateChanges.complete();
-    this.fm.stopMonitoring(this.elRef.nativeElement);
+    this.fm.stopMonitoring(this.elRef);
   }
 
   setDescribedByIds(ids: string[]) {

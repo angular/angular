@@ -82,7 +82,7 @@ export class MatMenuItem extends _MatMenuItemMixinBase
       // Start monitoring the element so it gets the appropriate focused classes. We want
       // to show the focus style for menu items only when the focus was not caused by a
       // mouse or touch interaction.
-      _focusMonitor.monitor(this._getHostElement(), false);
+      _focusMonitor.monitor(this._elementRef, false);
     }
 
     if (_parentMenu && _parentMenu.addItem) {
@@ -103,7 +103,7 @@ export class MatMenuItem extends _MatMenuItemMixinBase
 
   ngOnDestroy() {
     if (this._focusMonitor) {
-      this._focusMonitor.stopMonitoring(this._getHostElement());
+      this._focusMonitor.stopMonitoring(this._elementRef);
     }
 
     if (this._parentMenu && this._parentMenu.removeItem) {
