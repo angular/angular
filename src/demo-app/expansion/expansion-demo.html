@@ -62,17 +62,17 @@
   </div>
 </div>
 <br>
-<mat-accordion [displayMode]="displayMode" [multi]="multi"
+<mat-accordion [displayMode]="displayMode" [multi]="multi" [hideToggle]="hideToggle"
                class="demo-expansion-width">
-  <mat-expansion-panel #panel1  [hideToggle]="hideToggle">
+  <mat-expansion-panel #panel1>
     <mat-expansion-panel-header>Section 1</mat-expansion-panel-header>
     <p>This is the content text that makes sense here.</p>
   </mat-expansion-panel>
-  <mat-expansion-panel #panel2 [hideToggle]="hideToggle" [disabled]="disabled">
+  <mat-expansion-panel #panel2 [disabled]="disabled">
     <mat-expansion-panel-header>Section 2</mat-expansion-panel-header>
     <p>This is the content text that makes sense here.</p>
   </mat-expansion-panel>
-  <mat-expansion-panel #panel3 *ngIf="showPanel3" [hideToggle]="hideToggle">
+  <mat-expansion-panel #panel3 *ngIf="showPanel3">
     <mat-expansion-panel-header>Section 3</mat-expansion-panel-header>
     <mat-checkbox #showButtons>Reveal Buttons Below</mat-checkbox>
     <mat-action-row *ngIf="showButtons.checked">

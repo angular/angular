@@ -19,6 +19,7 @@ export type MatAccordionDisplayMode = 'default' | 'flat';
 @Directive({
   selector: 'mat-accordion',
   exportAs: 'matAccordion',
+  inputs: ['multi'],
   host: {
     class: 'mat-accordion'
   }

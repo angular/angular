@@ -13,6 +13,7 @@ describe('MatAccordion', () => {
         MatExpansionModule
       ],
       declarations: [
+        AccordionWithHideToggle,
         NestedPanel,
         SetOfItems,
       ],
@@ -93,6 +94,22 @@ describe('MatAccordion', () => {
 
     expect(innerPanel.accordion).not.toBe(outerPanel.accordion);
   });
+
+  it('should update the expansion panel if hideToggle changed', () => {
+    const fixture = TestBed.createComponent(AccordionWithHideToggle);
+    const panel = fixture.debugElement.query(By.directive(MatExpansionPanel));
+
+    fixture.detectChanges();
+
+    expect(panel.nativeElement.querySelector('.mat-expansion-indicator'))
+      .toBeTruthy('Expected the expansion indicator to be present.');
+
+    fixture.componentInstance.hideToggle = true;
+    fixture.detectChanges();
+
+    expect(panel.nativeElement.querySelector('.mat-expansion-indicator'))
+      .toBeFalsy('Expected the expansion indicator to be removed.');
+  });
 });
 
 
@@ -129,4 +146,16 @@ class SetOfItems {
 class NestedPanel {
   @ViewChild('outerPanel') outerPanel: MatExpansionPanel;
   @ViewChild('innerPanel') innerPanel: MatExpansionPanel;
+}
+
+@Component({template: `
+  <mat-accordion [hideToggle]="hideToggle">
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>Header</mat-expansion-panel-header>
+      <p>Content</p>
+    </mat-expansion-panel>
+  </mat-accordion>`
+})
+class AccordionWithHideToggle {
+  hideToggle = false;
 }
