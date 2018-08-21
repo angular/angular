@@ -15,36 +15,6 @@ import {TemplateFixture} from './render_util';
 
 describe('directive', () => {
 
-  describe('host', () => {
-
-    it('should support host bindings in directives', () => {
-      let directiveInstance: Directive|undefined;
-
-      class Directive {
-        klass = 'foo';
-        static ngDirectiveDef = defineDirective({
-          type: Directive,
-          selectors: [['', 'dir', '']],
-          factory: () => directiveInstance = new Directive,
-          hostBindings: (directiveIndex: number, elementIndex: number) => {
-            elementProperty(
-                elementIndex, 'className', bind(loadDirective<Directive>(directiveIndex).klass));
-          }
-        });
-      }
-
-      function Template() { element(0, 'span', [AttributeMarker.SelectOnly, 'dir']); }
-
-      const fixture = new TemplateFixture(Template, () => {}, 1, 0, [Directive]);
-      expect(fixture.html).toEqual('<span class="foo"></span>');
-
-      directiveInstance !.klass = 'bar';
-      fixture.update();
-      expect(fixture.html).toEqual('<span class="bar"></span>');
-    });
-
-  });
-
   describe('selectors', () => {
 
     it('should match directives with attribute selectors on bindings', () => {
