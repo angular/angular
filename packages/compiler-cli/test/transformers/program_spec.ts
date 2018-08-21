@@ -59,7 +59,7 @@ describe('ng program', () => {
 
   function compile(
       oldProgram?: ng.Program, overrideOptions?: ng.CompilerOptions, rootNames?: string[],
-      host?: CompilerHost): {program: ng.Program, emitResult: ts.EmitResult} {
+      host?: CompilerHost): {program: ng.Program, emitResult: ts.EmitResult, host: ng.CompilerHost} {
     const options = testSupport.createCompilerOptions(overrideOptions);
     if (!rootNames) {
       rootNames = [path.resolve(testSupport.basePath, 'src/index.ts')];
@@ -75,7 +75,30 @@ describe('ng program', () => {
     });
     expectNoDiagnosticsInProgram(options, program);
     const emitResult = program.emit();
-    return {emitResult, program};
+    return {emitResult, program, host};
+  }
+
+  function createWatchModeHost(): ng.CompilerHost {
+    const options = testSupport.createCompilerOptions();
+    const host = ng.createCompilerHost({options});
+
+    const originalGetSourceFile = host.getSourceFile;
+    const cache = new Map<string, ts.SourceFile>();
+    host.getSourceFile = function(fileName: string): ts.SourceFile {
+      if (fileName.endsWith('@angular/core/src/di/injection_token.d.ts')) {
+        debugger;
+      }
+      const sf = originalGetSourceFile.call(host, fileName) as ts.SourceFile;
+      if (sf && cache.has(sf.fileName)) {
+        const oldSf = cache.get(sf.fileName)!;
+        if (oldSf.getFullText() === sf.getFullText()) {
+          return oldSf;
+        }
+      }
+      sf && cache.set(sf.fileName, sf);
+      return sf;
+    };
+    return host;
   }
 
   function resolveFiles(rootNames: string[]) {
@@ -267,18 +290,21 @@ describe('ng program', () => {
           .toBe(false);
     });
 
-    if (!isInBazel()) {
+    describe('reuse tests', () => {
       it('should reuse the old ts program completely if nothing changed', () => {
         testSupport.writeFiles({'src/index.ts': createModuleAndCompSource('main')});
+        const host = createWatchModeHost();
         // Note: the second compile drops factories for library files,
         // and therefore changes the structure again
-        const p1 = compile().program;
-        const p2 = compile(p1).program;
-        compile(p2);
+        const p1 = compile(undefined, undefined, undefined, host).program;
+        const p2 = compile(p1, undefined, undefined, host).program;
+        debugger;
+        compile(p2, undefined, undefined, host);
         expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
       });
 
       it('should reuse the old ts program completely if a template or a ts file changed', () => {
+        const host = createWatchModeHost();
         testSupport.writeFiles({
           'src/main.ts': createModuleAndCompSource('main', 'main.html'),
           'src/main.html': `Some template`,
@@ -290,17 +316,18 @@ describe('ng program', () => {
         });
         // Note: the second compile drops factories for library files,
         // and therefore changes the structure again
-        const p1 = compile().program;
-        const p2 = compile(p1).program;
+        const p1 = compile(undefined, undefined, undefined, host).program;
+        const p2 = compile(p1, undefined, undefined, host).program;
         testSupport.writeFiles({
           'src/main.html': `Another template`,
           'src/util.ts': `export const x = 2`,
         });
-        compile(p2);
+        compile(p2, undefined, undefined, host);
         expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.Completely);
       });
 
       it('should not reuse the old ts program if an import changed', () => {
+        const host = createWatchModeHost();
         testSupport.writeFiles({
           'src/main.ts': createModuleAndCompSource('main'),
           'src/util.ts': `export const x = 1`,
@@ -311,14 +338,14 @@ describe('ng program', () => {
         });
         // Note: the second compile drops factories for library files,
         // and therefore changes the structure again
-        const p1 = compile().program;
-        const p2 = compile(p1).program;
+        const p1 = compile(undefined, undefined, undefined, host).program;
+        const p2 = compile(p1, undefined, undefined, host).program;
         testSupport.writeFiles(
             {'src/util.ts': `import {Injectable} from '@angular/core'; export const x = 1;`});
-        compile(p2);
+        compile(p2, undefined, undefined, host);
         expect(tsStructureIsReused(p2.getTsProgram())).toBe(StructureIsReused.SafeModules);
       });
-    }
+    });
 
   });
 
