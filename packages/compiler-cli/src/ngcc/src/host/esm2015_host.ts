@@ -8,9 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, Decorator, Parameter} from '../../../ngtsc/host';
+import {ClassMember, ClassMemberKind, CtorParameter, Decorator} from '../../../ngtsc/host';
 import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/metadata';
 import {getNameText} from '../utils';
+
 import {NgccReflectionHost} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
@@ -162,7 +163,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    *
    * @throws if `declaration` does not resolve to a class declaration.
    */
-  getConstructorParameters(clazz: ts.Declaration): Parameter[]|null {
+  getConstructorParameters(clazz: ts.Declaration): CtorParameter[]|null {
     const classSymbol = this.getClassSymbol(clazz);
     if (!classSymbol) {
       throw new Error(
@@ -170,7 +171,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
     const parameterNodes = this.getConstructorParameterDeclarations(classSymbol);
     if (parameterNodes) {
-      const parameters: Parameter[] = [];
+      const parameters: CtorParameter[] = [];
       const decoratorInfo = this.getConstructorDecorators(classSymbol);
       parameterNodes.forEach((node, index) => {
         const info = decoratorInfo[index];
