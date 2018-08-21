@@ -8,9 +8,10 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, Decorator, Parameter} from '../../../ngtsc/host';
+import {ClassMember, ClassMemberKind, CtorParameter, Decorator} from '../../../ngtsc/host';
 import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/metadata';
 import {getNameText} from '../utils';
+
 import {NgccReflectionHost} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
@@ -162,7 +163,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
    *
    * @throws if `declaration` does not resolve to a class declaration.
    */
-  getConstructorParameters(clazz: ts.Declaration): Parameter[]|null {
+  getConstructorParameters(clazz: ts.Declaration): CtorParameter[]|null {
     const classSymbol = this.getClassSymbol(clazz);
     if (!classSymbol) {
       throw new Error(
@@ -170,7 +171,7 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
     }
     const parameterNodes = this.getConstructorParameterDeclarations(classSymbol);
     if (parameterNodes) {
-      const parameters: Parameter[] = [];
+      const parameters: CtorParameter[] = [];
       const decoratorInfo = this.getConstructorDecorators(classSymbol);
       parameterNodes.forEach((node, index) => {
         const info = decoratorInfo[index];
@@ -187,12 +188,11 @@ export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements N
   }
 
   /**
-   * Find a symbol for a declaration that we think is a class.
-   * @param declaration The declaration whose symbol we are finding
-   * @returns the symbol for the declaration or `undefined` if it is not
-   * a "class" or has no symbol.
+   * Find a symbol for a node that we think is a class.
+   * @param node The node whose symbol we are finding.
+   * @returns The symbol for the node or `undefined` if it is not a "class" or has no symbol.
    */
-  getClassSymbol(declaration: ts.Declaration): ts.Symbol|undefined {
+  getClassSymbol(declaration: ts.Node): ts.Symbol|undefined {
     return ts.isClassDeclaration(declaration) ?
         declaration.name && this.checker.getSymbolAtLocation(declaration.name) :
         undefined;

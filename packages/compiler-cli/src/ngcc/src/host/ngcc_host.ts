@@ -12,5 +12,5 @@ import {ReflectionHost} from '../../../ngtsc/host';
  * A reflection host that has extra methods for looking at non-Typescript package formats
  */
 export interface NgccReflectionHost extends ReflectionHost {
-  getClassSymbol(declaration: ts.Declaration): ts.Symbol|undefined;
+  getClassSymbol(node: ts.Node): ts.Symbol|undefined;
 }

@@ -14,7 +14,7 @@ export function getOriginalSymbol(checker: ts.TypeChecker): (symbol: ts.Symbol) 
 }
 
 export function isDefined<T>(value: T | undefined | null): value is T {
-  return !!value;
+  return (value !== undefined) && (value !== null);
 }
 
 export function getNameText(name: ts.PropertyName | ts.BindingName): string {

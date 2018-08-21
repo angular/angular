@@ -64,21 +64,21 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
     if (ngModule.has('declarations')) {
       const declarationMeta =
           staticallyResolve(ngModule.get('declarations') !, this.reflector, this.checker);
-      declarations = resolveTypeList(declarationMeta, 'declarations');
+      declarations = this.resolveTypeList(declarationMeta, 'declarations');
     }
     let imports: Reference[] = [];
     if (ngModule.has('imports')) {
       const importsMeta = staticallyResolve(
           ngModule.get('imports') !, this.reflector, this.checker,
           ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
-      imports = resolveTypeList(importsMeta, 'imports');
+      imports = this.resolveTypeList(importsMeta, 'imports');
     }
     let exports: Reference[] = [];
     if (ngModule.has('exports')) {
       const exportsMeta = staticallyResolve(
           ngModule.get('exports') !, this.reflector, this.checker,
           ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
-      exports = resolveTypeList(exportsMeta, 'exports');
+      exports = this.resolveTypeList(exportsMeta, 'exports');
     }
 
     // Register this module's information with the SelectorScopeRegistry. This ensures that during
@@ -181,39 +181,39 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     return arg.typeName;
   }
-}
 
-/**
- * Compute a list of `Reference`s from a resolved metadata value.
- */
-function resolveTypeList(resolvedList: ResolvedValue, name: string): Reference[] {
-  const refList: Reference[] = [];
-  if (!Array.isArray(resolvedList)) {
-    throw new Error(`Expected array when reading property ${name}`);
-  }
-
-  resolvedList.forEach((entry, idx) => {
-    // Unwrap ModuleWithProviders for modules that are locally declared (and thus static resolution
-    // was able to descend into the function and return an object literal, a Map).
-    if (entry instanceof Map && entry.has('ngModule')) {
-      entry = entry.get('ngModule') !;
+  /**
+   * Compute a list of `Reference`s from a resolved metadata value.
+   */
+  private resolveTypeList(resolvedList: ResolvedValue, name: string): Reference[] {
+    const refList: Reference[] = [];
+    if (!Array.isArray(resolvedList)) {
+      throw new Error(`Expected array when reading property ${name}`);
     }
 
-    if (Array.isArray(entry)) {
-      // Recurse into nested arrays.
-      refList.push(...resolveTypeList(entry, name));
-    } else if (entry instanceof Reference) {
-      if (!entry.expressable) {
-        throw new Error(`Value at position ${idx} in ${name} array is not expressable`);
-      } else if (!ts.isClassDeclaration(entry.node)) {
-        throw new Error(`Value at position ${idx} in ${name} array is not a class declaration`);
+    resolvedList.forEach((entry, idx) => {
+      // Unwrap ModuleWithProviders for modules that are locally declared (and thus static
+      // resolution was able to descend into the function and return an object literal, a Map).
+      if (entry instanceof Map && entry.has('ngModule')) {
+        entry = entry.get('ngModule') !;
       }
-      refList.push(entry);
-    } else {
-      // TODO(alxhub): expand ModuleWithProviders.
-      throw new Error(`Value at position ${idx} in ${name} array is not a reference: ${entry}`);
-    }
-  });
 
-  return refList;
+      if (Array.isArray(entry)) {
+        // Recurse into nested arrays.
+        refList.push(...this.resolveTypeList(entry, name));
+      } else if (entry instanceof Reference) {
+        if (!entry.expressable) {
+          throw new Error(`Value at position ${idx} in ${name} array is not expressable`);
+        } else if (!this.reflector.isClass(entry.node)) {
+          throw new Error(`Value at position ${idx} in ${name} array is not a class declaration`);
+        }
+        refList.push(entry);
+      } else {
+        // TODO(alxhub): expand ModuleWithProviders.
+        throw new Error(`Value at position ${idx} in ${name} array is not a reference: ${entry}`);
+      }
+    });
+
+    return refList;
+  }
 }
