@@ -9,7 +9,7 @@
 import {Component, ViewEncapsulation} from '@angular/core';
 import {MatIconRegistry} from '@angular/material/icon';
 import {DomSanitizer} from '@angular/platform-browser';
-import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk-experimental/drag-drop';
+import {CdkDragDrop, moveItemInArray, transferArrayItem} from '@angular/cdk/drag-drop';
 
 @Component({
   moduleId: module.id,

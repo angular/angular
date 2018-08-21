@@ -166,7 +166,7 @@ describe('DragDropRegistry', () => {
     <cdk-drop id="items" *ngIf="showDuplicateContainer"></cdk-drop>
   `
 })
-export class SimpleDropZone {
+class SimpleDropZone {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   @ViewChildren(CdkDrop) dropInstances: QueryList<CdkDrop>;
   items = ['Zero', 'One', 'Two', 'Three'];

@@ -44,6 +44,7 @@ System.config({
     '@angular/cdk/bidi': 'dist/packages/cdk/bidi/index.js',
     '@angular/cdk/coercion': 'dist/packages/cdk/coercion/index.js',
     '@angular/cdk/collections': 'dist/packages/cdk/collections/index.js',
+    '@angular/cdk/drag-drop': 'dist/packages/cdk/drag-drop/index.js',
     '@angular/cdk/keycodes': 'dist/packages/cdk/keycodes/index.js',
     '@angular/cdk/layout': 'dist/packages/cdk/layout/index.js',
     '@angular/cdk/observers': 'dist/packages/cdk/observers/index.js',
@@ -59,8 +60,6 @@ System.config({
 
     '@angular/cdk-experimental/scrolling': 'dist/packages/cdk-experimental/scrolling/index.js',
     '@angular/cdk-experimental/dialog': 'dist/packages/cdk-experimental/dialog/index.js',
-    '@angular/cdk-experimental/drag-drop':
-      'dist/packages/cdk-experimental/drag-drop/index.js',
 
     '@angular/material/autocomplete': 'dist/packages/material/autocomplete/index.js',
     '@angular/material/badge': 'dist/packages/material/badge/index.js',

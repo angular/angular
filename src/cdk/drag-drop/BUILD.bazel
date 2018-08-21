@@ -7,7 +7,7 @@ load("@io_bazel_rules_sass//sass:sass.bzl", "sass_binary")
 ng_module(
   name = "drag-drop",
   srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
-  module_name = "@angular/cdk-experimental/drag-drop",
+  module_name = "@angular/cdk/drag-drop",
   assets = [":drop.css"],
   deps = [
     "@rxjs",
@@ -15,7 +15,7 @@ ng_module(
     "//src/cdk/overlay",
     "//src/cdk/bidi",
   ],
-  tsconfig = "//src/cdk-experimental:tsconfig-build.json",
+  tsconfig = "//src/cdk:tsconfig-build.json",
 )
 
 
@@ -28,7 +28,7 @@ ts_library(
     "//src/cdk/testing",
     "//src/cdk/bidi",
   ],
-  tsconfig = "//src/cdk-experimental:tsconfig-build.json",
+  tsconfig = "//src/cdk:tsconfig-build.json",
 )
 
 sass_binary(

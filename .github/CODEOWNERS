@@ -64,6 +64,7 @@
 /src/cdk/bidi/**                                   @jelbourn
 /src/cdk/coercion/**                               @jelbourn
 /src/cdk/collections/**                            @jelbourn @crisbeto @andrewseguin
+/src/cdk/drag-drop/**                              @crisbeto
 /src/cdk/keycodes/**                               @jelbourn
 /src/cdk/layout/**                                 @josephperrott
 /src/cdk/observers/**                              @jelbourn @crisbeto
@@ -87,7 +88,6 @@
 /src/cdk-experimental/**                           @jelbourn
 /src/cdk-experimental/dialog/**                    @jelbourn @josephperrott @crisbeto
 /src/cdk-experimental/scrolling/**                 @mmalerba
-/src/cdk-experimental/drag-drop/**                 @crisbeto
 
 # Docs examples & guides
 /guides/**                                         @amcdnl @jelbourn

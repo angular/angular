@@ -1165,7 +1165,7 @@ describe('CdkDrag', () => {
       style="width: 100px; height: 100px; background: red;"></div>
   `
 })
-export class StandaloneDraggable {
+class StandaloneDraggable {
   @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
   @ViewChild(CdkDrag) dragInstance: CdkDrag;
   startedSpy = jasmine.createSpy('started spy');
@@ -1180,7 +1180,7 @@ export class StandaloneDraggable {
     </div>
   `
 })
-export class StandaloneDraggableWithHandle {
+class StandaloneDraggableWithHandle {
   @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
   @ViewChild('handleElement') handleElement: ElementRef<HTMLElement>;
 }
@@ -1196,7 +1196,7 @@ export class StandaloneDraggableWithHandle {
     </div>
   `
 })
-export class StandaloneDraggableWithDelayedHandle {
+class StandaloneDraggableWithDelayedHandle {
   @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
   @ViewChild('handleElement') handleElement: ElementRef<HTMLElement>;
   showHandle = false;
@@ -1221,7 +1221,7 @@ export class StandaloneDraggableWithDelayedHandle {
     </div>
   `
 })
-export class StandaloneDraggableWithMultipleHandles {
+class StandaloneDraggableWithMultipleHandles {
   @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
   @ViewChildren(CdkDragHandle) handles: QueryList<CdkDragHandle>;
 }
@@ -1241,7 +1241,7 @@ export class StandaloneDraggableWithMultipleHandles {
     </cdk-drop>
   `
 })
-export class DraggableInDropZone {
+class DraggableInDropZone {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   @ViewChild(CdkDrop) dropInstance: CdkDrop;
   items = ['Zero', 'One', 'Two', 'Three'];
@@ -1280,7 +1280,7 @@ export class DraggableInDropZone {
     </cdk-drop>
   `
 })
-export class DraggableInHorizontalDropZone {
+class DraggableInHorizontalDropZone {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   @ViewChild(CdkDrop) dropInstance: CdkDrop;
   items = ['Zero', 'One', 'Two', 'Three'];
@@ -1300,7 +1300,7 @@ export class DraggableInHorizontalDropZone {
     </cdk-drop>
   `
 })
-export class DraggableInDropZoneWithCustomPreview {
+class DraggableInDropZoneWithCustomPreview {
   @ViewChild(CdkDrop) dropInstance: CdkDrop;
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   items = ['Zero', 'One', 'Two', 'Three'];
@@ -1318,7 +1318,7 @@ export class DraggableInDropZoneWithCustomPreview {
     </cdk-drop>
   `
 })
-export class DraggableInDropZoneWithCustomPlaceholder {
+class DraggableInDropZoneWithCustomPlaceholder {
   @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
   items = ['Zero', 'One', 'Two', 'Three'];
 }
@@ -1358,7 +1358,7 @@ export class DraggableInDropZoneWithCustomPlaceholder {
     </cdk-drop>
   `
 })
-export class ConnectedDropZones implements AfterViewInit {
+class ConnectedDropZones implements AfterViewInit {
   @ViewChildren(CdkDrag) rawDragItems: QueryList<CdkDrag>;
   @ViewChildren(CdkDrop) dropInstances: QueryList<CdkDrop>;
 
