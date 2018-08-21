@@ -393,6 +393,9 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
       onError?: ((message: string) => void)|undefined): ts.SourceFile {
+        if (fileName.endsWith('@angular/core/src/di/injection_token.d.ts')) {
+          debugger;
+        }
     // Note: Don't exit early in this method to make sure
     // we always have up to date references on the file!
     let genFileNames: string[] = [];
