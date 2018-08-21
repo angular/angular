@@ -99,7 +99,7 @@ function addMaterialAppStyles(options: Schema) {
     const htmlContent = buffer.toString();
     const insertion = '\n' +
       `html, body { height: 100%; }\n` +
-      `body { margin: 0; font-family: 'Roboto', sans-serif; }\n`;
+      `body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }\n`;
 
     if (htmlContent.includes(insertion)) {
       return;

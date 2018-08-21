@@ -6,9 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {normalize} from '@angular-devkit/core';
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace, WorkspaceProject, WorkspaceSchema} from '@schematics/angular/utility/config';
+import {join} from 'path';
 import {getProjectFromWorkspace} from '../../utils/get-project';
 import {getProjectStyleFile} from '../../utils/project-style-file';
 import {Schema} from '../schema';
@@ -20,14 +22,14 @@ export function addThemeToAppStyles(options: Schema): (host: Tree) => Tree {
   return function(host: Tree): Tree {
     const workspace = getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
+    const themeName = options.theme || 'indigo-pink';
 
     // Because the build setup for the Angular CLI can be changed so dramatically, we can't know
     // where to generate anything if the project is not using the default config for build and test.
-    assertDefaultProjectConfig(project);
+    assertDefaultBuildersConfigured(project);
 
-    const themeName = options.theme || 'indigo-pink';
     if (themeName === 'custom') {
-      insertCustomTheme(project, options.project, host);
+      insertCustomTheme(project, options.project, host, workspace);
     } else {
       insertPrebuiltTheme(project, host, themeName, workspace, options.project);
     }
@@ -36,19 +38,31 @@ export function addThemeToAppStyles(options: Schema): (host: Tree) => Tree {
   };
 }
 
-/** Insert a custom theme to styles.scss file. */
-function insertCustomTheme(project: WorkspaceProject, projectName: string, host: Tree) {
-  const stylesPath = getProjectStyleFile(project);
-  const buffer = host.read(stylesPath);
+/**
+ * Insert a custom theme to project style file. If no valid style file could be found, a new
+ * Scss file for the custom theme will be created.
+ */
+function insertCustomTheme(project: WorkspaceProject, projectName: string, host: Tree,
+                           workspace: WorkspaceSchema) {
 
-  if (buffer) {
-    const insertion = new InsertChange(stylesPath, 0, createCustomTheme(projectName));
-    const recorder = host.beginUpdate(stylesPath);
-    recorder.insertLeft(insertion.pos, insertion.toAdd);
-    host.commitUpdate(recorder);
-  } else {
-    console.warn(`Skipped custom theme; could not find file: ${stylesPath}`);
+  const stylesPath = getProjectStyleFile(project, 'scss');
+  const themeContent = createCustomTheme(projectName);
+
+  if (!stylesPath) {
+    // Normalize the path through the devkit utilities because we want to avoid having
+    // unnecessary path segments and windows backslash delimiters.
+    const customThemePath = normalize(join(project.sourceRoot, 'custom-theme.scss'));
+
+    host.create(customThemePath, themeContent);
+    addStyleToTarget(project.architect['build'], host, customThemePath, workspace);
+    return;
   }
+
+  const insertion = new InsertChange(stylesPath, 0, themeContent);
+  const recorder = host.beginUpdate(stylesPath);
+
+  recorder.insertLeft(insertion.pos, insertion.toAdd);
+  host.commitUpdate(recorder);
 }
 
 /** Insert a pre-built theme into the angular.json file. */
@@ -87,23 +101,20 @@ function addStyleToTarget(target: any, host: Tree, asset: string, workspace: Wor
   host.overwrite('angular.json', JSON.stringify(workspace, null, 2));
 }
 
-/** Throws if the project is not using the default build and test config. */
-function assertDefaultProjectConfig(project: WorkspaceProject) {
-  if (!isProjectUsingDefaultConfig(project)) {
-    throw new SchematicsException('Your project is not using the default configuration for ' +
-     'build and test. The Angular Material schematics can only be used with the default ' +
-     'configuration');
-  }
-}
-
-/** Gets whether the Angular CLI project is using the default build configuration. */
-function isProjectUsingDefaultConfig(project: WorkspaceProject) {
+/** Throws if the project is not using the default Angular devkit builders. */
+function assertDefaultBuildersConfigured(project: WorkspaceProject) {
   const defaultBuilder = '@angular-devkit/build-angular:browser';
   const defaultTestBuilder = '@angular-devkit/build-angular:karma';
 
-  return project.architect &&
+  const hasDefaultBuilders = project.architect &&
       project.architect['build'] &&
       project.architect['build']['builder'] === defaultBuilder &&
       project.architect['test'] &&
       project.architect['test']['builder'] === defaultTestBuilder;
+
+  if (!hasDefaultBuilders) {
+    throw new SchematicsException(
+      'Your project is not using the default builders for build and test. The Angular Material ' +
+      'schematics can only be used if the original builders from the Angular CLI are configured.');
+  }
 }
