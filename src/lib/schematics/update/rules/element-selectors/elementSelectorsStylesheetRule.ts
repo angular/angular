@@ -10,7 +10,7 @@ import {green, red} from 'chalk';
 import {sync as globSync} from 'glob';
 import {IOptions, Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-import {cssNames} from '../../material/data/css-names';
+import {elementSelectors} from '../../material/data/element-selectors';
 import {ExternalResource} from '../../tslint/component-file';
 import {ComponentWalker} from '../../tslint/component-walker';
 import {
@@ -20,8 +20,8 @@ import {
 import {findAllSubstringIndices} from '../../typescript/literal';
 
 /**
- * Rule that walks through every inline or external CSs stylesheet and updates outdated
- * CSS classes.
+ * Rule that walks through every inline or external CSS stylesheet and updates outdated
+ * element selectors.
  */
 export class Rule extends Rules.AbstractRule {
   apply(sourceFile: ts.SourceFile): RuleFailure[] {
@@ -40,7 +40,6 @@ export class Walker extends ComponentWalker {
     extraFiles.forEach(styleUrl => this._reportExternalStyle(styleUrl));
   }
 
-
   visitInlineStylesheet(literal: ts.StringLiteral) {
     this._createReplacementsForContent(literal, literal.getText())
       .forEach(data => addFailureAtReplacement(this, data.failureMessage, data.replacement));
@@ -49,28 +48,24 @@ export class Walker extends ComponentWalker {
   visitExternalStylesheet(node: ExternalResource) {
     this._createReplacementsForContent(node, node.getFullText())
       .map(data => createExternalReplacementFailure(node, data.failureMessage,
-          this.getRuleName(), data.replacement))
+        this.getRuleName(), data.replacement))
       .forEach(failure => this.addFailure(failure));
   }
 
   /**
-   * Searches for outdated CSs classes in the specified content and creates replacements
+   * Searches for outdated element selectors in the specified content and creates replacements
    * with the according messages that can be added to a rule failure.
    */
   private _createReplacementsForContent(node: ts.Node, stylesheetContent: string) {
     const replacements: {failureMessage: string, replacement: Replacement}[] = [];
 
-    cssNames.forEach(name => {
-      if (name.whitelist && !name.whitelist.stylesheet) {
-        return;
-      }
+    elementSelectors.forEach(selector => {
+      const failureMessage = `Found deprecated element selector "${red(selector.replace)}" ` +
+        `which has been renamed to "${green(selector.replaceWith)}"`;
 
-      const failureMessage = `Found deprecated CSS class "${red(name.replace)}" ` +
-          `which has been renamed to "${green(name.replaceWith)}"`;
-
-      findAllSubstringIndices(stylesheetContent, name.replace)
+      findAllSubstringIndices(stylesheetContent, selector.replace)
         .map(offset => node.getStart() + offset)
-        .map(start => new Replacement(start, name.replace.length, name.replaceWith))
+        .map(start => new Replacement(start, selector.replace.length, selector.replaceWith))
         .forEach(replacement => replacements.push({replacement, failureMessage}));
     });
 
