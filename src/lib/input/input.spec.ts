@@ -1151,6 +1151,25 @@ describe('MatInput with appearance', () => {
     expect(parseInt(outlineStart.style.width)).toBeGreaterThan(0);
     expect(parseInt(outlineGap.style.width)).toBeGreaterThan(0);
   }));
+
+  it('should not set an outline gap if the label is empty', fakeAsync(() => {
+    fixture.destroy();
+    TestBed.resetTestingModule();
+
+    const outlineFixture = createComponent(MatInputWithAppearanceAndLabel);
+
+    outlineFixture.componentInstance.labelContent = '';
+    outlineFixture.detectChanges();
+    outlineFixture.componentInstance.appearance = 'outline';
+    outlineFixture.detectChanges();
+    flush();
+    outlineFixture.detectChanges();
+
+    const outlineGap = outlineFixture.nativeElement.querySelector('.mat-form-field-outline-gap');
+
+    expect(parseInt(outlineGap.style.width)).toBeFalsy();
+  }));
+
 });
 
 describe('MatFormField default options', () => {
@@ -1594,13 +1613,14 @@ class MatInputWithAppearance {
 @Component({
   template: `
     <mat-form-field [appearance]="appearance">
-      <mat-label>Label</mat-label>
+      <mat-label>{{labelContent}}</mat-label>
       <input matInput>
     </mat-form-field>
   `
 })
 class MatInputWithAppearanceAndLabel {
   appearance: MatFormFieldAppearance;
+  labelContent = 'Label';
 }
 
 @Component({

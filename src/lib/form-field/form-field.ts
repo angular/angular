@@ -444,7 +444,10 @@ export class MatFormField extends _MatFormFieldMixinBase
    * appearance.
    */
   updateOutlineGap() {
-    if (this.appearance !== 'outline') {
+    const labelEl = this._label ? this._label.nativeElement : null;
+
+    if (this.appearance !== 'outline' || !labelEl || !labelEl.children.length ||
+        !labelEl.textContent.trim()) {
       return;
     }
 
@@ -465,14 +468,14 @@ export class MatFormField extends _MatFormFieldMixinBase
 
       const containerStart = this._getStartEnd(
           this._connectionContainerRef.nativeElement.getBoundingClientRect());
-      const labelStart = this._getStartEnd(
-          this._label.nativeElement.children[0].getBoundingClientRect());
+      const labelStart = this._getStartEnd(labelEl.children[0].getBoundingClientRect());
       let labelWidth = 0;
-      for (const child of this._label.nativeElement.children) {
+
+      for (const child of labelEl.children) {
         labelWidth += child.offsetWidth;
       }
       startWidth = labelStart - containerStart - outlineGapPadding;
-      gapWidth = labelWidth * floatingLabelScale + outlineGapPadding * 2;
+      gapWidth = labelWidth > 0 ? labelWidth * floatingLabelScale + outlineGapPadding * 2 : 0;
     }
 
     for (let i = 0; i < startEls.length; i++) {
