@@ -40,8 +40,12 @@ export class ConnectionPositionPair {
   constructor(
     origin: OriginConnectionPosition,
     overlay: OverlayConnectionPosition,
+    /** Offset along the X axis. */
     public offsetX?: number,
-    public offsetY?: number) {
+    /** Offset along the Y axis. */
+    public offsetY?: number,
+    /** Class(es) to be applied to the panel while this position is active. */
+    public panelClass?: string | string[]) {
 
     this.originX = origin.originX;
     this.originY = origin.originY;

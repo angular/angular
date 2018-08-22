@@ -323,6 +323,7 @@ describe('Overlay directives', () => {
         // TODO(jelbourn) figure out why, when compiling with bazel, these offsets are required.
         offsetX: 0,
         offsetY: 0,
+        panelClass: 'custom-class'
       }];
 
       fixture.componentInstance.isOpen = true;
@@ -348,7 +349,8 @@ describe('Overlay directives', () => {
         overlayX: 'start',
         overlayY: 'top',
         offsetX: 20,
-        offsetY: 10
+        offsetY: 10,
+        panelClass: 'custom-class'
       }];
 
       fixture.componentInstance.isOpen = true;

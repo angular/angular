@@ -19,7 +19,7 @@ import {
 import {Observable, Subscription, Subject} from 'rxjs';
 import {OverlayReference} from '../overlay-reference';
 import {isElementScrolledOutsideView, isElementClippedByScrolling} from './scroll-clip';
-import {coerceCssPixelValue} from '@angular/cdk/coercion';
+import {coerceCssPixelValue, coerceArray} from '@angular/cdk/coercion';
 import {Platform} from '@angular/cdk/platform';
 import {OverlayContainer} from '../overlay-container';
 
@@ -112,6 +112,9 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   /** Amount of subscribers to the `positionChanges` stream. */
   private _positionChangeSubscriptions = 0;
 
+  /** Keeps track of the CSS classes that the position strategy has applied on the overlay panel. */
+  private _appliedPanelClasses: string[] = [];
+
   /** Observable sequence of position changes. */
   positionChanges: Observable<ConnectedOverlayPositionChange> = Observable.create(observer => {
     const subscription = this._positionChanges.subscribe(observer);
@@ -184,6 +187,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       return;
     }
 
+    this._clearPanelClasses();
     this._resetOverlayElementStyles();
     this._resetBoundingBoxStyles();
 
@@ -282,6 +286,7 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
   }
 
   detach() {
+    this._clearPanelClasses();
     this._resizeSubscription.unsubscribe();
   }
 
@@ -589,6 +594,10 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
     this._setTransformOrigin(position);
     this._setOverlayElementStyles(originPoint, position);
     this._setBoundingBoxStyles(originPoint, position);
+
+    if (position.panelClass) {
+      this._addPanelClasses(position.panelClass);
+    }
 
     // Save the last connected position in case the position needs to be re-calculated.
     this._lastPosition = position;
@@ -991,6 +1000,26 @@ export class FlexibleConnectedPositionStrategy implements PositionStrategy {
       validateVerticalPosition('overlayY', pair.overlayY);
     });
   }
+
+  /** Adds a single CSS class or an array of classes on the overlay panel. */
+  private _addPanelClasses(cssClasses: string | string[]) {
+    if (this._pane) {
+      coerceArray(cssClasses).forEach(cssClass => {
+        if (this._appliedPanelClasses.indexOf(cssClass) === -1) {
+          this._appliedPanelClasses.push(cssClass);
+          this._pane.classList.add(cssClass);
+        }
+      });
+    }
+  }
+
+  /** Clears the classes that the position strategy has applied from the overlay panel. */
+  private _clearPanelClasses() {
+    if (this._pane) {
+      this._appliedPanelClasses.forEach(cssClass => this._pane.classList.remove(cssClass));
+      this._appliedPanelClasses = [];
+    }
+  }
 }
 
 /** A simple (x, y) coordinate. */
@@ -1052,6 +1081,7 @@ export interface ConnectedPosition {
   weight?: number;
   offsetX?: number;
   offsetY?: number;
+  panelClass?: string | string[];
 }
 
 /** Shallow-extends a stylesheet object with another stylesheet object. */
