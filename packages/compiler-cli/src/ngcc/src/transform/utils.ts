@@ -65,9 +65,9 @@ export function findAllPackageJsonFiles(rootDirectory: string): string[] {
 }
 
 /**
- * Identify the entry points of a package.
+ * Identify the entry points of a collection of package.json files.
  *
- * @param packageDirectory The absolute path to the root directory that contains the package.
+ * @param packageJsonPaths A collection of absolute paths to the package.json files.
  * @param format The format of the entry points to look for within the package.
  *
  * @returns A collection of `EntryPoint`s that correspond to entry points for the package.
@@ -88,13 +88,22 @@ export function getEntryPoints(packageJsonPaths: string[], format: string): Entr
   return entryPoints;
 }
 
-export function getMarkerPath(packageJsonPath: string, format: string) {
+function getMarkerPath(packageJsonPath: string, format: string) {
   return resolve(dirname(packageJsonPath), `__modified_by_ngcc_for_${format}__`);
 }
 
 export function checkMarkerFile(packageJsonPath: string, format: string) {
   const markerPath = getMarkerPath(packageJsonPath, format);
-  return existsSync(markerPath) && readFileSync(markerPath, 'utf8') === NGCC_VERSION;
+  const markerExists = existsSync(markerPath);
+  if (markerExists) {
+    const previousVersion = readFileSync(markerPath, 'utf8');
+    if (previousVersion !== NGCC_VERSION) {
+      throw new Error(
+          'The ngcc compiler has changed since the last ngcc build.\n' +
+          'Please completely remove `node_modules` and try again.');
+    }
+  }
+  return markerExists;
 }
 
 export function writeMarkerFile(packageJsonPath: string, format: string) {
