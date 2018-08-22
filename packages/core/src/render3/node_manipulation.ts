@@ -7,6 +7,7 @@
  */
 
 import {assertDefined} from './assert';
+import {attachLViewDataToNode} from './element_discovery';
 import {callHooks} from './hooks';
 import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {LContainerNode, LElementContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
@@ -694,8 +695,14 @@ export function removeChild(parent: LNode, child: RNode | null, currentView: LVi
 export function appendProjectedNode(
     node: LElementNode | LElementContainerNode | LTextNode | LContainerNode,
     currentParent: LElementNode | LElementContainerNode | LViewNode, currentView: LViewData,
-    renderParent: LElementNode): void {
+    renderParent: LElementNode, parentView: LViewData): void {
   appendChild(currentParent, node.native, currentView);
+
+  // the projected contents are processed while in the shadow view (which is the currentView)
+  // therefore we need to extract the view where the host element lives since it's the
+  // logical container of the content projected views
+  attachLViewDataToNode(node.native, parentView);
+
   if (node.tNode.type === TNodeType.Container) {
     // The node we are adding is a container and we are adding it to an element which
     // is not a component (no more re-projection).
@@ -710,10 +717,11 @@ export function appendProjectedNode(
     }
   } else if (node.tNode.type === TNodeType.ElementContainer) {
     let ngContainerChild = getChildLNode(node as LElementContainerNode);
+    const parentView = currentView[HOST_NODE].view;
     while (ngContainerChild) {
       appendProjectedNode(
           ngContainerChild as LElementNode | LElementContainerNode | LTextNode | LContainerNode,
-          currentParent, currentView, renderParent);
+          currentParent, currentView, renderParent, parentView);
       ngContainerChild = getNextLNode(ngContainerChild);
     }
   }
