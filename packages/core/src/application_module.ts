@@ -32,6 +32,10 @@ export function _localeFactory(locale?: string): string {
   return locale || 'en-US';
 }
 
+/**
+ * A built-in [dependency injection token](guide/glossary#di-token)
+ * that is used to configure the root injector for bootstrapping.
+ */
 export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
   {
     provide: ApplicationRef,
@@ -56,8 +60,12 @@ export const APPLICATION_MODULE_PROVIDERS: StaticProvider[] = [
 ];
 
 /**
- * This module includes the providers of @angular/core that are needed
- * to bootstrap components via `ApplicationRef`.
+ * Configures the root injector for an app with
+ * providers of `@angular/core` dependencies that `ApplicationRef` needs
+ * to bootstrap components.
+ *
+ * Re-exported by `BrowserModule`, which is included automatically in the root
+ * `AppModule` when you create a new app with the CLI `new` command.
  *
  * @experimental
  */
