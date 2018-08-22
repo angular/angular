@@ -7,6 +7,7 @@
  */
 
 import {assertDefined} from './assert';
+import {linkDataToNode} from './element_discovery';
 import {callHooks} from './hooks';
 import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {LContainerNode, LElementContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
@@ -696,6 +697,13 @@ export function appendProjectedNode(
     currentParent: LElementNode | LElementContainerNode | LViewNode, currentView: LViewData,
     renderParent: LElementNode): void {
   appendChild(currentParent, node.native, currentView);
+
+  // the projected contents are processed while in the shadow view (which is the currentView)
+  // therefore we need to extract the view where the host element lives since it's the
+  // logical container of the content projected views
+  const parentView = currentView[HOST_NODE].view;
+  linkDataToNode(node.native, parentView);
+
   if (node.tNode.type === TNodeType.Container) {
     // The node we are adding is a container and we are adding it to an element which
     // is not a component (no more re-projection).

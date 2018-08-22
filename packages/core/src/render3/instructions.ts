@@ -13,6 +13,7 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
+import {linkDataToNode} from './element_discovery';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
@@ -101,6 +102,8 @@ let currentElementNode: LElementNode|null = null;
 export function getCurrentSanitizer(): Sanitizer|null {
   return viewData && viewData[SANITIZER];
 }
+
+let depthCountFromRootOrTemplate = 0;
 
 /**
  * Returns the current OpaqueViewState instance.
@@ -518,6 +521,7 @@ export function adjustBlueprintForNewNode(view: LViewData) {
 export function resetApplicationState() {
   isParent = false;
   previousOrParentNode = null !;
+  depthCountFromRootOrTemplate = 0;
 }
 
 /**
@@ -796,6 +800,14 @@ export function elementStart(
   }
   appendChild(getParentLNode(node), native, viewData);
   createDirectivesAndLocals(node, localRefs);
+
+  // any immediate children of a component or template container must be pre-emptively
+  // monkey-patched with the component view data so that the element can be inspected
+  // later on using any element discovery utility methods (see `element_discovery.ts`)
+  if (depthCountFromRootOrTemplate == 0) {
+    linkDataToNode(native, viewData);
+  }
+  depthCountFromRootOrTemplate++;
 }
 
 /**
@@ -1296,6 +1308,7 @@ export function elementEnd(): void {
   currentQueries && (currentQueries = currentQueries.addNode(previousOrParentNode));
   queueLifecycleHooks(previousOrParentNode.tNode.flags, tView);
   currentElementNode = null;
+  depthCountFromRootOrTemplate--;
 }
 
 /**
@@ -1902,8 +1915,13 @@ export function template(
   const node = containerInternal(index, tagName || null, attrs || null, localRefs || null);
 
   if (firstTemplatePass) {
+    let depth = depthCountFromRootOrTemplate;
+    depthCountFromRootOrTemplate = 0;
+
     node.tNode.tViews = createTView(
         -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null);
+
+    depthCountFromRootOrTemplate = depth;
   }
 
   createDirectivesAndLocals(node, localRefs, localRefExtractor);
@@ -2142,10 +2160,15 @@ export function componentRefresh<T>(adjustedElementIndex: number): void {
       assertDefined(element.data, `Component's host node should have an LViewData attached.`);
   const hostView = element.data !;
 
+  const depth = depthCountFromRootOrTemplate;
+  depthCountFromRootOrTemplate = 0;
+
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
     detectChangesInternal(hostView, element, hostView[CONTEXT]);
   }
+
+  depthCountFromRootOrTemplate = depth;
 }
 
 /** Returns a boolean for whether the view is attached */

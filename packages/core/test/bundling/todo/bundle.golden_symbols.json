@@ -75,6 +75,9 @@
     "name": "IterableDiffers"
   },
   {
+    "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
     "name": "NEXT"
   },
   {
@@ -438,6 +441,9 @@
     "name": "defineInjectable"
   },
   {
+    "name": "depthCountFromRootOrTemplate"
+  },
+  {
     "name": "destroyLView"
   },
   {
@@ -721,6 +727,9 @@
   },
   {
     "name": "leaveView"
+  },
+  {
+    "name": "linkDataToNode"
   },
   {
     "name": "listener"
