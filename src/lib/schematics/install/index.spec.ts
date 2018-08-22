@@ -34,8 +34,17 @@ describe('material-install-schematic', () => {
 
     expect(packageJson.dependencies['@angular/material']).toBeDefined();
     expect(packageJson.dependencies['@angular/cdk']).toBeDefined();
+    expect(packageJson.dependencies['hammerjs']).toBeDefined();
     expect(packageJson.dependencies['@angular/animations']).toBe(angularCoreVersion,
       'Expected the @angular/animations package to have the same version as @angular/core.');
+  });
+
+  it('should add hammerjs import to project main file', () => {
+    const tree = runner.runSchematic('ng-add', {}, appTree);
+    const fileContent = getFileContent(tree, '/projects/material/src/main.ts');
+
+    expect(fileContent).toContain(`import 'hammerjs';`,
+      'Expected the project main file to contain a HammerJS import.');
   });
 
   it('should add default theme', () => {
@@ -105,5 +114,24 @@ describe('material-install-schematic', () => {
     expect(htmlContent).toContain('html, body { height: 100%; }');
     expect(htmlContent).toContain(
         'body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }');
+  });
+
+  describe('gestures disabled', () => {
+
+    it('should not add hammerjs to package.json', () => {
+      const tree = runner.runSchematic('ng-add', {gestures: false}, appTree);
+      const packageJson = JSON.parse(getFileContent(tree, '/package.json'));
+
+      expect(packageJson.dependencies['hammerjs'])
+        .toBeUndefined(`Expected 'hammerjs' to be not added to the package.json`);
+    });
+
+    it('should not add hammerjs import to project main file', () => {
+      const tree = runner.runSchematic('ng-add', {gestures: false}, appTree);
+      const fileContent = getFileContent(tree, '/projects/material/src/main.ts');
+
+      expect(fileContent).not.toContain(`import 'hammerjs';`,
+        'Expected the project main file to not contain a HammerJS import.');
+    });
   });
 });

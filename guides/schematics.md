@@ -20,7 +20,7 @@ This schematic will:
 - Add Prebuilt or Setup Custom Theme
 - Add Roboto fonts to your index.html
 - Apply simple CSS reset to body
-
+- Install and load `hammerjs` for gestures in your project.
 
 ## Generator Schematics
 In addition to the install schematic, Angular Material has three schematics it comes packaged with:

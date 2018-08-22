@@ -13,6 +13,11 @@
       "enum": ["indigo-pink", "deeppurple-amber", "pink-bluegrey", "purple-green", "custom"],
       "default": "indigo-pink",
       "description": "The theme to apply"
+    },
+    "gestures": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether gesture support should be set up or not."
     }
   },
   "required": []

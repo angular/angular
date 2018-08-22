@@ -22,9 +22,10 @@ import {getProjectFromWorkspace} from '../utils/get-project';
 import {addPackageToPackageJson, getPackageVersionFromPackageJson} from '../utils/package-json';
 import {getProjectStyleFile} from '../utils/project-style-file';
 import {addFontsToIndex} from './fonts/material-fonts';
+import {addHammerJsToMain} from './gestures/hammerjs-import';
 import {Schema} from './schema';
 import {addThemeToAppStyles} from './theming/theming';
-import {materialVersion, requiredAngularVersionRange} from './version-names';
+import {hammerjsVersion, materialVersion, requiredAngularVersionRange} from './version-names';
 
 /**
  * Scaffolds the basics of a Angular Material application, this includes:
@@ -39,7 +40,8 @@ export default function(options: Schema): Rule {
   }
 
   return chain([
-    options && options.skipPackageJson ? noop() : addMaterialToPackageJson(),
+    options && options.skipPackageJson ? noop() : addMaterialToPackageJson(options),
+    options && options.gestures ? addHammerJsToMain(options) : noop(),
     addThemeToAppStyles(options),
     addAnimationRootConfig(options),
     addFontsToIndex(options),
@@ -48,7 +50,7 @@ export default function(options: Schema): Rule {
 }
 
 /** Add material, cdk, animations to package.json if not already present. */
-function addMaterialToPackageJson() {
+function addMaterialToPackageJson(options: Schema) {
   return (host: Tree, context: SchematicContext) => {
     // Version tag of the `@angular/core` dependency that has been loaded from the `package.json`
     // of the CLI project. This tag should be preferred because all Angular dependencies should
@@ -59,6 +61,10 @@ function addMaterialToPackageJson() {
     addPackageToPackageJson(host, 'dependencies', '@angular/material', `^${materialVersion}`);
     addPackageToPackageJson(host, 'dependencies', '@angular/animations',
         ngCoreVersionTag || requiredAngularVersionRange);
+
+    if (options.gestures) {
+      addPackageToPackageJson(host, 'dependencies', 'hammerjs', hammerjsVersion);
+    }
 
     context.addTask(new NodePackageInstallTask());
 
