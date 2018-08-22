@@ -908,7 +908,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   }
 }
 
-class ValueConverter extends AstMemoryEfficientTransformer {
+export class ValueConverter extends AstMemoryEfficientTransformer {
   private _pipeBindExprs: FunctionCall[] = [];
 
   constructor(

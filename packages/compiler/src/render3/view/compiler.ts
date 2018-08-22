@@ -26,7 +26,7 @@ import {Render3ParseResult} from '../r3_template_transform';
 import {typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
-import {BindingScope, TemplateDefinitionBuilder, renderFlagCheckIfStmt} from './template';
+import {BindingScope, TemplateDefinitionBuilder, ValueConverter, renderFlagCheckIfStmt} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
 const EMPTY_ARRAY: any[] = [];
@@ -56,8 +56,22 @@ function baseDirectiveFields(
 
   definitionMap.set('contentQueriesRefresh', createContentQueriesRefreshFunction(meta));
 
+  // Initialize hostVars to number of bound host properties (interpolations illegal)
+  let hostVars = Object.keys(meta.host.properties).length;
+
   // e.g. `hostBindings: (dirIndex, elIndex) => { ... }
-  definitionMap.set('hostBindings', createHostBindingsFunction(meta, bindingParser));
+  definitionMap.set(
+      'hostBindings',
+      createHostBindingsFunction(meta, bindingParser, constantPool, (slots: number) => {
+        const originalSlots = hostVars;
+        hostVars += slots;
+        return originalSlots;
+      }));
+
+  if (hostVars) {
+    // e.g. `hostVars: 2
+    definitionMap.set('hostVars', o.literal(hostVars));
+  }
 
   // e.g. `attributes: ['role', 'listbox']`
   definitionMap.set('attributes', createHostAttributesArray(meta));
@@ -521,7 +535,8 @@ function createViewQueriesFunction(
 
 // Return a host binding function or null if one is not necessary.
 function createHostBindingsFunction(
-    meta: R3DirectiveMetadata, bindingParser: BindingParser): o.Expression|null {
+    meta: R3DirectiveMetadata, bindingParser: BindingParser, constantPool: ConstantPool,
+    allocatePureFunctionSlots: (slots: number) => number): o.Expression|null {
   const statements: o.Statement[] = [];
 
   const hostBindingSourceSpan = meta.typeSourceSpan;
@@ -532,9 +547,16 @@ function createHostBindingsFunction(
   const bindings = bindingParser.createBoundHostProperties(directiveSummary, hostBindingSourceSpan);
   const bindingContext = o.importExpr(R3.loadDirective).callFn([o.variable('dirIndex')]);
   if (bindings) {
+    const valueConverter = new ValueConverter(
+        constantPool,
+        /* new nodes are illegal here */ () => error('Unexpected node'), allocatePureFunctionSlots,
+        /* pipes are illegal here */ () => error('Unexpected pipe'));
+
     for (const binding of bindings) {
+      // resolve literal arrays and literal objects
+      const value = binding.expression.visit(valueConverter);
       const bindingExpr = convertPropertyBinding(
-          null, bindingContext, binding.expression, 'b', BindingForm.TrySimple,
+          null, bindingContext, value, 'b', BindingForm.TrySimple,
           () => error('Unexpected interpolation'));
       statements.push(...bindingExpr.stmts);
       statements.push(o.importExpr(R3.elementProperty)
