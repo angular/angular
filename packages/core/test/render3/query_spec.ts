@@ -370,7 +370,7 @@ describe('query', () => {
            /**
             * <ng-container #foo></ng-container>
             * class Cmpt {
-            *  @ViewChildren('foo') query;
+            *  @ViewChildren('foo', {read: ElementRef}) query;
             * }
             */
            const Cmpt = createComponent(
@@ -400,6 +400,41 @@ describe('query', () => {
            expect(isElementRef(qList.first)).toBeTruthy();
            expect(qList.first.nativeElement).toEqual(elToQuery);
          });
+
+      it('should query for <ng-container> and read ElementRef without explicit read option', () => {
+        let elToQuery;
+        /**
+         * <ng-container #foo></ng-container>
+         * class Cmpt {
+         *  @ViewChildren('foo') query;
+         * }
+         */
+        const Cmpt = createComponent(
+            'cmpt',
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                elementContainerStart(1, null, ['foo', '']);
+                elToQuery = loadElement(1).native;
+                elementContainerEnd();
+              }
+            },
+            3, 0, [], [],
+            function(rf: RenderFlags, ctx: any) {
+              if (rf & RenderFlags.Create) {
+                query(0, ['foo'], true, QUERY_READ_FROM_NODE);
+              }
+              if (rf & RenderFlags.Update) {
+                let tmp: any;
+                queryRefresh(tmp = load<QueryList<any>>(0)) && (ctx.query = tmp as QueryList<any>);
+              }
+            });
+
+        const cmptInstance = renderComponent(Cmpt);
+        const qList = (cmptInstance.query as QueryList<any>);
+        expect(qList.length).toBe(1);
+        expect(isElementRef(qList.first)).toBeTruthy();
+        expect(qList.first.nativeElement).toEqual(elToQuery);
+      });
 
       /**
        * BREAKING CHANGE: this tests asserts different behaviour as compared to Renderer2 when it

@@ -9,7 +9,7 @@
 import {NgForOfContext} from '@angular/common';
 
 import {AttributeMarker, defineComponent, templateRefExtractor} from '../../src/render3/index';
-import {bind, template, elementEnd, elementProperty, elementStart, getCurrentView, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, restoreView, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
+import {bind, template, elementEnd, elementProperty, elementStart, getCurrentView, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, restoreView, text, textBinding, elementContainerStart, elementContainerEnd, reference} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
@@ -948,7 +948,7 @@ describe('@angular/common integration', () => {
               elementContainerEnd();
             }
             if (rf & RenderFlags.Update) {
-              const tplRef = load(1);
+              const tplRef = reference(1);
               elementProperty(2, 'ngTemplateOutlet', bind(myApp.showing ? tplRef : null));
             }
           },
