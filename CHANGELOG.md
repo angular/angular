@@ -1,3 +1,13 @@
+<a name="6.1.4"></a>
+## [6.1.4](https://github.com/angular/angular/compare/6.1.3...6.1.4) (2018-08-22)
+
+
+### Bug Fixes
+
+* **router:** default scroll position restoration to disabled ([#25586](https://github.com/angular/angular/issues/25586)) ([7e61645](https://github.com/angular/angular/commit/7e61645)), closes [#25145](https://github.com/angular/angular/issues/25145)
+
+
+
 <a name="6.1.3"></a>
 ## [6.1.3](https://github.com/angular/angular/compare/6.1.2...6.1.3) (2018-08-15)
 
