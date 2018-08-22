@@ -443,7 +443,7 @@ export class Router {
    * Enables a bug fix that corrects relative link resolution in components with empty paths.
    * @see `RouterModule`
    */
-  relativeLinkResolution: 'legacy'|'corrected' = 'legacy';
+  relativeLinkResolution: 'legacy'|'corrected' = 'corrected';
 
   /**
    * Creates the router service.

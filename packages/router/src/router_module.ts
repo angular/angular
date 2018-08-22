@@ -425,8 +425,9 @@ export interface ExtraOptions {
    *
    * `<a [routerLink]="['../a']">Link to A</a>`
    *
-   * In other words, you're required to use `../` rather than `./`. This is currently the default
-   * behavior. Setting this option to `corrected` enables the fix.
+   * In other words, you're required to use `../` rather than `./`.
+   *
+   * The default in v11 is `corrected`.
    */
   relativeLinkResolution?: 'legacy'|'corrected';
 }
