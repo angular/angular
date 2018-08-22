@@ -6,9 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {browserDetection} from '@angular/platform-browser/testing/src/browser_util';
-
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ContentChild, ContentChildren, Directive, HostBinding, HostListener, Injectable, Input, NgModule, OnDestroy, Optional, Pipe, PipeTransform, QueryList, SimpleChanges, TemplateRef, ViewChild, ViewChildren, ViewContainerRef} from '../../../src/core';
+import {Component} from '../../../src/core';
 import * as $r3$ from '../../../src/core_render3_private_export';
 import {AttributeMarker} from '../../../src/render3';
 import {ComponentDefInternal, InitialStylingFlags} from '../../../src/render3/interfaces/definition';
@@ -353,20 +351,12 @@ describe('elements', () => {
       }
 
       const comp = renderComponent(MyComponent);
-      if (browserDetection.isIE) {
-        expect(toHtml(comp)).toEqual('<div style="width: 50px; color: red;"></div>');
-      } else {
-        expect(toHtml(comp)).toEqual('<div style="color: red; width: 50px;"></div>');
-      }
+      expect(toHtml(comp)).toEqual('<div style="color: red; width: 50px;"></div>');
 
       comp.someColor = 'blue';
       comp.someWidth = 100;
       $r3$.ɵdetectChanges(comp);
-      if (browserDetection.isIE) {
-        expect(toHtml(comp)).toEqual('<div style="width: 100px; color: blue;"></div>');
-      } else {
-        expect(toHtml(comp)).toEqual('<div style="color: blue; width: 100px;"></div>');
-      }
+      expect(toHtml(comp)).toEqual('<div style="color: blue; width: 100px;"></div>');
     });
 
     it('should bind to many and keep order', () => {
