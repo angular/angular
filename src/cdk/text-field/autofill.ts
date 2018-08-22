@@ -56,11 +56,21 @@ export class AutofillMonitor implements OnDestroy {
    * @param element The element to monitor.
    * @return A stream of autofill state changes.
    */
-  monitor(element: Element): Observable<AutofillEvent> {
+  monitor(element: Element): Observable<AutofillEvent>;
+
+  /**
+   * Monitor for changes in the autofill state of the given input element.
+   * @param element The element to monitor.
+   * @return A stream of autofill state changes.
+   */
+  monitor(element: ElementRef<Element>): Observable<AutofillEvent>;
+
+  monitor(elementOrRef: Element | ElementRef<Element>): Observable<AutofillEvent> {
     if (!this._platform.isBrowser) {
       return EMPTY;
     }
 
+    const element = elementOrRef instanceof ElementRef ? elementOrRef.nativeElement : elementOrRef;
     const info = this._monitoredElements.get(element);
 
     if (info) {
@@ -103,7 +113,16 @@ export class AutofillMonitor implements OnDestroy {
    * Stop monitoring the autofill state of the given input element.
    * @param element The element to stop monitoring.
    */
-  stopMonitoring(element: Element) {
+  stopMonitoring(element: Element);
+
+  /**
+   * Stop monitoring the autofill state of the given input element.
+   * @param element The element to stop monitoring.
+   */
+  stopMonitoring(element: ElementRef<Element>);
+
+  stopMonitoring(elementOrRef: Element | ElementRef<Element>) {
+    const element = elementOrRef instanceof ElementRef ? elementOrRef.nativeElement : elementOrRef;
     const info = this._monitoredElements.get(element);
 
     if (info) {
@@ -133,11 +152,11 @@ export class CdkAutofill implements OnDestroy, OnInit {
 
   ngOnInit() {
     this._autofillMonitor
-      .monitor(this._elementRef.nativeElement)
+      .monitor(this._elementRef)
       .subscribe(event => this.cdkAutofill.emit(event));
   }
 
   ngOnDestroy() {
-    this._autofillMonitor.stopMonitoring(this._elementRef.nativeElement);
+    this._autofillMonitor.stopMonitoring(this._elementRef);
   }
 }

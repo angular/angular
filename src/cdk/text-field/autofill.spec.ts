@@ -198,13 +198,13 @@ describe('cdkAutofill', () => {
   }));
 
   it('should monitor host element on init', () => {
-    expect(autofillMonitor.monitor).toHaveBeenCalledWith(testComponent.input.nativeElement);
+    expect(autofillMonitor.monitor).toHaveBeenCalledWith(testComponent.input);
   });
 
   it('should stop monitoring host element on destroy', () => {
     expect(autofillMonitor.stopMonitoring).not.toHaveBeenCalled();
     fixture.destroy();
-    expect(autofillMonitor.stopMonitoring).toHaveBeenCalledWith(testComponent.input.nativeElement);
+    expect(autofillMonitor.stopMonitoring).toHaveBeenCalledWith(testComponent.input);
   });
 });
 
