@@ -1000,8 +1000,8 @@ function saveNameToExportMap(
 function saveResolvedLocalsInData(
     lNode: LNodeWithLocalRefs, localRefExtractor: LocalRefExtractor): void {
   const localNames = lNode.tNode.localNames;
-  let localIndex = lNode.tNode.index + 1;
   if (localNames) {
+    let localIndex = lNode.tNode.index + 1;
     for (let i = 0; i < localNames.length; i += 2) {
       const index = localNames[i + 1] as number;
       const value = index === -1 ? localRefExtractor(lNode) : directives ![index];

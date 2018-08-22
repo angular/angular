@@ -331,8 +331,9 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         // Create text node at the current end of viewData. Must subtract header offset because
         // createLNode takes a raw index (not adjusted by header offset).
         adjustBlueprintForNewNode(viewData);
-        const textLNode = createLNode(
-            viewData.length - 1 - HEADER_OFFSET, TNodeType.Element, textRNode, null, null);
+        const lastNodeIndex = viewData.length - 1;
+        const textLNode =
+            createLNode(lastNodeIndex - HEADER_OFFSET, TNodeType.Element, textRNode, null, null);
         localPreviousNode = appendI18nNode(textLNode, localParentNode, localPreviousNode);
         resetApplicationState();
         break;
