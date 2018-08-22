@@ -110,7 +110,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     this._valueConverter = new ValueConverter(
         constantPool, () => this.allocateDataSlot(),
-        (numSlots: number): number => this._pureFunctionSlots += numSlots,
+        (numSlots: number) => this.allocatePureFunctionSlots(numSlots),
         (name, localName, slot, value: o.ReadVarExpr) => {
           const pipeType = pipeTypeByName.get(name);
           if (pipeType) {
@@ -171,24 +171,27 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // This is the initial pass through the nodes of this template. In this pass, we
     // queue all creation mode and update mode instructions for generation in the second
     // pass. It's necessary to separate the passes to ensure local refs are defined before
-    // resolving bindings.
+    // resolving bindings. We also count bindings in this pass as we walk bound expressions.
     t.visitAll(this, nodes);
+
+    // Add total binding count to pure function count so pure function instructions are
+    // generated with the correct slot offset when update instructions are processed.
+    this._pureFunctionSlots += this._bindingSlots;
+
+    // Pipes are walked in the first pass (to enqueue `pipe()` creation instructions and
+    // `pipeBind` update instructions), so we have to update the slot offsets manually
+    // to account for bindings.
+    this._valueConverter.updatePipeSlotOffsets(this._bindingSlots);
 
     // Nested templates must be processed before creation instructions so template()
     // instructions can be generated with the correct internal const count.
     this._nestedTemplateFns.forEach(buildTemplateFn => buildTemplateFn());
 
-    // Generate all the update mode instructions (e.g. resolve property or text bindings)
-    const updateStatements = this._updateCodeFns.map((fn: () => o.Statement) => fn());
-
     // Generate all the creation mode instructions (e.g. resolve bindings in listeners)
     const creationStatements = this._creationCodeFns.map((fn: () => o.Statement) => fn());
 
-    // To count slots for the reserveSlots() instruction, all bindings must have been visited.
-    if (this._pureFunctionSlots > 0) {
-      creationStatements.push(
-          instruction(null, R3.reserveSlots, [o.literal(this._pureFunctionSlots)]).toStmt());
-    }
+    // Generate all the update mode instructions (e.g. resolve property or text bindings)
+    const updateStatements = this._updateCodeFns.map((fn: () => o.Statement) => fn());
 
     //  Variable declaration must occur after binding resolution so we can generate context
     //  instructions that build on each other. e.g. const b = x().$implicit(); const b = x();
@@ -635,6 +638,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
         // TODO(chuckj): runtime: security context?
         const value = input.value.visit(this._valueConverter);
+        this.allocateBindingSlots(value);
         this.updateInstruction(input.sourceSpan, instruction, () => {
           return [
             o.literal(elementIndex), o.literal(input.name),
@@ -722,6 +726,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const context = o.variable(CONTEXT_NAME);
     template.inputs.forEach(input => {
       const value = input.value.visit(this._valueConverter);
+      this.allocateBindingSlots(value);
       this.updateInstruction(template.sourceSpan, R3.elementProperty, () => {
         return [
           o.literal(templateIndex), o.literal(input.name),
@@ -767,6 +772,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.creationInstruction(text.sourceSpan, R3.text, [o.literal(nodeIndex)]);
 
     const value = text.value.visit(this._valueConverter);
+    this.allocateBindingSlots(value);
     this.updateInstruction(
         text.sourceSpan, R3.textBinding,
         () => [o.literal(nodeIndex), this.convertPropertyBinding(o.variable(CONTEXT_NAME), value)]);
@@ -800,7 +806,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
   getConstCount() { return this._dataIndex; }
 
-  getVarCount() { return this._bindingSlots + this._pureFunctionSlots; }
+  getVarCount() { return this._pureFunctionSlots; }
 
   private bindingContext() { return `${this._bindingContext++}`; }
 
@@ -829,10 +835,18 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     this.instructionFn(this._updateCodeFns, span, reference, paramsOrFn || []);
   }
 
+  private allocatePureFunctionSlots(numSlots: number): number {
+    const originalSlots = this._pureFunctionSlots;
+    this._pureFunctionSlots += numSlots;
+    return originalSlots;
+  }
+
+  private allocateBindingSlots(value: AST) {
+    this._bindingSlots += value instanceof Interpolation ? value.expressions.length : 1;
+  }
+
   private convertPropertyBinding(implicit: o.Expression, value: AST, skipBindFn?: boolean):
       o.Expression {
-    if (!skipBindFn) this._bindingSlots++;
-
     const interpolationFn =
         value instanceof Interpolation ? interpolate : () => error('Unexpected interpolation');
 
@@ -875,6 +889,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 }
 
 class ValueConverter extends AstMemoryEfficientTransformer {
+  private _pipeBindExprs: FunctionCall[] = [];
+
   constructor(
       private constantPool: ConstantPool, private allocateSlot: () => number,
       private allocatePureFunctionSlots: (numSlots: number) => number,
@@ -897,11 +913,21 @@ class ValueConverter extends AstMemoryEfficientTransformer {
     const convertedArgs: AST[] =
         isVarLength ? this.visitAll([new LiteralArray(pipe.span, args)]) : this.visitAll(args);
 
-    return new FunctionCall(pipe.span, target, [
+    const pipeBindExpr = new FunctionCall(pipe.span, target, [
       new LiteralPrimitive(pipe.span, slot),
       new LiteralPrimitive(pipe.span, pureFunctionSlot),
       ...convertedArgs,
     ]);
+    this._pipeBindExprs.push(pipeBindExpr);
+    return pipeBindExpr;
+  }
+
+  updatePipeSlotOffsets(bindingSlots: number) {
+    this._pipeBindExprs.forEach((pipe: FunctionCall) => {
+      // update the slot offset arg (index 1) to account for binding slots
+      const slotOffset = pipe.args[1] as LiteralPrimitive;
+      (slotOffset.value as number) += bindingSlots;
+    });
   }
 
   visitLiteralArray(array: LiteralArray, context: any): AST {

@@ -2559,9 +2559,6 @@ export function bind<T>(value: T): T|NO_CHANGE {
   return bindingUpdated(viewData[BINDING_INDEX]++, value) ? value : NO_CHANGE;
 }
 
-// TODO(kara): Remove this when updating the compiler (cannot remove without breaking JIT test)
-export function reserveSlots(numSlots: number) {}
-
 /**
  * Create interpolation bindings with a variable number of expressions.
  *
