@@ -254,6 +254,12 @@ export interface TView {
   readonly id: number;
 
   /**
+   * This is a blueprint used to generate LViewData instances for this TView. Copying this
+   * blueprint is faster than creating a new LViewData from scratch.
+   */
+  blueprint: LViewData;
+
+  /**
    * The template function used to refresh the view of dynamically created views
    * and components. Will be null for inline views.
    */

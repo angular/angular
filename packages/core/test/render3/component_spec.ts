@@ -276,7 +276,7 @@ describe('encapsulation', () => {
       static ngComponentDef = defineComponent({
         type: LeafComponentwith,
         selectors: [['leaf']],
-        consts: 1,
+        consts: 2,
         vars: 0,
         template: function(rf: RenderFlags, ctx: LeafComponentwith) {
           if (rf & RenderFlags.Create) {

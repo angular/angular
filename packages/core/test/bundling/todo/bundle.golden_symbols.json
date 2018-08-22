@@ -132,9 +132,6 @@
     "name": "RENDER_PARENT"
   },
   {
-    "name": "ROOT_DIRECTIVE_INDICES"
-  },
-  {
     "name": "RecordViewTuple"
   },
   {
@@ -202,9 +199,6 @@
   },
   {
     "name": "_DuplicateMap"
-  },
-  {
-    "name": "_ROOT_DIRECTIVE_INDICES"
   },
   {
     "name": "_THROW_IF_NOT_FOUND"
@@ -412,6 +406,9 @@
   },
   {
     "name": "createTextNode"
+  },
+  {
+    "name": "createViewBlueprint"
   },
   {
     "name": "createViewQuery"
