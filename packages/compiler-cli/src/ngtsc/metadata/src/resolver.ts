@@ -53,7 +53,7 @@ export function isDynamicValue(value: any): value is DynamicValue {
  * non-primitive value, or a special `DynamicValue` type which indicates the value was not
  * available statically.
  */
-export type ResolvedValue = number | boolean | string | null | undefined | Reference |
+export type ResolvedValue = number | boolean | string | null | undefined | Reference | EnumValue |
     ResolvedValueArray | ResolvedValueMap | DynamicValue;
 
 /**
@@ -71,6 +71,15 @@ export interface ResolvedValueArray extends Array<ResolvedValue> {}
  * This is a reified type to allow the circular reference of `ResolvedValue` -> `ResolvedValueMap` ->
  * `ResolvedValue`.
  */ export interface ResolvedValueMap extends Map<string, ResolvedValue> {}
+
+/**
+ * A value member of an enumeration.
+ *
+ * Contains a `Reference` to the enumeration itself, and the name of the referenced member.
+ */
+export class EnumValue {
+  constructor(readonly enumRef: Reference<ts.EnumDeclaration>, readonly name: string) {}
+}
 
 /**
  * Tracks the scope of a function body, which includes `ResolvedValue`s for the parameters of that
@@ -438,11 +447,25 @@ class StaticInterpreter {
       return context.scope.get(node) !;
     } else if (ts.isExportAssignment(node)) {
       return this.visitExpression(node.expression, context);
+    } else if (ts.isEnumDeclaration(node)) {
+      return this.visitEnumDeclaration(node, context);
     } else if (ts.isSourceFile(node)) {
       return this.visitSourceFile(node, context);
     } else {
       return this.getReference(node, context);
     }
+  }
+
+  private visitEnumDeclaration(node: ts.EnumDeclaration, context: Context): ResolvedValue {
+    const enumRef = this.getReference(node, context) as Reference<ts.EnumDeclaration>;
+    const map = new Map<string, EnumValue>();
+    node.members.forEach(member => {
+      const name = this.stringNameFromPropertyName(member.name, context);
+      if (name !== undefined) {
+        map.set(name, new EnumValue(enumRef, name));
+      }
+    });
+    return map;
   }
 
   private visitElementAccessExpression(node: ts.ElementAccessExpression, context: Context):
@@ -688,6 +711,8 @@ function literal(value: ResolvedValue): any {
 
 function identifierOfDeclaration(decl: ts.Declaration): ts.Identifier|undefined {
   if (ts.isClassDeclaration(decl)) {
+    return decl.name;
+  } else if (ts.isEnumDeclaration(decl)) {
     return decl.name;
   } else if (ts.isFunctionDeclaration(decl)) {
     return decl.name;
