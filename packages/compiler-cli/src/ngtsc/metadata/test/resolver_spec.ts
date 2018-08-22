@@ -11,7 +11,7 @@ import * as ts from 'typescript';
 
 import {TypeScriptReflectionHost} from '..';
 import {getDeclaration, makeProgram} from '../../testing/in_memory_typescript';
-import {AbsoluteReference, Reference, ResolvedValue, staticallyResolve} from '../src/resolver';
+import {AbsoluteReference, EnumValue, Reference, ResolvedValue, staticallyResolve} from '../src/resolver';
 
 function makeSimpleProgram(contents: string): ts.Program {
   return makeProgram([{name: 'entry.ts', contents}]).program;
@@ -265,4 +265,23 @@ describe('ngtsc metadata', () => {
 
   it('template expressions work',
      () => { expect(evaluate('const a = 2, b = 4;', '`1${a}3${b}5`')).toEqual('12345'); });
+
+  it('enum resolution works', () => {
+    const result = evaluate(
+        `
+      enum Foo {
+        A,
+        B,
+        C,
+      }
+
+      const r = Foo.B;
+    `,
+        'r');
+    if (!(result instanceof EnumValue)) {
+      return fail(`result is not an EnumValue`);
+    }
+    expect(result.enumRef.node.name.text).toBe('Foo');
+    expect(result.name).toBe('B');
+  });
 });
