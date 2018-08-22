@@ -7,7 +7,7 @@
  */
 
 import * as mockFs from 'mock-fs';
-import {EntryPoint, findAllPackageJsonFiles, getEntryPoints} from '../../src/parsing/utils';
+import {EntryPoint, findAllPackageJsonFiles, getEntryPoints} from '../../src/transform/utils';
 
 function createMockFileSystem() {
   mockFs({
@@ -33,7 +33,7 @@ function createMockFileSystem() {
           'package.json': `{
             "fesm2015": "../../fesm2015/http/testing.js",
             "fesm5": "../../fesm5/http/testing.js",
-            "no-typings": "for testing purposes"
+            "typings": "../http/testing.d.ts"
           }`,
         },
       },
@@ -44,7 +44,7 @@ function createMockFileSystem() {
         'package.json': `{
           "fesm2015": "../fesm2015/testing.js",
           "fesm5": "../fesm5/testing.js",
-          "no-typings": "for testing purposes"
+          "typings": "../testing.d.ts"
         }`,
       },
       'node_modules': {
@@ -56,6 +56,15 @@ function createMockFileSystem() {
             },
           },
         },
+      },
+    },
+    '/node_modules/@angular/no-typings': {
+      'package.json': `{
+        "fesm2015": "./fesm2015/index.js"
+      }`,
+      'fesm2015': {
+        'index.js': 'DUMMY CONTENT',
+        'index.d.ts': 'DUMMY CONTENT',
       },
     },
     '/node_modules/@angular/other': {
@@ -82,25 +91,9 @@ function restoreRealFileSystem() {
 }
 
 describe('EntryPoint', () => {
-  it('should not break when called without a `relativeDtsEntryPath`',
-     () => { expect(() => new EntryPoint('/foo', './bar')).not.toThrow(); });
-
   it('should expose the absolute path to the entry point file', () => {
-    const entryPoint = new EntryPoint('/foo/bar', '../baz/qux/../quux.js');
+    const entryPoint = new EntryPoint('/foo/bar', '../baz/qux/../quux.js', '/typings/foo/bar.d.ts');
     expect(entryPoint.entryFileName).toBe('/foo/baz/quux.js');
-  });
-
-  describe('.getDtsFileNameFor()', () => {
-    it('should throw if no `.d.ts` entry path was specified', () => {
-      const entryPoint = new EntryPoint('/foo/bar', '../baz/qux.js');
-      expect(() => entryPoint.getDtsFileNameFor('test'))
-          .toThrowError('No `.d.ts` entry path was specified.');
-    });
-
-    it('should return the absolute path to the corresponding `.d.ts` file', () => {
-      const entryPoint = new EntryPoint('/foo/bar', '../src/entry.js', '../dts/entry.d.ts');
-      expect(entryPoint.getDtsFileNameFor('/foo/src/qu/x.js')).toBe('/foo/dts/qu/x.d.ts');
-    });
   });
 });
 
@@ -168,19 +161,11 @@ describe('getEntryPoints()', () => {
   });
 
   it('should return an entry point even if the typings are not specified', () => {
-    const entryPoints = getEntryPoints('/node_modules/@angular/common/http', 'fesm2015');
-    const sortedEntryPoints =
-        entryPoints.sort((a, b) => (a.entryFileName > b.entryFileName) ? 1 : -1);
-    const sortedPaths = sortedEntryPoints.map(x => x.entryFileName);
-
-    expect(sortedPaths).toEqual([
-      '/node_modules/@angular/common/fesm2015/http.js',
-      '/node_modules/@angular/common/fesm2015/http/testing.js',
-    ]);
-
-    expect(() => sortedEntryPoints[0].getDtsFileNameFor(sortedEntryPoints[0].entryFileName))
-        .not.toThrow();
-    expect(() => sortedEntryPoints[1].getDtsFileNameFor(sortedEntryPoints[1].entryFileName))
-        .toThrow();
+    const entryPoints = getEntryPoints('/node_modules/@angular/no-typings', 'fesm2015');
+    expect(entryPoints.length).toEqual(1);
+    expect(entryPoints[0].entryFileName)
+        .toEqual('/node_modules/@angular/no-typings/fesm2015/index.js');
+    expect(entryPoints[0].entryRoot).toEqual('/node_modules/@angular/no-typings/fesm2015');
+    expect(entryPoints[0].dtsEntryRoot).toEqual(entryPoints[0].entryRoot);
   });
 });

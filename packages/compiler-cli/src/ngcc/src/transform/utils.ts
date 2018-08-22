@@ -21,44 +21,19 @@ import {isDefined} from '../utils';
  */
 export class EntryPoint {
   entryFileName: string;
-  private entryRoot: string;
-  private dtsEntryRoot?: string;
+  entryRoot: string;
+  dtsEntryRoot: string;
 
   /**
    * @param packageRoot The absolute path to the root directory that contains the package.
    * @param relativeEntryPath The relative path to the entry point file.
    * @param relativeDtsEntryPath The relative path to the `.d.ts` entry point file.
    */
-  constructor(packageRoot: string, relativeEntryPath: string, relativeDtsEntryPath?: string) {
+  constructor(packageRoot: string, relativeEntryPath: string, relativeDtsEntryPath: string) {
     this.entryFileName = resolve(packageRoot, relativeEntryPath);
     this.entryRoot = dirname(this.entryFileName);
-
-    if (isDefined(relativeDtsEntryPath)) {
-      const dtsEntryFileName = resolve(packageRoot, relativeDtsEntryPath);
-      this.dtsEntryRoot = dirname(dtsEntryFileName);
-    }
-  }
-
-  /**
-   * Given the absolute path to a source file, return the absolute path to the corresponding `.d.ts`
-   * file. Assume that source files and `.d.ts` files have the same directory layout and the names
-   * of the `.d.ts` files can be derived by replacing the `.js` extension of the source file with
-   * `.d.ts`.
-   *
-   * @param sourceFileName The absolute path to the source file whose corresponding `.d.ts` file
-   *     should be returned.
-   *
-   * @returns The absolute path to the `.d.ts` file that corresponds to the specified source file.
-   */
-  getDtsFileNameFor(sourceFileName: string): string {
-    if (!isDefined(this.dtsEntryRoot)) {
-      throw new Error('No `.d.ts` entry path was specified.');
-    }
-
-    const relativeSourcePath = relative(this.entryRoot, sourceFileName);
-    const dtsFileName = resolve(this.dtsEntryRoot, relativeSourcePath).replace(/\.js$/, '.d.ts');
-
-    return dtsFileName;
+    const dtsEntryFileName = resolve(packageRoot, relativeDtsEntryPath);
+    this.dtsEntryRoot = dirname(dtsEntryFileName);
   }
 }
 
@@ -97,14 +72,17 @@ export function findAllPackageJsonFiles(rootDirectory: string): string[] {
  */
 export function getEntryPoints(packageDirectory: string, format: string): EntryPoint[] {
   const packageJsonPaths = findAllPackageJsonFiles(packageDirectory);
-  return packageJsonPaths
-      .map(packageJsonPath => {
-        const entryPointPackageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
-        const relativeEntryPointPath = entryPointPackageJson[format];
-        const relativeDtsEntryPointPath = entryPointPackageJson.typings;
-        return relativeEntryPointPath &&
-            new EntryPoint(
-                   dirname(packageJsonPath), relativeEntryPointPath, relativeDtsEntryPointPath);
-      })
-      .filter(entryPoint => entryPoint);
+  const entryPoints =
+      packageJsonPaths
+          .map(packageJsonPath => {
+            const entryPointPackageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'));
+            const entryPointPath: string|undefined = entryPointPackageJson[format];
+            if (!entryPointPath) {
+              return undefined;
+            }
+            const dtsEntryPointPath = entryPointPackageJson.typings || entryPointPath;
+            return new EntryPoint(dirname(packageJsonPath), entryPointPath, dtsEntryPointPath);
+          })
+          .filter(isDefined);
+  return entryPoints;
 }
