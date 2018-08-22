@@ -90,7 +90,6 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵquery': r3.query,
   'ɵqueryRefresh': r3.queryRefresh,
   'ɵregisterContentQuery': r3.registerContentQuery,
-  'ɵreserveSlots': r3.reserveSlots,
   'ɵreference': r3.reference,
   'ɵelementStyling': r3.elementStyling,
   'ɵelementStylingMap': r3.elementStylingMap,

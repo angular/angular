@@ -76,8 +76,6 @@ export {
 
   reference,
 
-  reserveSlots,
-
   embeddedViewStart,
   embeddedViewEnd,
   detectChanges,
