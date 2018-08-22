@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
+import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
 import {Esm2015FileParser} from '../../src/parsing/esm2015_parser';
 import {makeProgram} from '../helpers/utils';
 
@@ -39,7 +39,7 @@ describe('Esm2015PackageParser', () => {
   describe('getDecoratedClasses()', () => {
     it('should return an array of object for each class that is exported and decorated', () => {
       const program = makeProgram(BASIC_FILE);
-      const host = new Esm2015ReflectionHost(program.getTypeChecker());
+      const host = new Fesm2015ReflectionHost(program.getTypeChecker());
       const parser = new Esm2015FileParser(program, host);
 
       const parsedFiles = parser.parseFile(program.getSourceFile(BASIC_FILE.name) !);
