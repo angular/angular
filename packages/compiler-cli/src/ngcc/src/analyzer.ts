@@ -66,7 +66,7 @@ export class Analyzer {
   analyzeFile(file: ParsedFile): AnalyzedFile {
     const constantPool = new ConstantPool();
     const analyzedClasses =
-        file.decoratedClasses.map(clazz => this.analyzeClass(file.sourceFile, constantPool, clazz))
+        file.decoratedClasses.map(clazz => this.analyzeClass(constantPool, clazz))
             .filter(isDefined);
 
     return {
@@ -75,8 +75,7 @@ export class Analyzer {
     };
   }
 
-  protected analyzeClass(file: ts.SourceFile, pool: ConstantPool, clazz: ParsedClass): AnalyzedClass
-      |undefined {
+  protected analyzeClass(pool: ConstantPool, clazz: ParsedClass): AnalyzedClass|undefined {
     const matchingHandlers = this.handlers
                                  .map(handler => ({
                                         handler,

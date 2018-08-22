@@ -7,13 +7,10 @@
  */
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
-import {NgccReflectionHost} from '../host/ngcc_host';
 import {AnalyzedClass} from '../analyzer';
 import {Renderer} from './renderer';
 
 export class Esm2015Renderer extends Renderer {
-  constructor(protected host: NgccReflectionHost) { super(); }
-
   /**
    *  Add the imports at the top of the file
    */
