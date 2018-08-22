@@ -12,9 +12,9 @@ import {
   Inject,
   Input,
   Optional,
-  ViewEncapsulation
+  ViewEncapsulation,
+  InjectionToken
 } from '@angular/core';
-import {Location} from '@angular/common';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {CanColor, mixinColor} from '@angular/material/core';
 
@@ -28,6 +28,30 @@ export class MatProgressBarBase {
 }
 
 export const _MatProgressBarMixinBase = mixinColor(MatProgressBarBase, 'primary');
+
+/**
+ * Injection token used to provide the current location to `MatProgressBar`.
+ * Used to handle server-side rendering and to stub out during unit tests.
+ * @docs-private
+ */
+export const MAT_PROGRESS_BAR_LOCATION = new InjectionToken<MatProgressBarLocation>(
+  'mat-progress-bar-location',
+  {providedIn: 'root', factory: MAT_PROGRESS_BAR_LOCATION_FACTORY}
+);
+
+/**
+ * Stubbed out location for `MatProgressBar`.
+ * @docs-private
+ */
+export interface MatProgressBarLocation {
+  pathname: string;
+}
+
+/** @docs-private */
+export function MAT_PROGRESS_BAR_LOCATION_FACTORY(): MatProgressBarLocation {
+  return typeof window !== 'undefined' ? window.location : {pathname: ''};
+}
+
 
 /** Counter used to generate unique IDs for progress bars. */
 let progressbarId = 0;
@@ -61,13 +85,17 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
                * @deprecated `location` parameter to be made required.
                * @breaking-change 8.0.0
                */
-              @Optional() location?: Location) {
+              @Optional() @Inject(MAT_PROGRESS_BAR_LOCATION) location?: MatProgressBarLocation) {
     super(_elementRef);
 
     // We need to prefix the SVG reference with the current path, otherwise they won't work
     // in Safari if the page has a `<base>` tag. Note that we need quotes inside the `url()`,
-    // because named route URLs can contain parentheses (see #12338).
-    this._rectangleFillValue = `url('${location ? location.path() : ''}#${this.progressbarId}')`;
+    // because named route URLs can contain parentheses (see #12338). Also we don't use
+    // `Location` from `@angular/common` since we can't tell the difference between whether
+    // the consumer is using the hash location strategy or not, because `Location` normalizes
+    // both `/#/foo/bar` and `/foo/bar` to the same thing.
+    const path = location ? location.pathname.split('#')[0] : '';
+    this._rectangleFillValue = `url('${path}#${this.progressbarId}')`;
   }
 
   /** Value of the progress bar. Defaults to zero. Mirrored to aria-valuenow. */

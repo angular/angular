@@ -1,52 +1,49 @@
-import {TestBed, async, ComponentFixture} from '@angular/core/testing';
-import {Component} from '@angular/core';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
+import {Component, Type} from '@angular/core';
 import {By} from '@angular/platform-browser';
-import {Location} from '@angular/common';
-import {MatProgressBarModule} from './index';
+import {MatProgressBarModule, MAT_PROGRESS_BAR_LOCATION} from './index';
 
 
 describe('MatProgressBar', () => {
   let fakePath = '/fake-path';
 
-  beforeEach(async(() => {
+  function createComponent<T>(componentType: Type<T>): ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [MatProgressBarModule],
-      declarations: [
-        BasicProgressBar,
-        BufferProgressBar,
-      ],
+      declarations: [componentType],
       providers: [{
-        provide: Location,
-        useValue: {path: () => fakePath}
+        provide: MAT_PROGRESS_BAR_LOCATION,
+        useValue: {pathname: fakePath}
       }]
-    });
+    }).compileComponents();
 
-    TestBed.compileComponents();
-  }));
-
+    return TestBed.createComponent<T>(componentType);
+  }
 
   describe('basic progress-bar', () => {
-    let fixture: ComponentFixture<BasicProgressBar>;
-
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BasicProgressBar);
-      fixture.detectChanges();
-    });
-
     it('should apply a mode of "determinate" if no mode is provided.', () => {
-      let progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
+      const fixture = createComponent(BasicProgressBar);
+      fixture.detectChanges();
+
+      const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
       expect(progressElement.componentInstance.mode).toBe('determinate');
     });
 
     it('should define default values for value and bufferValue attributes', () => {
-      let progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
+      const fixture = createComponent(BasicProgressBar);
+      fixture.detectChanges();
+
+      const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
       expect(progressElement.componentInstance.value).toBe(0);
       expect(progressElement.componentInstance.bufferValue).toBe(0);
     });
 
     it('should clamp value and bufferValue between 0 and 100', () => {
-      let progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
-      let progressComponent = progressElement.componentInstance;
+      const fixture = createComponent(BasicProgressBar);
+      fixture.detectChanges();
+
+      const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
+      const progressComponent = progressElement.componentInstance;
 
       progressComponent.value = 50;
       expect(progressComponent.value).toBe(50);
@@ -68,8 +65,11 @@ describe('MatProgressBar', () => {
     });
 
     it('should return the transform attribute for bufferValue and mode', () => {
-      let progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
-      let progressComponent = progressElement.componentInstance;
+      const fixture = createComponent(BasicProgressBar);
+      fixture.detectChanges();
+
+      const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
+      const progressComponent = progressElement.componentInstance;
 
       expect(progressComponent._primaryTransform()).toEqual({transform: 'scaleX(0)'});
       expect(progressComponent._bufferTransform()).toBe(undefined);
@@ -95,26 +95,38 @@ describe('MatProgressBar', () => {
     });
 
     it('should prefix SVG references with the current path', () => {
+      const fixture = createComponent(BasicProgressBar);
+      fixture.detectChanges();
+
       const rect = fixture.debugElement.query(By.css('rect')).nativeElement;
       expect(rect.getAttribute('fill')).toMatch(/^url\(['"]?\/fake-path#.*['"]?\)$/);
     });
 
+    it('should account for location hash when prefixing the SVG references', () => {
+      fakePath = '/fake-path#anchor';
+
+      const fixture = createComponent(BasicProgressBar);
+      fixture.detectChanges();
+
+      const rect = fixture.debugElement.query(By.css('rect')).nativeElement;
+      expect(rect.getAttribute('fill')).not.toContain('#anchor#');
+    });
+
     it('should not be able to tab into the underlying SVG element', () => {
+      const fixture = createComponent(BasicProgressBar);
+      fixture.detectChanges();
+
       const svg = fixture.debugElement.query(By.css('svg')).nativeElement;
       expect(svg.getAttribute('focusable')).toBe('false');
     });
   });
 
   describe('buffer progress-bar', () => {
-    let fixture: ComponentFixture<BufferProgressBar>;
-
-    beforeEach(() => {
-      fixture = TestBed.createComponent(BufferProgressBar);
-      fixture.detectChanges();
-    });
-
     it('should not modify the mode if a valid mode is provided.', () => {
-      let progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
+      const fixture = createComponent(BufferProgressBar);
+      fixture.detectChanges();
+
+      const progressElement = fixture.debugElement.query(By.css('mat-progress-bar'));
       expect(progressElement.componentInstance.mode).toBe('buffer');
     });
   });
