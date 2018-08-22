@@ -12,7 +12,7 @@ import MagicString from 'magic-string';
 import {fromObject, generateMapFileComment} from 'convert-source-map';
 import {makeProgram} from '../helpers/utils';
 import {AnalyzedClass, Analyzer} from '../../src/analyzer';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
+import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
 import {Esm2015FileParser} from '../../src/parsing/esm2015_parser';
 import {Renderer} from '../../src/rendering/renderer';
 
@@ -32,7 +32,7 @@ class TestRenderer extends Renderer {
 }
 
 function createTestRenderer() {
-  const renderer = new TestRenderer({} as Esm2015ReflectionHost);
+  const renderer = new TestRenderer({} as Fesm2015ReflectionHost);
   spyOn(renderer, 'addImports').and.callThrough();
   spyOn(renderer, 'addDefinitions').and.callThrough();
   spyOn(renderer, 'removeDecorators').and.callThrough();
@@ -41,7 +41,7 @@ function createTestRenderer() {
 
 function analyze(file: {name: string, contents: string}) {
   const program = makeProgram(file);
-  const host = new Esm2015ReflectionHost(program.getTypeChecker());
+  const host = new Fesm2015ReflectionHost(program.getTypeChecker());
   const parser = new Esm2015FileParser(program, host);
   const analyzer = new Analyzer(program.getTypeChecker(), host);
 

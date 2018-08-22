@@ -46,7 +46,7 @@ export const CONSTRUCTOR_PARAMS = 'ctorParameters' as ts.__String;
  * * Constructor parameters decorators are found on an object returned from
  *   a static method called `ctorParameters`.
  */
-export class Esm2015ReflectionHost extends TypeScriptReflectionHost implements NgccReflectionHost {
+export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements NgccReflectionHost {
   constructor(checker: ts.TypeChecker) { super(checker); }
 
   /**
