@@ -11,6 +11,7 @@ ng_module(
   deps = [
     "//src/lib/core",
     "//src/cdk/bidi",
+    "//src/cdk/coercion",
   ],
   tsconfig = "//src/lib:tsconfig-build.json",
 )
