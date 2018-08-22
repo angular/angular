@@ -80,5 +80,5 @@ if [[ "$EXISTING_VERSION" != "$CHROMIUM_VERSION" ]]; then
 fi
 
 if [[ "$CHROMIUM_VERSION" != "$LATEST_CHROMIUM_VERSION" ]]; then
-  echo "New version of Chromium available. Update install-chromium.sh with build number: ${LATEST_CHROMIUM_VERSION}"
+  echo "New version of Chromium available. Update 'scripts/ci/env.sh' with build number: $LATEST_CHROMIUM_VERSION"
 fi

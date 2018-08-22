@@ -244,7 +244,7 @@ describe('instructions', () => {
         elementStylingMap(0, null, {'background-color': 'red'});
         elementStylingApply(0);
       });
-      expect(fixture.html).toEqual('<div style="height: 10px; background-color: red;"></div>');
+      expect(fixture.html).toEqual('<div style="background-color: red; height: 10px;"></div>');
     });
 
     it('should sanitize new styles that may contain `url` properties', () => {
