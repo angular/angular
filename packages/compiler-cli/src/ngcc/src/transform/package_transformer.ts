@@ -11,19 +11,22 @@ import {mkdir} from 'shelljs';
 import * as ts from 'typescript';
 
 import {DtsFileTransformer} from '../../../ngtsc/transform';
-
 import {AnalyzedFile, Analyzer} from '../analyzer';
 import {IMPORT_PREFIX} from '../constants';
+import {DtsMapper} from '../host/dts_mapper';
+import {Esm2015ReflectionHost} from '../host/esm2015_host';
 import {Esm5ReflectionHost} from '../host/esm5_host';
 import {Fesm2015ReflectionHost} from '../host/fesm2015_host';
 import {NgccReflectionHost} from '../host/ngcc_host';
 import {Esm2015FileParser} from '../parsing/esm2015_parser';
 import {Esm5FileParser} from '../parsing/esm5_parser';
 import {FileParser} from '../parsing/file_parser';
-import {EntryPoint, getEntryPoints} from '../parsing/utils';
 import {Esm2015Renderer} from '../rendering/esm2015_renderer';
 import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
+
+import {getEntryPoints} from './utils';
+
 
 
 /**
@@ -63,7 +66,8 @@ export class PackageTransformer {
       const host = ts.createCompilerHost(options);
       const packageProgram = ts.createProgram([entryPoint.entryFileName], options, host);
       const typeChecker = packageProgram.getTypeChecker();
-      const reflectionHost = this.getHost(format, packageProgram);
+      const dtsMapper = new DtsMapper(entryPoint.entryRoot, entryPoint.dtsEntryRoot);
+      const reflectionHost = this.getHost(format, packageProgram, dtsMapper);
 
       const parser = this.getFileParser(format, packageProgram, reflectionHost);
       const analyzer = new Analyzer(typeChecker, reflectionHost);
@@ -83,7 +87,7 @@ export class PackageTransformer {
       // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-9.html#new---declarationmap.)
       if (format === 'esm2015') {
         outputFiles.push(...this.transformDtsFiles(
-            analyzedFiles, sourceNodeModules, targetNodeModules, entryPoint));
+            analyzedFiles, sourceNodeModules, targetNodeModules, dtsMapper));
       }
 
       // Write out all the transformed files.
@@ -91,9 +95,10 @@ export class PackageTransformer {
     });
   }
 
-  getHost(format: string, program: ts.Program): NgccReflectionHost {
+  getHost(format: string, program: ts.Program, dtsMapper: DtsMapper): NgccReflectionHost {
     switch (format) {
       case 'esm2015':
+        return new Esm2015ReflectionHost(program.getTypeChecker(), dtsMapper);
       case 'fesm2015':
         return new Fesm2015ReflectionHost(program.getTypeChecker());
       case 'esm5':
@@ -139,7 +144,7 @@ export class PackageTransformer {
 
   transformDtsFiles(
       analyzedFiles: AnalyzedFile[], sourceNodeModules: string, targetNodeModules: string,
-      entryPoint: EntryPoint): FileInfo[] {
+      dtsMapper: DtsMapper): FileInfo[] {
     const outputFiles: FileInfo[] = [];
 
     analyzedFiles.forEach(analyzedFile => {
@@ -152,7 +157,7 @@ export class PackageTransformer {
 
       // Find the corresponding `.d.ts` file.
       const sourceFileName = analyzedFile.sourceFile.fileName;
-      const originalDtsFileName = entryPoint.getDtsFileNameFor(sourceFileName);
+      const originalDtsFileName = dtsMapper.getDtsFileNameFor(sourceFileName);
       const originalDtsContents = readFileSync(originalDtsFileName, 'utf8');
 
       // Transform the `.d.ts` file based on the recorded source file changes.
