@@ -364,13 +364,12 @@ describe('compiler compliance', () => {
           if (rf & 1) {
             $r3$.ɵelement(0, "div");
             $r3$.ɵpipe(1,"pipe");
-            $r3$.ɵreserveSlots(10);
           }
           if (rf & 2) {
-            $r3$.ɵelementProperty(0, "ternary", $r3$.ɵbind((ctx.cond ? $r3$.ɵpureFunction1(6, _c0, ctx.a): _c1)));
+            $r3$.ɵelementProperty(0, "ternary", $r3$.ɵbind((ctx.cond ? $r3$.ɵpureFunction1(8, _c0, ctx.a): _c1)));
             $r3$.ɵelementProperty(0, "pipe", $r3$.ɵbind($r3$.ɵpipeBind3(1, 4, ctx.value, 1, 2)));
-            $r3$.ɵelementProperty(0, "and", $r3$.ɵbind((ctx.cond && $r3$.ɵpureFunction1(8, _c0, ctx.b))));
-            $r3$.ɵelementProperty(0, "or", $r3$.ɵbind((ctx.cond || $r3$.ɵpureFunction1(10, _c0, ctx.c))));
+            $r3$.ɵelementProperty(0, "and", $r3$.ɵbind((ctx.cond && $r3$.ɵpureFunction1(10, _c0, ctx.b))));
+            $r3$.ɵelementProperty(0, "or", $r3$.ɵbind((ctx.cond || $r3$.ɵpureFunction1(12, _c0, ctx.c))));
           }
         }
       `;
@@ -656,7 +655,7 @@ describe('compiler compliance', () => {
           template:  function MyComponent_Template(rf, ctx) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "ul", null, $c1$);
-              $r3$.ɵtemplate(2, MyComponent_li_Template_2, 2, 1, null, $c2$);
+              $r3$.ɵtemplate(2, MyComponent_li_Template_2, 2, 2, null, $c2$);
               $r3$.ɵelementEnd();
             }
           },
@@ -718,10 +717,9 @@ describe('compiler compliance', () => {
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelement(0, "my-comp");
-                $r3$.ɵreserveSlots(2);
               }
               if (rf & 2) {
-                $r3$.ɵelementProperty(0, "names", $r3$.ɵbind($r3$.ɵpureFunction1(2, $e0_ff$, ctx.customName)));
+                $r3$.ɵelementProperty(0, "names", $r3$.ɵbind($r3$.ɵpureFunction1(1, $e0_ff$, ctx.customName)));
               }
             },
            directives: [MyComp]
@@ -800,12 +798,11 @@ describe('compiler compliance', () => {
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelement(0, "my-comp");
-                $r3$.ɵreserveSlots(10);
               }
               if (rf & 2) {
                 $r3$.ɵelementProperty(
                     0, "names",
-                    $r3$.ɵbind($r3$.ɵpureFunctionV(10, $e0_ff$, [ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8])));
+                    $r3$.ɵbind($r3$.ɵpureFunctionV(1, $e0_ff$, [ctx.n0, ctx.n1, ctx.n2, ctx.n3, ctx.n4, ctx.n5, ctx.n6, ctx.n7, ctx.n8])));
               }
             },
             directives: [MyComp]
@@ -864,10 +861,9 @@ describe('compiler compliance', () => {
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelement(0, "object-comp");
-                $r3$.ɵreserveSlots(2);
               }
               if (rf & 2) {
-                $r3$.ɵelementProperty(0, "config", $r3$.ɵbind($r3$.ɵpureFunction1(2, $e0_ff$, ctx.name)));
+                $r3$.ɵelementProperty(0, "config", $r3$.ɵbind($r3$.ɵpureFunction1(1, $e0_ff$, ctx.name)));
               }
             },
             directives: [ObjectComp]
@@ -932,12 +928,11 @@ describe('compiler compliance', () => {
             template:  function MyApp_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelement(0, "nested-comp");
-                $r3$.ɵreserveSlots(7);
               }
               if (rf & 2) {
                 $r3$.ɵelementProperty(
                     0, "config",
-                    $r3$.ɵbind($r3$.ɵpureFunction2(7, $e0_ff_2$, ctx.name, $r3$.ɵpureFunction1(4, $e0_ff_1$, $r3$.ɵpureFunction1(2, $e0_ff$, ctx.duration)))));
+                    $r3$.ɵbind($r3$.ɵpureFunction2(5, $e0_ff_2$, ctx.name, $r3$.ɵpureFunction1(3, $e0_ff_1$, $r3$.ɵpureFunction1(1, $e0_ff$, ctx.duration)))));
               }
             },
             directives: [NestedComp]
@@ -1254,11 +1249,10 @@ describe('compiler compliance', () => {
                   $r3$.ɵtext(4);
                   $r3$.ɵpipe(5, "myPipe");
                   $r3$.ɵelementEnd();
-                  $r3$.ɵreserveSlots(15);
                 }
                 if (rf & 2) {
-                  $r3$.ɵtextBinding(0, $r3$.ɵinterpolation1("", $r3$.ɵpipeBind2(1, 3, $r3$.ɵpipeBind2(2, 6, ctx.name, ctx.size), ctx.size), ""));
-                  $r3$.ɵtextBinding(4, $r3$.ɵinterpolation1("", $r3$.ɵpipeBindV(5, 13 , $r3$.ɵpureFunction1(15, $c0$, ctx.name)), ""));
+                  $r3$.ɵtextBinding(0, $r3$.ɵinterpolation1("", $r3$.ɵpipeBind2(1, 2, $r3$.ɵpipeBind2(2, 5, ctx.name, ctx.size), ctx.size), ""));
+                  $r3$.ɵtextBinding(4, $r3$.ɵinterpolation1("", $r3$.ɵpipeBindV(5, 8, $r3$.ɵpureFunction1(15, $c0$, ctx.name)), ""));
                 }
               },
               pipes: [MyPurePipe, MyPipe]
@@ -1373,7 +1367,7 @@ describe('compiler compliance', () => {
           if (rf & 1) {
             $r3$.ɵelementStart(0, "div");
             $r3$.ɵtext(1);
-            $r3$.ɵtemplate(2, MyComponent_div_span_Template_2, 2, 1, null, $c2$);
+            $r3$.ɵtemplate(2, MyComponent_div_span_Template_2, 2, 3, null, $c2$);
             $r3$.ɵelement(3, "span", null, $c4$);
             $r3$.ɵelementEnd();
           }
@@ -1396,7 +1390,7 @@ describe('compiler compliance', () => {
             if (rf & 1) {
               $r3$.ɵelement(0, "div", null, $c1$);
               $r3$.ɵtext(2);
-              $r3$.ɵtemplate(3, MyComponent_div_Template_3, 5, 1, null, $c2$);
+              $r3$.ɵtemplate(3, MyComponent_div_Template_3, 5, 2, null, $c2$);
               $r3$.ɵelement(4, "div", null, $c3$);
             }
             if (rf & 2) {
@@ -1460,7 +1454,7 @@ describe('compiler compliance', () => {
         if (rf & 1) {
           $i0$.ɵelementStart(0, "div");
           $i0$.ɵelement(1, "div", null, $c1$);
-          $i0$.ɵtemplate(3, MyComponent_div_span_Template_3, 2, 1, null, $c2$);
+          $i0$.ɵtemplate(3, MyComponent_div_span_Template_3, 2, 2, null, $c2$);
           $i0$.ɵelementEnd();
         }
         if (rf & 2) {
@@ -1839,7 +1833,7 @@ describe('compiler compliance', () => {
               $r3$.ɵtext(2);
               $r3$.ɵelementEnd();
               $r3$.ɵelementStart(3, "ul");
-              $r3$.ɵtemplate(4, MyComponent_li_li_Template_4, 2, 1, null, $c1$);
+              $r3$.ɵtemplate(4, MyComponent_li_li_Template_4, 2, 2, null, $c1$);
               $r3$.ɵelementEnd();
               $r3$.ɵelementEnd();
             }
