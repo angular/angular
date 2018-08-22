@@ -722,6 +722,29 @@ describe('ngtsc behavioral tests', () => {
         .toContain('function GrandChild_Factory(t) { return new (t || GrandChild)(); }');
   });
 
+  it('generates base factories for directives', () => {
+    writeConfig();
+    write(`test.ts`, `
+        import {Directive} from '@angular/core';
+
+        class Base {}
+
+        @Directive({
+          selector: '[test]',
+        })
+        class Dir extends Base {
+        }
+    `);
+
+
+    const exitCode = main(['-p', basePath], errorSpy);
+    expect(errorSpy).not.toHaveBeenCalled();
+    expect(exitCode).toBe(0);
+    const jsContents = getContents('test.js');
+
+    expect(jsContents).toContain('var ɵDir_BaseFactory = i0.ɵgetInheritedFactory(Dir)');
+  });
+
   it('should wrap "directives" in component metadata in a closure when forward references are present',
      () => {
        writeConfig();
