@@ -12,6 +12,8 @@ import {mainNgcc} from '../../src/ngcc/src/main';
 
 import {TestSupport, isInBazel, setup} from '../test_support';
 
+const unknown = 3;
+
 const OUTPUT_PATH = 'node_modules_ngtsc';
 
 describe('ngcc behavioral tests', () => {
