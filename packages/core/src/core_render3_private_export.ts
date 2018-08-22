@@ -159,4 +159,9 @@ export {
   bypassSanitizationTrustUrl as ɵbypassSanitizationTrustUrl,
   bypassSanitizationTrustResourceUrl as ɵbypassSanitizationTrustResourceUrl,
 } from './sanitization/bypass';
+
+export {
+  ElementContext as ɵElementContext,
+  getElementContext as ɵgetElementContext
+} from './render3/element_discovery';
 // clang-format on

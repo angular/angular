@@ -75,6 +75,9 @@
     "name": "IterableDiffers"
   },
   {
+    "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
     "name": "NEXT"
   },
   {
@@ -325,6 +328,9 @@
   },
   {
     "name": "assertTemplate"
+  },
+  {
+    "name": "attachLViewDataToNode"
   },
   {
     "name": "baseDirectiveCreate"
@@ -837,7 +843,7 @@
     "name": "renderStyling"
   },
   {
-    "name": "resetApplicationState"
+    "name": "resetComponentState"
   },
   {
     "name": "resolveDirective"
