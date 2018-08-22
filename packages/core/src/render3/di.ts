@@ -586,7 +586,8 @@ export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainer
   if (!di.viewContainerRef) {
     const vcRefHost = di.node;
 
-    ngDevMode && assertNodeOfPossibleTypes(vcRefHost, TNodeType.Container, TNodeType.Element);
+    ngDevMode && assertNodeOfPossibleTypes(
+                     vcRefHost, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
     const hostParent = getParentLNode(vcRefHost) !;
     const lContainer = createLContainer(hostParent, vcRefHost.view, true);
     const comment = vcRefHost.view[RENDERER].createComment(ngDevMode ? 'container' : '');

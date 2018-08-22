@@ -9,7 +9,7 @@
 import {NgForOfContext} from '@angular/common';
 
 import {AttributeMarker, defineComponent, templateRefExtractor} from '../../src/render3/index';
-import {bind, template, elementEnd, elementProperty, elementStart, getCurrentView, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, restoreView, text, textBinding} from '../../src/render3/instructions';
+import {bind, template, elementEnd, elementProperty, elementStart, getCurrentView, interpolation1, interpolation2, interpolation3, interpolationV, listener, load, nextContext, restoreView, text, textBinding, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {NgForOf, NgIf, NgTemplateOutlet} from './common_with_def';
@@ -922,6 +922,51 @@ describe('@angular/common integration', () => {
       fixture.component.showing = false;
       fixture.update();
       expect(fixture.html).toEqual('');
+    });
+
+    it('should allow usage on ng-container', () => {
+      class MyApp {
+        showing = false;
+        static ngComponentDef = defineComponent({
+          type: MyApp,
+          factory: () => new MyApp(),
+          selectors: [['my-app']],
+          consts: 3,
+          vars: 1,
+          /**
+           * <ng-template #tpl>from tpl</ng-template>
+           * <ng-container [ngTemplateOutlet]="showing ? tpl : null"></ng-container>
+           */
+          template: (rf: RenderFlags, myApp: MyApp) => {
+            if (rf & RenderFlags.Create) {
+              template(0, (rf1: RenderFlags) => {
+                if (rf1 & RenderFlags.Create) {
+                  text(0, 'from tpl');
+                }
+              }, 1, 0, undefined, undefined, ['tpl', ''], templateRefExtractor);
+              elementContainerStart(2, [AttributeMarker.SelectOnly, 'ngTemplateOutlet']);
+              elementContainerEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              const tplRef = load(1);
+              elementProperty(2, 'ngTemplateOutlet', bind(myApp.showing ? tplRef : null));
+            }
+          },
+          directives: () => [NgTemplateOutlet]
+        });
+      }
+
+      const fixture = new ComponentFixture(MyApp);
+      expect(fixture.html).toEqual('');
+
+      fixture.component.showing = true;
+      fixture.update();
+      expect(fixture.html).toEqual('from tpl');
+
+      fixture.component.showing = false;
+      fixture.update();
+      expect(fixture.html).toEqual('');
+
     });
 
   });
