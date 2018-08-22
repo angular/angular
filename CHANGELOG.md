@@ -1,3 +1,13 @@
+<a name="7.0.0-beta.3"></a>
+# [7.0.0-beta.3](https://github.com/angular/angular/compare/7.0.0-beta.2...7.0.0-beta.3) (2018-08-22)
+
+
+### Features
+
+* **router:** add UrlSegment[] to CanLoad interface ([#13127](https://github.com/angular/angular/issues/13127)) ([07d8d39](https://github.com/angular/angular/commit/07d8d39)), closes [#12411](https://github.com/angular/angular/issues/12411)
+
+
+
 <a name="6.1.4"></a>
 ## [6.1.4](https://github.com/angular/angular/compare/6.1.3...6.1.4) (2018-08-22)
 
