@@ -557,17 +557,21 @@ export const QUERY_READ_ELEMENT_REF =
 
 export const QUERY_READ_FROM_NODE =
     (new ReadFromInjectorFn<any>((injector: LInjector, node: LNode, directiveIdx: number) => {
-      ngDevMode && assertNodeOfPossibleTypes(node, TNodeType.Container, TNodeType.Element);
+      ngDevMode && assertNodeOfPossibleTypes(
+                       node, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
       if (directiveIdx > -1) {
         return node.view[DIRECTIVES] ![directiveIdx];
       }
-      if (node.tNode.type === TNodeType.Element) {
+      if (node.tNode.type === TNodeType.Element || node.tNode.type === TNodeType.ElementContainer) {
         return getOrCreateElementRef(injector);
       }
       if (node.tNode.type === TNodeType.Container) {
         return getOrCreateTemplateRef(injector);
       }
-      throw new Error('fail');
+      if (ngDevMode) {
+        // should never happen
+        throw new Error(`Unexpected node type: ${node.tNode.type}`);
+      }
     }) as any as QueryReadType<any>);
 
 /** A ref to a node's native element. */
