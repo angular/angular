@@ -9,7 +9,7 @@ import * as ts from 'typescript';
 import {Decorator} from '../../ngtsc/host';
 import {DecoratorHandler} from '../../ngtsc/transform';
 import {AnalyzedFile, Analyzer} from '../src/analyzer';
-import {Esm2015ReflectionHost} from '../src/host/esm2015_host';
+import {Fesm2015ReflectionHost} from '../src/host/fesm2015_host';
 import {ParsedClass} from '../src/parsing/parsed_class';
 import {ParsedFile} from '../src/parsing/parsed_file';
 import {getDeclaration, makeProgram} from './helpers/utils';
@@ -80,7 +80,7 @@ describe('Analyzer', () => {
       program = makeProgram(TEST_PROGRAM);
       const file = createParsedFile(program);
       const analyzer = new Analyzer(
-          program.getTypeChecker(), new Esm2015ReflectionHost(program.getTypeChecker()));
+          program.getTypeChecker(), new Fesm2015ReflectionHost(program.getTypeChecker()));
       testHandler = createTestHandler();
       analyzer.handlers = [testHandler];
       result = analyzer.analyzeFile(file);

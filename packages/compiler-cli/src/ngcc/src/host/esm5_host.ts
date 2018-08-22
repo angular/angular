@@ -10,7 +10,7 @@ import * as ts from 'typescript';
 import {ClassMember, ClassMemberKind, Decorator, FunctionDefinition, Parameter} from '../../../ngtsc/host';
 import {reflectObjectLiteral} from '../../../ngtsc/metadata';
 import {getNameText} from '../utils';
-import {CONSTRUCTOR_PARAMS, Esm2015ReflectionHost, getPropertyValueFromSymbol} from './esm2015_host';
+import {CONSTRUCTOR_PARAMS, Fesm2015ReflectionHost, getPropertyValueFromSymbol} from './fesm2015_host';
 
 /**
  * ESM5 packages contain ECMAScript IIFE functions that act like classes. For example:
@@ -29,7 +29,7 @@ import {CONSTRUCTOR_PARAMS, Esm2015ReflectionHost, getPropertyValueFromSymbol} f
  *   a static method called `ctorParameters`.
  *
  */
-export class Esm5ReflectionHost extends Esm2015ReflectionHost {
+export class Esm5ReflectionHost extends Fesm2015ReflectionHost {
   constructor(checker: ts.TypeChecker) { super(checker); }
 
   /**

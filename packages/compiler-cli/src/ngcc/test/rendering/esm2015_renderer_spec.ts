@@ -9,13 +9,13 @@ import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {makeProgram} from '../helpers/utils';
 import {Analyzer} from '../../src/analyzer';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
+import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
 import {Esm2015FileParser} from '../../src/parsing/esm2015_parser';
 import {Esm2015Renderer} from '../../src/rendering/esm2015_renderer';
 
 function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
-  const host = new Esm2015ReflectionHost(program.getTypeChecker());
+  const host = new Fesm2015ReflectionHost(program.getTypeChecker());
   const parser = new Esm2015FileParser(program, host);
   const analyzer = new Analyzer(program.getTypeChecker(), host);
   const renderer = new Esm2015Renderer(host);
