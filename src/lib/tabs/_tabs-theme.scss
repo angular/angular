@@ -85,8 +85,11 @@
 @mixin _mat-tab-label-focus($tab-focus-color) {
   .mat-tab-label,
   .mat-tab-link {
-    &.cdk-focused:not(.cdk-mouse-focused):not(.mat-tab-disabled) {
-      background-color: mat-color($tab-focus-color, lighter, 0.3);
+    &.cdk-keyboard-focused,
+    &.cdk-program-focused {
+      &:not(.mat-tab-disabled) {
+        background-color: mat-color($tab-focus-color, lighter, 0.3);
+      }
     }
   }
 }
