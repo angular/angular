@@ -5,10 +5,11 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
 import {Injectable, NgZone, OnDestroy} from '@angular/core';
 import {MediaMatcher} from './media-matcher';
-import {combineLatest, fromEventPattern, Observable, Subject} from 'rxjs';
-import {map, startWith, takeUntil} from 'rxjs/operators';
+import {asapScheduler, combineLatest, fromEventPattern, Observable, Subject} from 'rxjs';
+import {debounceTime, map, startWith, takeUntil} from 'rxjs/operators';
 import {coerceArray} from '@angular/cdk/coercion';
 
 
@@ -74,17 +75,19 @@ export class BreakpointObserver implements OnDestroy {
     const queries = splitQueries(coerceArray(value));
     const observables = queries.map(query => this._registerQuery(query).observable);
 
-    return combineLatest(observables).pipe(map((breakpointStates: InternalBreakpointState[]) => {
-      const response: BreakpointState = {
-        matches: false,
-        breakpoints: {},
-      };
-      breakpointStates.forEach((state: InternalBreakpointState) => {
-        response.matches = response.matches || state.matches;
-        response.breakpoints[state.query] = state.matches;
-      });
-      return response;
-    }));
+    return combineLatest(observables).pipe(
+      debounceTime(0, asapScheduler),
+      map((breakpointStates: InternalBreakpointState[]) => {
+        const response: BreakpointState = {
+          matches: false,
+          breakpoints: {},
+        };
+        breakpointStates.forEach((state: InternalBreakpointState) => {
+          response.matches = response.matches || state.matches;
+          response.breakpoints[state.query] = state.matches;
+        });
+        return response;
+      }));
   }
 
   /** Registers a specific query to be listened for. */
