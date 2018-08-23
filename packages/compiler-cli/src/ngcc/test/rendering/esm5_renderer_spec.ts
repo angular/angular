@@ -58,6 +58,18 @@ var C = (function() {
   return C;
 }());
 
+var compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;
+var badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;
+function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {
+  const compilerFactory = injector.get(CompilerFactory);
+  const compiler = compilerFactory.createCompiler([options]);
+  return compiler.compileModuleAsync(moduleType);
+}
+
+function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {
+  ngDevMode && assertNgModuleType(moduleType);
+  return Promise.resolve(new R3NgModuleFactory(moduleType));
+}
 // Some other content
 export {A, B, C};`
 };
@@ -92,6 +104,30 @@ import {Directive} from '@angular/core';
 const x = 3;
 
 var A = (function() {`);
+    });
+  });
+
+  describe('rewriteSwitchableDeclarations', () => {
+    it('should switch marked declaration initializers', () => {
+      const {renderer, program} = setup(PROGRAM);
+      const file = program.getSourceFile('some/file.js');
+      if (file === undefined) {
+        throw new Error(`Could not find source file`);
+      }
+      const output = new MagicString(PROGRAM.contents);
+      renderer.rewriteSwitchableDeclarations(output, file);
+      expect(output.toString())
+          .not.toContain(`var compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;`);
+      expect(output.toString())
+          .toContain(`var badlyFormattedVariable = __PRE_NGCC__badlyFormattedVariable;`);
+      expect(output.toString())
+          .toContain(`var compileNgModuleFactory = compileNgModuleFactory__POST_NGCC__;`);
+      expect(output.toString())
+          .toContain(
+              `function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {`);
+      expect(output.toString())
+          .toContain(
+              `function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {`);
     });
   });
 
