@@ -14,6 +14,8 @@ import * as ts from 'typescript';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as tsickle from 'tsickle';
+
+import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
 import * as ngc from './transformers/entry_points';
 import {GENERATED_FILES} from './transformers/util';
@@ -148,7 +150,15 @@ function reportErrorsAndExit(
       getCanonicalFileName: fileName => fileName,
       getNewLine: () => ts.sys.newLine
     };
-    consoleError(formatDiagnostics(errorsAndWarnings, formatHost));
+    if (options && (options.enableIvy === true || options.enableIvy === 'ngtsc')) {
+      const ngDiagnostics = errorsAndWarnings.filter(api.isNgDiagnostic);
+      const tsDiagnostics = errorsAndWarnings.filter(api.isTsDiagnostic);
+      consoleError(replaceTsWithNgInErrors(
+          ts.formatDiagnosticsWithColorAndContext(tsDiagnostics, formatHost)));
+      consoleError(formatDiagnostics(ngDiagnostics, formatHost));
+    } else {
+      consoleError(formatDiagnostics(errorsAndWarnings, formatHost));
+    }
   }
   return exitCodeFromResult(allDiagnostics);
 }
