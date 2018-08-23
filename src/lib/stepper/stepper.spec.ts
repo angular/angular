@@ -388,6 +388,24 @@ describe('MatStepper', () => {
       expect(headers.every(header => header.getAttribute('aria-setsize') === '3')).toBe(true);
     });
 
+    it('should adjust the index when removing a step before the current one', () => {
+      const stepperComponent: MatVerticalStepper = fixture.debugElement
+          .query(By.css('mat-vertical-stepper')).componentInstance;
+
+      stepperComponent.selectedIndex = 2;
+      fixture.detectChanges();
+
+      // Re-assert since the setter has some extra logic.
+      expect(stepperComponent.selectedIndex).toBe(2);
+
+      expect(() => {
+        fixture.componentInstance.showStepTwo = false;
+        fixture.detectChanges();
+      }).not.toThrow();
+
+      expect(stepperComponent.selectedIndex).toBe(1);
+    });
+
   });
 
   describe('icon overrides', () => {
@@ -1038,7 +1056,7 @@ class SimpleMatHorizontalStepperApp {
           <button mat-button matStepperNext>Next</button>
         </div>
       </mat-step>
-      <mat-step>
+      <mat-step *ngIf="showStepTwo">
         <ng-template matStepLabel>Step 2</ng-template>
         Content 2
         <div>
@@ -1058,6 +1076,7 @@ class SimpleMatHorizontalStepperApp {
 })
 class SimpleMatVerticalStepperApp {
   inputLabel = 'Step 3';
+  showStepTwo = true;
 }
 
 @Component({
