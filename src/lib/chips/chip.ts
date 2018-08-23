@@ -37,6 +37,7 @@ import {
   RippleTarget
 } from '@angular/material/core';
 import {Subject} from 'rxjs';
+import {take} from 'rxjs/operators';
 
 
 /** Represents an event fired on an individual `mat-chip`. */
@@ -218,14 +219,14 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   }
 
   constructor(public _elementRef: ElementRef,
-              ngZone: NgZone,
+              private _ngZone: NgZone,
               platform: Platform,
               @Optional() @Inject(MAT_RIPPLE_GLOBAL_OPTIONS) globalOptions: RippleGlobalOptions) {
     super(_elementRef);
 
     this._addHostClassName();
 
-    this._chipRipple = new RippleRenderer(this, ngZone, _elementRef, platform);
+    this._chipRipple = new RippleRenderer(this, _ngZone, _elementRef, platform);
     this._chipRipple.setupTriggerEvents(_elementRef.nativeElement);
 
     if (globalOptions) {
@@ -359,7 +360,15 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   }
 
   _blur(): void {
-    this._hasFocus = false;
+    // When animations are enabled, Angular may end up removing the chip from the DOM a little
+    // earlier than usual, causing it to be blurred and throwing off the logic in the chip list
+    // that moves focus not the next item. To work around the issue, we defer marking the chip
+    // as not focused until the next time the zone stabilizes.
+    this._ngZone.onStable
+      .asObservable()
+      .pipe(take(1))
+      .subscribe(() => this._hasFocus = false);
+
     this._onBlur.next({chip: this});
   }
 }

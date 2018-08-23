@@ -1,7 +1,12 @@
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality, Direction} from '@angular/cdk/bidi';
 import {BACKSPACE, DELETE, ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE, TAB} from '@angular/cdk/keycodes';
-import {createKeyboardEvent, dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
+import {
+  createKeyboardEvent,
+  dispatchFakeEvent,
+  dispatchKeyboardEvent,
+  MockNgZone,
+} from '@angular/cdk/testing';
 import {
   Component,
   DebugElement,
@@ -10,16 +15,18 @@ import {
   ViewChildren,
   Type,
   Provider,
+  NgZone,
 } from '@angular/core';
 import {ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, NgForm, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
-import {NoopAnimationsModule} from '@angular/platform-browser/animations';
+import {NoopAnimationsModule, BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatInputModule} from '../input/index';
 import {MatChip} from './chip';
 import {MatChipInputEvent} from './chip-input';
 import {MatChipList, MatChipsModule} from './index';
+import {trigger, transition, style, animate} from '@angular/animations';
 
 
 describe('MatChipList', () => {
@@ -30,6 +37,7 @@ describe('MatChipList', () => {
   let testComponent: StandardChipList;
   let chips: QueryList<any>;
   let manager: FocusKeyManager<MatChip>;
+  let zone: MockNgZone;
 
   describe('StandardChipList', () => {
     describe('basic behaviors', () => {
@@ -189,6 +197,7 @@ describe('MatChipList', () => {
           // Focus and blur the middle item
           midItem.focus();
           midItem._blur();
+          zone.simulateZoneExit();
 
           // Destroy the middle item
           testComponent.remove = 2;
@@ -197,6 +206,32 @@ describe('MatChipList', () => {
           // Should not have focus
           expect(chipListInstance._keyManager.activeItemIndex).toEqual(-1);
         });
+
+        it('should move focus to the last chip when the focused chip was deleted inside a' +
+          'component with animations', fakeAsync(() => {
+            fixture.destroy();
+            TestBed.resetTestingModule();
+            fixture = createComponent(StandardChipListWithAnimations, [], BrowserAnimationsModule);
+            fixture.detectChanges();
+
+            chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
+            chipListNativeElement = chipListDebugElement.nativeElement;
+            chipListInstance = chipListDebugElement.componentInstance;
+            testComponent = fixture.debugElement.componentInstance;
+            chips = chipListInstance.chips;
+
+            chips.last.focus();
+            fixture.detectChanges();
+
+            expect(chipListInstance._keyManager.activeItemIndex).toBe(chips.length - 1);
+
+            dispatchKeyboardEvent(chips.last._elementRef.nativeElement, 'keydown', BACKSPACE);
+            fixture.detectChanges();
+            tick(500);
+
+            expect(chipListInstance._keyManager.activeItemIndex).toBe(chips.length - 1);
+          }));
+
       });
     });
 
@@ -1053,7 +1088,9 @@ describe('MatChipList', () => {
     });
   });
 
-  function createComponent<T>(component: Type<T>, providers: Provider[] = []): ComponentFixture<T> {
+  function createComponent<T>(component: Type<T>, providers: Provider[] = [], animationsModule:
+      Type<NoopAnimationsModule> | Type<BrowserAnimationsModule> = NoopAnimationsModule):
+          ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [
         FormsModule,
@@ -1061,10 +1098,13 @@ describe('MatChipList', () => {
         MatChipsModule,
         MatFormFieldModule,
         MatInputModule,
-        NoopAnimationsModule,
+        animationsModule,
       ],
       declarations: [component],
-      providers
+      providers: [
+        {provide: NgZone, useFactory: () => zone = new MockNgZone()},
+        ...providers
+      ]
     }).compileComponents();
 
     return TestBed.createComponent<T>(component);
@@ -1328,3 +1368,33 @@ class ChipListWithFormErrorMessages {
   @ViewChild('form') form: NgForm;
   formControl = new FormControl('', Validators.required);
 }
+
+
+@Component({
+  template: `
+    <mat-chip-list>
+      <mat-chip *ngFor="let i of numbers" (removed)="remove(i)">{{i}}</mat-chip>
+    </mat-chip-list>`,
+  animations: [
+    // For the case we're testing this animation doesn't
+    // have to be used anywhere, it just has to be defined.
+    trigger('dummyAnimation', [
+      transition(':leave', [
+        style({opacity: 0}),
+        animate('500ms', style({opacity: 1}))
+      ])
+    ])
+  ]
+})
+class StandardChipListWithAnimations {
+  numbers = [0, 1, 2, 3, 4];
+
+  remove(item: number): void {
+    const index = this.numbers.indexOf(item);
+
+    if (index > -1) {
+      this.numbers.splice(index, 1);
+    }
+  }
+}
+
