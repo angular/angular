@@ -43,7 +43,7 @@ export function getElementContext(element: RElement): ElementContext|null {
       const lViewData = context as LViewData;
       const index = findMatchingElement(element, lViewData);
       context = {index, native: element, lViewData};
-      linkDataToNode(element, context);
+      attachLViewDataToNode(element, context);
     }
   } else {
     let parent = element as any;
@@ -56,7 +56,7 @@ export function getElementContext(element: RElement): ElementContext|null {
         const index = findMatchingElement(element, lViewData);
         if (index >= 0) {
           context = {index, native: element, lViewData};
-          linkDataToNode(element, context);
+          attachLViewDataToNode(element, context);
           break;
         }
       }
@@ -82,6 +82,6 @@ function findMatchingElement(element: RElement, lViewData: LViewData): number {
 }
 
 /** Assigns the given data to a DOM element using monkey-patching */
-export function linkDataToNode(node: any, data: LViewData | ElementContext) {
+export function attachLViewDataToNode(node: any, data: LViewData | ElementContext) {
   node[MONKEY_PATCH_KEY_NAME] = data;
 }

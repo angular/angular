@@ -13,7 +13,7 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
-import {linkDataToNode} from './element_discovery';
+import {attachLViewDataToNode} from './element_discovery';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
@@ -804,7 +804,7 @@ export function elementStart(
   // later on using any element discovery utility methods (see `element_discovery.ts`)
   const applyDataToNode = parentLNode.native === viewData[HOST_NODE].native;
   if (applyDataToNode) {
-    linkDataToNode(native, viewData);
+    attachLViewDataToNode(native, viewData);
   }
 }
 
@@ -2254,6 +2254,7 @@ export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?:
             grandparent.data[RENDER_PARENT] ! :
         parent as LElementNode;
 
+    const parentView = viewData[HOST_NODE].view;
     while (nodeToProject) {
       if (nodeToProject.type === TNodeType.Projection) {
         // This node is re-projected, so we must go up the tree to get its projected nodes.
@@ -2271,7 +2272,8 @@ export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?:
         const lNode = projectedView[nodeToProject.index];
         lNode.tNode.flags |= TNodeFlags.isProjected;
         appendProjectedNode(
-            lNode as LTextNode | LElementNode | LContainerNode, parent, viewData, renderParent);
+            lNode as LTextNode | LElementNode | LContainerNode, parent, viewData, renderParent,
+            parentView);
       }
 
       // If we are finished with a list of re-projected nodes, we need to get
