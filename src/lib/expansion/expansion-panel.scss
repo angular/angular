@@ -3,12 +3,31 @@
 @import '../../cdk/a11y/a11y';
 
 .mat-expansion-panel {
+  $border-radius: 4px;
+
   @include mat-elevation-transition;
   @include mat-overridable-elevation(2);
   box-sizing: content-box;
   display: block;
   margin: 0;
   transition: margin 225ms $mat-fast-out-slow-in-timing-function;
+  border-radius: $border-radius;
+
+  .mat-accordion & {
+    &:not(.mat-expanded), &:not(.mat-expansion-panel-spacing) {
+      border-radius: 0;
+    }
+
+    &:first-of-type {
+      border-top-right-radius: $border-radius;
+      border-top-left-radius: $border-radius;
+    }
+
+    &:last-of-type {
+      border-bottom-right-radius: $border-radius;
+      border-bottom-left-radius: $border-radius;
+    }
+  }
 
   @include cdk-high-contrast {
     outline: solid 1px;
