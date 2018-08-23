@@ -3,8 +3,9 @@ import { SitePage } from './site.po';
 
 describe(browser.baseUrl, () => {
   const page = new SitePage();
-  const getCurrentUrl = async () => (await browser.getCurrentUrl()).replace(/\?.*$/, '');
-  const prependBaseUrl = (url: string) => browser.baseUrl.replace(/\/$/, '') + url;
+  const getCurrentUrl = () => browser.getCurrentUrl().then(stripQuery).then(stripTrailingSlash);
+  const stripQuery = (url: string) => url.replace(/\?.*$/, '');
+  const stripTrailingSlash = (url: string) => url.replace(/\/$/, '');
 
   beforeAll(done => page.init().then(done));
 
@@ -16,7 +17,7 @@ describe(browser.baseUrl, () => {
       it(`should not redirect '${url}' (${i + 1}/${page.sitemapUrls.length})`, async () => {
         await page.goTo(url);
 
-        const expectedUrl = prependBaseUrl(url);
+        const expectedUrl = stripTrailingSlash(page.baseUrl + url);
         const actualUrl = await getCurrentUrl();
 
         expect(actualUrl).toBe(expectedUrl);
@@ -29,7 +30,7 @@ describe(browser.baseUrl, () => {
       it(`should redirect '${fromUrl}' to '${toUrl}' (${i + 1}/${page.legacyUrls.length})`, async () => {
         await page.goTo(fromUrl);
 
-        const expectedUrl = /^http/.test(toUrl) ? toUrl : prependBaseUrl(toUrl);
+        const expectedUrl = stripTrailingSlash(/^http/.test(toUrl) ? toUrl : page.baseUrl + toUrl);
         const actualUrl = await getCurrentUrl();
 
         expect(actualUrl).toBe(expectedUrl);
@@ -66,8 +67,8 @@ describe(browser.baseUrl, () => {
       expect(homeNavLink.isPresent()).toBe(true);
 
       await homeNavLink.click();
-      const expectedUrl = browser.baseUrl;
-      const actualUrl = await browser.getCurrentUrl();
+      const expectedUrl = page.baseUrl;
+      const actualUrl = await getCurrentUrl();
 
       expect(actualUrl).toBe(expectedUrl);
     });
