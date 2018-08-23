@@ -171,6 +171,7 @@ To get started, install these packages.
  * `@nguniversal/module-map-ngfactory-loader` - For handling lazy-loading in the context of a server-render.
  * `@nguniversal/express-engine` - An express engine for Universal applications.
  * `ts-loader` - To transpile the server application
+ * `webpack-cli` - To bundle the server application
 
 Install them with the following commands:
 
