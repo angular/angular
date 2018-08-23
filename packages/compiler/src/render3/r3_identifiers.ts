@@ -190,9 +190,6 @@ export class Identifiers {
     moduleName: CORE,
   };
 
-  // Reserve slots for pure functions
-  static reserveSlots: o.ExternalReference = {name: 'ɵreserveSlots', moduleName: CORE};
-
   // sanitization-related functions
   static sanitizeHtml: o.ExternalReference = {name: 'ɵzh', moduleName: CORE};
   static sanitizeStyle: o.ExternalReference = {name: 'ɵzs', moduleName: CORE};
