@@ -22,7 +22,12 @@ import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {Direction, Directionality} from '@angular/cdk/bidi';
 import {OverlayContainer, OverlayModule, CdkScrollable} from '@angular/cdk/overlay';
 import {Platform} from '@angular/cdk/platform';
-import {dispatchFakeEvent, dispatchKeyboardEvent, patchElementFocus} from '@angular/cdk/testing';
+import {
+  dispatchFakeEvent,
+  dispatchKeyboardEvent,
+  patchElementFocus,
+  dispatchMouseEvent,
+} from '@angular/cdk/testing';
 import {ESCAPE} from '@angular/cdk/keycodes';
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {
@@ -40,12 +45,12 @@ describe('MatTooltip', () => {
   let overlayContainer: OverlayContainer;
   let overlayContainerElement: HTMLElement;
   let dir: {value: Direction};
-  let platform: {IOS: boolean, isBrowser: boolean};
+  let platform: {IOS: boolean, isBrowser: boolean, ANDROID: boolean};
   let focusMonitor: FocusMonitor;
 
   beforeEach(async(() => {
     // Set the default Platform override that can be updated before component creation.
-    platform = {IOS: false, isBrowser: true};
+    platform = {IOS: false, isBrowser: true, ANDROID: false};
 
     TestBed.configureTestingModule({
       imports: [MatTooltipModule, OverlayModule, NoopAnimationsModule],
@@ -806,6 +811,30 @@ describe('MatTooltip', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.button.nativeElement.style.webkitUserDrag).toBeFalsy();
+    });
+
+    it('should not open on `mouseenter` on iOS', () => {
+      platform.IOS = true;
+
+      const fixture = TestBed.createComponent(BasicTooltipDemo);
+
+      fixture.detectChanges();
+      dispatchMouseEvent(fixture.componentInstance.button.nativeElement, 'mouseenter');
+      fixture.detectChanges();
+
+      assertTooltipInstance(fixture.componentInstance.tooltip, false);
+    });
+
+    it('should not open on `mouseenter` on Android', () => {
+      platform.ANDROID = true;
+
+      const fixture = TestBed.createComponent(BasicTooltipDemo);
+
+      fixture.detectChanges();
+      dispatchMouseEvent(fixture.componentInstance.button.nativeElement, 'mouseenter');
+      fixture.detectChanges();
+
+      assertTooltipInstance(fixture.componentInstance.tooltip, false);
     });
 
   });
