@@ -8,7 +8,7 @@ import {
   dispatchMouseEvent,
 } from '@angular/cdk/testing';
 import {Component, FactoryProvider, Type, ValueProvider, ViewChild} from '@angular/core';
-import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
+import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
 import {FormControl, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {
   DEC,
@@ -102,7 +102,7 @@ describe('MatDatepicker', () => {
         expect(document.querySelector('.cdk-overlay-pane.mat-datepicker-popup')).not.toBeNull();
       });
 
-      it('open touch should open dialog', () => {
+      it('touch should open dialog', () => {
         testComponent.touch = true;
         fixture.detectChanges();
 
@@ -114,6 +114,28 @@ describe('MatDatepicker', () => {
         expect(document.querySelector('.mat-datepicker-dialog mat-dialog-container'))
             .not.toBeNull();
       });
+
+      it('should not be able to open more than one dialog', fakeAsync(() => {
+        testComponent.touch = true;
+        fixture.detectChanges();
+
+        expect(document.querySelectorAll('.mat-datepicker-dialog').length).toBe(0);
+
+        testComponent.datepicker.open();
+        fixture.detectChanges();
+        tick(500);
+        fixture.detectChanges();
+
+        dispatchKeyboardEvent(document.querySelector('.mat-calendar-body')!, 'keydown', ENTER);
+        fixture.detectChanges();
+        tick(100);
+
+        testComponent.datepicker.open();
+        tick(500);
+        fixture.detectChanges();
+
+        expect(document.querySelectorAll('.mat-datepicker-dialog').length).toBe(1);
+      }));
 
       it('should open datepicker if opened input is set to true', fakeAsync(() => {
         testComponent.opened = true;
