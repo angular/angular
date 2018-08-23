@@ -74,12 +74,6 @@ $mat-card-header-size: 40px !default;
   margin: 0 -24px 16px -24px;
 }
 
-.mat-card-xl-image {
-  width: 240px;
-  height: 240px;
-  margin: -8px;
-}
-
 .mat-card-footer {
   // The negative margins pulls out the element, countering the padding
   // to get the footer to be flush against the side of the card.
@@ -117,7 +111,10 @@ $mat-card-header-size: 40px !default;
 
 // images grouped with title in title-group layout
 %mat-card-title-img {
-  margin: -8px 0;
+  // As per Material Design specifications, the images exceed the *top* content-box and take
+  // up some space. The margin below is necessary because otherwise space of the actual card
+  // content will be overlapped.
+  margin: -8px 0 8px 0;
 }
 
 .mat-card-title-group {
@@ -142,6 +139,21 @@ $mat-card-header-size: 40px !default;
   @extend %mat-card-title-img;
   width: 152px;
   height: 152px;
+}
+
+// This should normally also extend the `%mat-card-title-img`, but in order to avoid breaking
+// changes, we need to keep the horizontal margin reversion for now.
+// See: https://github.com/angular/material2/issues/12203
+.mat-card-xl-image {
+  width: 240px;
+  height: 240px;
+  margin: -8px;
+
+  // Special treatment inside title group in order to fix the media areas inside of a title-group.
+  // This can be removed once #12203 has been addressed.
+  .mat-card-title-group > & {
+    @extend %mat-card-title-img;
+  }
 }
 
 // MEDIA QUERIES
