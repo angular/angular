@@ -202,6 +202,7 @@ export class MatSelectTrigger {}
     '[class.mat-select-disabled]': 'disabled',
     '[class.mat-select-invalid]': 'errorState',
     '[class.mat-select-required]': 'required',
+    '[class.mat-select-empty]': 'empty',
     'class': 'mat-select',
     '(keydown)': '_handleKeydown($event)',
     '(focus)': '_onFocus()',

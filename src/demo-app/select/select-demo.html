@@ -144,6 +144,61 @@ Space above cards: <input type="number" [formControl]="topHeightCtrl">
     </mat-card-content>
   </mat-card>
 
+  <mat-card>
+    <mat-card-subtitle>Appearance comparison</mat-card-subtitle>
+    <mat-card-content>
+      <p>
+        <mat-form-field>
+          <mat-label>Legacy</mat-label>
+          <mat-select [(value)]="currentAppearanceValue">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let creature of digimon" [value]="creature.value">
+              {{ creature.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </p>
+
+      <p>
+        <mat-form-field appearance="standard">
+          <mat-label>Standard</mat-label>
+          <mat-select [(value)]="currentAppearanceValue">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let creature of digimon" [value]="creature.value">
+              {{ creature.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </p>
+
+      <p>
+        <mat-form-field appearance="fill">
+          <mat-label>Fill</mat-label>
+          <mat-select [(value)]="currentAppearanceValue">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let creature of digimon" [value]="creature.value">
+              {{ creature.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </p>
+
+      <p>
+        <mat-form-field appearance="outline">
+          <mat-label>Outline</mat-label>
+          <mat-select [(value)]="currentAppearanceValue">
+            <mat-option>None</mat-option>
+            <mat-option *ngFor="let creature of digimon" [value]="creature.value">
+              {{ creature.viewValue }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </p>
+
+      <button mat-button (click)="toggleSelected()">TOGGLE SELECTED</button>
+    </mat-card-content>
+  </mat-card>
+
   <div *ngIf="showSelect">
     <mat-card>
       <mat-card-subtitle>formControl</mat-card-subtitle>

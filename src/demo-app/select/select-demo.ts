@@ -29,6 +29,7 @@ export class SelectDemo {
   currentPokemon: string[];
   currentPokemonFromGroup: string;
   currentDigimon: string;
+  currentAppearanceValue: string | null;
   latestChangeEvent: MatSelectChange;
   floatLabel = 'auto';
   foodControl = new FormControl('pizza-1');
@@ -134,5 +135,9 @@ export class SelectDemo {
 
   compareByReference(o1: any, o2: any) {
     return o1 === o2;
+  }
+
+  toggleSelected() {
+    this.currentAppearanceValue = this.currentAppearanceValue ? null : this.digimon[0].value;
   }
 }
