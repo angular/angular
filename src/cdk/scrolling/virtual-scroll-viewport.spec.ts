@@ -1,8 +1,20 @@
 import {ArrayDataSource} from '@angular/cdk/collections';
-import {CdkVirtualForOf, CdkVirtualScrollViewport, ScrollingModule} from '@angular/cdk/scrolling';
+import {
+  CdkVirtualForOf,
+  CdkVirtualScrollViewport,
+  ScrollDispatcher,
+  ScrollingModule
+} from '@angular/cdk/scrolling';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
-import {Component, Input, ViewChild, ViewContainerRef, ViewEncapsulation} from '@angular/core';
-import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
+import {
+  Component,
+  Input,
+  TrackByFunction,
+  ViewChild,
+  ViewContainerRef,
+  ViewEncapsulation
+} from '@angular/core';
+import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
 import {animationFrameScheduler, Subject} from 'rxjs';
 
 
@@ -109,6 +121,17 @@ describe('CdkVirtualScrollViewport', () => {
       expect(viewport.elementRef.nativeElement.scrollHeight).toBe(10000);
     }));
 
+    it('should set total content size in horizontal mode', fakeAsync(() => {
+      testComponent.orientation = 'horizontal';
+      finishInit(fixture);
+
+      viewport.setTotalContentSize(10000);
+      flush();
+      fixture.detectChanges();
+
+      expect(viewport.elementRef.nativeElement.scrollWidth).toBe(10000);
+    }));
+
     it('should set rendered range', fakeAsync(() => {
       finishInit(fixture);
       viewport.setRenderedRange({start: 2, end: 3});
@@ -142,20 +165,6 @@ describe('CdkVirtualScrollViewport', () => {
       expect(viewport.getOffsetToRenderedContentStart()).toBe(10);
     }));
 
-    it('should set scroll offset', fakeAsync(() => {
-      finishInit(fixture);
-      viewport.setScrollOffset(testComponent.itemSize * 2);
-      fixture.detectChanges();
-      flush();
-
-      triggerScroll(viewport);
-      fixture.detectChanges();
-      flush();
-
-      expect(viewport.elementRef.nativeElement.scrollTop).toBe(testComponent.itemSize * 2);
-      expect(viewport.getRenderedRange()).toEqual({start: 2, end: 6});
-    }));
-
     it('should scroll to offset', fakeAsync(() => {
       finishInit(fixture);
       viewport.scrollToOffset(testComponent.itemSize * 2);
@@ -164,7 +173,7 @@ describe('CdkVirtualScrollViewport', () => {
       fixture.detectChanges();
       flush();
 
-      expect(viewport.elementRef.nativeElement.scrollTop).toBe(testComponent.itemSize * 2);
+      expect(viewport.measureScrollOffset()).toBe(testComponent.itemSize * 2);
       expect(viewport.getRenderedRange()).toEqual({start: 2, end: 6});
     }));
 
@@ -176,7 +185,7 @@ describe('CdkVirtualScrollViewport', () => {
       fixture.detectChanges();
       flush();
 
-      expect(viewport.elementRef.nativeElement.scrollTop).toBe(testComponent.itemSize * 2);
+      expect(viewport.measureScrollOffset()).toBe(testComponent.itemSize * 2);
       expect(viewport.getRenderedRange()).toEqual({start: 2, end: 6});
     }));
 
@@ -189,7 +198,7 @@ describe('CdkVirtualScrollViewport', () => {
       fixture.detectChanges();
       flush();
 
-      expect(viewport.elementRef.nativeElement.scrollLeft).toBe(testComponent.itemSize * 2);
+      expect(viewport.measureScrollOffset()).toBe(testComponent.itemSize * 2);
       expect(viewport.getRenderedRange()).toEqual({start: 2, end: 6});
     }));
 
@@ -202,7 +211,7 @@ describe('CdkVirtualScrollViewport', () => {
       fixture.detectChanges();
       flush();
 
-      expect(viewport.elementRef.nativeElement.scrollLeft).toBe(testComponent.itemSize * 2);
+      expect(viewport.measureScrollOffset()).toBe(testComponent.itemSize * 2);
       expect(viewport.getRenderedRange()).toEqual({start: 2, end: 6});
     }));
 
@@ -584,6 +593,121 @@ describe('CdkVirtualScrollViewport', () => {
       testComponent.maxBufferPx = 99;
       expect(() => finishInit(fixture)).toThrow();
     }));
+
+    it('should register and degregister with ScrollDispatcher',
+        fakeAsync(inject([ScrollDispatcher], (dispatcher: ScrollDispatcher) => {
+          spyOn(dispatcher, 'register').and.callThrough();
+          spyOn(dispatcher, 'deregister').and.callThrough();
+          finishInit(fixture);
+          expect(dispatcher.register).toHaveBeenCalledWith(testComponent.viewport);
+          fixture.destroy();
+          expect(dispatcher.deregister).toHaveBeenCalledWith(testComponent.viewport);
+        })));
+  });
+
+  describe('with RTL direction', () => {
+    let fixture: ComponentFixture<FixedSizeVirtualScrollWithRtlDirection>;
+    let testComponent: FixedSizeVirtualScrollWithRtlDirection;
+    let viewport: CdkVirtualScrollViewport;
+    let viewportEl: HTMLElement;
+    let contentWrapperEl: HTMLElement;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [ScrollingModule],
+        declarations: [FixedSizeVirtualScrollWithRtlDirection],
+      }).compileComponents();
+
+      fixture = TestBed.createComponent(FixedSizeVirtualScrollWithRtlDirection);
+      testComponent = fixture.componentInstance;
+      viewport = testComponent.viewport;
+      viewportEl = viewport.elementRef.nativeElement;
+      contentWrapperEl =
+          viewportEl.querySelector('.cdk-virtual-scroll-content-wrapper') as HTMLElement;
+    });
+
+    it('should initially be scrolled all the way right and showing the first item in horizontal' +
+       ' mode', fakeAsync(() => {
+          testComponent.orientation = 'horizontal';
+          finishInit(fixture);
+
+          expect(viewport.measureScrollOffset('right')).toBe(0);
+          expect(contentWrapperEl.style.transform).toMatch(/translateX\(0(px)?\)/);
+          expect((contentWrapperEl.children[0] as HTMLElement).innerText.trim()).toBe('0 - 0');
+        }));
+
+    it('should scroll through items as user scrolls to the left in horizontal mode',
+        fakeAsync(() => {
+          testComponent.orientation = 'horizontal';
+          finishInit(fixture);
+
+          triggerScroll(viewport, testComponent.itemSize * testComponent.items.length);
+          fixture.detectChanges();
+          flush();
+
+          expect(contentWrapperEl.style.transform).toBe('translateX(-300px)');
+          expect((contentWrapperEl.children[0] as HTMLElement).innerText.trim()).toBe('6 - 6');
+        }));
+
+    it('should interpret scrollToOffset amount as an offset from the right in horizontal mode',
+        fakeAsync(() => {
+          testComponent.orientation = 'horizontal';
+          finishInit(fixture);
+
+          viewport.scrollToOffset(100);
+          triggerScroll(viewport);
+          fixture.detectChanges();
+          flush();
+
+          expect(viewport.measureScrollOffset('right')).toBe(100);
+        }));
+
+    it('should scroll to the correct index in horizontal mode', fakeAsync(() => {
+      testComponent.orientation = 'horizontal';
+      finishInit(fixture);
+
+      viewport.scrollToIndex(2);
+      triggerScroll(viewport);
+      fixture.detectChanges();
+      flush();
+
+      expect((contentWrapperEl.children[0] as HTMLElement).innerText.trim()).toBe('2 - 2');
+    }));
+
+    it('should emit the scrolled to index in horizontal mode', fakeAsync(() => {
+      testComponent.orientation = 'horizontal';
+      finishInit(fixture);
+
+      expect(testComponent.scrolledToIndex).toBe(0);
+
+      viewport.scrollToIndex(2);
+      triggerScroll(viewport);
+      fixture.detectChanges();
+      flush();
+
+      expect(testComponent.scrolledToIndex).toBe(2);
+    }));
+
+    it('should set total content size', fakeAsync(() => {
+      finishInit(fixture);
+
+      viewport.setTotalContentSize(10000);
+      flush();
+      fixture.detectChanges();
+
+      expect(viewport.elementRef.nativeElement.scrollHeight).toBe(10000);
+    }));
+
+    it('should set total content size in horizontal mode', fakeAsync(() => {
+      testComponent.orientation = 'horizontal';
+      finishInit(fixture);
+
+      viewport.setTotalContentSize(10000);
+      flush();
+      fixture.detectChanges();
+
+      expect(viewport.elementRef.nativeElement.scrollWidth).toBe(10000);
+    }));
   });
 });
 
@@ -597,16 +721,17 @@ function finishInit(fixture: ComponentFixture<any>) {
   // On the second cycle we render the items.
   fixture.detectChanges();
   flush();
+
+  // Flush the initial fake scroll event.
+  animationFrameScheduler.flush();
+  flush();
+  fixture.detectChanges();
 }
 
 /** Trigger a scroll event on the viewport (optionally setting a new scroll offset). */
 function triggerScroll(viewport: CdkVirtualScrollViewport, offset?: number) {
   if (offset !== undefined) {
-    if (viewport.orientation == 'horizontal') {
-      viewport.elementRef.nativeElement.scrollLeft = offset;
-    } else {
-      viewport.elementRef.nativeElement.scrollTop = offset;
-    }
+    viewport.scrollToOffset(offset);
   }
   dispatchFakeEvent(viewport.elementRef.nativeElement, 'scroll');
   animationFrameScheduler.flush();
@@ -650,7 +775,58 @@ class FixedSizeVirtualScroll {
   @Input() minBufferPx = 0;
   @Input() maxBufferPx = 0;
   @Input() items = Array(10).fill(0).map((_, i) => i);
-  @Input() trackBy;
+  @Input() trackBy: TrackByFunction<number>;
+  @Input() templateCacheSize = 20;
+
+  scrolledToIndex = 0;
+
+  get viewportWidth() {
+    return this.orientation == 'horizontal' ? this.viewportSize : this.viewportCrossSize;
+  }
+
+  get viewportHeight() {
+    return this.orientation == 'horizontal' ? this.viewportCrossSize : this.viewportSize;
+  }
+}
+
+@Component({
+  template: `
+    <cdk-virtual-scroll-viewport dir="rtl"
+        [itemSize]="itemSize" [minBufferPx]="minBufferPx" [maxBufferPx]="maxBufferPx"
+        [orientation]="orientation" [style.height.px]="viewportHeight"
+        [style.width.px]="viewportWidth" (scrolledIndexChange)="scrolledToIndex = $event">
+      <div class="item"
+           *cdkVirtualFor="let item of items; let i = index; trackBy: trackBy; \
+                           templateCacheSize: templateCacheSize"
+           [style.height.px]="itemSize" [style.width.px]="itemSize">
+        {{i}} - {{item}}
+      </div>
+    </cdk-virtual-scroll-viewport>
+  `,
+  styles: [`
+    .cdk-virtual-scroll-content-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cdk-virtual-scroll-orientation-horizontal .cdk-virtual-scroll-content-wrapper {
+      flex-direction: row;
+    }
+  `],
+  encapsulation: ViewEncapsulation.None,
+})
+class FixedSizeVirtualScrollWithRtlDirection {
+  @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
+  @ViewChild(CdkVirtualForOf, {read: ViewContainerRef}) virtualForViewContainer: ViewContainerRef;
+
+  @Input() orientation = 'vertical';
+  @Input() viewportSize = 200;
+  @Input() viewportCrossSize = 100;
+  @Input() itemSize = 50;
+  @Input() minBufferPx = 0;
+  @Input() maxBufferPx = 0;
+  @Input() items = Array(10).fill(0).map((_, i) => i);
+  @Input() trackBy: TrackByFunction<number>;
   @Input() templateCacheSize = 20;
 
   scrolledToIndex = 0;

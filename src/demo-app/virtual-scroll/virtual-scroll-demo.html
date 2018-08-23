@@ -46,29 +46,36 @@
   <mat-label>Offset</mat-label>
   <input matInput type="number" [(ngModel)]="scrollToOffset">
 </mat-form-field>
-<button mat-button (click)="viewport1.scrollToOffset(scrollToOffset, scrollToBehavior)">
+<button mat-button (click)="viewport1.scrollToOffset(scrollToOffset, scrollToBehavior);
+                            viewport2.scrollToOffset(scrollToOffset, scrollToBehavior)">
   Go to offset
 </button>
 <mat-form-field>
   <mat-label>Index</mat-label>
   <input matInput type="number" [(ngModel)]="scrollToIndex">
 </mat-form-field>
-<button mat-button (click)="viewport1.scrollToIndex(scrollToIndex, scrollToBehavior)">
+<button mat-button (click)="viewport1.scrollToIndex(scrollToIndex, scrollToBehavior);
+                            viewport2.scrollToIndex(scrollToIndex, scrollToBehavior)">
   Go to index
 </button>
 <p>
-  Currently scrolled to item: {{scrolledIndex}}
+  Currently scrolled to item: {{scrolledIndex.get(viewport1) || 0}}
 </p>
 
 <cdk-virtual-scroll-viewport class="demo-viewport" [itemSize]="50" #viewport1
-                             (scrolledIndexChange)="scrolled($event)">
+                             (scrolledIndexChange)="scrolled(viewport1, $event)">
   <div *cdkVirtualFor="let size of fixedSizeData; let i = index" class="demo-item"
        [style.height.px]="size">
     Item #{{i}} - ({{size}}px)
   </div>
 </cdk-virtual-scroll-viewport>
 
-<cdk-virtual-scroll-viewport class="demo-viewport demo-horizontal" [itemSize]="50"
+<p>
+  Currently scrolled to item: {{scrolledIndex.get(viewport2) || 0}}
+</p>
+
+<cdk-virtual-scroll-viewport class="demo-viewport demo-horizontal" [itemSize]="50" #viewport2
+                             (scrolledIndexChange)="scrolled(viewport2, $event)"
                              orientation="horizontal">
   <div *cdkVirtualFor="let size of fixedSizeData; let i = index" class="demo-item"
        [style.width.px]="size">
@@ -124,8 +131,8 @@
 
 <h2>Use with <code>&lt;ol&gt;</code></h2>
 
-<cdk-virtual-scroll-viewport class="demo-viewport" autosize #viewport2>
-  <ol class="demo-ol" [start]="viewport2.getRenderedRange().start + 1">
+<cdk-virtual-scroll-viewport class="demo-viewport" autosize #viewport3>
+  <ol class="demo-ol" [start]="viewport3.getRenderedRange().start + 1">
     <li *cdkVirtualFor="let state of statesObservable | async" class="demo-li">
       {{state.name}} - {{state.capital}}
     </li>

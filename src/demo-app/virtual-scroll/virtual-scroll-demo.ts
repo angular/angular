@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectionStrategy, Component, ViewEncapsulation} from '@angular/core';
+import {CdkVirtualScrollViewport} from '@angular/cdk/scrolling';
+import {ChangeDetectionStrategy, Component, OnDestroy, ViewEncapsulation} from '@angular/core';
 import {BehaviorSubject} from 'rxjs';
 
 
@@ -24,11 +25,11 @@ type State = {
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class VirtualScrollDemo {
+export class VirtualScrollDemo implements OnDestroy {
   scrollToOffset = 0;
   scrollToIndex = 0;
   scrollToBehavior: ScrollBehavior = 'auto';
-  scrolledIndex = 0;
+  scrolledIndex = new Map<CdkVirtualScrollViewport, number>();
   fixedSizeData = Array(10000).fill(50);
   increasingSizeData = Array(10000).fill(0).map((_, i) => (1 + Math.floor(i / 1000)) * 20);
   decreasingSizeData = Array(10000).fill(0)
@@ -95,6 +96,10 @@ export class VirtualScrollDemo {
     this.emitData();
   }
 
+  ngOnDestroy() {
+    this.scrolledIndex.clear();
+  }
+
   emitData() {
     let data = this.observableData.value.concat([50]);
     this.observableData.next(data);
@@ -112,7 +117,7 @@ export class VirtualScrollDemo {
     }));
   }
 
-  scrolled(index: number) {
-    this.scrolledIndex = index;
+  scrolled(viewport: CdkVirtualScrollViewport, index: number) {
+    this.scrolledIndex.set(viewport, index);
   }
 }

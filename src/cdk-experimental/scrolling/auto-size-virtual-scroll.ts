@@ -125,7 +125,7 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
   attach(viewport: CdkVirtualScrollViewport) {
     this._averager.reset();
     this._viewport = viewport;
-    this._setScrollOffset();
+    this._renderContentForCurrentOffset();
   }
 
   /** Detaches this scroll strategy from the currently attached viewport. */
@@ -143,7 +143,7 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
   /** @docs-private Implemented as part of VirtualScrollStrategy. */
   onDataLengthChanged() {
     if (this._viewport) {
-      this._setScrollOffset();
+      this._renderContentForCurrentOffset();
       this._checkRenderedContentSize();
     }
   }
@@ -241,7 +241,7 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
       // jitteriness if we just jump to the estimated position. Instead we make sure to scroll by
       // the same number of pixels as the scroll magnitude.
       if (scrollMagnitude >= viewport.getViewportSize()) {
-        this._setScrollOffset();
+        this._renderContentForCurrentOffset();
       } else {
         // The number of new items to render on the side the user is scrolling towards. Rather than
         // just filling the underscan space, we actually fill enough to have a buffer size of
@@ -346,18 +346,12 @@ export class AutoSizeVirtualScrollStrategy implements VirtualScrollStrategy {
   }
 
   /**
-   * Sets the scroll offset and renders the content we estimate should be shown at that point.
-   * @param scrollOffset The offset to jump to. If not specified the scroll offset will not be
-   *     changed, but the rendered content will be recalculated based on our estimate of what should
-   *     be shown at the current scroll offset.
+   * Recalculates the rendered content based on our estimate of what should be shown at the current
+   * scroll offset.
    */
-  private _setScrollOffset(scrollOffset?: number) {
+  private _renderContentForCurrentOffset() {
     const viewport = this._viewport!;
-    if (scrollOffset == null) {
-      scrollOffset = viewport.measureScrollOffset();
-    } else {
-      viewport.setScrollOffset(scrollOffset);
-    }
+    const scrollOffset = viewport.measureScrollOffset();
     this._lastScrollOffset = scrollOffset;
     this._removalFailures = 0;
 

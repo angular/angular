@@ -48,21 +48,21 @@ export class CdkScrollable implements OnInit, OnDestroy {
   private _destroyed = new Subject();
 
   private _elementScrolled: Observable<Event> = Observable.create(observer =>
-      this._ngZone.runOutsideAngular(() =>
-          fromEvent(this._elementRef.nativeElement, 'scroll').pipe(takeUntil(this._destroyed))
+      this.ngZone.runOutsideAngular(() =>
+          fromEvent(this.elementRef.nativeElement, 'scroll').pipe(takeUntil(this._destroyed))
               .subscribe(observer)));
 
-  constructor(private _elementRef: ElementRef<HTMLElement>,
-              private _scroll: ScrollDispatcher,
-              private _ngZone: NgZone,
-              @Optional() private _dir?: Directionality) {}
+  constructor(protected elementRef: ElementRef<HTMLElement>,
+              protected scrollDispatcher: ScrollDispatcher,
+              protected ngZone: NgZone,
+              @Optional() protected dir?: Directionality) {}
 
   ngOnInit() {
-    this._scroll.register(this);
+    this.scrollDispatcher.register(this);
   }
 
   ngOnDestroy() {
-    this._scroll.deregister(this);
+    this.scrollDispatcher.deregister(this);
     this._destroyed.next();
     this._destroyed.complete();
   }
@@ -74,7 +74,7 @@ export class CdkScrollable implements OnInit, OnDestroy {
 
   /** Gets the ElementRef for the viewport. */
   getElementRef(): ElementRef<HTMLElement> {
-    return this._elementRef;
+    return this.elementRef;
   }
 
   /**
@@ -86,8 +86,8 @@ export class CdkScrollable implements OnInit, OnDestroy {
    * @param options specified the offsets to scroll to.
    */
   scrollTo(options: ExtendedScrollToOptions): void {
-    const el = this._elementRef.nativeElement;
-    const isRtl = this._dir && this._dir.value == 'rtl';
+    const el = this.elementRef.nativeElement;
+    const isRtl = this.dir && this.dir.value == 'rtl';
 
     // Rewrite start & end offsets as right or left offsets.
     options.left = options.left == null ? (isRtl ? options.end : options.start) : options.left;
@@ -119,7 +119,7 @@ export class CdkScrollable implements OnInit, OnDestroy {
   }
 
   private _applyScrollToOptions(options: ScrollToOptions): void {
-    const el = this._elementRef.nativeElement;
+    const el = this.elementRef.nativeElement;
 
     if (supportsScrollBehavior()) {
       el.scrollTo(options);
@@ -145,7 +145,7 @@ export class CdkScrollable implements OnInit, OnDestroy {
   measureScrollOffset(from: 'top' | 'left' | 'right' | 'bottom' | 'start' | 'end'): number {
     const LEFT = 'left';
     const RIGHT = 'right';
-    const el = this._elementRef.nativeElement;
+    const el = this.elementRef.nativeElement;
     if (from == 'top') {
       return el.scrollTop;
     }
@@ -154,7 +154,7 @@ export class CdkScrollable implements OnInit, OnDestroy {
     }
 
     // Rewrite start & end as left or right offsets.
-    const isRtl = this._dir && this._dir.value == 'rtl';
+    const isRtl = this.dir && this.dir.value == 'rtl';
     if (from == 'start') {
       from = isRtl ? RIGHT : LEFT;
     } else if (from == 'end') {
