@@ -94,7 +94,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
     // `Location` from `@angular/common` since we can't tell the difference between whether
     // the consumer is using the hash location strategy or not, because `Location` normalizes
     // both `/#/foo/bar` and `/foo/bar` to the same thing.
-    const path = location ? location.pathname.split('#')[0] : '';
+    const path = location && location.pathname ? location.pathname.split('#')[0] : '';
     this._rectangleFillValue = `url('${path}#${this.progressbarId}')`;
   }
 
