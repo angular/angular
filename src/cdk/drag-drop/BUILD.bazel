@@ -14,6 +14,7 @@ ng_module(
     "//src/cdk/platform",
     "//src/cdk/overlay",
     "//src/cdk/bidi",
+    "//src/cdk/coercion",
   ],
   tsconfig = "//src/cdk:tsconfig-build.json",
 )

@@ -20,6 +20,7 @@ import {
   QueryList,
   ViewEncapsulation,
 } from '@angular/core';
+import {coerceArray} from '@angular/cdk/coercion';
 import {CdkDrag} from './drag';
 import {CdkDragExit, CdkDragEnter, CdkDragDrop} from './drag-events';
 import {CDK_DROP_CONTAINER} from './drop-container';
@@ -56,7 +57,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    * container's items can be transferred. Can either be references to other drop containers,
    * or their unique IDs.
    */
-  @Input() connectedTo: (CdkDrop | string)[] = [];
+  @Input() connectedTo: (CdkDrop | string)[] | CdkDrop | string = [];
 
   /** Arbitrary data to attach to this container. */
   @Input() data: T;
@@ -316,7 +317,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
       })
       .sort((a, b) => a.clientRect.top - b.clientRect.top);
 
-    this._positionCache.siblings = this.connectedTo
+    this._positionCache.siblings = coerceArray(this.connectedTo)
       .map(drop => typeof drop === 'string' ? this._dragDropRegistry.getDropContainer(drop)! : drop)
       .filter(drop => drop && drop !== this)
       .map(drop => ({drop, clientRect: drop.element.nativeElement.getBoundingClientRect()}));

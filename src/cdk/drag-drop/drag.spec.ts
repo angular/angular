@@ -1151,6 +1151,36 @@ describe('CdkDrag', () => {
       });
     }));
 
+    it('should be able to pass a single id to `connectedTo`', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZones);
+      fixture.detectChanges();
+
+      const dropInstances = fixture.componentInstance.dropInstances.toArray();
+
+      dropInstances[1].id = 'done';
+      dropInstances[0].connectedTo = ['done'];
+      fixture.detectChanges();
+
+      const groups = fixture.componentInstance.groupedDragItems;
+      const element = groups[0][1].element.nativeElement;
+      const targetRect = groups[1][2].element.nativeElement.getBoundingClientRect();
+
+      dragElementViaMouse(fixture, element, targetRect.left + 1, targetRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      expect(event).toBeTruthy();
+      expect(event).toEqual({
+        previousIndex: 1,
+        currentIndex: 3,
+        item: groups[0][1],
+        container: dropInstances[1],
+        previousContainer: dropInstances[0]
+      });
+    }));
+
   });
 
 });
