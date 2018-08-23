@@ -423,6 +423,9 @@
     "name": "MODIFIER_KEY_GETTERS"
   },
   {
+    "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
     "name": "MULTI_PROVIDER_FN"
   },
   {
@@ -1158,6 +1161,9 @@
     "name": "assertTemplate"
   },
   {
+    "name": "attachLViewDataToNode"
+  },
+  {
     "name": "baseDirectiveCreate"
   },
   {
@@ -1354,6 +1360,9 @@
   },
   {
     "name": "definePipe"
+  },
+  {
+    "name": "depthCountFromRootOrTemplate"
   },
   {
     "name": "destroyLView"
