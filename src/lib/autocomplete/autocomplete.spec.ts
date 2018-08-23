@@ -2017,6 +2017,36 @@ describe('MatAutocomplete', () => {
     expect(Math.ceil(parseFloat(overlayPane.style.width as string))).toBe(500);
   });
 
+  it('should not reopen a closed autocomplete when returning to a blurred tab', () => {
+    const fixture = createComponent(SimpleAutocomplete);
+    fixture.detectChanges();
+
+    const trigger = fixture.componentInstance.trigger;
+    const input = fixture.debugElement.query(By.css('input')).nativeElement;
+
+    input.focus();
+    fixture.detectChanges();
+
+    expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+
+    trigger.closePanel();
+    fixture.detectChanges();
+
+    expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
+
+    // Simulate the user going to a different tab.
+    dispatchFakeEvent(window, 'blur');
+    input.blur();
+    fixture.detectChanges();
+
+    // Simulate the user coming back.
+    dispatchFakeEvent(window, 'focus');
+    input.focus();
+    fixture.detectChanges();
+
+    expect(trigger.panelOpen).toBe(false, 'Expected panel to remain closed.');
+  });
+
   it('should update the panel width if the window is resized', fakeAsync(() => {
     const widthFixture = createComponent(SimpleAutocomplete);
 
