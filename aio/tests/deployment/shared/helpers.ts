@@ -49,6 +49,7 @@ export function loadLocalSitemapUrls() {
 }
 
 export async function loadRemoteSitemapUrls(host: string) {
+  host = host.replace(/\/$/, '');
   const urlToSiteMap = `${host}/generated/sitemap.xml`;
   const get = /^https:/.test(host) ? httpsGet : httpGet;
 
