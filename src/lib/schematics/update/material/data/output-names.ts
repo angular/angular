@@ -19,8 +19,6 @@ export interface MaterialOutputNameData {
     elements?: string[],
     /** Limit to elements with any of these attributes. */
     attributes?: string[],
-    /** Whether to ignore CSS attribute selectors when doing this replacement. */
-    css?: boolean,
   };
 }
 

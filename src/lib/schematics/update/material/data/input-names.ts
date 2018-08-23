@@ -19,8 +19,12 @@ export interface MaterialInputNameData {
     elements?: string[],
     /** Limit to elements with any of these attributes. */
     attributes?: string[],
-    /** Whether to ignore CSS attribute selectors when doing this replacement. */
-    css?: boolean,
+    /**
+     * Whether inputs in stylesheets should be updated or not. Note that inputs inside of
+     * stylesheets usually don't make sense, but if developers use an input as a plain one-time
+     * attribute, it can be targeted through CSS selectors.
+     */
+    stylesheet?: boolean,
   };
 }
 

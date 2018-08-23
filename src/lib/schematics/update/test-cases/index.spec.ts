@@ -16,9 +16,11 @@ describe('test cases', () => {
    */
   const testCases = [
     'v5/attribute-selectors',
+    'v5/class-names',
     'v5/css-names',
     'v5/element-selectors',
-    'v5/ts-class-names',
+    'v5/input-names',
+    'v5/output-names',
   ];
 
   // Iterates through every test case directory and generates a jasmine test block that will
