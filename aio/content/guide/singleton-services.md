@@ -171,42 +171,71 @@ Remember to _import_ `CoreModule` as a Javascript import at the top of the file;
 
 <!-- KW--Does this mean that if we need it elsewhere we only import it at the top? I thought the services would all be available since we were importing it into `AppModule` in `providers`. -->
 
+<!--
 ## Prevent reimport of the `CoreModule`
+-->
+## `CoreModule` 중복로드 방지하기
 
+<!--
 Only the root `AppModule` should import the `CoreModule`. If a
 lazy-loaded module imports it too, the app can generate
 [multiple instances](guide/ngmodule-faq#q-why-bad) of a service.
+-->
+`CoreModule`은 최상위 `AppModule`에서만 로드해야 합니다. 만약 지연로딩하는 모듈에서도 `CoreModule`을 로드하게 되면 [싱글턴 서비스의 인스턴스가 여러개 생성](guide/ngmodule-faq#q-why-bad)됩니다.
 
+<!--
 To guard against a lazy-loaded module re-importing `CoreModule`, add the following `CoreModule` constructor.
+-->
+그래서 지연로딩하는 모듈이 `CoreModule`을 중복로드하는 것을 방지하려면 `CoreModule` 생성자를 다음과 같이 작성하면 됩니다.
 
 <code-example path="ngmodules/src/app/core/core.module.ts" region="ctor" title="src/app/core/core.module.ts" linenums="false">
 
 </code-example>
 
+<!--
 The constructor tells Angular to inject the `CoreModule` into itself.
 The injection would be circular if Angular looked for
 `CoreModule` in the _current_ injector. The `@SkipSelf`
 decorator means "look for `CoreModule` in an ancestor
 injector, above me in the injector hierarchy."
+-->
+이 생성자는 `CoreModule` 자신을 의존성으로 주입하라고 요청합니다. 이 의존성 주입이 _현재_ 인젝터 계층에서 이루어지면 순환 참조를 발생시킬 수 있습니다. 그래서 `@SkipSelf` 데코레이터를 사용해서 현재 인젝터 계층보다 상위 계층에서 의존성 객체를 찾도록 지정합니다.
 
+<!--
 If the constructor executes as intended in the `AppModule`,
 there would be no ancestor injector that could provide an instance of `CoreModule` and the injector should give up.
+-->
+이 생성자가 `AppModule`에서 실행되면 `AppModule`보다 상위 계층의 인젝터는 없기 때문에 `CoreModule`의 인스턴스는 주입되지 않습니다.
 
+<!--
 By default, the injector throws an error when it can't
 find a requested provider.
 The `@Optional` decorator means not finding the service is OK.
 The injector returns `null`, the `parentModule` parameter is null,
 and the constructor concludes uneventfully.
+-->
+기본적으로 인젝터가 의존성 객체를 찾지 못하면 에러가 발생합니다. 하지만 이 경우는 의존성으로 주입하지 않는 것이 정상 시나리오이기 때문에 `@Optional` 데코레이터를 붙여서 의존성 주입에 실패해도 에러가 아니라는 것을 지정했습니다. 그래서 인젝터가 주입하는 객체는 `null`이 되고, `parentModule` 프로퍼티에 할당되는 값도 `null`이 되며, 에러는 발생하지 않고 생성자는 종료됩니다.
 
+<!--
 It's a different story if you improperly import `CoreModule` into a lazy-loaded module such as `CustomersModule`.
+-->
+하지만 `CustomersModule`과 같이 지연로딩되는 모듈에서 `CoreModule`을 로드하는 경우에는 상황이 조금 다릅니다.
 
+<!--
 Angular creates a lazy-loaded module with its own injector,
 a _child_ of the root injector.
 `@SkipSelf` causes Angular to look for a `CoreModule` in the parent injector, which this time is the root injector.
 Of course it finds the instance imported by the root `AppModule`.
 Now `parentModule` exists and the constructor throws the error.
+-->
+지연로딩되는 모듈에는 인젝터가 따로 생성되는데, 이 인젝터는 최상위 인젝터의 _자식_ 인젝터입니다. 그리고 `@SkipSelf` 데코레이터가 사용되었기 때문에 부모 인젝터 계층에서 `CoreModule`을 찾기 시작하는데, 이 경우에는 최상위 인젝터에서 의존성 객체를 찾습니다.
+이번에는 당연하게도 `AppModule`에 있는 `CoreModule` 인스턴스를 찾게 됩니다.
+그래서 `parentModule` 프로퍼티에 객체가 할당되기 때문에 생성자는 에러를 발생시킵니다.
 
+<!--
 Here are the two files in their entirety for reference:
+-->
+설명한 내용을 코드로 확인해 보세요.
 
 <code-tabs linenums="false">
  <code-pane
@@ -223,9 +252,18 @@ Here are the two files in their entirety for reference:
 
 <hr>
 
+<!--
 ## More on NgModules
+-->
+## NgModule 더 알아보기
 
+<!--
 You may also be interested in:
 * [Sharing Modules](guide/sharing-ngmodules), which elaborates on the concepts covered on this page.
 * [Lazy Loading Modules](guide/lazy-loading-ngmodules).
 * [NgModule FAQ](guide/ngmodule-faq).
+-->
+다음 내용에 대해서도 확인해 보세요.
+* [모듈 공유하기](guide/sharing-ngmodules)
+* [기능모듈 지연로딩](guide/lazy-loading-ngmodules)
+* [NgModule FAQ](guide/ngmodule-faq)

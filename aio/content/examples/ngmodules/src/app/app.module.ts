@@ -1,16 +1,16 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-/* App Root */
+/* 애플리케이션 최상위 컴포넌트 */
 import { AppComponent } from './app.component';
 
-/* Feature Modules */
+/* 기능 모듈 */
 import { ContactModule } from './contact/contact.module';
 // #docregion import-for-root
 import { CoreModule } from './core/core.module';
 // #enddocregion import-for-root
 
-/* Routing Module */
+/* 라우팅 모듈 */
 import { AppRoutingModule } from './app-routing.module';
 
 
