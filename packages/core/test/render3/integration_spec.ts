@@ -9,10 +9,12 @@
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
+import {RendererType2} from '../../src/render/api';
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {AttributeMarker, defineComponent, defineDirective, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, text, textBinding, template} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
+import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
@@ -1384,6 +1386,32 @@ describe('render3 integration test', () => {
 
   });
 
+  describe('component styles', () => {
+    it('should pass in the component styles directly into the underlying renderer', () => {
+      class StyledComp {
+        static ngComponentDef = defineComponent({
+          type: StyledComp,
+          styles: ['div { color: red; }'],
+          consts: 1,
+          vars: 0,
+          encapsulation: 100,
+          selectors: [['foo']],
+          factory: () => new StyledComp(),
+          template: (rf: RenderFlags, ctx: StyledComp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div');
+            }
+          }
+        });
+      }
+
+      const rendererFactory = new MockRendererFactory();
+      new ComponentFixture(StyledComp, {rendererFactory});
+      expect(rendererFactory.lastCapturedType !.styles).toEqual(['div { color: red; }']);
+      expect(rendererFactory.lastCapturedType !.encapsulation).toEqual(100);
+    });
+  });
+
   describe('sanitization', () => {
     it('should sanitize data using the provided sanitization interface', () => {
       class SanitizationComp {
@@ -1446,4 +1474,13 @@ class LocalSanitizer implements Sanitizer {
   bypassSecurityTrustResourceUrl(value: string) {}
 
   bypassSecurityTrustUrl(value: string) { return new LocalSanitizedValue(value); }
+}
+
+class MockRendererFactory implements RendererFactory3 {
+  lastCapturedType: RendererType2|null = null;
+
+  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 {
+    this.lastCapturedType = rendererType;
+    return domRendererFactory3.createRenderer(hostElement, rendererType);
+  }
 }

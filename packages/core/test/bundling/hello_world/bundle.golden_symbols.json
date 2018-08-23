@@ -27,7 +27,7 @@
     "name": "EMPTY$1"
   },
   {
-    "name": "EMPTY_ARRAY"
+    "name": "EMPTY_ARRAY$1"
   },
   {
     "name": "FLAGS"
@@ -82,6 +82,9 @@
   },
   {
     "name": "VIEWS"
+  },
+  {
+    "name": "ViewEncapsulation$1"
   },
   {
     "name": "_CLEAN_PROMISE"
