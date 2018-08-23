@@ -57,6 +57,7 @@ export function getElementContext(element: RElement): ElementContext|null {
         if (index >= 0) {
           context = {index, native: element, lViewData};
           linkDataToNode(element, context);
+          break;
         }
       }
     }
