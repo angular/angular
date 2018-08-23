@@ -194,7 +194,7 @@ export class StaticSymbolResolver {
     }
   }
 
-  /* @internal */
+  /** @internal */
   ignoreErrorsFor<T>(cb: () => T) {
     const recorder = this.errorRecorder;
     this.errorRecorder = () => {};
