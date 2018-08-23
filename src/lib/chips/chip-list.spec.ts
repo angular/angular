@@ -1,6 +1,16 @@
 import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality, Direction} from '@angular/cdk/bidi';
-import {BACKSPACE, DELETE, ENTER, LEFT_ARROW, RIGHT_ARROW, SPACE, TAB} from '@angular/cdk/keycodes';
+import {
+  BACKSPACE,
+  DELETE,
+  ENTER,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+  SPACE,
+  TAB,
+  HOME,
+  END,
+} from '@angular/cdk/keycodes';
 import {
   createKeyboardEvent,
   dispatchFakeEvent,
@@ -294,6 +304,36 @@ describe('MatChipList', () => {
 
           expect(manager.activeItemIndex)
               .toBe(initialActiveIndex, 'Expected focused item not to have changed.');
+        });
+
+        it('should focus the first item when pressing HOME', () => {
+          const nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
+          const lastNativeChip = nativeChips[nativeChips.length - 1] as HTMLElement;
+          const HOME_EVENT = createKeyboardEvent('keydown', HOME, lastNativeChip);
+          const array = chips.toArray();
+          const lastItem = array[array.length - 1];
+
+          lastItem.focus();
+          expect(manager.activeItemIndex).toBe(array.length - 1);
+
+          chipListInstance._keydown(HOME_EVENT);
+          fixture.detectChanges();
+
+          expect(manager.activeItemIndex).toBe(0);
+          expect(HOME_EVENT.defaultPrevented).toBe(true);
+        });
+
+        it('should focus the last item when pressing END', () => {
+          const nativeChips = chipListNativeElement.querySelectorAll('mat-chip');
+          const END_EVENT = createKeyboardEvent('keydown', END, nativeChips[0]);
+
+          expect(manager.activeItemIndex).toBe(-1);
+
+          chipListInstance._keydown(END_EVENT);
+          fixture.detectChanges();
+
+          expect(manager.activeItemIndex).toBe(chips.length - 1);
+          expect(END_EVENT.defaultPrevented).toBe(true);
         });
 
       });

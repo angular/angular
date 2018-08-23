@@ -10,7 +10,7 @@ import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
-import {BACKSPACE} from '@angular/cdk/keycodes';
+import {BACKSPACE, HOME, END} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -483,7 +483,16 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
       this._keyManager.setLastItemActive();
       event.preventDefault();
     } else if (target && target.classList.contains('mat-chip')) {
-      this._keyManager.onKeydown(event);
+      if (event.keyCode === HOME) {
+        this._keyManager.setFirstItemActive();
+        event.preventDefault();
+      } else if (event.keyCode === END) {
+        this._keyManager.setLastItemActive();
+        event.preventDefault();
+      } else {
+        this._keyManager.onKeydown(event);
+      }
+
       this.stateChanges.next();
     }
   }
