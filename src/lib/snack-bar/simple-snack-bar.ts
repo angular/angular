@@ -9,7 +9,6 @@
 import {Component, ViewEncapsulation, Inject, ChangeDetectionStrategy} from '@angular/core';
 import {MatSnackBarRef} from './snack-bar-ref';
 import {MAT_SNACK_BAR_DATA} from './snack-bar-config';
-import {matSnackBarAnimations} from './snack-bar-animations';
 
 
 /**
@@ -23,15 +22,13 @@ import {matSnackBarAnimations} from './snack-bar-animations';
   styleUrls: ['simple-snack-bar.css'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [matSnackBarAnimations.contentFade],
   host: {
-    '[@contentFade]': '',
     'class': 'mat-simple-snackbar',
   }
 })
 export class SimpleSnackBar {
   /** Data that was injected into the snack bar. */
-  data: { message: string, action: string };
+  data: {message: string, action: string};
 
   constructor(
     public snackBarRef: MatSnackBarRef<SimpleSnackBar>,

@@ -13,6 +13,8 @@ $mat-snack-bar-button-vertical-margin:
 .mat-simple-snackbar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  height: 100%;
   line-height: $mat-snack-bar-line-height;
   opacity: 1;
 }
@@ -22,16 +24,17 @@ $mat-snack-bar-button-vertical-margin:
   flex-direction: column;
   flex-shrink: 0;
   justify-content: space-around;
-  margin: $mat-snack-bar-button-vertical-margin 0
+  margin: $mat-snack-bar-button-vertical-margin $mat-snack-bar-button-horizontal-margin * -1
           $mat-snack-bar-button-vertical-margin $mat-snack-bar-button-horizontal-margin;
 
   button {
     flex: 1;
     max-height: $mat-snack-bar-button-height;
+    min-width: 0;
   }
 
   [dir='rtl'] & {
-    margin-left: 0;
+    margin-left: -$mat-snack-bar-button-horizontal-margin;
     margin-right: $mat-snack-bar-button-horizontal-margin;
   }
 }

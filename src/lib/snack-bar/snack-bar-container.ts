@@ -94,11 +94,11 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
   onAnimationEnd(event: AnimationEvent) {
     const {fromState, toState} = event;
 
-    if ((toState === 'void' && fromState !== 'void') || toState.startsWith('hidden')) {
+    if ((toState === 'void' && fromState !== 'void') || toState === 'hidden') {
       this._completeExit();
     }
 
-    if (toState.startsWith('visible')) {
+    if (toState === 'visible') {
       // Note: we shouldn't use `this` inside the zone callback,
       // because it can cause a memory leak.
       const onEnter = this._onEnter;
@@ -113,14 +113,17 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
   /** Begin animation of snack bar entrance into view. */
   enter(): void {
     if (!this._destroyed) {
-      this._animationState = `visible-${this.snackBarConfig.verticalPosition}`;
+      this._animationState = 'visible';
       this._changeDetectorRef.detectChanges();
     }
   }
 
   /** Begin animation of the snack bar exiting from view. */
   exit(): Observable<void> {
-    this._animationState = `hidden-${this.snackBarConfig.verticalPosition}`;
+    // Note: this one transitions to `hidden`, rather than `void`, in order to handle the case
+    // where multiple snack bars are opened in quick succession (e.g. two consecutive calls to
+    // `MatSnackBar.open`).
+    this._animationState = 'hidden';
     return this._onExit;
   }
 

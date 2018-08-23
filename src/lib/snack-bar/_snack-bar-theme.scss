@@ -6,8 +6,10 @@
   $accent: map-get($theme, accent);
 
   .mat-snack-bar-container {
+    // Use the primary text on the dark theme, even though the lighter one uses
+    // a secondary, because the contrast on the light primary text is poor.
+    color: if($is-dark-theme, $dark-primary-text, $light-secondary-text);
     background: if($is-dark-theme, map-get($mat-grey, 50), #323232);
-    color: if($is-dark-theme, $dark-primary-text, $light-primary-text);
   }
 
   .mat-simple-snackbar-action {

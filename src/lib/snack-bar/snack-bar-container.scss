@@ -1,44 +1,25 @@
 @import '../../cdk/a11y/a11y';
+@import '../core/style/elevation';
 
-$mat-snack-bar-padding: 14px 24px !default;
-$mat-snack-bar-min-width: 288px !default;
-$mat-snack-bar-max-width: 568px !default;
+$mat-snack-bar-padding: 14px 16px !default;
+$mat-snack-bar-min-height: 48px !default;
+$mat-snack-bar-min-width: 344px !default;
+$mat-snack-bar-max-width: 33vw !default;
 $mat-snack-bar-spacing-margin: 24px !default;
+$mat-snack-bar-spacing-margin-handset: 8px !default;
 
 
 .mat-snack-bar-container {
-  border-radius: 2px;
+  @include mat-elevation(6);
+  border-radius: 4px;
   box-sizing: border-box;
   display: block;
   margin: $mat-snack-bar-spacing-margin;
   max-width: $mat-snack-bar-max-width;
   min-width: $mat-snack-bar-min-width;
   padding: $mat-snack-bar-padding;
-  // Initial transformation is applied to start snack bar out of view, below its target position.
-  // Note: it's preferred to use a series of transforms, instead of something like `calc()`, because
-  // IE won't animate transforms that contain a `calc`.
-  transform: translateY(100%) translateY($mat-snack-bar-spacing-margin);
-
-  /**
-   * Removes margin of snack bars which are center positioned horizontally.  This
-   * is done to align snack bars to the edge of the view vertically to match spec.
-   */
-  &.mat-snack-bar-center {
-    margin: 0;
-    transform: translateY(100%);
-  }
-
-  /**
-   * To allow for animations from a 'top' vertical position to animate in a downward
-   * direction, set the translation to start the snack bar above the target position.
-   */
-  &.mat-snack-bar-top {
-    transform: translateY(-100%) translateY(#{-$mat-snack-bar-spacing-margin});
-
-    &.mat-snack-bar-center {
-      transform: translateY(-100%);
-    }
-  }
+  min-height: $mat-snack-bar-min-height;
+  transform-origin: center;
 
   @include cdk-high-contrast {
     border: solid 1px;
@@ -53,8 +34,8 @@ $mat-snack-bar-spacing-margin: 24px !default;
   width: 100%;
 
   .mat-snack-bar-container {
-    margin: 0;
-    max-width: inherit;
+    margin: $mat-snack-bar-spacing-margin-handset;
+    max-width: 100%;
     width: 100%;
   }
 }
