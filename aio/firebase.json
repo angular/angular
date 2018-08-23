@@ -107,11 +107,6 @@
       {"type": 301, "source": "/testing/**", "destination": "/guide/testing"}
     ],
     "rewrites": [
-      // Previous Angular service worker redirects to the new script (this must remain forever).
-      {
-        "source": "/worker-basic.min.js",
-        "destination": "/ngsw-worker.js"
-      },
       {
         "source": "**/!(*.*)",
         "destination": "/index.html"
