@@ -168,11 +168,11 @@ describe('styling', () => {
 
            expect(renderToHtml(
                       Template, {myStyles: {width: '200px', height: '200px'}, myWidth: '300px'}, 1))
-               .toEqual('<span style="width: 300px; height: 200px; opacity: 0.5;"></span>');
+               .toEqual('<span style="height: 200px; opacity: 0.5; width: 300px;"></span>');
 
            expect(
                renderToHtml(Template, {myStyles: {width: '200px', height: null}, myWidth: null}, 1))
-               .toEqual('<span style="width: 200px; height: 100px; opacity: 0.5;"></span>');
+               .toEqual('<span style="height: 100px; opacity: 0.5; width: 200px;"></span>');
          });
     });
 
