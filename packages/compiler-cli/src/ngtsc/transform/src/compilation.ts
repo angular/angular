@@ -9,6 +9,7 @@
 import {ConstantPool} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {FatalDiagnosticError} from '../../diagnostics';
 import {Decorator, ReflectionHost} from '../../host';
 import {reflectNameOfDeclaration} from '../../metadata/src/reflector';
 
@@ -98,23 +99,30 @@ export class IvyCompilation {
 
           // Run analysis on the metadata. This will produce either diagnostics, an
           // analysis result, or both.
-          const analysis = adapter.analyze(node, metadata);
+          try {
+            const analysis = adapter.analyze(node, metadata);
+            if (analysis.analysis !== undefined) {
+              this.analysis.set(node, {
+                adapter,
+                analysis: analysis.analysis,
+                metadata: metadata,
+              });
+            }
 
-          if (analysis.analysis !== undefined) {
-            this.analysis.set(node, {
-              adapter,
-              analysis: analysis.analysis,
-              metadata: metadata,
-            });
-          }
+            if (analysis.diagnostics !== undefined) {
+              this._diagnostics.push(...analysis.diagnostics);
+            }
 
-          if (analysis.diagnostics !== undefined) {
-            this._diagnostics.push(...analysis.diagnostics);
-          }
-
-          if (analysis.factorySymbolName !== undefined && this.sourceToFactorySymbols !== null &&
-              this.sourceToFactorySymbols.has(sf.fileName)) {
-            this.sourceToFactorySymbols.get(sf.fileName) !.add(analysis.factorySymbolName);
+            if (analysis.factorySymbolName !== undefined && this.sourceToFactorySymbols !== null &&
+                this.sourceToFactorySymbols.has(sf.fileName)) {
+              this.sourceToFactorySymbols.get(sf.fileName) !.add(analysis.factorySymbolName);
+            }
+          } catch (err) {
+            if (err instanceof FatalDiagnosticError) {
+              this._diagnostics.push(err.toDiagnostic());
+            } else {
+              throw err;
+            }
           }
         };
 

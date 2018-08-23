@@ -9,6 +9,7 @@
 import {Expression, R3DependencyMetadata, R3Reference, R3ResolvedDependencyType, WrappedNodeExpr} from '@angular/compiler';
 import * as ts from 'typescript';
 
+import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';
 import {Decorator, ReflectionHost} from '../../host';
 import {AbsoluteReference, ImportMode, Reference} from '../../metadata';
 
@@ -31,7 +32,9 @@ export function getConstructorDependencies(
     (param.decorators || []).filter(dec => isCore || isAngularCore(dec)).forEach(dec => {
       if (dec.name === 'Inject') {
         if (dec.args === null || dec.args.length !== 1) {
-          throw new Error(`Unexpected number of arguments to @Inject().`);
+          throw new FatalDiagnosticError(
+              ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
+              `Unexpected number of arguments to @Inject().`);
         }
         tokenExpr = dec.args[0];
       } else if (dec.name === 'Optional') {
@@ -44,16 +47,21 @@ export function getConstructorDependencies(
         host = true;
       } else if (dec.name === 'Attribute') {
         if (dec.args === null || dec.args.length !== 1) {
-          throw new Error(`Unexpected number of arguments to @Attribute().`);
+          throw new FatalDiagnosticError(
+              ErrorCode.DECORATOR_ARITY_WRONG, dec.node,
+              `Unexpected number of arguments to @Attribute().`);
         }
         tokenExpr = dec.args[0];
         resolved = R3ResolvedDependencyType.Attribute;
       } else {
-        throw new Error(`Unexpected decorator ${dec.name} on parameter.`);
+        throw new FatalDiagnosticError(
+            ErrorCode.DECORATOR_UNEXPECTED, dec.node,
+            `Unexpected decorator ${dec.name} on parameter.`);
       }
     });
     if (tokenExpr === null) {
-      throw new Error(
+      throw new FatalDiagnosticError(
+          ErrorCode.PARAM_MISSING_TOKEN, param.nameNode,
           `No suitable token for parameter ${param.name || idx} of class ${clazz.name!.text}`);
     }
     if (ts.isIdentifier(tokenExpr)) {
