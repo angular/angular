@@ -162,6 +162,25 @@ describe('MatExpansionPanel', () => {
     expect(document.activeElement).not.toBe(button, 'Expected button to no longer be focusable.');
   }));
 
+  it('should restore focus to header if focused element is inside panel on close', fakeAsync(() => {
+    const fixture = TestBed.createComponent(PanelWithContent);
+    fixture.componentInstance.expanded = true;
+    fixture.detectChanges();
+    tick(250);
+
+    const button = fixture.debugElement.query(By.css('button')).nativeElement;
+    const header = fixture.debugElement.query(By.css('mat-expansion-panel-header')).nativeElement;
+
+    button.focus();
+    expect(document.activeElement).toBe(button, 'Expected button to start off focusable.');
+
+    fixture.componentInstance.expanded = false;
+    fixture.detectChanges();
+    tick(250);
+
+    expect(document.activeElement).toBe(header, 'Expected header to be focused.');
+  }));
+
   it('should not override the panel margin if it is not inside an accordion', fakeAsync(() => {
     const fixture = TestBed.createComponent(PanelWithCustomMargin);
     fixture.detectChanges();

@@ -19,7 +19,9 @@ import {
   ContentChild,
   Directive,
   EventEmitter,
+  ElementRef,
   Input,
+  Inject,
   OnChanges,
   OnDestroy,
   Optional,
@@ -28,7 +30,9 @@ import {
   SkipSelf,
   ViewContainerRef,
   ViewEncapsulation,
+  ViewChild,
 } from '@angular/core';
+import {DOCUMENT} from '@angular/common';
 import {Subject} from 'rxjs';
 import {filter, startWith, take} from 'rxjs/operators';
 import {MatAccordion} from './accordion';
@@ -72,8 +76,13 @@ let uniqueId = 0;
     '[class.mat-expansion-panel-spacing]': '_hasSpacing()',
   }
 })
-export class MatExpansionPanel extends _CdkAccordionItem
-  implements AfterContentInit, OnChanges, OnDestroy {
+export class MatExpansionPanel extends CdkAccordionItem implements AfterContentInit, OnChanges,
+  OnDestroy {
+
+  // @breaking-change 8.0.0 Remove `| undefined` from here
+  // when the `_document` constructor param is required.
+  private _document: Document | undefined;
+
   /** Whether the toggle indicator should be hidden. */
   @Input()
   get hideToggle(): boolean {
@@ -99,6 +108,9 @@ export class MatExpansionPanel extends _CdkAccordionItem
   /** Content that will be rendered lazily. */
   @ContentChild(MatExpansionPanelContent) _lazyContent: MatExpansionPanelContent;
 
+  /** Element containing the panel's user-provided content. */
+  @ViewChild('body') _body: ElementRef<HTMLElement>;
+
   /** Portal holding the user's content. */
   _portal: TemplatePortal;
 
@@ -108,9 +120,11 @@ export class MatExpansionPanel extends _CdkAccordionItem
   constructor(@Optional() @SkipSelf() accordion: MatAccordion,
               _changeDetectorRef: ChangeDetectorRef,
               _uniqueSelectionDispatcher: UniqueSelectionDispatcher,
-              private _viewContainerRef: ViewContainerRef) {
+              private _viewContainerRef: ViewContainerRef,
+              @Inject(DOCUMENT) _document?: any) {
     super(accordion, _changeDetectorRef, _uniqueSelectionDispatcher);
     this.accordion = accordion;
+    this._document = _document;
   }
 
   /** Determines whether the expansion panel should have spacing between it and its siblings. */
@@ -173,6 +187,17 @@ export class MatExpansionPanel extends _CdkAccordionItem
     if (phaseName === 'done' && toState === 'collapsed' && fromState !== 'void') {
       this.afterCollapse.emit();
     }
+  }
+
+  /** Checks whether the expansion panel's content contains the currently-focused element. */
+  _containsFocus(): boolean {
+    if (this._body && this._document) {
+      const focusedElement = this._document.activeElement;
+      const bodyElement = this._body.nativeElement;
+      return focusedElement === bodyElement || bodyElement.contains(focusedElement);
+    }
+
+    return false;
   }
 }
 
