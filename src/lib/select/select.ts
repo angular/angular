@@ -714,8 +714,13 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       manager.activeItem._selectViaInteraction();
     } else if (this._multiple && keyCode === A && event.ctrlKey) {
       event.preventDefault();
-      const hasDeselectedOptions = this.options.some(option => !option.selected);
-      this.options.forEach(option => hasDeselectedOptions ? option.select() : option.deselect());
+      const hasDeselectedOptions = this.options.some(opt => !opt.disabled && !opt.selected);
+
+      this.options.forEach(option => {
+        if (!option.disabled) {
+          hasDeselectedOptions ? option.select() : option.deselect();
+        }
+      });
     } else {
       const previouslyFocusedIndex = manager.activeItemIndex;
 

@@ -3989,6 +3989,33 @@ describe('MatSelect', () => {
       ]);
     });
 
+    it('should skip disabled options when using ctrl + a', () => {
+      const selectElement = fixture.nativeElement.querySelector('mat-select');
+      const options = fixture.componentInstance.options.toArray();
+
+      for (let i = 0; i < 3; i++) {
+        options[i].disabled = true;
+      }
+
+      expect(testInstance.control.value).toBeFalsy();
+
+      fixture.componentInstance.select.open();
+      fixture.detectChanges();
+
+      const event = createKeyboardEvent('keydown', A, selectElement);
+      Object.defineProperty(event, 'ctrlKey', {get: () => true});
+      dispatchEvent(selectElement, event);
+      fixture.detectChanges();
+
+      expect(testInstance.control.value).toEqual([
+        'sandwich-3',
+        'chips-4',
+        'eggs-5',
+        'pasta-6',
+        'sushi-7'
+      ]);
+    });
+
     it('should select all options when pressing ctrl + a when some options are selected', () => {
       const selectElement = fixture.nativeElement.querySelector('mat-select');
       const options = fixture.componentInstance.options.toArray();
