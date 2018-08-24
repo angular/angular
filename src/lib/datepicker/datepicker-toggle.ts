@@ -9,6 +9,7 @@
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
+  Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -39,6 +40,8 @@ export class MatDatepickerToggleIcon {}
   styleUrls: ['datepicker-toggle.css'],
   host: {
     'class': 'mat-datepicker-toggle',
+    // Clear out the native tabindex here since we forward it to the underlying button
+    '[attr.tabindex]': 'null',
     '[class.mat-datepicker-toggle-active]': 'datepicker && datepicker.opened',
     '[class.mat-accent]': 'datepicker && datepicker.color === "accent"',
     '[class.mat-warn]': 'datepicker && datepicker.color === "warn"',
@@ -53,6 +56,9 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
   /** Datepicker instance that the button will toggle. */
   @Input('for') datepicker: MatDatepicker<D>;
 
+  /** Tabindex for the toggle. */
+  @Input() tabIndex: number | null;
+
   /** Whether the toggle button is disabled. */
   @Input()
   get disabled(): boolean {
@@ -66,7 +72,14 @@ export class MatDatepickerToggle<D> implements AfterContentInit, OnChanges, OnDe
   /** Custom icon set by the consumer. */
   @ContentChild(MatDatepickerToggleIcon) _customIcon: MatDatepickerToggleIcon;
 
-  constructor(public _intl: MatDatepickerIntl, private _changeDetectorRef: ChangeDetectorRef) {}
+  constructor(
+    public _intl: MatDatepickerIntl,
+    private _changeDetectorRef: ChangeDetectorRef,
+    @Attribute('tabindex') defaultTabIndex: string) {
+
+    const parsedTabIndex = Number(defaultTabIndex);
+    this.tabIndex = (parsedTabIndex || parsedTabIndex === 0) ? parsedTabIndex : null;
+  }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.datepicker) {

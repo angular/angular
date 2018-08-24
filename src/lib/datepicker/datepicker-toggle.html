@@ -3,6 +3,7 @@
   type="button"
   aria-haspopup="true"
   [attr.aria-label]="_intl.openCalendarLabel"
+  [attr.tabindex]="disabled ? -1 : tabIndex"
   [disabled]="disabled"
   (click)="_open($event)">
 

@@ -1008,6 +1008,26 @@ describe('MatDatepicker', () => {
       }));
     });
 
+    describe('datepicker with tabindex on mat-datepicker-toggle', () => {
+      it('should forward the tabindex to the underlying button', () => {
+        const fixture = createComponent(DatepickerWithTabindexOnToggle, [MatNativeDateModule]);
+        fixture.detectChanges();
+
+        const button = fixture.nativeElement.querySelector('.mat-datepicker-toggle button');
+
+        expect(button.getAttribute('tabindex')).toBe('7');
+      });
+
+      it('should clear the tabindex from the mat-datepicker-toggle host', () => {
+        const fixture = createComponent(DatepickerWithTabindexOnToggle, [MatNativeDateModule]);
+        fixture.detectChanges();
+
+        const host = fixture.nativeElement.querySelector('.mat-datepicker-toggle');
+
+        expect(host.hasAttribute('tabindex')).toBe(false);
+      });
+    });
+
     describe('datepicker inside mat-form-field', () => {
       let fixture: ComponentFixture<FormFieldDatepicker>;
       let testComponent: FormFieldDatepicker;
@@ -1875,3 +1895,16 @@ class DelayedDatepicker {
   date: Date | null;
   assignedDatepicker: MatDatepicker<Date>;
 }
+
+
+
+@Component({
+  template: `
+    <input [matDatepicker]="d">
+    <mat-datepicker-toggle tabIndex="7" [for]="d">
+      <div class="custom-icon" matDatepickerToggleIcon></div>
+    </mat-datepicker-toggle>
+    <mat-datepicker #d></mat-datepicker>
+  `,
+})
+class DatepickerWithTabindexOnToggle {}
