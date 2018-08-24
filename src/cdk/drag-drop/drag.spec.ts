@@ -807,6 +807,25 @@ describe('CdkDrag', () => {
       expect(preview.textContent!.trim()).toContain('Custom preview');
     }));
 
+    it('should revert the element back to its parent after dragging with a custom ' +
+      'preview has stopped', fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
+        fixture.detectChanges();
+
+        const dragContainer = fixture.componentInstance.dropInstance.element.nativeElement;
+        const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+        expect(dragContainer.contains(item)).toBe(true, 'Expected item to be in container.');
+
+        // The coordinates don't matter.
+        dragElementViaMouse(fixture, item, 10, 10);
+        flush();
+        fixture.detectChanges();
+
+        expect(dragContainer.contains(item))
+            .toBe(true, 'Expected item to be returned to container.');
+      }));
+
     it('should position custom previews next to the pointer', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZoneWithCustomPreview);
       fixture.detectChanges();
