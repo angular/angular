@@ -8,7 +8,7 @@
       *ngSwitchCase="true"
       [ngTemplateOutlet]="iconOverrides.number"
       [ngTemplateOutletContext]="_getIconContext()"></ng-container>
-    <span *ngSwitchDefault>{{index + 1}}</span>
+    <span class="mat-step-icon-content" *ngSwitchDefault>{{index + 1}}</span>
   </ng-container>
 
   <ng-container *ngSwitchCase="'edit'" [ngSwitch]="!!(iconOverrides && iconOverrides.edit)">
@@ -16,7 +16,7 @@
       *ngSwitchCase="true"
       [ngTemplateOutlet]="iconOverrides.edit"
       [ngTemplateOutletContext]="_getIconContext()"></ng-container>
-    <mat-icon *ngSwitchDefault>create</mat-icon>
+    <mat-icon class="mat-step-icon-content" *ngSwitchDefault>create</mat-icon>
   </ng-container>
 
   <ng-container *ngSwitchCase="'done'" [ngSwitch]="!!(iconOverrides && iconOverrides.done)">
@@ -24,7 +24,7 @@
       *ngSwitchCase="true"
       [ngTemplateOutlet]="iconOverrides.done"
       [ngTemplateOutletContext]="_getIconContext()"></ng-container>
-    <mat-icon *ngSwitchDefault>done</mat-icon>
+    <mat-icon class="mat-step-icon-content" *ngSwitchDefault>done</mat-icon>
   </ng-container>
 </div>
 <div class="mat-step-label"

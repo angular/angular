@@ -26,10 +26,16 @@ $mat-step-header-icon-size: 16px !default;
   border-radius: 50%;
   height: $mat-stepper-label-header-height;
   width: $mat-stepper-label-header-height;
-  align-items: center;
-  justify-content: center;
-  display: flex;
   flex-shrink: 0;
+  position: relative;
+}
+
+.mat-step-icon-content {
+  // Use absolute positioning to center the content, because it works better with text.
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .mat-step-icon .mat-icon {
