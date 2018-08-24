@@ -9,12 +9,12 @@ describe('MatOption component', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [MatOptionModule],
-      declarations: [OptionWithDisable]
+      declarations: [BasicOption]
     }).compileComponents();
   }));
 
   it('should complete the `stateChanges` stream on destroy', () => {
-    const fixture = TestBed.createComponent(OptionWithDisable);
+    const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
     const optionInstance: MatOption =
@@ -28,7 +28,7 @@ describe('MatOption component', () => {
   });
 
   it('should not emit to `onSelectionChange` if selecting an already-selected option', () => {
-    const fixture = TestBed.createComponent(OptionWithDisable);
+    const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
     const optionInstance: MatOption =
@@ -50,7 +50,7 @@ describe('MatOption component', () => {
   });
 
   it('should not emit to `onSelectionChange` if deselecting an unselected option', () => {
-    const fixture = TestBed.createComponent(OptionWithDisable);
+    const fixture = TestBed.createComponent(BasicOption);
     fixture.detectChanges();
 
     const optionInstance: MatOption =
@@ -71,14 +71,25 @@ describe('MatOption component', () => {
     subscription.unsubscribe();
   });
 
+  it('should be able to set a custom id', () => {
+    const fixture = TestBed.createComponent(BasicOption);
+
+    fixture.componentInstance.id = 'custom-option';
+    fixture.detectChanges();
+
+    const optionInstance = fixture.debugElement.query(By.directive(MatOption)).componentInstance;
+
+    expect(optionInstance.id).toBe('custom-option');
+  });
+
   describe('ripples', () => {
-    let fixture: ComponentFixture<OptionWithDisable>;
+    let fixture: ComponentFixture<BasicOption>;
     let optionDebugElement: DebugElement;
     let optionNativeElement: HTMLElement;
     let optionInstance: MatOption;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(OptionWithDisable);
+      fixture = TestBed.createComponent(BasicOption);
       fixture.detectChanges();
 
       optionDebugElement = fixture.debugElement.query(By.directive(MatOption));
@@ -117,8 +128,9 @@ describe('MatOption component', () => {
 });
 
 @Component({
-  template: `<mat-option [disabled]="disabled"></mat-option>`
+  template: `<mat-option [id]="id" [disabled]="disabled"></mat-option>`
 })
-class OptionWithDisable {
+class BasicOption {
   disabled: boolean;
+  id: string;
 }
