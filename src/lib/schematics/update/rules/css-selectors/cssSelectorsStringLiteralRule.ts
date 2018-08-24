@@ -9,12 +9,12 @@
 import {green, red} from 'chalk';
 import {Replacement, RuleFailure, Rules, RuleWalker} from 'tslint';
 import * as ts from 'typescript';
-import {cssNames, MaterialCssNameData} from '../../material/data/css-names';
+import {cssSelectors, MaterialCssSelectorData} from '../../material/data/css-selectors';
 import {findAllSubstringIndices} from '../../typescript/literal';
 
 /**
  * Rule that walks through every string literal that is wrapped inside of a call expression.
- * All string literals which include an outdated CSS class name will be migrated.
+ * All string literals which include an outdated CSS selector will be migrated.
  */
 export class Rule extends Rules.AbstractRule {
   apply(sourceFile: ts.SourceFile): RuleFailure[] {
@@ -31,22 +31,22 @@ export class Walker extends RuleWalker {
 
     const textContent = node.getFullText();
 
-    cssNames.forEach(name => {
-      if (name.whitelist && !name.whitelist.strings) {
+    cssSelectors.forEach(data => {
+      if (data.whitelist && !data.whitelist.strings) {
         return;
       }
 
-      findAllSubstringIndices(textContent, name.replace)
+      findAllSubstringIndices(textContent, data.replace)
         .map(offset => node.getStart() + offset)
-        .map(start => new Replacement(start, name.replace.length, name.replaceWith))
-        .forEach(replacement => this._addFailureWithReplacement(node, replacement, name));
+        .map(start => new Replacement(start, data.replace.length, data.replaceWith))
+        .forEach(replacement => this._addFailureWithReplacement(node, replacement, data));
     });
   }
 
-  /** Adds a css name failure with the given replacement at the specified node. */
+  /** Adds a css selector failure with the given replacement at the specified node. */
   private _addFailureWithReplacement(node: ts.Node, replacement: Replacement,
-                                     name: MaterialCssNameData) {
-    this.addFailureAtNode(node, `Found deprecated CSS class "${red(name.replace)}" which has ` +
-      `been renamed to "${green(name.replaceWith)}"`, replacement);
+                                     data: MaterialCssSelectorData) {
+    this.addFailureAtNode(node, `Found deprecated CSS selector "${red(data.replace)}" which has ` +
+      `been renamed to "${green(data.replaceWith)}"`, replacement);
   }
 }

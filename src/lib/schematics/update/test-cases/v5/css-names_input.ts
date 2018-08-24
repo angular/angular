@@ -10,7 +10,6 @@ const e = By.css('.mat-input-hint-spacer');
 @Component({
   template: `
     <ng-content select=".mat-input-suffix"></ng-content>
-    <div [panelClass]="mat-input-underline">Content</div>
 
     <style>
       .mat-input-suffix {

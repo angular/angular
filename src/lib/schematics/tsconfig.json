@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "lib": ["es2017", "dom"],
+    "lib": ["es2017"],
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "../../../dist/schematics",

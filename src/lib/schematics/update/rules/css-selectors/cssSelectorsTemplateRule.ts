@@ -9,7 +9,7 @@
 import {green, red} from 'chalk';
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-import {cssNames} from '../../material/data/css-names';
+import {cssSelectors} from '../../material/data/css-selectors';
 import {ExternalResource} from '../../tslint/component-file';
 import {ComponentWalker} from '../../tslint/component-walker';
 import {
@@ -20,7 +20,7 @@ import {findAllSubstringIndices} from '../../typescript/literal';
 
 /**
  * Rule that walks through every inline or external HTML template and updates outdated
- * CSS classes.
+ * CSS selectors.
  */
 export class Rule extends Rules.AbstractRule {
   apply(sourceFile: ts.SourceFile): RuleFailure[] {
@@ -43,23 +43,23 @@ export class Walker extends ComponentWalker {
   }
 
   /**
-   * Searches for outdated css names in the specified content and creates replacements
+   * Searches for outdated css selectors in the specified content and creates replacements
    * with the according messages that can be added to a rule failure.
    */
   private _createReplacementsForContent(node: ts.Node, templateContent: string) {
     const replacements: {failureMessage: string, replacement: Replacement}[] = [];
 
-    cssNames.forEach(name => {
-      if (name.whitelist && !name.whitelist.html) {
+    cssSelectors.forEach(data => {
+      if (data.whitelist && !data.whitelist.html) {
         return;
       }
 
-      const failureMessage = `Found deprecated CSS class "${red(name.replace)}"` +
-        ` which has been renamed to "${green(name.replaceWith)}"`;
+      const failureMessage = `Found deprecated CSS selector "${red(data.replace)}"` +
+        ` which has been renamed to "${green(data.replaceWith)}"`;
 
-      findAllSubstringIndices(templateContent, name.replace)
+      findAllSubstringIndices(templateContent, data.replace)
         .map(offset => node.getStart() + offset)
-        .map(start => new Replacement(start, name.replace.length, name.replaceWith))
+        .map(start => new Replacement(start, data.replace.length, data.replaceWith))
         .forEach(replacement => replacements.push({replacement, failureMessage}));
     });
 

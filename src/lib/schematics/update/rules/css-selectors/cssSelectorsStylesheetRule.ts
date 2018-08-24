@@ -10,7 +10,7 @@ import {green, red} from 'chalk';
 import {sync as globSync} from 'glob';
 import {IOptions, Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-import {cssNames} from '../../material/data/css-names';
+import {cssSelectors} from '../../material/data/css-selectors';
 import {ExternalResource} from '../../tslint/component-file';
 import {ComponentWalker} from '../../tslint/component-walker';
 import {
@@ -21,7 +21,7 @@ import {findAllSubstringIndices} from '../../typescript/literal';
 
 /**
  * Rule that walks through every inline or external CSs stylesheet and updates outdated
- * CSS classes.
+ * CSS selectors.
  */
 export class Rule extends Rules.AbstractRule {
   apply(sourceFile: ts.SourceFile): RuleFailure[] {
@@ -54,23 +54,23 @@ export class Walker extends ComponentWalker {
   }
 
   /**
-   * Searches for outdated CSs classes in the specified content and creates replacements
+   * Searches for outdated CSS selectors in the specified content and creates replacements
    * with the according messages that can be added to a rule failure.
    */
   private _createReplacementsForContent(node: ts.Node, stylesheetContent: string) {
     const replacements: {failureMessage: string, replacement: Replacement}[] = [];
 
-    cssNames.forEach(name => {
-      if (name.whitelist && !name.whitelist.stylesheet) {
+    cssSelectors.forEach(data => {
+      if (data.whitelist && !data.whitelist.stylesheet) {
         return;
       }
 
-      const failureMessage = `Found deprecated CSS class "${red(name.replace)}" ` +
-          `which has been renamed to "${green(name.replaceWith)}"`;
+      const failureMessage = `Found deprecated CSS selector "${red(data.replace)}" ` +
+          `which has been renamed to "${green(data.replaceWith)}"`;
 
-      findAllSubstringIndices(stylesheetContent, name.replace)
+      findAllSubstringIndices(stylesheetContent, data.replace)
         .map(offset => node.getStart() + offset)
-        .map(start => new Replacement(start, name.replace.length, name.replaceWith))
+        .map(start => new Replacement(start, data.replace.length, data.replaceWith))
         .forEach(replacement => replacements.push({replacement, failureMessage}));
     });
 

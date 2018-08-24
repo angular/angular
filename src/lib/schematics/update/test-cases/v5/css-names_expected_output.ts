@@ -10,7 +10,6 @@ const e = By.css('.mat-form-field-hint-spacer');
 @Component({
   template: `
     <ng-content select=".mat-form-field-suffix"></ng-content>
-    <div [panelClass]="mat-form-field-underline">Content</div>
 
     <style>
       .mat-form-field-suffix {

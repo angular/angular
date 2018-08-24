@@ -35,7 +35,7 @@ export class Walker extends RuleWalker {
       findAllSubstringIndices(textContent, selector.replace)
         .map(offset => node.getStart() + offset)
         .map(start => new Replacement(start, selector.replace.length, selector.replaceWith))
-        .forEach(replacement => this._addFailureWithReplacement(node, replacement, name));
+        .forEach(replacement => this._addFailureWithReplacement(node, replacement, selector));
     });
   }
 
