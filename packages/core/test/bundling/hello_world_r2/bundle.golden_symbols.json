@@ -183,9 +183,6 @@
     "name": "APP_BOOTSTRAP_LISTENER"
   },
   {
-    "name": "APP_INITIALIZER"
-  },
-  {
     "name": "APP_ROOT"
   },
   {
@@ -1914,9 +1911,6 @@
     "name": "__assign"
   },
   {
-    "name": "__decorate"
-  },
-  {
     "name": "__extends"
   },
   {
@@ -1951,12 +1945,6 @@
   },
   {
     "name": "__extends$u"
-  },
-  {
-    "name": "__metadata"
-  },
-  {
-    "name": "__param"
   },
   {
     "name": "__read"
