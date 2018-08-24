@@ -9,35 +9,59 @@
 import {bold, green, red} from 'chalk';
 import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-import {propertyNames} from '../material/data/property-names';
+import {MaterialPropertyNameData, propertyNames} from '../material/data/property-names';
 
 /**
- * Rule that walks through every property access expression and updates properties that have
- * been changed in favor of the new name.
+ * Map of classes that have been updated. Each class name maps to the according property change
+ * data.
+ */
+const changedClassesMap = new Map<string, MaterialPropertyNameData>();
+
+propertyNames.filter(data => data.whitelist && data.whitelist.classes).forEach(data => {
+  data.whitelist.classes.forEach(name => changedClassesMap.set(name, data));
+});
+
+/**
+ * Rule that identifies class declarations that extend CDK or Material classes and had
+ * a public property change.
  */
 export class Rule extends Rules.TypedRule {
   applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
-    return this.applyWithWalker(
-        new CheckInheritanceWalker(sourceFile, this.getOptions(), program));
+    return this.applyWithWalker(new Walker(sourceFile, this.getOptions(), program));
   }
 }
 
-export class CheckInheritanceWalker extends ProgramAwareRuleWalker {
-  visitClassDeclaration(declaration: ts.ClassDeclaration) {
-    // Check if user is extending an Angular Material class whose properties have changed.
-    const type = this.getTypeChecker().getTypeAtLocation(declaration.name);
-    const baseTypes = this.getTypeChecker().getBaseTypes(type as ts.InterfaceType);
-    baseTypes.forEach(t => {
-      const propertyData = propertyNames.find(
-          data => data.whitelist && new Set(data.whitelist.classes).has(t.symbol.name));
-      if (propertyData) {
-        this.addFailureAtNode(
-            declaration,
-            `Found class "${bold(declaration.name.text)}" which extends class` +
-            ` "${bold(t.symbol.name)}". Please note that the base class property` +
-            ` "${red(propertyData.replace)}" has changed to "${green(propertyData.replaceWith)}".` +
-            ` You may need to update your class as well`);
+export class Walker extends ProgramAwareRuleWalker {
+
+  visitClassDeclaration(node: ts.ClassDeclaration) {
+    const baseTypes = this._determineBaseTypes(node);
+
+    if (!baseTypes) {
+      return;
+    }
+
+    baseTypes.forEach(typeName => {
+      const data = changedClassesMap.get(typeName);
+
+      if (data) {
+        this.addFailureAtNode(node,
+          `Found class "${bold(node.name.text)}" which extends class ` +
+          `"${bold(typeName)}". Please note that the base class property ` +
+          `"${red(data.replace)}" has changed to "${green(data.replaceWith)}". ` +
+          `You may need to update your class as well`);
       }
     });
+  }
+
+  private _determineBaseTypes(node: ts.ClassDeclaration): string[] | null {
+    if (!node.heritageClauses) {
+      return null;
+    }
+
+    return node.heritageClauses
+      .reduce((types, clause) => types.concat(clause.types), [])
+      .map(typeExpression => typeExpression.expression)
+      .filter(expression => expression && ts.isIdentifier(expression))
+      .map(identifier => identifier.text);
   }
 }
