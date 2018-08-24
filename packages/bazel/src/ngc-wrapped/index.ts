@@ -226,6 +226,15 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
 
   ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) => {
+    try {
+      const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
+      if (sourceFile && sourceFile.moduleName) {
+        return sourceFile.moduleName;
+      }
+    } catch (err) {
+      // File does not exist or parse error. Ignore this case and continue onto the
+      // other methods of resolving the module below.
+    }
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
       return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
