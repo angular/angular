@@ -4,7 +4,7 @@ import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {MatChip, MatChipsModule} from './index';
 
 describe('Chip Remove', () => {
-  let fixture: ComponentFixture<any>;
+  let fixture: ComponentFixture<TestChip>;
   let testChip: TestChip;
   let chipDebugElement: DebugElement;
   let chipNativeElement: HTMLElement;

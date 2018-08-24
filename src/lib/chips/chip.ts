@@ -391,17 +391,23 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   selector: '[matChipRemove]',
   host: {
     'class': 'mat-chip-remove mat-chip-trailing-icon',
-    '(click)': '_handleClick()',
+    '(click)': '_handleClick($event)',
   }
 })
 export class MatChipRemove {
-  constructor(protected _parentChip: MatChip) {
-  }
+  constructor(protected _parentChip: MatChip) {}
 
   /** Calls the parent chip's public `remove()` method if applicable. */
-  _handleClick(): void {
+  _handleClick(event: Event): void {
     if (this._parentChip.removable) {
       this._parentChip.remove();
     }
+
+    // We need to stop event propagation because otherwise the event will bubble up to the
+    // form field and cause the `onContainerClick` method to be invoked. This method would then
+    // reset the focused chip that has been focused after chip removal. Usually the parent
+    // the parent click listener of the `MatChip` would prevent propagation, but it can happen
+    // that the chip is being removed before the event bubbles up.
+    event.stopPropagation();
   }
 }
