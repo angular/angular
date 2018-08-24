@@ -1,6 +1,11 @@
 import {Platform, PlatformModule} from '@angular/cdk/platform';
-import {createFakeEvent, dispatchFakeEvent, wrappedErrorMessage} from '@angular/cdk/testing';
-import {ChangeDetectionStrategy, Component, ViewChild, Type, Provider} from '@angular/core';
+import {
+  createFakeEvent,
+  dispatchFakeEvent,
+  wrappedErrorMessage,
+  MockNgZone,
+} from '@angular/cdk/testing';
+import {ChangeDetectionStrategy, Component, ViewChild, Type, Provider, NgZone} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, TestBed} from '@angular/core/testing';
 import {
   FormControl,
@@ -28,10 +33,10 @@ import {
 } from '@angular/material/form-field';
 import {By} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MatInputModule} from './index';
-import {MatInput} from './input';
 import {MatStepperModule} from '@angular/material/stepper';
 import {MatTabsModule} from '@angular/material/tabs';
+import {MatInputModule} from './index';
+import {MatInput} from './input';
 import {MatTextareaAutosize} from './autosize';
 
 describe('MatInput without forms', () => {
@@ -1170,6 +1175,35 @@ describe('MatInput with appearance', () => {
     expect(parseInt(outlineGap.style.width)).toBeFalsy();
   }));
 
+  it('should calculate the gaps if the default appearance is provided through DI', fakeAsync(() => {
+    fixture.destroy();
+    TestBed.resetTestingModule();
+
+    let zone: MockNgZone;
+    const labelFixture = createComponent(MatInputWithLabel, [
+      {
+        provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
+        useValue: {appearance: 'outline'}
+      },
+      {
+        provide: NgZone,
+        useFactory: () => zone = new MockNgZone()
+      }
+    ]);
+
+    labelFixture.detectChanges();
+    zone!.simulateZoneExit();
+    flush();
+    labelFixture.detectChanges();
+
+    const wrapperElement = labelFixture.nativeElement;
+    const outlineStart = wrapperElement.querySelector('.mat-form-field-outline-start');
+    const outlineGap = wrapperElement.querySelector('.mat-form-field-outline-gap');
+
+    expect(parseInt(outlineStart.style.width)).toBeGreaterThan(0);
+    expect(parseInt(outlineGap.style.width)).toBeGreaterThan(0);
+  }));
+
 });
 
 describe('MatFormField default options', () => {
@@ -1585,6 +1619,16 @@ class MatInputOnPush {
   `
 })
 class MatInputWithReadonlyInput {}
+
+@Component({
+  template: `
+    <mat-form-field>
+      <mat-label>Label</mat-label>
+      <input matInput>
+    </mat-form-field>
+  `
+})
+class MatInputWithLabel {}
 
 @Component({
   template: `

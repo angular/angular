@@ -145,12 +145,12 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   /** The form-field appearance style. */
   @Input()
-  get appearance(): MatFormFieldAppearance {
-    return this._appearance || this._defaultOptions && this._defaultOptions.appearance || 'legacy';
-  }
+  get appearance(): MatFormFieldAppearance { return this._appearance; }
   set appearance(value: MatFormFieldAppearance) {
     const oldValue = this._appearance;
-    this._appearance = value;
+
+    this._appearance = value || (this._defaults && this._defaults.appearance) || 'legacy';
+
     if (this._appearance === 'outline' && oldValue !== value) {
       // @breaking-change 7.0.0 Remove this check and else block once _ngZone is required.
       if (this._ngZone) {
@@ -246,8 +246,8 @@ export class MatFormField extends _MatFormFieldMixinBase
       private _changeDetectorRef: ChangeDetectorRef,
       @Optional() @Inject(MAT_LABEL_GLOBAL_OPTIONS) labelOptions: LabelOptions,
       @Optional() private _dir: Directionality,
-      @Optional() @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS) private _defaultOptions:
-          MatFormFieldDefaultOptions,
+      @Optional() @Inject(MAT_FORM_FIELD_DEFAULT_OPTIONS)
+          private _defaults: MatFormFieldDefaultOptions,
       // @breaking-change 7.0.0 _platform, _ngZone and _animationMode to be made required.
       private _platform?: Platform,
       private _ngZone?: NgZone,
@@ -257,6 +257,9 @@ export class MatFormField extends _MatFormFieldMixinBase
     this._labelOptions = labelOptions ? labelOptions : {};
     this.floatLabel = this._labelOptions.float || 'auto';
     this._animationsEnabled = _animationMode !== 'NoopAnimations';
+
+    // Set the default through here so we invoke the setter on the first run.
+    this.appearance = (_defaults && _defaults.appearance) ? _defaults.appearance : 'legacy';
   }
 
   /**
