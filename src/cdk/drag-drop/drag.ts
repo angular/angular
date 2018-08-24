@@ -52,6 +52,7 @@ import {takeUntil} from 'rxjs/operators';
   exportAs: 'cdkDrag',
   host: {
     'class': 'cdk-drag',
+    '[class.cdk-drag-dragging]': '_isDragging()',
     '(mousedown)': '_startDragging($event)',
     '(touchstart)': '_startDragging($event)',
   }
@@ -189,7 +190,7 @@ export class CdkDrag<T = any> implements OnDestroy {
 
     // Do this check before removing from the registry since it'll
     // stop being considered as dragged once it is removed.
-    if (this._dragDropRegistry.isDragging(this)) {
+    if (this._isDragging()) {
       // Since we move out the element to the end of the body while it's being
       // dragged, we have to make sure that it's removed if it gets destroyed.
       this._removeElement(this.element.nativeElement);
@@ -220,11 +221,16 @@ export class CdkDrag<T = any> implements OnDestroy {
     }
   }
 
+  /** Checks whether the element is currently being dragged. */
+  _isDragging() {
+    return this._dragDropRegistry.isDragging(this);
+  }
+
   /** Handler for when the pointer is pressed down on the element or the handle. */
   private _pointerDown = (referenceElement: ElementRef<HTMLElement>,
                           event: MouseEvent | TouchEvent) => {
 
-    const isDragging = this._dragDropRegistry.isDragging(this);
+    const isDragging = this._isDragging();
 
     // Abort if the user is already dragging or is using a mouse button other than the primary one.
     if (isDragging || (!this._isTouchEvent(event) && event.button !== 0)) {
@@ -274,7 +280,7 @@ export class CdkDrag<T = any> implements OnDestroy {
   private _pointerMove = (event: MouseEvent | TouchEvent) => {
     // TODO(crisbeto): this should start dragging after a certain threshold,
     // otherwise we risk interfering with clicks on the element.
-    if (!this._dragDropRegistry.isDragging(this)) {
+    if (!this._isDragging()) {
       return;
     }
 
@@ -310,7 +316,7 @@ export class CdkDrag<T = any> implements OnDestroy {
 
   /** Handler that is invoked when the user lifts their pointer up, after initiating a drag. */
   private _pointerUp = () => {
-    if (!this._dragDropRegistry.isDragging(this)) {
+    if (!this._isDragging()) {
       return;
     }
 

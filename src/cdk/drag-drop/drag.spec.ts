@@ -303,6 +303,25 @@ describe('CdkDrag', () => {
       expect(dragElement.style.transform).toBe('translate3d(0px, 300px, 0px)');
     }));
 
+    it('should add a class while an element is being dragged', fakeAsync(() => {
+      const fixture = createComponent(StandaloneDraggable);
+      fixture.detectChanges();
+
+      const element = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(element.classList).not.toContain('cdk-drag-dragging');
+
+      dispatchMouseEvent(element, 'mousedown');
+      fixture.detectChanges();
+
+      expect(element.classList).toContain('cdk-drag-dragging');
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+
+      expect(element.classList).not.toContain('cdk-drag-dragging');
+    }));
+
   });
 
   describe('draggable with a handle', () => {
