@@ -12,9 +12,6 @@ import {
   transition,
   trigger,
   AnimationTriggerMetadata,
-  group,
-  query,
-  animateChild,
 } from '@angular/animations';
 
 /** Animations used by the Material datepicker. */
@@ -24,12 +21,14 @@ export const matDatepickerAnimations: {
 } = {
   /** Transforms the height of the datepicker's calendar. */
   transformPanel: trigger('transformPanel', [
-    state('void', style({opacity: 0, transform: 'scale(1, 0)'})),
-    state('enter', style({opacity: 1, transform: 'scale(1, 1)'})),
-    transition('void => enter', group([
-      query('@fadeInCalendar', animateChild()),
-      animate('400ms cubic-bezier(0.25, 0.8, 0.25, 1)')
-    ])),
+    state('void', style({
+      opacity: 0,
+      transform: 'scale(1, 0.8)'
+    })),
+    transition('void => enter',  animate('120ms cubic-bezier(0, 0, 0.2, 1)', style({
+      opacity: 1,
+      transform: 'scale(1, 1)'
+    }))),
     transition('* => void', animate('100ms linear', style({opacity: 0})))
   ]),
 
@@ -37,6 +36,9 @@ export const matDatepickerAnimations: {
   fadeInCalendar: trigger('fadeInCalendar', [
     state('void', style({opacity: 0})),
     state('enter', style({opacity: 1})),
-    transition('void => *', animate('400ms 100ms cubic-bezier(0.55, 0, 0.55, 0.2)'))
+
+    // TODO(crisbeto): this animation should be removed since it isn't quite on spec, but we
+    // need to keep it until #12440 gets in, otherwise the exit animation will look glitchy.
+    transition('void => *', animate('120ms 100ms cubic-bezier(0.55, 0, 0.55, 0.2)'))
   ])
 };

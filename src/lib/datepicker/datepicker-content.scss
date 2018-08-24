@@ -25,10 +25,10 @@ $mat-datepicker-touch-max-height: 788px;
 
 
 .mat-datepicker-content {
-  @include mat-elevation(8);
+  @include mat-elevation(4);
 
   display: block;
-  border-radius: 2px;
+  border-radius: 4px;
 
   .mat-calendar {
     width: $mat-datepicker-non-touch-calendar-width;
