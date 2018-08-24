@@ -254,10 +254,12 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
   }
 
   ngOnInit() {
-    this._autofillMonitor.monitor(this._elementRef).subscribe(event => {
-      this.autofilled = event.isAutofilled;
-      this.stateChanges.next();
-    });
+    if (this._platform.isBrowser) {
+      this._autofillMonitor.monitor(this._elementRef.nativeElement).subscribe(event => {
+        this.autofilled = event.isAutofilled;
+        this.stateChanges.next();
+      });
+    }
   }
 
   ngOnChanges() {
@@ -266,7 +268,10 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
 
   ngOnDestroy() {
     this.stateChanges.complete();
-    this._autofillMonitor.stopMonitoring(this._elementRef);
+
+    if (this._platform.isBrowser) {
+      this._autofillMonitor.stopMonitoring(this._elementRef.nativeElement);
+    }
   }
 
   ngDoCheck() {
