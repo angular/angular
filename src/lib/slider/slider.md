@@ -38,7 +38,7 @@ value on bottom.
 By default, the exact selected value of a slider is not visible to the user. However, this value can
 be added to the thumb by adding the `thumbLabel` attribute.
 
-The [Material Design spec](https://material.google.com/components/sliders.html) recommends using the
+The [Material Design spec](https://material.io/design/components/sliders.html#discrete-slider) recommends using the
 `thumbLabel` attribute (along with `tickInterval="1"`) only for sliders that are used to display a
 discrete value (such as a 1-5 rating).
 
@@ -74,7 +74,7 @@ The slider will always show a tick at the beginning and end of the track. If the
 doesn't add up perfectly the last interval will be shortened or lengthened so that the tick can be
 shown at the end of the track.
 
-The [Material Design spec](https://material.google.com/components/sliders.html) recommends using the
+The [Material Design spec](https://material.io/design/components/sliders.html#discrete-slider) recommends using the
 `tickInterval` attribute (set to `1` along with the `thumbLabel` attribute) only for sliders that
 are used to display a discrete value (such as a 1-5 rating).
 

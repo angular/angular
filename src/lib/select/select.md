@@ -1,6 +1,6 @@
 `<mat-select>` is a form control for selecting a value from a set of options, similar to the native
 `<select>` element. You can read more about selects in the
-[Material Design spec](https://material.google.com/components/menus.html). It is designed to work
+[Material Design spec](https://material.io/design/components/menus.html). It is designed to work
 inside of a [`<mat-form-field>`](https://material.angular.io/components/form-field/overview)
 element.
 

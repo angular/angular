@@ -103,7 +103,7 @@ export function MAT_TOOLTIP_DEFAULT_OPTIONS_FACTORY(): MatTooltipDefaultOptions 
  * Directive that attaches a material design tooltip to the host element. Animates the showing and
  * hiding of a tooltip provided position (defaults to below the element).
  *
- * https://material.google.com/components/tooltips.html
+ * https://material.io/design/components/tooltips.html
  */
 @Directive({
   selector: '[matTooltip]',
@@ -612,7 +612,7 @@ export class TooltipComponent {
   /**
    * Interactions on the HTML body should close the tooltip immediately as defined in the
    * material design spec.
-   * https://material.google.com/components/tooltips.html#tooltips-interaction
+   * https://material.io/design/components/tooltips.html#behavior
    */
   _handleBodyInteraction(): void {
     if (this._closeOnInteraction) {

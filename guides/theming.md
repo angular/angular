@@ -16,7 +16,7 @@ a theme consists of:
 In Angular Material, all theme styles are generated _statically_ at build-time so that your
 app doesn't have to spend cycles generating theme styles on startup.
 
-[1]: https://material.google.com/style/color.html#color-color-palette
+[1]: https://material.io/archive/guidelines/style/color.html#color-color-palette
 
 ### Using a pre-built theme
 Angular Material comes prepackaged with several pre-built theme css files. These theme files also
