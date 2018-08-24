@@ -211,24 +211,29 @@
           "tooltip": "Angular Forms",
           "children": [
             {
+              "url": "guide/forms-overview",
+              "title": "Forms Overview",
+              "tooltip": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
+            },            
+            {
               "url": "guide/user-input",
               "title": "User Input",
               "tooltip": "User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models."
             },
             {
+              "url": "guide/reactive-forms",
+              "title": "Reactive Forms",
+              "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
+            },
+            {
               "url": "guide/forms",
               "title": "Template-driven Forms",
-              "tooltip": "A form creates a cohesive, effective, and compelling data entry experience. An Angular form coordinates a set of data-bound user controls, tracks changes, validates input, and presents errors."
+              "tooltip": "Create a template-driven form using directives and Angular template syntax"
             },
             {
               "url": "guide/form-validation",
               "title": "Form Validation",
               "tooltip": "Validate user's form entries."
-            },
-            {
-              "url": "guide/reactive-forms",
-              "title": "Reactive Forms",
-              "tooltip": "Create a reactive form using FormBuilder, groups, and arrays."
             },
             {
               "url": "guide/dynamic-form",
