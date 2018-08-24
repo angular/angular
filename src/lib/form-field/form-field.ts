@@ -141,6 +141,7 @@ export const MAT_FORM_FIELD_DEFAULT_OPTIONS =
 export class MatFormField extends _MatFormFieldMixinBase
     implements AfterContentInit, AfterContentChecked, AfterViewInit, CanColor {
   private _labelOptions: LabelOptions;
+  private _outlineGapCalculationNeeded = false;
 
   /** The form-field appearance style. */
   @Input()
@@ -300,6 +301,9 @@ export class MatFormField extends _MatFormFieldMixinBase
 
   ngAfterContentChecked() {
     this._validateControlChild();
+    if (this._outlineGapCalculationNeeded) {
+      this.updateOutlineGap();
+    }
   }
 
   ngAfterViewInit() {
@@ -451,6 +455,17 @@ export class MatFormField extends _MatFormFieldMixinBase
       return;
     }
 
+    if (this._platform && !this._platform.isBrowser) {
+      // getBoundingClientRect isn't available on the server.
+      return;
+    }
+    // If the element is not present in the DOM, the outline gap will need to be calculated
+    // the next time it is checked and in the DOM.
+    if (!document.documentElement.contains(this._elementRef.nativeElement)) {
+      this._outlineGapCalculationNeeded = true;
+      return;
+    }
+
     let startWidth = 0;
     let gapWidth = 0;
     const startEls = this._connectionContainerRef.nativeElement.querySelectorAll<HTMLElement>(
@@ -458,14 +473,6 @@ export class MatFormField extends _MatFormFieldMixinBase
     const gapEls = this._connectionContainerRef.nativeElement.querySelectorAll<HTMLElement>(
         '.mat-form-field-outline-gap');
     if (this._label && this._label.nativeElement.children.length) {
-      if (this._platform && !this._platform.isBrowser) {
-        // getBoundingClientRect isn't available on the server.
-        return;
-      }
-      if (!document.documentElement.contains(this._elementRef.nativeElement)) {
-        return;
-      }
-
       const containerStart = this._getStartEnd(
           this._connectionContainerRef.nativeElement.getBoundingClientRect());
       const labelStart = this._getStartEnd(labelEl.children[0].getBoundingClientRect());
@@ -484,6 +491,8 @@ export class MatFormField extends _MatFormFieldMixinBase
     for (let i = 0; i < gapEls.length; i++) {
       gapEls.item(i).style.width = `${gapWidth}px`;
     }
+
+    this._outlineGapCalculationNeeded = false;
   }
 
   /** Gets the start end of the rect considering the current directionality. */
