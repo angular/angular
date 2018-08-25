@@ -11,7 +11,7 @@
 
 
 export const environment = {
-  gaId: 'UA-8594346-26', // Development id
+  gaId: 'UA-115919952-1', // Development id
   production: false,
   mode: 'stable'
 };
