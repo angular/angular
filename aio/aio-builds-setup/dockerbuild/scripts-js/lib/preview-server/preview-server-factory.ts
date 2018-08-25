@@ -64,9 +64,35 @@ export class PreviewServerFactory {
                                  buildCreator: BuildCreator, cfg: PreviewServerConfig): express.Express {
     const middleware = express();
     const jsonParser = bodyParser.json();
+    const significantFilesRe = new RegExp(cfg.significantFilesPattern);
 
     // RESPOND TO IS-ALIVE PING
     middleware.get(/^\/health-check\/?$/, (_req, res) => res.sendStatus(200));
+
+    // RESPOND TO CAN-HAVE-PUBLIC-PREVIEW CHECK
+    const canHavePublicPreviewRe = /^\/can-have-public-preview\/(\d+)\/?$/;
+    middleware.get(canHavePublicPreviewRe, async (req, res) => {
+      try {
+        const pr = +canHavePublicPreviewRe.exec(req.url)![1];
+
+        if (!await buildVerifier.getSignificantFilesChanged(pr, significantFilesRe)) {
+          // Cannot have preview: PR did not touch relevant files: `aio/` or `packages/` (except for spec files).
+          res.send({canHavePublicPreview: false, reason: 'No significant files touched.'});
+          logger.log(`PR:${pr} - Cannot have a public preview, because it did not touch any significant files.`);
+        } else if (!await buildVerifier.getPrIsTrusted(pr)) {
+          // Cannot have preview: PR not automatically verifiable as "trusted".
+          res.send({canHavePublicPreview: false, reason: 'Not automatically verifiable as "trusted".'});
+          logger.log(`PR:${pr} - Cannot have a public preview, because not automatically verifiable as "trusted".`);
+        } else {
+          // Can have preview.
+          res.send({canHavePublicPreview: true, reason: null});
+          logger.log(`PR:${pr} - Can have a public preview.`);
+        }
+      } catch (err) {
+        logger.error('Previewability check error', err);
+        respondWithError(res, err);
+      }
+    });
 
     // CIRCLE_CI BUILD COMPLETE WEBHOOK
     middleware.post(/^\/circle-build\/?$/, jsonParser, async (req, res) => {
@@ -108,7 +134,7 @@ export class PreviewServerFactory {
           `Invalid webhook: expected "githubRepo" property to equal "${cfg.githubRepo}" but got "${repo}".`);
 
         // Do not deploy unless this PR has touched relevant files: `aio/` or `packages/` (except for spec files)
-        if (!await buildVerifier.getSignificantFilesChanged(pr, new RegExp(cfg.significantFilesPattern))) {
+        if (!await buildVerifier.getSignificantFilesChanged(pr, significantFilesRe)) {
           res.sendStatus(204);
           logger.log(`PR:${pr}, Build:${buildNum} - ` +
                      `Skipping preview processing because this PR did not touch any significant files.`);

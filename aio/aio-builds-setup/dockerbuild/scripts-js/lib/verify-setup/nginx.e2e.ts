@@ -3,6 +3,7 @@ import * as path from 'path';
 import {rm} from 'shelljs';
 import {AIO_BUILDS_DIR, AIO_NGINX_HOSTNAME, AIO_NGINX_PORT_HTTP, AIO_NGINX_PORT_HTTPS} from '../common/env-variables';
 import {computeShortSha} from '../common/utils';
+import {PrNums} from './constants';
 import {helper as h} from './helper';
 import {customMatchers} from './jasmine-custom-matchers';
 
@@ -252,6 +253,42 @@ describe(`nginx`, () => {
     });
 
 
+    describe(`${host}/can-have-public-preview`, () => {
+      const baseUrl = `${scheme}://${host}/can-have-public-preview`;
+
+
+      it('should disallow non-GET requests', async () => {
+        await Promise.all([
+          h.runCmd(`curl -iLX POST ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX PUT ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX PATCH ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
+          h.runCmd(`curl -iLX DELETE ${baseUrl}/42`).then(h.verifyResponse([405, 'Not Allowed'])),
+        ]);
+      });
+
+
+      it('should pass requests through to the preview server', async () => {
+        await h.runCmd(`curl -iLX GET ${baseUrl}/${PrNums.CHANGED_FILES_ERROR}`).
+          then(h.verifyResponse(500, /CHANGED_FILES_ERROR/));
+      });
+
+
+      it('should respond with 404 for unknown paths', async () => {
+        const cmdPrefix = `curl -iLX GET ${baseUrl}`;
+
+        await Promise.all([
+          h.runCmd(`${cmdPrefix}/foo/42`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}-foo/42`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}nfoo/42`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/42/foo`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/f00`).then(h.verifyResponse(404)),
+          h.runCmd(`${cmdPrefix}/`).then(h.verifyResponse(404)),
+        ]);
+      });
+
+    });
+
+
     describe(`${host}/circle-build`, () => {
 
       it('should disallow non-POST requests', done => {
@@ -287,6 +324,7 @@ describe(`nginx`, () => {
           h.runCmd(`${cmdPrefix}/circle-build/42`).then(h.verifyResponse(404)),
         ]).then(done);
       });
+
     });
 
 

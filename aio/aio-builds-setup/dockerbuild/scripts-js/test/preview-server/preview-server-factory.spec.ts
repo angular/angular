@@ -39,6 +39,7 @@ describe('PreviewServerFactory', () => {
     significantFilesPattern: '^(?:aio|packages)\\/(?!.*[._]spec\\.[jt]s$)',
     trustedPrLabel: 'trusted: pr-label',
   };
+  let loggerErrorSpy: jasmine.Spy;
   let loggerInfoSpy: jasmine.Spy;
   let loggerLogSpy: jasmine.Spy;
 
@@ -47,9 +48,9 @@ describe('PreviewServerFactory', () => {
     PreviewServerFactory.create({...defaultConfig, ...partialConfig});
 
   beforeEach(() => {
+    loggerErrorSpy = spyOn(Logger.prototype, 'error');
     loggerInfoSpy = spyOn(Logger.prototype, 'info');
     loggerLogSpy = spyOn(Logger.prototype, 'log');
-    spyOn(Logger.prototype, 'error');
   });
 
   describe('create()', () => {
@@ -292,6 +293,102 @@ describe('PreviewServerFactory', () => {
           agent.get('/foo-health-check').expect(404),
           agent.get('/foonhealth-check').expect(404),
         ]);
+      });
+
+    });
+
+
+    describe('GET /can-have-public-preview/<pr>', () => {
+      const baseUrl = '/can-have-public-preview';
+      const pr = 777;
+      const url = `${baseUrl}/${pr}`;
+      let bvGetPrIsTrustedSpy: jasmine.Spy;
+      let bvGetSignificantFilesChangedSpy: jasmine.Spy;
+
+      beforeEach(() => {
+        bvGetPrIsTrustedSpy = spyOn(buildVerifier, 'getPrIsTrusted').and.returnValue(Promise.resolve(true));
+        bvGetSignificantFilesChangedSpy = spyOn(buildVerifier, 'getSignificantFilesChanged').
+          and.returnValue(Promise.resolve(true));
+      });
+
+
+      it('should respond with 404 for non-GET requests', async () => {
+        await Promise.all([
+          agent.put(url).expect(404),
+          agent.post(url).expect(404),
+          agent.patch(url).expect(404),
+          agent.delete(url).expect(404),
+        ]);
+      });
+
+
+      it('should respond with 404 if the path does not match exactly', async () => {
+        await Promise.all([
+          agent.get('/can-have-public-preview/42/foo').expect(404),
+          agent.get('/can-have-public-preview-foo/42').expect(404),
+          agent.get('/can-have-public-previewnfoo/42').expect(404),
+          agent.get('/foo/can-have-public-preview/42').expect(404),
+          agent.get('/foo-can-have-public-preview/42').expect(404),
+          agent.get('/fooncan-have-public-preview/42').expect(404),
+        ]);
+      });
+
+
+      it('should respond appropriately if the PR did not touch any significant files', async () => {
+        bvGetSignificantFilesChangedSpy.and.returnValue(Promise.resolve(false));
+
+        const expectedResponse = {canHavePublicPreview: false, reason: 'No significant files touched.'};
+        const expectedLog = `PR:${pr} - Cannot have a public preview, because it did not touch any significant files.`;
+
+        await agent.get(url).expect(200, expectedResponse);
+
+        expect(bvGetSignificantFilesChangedSpy).toHaveBeenCalledWith(pr, jasmine.any(RegExp));
+        expect(bvGetPrIsTrustedSpy).not.toHaveBeenCalled();
+        expect(loggerLogSpy).toHaveBeenCalledWith(expectedLog);
+      });
+
+
+      it('should respond appropriately if the PR is not automatically verifiable as "trusted"', async () => {
+        bvGetPrIsTrustedSpy.and.returnValue(Promise.resolve(false));
+
+        const expectedResponse = {canHavePublicPreview: false, reason: 'Not automatically verifiable as "trusted".'};
+        const expectedLog =
+          `PR:${pr} - Cannot have a public preview, because not automatically verifiable as "trusted".`;
+
+        await agent.get(url).expect(200, expectedResponse);
+
+        expect(bvGetSignificantFilesChangedSpy).toHaveBeenCalledWith(pr, jasmine.any(RegExp));
+        expect(bvGetPrIsTrustedSpy).toHaveBeenCalledWith(pr);
+        expect(loggerLogSpy).toHaveBeenCalledWith(expectedLog);
+      });
+
+
+      it('should respond appropriately if the PR can have a preview', async () => {
+        const expectedResponse = {canHavePublicPreview: true, reason: null};
+        const expectedLog = `PR:${pr} - Can have a public preview.`;
+
+        await agent.get(url).expect(200, expectedResponse);
+
+        expect(bvGetSignificantFilesChangedSpy).toHaveBeenCalledWith(pr, jasmine.any(RegExp));
+        expect(bvGetPrIsTrustedSpy).toHaveBeenCalledWith(pr);
+        expect(loggerLogSpy).toHaveBeenCalledWith(expectedLog);
+      });
+
+
+      it('should respond with error if `getSignificantFilesChanged()` fails', async () => {
+        bvGetSignificantFilesChangedSpy.and.callFake(() => Promise.reject('getSignificantFilesChanged error'));
+
+        await agent.get(url).expect(500, 'getSignificantFilesChanged error');
+        expect(loggerErrorSpy).toHaveBeenCalledWith('Previewability check error', 'getSignificantFilesChanged error');
+      });
+
+
+      it('should respond with error if `getPrIsTrusted()` fails', async () => {
+        const error = new Error('getPrIsTrusted error');
+        bvGetPrIsTrustedSpy.and.callFake(() => { throw error; });
+
+        await agent.get(url).expect(500, 'getPrIsTrusted error');
+        expect(loggerErrorSpy).toHaveBeenCalledWith('Previewability check error', error);
       });
 
     });
