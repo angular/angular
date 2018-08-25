@@ -100,14 +100,19 @@ export function stringifyElement(el: any /** TODO #9100 */): string {
 
     // Attributes in an ordered way
     const attributeMap = getDOM().attributeMap(el);
-    const keys: string[] = Array.from(attributeMap.keys()).sort();
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      const attValue = attributeMap.get(key);
+    const sortedKeys = Array.from(attributeMap.keys()).sort();
+    for (const key of sortedKeys) {
       const lowerCaseKey = key.toLowerCase();
+      let attValue = attributeMap.get(key);
+
       if (typeof attValue !== 'string') {
         result += ` ${lowerCaseKey}`;
       } else {
+        // Browsers order style rules differently. Order them alphabetically for consistency.
+        if (lowerCaseKey === 'style') {
+          attValue = attValue.split(/; ?/).filter(s => !!s).sort().map(s => `${s};`).join(' ');
+        }
+
         result += ` ${lowerCaseKey}="${attValue}"`;
       }
     }
