@@ -25,6 +25,23 @@ with a brief explanation of what they mean:
   File not found.
 
 
+## `https://ngbuilds.io/can-have-public-preview/<pr>`
+
+- **200 (OK)**:
+  Whether the PR can have a public preview (based on its author, label, changed files).
+  _Response type:_ JSON
+  _Response format:_
+  ```ts
+  {
+    canHavePublicPreview: boolean,
+    reason: string | null,
+  }
+  ```
+
+- **405 (Method Not Allowed)**:
+  Request method other than GET.
+
+
 ## `https://ngbuilds.io/circle-build`
 
 - **201 (Created)**:
