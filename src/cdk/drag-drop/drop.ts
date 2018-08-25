@@ -30,6 +30,12 @@ import {moveItemInArray} from './drag-utils';
 /** Counter used to generate unique ids for drop zones. */
 let _uniqueIdCounter = 0;
 
+/**
+ * Proximity, as a ratio to width/height, at which a
+ * dragged item will affect the drop container.
+ */
+const DROP_PROXIMITY_THRESHOLD = 0.05;
+
 /** Container that wraps a set of draggable items. */
 @Component({
   moduleId: module.id,
@@ -112,7 +118,8 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
   /** Cache of the dimensions of all the items and the sibling containers. */
   private _positionCache = {
     items: [] as {drag: CdkDrag, clientRect: ClientRect, offset: number}[],
-    siblings: [] as {drop: CdkDrop, clientRect: ClientRect}[]
+    siblings: [] as {drop: CdkDrop, clientRect: ClientRect}[],
+    self: {} as ClientRect
   };
 
   /**
@@ -150,16 +157,16 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
   /**
    * Emits an event to indicate that the user moved an item into the container.
    * @param item Item that was moved into the container.
-   * @param xOffset Position of the item along the X axis.
-   * @param yOffset Position of the item along the Y axis.
+   * @param pointerX Position of the item along the X axis.
+   * @param pointerY Position of the item along the Y axis.
    */
-  enter(item: CdkDrag, xOffset: number, yOffset: number): void {
+  enter(item: CdkDrag, pointerX: number, pointerY: number): void {
     this.entered.emit({item, container: this});
     this.start();
 
     // We use the coordinates of where the item entered the drop
     // zone to figure out at which index it should be inserted.
-    const newIndex = this._getItemIndexFromPointerPosition(item, xOffset, yOffset);
+    const newIndex = this._getItemIndexFromPointerPosition(item, pointerX, pointerY);
     const currentIndex = this._activeDraggables.indexOf(item);
     const newPositionReference = this._activeDraggables[newIndex];
     const placeholder = item.getPlaceholderElement();
@@ -211,12 +218,17 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
   /**
    * Sorts an item inside the container based on its position.
    * @param item Item to be sorted.
-   * @param xOffset Position of the item along the X axis.
-   * @param yOffset Position of the item along the Y axis.
+   * @param pointerX Position of the item along the X axis.
+   * @param pointerY Position of the item along the Y axis.
    */
-  _sortItem(item: CdkDrag, xOffset: number, yOffset: number): void {
+  _sortItem(item: CdkDrag, pointerX: number, pointerY: number): void {
+    // Don't sort the item if it's out of range.
+    if (!this._isPointerNearDropContainer(pointerX, pointerY)) {
+      return;
+    }
+
     const siblings = this._positionCache.items;
-    const newIndex = this._getItemIndexFromPointerPosition(item, xOffset, yOffset);
+    const newIndex = this._getItemIndexFromPointerPosition(item, pointerX, pointerY);
 
     if (newIndex === -1 && siblings.length > 0) {
       return;
@@ -321,6 +333,8 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
       .map(drop => typeof drop === 'string' ? this._dragDropRegistry.getDropContainer(drop)! : drop)
       .filter(drop => drop && drop !== this)
       .map(drop => ({drop, clientRect: drop.element.nativeElement.getBoundingClientRect()}));
+
+    this._positionCache.self = this.element.nativeElement.getBoundingClientRect();
   }
 
   /** Resets the container to its initial state. */
@@ -351,10 +365,10 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
   /**
    * Gets the index of an item in the drop container, based on the position of the user's pointer.
    * @param item Item that is being sorted.
-   * @param xOffset Position of the user's pointer along the X axis.
-   * @param yOffset Position of the user's pointer along the Y axis.
+   * @param pointerX Position of the user's pointer along the X axis.
+   * @param pointerY Position of the user's pointer along the Y axis.
    */
-  private _getItemIndexFromPointerPosition(item: CdkDrag, xOffset: number, yOffset: number) {
+  private _getItemIndexFromPointerPosition(item: CdkDrag, pointerX: number, pointerY: number) {
     return this._positionCache.items.findIndex(({drag, clientRect}, _, array) => {
       if (drag === item) {
         // If there's only one item left in the container, it must be
@@ -365,8 +379,22 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
       return this.orientation === 'horizontal' ?
           // Round these down since most browsers report client rects with
           // sub-pixel precision, whereas the mouse coordinates are rounded to pixels.
-          xOffset >= Math.floor(clientRect.left) && xOffset <= Math.floor(clientRect.right) :
-          yOffset >= Math.floor(clientRect.top) && yOffset <= Math.floor(clientRect.bottom);
+          pointerX >= Math.floor(clientRect.left) && pointerX <= Math.floor(clientRect.right) :
+          pointerY >= Math.floor(clientRect.top) && pointerY <= Math.floor(clientRect.bottom);
     });
+  }
+
+  /**
+   * Checks whether the pointer coordinates are close to the drop container.
+   * @param pointerX Coordinates along the X axis.
+   * @param pointerY Coordinates along the Y axis.
+   */
+  private _isPointerNearDropContainer(pointerX: number, pointerY: number): boolean {
+    const {top, right, bottom, left, width, height} = this._positionCache.self;
+    const xThreshold = width * DROP_PROXIMITY_THRESHOLD;
+    const yThreshold = height * DROP_PROXIMITY_THRESHOLD;
+
+    return pointerY > top - yThreshold && pointerY < bottom + yThreshold &&
+           pointerX > left - xThreshold && pointerX < right + xThreshold;
   }
 }

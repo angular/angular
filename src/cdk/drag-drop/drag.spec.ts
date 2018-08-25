@@ -461,6 +461,41 @@ describe('CdkDrag', () => {
           .toEqual(['One', 'Two', 'Zero', 'Three']);
     }));
 
+    it('should not move items in a vertical list if the pointer is too far away', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      const firstItem = dragItems.first;
+      const thirdItemRect = dragItems.toArray()[2].element.nativeElement.getBoundingClientRect();
+
+      // Move the cursor all the way to the right so it doesn't intersect along the x axis.
+      dragElementViaMouse(fixture, firstItem.element.nativeElement,
+          thirdItemRect.right + 1000, thirdItemRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      // Assert the event like this, rather than `toHaveBeenCalledWith`, because Jasmine will
+      // go into an infinite loop trying to stringify the event, if the test fails.
+      expect(event).toEqual({
+        previousIndex: 0,
+        currentIndex: 0,
+        item: firstItem,
+        container: fixture.componentInstance.dropInstance,
+        previousContainer: fixture.componentInstance.dropInstance
+      });
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+    }));
+
     it('should not move the original element from its initial DOM position', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
@@ -516,6 +551,41 @@ describe('CdkDrag', () => {
 
       expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
           .toEqual(['One', 'Two', 'Zero', 'Three']);
+    }));
+
+    it('should not move items in a horizontal list if pointer is too far away', fakeAsync(() => {
+      const fixture = createComponent(DraggableInHorizontalDropZone);
+      fixture.detectChanges();
+      const dragItems = fixture.componentInstance.dragItems;
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      const firstItem = dragItems.first;
+      const thirdItemRect = dragItems.toArray()[2].element.nativeElement.getBoundingClientRect();
+
+      // Move the cursor all the way to the bottom so it doesn't intersect along the y axis.
+      dragElementViaMouse(fixture, firstItem.element.nativeElement,
+          thirdItemRect.left + 1, thirdItemRect.bottom + 1000);
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      // Assert the event like this, rather than `toHaveBeenCalledWith`, because Jasmine will
+      // go into an infinite loop trying to stringify the event, if the test fails.
+      expect(event).toEqual({
+        previousIndex: 0,
+        currentIndex: 0,
+        item: firstItem,
+        container: fixture.componentInstance.dropInstance,
+        previousContainer: fixture.componentInstance.dropInstance
+      });
+
+      expect(dragItems.map(drag => drag.element.nativeElement.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
     }));
 
     it('should create a preview element while the item is dragged', fakeAsync(() => {
