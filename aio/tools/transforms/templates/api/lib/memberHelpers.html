@@ -47,6 +47,11 @@
 
 <code-example language="ts" hideCopy="true" linenums="false" class="no-box api-heading">{$ renderMemberSyntax(overload) $}</code-example>
 
+{% if overload.deprecated !== undefined %}
+<div class="deprecated">
+  {$ ('**Deprecated** ' + overload.deprecated) | marked $}
+</div>{% endif %}
+
 <h4 class="no-anchor">Parameters</h4>
 {$ params.renderParameters(overload.parameterDocs, cssClass + '-parameters', cssClass + '-parameter') $}
 
@@ -97,6 +102,13 @@
       </td>
     </tr>
   {% elseif method.overloads.length < 3 -%}
+    {% if method.isAbstract %}
+      <tr>
+        <td>
+          {$ renderOverloadInfo(method, cssClass + '-overload', method) $}
+        </td>
+      </tr>
+    {% endif %}
     {% for overload in method.overloads -%}
     <tr>
       <td>
@@ -110,7 +122,11 @@
         <details class="overloads">
           <summary><h4 class="no-anchor">{$ method.overloads.length $} overloads...</h4></summary>
           <div class="detail-contents">
-              {% for overload in method.overloads %}
+                {% if method.isAbstract %}
+                  {$ renderOverloadInfo(method, cssClass + '-overload', method) $}
+                  <hr class="hr-margin fullwidth">
+                {% endif %}
+                {% for overload in method.overloads %}
                 {$ renderOverloadInfo(overload, cssClass + '-overload', method) $}
                 {% if not loop.last %}<hr class="hr-margin fullwidth">{% endif %}
               {% endfor %}
