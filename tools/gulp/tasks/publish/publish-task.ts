@@ -1,11 +1,12 @@
+import {green, grey, red, yellow} from 'chalk';
 import {spawn} from 'child_process';
 import {existsSync, statSync} from 'fs-extra';
-import {join} from 'path';
 import {task} from 'gulp';
-import {execTask} from '../util/task_helpers';
 import {buildConfig, sequenceTask} from 'material2-build-tools';
-import {yellow, green, red, grey} from 'chalk';
 import * as minimist from 'minimist';
+import {join} from 'path';
+import {execTask} from '../../util/task_helpers';
+import {checkPublishBranch, versionNameRegex} from './branch-check';
 
 /** Packages that will be published to NPM by the release task. */
 export const releasePackages = [
@@ -15,9 +16,6 @@ export const releasePackages = [
   'material-experimental',
   'material-moment-adapter'
 ];
-
-/** Regular Expression that matches valid version numbers of Angular Material. */
-export const validVersionRegex = /^\d+\.\d+\.\d+(-(alpha|beta|rc)\.\d+)?$/;
 
 /** Parse command-line arguments for release task. */
 const argv = minimist(process.argv.slice(3));
@@ -50,38 +48,39 @@ task(':publish', async () => {
   const version = buildConfig.projectVersion;
   const currentDir = process.cwd();
 
-  if (!version.match(validVersionRegex)) {
-    console.log(red(`Error: Cannot publish due to an invalid version name. Version "${version}" ` +
-      `is not following our semver format.`));
-    console.log(yellow(`A version should follow this format: X.X.X, X.X.X-beta.X, X.X.X-alpha.X, ` +
-        `X.X.X-rc.X`));
+  if (!version.match(versionNameRegex)) {
+    console.error(red(`Error: Cannot publish due to an invalid version name. Version ` +
+        `"${version}" is not following our semver format.`));
+    console.error(yellow(`A version should follow this format: X.X.X, X.X.X-beta.X, ` +
+        `X.X.X-alpha.X, X.X.X-rc.X`));
     return;
   }
 
-  console.log('');
+  console.log();
   if (!tag) {
     console.log(grey('> You can specify the tag by passing --tag=labelName.\n'));
     console.log(green(`Publishing version "${version}" to the latest tag...`));
   } else {
     console.log(yellow(`Publishing version "${version}" to the ${tag} tag...`));
   }
-  console.log('');
-
+  console.log();
 
   if (version.match(/(alpha|beta|rc)/) && (!tag || tag === 'latest')) {
-    console.log(red(`Publishing ${version} to the "latest" tag is not allowed.`));
-    console.log(red(`Alpha, Beta or RC versions shouldn't be published to "latest".`));
-    console.log();
+    console.error(red(`Publishing ${version} to the "latest" tag is not allowed.`));
+    console.error(red(`Alpha, Beta or RC versions shouldn't be published to "latest".`));
+    console.error();
     return;
   }
 
   if (releasePackages.length > 1) {
-    console.warn(red('Warning: Multiple packages will be released if proceeding.'));
-    console.warn(red('Warning: Packages to be released:', releasePackages.join(', ')));
-    console.log();
+    console.warn(yellow('Warning: Multiple packages will be released.'));
+    console.warn(yellow('Warning: Packages to be released:', releasePackages.join(', ')));
+    console.warn();
   }
 
-  console.log(yellow('> Make sure to check the "angularVersion" in the build config.'));
+  checkPublishBranch(version);
+
+  console.log(yellow('> Make sure to check the "requiredAngularVersion" in the package.json.'));
   console.log(yellow('> The version in the config defines the peer dependency of Angular.'));
   console.log();
 

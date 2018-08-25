@@ -28,7 +28,8 @@ import './tasks/example-module';
 import './tasks/lint';
 import './tasks/material-release';
 import './tasks/payload';
-import './tasks/publish';
 import './tasks/unit-test';
 import './tasks/universal';
-import './tasks/validate-release';
+
+import './tasks/publish/publish-task';
+import './tasks/publish/validate-release';

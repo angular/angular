@@ -2,7 +2,7 @@ import {task} from 'gulp';
 import {readFileSync, existsSync} from 'fs';
 import {join} from 'path';
 import {green, red} from 'chalk';
-import {releasePackages} from './publish';
+import {releasePackages} from './publish-task';
 import {sync as glob} from 'glob';
 import {spawnSync} from 'child_process';
 import {buildConfig, sequenceTask} from 'material2-build-tools';
@@ -10,7 +10,7 @@ import {buildConfig, sequenceTask} from 'material2-build-tools';
 const {projectDir, projectVersion, outputDir} = buildConfig;
 
 /** Git repository URL that has been read out from the project package.json file. */
-const repositoryGitUrl = require('../../../package.json').repository.url;
+const repositoryGitUrl = require('../../../../package.json').repository.url;
 
 /** Path to the directory where all releases are created. */
 const releasesDir = join(outputDir, 'releases');
