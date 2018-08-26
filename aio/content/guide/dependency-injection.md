@@ -1,19 +1,37 @@
+<!--
 # Angular Dependency Injection
+-->
+# Angular의 의존성 주입
 
+<!--
 **Dependency Injection (DI)** is a way to create objects that depend upon other objects.
 A Dependency Injection system supplies the dependent objects (called the _dependencies_)
 when it creates an instance of an object.
+-->
+**의존성 주입 (Dependency Injection, DI)**은 의존성으로 필요한 객체를 클래스 외부에서 만들어서 전달받는 디자인 패턴입니다. 그리고 이 때 의존성 주입 시스템이 의존성 객체를 만드는 역할을 합니다.
 
+<!--
 The [Dependency Injection pattern](guide/dependency-injection-pattern) page describes this general approach.
 _The guide you're reading now_ explains how Angular's own Dependency Injection system works.
+-->
+의존성 주입의 일반적인 내용은 [의존성 주입 패턴](guide/dependency-injection-pattern) 문서에서 이미 소개했습니다. _이번 가이드 문서_ 에서는 Angular의 의존성 주입 시스템이 어떻게 동작하는지 소개합니다.
 
+<!--
 ## DI by example
+-->
+## 예제로 보는 DI
 
+<!--
 You'll learn Angular Dependency Injection through a discussion of the sample app that accompanies this guide.
 Run the <live-example></live-example> anytime.
+-->
+이 문서에서는 예제 애플리케이션을 살펴 보면서 Angular의 의존성 주입 시스템에 대해 알아볼 것입니다. 이 문서에서 설명하는 예제는 <live-example></live-example>에서 직접 확인하거나 다운받아 확인할 수 있습니다.
 
+<!--
 Start by reviewing this simplified version of the _heroes_ feature
 from the [The Tour of Heroes](tutorial/).
+-->
+[히어로들의 여행](tutorial/) 튜토리얼에서 작성했던 예제를 간단하게 만든 예제부터 시작해 봅시다.
 
 <code-tabs>
   <code-pane title="src/app/heroes/heroes.component.ts" path="dependency-injection/src/app/heroes/heroes.component.1.ts"
@@ -31,51 +49,85 @@ from the [The Tour of Heroes](tutorial/).
 
 </code-tabs>
 
+<!--
 The `HeroesComponent` is the top-level heroes component.
 Its only purpose is to display the `HeroListComponent`
 which displays a list of hero names.
+-->
+`HeroesComponent`는 이 예제의 최상위 컴포넌트입니다. 이 컴포넌트의 역할은 화면에 히어로의 목록을 `HeroListComponent`로 표시하는 것입니다.
 
+<!--
 This version of the `HeroListComponent` gets its `heroes` from the `HEROES` array, an in-memory collection
 defined in a separate `mock-heroes` file.
+-->
+이 코드에서 `HeroListComponent`의 `heroes` 프로퍼티는 `HEROES` 배열에서 가져오는데, 이 배열은 `mock-heroes` 파일에서 가져온 인-메모리 콜렉션입니다.
 
 <code-example title="src/app/heroes/hero-list.component.ts (class)" path="dependency-injection/src/app/heroes/hero-list.component.1.ts"
 region="class">
 </code-example>
 
+<!--
 That may suffice in the early stages of development, but it's far from ideal.
 As soon as you try to test this component or get heroes from a remote server,
 you'll have to change the implementation of `HerosListComponent` and
 replace every other use of the `HEROES` mock data.
+-->
+개발 초기 단계에는 이렇게 구현해도 문제되지 않지만, 이상적인 방법은 아닙니다. 개발을 진행하면서 이 컴포넌트를 테스트해야 하거나, 원격 서버에서 목록을 가져와야 하면 `HeroListComponent`에서 이 내용과 관련된 코드를 수정해야 하며 `HEROES` 목 데이터를 사용하는 다른 코드도 수정해야 합니다.
 
+<!--
 It's better to hide these details inside a _service_ class, 
 [defined in its own file](#one-class-per-file).
+-->
+그래서 이 히어로의 목록을 제공하는 기능은 _서비스_ 클래스 안쪽으로 옮기는 것이 더 나은 방법이며, 이 서비스도 [개별 파일로](#one-class-per-file) 정의하는 것이 좋습니다.
 
+<!--
 ## Create an injectable _HeroService_
+-->
+## 의존성 주입에 사용할 _HeroService_ 정의하기
 
+<!--
 The [**Angular CLI**](https://cli.angular.io/) can generate a new `HeroService` class in the `src/app/heroes` folder with this command.
+-->
+`src/app/heroes` 폴더에서 다음 명령을 실행하면 [**Angular CLI**](https://cli.angular.io/)를 사용해서 `HeroService` 클래스를 생성할 수 있습니다.
 
 <code-example language="sh" class="code-shell">
 ng generate service heroes/hero
 </code-example>
 
+<!--
 The command above creates the following `HeroService` skeleton.
+-->
+그러면 다음과 같이 `HeroService` 기본 코드가 생성됩니다.
 
+<!--
 <code-example path="dependency-injection/src/app/heroes/hero.service.0.ts" title="src/app/heroes/hero.service.ts (CLI-generated)">
 </code-example>
+-->
+<code-example path="dependency-injection/src/app/heroes/hero.service.0.ts" title="src/app/heroes/hero.service.ts (CLI로 생성한 기본 코드)">
+</code-example>
 
+<!--
 The `@Injectable` decorator is an essential ingredient in every Angular service definition.
 The rest of the class has been rewritten to expose a `getHeroes` method 
 that returns the same mock data as before.
+-->
+Angular 서비스를 정의할 때 `@Injectable` 데코레이터는 아주 중요한 역할을 합니다. 그리고 이전에 목 데이터를 가져왔던 로직은 이 클래스에 `getHeroes` 메소드로 다음과 같이 정의합니다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.3.ts" title="src/app/heroes/hero.service.3.ts">
 </code-example>
 
+<!--
 Of course, this isn't a real data service.
 If the app were actually getting data from a remote server, 
 the `getHeroes` method signature would have to be asynchronous.
+-->
+당연히 이 데이터는 실제 데이터가 아닙니다. 원격 서버에서 실제 데이터를 가져와야 한다면 `getHeroes` 메소드가 비동기로 동작하도록 수정해야 합니다.
 
+<!--
 That's a defect we can safely ignore in this guide where our focus is on
 _injecting the service_ into the `HeroList` component.
+-->
+이 문서에서 우리가 다루는 내용은 `HeroList` 컴포넌트에 _서비스를 주입하는 것_ 이기 때문에 지금은 이대로 넘어가도록 합시다.
 
 
 {@a injector-config}
