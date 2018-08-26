@@ -75,7 +75,7 @@ globally cause input errors to show when the input is dirty and invalid.
 ### Auto-resizing `<textarea>` elements
 
 `<textarea>` elements can be made to automatically resize by using the
-[`cdkAutosizeTextarea` directive](https://material.angular.io/cdk/text-field/overview#automatically-resizing-a-textarea)
+[`cdkTextareaAutosize` directive](https://material.angular.io/components/input/overview#auto-resizing-code-lt-textarea-gt-code-elements)
 available in the CDK.
 
 ### Responding to changes in the autofill state of an `<input>`
