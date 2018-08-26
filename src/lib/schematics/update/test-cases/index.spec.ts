@@ -21,6 +21,7 @@ describe('test cases', () => {
     'v5/element-selectors',
     'v5/input-names',
     'v5/output-names',
+    'v5/property-names',
   ];
 
   // Iterates through every test case directory and generates a jasmine test block that will

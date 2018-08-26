@@ -34,10 +34,10 @@ export default function(): Rule {
           path.join(__dirname, 'rules/output-names'),
           path.join(__dirname, 'rules/css-selectors'),
           path.join(__dirname, 'rules/element-selectors'),
+          path.join(__dirname, 'rules/property-names'),
         ],
         rules: {
           // Automatic fixes.
-          'switch-property-names': true,
           'switch-template-export-as-names': true,
 
           // Attribute selector update rules.
@@ -66,12 +66,15 @@ export default function(): Rule {
           // Output name update rules
           'output-names-template': true,
 
+          // Property name update rules
+          'property-names-access': true,
+          'property-names-misc': true,
+
           // Additional issues we can detect but not automatically fix.
           'check-class-declaration-misc': true,
           'check-import-misc': true,
           'check-inheritance': true,
           'check-method-calls': true,
-          'check-property-access-misc': true,
           'check-template-misc': true
         }
       }, {
