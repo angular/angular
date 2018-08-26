@@ -12,7 +12,7 @@ Using the Angular CLI, generate a new component named `heroes`.
   ng generate component heroes
 </code-example>
 
-The CLI creates a new folder, `src/app/heroes/` and generates
+The CLI creates a new folder, `src/app/heroes/`, and generates
 the three files of the  `HeroesComponent`.
 
 The `HeroesComponent` class file is as follows:
@@ -38,7 +38,7 @@ The CLI generated three metadata properties:
 The [CSS element selector](https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors),
 `'app-heroes'`, matches the name of the HTML element that identifies this component within a parent component's template.
 
-The `ngOnInit` is a [lifecycle hook](guide/lifecycle-hooks#oninit) 
+The `ngOnInit` is a [lifecycle hook](guide/lifecycle-hooks#oninit). 
 Angular calls `ngOnInit` shortly after creating a component.
 It's a good place to put initialization logic.
 
@@ -108,7 +108,7 @@ and show both `id` and `name` in a details layout like this:
   title="heroes.component.html (HeroesComponent's template)" linenums="false">
 </code-example>
 
-The browser refreshes and display's the hero's information.
+The browser refreshes and displays the hero's information.
 
 ## Format with the _UppercasePipe_
 
