@@ -498,18 +498,15 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   }
 
   /**
-   * If the amount of chips changed, we need to update the key manager state and make sure
-   * that to so that we can refocus the
-   * next closest one.
+   * If the amount of chips changed, we need to update the
+   * key manager state and focus the next closest chip.
    */
   protected _updateFocusForDestroyedChips() {
-    if (this._lastDestroyedChipIndex == null || !this.chips.length) {
-      return;
+    if (this._lastDestroyedChipIndex != null && this.chips.length) {
+      const newChipIndex = Math.min(this._lastDestroyedChipIndex, this.chips.length - 1);
+      this._keyManager.setActiveItem(newChipIndex);
     }
 
-    const newChipIndex = Math.min(this._lastDestroyedChipIndex, this.chips.length - 1);
-
-    this._keyManager.setActiveItem(newChipIndex);
     this._lastDestroyedChipIndex = null;
   }
 

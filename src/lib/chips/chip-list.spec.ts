@@ -17,6 +17,7 @@ import {
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
+  typeInElement,
   MockNgZone,
 } from '@angular/cdk/testing';
 import {
@@ -993,6 +994,31 @@ describe('MatChipList', () => {
         .not.toBeNull(`Expected placeholder to have an asterisk, as control was required.`);
     });
 
+    it('should keep focus on the input after adding the first chip', fakeAsync(() => {
+      const nativeInput = fixture.nativeElement.querySelector('input');
+      const chipEls = Array.from(fixture.nativeElement.querySelectorAll('.mat-chip')).reverse();
+
+      // Remove the chips via backspace to simulate the user removing them.
+      chipEls.forEach((chip: HTMLElement) => {
+        chip.focus();
+        dispatchKeyboardEvent(chip, 'keydown', BACKSPACE);
+        fixture.detectChanges();
+        tick();
+      });
+
+      nativeInput.focus();
+      expect(fixture.componentInstance.foods).toEqual([], 'Expected all chips to be removed.');
+      expect(document.activeElement).toBe(nativeInput, 'Expected input to be focused.');
+
+      typeInElement('123', nativeInput);
+      fixture.detectChanges();
+      dispatchKeyboardEvent(nativeInput, 'keydown', ENTER);
+      fixture.detectChanges();
+      tick();
+
+      expect(document.activeElement).toBe(nativeInput, 'Expected input to remain focused.');
+    }));
+
     describe('keyboard behavior', () => {
       beforeEach(() => {
         chipListDebugElement = fixture.debugElement.query(By.directive(MatChipList));
@@ -1322,7 +1348,7 @@ class MultiSelectionChipList {
     <mat-form-field>
       <mat-chip-list [multiple]="true"
                     placeholder="Food" [formControl]="control" [required]="isRequired" #chipList1>
-        <mat-chip *ngFor="let food of foods" [value]="food.value">
+        <mat-chip *ngFor="let food of foods" [value]="food.value" (removed)="remove(food)">
           {{ food.viewValue }}
         </mat-chip>
       </mat-chip-list>
@@ -1366,6 +1392,14 @@ class InputChipList {
     // Reset the input value
     if (input) {
       input.value = '';
+    }
+  }
+
+  remove(food: any): void {
+    const index = this.foods.indexOf(food);
+
+    if (index > -1) {
+      this.foods.splice(index, 1);
     }
   }
 
