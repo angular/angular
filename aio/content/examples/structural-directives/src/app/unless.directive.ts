@@ -5,7 +5,7 @@ import { Directive, Input, TemplateRef, ViewContainerRef } from '@angular/core';
 
 // #enddocregion skeleton
 /**
- * Add the template content to the DOM unless the condition is true.
+ * 평가 조건이 true가 아니라면 DOM에 템플릿을 추가합니다.
 // #enddocregion no-docs
  *
  * If the expression assigned to `appUnless` evaluates to a truthy value

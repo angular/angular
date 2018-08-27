@@ -15,7 +15,7 @@ export class Car {
   }
   // #enddocregion car-ctor
 
-  // Method using the engine and tires
+  // 엔진과 타이어를 활용하는 메소드
   drive() {
     return `${this.description} car with ` +
       `${this.engine.cylinders} cylinders and ${this.tires.make} tires.`;

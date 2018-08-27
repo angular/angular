@@ -6,7 +6,7 @@ import { Car, Engine, Tires } from './car';
 ///////// example 1 ////////////
 export function simpleCar() {
   // #docregion car-ctor-instantiation
-  // Simple car with 4 cylinders and Flintstone tires.
+  // 4 실린더 엔진과 기본 타이어를 사용하는 자동차 생성하기
   let car = new Car(new Engine(), new Tires());
   // #enddocregion car-ctor-instantiation
   car.description = 'Simple';
@@ -22,7 +22,7 @@ export function simpleCar() {
 // #enddocregion car-ctor-instantiation-with-param
 export function superCar() {
 // #docregion car-ctor-instantiation-with-param
-  // Super car with 12 cylinders and Flintstone tires.
+  // 12 실린더 엔진과 기본 타이어를 사용하는 슈퍼카 생성하기
   let bigCylinders = 12;
   let car = new Car(new Engine2(bigCylinders), new Tires());
 // #enddocregion car-ctor-instantiation-with-param
@@ -38,7 +38,7 @@ export function superCar() {
   // #enddocregion car-ctor-instantiation-with-mocks
 export function testCar() {
   // #docregion car-ctor-instantiation-with-mocks
-  // Test car with 8 cylinders and YokoGoodStone tires.
+  // 8 실린더 엔진과 YokoGoodStone 메이커의 타이어를 사용하는 테스트카 생성하기
   let car = new Car(new MockEngine(), new MockTires());
   // #enddocregion car-ctor-instantiation-with-mocks
   car.description = 'Test';

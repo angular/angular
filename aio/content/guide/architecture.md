@@ -167,10 +167,12 @@ For data or logic that is not associated with a specific view, and that you want
 *의존성 주입(Dependency injection, DI)*을 사용하면 컴포넌트 클래스를 유연하면서도 효율적으로 구성할 수 있습니다. 서버에서 데이터를 받아오거나, 사용자의 입력을 검증한다던지, 콘솔에 로그를 출력하는 로직은 특정 뷰와 직접적인 관련이 없기 때문에 서비스에서 처리하는 것이 좋습니다.
 
 <div class="alert is-helpful">
+
   <!--
   For a more detailed discusssion, see [Introduction to services and DI](guide/architecture-services).
   -->
   서비스와 의존성 주입에 대해 좀 더 자세하게 알아보려면 [서비스와 DI 소개](guide/architecture-services) 문서를 확인해 보세요.
+
 </div>
 
 <!--

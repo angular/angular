@@ -142,12 +142,15 @@ The following table summarizes the `@NgModule` metadata properties.
         </li>
       </ol>
 
+      <!--
       Components, directives, and pipes must belong to _exactly_ one module.
       The compiler emits an error if you try to declare the same class in more than one module. Be careful not to re-declare a class that is imported
       directly or indirectly from another module.
       The compiler emits an error if you try to declare the same class in more than one module.
 
       Don't re-declare a class imported from another module.
+      -->
+      컴포넌트, 디렉티브, 파이프는 _반드시_ 한 모듈에만 등록되어야 합니다. 어떤 항목이 모듈에 두 번 이상 등록되면 컴파일러에서 에러가 발생합니다. 중복 로드되지 않도록 주의하세요.
 
     </td>
 

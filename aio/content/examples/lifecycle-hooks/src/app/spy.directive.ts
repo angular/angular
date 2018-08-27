@@ -6,8 +6,8 @@ import { LoggerService } from './logger.service';
 let nextId = 1;
 
 // #docregion spy-directive
-// Spy on any element to which it is applied.
-// Usage: <div mySpy>...</div>
+// 엘리먼트에 스파이 디렉티브를 자유롭게 적용합니다.
+// 사용방법: <div mySpy>...</div>
 @Directive({selector: '[mySpy]'})
 export class SpyDirective implements OnInit, OnDestroy {
 

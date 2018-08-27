@@ -198,10 +198,11 @@ In this way you're using both the Angular and JavaScript module systems _togethe
 지금까지 살펴본 코드처럼 Angular의 모듈 체계와 JavaScript의 모듈 체계는 _함께_ 사용됩니다. 지금은 두 체계를 함께 사용하면서 "imports"와 "exports" 키워드를 비슷하게 사용하기 때문에 혼란스러울 수 있지만, Angular를 계속 사용하면서 익숙해질 것입니다.
 
 <div class="alert is-helpful">
+
 <!--
-  Learn more from the [NgModules](guide/ngmodules) page.
+Learn more from the [NgModules](guide/ngmodules) page.
 -->
-  [NgModule](guide/ngmodules)에 대해 더 알아보세요.
+[NgModule](guide/ngmodules)에 대해 더 알아보세요.
 
 </div>
 

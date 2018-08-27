@@ -34,7 +34,7 @@ export class ChildViewComponent {
 export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
   private prevHero = '';
 
-  // Query for a VIEW child of type `ChildViewComponent`
+  // `ChildViewComponent` 타입의 뷰 차일드를 참조합니다.
   @ViewChild(ChildViewComponent) viewChild: ChildViewComponent;
 
 // #enddocregion hooks
@@ -44,13 +44,13 @@ export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
 
 // #docregion hooks
   ngAfterViewInit() {
-    // viewChild is set after the view has been initialized
+    // viewChild는 뷰가 모두 초기화된 이후에 값이 할당됩니다.
     this.logIt('AfterViewInit');
     this.doSomething();
   }
 
   ngAfterViewChecked() {
-    // viewChild is updated after the view has been checked
+    // 뷰에서 변화감지 로직이 동작하면 viewChild가 갱신됩니다.
     if (this.prevHero === this.viewChild.hero) {
       this.logIt('AfterViewChecked (no change)');
     } else {
@@ -64,11 +64,11 @@ export class AfterViewComponent implements  AfterViewChecked, AfterViewInit {
   comment = '';
 
 // #docregion do-something
-  // This surrogate for real business logic sets the `comment`
+  // 동작을 확인하기 위해 `comment` 값을 변경해 봅니다.
   private doSomething() {
     let c = this.viewChild.hero.length > 10 ? `That's a long name` : '';
     if (c !== this.comment) {
-      // Wait a tick because the component's view has already been checked
+      // 컴포넌트의 뷰는 방금 검사를 마쳤기 때문에 한 싸이클 뒤에 실행합니다.
       this.logger.tick_then(() => this.comment = c);
     }
   }

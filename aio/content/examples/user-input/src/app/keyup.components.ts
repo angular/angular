@@ -20,14 +20,14 @@ export class KeyUpComponent_v1 {
 // #enddocregion key-up-component-1-class, key-up-component-1-class-no-type
   /*
   // #docregion key-up-component-1-class-no-type
-  onKey(event: any) { // without type info
+  onKey(event: any) { // 타입을 지정하지 않은 경우
     this.values += event.target.value + ' | ';
   }
   // #enddocregion key-up-component-1-class-no-type
   */
   // #docregion key-up-component-1-class
 
-  onKey(event: KeyboardEvent) { // with type info
+  onKey(event: KeyboardEvent) { // 타입을 지정한 경우
     this.values += (<HTMLInputElement>event.target).value + ' | ';
   }
 // #docregion key-up-component-1-class-no-type

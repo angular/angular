@@ -28,14 +28,11 @@ The class interacts with the view through an API of properties and methods.
 -->
 뷰에서 사용할 애플리케이션 로직은 컴포넌트에 정의하며, 뷰는 클래스의 프로퍼티와 메소드를 활용해서 클래스와 상호작용 합니다.
 
-For example, the `HeroListComponent` has a `heroes` property that holds an array of heroes. It also has a `selectHero()` method that sets a `selectedHero` property when the user clicks to choose a hero from that list. The component acquires the heroes from a service, which is a TypeScript [parameter property](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) on the constructor. The service is provided to the component through the dependency injection system.
-
-<!-- old
-For example, the `HeroListComponent` has a `heroes` property that returns an array of heroes that it acquires from a service. `HeroListComponent` also has a `selectHero()` method that sets a `selectedHero` property when the user clicks to choose a hero from that list.
--->
 <!--
-예를 들어 `HeroListComponent`에 있는 `heroes` 프로퍼티는 서비스에서 히어로 목록을 받아서 저장해두는 프로퍼티입니다. 그리고 `selectHero()` 메소드는 사용자가 히어로 목록에서 한 명을 선택했을 때 이 히어로를 `selectedHero` 프로퍼티에 저장하는 메소드입니다.
+For example, the `HeroListComponent` has a `heroes` property that holds an array of heroes. It also has a `selectHero()` method that sets a `selectedHero` property when the user clicks to choose a hero from that list. The component acquires the heroes from a service, which is a TypeScript [parameter property](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties) on the constructor. The service is provided to the component through the dependency injection system.
 -->
+예를 들면 `HeroListComponent`는 히어로의 목록을 받아서 저장하도록 `heroes` 프로퍼티를 선언할 수 있습니다. 이 프로퍼티에 저장된 목록은 화면에 표시되며,  사용자가 화면에서 히어로 목록 중 하나를 클릭했을 때 `selectHero()` 메소드가 `selectedHero` 프로퍼티를 갱신하도록 구현할 수 있습니다. 컴포넌트는 생성자에 TypeScript [인자 프로퍼티(parameter property)](http://www.typescriptlang.org/docs/handbook/classes.html#parameter-properties)를 지정해서 서비스를 의존성으로 주입받을 수 있으며, 히어로 데이터는 이 서비스를 통해 가져옵니다.
+
 
 <code-example path="architecture/src/app/hero-list.component.ts" linenums="false" title="src/app/hero-list.component.ts (class)" region="class"></code-example>
 

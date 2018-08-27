@@ -45,9 +45,9 @@ export class CountdownViewChildParentComponent implements AfterViewInit {
   seconds() { return 0; }
 
   ngAfterViewInit() {
-    // Redefine `seconds()` to get from the `CountdownTimerComponent.seconds` ...
-    // but wait a tick first to avoid one-time devMode
-    // unidirectional-data-flow-violation error
+    // `seconds()` 메소드는 `CountdownTimerComponent.seconds`에서 다시 구현합니다.
+    // 이 때 개발 모드에서 출력하는 단방향 바인딩 검사 에러를 방지하기 위해
+    // 한 싸이클 기다려야 합니다.
     setTimeout(() => this.seconds = () => this.timerComponent.seconds, 0);
   }
 

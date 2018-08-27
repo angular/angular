@@ -50,14 +50,14 @@ export class DoCheckComponent implements DoCheck {
     if (this.changeDetected) {
         this.noChangeCount = 0;
     } else {
-        // log that hook was called when there was no relevant change.
+        // 컴포넌트의 내용이 변경되지 않았으면 함수가 몇번 실행되었는지 로그를 출력합니다.
         let count = this.noChangeCount += 1;
         let noChangeMsg = `DoCheck called ${count}x when no change to hero or power`;
         if (count === 1) {
-          // add new "no change" message
+          // "no change" 메시지를 추가합니다.
           this.changeLog.push(noChangeMsg);
         } else {
-          // update last "no change" message
+          // 마지막에 추가한 "no change" 메시지를 수정합니다.
           this.changeLog[this.changeLog.length - 1] = noChangeMsg;
         }
     }

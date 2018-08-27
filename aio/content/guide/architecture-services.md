@@ -135,9 +135,15 @@ The process of `HeroService` injection looks something like this:
 -->
 ### 서비스 프로바이더 등록하기
 
+<!--
 You must register at least one *provider* of any service you are going to use. A service can register providers itself, making it available everywhere, or you can register providers with specific modules or components. You register providers in the metadata of the service (in the `@Injectable` decorator), or in the `@NgModule` or `@Component` metadata 
+-->
+서비스를 사용하려면 *프로바이더(provider)* 를 어디엔가 등록해야 하는데, 서비스 프로바이더를 등록하는 방법은 두 가지입니다. 하나는 서비스 메타데이터(`@Injectable` 데코레이터)에 자신의 프로바이더를 직접 등록하는 방법이며, 다른 하나는 `@NgModule`이나 `@Component` 메타데이터에 프로바이더를 등록하고 하위 계층에서 이 프로바이더를 이용하는 방법입니다.
 
+<!--
 * By default, the Angular CLI command `ng generate service` registers a provider with the root injector for your service by including provider metadata in the `@Injectable` decorator. The tutorial uses this method to register the provider of  HeroService class definition:
+-->
+* Angular CLI의 `ng generate service` 명령으로 서비스를 생성하면, 서비스에 `@Injectable` 데코레이터를 추가해서 애플리케이션 최상위 인젝터에 이 서비스의 프로바이더를 등록합니다. 이 문서에서 다루는 예제에서도 `HeroService` 클래스는 이렇게 생성되었습니다:
 
 ``` 
 @Injectable({
@@ -145,9 +151,15 @@ You must register at least one *provider* of any service you are going to use. A
 })
 ``` 
 
+ <!--
  When you provide the service at the root level, Angular creates a single, shared instance of HeroService and injects into any class that asks for it. Registering the provider in the `@Injectable` metadata also allows Angular to optimize an app by removing the service if it turns out not to be used after all. 
+-->
+서비스 프로바이더를 최상위 인젝터에 등록하면, 이 서비스의 인스턴스는 애플리케이션 전체에 하나만 만들어지며, 이 서비스를 의존성으로 주입받는 객체가 서비스 인스턴스를 모두 공유합니다. 그리고 `@Injectable` 메타데이터로 등록된 서비스 프로바이더가 실제로 사용되지 않으면, 이 부분은 최적화되면서 제거됩니다.
 
+<!--
 * When you register a provider with a [specific NgModule](guide/architecture-modules), the same instance of a service is available to all components in that NgModule. To register at this level, use the `providers` property of the `@NgModule` decorator:
+-->
+* 서비스 프로바이더를 [모듈](guide/architecture-modules)에 등록하면, 이 모듈 안에 있는 컴포넌트들은 모두 같은 서비스 인스턴스를 공유합니다. 모듈에 서비스 프로바이더를 등록하려면 `@NgModule` 데코레이터를 다음과 같이 작성합니다:
 
 ``` 
 @NgModule({

@@ -209,9 +209,11 @@
             "url": "https://www.genuitec.com/products/angular-ide"
           },
           "amexio-canvas": {
-             "desc": "Amexio Canvas is Drag and Drop Environment to create Fully Responsive Web and Smart Device HTML5/Angular Apps. Code will be auto generated and hot deployed by the Canvas for live testing. Out of the box 50+ Material Design Theme support. Commit your code to GitHub public or private repository.",
+             "//desc": "Amexio Canvas is Drag and Drop Environment to create Fully Responsive Web and Smart Device HTML5/Angular Apps. Code will be auto generated and hot deployed by the Canvas for live testing. Out of the box 50+ Material Design Theme support. Commit your code to GitHub public or private repository.",
+             "desc": "Amexio Canvas는 드래그 앤 드랍으로 반응형 웹을 만드는 환경입니다. 사용자의 동작에 따라 코드가 자동으로 생성되며, 구현 내용을 바로 테스트할 수 있는 환경도 갖추고 있습니다. MateriL Design 테마도 50가지 이상 제공하고 있습니다. 작성한 코드를 Github 저장소로 커밋할 수도 있습니다.",
             "rev": true,
-            "title": "Amexio Canvas Web Based Drag and Drop IDE by MetaMagic",
+            "//title": "Amexio Canvas Web Based Drag and Drop IDE by MetaMagic",
+            "title": "MetaMagic에서 제공하는 드래그 앤 드랍 방식의 Amexio Canvas Web IDE",
             "url": "https://amexio.tech/"
           }	
         }
@@ -328,7 +330,7 @@
           },
           "234237": {
             "//desc": "UX guidelines, HTML/CSS framework, and Angular components working together to craft exceptional experiences",
-            "dest": "Angular 컴포넌트에 어울리는 UX를 고민한다면 이 디자인 가이드를 확인해보세요.",
+            "desc": "Angular 컴포넌트에 어울리는 UX를 고민한다면 이 디자인 가이드를 확인해보세요.",
             "rev": true,
             "title": "Clarity Design System",
             "url": "https://vmware.github.io/clarity/"
@@ -411,14 +413,16 @@
             "url": "https://github.com/angular/material2"
           },
           "mcc": {
-            "desc": "Material components made by the community",
+            "//desc": "Material components made by the community",
+            "desc": "개발자 커뮤니티에서 만든 Material 컴포넌트 모음입니다.",
             "logo": "",
             "rev": true,
             "title": "Material Community Components",
             "url": "https://github.com/tiaguinho/material-community-components"
           },
           "ngzorro": {
-            "desc": "A set of enterprise-class UI components based on Ant Design and Angular",
+            "//desc": "A set of enterprise-class UI components based on Ant Design and Angular",
+            "desc": "Ant Design과 Angular를 바탕으로 기업에서도 활용할 수 있는 UI 컴포넌트를 제공합니다.",
             "rev": true,
             "title": "Ant Design of Angular (ng-zorro-antd)",
             "url": "https://ng.ant.design/docs/introduce/en"
@@ -446,7 +450,8 @@
             "logo": "http://www.amexio.org/amexio-logo.png"
           },
           "bm": {
-            "desc": "A lightweight Material Design library for Angular, based upon Google's Material Components for the Web",
+            "//desc": "A lightweight Material Design library for Angular, based upon Google's Material Components for the Web",
+            "desc": "Google의 Material 컴포넌트 디자인을 작은 용량으로 훌륭하게 구현한 라이브러리입니다.",
             "logo": "https://blox.src.zone/assets/bloxmaterial.03ecfe4fa0147a781487749dc1cc4580.svg",
             "rev": true,
             "title": "Blox Material",
@@ -460,7 +465,8 @@
             "url": "https://www.syncfusion.com/products/angular-js2"
           },
           "trulyui": {
-            "desc": "TrulyUI is an Angular UI Framework especially developed for Desktop Applications based on Web Components using the greatest technologies of the world.",
+            "//desc": "TrulyUI is an Angular UI Framework especially developed for Desktop Applications based on Web Components using the greatest technologies of the world.",
+            "desc": "TrulyUI는 웹 컴포넌트를 바탕으로 만드는 데스크탑 애플리케이션에 최적화된 UI 프레임워크입니다.",
             "rev": true,
             "title": "Truly UI",
             "url": "http://truly-ui.tk"
@@ -574,14 +580,16 @@
             "logo": "https://angular-buch.com/assets/img/brand.svg",
             "rev": true,
             "//title": "Angular-Buch (German)",
-            "title": "Angular-Buch (독일)",
+            "title": "Angular-Buch (독일어)",
             "url": "https://angular-buch.com/"
           },
           "wishtack-guide-angular": {
-            "desc": "The free, open-source and up-to-date Angular guide. This pragmatic guide is focused on best practices and will drive you from scratch to cloud.",
+            "//desc": "The free, open-source and up-to-date Angular guide. This pragmatic guide is focused on best practices and will drive you from scratch to cloud.",
+            "desc": "최신 Angular 내용을 다루는 무료 오픈소스 가이드입니다. 실전 활용방법을 집중적으로 소개합니다.",
             "logo": "https://raw.githubusercontent.com/wishtack/gitbook-guide-angular/master/.gitbook/assets/wishtack-logo-with-text.png",
             "rev": true,
             "title": "The Angular Guide by Wishtack (Français)",
+            "//title": "The Angular Guide by Wishtack (프랑스어)",
             "url": "https://guide-angular.wishtack.io/"
           }
         }
@@ -715,7 +723,8 @@
             "url": "https://ultimateangular.com/"
           },
           "willh-angular-zero": {
-            "desc": "Online video course in Chinese for newbies who need to learning from the scratch in Chinese.  It's covering Angular, Angular CLI, TypeScript, VSCode, and some must known knowledge of Angular development.",
+            "//desc": "Online video course in Chinese for newbies who need to learning from the scratch in Chinese.  It's covering Angular, Angular CLI, TypeScript, VSCode, and some must known knowledge of Angular development.",
+            "desc": "Angular 입문자를 위해 제공되는 중국어 온라인 강의입니다. Angular와 Angular CLI, TypeScript, VSCode 등 Angular를 개발할 때 꼭 알아야 할 내용을 모두 다룹니다.",
             "rev": true,
             "title": "Angular in Action: Start From Scratch (正體中文)",
             "url": "https://www.udemy.com/angular-zero/?couponCode=ANGULAR.IO"
@@ -749,7 +758,8 @@
             "url": "http://www.angularacademy.ca"
           },
           "at": {
-            "desc": "Angular Training teaches Angular on-site all over the world. Also provides consulting and mentoring.",
+            "//desc": "Angular Training teaches Angular on-site all over the world. Also provides consulting and mentoring.",
+            "desc": "Angular Training은 전세계를 대상으로 하는 현상 강의입니다. 컨설팅과 멘토링도 제공합니다.",
             "rev": true,
             "title": "Angular Training",
             "url": "http://www.angulartraining.com"
@@ -764,7 +774,7 @@
           },
           "-KLIzFhfGKi1xttqJ7Uh": {
             "//desc": "4 day in-depth Angular training in Israel",
-            "desc": "이스라엘에서 4일동안 진행되는 집중 코스입니다.",
+            "desc": "이스라엘에서 진행되는 4일 집중 코스입니다.",
             "rev": true,
             "//title": "ng-course (Israel)",
             "title": "ng-course (이스라엘)",
@@ -793,7 +803,8 @@
             "url": "http://ninja-squad.com/formations/formation-angular2"
           },
           "a2b": {
-            "desc": "Angular Boot Camp covers introductory through advanced Angular topics. It includes extensive workshop sessions, with hands-on help from our experienced developer-trainers. We take developers or teams from the beginnings of Angular understanding through a working knowledge of all essential Angular features.",
+            "//desc": "Angular Boot Camp covers introductory through advanced Angular topics. It includes extensive workshop sessions, with hands-on help from our experienced developer-trainers. We take developers or teams from the beginnings of Angular understanding through a working knowledge of all essential Angular features.",
+            "desc": "Angular Boot Camp는 Angular 기본 내용부터 고급 활용방법까지 다룹니다. Angular 숙련자가 함께 도와주는 실습 워크샵도 운영하고 있습니다.",
             "logo": "https://angularbootcamp.com/images/angular-boot-camp-logo.svg",
             "rev": true,
             "title": "Angular Boot Camp",

@@ -18,7 +18,7 @@ let nextId = 1;
 export class PeekABoo implements OnInit {
   constructor(private logger: LoggerService) { }
 
-  // implement OnInit's `ngOnInit` method
+  // OnInit 인터페이스에서 정의하는 `ngOnInit` 메소드를 구현합니다.
   ngOnInit() { this.logIt(`OnInit`); }
 
   logIt(msg: string) {

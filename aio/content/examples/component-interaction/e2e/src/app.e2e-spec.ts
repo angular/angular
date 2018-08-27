@@ -60,7 +60,7 @@ describe('Component Communication Cookbook Tests', function () {
   describe('Parent-to-child communication with ngOnChanges', function() {
     // #docregion parent-to-child-onchanges
     // ...
-    // Test must all execute in this exact order
+    // 테스트는 정확히 이 순서대로 실행됩니다.
     it('should set expected initial values', function () {
       let actual = getActual();
 

@@ -3,7 +3,7 @@ import { Directive } from '@angular/core';
 import { AbstractControl, FormGroup, NG_VALIDATORS, ValidationErrors, Validator, ValidatorFn } from '@angular/forms';
 
 // #docregion cross-validation-validator
-/** A hero's name can't match the hero's alter ego */
+/** 히어로의 이름은 별명과 일치하지 않아야 합니다. */
 export const identityRevealedValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
   const name = control.get('name');
   const alterEgo = control.get('alterEgo');

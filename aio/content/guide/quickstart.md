@@ -7,7 +7,7 @@
 Good tools make application development quicker and easier to maintain than
 if you did everything by hand.
 -->
-애플리케이션을 개발할 때 좋은 도구를 사용하면 모든 것을 수동으로 할 때보다 개발 속도를 향상시킬 수 있으며 유지보수하기도 편합니다.
+좋은 도구를 사용하면 모든 것을 수동으로 할 때보다 개발 속도를 향상시킬 수 있으며 유지보수하기도 편합니다.
 
 <!--
 The [**Angular CLI**](https://cli.angular.io/) is a **_command line interface_** tool
@@ -103,21 +103,26 @@ Generate a new project and default app by running the following command:
 
 </code-example>
 
-
+<!--
 The Angular CLI installs the necessary npm packages, creates the project files, and populates the project with a simple default app. This can take some time.
-
-
+-->
+그러면 Angular CLI가 Angular 프로젝트에 필요한 npm 패키지를 설치하고, 프로젝트를 구성하는기본 파일을 생성합니다. 이 과정은 시작이 조금 걸립니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 You can add pre-packaged functionality to a new project by using the `ng add` command. The `ng add` command transforms a project by applying the schematics in the specified package. 
 For more information, see the [Angular CLI documentation.](https://github.com/angular/angular-cli/wiki/add "Angular CLI documentation") 
+-->
+이렇게 생성한 프로젝트에는 `ng add` 명령으로 기능셋을 추가할 수 있습니다. `ng add` 명령은 Angular가 사전에 정의해 둔 기능과 패키지를 추가해서 프로젝트를 한층 업그레이드하는 명령입니다.
+좀더 자세한 내용은 [Angular CLI 문서](https://github.com/angular/angular-cli/wiki/add "Angular CLI documentation")를 참고하세요.
 
+<!--
 Angular Material provides schematics for typical app layouts. 
 See the [Angular Material documentation](https://material.angular.io/guides "Angular Material documentation") for details.
-
+-->
+`ng add` 명령으로 추가할 수 있는 기능 중에는 Angular Material도 있습니다. Angular Material을 추가하면 애플리케이션에 훌륭한 레이아웃을 간단하게 적용할 수 있으며, 자세한 내용은 [Angular Material 문서](https://material.angular.io/guides "Angular Material documentation")를 참고하세요.
 
 </div>
 
@@ -414,7 +419,10 @@ Any files outside of this folder are meant to support building your app.
     </td>
     <td>
 
+      <!--
       A configuration file to share [target browsers](https://github.com/browserslist/browserslist) between different front-end tools.
+      -->
+      개발자들이 서로 다른 개발도구를 사용하는 경우를 위해 [타겟 브라우저](https://github.com/browserslist/browserslist)를 설정하는 파일입니다.
 
     </td>
   </tr>
@@ -460,8 +468,11 @@ Any files outside of this folder are meant to support building your app.
     </td>
     <td>
 
+      <!--
       Unit test configuration for the [Karma test runner](https://karma-runner.github.io),
       used when running `ng test`.
+      -->
+      `ng test` 명령으로 실행되는 [Karma test runner](https://karma-runner.github.io)의 환경을 설정하는 파일입니다.
 
     </td>
   </tr>  
@@ -563,9 +574,14 @@ Any files outside of this folder are meant to support building your app.
     </td>
     <td>
 
+      <!--
       Additional Linting configuration for [TSLint](https://palantir.github.io/tslint/) together with
       [Codelyzer](http://codelyzer.com/), used when running `ng lint`.
       Linting helps keep your code style consistent.
+      -->
+      `ng lint` 명령으로 실행하는 [TSLint](https://palantir.github.io/tslint/)와
+      [Codelyzer](http://codelyzer.com/) 설정 파일입니다.
+      코딩 스타일 검사 도구를 활용하면 코드의 가독성을 일관되게 유지할 수 있습니다.
 
     </td>
   </tr>  
@@ -715,10 +731,15 @@ These files go in the root folder next to `src/`.
     </td>
     <td>
 
+      <!--
       Configuration for Angular CLI.
       In this file you can set several defaults and also configure what files are included
       when your project is built.
       Check out the official documentation if you want to know more.
+      -->
+      Angular CLI 설정파일입니다.
+      이 파일에는 Angular CLI가 동작하는 환경이나 프로젝트를 빌드할 때 필요한 내용을 정의할 수 있습니다.
+      자세한 내용은 Angular CLI 공식 문서를 참고하세요.
 
     </td>
   </tr>

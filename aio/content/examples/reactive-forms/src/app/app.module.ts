@@ -22,7 +22,7 @@ import { ProfileEditorComponent } from './profile-editor/profile-editor.componen
 // #enddocregion imports
     BrowserModule,
 // #docregion imports
-    // other imports ...
+    // 다른 모듈들...
     ReactiveFormsModule
   ],
 // #enddocregion imports

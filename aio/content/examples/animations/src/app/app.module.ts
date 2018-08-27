@@ -20,7 +20,7 @@ import { HeroListTimingsComponent } from './hero-list-timings.component';
 
 @NgModule({
   imports: [ BrowserModule, BrowserAnimationsModule ],
-  // ... more stuff ...
+  // ... 기타 설정 ...
 // #enddocregion animations-module
   declarations: [
     HeroTeamBuilderComponent,

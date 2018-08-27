@@ -675,13 +675,17 @@
             },
             {
               "url": "guide/upgrade-performance",
-              "title": "Upgrading for Performance",
-              "tooltip": "Upgrade from AngularJS to Angular in a more flexible way."
+              "title!": "Upgrading for Performance",
+              "title": "성능 향상",
+              "tooltip!": "Upgrade from AngularJS to Angular in a more flexible way.",
+              "tooltip": "AngularJS 프로젝트를 그대로 실행하면서 Angular 프로젝트로 점차적으로 도입할 수 있습니다."
             },
             {
               "url": "guide/ajs-quick-reference",
-              "title": "AngularJS-Angular Concepts",
-              "tooltip": "Learn how AngularJS concepts and techniques map to Angular."
+              "title!": "AngularJS-Angular Concepts",
+              "title": "AngularJS와 Angular 컨셉 비교",
+              "tooltip!": "Learn how AngularJS concepts and techniques map to Angular.",
+              "tooltip": "AngularJS에서 사용하는 컨셉과 테크닉을 Angular에 어떻게 적용할 수 있는지 확인해 보세요."
             }
           ]
         },
@@ -793,7 +797,7 @@
           "title!": "Code of Conduct",
           "title": "커뮤니티 활용 수칙",
           "tooltip!": "Treating each other with respect.",
-          "tooltip": "서로 친하게 지내요:)"
+          "tooltip": "친하게 지내요:)"
         }
       ]
     },

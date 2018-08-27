@@ -138,7 +138,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   // #docregion setClasses
   currentClasses: {};
   setCurrentClasses() {
-    // CSS classes: added/removed per current state of component properties
+    // 컴포넌트 프로퍼티의 현재 스테이트에 따라 CSS 클래스를 지정하거나 제거합니다.
     this.currentClasses =  {
       'saveable': this.canSave,
       'modified': !this.isUnchanged,
@@ -150,7 +150,7 @@ export class AppComponent implements AfterViewInit, OnInit {
   // #docregion setStyles
   currentStyles: {};
   setCurrentStyles() {
-    // CSS styles: set per current state of component properties
+    // 컴포넌트 프로퍼티의 현재 스테이트에 따라 CSS 스타일을 지정합니다.
     this.currentStyles = {
       'font-style':  this.canSave      ? 'italic' : 'normal',
       'font-weight': !this.isUnchanged ? 'bold'   : 'normal',

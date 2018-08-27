@@ -64,7 +64,7 @@ export class ProfileEditorComponent {
 // #docregion on-submit
 
   onSubmit() {
-    // TODO: Use EventEmitter with form value
+    // TODO: EventEmitter로 폼 내용 보내기
     console.warn(this.profileForm.value);
   }
 // #enddocregion on-submit
