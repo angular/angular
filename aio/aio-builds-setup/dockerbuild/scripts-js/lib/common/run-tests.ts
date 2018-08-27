@@ -5,6 +5,7 @@
 // Using `import...from 'jasmine'` here, would import from `@types/jasmine` (which refers to the
 // `jasmine-core` module and the `jasmine` module).
 import Jasmine = require('jasmine');
+import 'source-map-support/register';
 
 export const runTests = (specFiles: string[]) => {
   const config = {
