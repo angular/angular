@@ -6,9 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InitialStylingFlags, ViewEncapsulation} from '@angular/compiler/src/core';
-import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
-
+import {AttributeMarker, InitialStylingFlags, ViewEncapsulation} from '@angular/compiler/src/core';
+import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 describe('compiler compliance: styling', () => {
@@ -168,7 +167,8 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const _c0 = ["opacity","width","height",${InitialStylingFlags.VALUES_MODE},"opacity","1"];
+          const $e0_attrs$ = [${AttributeMarker.SelectOnly}, "style"];
+          const $e0_styling$ = ["opacity","width","height",${InitialStylingFlags.VALUES_MODE},"opacity","1"];
           …
           MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
               type: MyComponent,
@@ -181,8 +181,8 @@ describe('compiler compliance: styling', () => {
               vars: 1,
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
-                  $r3$.ɵelementStart(0, "div");
-                  $r3$.ɵelementStyling(null, _c0, $r3$.ɵzss);
+                  $r3$.ɵelementStart(0, "div", $e0_attrs$);
+                  $r3$.ɵelementStyling(null, $e0_styling$, $r3$.ɵzss);
                   $r3$.ɵelementEnd();
                 }
                 if (rf & 2) {
@@ -324,7 +324,8 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const _c0 = ["grape","apple","orange",${InitialStylingFlags.VALUES_MODE},"grape",true];
+          const $e0_attrs$ = [${AttributeMarker.SelectOnly}, "class"];
+          const $e0_cd$ = ["grape","apple","orange",${InitialStylingFlags.VALUES_MODE},"grape",true];
           …
           MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
               type: MyComponent,
@@ -337,8 +338,8 @@ describe('compiler compliance: styling', () => {
               vars: 1,
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
-                  $r3$.ɵelementStart(0, "div");
-                  $r3$.ɵelementStyling(_c0);
+                  $r3$.ɵelementStart(0, "div", $e0_attrs$);
+                  $r3$.ɵelementStyling($e0_cd$);
                   $r3$.ɵelementEnd();
                 }
                 if (rf & 2) {
@@ -379,8 +380,9 @@ describe('compiler compliance: styling', () => {
          };
 
          const template = `
-          const _c0 = ["foo",${InitialStylingFlags.VALUES_MODE},"foo",true];
-          const _c1 = ["width",${InitialStylingFlags.VALUES_MODE},"width","100px"];
+          const $e0_attrs$ = [${AttributeMarker.SelectOnly}, "class", "style"];
+          const $e0_cd$ = ["foo",${InitialStylingFlags.VALUES_MODE},"foo",true];
+          const $e0_sd$ = ["width",${InitialStylingFlags.VALUES_MODE},"width","100px"];
           …
           MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
               type: MyComponent,
@@ -393,8 +395,8 @@ describe('compiler compliance: styling', () => {
               vars: 2,
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
-                  $r3$.ɵelementStart(0, "div");
-                  $r3$.ɵelementStyling(_c0, _c1);
+                  $r3$.ɵelementStart(0, "div", $e0_attrs$);
+                  $r3$.ɵelementStyling($e0_cd$, $e0_sd$);
                   $r3$.ɵelementEnd();
                 }
                 if (rf & 2) {
