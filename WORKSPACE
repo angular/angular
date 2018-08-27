@@ -3,6 +3,12 @@ workspace(name = "angular")
 #
 # Download Bazel toolchain dependencies as needed by build actions
 #
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.12.0.zip"],
+    strip_prefix = "rules_nodejs-0.12.0",
+    sha256 = "2977cdbc8ae0eed7d4186385af56a50a3321a549e2136a959998bba89d2edb6e",
+)
 
 http_archive(
     name = "build_bazel_rules_typescript",
@@ -100,7 +106,11 @@ local_repository(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
 
-check_bazel_version("0.15.0")
+check_bazel_version("0.16.0", """
+If you are on a Mac and using Homebrew, there is a breaking change to the installation in Bazel 0.16
+See https://blog.bazel.build/2018/08/22/bazel-homebrew.html
+
+""")
 node_repositories(
   package_json = ["//:package.json"],
   preserve_symlinks = True,
