@@ -76,7 +76,7 @@ const GITHUB_PULLS_URL = `/repos/${AIO_GITHUB_ORGANIZATION}/${AIO_GITHUB_REPO}/p
 const GITHUB_TEAMS_URL = `/orgs/${AIO_GITHUB_ORGANIZATION}/teams`;
 
 const getIssueUrl = (prNum: number) => `${GITHUB_ISSUES_URL}/${prNum}`;
-const getFilesUrl = (prNum: number) => `${GITHUB_PULLS_URL}/${prNum}/files`;
+const getFilesUrl = (prNum: number, pageNum = 0) => `${GITHUB_PULLS_URL}/${prNum}/files?page=${pageNum}&per_page=100`;
 const getCommentUrl = (prNum: number) => `${getIssueUrl(prNum)}/comments`;
 const getTeamMembershipUrl = (teamId: number, username: string) => `/teams/${teamId}/memberships/${username}`;
 
