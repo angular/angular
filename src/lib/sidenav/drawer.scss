@@ -150,7 +150,7 @@ $mat-drawer-over-drawer-z-index: 4;
 
   &:not(.mat-drawer-side) {
     // The elevation of z-16 is noted in the design specifications.
-    // See https://material.io/guidelines/patterns/navigation-drawer.html#
+    // See https://material.io/design/components/navigation-drawer.html
     @include mat-elevation(16);
   }
 }

@@ -12,10 +12,11 @@
   // We use invert() here to have the darken the background color expected to be used. If the
   // background is light, we use a dark backdrop. If the background is dark,
   // we use a light backdrop.
-  $drawer-backdrop-color: invert(mat-color($background, card, 0.6)) !default;
-  $drawer-background-color: mat-color($background, dialog) !default;
-  $drawer-container-background-color:  mat-color($background, background) !default;
-  $drawer-push-background-color: mat-color($background, dialog) !default;
+  $drawer-backdrop-color: invert(mat-color($background, card, 0.6));
+  $drawer-background-color: mat-color($background, dialog);
+  $drawer-container-background-color:  mat-color($background, background);
+  $drawer-push-background-color: mat-color($background, dialog);
+  $drawer-side-border: solid 1px mat-color($foreground, divider);
 
   .mat-drawer-container {
     background-color: $drawer-container-background-color;
@@ -28,6 +29,25 @@
 
     &.mat-drawer-push {
       background-color: $drawer-push-background-color;
+    }
+  }
+
+  .mat-drawer-side {
+    border-right: $drawer-side-border;
+
+    &.mat-drawer-end {
+      border-left: $drawer-side-border;
+      border-right: none;
+    }
+  }
+
+  [dir='rtl'] .mat-drawer-side {
+    border-left: $drawer-side-border;
+    border-right: none;
+
+    &.mat-drawer-end {
+      border-left: none;
+      border-right: $drawer-side-border;
     }
   }
 
