@@ -27,6 +27,12 @@
     "name": "ChangeDetectionStrategy"
   },
   {
+    "name": "ChangeDetectorRef"
+  },
+  {
+    "name": "DECLARATION_VIEW"
+  },
+  {
     "name": "DIRECTIVES"
   },
   {
@@ -39,7 +45,10 @@
     "name": "EMPTY$1"
   },
   {
-    "name": "EMPTY_RENDERER_TYPE_ID"
+    "name": "EMPTY_ARRAY$1"
+  },
+  {
+    "name": "ElementRef"
   },
   {
     "name": "ElementRef$1"
@@ -96,6 +105,12 @@
     "name": "NgModuleRef"
   },
   {
+    "name": "NodeInjector"
+  },
+  {
+    "name": "NullInjector"
+  },
+  {
     "name": "Optional"
   },
   {
@@ -105,6 +120,9 @@
     "name": "PARENT"
   },
   {
+    "name": "PublicFeature"
+  },
+  {
     "name": "QUERIES"
   },
   {
@@ -112,9 +130,6 @@
   },
   {
     "name": "RENDER_PARENT"
-  },
-  {
-    "name": "ROOT_DIRECTIVE_INDICES"
   },
   {
     "name": "RecordViewTuple"
@@ -135,7 +150,28 @@
     "name": "TVIEW"
   },
   {
+    "name": "TemplateRef"
+  },
+  {
     "name": "TemplateRef$1"
+  },
+  {
+    "name": "ToDoAppComponent_footer_Template_6"
+  },
+  {
+    "name": "ToDoAppComponent_footer_button_Template_5"
+  },
+  {
+    "name": "ToDoAppComponent_section_Template_5"
+  },
+  {
+    "name": "ToDoAppComponent_section_input_Template_1"
+  },
+  {
+    "name": "ToDoAppComponent_section_li_Template_3"
+  },
+  {
+    "name": "ToDoAppComponent_section_li_input_Template_6"
   },
   {
     "name": "Todo"
@@ -144,10 +180,10 @@
     "name": "TodoStore"
   },
   {
-    "name": "UNDEFINED_RENDERER_TYPE_ID"
+    "name": "VIEWS"
   },
   {
-    "name": "VIEWS"
+    "name": "ViewContainerRef"
   },
   {
     "name": "ViewContainerRef$1"
@@ -156,7 +192,7 @@
     "name": "ViewEncapsulation$1"
   },
   {
-    "name": "ViewRef$1"
+    "name": "ViewRef"
   },
   {
     "name": "_CLEAN_PROMISE"
@@ -168,7 +204,7 @@
     "name": "_DuplicateMap"
   },
   {
-    "name": "_ROOT_DIRECTIVE_INDICES"
+    "name": "_THROW_IF_NOT_FOUND"
   },
   {
     "name": "__read"
@@ -288,7 +324,13 @@
     "name": "bind"
   },
   {
+    "name": "bindingRootIndex"
+  },
+  {
     "name": "bindingUpdated"
+  },
+  {
+    "name": "bloomAdd"
   },
   {
     "name": "bloomFindPossibleInjector"
@@ -306,6 +348,12 @@
     "name": "callHooks"
   },
   {
+    "name": "canInsertNativeChildOfElement"
+  },
+  {
+    "name": "canInsertNativeChildOfView"
+  },
+  {
     "name": "canInsertNativeNode"
   },
   {
@@ -321,7 +369,10 @@
     "name": "componentRefresh"
   },
   {
-    "name": "container"
+    "name": "containerInternal"
+  },
+  {
+    "name": "contextViewData"
   },
   {
     "name": "createDirectivesAndLocals"
@@ -360,6 +411,9 @@
     "name": "createTextNode"
   },
   {
+    "name": "createViewBlueprint"
+  },
+  {
     "name": "createViewQuery"
   },
   {
@@ -388,6 +442,12 @@
   },
   {
     "name": "detectChangesInternal"
+  },
+  {
+    "name": "diPublic"
+  },
+  {
+    "name": "diPublicInInjector"
   },
   {
     "name": "directiveCreate"
@@ -471,7 +531,13 @@
     "name": "getCleanup"
   },
   {
+    "name": "getClosestComponentAncestor"
+  },
+  {
     "name": "getCurrentSanitizer"
+  },
+  {
+    "name": "getCurrentView"
   },
   {
     "name": "getInitialIndex"
@@ -492,10 +558,16 @@
     "name": "getNextLNode"
   },
   {
+    "name": "getOrCreateChangeDetectorRef"
+  },
+  {
     "name": "getOrCreateContainerRef"
   },
   {
     "name": "getOrCreateElementRef"
+  },
+  {
+    "name": "getOrCreateHostChangeDetector"
   },
   {
     "name": "getOrCreateInjectable"
@@ -534,7 +606,13 @@
     "name": "getRenderFlags"
   },
   {
+    "name": "getRenderParent"
+  },
+  {
     "name": "getRenderer"
+  },
+  {
+    "name": "getRendererFactory"
   },
   {
     "name": "getRootView"
@@ -567,9 +645,6 @@
     "name": "hostElement"
   },
   {
-    "name": "initBindings"
-  },
-  {
     "name": "initChangeDetectorIfExisting"
   },
   {
@@ -592,6 +667,12 @@
   },
   {
     "name": "invertObject"
+  },
+  {
+    "name": "isComponent"
+  },
+  {
+    "name": "isContentQueryHost"
   },
   {
     "name": "isContextDirty"
@@ -669,6 +750,18 @@
     "name": "namespaceHTML"
   },
   {
+    "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nativeNodeLocalRefExtractor"
+  },
+  {
+    "name": "nextContext"
+  },
+  {
+    "name": "nextNgElementId"
+  },
+  {
     "name": "pointers"
   },
   {
@@ -702,16 +795,19 @@
     "name": "readElementValue"
   },
   {
+    "name": "reference"
+  },
+  {
     "name": "refreshChildComponents"
   },
   {
     "name": "refreshContentQueries"
   },
   {
-    "name": "refreshDynamicEmbeddedViews"
+    "name": "refreshDescendantViews"
   },
   {
-    "name": "refreshView"
+    "name": "refreshDynamicEmbeddedViews"
   },
   {
     "name": "removeListeners"
@@ -738,7 +834,7 @@
     "name": "resolveDirective"
   },
   {
-    "name": "resolveRendererType2"
+    "name": "restoreView"
   },
   {
     "name": "sameHostView"
@@ -804,6 +900,9 @@
     "name": "stringify$2"
   },
   {
+    "name": "template"
+  },
+  {
     "name": "text"
   },
   {
@@ -841,6 +940,9 @@
   },
   {
     "name": "walkLNodeTree"
+  },
+  {
+    "name": "walkUpViews"
   },
   {
     "name": "wrapListenerWithDirtyAndDefault"

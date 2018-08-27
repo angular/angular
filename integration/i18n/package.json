@@ -9,6 +9,7 @@
     "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
     "@angular/core": "file:../../dist/packages-dist/core",
     "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
+    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
     "@angular/platform-server": "file:../../dist/packages-dist/platform-server",
     "google-closure-compiler": "git+https://github.com/alexeagle/closure-compiler.git#packagejson.dist",
     "rxjs": "file:../../node_modules/rxjs",

@@ -63,12 +63,21 @@ export function assertComponentType(
     msg: string =
         'Type passed in is not ComponentType, it does not have \'ngComponentDef\' property.') {
   if (!actual.ngComponentDef) {
-    debugger;
+    throwError(msg);
+  }
+}
+
+export function assertNgModuleType(
+    actual: any,
+    msg: string =
+        'Type passed in is not NgModuleType, it does not have \'ngModuleDef\' property.') {
+  if (!actual.ngModuleDef) {
     throwError(msg);
   }
 }
 
 function throwError(msg: string): never {
+  // tslint:disable-next-line
   debugger;  // Left intentionally for better debugger experience.
   throw new Error(`ASSERTION ERROR: ${msg}`);
 }

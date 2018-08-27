@@ -12,17 +12,14 @@ ts_library(
         "//packages/compiler",
         "//packages/compiler-cli",
         "//packages/compiler/test:test_utils",
-        "//packages/compiler/testing",
-        "//packages/core",
     ],
 )
 
 jasmine_node_test(
     name = "compliance",
-    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    bootstrap = ["angular/tools/testing/init_node_no_angular_spec.js"],
     data = [
-        "//packages/common:npm_package",
-        "//packages/core:npm_package",
+        "//packages/compiler-cli/test/ngtsc/fake_core:npm_package",
     ],
     tags = [
         "ivy-local",
@@ -30,6 +27,6 @@ jasmine_node_test(
     ],
     deps = [
         ":test_lib",
-        "//tools/testing:node",
+        "//tools/testing:node_no_angular",
     ],
 )

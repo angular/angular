@@ -78,10 +78,11 @@ function formatNumber(
  * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
  * and may require a polyfill. See [Browser Support](guide/browser-support) for details.
  *
+ * @usageNotes
+ *
  * ### Example
  *
  * {@example common/pipes/ts/number_pipe.ts region='DeprecatedNumberPipe'}
- *
  *
  */
 @Pipe({name: 'number'})
@@ -105,6 +106,8 @@ export class DeprecatedDecimalPipe implements PipeTransform {
  *
  * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
  * and may require a polyfill. See [Browser Support](guide/browser-support) for details.
+ *
+ * @usageNotes
  *
  * ### Example
  *
@@ -139,6 +142,8 @@ export class DeprecatedPercentPipe implements PipeTransform {
  *
  * WARNING: this pipe uses the Internationalization API which is not yet available in all browsers
  * and may require a polyfill. See [Browser Support](guide/browser-support) for details.
+ *
+ * @usageNotes
  *
  * ### Example
  *

@@ -22,5 +22,6 @@ nodejs_binary(
     name = "packager",
     data = ["lib"],
     entry_point = "angular/packages/bazel/src/ng_package/packager.js",
+    install_source_map_support = False,
     node_modules = "@angular_packager_deps//:node_modules",
 )

@@ -6,6 +6,9 @@
     "name": "BINDING_INDEX"
   },
   {
+    "name": "BLOOM_MASK"
+  },
+  {
     "name": "CLEAN_PROMISE"
   },
   {
@@ -24,7 +27,7 @@
     "name": "EMPTY$1"
   },
   {
-    "name": "EMPTY_RENDERER_TYPE_ID"
+    "name": "EMPTY_ARRAY$1"
   },
   {
     "name": "FLAGS"
@@ -45,13 +48,22 @@
     "name": "NEXT"
   },
   {
+    "name": "NG_ELEMENT_ID"
+  },
+  {
     "name": "NG_HOST_SYMBOL"
   },
   {
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
+    "name": "NO_CHANGE"
+  },
+  {
     "name": "PARENT"
+  },
+  {
+    "name": "PublicFeature"
   },
   {
     "name": "QUERIES"
@@ -63,13 +75,10 @@
     "name": "RENDER_PARENT"
   },
   {
-    "name": "ROOT_DIRECTIVE_INDICES"
+    "name": "SANITIZER"
   },
   {
     "name": "TVIEW"
-  },
-  {
-    "name": "UNDEFINED_RENDERER_TYPE_ID"
   },
   {
     "name": "VIEWS"
@@ -79,9 +88,6 @@
   },
   {
     "name": "_CLEAN_PROMISE"
-  },
-  {
-    "name": "_ROOT_DIRECTIVE_INDICES"
   },
   {
     "name": "_getComponentHostLElementNode"
@@ -96,7 +102,19 @@
     "name": "baseDirectiveCreate"
   },
   {
+    "name": "bindingRootIndex"
+  },
+  {
+    "name": "bloomAdd"
+  },
+  {
     "name": "callHooks"
+  },
+  {
+    "name": "canInsertNativeChildOfElement"
+  },
+  {
+    "name": "canInsertNativeChildOfView"
   },
   {
     "name": "canInsertNativeNode"
@@ -129,6 +147,9 @@
     "name": "createTextNode"
   },
   {
+    "name": "createViewBlueprint"
+  },
+  {
     "name": "createViewQuery"
   },
   {
@@ -136,6 +157,12 @@
   },
   {
     "name": "detectChangesInternal"
+  },
+  {
+    "name": "diPublic"
+  },
+  {
+    "name": "diPublicInInjector"
   },
   {
     "name": "domRendererFactory3"
@@ -168,13 +195,25 @@
     "name": "getLViewChild"
   },
   {
+    "name": "getOrCreateNodeInjector"
+  },
+  {
+    "name": "getOrCreateNodeInjectorForNode"
+  },
+  {
     "name": "getOrCreateTView"
   },
   {
     "name": "getParentLNode"
   },
   {
+    "name": "getPreviousOrParentNode"
+  },
+  {
     "name": "getRenderFlags"
+  },
+  {
+    "name": "getRenderParent"
   },
   {
     "name": "getRootView"
@@ -201,6 +240,15 @@
     "name": "namespaceHTML"
   },
   {
+    "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nextNgElementId"
+  },
+  {
+    "name": "queueHostBindingForCheck"
+  },
+  {
     "name": "readElementValue"
   },
   {
@@ -210,10 +258,10 @@
     "name": "refreshContentQueries"
   },
   {
-    "name": "refreshDynamicEmbeddedViews"
+    "name": "refreshDescendantViews"
   },
   {
-    "name": "refreshView"
+    "name": "refreshDynamicEmbeddedViews"
   },
   {
     "name": "renderComponent"
@@ -226,9 +274,6 @@
   },
   {
     "name": "resetApplicationState"
-  },
-  {
-    "name": "resolveRendererType2"
   },
   {
     "name": "setHostBindings"

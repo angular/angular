@@ -13,10 +13,17 @@ import {Decorator, ReflectionHost} from '../../host';
 import {AbsoluteReference, ImportMode, Reference} from '../../metadata';
 
 export function getConstructorDependencies(
-    clazz: ts.ClassDeclaration, reflector: ReflectionHost,
-    isCore: boolean): R3DependencyMetadata[] {
+    clazz: ts.ClassDeclaration, reflector: ReflectionHost, isCore: boolean): R3DependencyMetadata[]|
+    null {
   const useType: R3DependencyMetadata[] = [];
-  const ctorParams = reflector.getConstructorParameters(clazz) || [];
+  let ctorParams = reflector.getConstructorParameters(clazz);
+  if (ctorParams === null) {
+    if (reflector.hasBaseClass(clazz)) {
+      return null;
+    } else {
+      ctorParams = [];
+    }
+  }
   ctorParams.forEach((param, idx) => {
     let tokenExpr = param.type;
     let optional = false, self = false, skipSelf = false, host = false;

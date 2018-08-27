@@ -36,7 +36,9 @@ filegroup(
     name = "angularjs_scripts",
     srcs = [
         "@angular_deps//:node_modules/angular-1.5/angular.js",
+        "@angular_deps//:node_modules/angular-1.6/angular.js",
         "@angular_deps//:node_modules/angular-mocks-1.5/angular-mocks.js",
+        "@angular_deps//:node_modules/angular-mocks-1.6/angular-mocks.js",
         "@angular_deps//:node_modules/angular-mocks/angular-mocks.js",
         "@angular_deps//:node_modules/angular/angular.js",
     ],

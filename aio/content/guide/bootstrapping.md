@@ -37,7 +37,7 @@ Angular CLI로 프로젝트를 생성했다면 `AppModule`은 다음과 같이 �
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { HttpModule } from '@angular/http';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 
@@ -49,7 +49,7 @@ import { AppComponent } from './app.component';
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
@@ -259,7 +259,7 @@ It tells Angular about other NgModules that this particular module needs to func
 This list of modules are those that export components, directives, or pipes
 that the component templates in this module reference. In this case, the component is
 `AppComponent`, which references components, directives, or pipes in `BrowserModule`,
-`FormsModule`, or  `HttpModule`.
+`FormsModule`, or  `HttpClientModule`.
 A component template can reference another component, directive,
 or pipe when the referenced class is declared in this module or
 the class was imported from another module.

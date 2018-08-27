@@ -7,19 +7,30 @@
  */
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
-import {NgccReflectionHost} from '../host/ngcc_host';
 import {AnalyzedClass} from '../analyzer';
 import {Renderer} from './renderer';
 
 export class Esm2015Renderer extends Renderer {
-  constructor(protected host: NgccReflectionHost) { super(); }
-
   /**
    *  Add the imports at the top of the file
    */
   addImports(output: MagicString, imports: {name: string; as: string;}[]): void {
     // The imports get inserted at the very top of the file.
     imports.forEach(i => { output.appendLeft(0, `import * as ${i.as} from '${i.name}';\n`); });
+  }
+
+  addConstants(output: MagicString, constants: string, file: ts.SourceFile): void {
+    if (constants === '') {
+      return;
+    }
+    const insertionPoint = file.statements.reduce((prev, stmt) => {
+      if (ts.isImportDeclaration(stmt) || ts.isImportEqualsDeclaration(stmt) ||
+          ts.isNamespaceImport(stmt)) {
+        return stmt.getEnd();
+      }
+      return prev;
+    }, 0);
+    output.appendLeft(insertionPoint, '\n' + constants + '\n');
   }
 
   /**

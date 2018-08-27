@@ -46,6 +46,7 @@ ts_library(
     name = "test_lib",
     testonly = True,
     srcs = glob(["test/*.ts"]),
+    tsconfig = "//tools:tsconfig.json",
     deps = [":lib"],
 )
 

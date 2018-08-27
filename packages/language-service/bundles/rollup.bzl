@@ -9,14 +9,15 @@ This allows editors and other tools to easily use the language service bundle
 without having to provide all of the angular specific peer dependencies.
 """
 
-load("@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
+load(
+    "@build_bazel_rules_nodejs//internal/rollup:rollup_bundle.bzl",
     "ROLLUP_ATTRS",
     "rollup_module_mappings_aspect",
-    "write_rollup_config",
     "run_rollup",
-    "run_uglify"
+    "run_uglify",
+    "write_rollup_config",
 )
-load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "flatten_esm5", "esm5_root_dir")
+load("//packages/bazel/src:esm5.bzl", "esm5_outputs_aspect", "esm5_root_dir", "flatten_esm5")
 
 # Note: the file is called "umd.js" and "umd.min.js" because of historical
 # reasons. The format is actually amd and not umd, but we are afraid to rename
@@ -28,13 +29,15 @@ _ROLLUP_OUTPUTS = {
 }
 
 def _ls_rollup_bundle(ctx):
-  esm5_sources = flatten_esm5(ctx)
-  rollup_config = write_rollup_config(ctx,
-      root_dir = "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]),
-      output_format = "amd")
-  run_rollup(ctx, esm5_sources, rollup_config, ctx.outputs.build_umd)
-  source_map = run_uglify(ctx, ctx.outputs.build_umd, ctx.outputs.build_umd_min)
-  return DefaultInfo(files=depset([ctx.outputs.build_umd, ctx.outputs.build_umd_min, source_map]))
+    esm5_sources = flatten_esm5(ctx)
+    rollup_config = write_rollup_config(
+        ctx,
+        root_dir = "/".join([ctx.bin_dir.path, ctx.label.package, esm5_root_dir(ctx)]),
+        output_format = "amd",
+    )
+    run_rollup(ctx, esm5_sources, rollup_config, ctx.outputs.build_umd)
+    source_map = run_uglify(ctx, ctx.outputs.build_umd, ctx.outputs.build_umd_min)
+    return DefaultInfo(files = depset([ctx.outputs.build_umd, ctx.outputs.build_umd_min, source_map]))
 
 ls_rollup_bundle = rule(
     implementation = _ls_rollup_bundle,

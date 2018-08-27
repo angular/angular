@@ -9,13 +9,13 @@ import * as ts from 'typescript';
 import MagicString from 'magic-string';
 import {makeProgram} from '../helpers/utils';
 import {Analyzer} from '../../src/analyzer';
-import {Esm2015ReflectionHost} from '../../src/host/esm2015_host';
+import {Fesm2015ReflectionHost} from '../../src/host/fesm2015_host';
 import {Esm2015FileParser} from '../../src/parsing/esm2015_parser';
 import {Esm2015Renderer} from '../../src/rendering/esm2015_renderer';
 
 function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
-  const host = new Esm2015ReflectionHost(program.getTypeChecker());
+  const host = new Fesm2015ReflectionHost(program.getTypeChecker());
   const parser = new Esm2015FileParser(program, host);
   const analyzer = new Analyzer(program.getTypeChecker(), host);
   const renderer = new Esm2015Renderer(host);
@@ -52,6 +52,36 @@ A.decorators = [
           .toEqual(
               `import * as i0 from '@angular/core';\n` +
               `import * as i1 from '@angular/common';\n` + PROGRAM.contents);
+    });
+  });
+
+
+  describe('addConstants', () => {
+    it('should insert the given constants after imports in the source file', () => {
+      const PROGRAM = {
+        name: 'some/file.js',
+        contents: `
+/* A copyright notice */
+import {Directive} from '@angular/core';
+export class A {}
+A.decorators = [
+  { type: Directive, args: [{ selector: '[a]' }] },
+  { type: Other }
+];
+// Some other content`
+      };
+      const {renderer, program} = setup(PROGRAM);
+      const file = program.getSourceFile('some/file.js');
+      if (file === undefined) {
+        throw new Error(`Could not find source file`);
+      }
+      const output = new MagicString(PROGRAM.contents);
+      renderer.addConstants(output, 'const x = 3;', file);
+      expect(output.toString()).toContain(`
+import {Directive} from '@angular/core';
+const x = 3;
+
+export class A {}`);
     });
   });
 

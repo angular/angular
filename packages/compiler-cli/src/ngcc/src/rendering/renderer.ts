@@ -5,16 +5,19 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-import {dirname} from 'path';
+import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
+import {SourceMapConverter, commentRegex, fromJSON, fromMapFileSource, fromObject, fromSource, generateMapFileComment, mapFileCommentRegex, removeComments, removeMapFileComments} from 'convert-source-map';
+import {readFileSync, statSync} from 'fs';
+import MagicString from 'magic-string';
+import {basename, dirname} from 'path';
+import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import * as ts from 'typescript';
 
-import MagicString from 'magic-string';
-import {commentRegex, mapFileCommentRegex, fromJSON, fromSource, fromMapFileSource, fromObject, generateMapFileComment, removeComments, removeMapFileComments, SourceMapConverter} from 'convert-source-map';
-import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
-import {Expression, Statement, WrappedNodeExpr, WritePropExpr} from '@angular/compiler';
-import {AnalyzedClass, AnalyzedFile} from '../analyzer';
 import {Decorator} from '../../../ngtsc/host';
 import {ImportManager, translateStatement} from '../../../ngtsc/transform';
+import {AnalyzedClass, AnalyzedFile} from '../analyzer';
+import {IMPORT_PREFIX} from '../constants';
+import {NgccReflectionHost} from '../host/ngcc_host';
 
 interface SourceMapInfo {
   source: string;
@@ -55,19 +58,21 @@ export interface FileInfo {
 }
 
 /**
- * A base-class for rendering an `AnalyzedClass`.
- * Package formats have output files that must be rendered differently,
- * Concrete sub-classes must implement the `addImports`, `addDefinitions` and
- * `removeDecorators` abstract methods.
+ * A base-class for rendering an `AnalyzedFile`.
+ *
+ * Package formats have output files that must be rendered differently. Concrete sub-classes must
+ * implement the `addImports`, `addDefinitions` and `removeDecorators` abstract methods.
  */
 export abstract class Renderer {
+  constructor(protected host: NgccReflectionHost) {}
+
   /**
    * Render the source code and source-map for an Analyzed file.
    * @param file The analyzed file to render.
    * @param targetPath The absolute path where the rendered file will be written.
    */
   renderFile(file: AnalyzedFile, targetPath: string): RenderResult {
-    const importManager = new ImportManager(false, 'ɵngcc');
+    const importManager = new ImportManager(false, IMPORT_PREFIX);
     const input = this.extractSourceMap(file.sourceFile);
 
     const outputText = new MagicString(input.source);
@@ -79,6 +84,10 @@ export abstract class Renderer {
       this.trackDecorators(clazz.decorators, decoratorsToRemove);
     });
 
+    this.addConstants(
+        outputText, renderConstantPool(file.sourceFile, file.constantPool, importManager),
+        file.sourceFile);
+
     this.addImports(outputText, importManager.getAllImports(file.sourceFile.fileName, null));
     // QUESTION: do we need to remove contructor param metadata and property decorators?
     this.removeDecorators(outputText, decoratorsToRemove);
@@ -86,6 +95,8 @@ export abstract class Renderer {
     return this.renderSourceAndMap(file, input, outputText, targetPath);
   }
 
+  protected abstract addConstants(output: MagicString, constants: string, file: ts.SourceFile):
+      void;
   protected abstract addImports(output: MagicString, imports: {name: string, as: string}[]): void;
   protected abstract addDefinitions(
       output: MagicString, analyzedClass: AnalyzedClass, definitions: string): void;
@@ -127,7 +138,20 @@ export abstract class Renderer {
       try {
         externalSourceMap = fromMapFileSource(file.text, dirname(file.fileName));
       } catch (e) {
-        console.warn(e);
+        if (e.code === 'ENOENT') {
+          console.warn(
+              `The external map file specified in the source code comment "${e.path}" was not found on the file system.`);
+          const mapPath = file.fileName + '.map';
+          if (basename(e.path) !== basename(mapPath) && statSync(mapPath).isFile()) {
+            console.warn(
+                `Guessing the map file name from the source file name: "${basename(mapPath)}"`);
+            try {
+              externalSourceMap = fromObject(JSON.parse(readFileSync(mapPath, 'utf8')));
+            } catch (e) {
+              console.error(e);
+            }
+          }
+        }
       }
       return {
         source: removeMapFileComments(file.text).replace(/\n\n$/, '\n'),
@@ -205,6 +229,17 @@ export function mergeSourceMaps(
   mergedMapGenerator.applySourceMap(oldMapConsumer);
   const merged = fromJSON(mergedMapGenerator.toString());
   return merged;
+}
+
+/**
+ * Render the constant pool as source code for the given class.
+ */
+export function renderConstantPool(
+    sourceFile: ts.SourceFile, constantPool: ConstantPool, imports: ImportManager): string {
+  const printer = ts.createPrinter();
+  return constantPool.statements.map(stmt => translateStatement(stmt, imports))
+      .map(stmt => printer.printNode(ts.EmitHint.Unspecified, stmt, sourceFile))
+      .join('\n');
 }
 
 /**

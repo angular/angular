@@ -14,11 +14,11 @@ import {Sanitizer} from '../sanitization/security';
 
 import {assertComponentType, assertDefined} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, ROOT_DIRECTIVE_INDICES, _getComponentHostLElementNode, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings,} from './instructions';
+import {CLEAN_PROMISE, _getComponentHostLElementNode, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings, queueHostBindingForCheck,} from './instructions';
 import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {LViewData, LViewFlags, RootContext, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
+import {LViewData, LViewFlags, RootContext, BINDING_INDEX, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
 import {stringify} from './util';
 
 
@@ -99,20 +99,21 @@ export function renderComponent<T>(
   const componentDef =
       (componentType as ComponentType<T>).ngComponentDef as ComponentDefInternal<T>;
   if (componentDef.type != componentType) componentDef.type = componentType;
-  let component: T;
+
   // The first index of the first selector is the tag name.
   const componentTag = componentDef.selectors ![0] ![0] as string;
   const hostNode = locateHostElement(rendererFactory, opts.host || componentTag);
   const rootContext = createRootContext(opts.scheduler || requestAnimationFrame.bind(window));
 
   const rootView: LViewData = createLViewData(
-      rendererFactory.createRenderer(hostNode, componentDef.rendererType),
-      createTView(-1, null, null, null, null), rootContext,
+      rendererFactory.createRenderer(hostNode, componentDef),
+      createTView(-1, null, 1, 0, null, null, null), rootContext,
       componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
   rootView[INJECTOR] = opts.injector || null;
 
   const oldView = enterView(rootView, null !);
   let elementNode: LElementNode;
+  let component: T;
   try {
     if (rendererFactory.begin) rendererFactory.begin();
 
@@ -120,14 +121,18 @@ export function renderComponent<T>(
     elementNode = hostElement(componentTag, hostNode, componentDef, sanitizer);
 
     // Create directive instance with factory() and store at index 0 in directives array
-    rootContext.components.push(
-        component = baseDirectiveCreate(0, componentDef.factory(), componentDef) as T);
+    component = baseDirectiveCreate(0, componentDef.factory() as T, componentDef);
+    if (componentDef.hostBindings) {
+      queueHostBindingForCheck(0, componentDef.hostVars);
+    }
+    rootContext.components.push(component);
+    (elementNode.data as LViewData)[CONTEXT] = component;
     initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data !);
 
     opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
 
     executeInitAndContentHooks();
-    setHostBindings(ROOT_DIRECTIVE_INDICES);
+    setHostBindings(rootView[TVIEW].hostBindings);
     detectChangesInternal(elementNode.data as LViewData, elementNode, component);
   } finally {
     leaveView(oldView);

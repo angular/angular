@@ -12,6 +12,7 @@ import {Identifiers} from '@angular/compiler/src/render3/r3_identifiers';
 import {angularCoreEnv} from '../../src/render3/jit/environment';
 
 const INTERFACE_EXCEPTIONS = new Set<string>([
+  'ɵBaseDef',
   'ɵComponentDef',
   'ɵDirectiveDef',
   'ɵInjectorDef',

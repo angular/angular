@@ -5,6 +5,7 @@ ts_library(
     name = "ts_spec",
     testonly = True,
     srcs = ["test.spec.ts"],
+    tsconfig = ":tsconfig.json",
 )
 
 ts_library(

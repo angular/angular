@@ -7,16 +7,16 @@
  */
 
 
-import {MockDirectory, setup} from '@angular/compiler/test/aot/test_util';
+import {setup} from '@angular/compiler/test/aot/test_util';
 import {compile, expectEmit} from './mock_compile';
 
 describe('mock_compiler', () => {
   // This produces a MockDirectory of the file needed to compile an Angular application.
   // This setup is performed in a beforeAll which populates the map returned.
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   describe('compiling', () => {
@@ -140,7 +140,7 @@ describe('mock_compiler', () => {
     expectEmit(
         result.source, `
     // TODO: this comment should not be taken into account
-    $r3$.ɵT(0, "Hello!");
+    $r3$.ɵtext(0, "Hello!");
     // TODO: this comment should not be taken into account
     `,
         'todo comments should be ignored');

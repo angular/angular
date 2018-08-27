@@ -15,7 +15,7 @@ import {filterToMembersWithDecorator, reflectObjectLiteral, staticallyResolve} f
 import {AnalysisOutput, CompileResult, DecoratorHandler} from '../../transform';
 
 import {ResourceLoader} from './api';
-import {extractDirectiveMetadata, extractQueriesFromDecorator, queriesFromFields} from './directive';
+import {extractDirectiveMetadata, extractQueriesFromDecorator, parseFieldArrayValue, queriesFromFields} from './directive';
 import {SelectorScopeRegistry} from './selector_scope';
 import {isAngularCore, unwrapExpression} from './util';
 
@@ -24,7 +24,7 @@ const EMPTY_MAP = new Map<string, Expression>();
 /**
  * `DecoratorHandler` which handles the `@Component` annotation.
  */
-export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMetadata> {
+export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMetadata, Decorator> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean,
@@ -33,7 +33,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
 
 
-  detect(decorators: Decorator[]): Decorator|undefined {
+  detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
+    if (!decorators) {
+      return undefined;
+    }
     return decorators.find(
         decorator => decorator.name === 'Component' && (this.isCore || isAngularCore(decorator)));
   }
@@ -132,23 +135,36 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
       viewQueries.push(...queriesFromDecorator.view);
     }
 
+    let styles: string[]|null = null;
+    if (component.has('styles')) {
+      styles = parseFieldArrayValue(component, 'styles', this.reflector, this.checker);
+    }
+
+    let encapsulation: number = 0;
+    if (component.has('encapsulation')) {
+      encapsulation = parseInt(staticallyResolve(
+          component.get('encapsulation') !, this.reflector, this.checker) as string);
+    }
+
     return {
       analysis: {
         ...metadata,
         template,
         viewQueries,
+        encapsulation,
+        styles: styles || [],
 
         // These will be replaced during the compilation step, after all `NgModule`s have been
         // analyzed and the full compilation scope for the component can be realized.
         pipes: EMPTY_MAP,
         directives: EMPTY_MAP,
+        wrapDirectivesInClosure: false,
       }
     };
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3ComponentMetadata): CompileResult {
-    const pool = new ConstantPool();
-
+  compile(node: ts.ClassDeclaration, analysis: R3ComponentMetadata, pool: ConstantPool):
+      CompileResult {
     // Check whether this component was registered with an NgModule. If so, it should be compiled
     // under that module's compilation scope.
     const scope = this.scopeRegistry.lookupCompilationScope(node);
@@ -156,14 +172,16 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
       // Replace the empty components and directives from the analyze() step with a fully expanded
       // scope. This is possible now because during compile() the whole compilation unit has been
       // fully analyzed.
-      analysis = {...analysis, ...scope};
+      const {directives, pipes, containsForwardDecls} = scope;
+      const wrapDirectivesInClosure: boolean = !!containsForwardDecls;
+      analysis = {...analysis, directives, pipes, wrapDirectivesInClosure};
     }
 
     const res = compileComponentFromMetadata(analysis, pool, makeBindingParser());
     return {
       name: 'ngComponentDef',
       initializer: res.expression,
-      statements: pool.statements,
+      statements: res.statements,
       type: res.type,
     };
   }

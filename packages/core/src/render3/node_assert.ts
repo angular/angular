@@ -17,7 +17,9 @@ export function assertNodeType(node: LNode, type: TNodeType) {
 export function assertNodeOfPossibleTypes(node: LNode, ...types: TNodeType[]) {
   assertDefined(node, 'should be called with a node');
   const found = types.some(type => node.tNode.type === type);
-  assertEqual(found, true, `Should be one of ${types.map(typeName).join(', ')}`);
+  assertEqual(
+      found, true,
+      `Should be one of ${types.map(typeName).join(', ')} but got ${typeName(node.tNode.type)}`);
 }
 
 function typeName(type: TNodeType): string {
@@ -25,5 +27,6 @@ function typeName(type: TNodeType): string {
   if (type == TNodeType.Container) return 'Container';
   if (type == TNodeType.View) return 'View';
   if (type == TNodeType.Element) return 'Element';
+  if (type == TNodeType.ElementContainer) return 'ElementContainer';
   return '<unknown>';
 }

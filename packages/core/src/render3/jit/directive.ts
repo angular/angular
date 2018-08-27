@@ -10,13 +10,13 @@ import {ConstantPool, R3DirectiveMetadata, WrappedNodeExpr, compileComponentFrom
 
 import {Component, Directive, HostBinding, HostListener, Input, Output} from '../../metadata/directives';
 import {componentNeedsResolution, maybeQueueResolutionOfComponentResources} from '../../metadata/resource_loading';
-import {ReflectionCapabilities} from '../../reflection/reflection_capabilities';
+import {ViewEncapsulation} from '../../metadata/view';
 import {Type} from '../../type';
 import {stringify} from '../../util';
 
 import {angularCoreEnv} from './environment';
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF} from './fields';
-import {patchComponentDefWithScope} from './module';
+import {patchComponentDefWithScope, transitiveScopesFor} from './module';
 import {getReflect, reflectDependencies} from './util';
 
 type StringMap = {
@@ -33,12 +33,12 @@ type StringMap = {
  * until the global queue has been resolved with a call to `resolveComponentResources`.
  */
 export function compileComponent(type: Type<any>, metadata: Component): void {
-  let def: any = null;
+  let ngComponentDef: any = null;
   // Metadata may have resources which need to be resolved.
   maybeQueueResolutionOfComponentResources(metadata);
   Object.defineProperty(type, NG_COMPONENT_DEF, {
     get: () => {
-      if (def === null) {
+      if (ngComponentDef === null) {
         if (componentNeedsResolution(metadata)) {
           const error = [`Component '${stringify(type)}' is not resolved:`];
           if (metadata.templateUrl) {
@@ -73,22 +73,29 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
               directives: new Map(),
               pipes: new Map(),
               viewQueries: [],
+              wrapDirectivesInClosure: false,
+              styles: metadata.styles || [],
+              encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated
             },
             constantPool, makeBindingParser());
+        const preStatements = [...constantPool.statements, ...res.statements];
 
-        def = jitExpression(
-            res.expression, angularCoreEnv, `ng://${type.name}/ngComponentDef.js`, constantPool);
+        ngComponentDef = jitExpression(
+            res.expression, angularCoreEnv, `ng://${type.name}/ngComponentDef.js`, preStatements);
 
         // If component compilation is async, then the @NgModule annotation which declares the
         // component may execute and set an ngSelectorScope property on the component type. This
         // allows the component to patch itself with directiveDefs from the module after it finishes
         // compiling.
         if (hasSelectorScope(type)) {
-          patchComponentDefWithScope(def, type.ngSelectorScope);
+          const scopes = transitiveScopesFor(type.ngSelectorScope);
+          patchComponentDefWithScope(ngComponentDef, scopes);
         }
       }
-      return def;
+      return ngComponentDef;
     },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
   });
 }
 
@@ -105,21 +112,23 @@ function hasSelectorScope<T>(component: Type<T>): component is Type<T>&
  * will resolve when compilation completes and the directive becomes usable.
  */
 export function compileDirective(type: Type<any>, directive: Directive): void {
-  let def: any = null;
+  let ngDirectiveDef: any = null;
   Object.defineProperty(type, NG_DIRECTIVE_DEF, {
     get: () => {
-      if (def === null) {
+      if (ngDirectiveDef === null) {
         const constantPool = new ConstantPool();
         const sourceMapUrl = `ng://${type && type.name}/ngDirectiveDef.js`;
         const res = compileR3Directive(
             directiveMetadata(type, directive), constantPool, makeBindingParser());
-        def = jitExpression(res.expression, angularCoreEnv, sourceMapUrl, constantPool);
+        const preStatements = [...constantPool.statements, ...res.statements];
+        ngDirectiveDef = jitExpression(res.expression, angularCoreEnv, sourceMapUrl, preStatements);
       }
-      return def;
+      return ngDirectiveDef;
     },
+    // Make the property configurable in dev mode to allow overriding in tests
+    configurable: !!ngDevMode,
   });
 }
-
 
 export function extendsDirectlyFromObject(type: Type<any>): boolean {
   return Object.getPrototypeOf(type.prototype) === Object.prototype;
@@ -166,6 +175,7 @@ function directiveMetadata(type: Type<any>, metadata: Directive): R3DirectiveMet
     },
     typeSourceSpan: null !,
     usesInheritance: !extendsDirectlyFromObject(type),
+    exportAs: metadata.exportAs || null,
   };
 }
 

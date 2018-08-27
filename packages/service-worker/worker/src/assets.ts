@@ -193,9 +193,10 @@ export abstract class AssetGroup {
       cacheDirectives.forEach(v => v[0] = v[0].toLowerCase());
 
       // Find the max-age directive, if one exists.
-      const cacheAge = cacheDirectives.filter(v => v[0] === 'max-age').map(v => v[1])[0];
+      const maxAgeDirective = cacheDirectives.find(v => v[0] === 'max-age');
+      const cacheAge = maxAgeDirective ? maxAgeDirective[1] : undefined;
 
-      if (cacheAge.length === 0) {
+      if (!cacheAge) {
         // No usable TTL defined. Must assume that the response is stale.
         return true;
       }

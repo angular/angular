@@ -16,7 +16,7 @@ import {NgtscProgram} from '../../src/ngtsc/program';
 
 const IDENTIFIER = /[A-Za-z_$ɵ][A-Za-z0-9_$]*/;
 const OPERATOR =
-    /!|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\./;
+    /!|\?|%|\*|\/|\^|&&?|\|\|?|\(|\)|\{|\}|\[|\]|:|;|<=?|>=?|={1,3}|!==?|=>|\+\+?|--?|@|,|\.|\.\.\./;
 const STRING = /'[^']*'|"[^"]*"|`[\s\S]*?`/;
 const NUMBER = /\d+/;
 
@@ -74,8 +74,14 @@ export function expectEmit(
       const m = source.match(regexp);
       const expectedPiece = pieces[i - 1] == IDENTIFIER ? '<IDENT>' : pieces[i - 1];
       if (!m) {
+        // display at most `contextLength` characters of the line preceding the error location
+        const contextLength = 50;
+        const fullContext = source.substring(source.lastIndexOf('\n', last) + 1, last);
+        const context = fullContext.length > contextLength ?
+            `...${fullContext.substr(-contextLength)}` :
+            fullContext;
         fail(
-            `${description}: Expected to find ${expectedPiece} '${source.substr(0,last)}[<---HERE expected "${expectedPiece}"]${source.substr(last)}'`);
+            `${description}: Failed to find "${expectedPiece}" after "${context}" in:\n'${source.substr(0,last)}[<---HERE expected "${expectedPiece}"]${source.substr(last)}'`);
         return;
       } else {
         last = (m.index || 0) + m[0].length;

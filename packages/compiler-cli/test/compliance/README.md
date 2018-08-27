@@ -1,1 +1,3 @@
-Tests in this directory are excluded from running in the browser and only run in node.
+Tests in this directory should be run with:
+
+bazel test --define=compile=local  packages/compiler-cli/test/compliance:compliance

@@ -31,6 +31,8 @@ module.exports = function(config) {
       // Serve AngularJS for `ngUpgrade` testing.
       {pattern: 'node_modules/angular-1.5/angular.js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks-1.5/angular-mocks.js', included: false, watched: false},
+      {pattern: 'node_modules/angular-1.6/angular.js', included: false, watched: false},
+      {pattern: 'node_modules/angular-mocks-1.6/angular-mocks.js', included: false, watched: false},
       {pattern: 'node_modules/angular/angular.js', included: false, watched: false},
       {pattern: 'node_modules/angular-mocks/angular-mocks.js', included: false, watched: false},
 
@@ -82,7 +84,7 @@ module.exports = function(config) {
       'dist/all/@angular/elements/schematics/**',
       'dist/all/@angular/examples/**/e2e_test/*',
       'dist/all/@angular/language-service/**',
-      'dist/all/@angular/router/test/**',
+      'dist/all/@angular/router/**/test/**',
       'dist/all/@angular/platform-browser/testing/e2e_util.js',
       'dist/all/angular1_router.js',
       'dist/examples/**/e2e_test/**',

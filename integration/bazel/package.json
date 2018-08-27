@@ -4,27 +4,21 @@
   "version": "0.0.0",
   "license": "MIT",
   "dependencies": {
-    "@angular/animations": "file:../../dist/packages-dist/animations",
-    "@angular/common": "file:../../dist/packages-dist/common",
-    "@angular/compiler": "file:../../dist/packages-dist/compiler",
-    "@angular/core": "file:../../dist/packages-dist/core",
-    "@angular/platform-browser": "file:../../dist/packages-dist/platform-browser",
-    "@angular/platform-browser-dynamic": "file:../../dist/packages-dist/platform-browser-dynamic",
+    "reflect-metadata": "file:../../node_modules/reflect-metadata",
     "rxjs": "file:../../node_modules/rxjs",
+    "tslib": "file:../../node_modules/tslib",
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@angular/bazel": "file:../../dist/packages-dist/bazel",
-    "@angular/compiler-cli": "file:../../dist/packages-dist/compiler-cli",
-    "@types/jasmine": "2.8.7",
+    "@bazel/typescript": "0.16.1",
+    "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/source-map": "0.5.1",
     "http-server": "0.11.1",
     "protractor": "file:../../node_modules/protractor",
-    "tsutils": "file:../../node_modules/tsutils",
+    "tsickle": "file:../../node_modules/tsickle",
     "typescript": "file:../../node_modules/typescript"
   },
   "scripts": {
-    "postinstall": "ngc -p angular.tsconfig.json",
     "test": "bazel build ... --noshow_progress && bazel test ..."
   }
 }
