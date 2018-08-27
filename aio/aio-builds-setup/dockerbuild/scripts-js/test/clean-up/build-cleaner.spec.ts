@@ -88,9 +88,12 @@ describe('BuildCleaner', () => {
     });
 
 
-    it('should return a promise', () => {
+    it('should return a promise', async () => {
       const promise = cleaner.cleanUp();
       expect(promise).toEqual(jasmine.any(Promise));
+
+      // Do not complete the test and release the spies synchronously, to avoid running the actual implementations.
+      await promise;
     });
 
 
