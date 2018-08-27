@@ -2,6 +2,7 @@
 import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as http from 'http';
+import {AddressInfo} from 'net';
 import {CircleCiApi} from '../common/circle-ci-api';
 import {GithubApi} from '../common/github-api';
 import {GithubPullRequests} from '../common/github-pull-requests';
@@ -52,7 +53,7 @@ export class PreviewServerFactory {
     const httpServer = http.createServer(middleware as any);
 
     httpServer.on('listening', () => {
-      const info = httpServer.address();
+      const info = httpServer.address() as AddressInfo;
       logger.info(`Up and running (and listening on ${info.address}:${info.port})...`);
     });
 
