@@ -118,10 +118,15 @@ export class CdkAriaLive implements OnDestroy {
         this._subscription = null;
       }
     } else if (!this._subscription) {
-      this._subscription = this._ngZone.runOutsideAngular(
-          () => this._contentObserver.observe(this._elementRef).subscribe(
-              () => this._liveAnnouncer.announce(
-                  this._elementRef.nativeElement.innerText, this._politeness)));
+      this._subscription = this._ngZone.runOutsideAngular(() => {
+        return this._contentObserver
+          .observe(this._elementRef)
+          .subscribe(() => {
+            // Note that we use textContent here, rather than innerText, in order to avoid a reflow.
+            const element = this._elementRef.nativeElement;
+            this._liveAnnouncer.announce(element.textContent, this._politeness);
+          });
+      });
     }
   }
   private _politeness: AriaLivePoliteness = 'off';
