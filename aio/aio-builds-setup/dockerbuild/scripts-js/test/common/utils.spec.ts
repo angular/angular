@@ -1,4 +1,5 @@
 // Imports
+import {resolve as resolvePath} from 'path';
 import {
   assert,
   assertNotMissingOrEmpty,
@@ -39,7 +40,7 @@ describe('utils', () => {
       const sha = 'ABCDEF1234567';
       const artifactPath = 'a/path/to/file.zip';
       const path = computeArtifactDownloadPath(downloadDir, pr, sha, artifactPath);
-      expect(path).toEqual('/a/b/c/123-ABCDEF1-file.zip');
+      expect(path).toBe(resolvePath('/a/b/c/123-ABCDEF1-file.zip'));
     });
   });
 
