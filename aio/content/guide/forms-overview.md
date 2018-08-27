@@ -1,6 +1,6 @@
 # Forms in Angular
 
-Handling user input with forms is the cornerstone of many common applications. You use forms to log in to a page, updating a profile, entering sensitive information, and many other data-entry tasks. 
+Handling user input with forms is the cornerstone of many common applications. You use forms to log in, to update a profile, to enter sensitive information, and to perform many other data-entry tasks. 
 
 Angular provides two different approaches to handling user input through forms: Reactive and template-driven. Each set of forms promote a distinct way of processing forms and offers different advantages. The sections below provide a comparison of the two approaches and when each one is applicable. There are many different factors that influence your decision on which approach works best for your situation. Whether you’re using reactive or template driven forms, these concepts are key to understanding the mechanisms underneath each solution.
 
@@ -19,22 +19,22 @@ Control value accessors define a bridge between Angular forms and native DOM ele
 
 ## Forms data flows
 
-When building forms in Angular, its important to be able understand how the the framework handles data flows from user input to the form and changes from code. Reactive and template-driven follow two different strategies when handling these scenarios. Using a simple component with a single input field, we can illustrate how changes are handled.
+When building forms in Angular, it's important to be able understand how the the framework handles data flows from user input to the form and changes from code. Reactive and template-driven follow two different strategies when handling these scenarios. Using a simple component with a single input field, we can illustrate how changes are handled.
 
 Here is a component with an input field for a single control using reactive forms.
 
 ```typescript
 @Component({
-  template: `Name: <input type="text" [formControl]="name"/> `
+  template: `Name: <input type="text" [formControl]="name"> `
 })
 export class ReactiveNameComponent {
-  name = new FormControl();
+  name = new FormControl('');
 }
 ```
 
 Let’s look at how the data flows for an input with reactive forms.
 
-**Diagram of Input Event flow For Reactive Forms**
+**Diagram of Input Event Flow For Reactive Forms**
 
 When text is entered into the input field, the control is immediately updated to the new value, which then emits a new value through an observable. The source of truth, the form model, is explicitly defined with the form control in the component class. This model is created independently of the UI and is used to provide the value and validation status for the control instance. Reactive forms use directives to link existing form control instances to form elements in the view. This is important because you have full control over the form model without ever rendering the UI. The source of truth is always correct, because it is synchronously updated at the time changes are made.
 
@@ -42,16 +42,16 @@ Now let’s look at the same data flows with template-driven forms.
 
 ```typescript
 @Component({
-  template: `Name: <input type="text" [(ngModel)]="name"/>`
+  template: `Name: <input type="text" [(ngModel)]="name">`
 })
 export class TemplateNameComponent {
-  name = ‘’;
+  name = '';
 }
 ```
 
-**Diagram of Input Event flow For Reactive Forms**
+**Diagram of Input Event Flow For Reactive Forms**
 
-Template-driven forms are less explicit in that the source of truth for is the directives in the template. Directives are necessary to bind the model to the component class. You no longer have direct control of the form model. Template-driven forms use directives such as NgModel and NgModelGroup to create the form control or group instances and manage their lifecycle within the change detection cycle. This abstraction promotes simplicity over structure. Because template-driven forms are dependent on the UI, the change detection process must complete its cycle where it checks for values changes, queues a task for the value to be updated, and performs a tick before the source of truth is correct. The process happens asynchronously to prevent errors from occuring with values changing during the change detection cycle and introduces unpredictability for querying the source of truth.
+Template-driven forms are less explicit in that the source of truth for is the directives in the template. Directives are necessary to bind the model to the component class. You no longer have direct control of the form model. Template-driven forms use directives such as `NgModel` and `NgModelGroup` to create the form control or group instances and manage their lifecycle within the change detection cycle. This abstraction promotes simplicity over structure. Because template-driven forms are dependent on the UI, the change detection process must complete its cycle where it checks for values changes, queues a task for the value to be updated, and performs a tick before the source of truth is correct. The process happens asynchronously to prevent errors from occuring with values changing during the change detection cycle and introduces unpredictability for querying the source of truth.
 
 ## Custom validation and testing
 
