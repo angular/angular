@@ -103,7 +103,11 @@ export function getCurrentSanitizer(): Sanitizer|null {
   return viewData && viewData[SANITIZER];
 }
 
-let depthCountFromRootOrTemplate = 0;
+/**
+ * Store the element depth count. This is used to identify the root elements of the template
+ * so that we can than attach `LViewData` to only those elements.
+ */
+let elementDepthCount !: number;
 
 /**
  * Returns the current OpaqueViewState instance.
@@ -518,10 +522,10 @@ export function adjustBlueprintForNewNode(view: LViewData) {
 /**
  * Resets the application state.
  */
-export function resetApplicationState() {
+export function resetComponentState() {
   isParent = false;
   previousOrParentNode = null !;
-  depthCountFromRootOrTemplate = 0;
+  elementDepthCount = 0;
 }
 
 /**
@@ -541,7 +545,7 @@ export function renderTemplate<T>(
     directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
     sanitizer?: Sanitizer | null): LElementNode {
   if (host == null) {
-    resetApplicationState();
+    resetComponentState();
     rendererFactory = providedRendererFactory;
     const tView =
         getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null);
@@ -804,10 +808,10 @@ export function elementStart(
   // any immediate children of a component or template container must be pre-emptively
   // monkey-patched with the component view data so that the element can be inspected
   // later on using any element discovery utility methods (see `element_discovery.ts`)
-  if (depthCountFromRootOrTemplate === 0) {
+  if (elementDepthCount === 0) {
     attachLViewDataToNode(native, viewData);
   }
-  depthCountFromRootOrTemplate++;
+  elementDepthCount++;
 }
 
 /**
@@ -1183,7 +1187,7 @@ export function locateHostElement(
 export function hostElement(
     tag: string, rNode: RElement | null, def: ComponentDefInternal<any>,
     sanitizer?: Sanitizer | null): LElementNode {
-  resetApplicationState();
+  resetComponentState();
   const node = createLNode(
       0, TNodeType.Element, rNode, null, null,
       createLViewData(
@@ -1308,7 +1312,7 @@ export function elementEnd(): void {
   currentQueries && (currentQueries = currentQueries.addNode(previousOrParentNode));
   queueLifecycleHooks(previousOrParentNode.tNode.flags, tView);
   currentElementNode = null;
-  depthCountFromRootOrTemplate--;
+  elementDepthCount--;
 }
 
 /**
@@ -1915,13 +1919,8 @@ export function template(
   const node = containerInternal(index, tagName || null, attrs || null, localRefs || null);
 
   if (firstTemplatePass) {
-    let depth = depthCountFromRootOrTemplate;
-    depthCountFromRootOrTemplate = 0;
-
     node.tNode.tViews = createTView(
         -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null);
-
-    depthCountFromRootOrTemplate = depth;
   }
 
   createDirectivesAndLocals(node, localRefs, localRefExtractor);
@@ -2160,15 +2159,10 @@ export function componentRefresh<T>(adjustedElementIndex: number): void {
       assertDefined(element.data, `Component's host node should have an LViewData attached.`);
   const hostView = element.data !;
 
-  const depth = depthCountFromRootOrTemplate;
-  depthCountFromRootOrTemplate = 0;
-
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
     detectChangesInternal(hostView, element, hostView[CONTEXT]);
   }
-
-  depthCountFromRootOrTemplate = depth;
 }
 
 /** Returns a boolean for whether the view is attached */

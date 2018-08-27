@@ -330,9 +330,6 @@
     "name": "assertTemplate"
   },
   {
-    "name": "attachLViewDataToNode"
-  },
-  {
     "name": "baseDirectiveCreate"
   },
   {
@@ -730,6 +727,9 @@
   },
   {
     "name": "leaveView"
+  },
+  {
+    "name": "linkDataToNode"
   },
   {
     "name": "listener"
