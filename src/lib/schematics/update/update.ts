@@ -30,16 +30,15 @@ export default function(): Rule {
           path.join(__dirname, 'rules/'),
           path.join(__dirname, 'rules/attribute-selectors'),
           path.join(__dirname, 'rules/class-names'),
+          path.join(__dirname, 'rules/class-inheritance'),
           path.join(__dirname, 'rules/input-names'),
           path.join(__dirname, 'rules/output-names'),
           path.join(__dirname, 'rules/css-selectors'),
           path.join(__dirname, 'rules/element-selectors'),
           path.join(__dirname, 'rules/property-names'),
+          path.join(__dirname, 'rules/method-calls'),
         ],
         rules: {
-          // Automatic fixes.
-          'switch-template-export-as-names': true,
-
           // Attribute selector update rules.
           'attribute-selectors-string-literal': true,
           'attribute-selectors-stylesheet': true,
@@ -70,11 +69,15 @@ export default function(): Rule {
           'property-names-access': true,
           'property-names-misc': true,
 
-          // Additional issues we can detect but not automatically fix.
-          'check-class-declaration-misc': true,
+          // Method call checks
+          'method-calls-check': true,
+
+          // Class inheritance
+          'class-inheritance-check': true,
+          'class-inheritance-misc': true,
+
+          // Additional misc rules.
           'check-import-misc': true,
-          'check-inheritance': true,
-          'check-method-calls': true,
           'check-template-misc': true
         }
       }, {

@@ -43,7 +43,7 @@ export const methodCallChecks = transformChanges<MaterialMethodCallData>([
         invalidArgCounts: [
           {
             count: 2,
-            message: '"g{{default}}" is now required as a third argument'
+            message: '"g{{defaults}}" is now required as a third argument'
           }
         ]
       }
