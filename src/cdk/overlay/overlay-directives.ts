@@ -158,6 +158,9 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   /** The custom class to be set on the backdrop element. */
   @Input('cdkConnectedOverlayBackdropClass') backdropClass: string;
 
+  /** The custom class to add to the overlay pane element. */
+  @Input('cdkConnectedOverlayPanelClass') panelClass: string | string[];
+
   /** Margin between the overlay and the viewport edges. */
   @Input('cdkConnectedOverlayViewportMargin') viewportMargin: number = 0;
 
@@ -294,6 +297,10 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
 
     if (this.backdropClass) {
       overlayConfig.backdropClass = this.backdropClass;
+    }
+
+    if (this.panelClass) {
+      overlayConfig.panelClass = this.panelClass;
     }
 
     return overlayConfig;

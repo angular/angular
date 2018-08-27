@@ -232,6 +232,15 @@ describe('Overlay directives', () => {
       expect(backdrop.classList).toContain('mat-test-class');
     });
 
+    it('should set the custom panel class', () => {
+      fixture.componentInstance.isOpen = true;
+      fixture.detectChanges();
+
+      const panel
+        = overlayContainerElement.querySelector('.cdk-overlay-pane') as HTMLElement;
+      expect(panel.classList).toContain('cdk-test-panel-class');
+    });
+
     it('should set the offsetX', () => {
       fixture.componentInstance.offsetX = 5;
       fixture.componentInstance.isOpen = true;
@@ -478,6 +487,7 @@ describe('Overlay directives', () => {
             [cdkConnectedOverlayGrowAfterOpen]="growAfterOpen"
             [cdkConnectedOverlayPush]="push"
             cdkConnectedOverlayBackdropClass="mat-test-class"
+            cdkConnectedOverlayPanelClass="cdk-test-panel-class"
             (backdropClick)="backdropClickHandler($event)"
             [cdkConnectedOverlayOffsetX]="offsetX"
             [cdkConnectedOverlayOffsetY]="offsetY"
