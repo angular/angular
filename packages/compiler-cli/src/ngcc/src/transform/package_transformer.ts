@@ -65,13 +65,21 @@ export class PackageTransformer {
       // Create the TS program and necessary helpers.
       // TODO : create a custom compiler host that reads from .bak files if available.
       const host = ts.createCompilerHost(options);
+      let rootDirs: string[]|undefined = undefined;
+      if (options.rootDirs !== undefined) {
+        rootDirs = options.rootDirs;
+      } else if (options.rootDir !== undefined) {
+        rootDirs = [options.rootDir];
+      } else {
+        rootDirs = [host.getCurrentDirectory()];
+      }
       const packageProgram = ts.createProgram([entryPoint.entryFileName], options, host);
       const typeChecker = packageProgram.getTypeChecker();
       const dtsMapper = new DtsMapper(entryPoint.entryRoot, entryPoint.dtsEntryRoot);
       const reflectionHost = this.getHost(format, packageProgram, dtsMapper);
 
       const parser = this.getFileParser(format, packageProgram, reflectionHost);
-      const analyzer = new Analyzer(typeChecker, reflectionHost);
+      const analyzer = new Analyzer(typeChecker, reflectionHost, rootDirs);
       const renderer = this.getRenderer(format, packageProgram, reflectionHost);
 
       // Parse and analyze the files.

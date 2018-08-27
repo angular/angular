@@ -46,7 +46,7 @@ function analyze(file: {name: string, contents: string}) {
   const program = makeProgram(file);
   const host = new Fesm2015ReflectionHost(program.getTypeChecker());
   const parser = new Esm2015FileParser(program, host);
-  const analyzer = new Analyzer(program.getTypeChecker(), host);
+  const analyzer = new Analyzer(program.getTypeChecker(), host, ['']);
 
   const parsedFiles = parser.parseFile(program.getSourceFile(file.name) !);
   return parsedFiles.map(file => analyzer.analyzeFile(file));
