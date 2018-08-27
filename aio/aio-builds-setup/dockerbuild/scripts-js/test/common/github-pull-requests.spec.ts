@@ -147,7 +147,7 @@ describe('GithubPullRequests', () => {
     it('should resolve with the data returned from GitHub', done => {
       const expected: any = [{ sha: 'ABCDE', filename: 'a/b/c'}, { sha: '12345', filename: 'x/y/z' }];
       githubApi.get.and.callFake(() => Promise.resolve(expected));
-      prs.fetch(42).then(data => {
+      prs.fetchFiles(42).then(data => {
         expect(data).toEqual(expected);
         done();
       });
