@@ -29,7 +29,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean,
-      private resourceLoader: ResourceLoader) {}
+      private resourceLoader: ResourceLoader, private rootDirs: string[]) {}
 
   private literalCache = new Map<Decorator, ts.ObjectLiteralExpression>();
 
@@ -111,9 +111,21 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
       preserveWhitespaces = value;
     }
 
+    // Go through the root directories for this project, and select the one with the smallest
+    // relative path representation.
+    const filePath = node.getSourceFile().fileName;
+    const relativeFilePath = this.rootDirs.reduce<string|undefined>((previous, rootDir) => {
+      const candidate = path.posix.relative(rootDir, filePath);
+      if (previous === undefined || candidate.length < previous.length) {
+        return candidate;
+      } else {
+        return previous;
+      }
+    }, undefined) !;
+
     const template = parseTemplate(
         templateStr, `${node.getSourceFile().fileName}#${node.name!.text}/template.html`,
-        {preserveWhitespaces});
+        {preserveWhitespaces}, relativeFilePath);
     if (template.errors !== undefined) {
       throw new Error(
           `Errors parsing template: ${template.errors.map(e => e.toString()).join(', ')}`);

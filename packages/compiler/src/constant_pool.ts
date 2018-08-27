@@ -122,7 +122,8 @@ export class ConstantPool {
   //  */
   // const MSG_XYZ = goog.getMsg('message');
   // ```
-  getTranslation(message: string, meta: {description?: string, meaning?: string}): o.Expression {
+  getTranslation(message: string, meta: {description?: string, meaning?: string}, suffix: string):
+      o.Expression {
     // The identity of an i18n message depends on the message and its meaning
     const key = meta.meaning ? `${message}\u0000\u0000${meta.meaning}` : message;
 
@@ -138,7 +139,7 @@ export class ConstantPool {
     }
 
     // Call closure to get the translation
-    const variable = o.variable(this.freshTranslationName());
+    const variable = o.variable(this.freshTranslationName(suffix));
     const fnCall = o.variable(GOOG_GET_MSG).callFn([o.literal(message)]);
     const msgStmt = variable.set(fnCall).toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]);
     this.statements.push(msgStmt);
@@ -257,8 +258,8 @@ export class ConstantPool {
 
   private freshName(): string { return this.uniqueName(CONSTANT_PREFIX); }
 
-  private freshTranslationName(): string {
-    return this.uniqueName(TRANSLATION_PREFIX).toUpperCase();
+  private freshTranslationName(suffix: string): string {
+    return this.uniqueName(TRANSLATION_PREFIX + suffix).toUpperCase();
   }
 
   private keyOf(expression: o.Expression) {
