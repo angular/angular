@@ -54,10 +54,11 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
         const constantPool = new ConstantPool();
 
         // Parse the template and check for errors.
-        const template =
-            parseTemplate(metadata.template !, `ng://${stringify(type)}/template.html`, {
+        const template = parseTemplate(
+            metadata.template !, `ng://${stringify(type)}/template.html`, {
               preserveWhitespaces: metadata.preserveWhitespaces || false,
-            });
+            },
+            '');
         if (template.errors !== undefined) {
           const errors = template.errors.map(err => err.toString()).join(', ');
           throw new Error(

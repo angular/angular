@@ -80,7 +80,7 @@ describe('Analyzer', () => {
       program = makeProgram(TEST_PROGRAM);
       const file = createParsedFile(program);
       const analyzer = new Analyzer(
-          program.getTypeChecker(), new Fesm2015ReflectionHost(program.getTypeChecker()));
+          program.getTypeChecker(), new Fesm2015ReflectionHost(program.getTypeChecker()), ['']);
       testHandler = createTestHandler();
       analyzer.handlers = [testHandler];
       result = analyzer.analyzeFile(file);

@@ -17,7 +17,7 @@ function setup(file: {name: string, contents: string}) {
   const program = makeProgram(file);
   const host = new Fesm2015ReflectionHost(program.getTypeChecker());
   const parser = new Esm2015FileParser(program, host);
-  const analyzer = new Analyzer(program.getTypeChecker(), host);
+  const analyzer = new Analyzer(program.getTypeChecker(), host, ['']);
   const renderer = new Esm2015Renderer(host);
   return {analyzer, host, parser, program, renderer};
 }

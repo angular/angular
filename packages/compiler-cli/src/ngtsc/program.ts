@@ -29,11 +29,20 @@ export class NgtscProgram implements api.Program {
   private _coreImportsFrom: ts.SourceFile|null|undefined = undefined;
   private _reflector: TypeScriptReflectionHost|undefined = undefined;
   private _isCore: boolean|undefined = undefined;
+  private rootDirs: string[];
 
 
   constructor(
       rootNames: ReadonlyArray<string>, private options: api.CompilerOptions,
       host: api.CompilerHost, oldProgram?: api.Program) {
+    this.rootDirs = [];
+    if (options.rootDirs !== undefined) {
+      this.rootDirs.push(...options.rootDirs);
+    } else if (options.rootDir !== undefined) {
+      this.rootDirs.push(options.rootDir);
+    } else {
+      this.rootDirs.push(host.getCurrentDirectory());
+    }
     this.resourceLoader = host.readResource !== undefined ?
         new HostResourceLoader(host.readResource.bind(host)) :
         new FileResourceLoader();
@@ -177,7 +186,7 @@ export class NgtscProgram implements api.Program {
     const handlers = [
       new BaseDefDecoratorHandler(checker, this.reflector),
       new ComponentDecoratorHandler(
-          checker, this.reflector, scopeRegistry, this.isCore, this.resourceLoader),
+          checker, this.reflector, scopeRegistry, this.isCore, this.resourceLoader, this.rootDirs),
       new DirectiveDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
       new InjectableDecoratorHandler(this.reflector, this.isCore),
       new NgModuleDecoratorHandler(checker, this.reflector, scopeRegistry, this.isCore),
