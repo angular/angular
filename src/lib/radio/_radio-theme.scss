@@ -7,12 +7,11 @@
     border-color: mat-color($palette);
   }
 
-  .mat-radio-inner-circle {
+  .mat-radio-inner-circle,
+  .mat-radio-ripple .mat-ripple-element:not(.mat-radio-persistent-ripple),
+  &.mat-radio-checked .mat-radio-persistent-ripple,
+  &:active .mat-radio-persistent-ripple {
     background-color: mat-color($palette);
-  }
-
-  .mat-radio-ripple .mat-ripple-element {
-    background-color: mat-color($palette, 0.26);
   }
 }
 
@@ -57,6 +56,12 @@
       .mat-radio-label-content {
         color: mat-color($foreground, disabled);
       }
+    }
+
+    // Switch this to a solid color since we're using `opacity`
+    // to control how opaque the ripple should be.
+    .mat-ripple-element {
+      background-color: map_get($foreground, base);
     }
   }
 }

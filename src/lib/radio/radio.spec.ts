@@ -3,7 +3,6 @@ import {FormControl, FormsModule, NgModel, ReactiveFormsModule} from '@angular/f
 import {Component, DebugElement, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {dispatchFakeEvent} from '@angular/cdk/testing';
-import {defaultRippleAnimationConfig} from '@angular/material/core';
 import {MatRadioButton, MatRadioChange, MatRadioGroup, MatRadioModule} from './index';
 
 describe('MatRadio', () => {
@@ -197,25 +196,6 @@ describe('MatRadio', () => {
       expect(changeSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('should show a ripple when focusing via the keyboard', fakeAsync(() => {
-      expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected no ripples on init.');
-
-      dispatchFakeEvent(radioInputElements[0], 'keydown');
-      dispatchFakeEvent(radioInputElements[0], 'focus');
-
-      tick(defaultRippleAnimationConfig.enterDuration);
-
-      expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
-          .toBe(1, 'Expected one ripple after keyboard focus.');
-
-      dispatchFakeEvent(radioInputElements[0], 'blur');
-      tick(defaultRippleAnimationConfig.exitDuration);
-
-      expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
-          .toBe(0, 'Expected no ripples on blur.');
-    }));
-
     it('should update the group and radios when updating the group value', () => {
       expect(groupInstance.value).toBeFalsy();
 
@@ -253,8 +233,10 @@ describe('MatRadio', () => {
       dispatchFakeEvent(radioLabelElements[0], 'mousedown');
       dispatchFakeEvent(radioLabelElements[0], 'mouseup');
 
-      expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
-        .toBe(0, 'Expected a disabled radio button to not show ripples');
+      let rippleAmount = radioNativeElements[0]
+          .querySelectorAll('.mat-ripple-element:not(.mat-radio-persistent-ripple)').length;
+
+      expect(rippleAmount).toBe(0, 'Expected a disabled radio button to not show ripples');
 
       testComponent.isFirstDisabled = false;
       fixture.detectChanges();
@@ -262,7 +244,10 @@ describe('MatRadio', () => {
       dispatchFakeEvent(radioLabelElements[0], 'mousedown');
       dispatchFakeEvent(radioLabelElements[0], 'mouseup');
 
-      expect(radioNativeElements[0].querySelectorAll('.mat-ripple-element').length)
+      rippleAmount = radioNativeElements[0]
+          .querySelectorAll('.mat-ripple-element:not(.mat-radio-persistent-ripple)').length;
+
+      expect(rippleAmount)
         .toBe(1, 'Expected an enabled radio button to show ripples');
     });
 
@@ -274,7 +259,10 @@ describe('MatRadio', () => {
         dispatchFakeEvent(radioLabel, 'mousedown');
         dispatchFakeEvent(radioLabel, 'mouseup');
 
-        expect(radioLabel.querySelectorAll('.mat-ripple-element').length).toBe(0);
+        const rippleAmount = radioNativeElements[0]
+            .querySelectorAll('.mat-ripple-element:not(.mat-radio-persistent-ripple)').length;
+
+        expect(rippleAmount).toBe(0);
       }
 
       testComponent.disableRipple = false;
@@ -284,7 +272,10 @@ describe('MatRadio', () => {
         dispatchFakeEvent(radioLabel, 'mousedown');
         dispatchFakeEvent(radioLabel, 'mouseup');
 
-        expect(radioLabel.querySelectorAll('.mat-ripple-element').length).toBe(1);
+        const rippleAmount = radioNativeElements[0]
+            .querySelectorAll('.mat-ripple-element:not(.mat-radio-persistent-ripple)').length;
+
+        expect(rippleAmount).toBe(1);
       }
     });
 

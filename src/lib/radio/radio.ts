@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
+import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {UniqueSelectionDispatcher} from '@angular/cdk/collections';
 import {
@@ -36,12 +36,10 @@ import {
   CanDisable,
   CanDisableRipple,
   HasTabIndex,
-  MatRipple,
   mixinColor,
   mixinDisabled,
   mixinDisableRipple,
   mixinTabIndex,
-  RippleRef,
 } from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
@@ -459,12 +457,6 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   /** Value assigned to this radio. */
   private _value: any = null;
 
-  /** The child ripple instance. */
-  @ViewChild(MatRipple) _ripple: MatRipple;
-
-  /** Reference to the current focus ripple. */
-  private _focusRipple: RippleRef | null;
-
   /** Unregister function for _radioDispatcher */
   private _removeUniqueSelectionListener: () => void = () => {};
 
@@ -518,12 +510,16 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
 
   ngAfterViewInit() {
     this._focusMonitor
-      .monitor(this._inputElement)
-      .subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
+      .monitor(this._elementRef, true)
+      .subscribe(focusOrigin => {
+        if (!focusOrigin && this.radioGroup) {
+          this.radioGroup._touch();
+        }
+      });
   }
 
   ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this._inputElement);
+    this._focusMonitor.stopMonitoring(this._elementRef);
     this._removeUniqueSelectionListener();
   }
 
@@ -566,23 +562,6 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
       this.radioGroup._touch();
       if (groupValueChanged) {
         this.radioGroup._emitChangeEvent();
-      }
-    }
-  }
-
-  /** Function is called whenever the focus changes for the input element. */
-  private _onInputFocusChange(focusOrigin: FocusOrigin) {
-    // TODO(paul): support `program`. See https://github.com/angular/material2/issues/9889
-    if (!this._focusRipple && focusOrigin === 'keyboard') {
-      this._focusRipple = this._ripple.launch(0, 0, {persistent: true});
-    } else if (!focusOrigin) {
-      if (this.radioGroup) {
-        this.radioGroup._touch();
-      }
-
-      if (this._focusRipple) {
-        this._focusRipple.fadeOut();
-        this._focusRipple = null;
       }
     }
   }

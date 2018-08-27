@@ -4,7 +4,7 @@
 
 
 $mat-radio-size: $mat-toggle-size !default;
-$mat-radio-ripple-radius: 25px;
+$mat-radio-ripple-radius: 20px;
 
 // Top-level host container.
 .mat-radio-button {
@@ -111,7 +111,8 @@ $mat-radio-ripple-radius: 25px;
 }
 
 // Basic disabled state.
-.mat-radio-disabled, .mat-radio-disabled .mat-radio-label {
+.mat-radio-disabled,
+.mat-radio-disabled .mat-radio-label {
   cursor: default;
 }
 
@@ -125,4 +126,29 @@ $mat-radio-ripple-radius: 25px;
   width: $mat-radio-ripple-radius * 2;
   z-index: 1;
   pointer-events: none;
+
+  .mat-ripple-element:not(.mat-radio-persistent-ripple) {
+    opacity: 0.16;
+  }
+}
+
+.mat-radio-persistent-ripple {
+  width: 100%;
+  height: 100%;
+  transform: none;
+
+  .mat-radio-container:hover & {
+    opacity: 0.04;
+  }
+
+  .mat-radio-button.cdk-focused & {
+    opacity: 0.12;
+  }
+
+  // We do this here, rather than having a `:not(.mat-radio-disabled)`
+  // above in the `:hover`, because the `:not` will bump the specificity
+  // a lot and will cause it to overide the focus styles.
+  &, .mat-radio-disabled .mat-radio-container:hover & {
+    opacity: 0;
+  }
 }
