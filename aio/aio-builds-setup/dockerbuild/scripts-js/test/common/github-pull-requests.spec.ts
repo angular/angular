@@ -101,10 +101,7 @@ describe('GithubPullRequests', () => {
   describe('fetchAll()', () => {
     let prs: GithubPullRequests;
 
-    beforeEach(() => {
-      prs = new GithubPullRequests(githubApi, 'foo', 'bar');
-      spyOn(console, 'log');
-    });
+    beforeEach(() => prs = new GithubPullRequests(githubApi, 'foo', 'bar'));
 
 
     it('should call \'getPaginated()\' with the correct pathname and params', () => {

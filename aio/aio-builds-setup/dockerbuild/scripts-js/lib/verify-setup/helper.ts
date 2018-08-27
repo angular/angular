@@ -11,7 +11,7 @@ import {
   AIO_NGINX_PORT_HTTPS,
   AIO_WWW_USER,
 } from '../common/env-variables';
-import {computeShortSha, createLogger} from '../common/utils';
+import {computeShortSha, Logger} from '../common/utils';
 
 // Interfaces - Types
 export interface CmdResult { success: boolean; err: Error | null; stdout: string; stderr: string; }
@@ -31,7 +31,7 @@ class Helper {
     https: AIO_NGINX_PORT_HTTPS,
   };
 
-  private logger = createLogger('TestHelper');
+  private logger = new Logger('TestHelper');
 
   // Constructor
   constructor() {
