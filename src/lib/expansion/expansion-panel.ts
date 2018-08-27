@@ -35,9 +35,9 @@ import {
 import {DOCUMENT} from '@angular/common';
 import {Subject} from 'rxjs';
 import {filter, startWith, take} from 'rxjs/operators';
-import {MatAccordion} from './accordion';
 import {matExpansionAnimations} from './expansion-animations';
 import {MatExpansionPanelContent} from './expansion-panel-content';
+import {MAT_ACCORDION, MatAccordionBase} from './accordion-base';
 
 // TODO(devversion): workaround for https://github.com/angular/material2/issues/12760
 export const _CdkAccordionItem = CdkAccordionItem;
@@ -68,7 +68,7 @@ let uniqueId = 0;
   providers: [
     // Provide MatAccordion as undefined to prevent nested expansion panels from registering
     // to the same accordion.
-    {provide: MatAccordion, useValue: undefined},
+    {provide: MAT_ACCORDION, useValue: undefined},
   ],
   host: {
     'class': 'mat-expansion-panel',
@@ -103,7 +103,7 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   readonly _inputChanges = new Subject<SimpleChanges>();
 
   /** Optionally defined accordion the expansion panel belongs to. */
-  accordion: MatAccordion;
+  accordion: MatAccordionBase;
 
   /** Content that will be rendered lazily. */
   @ContentChild(MatExpansionPanelContent) _lazyContent: MatExpansionPanelContent;
@@ -117,7 +117,7 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   /** ID for the associated header element. Used for a11y labelling. */
   _headerId = `mat-expansion-panel-header-${uniqueId++}`;
 
-  constructor(@Optional() @SkipSelf() accordion: MatAccordion,
+  constructor(@Optional() @SkipSelf() @Inject(MAT_ACCORDION) accordion: MatAccordionBase,
               _changeDetectorRef: ChangeDetectorRef,
               _uniqueSelectionDispatcher: UniqueSelectionDispatcher,
               private _viewContainerRef: ViewContainerRef,
