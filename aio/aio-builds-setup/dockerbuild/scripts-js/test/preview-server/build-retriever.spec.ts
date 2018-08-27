@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as nock from 'nock';
 import {BuildInfo, CircleCiApi} from '../../lib/common/circle-ci-api';
+import {Logger} from '../../lib/common/utils';
 import {BuildRetriever} from '../../lib/preview-server/build-retriever';
 
 describe('BuildRetriever', () => {
@@ -28,10 +29,6 @@ describe('BuildRetriever', () => {
       username: 'ORG',
       vcs_revision: 'COMMIT',
     };
-
-    spyOn(console, 'log');
-    spyOn(console, 'warn');
-    spyOn(console, 'error');
 
     api = new CircleCiApi('ORG', 'REPO', 'TOKEN');
     spyOn(api, 'getBuildInfo').and.callFake(() => Promise.resolve(BUILD_INFO));
@@ -91,6 +88,7 @@ describe('BuildRetriever', () => {
     let retriever: BuildRetriever;
 
     beforeEach(() => {
+      spyOn(Logger.prototype, 'warn');
       retriever = new BuildRetriever(api, MAX_DOWNLOAD_SIZE, DOWNLOAD_DIR);
     });
 

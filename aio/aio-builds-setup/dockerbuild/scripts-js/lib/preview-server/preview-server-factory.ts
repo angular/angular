@@ -7,7 +7,7 @@ import {CircleCiApi} from '../common/circle-ci-api';
 import {GithubApi} from '../common/github-api';
 import {GithubPullRequests} from '../common/github-pull-requests';
 import {GithubTeams} from '../common/github-teams';
-import {assert, assertNotMissingOrEmpty, createLogger} from '../common/utils';
+import {assert, assertNotMissingOrEmpty, Logger} from '../common/utils';
 import {BuildCreator} from './build-creator';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from './build-events';
 import {BuildRetriever} from './build-retriever';
@@ -32,7 +32,7 @@ export interface PreviewServerConfig {
   trustedPrLabel: string;
 }
 
-const logger = createLogger('PreviewServer');
+const logger = new Logger('PreviewServer');
 
 // Classes
 export class PreviewServerFactory {
