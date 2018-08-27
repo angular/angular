@@ -6,6 +6,7 @@ import {
   computeShortSha,
   getEnvVar,
   getPrInfoFromDownloadPath,
+  Logger,
 } from '../../lib/common/utils';
 
 // Tests
@@ -19,6 +20,7 @@ describe('utils', () => {
     });
   });
 
+
   describe('assert', () => {
     it('should throw if passed a false value', () => {
       expect(() => assert(false, 'error message')).toThrowError('error message');
@@ -28,6 +30,7 @@ describe('utils', () => {
       expect(() => assert(true, 'error message')).not.toThrow();
     });
   });
+
 
   describe('computeArtifactDownloadPath', () => {
     it('should compute an absolute path based on the artifact info provided', () => {
@@ -40,6 +43,7 @@ describe('utils', () => {
     });
   });
 
+
   describe('getPrInfoFromDownloadPath', () => {
     it('should extract the PR and SHA from the file path', () => {
       const {pr, sha} = getPrInfoFromDownloadPath('a/b/c/12345-ABCDE-artifact.zip');
@@ -47,6 +51,7 @@ describe('utils', () => {
       expect(sha).toEqual('ABCDE');
     });
   });
+
 
   describe('assertNotMissingOrEmpty()', () => {
 
@@ -118,6 +123,81 @@ describe('utils', () => {
 
     it('should return an empty string if an empty variable is optional', () => {
       expect(getEnvVar(emptyVar, true)).toBe('');
+    });
+
+  });
+
+
+  describe('Logger', () => {
+    let consoleErrorSpy: jasmine.Spy;
+    let consoleInfoSpy: jasmine.Spy;
+    let consoleLogSpy: jasmine.Spy;
+    let consoleWarnSpy: jasmine.Spy;
+    let logger: Logger;
+
+    beforeEach(() => {
+      consoleErrorSpy = spyOn(console, 'error');
+      consoleInfoSpy = spyOn(console, 'info');
+      consoleLogSpy = spyOn(console, 'log');
+      consoleWarnSpy = spyOn(console, 'warn');
+
+      logger = new Logger('TestScope');
+    });
+
+
+    it('should delegate to `console`', () => {
+      logger.error('foo');
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+      expect(consoleErrorSpy.calls.argsFor(0)).toContain('foo');
+
+      logger.info('bar');
+      expect(consoleInfoSpy).toHaveBeenCalledTimes(1);
+      expect(consoleInfoSpy.calls.argsFor(0)).toContain('bar');
+
+      logger.log('baz');
+      expect(consoleLogSpy).toHaveBeenCalledTimes(1);
+      expect(consoleLogSpy.calls.argsFor(0)).toContain('baz');
+
+      logger.warn('qux');
+      expect(consoleWarnSpy).toHaveBeenCalledTimes(1);
+      expect(consoleWarnSpy.calls.argsFor(0)).toContain('qux');
+    });
+
+
+    it('should prepend messages with the current date and logger\'s scope', () => {
+      const mockDate = new Date(1337);
+      const expectedDateStr = `[${mockDate}]`;
+      const expectedScopeStr = 'TestScope:           ';
+
+      jasmine.clock().mockDate(mockDate);
+      jasmine.clock().withMock(() => {
+        logger.error();
+        logger.info();
+        logger.log();
+        logger.warn();
+      });
+
+      expect(consoleErrorSpy).toHaveBeenCalledWith(expectedDateStr, expectedScopeStr);
+      expect(consoleInfoSpy).toHaveBeenCalledWith(expectedDateStr, expectedScopeStr);
+      expect(consoleLogSpy).toHaveBeenCalledWith(expectedDateStr, expectedScopeStr);
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expectedDateStr, expectedScopeStr);
+    });
+
+
+    it('should pass all arguments to `console`', () => {
+      const someString = jasmine.any(String);
+
+      logger.error('foo1', 'foo2');
+      expect(consoleErrorSpy).toHaveBeenCalledWith(someString, someString, 'foo1', 'foo2');
+
+      logger.info('bar1', 'bar2');
+      expect(consoleInfoSpy).toHaveBeenCalledWith(someString, someString, 'bar1', 'bar2');
+
+      logger.log('baz1', 'baz2');
+      expect(consoleLogSpy).toHaveBeenCalledWith(someString, someString, 'baz1', 'baz2');
+
+      logger.warn('qux1', 'qux2');
+      expect(consoleWarnSpy).toHaveBeenCalledWith(someString, someString, 'qux1', 'qux2');
     });
 
   });

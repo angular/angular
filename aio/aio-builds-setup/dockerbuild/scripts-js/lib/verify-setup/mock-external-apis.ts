@@ -2,7 +2,7 @@
 import * as nock from 'nock';
 import * as tar from 'tar-stream';
 import {gzipSync} from 'zlib';
-import {createLogger, getEnvVar} from '../common/utils';
+import {getEnvVar, Logger} from '../common/utils';
 import {BuildNums, PrNums, SHA} from './constants';
 
 // We are using the `nock` library to fake responses from REST requests, when testing.
@@ -14,7 +14,7 @@ import {BuildNums, PrNums, SHA} from './constants';
 // below and return a suitable response. This is quite complicated to setup since the
 // response from, say, CircleCI will affect what request is made to, say, Github.
 
-const logger = createLogger('NOCK');
+const logger = new Logger('mock-external-apis');
 
 const log = (...args: any[]) => {
   // Filter out non-matching URL checks

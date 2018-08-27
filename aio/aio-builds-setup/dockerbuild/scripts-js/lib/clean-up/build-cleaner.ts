@@ -5,12 +5,12 @@ import * as shell from 'shelljs';
 import {HIDDEN_DIR_PREFIX} from '../common/constants';
 import {GithubApi} from '../common/github-api';
 import {GithubPullRequests} from '../common/github-pull-requests';
-import {assertNotMissingOrEmpty, createLogger, getPrInfoFromDownloadPath} from '../common/utils';
+import {assertNotMissingOrEmpty, getPrInfoFromDownloadPath, Logger} from '../common/utils';
 
 // Classes
 export class BuildCleaner {
 
-  private logger = createLogger('BuildCleaner');
+  private logger = new Logger('BuildCleaner');
 
   // Constructor
   constructor(protected buildsDir: string, protected githubOrg: string, protected githubRepo: string,

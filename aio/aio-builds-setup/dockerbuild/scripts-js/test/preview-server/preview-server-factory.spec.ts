@@ -7,6 +7,7 @@ import {CircleCiApi} from '../../lib/common/circle-ci-api';
 import {GithubApi} from '../../lib/common/github-api';
 import {GithubPullRequests} from '../../lib/common/github-pull-requests';
 import {GithubTeams} from '../../lib/common/github-teams';
+import {Logger} from '../../lib/common/utils';
 import {BuildCreator} from '../../lib/preview-server/build-creator';
 import {ChangedPrVisibilityEvent, CreatedBuildEvent} from '../../lib/preview-server/build-events';
 import {BuildRetriever, GithubInfo} from '../../lib/preview-server/build-retriever';
@@ -38,15 +39,17 @@ describe('PreviewServerFactory', () => {
     significantFilesPattern: '^(?:aio|packages)\\/(?!.*[._]spec\\.[jt]s$)',
     trustedPrLabel: 'trusted: pr-label',
   };
+  let loggerInfoSpy: jasmine.Spy;
+  let loggerLogSpy: jasmine.Spy;
 
   // Helpers
   const createPreviewServer = (partialConfig: Partial<PreviewServerConfig> = {}) =>
     PreviewServerFactory.create({...defaultConfig, ...partialConfig});
 
   beforeEach(() => {
-    spyOn(console, 'error');
-    spyOn(console, 'info');
-    spyOn(console, 'log');
+    loggerInfoSpy = spyOn(Logger.prototype, 'info');
+    loggerLogSpy = spyOn(Logger.prototype, 'log');
+    spyOn(Logger.prototype, 'error');
   });
 
   describe('create()', () => {
@@ -140,11 +143,10 @@ describe('PreviewServerFactory', () => {
       const server = createPreviewServer();
       server.address = () => ({address: 'foo', family: '', port: 1337});
 
-      expect(console.info).not.toHaveBeenCalled();
+      expect(loggerInfoSpy).not.toHaveBeenCalled();
 
       server.emit('listening');
-      expect(console.info).toHaveBeenCalledWith(
-        jasmine.any(String), 'PreviewServer:       ', 'Up and running (and listening on foo:1337)...');
+      expect(loggerInfoSpy).toHaveBeenCalledWith('Up and running (and listening on foo:1337)...');
     });
 
   });
@@ -359,8 +361,8 @@ describe('PreviewServerFactory', () => {
         await agent.post(URL).send(BASIC_PAYLOAD).expect(204);
         expect(getGithubInfoSpy).not.toHaveBeenCalled();
         expect(getSignificantFilesChangedSpy).not.toHaveBeenCalled();
-        expect(console.log).toHaveBeenCalledWith(jasmine.any(String), 'PreviewServer:       ',
-        'Build:12345, Job:lint -', 'Skipping preview processing because this is not the "aio_preview" job.');
+        expect(loggerLogSpy).toHaveBeenCalledWith(
+          'Build:12345, Job:lint -', 'Skipping preview processing because this is not the "aio_preview" job.');
         expect(downloadBuildArtifactSpy).not.toHaveBeenCalled();
         expect(getPrIsTrustedSpy).not.toHaveBeenCalled();
         expect(createBuildSpy).not.toHaveBeenCalled();
@@ -371,7 +373,7 @@ describe('PreviewServerFactory', () => {
         await agent.post(URL).send(BASIC_PAYLOAD).expect(204);
         expect(getGithubInfoSpy).toHaveBeenCalledWith(BUILD_NUM);
         expect(getSignificantFilesChangedSpy).toHaveBeenCalledWith(PR, jasmine.any(RegExp));
-        expect(console.log).toHaveBeenCalledWith(jasmine.any(String), 'PreviewServer:       ',
+        expect(loggerLogSpy).toHaveBeenCalledWith(
           'PR:777, Build:12345 - Skipping preview processing because this PR did not touch any significant files.');
         expect(downloadBuildArtifactSpy).not.toHaveBeenCalled();
         expect(getPrIsTrustedSpy).not.toHaveBeenCalled();
