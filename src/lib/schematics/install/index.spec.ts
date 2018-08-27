@@ -30,13 +30,17 @@ describe('material-install-schematic', () => {
   it('should update package.json', () => {
     const tree = runner.runSchematic('ng-add', {}, appTree);
     const packageJson = JSON.parse(getFileContent(tree, '/package.json'));
-    const angularCoreVersion = packageJson.dependencies['@angular/core'];
+    const dependencies = packageJson.dependencies;
+    const angularCoreVersion = dependencies['@angular/core'];
 
-    expect(packageJson.dependencies['@angular/material']).toBeDefined();
-    expect(packageJson.dependencies['@angular/cdk']).toBeDefined();
-    expect(packageJson.dependencies['hammerjs']).toBeDefined();
-    expect(packageJson.dependencies['@angular/animations']).toBe(angularCoreVersion,
+    expect(dependencies['@angular/material']).toBeDefined();
+    expect(dependencies['@angular/cdk']).toBeDefined();
+    expect(dependencies['hammerjs']).toBeDefined();
+    expect(dependencies['@angular/animations']).toBe(angularCoreVersion,
       'Expected the @angular/animations package to have the same version as @angular/core.');
+
+    expect(Object.keys(dependencies)).toEqual(Object.keys(dependencies).sort(),
+        'Expected the modified "dependencies" to be sorted alphabetically.');
   });
 
   it('should add hammerjs import to project main file', () => {

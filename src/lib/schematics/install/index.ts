@@ -57,13 +57,13 @@ function addMaterialToPackageJson(options: Schema) {
     // have the same version tag if possible.
     const ngCoreVersionTag = getPackageVersionFromPackageJson(host, '@angular/core');
 
-    addPackageToPackageJson(host, 'dependencies', '@angular/cdk', `^${materialVersion}`);
-    addPackageToPackageJson(host, 'dependencies', '@angular/material', `^${materialVersion}`);
-    addPackageToPackageJson(host, 'dependencies', '@angular/animations',
+    addPackageToPackageJson(host, '@angular/cdk', `^${materialVersion}`);
+    addPackageToPackageJson(host, '@angular/material', `^${materialVersion}`);
+    addPackageToPackageJson(host, '@angular/animations',
         ngCoreVersionTag || requiredAngularVersionRange);
 
     if (options.gestures) {
-      addPackageToPackageJson(host, 'dependencies', 'hammerjs', hammerjsVersion);
+      addPackageToPackageJson(host, 'hammerjs', hammerjsVersion);
     }
 
     context.addTask(new NodePackageInstallTask());
