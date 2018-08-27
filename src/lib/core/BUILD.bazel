@@ -17,6 +17,7 @@ ng_module(
     ":option/optgroup.css",
   ] + glob(["**/*.html"]),
   deps = [
+    "//src/cdk/a11y",
     "//src/cdk/bidi",
     "//src/cdk/coercion",
     "//src/cdk/keycodes",

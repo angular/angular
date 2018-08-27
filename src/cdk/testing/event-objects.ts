@@ -26,6 +26,10 @@ export function createMouseEvent(type: string, x = 0, y = 0, button = 0) {
     button, /* button */
     null /* relatedTarget */);
 
+  // `initMouseEvent` doesn't allow us to pass the `buttons` and
+  // defaults it to 0 which looks like a fake event.
+  Object.defineProperty(event, 'buttons', {get: () => 1});
+
   return event;
 }
 
