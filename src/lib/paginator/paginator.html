@@ -6,6 +6,7 @@
 
     <mat-form-field
       *ngIf="_displayedPageSizeOptions.length > 1"
+      [color]="color"
       class="mat-paginator-page-size-select">
       <mat-select
         [value]="pageSize"

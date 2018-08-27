@@ -5,6 +5,7 @@ import {Component, ViewChild} from '@angular/core';
 import {MatPaginatorIntl} from './paginator-intl';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
 import {dispatchMouseEvent} from '@angular/cdk/testing';
+import {ThemePalette} from '@angular/material/core';
 
 
 describe('MatPaginator', () => {
@@ -165,6 +166,18 @@ describe('MatPaginator', () => {
   it('should not allow a negative pageIndex', () => {
     paginator.pageSize = -42;
     expect(paginator.pageIndex).toBeGreaterThanOrEqual(0);
+  });
+
+  it('should be able to set the color of the form field', () => {
+    const formField: HTMLElement = fixture.nativeElement.querySelector('.mat-form-field');
+
+    expect(formField.classList).toContain('mat-primary');
+
+    component.color = 'accent';
+    fixture.detectChanges();
+
+    expect(formField.classList).not.toContain('mat-primary');
+    expect(formField.classList).toContain('mat-accent');
   });
 
   describe('when showing the first and last button', () => {
@@ -387,6 +400,7 @@ function getLastButton(fixture: ComponentFixture<any>) {
                    [hidePageSize]="hidePageSize"
                    [showFirstLastButtons]="showFirstLastButtons"
                    [length]="length"
+                   [color]="color"
                    (page)="pageEvent($event)">
     </mat-paginator>
   `,
@@ -399,6 +413,7 @@ class MatPaginatorApp {
   showFirstLastButtons = false;
   length = 100;
   pageEvent = jasmine.createSpy('page event');
+  color: ThemePalette;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
