@@ -156,9 +156,6 @@
     "name": "defineComponent"
   },
   {
-    "name": "depthCountFromRootOrTemplate"
-  },
-  {
     "name": "detectChangesInternal"
   },
   {
@@ -276,7 +273,7 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "resetApplicationState"
+    "name": "resetComponentState"
   },
   {
     "name": "setHostBindings"

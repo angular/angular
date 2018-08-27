@@ -330,6 +330,9 @@
     "name": "assertTemplate"
   },
   {
+    "name": "attachLViewDataToNode"
+  },
+  {
     "name": "baseDirectiveCreate"
   },
   {
@@ -439,9 +442,6 @@
   },
   {
     "name": "defineInjectable"
-  },
-  {
-    "name": "depthCountFromRootOrTemplate"
   },
   {
     "name": "destroyLView"
@@ -729,9 +729,6 @@
     "name": "leaveView"
   },
   {
-    "name": "linkDataToNode"
-  },
-  {
     "name": "listener"
   },
   {
@@ -846,7 +843,7 @@
     "name": "renderStyling"
   },
   {
-    "name": "resetApplicationState"
+    "name": "resetComponentState"
   },
   {
     "name": "resolveDirective"
