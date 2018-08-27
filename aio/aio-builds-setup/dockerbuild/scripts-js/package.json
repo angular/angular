@@ -11,7 +11,7 @@
     "prebuild-watch": "yarn prebuild",
     "build-watch": "yarn ~~build-watch",
     "clean-dist": "node --eval \"require('shelljs').rm('-rf', 'dist')\"",
-    "predev": "yarn build",
+    "predev": "yarn build || true",
     "dev": "concurrently --kill-others --raw --success first \"yarn ~~build-watch\" \"yarn ~~test-watch\"",
     "lint": "tslint --project tsconfig.json",
     "pretest": "yarn build",
