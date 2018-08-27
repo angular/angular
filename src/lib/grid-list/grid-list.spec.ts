@@ -32,6 +32,7 @@ describe('MatGridList', () => {
         GridListWithoutMatchingGap,
         GridListWithEmptyDirectionality,
         GridListWithRtl,
+        GridListWithIndirectTileDescendants,
       ],
     });
 
@@ -317,6 +318,15 @@ describe('MatGridList', () => {
     expect(tile.style.left).toBe('');
     expect(tile.style.right).toBe('0px');
   });
+
+  it('should lay out the tiles if they are not direct descendants of the list', () => {
+    const fixture = TestBed.createComponent(GridListWithIndirectTileDescendants);
+    fixture.detectChanges();
+
+    const tile = fixture.debugElement.query(By.directive(MatGridTile));
+    expect(getStyle(tile, 'padding-top')).toBe('200px');
+  });
+
 });
 
 
@@ -509,3 +519,17 @@ class GridListWithEmptyDirectionality { }
   providers: [{provide: Directionality, useValue: {value: 'rtl'}}]
 })
 class GridListWithRtl { }
+
+@Component({
+  // Note the blank `ngSwitch` which we need in order to hit the bug that we're testing.
+  template: `
+    <div style="width:200px">
+      <mat-grid-list cols="1">
+        <ng-container [ngSwitch]="true">
+          <mat-grid-tile></mat-grid-tile>
+        </ng-container>
+      </mat-grid-list>
+    </div>
+  `
+})
+class GridListWithIndirectTileDescendants {}

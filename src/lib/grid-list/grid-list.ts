@@ -62,7 +62,7 @@ export class MatGridList implements OnInit, AfterContentChecked {
   private _tileStyler: TileStyler;
 
   /** Query list of tiles that are being rendered. */
-  @ContentChildren(MatGridTile) _tiles: QueryList<MatGridTile>;
+  @ContentChildren(MatGridTile, {descendants: true}) _tiles: QueryList<MatGridTile>;
 
   constructor(private _element: ElementRef, @Optional() private _dir: Directionality) {}
 
