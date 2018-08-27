@@ -14,45 +14,66 @@ import {NgControl} from './ng_control';
 
 
 /**
- * An interface that `FormGroupDirective` and `NgForm` implement.
+ * @description
+ * An interface implemented by `FormGroupDirective` and `NgForm` directives.
  *
- * Only used by the forms module.
- *
- *
+ * Only used by the `FormsModule`.
  */
 export interface Form {
   /**
+   * @description
    * Add a control to this form.
+   *
+   * @param dir The control to add to the form
    */
   addControl(dir: NgControl): void;
 
   /**
+   * @description
    * Remove a control from this form.
+   *
+   * @param dir: The control to remove from the form
    */
   removeControl(dir: NgControl): void;
 
   /**
-   * Look up the `FormControl` associated with a particular `NgControl`.
+   * @description
+   * Reports the `FormControl` associated with the provided `NgControl`.
+   *
+   * @param dir: The form control instance
    */
   getControl(dir: NgControl): FormControl;
 
   /**
+   * @description
    * Add a group of controls to this form.
+   *
+   * @param dir: The control group to remove
    */
   addFormGroup(dir: AbstractFormGroupDirective): void;
 
   /**
-   * Remove a group of controls from this form.
+   * @description
+   * Remove a group of controls to this form.
+   *
+   * @param dir: The control group to remove
    */
   removeFormGroup(dir: AbstractFormGroupDirective): void;
 
   /**
-   * Look up the `FormGroup` associated with a particular `AbstractFormGroupDirective`.
+   * @description
+   * Reports the form group for the provided control
+   *
+   * @param dir: The form group to query
    */
   getFormGroup(dir: AbstractFormGroupDirective): FormGroup;
 
   /**
+   * @description
    * Update the model for a particular control with a new value.
+   *
+   * @param dir: The control to update
+   * @param value: The new value for the control
    */
   updateModel(dir: NgControl, value: any): void;
 }
