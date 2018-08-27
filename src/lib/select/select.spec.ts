@@ -126,6 +126,7 @@ describe('MatSelect', () => {
         SelectWithGroups,
         SelectWithGroupsAndNgContainer,
         SelectWithFormFieldLabel,
+        SelectWithChangeEvent,
       ]);
     }));
 
@@ -249,6 +250,16 @@ describe('MatSelect', () => {
 
           const labelFixture = TestBed.createComponent(SelectWithFormFieldLabel);
           labelFixture.componentInstance.placeholder = 'Thing selector';
+          labelFixture.detectChanges();
+          select = labelFixture.debugElement.query(By.css('mat-select')).nativeElement;
+
+          expect(select.getAttribute('aria-labelledby')).toBeFalsy();
+        });
+
+        it('should not set `aria-labelledby` if there is no form field label', () => {
+          fixture.destroy();
+
+          const labelFixture = TestBed.createComponent(SelectWithChangeEvent);
           labelFixture.detectChanges();
           select = labelFixture.debugElement.query(By.css('mat-select')).nativeElement;
 
