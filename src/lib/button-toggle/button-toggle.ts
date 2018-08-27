@@ -85,6 +85,7 @@ export class MatButtonToggleChange {
   host: {
     'role': 'group',
     'class': 'mat-button-toggle-group',
+    '[attr.aria-disabled]': 'disabled',
     '[class.mat-button-toggle-vertical]': 'vertical'
   },
   exportAs: 'matButtonToggleGroup',
@@ -98,7 +99,7 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase impleme
 
   /**
    * Reference to the raw value that the consumer tried to assign. The real
-   * value will exaclude any values from this one that don't correspond to a
+   * value will exclude any values from this one that don't correspond to a
    * toggle. Useful for the cases where the value is assigned before the toggles
    * have been initialized or at the same that they're being swapped out.
    */

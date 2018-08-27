@@ -277,6 +277,15 @@ describe('MatButtonToggle without forms', () => {
       expect(buttonToggleInstances[0].checked).toBe(true);
     });
 
+    it('should set aria-disabled based on whether the group is disabled', () => {
+      expect(groupNativeElement.getAttribute('aria-disabled')).toBe('false');
+
+      testComponent.isGroupDisabled = true;
+      fixture.detectChanges();
+
+      expect(groupNativeElement.getAttribute('aria-disabled')).toBe('true');
+    });
+
     it('should update the group value when one of the toggles changes', () => {
       expect(groupInstance.value).toBeFalsy();
       buttonToggleLabelElements[0].click();
