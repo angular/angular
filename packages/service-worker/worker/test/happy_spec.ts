@@ -184,6 +184,12 @@ const brokenServer =
     new MockServerStateBuilder().withStaticFiles(brokenFs).withManifest(brokenManifest).build();
 
 const server404 = new MockServerStateBuilder().withStaticFiles(dist).build();
+const serverBrokenManifest =
+    new MockServerStateBuilder()
+        .withStaticFiles(dist)
+        .withManifest(manifest)
+        .withRedirect('ngsw.json', 'index.html', '<html><body></body></html>')
+        .build();
 
 const scope = new SwTestHarnessBuilder().withServerState(server).build();
 
@@ -204,6 +210,7 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       serverUpdate.reset();
       server404.reset();
       brokenServer.reset();
+      serverBrokenManifest.reset();
 
       scope = new SwTestHarnessBuilder().withServerState(server).build();
       driver = new Driver(scope, scope, new CacheDatabase(scope, scope));
@@ -585,6 +592,16 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       serverUpdate.assertSawRequestFor('/lazy/unchanged2.txt');
 
       serverUpdate.assertNoOtherRequests();
+    });
+
+    async_it('unregisters when manifest fails to parse', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+
+      scope.updateServerState(serverBrokenManifest);
+      expect(await driver.checkForUpdate()).toEqual(false);
+      expect(scope.unregistered).toEqual(true);
+      expect(await scope.caches.keys()).toEqual([]);
     });
 
     async_it('unregisters when manifest 404s', async() => {

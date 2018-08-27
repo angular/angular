@@ -655,7 +655,11 @@ export class Driver implements Debuggable, UpdateSource {
       throw new Error(`Manifest fetch failed! (status: ${res.status})`);
     }
     this.lastUpdateCheck = this.adapter.time;
-    return res.json();
+    return res.json().catch(async(err) => {
+      await this.deleteAllCaches();
+      await this.scope.registration.unregister();
+      throw new Error(`Manifest json parse failed! (status: ${res.status})`);
+    });
   }
 
   private async deleteAllCaches(): Promise<void> {
