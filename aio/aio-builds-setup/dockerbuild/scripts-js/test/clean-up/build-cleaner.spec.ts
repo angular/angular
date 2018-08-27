@@ -5,6 +5,7 @@ import * as shell from 'shelljs';
 import {BuildCleaner} from '../../lib/clean-up/build-cleaner';
 import {HIDDEN_DIR_PREFIX} from '../../lib/common/constants';
 import {GithubPullRequests} from '../../lib/common/github-pull-requests';
+import {Logger} from '../../lib/common/utils';
 
 const EXISTING_BUILDS = [10, 20, 30, 40];
 const EXISTING_DOWNLOADS = [
@@ -18,11 +19,13 @@ const ANY_DATE = jasmine.any(String);
 
 // Tests
 describe('BuildCleaner', () => {
+  let loggerErrorSpy: jasmine.Spy;
+  let loggerLogSpy: jasmine.Spy;
   let cleaner: BuildCleaner;
 
   beforeEach(() => {
-    spyOn(console, 'error');
-    spyOn(console, 'log');
+    loggerErrorSpy = spyOn(Logger.prototype, 'error');
+    loggerLogSpy = spyOn(Logger.prototype, 'log');
     cleaner = new BuildCleaner('/foo/bar', 'baz', 'qux', '12345', 'downloads', 'build.zip');
   });
 
@@ -279,7 +282,8 @@ describe('BuildCleaner', () => {
 
     it('should log the number of open PRs', () => {
       promise.then(prNumbers => {
-        expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', `Open pull requests: ${prNumbers}`);
+        expect(loggerLogSpy).toHaveBeenCalledWith(
+          ANY_DATE, 'BuildCleaner:        ', `Open pull requests: ${prNumbers}`);
       });
     });
   });
@@ -383,8 +387,7 @@ describe('BuildCleaner', () => {
 
       cleaner.removeDir('/foo/bar');
 
-      expect(console.error).toHaveBeenCalledWith(
-        jasmine.any(String), 'BuildCleaner:        ', 'ERROR: Unable to remove \'/foo/bar\' due to:', 'Test');
+      expect(loggerErrorSpy).toHaveBeenCalledWith('ERROR: Unable to remove \'/foo/bar\' due to:', 'Test');
     });
 
   });
@@ -401,8 +404,8 @@ describe('BuildCleaner', () => {
     it('should log the number of existing builds and builds to be removed', () => {
       cleaner.removeUnnecessaryBuilds([1, 2, 3], [3, 4, 5, 6]);
 
-      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', 'Existing builds: 3');
-      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', 'Removing 2 build(s): 1, 2');
+      expect(loggerLogSpy).toHaveBeenCalledWith('Existing builds: 3');
+      expect(loggerLogSpy).toHaveBeenCalledWith('Removing 2 build(s): 1, 2');
     });
 
 
@@ -470,8 +473,8 @@ describe('BuildCleaner', () => {
     it('should log the number of existing builds and builds to be removed', () => {
       cleaner.removeUnnecessaryDownloads(EXISTING_DOWNLOADS, OPEN_PRS);
 
-      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ', 'Existing downloads: 4');
-      expect(console.log).toHaveBeenCalledWith(ANY_DATE, 'BuildCleaner:        ',
+      expect(loggerLogSpy).toHaveBeenCalledWith('Existing downloads: 4');
+      expect(loggerLogSpy).toHaveBeenCalledWith(
         'Removing 2 download(s): downloads/20-ABCDEF0-build.zip, downloads/20-1234567-build.zip');
     });
   });
