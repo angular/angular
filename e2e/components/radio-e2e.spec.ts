@@ -9,17 +9,12 @@ describe('radio', () => {
       element(by.id('water')).click();
 
       expect(element(by.id('water')).getAttribute('class')).toContain('mat-radio-checked');
-      await browser.wait(ExpectedConditions.not(
-        ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
 
       expect(element(by.css('input[id=water-input]')).getAttribute('checked')).toBeTruthy();
       expect(element(by.css('input[id=leaf-input]')).getAttribute('checked')).toBeFalsy();
 
       element(by.id('leaf')).click();
       expect(element(by.id('leaf')).getAttribute('class')).toContain('mat-radio-checked');
-
-      await browser.wait(ExpectedConditions.not(
-        ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
 
       expect(element(by.css('input[id=leaf-input]')).getAttribute('checked')).toBeTruthy();
       expect(element(by.css('input[id=water-input]')).getAttribute('checked')).toBeFalsy();
@@ -37,9 +32,6 @@ describe('radio', () => {
 
       element(by.id('leaf')).click();
       expect(element(by.id('leaf')).getAttribute('class')).toContain('mat-radio-disabled');
-
-      await browser.wait(ExpectedConditions.not(
-        ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
 
       expect(element(by.css('input[id=leaf-input]')).getAttribute('disabled')).toBeTruthy();
     });
