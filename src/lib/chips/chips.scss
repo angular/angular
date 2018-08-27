@@ -151,6 +151,10 @@ $mat-chip-remove-size: 18px;
   align-items: center;
   display: flex;
   overflow: hidden;
+
+  // Makes `<img>` tags behave like `background-size: cover`. Not supported
+  // in IE, but we're using it as a progressive enhancement.
+  object-fit: cover;
 }
 
 input.mat-chip-input {
