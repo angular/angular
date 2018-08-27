@@ -52,7 +52,7 @@ export interface CdkDropContainer<T = any> {
    * @param item Item whose index should be determined.
    */
   getItemIndex(item: CdkDrag): number;
-  _sortItem(item: CdkDrag, pointerX: number, pointerY: number): void;
+  _sortItem(item: CdkDrag, pointerX: number, pointerY: number, delta: {x: number, y: number}): void;
   _draggables: QueryList<CdkDrag>;
   _getSiblingContainerFromPosition(item: CdkDrag, x: number, y: number): CdkDropContainer | null;
 }

@@ -129,6 +129,12 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    */
   private _activeDraggables: CdkDrag[];
 
+  /**
+   * Keeps track of the item that was last swapped with the dragged item, as
+   * well as what direction the pointer was moving in when the swap occured.
+   */
+  private _previousSwap = {drag: null as CdkDrag | null, delta: 0};
+
   /** Starts dragging an item. */
   start(): void {
     this._dragging = true;
@@ -220,15 +226,17 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    * @param item Item to be sorted.
    * @param pointerX Position of the item along the X axis.
    * @param pointerY Position of the item along the Y axis.
+   * @param pointerDeta Direction in which the pointer is moving along each axis.
    */
-  _sortItem(item: CdkDrag, pointerX: number, pointerY: number): void {
+  _sortItem(item: CdkDrag, pointerX: number, pointerY: number,
+            pointerDelta: {x: number, y: number}): void {
     // Don't sort the item if it's out of range.
     if (!this._isPointerNearDropContainer(pointerX, pointerY)) {
       return;
     }
 
     const siblings = this._positionCache.items;
-    const newIndex = this._getItemIndexFromPointerPosition(item, pointerX, pointerY);
+    const newIndex = this._getItemIndexFromPointerPosition(item, pointerX, pointerY, pointerDelta);
 
     if (newIndex === -1 && siblings.length > 0) {
       return;
@@ -236,9 +244,13 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
 
     const isHorizontal = this.orientation === 'horizontal';
     const currentIndex = siblings.findIndex(currentItem => currentItem.drag === item);
+    const siblingAtNewPosition = siblings[newIndex];
     const currentPosition = siblings[currentIndex].clientRect;
-    const newPosition = siblings[newIndex].clientRect;
+    const newPosition = siblingAtNewPosition.clientRect;
     const delta = currentIndex > newIndex ? 1 : -1;
+
+    this._previousSwap.drag = siblingAtNewPosition.drag;
+    this._previousSwap.delta = isHorizontal ? pointerDelta.x : pointerDelta.y;
 
     // How many pixels the item's placeholder should be offset.
     const itemOffset = isHorizontal ? newPosition.left - currentPosition.left :
@@ -346,6 +358,8 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
     this._activeDraggables = [];
     this._positionCache.items = [];
     this._positionCache.siblings = [];
+    this._previousSwap.drag = null;
+    this._previousSwap.delta = 0;
   }
 
   /**
@@ -367,8 +381,13 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    * @param item Item that is being sorted.
    * @param pointerX Position of the user's pointer along the X axis.
    * @param pointerY Position of the user's pointer along the Y axis.
+   * @param delta Direction in which the user is moving their pointer.
    */
-  private _getItemIndexFromPointerPosition(item: CdkDrag, pointerX: number, pointerY: number) {
+  private _getItemIndexFromPointerPosition(item: CdkDrag, pointerX: number, pointerY: number,
+                                           delta?: {x: number, y: number}) {
+
+    const isHorizontal = this.orientation === 'horizontal';
+
     return this._positionCache.items.findIndex(({drag, clientRect}, _, array) => {
       if (drag === item) {
         // If there's only one item left in the container, it must be
@@ -376,9 +395,19 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
         return array.length < 2;
       }
 
-      return this.orientation === 'horizontal' ?
+      if (delta) {
+        const direction = isHorizontal ? delta.x : delta.y;
+
+        // If the user is still hovering over the same item as last time, and they didn't change
+        // the direction in which they're dragging, we don't consider it a direction swap.
+        if (drag === this._previousSwap.drag && direction === this._previousSwap.delta) {
+          return false;
+        }
+      }
+
+      return isHorizontal ?
           // Round these down since most browsers report client rects with
-          // sub-pixel precision, whereas the mouse coordinates are rounded to pixels.
+          // sub-pixel precision, whereas the pointer coordinates are rounded to pixels.
           pointerX >= Math.floor(clientRect.left) && pointerX <= Math.floor(clientRect.right) :
           pointerY >= Math.floor(clientRect.top) && pointerY <= Math.floor(clientRect.bottom);
     });

@@ -843,6 +843,86 @@ describe('CdkDrag', () => {
         flush();
       }));
 
+    it('should not swap position for tiny pointer movements', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const items = fixture.componentInstance.dragItems.map(i => i.element.nativeElement);
+      const draggedItem = items[0];
+      const target = items[1];
+      const {top, left} = draggedItem.getBoundingClientRect();
+
+      // Bump the height so the pointer doesn't leave after swapping.
+      target.style.height = `${ITEM_HEIGHT * 3}px`;
+
+      dispatchMouseEvent(draggedItem, 'mousedown', left, top);
+      fixture.detectChanges();
+
+      const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+
+      expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      const targetRect = target.getBoundingClientRect();
+      const pointerTop = targetRect.top + 20;
+
+      // Move over the target so there's a 20px overlap.
+      dispatchMouseEvent(document, 'mousemove', targetRect.left, pointerTop);
+      fixture.detectChanges();
+      expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
+          .toEqual(['One', 'Zero', 'Two', 'Three'], 'Expected position to swap.');
+
+      // Move down a further 1px.
+      dispatchMouseEvent(document, 'mousemove', targetRect.left, pointerTop + 1);
+      fixture.detectChanges();
+      expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
+          .toEqual(['One', 'Zero', 'Two', 'Three'], 'Expected positions not to swap.');
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+    }));
+
+    it('should swap position for pointer movements in the opposite direction', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const items = fixture.componentInstance.dragItems.map(i => i.element.nativeElement);
+      const draggedItem = items[0];
+      const target = items[1];
+      const {top, left} = draggedItem.getBoundingClientRect();
+
+      // Bump the height so the pointer doesn't leave after swapping.
+      target.style.height = `${ITEM_HEIGHT * 3}px`;
+
+      dispatchMouseEvent(draggedItem, 'mousedown', left, top);
+      fixture.detectChanges();
+
+      const placeholder = document.querySelector('.cdk-drag-placeholder')! as HTMLElement;
+
+      expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three']);
+
+      const targetRect = target.getBoundingClientRect();
+      const pointerTop = targetRect.top + 20;
+
+      // Move over the target so there's a 20px overlap.
+      dispatchMouseEvent(document, 'mousemove', targetRect.left, pointerTop);
+      fixture.detectChanges();
+      expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
+          .toEqual(['One', 'Zero', 'Two', 'Three'], 'Expected position to swap.');
+
+      // Move up 10px.
+      dispatchMouseEvent(document, 'mousemove', targetRect.left, pointerTop - 10);
+      fixture.detectChanges();
+      expect(getElementSibligsByPosition(placeholder, 'top').map(e => e.textContent!.trim()))
+          .toEqual(['Zero', 'One', 'Two', 'Three'], 'Expected positions to swap again.');
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      flush();
+    }));
+
     it('should clean up the preview element if the item is destroyed mid-drag', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();

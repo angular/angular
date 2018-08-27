@@ -46,6 +46,12 @@ import {takeUntil} from 'rxjs/operators';
 // TODO(crisbeto): add an API for moving a draggable up/down the
 // list programmatically. Useful for keyboard controls.
 
+/**
+ * Amount the pixels the user should drag before we
+ * consider them to have changed the drag direction.
+ */
+const POINTER_DIRECTION_CHANGE_THRESHOLD = 5;
+
 /** Element that can be moved inside a CdkDrop container. */
 @Directive({
   selector: '[cdkDrag]',
@@ -113,6 +119,12 @@ export class CdkDrag<T = any> implements OnDestroy {
    * hitting the zone if the consumer didn't subscribe to it.
    */
   private _moveEventSubscriptions = 0;
+
+  /** Keeps track of the direction in which the user is dragging along each axis. */
+  private _pointerDirectionDelta: {x: -1 | 0 | 1, y: -1 | 0 | 1};
+
+  /** Pointer position at which the last change in the delta occurred. */
+  private _pointerPositionAtLastDirectionChange: Point;
 
   /** Elements that can be used to drag the draggable item. */
   @ContentChildren(CdkDragHandle) _handles: QueryList<CdkDragHandle>;
@@ -255,7 +267,10 @@ export class CdkDrag<T = any> implements OnDestroy {
     // extra `getBoundingClientRect` calls and just move the preview next to the cursor.
     this._pickupPositionInElement = this._previewTemplate ? {x: 0, y: 0} :
         this._getPointerPositionInElement(referenceElement, event);
-    this._pickupPositionOnPage = this._getPointerPositionOnPage(event);
+    const pointerPosition = this._pickupPositionOnPage = this._getPointerPositionOnPage(event);
+
+    this._pointerDirectionDelta = {x: 0, y: 0};
+    this._pointerPositionAtLastDirectionChange = {x: pointerPosition.x, y: pointerPosition.y};
 
     // Emit the event on the item before the one on the container.
     this.started.emit({source: this});
@@ -292,6 +307,7 @@ export class CdkDrag<T = any> implements OnDestroy {
     event.preventDefault();
 
     const pointerPosition = this._getConstrainedPointerPosition(event);
+    this._updatePointerDirectionDelta(pointerPosition);
 
     if (this.dropContainer) {
       this._updateActiveDropContainer(pointerPosition);
@@ -392,7 +408,7 @@ export class CdkDrag<T = any> implements OnDestroy {
       });
     }
 
-    this.dropContainer._sortItem(this, x, y);
+    this.dropContainer._sortItem(this, x, y, this._pointerDirectionDelta);
     this._setTransform(this._preview,
                        x - this._pickupPositionInElement.x,
                        y - this._pickupPositionInElement.y);
@@ -589,6 +605,31 @@ export class CdkDrag<T = any> implements OnDestroy {
     }
 
     this._placeholder = this._placeholderRef = null!;
+  }
+
+  /** Updates the current drag delta, based on the user's current pointer position on the page. */
+  private _updatePointerDirectionDelta(pointerPositionOnPage: Point) {
+    const {x, y} = pointerPositionOnPage;
+    const delta = this._pointerDirectionDelta;
+    const positionSinceLastChange = this._pointerPositionAtLastDirectionChange;
+
+    // Amount of pixels the user has dragged since the last time the direction changed.
+    const changeX = Math.abs(x - positionSinceLastChange.x);
+    const changeY = Math.abs(y - positionSinceLastChange.y);
+
+    // Because we handle pointer events on a per-pixel basis, we don't want the delta
+    // to change for every pixel, otherwise anything that depends on it can look erratic.
+    // To make the delta more consistent, we track how much the user has moved since the last
+    // delta change and we only update it after it has reached a certain threshold.
+    if (changeX > POINTER_DIRECTION_CHANGE_THRESHOLD) {
+      delta.x = x > positionSinceLastChange.x ? 1 : -1;
+      positionSinceLastChange.x = x;
+    }
+
+    if (changeY > POINTER_DIRECTION_CHANGE_THRESHOLD) {
+      delta.y = y > positionSinceLastChange.y ? 1 : -1;
+      positionSinceLastChange.y = y;
+    }
   }
 }
 
