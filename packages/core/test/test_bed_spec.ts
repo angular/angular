@@ -109,6 +109,15 @@ describe('TestBed', () => {
     expect(nameInjected).toEqual('World!');
   });
 
+  it('should return test module injector for root node', () => {
+    const hello = TestBed.createComponent(HelloWorld);
+    hello.detectChanges();
+    const injector = hello.debugElement.injector;
+
+    const nameInjected = injector.get(NAME);
+    expect(nameInjected).toEqual('World!');
+  });
+
   it('should give the ability to query by directive', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();

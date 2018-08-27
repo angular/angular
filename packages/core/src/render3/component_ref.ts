@@ -101,8 +101,10 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     let rendererFactory: RendererFactory3;
 
     if (ngModule) {
-      const wrapper = ngModule.injector.get(WRAP_RENDERER_FACTORY2, (v: RendererFactory2) => v);
-      rendererFactory = wrapper(ngModule.injector.get(RendererFactory2)) as RendererFactory3;
+      const wrapper =
+          ngModule.injector.get(WRAP_RENDERER_FACTORY2, (v: RendererFactory2, i: Injector) => v);
+      rendererFactory =
+          wrapper(ngModule.injector.get(RendererFactory2), ngModule.injector) as RendererFactory3;
     } else {
       rendererFactory = domRendererFactory3;
     }

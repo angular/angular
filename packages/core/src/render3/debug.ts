@@ -7,7 +7,7 @@
  */
 
 import {Injector} from '../di/injector';
-import {Renderer2, RendererType2} from '../render/api';
+import {Renderer2, RendererFactory2, RendererType2} from '../render/api';
 import {DebugContext} from '../view';
 import {DebugRenderer2, DebugRendererFactory2} from '../view/services';
 
@@ -22,9 +22,12 @@ import {CONTEXT, DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
  * The created DebugRenderer know how to create a Debug Context specific to IVY.
  */
 export class Render3DebugRendererFactory2 extends DebugRendererFactory2 {
+  constructor(delegate: RendererFactory2, private _moduleInjector: Injector) { super(delegate); }
+
   createRenderer(element: any, renderData: RendererType2|null): Renderer2 {
     const renderer = super.createRenderer(element, renderData) as DebugRenderer2;
-    renderer.debugContextFactory = () => new Render3DebugContext(_getViewData());
+    renderer.debugContextFactory = () =>
+        new Render3DebugContext(this._moduleInjector, _getViewData());
     return renderer;
   }
 }
@@ -37,9 +40,10 @@ export class Render3DebugRendererFactory2 extends DebugRendererFactory2 {
 class Render3DebugContext implements DebugContext {
   readonly nodeIndex: number|null;
 
-  constructor(private viewData: LViewData) {
-    // The LNode will be created next and appended to viewData
-    this.nodeIndex = viewData ? viewData.length : null;
+  constructor(private moduleInjector: Injector, private viewData: LViewData|null) {
+    // viewData can be null for the root element created to contain test component (such element is
+    // created before ivy kicks in and creates root view).
+    this.nodeIndex = viewData ? viewData.length - 1 : null;
   }
 
   get view(): any { return this.viewData; }
@@ -53,11 +57,11 @@ class Render3DebugContext implements DebugContext {
         return new di.NodeInjector(nodeInjector);
       }
     }
-    return Injector.NULL;
+
+    return this.moduleInjector;
   }
 
   get component(): any {
-    // TODO(vicb): why/when
     if (this.nodeIndex === null) {
       return null;
     }
@@ -74,7 +78,6 @@ class Render3DebugContext implements DebugContext {
   get providerTokens(): any[] {
     const matchedDirectives: any[] = [];
 
-    // TODO(vicb): why/when
     if (this.nodeIndex === null) {
       return matchedDirectives;
     }

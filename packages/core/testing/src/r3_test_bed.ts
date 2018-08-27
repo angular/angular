@@ -412,7 +412,8 @@ export class TestBedRender3 implements Injector, TestBed {
 
     const rendererFactoryWrapper = {
       provide: WRAP_RENDERER_FACTORY2,
-      useFactory: () => (rf: RendererFactory2) => new Render3DebugRendererFactory2(rf),
+      useFactory: () => (rf: RendererFactory2, moduleInjector: Injector) =>
+                      new Render3DebugRendererFactory2(rf, moduleInjector),
     };
 
     @NgModule({
