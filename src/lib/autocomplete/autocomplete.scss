@@ -26,13 +26,14 @@ $mat-autocomplete-panel-border-radius: 4px !default;
     visibility: hidden;
   }
 
+  .mat-autocomplete-panel-above & {
+    border-radius: 0;
+    border-top-left-radius: $mat-autocomplete-panel-border-radius;
+    border-top-right-radius: $mat-autocomplete-panel-border-radius;
+  }
+
   @include cdk-high-contrast {
     outline: solid 1px;
   }
 }
 
-.mat-autocomplete-panel-above {
-  border-radius: 0;
-  border-top-left-radius: $mat-autocomplete-panel-border-radius;
-  border-top-right-radius: $mat-autocomplete-panel-border-radius;
-}

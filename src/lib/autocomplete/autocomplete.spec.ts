@@ -1441,8 +1441,7 @@ describe('MatAutocomplete', () => {
       expect(Math.floor(inputTop))
           .toEqual(Math.floor(panelBottom), `Expected panel to fall back to above position.`);
 
-      expect(panel.querySelector('.mat-autocomplete-panel')!.classList)
-          .toContain('mat-autocomplete-panel-above');
+      expect(panel.classList).toContain('mat-autocomplete-panel-above');
     }));
 
     it('should allow the panel to expand when the number of results increases', fakeAsync(() => {
