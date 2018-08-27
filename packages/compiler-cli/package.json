@@ -12,7 +12,6 @@
   "dependencies": {
     "reflect-metadata": "^0.1.2",
     "minimist": "^1.2.0",
-    "tsickle": "^0.32.1",
     "chokidar": "^1.4.2",
     "convert-source-map": "^1.5.1",
     "magic-string": "^0.25.0",

@@ -554,10 +554,10 @@ describe('ngc transformer command-line', () => {
     });
 
     describe('closure', () => {
-      it('should not generate closure specific code by default', () => {
+      it('should not run tsickle by default', () => {
         writeConfig(`{
           "extends": "./tsconfig-base.json",
-          "files": ["mymodule.ts"]
+          "files": ["mymodule.ts"],
         }`);
         write('mymodule.ts', `
         import {NgModule, Component} from '@angular/core';
@@ -575,7 +575,8 @@ describe('ngc transformer command-line', () => {
         const mymodulejs = path.resolve(outDir, 'mymodule.js');
         const mymoduleSource = fs.readFileSync(mymodulejs, 'utf8');
         expect(mymoduleSource).not.toContain('@fileoverview added by tsickle');
-        expect(mymoduleSource).toContain('MyComp.decorators = [');
+        expect(mymoduleSource).toContain('MyComp = __decorate');
+        expect(mymoduleSource).not.toContain('MyComp.decorators = [');
       });
 
       it('should add closure annotations', () => {
