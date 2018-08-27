@@ -98,7 +98,7 @@ local_repository(
 # Load and install our dependencies downloaded above.
 #
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories", "yarn_install")
+load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
 
 check_bazel_version("0.15.0")
 node_repositories(
@@ -126,24 +126,6 @@ ts_setup_workspace()
 load("@angular//:index.bzl", "ng_setup_workspace")
 
 ng_setup_workspace()
-
-#
-# Ask Bazel to manage these toolchain dependencies for us.
-# Bazel will run `yarn install` when one of these toolchains is requested during
-# a build.
-#
-
-yarn_install(
-    name = "ts-api-guardian_runtime_deps",
-    package_json = "//tools/ts-api-guardian:package.json",
-    yarn_lock = "//tools/ts-api-guardian:yarn.lock",
-)
-
-yarn_install(
-    name = "http-server_runtime_deps",
-    package_json = "//tools/http-server:package.json",
-    yarn_lock = "//tools/http-server:yarn.lock",
-)
 
 ##################################
 # Skylark documentation generation
