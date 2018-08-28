@@ -31,7 +31,9 @@ import {
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
+  Inject,
 } from '@angular/core';
+import {DOCUMENT} from '@angular/common';
 import {BehaviorSubject, Observable, of as observableOf, Subject, Subscription} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {CdkColumnDef} from './cell';
@@ -55,6 +57,7 @@ import {
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {StickyStyler} from './sticky-styler';
 import {Direction, Directionality} from '@angular/cdk/bidi';
+import {Platform} from '@angular/cdk/platform';
 
 /** Interface used to provide an outlet for rows to be inserted into. */
 export interface RowOutlet {
@@ -148,6 +151,8 @@ export interface RenderRow<T> {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDestroy, OnInit {
+  private _document: Document;
+
   /** Latest data provided by the data source. */
   protected _data: T[] | ReadonlyArray<T>;
 
@@ -359,11 +364,19 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
               protected readonly _changeDetectorRef: ChangeDetectorRef,
               protected readonly _elementRef: ElementRef,
               @Attribute('role') role: string,
-              @Optional() protected readonly _dir: Directionality) {
+              @Optional() protected readonly _dir: Directionality,
+              /**
+               * @deprecated
+               * @breaking-change 8.0.0 `_document` and `_platform` to
+               *    be made into a required parameters.
+               */
+              @Inject(DOCUMENT) _document?: any,
+              private _platform?: Platform) {
     if (!role) {
       this._elementRef.nativeElement.setAttribute('role', 'grid');
     }
 
+    this._document = _document;
     this._isNativeHtmlTable = this._elementRef.nativeElement.nodeName === 'TABLE';
   }
 
@@ -949,7 +962,9 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     ];
 
     for (const section of sections) {
-      const element = document.createElement(section.tag);
+      // @breaking-change 8.0.0 remove the `|| document` once the `_document` is a required param.
+      const documentRef = this._document || document;
+      const element = documentRef.createElement(section.tag);
       element.appendChild(section.outlet.elementRef.nativeElement);
       this._elementRef.nativeElement.appendChild(element);
     }
@@ -1001,7 +1016,9 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
    */
   private _setupStickyStyler() {
     const direction: Direction = this._dir ? this._dir.value : 'ltr';
-    this._stickyStyler = new StickyStyler(this._isNativeHtmlTable, this.stickyCssClass, direction);
+    this._stickyStyler = new StickyStyler(this._isNativeHtmlTable,
+        // @breaking-change 8.0.0 remove the null check for `this._platform`.
+        this.stickyCssClass, direction, this._platform ? this._platform.isBrowser : true);
     (this._dir ? this._dir.change : observableOf<Direction>())
         .pipe(takeUntil(this._onDestroy))
         .subscribe(value => {
@@ -1012,6 +1029,6 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 }
 
 /** Utility function that gets a merged list of the entries in a QueryList and values of a Set. */
-function  mergeQueryListAndSet<T>(queryList: QueryList<T>, set: Set<T>): T[] {
+function mergeQueryListAndSet<T>(queryList: QueryList<T>, set: Set<T>): T[] {
   return queryList.toArray().concat(Array.from(set));
 }

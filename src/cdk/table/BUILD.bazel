@@ -11,6 +11,7 @@ ng_module(
     "//src/cdk/bidi",
     "//src/cdk/collections",
     "//src/cdk/coercion",
+    "//src/cdk/platform",
     "@rxjs",
   ],
   tsconfig = "//src/cdk:tsconfig-build.json",

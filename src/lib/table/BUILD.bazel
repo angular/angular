@@ -14,6 +14,7 @@ ng_module(
     "//src/lib/paginator",
     "//src/lib/sort",
     "//src/cdk/table",
+    "//src/cdk/platform",
     "@rxjs",
   ] + glob(["**/*.html"]),
   tsconfig = "//src/lib:tsconfig-build.json",
