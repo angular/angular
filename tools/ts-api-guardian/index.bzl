@@ -17,14 +17,14 @@
 
 load("@build_bazel_rules_nodejs//internal/node:node.bzl", "nodejs_binary", "nodejs_test")
 
-COMMON_MODULE_IDENTIFIERS = ["angular", "jasmine", "protractor"]
+COMMON_MODULE_IDENTIFIERS = ["angular", "jasmine", "protractor", "fs", "Symbol"]
 
 def ts_api_guardian_test(name, golden, actual, data = [], **kwargs):
     """Runs ts_api_guardian
     """
     data += [
-        "//tools/ts-api-guardian:lib",
-        "//tools/ts-api-guardian:bin/ts-api-guardian",
+        "@angular//tools/ts-api-guardian:lib",
+        "@angular//tools/ts-api-guardian:bin/ts-api-guardian",
         "@bazel_tools//tools/bash/runfiles",
     ]
 
