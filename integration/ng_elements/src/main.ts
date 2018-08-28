@@ -3,11 +3,11 @@ import {AppModuleNgFactory} from './app.ngfactory';
 
 platformBrowser().bootstrapModuleFactory(AppModuleNgFactory, {ngZone: 'noop'});
 
-const helloWorldEl = document.querySelector('hello-world-el');
+const helloWorld = document.querySelector('hello-world-el');
 const input = document.querySelector('input[type=text]');
-if(input){
+if(input && helloWorld){
     input.addEventListener('input', e => {
     const newText = (e.target as any).value;
-    helloWorldEl.setAttribute('name', newText);
+    helloWorld.setAttribute('name', newText);
   });
 }
