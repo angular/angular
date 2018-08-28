@@ -862,25 +862,6 @@ describe('render3 integration test', () => {
       expect(fixture.html).toEqual('<div></div>');
     });
 
-    it('should throw when trying to add event listener', () => {
-      /**
-       * <div><ng-container (click)="..."></ng-container></div>
-       */
-      function Template() {
-        elementStart(0, 'div');
-        {
-          elementContainerStart(1);
-          {
-            listener('click', function() {});
-          }
-          elementContainerEnd();
-        }
-        elementEnd();
-      }
-
-      expect(() => { new TemplateFixture(Template, () => {}, 2); }).toThrow();
-    });
-
   });
 
   describe('tree', () => {
