@@ -367,9 +367,12 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     this._ngZone.onStable
       .asObservable()
       .pipe(take(1))
-      .subscribe(() => this._hasFocus = false);
-
-    this._onBlur.next({chip: this});
+      .subscribe(() => {
+        this._ngZone.run(() => {
+          this._hasFocus = false;
+          this._onBlur.next({chip: this});
+        });
+      });
   }
 }
 

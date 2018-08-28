@@ -772,6 +772,22 @@ describe('MatChipList', () => {
 
         expect(chipArray[4].focus).not.toHaveBeenCalled();
       });
+
+      it('should blur the form field when the active chip is blurred', fakeAsync(() => {
+        const formField: HTMLElement = fixture.nativeElement.querySelector('.mat-form-field');
+
+        nativeChips[0].focus();
+        fixture.detectChanges();
+
+        expect(formField.classList).toContain('mat-focused');
+
+        nativeChips[0].blur();
+        fixture.detectChanges();
+        zone.simulateZoneExit();
+        fixture.detectChanges();
+
+        expect(formField.classList).not.toContain('mat-focused');
+      }));
     });
 
     describe('multiple selection', () => {
