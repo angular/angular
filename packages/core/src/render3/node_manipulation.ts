@@ -7,7 +7,7 @@
  */
 
 import {assertDefined} from './assert';
-import {attachPatchData} from './context_discovery';
+import {attachPatchData, readElementValue} from './context_discovery';
 import {callHooks} from './hooks';
 import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unused1} from './interfaces/container';
 import {LContainerNode, LElementContainerNode, LElementNode, LTextNode, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
@@ -15,7 +15,7 @@ import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection'
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
 import {CLEANUP, CONTAINER_INDEX, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeType} from './node_assert';
-import {getLNode, readElementValue, stringify} from './util';
+import {getLNode, stringify} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4 + unused5;
 

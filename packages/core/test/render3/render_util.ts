@@ -9,6 +9,7 @@
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {Injector} from '../../src/di/injector';
+import {PlayerHandler} from '../../src/render3/animations/interfaces';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {getContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
@@ -103,9 +104,12 @@ export class ComponentFixture<T> extends BaseFixture {
   component: T;
   requestAnimationFrame: {(fn: () => void): void; flush(): void; queue: (() => void)[];};
 
-  constructor(
-      private componentType: ComponentType<T>,
-      opts: {injector?: Injector, sanitizer?: Sanitizer, rendererFactory?: RendererFactory3} = {}) {
+  constructor(private componentType: ComponentType<T>, opts: {
+    injector?: Injector,
+    sanitizer?: Sanitizer,
+    rendererFactory?: RendererFactory3,
+    playerHandler?: PlayerHandler
+  } = {}) {
     super();
     this.requestAnimationFrame = function(fn: () => void) {
       requestAnimationFrame.queue.push(fn);
@@ -122,7 +126,8 @@ export class ComponentFixture<T> extends BaseFixture {
       scheduler: this.requestAnimationFrame,
       injector: opts.injector,
       sanitizer: opts.sanitizer,
-      rendererFactory: opts.rendererFactory || domRendererFactory3
+      rendererFactory: opts.rendererFactory || domRendererFactory3,
+      playerHandler: opts.playerHandler
     });
   }
 

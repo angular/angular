@@ -11,7 +11,6 @@ import {assertEqual} from './assert';
 import {LElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {RElement} from './interfaces/renderer';
 import {CONTEXT, DIRECTIVES, HEADER_OFFSET, LViewData, TVIEW} from './interfaces/view';
-import {readElementValue} from './util';
 
 /**
  * This property will be monkey-patched on elements, components and directives
@@ -400,4 +399,8 @@ function getDirectiveEndIndex(tNode: TNode, startIndex: number): number {
   // values are used).
   const count = tNode.flags & TNodeFlags.DirectiveCountMask;
   return count ? (startIndex + count) : -1;
+}
+
+export function readElementValue(value: LElementNode | any[]): LElementNode {
+  return (Array.isArray(value) ? (value as any as any[])[0] : value) as LElementNode;
 }
