@@ -102,7 +102,7 @@ export class RippleRenderer {
 
   constructor(private _target: RippleTarget,
               private _ngZone: NgZone,
-              elementRef: ElementRef,
+              elementRef: ElementRef<HTMLElement>,
               platform: Platform) {
 
     // Only do anything if we're on the browser.

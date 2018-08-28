@@ -350,7 +350,7 @@ export class CdkTrapFocus implements OnDestroy, AfterContentInit, DoCheck {
   private _autoCapture: boolean;
 
   constructor(
-      private _elementRef: ElementRef,
+      private _elementRef: ElementRef<HTMLElement>,
       private _focusTrapFactory: FocusTrapFactory,
       @Inject(DOCUMENT) _document: any) {
 

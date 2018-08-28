@@ -118,7 +118,7 @@ export class MatOption implements AfterViewChecked, OnDestroy {
   readonly _stateChanges = new Subject<void>();
 
   constructor(
-    private _element: ElementRef,
+    private _element: ElementRef<HTMLElement>,
     private _changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(MAT_OPTION_PARENT_COMPONENT) private _parent: MatOptionParentComponent,
     @Optional() readonly group: MatOptgroup) {}

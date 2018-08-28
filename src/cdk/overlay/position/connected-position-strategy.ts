@@ -58,7 +58,7 @@ export class ConnectedPositionStrategy implements PositionStrategy {
   constructor(
       originPos: OriginConnectionPosition,
       overlayPos: OverlayConnectionPosition,
-      connectedTo: ElementRef,
+      connectedTo: ElementRef<HTMLElement>,
       viewportRuler: ViewportRuler,
       document: Document,
       // @breaking-change 7.0.0 `platform` parameter to be made required.

@@ -78,7 +78,7 @@ export class MatTabNav extends _MatTabNavMixinBase
   private readonly _onDestroy = new Subject<void>();
 
   private _activeLinkChanged: boolean;
-  private _activeLinkElement: ElementRef | null;
+  private _activeLinkElement: ElementRef<HTMLElement> | null;
 
   @ViewChild(MatInkBar) _inkBar: MatInkBar;
 

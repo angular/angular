@@ -84,7 +84,7 @@ export class MatBottomSheetContainer extends BasePortalOutlet implements OnDestr
   private _destroyed: boolean;
 
   constructor(
-    private _elementRef: ElementRef,
+    private _elementRef: ElementRef<HTMLElement>,
     private _changeDetectorRef: ChangeDetectorRef,
     private _focusTrapFactory: FocusTrapFactory,
     breakpointObserver: BreakpointObserver,

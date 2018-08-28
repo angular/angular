@@ -63,7 +63,7 @@ describe('ConnectedPositionStrategy', () => {
 
     let originElement: HTMLElement;
     let positionStrategy: ConnectedPositionStrategy;
-    let fakeElementRef: ElementRef;
+    let fakeElementRef: ElementRef<HTMLElement>;
 
     let originRect: ClientRect | null;
     let originCenterX: number | null;
@@ -73,7 +73,7 @@ describe('ConnectedPositionStrategy', () => {
       // The origin and overlay elements need to be in the document body in order to have geometry.
       originElement = createPositionedBlockElement();
       document.body.appendChild(originElement);
-      fakeElementRef = new ElementRef(originElement);
+      fakeElementRef = new ElementRef<HTMLElement>(originElement);
     });
 
     afterEach(() => {
@@ -583,7 +583,7 @@ describe('ConnectedPositionStrategy', () => {
     let positionChangeHandler: jasmine.Spy;
     let onPositionChangeSubscription: Subscription;
     let positionChange: ConnectedOverlayPositionChange;
-    let fakeElementRef: ElementRef;
+    let fakeElementRef: ElementRef<HTMLElement>;
     let positionStrategy: ConnectedPositionStrategy;
 
     beforeEach(() => {
@@ -597,14 +597,14 @@ describe('ConnectedPositionStrategy', () => {
       scrollable.appendChild(originElement);
 
       // Create a strategy with knowledge of the scrollable container
-      fakeElementRef = new ElementRef(originElement);
+      fakeElementRef = new ElementRef<HTMLElement>(originElement);
       positionStrategy = overlay.position().connectedTo(
           fakeElementRef,
           {originX: 'start', originY: 'bottom'},
           {overlayX: 'start', overlayY: 'top'});
 
       positionStrategy.withScrollableContainers([
-          new CdkScrollable(new ElementRef(scrollable), null!, null!)]);
+          new CdkScrollable(new ElementRef<HTMLElement>(scrollable), null!, null!)]);
       positionChangeHandler = jasmine.createSpy('positionChangeHandler');
       onPositionChangeSubscription =
           positionStrategy.onPositionChange.subscribe(positionChangeHandler);
@@ -673,13 +673,13 @@ describe('ConnectedPositionStrategy', () => {
   describe('positioning properties', () => {
     let originElement: HTMLElement;
     let positionStrategy: ConnectedPositionStrategy;
-    let fakeElementRef: ElementRef;
+    let fakeElementRef: ElementRef<HTMLElement>;
 
     beforeEach(() => {
       // The origin and overlay elements need to be in the document body in order to have geometry.
       originElement = createPositionedBlockElement();
       document.body.appendChild(originElement);
-      fakeElementRef = new ElementRef(originElement);
+      fakeElementRef = new ElementRef<HTMLElement>(originElement);
     });
 
     afterEach(() => {

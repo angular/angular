@@ -229,7 +229,7 @@ export class MatMenu implements AfterContentInit, MatMenuPanel<MatMenuItem>, OnI
   @Output() close = this.closed;
 
   constructor(
-    private _elementRef: ElementRef,
+    private _elementRef: ElementRef<HTMLElement>,
     private _ngZone: NgZone,
     @Inject(MAT_MENU_DEFAULT_OPTIONS) private _defaultOptions: MatMenuDefaultOptions) { }
 

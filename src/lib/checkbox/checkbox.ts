@@ -162,7 +162,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   @Input() value: string;
 
   /** The native `<input type="checkbox">` element */
-  @ViewChild('input') _inputElement: ElementRef;
+  @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
 
   /** Reference to the ripple instance of the checkbox. */
   @ViewChild(MatRipple) ripple: MatRipple;
@@ -182,7 +182,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   /** Reference to the focused state ripple. */
   private _focusRipple: RippleRef | null;
 
-  constructor(elementRef: ElementRef,
+  constructor(elementRef: ElementRef<HTMLElement>,
               private _changeDetectorRef: ChangeDetectorRef,
               private _focusMonitor: FocusMonitor,
               private _ngZone: NgZone,

@@ -785,9 +785,9 @@ class BasicTestApp {
   hasBackdrop: boolean | null = null;
 
   @ViewChild('drawer') drawer: MatDrawer;
-  @ViewChild('drawerButton') drawerButton: ElementRef;
-  @ViewChild('openButton') openButton: ElementRef;
-  @ViewChild('closeButton') closeButton: ElementRef;
+  @ViewChild('drawerButton') drawerButton: ElementRef<HTMLButtonElement>;
+  @ViewChild('openButton') openButton: ElementRef<HTMLButtonElement>;
+  @ViewChild('closeButton') closeButton: ElementRef<HTMLButtonElement>;
 
   open() {
     this.openCount++;

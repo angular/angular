@@ -81,7 +81,7 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
     this.stateChanges.next();
   }
 
-  constructor(fb: FormBuilder, private fm: FocusMonitor, private elRef: ElementRef) {
+  constructor(fb: FormBuilder, private fm: FocusMonitor, private elRef: ElementRef<HTMLElement>) {
     this.parts = fb.group({
       area: '',
       exchange: '',
@@ -105,7 +105,7 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
 
   onContainerClick(event: MouseEvent) {
     if ((event.target as Element).tagName.toLowerCase() != 'input') {
-      this.elRef.nativeElement.querySelector('input').focus();
+      this.elRef.nativeElement.querySelector('input')!.focus();
     }
   }
 }

@@ -189,7 +189,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     this._autocompleteDisabled = coerceBooleanProperty(value);
   }
 
-  constructor(private _element: ElementRef, private _overlay: Overlay,
+  constructor(private _element: ElementRef<HTMLInputElement>, private _overlay: Overlay,
               private _viewContainerRef: ViewContainerRef,
               private _zone: NgZone,
               private _changeDetectorRef: ChangeDetectorRef,
@@ -667,7 +667,7 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
 
   /** Determines whether the panel can be opened. */
   private _canOpen(): boolean {
-    const element: HTMLInputElement = this._element.nativeElement;
+    const element = this._element.nativeElement;
     return !element.readOnly && !element.disabled && !this._autocompleteDisabled;
   }
 }

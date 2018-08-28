@@ -211,7 +211,7 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     'week'
   ].filter(t => getSupportedInputTypes().has(t));
 
-  constructor(protected _elementRef: ElementRef,
+  constructor(protected _elementRef: ElementRef<HTMLInputElement>,
               protected _platform: Platform,
               /** @docs-private */
               @Optional() @Self() public ngControl: NgControl,

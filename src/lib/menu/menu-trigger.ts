@@ -130,7 +130,7 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   @Output() readonly onMenuClose: EventEmitter<void> = this.menuClosed;
 
   constructor(private _overlay: Overlay,
-              private _element: ElementRef,
+              private _element: ElementRef<HTMLElement>,
               private _viewContainerRef: ViewContainerRef,
               @Inject(MAT_MENU_SCROLL_STRATEGY) private _scrollStrategy,
               @Optional() private _parentMenu: MatMenu,

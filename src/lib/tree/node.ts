@@ -46,7 +46,7 @@ export class MatTreeNode<T> extends _MatTreeNodeMixinBase<T>
     implements CanDisable, HasTabIndex {
   @Input() role: 'treeitem' | 'group' = 'treeitem';
 
-  constructor(protected _elementRef: ElementRef,
+  constructor(protected _elementRef: ElementRef<HTMLElement>,
               protected _tree: CdkTree<T>,
               @Attribute('tabindex') tabIndex: string) {
     super(_elementRef, _tree);
@@ -93,7 +93,7 @@ export class MatNestedTreeNode<T> extends _MatNestedTreeNodeMixinBase<T>
 
   @ContentChildren(MatTreeNodeOutlet) nodeOutlet: QueryList<MatTreeNodeOutlet>;
 
-  constructor(protected _elementRef: ElementRef,
+  constructor(protected _elementRef: ElementRef<HTMLElement>,
               protected _tree: CdkTree<T>,
               protected _differs: IterableDiffers,
               @Attribute('tabindex') tabIndex: string) {

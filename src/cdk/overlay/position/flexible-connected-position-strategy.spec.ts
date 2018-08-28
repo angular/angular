@@ -1575,7 +1575,7 @@ describe('FlexibleConnectedPositionStrategy', () => {
         }]);
 
       strategy.withScrollableContainers([
-        new CdkScrollable(new ElementRef(scrollable), null!, null!)
+        new CdkScrollable(new ElementRef<HTMLElement>(scrollable), null!, null!)
       ]);
 
       positionChangeHandler = jasmine.createSpy('positionChange handler');

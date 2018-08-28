@@ -10,7 +10,7 @@ export class FullscreenE2E {
 
   dialogRef: MatDialogRef<TestDialogFullScreen> | null;
 
-  constructor (private _element: ElementRef, private _dialog: MatDialog) { }
+  constructor (private _element: ElementRef<HTMLElement>, private _dialog: MatDialog) { }
 
   openDialog() {
     this.dialogRef = this._dialog.open(TestDialogFullScreen);
@@ -21,16 +21,16 @@ export class FullscreenE2E {
   }
 
   openFullscreen() {
-    let element = this._element.nativeElement.querySelector('#fullscreen-pane');
+    let element = this._element.nativeElement.querySelector('#fullscreen-pane') as any;
 
     if (element.requestFullscreen) {
       element.requestFullscreen();
     } else if (element.webkitRequestFullScreen) {
       element.webkitRequestFullScreen();
-    } else if ((element as any).mozRequestFullScreen) {
-      (element as any).mozRequestFullScreen();
-    } else if ((element as any).msRequestFullScreen) {
-      (element as any).msRequestFullScreen();
+    } else if (element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if (element.msRequestFullScreen) {
+      element.msRequestFullScreen();
     }
   }
 

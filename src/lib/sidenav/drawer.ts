@@ -221,7 +221,7 @@ export class MatDrawer implements AfterContentInit, AfterContentChecked, OnDestr
     return this.opened && this.mode !== 'side';
   }
 
-  constructor(private _elementRef: ElementRef,
+  constructor(private _elementRef: ElementRef<HTMLElement>,
               private _focusTrapFactory: FocusTrapFactory,
               private _focusMonitor: FocusMonitor,
               private _platform: Platform,
@@ -484,7 +484,7 @@ export class MatDrawerContainer implements AfterContentInit, DoCheck, OnDestroy 
   }
 
   constructor(@Optional() private _dir: Directionality,
-              private _element: ElementRef,
+              private _element: ElementRef<HTMLElement>,
               private _ngZone: NgZone,
               private _changeDetectorRef: ChangeDetectorRef,
               @Inject(MAT_DRAWER_DEFAULT_AUTOSIZE) defaultAutosize = false,

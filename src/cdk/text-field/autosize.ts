@@ -78,7 +78,7 @@ export class CdkTextareaAutosize implements AfterViewInit, DoCheck, OnDestroy {
   private _cachedLineHeight: number;
 
   constructor(
-    private _elementRef: ElementRef,
+    private _elementRef: ElementRef<HTMLElement>,
     private _platform: Platform,
     private _ngZone: NgZone) {
     this._textareaElement = this._elementRef.nativeElement as HTMLTextAreaElement;

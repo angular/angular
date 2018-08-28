@@ -160,7 +160,7 @@ export class MatAutocomplete extends _MatAutocompleteMixinBase implements AfterC
 
   constructor(
     private _changeDetectorRef: ChangeDetectorRef,
-    private _elementRef: ElementRef,
+    private _elementRef: ElementRef<HTMLElement>,
     @Inject(MAT_AUTOCOMPLETE_DEFAULT_OPTIONS) defaults: MatAutocompleteDefaultOptions) {
     super();
 

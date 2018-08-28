@@ -181,16 +181,16 @@ function expectMessage(el: Element, message: string) {
   `,
 })
 class TestApp {
-  @ViewChild('element1') _element1: ElementRef;
+  @ViewChild('element1') _element1: ElementRef<HTMLElement>;
   get element1(): Element { return this._element1.nativeElement; }
 
-  @ViewChild('element2') _element2: ElementRef;
+  @ViewChild('element2') _element2: ElementRef<HTMLElement>;
   get element2(): Element { return this._element2.nativeElement; }
 
-  @ViewChild('element3') _element3: ElementRef;
+  @ViewChild('element3') _element3: ElementRef<HTMLElement>;
   get element3(): Element { return this._element3.nativeElement; }
 
-  @ViewChild('element4') _element4: ElementRef;
+  @ViewChild('element4') _element4: ElementRef<HTMLElement>;
   get element4(): Element { return this._element4.nativeElement; }
 
 

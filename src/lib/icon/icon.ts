@@ -110,7 +110,7 @@ export class MatIcon extends _MatIconMixinBase implements OnChanges, OnInit, Can
   private _previousFontIconClass: string;
 
   constructor(
-      elementRef: ElementRef,
+      elementRef: ElementRef<HTMLElement>,
       private _iconRegistry: MatIconRegistry,
       @Attribute('aria-hidden') ariaHidden: string) {
     super(elementRef);

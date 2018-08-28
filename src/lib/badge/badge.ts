@@ -101,7 +101,7 @@ export class MatBadge implements OnDestroy {
   constructor(
       @Optional() @Inject(DOCUMENT) private _document: any,
       private _ngZone: NgZone,
-      private _elementRef: ElementRef,
+      private _elementRef: ElementRef<HTMLElement>,
       private _ariaDescriber: AriaDescriber) {}
 
   /** Whether the badge is above the host or not */

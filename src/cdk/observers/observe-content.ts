@@ -164,7 +164,8 @@ export class CdkObserveContent implements AfterContentInit, OnDestroy {
 
   private _currentSubscription: Subscription | null = null;
 
-  constructor(private _contentObserver: ContentObserver, private _elementRef: ElementRef,
+  constructor(private _contentObserver: ContentObserver,
+              private _elementRef: ElementRef<HTMLElement>,
               private _ngZone: NgZone) {}
 
   ngAfterContentInit() {

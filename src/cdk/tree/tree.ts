@@ -323,7 +323,7 @@ export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
    */
   @Input() role: 'treeitem' | 'group' = 'treeitem';
 
-  constructor(protected _elementRef: ElementRef,
+  constructor(protected _elementRef: ElementRef<HTMLElement>,
               protected _tree: CdkTree<T>) {
     CdkTreeNode.mostRecentTreeNode = this as CdkTreeNode<T>;
   }

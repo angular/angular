@@ -474,14 +474,14 @@ class SimpleMatSortApp {
   @ViewChild('overrideStart') overrideStart: MatSortHeader;
   @ViewChild('overrideDisableClear') overrideDisableClear: MatSortHeader;
 
-  constructor (public elementRef: ElementRef) { }
+  constructor (public elementRef: ElementRef<HTMLElement>) { }
 
   sort(id: SimpleMatSortAppColumnIds) {
     this.dispatchMouseEvent(id, 'click');
   }
 
   dispatchMouseEvent(id: SimpleMatSortAppColumnIds, event: string) {
-    const sortElement = this.elementRef.nativeElement.querySelector(`#${id}`);
+    const sortElement = this.elementRef.nativeElement.querySelector(`#${id}`)!;
     dispatchMouseEvent(sortElement, event);
   }
 

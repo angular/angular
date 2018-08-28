@@ -434,6 +434,6 @@ export class MatTabHeader extends _MatTabHeaderMixinBase
         this._labelWrappers.toArray()[this.selectedIndex].elementRef.nativeElement :
         null;
 
-    this._inkBar.alignToElement(selectedLabelWrapper);
+    this._inkBar.alignToElement(selectedLabelWrapper!);
   }
 }

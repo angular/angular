@@ -141,14 +141,14 @@ export class ScrollDispatcher implements OnDestroy {
 
   /** Returns true if the element is contained within the provided Scrollable. */
   private _scrollableContainsElement(scrollable: CdkScrollable, elementRef: ElementRef): boolean {
-    let element = elementRef.nativeElement;
+    let element: HTMLElement | null = elementRef.nativeElement;
     let scrollableElement = scrollable.getElementRef().nativeElement;
 
     // Traverse through the element parents until we reach null, checking if any of the elements
     // are the scrollable's element.
     do {
       if (element == scrollableElement) { return true; }
-    } while (element = element.parentElement);
+    } while (element = element!.parentElement);
 
     return false;
   }

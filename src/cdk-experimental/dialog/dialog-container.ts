@@ -104,7 +104,7 @@ export class CdkDialogContainer extends BasePortalOutlet implements OnDestroy {
   _afterExit: Subject<void> = new Subject();
 
   constructor(
-    private _elementRef: ElementRef,
+    private _elementRef: ElementRef<HTMLElement>,
     private _focusTrapFactory: FocusTrapFactory,
     private _changeDetectorRef: ChangeDetectorRef,
     @Optional() @Inject(DOCUMENT) private _document: any,

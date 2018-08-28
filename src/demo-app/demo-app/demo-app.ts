@@ -96,11 +96,12 @@ export class DemoApp {
   ];
 
   constructor(
-    private _element: ElementRef,
+    private _element: ElementRef<HTMLElement>,
     private _overlayContainer: OverlayContainer) {}
 
   toggleFullscreen() {
-    const elem = this._element.nativeElement.querySelector('.demo-content');
+    // Cast to `any`, because the typings don't include the browser-prefixed methods.
+    const elem = this._element.nativeElement.querySelector('.demo-content') as any;
     if (elem.requestFullscreen) {
       elem.requestFullscreen();
     } else if (elem.webkitRequestFullScreen) {

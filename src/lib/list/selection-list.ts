@@ -137,7 +137,7 @@ export class MatListOption extends _MatListOptionMixinBase
     }
   }
 
-  constructor(private _element: ElementRef,
+  constructor(private _element: ElementRef<HTMLElement>,
               private _changeDetector: ChangeDetectorRef,
               /** @docs-private */
               @Inject(forwardRef(() => MatSelectionList)) public selectionList: MatSelectionList) {
@@ -191,7 +191,7 @@ export class MatListOption extends _MatListOptionMixinBase
    * @docs-private
    */
   getLabel() {
-    return this._text ? this._text.nativeElement.textContent : '';
+    return this._text ? (this._text.nativeElement.textContent || '') : '';
   }
 
   /** Whether this list item should show a ripple effect when clicked. */
@@ -329,7 +329,7 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
   /** View to model callback that should be called if the list or its options lost focus. */
   _onTouched: () => void = () => {};
 
-  constructor(private _element: ElementRef, @Attribute('tabindex') tabIndex: string) {
+  constructor(private _element: ElementRef<HTMLElement>, @Attribute('tabindex') tabIndex: string) {
     super();
     this.tabIndex = parseInt(tabIndex) || 0;
   }

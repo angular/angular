@@ -196,7 +196,7 @@ export class MatTooltip implements OnDestroy {
 
   constructor(
     private _overlay: Overlay,
-    private _elementRef: ElementRef,
+    private _elementRef: ElementRef<HTMLElement>,
     private _scrollDispatcher: ScrollDispatcher,
     private _viewContainerRef: ViewContainerRef,
     private _ngZone: NgZone,

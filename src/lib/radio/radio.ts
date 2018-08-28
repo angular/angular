@@ -461,7 +461,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
   private _removeUniqueSelectionListener: () => void = () => {};
 
   /** The native `<input type=radio>` element */
-  @ViewChild('input') _inputElement: ElementRef;
+  @ViewChild('input') _inputElement: ElementRef<HTMLInputElement>;
 
   constructor(@Optional() radioGroup: MatRadioGroup,
               elementRef: ElementRef,

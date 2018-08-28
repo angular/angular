@@ -115,7 +115,7 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   @ContentChild(MatListAvatarCssMatStyler) _avatar: MatListAvatarCssMatStyler;
   @ContentChild(MatListIconCssMatStyler) _icon: MatListIconCssMatStyler;
 
-  constructor(private _element: ElementRef,
+  constructor(private _element: ElementRef<HTMLElement>,
               @Optional() private _navList: MatNavList) {
     super();
     this._isNavList = !!_navList;

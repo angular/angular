@@ -230,7 +230,7 @@ export class MatFormField extends _MatFormFieldMixinBase
    */
   @ViewChild('underline') underlineRef: ElementRef;
 
-  @ViewChild('connectionContainer') _connectionContainerRef: ElementRef<HTMLElement>;
+  @ViewChild('connectionContainer') _connectionContainerRef: ElementRef;
   @ViewChild('inputContainer') _inputContainerRef: ElementRef;
   @ViewChild('label') private _label: ElementRef;
   @ContentChild(MatFormFieldControl) _control: MatFormFieldControl<any>;
@@ -471,9 +471,9 @@ export class MatFormField extends _MatFormFieldMixinBase
 
     let startWidth = 0;
     let gapWidth = 0;
-    const startEls = this._connectionContainerRef.nativeElement.querySelectorAll<HTMLElement>(
+    const startEls = this._connectionContainerRef.nativeElement.querySelectorAll(
       '.mat-form-field-outline-start');
-    const gapEls = this._connectionContainerRef.nativeElement.querySelectorAll<HTMLElement>(
+    const gapEls = this._connectionContainerRef.nativeElement.querySelectorAll(
         '.mat-form-field-outline-gap');
     if (this._label && this._label.nativeElement.children.length) {
       const containerStart = this._getStartEnd(

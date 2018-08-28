@@ -1716,7 +1716,7 @@ describe('MatMenu default overrides', () => {
 })
 class SimpleMenu {
   @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
-  @ViewChild('triggerEl') triggerEl: ElementRef;
+  @ViewChild('triggerEl') triggerEl: ElementRef<HTMLElement>;
   @ViewChild(MatMenu) menu: MatMenu;
   @ViewChildren(MatMenuItem) items: QueryList<MatMenuItem>;
   extraItems: string[] = [];
@@ -1734,14 +1734,14 @@ class SimpleMenu {
 })
 class PositionedMenu {
   @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
-  @ViewChild('triggerEl') triggerEl: ElementRef;
+  @ViewChild('triggerEl') triggerEl: ElementRef<HTMLElement>;
   xPosition: MenuPositionX = 'before';
   yPosition: MenuPositionY = 'above';
 }
 
 interface TestableMenu {
   trigger: MatMenuTrigger;
-  triggerEl: ElementRef;
+  triggerEl: ElementRef<HTMLElement>;
 }
 @Component({
   template: `
@@ -1754,7 +1754,7 @@ interface TestableMenu {
 class OverlapMenu implements TestableMenu {
   @Input() overlapTrigger: boolean;
   @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
-  @ViewChild('triggerEl') triggerEl: ElementRef;
+  @ViewChild('triggerEl') triggerEl: ElementRef<HTMLElement>;
 }
 
 @Component({
@@ -1843,7 +1843,7 @@ class CustomMenu {
 class NestedMenu {
   @ViewChild('root') rootMenu: MatMenu;
   @ViewChild('rootTrigger') rootTrigger: MatMenuTrigger;
-  @ViewChild('rootTriggerEl') rootTriggerEl: ElementRef;
+  @ViewChild('rootTriggerEl') rootTriggerEl: ElementRef<HTMLElement>;
   @ViewChild('alternateTrigger') alternateTrigger: MatMenuTrigger;
   readonly rootCloseCallback = jasmine.createSpy('root menu closed callback');
 
@@ -1899,7 +1899,9 @@ class NestedMenuCustomElevation {
   `
 })
 class NestedMenuRepeater {
-  @ViewChild('rootTriggerEl') rootTriggerEl: ElementRef;
+  @ViewChild('rootTriggerEl') rootTriggerEl: ElementRef<HTMLElement>;
+  @ViewChild('levelOneTrigger') levelOneTrigger: MatMenuTrigger;
+
   items = ['one', 'two', 'three'];
 }
 
@@ -1943,7 +1945,7 @@ class FakeIcon {}
 })
 class SimpleLazyMenu {
   @ViewChild(MatMenuTrigger) trigger: MatMenuTrigger;
-  @ViewChild('triggerEl') triggerEl: ElementRef;
+  @ViewChild('triggerEl') triggerEl: ElementRef<HTMLElement>;
   @ViewChildren(MatMenuItem) items: QueryList<MatMenuItem>;
 }
 

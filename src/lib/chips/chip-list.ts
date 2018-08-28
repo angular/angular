@@ -326,7 +326,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   /** The chip components contained within this chip list. */
   @ContentChildren(MatChip) chips: QueryList<MatChip>;
 
-  constructor(protected _elementRef: ElementRef,
+  constructor(protected _elementRef: ElementRef<HTMLElement>,
               private _changeDetectorRef: ChangeDetectorRef,
               @Optional() private _dir: Directionality,
               @Optional() _parentForm: NgForm,
@@ -424,7 +424,6 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
   // Implemented as part of ControlValueAccessor.
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
-    this._elementRef.nativeElement.disabled = isDisabled;
     this.stateChanges.next();
   }
 

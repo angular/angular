@@ -95,7 +95,7 @@ export class MatChipInput implements OnChanges {
   protected _inputElement: HTMLInputElement;
 
   constructor(
-    protected _elementRef: ElementRef,
+    protected _elementRef: ElementRef<HTMLInputElement>,
     @Inject(MAT_CHIPS_DEFAULT_OPTIONS) private _defaultOptions: MatChipsDefaultOptions) {
     this._inputElement = this._elementRef.nativeElement as HTMLInputElement;
   }

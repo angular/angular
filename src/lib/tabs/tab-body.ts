@@ -153,7 +153,7 @@ export class MatTabBody implements OnInit, OnDestroy {
     this._computePositionAnimationState();
   }
 
-  constructor(private _elementRef: ElementRef,
+  constructor(private _elementRef: ElementRef<HTMLElement>,
               @Optional() private _dir: Directionality,
               /**
                * @breaking-change 7.0.0 changeDetectorRef to be made required.

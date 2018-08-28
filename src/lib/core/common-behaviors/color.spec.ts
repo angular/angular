@@ -73,5 +73,5 @@ class TestClass {
   testElement: HTMLElement = document.createElement('div');
 
   /** Fake instance of an ElementRef. */
-  _elementRef = new ElementRef(this.testElement);
+  _elementRef = new ElementRef<HTMLElement>(this.testElement);
 }

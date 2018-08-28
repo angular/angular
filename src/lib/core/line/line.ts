@@ -31,7 +31,7 @@ export class MatLine {}
  * @docs-private
  */
 export class MatLineSetter {
-  constructor(private _lines: QueryList<MatLine>, private _element: ElementRef) {
+  constructor(private _lines: QueryList<MatLine>, private _element: ElementRef<HTMLElement>) {
     this._setLineClass(this._lines.length);
 
     this._lines.changes.subscribe(() => {

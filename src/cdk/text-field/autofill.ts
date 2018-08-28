@@ -148,7 +148,8 @@ export class CdkAutofill implements OnDestroy, OnInit {
   /** Emits when the autofill state of the element changes. */
   @Output() cdkAutofill: EventEmitter<AutofillEvent> = new EventEmitter<AutofillEvent>();
 
-  constructor(private _elementRef: ElementRef, private _autofillMonitor: AutofillMonitor) {}
+  constructor(private _elementRef: ElementRef<HTMLElement>,
+              private _autofillMonitor: AutofillMonitor) {}
 
   ngOnInit() {
     this._autofillMonitor

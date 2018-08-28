@@ -216,14 +216,16 @@ describe('cdkAutofill', () => {
   `
 })
 class Inputs {
-  @ViewChild('input1') input1: ElementRef;
-  @ViewChild('input2') input2: ElementRef;
-  @ViewChild('input3') input3: ElementRef;
+  // Cast to `any` so we can stub out some methods in the tests.
+  @ViewChild('input1') input1: ElementRef<any>;
+  @ViewChild('input2') input2: ElementRef<any>;
+  @ViewChild('input3') input3: ElementRef<any>;
 }
 
 @Component({
   template: `<input #input cdkAutofill>`
 })
 class InputWithCdkAutofilled {
-  @ViewChild('input') input: ElementRef;
+  // Cast to `any` so we can stub out some methods in the tests.
+  @ViewChild('input') input: ElementRef<any>;
 }

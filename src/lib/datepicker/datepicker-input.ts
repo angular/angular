@@ -240,7 +240,7 @@ export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, V
   private _lastValueValid = false;
 
   constructor(
-      private _elementRef: ElementRef,
+      private _elementRef: ElementRef<HTMLInputElement>,
       @Optional() public _dateAdapter: DateAdapter<D>,
       @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
       @Optional() private _formField: MatFormField) {

@@ -70,7 +70,7 @@ export class MatMenuItem extends _MatMenuItemMixinBase
   _triggersSubmenu: boolean = false;
 
   constructor(
-    private _elementRef: ElementRef,
+    private _elementRef: ElementRef<HTMLElement>,
     @Inject(DOCUMENT) document?: any,
     private _focusMonitor?: FocusMonitor,
     @Inject(MAT_MENU_PANEL) @Optional() private _parentMenu?: MatMenuPanel<MatMenuItem>) {

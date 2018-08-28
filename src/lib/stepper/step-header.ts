@@ -62,7 +62,7 @@ export class MatStepHeader implements OnDestroy {
   constructor(
     public _intl: MatStepperIntl,
     private _focusMonitor: FocusMonitor,
-    private _element: ElementRef,
+    private _element: ElementRef<HTMLElement>,
     changeDetectorRef: ChangeDetectorRef) {
     _focusMonitor.monitor(_element, true);
     this._intlSubscription = _intl.changes.subscribe(() => changeDetectorRef.markForCheck());

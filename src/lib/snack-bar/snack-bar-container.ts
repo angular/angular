@@ -68,7 +68,7 @@ export class MatSnackBarContainer extends BasePortalOutlet implements OnDestroy 
 
   constructor(
     private _ngZone: NgZone,
-    private _elementRef: ElementRef,
+    private _elementRef: ElementRef<HTMLElement>,
     private _changeDetectorRef: ChangeDetectorRef,
     /** The snack bar configuration. */
     public snackBarConfig: MatSnackBarConfig) {

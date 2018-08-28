@@ -117,7 +117,7 @@ describe('ScrollDispatcher', () => {
   describe('Nested scrollables', () => {
     let scroll: ScrollDispatcher;
     let fixture: ComponentFixture<NestedScrollingComponent>;
-    let element: ElementRef;
+    let element: ElementRef<HTMLElement>;
 
     beforeEach(inject([ScrollDispatcher], (s: ScrollDispatcher) => {
       scroll = s;
@@ -228,7 +228,7 @@ describe('ScrollDispatcher', () => {
 })
 class ScrollingComponent {
   @ViewChild(CdkScrollable) scrollable: CdkScrollable;
-  @ViewChild('scrollingElement') scrollingElement: ElementRef;
+  @ViewChild('scrollingElement') scrollingElement: ElementRef<HTMLElement>;
 }
 
 
@@ -245,7 +245,7 @@ class ScrollingComponent {
   `
 })
 class NestedScrollingComponent {
-  @ViewChild('interestingElement') interestingElement: ElementRef;
+  @ViewChild('interestingElement') interestingElement: ElementRef<HTMLElement>;
 }
 
 const TEST_COMPONENTS = [ScrollingComponent, NestedScrollingComponent];

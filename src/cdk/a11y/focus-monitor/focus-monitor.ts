@@ -417,7 +417,7 @@ export class CdkMonitorFocus implements OnDestroy {
   private _monitorSubscription: Subscription;
   @Output() cdkFocusChange = new EventEmitter<FocusOrigin>();
 
-  constructor(private _elementRef: ElementRef, private _focusMonitor: FocusMonitor) {
+  constructor(private _elementRef: ElementRef<HTMLElement>, private _focusMonitor: FocusMonitor) {
     this._monitorSubscription = this._focusMonitor.monitor(
         this._elementRef,
         this._elementRef.nativeElement.hasAttribute('cdkMonitorSubtreeFocus'))
