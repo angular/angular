@@ -39,7 +39,7 @@ export class SelectionModel<T> {
   /**
    * Event emitted when the value has changed.
    * @deprecated Use `changed` instead.
-   * @deletion-target 8.0.0 To be changed to `changed`
+   * @breaking-change 8.0.0 To be changed to `changed`
    */
   onChange: Subject<SelectionChange<T>> | null = this.changed;
 
