@@ -9,6 +9,7 @@
 import {Injector} from '../../di/injector';
 import {QueryList} from '../../linker';
 import {Sanitizer} from '../../sanitization/security';
+import {PlayerHandler} from '../animations/interfaces';
 
 import {LContainer} from './container';
 import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDefInternal, PipeDefList} from './definition';
@@ -499,6 +500,9 @@ export interface TView {
   contentQueries: number[]|null;
 }
 
+export const enum RootContextFlags {Empty = 0b00, DetectChanges = 0b01, FlushPlayers = 0b10}
+
+
 /**
  * RootContext contains information which is shared for all components which
  * were bootstrapped with {@link renderComponent}.
@@ -522,6 +526,16 @@ export interface RootContext {
    * {@link renderComponent}.
    */
   components: {}[];
+
+  /**
+   * The player flushing handler to kick off all animations
+   */
+  playerHandler: PlayerHandler|null;
+
+  /**
+   * What render-related operations to run once a scheduler has been set
+   */
+  flags: RootContextFlags;
 }
 
 /**

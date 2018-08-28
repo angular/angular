@@ -3,6 +3,12 @@
     "name": "ACTIVE_INDEX"
   },
   {
+    "name": "AnimationWorldComponent"
+  },
+  {
+    "name": "AnimationWorldComponent_div_Template_4"
+  },
+  {
     "name": "BINDING_INDEX"
   },
   {
@@ -30,6 +36,9 @@
     "name": "ChangeDetectorRef"
   },
   {
+    "name": "CorePlayerHandler"
+  },
+  {
     "name": "DECLARATION_VIEW"
   },
   {
@@ -45,7 +54,13 @@
     "name": "EMPTY$1"
   },
   {
+    "name": "EMPTY_ARR"
+  },
+  {
     "name": "EMPTY_ARRAY$1"
+  },
+  {
+    "name": "EMPTY_OBJ"
   },
   {
     "name": "ElementRef"
@@ -108,12 +123,6 @@
     "name": "NgForOfContext"
   },
   {
-    "name": "NgIf"
-  },
-  {
-    "name": "NgIfContext"
-  },
-  {
     "name": "NgModuleRef"
   },
   {
@@ -156,6 +165,9 @@
     "name": "SANITIZER"
   },
   {
+    "name": "SimpleKeyframePlayer"
+  },
+  {
     "name": "SkipSelf"
   },
   {
@@ -169,30 +181,6 @@
   },
   {
     "name": "TemplateRef$1"
-  },
-  {
-    "name": "ToDoAppComponent_footer_Template_6"
-  },
-  {
-    "name": "ToDoAppComponent_footer_button_Template_5"
-  },
-  {
-    "name": "ToDoAppComponent_section_Template_5"
-  },
-  {
-    "name": "ToDoAppComponent_section_input_Template_1"
-  },
-  {
-    "name": "ToDoAppComponent_section_li_Template_3"
-  },
-  {
-    "name": "ToDoAppComponent_section_li_input_Template_6"
-  },
-  {
-    "name": "Todo"
-  },
-  {
-    "name": "TodoStore"
   },
   {
     "name": "VIEWS"
@@ -243,67 +231,10 @@
     "name": "_c1"
   },
   {
-    "name": "_c10"
-  },
-  {
-    "name": "_c11"
-  },
-  {
-    "name": "_c12"
-  },
-  {
-    "name": "_c13"
-  },
-  {
-    "name": "_c14"
-  },
-  {
-    "name": "_c15"
-  },
-  {
-    "name": "_c16"
-  },
-  {
-    "name": "_c17"
-  },
-  {
-    "name": "_c18"
-  },
-  {
-    "name": "_c19"
-  },
-  {
     "name": "_c2"
   },
   {
-    "name": "_c20"
-  },
-  {
-    "name": "_c21"
-  },
-  {
-    "name": "_c22"
-  },
-  {
     "name": "_c3"
-  },
-  {
-    "name": "_c4"
-  },
-  {
-    "name": "_c5"
-  },
-  {
-    "name": "_c6"
-  },
-  {
-    "name": "_c7"
-  },
-  {
-    "name": "_c8"
-  },
-  {
-    "name": "_c9"
   },
   {
     "name": "_currentInjector"
@@ -330,19 +261,22 @@
     "name": "addComponentLogic"
   },
   {
+    "name": "addPlayer"
+  },
+  {
     "name": "addRemoveViewFromContainer"
   },
   {
     "name": "addToViewTree"
   },
   {
+    "name": "allocAnimationContext"
+  },
+  {
     "name": "allocStylingContext"
   },
   {
     "name": "appendChild"
-  },
-  {
-    "name": "assertTemplate"
   },
   {
     "name": "attachPatchData"
@@ -367,6 +301,9 @@
   },
   {
     "name": "bloomHashBit"
+  },
+  {
+    "name": "buildAnimationPlayer"
   },
   {
     "name": "cacheMatchingDirectivesForNode"
@@ -504,10 +441,13 @@
     "name": "directiveInject"
   },
   {
-    "name": "domRendererFactory3"
+    "name": "discoverDirectiveIndices"
   },
   {
-    "name": "elementClassProp"
+    "name": "discoverDirectives"
+  },
+  {
+    "name": "domRendererFactory3"
   },
   {
     "name": "elementCreate"
@@ -526,6 +466,9 @@
   },
   {
     "name": "elementStylingApply"
+  },
+  {
+    "name": "elementStylingMap"
   },
   {
     "name": "enterView"
@@ -567,7 +510,16 @@
     "name": "findDirectiveMatches"
   },
   {
+    "name": "findEntryPositionByProp"
+  },
+  {
     "name": "findViaComponent"
+  },
+  {
+    "name": "findViaDirective"
+  },
+  {
+    "name": "findViaNativeElement"
   },
   {
     "name": "firstTemplatePass"
@@ -597,13 +549,19 @@
     "name": "getContainerRenderParent"
   },
   {
+    "name": "getContext"
+  },
+  {
     "name": "getCurrentSanitizer"
   },
   {
-    "name": "getCurrentView"
+    "name": "getDirectiveDef"
   },
   {
-    "name": "getDirectiveDef"
+    "name": "getDirectiveEndIndex"
+  },
+  {
+    "name": "getDirectiveStartIndex"
   },
   {
     "name": "getHighestElementContainer"
@@ -627,6 +585,9 @@
     "name": "getLNode"
   },
   {
+    "name": "getLNodeFromViewData"
+  },
+  {
     "name": "getLViewChild"
   },
   {
@@ -634,6 +595,9 @@
   },
   {
     "name": "getMultiStartIndex"
+  },
+  {
+    "name": "getOrCreateAnimationContext"
   },
   {
     "name": "getOrCreateInjectable"
@@ -690,6 +654,12 @@
     "name": "getRendererFactory"
   },
   {
+    "name": "getRootContext"
+  },
+  {
+    "name": "getRootView"
+  },
+  {
     "name": "getStyleSanitizer"
   },
   {
@@ -723,10 +693,16 @@
     "name": "inject"
   },
   {
+    "name": "injectElementRef"
+  },
+  {
     "name": "injectTemplateRef"
   },
   {
     "name": "injectViewContainerRef"
+  },
+  {
+    "name": "insertNewMultiProperty"
   },
   {
     "name": "insertView"
@@ -741,7 +717,13 @@
     "name": "invertObject"
   },
   {
+    "name": "isClassBased"
+  },
+  {
     "name": "isComponent"
+  },
+  {
+    "name": "isComponentInstance"
   },
   {
     "name": "isContentQueryHost"
@@ -757,6 +739,9 @@
   },
   {
     "name": "isDifferent"
+  },
+  {
+    "name": "isDirectiveInstance"
   },
   {
     "name": "isDirty"
@@ -778,6 +763,9 @@
   },
   {
     "name": "isProceduralRenderer"
+  },
+  {
+    "name": "isSanitizable"
   },
   {
     "name": "iterateListLike"
@@ -811,9 +799,6 @@
   },
   {
     "name": "makeParamDecorator"
-  },
-  {
-    "name": "markDirty"
   },
   {
     "name": "markDirtyIfOnPush"
@@ -876,9 +861,6 @@
     "name": "readPatchedLViewData"
   },
   {
-    "name": "reference"
-  },
-  {
     "name": "refreshChildComponents"
   },
   {
@@ -915,9 +897,6 @@
     "name": "resolveDirective"
   },
   {
-    "name": "restoreView"
-  },
-  {
     "name": "sameHostView"
   },
   {
@@ -931,6 +910,9 @@
   },
   {
     "name": "searchMatchesQueuedForCreation"
+  },
+  {
+    "name": "setAnimationPlayState"
   },
   {
     "name": "setClass"
@@ -981,6 +963,9 @@
     "name": "stringify$2"
   },
   {
+    "name": "swapMultiContextEntries"
+  },
+  {
     "name": "template"
   },
   {
@@ -1005,10 +990,13 @@
     "name": "trackByIdentity"
   },
   {
-    "name": "updateClassProp"
+    "name": "traverseNextElement"
   },
   {
-    "name": "updateStyleProp"
+    "name": "updateSinglePointerValues"
+  },
+  {
+    "name": "updateStylingMap"
   },
   {
     "name": "updateViewQuery"
