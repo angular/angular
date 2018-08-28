@@ -19,14 +19,19 @@ export class GeneratedFactoryHostWrapper implements ts.CompilerHost {
       private delegate: ts.CompilerHost, private generator: FactoryGenerator,
       private factoryToSourceMap: Map<string, string>) {
     if (delegate.resolveTypeReferenceDirectives) {
+      // Backward compatibility with TypeScript 2.9 and older since return
+      // type has changed from (ts.ResolvedTypeReferenceDirective | undefined)[]
+      // to ts.ResolvedTypeReferenceDirective[] in Typescript 3.0
+      type ts3ResolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
+          ts.ResolvedTypeReferenceDirective[];
       this.resolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
-          delegate.resolveTypeReferenceDirectives !(names, containingFile);
+          (delegate.resolveTypeReferenceDirectives as ts3ResolveTypeReferenceDirectives) !(
+              names, containingFile);
     }
   }
 
   resolveTypeReferenceDirectives?:
-      (names: string[],
-       containingFile: string) => (ts.ResolvedTypeReferenceDirective | undefined)[];
+      (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];
 
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
