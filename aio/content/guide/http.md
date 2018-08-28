@@ -846,6 +846,49 @@ the cached response first (and immediately), followed later
 by the response from the server.
 Subscribers see a sequence of _two_ responses.
 
+#### StateTransfer
+
+You can also use interceptors to implement State Transfer API. For example:
+```javascript
+@Injectable()
+export class StateTransferInterceptor implements HttpInterceptor {
+  constructor(
+    private state: TransferState,
+    @Inject(PLATFORM_ID) private platform: any
+  ) {}
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    const stateKey = makeStateKey(JSON.stringify(req));
+    const stateFound = this.state.get(stateKey, null as any);
+    
+    // Still skip non-GET requests.
+    if (req.method !== 'GET') {
+      return next.handle(req);
+    }
+
+    if (stateFound) {
+      // We should use new HttpResponse in order to handle it as Http request later
+      const res = Observable.of(new HttpResponse(stateFound));
+      // We should clear cache so we can receive actual data from backend
+      this.state.remove(stateKey);
+
+      return res;
+    }
+
+    return next.handle(req).pipe(
+      tap((event) => {
+        // Just like before, check for the HttpResponse event and isPlatformServer and cache it.
+        // We should check isPlatformServer if we do not want to cache requests on the browser.
+        if (event instanceof HttpResponse && isPlatformServer(this.platform)) {
+          // Update the cache
+          this.state.set(stateKey, event as any);
+        }
+      }));
+
+  }
+}
+```
+
 ### Listening to progress events
 
 Sometimes applications transfer large amounts of data and those transfers can take a long time.
