@@ -244,14 +244,14 @@ filegroup(
 
     yarn_install(
         name = "ts-api-guardian_runtime_deps",
-        package_json = "//tools/ts-api-guardian:package.json",
-        yarn_lock = "//tools/ts-api-guardian:yarn.lock",
+        package_json = "@angular//tools/ts-api-guardian:package.json",
+        yarn_lock = "@angular//tools/ts-api-guardian:yarn.lock",
     )
 
     yarn_install(
         name = "http-server_runtime_deps",
-        package_json = "//tools/http-server:package.json",
-        yarn_lock = "//tools/http-server:yarn.lock",
+        package_json = "@angular//tools/http-server:package.json",
+        yarn_lock = "@angular//tools/http-server:yarn.lock",
     )
 
     _ng_setup_workspace()
