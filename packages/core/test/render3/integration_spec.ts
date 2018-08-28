@@ -21,6 +21,8 @@ import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
 
 import {NgIf} from './common_with_def';
 import {ComponentFixture, TemplateFixture, containerEl, createComponent, renderToHtml} from './render_util';
+import {MONKEY_PATCH_KEY_NAME, getElementContext} from '../../src/render3/element_discovery';
+import {StylingIndex} from '../../src/render3/styling';
 
 describe('render3 integration test', () => {
 
@@ -1404,12 +1406,424 @@ describe('render3 integration test', () => {
           }
         });
       }
-
       const rendererFactory = new MockRendererFactory();
       new ComponentFixture(StyledComp, {rendererFactory});
       expect(rendererFactory.lastCapturedType !.styles).toEqual(['div { color: red; }']);
       expect(rendererFactory.lastCapturedType !.encapsulation).toEqual(100);
     });
+  });
+
+  describe('element discovery', () => {
+    it('should only monkey-patch immediate child nodes in a component', () => {
+      class StructuredComp {
+        static ngComponentDef = defineComponent({
+          type: StructuredComp,
+          selectors: [['structured-comp']],
+          factory: () => new StructuredComp(),
+          consts: 2,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: StructuredComp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'div');
+              elementStart(1, 'p');
+              elementEnd();
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(StructuredComp);
+      fixture.update();
+
+      const host = fixture.hostElement;
+      const parent = host.querySelector('div') as any;
+      const child = host.querySelector('p') as any;
+
+      expect(parent[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+      expect(child[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+    });
+
+    it('should only monkey-patch immediate child nodes in a sub component', () => {
+      class ChildComp {
+        static ngComponentDef = defineComponent({
+          type: ChildComp,
+          selectors: [['child-comp']],
+          factory: () => new ChildComp(),
+          consts: 3,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: ChildComp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div');
+              element(1, 'div');
+              element(2, 'div');
+            }
+          }
+        });
+      }
+
+      class ParentComp {
+        static ngComponentDef = defineComponent({
+          type: ParentComp,
+          selectors: [['parent-comp']],
+          directives: [ChildComp],
+          factory: () => new ParentComp(),
+          consts: 2,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: ParentComp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'section');
+              elementStart(1, 'child-comp');
+              elementEnd();
+              elementEnd();
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(ParentComp);
+      fixture.update();
+
+      const host = fixture.hostElement;
+      const child = host.querySelector('child-comp') as any;
+      expect(child[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+
+      const [kid1, kid2, kid3] = Array.from(host.querySelectorAll('child-comp > *'));
+      expect(kid1[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+      expect(kid2[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+      expect(kid3[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    });
+
+    it('should only monkey-patch immediate child nodes in an embedded template container', () => {
+      class StructuredComp {
+        static ngComponentDef = defineComponent({
+          type: StructuredComp,
+          selectors: [['structured-comp']],
+          directives: [NgIf],
+          factory: () => new StructuredComp(),
+          consts: 2,
+          vars: 1,
+          template: (rf: RenderFlags, ctx: StructuredComp) => {
+            if (rf & RenderFlags.Create) {
+              elementStart(0, 'section');
+              template(1, (rf, ctx) => {
+                if (rf & RenderFlags.Create) {
+                  elementStart(0, 'div');
+                  element(1, 'p');
+                  elementEnd();
+                  element(2, 'div');
+                }
+              }, 3, 0, null, ['ngIf', '']);
+              elementEnd();
+            }
+            if (rf & RenderFlags.Update) {
+              elementProperty(1, 'ngIf', true);
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(StructuredComp);
+      fixture.update();
+
+      const host = fixture.hostElement;
+      const [section, div1, p, div2] = Array.from(host.querySelectorAll('section, div, p'));
+
+      expect(section.nodeName.toLowerCase()).toBe('section');
+      expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+
+      expect(div1.nodeName.toLowerCase()).toBe('div');
+      expect(div1[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+
+      expect(p.nodeName.toLowerCase()).toBe('p');
+      expect(p[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+
+      expect(div2.nodeName.toLowerCase()).toBe('div');
+      expect(div2[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+    });
+
+    it('should return a context object from a given dom node', () => {
+      class StructuredComp {
+        static ngComponentDef = defineComponent({
+          type: StructuredComp,
+          selectors: [['structured-comp']],
+          directives: [NgIf],
+          factory: () => new StructuredComp(),
+          consts: 2,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: StructuredComp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'section');
+              element(1, 'div');
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(StructuredComp);
+      fixture.update();
+
+      const section = fixture.hostElement.querySelector('section') !;
+      const sectionContext = getElementContext(section) !;
+      const sectionLView = sectionContext.lViewData;
+      expect(sectionContext.index).toEqual(HEADER_OFFSET);
+      expect(sectionLView.length).toBeGreaterThan(HEADER_OFFSET);
+      expect(sectionContext.native).toBe(section);
+
+      const div = fixture.hostElement.querySelector('div') !;
+      const divContext = getElementContext(div) !;
+      const divLView = divContext.lViewData;
+      expect(divContext.index).toEqual(HEADER_OFFSET + 1);
+      expect(divLView.length).toBeGreaterThan(HEADER_OFFSET);
+      expect(divContext.native).toBe(div);
+
+      expect(divLView).toBe(sectionLView);
+    });
+
+    it('should cache the element context on a element was pre-emptively monkey-patched', () => {
+      class StructuredComp {
+        static ngComponentDef = defineComponent({
+          type: StructuredComp,
+          selectors: [['structured-comp']],
+          factory: () => new StructuredComp(),
+          consts: 1,
+          vars: 0,
+          template: (rf: RenderFlags, ctx: StructuredComp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'section');
+            }
+          }
+        });
+      }
+
+      const fixture = new ComponentFixture(StructuredComp);
+      fixture.update();
+
+      const section = fixture.hostElement.querySelector('section') !as any;
+      const result1 = section[MONKEY_PATCH_KEY_NAME];
+      expect(Array.isArray(result1)).toBeTruthy();
+
+      const context = getElementContext(section) !;
+      const result2 = section[MONKEY_PATCH_KEY_NAME];
+      expect(Array.isArray(result2)).toBeFalsy();
+
+      expect(result2).toBe(context);
+      expect(result2.lViewData).toBe(result1);
+    });
+
+    it('should cache the element context on an intermediate element that isn\'t pre-emptively monkey-patched',
+       () => {
+         class StructuredComp {
+           static ngComponentDef = defineComponent({
+             type: StructuredComp,
+             selectors: [['structured-comp']],
+             factory: () => new StructuredComp(),
+             consts: 2,
+             vars: 0,
+             template: (rf: RenderFlags, ctx: StructuredComp) => {
+               if (rf & RenderFlags.Create) {
+                 elementStart(0, 'section');
+                 element(1, 'p');
+                 elementEnd();
+               }
+             }
+           });
+         }
+
+         const fixture = new ComponentFixture(StructuredComp);
+         fixture.update();
+
+         const section = fixture.hostElement.querySelector('section') !as any;
+         expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+
+         const p = fixture.hostElement.querySelector('p') !as any;
+         expect(p[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+
+         const pContext = getElementContext(p) !;
+         expect(pContext.native).toBe(p);
+         expect(p[MONKEY_PATCH_KEY_NAME]).toBe(pContext);
+       });
+
+    it('should be able to pull in element context data even if the element is decorated using styling',
+       () => {
+         class StructuredComp {
+           static ngComponentDef = defineComponent({
+             type: StructuredComp,
+             selectors: [['structured-comp']],
+             factory: () => new StructuredComp(),
+             consts: 1,
+             vars: 0,
+             template: (rf: RenderFlags, ctx: StructuredComp) => {
+               if (rf & RenderFlags.Create) {
+                 elementStart(0, 'section');
+                 elementStyling(['class-foo']);
+                 elementEnd();
+               }
+               if (rf & RenderFlags.Update) {
+                 elementStylingApply(0);
+               }
+             }
+           });
+         }
+
+         const fixture = new ComponentFixture(StructuredComp);
+         fixture.update();
+
+         const section = fixture.hostElement.querySelector('section') !as any;
+         const result1 = section[MONKEY_PATCH_KEY_NAME];
+         expect(Array.isArray(result1)).toBeTruthy();
+
+         const elementResult = result1[HEADER_OFFSET];  // first element
+         expect(Array.isArray(elementResult)).toBeTruthy();
+         expect(elementResult[StylingIndex.ElementPosition].native).toBe(section);
+
+         const context = getElementContext(section) !;
+         const result2 = section[MONKEY_PATCH_KEY_NAME];
+         expect(Array.isArray(result2)).toBeFalsy();
+
+         expect(context.native).toBe(section);
+       });
+
+    it('should monkey-patch immediate child nodes in a content-projected region with a reference to the parent component',
+       () => {
+         /*
+           <!-- DOM view -->
+           <section>
+             <projection-comp>
+               welcome
+               <header>
+                 <h1>
+                   <p>this content is projected</p>
+                   this content is projected also
+                 </h1>
+               </header>
+             </projection-comp>
+           </section>
+         */
+         class ProjectorComp {
+           static ngComponentDef = defineComponent({
+             type: ProjectorComp,
+             selectors: [['projector-comp']],
+             factory: () => new ProjectorComp(),
+             consts: 4,
+             vars: 0,
+             template: (rf: RenderFlags, ctx: ProjectorComp) => {
+               if (rf & RenderFlags.Create) {
+                 projectionDef();
+                 text(0, 'welcome');
+                 elementStart(1, 'header');
+                 elementStart(2, 'h1');
+                 projection(3);
+                 elementEnd();
+                 elementEnd();
+               }
+               if (rf & RenderFlags.Update) {
+               }
+             }
+           });
+         }
+
+         class ParentComp {
+           static ngComponentDef = defineComponent({
+             type: ParentComp,
+             selectors: [['parent-comp']],
+             directives: [ProjectorComp],
+             factory: () => new ParentComp(),
+             consts: 5,
+             vars: 0,
+             template: (rf: RenderFlags, ctx: ParentComp) => {
+               if (rf & RenderFlags.Create) {
+                 elementStart(0, 'section');
+                 elementStart(1, 'projector-comp');
+                 elementStart(2, 'p');
+                 text(3, 'this content is projected');
+                 elementEnd();
+                 text(4, 'this content is projected also');
+                 elementEnd();
+                 elementEnd();
+               }
+             }
+           });
+         }
+
+         const fixture = new ComponentFixture(ParentComp);
+         fixture.update();
+
+         const host = fixture.hostElement;
+         const textNode = host.firstChild as any;
+         const section = host.querySelector('section') !as any;
+         const projectorComp = host.querySelector('projector-comp') !as any;
+         const header = host.querySelector('header') !as any;
+         const h1 = host.querySelector('h1') !as any;
+         const p = host.querySelector('p') !as any;
+         const pText = p.firstChild as any;
+         const projectedTextNode = p.nextSibling;
+
+         expect(projectorComp.children).toContain(header);
+         expect(h1.children).toContain(p);
+
+         expect(textNode[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+         expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+         expect(projectorComp[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+         expect(header[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+         expect(h1[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+         expect(p[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+         expect(pText[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+         expect(projectedTextNode[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
+
+         const parentContext = getElementContext(section) !;
+         const shadowContext = getElementContext(header) !;
+         const projectedContext = getElementContext(p) !;
+
+         const parentComponentData = parentContext.lViewData;
+         const shadowComponentData = shadowContext.lViewData;
+         const projectedComponentData = projectedContext.lViewData;
+
+         expect(projectedComponentData).toBe(parentComponentData);
+         expect(shadowComponentData).not.toBe(parentComponentData);
+       });
+
+    it('should return `null` when an element context is retrieved that isn\'t situated in Angular',
+       () => {
+         const elm1 = document.createElement('div');
+         const context1 = getElementContext(elm1);
+         expect(context1).toBeFalsy();
+
+         const elm2 = document.createElement('div');
+         document.body.appendChild(elm2);
+         const context2 = getElementContext(elm2);
+         expect(context2).toBeFalsy();
+       });
+
+    it('should return `null` when an element context is retrieved that is a DOM node that was not created by Angular',
+       () => {
+         class StructuredComp {
+           static ngComponentDef = defineComponent({
+             type: StructuredComp,
+             selectors: [['structured-comp']],
+             factory: () => new StructuredComp(),
+             consts: 1,
+             vars: 0,
+             template: (rf: RenderFlags, ctx: StructuredComp) => {
+               if (rf & RenderFlags.Create) {
+                 element(0, 'section');
+               }
+             }
+           });
+         }
+
+         const fixture = new ComponentFixture(StructuredComp);
+         fixture.update();
+
+         const section = fixture.hostElement.querySelector('section') !as any;
+         const manuallyCreatedElement = document.createElement('div');
+         section.appendChild(manuallyCreatedElement);
+
+         const context = getElementContext(manuallyCreatedElement);
+         expect(context).toBeFalsy();
+       });
   });
 
   describe('sanitization', () => {

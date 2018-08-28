@@ -273,7 +273,7 @@
     "name": "renderEmbeddedTemplate"
   },
   {
-    "name": "resetApplicationState"
+    "name": "resetComponentState"
   },
   {
     "name": "setHostBindings"

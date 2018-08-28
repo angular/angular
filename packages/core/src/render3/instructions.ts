@@ -13,6 +13,7 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
+import {attachLViewDataToNode} from './element_discovery';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
@@ -101,6 +102,12 @@ let currentElementNode: LElementNode|null = null;
 export function getCurrentSanitizer(): Sanitizer|null {
   return viewData && viewData[SANITIZER];
 }
+
+/**
+ * Store the element depth count. This is used to identify the root elements of the template
+ * so that we can than attach `LViewData` to only those elements.
+ */
+let elementDepthCount !: number;
 
 /**
  * Returns the current OpaqueViewState instance.
@@ -515,9 +522,10 @@ export function adjustBlueprintForNewNode(view: LViewData) {
 /**
  * Resets the application state.
  */
-export function resetApplicationState() {
+export function resetComponentState() {
   isParent = false;
   previousOrParentNode = null !;
+  elementDepthCount = 0;
 }
 
 /**
@@ -537,7 +545,7 @@ export function renderTemplate<T>(
     directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
     sanitizer?: Sanitizer | null): LElementNode {
   if (host == null) {
-    resetApplicationState();
+    resetComponentState();
     rendererFactory = providedRendererFactory;
     const tView =
         getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null);
@@ -796,6 +804,14 @@ export function elementStart(
   }
   appendChild(getParentLNode(node), native, viewData);
   createDirectivesAndLocals(node, localRefs);
+
+  // any immediate children of a component or template container must be pre-emptively
+  // monkey-patched with the component view data so that the element can be inspected
+  // later on using any element discovery utility methods (see `element_discovery.ts`)
+  if (elementDepthCount === 0) {
+    attachLViewDataToNode(native, viewData);
+  }
+  elementDepthCount++;
 }
 
 /**
@@ -1171,7 +1187,7 @@ export function locateHostElement(
 export function hostElement(
     tag: string, rNode: RElement | null, def: ComponentDefInternal<any>,
     sanitizer?: Sanitizer | null): LElementNode {
-  resetApplicationState();
+  resetComponentState();
   const node = createLNode(
       0, TNodeType.Element, rNode, null, null,
       createLViewData(
@@ -1296,6 +1312,7 @@ export function elementEnd(): void {
   currentQueries && (currentQueries = currentQueries.addNode(previousOrParentNode));
   queueLifecycleHooks(previousOrParentNode.tNode.flags, tView);
   currentElementNode = null;
+  elementDepthCount--;
 }
 
 /**
@@ -2244,6 +2261,7 @@ export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?:
             grandparent.data[RENDER_PARENT] ! :
         parent as LElementNode;
 
+    const parentView = viewData[HOST_NODE].view;
     while (nodeToProject) {
       if (nodeToProject.type === TNodeType.Projection) {
         // This node is re-projected, so we must go up the tree to get its projected nodes.
@@ -2261,7 +2279,8 @@ export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?:
         const lNode = projectedView[nodeToProject.index];
         lNode.tNode.flags |= TNodeFlags.isProjected;
         appendProjectedNode(
-            lNode as LTextNode | LElementNode | LContainerNode, parent, viewData, renderParent);
+            lNode as LTextNode | LElementNode | LContainerNode, parent, viewData, renderParent,
+            parentView);
       }
 
       // If we are finished with a list of re-projected nodes, we need to get

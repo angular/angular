@@ -7,7 +7,7 @@
  */
 
 import {assertEqual, assertLessThan} from './assert';
-import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createLNode, getPreviousOrParentNode, getRenderer, load, resetApplicationState} from './instructions';
+import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createLNode, getPreviousOrParentNode, getRenderer, load, resetComponentState} from './instructions';
 import {RENDER_PARENT} from './interfaces/container';
 import {LContainerNode, LNode, TContainerNode, TElementNode, TNodeType} from './interfaces/node';
 import {BINDING_INDEX, HEADER_OFFSET, TVIEW} from './interfaces/view';
@@ -305,7 +305,7 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
   const renderer = getRenderer();
   let localParentNode: LNode = getParentLNode(load(startIndex)) || getPreviousOrParentNode();
   let localPreviousNode: LNode = localParentNode;
-  resetApplicationState();  // We don't want to add to the tree with the wrong previous node
+  resetComponentState();  // We don't want to add to the tree with the wrong previous node
 
   for (let i = 0; i < instructions.length; i++) {
     const instruction = instructions[i] as number;
@@ -335,7 +335,7 @@ export function i18nApply(startIndex: number, instructions: I18nInstruction[]): 
         const textLNode =
             createLNode(lastNodeIndex - HEADER_OFFSET, TNodeType.Element, textRNode, null, null);
         localPreviousNode = appendI18nNode(textLNode, localParentNode, localPreviousNode);
-        resetApplicationState();
+        resetComponentState();
         break;
       case I18nInstructions.CloseNode:
         localPreviousNode = localParentNode;
