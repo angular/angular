@@ -40,7 +40,7 @@ export function compileNgModuleDefs(moduleType: Type<any>, ngModule: NgModule): 
       if (ngModuleDef === null) {
         const meta: R3NgModuleMetadata = {
           type: wrap(moduleType),
-          bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY).map(wrap),
+          bootstrap: flatten(ngModule.bootstrap || EMPTY_ARRAY).map(wrapReference),
           declarations: declarations.map(wrapReference),
           imports: flatten(ngModule.imports || EMPTY_ARRAY)
                        .map(expandModuleWithProviders)

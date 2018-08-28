@@ -87,6 +87,12 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
           ref => this._extractModuleFromModuleWithProvidersFn(ref.node));
       exports = this.resolveTypeList(expr, exportsMeta, 'exports');
     }
+    let bootstrap: Reference[] = [];
+    if (ngModule.has('bootstrap')) {
+      const expr = ngModule.get('bootstrap') !;
+      const bootstrapMeta = staticallyResolve(expr, this.reflector, this.checker);
+      bootstrap = this.resolveTypeList(expr, bootstrapMeta, 'bootstrap');
+    }
 
     // Register this module's information with the SelectorScopeRegistry. This ensures that during
     // the compile() phase, the module's metadata is available for selector scope computation.
@@ -96,7 +102,7 @@ export class NgModuleDecoratorHandler implements DecoratorHandler<NgModuleAnalys
 
     const ngModuleDef: R3NgModuleMetadata = {
       type: new WrappedNodeExpr(node.name !),
-      bootstrap: [],
+      bootstrap: bootstrap.map(bootstrap => toR3Reference(bootstrap, context)),
       declarations: declarations.map(decl => toR3Reference(decl, context)),
       exports: exports.map(exp => toR3Reference(exp, context)),
       imports: imports.map(imp => toR3Reference(imp, context)),
