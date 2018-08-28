@@ -12,7 +12,7 @@ import {ClassMember, ClassMemberKind, CtorParameter, Decorator} from '../../../n
 import {TypeScriptReflectionHost, reflectObjectLiteral} from '../../../ngtsc/metadata';
 import {findAll, getNameText} from '../utils';
 
-import {NgccReflectionHost, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
+import {NgccReflectionHost, PRE_NGCC_MARKER, SwitchableVariableDeclaration, isSwitchableVariableDeclaration} from './ngcc_host';
 
 export const DECORATORS = 'decorators' as ts.__String;
 export const PROP_DECORATORS = 'propDecorators' as ts.__String;
@@ -205,7 +205,10 @@ export class Fesm2015ReflectionHost extends TypeScriptReflectionHost implements 
    * @returns An array of variable declarations that match.
    */
   getSwitchableDeclarations(module: ts.Node): SwitchableVariableDeclaration[] {
-    return findAll(module, isSwitchableVariableDeclaration);
+    // Don't bother to walk the AST if the marker is not found in the text
+    return module.getText().indexOf(PRE_NGCC_MARKER) >= 0 ?
+        findAll(module, isSwitchableVariableDeclaration) :
+        [];
   }
 
   /**
