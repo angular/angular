@@ -6,6 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Directionality} from '@angular/cdk/bidi';
+import {ViewportRuler} from '@angular/cdk/scrolling';
+import {DOCUMENT} from '@angular/common';
 import {
   ContentChild,
   ContentChildren,
@@ -23,24 +26,22 @@ import {
   SkipSelf,
   ViewContainerRef,
 } from '@angular/core';
-import {DOCUMENT} from '@angular/common';
-import {Directionality} from '@angular/cdk/bidi';
-import {CdkDragHandle} from './drag-handle';
-import {CdkDropContainer, CDK_DROP_CONTAINER} from './drop-container';
-import {
-  CdkDragStart,
-  CdkDragEnd,
-  CdkDragExit,
-  CdkDragEnter,
-  CdkDragDrop,
-  CdkDragMove,
-} from './drag-events';
-import {CdkDragPreview} from './drag-preview';
-import {CdkDragPlaceholder} from './drag-placeholder';
-import {ViewportRuler} from '@angular/cdk/overlay';
-import {DragDropRegistry} from './drag-drop-registry';
-import {Subject, merge, Observable} from 'rxjs';
+import {merge, Observable, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
+import {DragDropRegistry} from './drag-drop-registry';
+import {
+  CdkDragDrop,
+  CdkDragEnd,
+  CdkDragEnter,
+  CdkDragExit,
+  CdkDragMove,
+  CdkDragStart,
+} from './drag-events';
+import {CdkDragHandle} from './drag-handle';
+import {CdkDragPlaceholder} from './drag-placeholder';
+import {CdkDragPreview} from './drag-preview';
+import {CDK_DROP_CONTAINER, CdkDropContainer} from './drop-container';
+
 
 // TODO(crisbeto): add auto-scrolling functionality.
 // TODO(crisbeto): add an API for moving a draggable up/down the

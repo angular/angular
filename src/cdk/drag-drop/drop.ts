@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {coerceArray} from '@angular/cdk/coercion';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -20,12 +21,12 @@ import {
   QueryList,
   ViewEncapsulation,
 } from '@angular/core';
-import {coerceArray} from '@angular/cdk/coercion';
 import {CdkDrag} from './drag';
-import {CdkDragExit, CdkDragEnter, CdkDragDrop} from './drag-events';
-import {CDK_DROP_CONTAINER} from './drop-container';
 import {DragDropRegistry} from './drag-drop-registry';
+import {CdkDragDrop, CdkDragEnter, CdkDragExit} from './drag-events';
 import {moveItemInArray} from './drag-utils';
+import {CDK_DROP_CONTAINER} from './drop-container';
+
 
 /** Counter used to generate unique ids for drop zones. */
 let _uniqueIdCounter = 0;
