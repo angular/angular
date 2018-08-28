@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ChangeDetectorRef, ElementRef, Host, InjectFlags, Optional, Self, SkipSelf, TemplateRef, ViewContainerRef, defineInjectable} from '@angular/core';
+import {Attribute, ChangeDetectorRef, ElementRef, Host, InjectFlags, Optional, Self, SkipSelf, TemplateRef, ViewContainerRef, defineInjectable} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
 import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, loadDirective, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
 import {LViewFlags} from '../../src/render3/interfaces/view';
 import {ViewRef} from '../../src/render3/view_ref';
 
-import {ComponentFixture, createComponent, createDirective, renderComponent, renderToHtml, toHtml} from './render_util';
+import {ComponentFixture, createComponent, createDirective, renderComponent, toHtml} from './render_util';
 
 describe('di', () => {
   describe('no dependencies', () => {
@@ -1207,6 +1207,23 @@ describe('di', () => {
 
   describe('@Attribute', () => {
 
+    class MyDirective {
+      exists = 'wrong' as string | undefined;
+      myDirective = 'wrong' as string | undefined;
+      constructor(
+          @Attribute('exist') existAttrValue: string|undefined,
+          @Attribute('myDirective') myDirectiveAttrValue: string|undefined) {
+        this.exists = existAttrValue;
+        this.myDirective = myDirectiveAttrValue;
+      }
+
+      static ngDirectiveDef = defineDirective({
+        type: MyDirective,
+        selectors: [['', 'myDirective', '']],
+        factory: () => new MyDirective(injectAttribute('exist'), injectAttribute('myDirective'))
+      });
+    }
+
     it('should inject attribute', () => {
       let exist = 'wrong' as string | undefined;
       let nonExist = 'wrong' as string | undefined;
@@ -1222,6 +1239,48 @@ describe('di', () => {
       new ComponentFixture(MyApp);
       expect(exist).toEqual('existValue');
       expect(nonExist).toEqual(undefined);
+    });
+
+    // https://stackblitz.com/edit/angular-scawyi?file=src%2Fapp%2Fapp.component.ts
+    it('should inject attributes on <ng-template>', () => {
+      let myDirectiveInstance: MyDirective;
+
+      /* <ng-template myDirective="initial" exist="existValue" other="ignore"></ng-template>*/
+      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          template(
+              0, null, 0, 0, null,
+              ['myDirective', 'initial', 'exist', 'existValue', 'other', 'ignore']);
+        }
+        if (rf & RenderFlags.Update) {
+          myDirectiveInstance = loadDirective(0);
+        }
+      }, 1, 0, [MyDirective]);
+
+      new ComponentFixture(MyApp);
+      expect(myDirectiveInstance !.exists).toEqual('existValue');
+      expect(myDirectiveInstance !.myDirective).toEqual('initial');
+    });
+
+    // https://stackblitz.com/edit/angular-scawyi?file=src%2Fapp%2Fapp.component.ts
+    it('should inject attributes on <ng-container>', () => {
+      let myDirectiveInstance: MyDirective;
+
+      /* <ng-container myDirective="initial" exist="existValue" other="ignore"></ng-container>*/
+      const MyApp = createComponent('my-app', function(rf: RenderFlags, ctx: any) {
+        if (rf & RenderFlags.Create) {
+          elementContainerStart(
+              0, ['myDirective', 'initial', 'exist', 'existValue', 'other', 'ignore']);
+          elementContainerEnd();
+        }
+        if (rf & RenderFlags.Update) {
+          myDirectiveInstance = loadDirective(0);
+        }
+      }, 1, 0, [MyDirective]);
+
+      new ComponentFixture(MyApp);
+      expect(myDirectiveInstance !.exists).toEqual('existValue');
+      expect(myDirectiveInstance !.myDirective).toEqual('initial');
     });
 
     // https://stackblitz.com/edit/angular-8ytqkp?file=src%2Fapp%2Fapp.component.ts

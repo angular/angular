@@ -268,12 +268,12 @@ const componentFactoryResolver: ComponentFactoryResolver = new ComponentFactoryR
  * @experimental
  */
 export function injectAttribute(attrNameToInject: string): string|undefined {
-  ngDevMode && assertPreviousIsParent();
-  const lElement = getPreviousOrParentNode() as LElementNode;
-  ngDevMode && assertNodeType(lElement, TNodeType.Element);
-  const tElement = lElement.tNode;
-  ngDevMode && assertDefined(tElement, 'expecting tNode');
-  const attrs = tElement.attrs;
+  const lNode = getPreviousOrParentNode();
+  ngDevMode && assertNodeOfPossibleTypes(
+                   lNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
+  const tNode = lNode.tNode;
+  ngDevMode && assertDefined(tNode, 'expecting tNode');
+  const attrs = tNode.attrs;
   if (attrs) {
     for (let i = 0; i < attrs.length; i = i + 2) {
       const attrName = attrs[i];
