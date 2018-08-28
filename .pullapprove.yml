@@ -24,7 +24,6 @@
 # petebacondarwin - Pete Bacon Darwin
 # pkozlowski-opensource - Pawel Kozlowski
 # robwormald - Rob Wormald
-# vicb - Victor Berchet
 # vikerman - Vikram Subramanian
 
 
@@ -125,7 +124,6 @@ groups:
     users:
       - alexeagle
       - mhevery
-      - vicb
       - IgorMinar #fallback
 
   core:
@@ -197,7 +195,6 @@ groups:
       - mhevery #primary
       - jasonaden
       - kara
-      - vicb
       - IgorMinar
       - jenniferfell #docs only
 
@@ -222,8 +219,7 @@ groups:
         - "aio/content/guide/i18n.md"
         - "aio/content/examples/i18n/*"
     users:
-      - vicb #primary
-      - alxhub
+      - alxhub #primary
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
@@ -235,7 +231,6 @@ groups:
         - "aio/content/guide/aot-compiler.md"
     users:
       - alxhub #primary
-      - vicb
       - mhevery
       - IgorMinar #fallback
       - jenniferfell #docs only
@@ -260,7 +255,6 @@ groups:
     users:
       - alexeagle
       - alxhub
-      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -273,7 +267,6 @@ groups:
           - "packages/common/http/*"
     users:
       - pkozlowski-opensource #primary
-      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
 
@@ -322,7 +315,6 @@ groups:
     users:
       - kyliau #primary
       # needs secondary
-      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
@@ -336,7 +328,6 @@ groups:
         - "aio/content/images/guide/router/*"
     users:
       - jasonaden #primary
-      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
@@ -379,10 +370,9 @@ groups:
       files:
         - "packages/platform-browser/*"
     users:
-      - vicb #primary
+      - mhevery #primary
       # needs secondary
       - IgorMinar #fallback
-      - mhevery #fallback
 
   platform-server:
     conditions:
@@ -393,7 +383,6 @@ groups:
     users:
       - vikerman #primary
       - alxhub #secondary
-      - vicb
       - IgorMinar #fallback
       - mhevery #fallback
       - jenniferfell #docs only
@@ -403,10 +392,9 @@ groups:
       files:
         - "packages/platform-webworker/*"
     users:
-      - vicb #primary
+      - mhevery #primary
       # needs secondary
       - IgorMinar #fallback
-      - mhevery #fallback
 
   service-worker:
     conditions:
