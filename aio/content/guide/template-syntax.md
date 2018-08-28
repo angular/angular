@@ -643,188 +643,252 @@ The following table summarizes:
 
 {@a property-binding}
 
-## Property binding ( <span class="syntax">[property]</span> )
+## Property binding `[property]`
 
-Write a template **property binding** to set a property of a view element.
-The binding sets the property to the value of a [template expression](guide/template-syntax#template-expressions).
+Use property binding to _set_ properties of target elements or
+directive `@Input()` decorators. For an example
+demonstrating all of the points in this section, see the
+<live-example name="property-binding">property binding example</live-example>.
 
-The most common property binding sets an element property to a component property value. An example is
-binding the `src` property of an image element to a component's `heroImageUrl` property:
+### One-way in
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" header="src/app/app.component.html" linenums="false">
+Property binding flows a value in one direction,
+from a component's property into a target element property.
+
+You can't use property
+binding to read or pull values out of target elements. Similarly, you cannot use
+property binding to call a method on the target element.
+If the element raises events, you can listen to them with an [event binding](guide/template-syntax#event-binding).
+
+If you must read a target element property or call one of its methods,
+see the API reference for [ViewChild](api/core/ViewChild) and
+[ContentChild](api/core/ContentChild).
+
+### Examples
+
+The most common property binding sets an element property to a component
+property value. An example is
+binding the `src` property of an image element to a component's `itemImageUrl` property:
+
+<code-example path="property-binding/src/app/app.component.html" region="property-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
+
+Here's an example of binding to the `colSpan` property. Notice that it's not `colspan`,
+which is the attribute, spelled with a lowercase `s`.
+
+<code-example path="property-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+For more details, see the [MDN HTMLTableCellElment](https://developer.mozilla.org/en-US/docs/Web/API/HTMLTableCellElement) documentation.
+
+<!-- Add link when Attribute Binding updates are merged:
+For more about `colSpan` and `colspan`, see (Attribute Binding)[guide/template-syntax]. -->
 
 Another example is disabling a button when the component says that it `isUnchanged`:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-2" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="disabled-button" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 Another is setting a property of a directive:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Yet another is setting the model property of a custom component (a great way
-for parent and child components to communicate):
+Yet another is setting the model property of a custom component&mdash;a great way
+for parent and child components to communicate:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
-
-### One-way *in*
-
-People often describe property binding as *one-way data binding* because it flows a value in one direction,
-from a component's data property into a target element property.
-
-You cannot use property binding to pull values *out* of the target element.
-You can't bind to a property of the target element to _read_ it. You can only _set_ it.
-
-<div class="alert is-helpful">
-
-Similarly, you cannot use property binding to *call* a method on the target element.
-
-If the element raises events, you can listen to them with an [event binding](guide/template-syntax#event-binding).
-
-If you must read a target element property or call one of its methods,
-you'll need a different technique.
-See the API reference for
-[ViewChild](api/core/ViewChild) and
-[ContentChild](api/core/ContentChild).
-
-</div>
 
 ### Binding target
 
-An element property between enclosing square brackets identifies the target property.
+An element property between enclosing square brackets identifies
+the target property.
 The target property in the following code is the image element's `src` property.
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-1" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="property-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Some people prefer the `bind-` prefix alternative, known as the *canonical form*:
+There's also the `bind-` prefix alternative:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-5" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="bind-prefix" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-The target name is always the name of a property, even when it appears to be the name of something else.
-You see `src` and may think it's the name of an attribute. No. It's the name of an image element property.
+
+In most cases, the target name is the name of a property, even
+when it appears to be the name of an attribute.
+So in this case, `src` is the name of the `<img>` element property.
 
 Element properties may be the more common targets,
 but Angular looks first to see if the name is a property of a known directive,
 as it is in the following example:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-3" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="class-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="alert is-helpful">
-
-Technically, Angular is matching the name to a directive [input](guide/template-syntax#inputs-outputs),
-one of the property names listed in the directive's `inputs` array or a property decorated with `@Input()`.
+Technically, Angular is matching the name to a directive `@Input()`,
+one of the property names listed in the directive's `inputs` array
+or a property decorated with `@Input()`.
 Such inputs map to the directive's own properties.
-
-</div>
 
 If the name fails to match a property of a known directive or element, Angular reports an “unknown directive” error.
 
+<div class="alert is-helpful">
+
+Though the target name is usually the name of a property,
+there is an automatic attribute-to-property mapping in Angular for
+several common attributes. These include `class`/`className`, `innerHtml`/`innerHTML`, and
+`tabindex`/`tabIndex`.
+
+</div>
+
+
 ### Avoid side effects
 
-As mentioned previously, evaluation of a template expression should have no visible side effects.
-The expression language itself does its part to keep you safe.
-You can't assign a value to anything in a property binding expression nor use the increment and decrement operators.
+Evaluation of a template expression should have no visible side effects.
+The expression language itself, or the way you write template expressions,
+helps to a certain extent;
+you can't assign a value to anything in a property binding expression
+nor use the increment and decrement operators.
 
-Of course, the expression might invoke a property or method that has side effects.
-Angular has no way of knowing that or stopping you.
-
-The expression could call something like `getFoo()`. Only you know what `getFoo()` does.
-If `getFoo()` changes something and you happen to be binding to that something, you risk an unpleasant experience.
-Angular may or may not display the changed value. Angular may detect the change and throw a warning error.
-In general, stick to data properties and to methods that return values and do no more.
+For example, you could have an expression that invoked a property or method that had
+side effects. The expression could call something like `getFoo()` where only you
+know what `getFoo()` does. If `getFoo()` changes something
+and you happen to be binding to that something,
+Angular may or may not display the changed value. Angular may detect the
+change and throw a warning error.
+As a best practice, stick to properties and to methods that return
+values and avoid side effects.
 
 ### Return the proper type
 
-The template expression should evaluate to the type of value expected by the target property.
-Return a string if the target property expects a string.
-Return a number if the target property expects a number.
-Return an object if the target property expects an object.
+The template expression should evaluate to the type of value
+that the target property expects.
+Return a string if the target property expects a string, a number if it
+expects a number, an object if it expects an object, and so on.
 
-The `hero` property of the `HeroDetail` component expects a `Hero` object, which is exactly what you're sending in the property binding:
+In the following example, the `childItem` property of the `ItemDetailComponent` expects a string, which is exactly what you're sending in the property binding:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-4" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="model-property-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
+
+You can confirm this by looking in the `ItemDetailComponent` where the `@Input` type is set to a string:
+<code-example path="property-binding/src/app/item-detail/item-detail.component.ts" region="input-type" header="src/app/item-detail/item-detail.component.ts (setting the @Input() type" linenums="false">
+</code-example>
+
+As you can see here, the `parentItem` in `AppComponent` is a string, which the `ItemDetailComponent` expects:
+<code-example path="property-binding/src/app/app.component.ts" region="parent-data-type" header="src/app/app.component.ts" linenums="false">
+</code-example>
+
+#### Passing in an object
+
+The previous simple example showed passing in a string. To pass in an object,
+the syntax and thinking are the same.
+
+In this scenario, `ListItemComponent` is nested within `AppComponent` and the `item` property expects an object.
+
+<code-example path="property-binding/src/app/app.component.html" region="pass-object" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+The `item` property is declared in the `ListItemComponent` with a type of `Item` and decorated with `@Input()`:
+
+<code-example path="property-binding/src/app/list-item/list-item.component.ts" region="item-input" header="src/app/list-item.component.ts" linenums="false">
+</code-example>
+
+In this sample app, an `Item` is an object that has two properties; an `id` and a `name`.
+
+<code-example path="property-binding/src/app/item.ts" region="item-class" header="src/app/item.ts" linenums="false">
+</code-example>
+
+While a list of items exists in another file, `mock-items.ts`, you can
+specify a different item in `app.component.ts` so that the new item will render:
+
+<code-example path="property-binding/src/app/app.component.ts" region="pass-object" header="src/app.component.ts" linenums="false">
+</code-example>
+
+You just have to make sure, in this case, that you're supplying an object because that's the type of `item` and is what the nested component, `ListItemComponent`, expects.
+
+In this example, `AppComponent` specifies a different `item` object
+(`currentItem`) and passes it to the nested `ListItemComponent`. `ListItemComponent` was able to use `currentItem` because it matches what an `Item` object is according to `item.ts`. The `item.ts` file is where
+`ListItemComponent` gets its definition of an `item`.
 
 ### Remember the brackets
 
-The brackets tell Angular to evaluate the template expression.
+The brackets, `[]`, tell Angular to evaluate the template expression.
 If you omit the brackets, Angular treats the string as a constant
-and *initializes the target property* with that string.
-It does *not* evaluate the string!
+and *initializes the target property* with that string:
 
-Don't make the following mistake:
-
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-6" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="no-evaluation" header="src/app.component.html" linenums="false">
 </code-example>
 
-{@a one-time-initialization}
+
+Omitting the brackets will render the string
+`parentItem`, not the value of `parentItem`.
 
 ### One-time string initialization
 
 You *should* omit the brackets when all of the following are true:
 
 * The target property accepts a string value.
-* The string is a fixed value that you can bake into the template.
+* The string is a fixed value that you can put directly into the template.
 * This initial value never changes.
 
 You routinely initialize attributes this way in standard HTML, and it works
 just as well for directive and component property initialization.
-The following example initializes the `prefix` property of the `HeroDetailComponent` to a fixed string,
+The following example initializes the `prefix` property of the `StringInitComponent` to a fixed string,
 not a template expression. Angular sets it and forgets about it.
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-7" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="string-init" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-The `[hero]` binding, on the other hand, remains a live binding to the component's `currentHero` property.
+The `[item]` binding, on the other hand, remains a live binding to the component's `currentItem` property.
 
-{@a property-binding-or-interpolation}
-
-### Property binding or interpolation?
+### Property binding vs. interpolation
 
 You often have a choice between interpolation and property binding.
 The following binding pairs do the same thing:
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation" header="src/app/app.component.html" linenums="false">
+<code-example path="property-binding/src/app/app.component.html" region="property-binding-interpolation" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-_Interpolation_ is a convenient alternative to _property binding_ in many cases.
+Interpolation is a convenient alternative to property binding in
+many cases. When rendering data values as strings, there is no
+technical reason to prefer one form to the other, though readability
+tends to favor interpolation. However, *when setting an element
+property to a non-string data value, you must use property binding*.
 
-When rendering data values as strings, there is no technical reason to prefer one form to the other.
-You lean toward readability, which tends to favor interpolation.
-You suggest establishing coding style rules and choosing the form that
-both conforms to the rules and feels most natural for the task at hand.
+### Content security
 
-When setting an element property to a non-string data value, you must use _property binding_.
+Imagine the following malicious content.
 
-#### Content security
-
-Imagine the following *malicious content*.
-
-<code-example path="template-syntax/src/app/app.component.ts" region="evil-title" header="src/app/app.component.ts" linenums="false">
+<code-example path="property-binding/src/app/app.component.ts" region="malicious-content" header="src/app/app.component.ts" linenums="false">
 </code-example>
 
-Fortunately, Angular data binding is on alert for dangerous HTML.
-It [*sanitizes*](guide/security#sanitization-and-security-contexts) the values before displaying them.
-It **will not** allow HTML with script tags to leak into the browser, neither with interpolation
+In the component template, the content might be used with interpolation:
+
+<code-example path="property-binding/src/app/app.component.html" region="malicious-interpolated" header="src/app/app.component.ts" linenums="false">
+</code-example>
+
+Fortunately, Angular data binding is on alert for dangerous HTML. In the above case,
+the HTML displays as is, and the Javascript does not execute. Angular **does not**
+allow HTML with script tags to leak into the browser, neither with interpolation
 nor property binding.
 
-<code-example path="template-syntax/src/app/app.component.html" region="property-binding-vs-interpolation-sanitization" header="src/app/app.component.html" linenums="false">
+In the following example, however, Angular [sanitizes](guide/security#sanitization-and-security-contexts)
+the values before displaying them.
+
+<code-example path="property-binding/src/app/app.component.html" region="malicious-content" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Interpolation handles the script tags differently than property binding but both approaches render the
-content harmlessly.
+Interpolation handles the `<script>` tags differently than
+property binding but both approaches render the
+content harmlessly. The following is the browser output
+of the `evilTitle` examples.
 
-
-<figure>
-  <img src='generated/images/guide/template-syntax/evil-title.png' alt="evil title made safe">
-</figure>
-
+```
+"Template <script>alert("evil never sleeps")</script> Syntax" is the interpolated evil title.
+"Template alert("evil never sleeps")Syntax" is the property bound evil title.
+```
 
 <hr/>
 {@a other-bindings}
@@ -855,7 +919,7 @@ table span attributes. They are pure attributes.
 They do not correspond to element properties, and they do not set element properties.
 There are no property targets to bind to.
 
-This fact becomes painfully obvious when you write something like this.
+This fact becomes obvious when you write something like this.
 
 <code-example language="html">
   &lt;tr&gt;&lt;td colspan="{{1 + 1}}"&gt;Three-Four&lt;/td&gt;&lt;/tr&gt;
@@ -910,7 +974,7 @@ Instead of an element property between brackets, start with the prefix `class`,
 optionally followed by a dot (`.`) and the name of a CSS class: `[class.class-name]`.
 
 The following examples show how to add and remove the application's "special" class
-with class bindings.  Here's how to set the attribute without binding:
+with class bindings. Here's how to set the attribute without binding:
 
 <code-example path="template-syntax/src/app/app.component.html" region="class-binding-1" header="src/app/app.component.html" linenums="false">
 </code-example>
