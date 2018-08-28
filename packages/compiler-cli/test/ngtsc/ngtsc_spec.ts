@@ -182,6 +182,7 @@ describe('ngtsc behavioral tests', () => {
 
         @NgModule({
           declarations: [TestCmp],
+          bootstrap: [TestCmp],
         })
         export class TestModule {}
     `);
@@ -193,7 +194,7 @@ describe('ngtsc behavioral tests', () => {
     const jsContents = getContents('test.js');
     expect(jsContents)
         .toContain(
-            'i0.ɵdefineNgModule({ type: TestModule, bootstrap: [], ' +
+            'i0.ɵdefineNgModule({ type: TestModule, bootstrap: [TestCmp], ' +
             'declarations: [TestCmp], imports: [], exports: [] })');
 
     const dtsContents = getContents('test.d.ts');
