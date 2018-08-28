@@ -226,14 +226,21 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
 
   ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) => {
-    try {
-      const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
-      if (sourceFile && sourceFile.moduleName) {
-        return sourceFile.moduleName;
+    // Lookup the module name specified in the TypeScript source file, if present
+    // it will look like ///<amd module-name="something"/>
+    // For performance, we only do this for .d.ts files, to avoid parsing lots of
+    // additional files that were not in the program.
+    // (We don't have the ts.Program available in this codepath)
+    if (importedFilePath.endsWith('.d.ts')) {
+      try {
+        const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
+        if (sourceFile && sourceFile.moduleName) {
+          return sourceFile.moduleName;
+        }
+      } catch (err) {
+        // File does not exist or parse error. Ignore this case and continue onto the
+        // other methods of resolving the module below.
       }
-    } catch (err) {
-      // File does not exist or parse error. Ignore this case and continue onto the
-      // other methods of resolving the module below.
     }
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
