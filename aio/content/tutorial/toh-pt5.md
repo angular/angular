@@ -213,8 +213,7 @@ The _class_ is similar to the `HeroesComponent` class.
 * The constructor expects Angular to inject the `HeroService` into a private `heroService` property.
 * The `ngOnInit()` lifecycle hook calls `getHeroes`.
 
-This `getHeroes` reduces the number of heroes displayed to four
-(2nd, 3rd, 4th, and 5th).
+This `getHeroes` returns the sliced list of heroes at positions 1 and 5, returning only four of the Top Heroes (2nd, 3rd, 4th, and 5th).
 
 <code-example path="toh-pt5/src/app/dashboard/dashboard.component.ts" region="getHeroes">
 </code-example>
