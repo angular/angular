@@ -12,16 +12,18 @@ import {Type} from '../core';
 import {Injector} from '../di/injector';
 import {Sanitizer} from '../sanitization/security';
 
+import {PlayerHandler} from './animations/interfaces';
 import {assertComponentType, assertDefined} from './assert';
+import {getLElementFromComponent, readPatchedLViewData} from './context_discovery';
+import {getComponentDef} from './definition';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, leaveView, locateHostElement, setHostBindings, queueHostBindingForCheck,} from './instructions';
+import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, hostElement, leaveView, locateHostElement, setHostBindings, queueHostBindingForCheck,} from './instructions';
 import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {LViewData, LViewFlags, RootContext, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
-import {stringify} from './util';
-import {getComponentDef} from './definition';
-import {getLElementFromComponent, readPatchedLViewData} from './context_discovery';
+import {CONTEXT, INJECTOR, LViewData, LViewFlags, RootContext, RootContextFlags, TVIEW} from './interfaces/view';
+import {getRootView, stringify} from './util';
+
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -31,6 +33,9 @@ export interface CreateComponentOptions {
 
   /** A custom sanitizer instance */
   sanitizer?: Sanitizer;
+
+  /** A custom animation player handler */
+  playerHandler?: PlayerHandler;
 
   /**
    * Host element on which the component will be bootstrapped. If not specified,
@@ -109,7 +114,8 @@ export function renderComponent<T>(
   const hostNode = locateHostElement(rendererFactory, opts.host || componentTag);
   const rootFlags = componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
                                           LViewFlags.CheckAlways | LViewFlags.IsRoot;
-  const rootContext = createRootContext(opts.scheduler || requestAnimationFrame.bind(window));
+  const rootContext = createRootContext(
+      opts.scheduler || requestAnimationFrame.bind(window), opts.playerHandler || null);
 
   const rootView: LViewData = createLViewData(
       rendererFactory.createRenderer(hostNode, componentDef),
@@ -157,11 +163,14 @@ export function createRootComponent<T>(
 }
 
 
-export function createRootContext(scheduler: (workFn: () => void) => void): RootContext {
+export function createRootContext(
+    scheduler: (workFn: () => void) => void, playerHandler?: PlayerHandler|null): RootContext {
   return {
     components: [],
     scheduler: scheduler,
     clean: CLEAN_PROMISE,
+    playerHandler: playerHandler || null,
+    flags: RootContextFlags.Empty
   };
 }
 

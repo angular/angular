@@ -166,6 +166,17 @@ export {
   getContext as ɵgetContext
 } from './render3/context_discovery';
 
+export {
+  Player as ɵPlayer,
+  PlayState as ɵPlayState,
+  PlayerHandler as ɵPlayerHandler,
+} from './render3/animations/interfaces';
+
+export {
+  addPlayer as ɵaddPlayer,
+  getPlayers as ɵgetPlayers,
+} from './render3/animations/players';
+
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.
 //

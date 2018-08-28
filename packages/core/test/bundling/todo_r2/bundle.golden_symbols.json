@@ -1287,6 +1287,9 @@
     "name": "createEmbeddedViewAndNode"
   },
   {
+    "name": "createEmptyStylingContext"
+  },
+  {
     "name": "createInjector"
   },
   {
