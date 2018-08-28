@@ -124,7 +124,7 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
   dataStream: Observable<T[] | ReadonlyArray<T>> = this._dataSourceChanges
       .pipe(
           // Start off with null `DataSource`.
-          startWith(null!),
+          startWith<DataSource<T>>(null!),
           // Bundle up the previous and current data sources so we can work with both.
           pairwise(),
           // Use `_changeDataSource` to disconnect from the previous data source and connect to the
@@ -281,22 +281,23 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
   /** Apply changes to the DOM. */
   private _applyChanges(changes: IterableChanges<T>) {
     // Rearrange the views to put them in the right location.
-    changes.forEachOperation(
-        (record: IterableChangeRecord<T>, adjustedPreviousIndex: number, currentIndex: number) => {
-          if (record.previousIndex == null) {  // Item added.
-            const view = this._getViewForNewItem();
-            this._viewContainerRef.insert(view, currentIndex);
-            view.context.$implicit = record.item;
-          } else if (currentIndex == null) {  // Item removed.
-            this._cacheView(this._viewContainerRef.detach(adjustedPreviousIndex) as
-                EmbeddedViewRef<CdkVirtualForOfContext<T>>);
-          } else {  // Item moved.
-            const view = this._viewContainerRef.get(adjustedPreviousIndex) as
-                EmbeddedViewRef<CdkVirtualForOfContext<T>>;
-            this._viewContainerRef.move(view, currentIndex);
-            view.context.$implicit = record.item;
-          }
-        });
+    changes.forEachOperation((record: IterableChangeRecord<T>,
+                              adjustedPreviousIndex: number | null,
+                              currentIndex: number | null) => {
+      if (record.previousIndex == null) {  // Item added.
+        const view = this._getViewForNewItem();
+        this._viewContainerRef.insert(view, currentIndex!);
+        view.context.$implicit = record.item;
+      } else if (currentIndex == null) {  // Item removed.
+        this._cacheView(this._viewContainerRef.detach(adjustedPreviousIndex!) as
+            EmbeddedViewRef<CdkVirtualForOfContext<T>>);
+      } else {  // Item moved.
+        const view = this._viewContainerRef.get(adjustedPreviousIndex!) as
+            EmbeddedViewRef<CdkVirtualForOfContext<T>>;
+        this._viewContainerRef.move(view, currentIndex);
+        view.context.$implicit = record.item;
+      }
+    });
 
     // Update $implicit for any items that had an identity change.
     changes.forEachIdentityChange((record: IterableChangeRecord<T>) => {

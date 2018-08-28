@@ -9,6 +9,7 @@
     "experimentalDecorators": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "importHelpers": true,
     "module": "es2015",
     "moduleResolution": "node",

@@ -26,6 +26,7 @@ import {
   PositionStrategy,
   ScrollStrategy,
 } from './index';
+import {OverlayReference} from './overlay-reference';
 
 
 describe('Overlay', () => {
@@ -342,7 +343,7 @@ describe('Overlay', () => {
   });
 
   it('should keep the direction in sync with the passed in Directionality', () => {
-    const customDirectionality = {value: 'rtl', change: new EventEmitter()};
+    const customDirectionality = {value: 'rtl', change: new EventEmitter<Direction>()};
     const overlayRef = overlay.create({direction: customDirectionality as Directionality});
 
     expect(overlayRef.getDirection()).toBe('rtl');
@@ -766,9 +767,9 @@ class FakePositionStrategy implements PositionStrategy {
 
 class FakeScrollStrategy implements ScrollStrategy {
   isEnabled = false;
-  overlayRef: OverlayRef;
+  overlayRef: OverlayReference;
 
-  attach(overlayRef: OverlayRef) {
+  attach(overlayRef: OverlayReference) {
     this.overlayRef = overlayRef;
   }
 

@@ -515,13 +515,13 @@ export class CdkDrag<T = any> implements OnDestroy {
 
     return this._ngZone.runOutsideAngular(() => {
       return new Promise(resolve => {
-        const handler = (event: TransitionEvent) => {
+        const handler = ((event: TransitionEvent) => {
           if (!event || event.target === this._preview) {
             this._preview.removeEventListener('transitionend', handler);
             resolve();
             clearTimeout(timeout);
           }
-        };
+        }) as EventListenerOrEventListenerObject;
 
         // If a transition is short enough, the browser might not fire the `transitionend` event.
         // Since we know how long it's supposed to take, add a timeout with a 50% buffer that'll

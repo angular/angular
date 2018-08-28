@@ -50,7 +50,7 @@ export class Dialog {
   }
   _afterAllClosedBase = new Subject<void>();
   afterAllClosed: Observable<void> = defer<void>(() => this.openDialogs.length ?
-      this._afterAllClosed : this._afterAllClosed.pipe(startWith(undefined)));
+      this._afterAllClosed : this._afterAllClosed.pipe(startWith<void>(undefined)));
 
   /** Stream that emits when a dialog is opened. */
   get afterOpened(): Subject<DialogRef<any>> {

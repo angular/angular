@@ -39,7 +39,10 @@ export class DragDropRegistry<I, C extends {id: string}> implements OnDestroy {
   private _activeDragInstances = new Set<I>();
 
   /** Keeps track of the event listeners that we've bound to the `document`. */
-  private _globalListeners = new Map<string, {handler: PointerEventHandler, options?: any}>();
+  private _globalListeners = new Map<'touchmove' | 'mousemove' | 'touchend' | 'mouseup', {
+    handler: PointerEventHandler,
+    options?: any
+  }>();
 
   /**
    * Emits the `touchmove` or `mousemove` events that are dispatched

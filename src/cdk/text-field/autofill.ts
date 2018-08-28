@@ -79,7 +79,7 @@ export class AutofillMonitor implements OnDestroy {
 
     const result = new Subject<AutofillEvent>();
     const cssClass = 'cdk-text-field-autofilled';
-    const listener = (event: AnimationEvent) => {
+    const listener = ((event: AnimationEvent) => {
       // Animation events fire on initial element render, we check for the presence of the autofill
       // CSS class to make sure this is a real change in state, not just the initial render before
       // we fire off events.
@@ -92,7 +92,7 @@ export class AutofillMonitor implements OnDestroy {
         element.classList.remove(cssClass);
         this._ngZone.run(() => result.next({target: event.target as Element, isAutofilled: false}));
       }
-    };
+    }) as EventListenerOrEventListenerObject;
 
     this._ngZone.runOutsideAngular(() => {
       element.addEventListener('animationstart', listener, listenerOptions);

@@ -1,8 +1,9 @@
-import {task} from 'gulp';
+import {task, src, dest} from 'gulp';
 import {join} from 'path';
 import {ngcBuildTask, copyTask, execNodeTask, serverTask} from '../util/task_helpers';
 import {copySync} from 'fs-extra';
 import {buildConfig, sequenceTask, triggerLivereload, watchFiles} from 'material2-build-tools';
+import {sync as globSync} from 'glob';
 
 // There are no type definitions available for these imports.
 const gulpConnect = require('gulp-connect');
@@ -68,7 +69,7 @@ task('e2e-app:build', sequenceTask(
     'material-moment-adapter:build-release',
     'material-examples:build-release'
   ],
-  ['e2e-app:copy-release', 'e2e-app:copy-assets'],
+  ['e2e-app:copy-release', 'e2e-app:copy-typings', 'e2e-app:copy-assets'],
   'e2e-app:build-ts'
 ));
 
@@ -115,3 +116,16 @@ task('e2e-app:copy-release', () => {
   copySync(join(releasesDir, 'material-moment-adapter'), join(outDir, 'material-moment-adapter'));
 });
 
+// Copy the core declaration files next to the declarations of each module. This is a workaround
+// for an issue in TypeScript 2.9 where the generated declaration files have wrong import paths.
+// We should be able to remove this task once we update to TypeScript 3.0.
+// See: https://github.com/Microsoft/TypeScript/issues/25511.
+task('e2e-app:copy-typings', () => {
+  const stream = src(join(outDir, 'material/core/typings/*/**'));
+
+  globSync(join(outDir, 'material/!(core)/')).forEach(directory => {
+    stream.pipe(dest(join(directory, 'core')));
+  });
+
+  return stream;
+});

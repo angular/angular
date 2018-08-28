@@ -6,6 +6,7 @@
     "experimentalDecorators": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": ".",

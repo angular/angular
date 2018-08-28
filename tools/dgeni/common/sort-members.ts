@@ -1,10 +1,32 @@
 import {CategorizedMethodMemberDoc, CategorizedPropertyMemberDoc} from './dgeni-definitions';
 
-/** Combined type for a categorized method member document. */
-type CategorizedMemberDoc = CategorizedMethodMemberDoc & CategorizedPropertyMemberDoc;
+/** Sorts method members by deprecated status, member decorator, and name. */
+export function sortCategorizedMethodMembers(docA: CategorizedMethodMemberDoc,
+                                             docB: CategorizedMethodMemberDoc) {
+  // Sort deprecated docs to the end
+  if (!docA.isDeprecated && docB.isDeprecated) {
+    return -1;
+  }
 
-/** Sorts members by deprecated status, member decorator, and name. */
-export function sortCategorizedMembers(docA: CategorizedMemberDoc, docB: CategorizedMemberDoc) {
+  if (docA.isDeprecated && !docB.isDeprecated) {
+    return 1;
+  }
+
+  // Break ties by sorting alphabetically on the name
+  if (docA.name < docB.name) {
+    return -1;
+  }
+
+  if (docA.name > docB.name) {
+    return 1;
+  }
+
+  return 0;
+}
+
+/** Sorts property members by deprecated status, member decorator, and name. */
+export function sortCategorizedPropertyMembers(docA: CategorizedPropertyMemberDoc,
+                                               docB: CategorizedPropertyMemberDoc) {
   // Sort deprecated docs to the end
   if (!docA.isDeprecated && docB.isDeprecated) {
     return -1;

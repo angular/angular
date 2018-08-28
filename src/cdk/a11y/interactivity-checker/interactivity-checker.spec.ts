@@ -326,7 +326,7 @@ describe('InteractivityChecker', () => {
         appendElements([iframe]);
 
         iframe.setAttribute('tabindex', '-1');
-        iframe.contentDocument.body.appendChild(button);
+        iframe.contentDocument!.body.appendChild(button);
 
         expect(checker.isTabbable(iframe)).toBe(false);
         expect(checker.isTabbable(button)).toBe(false);
@@ -344,7 +344,7 @@ describe('InteractivityChecker', () => {
         appendElements([iframe]);
 
         iframe.setAttribute('tabindex', '-1');
-        iframe.contentDocument.body.appendChild(button);
+        iframe.contentDocument!.body.appendChild(button);
 
         // Some browsers explicitly prevent overwriting of properties on a `Window` object.
         if (!platform.SAFARI) {
@@ -392,7 +392,7 @@ describe('InteractivityChecker', () => {
 
         // This is a hack to create an empty contentDocument for the frame element.
         objectEl.type = 'text/html';
-        objectEl.contentDocument.body.appendChild(button);
+        objectEl.contentDocument!.body.appendChild(button);
 
         expect(checker.isTabbable(objectEl)).toBe(false);
         expect(checker.isTabbable(button)).toBe(false);
@@ -405,7 +405,7 @@ describe('InteractivityChecker', () => {
         appendElements([iframe]);
 
         iframe.style.display = 'none';
-        iframe.contentDocument.body.appendChild(button);
+        iframe.contentDocument!.body.appendChild(button);
 
         expect(checker.isTabbable(iframe)).toBe(false);
         expect(checker.isTabbable(button)).toBe(false);

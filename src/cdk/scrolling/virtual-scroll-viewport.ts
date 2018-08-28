@@ -143,7 +143,7 @@ export class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, O
       this.elementScrolled()
           .pipe(
               // Start off with a fake scroll event so we properly detect our initial position.
-              startWith(null!),
+              startWith<Event | null>(null!),
               // Sample the scroll stream at every animation frame. This way if there are multiple
               // scroll events in the same frame we only need to recheck our layout once.
               sampleTime(0, animationFrameScheduler))

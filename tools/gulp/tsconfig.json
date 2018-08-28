@@ -7,6 +7,7 @@
     "moduleResolution": "node",
     "outDir": "../../dist/tools/gulp",
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "noEmitOnError": true,
     "noImplicitAny": true,
     "target": "es5",

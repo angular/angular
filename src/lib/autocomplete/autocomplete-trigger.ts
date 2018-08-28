@@ -319,10 +319,10 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, OnDestroy {
     }
 
     return merge(
-      fromEvent(this._document, 'click'),
-      fromEvent(this._document, 'touchend')
+      fromEvent<MouseEvent>(this._document, 'click'),
+      fromEvent<TouchEvent>(this._document, 'touchend')
     )
-    .pipe(filter((event: MouseEvent | TouchEvent) => {
+    .pipe(filter(event => {
       const clickTarget = event.target as HTMLElement;
       const formField = this._formField ?
           this._formField._elementRef.nativeElement : null;

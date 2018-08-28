@@ -239,7 +239,7 @@ export class CdkStepper implements AfterViewInit, OnDestroy {
       .withWrap()
       .withVerticalOrientation(this._orientation === 'vertical');
 
-    (this._dir ? this._dir.change as Observable<Direction> : obaservableOf())
+    (this._dir ? this._dir.change as Observable<Direction> : obaservableOf<Direction>())
       .pipe(startWith(this._layoutDirection()), takeUntil(this._destroyed))
       .subscribe(direction => this._keyManager.withHorizontalOrientation(direction));
 

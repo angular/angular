@@ -9,6 +9,7 @@
     "experimentalDecorators": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "lib": ["es6", "es2015", "dom"],
     "skipLibCheck": true,
     "module": "commonjs",

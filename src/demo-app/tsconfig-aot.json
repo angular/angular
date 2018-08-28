@@ -8,6 +8,7 @@
     "experimentalDecorators": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "outDir": "../../dist/packages/demo-app",
     "rootDirs": [
       ".",

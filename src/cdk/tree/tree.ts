@@ -210,15 +210,16 @@ export class CdkTree<T>
     const changes = dataDiffer.diff(data);
     if (!changes) { return; }
 
-    changes.forEachOperation(
-      (item: IterableChangeRecord<T>, adjustedPreviousIndex: number, currentIndex: number) => {
+    changes.forEachOperation((item: IterableChangeRecord<T>,
+                              adjustedPreviousIndex: number | null,
+                              currentIndex: number | null) => {
         if (item.previousIndex == null) {
-          this.insertNode(data[currentIndex], currentIndex, viewContainer, parentData);
+          this.insertNode(data[currentIndex!], currentIndex!, viewContainer, parentData);
         } else if (currentIndex == null) {
-          viewContainer.remove(adjustedPreviousIndex);
+          viewContainer.remove(adjustedPreviousIndex!);
           this._levels.delete(item.item);
         } else {
-          const view = viewContainer.get(adjustedPreviousIndex);
+          const view = viewContainer.get(adjustedPreviousIndex!);
           viewContainer.move(view!, currentIndex);
         }
       });
@@ -295,7 +296,7 @@ export class CdkTreeNode<T> implements FocusableOption, OnDestroy {
    * The most recently created `CdkTreeNode`. We save it in static variable so we can retrieve it
    * in `CdkTree` and set the data to it.
    */
-  static mostRecentTreeNode: CdkTreeNode<{}> | null = null;
+  static mostRecentTreeNode: CdkTreeNode<any> | null = null;
 
   /** Subject that emits when the component has been destroyed. */
   protected _destroyed = new Subject<void>();

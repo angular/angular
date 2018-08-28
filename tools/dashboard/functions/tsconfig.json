@@ -6,6 +6,7 @@
     "noEmitOnError": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "sourceMap": true,
     "target": "es5",
     "baseUrl": "",

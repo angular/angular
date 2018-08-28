@@ -25,7 +25,7 @@ export class NestedTreeControl<T> extends BaseTreeControl<T> {
    */
   expandAll(): void {
     this.expansionModel.clear();
-    const allNodes = this.dataNodes.reduce((accumulator, dataNode) =>
+    const allNodes = this.dataNodes.reduce((accumulator: T[], dataNode) =>
         [...accumulator, ...this.getDescendants(dataNode), dataNode], []);
     this.expansionModel.select(...allNodes);
   }

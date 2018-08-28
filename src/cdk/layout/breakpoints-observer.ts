@@ -99,16 +99,16 @@ export class BreakpointObserver implements OnDestroy {
 
     const mql: MediaQueryList = this.mediaMatcher.matchMedia(query);
     // Create callback for match changes and add it is as a listener.
-    const queryObservable = fromEventPattern(
+    const queryObservable = fromEventPattern<MediaQueryList>(
       // Listener callback methods are wrapped to be placed back in ngZone. Callbacks must be placed
       // back into the zone because matchMedia is only included in Zone.js by loading the
       // webapis-media-query.js file alongside the zone.js file.  Additionally, some browsers do not
       // have MediaQueryList inherit from EventTarget, which causes inconsistencies in how Zone.js
       // patches it.
-      (listener: MediaQueryListListener) => {
+      (listener: Function) => {
         mql.addListener((e: MediaQueryList) => this.zone.run(() => listener(e)));
       },
-      (listener: MediaQueryListListener) => {
+      (listener: Function) => {
         mql.removeListener((e: MediaQueryList) => this.zone.run(() => listener(e)));
       })
       .pipe(

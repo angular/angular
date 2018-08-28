@@ -996,10 +996,11 @@ describe('MatChipList', () => {
 
     it('should keep focus on the input after adding the first chip', fakeAsync(() => {
       const nativeInput = fixture.nativeElement.querySelector('input');
-      const chipEls = Array.from(fixture.nativeElement.querySelectorAll('.mat-chip')).reverse();
+      const chipEls = Array.from<HTMLElement>(
+          fixture.nativeElement.querySelectorAll('.mat-chip')).reverse();
 
       // Remove the chips via backspace to simulate the user removing them.
-      chipEls.forEach((chip: HTMLElement) => {
+      chipEls.forEach(chip => {
         chip.focus();
         dispatchKeyboardEvent(chip, 'keydown', BACKSPACE);
         fixture.detectChanges();

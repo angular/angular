@@ -48,7 +48,9 @@ export function addModuleImportToModule(
     throw new SchematicsException(`Module not found: ${modulePath}`);
   }
 
-  const changes = addImportToModule(moduleSource, modulePath, moduleName, src);
+  // TODO: cast to any, because the types for ts.SourceFile
+  // aren't compatible with `strictFunctionTypes`.
+  const changes = addImportToModule(moduleSource as any, modulePath, moduleName, src);
   const recorder = host.beginUpdate(modulePath);
 
   changes.forEach((change) => {

@@ -66,7 +66,10 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
       + '.component';
     const relativePath = buildRelativePath(modulePath, componentPath);
     const classifiedName = strings.classify(`${options.name}Component`);
-    const declarationChanges = addDeclarationToModule(source,
+
+    // TODO: cast to any, because the types for ts.SourceFile
+    // aren't compatible with `strictFunctionTypes`.
+    const declarationChanges = addDeclarationToModule(source as any,
       modulePath,
       classifiedName,
       relativePath);
@@ -82,9 +85,11 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
     if (options.export) {
       // Need to refresh the AST because we overwrote the file in the host.
       const source = readIntoSourceFile(host, modulePath);
-
       const exportRecorder = host.beginUpdate(modulePath);
-      const exportChanges = addExportToModule(source, modulePath,
+
+      // TODO: cast to any, because the types for ts.SourceFile
+      // aren't compatible with `strictFunctionTypes`.
+      const exportChanges = addExportToModule(source as any, modulePath,
         strings.classify(`${options.name}Component`),
         relativePath);
 
@@ -99,10 +104,12 @@ function addDeclarationToNgModule(options: ComponentOptions): Rule {
     if (options.entryComponent) {
       // Need to refresh the AST because we overwrote the file in the host.
       const source = readIntoSourceFile(host, modulePath);
-
       const entryComponentRecorder = host.beginUpdate(modulePath);
+
+      // TODO: cast to any, because the types for ts.SourceFile
+      // aren't compatible with `strictFunctionTypes`.
       const entryComponentChanges = addEntryComponentToModule(
-        source, modulePath,
+        source as any, modulePath,
         strings.classify(`${options.name}Component`),
         relativePath);
 

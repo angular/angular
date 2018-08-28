@@ -9,6 +9,7 @@
     // Don't use strict nulls for the e2e-app because the material-examples are not
     // strict-null compliant.
     "strictNullChecks": false,
+    "strictFunctionTypes": true,
     "lib": ["es6", "es2015", "dom"],
     "module": "commonjs",
     "moduleResolution": "node",

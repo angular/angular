@@ -447,17 +447,19 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     if (!changes) { return; }
 
     const viewContainer = this._rowOutlet.viewContainer;
-    changes.forEachOperation(
-        (record: IterableChangeRecord<RenderRow<T>>, prevIndex: number, currentIndex: number) => {
-          if (record.previousIndex == null) {
-            this._insertRow(record.item, currentIndex);
-          } else if (currentIndex == null) {
-            viewContainer.remove(prevIndex);
-          } else {
-            const view = <RowViewRef<T>>viewContainer.get(prevIndex);
-            viewContainer.move(view!, currentIndex);
-          }
-        });
+
+    changes.forEachOperation((record: IterableChangeRecord<RenderRow<T>>,
+                              prevIndex: number | null,
+                              currentIndex: number | null) => {
+      if (record.previousIndex == null) {
+        this._insertRow(record.item, currentIndex!);
+      } else if (currentIndex == null) {
+        viewContainer.remove(prevIndex!);
+      } else {
+        const view = <RowViewRef<T>>viewContainer.get(prevIndex!);
+        viewContainer.move(view!, currentIndex);
+      }
+    });
 
     // Update the meta context of a row's context data (index, count, first, last, ...)
     this._updateRowIndexContext();

@@ -6,6 +6,7 @@
     "experimentalDecorators": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
+    "strictFunctionTypes": true,
     "importHelpers": true,
     "newLine": "lf",
     "module": "es2015",

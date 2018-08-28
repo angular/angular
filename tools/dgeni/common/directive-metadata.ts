@@ -4,7 +4,9 @@ import {
   CallExpression,
   ObjectLiteralExpression,
   PropertyAssignment,
-  StringLiteral, SyntaxKind
+  StringLiteral,
+  SyntaxKind,
+  NodeArray,
 } from 'typescript';
 
 /**
@@ -53,12 +55,11 @@ export function getDirectiveMetadata(classDoc: CategorizedClassDoc): Map<string,
   const objectExpression = expression.arguments[0] as ObjectLiteralExpression;
   const resultMetadata = new Map<string, any>();
 
-  objectExpression.properties.forEach((prop: PropertyAssignment) => {
-
+  (objectExpression.properties as NodeArray<PropertyAssignment>).forEach(prop => {
     // Support ArrayLiteralExpression assignments in the directive metadata.
     if (prop.initializer.kind === SyntaxKind.ArrayLiteralExpression) {
       const arrayData = (prop.initializer as ArrayLiteralExpression).elements
-          .map((literal: StringLiteral) => literal.text);
+          .map(literal => (literal as StringLiteral).text);
 
       resultMetadata.set(prop.name.getText(), arrayData);
     }
