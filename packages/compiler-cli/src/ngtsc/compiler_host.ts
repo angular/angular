@@ -36,14 +36,19 @@ export interface CompilerHost extends ts.CompilerHost {
 export class NgtscCompilerHost implements CompilerHost {
   constructor(private delegate: ts.CompilerHost) {
     if (delegate.resolveTypeReferenceDirectives) {
+      // Backward compatibility with TypeScript 2.9 and older since return
+      // type has changed from (ts.ResolvedTypeReferenceDirective | undefined)[]
+      // to ts.ResolvedTypeReferenceDirective[] in Typescript 3.0
+      type ts3ResolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
+          ts.ResolvedTypeReferenceDirective[];
       this.resolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
-          delegate.resolveTypeReferenceDirectives !(names, containingFile);
+          (delegate.resolveTypeReferenceDirectives as ts3ResolveTypeReferenceDirectives) !(
+              names, containingFile);
     }
   }
 
   resolveTypeReferenceDirectives?:
-      (names: string[],
-       containingFile: string) => (ts.ResolvedTypeReferenceDirective | undefined)[];
+      (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];
 
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
