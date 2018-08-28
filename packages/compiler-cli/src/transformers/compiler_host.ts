@@ -79,8 +79,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   // TODO(issue/24571): remove '!'.
   getDirectories !: (path: string) => string[];
   resolveTypeReferenceDirectives?:
-      (names: string[],
-       containingFile: string) => (ts.ResolvedTypeReferenceDirective | undefined)[];
+      (names: string[], containingFile: string) => ts.ResolvedTypeReferenceDirective[];
   directoryExists?: (directoryName: string) => boolean;
 
   constructor(
@@ -106,8 +105,14 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
       this.getDefaultLibLocation = () => context.getDefaultLibLocation !();
     }
     if (context.resolveTypeReferenceDirectives) {
+      // Backward compatibility with TypeScript 2.9 and older since return
+      // type has changed from (ts.ResolvedTypeReferenceDirective | undefined)[]
+      // to ts.ResolvedTypeReferenceDirective[] in Typescript 3.0
+      type ts3ResolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
+          ts.ResolvedTypeReferenceDirective[];
       this.resolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
-          context.resolveTypeReferenceDirectives !(names, containingFile);
+          (context.resolveTypeReferenceDirectives as ts3ResolveTypeReferenceDirectives) !(
+              names, containingFile);
     }
     if (context.trace) {
       this.trace = s => context.trace !(s);
