@@ -224,23 +224,29 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
   };
 
   const ngHost = ng.createCompilerHost({options: compilerOpts, tsHost: bazelHost});
-
+  const fileNameToModuleNameCache = new Map<string, string>();
   ngHost.fileNameToModuleName = (importedFilePath: string, containingFilePath: string) => {
-    // Lookup the module name specified in the TypeScript source file, if present
-    // it will look like ///<amd module-name="something"/>
-    // For performance, we only do this for .d.ts files, to avoid parsing lots of
-    // additional files that were not in the program.
-    // (We don't have the ts.Program available in this codepath)
-    if (importedFilePath.endsWith('.d.ts')) {
-      try {
-        const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
-        if (sourceFile && sourceFile.moduleName) {
-          return sourceFile.moduleName;
-        }
-      } catch (err) {
-        // File does not exist or parse error. Ignore this case and continue onto the
-        // other methods of resolving the module below.
+    // Memoize this lookup to avoid expensive re-parses of the same file
+    // When run as a worker, the actual ts.SourceFile is cached
+    // but when we don't run as a worker, there is no cache.
+    // For one example target in g3, we saw a cache hit rate of 7590/7695
+    if (fileNameToModuleNameCache.has(importedFilePath)) {
+      return fileNameToModuleNameCache.get(importedFilePath);
+    }
+    const result = doFileNameToModuleName(importedFilePath);
+    fileNameToModuleNameCache.set(importedFilePath, result);
+    return result;
+  };
+
+  function doFileNameToModuleName(importedFilePath: string): string {
+    try {
+      const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
+      if (sourceFile && sourceFile.moduleName) {
+        return sourceFile.moduleName;
       }
+    } catch (err) {
+      // File does not exist or parse error. Ignore this case and continue onto the
+      // other methods of resolving the module below.
     }
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
@@ -251,7 +257,8 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
       return result.substr(NODE_MODULES.length);
     }
     return bazelOpts.workspaceName + '/' + result;
-  };
+  }
+
   ngHost.toSummaryFileName = (fileName: string, referringSrcFileName: string) => path.posix.join(
       bazelOpts.workspaceName,
       relativeToRootDirs(fileName, compilerOpts.rootDirs).replace(EXT, ''));
