@@ -302,9 +302,9 @@ an administrator ever needs to deactivate the service worker quickly.
 
 To deactivate the service worker, remove or rename the
 `ngsw-config.json` file. When the service worker's request
-for `ngsw.json` returns a `404`, then the service worker
-removes all of its caches and de-registers itself,
-essentially self-destructing.
+for `ngsw.json` returns a `404` or fails to parse, then the 
+service worker removes all of its caches and de-registers 
+itself, essentially self-destructing.
 
 ### Safety Worker
 
