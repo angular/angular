@@ -1,4 +1,5 @@
 import {Package} from 'dgeni';
+import {Host} from 'dgeni-packages/typescript/services/ts-host/host';
 import {patchLogService} from './patch-log-service';
 import {DocsPrivateFilter} from './processors/docs-private-filter';
 import {Categorizer} from './processors/categorizer';
@@ -122,6 +123,16 @@ apiDocsPackage.config((readTypeScriptModules: ReadTypeScriptModules, tsParser: T
     ...cdkPackages.map(packageName => `./cdk/${packageName}/index.ts`),
     ...materialPackages.map(packageName => `./lib/${packageName}/index.ts`)
   ];
+});
+
+apiDocsPackage.config((tsHost: Host) => {
+  // Disable concatenation of multiple leading comments for a TypeScript node. Since all shipped
+  // source files have a license banner at top, the license banner comment would be incorrectly
+  // considered as "comment" for the first TypeScript node of a given file. Since there are
+  // various files in the Material project where the first node of a source file is exported and
+  // should only use the first leading comment, we need to disable comment concatenation.
+  // See for example: src/cdk/coercion/boolean-property.ts
+  tsHost.concatMultipleLeadingComments = false;
 });
 
 // Configure processor for finding nunjucks templates.
