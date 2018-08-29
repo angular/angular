@@ -1,11 +1,12 @@
 {% extends 'base.template.html' -%}
 
 {% macro listItems(items, title, overridePath) %}
-  {% if items.length %}
+  {% set filteredItems = items | filterByPropertyValue('internal', undefined) %}
+  {% if filteredItems.length %}
   <section class="export-list">
     <h3>{$ title $}</h3>
     <table class="is-full-width list-table">
-      {% for item in items %}
+      {% for item in filteredItems %}
       <tr>
         <td><code class="code-anchor">
           <a href="{$ overridePath or item.path $}">{$ item.name $}</a></code></td>
