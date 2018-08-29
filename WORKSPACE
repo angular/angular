@@ -11,13 +11,6 @@ http_archive(
 )
 
 http_archive(
-    name = "build_bazel_rules_nodejs",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.11.4.zip"],
-    strip_prefix = "rules_nodejs-0.11.4",
-    sha256 = "c31c4ead696944a50fad2b3ee9dfbbeffe31a8dcca0b21b9bf5b3e6c6b069801",
-)
-
-http_archive(
     name = "bazel_skylib",
     urls = ["https://github.com/bazelbuild/bazel-skylib/archive/0.3.1.zip"],
     strip_prefix = "bazel-skylib-0.3.1",
