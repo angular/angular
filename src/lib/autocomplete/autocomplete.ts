@@ -5,32 +5,34 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+
+import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
+import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
   AfterContentInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   ContentChildren,
   ElementRef,
+  EventEmitter,
+  Inject,
+  InjectionToken,
   Input,
+  Output,
   QueryList,
   TemplateRef,
   ViewChild,
   ViewEncapsulation,
-  ChangeDetectorRef,
-  ChangeDetectionStrategy,
-  EventEmitter,
-  Output,
-  InjectionToken,
-  Inject,
 } from '@angular/core';
 import {
-  MatOption,
-  MatOptgroup,
-  MAT_OPTION_PARENT_COMPONENT,
-  mixinDisableRipple,
   CanDisableRipple,
+  CanDisableRippleCtor,
+  MAT_OPTION_PARENT_COMPONENT,
+  MatOptgroup,
+  MatOption,
+  mixinDisableRipple,
 } from '@angular/material/core';
-import {ActiveDescendantKeyManager} from '@angular/cdk/a11y';
-import {coerceBooleanProperty} from '@angular/cdk/coercion';
 
 
 /**
@@ -48,10 +50,12 @@ export class MatAutocompleteSelectedEvent {
     public option: MatOption) { }
 }
 
+
 // Boilerplate for applying mixins to MatAutocomplete.
 /** @docs-private */
 export class MatAutocompleteBase {}
-export const _MatAutocompleteMixinBase = mixinDisableRipple(MatAutocompleteBase);
+export const _MatAutocompleteMixinBase: CanDisableRippleCtor & typeof MatAutocompleteBase =
+    mixinDisableRipple(MatAutocompleteBase);
 
 /** Default `mat-autocomplete` options that can be overridden. */
 export interface MatAutocompleteDefaultOptions {

@@ -20,6 +20,7 @@ import {
   ElementRef,
   EventEmitter,
   forwardRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
@@ -28,14 +29,17 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
-  Inject,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanColor,
+  CanColorCtor,
   CanDisable,
+  CanDisableCtor,
   CanDisableRipple,
+  CanDisableRippleCtor,
   HasTabIndex,
+  HasTabIndexCtor,
   mixinColor,
   mixinDisabled,
   mixinDisableRipple,
@@ -71,7 +75,8 @@ export class MatRadioChange {
 // Boilerplate for applying mixins to MatRadioGroup.
 /** @docs-private */
 export class MatRadioGroupBase { }
-export const _MatRadioGroupMixinBase = mixinDisabled(MatRadioGroupBase);
+export const _MatRadioGroupMixinBase: CanDisableCtor & typeof MatRadioGroupBase =
+    mixinDisabled(MatRadioGroupBase);
 
 /**
  * A group of radio buttons. May contain one or more `<mat-radio-button>` elements.
@@ -311,8 +316,9 @@ export class MatRadioButtonBase {
 }
 // As per Material design specifications the selection control radio should use the accent color
 // palette by default. https://material.io/guidelines/components/selection-controls.html
-export const _MatRadioButtonMixinBase =
-    mixinColor(mixinDisableRipple(mixinTabIndex(MatRadioButtonBase)), 'accent');
+export const _MatRadioButtonMixinBase:
+    CanColorCtor & CanDisableRippleCtor & HasTabIndexCtor & typeof MatRadioButtonBase =
+        mixinColor(mixinDisableRipple(mixinTabIndex(MatRadioButtonBase)), 'accent');
 
 /**
  * A Material design radio-button. Typically placed inside of `<mat-radio-group>` elements.

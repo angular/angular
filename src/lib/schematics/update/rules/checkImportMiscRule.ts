@@ -12,43 +12,26 @@ import * as ts from 'typescript';
 import {isMaterialImportDeclaration} from '../material/typescript-specifiers';
 
 /**
- * Rule that detects import declarations that refer to outdated identifiers from Angular Material
- * or the CDK which cannot be updated automatically.
+ * Rule that walks through every identifier that is part of Angular Material and replaces the
+ * outdated name with the new one.
  */
 export class Rule extends Rules.TypedRule {
   applyWithProgram(sourceFile: ts.SourceFile, program: ts.Program): RuleFailure[] {
-    return this.applyWithWalker(new Walker(sourceFile, this.getOptions(), program));
+    return this.applyWithWalker(new CheckImportMiscWalker(sourceFile, this.getOptions(), program));
   }
 }
 
-export class Walker extends ProgramAwareRuleWalker {
-
-  visitImportDeclaration(node: ts.ImportDeclaration) {
-    if (!isMaterialImportDeclaration(node) ||
-        !node.importClause ||
-        !node.importClause.namedBindings) {
-      return;
+export class CheckImportMiscWalker extends ProgramAwareRuleWalker {
+  visitImportDeclaration(declaration: ts.ImportDeclaration) {
+    if (isMaterialImportDeclaration(declaration)) {
+      declaration.importClause.namedBindings.forEachChild(n => {
+        let importName = n.getFirstToken() && n.getFirstToken().getText();
+        if (importName === 'SHOW_ANIMATION' || importName === 'HIDE_ANIMATION') {
+          this.addFailureAtNode(
+              n,
+              `Found deprecated symbol "${red(importName)}" which has been removed`);
+        }
+      });
     }
-
-    const namedBindings = node.importClause.namedBindings;
-
-    if (ts.isNamedImports(namedBindings)) {
-      this._checkAnimationConstants(namedBindings);
-    }
-  }
-
-  /**
-   * Checks for named imports that refer to the deleted animation constants.
-   * https://github.com/angular/material2/commit/9f3bf274c4f15f0b0fbd8ab7dbf1a453076e66d9
-   */
-  private _checkAnimationConstants(namedImports: ts.NamedImports) {
-    namedImports.elements.filter(element => ts.isIdentifier(element.name)).forEach(element => {
-      const importName = element.name.text;
-
-      if (importName === 'SHOW_ANIMATION' || importName === 'HIDE_ANIMATION') {
-        this.addFailureAtNode(element,
-            `Found deprecated symbol "${red(importName)}" which has been removed`);
-      }
-    });
   }
 }

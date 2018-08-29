@@ -7,9 +7,9 @@
  */
 
 export {MatCommonModule, MATERIAL_SANITY_CHECKS} from './common-module';
-export {CanDisable, mixinDisabled} from './disabled';
-export {CanColor, mixinColor, ThemePalette} from './color';
-export {CanDisableRipple, mixinDisableRipple} from './disable-ripple';
-export {HasTabIndex, mixinTabIndex} from './tabindex';
-export {CanUpdateErrorState, mixinErrorState} from './error-state';
-export {HasInitialized, mixinInitialized} from './initialized';
+export {CanDisable, CanDisableCtor, mixinDisabled} from './disabled';
+export {CanColor, CanColorCtor, mixinColor, ThemePalette} from './color';
+export {CanDisableRipple, CanDisableRippleCtor, mixinDisableRipple} from './disable-ripple';
+export {HasTabIndex, HasTabIndexCtor, mixinTabIndex} from './tabindex';
+export {CanUpdateErrorState, CanUpdateErrorStateCtor, mixinErrorState} from './error-state';
+export {HasInitialized, HasInitializedCtor, mixinInitialized} from './initialized';

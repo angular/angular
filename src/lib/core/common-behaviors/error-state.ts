@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Constructor} from './constructor';
-import {ErrorStateMatcher} from '../error/error-options';
 import {FormControl, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
 import {Subject} from 'rxjs';
+import {ErrorStateMatcher} from '../error/error-options';
+import {Constructor} from './constructor';
+
 
 /** @docs-private */
 export interface CanUpdateErrorState {
@@ -18,6 +19,9 @@ export interface CanUpdateErrorState {
   errorState: boolean;
   errorStateMatcher: ErrorStateMatcher;
 }
+
+/** @docs-private */
+export type CanUpdateErrorStateCtor = Constructor<CanUpdateErrorState>;
 
 /** @docs-private */
 export interface HasErrorState {
@@ -32,7 +36,7 @@ export interface HasErrorState {
  * For component with `errorState` and need to update `errorState`.
  */
 export function mixinErrorState<T extends Constructor<HasErrorState>>(base: T)
-: Constructor<CanUpdateErrorState> & T {
+: CanUpdateErrorStateCtor & T {
   return class extends base {
     /** Whether the component is in an error state. */
     errorState: boolean = false;

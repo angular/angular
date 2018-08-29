@@ -8,24 +8,29 @@
 
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {getSupportedInputTypes, Platform} from '@angular/cdk/platform';
+import {AutofillMonitor} from '@angular/cdk/text-field';
 import {
   Directive,
   DoCheck,
   ElementRef,
   Inject,
   Input,
+  NgZone,
   OnChanges,
   OnDestroy,
   OnInit,
   Optional,
   Self,
-  NgZone,
 } from '@angular/core';
 import {FormGroupDirective, NgControl, NgForm} from '@angular/forms';
-import {CanUpdateErrorState, ErrorStateMatcher, mixinErrorState} from '@angular/material/core';
+import {
+  CanUpdateErrorState,
+  CanUpdateErrorStateCtor,
+  ErrorStateMatcher,
+  mixinErrorState,
+} from '@angular/material/core';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {Subject} from 'rxjs';
-import {AutofillMonitor} from '@angular/cdk/text-field';
 import {getMatInputUnsupportedTypeError} from './input-errors';
 import {MAT_INPUT_VALUE_ACCESSOR} from './input-value-accessor';
 
@@ -54,7 +59,8 @@ export class MatInputBase {
               /** @docs-private */
               public ngControl: NgControl) {}
 }
-export const _MatInputMixinBase = mixinErrorState(MatInputBase);
+export const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
+    mixinErrorState(MatInputBase);
 
 /** Directive that allows a native input to work inside a `MatFormField`. */
 @Directive({

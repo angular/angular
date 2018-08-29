@@ -6,13 +6,15 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Component, ViewEncapsulation, Input, ChangeDetectionStrategy} from '@angular/core';
-import {mixinDisabled, CanDisable} from '../common-behaviors/disabled';
+import {ChangeDetectionStrategy, Component, Input, ViewEncapsulation} from '@angular/core';
+import {CanDisable, CanDisableCtor, mixinDisabled} from '../common-behaviors/disabled';
+
 
 // Boilerplate for applying mixins to MatOptgroup.
 /** @docs-private */
 export class MatOptgroupBase { }
-export const _MatOptgroupMixinBase = mixinDisabled(MatOptgroupBase);
+export const _MatOptgroupMixinBase: CanDisableCtor & typeof MatOptgroupBase =
+    mixinDisabled(MatOptgroupBase);
 
 // Counter for unique group ids.
 let _uniqueOptgroupIdCounter = 0;

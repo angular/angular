@@ -29,9 +29,13 @@ import {
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanColor,
+  CanColorCtor,
   CanDisable,
+  CanDisableCtor,
   CanDisableRipple,
+  CanDisableRippleCtor,
   HasTabIndex,
+  HasTabIndexCtor,
   MatRipple,
   mixinColor,
   mixinDisabled,
@@ -39,8 +43,8 @@ import {
   mixinTabIndex,
   RippleRef,
 } from '@angular/material/core';
-import {MAT_CHECKBOX_CLICK_ACTION, MatCheckboxClickAction} from './checkbox-config';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {MAT_CHECKBOX_CLICK_ACTION, MatCheckboxClickAction} from './checkbox-config';
 
 
 // Increasing integer for generating unique ids for checkbox components.
@@ -85,8 +89,13 @@ export class MatCheckboxChange {
 export class MatCheckboxBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatCheckboxMixinBase =
-  mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatCheckboxBase)), 'accent'));
+export const _MatCheckboxMixinBase:
+    HasTabIndexCtor &
+    CanColorCtor &
+    CanDisableRippleCtor &
+    CanDisableCtor &
+    typeof MatCheckboxBase =
+        mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatCheckboxBase)), 'accent'));
 
 
 /**

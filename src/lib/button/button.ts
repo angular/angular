@@ -23,10 +23,13 @@ import {
   CanColor,
   CanDisable,
   CanDisableRipple,
+  CanColorCtor,
+  CanDisableCtor,
+  CanDisableRippleCtor,
   MatRipple,
   mixinColor,
   mixinDisabled,
-  mixinDisableRipple
+  mixinDisableRipple,
 } from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 
@@ -52,8 +55,10 @@ const BUTTON_HOST_ATTRIBUTES = [
 export class MatButtonBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatButtonMixinBase = mixinColor(mixinDisabled(mixinDisableRipple(MatButtonBase)));
 
+export const _MatButtonMixinBase:
+    CanDisableRippleCtor & CanDisableCtor & CanColorCtor & typeof MatButtonBase =
+        mixinColor(mixinDisabled(mixinDisableRipple(MatButtonBase)));
 
 /**
  * Material design button.

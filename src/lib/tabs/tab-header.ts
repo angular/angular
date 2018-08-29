@@ -27,7 +27,7 @@ import {
   ViewChild,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanDisableRipple, mixinDisableRipple} from '@angular/material/core';
+import {CanDisableRipple, CanDisableRippleCtor, mixinDisableRipple} from '@angular/material/core';
 import {merge, of as observableOf, Subject} from 'rxjs';
 import {takeUntil} from 'rxjs/operators';
 import {MatInkBar} from './ink-bar';
@@ -51,7 +51,8 @@ const EXAGGERATED_OVERSCROLL = 60;
 // Boilerplate for applying mixins to MatTabHeader.
 /** @docs-private */
 export class MatTabHeaderBase {}
-export const _MatTabHeaderMixinBase = mixinDisableRipple(MatTabHeaderBase);
+export const _MatTabHeaderMixinBase: CanDisableRippleCtor & typeof MatTabHeaderBase =
+    mixinDisableRipple(MatTabHeaderBase);
 
 /**
  * The header of the tab group which displays a list of all the tabs in the tab group. Includes

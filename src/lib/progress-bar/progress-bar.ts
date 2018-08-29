@@ -25,7 +25,7 @@ import {
 import {fromEvent, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
-import {CanColor, mixinColor} from '@angular/material/core';
+import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
 import {DOCUMENT} from '@angular/common';
 
 // TODO(josephperrott): Benchpress tests.
@@ -42,7 +42,8 @@ export interface ProgressAnimationEnd {
   value: number;
 }
 
-export const _MatProgressBarMixinBase = mixinColor(MatProgressBarBase, 'primary');
+export const _MatProgressBarMixinBase: CanColorCtor & typeof MatProgressBarBase =
+    mixinColor(MatProgressBarBase, 'primary');
 
 /**
  * Injection token used to provide the current location to `MatProgressBar`.

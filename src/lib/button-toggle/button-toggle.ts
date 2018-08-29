@@ -8,8 +8,10 @@
 
 import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
+import {SelectionModel} from '@angular/cdk/collections';
 import {
   AfterContentInit,
+  Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -26,16 +28,17 @@ import {
   QueryList,
   ViewChild,
   ViewEncapsulation,
-  Attribute,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanDisable,
+  CanDisableCtor,
   CanDisableRipple,
+  CanDisableRippleCtor,
   mixinDisabled,
-  mixinDisableRipple
+  mixinDisableRipple,
 } from '@angular/material/core';
-import {SelectionModel} from '@angular/cdk/collections';
+
 
 /** Acceptable types for a button toggle. */
 export type ToggleType = 'checkbox' | 'radio';
@@ -43,7 +46,8 @@ export type ToggleType = 'checkbox' | 'radio';
 // Boilerplate for applying mixins to MatButtonToggleGroup and MatButtonToggleGroupMultiple
 /** @docs-private */
 export class MatButtonToggleGroupBase {}
-export const _MatButtonToggleGroupMixinBase = mixinDisabled(MatButtonToggleGroupBase);
+export const _MatButtonToggleGroupMixinBase: CanDisableCtor & typeof MatButtonToggleGroupBase =
+    mixinDisabled(MatButtonToggleGroupBase);
 
 /**
  * Provider Expression that allows mat-button-toggle-group to register as a ControlValueAccessor.
@@ -315,7 +319,8 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase impleme
 // Boilerplate for applying mixins to the MatButtonToggle class.
 /** @docs-private */
 export class MatButtonToggleBase {}
-export const _MatButtonToggleMixinBase = mixinDisableRipple(MatButtonToggleBase);
+export const _MatButtonToggleMixinBase: CanDisableRippleCtor & typeof MatButtonToggleBase =
+    mixinDisableRipple(MatButtonToggleBase);
 
 /** Single button inside of a toggle group. */
 @Component({

@@ -16,6 +16,9 @@ export interface CanColor {
 }
 
 /** @docs-private */
+export type CanColorCtor = Constructor<CanColor>;
+
+/** @docs-private */
 export interface HasElementRef {
   _elementRef: ElementRef;
 }
@@ -24,8 +27,8 @@ export interface HasElementRef {
 export type ThemePalette = 'primary' | 'accent' | 'warn' | undefined;
 
 /** Mixin to augment a directive with a `color` property. */
-export function mixinColor<T extends Constructor<HasElementRef>>(base: T,
-    defaultColor?: ThemePalette): Constructor<CanColor> & T {
+export function mixinColor<T extends Constructor<HasElementRef>>(
+    base: T, defaultColor?: ThemePalette): CanColorCtor & T {
   return class extends base {
     private _color: ThemePalette;
 

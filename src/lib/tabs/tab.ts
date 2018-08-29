@@ -21,16 +21,17 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanDisable, mixinDisabled} from '@angular/material/core';
+import {CanDisable, CanDisableCtor, mixinDisabled} from '@angular/material/core';
 import {Subject} from 'rxjs';
-import {MatTabLabel} from './tab-label';
 import {MatTabContent} from './tab-content';
+import {MatTabLabel} from './tab-label';
 
 
 // Boilerplate for applying mixins to MatTab.
 /** @docs-private */
 export class MatTabBase {}
-export const _MatTabMixinBase = mixinDisabled(MatTabBase);
+export const _MatTabMixinBase: CanDisableCtor & typeof MatTabBase =
+    mixinDisabled(MatTabBase);
 
 @Component({
   moduleId: module.id,

@@ -27,6 +27,7 @@ import {
   ElementRef,
   EventEmitter,
   forwardRef,
+  Inject,
   Input,
   OnDestroy,
   OnInit,
@@ -34,20 +35,22 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
-  Inject,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   CanColor,
+  CanColorCtor,
   CanDisable,
+  CanDisableCtor,
   HammerInput,
   HasTabIndex,
+  HasTabIndexCtor,
   mixinColor,
   mixinDisabled,
   mixinTabIndex,
 } from '@angular/material/core';
-import {Subscription} from 'rxjs';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
+import {Subscription} from 'rxjs';
 
 /**
  * Visually, a 30px separation between tick marks looks best. This is very subjective but it is
@@ -89,8 +92,12 @@ export class MatSliderChange {
 export class MatSliderBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatSliderMixinBase =
-  mixinTabIndex(mixinColor(mixinDisabled(MatSliderBase), 'accent'));
+export const _MatSliderMixinBase:
+    HasTabIndexCtor &
+    CanColorCtor &
+    CanDisableCtor &
+    typeof MatSliderBase =
+        mixinTabIndex(mixinColor(mixinDisabled(MatSliderBase), 'accent'));
 
 /**
  * Allows users to select from a range of values by moving the slider thumb. It is similar in

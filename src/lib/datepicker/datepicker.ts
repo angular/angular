@@ -18,7 +18,6 @@ import {
 } from '@angular/cdk/overlay';
 import {ComponentPortal, ComponentType} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
-import {take, filter} from 'rxjs/operators';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -30,20 +29,27 @@ import {
   InjectionToken,
   Input,
   NgZone,
+  OnDestroy,
   Optional,
   Output,
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
-  OnDestroy,
 } from '@angular/core';
-import {CanColor, DateAdapter, mixinColor, ThemePalette} from '@angular/material/core';
+import {
+  CanColor,
+  CanColorCtor,
+  DateAdapter,
+  mixinColor,
+  ThemePalette,
+} from '@angular/material/core';
 import {MatDialog, MatDialogRef} from '@angular/material/dialog';
 import {merge, Subject, Subscription} from 'rxjs';
-import {createMissingDateImplError} from './datepicker-errors';
-import {MatDatepickerInput} from './datepicker-input';
+import {filter, take} from 'rxjs/operators';
 import {MatCalendar} from './calendar';
 import {matDatepickerAnimations} from './datepicker-animations';
+import {createMissingDateImplError} from './datepicker-errors';
+import {MatDatepickerInput} from './datepicker-input';
 
 /** Used to generate a unique ID for each datepicker instance. */
 let datepickerUid = 0;
@@ -69,7 +75,8 @@ export const MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY_PROVIDER = {
 export class MatDatepickerContentBase {
   constructor(public _elementRef: ElementRef) { }
 }
-export const _MatDatepickerContentMixinBase = mixinColor(MatDatepickerContentBase);
+export const _MatDatepickerContentMixinBase: CanColorCtor & typeof MatDatepickerContentBase =
+    mixinColor(MatDatepickerContentBase);
 
 /**
  * Component used as the content for the datepicker dialog and popup. We use this instead of using

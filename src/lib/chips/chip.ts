@@ -25,8 +25,11 @@ import {
 } from '@angular/core';
 import {
   CanColor,
+  CanColorCtor,
   CanDisable,
+  CanDisableCtor,
   CanDisableRipple,
+  CanDisableRippleCtor,
   MAT_RIPPLE_GLOBAL_OPTIONS,
   mixinColor,
   mixinDisabled,
@@ -34,7 +37,7 @@ import {
   RippleConfig,
   RippleGlobalOptions,
   RippleRenderer,
-  RippleTarget
+  RippleTarget,
 } from '@angular/material/core';
 import {Subject} from 'rxjs';
 import {take} from 'rxjs/operators';
@@ -64,8 +67,9 @@ export class MatChipBase {
   constructor(public _elementRef: ElementRef) {}
 }
 
-export const _MatChipMixinBase =
-    mixinColor(mixinDisableRipple(mixinDisabled(MatChipBase)), 'primary');
+export const _MatChipMixinBase:
+    CanColorCtor & CanDisableRippleCtor & CanDisableCtor & typeof MatChipBase =
+        mixinColor(mixinDisableRipple(mixinDisabled(MatChipBase)), 'primary');
 
 const CHIP_ATTRIBUTE_NAMES = ['mat-basic-chip'];
 

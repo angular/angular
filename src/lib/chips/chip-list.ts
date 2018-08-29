@@ -10,7 +10,7 @@ import {FocusKeyManager} from '@angular/cdk/a11y';
 import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
-import {BACKSPACE, HOME, END} from '@angular/cdk/keycodes';
+import {BACKSPACE, END, HOME} from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
   ChangeDetectionStrategy,
@@ -30,7 +30,12 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {ControlValueAccessor, FormGroupDirective, NgControl, NgForm} from '@angular/forms';
-import {CanUpdateErrorState, ErrorStateMatcher, mixinErrorState} from '@angular/material/core';
+import {
+  CanUpdateErrorState,
+  CanUpdateErrorStateCtor,
+  ErrorStateMatcher,
+  mixinErrorState,
+} from '@angular/material/core';
 import {MatFormFieldControl} from '@angular/material/form-field';
 import {merge, Observable, Subject, Subscription} from 'rxjs';
 import {startWith, takeUntil} from 'rxjs/operators';
@@ -47,7 +52,8 @@ export class MatChipListBase {
               /** @docs-private */
               public ngControl: NgControl) {}
 }
-export const _MatChipListMixinBase = mixinErrorState(MatChipListBase);
+export const _MatChipListMixinBase: CanUpdateErrorStateCtor & typeof MatChipListBase =
+    mixinErrorState(MatChipListBase);
 
 
 // Increasing integer for generating unique ids for chip-list components.

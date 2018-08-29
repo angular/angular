@@ -28,7 +28,7 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import {
-  CanColor,
+  CanColor, CanColorCtor,
   FloatLabelType,
   LabelOptions,
   MAT_LABEL_GLOBAL_OPTIONS,
@@ -70,7 +70,8 @@ export class MatFormFieldBase {
  * Base class to which we're applying the form field mixins.
  * @docs-private
  */
-export const _MatFormFieldMixinBase = mixinColor(MatFormFieldBase, 'primary');
+export const _MatFormFieldMixinBase: CanColorCtor & typeof MatFormFieldBase =
+    mixinColor(MatFormFieldBase, 'primary');
 
 /** Possible appearance styles for the form field. */
 export type MatFormFieldAppearance = 'legacy' | 'standard' | 'fill' | 'outline';

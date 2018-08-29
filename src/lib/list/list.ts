@@ -18,17 +18,25 @@ import {
   QueryList,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanDisableRipple, MatLine, MatLineSetter, mixinDisableRipple} from '@angular/material/core';
+import {
+  CanDisableRipple,
+  CanDisableRippleCtor,
+  MatLine,
+  MatLineSetter,
+  mixinDisableRipple,
+} from '@angular/material/core';
 
 // Boilerplate for applying mixins to MatList.
 /** @docs-private */
 export class MatListBase {}
-export const _MatListMixinBase = mixinDisableRipple(MatListBase);
+export const _MatListMixinBase: CanDisableRippleCtor & typeof MatListBase =
+    mixinDisableRipple(MatListBase);
 
 // Boilerplate for applying mixins to MatListItem.
 /** @docs-private */
 export class MatListItemBase {}
-export const _MatListItemMixinBase = mixinDisableRipple(MatListItemBase);
+export const _MatListItemMixinBase: CanDisableRippleCtor & typeof MatListItemBase =
+    mixinDisableRipple(MatListItemBase);
 
 @Component({
   moduleId: module.id,

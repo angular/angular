@@ -31,14 +31,16 @@ export interface CanStick {
   resetStickyChanged(): void;
 }
 
+/** @docs-private */
+export type CanStickCtor = Constructor<CanStick>;
+
 /**
  * Mixin to provide a directive with a function that checks if the sticky input has been
  * changed since the last time the function was called. Essentially adds a dirty-check to the
  * sticky value.
  * @docs-private
  */
-export function mixinHasStickyInput<T extends Constructor<{}>>(base: T):
-    Constructor<CanStick> & T {
+export function mixinHasStickyInput<T extends Constructor<{}>>(base: T): CanStickCtor & T {
   return class extends base {
     /** Whether sticky positioning should be applied. */
     get sticky(): boolean { return this._sticky; }

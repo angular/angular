@@ -6,9 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ContentChild, Directive, ElementRef, Input, TemplateRef} from '@angular/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
-import {CanStick, mixinHasStickyInput} from './can-stick';
+import {ContentChild, Directive, ElementRef, Input, TemplateRef} from '@angular/core';
+import {CanStick, CanStickCtor, mixinHasStickyInput} from './can-stick';
+
 
 /** Base interface for a cell definition. Captures a column's cell template definition. */
 export interface CellDef {
@@ -45,7 +46,8 @@ export class CdkFooterCellDef implements CellDef {
 // Boilerplate for applying mixins to CdkColumnDef.
 /** @docs-private */
 export class CdkColumnDefBase {}
-export const _CdkColumnDefBase = mixinHasStickyInput(CdkColumnDefBase);
+export const _CdkColumnDefBase: CanStickCtor & typeof CdkColumnDefBase =
+    mixinHasStickyInput(CdkColumnDefBase);
 
 /**
  * Column definition for the CDK table.

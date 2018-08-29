@@ -30,11 +30,11 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
-  CanColor,
-  CanDisable,
-  CanDisableRipple,
+  CanColor, CanColorCtor,
+  CanDisable, CanDisableCtor,
+  CanDisableRipple, CanDisableRippleCtor,
   HammerInput,
-  HasTabIndex,
+  HasTabIndex, HasTabIndexCtor,
   mixinColor,
   mixinDisabled,
   mixinDisableRipple,
@@ -69,8 +69,13 @@ export class MatSlideToggleChange {
 export class MatSlideToggleBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatSlideToggleMixinBase =
-  mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatSlideToggleBase)), 'accent'));
+export const _MatSlideToggleMixinBase:
+    HasTabIndexCtor &
+    CanColorCtor &
+    CanDisableRippleCtor &
+    CanDisableCtor &
+    typeof MatSlideToggleBase =
+        mixinTabIndex(mixinColor(mixinDisableRipple(mixinDisabled(MatSlideToggleBase)), 'accent'));
 
 /** Represents a slidable "switch" toggle that can be moved between on and off. */
 @Component({

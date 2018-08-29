@@ -11,6 +11,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {SelectionModel} from '@angular/cdk/collections';
 import {
+  A,
   DOWN_ARROW,
   END,
   ENTER,
@@ -19,7 +20,6 @@ import {
   RIGHT_ARROW,
   SPACE,
   UP_ARROW,
-  A,
 } from '@angular/cdk/keycodes';
 import {
   CdkConnectedOverlay,
@@ -61,10 +61,14 @@ import {
   _countGroupLabelsBeforeOption,
   _getOptionScrollPosition,
   CanDisable,
+  CanDisableCtor,
   CanDisableRipple,
+  CanDisableRippleCtor,
   CanUpdateErrorState,
+  CanUpdateErrorStateCtor,
   ErrorStateMatcher,
   HasTabIndex,
+  HasTabIndexCtor,
   MAT_OPTION_PARENT_COMPONENT,
   MatOptgroup,
   MatOption,
@@ -77,13 +81,13 @@ import {
 import {MatFormField, MatFormFieldControl} from '@angular/material/form-field';
 import {defer, merge, Observable, Subject} from 'rxjs';
 import {
+  distinctUntilChanged,
   filter,
   map,
   startWith,
   switchMap,
   take,
   takeUntil,
-  distinctUntilChanged,
 } from 'rxjs/operators';
 import {matSelectAnimations} from './select-animations';
 import {
@@ -164,8 +168,13 @@ export class MatSelectBase {
               public _parentFormGroup: FormGroupDirective,
               public ngControl: NgControl) {}
 }
-export const _MatSelectMixinBase = mixinDisableRipple(
-    mixinTabIndex(mixinDisabled(mixinErrorState(MatSelectBase))));
+export const _MatSelectMixinBase:
+    CanDisableCtor &
+    HasTabIndexCtor &
+    CanDisableRippleCtor &
+    CanUpdateErrorStateCtor &
+    typeof MatSelectBase =
+        mixinDisableRipple(mixinTabIndex(mixinDisabled(mixinErrorState(MatSelectBase))));
 
 
 /**

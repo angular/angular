@@ -6,6 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {Platform} from '@angular/cdk/platform';
+import {DOCUMENT} from '@angular/common';
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
@@ -13,21 +15,21 @@ import {
   ContentChildren,
   Directive,
   ElementRef,
+  Inject,
   isDevMode,
   QueryList,
   ViewEncapsulation,
-  Inject,
 } from '@angular/core';
-import {CanColor, mixinColor} from '@angular/material/core';
-import {Platform} from '@angular/cdk/platform';
-import {DOCUMENT} from '@angular/common';
+import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
+
 
 // Boilerplate for applying mixins to MatToolbar.
 /** @docs-private */
 export class MatToolbarBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatToolbarMixinBase = mixinColor(MatToolbarBase);
+export const _MatToolbarMixinBase: CanColorCtor & typeof MatToolbarBase =
+    mixinColor(MatToolbarBase);
 
 @Directive({
   selector: 'mat-toolbar-row',

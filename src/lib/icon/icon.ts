@@ -18,7 +18,7 @@ import {
   SimpleChanges,
   ViewEncapsulation,
 } from '@angular/core';
-import {CanColor, mixinColor} from '@angular/material/core';
+import {CanColor, CanColorCtor, mixinColor} from '@angular/material/core';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {MatIconRegistry} from './icon-registry';
 
@@ -28,7 +28,8 @@ import {MatIconRegistry} from './icon-registry';
 export class MatIconBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatIconMixinBase = mixinColor(MatIconBase);
+export const _MatIconMixinBase: CanColorCtor & typeof MatIconBase =
+    mixinColor(MatIconBase);
 
 
 /**

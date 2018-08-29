@@ -25,10 +25,12 @@ import {
 } from '@angular/core';
 import {
   CanColor,
+  CanColorCtor,
   CanDisableRipple,
+  CanDisableRippleCtor,
   mixinColor,
   mixinDisableRipple,
-  ThemePalette
+  ThemePalette,
 } from '@angular/material/core';
 import {merge, Subscription} from 'rxjs';
 import {MatTab} from './tab';
@@ -54,7 +56,8 @@ export type MatTabHeaderPosition = 'above' | 'below';
 export class MatTabGroupBase {
   constructor(public _elementRef: ElementRef) {}
 }
-export const _MatTabGroupMixinBase = mixinColor(mixinDisableRipple(MatTabGroupBase), 'primary');
+export const _MatTabGroupMixinBase: CanColorCtor & CanDisableRippleCtor & typeof MatTabGroupBase =
+    mixinColor(mixinDisableRipple(MatTabGroupBase), 'primary');
 
 /**
  * Material design tab-group component.  Supports basic tab pairs (label + content) and includes

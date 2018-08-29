@@ -20,8 +20,8 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
 } from '@angular/core';
+import {CanStick, CanStickCtor, mixinHasStickyInput} from './can-stick';
 import {CdkCellDef, CdkColumnDef} from './cell';
-import {CanStick, mixinHasStickyInput} from './can-stick';
 
 /**
  * The row template that can be used by the mat-table. Should not be used outside of the
@@ -76,7 +76,8 @@ export abstract class BaseRowDef implements OnChanges {
 // Boilerplate for applying mixins to CdkHeaderRowDef.
 /** @docs-private */
 export class CdkHeaderRowDefBase extends BaseRowDef {}
-export const _CdkHeaderRowDefBase = mixinHasStickyInput(CdkHeaderRowDefBase);
+export const _CdkHeaderRowDefBase: CanStickCtor & typeof CdkHeaderRowDefBase =
+    mixinHasStickyInput(CdkHeaderRowDefBase);
 
 /**
  * Header row definition for the CDK table.
@@ -101,7 +102,8 @@ export class CdkHeaderRowDef extends _CdkHeaderRowDefBase implements CanStick, O
 // Boilerplate for applying mixins to CdkFooterRowDef.
 /** @docs-private */
 export class CdkFooterRowDefBase extends BaseRowDef {}
-export const _CdkFooterRowDefBase = mixinHasStickyInput(CdkFooterRowDefBase);
+export const _CdkFooterRowDefBase: CanStickCtor & typeof CdkFooterRowDefBase =
+    mixinHasStickyInput(CdkFooterRowDefBase);
 
 /**
  * Footer row definition for the CDK table.
