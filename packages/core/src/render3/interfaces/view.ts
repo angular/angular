@@ -315,6 +315,11 @@ export interface TView {
   childIndex: number;
 
   /**
+   * A reference to the first child node located in the view.
+   */
+  firstChild: TNode|null;
+
+  /**
    * Selector matches for a node are temporarily cached on the TView so the
    * DI system can eagerly instantiate directives on the same node if they are
    * created out of order. They are overwritten after each node.
