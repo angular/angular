@@ -167,7 +167,7 @@ describe('MatRipple', () => {
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     }));
 
-    it('should ignore fake mouse events from screen readers', () => fakeAsync(() => {
+    it('should ignore fake mouse events from screen readers', fakeAsync(() => {
       const event = createMouseEvent('mousedown');
       Object.defineProperty(event, 'buttons', {get: () => 0});
 
