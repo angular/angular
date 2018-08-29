@@ -34,6 +34,8 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
   .processor(require('./processors/computeStability'))
   .processor(require('./processors/removeInjectableConstructors'))
   .processor(require('./processors/processPackages'))
+  .processor(require('./processors/processNgModuleDocs'))
+
 
   /**
    * These are the API doc types that will be rendered to actual files.
@@ -41,7 +43,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
    * more Angular specific API types, such as decorators and directives.
    */
   .factory(function API_DOC_TYPES_TO_RENDER(EXPORT_DOC_TYPES) {
-    return EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe', 'package']);
+    return EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'ngmodule', 'pipe', 'package']);
   })
 
   /**
@@ -198,7 +200,7 @@ module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
       outputPathTemplate: '${moduleFolder}.json'
     });
     computePathsProcessor.pathTemplates.push({
-      docTypes: EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'pipe']),
+      docTypes: EXPORT_DOC_TYPES.concat(['decorator', 'directive', 'ngmodule', 'pipe']),
       pathTemplate: '${moduleDoc.moduleFolder}/${name}',
       outputPathTemplate: '${moduleDoc.moduleFolder}/${name}.json',
     });
