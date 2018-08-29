@@ -6,57 +6,66 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Directive, Input, OnInit, TemplateRef, ViewContainerRef} from '@angular/core';
+
+
 
 /**
- * This is a directive to store data in a local variable
- * I developped it from angular's ngIf directive.
- * https://github.com/angular/angular/blob/6.1.1/packages/common/src/directives/ng_if.ts
+ * Exposes a stored expression value to its child view.
  *
- * ## Storing result in a variable
+ * `ngLet` evaluates the expression and, if stored in a variable, provides the result to its child
+ * view.
  *
- * A common pattern is that we need to show a set of properties from the same object. If the
- * object is undefined, then we have to use the safe-traversal-operator `?.` to guard against
- * dereferencing a `null` value. This is especially the case when waiting on async data such as
- * when using the `async` pipe as shown in following example:
  *
- * ```
- * Hello {{ (userStream|async)?.last }}, {{ (userStream|async)?.first }}!
- * ```
- * There are several inefficiencies in the above example:
- *  - We create multiple subscriptions on `userStream`. One for each `async` pipe, or two in the
- *    example above.
- *  - We have to use the safe-traversal-operator `?.` to access properties, which is cumbersome.
- *  - We have to place the `async` pipe in parenthesis.
+ * @usageNotes
  *
- * A better way to do this is to use `ngIf` and store the result of the condition in a local
+ * ### Storing falsy result in a variable
+ *
+ * `ngIf` supports the common use case of storing a value in a variable and exposing it to its child
+ * view.
+ *
+ * {@example common/ngIf/ts/module.ts region='NgIfAs'}
+ *
+ * This works well for most cases. However, if the value stored is falsy (ie. `false`, `0`, `''`,
+ * etc)
+ * the child view will not be rendered. This can be problematic if the stored value is required to
+ * be displayed,
+ * or provided as an argument to an output or DOM event.
+ *
+ * `ngLet` works around this issue by always rendering the child view, regardless of the result of
+ * its expression.
+ *
+ * ### Semantic meaning
+ *
+ * Even in the cases where `ngIf` works, some semantic meaning is lost. Reading the code doesn't
+ * communicate whether
+ * the auther intended contitional rendering or simply needed to expose the result of the expression
+ * to its child view.
+ *
+ * `ngLet` explicitly communicates semantic meaning, illustrating that the intent of the author's
+ * code was to expose the
+ * result of the expression, not conditional rendering.
+ *
+ * ### Syntax
+ *
+ * Simple form:
+ * - `<div *ngLet="condition as value">{{value}}</div>`
+ * - `<ng-template [ngLet]="condition as value"><div>{{value}}</div></ng-template>`
+ *
+ *
  */
-
 @Directive({selector: '[ngLet]'})
-export class NgLet {
+export class NgLet implements OnInit {
   private _context: NgLetContext = new NgLetContext();
-  private _thenTemplateRef: TemplateRef<NgLetContext>|null = null;
-  private _thenViewRef: EmbeddedViewRef<NgLetContext>|null = null;
 
-  constructor(private _viewContainer: ViewContainerRef, templateRef: TemplateRef<NgLetContext>) {
-    this._thenTemplateRef = templateRef;
+  constructor(
+      private _viewContainer: ViewContainerRef, private _templateRef: TemplateRef<NgLetContext>, ) {
   }
 
   @Input()
-  set ngLet(condition: any) {
-    this._context.$implicit = this._context.ngLet = condition;
-    this._updateView();
-  }
+  set ngLet(value: any) { this._context.$implicit = this._context.ngLet = value; }
 
-  private _updateView() {
-    if (!this._thenViewRef) {
-      this._viewContainer.clear();
-      if (this._thenTemplateRef) {
-        this._thenViewRef =
-            this._viewContainer.createEmbeddedView(this._thenTemplateRef, this._context);
-      }
-    }
-  }
+  ngOnInit() { this._viewContainer.createEmbeddedView(this._templateRef, this._context); }
 }
 
 export class NgLetContext {

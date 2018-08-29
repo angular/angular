@@ -291,7 +291,7 @@ export declare class NgIfContext {
 
 export declare class NgLet {
     ngLet: any;
-    constructor(_viewContainer: ViewContainerRef, templateRef: TemplateRef<NgLetContext>);
+    constructor(_viewContainer: ViewContainerRef, _templateRef: TemplateRef<NgLetContext>);
 }
 
 export declare class NgLetContext {
