@@ -28,13 +28,11 @@
     "inlineStyle": {
       "description": "Specifies if the style will be in the ts file.",
       "type": "boolean",
-      "default": false,
       "alias": "s"
     },
     "inlineTemplate": {
       "description": "Specifies if the template will be in the ts file.",
       "type": "boolean",
-      "default": false,
       "alias": "t"
     },
     "viewEncapsulation": {
@@ -62,8 +60,7 @@
     },
     "spec": {
       "type": "boolean",
-      "description": "Specifies if a spec file is generated.",
-      "default": true
+      "description": "Specifies if a spec file is generated."
     },
     "flat": {
       "type": "boolean",

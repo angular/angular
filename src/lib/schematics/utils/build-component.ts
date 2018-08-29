@@ -36,10 +36,10 @@ import {buildRelativePath, findModuleFromOptions} from '@schematics/angular/util
 import {parseName} from '@schematics/angular/utility/parse-name';
 import {buildDefaultPath} from '@schematics/angular/utility/project';
 import {validateHtmlSelector, validateName} from '@schematics/angular/utility/validation';
-import {resolve, dirname, join} from 'path';
 import {readFileSync} from 'fs';
+import {dirname, join, resolve} from 'path';
 import * as ts from 'typescript';
-import {determineDefaultStyleExt} from './default-style-ext';
+import {getDefaultComponentOptions} from './schematic-options';
 
 function readIntoSourceFile(host: Tree, modulePath: string): ts.SourceFile {
   const text = host.read(modulePath);
@@ -163,14 +163,17 @@ export function buildComponent(options: ComponentOptions,
   return (host: Tree, context: FileSystemSchematicContext) => {
     const workspace = getWorkspace(host);
     const project = workspace.projects[options.project || workspace.defaultProject];
+    const defaultComponentOptions = getDefaultComponentOptions(project);
 
     const schematicFilesUrl = './files';
     const schematicFilesPath = resolve(dirname(context.schematic.description.path),
         schematicFilesUrl);
 
-    if (!options.styleext) {
-      options.styleext = determineDefaultStyleExt(project);
-    }
+    // Add the default component option values to the options if an option is not explicitly
+    // specified but a default component option is available.
+    Object.keys(options)
+      .filter(optionName => options[optionName] == null && defaultComponentOptions[optionName])
+      .forEach(optionName => options[optionName] = defaultComponentOptions[optionName]);
 
     if (options.path === undefined) {
       options.path = buildDefaultPath(project);

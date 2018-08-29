@@ -41,18 +41,6 @@ describe('material-table-schematic', () => {
     expect(componentContent).toContain('FooDataSource');
   });
 
-  it('should support passing the style extension option', () => {
-    const tree = runner.runSchematic('table', {styleext: 'scss', ...baseOptions}, createTestApp());
-
-    expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
-  });
-
-  it('should fallback to the default angular:component style extension', () => {
-    const tree = runner.runSchematic('table', baseOptions, createTestApp({style: 'less'}));
-
-    expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.less');
-  });
-
   it('should add table imports to module', () => {
     const tree = runner.runSchematic('table', baseOptions, createTestApp());
     const moduleContent = getFileContent(tree, '/projects/material/src/app/app.module.ts');
@@ -65,4 +53,63 @@ describe('material-table-schematic', () => {
       `import { MatTableModule, MatPaginatorModule, MatSortModule } from '@angular/material';`);
   });
 
+  describe('styleext option', () => {
+    it('should respect the option value', () => {
+      const tree = runner.runSchematic(
+          'table', {styleext: 'scss', ...baseOptions}, createTestApp());
+
+      expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.scss');
+    });
+
+    it('should fallback to the @schematics/angular:component option value', () => {
+      const tree = runner.runSchematic('table', baseOptions, createTestApp({style: 'less'}));
+
+      expect(tree.files).toContain('/projects/material/src/app/foo/foo.component.less');
+    });
+  });
+
+  describe('inlineStyle option', () => {
+    it('should respect the option value', () => {
+      const tree = runner.runSchematic(
+          'table', {inlineStyle: true, ...baseOptions}, createTestApp());
+
+      expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.css');
+    });
+
+    it('should fallback to the @schematics/angular:component option value', () => {
+      const tree = runner.runSchematic('table', baseOptions, createTestApp({inlineStyle: true}));
+
+      expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.css');
+    });
+  });
+
+  describe('inlineTemplate option', () => {
+    it('should respect the option value', () => {
+      const tree = runner.runSchematic(
+          'table', {inlineTemplate: true, ...baseOptions}, createTestApp());
+
+      expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.html');
+    });
+
+    it('should fallback to the @schematics/angular:component option value', () => {
+      const tree = runner.runSchematic(
+          'table', baseOptions, createTestApp({inlineTemplate: true}));
+
+      expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.html');
+    });
+  });
+
+  describe('spec option', () => {
+    it('should respect the option value', () => {
+      const tree = runner.runSchematic('table', {spec: false, ...baseOptions}, createTestApp());
+
+      expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
+    });
+
+    it('should fallback to the @schematics/angular:component option value', () => {
+      const tree = runner.runSchematic('table', baseOptions, createTestApp({skipTests: true}));
+
+      expect(tree.files).not.toContain('/projects/material/src/app/foo/foo.component.spec.ts');
+    });
+  });
 });

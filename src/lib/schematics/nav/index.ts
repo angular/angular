@@ -18,10 +18,8 @@ import {addModuleImportToModule, findModuleFromOptions} from '../utils/ast';
 export default function(options: Schema): Rule {
   return chain([
     buildComponent({...options}, {
-      template: options.inlineTemplate &&
-      './__path__/__name@dasherize@if-flat__/__name@dasherize__.component.html',
-      stylesheet: options.inlineStyle &&
-      './__path__/__name@dasherize@if-flat__/__name@dasherize__.component.__styleext__',
+      template: './__path__/__name@dasherize@if-flat__/__name@dasherize__.component.html',
+      stylesheet: './__path__/__name@dasherize@if-flat__/__name@dasherize__.component.__styleext__',
     }),
     options.skipImport ? noop() : addNavModulesToModule(options)
   ]);

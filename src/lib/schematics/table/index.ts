@@ -18,8 +18,7 @@ import {addModuleImportToModule, findModuleFromOptions} from '../utils/ast';
 export default function(options: Schema): Rule {
   return chain([
     buildComponent({...options}, {
-      template: options.inlineTemplate &&
-      './__path__/__name@dasherize@if-flat__/__name@dasherize__.component.html'
+      template: './__path__/__name@dasherize@if-flat__/__name@dasherize__.component.html'
     }),
     options.skipImport ? noop() : addTableModulesToModule(options)
   ]);
