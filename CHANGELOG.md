@@ -1,12 +1,14 @@
-<a name="6.1.5"></a>
-## [6.1.5](https://github.com/angular/angular/compare/6.1.4...6.1.5) (2018-08-29)
+<a name="6.1.6"></a>
+## [6.1.6](https://github.com/angular/angular/compare/6.1.5...6.1.6) (2018-08-29)
 
 
 ### Bug Fixes
 
+* **bazel:** Cache fileNameToModuleName lookups ([#25731](https://github.com/angular/angular/issues/25731)) ([3e690e0](https://github.com/angular/angular/commit/3e690e0))
 * **bazel:** only lookup amd module-name tags in .d.ts files ([#25710](https://github.com/angular/angular/issues/25710)) ([7aff364](https://github.com/angular/angular/commit/7aff364))
 
 
+Note: the 1.6.5 release on npm accidentally glitched-out midway, so we cut 6.1.6 instead. sorry! :-)
 
 <a name="7.0.0-beta.3"></a>
 # [7.0.0-beta.3](https://github.com/angular/angular/compare/7.0.0-beta.2...7.0.0-beta.3) (2018-08-22)
