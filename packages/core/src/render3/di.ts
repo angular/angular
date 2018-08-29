@@ -10,6 +10,7 @@
 // correctly implementing its interfaces for backwards compatibility.
 
 import {ChangeDetectorRef as viewEngine_ChangeDetectorRef} from '../change_detection/change_detector_ref';
+import {getInjectableDef, getInjectorDef} from '../di/defs';
 import {InjectionToken} from '../di/injection_token';
 import {InjectFlags, Injector, NullInjector, inject, setCurrentInjector} from '../di/injector';
 import {ComponentFactory as viewEngine_ComponentFactory, ComponentRef as viewEngine_ComponentRef} from '../linker/component_factory';
@@ -24,6 +25,7 @@ import {Type} from '../type';
 
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
 import {ComponentFactoryResolver} from './component_ref';
+import {getComponentDef, getDirectiveDef, getPipeDef} from './definition';
 import {addToViewTree, assertPreviousIsParent, createEmbeddedViewNode, createLContainer, createLNodeObject, createTNode, getPreviousOrParentNode, getPreviousOrParentTNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
 import {VIEWS} from './interfaces/container';
 import {DirectiveDefInternal, RenderFlags} from './interfaces/definition';
@@ -797,9 +799,9 @@ export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef
 
 export function getFactoryOf<T>(type: Type<any>): ((type?: Type<T>) => T)|null {
   const typeAny = type as any;
-  const def = typeAny.ngComponentDef || typeAny.ngDirectiveDef || typeAny.ngPipeDef ||
-      typeAny.ngInjectableDef || typeAny.ngInjectorDef;
-  if (def === undefined || def.factory === undefined) {
+  const def = getComponentDef<T>(typeAny) || getDirectiveDef<T>(typeAny) ||
+      getPipeDef<T>(typeAny) || getInjectableDef<T>(typeAny) || getInjectorDef<T>(typeAny);
+  if (!def || def.factory === undefined) {
     return null;
   }
   return def.factory;

@@ -10,9 +10,9 @@ import {OnDestroy} from '../metadata/lifecycle_hooks';
 import {Type} from '../type';
 import {stringify} from '../util';
 
-import {InjectableDef, InjectableType, InjectorDef, InjectorType, InjectorTypeWithProviders} from './defs';
+import {InjectableDef, InjectableType, InjectorType, InjectorTypeWithProviders, getInjectableDef, getInjectorDef} from './defs';
 import {resolveForwardRef} from './forward_ref';
-import {InjectableDefToken, InjectionToken} from './injection_token';
+import {InjectionToken} from './injection_token';
 import {INJECTOR, InjectFlags, Injector, NullInjector, THROW_IF_NOT_FOUND, USE_VALUE, inject, injectArgs, setCurrentInjector} from './injector';
 import {ClassProvider, ConstructorProvider, ExistingProvider, FactoryProvider, Provider, StaticClassProvider, StaticProvider, TypeProvider, ValueProvider} from './provider';
 import {APP_ROOT} from './scope';
@@ -161,10 +161,8 @@ export class R3Injector {
         if (record === undefined) {
           // No record, but maybe the token is scoped to this injector. Look for an ngInjectableDef
           // with a scope matching this injector.
-          const def = couldBeInjectableType(token) &&
-                  (token as InjectableType<any>| InjectableDefToken<any>).ngInjectableDef ||
-              undefined;
-          if (def !== undefined && this.injectableDefInScope(def)) {
+          const def = couldBeInjectableType(token) && getInjectableDef(token);
+          if (def && this.injectableDefInScope(def)) {
             // Found an ngInjectableDef and it's scoped to this injector. Pretend as if it was here
             // all along.
             record = injectableDefRecord(token);
@@ -207,7 +205,7 @@ export class R3Injector {
     // read, so care is taken to only do the read once.
 
     // First attempt to read the ngInjectorDef.
-    let def = (defOrWrappedDef as InjectorType<any>).ngInjectorDef as(InjectorDef<any>| undefined);
+    let def = getInjectorDef(defOrWrappedDef);
 
     // If that's not present, then attempt to read ngModule from the InjectorDefTypeWithProviders.
     const ngModule =
@@ -228,7 +226,7 @@ export class R3Injector {
     // Finally, if defOrWrappedType was an `InjectorDefTypeWithProviders`, then the actual
     // `InjectorDef` is on its `ngModule`.
     if (ngModule !== undefined) {
-      def = ngModule.ngInjectorDef;
+      def = getInjectorDef(ngModule);
     }
 
     // If no definition was found, it might be from exports. Remove it.
@@ -331,8 +329,8 @@ export class R3Injector {
 }
 
 function injectableDefRecord(token: Type<any>| InjectionToken<any>): Record<any> {
-  const def = (token as InjectableType<any>).ngInjectableDef as InjectableDef<any>;
-  if (def === undefined) {
+  const injectableDef = getInjectableDef(token as InjectableType<any>);
+  if (injectableDef === null) {
     if (token instanceof InjectionToken) {
       throw new Error(`Token ${stringify(token)} is missing an ngInjectableDef definition.`);
     }
@@ -340,7 +338,7 @@ function injectableDefRecord(token: Type<any>| InjectionToken<any>): Record<any>
     // no-args constructor.
     return makeRecord(() => new (token as Type<any>)());
   }
-  return makeRecord(def.factory);
+  return makeRecord(injectableDef.factory);
 }
 
 function providerToRecord(provider: SingleProvider): Record<any> {

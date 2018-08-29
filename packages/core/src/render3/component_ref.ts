@@ -18,6 +18,7 @@ import {Type} from '../type';
 
 import {assertComponentType, assertDefined} from './assert';
 import {LifecycleHooksFeature, createRootContext} from './component';
+import {getComponentDef} from './definition';
 import {adjustBlueprintForNewNode, baseDirectiveCreate, createLNode, createLViewData, createTView, elementCreate, enterView, hostElement, initChangeDetectorIfExisting, locateHostElement, queueHostBindingForCheck, renderEmbeddedTemplate, setHostBindings} from './instructions';
 import {ComponentDefInternal, ComponentType, RenderFlags} from './interfaces/definition';
 import {LElementNode, TNode, TNodeType} from './interfaces/node';
@@ -28,7 +29,7 @@ import {RootViewRef, ViewRef} from './view_ref';
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
   resolveComponentFactory<T>(component: Type<T>): viewEngine_ComponentFactory<T> {
     ngDevMode && assertComponentType(component);
-    const componentDef = (component as ComponentType<T>).ngComponentDef;
+    const componentDef = getComponentDef(component) !;
     return new ComponentFactory(componentDef);
   }
 }
