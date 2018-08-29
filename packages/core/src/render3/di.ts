@@ -591,10 +591,7 @@ export const QUERY_READ_FROM_NODE =
     }) as any as QueryReadType<any>);
 
 /** A ref to a node's native element. */
-class ElementRef implements viewEngine_ElementRef {
-  readonly nativeElement: any;
-  constructor(nativeElement: any) { this.nativeElement = nativeElement; }
-}
+class ElementRef extends viewEngine_ElementRef {}
 
 /**
  * Creates a ViewContainerRef and stores it on the injector. Or, if the ViewContainerRef
@@ -660,12 +657,14 @@ export class NodeInjector implements Injector {
  * A ref to a container that enables adding and removing views from that container
  * imperatively.
  */
-class ViewContainerRef implements viewEngine_ViewContainerRef {
+class ViewContainerRef extends viewEngine_ViewContainerRef {
   private _viewRefs: viewEngine_ViewRef[] = [];
 
   constructor(
       private _lContainerNode: LContainerNode,
-      private _hostNode: LElementNode|LElementContainerNode|LContainerNode) {}
+      private _hostNode: LElementNode|LElementContainerNode|LContainerNode) {
+    super();
+  }
 
   get element(): ElementRef {
     const injector = getOrCreateNodeInjectorForNode(this._hostNode);
@@ -820,10 +819,12 @@ export function getInheritedFactory<T>(type: Type<any>): (type: Type<T>) => T {
   }
 }
 
-class TemplateRef<T> implements viewEngine_TemplateRef<T> {
+class TemplateRef<T> extends viewEngine_TemplateRef<T> {
   constructor(
       private _declarationParentView: LViewData, readonly elementRef: viewEngine_ElementRef,
-      private _tView: TView, private _renderer: Renderer3, private _queries: LQueries|null) {}
+      private _tView: TView, private _renderer: Renderer3, private _queries: LQueries|null) {
+    super();
+  }
 
   createEmbeddedView(context: T, containerNode?: LContainerNode, index?: number):
       viewEngine_EmbeddedViewRef<T> {
