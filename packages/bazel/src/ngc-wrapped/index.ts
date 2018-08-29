@@ -231,17 +231,20 @@ export function compile({allowNonHermeticReads, allDepsCompiledWithBazel = true,
     // For performance, we only do this for .d.ts files, to avoid parsing lots of
     // additional files that were not in the program.
     // (We don't have the ts.Program available in this codepath)
-    if (importedFilePath.endsWith('.d.ts')) {
-      try {
-        const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
-        if (sourceFile && sourceFile.moduleName) {
-          return sourceFile.moduleName;
-        }
-      } catch (err) {
-        // File does not exist or parse error. Ignore this case and continue onto the
-        // other methods of resolving the module below.
-      }
-    }
+    // TODO(gregmagolan): the performance regression is not acceptable with this
+    // put this back in to fix angular building from source downstream once we
+    // find a way to improve its performance (perhaps with using ts.Program)
+    // if (importedFilePath.endsWith('.d.ts')) {
+    //   try {
+    //     const sourceFile = ngHost.getSourceFile(importedFilePath, ts.ScriptTarget.Latest);
+    //     if (sourceFile && sourceFile.moduleName) {
+    //       return sourceFile.moduleName;
+    //     }
+    //   } catch (err) {
+    //     // File does not exist or parse error. Ignore this case and continue onto the
+    //     // other methods of resolving the module below.
+    //   }
+    // }
     if ((compilerOpts.module === ts.ModuleKind.UMD || compilerOpts.module === ts.ModuleKind.AMD) &&
         ngHost.amdModuleName) {
       return ngHost.amdModuleName({ fileName: importedFilePath } as ts.SourceFile);
