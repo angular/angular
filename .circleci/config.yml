@@ -47,10 +47,7 @@ jobs:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
-
-      - run: bazel run @nodejs//:npm install
-      - run: bazel build src/...
-      - run: bazel test src/...
+      - run: echo "Temporarily disabled until Bazel setup can be fixed"
       - save_cache:
           key: *cache_key
           paths:
