@@ -9,10 +9,13 @@
 import {ChangeDetectionStrategy} from '../change_detection/constants';
 import {Provider} from '../di';
 import {R3_COMPILE_COMPONENT, R3_COMPILE_DIRECTIVE, R3_COMPILE_PIPE} from '../ivy_switch';
+import {NG_BASE_DEF} from '../render3/fields';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
 import {fillProperties} from '../util/property';
+
 import {ViewEncapsulation} from './view';
+
 
 
 /**
@@ -777,11 +780,6 @@ const initializeBaseDef = (target: any): void => {
     fillProperties(baseDef.declaredInputs, inheritedBaseDef.declaredInputs);
   }
 };
-
-/**
- * Used to get the minified alias of ngBaseDef
- */
-const NG_BASE_DEF = Object.keys({ngBaseDef: true})[0];
 
 /**
  * Does the work of creating the `ngBaseDef` property for the @Input and @Output decorators.

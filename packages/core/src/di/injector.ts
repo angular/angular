@@ -8,8 +8,9 @@
 
 import {Type} from '../type';
 import {stringify} from '../util';
+import {getClosureSafeProperty} from '../util/property';
 
-import {InjectableDef, defineInjectable} from './defs';
+import {InjectableDef, defineInjectable, getInjectableDef} from './defs';
 import {resolveForwardRef} from './forward_ref';
 import {InjectionToken} from './injection_token';
 import {Inject, Optional, Self, SkipSelf} from './metadata';
@@ -115,9 +116,8 @@ const CIRCULAR = IDENT;
 const MULTI_PROVIDER_FN = function(): any[] {
   return Array.prototype.slice.call(arguments);
 };
-const GET_PROPERTY_NAME = {} as any;
 export const USE_VALUE =
-    getClosureSafeProperty<ValueProvider>({provide: String, useValue: GET_PROPERTY_NAME});
+    getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
 const NG_TOKEN_PATH = 'ngTokenPath';
 const NG_TEMP_TOKEN_PATH = 'ngTempTokenPath';
 const enum OptionFlags {
@@ -397,15 +397,6 @@ function staticError(text: string, obj: any): Error {
   return new Error(formatError(text, obj));
 }
 
-function getClosureSafeProperty<T>(objWithPropertyToExtract: T): string {
-  for (let key in objWithPropertyToExtract) {
-    if (objWithPropertyToExtract[key] === GET_PROPERTY_NAME) {
-      return key;
-    }
-  }
-  throw Error('!prop');
-}
-
 /**
  * Injection flags for DI.
  */
@@ -462,7 +453,7 @@ export function inject<T>(token: Type<T>| InjectionToken<T>, flags = InjectFlags
   if (_currentInjector === undefined) {
     throw new Error(`inject() must be called from an injection context`);
   } else if (_currentInjector === null) {
-    const injectableDef: InjectableDef<T> = (token as any).ngInjectableDef;
+    const injectableDef: InjectableDef<T>|null = getInjectableDef(token);
     if (injectableDef && injectableDef.providedIn == 'root') {
       return injectableDef.value === undefined ? injectableDef.value = injectableDef.factory() :
                                                  injectableDef.value;

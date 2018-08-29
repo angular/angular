@@ -20,6 +20,7 @@ import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LViewData, LViewFlags, RootContext, BINDING_INDEX, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
 import {stringify} from './util';
+import {getComponentDef} from './definition';
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -96,8 +97,7 @@ export function renderComponent<T>(
   ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
-  const componentDef =
-      (componentType as ComponentType<T>).ngComponentDef as ComponentDefInternal<T>;
+  const componentDef = getComponentDef<T>(componentType) !;
   if (componentDef.type != componentType) componentDef.type = componentType;
 
   // The first index of the first selector is the tag name.

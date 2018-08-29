@@ -8,6 +8,7 @@
 
 import {DebugElement, DebugNode, EventListener, getDebugNode, indexDebugNode, removeDebugNodeFromIndex} from '../debug/debug_node';
 import {Injector} from '../di';
+import {InjectableDef, getInjectableDef} from '../di/defs';
 import {InjectableType} from '../di/injectable';
 import {ErrorHandler} from '../error_handler';
 import {isDevMode} from '../is_dev_mode';
@@ -169,8 +170,9 @@ const viewDefOverrides = new Map<any, ViewDefinition>();
 
 function debugOverrideProvider(override: ProviderOverride) {
   providerOverrides.set(override.token, override);
-  if (typeof override.token === 'function' && override.token.ngInjectableDef &&
-      typeof override.token.ngInjectableDef.providedIn === 'function') {
+  let injectableDef: InjectableDef<any>|null;
+  if (typeof override.token === 'function' && (injectableDef = getInjectableDef(override.token)) &&
+      typeof injectableDef.providedIn === 'function') {
     providerOverridesWithScope.set(override.token as InjectableType<any>, override);
   }
 }
@@ -276,7 +278,7 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
     });
     def.modules.forEach(module => {
       providerOverridesWithScope.forEach((override, token) => {
-        if (token.ngInjectableDef.providedIn === module) {
+        if (getInjectableDef(token) !.providedIn === module) {
           hasOverrides = true;
           hasDeprecatedOverrides = hasDeprecatedOverrides || override.deprecatedBehavior;
         }
@@ -304,7 +306,7 @@ function applyProviderOverridesToNgModule(def: NgModuleDefinition): NgModuleDefi
     if (providerOverridesWithScope.size > 0) {
       let moduleSet = new Set<any>(def.modules);
       providerOverridesWithScope.forEach((override, token) => {
-        if (moduleSet.has(token.ngInjectableDef.providedIn)) {
+        if (moduleSet.has(getInjectableDef(token) !.providedIn)) {
           let provider = {
             token: token,
             flags:

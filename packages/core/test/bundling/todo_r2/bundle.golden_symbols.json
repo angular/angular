@@ -312,9 +312,6 @@
     "name": "FormatWidth"
   },
   {
-    "name": "GET_PROPERTY_NAME"
-  },
-  {
     "name": "GROUP_SEP"
   },
   {
@@ -462,7 +459,25 @@
     "name": "NEXT"
   },
   {
+    "name": "NG_COMPONENT_DEF"
+  },
+  {
+    "name": "NG_DIRECTIVE_DEF"
+  },
+  {
     "name": "NG_ELEMENT_ID"
+  },
+  {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
+    "name": "NG_INJECTOR_DEF"
+  },
+  {
+    "name": "NG_MODULE_DEF"
+  },
+  {
+    "name": "NG_PIPE_DEF"
   },
   {
     "name": "NG_PROJECT_AS_ATTR_NAME"
@@ -1554,6 +1569,9 @@
     "name": "getClosureSafeProperty"
   },
   {
+    "name": "getComponentDef"
+  },
+  {
     "name": "getCurrencySymbol"
   },
   {
@@ -1581,6 +1599,9 @@
     "name": "getDebugNode"
   },
   {
+    "name": "getDirectiveDef"
+  },
+  {
     "name": "getErrorLogger"
   },
   {
@@ -1591,6 +1612,12 @@
   },
   {
     "name": "getInitialValue"
+  },
+  {
+    "name": "getInjectableDef"
+  },
+  {
+    "name": "getInjectorDef"
   },
   {
     "name": "getLElementFromComponent"
@@ -1656,6 +1683,9 @@
     "name": "getNamedFormat"
   },
   {
+    "name": "getNgModuleDef"
+  },
+  {
     "name": "getNgZone"
   },
   {
@@ -1702,6 +1732,9 @@
   },
   {
     "name": "getParentState"
+  },
+  {
+    "name": "getPipeDef"
   },
   {
     "name": "getPlatform"
