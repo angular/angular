@@ -401,4 +401,43 @@ describe('compiler compliance: template', () => {
 
     expectEmit(result.source, template, 'Incorrect template');
   });
+
+  it('should support directive outputs on <ng-template>', () => {
+
+    const files = {
+      app: {
+        'spec.ts': `
+              import {Component, NgModule} from '@angular/core';
+
+              @Component({
+                selector: 'my-component',
+                template: '<ng-template (outDirective)="$event.doSth()"></ng-template>';
+              })
+              export class MyComponent {}
+
+              @NgModule({declarations: [MyComponent]})
+              export class MyModule {}
+          `
+      }
+    };
+
+    const template = `
+      const $t0_attrs$ = [${AttributeMarker.SelectOnly}, "outDirective"];
+
+      function Template_0(rf, ctx) { }
+
+      // ...
+
+      template: function MyComponent_Template(rf, ctx) {
+        if (rf & 1) {
+          $i0$.ɵtemplate(0, Template_0, 0, 0, null, $t0_attrs$);
+          $i0$.ɵlistener("outDirective", function MyComponent_Template_ng_template_outDirective_listener($event) { return $event.doSth(); });
+        }
+      }`;
+
+    const result = compile(files, angularFiles);
+
+    expectEmit(result.source, template, 'Incorrect template');
+
+  });
 });
