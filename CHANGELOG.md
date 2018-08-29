@@ -1,3 +1,16 @@
+<a name="7.0.0-beta.4"></a>
+# [7.0.0-beta.4](https://github.com/angular/angular/compare/7.0.0-beta.3...7.0.0-beta.4) (2018-08-29)
+
+
+### Bug Fixes
+
+* **bazel:** Cache fileNameToModuleName lookups ([#25731](https://github.com/angular/angular/issues/25731)) ([f394ba0](https://github.com/angular/angular/commit/f394ba0))
+* **bazel:** move bazel managed runtime deps for downstream usage ([#25690](https://github.com/angular/angular/issues/25690)) ([6ed7993](https://github.com/angular/angular/commit/6ed7993))
+* **bazel:** only lookup amd module-name tags in .d.ts files ([#25710](https://github.com/angular/angular/issues/25710)) ([42072c4](https://github.com/angular/angular/commit/42072c4))
+* **compiler:** update compiler to generate new slot allocations ([#25607](https://github.com/angular/angular/issues/25607)) ([27e2039](https://github.com/angular/angular/commit/27e2039))
+
+
+
 <a name="6.1.6"></a>
 ## [6.1.6](https://github.com/angular/angular/compare/6.1.5...6.1.6) (2018-08-29)
 
