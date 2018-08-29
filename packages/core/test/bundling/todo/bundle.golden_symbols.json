@@ -210,6 +210,9 @@
     "name": "_THROW_IF_NOT_FOUND"
   },
   {
+    "name": "__extends"
+  },
+  {
     "name": "__read"
   },
   {
@@ -514,6 +517,9 @@
   },
   {
     "name": "executePipeOnDestroys"
+  },
+  {
+    "name": "extendStatics"
   },
   {
     "name": "extractDirectiveDef"

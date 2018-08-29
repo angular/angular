@@ -804,7 +804,7 @@ describe('di', () => {
       class DirectiveSameInstance {
         value: boolean;
         constructor(elementRef: ElementRef, directive: Directive) {
-          this.value = elementRef === directive.elementRef;
+          this.value = (elementRef === directive.elementRef) && elementRef instanceof ElementRef;
         }
         static ngDirectiveDef = defineDirective({
           type: DirectiveSameInstance,
