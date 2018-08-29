@@ -51,7 +51,19 @@
     "name": "NEXT"
   },
   {
+    "name": "NG_COMPONENT_DEF"
+  },
+  {
+    "name": "NG_DIRECTIVE_DEF"
+  },
+  {
     "name": "NG_ELEMENT_ID"
+  },
+  {
+    "name": "NG_ELEMENT_ID"
+  },
+  {
+    "name": "NG_PIPE_DEF"
   },
   {
     "name": "NG_PROJECT_AS_ATTR_NAME"
@@ -201,10 +213,20 @@
     "name": "getChildLNode"
   },
   {
+<<<<<<< HEAD
     "name": "getLElementFromComponent"
   },
   {
     "name": "getLElementFromRootComponent"
+=======
+    "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getComponentDef"
+  },
+  {
+    "name": "getDirectiveDef"
+>>>>>>> fix(ivy): don't accidently read the inherited definition
   },
   {
     "name": "getLViewChild"
@@ -220,6 +242,9 @@
   },
   {
     "name": "getParentLNode"
+  },
+  {
+    "name": "getPipeDef"
   },
   {
     "name": "getPreviousOrParentNode"

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {NG_INJECTABLE_DEF, NG_INJECTOR_DEF} from '../render3/fields';
 import {Type} from '../type';
 
 import {ClassProvider, ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
@@ -159,4 +160,22 @@ export function defineInjector(options: {factory: () => any, providers?: any[], 
   return ({
     factory: options.factory, providers: options.providers || [], imports: options.imports || [],
   } as InjectorDef<any>) as never;
+}
+
+/**
+ * Read the `ngInjectableDef` type in a way which is immune to accidentally reading inherited value.
+ *
+ * @param type type which may have `ngInjectableDef`
+ */
+export function getInjectableDef<T>(type: any): InjectableDef<T>|null {
+  return type.hasOwnProperty(NG_INJECTABLE_DEF) ? (type as any)[NG_INJECTABLE_DEF] : null;
+}
+
+/**
+ * Read the `ngInjectorDef` type in a way which is immune to accidentally reading inherited value.
+ *
+ * @param type type which may have `ngInjectorDef`
+ */
+export function getInjectorDef<T>(type: any): InjectorDef<T>|null {
+  return type.hasOwnProperty(NG_INJECTOR_DEF) ? (type as any)[NG_INJECTOR_DEF] : null;
 }

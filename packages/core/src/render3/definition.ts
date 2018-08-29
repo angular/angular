@@ -14,6 +14,7 @@ import {NgModuleDef, NgModuleDefInternal} from '../metadata/ng_module';
 import {ViewEncapsulation} from '../metadata/view';
 import {Type} from '../type';
 
+import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {BaseDef, ComponentDefFeature, ComponentDefInternal, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveType, DirectiveTypesOrFactory, PipeDefInternal, PipeType, PipeTypesOrFactory} from './interfaces/definition';
 import {CssSelectorList, SelectorFlags} from './interfaces/projection';
 
@@ -328,19 +329,19 @@ export function defineComponent<T>(componentDefinition: {
 
 export function extractDirectiveDef(type: DirectiveType<any>& ComponentType<any>):
     DirectiveDefInternal<any>|ComponentDefInternal<any> {
-  const def = type.ngComponentDef || type.ngDirectiveDef;
+  const def = getComponentDef(type) || getDirectiveDef(type);
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is neither 'ComponentType' or 'DirectiveType'.`);
   }
-  return def;
+  return def !;
 }
 
 export function extractPipeDef(type: PipeType<any>): PipeDefInternal<any> {
-  const def = type.ngPipeDef;
+  const def = getPipeDef(type);
   if (ngDevMode && !def) {
     throw new Error(`'${type.name}' is not a 'PipeType'.`);
   }
-  return def;
+  return def !;
 }
 
 export function defineNgModule<T>(def: {type: T} & Partial<NgModuleDef<T, any, any, any>>): never {
@@ -661,4 +662,26 @@ export function definePipe<T>(pipeDef: {
     pure: pipeDef.pure !== false,
     onDestroy: pipeDef.type.prototype.ngOnDestroy || null
   }) as never;
+}
+
+/**
+ * The following getter methods retrieve the definition form the type. Currently the retrieval
+ * honors inheritance, but in the future we may change the rule to require that definitions are
+ * explicit. This would require some sort of migration strategy.
+ */
+
+export function getComponentDef<T>(type: any): ComponentDefInternal<T>|null {
+  return (type as any)[NG_COMPONENT_DEF] || null;
+}
+
+export function getDirectiveDef<T>(type: any): DirectiveDefInternal<T>|null {
+  return (type as any)[NG_DIRECTIVE_DEF] || null;
+}
+
+export function getPipeDef<T>(type: any): PipeDefInternal<T>|null {
+  return (type as any)[NG_PIPE_DEF] || null;
+}
+
+export function getNgModuleDef<T>(type: any): NgModuleDefInternal<T>|null {
+  return (type as any)[NG_MODULE_DEF] || null;
 }

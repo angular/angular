@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectableType, InjectorType, defineInjectable, defineInjector} from './di/defs';
+import {InjectableType, InjectorType, defineInjectable, defineInjector, getInjectableDef} from './di/defs';
 import {InjectableProvider} from './di/injectable';
 import {inject, injectArgs} from './di/injector';
 import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './di/provider';
@@ -59,9 +59,8 @@ function preR3NgModuleCompile(moduleType: InjectorType<any>, metadata: NgModule)
   });
 }
 
-const GET_PROPERTY_NAME = {} as any;
-const USE_VALUE = getClosureSafeProperty<ValueProvider>(
-    {provide: String, useValue: GET_PROPERTY_NAME}, GET_PROPERTY_NAME);
+const USE_VALUE =
+    getClosureSafeProperty<ValueProvider>({provide: String, useValue: getClosureSafeProperty});
 const EMPTY_ARRAY: any[] = [];
 
 function convertInjectableProviderToFactory(type: Type<any>, provider?: InjectableProvider): () =>
@@ -106,7 +105,7 @@ function convertInjectableProviderToFactory(type: Type<any>, provider?: Injectab
 function preR3InjectableCompile(
     injectableType: InjectableType<any>,
     options: {providedIn?: Type<any>| 'root' | null} & InjectableProvider): void {
-  if (options && options.providedIn !== undefined && injectableType.ngInjectableDef === undefined) {
+  if (options && options.providedIn !== undefined && !getInjectableDef(injectableType)) {
     injectableType.ngInjectableDef = defineInjectable({
       providedIn: options.providedIn,
       factory: convertInjectableProviderToFactory(injectableType, options),
