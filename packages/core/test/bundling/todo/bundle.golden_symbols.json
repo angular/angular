@@ -84,9 +84,6 @@
     "name": "NG_ELEMENT_ID"
   },
   {
-    "name": "NG_HOST_SYMBOL"
-  },
-  {
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
@@ -333,7 +330,7 @@
     "name": "assertTemplate"
   },
   {
-    "name": "attachLViewDataToNode"
+    "name": "attchContextDataToTarget"
   },
   {
     "name": "baseDirectiveCreate"
@@ -531,6 +528,15 @@
     "name": "findDirectiveMatches"
   },
   {
+    "name": "findViaComponent"
+  },
+  {
+    "name": "findViaDirective"
+  },
+  {
+    "name": "findViaElement"
+  },
+  {
     "name": "firstTemplatePass"
   },
   {
@@ -549,6 +555,9 @@
     "name": "getClosestComponentAncestor"
   },
   {
+    "name": "getContext"
+  },
+  {
     "name": "getCurrentSanitizer"
   },
   {
@@ -559,6 +568,9 @@
   },
   {
     "name": "getInitialValue"
+  },
+  {
+    "name": "getLElementNode"
   },
   {
     "name": "getLViewChild"
@@ -690,6 +702,9 @@
     "name": "isComponent"
   },
   {
+    "name": "isComponentInstance"
+  },
+  {
     "name": "isContentQueryHost"
   },
   {
@@ -703,6 +718,9 @@
   },
   {
     "name": "isDifferent"
+  },
+  {
+    "name": "isDirectiveInstance"
   },
   {
     "name": "isDirty"
@@ -940,6 +958,9 @@
   },
   {
     "name": "trackByIdentity"
+  },
+  {
+    "name": "unwrapLNode"
   },
   {
     "name": "updateClassProp"

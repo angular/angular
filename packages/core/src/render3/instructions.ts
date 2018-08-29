@@ -13,7 +13,7 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
-import {attachLViewDataToNode} from './element_discovery';
+import {Context, attchContextDataToTarget, getLElementNode} from './context_discovery';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
@@ -31,12 +31,6 @@ import {StylingContext, allocStylingContext, createStylingContextTemplate, rende
 import {assertDataInRangeInternal, isDifferent, loadElementInternal, loadInternal, stringify} from './util';
 import {ViewRef} from './view_ref';
 
-/**
- * Directive (D) sets a property on all component instances using this constant as a key and the
- * component's host node (LElement) as the value. This is used in methods like detectChanges to
- * facilitate jumping from an instance to the host node.
- */
-export const NG_HOST_SYMBOL = '__ngHostLNode__';
 
 /**
  * A permanent marker promise which signifies that the current CD tree is
@@ -806,7 +800,7 @@ export function elementStart(
   // monkey-patched with the component view data so that the element can be inspected
   // later on using any element discovery utility methods (see `element_discovery.ts`)
   if (elementDepthCount === 0) {
-    attachLViewDataToNode(native, viewData);
+    attchContextDataToTarget(native, viewData);
   }
   elementDepthCount++;
 }
@@ -1760,8 +1754,7 @@ export function baseDirectiveCreate<T>(
                    'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
 
-  Object.defineProperty(
-      directive, NG_HOST_SYMBOL, {enumerable: false, value: previousOrParentNode});
+  attchContextDataToTarget(directive, viewData);
 
   if (directives == null) viewData[DIRECTIVES] = directives = [];
 
@@ -2867,7 +2860,7 @@ function assertDataNext(index: number, arr?: any[]) {
 
 export function _getComponentHostLElementNode<T>(component: T): LElementNode {
   ngDevMode && assertDefined(component, 'expecting component got null');
-  const lElementNode = (component as any)[NG_HOST_SYMBOL] as LElementNode;
+  const lElementNode = getLElementNode(component) !;
   ngDevMode && assertDefined(component, 'object is not a component');
   return lElementNode;
 }

@@ -162,9 +162,9 @@ export {
 } from './sanitization/bypass';
 
 export {
-  ElementContext as ɵElementContext,
-  getElementContext as ɵgetElementContext
-} from './render3/element_discovery';
+  Context as ɵContext,
+  getContext as ɵgetContext
+} from './render3/context_discovery';
 
 // we reexport these symbols just so that they are retained during the dead code elimination
 // performed by rollup while it's creating fesm files.

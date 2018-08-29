@@ -45,13 +45,13 @@
     "name": "INJECTOR$1"
   },
   {
+    "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
     "name": "NEXT"
   },
   {
     "name": "NG_ELEMENT_ID"
-  },
-  {
-    "name": "NG_HOST_SYMBOL"
   },
   {
     "name": "NG_PROJECT_AS_ATTR_NAME"
@@ -97,6 +97,9 @@
   },
   {
     "name": "appendChild"
+  },
+  {
+    "name": "attchContextDataToTarget"
   },
   {
     "name": "baseDirectiveCreate"
@@ -186,10 +189,25 @@
     "name": "extractPipeDef"
   },
   {
+    "name": "findViaComponent"
+  },
+  {
+    "name": "findViaDirective"
+  },
+  {
+    "name": "findViaElement"
+  },
+  {
     "name": "firstTemplatePass"
   },
   {
     "name": "getChildLNode"
+  },
+  {
+    "name": "getContext"
+  },
+  {
+    "name": "getLElementNode"
   },
   {
     "name": "getLViewChild"
@@ -226,6 +244,12 @@
   },
   {
     "name": "invertObject"
+  },
+  {
+    "name": "isComponentInstance"
+  },
+  {
+    "name": "isDirectiveInstance"
   },
   {
     "name": "isProceduralRenderer"
@@ -289,6 +313,9 @@
   },
   {
     "name": "tickRootContext"
+  },
+  {
+    "name": "unwrapLNode"
   },
   {
     "name": "updateViewQuery"
