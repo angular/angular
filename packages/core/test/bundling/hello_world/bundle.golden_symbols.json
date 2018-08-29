@@ -45,13 +45,13 @@
     "name": "INJECTOR$1"
   },
   {
+    "name": "MONKEY_PATCH_KEY_NAME"
+  },
+  {
     "name": "NEXT"
   },
   {
     "name": "NG_ELEMENT_ID"
-  },
-  {
-    "name": "NG_HOST_SYMBOL"
   },
   {
     "name": "NG_PROJECT_AS_ATTR_NAME"
@@ -99,6 +99,9 @@
     "name": "appendChild"
   },
   {
+    "name": "attachPatchData"
+  },
+  {
     "name": "baseDirectiveCreate"
   },
   {
@@ -124,6 +127,9 @@
   },
   {
     "name": "componentRefresh"
+  },
+  {
+    "name": "createLContext"
   },
   {
     "name": "createLNode"
@@ -186,10 +192,19 @@
     "name": "extractPipeDef"
   },
   {
+    "name": "findViaComponent"
+  },
+  {
     "name": "firstTemplatePass"
   },
   {
     "name": "getChildLNode"
+  },
+  {
+    "name": "getLElementFromComponent"
+  },
+  {
+    "name": "getLElementFromRootComponent"
   },
   {
     "name": "getLViewChild"
@@ -250,6 +265,9 @@
   },
   {
     "name": "readElementValue"
+  },
+  {
+    "name": "readPatchedData"
   },
   {
     "name": "refreshChildComponents"
