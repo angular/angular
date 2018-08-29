@@ -17,6 +17,7 @@ import {
   IterableDiffer,
   IterableDiffers,
   NgIterable,
+  NgZone,
   OnDestroy,
   SkipSelf,
   TemplateRef,
@@ -166,14 +167,15 @@ export class CdkVirtualForOf<T> implements CollectionViewer, DoCheck, OnDestroy 
       /** The set of available differs. */
       private _differs: IterableDiffers,
       /** The virtual scrolling viewport that these items are being rendered in. */
-      @SkipSelf() private _viewport: CdkVirtualScrollViewport) {
+      @SkipSelf() private _viewport: CdkVirtualScrollViewport,
+      ngZone: NgZone) {
     this.dataStream.subscribe(data => {
       this._data = data;
       this._onRenderedDataChange();
     });
     this._viewport.renderedRangeStream.pipe(takeUntil(this._destroyed)).subscribe(range => {
       this._renderedRange = range;
-      this.viewChange.next(this._renderedRange);
+      ngZone.run(() => this.viewChange.next(this._renderedRange));
       this._onRenderedDataChange();
     });
     this._viewport.attach(this);

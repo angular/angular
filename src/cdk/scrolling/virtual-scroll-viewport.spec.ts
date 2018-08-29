@@ -9,6 +9,7 @@ import {dispatchFakeEvent} from '@angular/cdk/testing';
 import {
   Component,
   Input,
+  NgZone,
   TrackByFunction,
   ViewChild,
   ViewContainerRef,
@@ -603,6 +604,13 @@ describe('CdkVirtualScrollViewport', () => {
           fixture.destroy();
           expect(dispatcher.deregister).toHaveBeenCalledWith(testComponent.viewport);
         })));
+
+    it('should emit on viewChange inside the Angular zone', fakeAsync(() => {
+      const zoneTest = jasmine.createSpy('zone test');
+      testComponent.virtualForOf.viewChange.subscribe(() => zoneTest(NgZone.isInAngularZone()));
+      finishInit(fixture);
+      expect(zoneTest).toHaveBeenCalledWith(true);
+    }));
   });
 
   describe('with RTL direction', () => {
@@ -766,6 +774,7 @@ function triggerScroll(viewport: CdkVirtualScrollViewport, offset?: number) {
 })
 class FixedSizeVirtualScroll {
   @ViewChild(CdkVirtualScrollViewport) viewport: CdkVirtualScrollViewport;
+  @ViewChild(CdkVirtualForOf) virtualForOf: CdkVirtualForOf<any>;
   @ViewChild(CdkVirtualForOf, {read: ViewContainerRef}) virtualForViewContainer: ViewContainerRef;
 
   @Input() orientation = 'vertical';
