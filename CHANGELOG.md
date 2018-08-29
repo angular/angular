@@ -1,3 +1,13 @@
+<a name="6.1.5"></a>
+## [6.1.5](https://github.com/angular/angular/compare/6.1.4...6.1.5) (2018-08-29)
+
+
+### Bug Fixes
+
+* **bazel:** only lookup amd module-name tags in .d.ts files ([#25710](https://github.com/angular/angular/issues/25710)) ([7aff364](https://github.com/angular/angular/commit/7aff364))
+
+
+
 <a name="6.1.4"></a>
 ## [6.1.4](https://github.com/angular/angular/compare/6.1.3...6.1.4) (2018-08-22)
 
