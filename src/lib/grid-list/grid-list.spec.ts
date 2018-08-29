@@ -1,5 +1,5 @@
-import {async, TestBed} from '@angular/core/testing';
-import {Component, DebugElement} from '@angular/core';
+import {TestBed, ComponentFixture} from '@angular/core/testing';
+import {Component, DebugElement, Type} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MatGridList, MatGridListModule} from './index';
 import {MatGridTile, MatGridTileText} from './grid-tile';
@@ -7,72 +7,49 @@ import {Directionality} from '@angular/cdk/bidi';
 
 
 describe('MatGridList', () => {
-  beforeEach(async(() => {
+  function createComponent<T>(componentType: Type<T>): ComponentFixture<T> {
     TestBed.configureTestingModule({
       imports: [MatGridListModule],
-      declarations: [
-        GridListWithoutCols,
-        GridListWithInvalidRowHeightRatio,
-        GridListWithTooWideColspan,
-        GridListWithUnspecifiedRowHeight,
-        GirdListWithRowHeightRatio,
-        GridListWithFitRowHeightMode,
-        GridListWithFixedRowHeightMode,
-        GridListWithUnitlessFixedRowHeight,
-        GridListWithUnspecifiedGutterSize,
-        GridListWithGutterSize,
-        GridListWithUnitlessGutterSize,
-        GridListWithRatioHeightAndMulipleRows,
-        GridListWithFixRowHeightAndMultipleRows,
-        GridListWithColspanBinding,
-        GridListWithRowspanBinding,
-        GridListWithComplexLayout,
-        GridListWithFootersWithoutLines,
-        GridListWithFooterContainingTwoLines,
-        GridListWithoutMatchingGap,
-        GridListWithEmptyDirectionality,
-        GridListWithRtl,
-        GridListWithIndirectTileDescendants,
-      ],
-    });
+      declarations: [componentType],
+    }).compileComponents();
 
-    TestBed.compileComponents();
-  }));
+    return TestBed.createComponent<T>(componentType);
+  }
 
   it('should throw error if cols is not defined', () => {
-    let fixture = TestBed.createComponent(GridListWithoutCols);
+    const fixture = createComponent(GridListWithoutCols);
 
     expect(() => fixture.detectChanges()).toThrowError(/must pass in number of columns/);
   });
 
   it('should throw error if rowHeight ratio is invalid', () => {
-    let fixture = TestBed.createComponent(GridListWithInvalidRowHeightRatio);
+    const fixture = createComponent(GridListWithInvalidRowHeightRatio);
 
     expect(() => fixture.detectChanges()).toThrowError(/invalid ratio given for row-height/);
   });
 
   it('should throw error if tile colspan is wider than total cols', () => {
-    let fixture = TestBed.createComponent(GridListWithTooWideColspan);
+    const fixture = createComponent(GridListWithTooWideColspan);
 
     expect(() => fixture.detectChanges()).toThrowError(/tile with colspan 5 is wider than grid/);
   });
 
   it('should default to 1:1 row height if undefined ', () => {
-    let fixture = TestBed.createComponent(GridListWithUnspecifiedRowHeight);
+    const fixture = createComponent(GridListWithUnspecifiedRowHeight);
     fixture.detectChanges();
-    let tile = fixture.debugElement.query(By.directive(MatGridTile));
+    const tile = fixture.debugElement.query(By.directive(MatGridTile));
 
     // In ratio mode, heights are set using the padding-top property.
     expect(getStyle(tile, 'padding-top')).toBe('200px');
   });
 
   it('should use a ratio row height if passed in', () => {
-    let fixture = TestBed.createComponent(GirdListWithRowHeightRatio);
+    const fixture = createComponent(GirdListWithRowHeightRatio);
 
     fixture.componentInstance.rowHeight = '4:1';
     fixture.detectChanges();
 
-    let tile = fixture.debugElement.query(By.directive(MatGridTile));
+    const tile = fixture.debugElement.query(By.directive(MatGridTile));
     expect(getStyle(tile, 'padding-top')).toBe('100px');
 
     fixture.componentInstance.rowHeight = '2:1';
@@ -82,11 +59,11 @@ describe('MatGridList', () => {
   });
 
   it('should divide row height evenly in "fit" mode', () => {
-    let fixture = TestBed.createComponent(GridListWithFitRowHeightMode);
+    const fixture = createComponent(GridListWithFitRowHeightMode);
 
     fixture.componentInstance.totalHeight = '300px';
     fixture.detectChanges();
-    let tile = fixture.debugElement.query(By.directive(MatGridTile));
+    const tile = fixture.debugElement.query(By.directive(MatGridTile));
 
     // 149.5 * 2 = 299px + 1px gutter = 300px
     expect(getStyle(tile, 'height')).toBe('149.5px');
@@ -99,12 +76,12 @@ describe('MatGridList', () => {
   });
 
   it('should use the fixed row height if passed in', () => {
-    let fixture = TestBed.createComponent(GridListWithFixedRowHeightMode);
+    const fixture = createComponent(GridListWithFixedRowHeightMode);
 
     fixture.componentInstance.rowHeight = '100px';
     fixture.detectChanges();
 
-    let tile = fixture.debugElement.query(By.directive(MatGridTile));
+    const tile = fixture.debugElement.query(By.directive(MatGridTile));
     expect(getStyle(tile, 'height')).toBe('100px');
 
     fixture.componentInstance.rowHeight = '200px';
@@ -114,18 +91,18 @@ describe('MatGridList', () => {
   });
 
   it('should default to pixels if row height units are missing', () => {
-    let fixture = TestBed.createComponent(GridListWithUnitlessFixedRowHeight);
+    const fixture = createComponent(GridListWithUnitlessFixedRowHeight);
     fixture.detectChanges();
 
-    let tile = fixture.debugElement.query(By.directive(MatGridTile));
+    const tile = fixture.debugElement.query(By.directive(MatGridTile));
     expect(getStyle(tile, 'height')).toBe('100px');
   });
 
   it('should default gutter size to 1px', () => {
-    let fixture = TestBed.createComponent(GridListWithUnspecifiedGutterSize);
+    const fixture = createComponent(GridListWithUnspecifiedGutterSize);
     fixture.detectChanges();
 
-    let tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
+    const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
 
     // check horizontal gutter
     expect(getStyle(tiles[0], 'width')).toBe('99.5px');
@@ -137,10 +114,10 @@ describe('MatGridList', () => {
   });
 
   it('should set the gutter size if passed', () => {
-    let fixture = TestBed.createComponent(GridListWithGutterSize);
+    const fixture = createComponent(GridListWithGutterSize);
     fixture.detectChanges();
 
-    let tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
+    const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
 
     // check horizontal gutter
     expect(getStyle(tiles[0], 'width')).toBe('99px');
@@ -152,10 +129,10 @@ describe('MatGridList', () => {
   });
 
   it('should use pixels if gutter units are missing', () => {
-    let fixture = TestBed.createComponent(GridListWithUnitlessGutterSize);
+    const fixture = createComponent(GridListWithUnitlessGutterSize);
     fixture.detectChanges();
 
-    let tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
+    const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
 
     // check horizontal gutter
     expect(getStyle(tiles[0], 'width')).toBe('99px');
@@ -167,27 +144,27 @@ describe('MatGridList', () => {
   });
 
   it('should set the correct list height in ratio mode', () => {
-    let fixture = TestBed.createComponent(GridListWithRatioHeightAndMulipleRows);
+    const fixture = createComponent(GridListWithRatioHeightAndMulipleRows);
     fixture.detectChanges();
 
-    let list = fixture.debugElement.query(By.directive(MatGridList));
+    const list = fixture.debugElement.query(By.directive(MatGridList));
     expect(getStyle(list, 'padding-bottom')).toBe('201px');
   });
 
   it('should set the correct list height in fixed mode', () => {
-    let fixture = TestBed.createComponent(GridListWithFixRowHeightAndMultipleRows);
+    const fixture = createComponent(GridListWithFixRowHeightAndMultipleRows);
     fixture.detectChanges();
 
-    let list = fixture.debugElement.query(By.directive(MatGridList));
+    const list = fixture.debugElement.query(By.directive(MatGridList));
     expect(getStyle(list, 'height')).toBe('201px');
   });
 
   it('should allow adjustment of tile colspan', () => {
-    let fixture = TestBed.createComponent(GridListWithColspanBinding);
+    const fixture = createComponent(GridListWithColspanBinding);
       fixture.componentInstance.colspan = 2;
       fixture.detectChanges();
 
-      let tile = fixture.debugElement.query(By.directive(MatGridTile));
+      const tile = fixture.debugElement.query(By.directive(MatGridTile));
       expect(getStyle(tile, 'width')).toBe('199.5px');
 
       fixture.componentInstance.colspan = 3;
@@ -196,12 +173,12 @@ describe('MatGridList', () => {
   });
 
   it('should allow adjustment of tile rowspan', () => {
-    let fixture = TestBed.createComponent(GridListWithRowspanBinding);
+    const fixture = createComponent(GridListWithRowspanBinding);
 
     fixture.componentInstance.rowspan = 2;
     fixture.detectChanges();
 
-    let tile = fixture.debugElement.query(By.directive(MatGridTile));
+    const tile = fixture.debugElement.query(By.directive(MatGridTile));
     expect(getStyle(tile, 'height')).toBe('201px');
 
     fixture.componentInstance.rowspan = 3;
@@ -210,57 +187,57 @@ describe('MatGridList', () => {
   });
 
   it('should lay out tiles correctly for a complex layout', () => {
-    let fixture = TestBed.createComponent(GridListWithComplexLayout);
+    const fixture = createComponent(GridListWithComplexLayout);
 
-      fixture.componentInstance.tiles = [
-        {cols: 3, rows: 1},
-        {cols: 1, rows: 2},
-        {cols: 1, rows: 1},
-        {cols: 2, rows: 1}
-      ];
+    fixture.componentInstance.tiles = [
+      {cols: 3, rows: 1},
+      {cols: 1, rows: 2},
+      {cols: 1, rows: 1},
+      {cols: 2, rows: 1}
+    ];
 
-      fixture.detectChanges();
-      let tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
+    fixture.detectChanges();
+    const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
 
-      expect(getStyle(tiles[0], 'width')).toBe('299.75px');
-      expect(getStyle(tiles[0], 'height')).toBe('100px');
-      expect(getComputedLeft(tiles[0])).toBe(0);
-      expect(getStyle(tiles[0], 'top')).toBe('0px');
+    expect(getStyle(tiles[0], 'width')).toBe('299.75px');
+    expect(getStyle(tiles[0], 'height')).toBe('100px');
+    expect(getComputedLeft(tiles[0])).toBe(0);
+    expect(getStyle(tiles[0], 'top')).toBe('0px');
 
-      expect(getStyle(tiles[1], 'width')).toBe('99.25px');
-      expect(getStyle(tiles[1], 'height')).toBe('201px');
-      expect(getComputedLeft(tiles[1])).toBe(300.75);
-      expect(getStyle(tiles[1], 'top')).toBe('0px');
+    expect(getStyle(tiles[1], 'width')).toBe('99.25px');
+    expect(getStyle(tiles[1], 'height')).toBe('201px');
+    expect(getComputedLeft(tiles[1])).toBe(300.75);
+    expect(getStyle(tiles[1], 'top')).toBe('0px');
 
-      expect(getStyle(tiles[2], 'width')).toBe('99.25px');
-      expect(getStyle(tiles[2], 'height')).toBe('100px');
-      expect(getComputedLeft(tiles[2])).toBe(0);
-      expect(getStyle(tiles[2], 'top')).toBe('101px');
+    expect(getStyle(tiles[2], 'width')).toBe('99.25px');
+    expect(getStyle(tiles[2], 'height')).toBe('100px');
+    expect(getComputedLeft(tiles[2])).toBe(0);
+    expect(getStyle(tiles[2], 'top')).toBe('101px');
 
-      expect(getStyle(tiles[3], 'width')).toBe('199.5px');
-      expect(getStyle(tiles[3], 'height')).toBe('100px');
-      expect(getComputedLeft(tiles[3])).toBe(100.25);
-      expect(getStyle(tiles[3], 'top')).toBe('101px');
+    expect(getStyle(tiles[3], 'width')).toBe('199.5px');
+    expect(getStyle(tiles[3], 'height')).toBe('100px');
+    expect(getComputedLeft(tiles[3])).toBe(100.25);
+    expect(getStyle(tiles[3], 'top')).toBe('101px');
   });
 
   it('should add not add any classes to footers without lines', () => {
-    let fixture = TestBed.createComponent(GridListWithFootersWithoutLines);
+    const fixture = createComponent(GridListWithFootersWithoutLines);
     fixture.detectChanges();
 
-    let footer = fixture.debugElement.query(By.directive(MatGridTileText));
+    const footer = fixture.debugElement.query(By.directive(MatGridTileText));
     expect(footer.nativeElement.classList.contains('mat-2-line')).toBe(false);
   });
 
   it('should add class to footers with two lines', () => {
-    let fixture = TestBed.createComponent(GridListWithFooterContainingTwoLines);
+    const fixture = createComponent(GridListWithFooterContainingTwoLines);
     fixture.detectChanges();
 
-    let footer = fixture.debugElement.query(By.directive(MatGridTileText));
+    const footer = fixture.debugElement.query(By.directive(MatGridTileText));
     expect(footer.nativeElement.classList.contains('mat-2-line')).toBe(true);
   });
 
   it('should not use calc() that evaluates to 0', () => {
-    const fixture = TestBed.createComponent(GirdListWithRowHeightRatio);
+    const fixture = createComponent(GirdListWithRowHeightRatio);
 
     fixture.componentInstance.rowHeight = '4:1';
     fixture.detectChanges();
@@ -272,7 +249,7 @@ describe('MatGridList', () => {
   });
 
   it('should reset the old styles when switching to a new tile styler', () => {
-    const fixture = TestBed.createComponent(GirdListWithRowHeightRatio);
+    const fixture = createComponent(GirdListWithRowHeightRatio);
 
     fixture.componentInstance.rowHeight = '4:1';
     fixture.detectChanges();
@@ -293,7 +270,7 @@ describe('MatGridList', () => {
   });
 
   it('should ensure that all tiles are inside the grid when there are no matching gaps', () => {
-    const fixture = TestBed.createComponent(GridListWithoutMatchingGap);
+    const fixture = createComponent(GridListWithoutMatchingGap);
     const tiles = fixture.debugElement.queryAll(By.css('mat-grid-tile'));
 
     fixture.detectChanges();
@@ -302,7 +279,7 @@ describe('MatGridList', () => {
   });
 
   it('should default to LTR if empty directionality is given', () => {
-    const fixture = TestBed.createComponent(GridListWithEmptyDirectionality);
+    const fixture = createComponent(GridListWithEmptyDirectionality);
     const tile: HTMLElement = fixture.debugElement.query(By.css('mat-grid-tile')).nativeElement;
     fixture.detectChanges();
 
@@ -311,7 +288,7 @@ describe('MatGridList', () => {
   });
 
   it('should set `right` styles for RTL', () => {
-    const fixture = TestBed.createComponent(GridListWithRtl);
+    const fixture = createComponent(GridListWithRtl);
     const tile: HTMLElement = fixture.debugElement.query(By.css('mat-grid-tile')).nativeElement;
     fixture.detectChanges();
 
@@ -320,7 +297,7 @@ describe('MatGridList', () => {
   });
 
   it('should lay out the tiles if they are not direct descendants of the list', () => {
-    const fixture = TestBed.createComponent(GridListWithIndirectTileDescendants);
+    const fixture = createComponent(GridListWithIndirectTileDescendants);
     fixture.detectChanges();
 
     const tile = fixture.debugElement.query(By.directive(MatGridTile));
@@ -340,8 +317,8 @@ function getComputedLeft(element: DebugElement): number {
   // for left because iOS Safari doesn't support using `getComputedStyle` to get the calculated
   // `left` value when using CSS `calc`. We subtract the `left` of the document body because
   // browsers, by default, add a margin to the body (typically 8px).
-  let elementRect = element.nativeElement.getBoundingClientRect();
-  let bodyRect = document.body.getBoundingClientRect();
+  const elementRect = element.nativeElement.getBoundingClientRect();
+  const bodyRect = document.body.getBoundingClientRect();
 
   return elementRect.left - bodyRect.left;
 }
