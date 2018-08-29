@@ -61,6 +61,14 @@ $api-symbols: (
     content: ' ',
     background: $white
   ),
+  class: (
+    content: 'C',
+    background: $blue-500
+  ),
+  const: (
+    content: 'K',
+    background: $mediumgray
+  ),
   decorator: (
     content: '@',
     background: $blue-800
@@ -69,46 +77,42 @@ $api-symbols: (
     content: 'D',
     background: $pink-600
   ),
-  pipe: (
-    content: 'P',
-    background: $blue-grey-600
-  ),
-  class: (
-    content: 'C',
-    background: $blue-500
-  ),
-  interface: (
-    content: 'I',
-    background: $teal-500
+  enum: (
+    content: 'E',
+    background: $amber-700
   ),
   function: (
     content: 'F',
     background: $green-500
   ),
-  enum: (
-    content: 'E',
-    background: $amber-700
-  ),
-  const: (
-    content: 'K',
-    background: $mediumgray
+  interface: (
+    content: 'I',
+    background: $teal-500
   ),
   let: (
     content: 'K',
     background: $mediumgray
   ),
-  var: (
-    content: 'K',
-    background: $mediumgray
+  ngmodule: (
+    content: 'M',
+    background: $darkred
+  ),
+  package: (
+    content: 'Pk',
+    background: $purple-600
+  ),
+  pipe: (
+    content: 'P',
+    background: $blue-grey-600
   ),
   type-alias: (
     content: 'T',
     background: $light-green-600
   ),
-  package: (
-    content: 'Pk',
-    background: $purple-600
-  )
+  var: (
+    content: 'K',
+    background: $mediumgray
+  ),
 );
 
 // OTHER
