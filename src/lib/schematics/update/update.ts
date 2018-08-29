@@ -9,10 +9,11 @@
 import {Rule, SchematicContext, TaskId, Tree} from '@angular-devkit/schematics';
 import {RunSchematicTask, TslintFixTask} from '@angular-devkit/schematics/tasks';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import * as path from 'path';
+import {TargetVersion} from './index';
+import {createTslintConfig} from './tslint-update';
 
 /** Entry point for `ng update` from Angular CLI. */
-export default function(): Rule {
+export function createUpdateRule(targetVersion: TargetVersion): Rule {
   return (tree: Tree, context: SchematicContext) => {
 
     const allTsConfigPaths = getTsConfigPaths(tree);
@@ -23,64 +24,11 @@ export default function(): Rule {
         'Material repository that includes the name of your TypeScript configuration.');
     }
 
+    const tslintConfig = createTslintConfig(targetVersion);
+
     for (const tsconfig of allTsConfigPaths) {
       // Run the update tslint rules.
-      tslintFixTasks.push(context.addTask(new TslintFixTask({
-        rulesDirectory: [
-          path.join(__dirname, 'rules/'),
-          path.join(__dirname, 'rules/attribute-selectors'),
-          path.join(__dirname, 'rules/class-names'),
-          path.join(__dirname, 'rules/class-inheritance'),
-          path.join(__dirname, 'rules/input-names'),
-          path.join(__dirname, 'rules/output-names'),
-          path.join(__dirname, 'rules/css-selectors'),
-          path.join(__dirname, 'rules/element-selectors'),
-          path.join(__dirname, 'rules/property-names'),
-          path.join(__dirname, 'rules/method-calls'),
-        ],
-        rules: {
-          // Attribute selector update rules.
-          'attribute-selectors-string-literal': true,
-          'attribute-selectors-stylesheet': true,
-          'attribute-selectors-template': true,
-
-          // Class name update rules
-          'class-names-identifier': true,
-          'class-names-identifier-misc': true,
-
-          // CSS selectors update rules
-          'css-selectors-string-literal': true,
-          'css-selectors-stylesheet': true,
-          'css-selectors-template': true,
-
-          // Element selector update rules
-          'element-selectors-string-literal': true,
-          'element-selectors-stylesheet': true,
-          'element-selectors-template': true,
-
-          // Input name update rules
-          'input-names-stylesheet': true,
-          'input-names-template': true,
-
-          // Output name update rules
-          'output-names-template': true,
-
-          // Property name update rules
-          'property-names-access': true,
-          'property-names-misc': true,
-
-          // Method call checks
-          'method-calls-check': true,
-
-          // Class inheritance
-          'class-inheritance-check': true,
-          'class-inheritance-misc': true,
-
-          // Additional misc rules.
-          'check-import-misc': true,
-          'check-template-misc': true
-        }
-      }, {
+      tslintFixTasks.push(context.addTask(new TslintFixTask(tslintConfig, {
         silent: false,
         ignoreErrors: true,
         tsConfigPath: tsconfig,
@@ -90,13 +38,6 @@ export default function(): Rule {
     // Delete the temporary schematics directory.
     context.addTask(new RunSchematicTask('ng-post-update', {}), tslintFixTasks);
   };
-}
-
-/** Post-update schematic to be called when update is finished. */
-export function postUpdate(): Rule {
-  return () => console.log(
-      '\nComplete! Please check the output above for any issues that were detected but could not' +
-      ' be automatically fixed.');
 }
 
 /**
