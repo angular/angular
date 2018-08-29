@@ -51,7 +51,16 @@
     "name": "NEXT"
   },
   {
+    "name": "NG_COMPONENT_DEF"
+  },
+  {
+    "name": "NG_DIRECTIVE_DEF"
+  },
+  {
     "name": "NG_ELEMENT_ID"
+  },
+  {
+    "name": "NG_PIPE_DEF"
   },
   {
     "name": "NG_PROJECT_AS_ATTR_NAME"
@@ -201,6 +210,15 @@
     "name": "getChildLNode"
   },
   {
+    "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getComponentDef"
+  },
+  {
+    "name": "getDirectiveDef"
+  },
+  {
     "name": "getLElementFromComponent"
   },
   {
@@ -220,6 +238,9 @@
   },
   {
     "name": "getParentLNode"
+  },
+  {
+    "name": "getPipeDef"
   },
   {
     "name": "getPreviousOrParentNode"

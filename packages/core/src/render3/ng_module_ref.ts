@@ -16,6 +16,7 @@ import {Type} from '../type';
 import {stringify} from '../util';
 import {assertDefined} from './assert';
 import {ComponentFactoryResolver} from './component_ref';
+import {getNgModuleDef} from './definition';
 
 export interface NgModuleType { ngModuleDef: NgModuleDefInternal<any>; }
 
@@ -35,12 +36,12 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
 
   constructor(ngModuleType: Type<T>, parentInjector: Injector|null) {
     super();
-    const ngModuleDef = (ngModuleType as any as NgModuleType).ngModuleDef;
+    const ngModuleDef = getNgModuleDef(ngModuleType);
     ngDevMode && assertDefined(
                      ngModuleDef,
                      `NgModule '${stringify(ngModuleType)}' is not a subtype of 'NgModuleType'.`);
 
-    this._bootstrapComponents = ngModuleDef.bootstrap;
+    this._bootstrapComponents = ngModuleDef !.bootstrap;
     const additionalProviders: StaticProvider[] = [
       COMPONENT_FACTORY_RESOLVER, {
         provide: viewEngine_NgModuleRef,

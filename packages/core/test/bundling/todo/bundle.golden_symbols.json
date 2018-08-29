@@ -81,7 +81,19 @@
     "name": "NEXT"
   },
   {
+    "name": "NG_COMPONENT_DEF"
+  },
+  {
+    "name": "NG_DIRECTIVE_DEF"
+  },
+  {
     "name": "NG_ELEMENT_ID"
+  },
+  {
+    "name": "NG_INJECTABLE_DEF"
+  },
+  {
+    "name": "NG_PIPE_DEF"
   },
   {
     "name": "NG_PROJECT_AS_ATTR_NAME"
@@ -558,16 +570,28 @@
     "name": "getClosestComponentAncestor"
   },
   {
+    "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getComponentDef"
+  },
+  {
     "name": "getCurrentSanitizer"
   },
   {
     "name": "getCurrentView"
   },
   {
+    "name": "getDirectiveDef"
+  },
+  {
     "name": "getInitialIndex"
   },
   {
     "name": "getInitialValue"
+  },
+  {
+    "name": "getInjectableDef"
   },
   {
     "name": "getLElementFromComponent"
@@ -619,6 +643,9 @@
   },
   {
     "name": "getParentState"
+  },
+  {
+    "name": "getPipeDef"
   },
   {
     "name": "getPointers"

@@ -39,11 +39,13 @@ export function InheritDefinitionFeature(
   while (superType) {
     let superDef: DirectiveDefInternal<any>|ComponentDefInternal<any>|undefined = undefined;
     if (isComponentDef(definition)) {
+      // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
       superDef = superType.ngComponentDef || superType.ngDirectiveDef;
     } else {
       if (superType.ngComponentDef) {
         throw new Error('Directives cannot inherit Components');
       }
+      // Don't use getComponentDef/getDirectiveDef. This logic relies on inheritance.
       superDef = superType.ngDirectiveDef;
     }
 
