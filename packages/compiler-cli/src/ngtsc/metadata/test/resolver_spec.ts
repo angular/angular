@@ -284,4 +284,17 @@ describe('ngtsc metadata', () => {
     expect(result.enumRef.node.name.text).toBe('Foo');
     expect(result.name).toBe('B');
   });
+
+  it('variable declaration resolution works', () => {
+    const {program} = makeProgram([
+      {name: 'decl.d.ts', contents: 'export declare let value: number;'},
+      {name: 'entry.ts', contents: `import {value} from './decl'; const target$ = value;`},
+    ]);
+    const checker = program.getTypeChecker();
+    const host = new TypeScriptReflectionHost(checker);
+    const result = getDeclaration(program, 'entry.ts', 'target$', ts.isVariableDeclaration);
+    const res = staticallyResolve(result.initializer !, host, checker);
+    console.error(res);
+    expect(res instanceof Reference).toBe(true);
+  });
 });
