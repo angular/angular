@@ -689,6 +689,34 @@ describe('MatSelectionList without forms', () => {
       expect(listItemContent.nativeElement.classList).toContain('mat-list-item-content-reverse');
     });
   });
+
+  describe('with list item elements', () => {
+    beforeEach(async(() => {
+      TestBed.configureTestingModule({
+        imports: [MatListModule],
+        declarations: [
+          SelectionListWithAvatar,
+          SelectionListWithIcon,
+        ],
+      }).compileComponents();
+    }));
+
+    it('should add a class to reflect that it has an avatar', () => {
+      const fixture = TestBed.createComponent(SelectionListWithIcon);
+      fixture.detectChanges();
+
+      const listOption = fixture.nativeElement.querySelector('.mat-list-option');
+      expect(listOption.classList).toContain('mat-list-item-with-avatar');
+    });
+
+    it('should add a class to reflect that it has an icon', () => {
+      const fixture = TestBed.createComponent(SelectionListWithIcon);
+      fixture.detectChanges();
+
+      const listOption = fixture.nativeElement.querySelector('.mat-list-option');
+      expect(listOption.classList).toContain('mat-list-item-with-avatar');
+    });
+  });
 });
 
 describe('MatSelectionList with forms', () => {
@@ -1177,4 +1205,31 @@ class SelectionListWithCustomComparator {
     {id: 2, label: 'Two'},
     {id: 3, label: 'Three'}
   ];
+}
+
+
+@Component({
+  template: `
+    <mat-selection-list>
+      <mat-list-option>
+        <div mat-list-avatar>I</div>
+        Inbox
+      </mat-list-option>
+    </mat-selection-list>
+  `
+})
+class SelectionListWithAvatar {
+}
+
+@Component({
+  template: `
+    <mat-selection-list>
+      <mat-list-option>
+        <div mat-list-icon>I</div>
+        Inbox
+      </mat-list-option>
+    </mat-selection-list>
+  `
+})
+class SelectionListWithIcon {
 }

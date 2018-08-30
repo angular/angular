@@ -38,7 +38,7 @@ import {
 } from '@angular/material/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Subscription} from 'rxjs';
-import {MatListAvatarCssMatStyler} from './list';
+import {MatListAvatarCssMatStyler, MatListIconCssMatStyler} from './list';
 
 
 /** @docs-private */
@@ -86,7 +86,7 @@ export class MatSelectionListChange {
     'tabindex': '-1',
     '[class.mat-list-item-disabled]': 'disabled',
     '[class.mat-list-item-focus]': '_hasFocus',
-    '[class.mat-list-item-with-avatar]': '_avatar',
+    '[class.mat-list-item-with-avatar]': '_avatar || _icon',
     '[attr.aria-selected]': 'selected.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
   },
@@ -104,6 +104,7 @@ export class MatListOption extends _MatListOptionMixinBase
   _hasFocus: boolean = false;
 
   @ContentChild(MatListAvatarCssMatStyler) _avatar: MatListAvatarCssMatStyler;
+  @ContentChild(MatListIconCssMatStyler) _icon: MatListIconCssMatStyler;
   @ContentChildren(MatLine) _lines: QueryList<MatLine>;
 
   /** DOM element containing the item's text. */
