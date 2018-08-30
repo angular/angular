@@ -175,65 +175,69 @@ The following code snippets illustrate how the same kind of operation is defined
 각 상황에서 옵저버블과 Promise가 어떻게 다른지 확인해 봅시다.
 
 <table>
-  <tr>
-    <!--
-    <th>Operation</th>
-    -->
-    <th>동작</th>
-    <th>Observable</th>
-    <th>Promise</th>
-  </tr>
-  <tr>
-    <!--
-    <td>Creation</td>
-    -->
-    <td>생성</td>
-    <td>
-      <pre>new Observable((observer) => {
-  observer.next(123);
-});</pre>
-    </td>
-    <td>
-      <pre>new Promise((resolve, reject) => {
-  resolve(123);
-});</pre>
-    </td>
-  </tr>
-  <tr>
-    <!--
-    <td>Transform</td>
-    -->
-    <td>변환</td>
-    <td><pre>obs.map((value) => value * 2 );</pre></td>
-    <td><pre>promise.then((value) => value * 2);</pre></td>
-  </tr>
-  <tr>
-    <!--
-    <td>Subscribe</td>
-    -->
-    <td>구독</td>
-    <td>
-      <pre>sub = obs.subscribe((value) => {
-  console.log(value)
-});</pre>
-    </td>
-    <td>
-      <pre>promise.then((value) => {
-  console.log(value);
-});</pre>
-    </td>
-  </tr>
-  <tr>
-    <!--
-    <td>Unsubscribe</td>
-    -->
-    <td>구독 해지</td>
-    <td><pre>sub.unsubscribe();</pre></td>
-    <!--
-    <td>Implied by promise resolution.</td>
-    -->
-    <td>Promise가 모두 실행되면 해지된 것으로 봅니다.</td>
-  </tr>
+  <thead>
+    <tr>
+      <!--
+      <th>Operation</th>
+      -->
+      <th>동작</th>
+      <th>Observable</th>
+      <th>Promise</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <!--
+      <td>Creation</td>
+      -->
+      <td>생성</td>
+      <td>
+        <pre>new Observable((observer) => {
+    observer.next(123);
+  });</pre>
+      </td>
+      <td>
+        <pre>new Promise((resolve, reject) => {
+    resolve(123);
+  });</pre>
+      </td>
+    </tr>
+    <tr>
+      <!--
+      <td>Transform</td>
+      -->
+      <td>변환</td>
+      <td><pre>obs.map((value) => value * 2 );</pre></td>
+      <td><pre>promise.then((value) => value * 2);</pre></td>
+    </tr>
+    <tr>
+      <!--
+      <td>Subscribe</td>
+      -->
+      <td>구독</td>
+      <td>
+        <pre>sub = obs.subscribe((value) => {
+    console.log(value)
+  });</pre>
+      </td>
+      <td>
+        <pre>promise.then((value) => {
+    console.log(value);
+  });</pre>
+      </td>
+    </tr>
+    <tr>
+      <!--
+      <td>Unsubscribe</td>
+      -->
+      <td>구독 해지</td>
+      <td><pre>sub.unsubscribe();</pre></td>
+      <!--
+      <td>Implied by promise resolution.</td>
+      -->
+      <td>Promise가 모두 실행되면 해지된 것으로 봅니다.</td>
+    </tr>
+  </tbody>
 </table>
 
 <!--
