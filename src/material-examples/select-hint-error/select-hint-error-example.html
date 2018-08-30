@@ -1,3 +1,4 @@
+<h4>mat select</h4>
 <mat-form-field>
   <mat-select placeholder="Favorite animal" [formControl]="animalControl" required>
     <mat-option>--</mat-option>
@@ -8,3 +9,19 @@
   <mat-error *ngIf="animalControl.hasError('required')">Please choose an animal</mat-error>
   <mat-hint>{{animalControl.value?.sound}}</mat-hint>
 </mat-form-field>
+
+<h4>native html select</h4>
+<mat-form-field>
+  <mat-label>Select your car (required)</mat-label>
+  <select matNativeControl required [formControl]="selectFormControl">
+    <option label="--select something --"></option>
+    <option value="saab">Saab</option>
+    <option value="mercedes">Mercedes</option>
+    <option value="audi">Audi</option>
+  </select>
+  <mat-error *ngIf="selectFormControl.hasError('required')">
+    This field is required
+  </mat-error>
+  <mat-hint>You can pick up your favorite car here</mat-hint>
+</mat-form-field>
+

@@ -1,4 +1,5 @@
 <form>
+  <h4>mat-select</h4>
   <mat-form-field>
     <mat-select placeholder="Favorite food" [(ngModel)]="selectedValue" name="food">
       <mat-option *ngFor="let food of foods" [value]="food.value">
@@ -6,6 +7,15 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
-
-  <p> Selected value: {{selectedValue}} </p>
+  <p> Selected food: {{selectedValue}} </p>
+  <h4>native html select</h4>
+  <mat-form-field>
+    <select matNativeControl placeholder="Favorite car" [(ngModel)]="selectedCar" name="car">
+      <option value="" disabled selected></option>
+      <option *ngFor="let car of cars" [value]="car.value">
+        {{car.viewValue}}
+      </option>
+    </select>
+  </mat-form-field>
+  <p> Selected car: {{selectedCar}} </p>
 </form>

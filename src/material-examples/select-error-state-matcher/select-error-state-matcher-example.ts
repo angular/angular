@@ -22,5 +22,15 @@ export class SelectErrorStateMatcherExample {
     Validators.pattern('valid'),
   ]);
 
+  selectFormControl = new FormControl('valid', [
+    Validators.required,
+    Validators.pattern('valid'),
+  ]);
+
+  nativeSelectFormControl = new FormControl('valid', [
+    Validators.required,
+    Validators.pattern('valid'),
+  ]);
+
   matcher = new MyErrorStateMatcher();
 }

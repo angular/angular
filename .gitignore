@@ -27,6 +27,7 @@ node_modules
 # IDEs
 /.idea
 /.vscode
+/*.iml
 
 # misc
 .DS_Store
@@ -38,6 +39,7 @@ npm-debug.log
 testem.log
 /.chrome
 /.git
+/.firebase
 
 # schematics
 /src/lib/schematics/**/*.js

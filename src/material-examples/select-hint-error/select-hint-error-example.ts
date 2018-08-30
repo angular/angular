@@ -14,6 +14,7 @@ export interface Animal {
 })
 export class SelectHintErrorExample {
   animalControl = new FormControl('', [Validators.required]);
+  selectFormControl = new FormControl('', Validators.required);
   animals: Animal[] = [
     {name: 'Dog', sound: 'Woof!'},
     {name: 'Cat', sound: 'Meow!'},

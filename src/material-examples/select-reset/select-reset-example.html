@@ -1,6 +1,19 @@
+<h4>mat-select</h4>
 <mat-form-field>
   <mat-select placeholder="State">
     <mat-option>None</mat-option>
     <mat-option *ngFor="let state of states" [value]="state">{{state}}</mat-option>
   </mat-select>
+</mat-form-field>
+
+<h4>native html select</h4>
+<mat-form-field>
+  <mat-label>Select your car</mat-label>
+  <select matNativeControl id="mySelectId">
+    <option value="" disabled selected></option>
+    <option value="volvo">Volvo</option>
+    <option value="saab">Saab</option>
+    <option value="mercedes">Mercedes</option>
+    <option value="audi">Audi</option>
+  </select>
 </mat-form-field>

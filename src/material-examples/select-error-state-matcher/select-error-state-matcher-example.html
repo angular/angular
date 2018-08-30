@@ -1,3 +1,4 @@
+<h4>mat-select</h4>
 <mat-form-field>
   <mat-select placeholder="Choose one" [formControl]="selected" [errorStateMatcher]="matcher">
     <mat-option>Clear</mat-option>
@@ -7,6 +8,19 @@
   <mat-hint>Errors appear instantly!</mat-hint>
   <mat-error *ngIf="selected.hasError('required')">You must make a selection</mat-error>
   <mat-error *ngIf="selected.hasError('pattern') && !selected.hasError('required')">
+    Your selection is invalid
+  </mat-error>
+</mat-form-field>
+
+<h4>native html select</h4>
+<mat-form-field class="demo-full-width">
+  <select matNativeControl placeholder="Choose one" [formControl]="nativeSelectFormControl" [errorStateMatcher]="matcher">
+    <option value=""></option>
+    <option value="valid" selected>Valid option</option>
+    <option value="invalid">Invalid option</option>
+  </select>
+  <mat-error *ngIf="nativeSelectFormControl.hasError('required')">You must make a selection</mat-error>
+  <mat-error *ngIf="nativeSelectFormControl.hasError('pattern') && !nativeSelectFormControl.hasError('required')">
     Your selection is invalid
   </mat-error>
 </mat-form-field>

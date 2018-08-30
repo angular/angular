@@ -64,7 +64,8 @@ export const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
 
 /** Directive that allows a native input to work inside a `MatFormField`. */
 @Directive({
-  selector: `input[matInput], textarea[matInput]`,
+  selector: `input[matInput], textarea[matInput], select[matNativeControl],
+      input[matNativeControl], textarea[matNativeControl]`,
   exportAs: 'matInput',
   host: {
     /**
@@ -78,7 +79,7 @@ export const _MatInputMixinBase: CanUpdateErrorStateCtor & typeof MatInputBase =
     '[attr.placeholder]': 'placeholder',
     '[disabled]': 'disabled',
     '[required]': 'required',
-    '[readonly]': 'readonly',
+    '[attr.readonly]': 'readonly && !_isNativeSelect || null',
     '[attr.aria-describedby]': '_ariaDescribedby || null',
     '[attr.aria-invalid]': 'errorState',
     '[attr.aria-required]': 'required.toString()',
@@ -98,6 +99,9 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
 
   /** Whether the component is being rendered on the server. */
   _isServer = false;
+
+  /** Whether the component is a native html select. */
+  _isNativeSelect = false;
 
   /**
    * Implemented as part of MatFormFieldControl.
@@ -257,6 +261,7 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     }
 
     this._isServer = !this._platform.isBrowser;
+    this._isNativeSelect = this._elementRef.nativeElement.nodeName.toLowerCase() === 'select';
   }
 
   ngOnInit() {
@@ -362,7 +367,18 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
    * Implemented as part of MatFormFieldControl.
    * @docs-private
    */
-  get shouldLabelFloat(): boolean { return this.focused || !this.empty; }
+  get shouldLabelFloat(): boolean {
+    if (this._isNativeSelect) {
+      // For a single-selection `<select>`, the label should float when the selected option has
+      // a non-empty display value. For a `<select multiple>`, the label *always* floats to avoid
+      // overlapping the label with the options.
+      const selectElement = this._elementRef.nativeElement;
+      return selectElement.multiple || !this.empty || selectElement.options[0].label ||
+          this.focused;
+    } else {
+      return this.focused || !this.empty;
+    }
+  }
 
   /**
    * Implemented as part of MatFormFieldControl.

@@ -7,7 +7,8 @@ In this document, "form field" refers to the wrapper component `<mat-form-field>
 (e.g. the input, textarea, select, etc.)
 
 The following Angular Material components are designed to work inside a `<mat-form-field>`:
-* [`<input matInput>` &amp; `<textarea matInput>`](https://material.angular.io/components/input/overview)
+* [`<input matNativeControl>` &amp; `<textarea matNativeControl>`](https://material.angular.io/components/input/overview)
+* [`<select matNativeControl>`](https://material.angular.io/components/select/overview)
 * [`<mat-select>`](https://material.angular.io/components/select/overview)
 * [`<mat-chip-list>`](https://material.angular.io/components/chips/overview)
 
@@ -41,7 +42,8 @@ want a floating label, add a `<mat-label>` to the `mat-form-field`.
 ### Floating label
 
 The floating label is a text label displayed on top of the form field control when
-the control does not contain any text. By default, when text is present the floating label
+the control does not contain any text or when `<select matNativeControl>` does not show any option text. 
+By default, when text is present the floating label
 floats above the form field control. The label for a form field can be specified by adding a
 `mat-label` element.
 
