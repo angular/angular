@@ -311,7 +311,9 @@ export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, V
   }
 
   _onKeydown(event: KeyboardEvent) {
-    if (this._datepicker && event.altKey && event.keyCode === DOWN_ARROW) {
+    const isAltDownArrow = event.altKey && event.keyCode === DOWN_ARROW;
+
+    if (this._datepicker && isAltDownArrow && !this._elementRef.nativeElement.readOnly) {
       this._datepicker.open();
       event.preventDefault();
     }

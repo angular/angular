@@ -454,7 +454,7 @@ describe('MatDatepicker', () => {
         expect(testComponent.datepicker.opened).toBe(false);
       }));
 
-      it('should open the datpeicker using ALT + DOWN_ARROW', fakeAsync(() => {
+      it('should open the datepicker using ALT + DOWN_ARROW', fakeAsync(() => {
         expect(testComponent.datepicker.opened).toBe(false);
 
         const event = createKeyboardEvent('keydown', DOWN_ARROW);
@@ -466,6 +466,24 @@ describe('MatDatepicker', () => {
 
         expect(testComponent.datepicker.opened).toBe(true);
         expect(event.defaultPrevented).toBe(true);
+      }));
+
+      it('should not open for ALT + DOWN_ARROW on readonly input', fakeAsync(() => {
+        const input = fixture.nativeElement.querySelector('input');
+
+        expect(testComponent.datepicker.opened).toBe(false);
+
+        input.setAttribute('readonly', 'true');
+
+        const event = createKeyboardEvent('keydown', DOWN_ARROW);
+        Object.defineProperty(event, 'altKey', {get: () => true});
+
+        dispatchEvent(input, event);
+        fixture.detectChanges();
+        flush();
+
+        expect(testComponent.datepicker.opened).toBe(false);
+        expect(event.defaultPrevented).toBe(false);
       }));
 
     });
