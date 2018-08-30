@@ -28,6 +28,7 @@
     "presetup-local": "yarn presetup",
     "setup-local": "yarn aio-use-local && yarn example-use-local",
     "postsetup-local": "yarn postsetup",
+    "set-opensearch-url": "node --eval \"const sh = require('shelljs'); sh.set('-e'); sh.sed('-i', /PLACEHOLDER_URL/g, process.argv[1], 'dist/assets/opensearch.xml');\"",
     "test-pwa-score-localhost": "concurrently --kill-others --success first \"http-server dist -p 4200 --silent\" \"yarn test-pwa-score http://localhost:4200 90\"",
     "test-pwa-score": "node scripts/test-pwa-score",
     "example-e2e": "yarn example-check-local && node ./tools/examples/run-example-e2e",

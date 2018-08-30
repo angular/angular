@@ -150,7 +150,7 @@ jobs:
       - restore_cache:
           key: *cache_key
       - run: yarn install --frozen-lockfile --non-interactive
-      - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH
+      - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH $CIRCLE_PR_NUMBER $CIRCLE_SHA1
       - store_artifacts:
           path: *aio_preview_artifact_path
           # The `destination` needs to be kept in synch with the value of
