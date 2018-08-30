@@ -185,7 +185,7 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     // input element. To ensure that bindings for `type` work, we need to sync the setter
     // with the native property. Textarea elements don't support the type property or attribute.
     if (!this._isTextarea() && getSupportedInputTypes().has(this._type)) {
-      this._elementRef.nativeElement.type = this._type;
+      (this._elementRef.nativeElement as HTMLInputElement).type = this._type;
     }
   }
   protected _type = 'text';
@@ -221,16 +221,17 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
     'week'
   ].filter(t => getSupportedInputTypes().has(t));
 
-  constructor(protected _elementRef: ElementRef<HTMLInputElement>,
-              protected _platform: Platform,
-              /** @docs-private */
-              @Optional() @Self() public ngControl: NgControl,
-              @Optional() _parentForm: NgForm,
-              @Optional() _parentFormGroup: FormGroupDirective,
-              _defaultErrorStateMatcher: ErrorStateMatcher,
-              @Optional() @Self() @Inject(MAT_INPUT_VALUE_ACCESSOR) inputValueAccessor: any,
-              private _autofillMonitor: AutofillMonitor,
-              ngZone: NgZone) {
+  constructor(
+    protected _elementRef: ElementRef<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+    protected _platform: Platform,
+    /** @docs-private */
+    @Optional() @Self() public ngControl: NgControl,
+    @Optional() _parentForm: NgForm,
+    @Optional() _parentFormGroup: FormGroupDirective,
+    _defaultErrorStateMatcher: ErrorStateMatcher,
+    @Optional() @Self() @Inject(MAT_INPUT_VALUE_ACCESSOR) inputValueAccessor: any,
+    private _autofillMonitor: AutofillMonitor,
+    ngZone: NgZone) {
     super(_defaultErrorStateMatcher, _parentForm, _parentFormGroup, ngControl);
     // If no input value accessor was explicitly specified, use the element as the input value
     // accessor.
@@ -372,8 +373,9 @@ export class MatInput extends _MatInputMixinBase implements MatFormFieldControl<
       // For a single-selection `<select>`, the label should float when the selected option has
       // a non-empty display value. For a `<select multiple>`, the label *always* floats to avoid
       // overlapping the label with the options.
-      const selectElement = this._elementRef.nativeElement;
-      return selectElement.multiple || !this.empty || selectElement.options[0].label ||
+      const selectElement = this._elementRef.nativeElement as HTMLSelectElement;
+
+      return selectElement.multiple || !this.empty || !!selectElement.options[0].label ||
           this.focused;
     } else {
       return this.focused || !this.empty;
