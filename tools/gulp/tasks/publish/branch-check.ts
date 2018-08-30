@@ -1,12 +1,8 @@
-import {bold} from 'chalk';
 import {spawnSync} from 'child_process';
 import {buildConfig} from 'material2-build-tools';
 
 /** Regular expression that matches version names and the individual version segments. */
 export const versionNameRegex = /^(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d)+)?/;
-
-/** Regular expression that matches publish branch names and their Semver digits. */
-const publishBranchNameRegex = /^([0-9]+)\.([x0-9]+)(?:\.([x0-9]+))?$/;
 
 /** Checks if the specified version can be released from the current Git branch. */
 export function checkPublishBranch(version: string) {
@@ -14,28 +10,25 @@ export function checkPublishBranch(version: string) {
   const branchName = spawnSync('git', ['symbolic-ref', '--short', 'HEAD'],
     {cwd: buildConfig.projectDir}).stdout.toString().trim();
 
-  if (branchName === 'master') {
-    if (versionType === 'major') {
-      return;
-    }
 
-    throw `Publishing of "${versionType}" releases should not happen inside of the ` +
-        `${bold('master')} branch.`;
+  // TODO(devversion): also check the the local branch's HEAD sha matches upstream.
+  // TODO(devversion): also check that the version is a single increment of the previous release.
+  // TODO(devversion): minor releases can also be published from master if there isn't a minor
+  // branch for that major range yet.
+  const [major, minor] = version.split('.');
+
+  let expectedBranch = '';
+  if (versionType === 'major') {
+    expectedBranch = 'master';
+  } else if (versionType === 'minor') {
+    expectedBranch = `${major}.x`;
+  } else if (versionType === 'patch') {
+    expectedBranch = `${major}.${minor}.x`;
   }
 
-  const branchNameMatch = branchName.match(publishBranchNameRegex) || [];
-  const branchDigits = branchNameMatch.slice(1, 4);
-
-  if (branchDigits[2] === 'x' && versionType !== 'patch') {
-    throw `Cannot publish a "${versionType}" release inside of a patch branch (${branchName})`;
+  if (branchName !== expectedBranch) {
+    throw `A ${versionType} release must be done from the ${expectedBranch} branch.`;
   }
-
-  if (branchDigits[1] === 'x' && versionType !== 'minor') {
-    throw `Cannot publish a "${versionType}" release inside of a minor branch (${branchName})`;
-  }
-
-  throw `Cannot publish a "${versionType}" release from branch: "${branchName}". Releases should `
-  + `be published from "master" or the according publish branch (e.g. "6.x", "6.4.x")`;
 }
 
 /**
