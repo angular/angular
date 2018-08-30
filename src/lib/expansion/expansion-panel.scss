@@ -5,13 +5,13 @@
 .mat-expansion-panel {
   $border-radius: 4px;
 
-  @include mat-elevation-transition;
   @include mat-overridable-elevation(2);
   box-sizing: content-box;
   display: block;
   margin: 0;
-  transition: margin 225ms $mat-fast-out-slow-in-timing-function;
   border-radius: $border-radius;
+  transition: margin 225ms $mat-fast-out-slow-in-timing-function,
+      mat-elevation-transition-property-value();
 
   .mat-accordion & {
     &:not(.mat-expanded), &:not(.mat-expansion-panel-spacing) {
