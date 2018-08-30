@@ -92,6 +92,10 @@ fi
   # Include any mode-specific files
   cp -rf src/extra-files/$deployEnv/. dist/
 
+  # Set deployedUrl as parameter in the opensearch description
+  # deployedUrl must end with /
+  sed -i "s|PLACEHOLDERURL|$deployedUrl|g" dist/assets/opensearch.xml 
+
   # Check payload size
   yarn payload-size
 
