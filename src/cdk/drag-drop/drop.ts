@@ -218,7 +218,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
    */
   getItemIndex(item: CdkDrag): number {
     return this._dragging ?
-        this._positionCache.items.findIndex(currentItem => currentItem.drag === item) :
+        findIndex(this._positionCache.items, currentItem => currentItem.drag === item) :
         this._draggables.toArray().indexOf(item);
   }
 
@@ -244,7 +244,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
     }
 
     const isHorizontal = this.orientation === 'horizontal';
-    const currentIndex = siblings.findIndex(currentItem => currentItem.drag === item);
+    const currentIndex = findIndex(siblings, currentItem => currentItem.drag === item);
     const siblingAtNewPosition = siblings[newIndex];
     const currentPosition = siblings[currentIndex].clientRect;
     const newPosition = siblingAtNewPosition.clientRect;
@@ -389,7 +389,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
 
     const isHorizontal = this.orientation === 'horizontal';
 
-    return this._positionCache.items.findIndex(({drag, clientRect}, _, array) => {
+    return findIndex(this._positionCache.items, ({drag, clientRect}, _, array) => {
       if (drag === item) {
         // If there's only one item left in the container, it must be
         // the dragged item itself so we use it as a reference.
@@ -427,4 +427,23 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
     return pointerY > top - yThreshold && pointerY < bottom + yThreshold &&
            pointerX > left - xThreshold && pointerX < right + xThreshold;
   }
+}
+
+
+/**
+ * Finds the index of an item that matches a predicate function. Used as an equivalent
+ * of `Array.prototype.find` which isn't part of the standard Google typings.
+ * @param array Array in which to look for matches.
+ * @param predicate Function used to determine whether an item is a match.
+ */
+function findIndex<T>(array: T[],
+                      predicate: (value: T, index: number, obj: T[]) => boolean): number {
+
+  for (let i = 0; i < array.length; i++) {
+    if (predicate(array[i], i, array)) {
+      return i;
+    }
+  }
+
+  return -1;
 }
