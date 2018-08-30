@@ -8,6 +8,7 @@
 
 import {Type} from '../../type';
 import {fillProperties} from '../../util/property';
+import {EMPTY, EMPTY_ARRAY} from '../definition';
 import {ComponentDefInternal, ComponentTemplate, DirectiveDefFeature, DirectiveDefInternal, RenderFlags} from '../interfaces/definition';
 
 
@@ -47,6 +48,16 @@ export function InheritDefinitionFeature(
     }
 
     const baseDef = (superType as any).ngBaseDef;
+
+    // Some fields in the definition may be empty, if there were no values to put in them that
+    // would've justified object creation. Unwrap them if necessary.
+    if (baseDef || superDef) {
+      const writeableDef = definition as any;
+      writeableDef.inputs = maybeUnwrapEmpty(definition.inputs);
+      writeableDef.declaredInputs = maybeUnwrapEmpty(definition.declaredInputs);
+      writeableDef.outputs = maybeUnwrapEmpty(definition.outputs);
+    }
+
     if (baseDef) {
       // Merge inputs and outputs
       fillProperties(definition.inputs, baseDef.inputs);
@@ -160,5 +171,17 @@ export function InheritDefinitionFeature(
     }
 
     superType = Object.getPrototypeOf(superType);
+  }
+}
+
+function maybeUnwrapEmpty<T>(value: T[]): T[];
+function maybeUnwrapEmpty<T>(value: T): T;
+function maybeUnwrapEmpty(value: any): any {
+  if (value === EMPTY) {
+    return {};
+  } else if (Array.isArray(value) && value === EMPTY_ARRAY) {
+    return [];
+  } else {
+    return value;
   }
 }
