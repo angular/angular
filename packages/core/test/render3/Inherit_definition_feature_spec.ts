@@ -7,6 +7,7 @@
  */
 
 import {EventEmitter, Output} from '../../src/core';
+import {EMPTY} from '../../src/render3/definition';
 import {InheritDefinitionFeature} from '../../src/render3/features/inherit_definition_feature';
 import {ComponentDefInternal, DirectiveDefInternal, RenderFlags, defineBase, defineComponent, defineDirective} from '../../src/render3/index';
 
@@ -124,6 +125,40 @@ describe('InheritDefinitionFeature', () => {
       bar: 'superBar',
       baz: 'subBaz',
       qux: 'subQux',
+    });
+  });
+
+  it('should detect EMPTY inputs and outputs', () => {
+    class SuperDirective {
+      static ngDirectiveDef = defineDirective({
+        inputs: {
+          testIn: 'testIn',
+        },
+        outputs: {
+          testOut: 'testOut',
+        },
+        type: SuperDirective,
+        selectors: [['', 'superDir', '']],
+        factory: () => new SuperDirective(),
+      });
+    }
+
+    class SubDirective extends SuperDirective {
+      static ngDirectiveDef = defineDirective({
+        type: SubDirective,
+        selectors: [['', 'subDir', '']],
+        factory: () => new SubDirective(),
+        features: [InheritDefinitionFeature]
+      });
+    }
+
+    const subDef = SubDirective.ngDirectiveDef as DirectiveDefInternal<any>;
+
+    expect(subDef.inputs).toEqual({
+      testIn: 'testIn',
+    });
+    expect(subDef.outputs).toEqual({
+      testOut: 'testOut',
     });
   });
 
