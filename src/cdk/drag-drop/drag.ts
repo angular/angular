@@ -10,6 +10,7 @@ import {Directionality} from '@angular/cdk/bidi';
 import {ViewportRuler} from '@angular/cdk/scrolling';
 import {DOCUMENT} from '@angular/common';
 import {
+  AfterViewInit,
   ContentChild,
   ContentChildren,
   Directive,
@@ -27,7 +28,7 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import {merge, Observable, Subject} from 'rxjs';
-import {takeUntil} from 'rxjs/operators';
+import {takeUntil, take} from 'rxjs/operators';
 import {DragDropRegistry} from './drag-drop-registry';
 import {
   CdkDragDrop,
@@ -60,11 +61,9 @@ const POINTER_DIRECTION_CHANGE_THRESHOLD = 5;
   host: {
     'class': 'cdk-drag',
     '[class.cdk-drag-dragging]': '_isDragging()',
-    '(mousedown)': '_startDragging($event)',
-    '(touchstart)': '_startDragging($event)',
   }
 })
-export class CdkDrag<T = any> implements OnDestroy {
+export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
   private _document: Document;
   private _destroyed = new Subject<void>();
 
@@ -127,6 +126,9 @@ export class CdkDrag<T = any> implements OnDestroy {
   /** Pointer position at which the last change in the delta occurred. */
   private _pointerPositionAtLastDirectionChange: Point;
 
+  /** Root element that will be dragged by the user. */
+  private _rootElement: HTMLElement;
+
   /** Elements that can be used to drag the draggable item. */
   @ContentChildren(CdkDragHandle) _handles: QueryList<CdkDragHandle>;
 
@@ -141,6 +143,13 @@ export class CdkDrag<T = any> implements OnDestroy {
 
   /** Locks the position of the dragged element along the specified axis. */
   @Input('cdkDragLockAxis') lockAxis: 'x' | 'y';
+
+  /**
+   * Selector that will be used to determine the root draggable element, starting from
+   * the `cdkDrag` element and going up the DOM. Passing an alternate root element is useful
+   * when trying to enable dragging on an element that you might not have access to.
+   */
+  @Input('cdkDragRootElement') rootElementSelector: string;
 
   /** Emits when the user starts dragging the item. */
   @Output('cdkDragStarted') started: EventEmitter<CdkDragStart> = new EventEmitter<CdkDragStart>();
@@ -197,7 +206,26 @@ export class CdkDrag<T = any> implements OnDestroy {
     return this._placeholder;
   }
 
+  /** Returns the root draggable element. */
+  getRootElement(): HTMLElement {
+    return this._rootElement;
+  }
+
+  ngAfterViewInit() {
+    // We need to wait for the zone to stabilize, in order for the reference
+    // element to be in the proper place in the DOM. This is mostly relevant
+    // for draggable elements inside portals since they get stamped out in
+    // their original DOM position and then they get transferred to the portal.
+    this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(() => {
+      const rootElement = this._rootElement = this._getRootElement();
+      rootElement.addEventListener('mousedown', this._startDragging);
+      rootElement.addEventListener('touchstart', this._startDragging);
+    });
+  }
+
   ngOnDestroy() {
+    this._rootElement.removeEventListener('mousedown', this._startDragging);
+    this._rootElement.removeEventListener('touchstart', this._startDragging);
     this._destroyPreview();
     this._destroyPlaceholder();
 
@@ -206,7 +234,7 @@ export class CdkDrag<T = any> implements OnDestroy {
     if (this._isDragging()) {
       // Since we move out the element to the end of the body while it's being
       // dragged, we have to make sure that it's removed if it gets destroyed.
-      this._removeElement(this.element.nativeElement);
+      this._removeElement(this._rootElement);
     }
 
     this._nextSibling = null;
@@ -217,7 +245,7 @@ export class CdkDrag<T = any> implements OnDestroy {
   }
 
   /** Starts the dragging sequence. */
-  _startDragging(event: MouseEvent | TouchEvent) {
+  _startDragging = (event: MouseEvent | TouchEvent) => {
     // Delegate the event based on whether it started from a handle or the element itself.
     if (this._handles.length) {
       const targetHandle = this._handles.find(handle => {
@@ -227,10 +255,10 @@ export class CdkDrag<T = any> implements OnDestroy {
       });
 
       if (targetHandle) {
-        this._pointerDown(targetHandle.element, event);
+        this._pointerDown(targetHandle.element.nativeElement, event);
       }
     } else {
-      this._pointerDown(this.element, event);
+      this._pointerDown(this._rootElement, event);
     }
   }
 
@@ -240,7 +268,7 @@ export class CdkDrag<T = any> implements OnDestroy {
   }
 
   /** Handler for when the pointer is pressed down on the element or the handle. */
-  private _pointerDown = (referenceElement: ElementRef<HTMLElement>,
+  private _pointerDown = (referenceElement: HTMLElement,
                           event: MouseEvent | TouchEvent) => {
 
     const isDragging = this._isDragging();
@@ -277,7 +305,7 @@ export class CdkDrag<T = any> implements OnDestroy {
     this.started.emit({source: this});
 
     if (this.dropContainer) {
-      const element = this.element.nativeElement;
+      const element = this._rootElement;
 
       // Grab the `nextSibling` before the preview and placeholder
       // have been created so we don't get the preview by accident.
@@ -318,7 +346,7 @@ export class CdkDrag<T = any> implements OnDestroy {
           pointerPosition.x - this._pickupPositionOnPage.x + this._passiveTransform.x;
       activeTransform.y =
           pointerPosition.y - this._pickupPositionOnPage.y + this._passiveTransform.y;
-      this._setTransform(this.element.nativeElement, activeTransform.x, activeTransform.y);
+      this._setTransform(this._rootElement, activeTransform.x, activeTransform.y);
     }
 
     // Since this event gets fired for every pixel while dragging, we only
@@ -362,12 +390,12 @@ export class CdkDrag<T = any> implements OnDestroy {
     // It's important that we maintain the position, because moving the element around in the DOM
     // can throw off `NgFor` which does smart diffing and re-creates elements only when necessary,
     // while moving the existing elements in all other cases.
-    this.element.nativeElement.style.display = '';
+    this._rootElement.style.display = '';
 
     if (this._nextSibling) {
-      this._nextSibling.parentNode!.insertBefore(this.element.nativeElement, this._nextSibling);
+      this._nextSibling.parentNode!.insertBefore(this._rootElement, this._nextSibling);
     } else {
-      this._placeholder.parentNode!.appendChild(this.element.nativeElement);
+      this._placeholder.parentNode!.appendChild(this._rootElement);
     }
 
     this._destroyPreview();
@@ -430,7 +458,7 @@ export class CdkDrag<T = any> implements OnDestroy {
       this._previewRef = viewRef;
       this._setTransform(preview, this._pickupPositionOnPage.x, this._pickupPositionOnPage.y);
     } else {
-      const element = this.element.nativeElement;
+      const element = this._rootElement;
       const elementRect = element.getBoundingClientRect();
 
       preview = element.cloneNode(true) as HTMLElement;
@@ -456,7 +484,7 @@ export class CdkDrag<T = any> implements OnDestroy {
       );
       placeholder = this._placeholderRef.rootNodes[0];
     } else {
-      placeholder = this.element.nativeElement.cloneNode(true) as HTMLElement;
+      placeholder = this._rootElement.cloneNode(true) as HTMLElement;
     }
 
     placeholder.classList.add('cdk-drag-placeholder');
@@ -468,10 +496,10 @@ export class CdkDrag<T = any> implements OnDestroy {
    * @param referenceElement Element that initiated the dragging.
    * @param event Event that initiated the dragging.
    */
-  private _getPointerPositionInElement(referenceElement: ElementRef<HTMLElement>,
+  private _getPointerPositionInElement(referenceElement: HTMLElement,
                                        event: MouseEvent | TouchEvent): Point {
-    const elementRect = this.element.nativeElement.getBoundingClientRect();
-    const handleElement = referenceElement === this.element ? null : referenceElement.nativeElement;
+    const elementRect = this._rootElement.getBoundingClientRect();
+    const handleElement = referenceElement === this._rootElement ? null : referenceElement;
     const referenceRect = handleElement ? handleElement.getBoundingClientRect() : elementRect;
     const x = this._isTouchEvent(event) ?
         event.targetTouches[0].pageX - referenceRect.left - this._scrollPosition.left :
@@ -632,6 +660,23 @@ export class CdkDrag<T = any> implements OnDestroy {
       positionSinceLastChange.y = y;
     }
   }
+
+  /** Gets the root draggable element, based on the `rootElementSelector`. */
+  private _getRootElement(): HTMLElement {
+    if (this.rootElementSelector) {
+      let currentElement = this.element.nativeElement.parentElement as HTMLElement | null;
+
+      while (currentElement) {
+        if (currentElement.matches(this.rootElementSelector)) {
+          return currentElement;
+        }
+
+        currentElement = currentElement.parentElement;
+      }
+    }
+
+    return this.element.nativeElement;
+  }
 }
 
 /** Parses a CSS time value to milliseconds. */
@@ -649,7 +694,6 @@ function getTransitionDurationInMs(element: HTMLElement): number {
 
   return parseCssTimeUnitsToMs(rawDuration) + parseCssTimeUnitsToMs(rawDelay);
 }
-
 
 /** Point on the page or within an element. */
 interface Point {

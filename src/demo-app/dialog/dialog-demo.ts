@@ -90,16 +90,19 @@ export class DialogDemo {
 @Component({
   selector: 'demo-jazz-dialog',
   template: `
-  <p>It's Jazz!</p>
+    <div cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+      <p>It's Jazz!</p>
 
-  <mat-form-field>
-    <mat-label>How much?</mat-label>
-    <input matInput #howMuch>
-  </mat-form-field>
+      <mat-form-field>
+        <mat-label>How much?</mat-label>
+        <input matInput #howMuch>
+      </mat-form-field>
 
-  <p> {{ data.message }} </p>
-  <button type="button" (click)="dialogRef.close(howMuch.value)">Close dialog</button>
-  <button (click)="togglePosition()">Change dimensions</button>`
+      <p cdkDragHandle> {{ data.message }} </p>
+      <button type="button" (click)="dialogRef.close(howMuch.value)">Close dialog</button>
+      <button (click)="togglePosition()">Change dimensions</button>
+    </div>
+  `
 })
 export class JazzDialog {
   private _dimesionToggle = false;

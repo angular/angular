@@ -187,7 +187,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
     // Don't use items that are being dragged as a reference, because
     // their element has been moved down to the bottom of the body.
     if (newPositionReference && !this._dragDropRegistry.isDragging(newPositionReference)) {
-      const element = newPositionReference.element.nativeElement;
+      const element = newPositionReference.getRootElement();
       element.parentElement!.insertBefore(placeholder, element);
       this._activeDraggables.splice(newIndex, 0, item);
     } else {
@@ -277,7 +277,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
       const isDraggedItem = sibling.drag === item;
       const offset = isDraggedItem ? itemOffset : siblingOffset;
       const elementToOffset = isDraggedItem ? item.getPlaceholderElement() :
-                                              sibling.drag.element.nativeElement;
+                                              sibling.drag.getRootElement();
 
       // Update the offset to reflect the new position.
       sibling.offset += offset;
@@ -320,7 +320,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
             // If the element is being dragged, we have to measure the
             // placeholder, because the element is hidden.
             drag.getPlaceholderElement() :
-            drag.element.nativeElement;
+            drag.getRootElement();
         const clientRect = elementToMeasure.getBoundingClientRect();
 
         return {
@@ -355,7 +355,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
     this._dragging = false;
 
     // TODO(crisbeto): may have to wait for the animations to finish.
-    this._activeDraggables.forEach(item => item.element.nativeElement.style.transform = '');
+    this._activeDraggables.forEach(item => item.getRootElement().style.transform = '');
     this._activeDraggables = [];
     this._positionCache.items = [];
     this._positionCache.siblings = [];

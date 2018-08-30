@@ -322,6 +322,22 @@ describe('CdkDrag', () => {
       expect(element.classList).not.toContain('cdk-drag-dragging');
     }));
 
+    it('should be able to set an alternate drag root element', fakeAsync(() => {
+      const fixture = createComponent(DraggableWithAlternateRoot);
+      fixture.detectChanges();
+
+      const dragRoot = fixture.componentInstance.dragRoot.nativeElement;
+      const dragElement = fixture.componentInstance.dragElement.nativeElement;
+
+      expect(dragRoot.style.transform).toBeFalsy();
+      expect(dragElement.style.transform).toBeFalsy();
+
+      dragElementViaMouse(fixture, dragRoot, 50, 100);
+
+      expect(dragRoot.style.transform).toBe('translate3d(50px, 100px, 0px)');
+      expect(dragElement.style.transform).toBeFalsy();
+    }));
+
   });
 
   describe('draggable with a handle', () => {
@@ -1596,6 +1612,23 @@ class ConnectedDropZones implements AfterViewInit {
   }
 }
 
+
+@Component({
+  template: `
+    <div #dragRoot class="alternate-root" style="width: 200px; height: 200px; background: hotpink">
+      <div
+        cdkDrag
+        cdkDragRootElement=".alternate-root"
+        #dragElement
+        style="width: 100px; height: 100px; background: red;"></div>
+    </div>
+  `
+})
+class DraggableWithAlternateRoot {
+  @ViewChild('dragElement') dragElement: ElementRef<HTMLElement>;
+  @ViewChild('dragRoot') dragRoot: ElementRef<HTMLElement>;
+  @ViewChild(CdkDrag) dragInstance: CdkDrag;
+}
 
 
 /**

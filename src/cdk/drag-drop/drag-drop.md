@@ -116,3 +116,12 @@ specific axis, you can set `cdkDragLockAxis` on `cdkDrag` or `lockAxis` on `<cdk
 to either `"x"` or `"y"`.
 
 <!-- example(cdk-drag-drop-axis-lock) -->
+
+### Alternate drag root element
+If there's an element that you want to make draggable, but you don't have direct access to it, you
+can use the `cdkDragRootElement` attribute. The attribute works by accepting a selector and looking
+up the DOM until it finds an element that matches the selector. If an element is found, it'll become
+the element that is moved as the user is dragging. This is useful for cases like making a dialog
+draggable.
+
+<!-- example(cdk-drag-drop-root-element) -->
