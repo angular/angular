@@ -1705,4 +1705,65 @@ describe('ViewContainerRef', () => {
       ]);
     });
   });
+
+  describe('host bindings', () => {
+
+    it('should support host bindings on dynamically created components', () => {
+
+      @Component(
+          {selector: 'host-bindings', host: {'id': 'attribute', '[title]': 'title'}, template: ``})
+      class HostBindingCmpt {
+        title = 'initial';
+
+        static ngComponentDef = defineComponent({
+          type: HostBindingCmpt,
+          selectors: [['host-bindings']],
+          factory: () => new HostBindingCmpt(),
+          consts: 0,
+          vars: 0,
+          template: (rf: RenderFlags, cmp: HostBindingCmpt) => {},
+          hostVars: 1,
+          attributes: ['id', 'attribute'],
+          hostBindings: function(dirIndex, elIndex) {
+            const cmptInstance = loadDirective<HostBindingCmpt>(dirIndex);
+            elementProperty(elIndex, 'title', bind(cmptInstance.title));
+          },
+        });
+      }
+
+      @Component({
+        template: `
+          <ng-template vcref></ng-template>
+        `
+      })
+      class AppCmpt {
+        static ngComponentDef = defineComponent({
+          type: AppCmpt,
+          selectors: [['app']],
+          factory: () => new AppCmpt(),
+          consts: 1,
+          vars: 0,
+          template: (rf: RenderFlags, cmp: AppCmpt) => {
+            if (rf & RenderFlags.Create) {
+              template(0, null, 0, 0, null, ['vcref', '']);
+            }
+          },
+          directives: [HostBindingCmpt, DirectiveWithVCRef]
+        });
+      }
+
+      const fixture = new ComponentFixture(AppCmpt);
+      expect(fixture.html).toBe('');
+
+      const componentRef = directiveInstance !.vcref.createComponent(
+          directiveInstance !.cfr.resolveComponentFactory(HostBindingCmpt));
+      expect(fixture.html).toBe('<host-bindings id="attribute" title="initial"></host-bindings>');
+
+
+      componentRef.instance.title = 'changed';
+      fixture.update();
+      expect(fixture.html).toBe('<host-bindings id="attribute" title="changed"></host-bindings>');
+    });
+
+  });
 });
