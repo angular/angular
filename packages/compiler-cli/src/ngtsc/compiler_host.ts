@@ -34,7 +34,16 @@ export interface CompilerHost extends ts.CompilerHost {
  * Implementation of `CompilerHost` which delegates to a native TypeScript host in most cases.
  */
 export class NgtscCompilerHost implements CompilerHost {
-  constructor(private delegate: ts.CompilerHost) {}
+  constructor(private delegate: ts.CompilerHost) {
+    if (delegate.resolveTypeReferenceDirectives) {
+      this.resolveTypeReferenceDirectives = (names: string[], containingFile: string) =>
+          delegate.resolveTypeReferenceDirectives !(names, containingFile);
+    }
+  }
+
+  resolveTypeReferenceDirectives?:
+      (names: string[],
+       containingFile: string) => (ts.ResolvedTypeReferenceDirective | undefined)[];
 
   getSourceFile(
       fileName: string, languageVersion: ts.ScriptTarget,
