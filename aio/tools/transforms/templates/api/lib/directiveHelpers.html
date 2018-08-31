@@ -1,13 +1,40 @@
 {% macro renderBindings(bindings, cssContainerClass, cssItemClass, title) -%}
+{% set hasDescription = bindings | hasValues('memberDoc.description') %}
+{% set hasTypes = bindings | hasValues('memberDoc.type') %}
 {% if bindings.length %}
 <section class="{$ cssContainerClass $}">
   <h2>{$ title $}</h2>
-  {% for binding in bindings %}
-  <div class="{$ cssItemClass $}">
-    <code>{$ binding.bindingName $}</code>&nbsp;bound to&nbsp;<code>{$ binding.memberDoc.containerDoc.name $}.{$ binding.propertyName $}</code>
-    {#{$ binding.memberDoc.description | trimBlankLines | marked $}#}
-  </div>
+  <table class="is-full-width list-table binding-table">
+      <thead>
+        <tr>
+          <th>Binding</th>
+          {% if hasTypes %}<th>Type</th>{% endif %}
+          {% if hasDescription %}<th>Description</th>{% endif %}
+        </tr>
+      </thead>
+      <tbody>
+      {% for binding in bindings %}
+      <tr class="{$ cssItemClass $}">
+          <td><a href="#{$ binding.memberDoc.anchor $}">
+            <code>{$ binding.bindingName $}
+              {%- if binding.bindingName != binding.propertyName %} ({$ binding.propertyName $}){% endif-%}
+            </code>
+          </a></td>
+          {% if hasTypes %}
+          <td><label class="property-type-label"><code>{$ binding.memberDoc.type | escape $}</code></label></td>
+          {% endif %}
+          {% if hasDescription %}
+          <td>
+            {$ binding.memberDoc.shortDescription | marked $}
+            {$ binding.memberDoc.description | marked $}
+          </td>
+          {% endif %}
+      </tr>
   {% endfor %}
+</tbody>
+</table>
 </section>
 {% endif %}
 {%- endmacro %}
+
+

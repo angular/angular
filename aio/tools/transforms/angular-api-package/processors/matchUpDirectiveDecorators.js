@@ -21,7 +21,9 @@ module.exports = function matchUpDirectiveDecorators() {
         if (doc.docType === 'directive') {
 
           doc.selector = stripQuotes(doc.directiveOptions.selector);
+          doc.selectorArray = doc.selector ? doc.selector.split(',') : [];
           doc.exportAs = stripQuotes(doc.directiveOptions.exportAs);
+          doc.exportAsArray = doc.exportAs ? doc.exportAs.split(',') : [];
 
           doc.inputs = getBindingInfo(doc.directiveOptions.inputs, doc.members, 'Input');
           doc.outputs = getBindingInfo(doc.directiveOptions.outputs, doc.members, 'Output');
