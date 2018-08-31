@@ -515,7 +515,7 @@ export const defineDirective = defineComponent as any as<T>(directiveDefinition:
   /**
    * Factory method used to create an instance of directive.
    */
-  factory: () => T | ({0: T} & any[]); /* trying to say T | [T, ...any] */
+  factory: () => T;
 
   /**
    * Static attributes to set on host element.
