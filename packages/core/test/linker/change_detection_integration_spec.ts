@@ -1391,8 +1391,8 @@ const TEST_COMPILER_PROVIDERS: Provider[] = [
                         {declarations: [MainComp, OuterComp, InnerComp, DummyDirective]})
                     .createComponent(MainComp);
           mainComp = ctx.componentInstance;
-          outerComp = ctx.debugElement.query(By.directive(OuterComp)).injector.get(OuterComp);
-          innerComp = ctx.debugElement.query(By.directive(InnerComp)).injector.get(InnerComp);
+          outerComp = ctx.debugElement.query(By.directive(OuterComp)) !.injector.get(OuterComp);
+          innerComp = ctx.debugElement.query(By.directive(InnerComp)) !.injector.get(InnerComp);
         });
 
         it('should dirty check projected views in regular order', () => {

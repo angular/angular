@@ -77,7 +77,7 @@ describe('TestBed', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
 
-    const greetingByCss = hello.debugElement.query(By.css('greeting-cmp'));
+    const greetingByCss = hello.debugElement.query(By.css('greeting-cmp')) !;
     expect(greetingByCss.nativeElement).toHaveText('Hello World!');
     expect(greetingByCss.componentInstance).toBeAnInstanceOf(GreetingCmp);
   });
@@ -86,7 +86,7 @@ describe('TestBed', () => {
     const hello = TestBed.createComponent(HelloWorld);
 
     hello.detectChanges();
-    const greetingByCss = hello.debugElement.query(By.css('greeting-cmp'));
+    const greetingByCss = hello.debugElement.query(By.css('greeting-cmp')) !;
     expect(greetingByCss.nativeElement).toHaveText('Hello World!');
 
     greetingByCss.componentInstance.name = 'TestBed!';
@@ -98,7 +98,7 @@ describe('TestBed', () => {
   it('should give access to the node injector', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
-    const injector = hello.debugElement.query(By.css('greeting-cmp')).injector;
+    const injector = hello.debugElement.query(By.css('greeting-cmp')) !.injector;
 
     // from the node injector
     const helloInjected = injector.get(HelloWorld);
@@ -113,7 +113,7 @@ describe('TestBed', () => {
     const hello = TestBed.createComponent(HelloWorld);
     hello.detectChanges();
 
-    const greetingByDirective = hello.debugElement.query(By.directive(GreetingCmp));
+    const greetingByDirective = hello.debugElement.query(By.directive(GreetingCmp)) !;
     expect(greetingByDirective.componentInstance).toBeAnInstanceOf(GreetingCmp);
   });
 

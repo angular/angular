@@ -92,7 +92,7 @@ import {NAMESPACE_URIS} from '../../src/dom/dom_renderer';
          () => {
            const fixture = TestBed.createComponent(SomeApp);
 
-           const cmp = fixture.debugElement.query(By.css('cmp-native')).nativeElement;
+           const cmp = fixture.debugElement.query(By.css('cmp-native')) !.nativeElement;
 
 
            const native = cmp.shadowRoot.querySelector('.native');

@@ -34,7 +34,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.detectChanges();
 
         // model -> view
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input')) !;
         expect(input.nativeElement.value).toEqual('old value');
 
         input.nativeElement.value = 'updated value';
@@ -49,7 +49,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input')) !;
         expect(input.nativeElement.value).toEqual('loginValue');
       });
 
@@ -58,7 +58,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('loginValue')});
         fixture.detectChanges();
 
-        const form = fixture.debugElement.query(By.css('form'));
+        const form = fixture.debugElement.query(By.css('form')) !;
         expect(form.nativeElement.getAttribute('novalidate')).toEqual('');
       });
 
@@ -68,7 +68,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input')) !;
         input.nativeElement.value = 'updatedValue';
         dispatchEvent(input.nativeElement, 'input');
 
@@ -87,7 +87,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = new FormGroup({'login': new FormControl('newValue')});
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input')) !;
         expect(input.nativeElement.value).toEqual('newValue');
       });
 
@@ -100,7 +100,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input')) !;
         input.nativeElement.value = 'Nancy';
         dispatchEvent(input.nativeElement, 'input');
         fixture.detectChanges();
@@ -196,7 +196,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         form.addControl('email', new FormControl('email'));
         fixture.detectChanges();
 
-        let emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
+        let emailInput = fixture.debugElement.query(By.css('[formControlName="email"]')) !;
         expect(emailInput.nativeElement.value).toEqual('email');
 
         const newForm = new FormGroup({
@@ -206,7 +206,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = newForm;
         fixture.detectChanges();
 
-        emailInput = fixture.debugElement.query(By.css('[formControlName="email"]'));
+        emailInput = fixture.debugElement.query(By.css('[formControlName="email"]')) !;
         expect(emailInput as any).toBe(null);  // TODO: Review use of `any` here (#19904)
       });
 
@@ -248,7 +248,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           form.addControl('login', new FormControl('newValue'));
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input'));
+          const input = fixture.debugElement.query(By.css('input')) !;
           expect(input.nativeElement.value).toEqual('newValue');
 
           input.nativeElement.value = 'user input';
@@ -306,7 +306,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           form.addControl('cities', new FormArray([new FormControl('LA')]));
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input'));
+          const input = fixture.debugElement.query(By.css('input')) !;
           expect(input.nativeElement.value).toEqual('LA');
 
           input.nativeElement.value = 'MTV';
@@ -352,7 +352,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           newArr.removeAt(0);
           fixture.detectChanges();
 
-          firstInput = fixture.debugElement.query(By.css('input')).nativeElement;
+          firstInput = fixture.debugElement.query(By.css('input')) !.nativeElement;
           firstInput.value = 'last one';
           dispatchEvent(firstInput, 'input');
           fixture.detectChanges();
@@ -362,7 +362,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           newArr.get([0]) !.setValue('set value');
           fixture.detectChanges();
 
-          firstInput = fixture.debugElement.query(By.css('input')).nativeElement;
+          firstInput = fixture.debugElement.query(By.css('input')) !.nativeElement;
           expect(firstInput.value).toEqual('set value');
         });
 
@@ -384,7 +384,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           newArr.removeAt(0);
           fixture.detectChanges();
 
-          const formEl = fixture.debugElement.query(By.css('form'));
+          const formEl = fixture.debugElement.query(By.css('form')) !;
           expect(() => dispatchEvent(formEl.nativeElement, 'submit')).not.toThrowError();
         });
 
@@ -508,7 +508,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         login.setValue('newValue');
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input')) !;
         expect(input.nativeElement.value).toEqual('newValue');
       });
 
@@ -520,7 +520,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
              fixture.componentInstance.control = control;
              fixture.detectChanges();
 
-             const input = fixture.debugElement.query(By.css('input'));
+             const input = fixture.debugElement.query(By.css('input')) !;
              expect(input.nativeElement.disabled).toBe(true);
 
              control.enable();
@@ -535,7 +535,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input'));
+          const input = fixture.debugElement.query(By.css('input')) !;
           expect(input.nativeElement.disabled).toBe(true);
 
           control.enable();
@@ -553,7 +553,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
              control.disable();
              fixture.detectChanges();
 
-             const input = fixture.debugElement.query(By.css('input'));
+             const input = fixture.debugElement.query(By.css('input')) !;
              expect(input.nativeElement.disabled).toBe(true);
 
              control.enable();
@@ -589,7 +589,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           control.disable();
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('my-input'));
+          const input = fixture.debugElement.query(By.css('my-input')) !;
           expect(input.nativeElement.getAttribute('disabled')).toBe(null);
         });
 
@@ -606,7 +606,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const loginEl = fixture.debugElement.query(By.css('input'));
+        const loginEl = fixture.debugElement.query(By.css('input')) !;
         expect(login.touched).toBe(false);
 
         dispatchEvent(loginEl.nativeElement, 'blur');
@@ -623,7 +623,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.event = null !;
         fixture.detectChanges();
 
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
         dispatchEvent(formEl, 'submit');
 
         fixture.detectChanges();
@@ -638,7 +638,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         const formGroupDir = fixture.debugElement.children[0].injector.get(FormGroupDirective);
         expect(formGroupDir.submitted).toBe(false);
 
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
         dispatchEvent(formEl, 'submit');
 
         fixture.detectChanges();
@@ -652,7 +652,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        const loginEl = fixture.debugElement.query(By.css('input')) !.nativeElement;
         expect(loginEl.value).toBe('some value');
 
         form.reset({'login': 'reset value'});
@@ -666,7 +666,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        const loginEl = fixture.debugElement.query(By.css('input')) !.nativeElement;
         expect(loginEl.value).toBe('some value');
 
         form.reset();
@@ -685,7 +685,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
         login.valueChanges.subscribe(() => { expect(login.dirty).toBe(true); });
 
-        const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+        const loginEl = fixture.debugElement.query(By.css('input')) !.nativeElement;
         loginEl.value = 'newValue';
 
         dispatchEvent(loginEl, 'input');
@@ -699,7 +699,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            fixture.componentInstance.form = form;
            fixture.detectChanges();
 
-           const loginEl = fixture.debugElement.query(By.css('input')).nativeElement;
+           const loginEl = fixture.debugElement.query(By.css('input')) !.nativeElement;
            loginEl.value = 'newValue';
            dispatchEvent(loginEl, 'input');
 
@@ -719,7 +719,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.control = control;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
         expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
         dispatchEvent(input, 'blur');
@@ -740,7 +740,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            fixture.debugElement.componentInstance.control = control;
            fixture.detectChanges();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
            expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
            dispatchEvent(input, 'blur');
@@ -762,7 +762,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            fixture.debugElement.componentInstance.control = control;
            fixture.detectChanges();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
            expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
            dispatchEvent(input, 'blur');
@@ -794,7 +794,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
+        const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
         expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
         dispatchEvent(input, 'blur');
@@ -815,8 +815,8 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const input = fixture.debugElement.query(By.css('input')).nativeElement;
-        const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+        const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
+        const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
 
         expect(sortedClassList(formEl)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
@@ -844,7 +844,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -867,7 +867,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = form;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -893,7 +893,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           control.setValue('Nancy');
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           expect(input.value).toEqual('Nancy', 'Expected value to propagate to view immediately.');
           expect(control.value).toEqual('Nancy', 'Expected model value to update immediately.');
           expect(control.valid).toBe(true, 'Expected validation to run immediately.');
@@ -907,7 +907,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
           expect(control.dirty).toBe(false, 'Expected control to start out pristine.');
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -928,7 +928,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
           expect(control.touched).toBe(false, 'Expected control to start out untouched.');
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
 
@@ -943,7 +943,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
 
@@ -969,7 +969,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'aa';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -990,7 +990,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
 
           expect(input.value).toEqual('Nancy', 'Expected value to be set in the view.');
           expect(control.value).toEqual('Nancy', 'Expected initial model value to be set.');
@@ -1003,7 +1003,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'aa';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1032,7 +1032,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           const sub =
               merge(control.valueChanges, control.statusChanges).subscribe(val => values.push(val));
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1058,7 +1058,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           const sub =
               merge(control.valueChanges, control.statusChanges).subscribe(val => values.push(val));
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
           expect(values).toEqual(
@@ -1103,7 +1103,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.control = control;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'aa';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1127,7 +1127,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1153,7 +1153,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.cityArray = cityArray;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1221,7 +1221,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = form;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           expect(input.value).toEqual('Nancy', 'Expected initial value to propagate to view.');
           expect(form.value).toEqual({login: 'Nancy'}, 'Expected initial value to be set.');
           expect(form.valid).toBe(true, 'Expected form to run validation on initial value.');
@@ -1234,7 +1234,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1250,7 +1250,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
               .toEqual({login: ''}, 'Expected form value to remain unchanged on blur.');
           expect(formGroup.valid).toBe(false, 'Expected form validation not to run on blur.');
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1266,12 +1266,12 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1302,7 +1302,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           formGroup.setValue({login: 'Nancy'});
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           expect(input.value).toEqual('Nancy', 'Expected view value to update immediately.');
           expect(formGroup.value)
               .toEqual({login: 'Nancy'}, 'Expected form value to update immediately.');
@@ -1315,7 +1315,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           dispatchEvent(input, 'input');
           fixture.detectChanges();
 
@@ -1326,7 +1326,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
           expect(formGroup.dirty).toBe(false, 'Expected dirty not to change on blur.');
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1339,13 +1339,13 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
 
           expect(formGroup.touched).toBe(false, 'Expected touched not to change until submit.');
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1359,7 +1359,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1375,7 +1375,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           expect(formGroup.dirty).toBe(false, 'Expected dirty to stay false on reset.');
           expect(formGroup.touched).toBe(false, 'Expected touched to stay false on reset.');
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1399,7 +1399,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
               formGroup.statusChanges);
           const sub = streams.subscribe(val => values.push(val));
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1411,7 +1411,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
           expect(values).toEqual([], 'Expected no valueChanges or statusChanges on blur');
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1436,13 +1436,13 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
               formGroup.statusChanges);
           const sub = streams.subscribe(val => values.push(val));
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
           expect(values).toEqual(
               [], 'Expected no valueChanges or statusChanges if value unchanged.');
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1496,7 +1496,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           formGroup.get('signin.login') !.setValidators(validatorSpy);
           formGroup.get('signin') !.setValidators(groupValidatorSpy);
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1511,7 +1511,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           dispatchEvent(input, 'blur');
           fixture.detectChanges();
 
@@ -1520,7 +1520,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
           expect(formGroup.touched).toBe(false, 'Expected group to become untouched.');
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1534,7 +1534,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.form = formGroup;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1548,7 +1548,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           expect(control.value).toEqual('', 'Expected value to remain unchanged until submit.');
           expect(control.valid).toBe(false, 'Expected no validation to occur until submit.');
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1566,7 +1566,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           fixture.componentInstance.cityArray = cityArray;
           fixture.detectChanges();
 
-          const input = fixture.debugElement.query(By.css('input')).nativeElement;
+          const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
           input.value = 'Nancy';
           dispatchEvent(input, 'input');
           fixture.detectChanges();
@@ -1575,7 +1575,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           expect(control.valid).toBe(false, 'Expected no validation to occur until submit.');
 
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1612,7 +1612,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
           expect(passwordControl.valid)
               .toBe(false, 'Expected no validation to occur until submit.');
 
-          const form = fixture.debugElement.query(By.css('form')).nativeElement;
+          const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
           dispatchEvent(form, 'submit');
           fixture.detectChanges();
 
@@ -1721,7 +1721,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            fixture.detectChanges();
            tick();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
            expect(input.value).toEqual('oldValue');
 
            input.value = 'updatedValue';
@@ -1739,7 +1739,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            fixture.detectChanges();
            tick();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
            expect(input.value).toEqual('oldValue');
 
            input.value = 'updatedValue';
@@ -1757,7 +1757,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            fixture.detectChanges();
            tick();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
            input.value = 'aa';
            input.setSelectionRange(1, 2);
            dispatchEvent(input, 'input');
@@ -1778,7 +1778,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            fixture.detectChanges();
            tick();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
            input.value = 'Nancy';
            dispatchEvent(input, 'input');
            fixture.detectChanges();
@@ -1787,7 +1787,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
            expect(fixture.componentInstance.login)
                .toEqual('initial', 'Expected ngModel value to remain unchanged on input.');
 
-           const form = fixture.debugElement.query(By.css('form')).nativeElement;
+           const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
            dispatchEvent(form, 'submit');
            fixture.detectChanges();
            tick();
@@ -1806,7 +1806,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.control = control;
         fixture.detectChanges();
 
-        const checkbox = fixture.debugElement.query(By.css('input'));
+        const checkbox = fixture.debugElement.query(By.css('input')) !;
         expect(checkbox.nativeElement.checked).toBe(false);
         expect(control.hasError('required')).toEqual(true);
 
@@ -1829,10 +1829,10 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const required = fixture.debugElement.query(By.css('[required]'));
-        const minLength = fixture.debugElement.query(By.css('[minlength]'));
-        const maxLength = fixture.debugElement.query(By.css('[maxlength]'));
-        const pattern = fixture.debugElement.query(By.css('[pattern]'));
+        const required = fixture.debugElement.query(By.css('[required]')) !;
+        const minLength = fixture.debugElement.query(By.css('[minlength]')) !;
+        const maxLength = fixture.debugElement.query(By.css('[maxlength]')) !;
+        const pattern = fixture.debugElement.query(By.css('[pattern]')) !;
 
         required.nativeElement.value = '';
         minLength.nativeElement.value = '1';
@@ -1878,10 +1878,10 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.pattern = '.{3,}';
         fixture.detectChanges();
 
-        const required = fixture.debugElement.query(By.css('[name=required]'));
-        const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
-        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
-        const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+        const required = fixture.debugElement.query(By.css('[name=required]')) !;
+        const minLength = fixture.debugElement.query(By.css('[name=minlength]')) !;
+        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]')) !;
+        const pattern = fixture.debugElement.query(By.css('[name=pattern]')) !;
 
         required.nativeElement.value = '';
         minLength.nativeElement.value = '1';
@@ -1922,10 +1922,10 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.form = form;
         fixture.detectChanges();
 
-        const required = fixture.debugElement.query(By.css('[name=required]'));
-        const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
-        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
-        const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+        const required = fixture.debugElement.query(By.css('[name=required]')) !;
+        const minLength = fixture.debugElement.query(By.css('[name=minlength]')) !;
+        const maxLength = fixture.debugElement.query(By.css('[name=maxlength]')) !;
+        const pattern = fixture.debugElement.query(By.css('[name=pattern]')) !;
 
         required.nativeElement.value = '';
         minLength.nativeElement.value = '1';
@@ -2035,7 +2035,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
            expect(form.hasError('uniqLogin', ['login'])).toEqual(true);
 
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input')) !;
            input.nativeElement.value = 'expected';
            dispatchEvent(input.nativeElement, 'input');
            tick(100);
@@ -2050,7 +2050,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.detectChanges();
         expect(form.valid).toEqual(true);
 
-        const input = fixture.debugElement.query(By.css('input'));
+        const input = fixture.debugElement.query(By.css('input')) !;
         input.nativeElement.value = '';
         dispatchEvent(input.nativeElement, 'input');
 
@@ -2068,7 +2068,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
            expect(form.hasError('required', ['login'])).toEqual(true);
 
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input')) !;
            input.nativeElement.value = 'wrong value';
            dispatchEvent(input.nativeElement, 'input');
 
@@ -2094,7 +2094,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
            expect(control.hasError('required')).toEqual(true);
 
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input')) !;
            input.nativeElement.value = 'expected';
            dispatchEvent(input.nativeElement, 'input');
 
@@ -2117,7 +2117,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
 
            expect(resultArr.length).toEqual(1, `Expected source observable to emit once on init.`);
 
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input')) !;
            input.nativeElement.value = 'a';
            dispatchEvent(input.nativeElement, 'input');
            fixture.detectChanges();
@@ -2345,7 +2345,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.control = new FormControl('oldValue');
         fixture.detectChanges();
 
-        const inputEl = fixture.debugElement.query(By.css('input'));
+        const inputEl = fixture.debugElement.query(By.css('input')) !;
         const inputNativeEl = inputEl.nativeElement;
         expect(inputNativeEl.value).toEqual('oldValue');
 
@@ -2376,7 +2376,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.control = new FormControl('oldValue');
         fixture.detectChanges();
 
-        const inputEl = fixture.debugElement.query(By.css('input'));
+        const inputEl = fixture.debugElement.query(By.css('input')) !;
         const inputNativeEl = inputEl.nativeElement;
         expect(inputNativeEl.value).toEqual('oldValue');
 
@@ -2404,7 +2404,7 @@ import {MyInput, MyInputForm} from './value_accessor_integration_spec';
         fixture.componentInstance.control = new FormControl('oldValue');
         fixture.detectChanges();
 
-        const inputEl = fixture.debugElement.query(By.css('input'));
+        const inputEl = fixture.debugElement.query(By.css('input')) !;
         const inputNativeEl = inputEl.nativeElement;
         expect(inputNativeEl.value).toEqual('oldValue');
 

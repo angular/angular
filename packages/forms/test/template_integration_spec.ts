@@ -34,7 +34,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            // model -> view
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
            expect(input.value).toEqual('oldValue');
 
            input.value = 'updatedValue';
@@ -63,7 +63,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.detectChanges();
            tick();
 
-           const form = fixture.debugElement.query(By.css('form'));
+           const form = fixture.debugElement.query(By.css('form')) !;
            expect(form.nativeElement.getAttribute('novalidate')).toEqual('');
          }));
 
@@ -73,7 +73,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.detectChanges();
            tick();
 
-           const form = fixture.debugElement.query(By.css('form'));
+           const form = fixture.debugElement.query(By.css('form')) !;
            expect(form.nativeElement.hasAttribute('novalidate')).toEqual(false);
          }));
 
@@ -155,7 +155,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.whenStable().then(() => {
              fixture.detectChanges();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              expect(sortedClassList(input)).toEqual(['ng-invalid', 'ng-pristine', 'ng-untouched']);
 
              dispatchEvent(input, 'blur');
@@ -176,7 +176,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.whenStable().then(() => {
              fixture.detectChanges();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              expect(sortedClassList(input)).toEqual(['ng-pending', 'ng-pristine', 'ng-untouched']);
 
              dispatchEvent(input, 'blur');
@@ -198,9 +198,9 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.componentInstance.first = '';
            fixture.detectChanges();
 
-           const form = fixture.debugElement.query(By.css('form')).nativeElement;
-           const modelGroup = fixture.debugElement.query(By.css('[ngModelGroup]')).nativeElement;
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const form = fixture.debugElement.query(By.css('form')) !.nativeElement;
+           const modelGroup = fixture.debugElement.query(By.css('[ngModelGroup]')) !.nativeElement;
+           const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
 
            // ngModelGroup creates its control asynchronously
            fixture.whenStable().then(() => {
@@ -237,7 +237,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
       it('should not add novalidate when ngNoForm is used', () => {
         const fixture = initTest(NgNoFormComp);
         fixture.detectChanges();
-        const form = fixture.debugElement.query(By.css('form'));
+        const form = fixture.debugElement.query(By.css('form')) !;
         expect(form.nativeElement.hasAttribute('novalidate')).toEqual(false);
       });
     });
@@ -320,7 +320,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              const form = fixture.debugElement.children[0].injector.get(NgForm);
              expect(input.value).toEqual('Nancy Drew', 'Expected initial view value to be set.');
              expect(form.value)
@@ -339,7 +339,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              const form = fixture.debugElement.children[0].injector.get(NgForm);
              expect(input.value)
                  .toEqual('Carson', 'Expected view value to update on programmatic change.');
@@ -357,7 +357,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -383,7 +383,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -416,7 +416,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -438,7 +438,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -466,7 +466,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              const sub = merge(form.valueChanges !, form.statusChanges !)
                              .subscribe(val => values.push(val));
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -494,7 +494,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              expect(fixture.componentInstance.events)
                  .toEqual([], 'Expected ngModelChanges not to fire.');
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              dispatchEvent(input, 'blur');
              fixture.detectChanges();
 
@@ -566,7 +566,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              const form = fixture.debugElement.children[0].injector.get(NgForm);
              expect(input.value).toEqual('Nancy Drew', 'Expected initial view value to be set.');
              expect(form.value)
@@ -585,7 +585,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              const form = fixture.debugElement.children[0].injector.get(NgForm);
              expect(input.value)
                  .toEqual('Carson', 'Expected view value to update on programmatic change.');
@@ -604,7 +604,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -623,7 +623,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
                  .toEqual('Carson', 'Expected value not to update on blur.');
              expect(form.valid).toBe(false, 'Expected validation not to run on blur.');
 
-             const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+             const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
              dispatchEvent(formEl, 'submit');
              fixture.detectChanges();
 
@@ -639,13 +639,13 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
              tick();
 
-             const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+             const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
              dispatchEvent(formEl, 'submit');
              fixture.detectChanges();
              tick();
@@ -682,7 +682,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              form.control.get('name') !.setValidators(groupValidatorSpy);
              form.control.get('name.last') !.setValidators(validatorSpy);
 
-             const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+             const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
              dispatchEvent(formEl, 'submit');
              fixture.detectChanges();
 
@@ -697,7 +697,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -712,7 +712,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
              expect(form.dirty).toBe(false, 'Expected dirtiness not to update on blur.');
 
-             const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+             const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
              dispatchEvent(formEl, 'submit');
              fixture.detectChanges();
 
@@ -726,7 +726,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -739,7 +739,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              const form = fixture.debugElement.children[0].injector.get(NgForm);
              expect(form.touched).toBe(false, 'Expected touched not to update on blur.');
 
-             const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+             const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
              dispatchEvent(formEl, 'submit');
              fixture.detectChanges();
 
@@ -753,7 +753,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -773,7 +773,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              expect(form.dirty).toBe(false, 'Expected dirty to stay false on reset.');
              expect(form.touched).toBe(false, 'Expected touched to stay false on reset.');
 
-             const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+             const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
              dispatchEvent(formEl, 'submit');
              fixture.detectChanges();
 
@@ -798,7 +798,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              const sub = merge(form.valueChanges !, form.statusChanges !)
                              .subscribe(val => values.push(val));
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -812,7 +812,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
              expect(values).toEqual([], 'Expected no valueChanges or statusChanges on blur.');
 
-             const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+             const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
              dispatchEvent(formEl, 'submit');
              fixture.detectChanges();
 
@@ -830,14 +830,14 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+             const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
              dispatchEvent(formEl, 'submit');
              fixture.detectChanges();
 
              expect(fixture.componentInstance.events)
                  .toEqual([], 'Expected ngModelChanges not to fire if value unchanged.');
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Carson';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -908,7 +908,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
              fixture.detectChanges();
              tick();
 
-             const input = fixture.debugElement.query(By.css('input')).nativeElement;
+             const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
              input.value = 'Nancy Drew';
              dispatchEvent(input, 'input');
              fixture.detectChanges();
@@ -1005,7 +1005,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            const fixture = initTest(NgModelForm);
            fixture.componentInstance.event = null !;
 
-           const form = fixture.debugElement.query(By.css('form'));
+           const form = fixture.debugElement.query(By.css('form')) !;
            dispatchEvent(form.nativeElement, 'submit');
            tick();
 
@@ -1019,7 +1019,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            const form = fixture.debugElement.children[0].injector.get(NgForm);
            expect(form.submitted).toBe(false);
 
-           const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
+           const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
            dispatchEvent(formEl, 'submit');
            tick();
 
@@ -1033,8 +1033,8 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           const formEl = fixture.debugElement.query(By.css('form'));
-           const input = fixture.debugElement.query(By.css('input'));
+           const formEl = fixture.debugElement.query(By.css('form')) !;
+           const input = fixture.debugElement.query(By.css('input')) !;
 
            expect(input.nativeElement.value).toBe('should be cleared');       // view value
            expect(fixture.componentInstance.name).toBe('should be cleared');  // ngModel value
@@ -1052,7 +1052,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
       it('should reset the form submit state when reset button is clicked', fakeAsync(() => {
            const fixture = initTest(NgModelForm);
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           const formEl = fixture.debugElement.query(By.css('form'));
+           const formEl = fixture.debugElement.query(By.css('form')) !;
 
            dispatchEvent(formEl.nativeElement, 'submit');
            fixture.detectChanges();
@@ -1098,7 +1098,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            form.get('name') !.valueChanges.subscribe(
                () => { expect(form.get('name') !.dirty).toBe(true); });
 
-           const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+           const inputEl = fixture.debugElement.query(By.css('input')) !.nativeElement;
            inputEl.value = 'newValue';
 
            dispatchEvent(inputEl, 'input');
@@ -1111,8 +1111,8 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm).form;
-           const formEl = fixture.debugElement.query(By.css('form')).nativeElement;
-           const inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+           const formEl = fixture.debugElement.query(By.css('form')) !.nativeElement;
+           const inputEl = fixture.debugElement.query(By.css('input')) !.nativeElement;
 
            inputEl.value = 'newValue';
            dispatchEvent(inputEl, 'input');
@@ -1163,7 +1163,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.detectChanges();
            tick();
 
-           const input = fixture.debugElement.query(By.css(`[name="first"]`));
+           const input = fixture.debugElement.query(By.css(`[name="first"]`)) !;
            expect(input.nativeElement.disabled).toBe(true);
          }));
 
@@ -1178,7 +1178,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
                const form = fixture.debugElement.children[0].injector.get(NgForm);
                expect(form.control.get('name') !.disabled).toBe(true);
 
-               const customInput = fixture.debugElement.query(By.css('[name="custom"]'));
+               const customInput = fixture.debugElement.query(By.css('[name="custom"]')) !;
                expect(customInput.nativeElement.disabled).toEqual(true);
              });
            });
@@ -1200,7 +1200,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            const form = fixture.debugElement.children[0].injector.get(NgForm);
            expect(form.control.get('name') !.disabled).toBe(true);
 
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input')) !;
            expect(input.nativeElement.disabled).toEqual(true);
 
            form.control.enable();
@@ -1221,7 +1221,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            const control =
                fixture.debugElement.children[0].injector.get(NgForm).control.get('checkbox') !;
 
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input')) !;
            expect(input.nativeElement.checked).toBe(false);
            expect(control.hasError('required')).toBe(false);
 
@@ -1257,7 +1257,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            const control =
                fixture.debugElement.children[0].injector.get(NgForm).control.get('email') !;
 
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input')) !;
            expect(control.hasError('email')).toBe(false);
 
            fixture.componentInstance.validatorEnabled = true;
@@ -1300,10 +1300,10 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.detectChanges();
            tick();
 
-           const required = fixture.debugElement.query(By.css('[name=required]'));
-           const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
-           const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
-           const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+           const required = fixture.debugElement.query(By.css('[name=required]')) !;
+           const minLength = fixture.debugElement.query(By.css('[name=minlength]')) !;
+           const maxLength = fixture.debugElement.query(By.css('[name=maxlength]')) !;
+           const pattern = fixture.debugElement.query(By.css('[name=pattern]')) !;
 
            required.nativeElement.value = '';
            minLength.nativeElement.value = '1';
@@ -1343,7 +1343,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input')) !;
 
            input.nativeElement.value = '';
            dispatchEvent(input.nativeElement, 'input');
@@ -1365,7 +1365,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input')) !;
 
            input.nativeElement.value = '';
            dispatchEvent(input.nativeElement, 'input');
@@ -1387,7 +1387,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            tick();
 
            const form = fixture.debugElement.children[0].injector.get(NgForm);
-           const input = fixture.debugElement.query(By.css('input'));
+           const input = fixture.debugElement.query(By.css('input')) !;
 
            input.nativeElement.value = '';
            dispatchEvent(input.nativeElement, 'input');
@@ -1407,10 +1407,10 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.detectChanges();
            tick();
 
-           const required = fixture.debugElement.query(By.css('[name=required]'));
-           const minLength = fixture.debugElement.query(By.css('[name=minlength]'));
-           const maxLength = fixture.debugElement.query(By.css('[name=maxlength]'));
-           const pattern = fixture.debugElement.query(By.css('[name=pattern]'));
+           const required = fixture.debugElement.query(By.css('[name=required]')) !;
+           const minLength = fixture.debugElement.query(By.css('[name=minlength]')) !;
+           const maxLength = fixture.debugElement.query(By.css('[name=maxlength]')) !;
+           const pattern = fixture.debugElement.query(By.css('[name=pattern]')) !;
 
            required.nativeElement.value = '';
            minLength.nativeElement.value = '1';
@@ -1474,7 +1474,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
 
       it('should update control status', fakeAsync(() => {
            const fixture = initTest(NgModelChangeState);
-           const inputEl = fixture.debugElement.query(By.css('input'));
+           const inputEl = fixture.debugElement.query(By.css('input')) !;
            const inputNativeEl = inputEl.nativeElement;
            const onNgModelChange = jasmine.createSpy('onNgModelChange');
            fixture.componentInstance.onNgModelChange = onNgModelChange;
@@ -1507,7 +1507,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
     describe('IME events', () => {
       it('should determine IME event handling depending on platform by default', fakeAsync(() => {
            const fixture = initTest(StandaloneNgModel);
-           const inputEl = fixture.debugElement.query(By.css('input'));
+           const inputEl = fixture.debugElement.query(By.css('input')) !;
            const inputNativeEl = inputEl.nativeElement;
            fixture.componentInstance.name = 'oldValue';
            fixture.detectChanges();
@@ -1542,7 +1542,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
                StandaloneNgModel,
                {set: {providers: [{provide: COMPOSITION_BUFFER_MODE, useValue: true}]}});
            const fixture = initTest(StandaloneNgModel);
-           const inputEl = fixture.debugElement.query(By.css('input'));
+           const inputEl = fixture.debugElement.query(By.css('input')) !;
            const inputNativeEl = inputEl.nativeElement;
            fixture.componentInstance.name = 'oldValue';
            fixture.detectChanges();
@@ -1574,7 +1574,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
                {set: {providers: [{provide: COMPOSITION_BUFFER_MODE, useValue: false}]}});
            const fixture = initTest(StandaloneNgModel);
 
-           const inputEl = fixture.debugElement.query(By.css('input'));
+           const inputEl = fixture.debugElement.query(By.css('input')) !;
            const inputNativeEl = inputEl.nativeElement;
            fixture.componentInstance.name = 'oldValue';
            fixture.detectChanges();
@@ -1601,7 +1601,7 @@ import {NgModelCustomComp, NgModelCustomWrapper} from './value_accessor_integrat
            fixture.detectChanges();
            tick();
 
-           const input = fixture.debugElement.query(By.css('input')).nativeElement;
+           const input = fixture.debugElement.query(By.css('input')) !.nativeElement;
            input.value = 'aa';
            input.selectionStart = 1;
            dispatchEvent(input, 'input');

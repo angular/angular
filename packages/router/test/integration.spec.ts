@@ -1432,7 +1432,7 @@ describe('Integration', () => {
 
          teamCmp.routerLink = ['/team/0'];
          advance(fixture);
-         const anchor = fixture.debugElement.query(By.css('a')).nativeElement;
+         const anchor = fixture.debugElement.query(By.css('a')) !.nativeElement;
          anchor.click();
          advance(fixture);
          expect(fixture.nativeElement).toHaveText('team 0 [ , right:  ]');
@@ -1440,7 +1440,7 @@ describe('Integration', () => {
 
          teamCmp.routerLink = ['/team/1'];
          advance(fixture);
-         const button = fixture.debugElement.query(By.css('button')).nativeElement;
+         const button = fixture.debugElement.query(By.css('button')) !.nativeElement;
          button.click();
          advance(fixture);
          expect(fixture.nativeElement).toHaveText('team 1 [ , right:  ]');
@@ -3176,8 +3176,8 @@ describe('Integration', () => {
              expect(location.path()).toEqual('/lazy/parent/child');
              expect(fixture.nativeElement).toHaveText('parent[child]');
 
-             const pInj = fixture.debugElement.query(By.directive(Parent)).injector !;
-             const cInj = fixture.debugElement.query(By.directive(Child)).injector !;
+             const pInj = fixture.debugElement.query(By.directive(Parent)) !.injector !;
+             const cInj = fixture.debugElement.query(By.directive(Child)) !.injector !;
 
              expect(pInj.get('moduleName')).toEqual('parent');
              expect(pInj.get('fromParent')).toEqual('from parent');
@@ -3290,7 +3290,7 @@ describe('Integration', () => {
 
              expect(fixture.nativeElement).toHaveText('lazy');
              const lzc =
-                 fixture.debugElement.query(By.directive(LazyLoadedComponent)).componentInstance;
+                 fixture.debugElement.query(By.directive(LazyLoadedComponent)) !.componentInstance;
              expect(lzc.injectedService).toBe(lzc.resolvedService);
            })));
 

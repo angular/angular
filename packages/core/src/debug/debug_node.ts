@@ -95,7 +95,7 @@ export class DebugElement extends DebugNode {
     }
   }
 
-  query(predicate: Predicate<DebugElement>): DebugElement {
+  query(predicate: Predicate<DebugElement>): DebugElement|null {
     const results = this.queryAll(predicate);
     return results[0] || null;
   }

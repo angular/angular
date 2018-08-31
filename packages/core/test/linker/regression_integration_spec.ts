@@ -94,7 +94,8 @@ function declareTests({useJit}: {useJit: boolean}) {
 
            TestBed.configureTestingModule({declarations: [MyDir, MyComp]});
            const fixture = TestBed.createComponent(MyComp);
-           const dir = fixture.debugElement.query(By.directive(MyDir)).injector.get(MyDir) as MyDir;
+           const dir =
+               fixture.debugElement.query(By.directive(MyDir)) !.injector.get(MyDir) as MyDir;
 
            fixture.detectChanges();
            expect(dir.setterCalls).toEqual({'a': null, 'b': 2});
@@ -280,7 +281,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
       const ctx =
           TestBed.configureTestingModule({declarations: [MyComp, MyDir]}).createComponent(MyComp);
-      const dir = <MyDir>ctx.debugElement.query(By.directive(MyDir)).injector.get(MyDir);
+      const dir = <MyDir>ctx.debugElement.query(By.directive(MyDir)) !.injector.get(MyDir);
 
       expect(dir.template).toBeUndefined();
 
