@@ -516,28 +516,9 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
       // Generate Listeners (outputs)
       element.outputs.forEach((outputAst: t.BoundEvent) => {
-        const elName = sanitizeIdentifier(element.name);
-        const evName = sanitizeIdentifier(outputAst.name);
-        const functionName = `${this.templateName}_${elName}_${evName}_listener`;
-
-        this.creationInstruction(outputAst.sourceSpan, R3.listener, () => {
-          const listenerScope = this._bindingScope.nestedScope(this._bindingScope.bindingLevel);
-
-          const bindingExpr = convertActionBinding(
-              listenerScope, implicit, outputAst.handler, 'b',
-              () => error('Unexpected interpolation'));
-
-          const statements = [
-            ...listenerScope.restoreViewStatement(), ...listenerScope.variableDeclarations(),
-            ...bindingExpr.render3Stmts
-          ];
-
-          const handler = o.fn(
-              [new o.FnParam('$event', o.DYNAMIC_TYPE)], statements, o.INFERRED_TYPE, null,
-              functionName);
-
-          return [o.literal(outputAst.name), handler];
-        });
+        this.creationInstruction(
+            outputAst.sourceSpan, R3.listener,
+            this.prepareListenerParameter(element.name, outputAst));
       });
     }
 
@@ -736,6 +717,13 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
           o.literal(templateVisitor.getVarCount()));
       return trimTrailingNulls(parameters);
     });
+
+    // Generate listeners for directive output
+    template.outputs.forEach((outputAst: t.BoundEvent) => {
+      this.creationInstruction(
+          outputAst.sourceSpan, R3.listener,
+          this.prepareListenerParameter('ng_template', outputAst));
+    });
   }
 
   // These should be handled in the template or element directly.
@@ -905,6 +893,31 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     }));
 
     return this.constantPool.getConstLiteral(asLiteral(refsParam), true);
+  }
+
+  private prepareListenerParameter(tagName: string, outputAst: t.BoundEvent): () => o.Expression[] {
+    const evName = sanitizeIdentifier(outputAst.name);
+    const functionName = `${this.templateName}_${tagName}_${evName}_listener`;
+
+    return () => {
+
+      const listenerScope = this._bindingScope.nestedScope(this._bindingScope.bindingLevel);
+
+      const bindingExpr = convertActionBinding(
+          listenerScope, o.variable(CONTEXT_NAME), outputAst.handler, 'b',
+          () => error('Unexpected interpolation'));
+
+      const statements = [
+        ...listenerScope.restoreViewStatement(), ...listenerScope.variableDeclarations(),
+        ...bindingExpr.render3Stmts
+      ];
+
+      const handler = o.fn(
+          [new o.FnParam('$event', o.DYNAMIC_TYPE)], statements, o.INFERRED_TYPE, null,
+          functionName);
+
+      return [o.literal(outputAst.name), handler];
+    };
   }
 }
 
