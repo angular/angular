@@ -7,7 +7,9 @@
 * You can now use a native `<select>` element in `<mat-form-field>` 
 * Updated visuals for 2018 Material Design update (in-progress, not all components are done)
 
-_Note that schematics for v7 are still in-progress._ 
+_Note that schematics for v7 are still in-progress._
+
+You can view a beta version of the docs at https://beta-angular-material-io.firebaseapp.com. 
 
 ### Bug Fixes
 
