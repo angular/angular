@@ -7,6 +7,7 @@
  */
 import * as ts from 'typescript';
 import MagicString from 'magic-string';
+import {POST_NGCC_MARKER, PRE_NGCC_MARKER} from '../host/ngcc_host';
 import {AnalyzedClass} from '../analyzer';
 import {Renderer} from './renderer';
 
@@ -68,6 +69,16 @@ export class Esm2015Renderer extends Renderer {
           });
         }
       }
+    });
+  }
+
+  rewriteSwitchableDeclarations(outputText: MagicString, sourceFile: ts.SourceFile): void {
+    const declarations = this.host.getSwitchableDeclarations(sourceFile);
+    declarations.forEach(declaration => {
+      const start = declaration.initializer.getStart();
+      const end = declaration.initializer.getEnd();
+      const replacement = declaration.initializer.text.replace(PRE_NGCC_MARKER, POST_NGCC_MARKER);
+      outputText.overwrite(start, end, replacement);
     });
   }
 }

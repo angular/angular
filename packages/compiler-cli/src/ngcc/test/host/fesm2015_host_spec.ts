@@ -385,6 +385,24 @@ const FUNCTION_BODY_FILE = {
   `
 };
 
+const MARKER_FILE = {
+  name: '/marker.js',
+  contents: `
+    var compileNgModuleFactory = compileNgModuleFactory__PRE_NGCC__;
+
+    function compileNgModuleFactory__PRE_NGCC__(injector, options, moduleType) {
+      var compilerFactory = injector.get(CompilerFactory);
+      var compiler = compilerFactory.createCompiler([options]);
+      return compiler.compileModuleAsync(moduleType);
+    }
+
+    function compileNgModuleFactory__POST_NGCC__(injector, options, moduleType) {
+      ngDevMode && assertNgModuleType(moduleType);
+      return Promise.resolve(new R3NgModuleFactory(moduleType));
+    }
+  `
+};
+
 describe('Fesm2015ReflectionHost', () => {
 
   describe('getDecoratorsOfDeclaration()', () => {
@@ -1119,5 +1137,18 @@ describe('Fesm2015ReflectionHost', () => {
           getDeclaration(program, SIMPLE_CLASS_FILE.name, 'EmptyClass', ts.isClassDeclaration);
       expect(host.getGenericArityOfClass(node)).toBe(0);
     });
+  });
+
+  describe('getSwitchableDeclarations()', () => {
+    it('should return a collection of all the switchable variable declarations in the given module',
+       () => {
+         const program = makeProgram(MARKER_FILE);
+         const host = new Fesm2015ReflectionHost(program.getTypeChecker());
+         const file = program.getSourceFile(MARKER_FILE.name) !;
+         const declarations = host.getSwitchableDeclarations(file);
+         expect(declarations.map(d => [d.name.getText(), d.initializer !.getText()])).toEqual([
+           ['compileNgModuleFactory', 'compileNgModuleFactory__PRE_NGCC__']
+         ]);
+       });
   });
 });
