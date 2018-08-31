@@ -97,8 +97,6 @@ export function getRendererFactory(): RendererFactory3 {
   return rendererFactory;
 }
 
-let currentElementNode: LElementNode|null = null;
-
 export function getCurrentSanitizer(): Sanitizer|null {
   return viewData && viewData[SANITIZER];
 }
@@ -797,7 +795,6 @@ export function elementStart(
 
   const node: LElementNode =
       createLNode(index, TNodeType.Element, native !, name, attrs || null, null);
-  currentElementNode = node;
 
   if (attrs) {
     setUpAttributes(native, attrs);
@@ -1311,7 +1308,6 @@ export function elementEnd(): void {
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.Element);
   currentQueries && (currentQueries = currentQueries.addNode(previousOrParentNode));
   queueLifecycleHooks(previousOrParentNode.tNode.flags, tView);
-  currentElementNode = null;
   elementDepthCount--;
 }
 
@@ -1514,8 +1510,7 @@ export function elementStyling<T>(
     classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer?: StyleSanitizeFn | null): void {
-  const lElement = currentElementNode !;
-  const tNode = lElement.tNode;
+  const tNode = previousOrParentNode.tNode;
   if (!tNode.stylingTemplate) {
     // initialize the styling template.
     tNode.stylingTemplate =
