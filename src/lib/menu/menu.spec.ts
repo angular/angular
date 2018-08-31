@@ -625,7 +625,7 @@ describe('MatMenu', () => {
       let panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
 
       expect(Math.floor(panel.getBoundingClientRect().bottom))
-          .toBe(Math.floor(trigger.getBoundingClientRect().bottom), 'Expected menu to open above');
+          .toBe(Math.floor(trigger.getBoundingClientRect().top), 'Expected menu to open above');
 
       fixture.componentInstance.trigger.closeMenu();
       fixture.detectChanges();
@@ -638,7 +638,7 @@ describe('MatMenu', () => {
       panel = overlayContainerElement.querySelector('.mat-menu-panel') as HTMLElement;
 
       expect(Math.floor(panel.getBoundingClientRect().top))
-          .toBe(Math.floor(trigger.getBoundingClientRect().top), 'Expected menu to open below');
+          .toBe(Math.floor(trigger.getBoundingClientRect().bottom), 'Expected menu to open below');
     });
 
   });
@@ -671,7 +671,7 @@ describe('MatMenu', () => {
 
       // The y-position of the overlay should be unaffected, as it can already fit vertically
       expect(Math.floor(overlayRect.top))
-          .toBe(Math.floor(triggerRect.top),
+          .toBe(Math.floor(triggerRect.bottom),
               `Expected menu top position to be unchanged if it can fit in the viewport.`);
     });
 
@@ -691,11 +691,8 @@ describe('MatMenu', () => {
       const triggerRect = trigger.getBoundingClientRect();
       const overlayRect = overlayPane.getBoundingClientRect();
 
-      // In "above" position, the bottom edges of the overlay and the origin are aligned.
-      // To find the overlay top, subtract the menu height from the origin's bottom edge.
-      const expectedTop = triggerRect.bottom - overlayRect.height;
-      expect(Math.floor(overlayRect.top))
-          .toBe(Math.floor(expectedTop),
+      expect(Math.floor(overlayRect.bottom))
+          .toBe(Math.floor(triggerRect.top),
               `Expected menu to open in "above" position if "below" position wouldn't fit.`);
 
       // The x-position of the overlay should be unaffected, as it can already fit horizontally
@@ -722,14 +719,13 @@ describe('MatMenu', () => {
       const overlayRect = overlayPane.getBoundingClientRect();
 
       const expectedLeft = triggerRect.right - overlayRect.width;
-      const expectedTop = triggerRect.bottom - overlayRect.height;
 
       expect(Math.floor(overlayRect.left))
           .toBe(Math.floor(expectedLeft),
               `Expected menu to open in "before" position if "after" position wouldn't fit.`);
 
-      expect(Math.floor(overlayRect.top))
-          .toBe(Math.floor(expectedTop),
+      expect(Math.floor(overlayRect.bottom))
+          .toBe(Math.floor(triggerRect.top),
               `Expected menu to open in "above" position if "below" position wouldn't fit.`);
     });
 
@@ -753,7 +749,7 @@ describe('MatMenu', () => {
       // As designated "above" position won't fit on screen, the menu should fall back
       // to "below" mode, where the top edges of the overlay and trigger are aligned.
       expect(Math.floor(overlayRect.top))
-          .toBe(Math.floor(triggerRect.top),
+          .toBe(Math.floor(triggerRect.bottom),
               `Expected menu to open in "below" position if "above" position wouldn't fit.`);
     });
 
@@ -1416,11 +1412,11 @@ describe('MatMenu', () => {
       const menus = overlay.querySelectorAll('.mat-menu-panel');
 
       expect(menus[0].classList)
-          .toContain('mat-elevation-z2', 'Expected root menu to have base elevation.');
+          .toContain('mat-elevation-z4', 'Expected root menu to have base elevation.');
       expect(menus[1].classList)
-          .toContain('mat-elevation-z3', 'Expected first sub-menu to have base elevation + 1.');
+          .toContain('mat-elevation-z5', 'Expected first sub-menu to have base elevation + 1.');
       expect(menus[2].classList)
-          .toContain('mat-elevation-z4', 'Expected second sub-menu to have base elevation + 2.');
+          .toContain('mat-elevation-z6', 'Expected second sub-menu to have base elevation + 2.');
     });
 
     it('should update the elevation when the same menu is opened at a different depth',
@@ -1438,7 +1434,7 @@ describe('MatMenu', () => {
         let lastMenu = overlay.querySelectorAll('.mat-menu-panel')[2];
 
         expect(lastMenu.classList)
-            .toContain('mat-elevation-z4', 'Expected menu to have the base elevation plus two.');
+            .toContain('mat-elevation-z6', 'Expected menu to have the base elevation plus two.');
 
         (overlay.querySelector('.cdk-overlay-backdrop')! as HTMLElement).click();
         fixture.detectChanges();
@@ -1454,9 +1450,9 @@ describe('MatMenu', () => {
         lastMenu = overlay.querySelector('.mat-menu-panel') as HTMLElement;
 
         expect(lastMenu.classList)
-            .not.toContain('mat-elevation-z4', 'Expected menu not to maintain old elevation.');
+            .not.toContain('mat-elevation-z6', 'Expected menu not to maintain old elevation.');
         expect(lastMenu.classList)
-            .toContain('mat-elevation-z2', 'Expected menu to have the proper updated elevation.');
+            .toContain('mat-elevation-z4', 'Expected menu to have the proper updated elevation.');
       }));
 
     it('should not increase the elevation if the user specified a custom one', () => {
@@ -1679,7 +1675,7 @@ describe('MatMenu default overrides', () => {
       declarations: [SimpleMenu, FakeIcon],
       providers: [{
         provide: MAT_MENU_DEFAULT_OPTIONS,
-        useValue: {overlapTrigger: false, xPosition: 'before', yPosition: 'above'},
+        useValue: {overlapTrigger: true, xPosition: 'before', yPosition: 'above'},
       }],
     }).compileComponents();
   }));
@@ -1689,7 +1685,7 @@ describe('MatMenu default overrides', () => {
     fixture.detectChanges();
     const menu = fixture.componentInstance.menu;
 
-    expect(menu.overlapTrigger).toBe(false);
+    expect(menu.overlapTrigger).toBe(true);
     expect(menu.xPosition).toBe('before');
     expect(menu.yPosition).toBe('above');
   });

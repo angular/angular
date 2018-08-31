@@ -156,7 +156,7 @@ describe('menu', () => {
       await expectAlignedWith(page.menu(), '#trigger');
     });
 
-    it('should align overlay end to origin end when x-position is "before"', async() => {
+    it('should align overlay end to origin end when x-position is "before"', async () => {
       page.beforeTrigger().click();
 
       const trigger = await page.beforeTrigger().getLocation();

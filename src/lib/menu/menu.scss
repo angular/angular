@@ -5,11 +5,11 @@
 @import '../../cdk/a11y/a11y';
 
 $mat-menu-vertical-padding: 8px !default;
-$mat-menu-border-radius: 2px !default;
+$mat-menu-border-radius: 4px !default;
 $mat-menu-submenu-indicator-size: 10px !default;
 
 .mat-menu-panel {
-  @include mat-menu-base(2);
+  @include mat-menu-base(4);
   max-height: calc(100vh - #{$mat-menu-item-height});
   border-radius: $mat-menu-border-radius;
   outline: 0;

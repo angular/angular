@@ -5,7 +5,7 @@
     <button [matMenuTriggerFor]="menu" id="trigger">TRIGGER</button>
     <button [matMenuTriggerFor]="menu" id="trigger-two">TRIGGER 2</button>
 
-    <mat-menu #menu="matMenu" yPosition="below" class="custom">
+    <mat-menu #menu="matMenu" yPosition="below" class="custom" overlapTrigger>
       <button mat-menu-item (click)="selected='one'">One</button>
       <button mat-menu-item (click)="selected='two'">Two</button>
       <button mat-menu-item (click)="selected='three'" disabled>Three</button>
@@ -15,20 +15,30 @@
     <button [matMenuTriggerFor]="beforeMenu" id="before-t">
       BEFORE
     </button>
-    <mat-menu xPosition="before" yPosition="below" class="before" #beforeMenu="matMenu">
+    <mat-menu
+      xPosition="before"
+      yPosition="below"
+      class="before"
+      #beforeMenu="matMenu"
+      overlapTrigger>
       <button mat-menu-item>Item</button>
     </mat-menu>
 
     <div class="bottom-row">
       <button [matMenuTriggerFor]="aboveMenu" id="above-t">ABOVE</button>
-      <mat-menu yPosition="above" class="above" #aboveMenu="matMenu">
+      <mat-menu yPosition="above" class="above" #aboveMenu="matMenu" overlapTrigger>
         <button mat-menu-item>Item</button>
       </mat-menu>
 
       <button [matMenuTriggerFor]="combined" id="combined-t">
         BOTH
       </button>
-      <mat-menu xPosition="before" yPosition="above" class="combined" #combined="matMenu">
+      <mat-menu
+        xPosition="before"
+        yPosition="above"
+        class="combined"
+        #combined="matMenu"
+        overlapTrigger>
         <button mat-menu-item>Item</button>
       </mat-menu>
 

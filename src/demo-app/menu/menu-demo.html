@@ -137,7 +137,7 @@
 
 <div class="demo-menu">
   <div class="demo-menu-section">
-    <p>overlapTrigger: false</p>
+    <p>overlapTrigger: true</p>
 
     <mat-toolbar>
       <button mat-icon-button [mat-menu-trigger-for]="menuOverlay">
@@ -145,7 +145,7 @@
       </button>
     </mat-toolbar>
 
-    <mat-menu [overlapTrigger]="false" #menuOverlay="matMenu">
+    <mat-menu [overlapTrigger]="true" #menuOverlay="matMenu">
       <button mat-menu-item *ngFor="let item of items" [disabled]="item.disabled">
         {{ item.text }}
       </button>
@@ -153,7 +153,7 @@
   </div>
   <div class="demo-menu-section">
     <p>
-      Position x: before, overlapTrigger: false
+      Position x: before, overlapTrigger: true
     </p>
     <mat-toolbar class="demo-end-icon">
       <button mat-icon-button [mat-menu-trigger-for]="posXMenuOverlay">
@@ -161,7 +161,7 @@
       </button>
     </mat-toolbar>
 
-    <mat-menu xPosition="before" [overlapTrigger]="false" #posXMenuOverlay="matMenu">
+    <mat-menu xPosition="before" [overlapTrigger]="true" #posXMenuOverlay="matMenu">
       <button mat-menu-item *ngFor="let item of iconItems" [disabled]="item.disabled">
         <mat-icon>{{ item.icon }}</mat-icon>
         {{ item.text }}
@@ -170,7 +170,7 @@
   </div>
   <div class="demo-menu-section">
     <p>
-      Position y: above, overlapTrigger: false
+      Position y: above, overlapTrigger: true
     </p>
     <mat-toolbar>
       <button mat-icon-button [mat-menu-trigger-for]="posYMenuOverlay">
@@ -178,7 +178,7 @@
       </button>
     </mat-toolbar>
 
-    <mat-menu yPosition="above" [overlapTrigger]="false" #posYMenuOverlay="matMenu">
+    <mat-menu yPosition="above" [overlapTrigger]="true" #posYMenuOverlay="matMenu">
       <button mat-menu-item *ngFor="let item of items" [disabled]="item.disabled">
         {{ item.text }}
       </button>
