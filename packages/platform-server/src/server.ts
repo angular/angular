@@ -7,15 +7,15 @@
  */
 
 import {ɵAnimationEngine} from '@angular/animations/browser';
-import {PlatformLocation, ViewportScroller, ɵNullViewportScroller as NullViewportScroller, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
+import {DOCUMENT, PlatformLocation, ViewportScroller, WINDOW, ɵNullViewportScroller as NullViewportScroller, ɵPLATFORM_SERVER_ID as PLATFORM_SERVER_ID} from '@angular/common';
 import {HttpClientModule} from '@angular/common/http';
 import {Injectable, InjectionToken, Injector, NgModule, NgZone, Optional, PLATFORM_ID, PLATFORM_INITIALIZER, PlatformRef, Provider, RendererFactory2, RootRenderer, StaticProvider, Testability, createPlatformFactory, isDevMode, platformCore, ɵALLOW_MULTIPLE_PLATFORMS as ALLOW_MULTIPLE_PLATFORMS} from '@angular/core';
 import {HttpModule} from '@angular/http';
-import {BrowserModule, DOCUMENT, EVENT_MANAGER_PLUGINS, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID, ɵgetDOM as getDOM} from '@angular/platform-browser';
+import {BrowserModule, EVENT_MANAGER_PLUGINS, ɵSharedStylesHost as SharedStylesHost, ɵTRANSITION_ID, ɵgetDOM as getDOM} from '@angular/platform-browser';
 import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
 import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
-import {DominoAdapter, parseDocument} from './domino_adapter';
+import {DominoAdapter, parseDocument, parseDocumentToWindow} from './domino_adapter';
 import {SERVER_HTTP_PROVIDERS} from './http';
 import {ServerPlatformLocation} from './location';
 import {PlatformState} from './platform_state';
@@ -29,7 +29,8 @@ function notSupported(feature: string): Error {
 }
 
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
-  {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
+  {provide: DOCUMENT, useFactory: _document, deps: [WINDOW]},
+  {provide: WINDOW, useFactory: _window, deps: [Injector]},
   {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
   {provide: PLATFORM_INITIALIZER, useFactory: initDominoAdapter, multi: true, deps: [Injector]}, {
     provide: PlatformLocation,
@@ -80,12 +81,16 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
 export class ServerModule {
 }
 
-function _document(injector: Injector) {
-  let config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
+function _document(window: Window): Document {
+  return window.document;
+}
+
+function _window(injector: Injector): Window {
+  const config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
   if (config && config.document) {
-    return parseDocument(config.document, config.url);
+    return parseDocumentToWindow(config.document, config.url);
   } else {
-    return getDOM().createHtmlDocument();
+    return ({document: getDOM().createHtmlDocument()}) as Window;
   }
 }
 

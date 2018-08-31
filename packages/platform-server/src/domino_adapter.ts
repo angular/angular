@@ -22,10 +22,16 @@ function setDomTypes() {
 /**
  * Parses a document string to a Document object.
  */
-export function parseDocument(html: string, url = '/') {
-  let window = domino.createWindow(html, url);
-  let doc = window.document;
-  return doc;
+export function parseDocument(html: string, url = '/'): Document {
+  const window = parseDocumentToWindow(html, url);
+  return window.document;
+}
+
+/**
+ * Parses a document string and returns the window object that contains it.
+ */
+export function parseDocumentToWindow(html: string, url = '/'): Window {
+  return domino.createWindow(html, url);
 }
 
 /**

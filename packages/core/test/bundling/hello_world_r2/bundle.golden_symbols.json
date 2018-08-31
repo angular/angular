@@ -1635,6 +1635,9 @@
     "name": "ViewRef_"
   },
   {
+    "name": "WINDOW"
+  },
+  {
     "name": "WS_CHARS"
   },
   {
@@ -2215,6 +2218,9 @@
   },
   {
     "name": "_visitor"
+  },
+  {
+    "name": "_window"
   },
   {
     "name": "add32"
