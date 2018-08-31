@@ -1,21 +1,9 @@
-{% import "lib/memberHelpers.html" as memberHelpers -%}
-{% import "lib/descendants.html" as descendants -%}
-{% import "lib/paramList.html" as params -%}
 {% extends 'export-base.template.html' -%}
 
 {% block overview %}
   {% include "includes/class-overview.html" %}
 {% endblock %}
 {% block details %}
-  {% block additional %}{% endblock %}
   {% include "includes/description.html" %}
-  {$ memberHelpers.renderProperties(doc.staticProperties, 'static-properties', 'static-property', 'Static properties') $}
-  {$ memberHelpers.renderMethodDetails(versionInfo, doc.staticMethods, 'static-methods', 'static-method', 'Static methods') $}
-  {% if doc.constructorDoc %}
-  <h2>Constructor</h2>
-  {$ memberHelpers.renderMethodDetail(versionInfo, doc.constructorDoc, 'constructor') $}{% endif %}
-
-  {$ memberHelpers.renderProperties(doc.properties, 'instance-properties', 'instance-property', 'Properties') $}
-
-  {$ memberHelpers.renderMethodDetails(versionInfo, doc.methods, 'instance-methods', 'instance-method', 'Methods') $}
+  {% include "includes/class-members.html" %}
 {% endblock %}
