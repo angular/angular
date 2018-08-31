@@ -97,8 +97,6 @@ export function getRendererFactory(): RendererFactory3 {
   return rendererFactory;
 }
 
-let currentElementNode: LElementNode|null = null;
-
 export function getCurrentSanitizer(): Sanitizer|null {
   return viewData && viewData[SANITIZER];
 }
@@ -797,7 +795,6 @@ export function elementStart(
 
   const node: LElementNode =
       createLNode(index, TNodeType.Element, native !, name, attrs || null, null);
-  currentElementNode = node;
 
   if (attrs) {
     setUpAttributes(native, attrs);
@@ -1205,7 +1202,6 @@ export function hostElement(
   return node;
 }
 
-
 /**
  * Adds an event listener to the current node.
  *
@@ -1218,29 +1214,35 @@ export function hostElement(
  */
 export function listener(
     eventName: string, listenerFn: (e?: any) => any, useCapture = false): void {
-  ngDevMode && assertPreviousIsParent();
-  ngDevMode && assertNodeOfPossibleTypes(previousOrParentNode, TNodeType.Element);
+  ngDevMode &&
+      assertNodeOfPossibleTypes(
+          previousOrParentNode, TNodeType.Element, TNodeType.Container, TNodeType.ElementContainer);
   const node = previousOrParentNode;
-  const native = node.native as RElement;
-  ngDevMode && ngDevMode.rendererAddEventListener++;
 
-  // In order to match current behavior, native DOM event listeners must be added for all
-  // events (including outputs).
-  if (isProceduralRenderer(renderer)) {
-    const wrappedListener = wrapListenerWithDirtyLogic(viewData, listenerFn);
-    const cleanupFn = renderer.listen(native, eventName, wrappedListener);
-    storeCleanupFn(viewData, cleanupFn);
-  } else {
-    const wrappedListener = wrapListenerWithDirtyAndDefault(viewData, listenerFn);
-    native.addEventListener(eventName, wrappedListener, useCapture);
-    const cleanupInstances = getCleanup(viewData);
-    cleanupInstances.push(wrappedListener);
-    if (firstTemplatePass) {
-      getTViewCleanup(viewData).push(
-          eventName, node.tNode.index, cleanupInstances !.length - 1, useCapture);
+  // add native event listener - applicable to elements only
+  if (previousOrParentNode.tNode.type === TNodeType.Element) {
+    const native = node.native as RElement;
+    ngDevMode && ngDevMode.rendererAddEventListener++;
+
+    // In order to match current behavior, native DOM event listeners must be added for all
+    // events (including outputs).
+    if (isProceduralRenderer(renderer)) {
+      const wrappedListener = wrapListenerWithDirtyLogic(viewData, listenerFn);
+      const cleanupFn = renderer.listen(native, eventName, wrappedListener);
+      storeCleanupFn(viewData, cleanupFn);
+    } else {
+      const wrappedListener = wrapListenerWithDirtyAndDefault(viewData, listenerFn);
+      native.addEventListener(eventName, wrappedListener, useCapture);
+      const cleanupInstances = getCleanup(viewData);
+      cleanupInstances.push(wrappedListener);
+      if (firstTemplatePass) {
+        getTViewCleanup(viewData).push(
+            eventName, node.tNode.index, cleanupInstances !.length - 1, useCapture);
+      }
     }
   }
 
+  // subscribe to directive outputs
   let tNode: TNode|null = node.tNode;
   if (tNode.outputs === undefined) {
     // if we create TNode here, inputs must be undefined so we know they still need to be
@@ -1311,7 +1313,6 @@ export function elementEnd(): void {
   ngDevMode && assertNodeType(previousOrParentNode, TNodeType.Element);
   currentQueries && (currentQueries = currentQueries.addNode(previousOrParentNode));
   queueLifecycleHooks(previousOrParentNode.tNode.flags, tView);
-  currentElementNode = null;
   elementDepthCount--;
 }
 
@@ -1514,8 +1515,7 @@ export function elementStyling<T>(
     classDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleDeclarations?: (string | boolean | InitialStylingFlags)[] | null,
     styleSanitizer?: StyleSanitizeFn | null): void {
-  const lElement = currentElementNode !;
-  const tNode = lElement.tNode;
+  const tNode = previousOrParentNode.tNode;
   if (!tNode.stylingTemplate) {
     // initialize the styling template.
     tNode.stylingTemplate =

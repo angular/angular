@@ -9,9 +9,6 @@ import { UserService }        from './user.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-// #docregion providers
-  providers: [ LoggerService, UserContextService, UserService ]
-// #enddocregion providers
 })
 export class AppComponent {
 // #enddocregion import-services
