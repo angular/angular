@@ -1,14 +1,30 @@
 {% import "lib/directiveHelpers.html" as directiveHelper -%}
-{% import "lib/paramList.html" as params -%}
 {% extends 'class.template.html' -%}
 
-{% block overview %}{% include "includes/directive-overview.html" %}{% endblock %}
-{% block additional -%}
-{% include "includes/ngmodule.html" %}
-{% include "includes/selectors.html" %}
+{% block overview %}{% endblock %}
+
+{% block details -%}
+  {% include "includes/ngmodule.html" %}
+  {% include "includes/selectors.html" %}
+
   {$ directiveHelper.renderBindings(doc.inputs, 'inputs', 'input', 'Inputs') $}
+
   {$ directiveHelper.renderBindings(doc.outputs, 'outputs', 'output', 'Outputs') $}
+
   {% include "includes/export-as.html" %}
+
+  {% if doc.description or doc.usageNotes %}
+  <section class="description">
+    <h2>Description</h2>
+    {$ (doc.description or '') | trimBlankLines | marked $}
+    {$ (doc.usageNotes or '') | trimBlankLines | marked $}
+  </section>
+  {% endif %}
+
+  <h2>Class</h2>
+  {% include "includes/directive-overview.html" %}
+
+  {% include "includes/class-members.html" %}
 {% endblock %}
 
-{% block annotations %}{% endblock %}
+{% block endNotes %}{% endblock %}
