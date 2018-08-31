@@ -17,3 +17,8 @@ import {InjectionToken} from '@angular/core';
  *
  */
 export const DOCUMENT = new InjectionToken<Document>('DocumentToken');
+
+/**
+ * DI token for Window instance for easier mocking in Angular tests.
+ */
+export const WINDOW = new InjectionToken<Window>('WindowToken');
