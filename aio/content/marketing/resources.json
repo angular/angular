@@ -22,6 +22,13 @@
             "//title": "Angular Conferences and Angular Camps in Moscow, Russia.",
             "title": "Angular 러시아",
             "url": "https://angular-ru.github.io/"
+          },
+          "made-with-angular": {
+            "//desc": "A showcase of web apps built with Angular.",
+            "desc": "Angular로 만들어진 웹 앱을 살펴보세요.",
+            "rev": true,
+            "title": "Made with Angular",
+            "url": "https://www.madewithangular.com/"
           }
         }
       },
@@ -215,7 +222,7 @@
             "//title": "Amexio Canvas Web Based Drag and Drop IDE by MetaMagic",
             "title": "MetaMagic에서 제공하는 드래그 앤 드랍 방식의 Amexio Canvas Web IDE",
             "url": "https://amexio.tech/"
-          }	
+          }
         }
       },
       "개발 툴": {
@@ -307,6 +314,15 @@
             "title": "Nx",
             "logo": "https://nrwl.io/assets/nx-logo.png",
             "url": "https://nrwl.io/nx"
+          },
+          "uijar": {
+            "//desc": "A drop in module to automatically create a living style guide based on the test you write for your components.",
+            "desc": "컴포넌트 테스트 코드를 활용해서 개발 가이드 문서를 만들어 보세요.",
+            "logo": "",
+            "rev": true,
+            "title": "UI-jar - Test Driven Style Guide Development",
+            "//title": "UI-jar - 테스트 파일로 개발 문서 자동 생성하기",
+            "url": "https://github.com/ui-jar/ui-jar"
           }
         }
       },
@@ -373,8 +389,8 @@
             "url": "http://www.primefaces.org/primeng/"
           },
           "a3b": {
-            "//desc": "One of the first major UI frameworks to support Angular",
-            "desc": "Kendo UI는 Angular용 UI 프레임워크를 가장 먼저 시작한 프레임워크 중 하나입니다.",
+            "//desc": "A professional grade library of Angular UI components written in TypeScript that includes our Data Grid, TreeView, Charts, Editors, DropDowns, DatePickers, and many more. Features include support for AOT compilation, Tree Shaking for high-performance, localization, and accessibility.",
+            "desc": "전문가 수준의 Angular UI 컴포넌트를 TypeScript로 작성한 라이브러리입니다. 데이터 그리드, 트리뷰, 차트, 에디터, 드롭다운, 데이트 피커 등을 제공합니다. 이 라이브러리에서 제공하는 컴포넌트는 모두 AOT 컴파일을 지원하며 성능 향상을 위해 트리 셰이킹도 지원합니다. 다국어와 웹 접근성 기능도 제공합니다.",
             "logo": "",
             "rev": true,
             "title": "Kendo UI",
@@ -492,10 +508,10 @@
           },
           "-KLIzGEp8Mh5W-FkiQnL": {
             "//desc": "Your quick, no-nonsense guide to building real-world apps with Angular",
-            "desc": "Angular로 운영용 애플리케이션을 만드는 방법을 쉽고 합리적인 방법으로 안내합니다.",
+            "desc": "Angular 애플리케이션을 만드는 방법을 쉽고 합리적으로 안내합니다.",
             "rev": true,
-            "title": "Learning Angular",
-            "url": "https://www.packtpub.com/web-development/learning-angular-2"
+            "title": "Learning Angular - Second Edition",
+            "url": "https://www.packtpub.com/web-development/learning-angular-second-edition"
           },
           "3ab": {
             "//desc": "More than 15 books from O'Reilly about Angular",
@@ -591,6 +607,14 @@
             "title": "The Angular Guide by Wishtack (Français)",
             "//title": "The Angular Guide by Wishtack (프랑스어)",
             "url": "https://guide-angular.wishtack.io/"
+          },
+          "ab5": {
+            "//desc": "How to build Angular applications using NGRX",
+            "desc": "NGRX로 Angular 애플리케이션을 만드는 방법",
+            "logo": "",
+            "rev": true,
+            "title": "Architecting Angular Applications with NGRX",
+            "url": "https://www.packtpub.com/web-development/architecting-angular-applications-redux"
           }
         }
       },
@@ -735,6 +759,14 @@
             "rev": true,
             "title": "AngularFirebase.com",
             "url": "https://angularfirebase.com/"
+          },
+          "loiane-angulartraining": {
+            "//desc": "Free Angular course in Portuguese.",
+            "desc": "포르투갈어로 제공되는 무료 Angular 강의",
+            "rev": true,
+            "//title": "Loiane Training (Português)",
+            "title": "Loiane Training (포르투갈어)",
+            "url": "https://loiane.training/course/angular/"
           }
         }
       },
@@ -742,6 +774,13 @@
         "Workshops & Onsite Training": "",
         "order": 2,
         "resources": {
+          "-acceleb": {
+            "//desc": "Customized, Instructor-Led Angular Training",
+            "desc": "효율적인 Angular 학습 코스",
+            "rev": true,
+            "title": "Accelebrate",
+            "url": "https://www.accelebrate.com/angular-training"
+          },
           "-KLIBoFWStce29UCwkvY": {
             "//desc": "Private Angular Training and Mentoring",
             "desc": "강사의 멘토링도 받을 수 있는 전일제 수업입니다.",
@@ -867,6 +906,13 @@
             "//title": "Angular.Schule (German)",
             "title": "Angular.Schule (독일)",
             "url": "https://angular.schule/"
+          },
+          "strbrw": {
+            "//desc": "Angular and RxJS trainings, Code Reviews and consultancy. We help software engineers all over the world to create better web-applications...",
+            "desc": "Angular와 RxJS에 대해 안내하며 코드 리뷰와 컨설팅도 제공합니다. 웹 애플리케이션 세상이 좀 더 나아지길 바라며 전세계의 소프트웨어 엔지니어를 돕고 있습니다.",
+            "rev": true,
+            "title": "StrongBrew",
+            "url": "https://strongbrew.io/"
           }
         }
       }
