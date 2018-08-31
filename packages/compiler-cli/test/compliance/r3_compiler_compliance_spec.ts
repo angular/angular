@@ -590,6 +590,7 @@ describe('compiler compliance', () => {
           hostBindings: function HostBindingDir_HostBindings(dirIndex, elIndex) {
             $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵloadDirective(dirIndex).dirId));
           },
+          hostVars: 1,
           features: [$r3$.ɵPublicFeature]
         });
       `;
@@ -598,6 +599,53 @@ describe('compiler compliance', () => {
       const source = result.source;
 
       expectEmit(source, HostBindingDirDeclaration, 'Invalid host binding code');
+    });
+
+    it('should support host bindings with pure functions', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+            import {Component, NgModule} from '@angular/core';
+
+            @Component({
+              selector: 'host-binding-comp',
+              host: {
+                '[id]': '["red", id]'
+              },
+              template: ''
+            })
+            export class HostBindingComp {
+              id = 'some id';
+            }
+
+            @NgModule({declarations: [HostBindingComp]})
+            export class MyModule {}
+          `
+        }
+      };
+
+      const HostBindingCompDeclaration = `
+        const $ff$ = function ($v$) { return ["red", $v$]; };
+        …
+        HostBindingComp.ngComponentDef = $r3$.ɵdefineComponent({
+          type: HostBindingComp,
+          selectors: [["host-binding-comp"]],
+          factory: function HostBindingComp_Factory(t) { return new (t || HostBindingComp)(); },
+          hostBindings: function HostBindingComp_HostBindings(dirIndex, elIndex) {
+            $r3$.ɵelementProperty(elIndex, "id", $r3$.ɵbind($r3$.ɵpureFunction1(1, $ff$, $r3$.ɵloadDirective(dirIndex).id)));
+          },
+          hostVars: 3,
+          features: [$r3$.ɵPublicFeature],
+          consts: 0,
+          vars: 0,
+          template: function HostBindingComp_Template(rf, ctx) {}
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      const source = result.source;
+
+      expectEmit(source, HostBindingCompDeclaration, 'Invalid host binding code');
     });
 
     it('should support structural directives', () => {
