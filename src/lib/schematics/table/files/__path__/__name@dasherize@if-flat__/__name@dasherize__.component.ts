@@ -8,8 +8,10 @@ import { <%= classify(name) %>DataSource } from './<%= dasherize(name) %>-dataso
     <%= indentTextContent(resolvedFiles.template, 4) %>
   `,<% } else { %>
   templateUrl: './<%= dasherize(name) %>.component.html',<% } if(inlineStyle) { %>
-  styles: []<% } else { %>
-  styleUrls: ['./<%= dasherize(name) %>.component.<%= styleext %>']<% } %><% if(!!viewEncapsulation) { %>,
+  styles: [`
+    <%= indentTextContent(resolvedFiles.stylesheet, 4) %>
+  `],<% } else { %>
+  styleUrls: ['./<%= dasherize(name) %>.component.<%= styleext %>'],<% } %><% if(!!viewEncapsulation) { %>
   encapsulation: ViewEncapsulation.<%= viewEncapsulation %><% } if (changeDetection !== 'Default') { %>,
   changeDetection: ChangeDetectionStrategy.<%= changeDetection %><% } %>
 })
