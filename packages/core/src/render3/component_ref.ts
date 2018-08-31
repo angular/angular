@@ -18,11 +18,11 @@ import {Type} from '../type';
 
 import {assertComponentType, assertDefined} from './assert';
 import {LifecycleHooksFeature, createRootContext} from './component';
-import {adjustBlueprintForNewNode, baseDirectiveCreate, createLNode, createLViewData, createTView, elementCreate, enterView, hostElement, initChangeDetectorIfExisting, locateHostElement, renderEmbeddedTemplate} from './instructions';
+import {adjustBlueprintForNewNode, baseDirectiveCreate, createLNode, createLViewData, createTView, elementCreate, enterView, hostElement, initChangeDetectorIfExisting, locateHostElement, queueHostBindingForCheck, renderEmbeddedTemplate, setHostBindings} from './instructions';
 import {ComponentDefInternal, ComponentType, RenderFlags} from './interfaces/definition';
 import {LElementNode, TNode, TNodeType} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {BINDING_INDEX, CONTEXT, FLAGS, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
+import {CONTEXT, FLAGS, INJECTOR, LViewData, LViewFlags, RootContext, TVIEW} from './interfaces/view';
 import {RootViewRef, ViewRef} from './view_ref';
 
 export class ComponentFactoryResolver extends viewEngine_ComponentFactoryResolver {
@@ -138,6 +138,9 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
 
       // Create directive instance with factory() and store at index 0 in directives array
       component = baseDirectiveCreate(0, this.componentDef.factory(), this.componentDef);
+      if (this.componentDef.hostBindings) {
+        queueHostBindingForCheck(0, this.componentDef.hostVars);
+      }
       rootContext.components.push(component);
       initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data !);
       (elementNode.data as LViewData)[CONTEXT] = component;
@@ -145,6 +148,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       // executed here?
       // Angular 5 reference: https://stackblitz.com/edit/lifecycle-hooks-vcref
       LifecycleHooksFeature(component, this.componentDef);
+
+      setHostBindings(rootView[TVIEW].hostBindings);
 
       // Transform the arrays of native nodes into a LNode structure that can be consumed by the
       // projection instruction. This is needed to support the reprojection of these nodes.
