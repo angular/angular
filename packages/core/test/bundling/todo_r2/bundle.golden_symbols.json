@@ -1317,9 +1317,6 @@
     "name": "createViewQuery"
   },
   {
-    "name": "currentElementNode"
-  },
-  {
     "name": "dateGetter"
   },
   {

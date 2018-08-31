@@ -432,9 +432,6 @@
     "name": "createViewQuery"
   },
   {
-    "name": "currentElementNode"
-  },
-  {
     "name": "defineComponent"
   },
   {
