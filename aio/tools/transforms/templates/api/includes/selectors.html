@@ -1,9 +1,19 @@
 {%- if doc.selector %}
 <section class="selectors">
   <h2>Selectors</h2>
-  <code-example hideCopy="true" class="no-box api-heading selector">
-  {%- for selector in doc.selector.split(',') %}
-  {$ selector $}{% endfor %}
-  </code-example>
+  <table class="is-full-width list-table selector-table">
+      <thead>
+        <tr>
+          <th>Selector</th>
+        </tr>
+      </thead>
+      <tbody>
+      {%- for selector in doc.selectorArray %}
+      <tr class="selector">
+        <td><code>{$ selector $}</code></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
 </section>
 {% endif %}

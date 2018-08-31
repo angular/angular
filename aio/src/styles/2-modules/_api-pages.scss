@@ -31,6 +31,10 @@
   }
 
   .method-table, .option-table, .list-table {
+    td > code {
+      background-color: inherit;
+    }
+
     .with-github-links {
       align-items: center;
       display: flex;
