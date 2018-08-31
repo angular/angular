@@ -88,9 +88,10 @@ export class NgtscProgram implements api.Program {
   }
 
   getNgSemanticDiagnostics(
-      fileName?: string|undefined,
-      cancellationToken?: ts.CancellationToken|undefined): ReadonlyArray<api.Diagnostic> {
-    return [];
+      fileName?: string|undefined, cancellationToken?: ts.CancellationToken|
+                                   undefined): ReadonlyArray<ts.Diagnostic|api.Diagnostic> {
+    const compilation = this.ensureAnalyzed();
+    return compilation.diagnostics;
   }
 
   async loadNgStructureAsync(): Promise<void> {
@@ -117,6 +118,16 @@ export class NgtscProgram implements api.Program {
     throw new Error('Method not implemented.');
   }
 
+  private ensureAnalyzed(): IvyCompilation {
+    if (this.compilation === undefined) {
+      this.compilation = this.makeCompilation();
+      this.tsProgram.getSourceFiles()
+          .filter(file => !file.fileName.endsWith('.d.ts'))
+          .forEach(file => this.compilation !.analyzeSync(file));
+    }
+    return this.compilation;
+  }
+
   emit(opts?: {
     emitFlags?: api.EmitFlags,
     cancellationToken?: ts.CancellationToken,
@@ -126,12 +137,7 @@ export class NgtscProgram implements api.Program {
   }): ts.EmitResult {
     const emitCallback = opts && opts.emitCallback || defaultEmitCallback;
 
-    if (this.compilation === undefined) {
-      this.compilation = this.makeCompilation();
-      this.tsProgram.getSourceFiles()
-          .filter(file => !file.fileName.endsWith('.d.ts'))
-          .forEach(file => this.compilation !.analyzeSync(file));
-    }
+    this.ensureAnalyzed();
 
     // Since there is no .d.ts transformation API, .d.ts files are transformed during write.
     const writeFile: ts.WriteFileCallback =
