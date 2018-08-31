@@ -448,6 +448,7 @@ describe('ngtsc behavioral tests', () => {
           Component,
           ElementRef,
           Injector,
+          Renderer2,
           TemplateRef,
           ViewContainerRef,
         } from '@angular/core';
@@ -462,6 +463,7 @@ describe('ngtsc behavioral tests', () => {
             cdr: ChangeDetectorRef,
             er: ElementRef,
             i: Injector,
+            r2: Renderer2,
             tr: TemplateRef,
             vcr: ViewContainerRef,
           ) {}
@@ -474,7 +476,7 @@ describe('ngtsc behavioral tests', () => {
     const jsContents = getContents('test.js');
     expect(jsContents)
         .toContain(
-            `factory: function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵinjectAttribute("test"), i0.ɵinjectChangeDetectorRef(), i0.ɵinjectElementRef(), i0.ɵdirectiveInject(i0.INJECTOR), i0.ɵinjectTemplateRef(), i0.ɵinjectViewContainerRef()); }`);
+            `factory: function FooCmp_Factory(t) { return new (t || FooCmp)(i0.ɵinjectAttribute("test"), i0.ɵinjectChangeDetectorRef(), i0.ɵinjectElementRef(), i0.ɵdirectiveInject(i0.INJECTOR), i0.ɵinjectRenderer2(), i0.ɵinjectTemplateRef(), i0.ɵinjectViewContainerRef()); }`);
   });
 
   it('should generate queries for components', () => {
