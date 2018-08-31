@@ -47,20 +47,8 @@
   {$ renderTable(doc.ngmoduleOptions.providers, 'providers', 'Providers', 'Provider') $}
   {% endif %}
 
-  {% if doc.ngmoduleOptions.imports %}
-  {$ renderTable(doc.ngmoduleOptions.imports, 'imports', 'Imports', 'Import') $}
-  {% endif %}
-
   {% if doc.ngmoduleOptions.exports %}
   {$ renderTable(doc.ngmoduleOptions.exports, 'exports', 'Exports', 'Export') $}
-  {% endif %}
-
-  {% if doc.ngmoduleOptions.declarations %}
-  {$ renderTable(doc.ngmoduleOptions.declarations, 'declarations', 'Declarations', 'Declaration') $}
-  {% endif %}
-
-  {% if doc.ngmoduleOptions.entryComponents %}
-  {$ renderTable(doc.ngmoduleOptions.entryComponents, 'entryComponents', 'Entry components', 'Entry component') $}
   {% endif %}
 
 {% endblock %}
