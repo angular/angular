@@ -68,6 +68,22 @@ export class BrowserDetection {
     return this._ua.indexOf('Chrome') > -1 && this._ua.indexOf('Chrome/3') > -1 &&
         this._ua.indexOf('Edge') == -1;
   }
+
+  get supportsCustomElements() { return (typeof(<any>global).customElements !== 'undefined'); }
+
+  get supportsDeprecatedCustomCustomElementsV0() {
+    return (typeof(document as any).registerElement !== 'undefined');
+  }
+
+  get supportsShadowDom() {
+    const testEl = document.createElement('div');
+    return (typeof testEl.attachShadow !== 'undefined');
+  }
+
+  get supportsDeprecatedShadowDomV0() {
+    const testEl = document.createElement('div') as any;
+    return (typeof testEl.createShadowRoot !== 'undefined');
+  }
 }
 
 BrowserDetection.setup();
