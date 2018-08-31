@@ -2,6 +2,7 @@
   width: 200px;
   height: 200px;
   border: solid 1px #ccc;
+  color: rgba(0, 0, 0, 0.87);
   cursor: move;
   display: inline-flex;
   justify-content: center;
