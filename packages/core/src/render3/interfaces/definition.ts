@@ -127,11 +127,8 @@ export interface DirectiveDef<T, Selector extends string> extends BaseDef<T> {
 
   /**
    * Factory function used to create a new directive instance.
-   *
-   * Usually returns the directive instance, but if the directive has a content query,
-   * it instead returns an array that contains the instance as well as content query data.
    */
-  factory(): T|[T];
+  factory(): T;
 
   /**
    * Function to create instances of content queries associated with a given directive.
