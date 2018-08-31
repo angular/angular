@@ -342,11 +342,11 @@ export class DomElementSchemaRegistry extends ElementSchemaRegistry {
     // property names do not have a security impact.
     tagName = tagName.toLowerCase();
     propName = propName.toLowerCase();
-    let ctx = SECURITY_SCHEMA[tagName + '|' + propName];
+    let ctx = SECURITY_SCHEMA()[tagName + '|' + propName];
     if (ctx) {
       return ctx;
     }
-    ctx = SECURITY_SCHEMA['*|' + propName];
+    ctx = SECURITY_SCHEMA()['*|' + propName];
     return ctx ? ctx : SecurityContext.NONE;
   }
 
