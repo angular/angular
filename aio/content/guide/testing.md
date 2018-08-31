@@ -89,6 +89,189 @@ The root file names (`app.component`) are the same for both files.
 
 Adopt these two conventions in your own projects for _every kind_ of test file.
 
+{@a ci}
+
+## Set up continuous integration
+
+One of the best ways to keep your project bug free is through a test suite, but it's easy to forget to run tests all the time. 
+Continuous integration (CI) servers let you set up your project repository so that your tests run on every commit and pull request.
+
+There are paid CI services like Circle CI and Travis CI, and you can also host your own for free using Jenkins and others. 
+Although Circle CI and Travis CI are paid services, they are provided free for open source projects. 
+You can create a public project on GitHub and add these services without paying. 
+Contributions to the Angular repo are automatically run through a whole suite of Circle CI and Travis CI tests.
+
+This article explains how to configure your project to run Circle CI and Travis CI, and also update your test configuration to be able to run tests in the Chrome browser in either environment.
+
+
+### Configure project for Circle CI
+
+Step 1: Create a folder called `.circleci` at the project root.
+
+Step 2: In the new folder, create a file called `config.yml` with the following content:
+
+```
+version: 2
+jobs:
+  build:
+    working_directory: ~/my-project
+    docker:
+      - image: circleci/node:8-browsers
+    steps:
+      - checkout
+      - restore_cache:
+          key: my-project-{{ .Branch }}-{{ checksum "package.json" }}
+      - run: npm install
+      - save_cache:
+          key: my-project-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - "node_modules"
+      - run: xvfb-run -a npm run test -- --single-run --no-progress --browser=ChromeNoSandbox
+      - run: xvfb-run -a npm run e2e -- --no-progress --config=protractor-ci.conf.js
+```
+
+This configuration caches `node_modules/` and uses [`npm run`](https://docs.npmjs.com/cli/run-script) to run CLI commands, because `@angular/cli` is not installed globally. 
+The double dash (`--`) is needed to pass arguments into the `npm` script.
+
+For Chrome, it uses `xvfb-run` to run the `npm run` command using a virtual screen.
+
+Step 3: Commit your changes and push them to your repository.
+
+Step 4: [Sign up for Circle CI](https://circleci.com/docs/2.0/first-steps/) and [add your project](https://circleci.com/add-projects). 
+Your project should start building.
+
+* Learn more about Circle CI from [Circle CI documentation](https://circleci.com/docs/2.0/).
+
+### Configure project for Travis CI
+
+Step 1: Create a file called `.travis.yml` at the project root, with the following content:
+
+```
+dist: trusty
+sudo: false
+
+language: node_js
+node_js:
+  - "8"
+  
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-stable
+
+cache:
+  directories:
+     - ./node_modules
+
+install:
+  - npm install
+
+script:
+  # Use Chromium instead of Chrome.
+  - export CHROME_BIN=chromium-browser
+  - xvfb-run -a npm run test -- --single-run --no-progress --browser=ChromeNoSandbox
+  - xvfb-run -a npm run e2e -- --no-progress --config=protractor-ci.conf.js
+```
+
+This does the same things as the Circle CI configuration, except that Travis doesn't come with Chrome, so we use Chromium instead.
+
+Step 2: Commit your changes and push them to your repository.
+
+Step 3: [Sign up for Travis CI](https://travis-ci.org/auth) and [add your project](https://travis-ci.org/profile). 
+You'll need to push a new commit to trigger a build.
+
+* Learn more about Travis CI testing from [Travis CI documentation](https://docs.travis-ci.com/).
+
+### Configure CLI for CI testing in Chrome
+
+When the CLI commands `ng test` and `ng e2e` are generally running the CI tests in your environment, you might still need to adjust your configuration to run the Chrome browser tests.
+
+There are configuration files for both the [Karma JavaScript test runner](http://karma-runner.github.io/2.0/config/configuration-file.html) 
+and [Protractor](https://www.protractortest.org/#/api-overview) end-to-end testing tool, 
+which  you must adjust to start Chrome without sandboxing.
+
+* In the Karma configuration file, `karma.conf.js`, add a custom launcher called ChromeNoSandbox below browsers:
+```
+browsers: ['Chrome'],
+customLaunchers: {
+  ChromeNoSandbox: {
+    base: 'Chrome',
+    flags: ['--no-sandbox']
+  }
+},
+```
+
+* Create a new file, `protractor-ci.conf.js`, in the root folder of your project, which extends the original `protractor.conf.js`:
+```
+const config = require('./protractor.conf').config;
+
+config.capabilities = {
+  browserName: 'chrome',
+  chromeOptions: {
+    args: ['--no-sandbox']
+  }
+};
+
+exports.config = config;
+```
+
+Now you can run the following commands to use the `--no-sandbox` flag:
+
+```
+ng test --single-run --no-progress --browser=ChromeNoSandbox
+ng e2e --no-progress --config=protractor-ci.conf.js
+```
+
+{@a code-coverage}
+
+## Enable code coverage reports
+
+The CLI can run unit tests and create code coverage reports. 
+Code coverage reports show you  any parts of our code base that may not be properly tested by your unit tests.
+
+To generate a coverage report run the following command in the root of your project.
+
+```
+ng test --watch=false --code-coverage
+```
+
+When  the tests are complete, the command creates a new `/coverage` folder in the project. Open the `index.html` file to see a report with your source code and code coverage values.
+
+If you want to create code-coverage reports every time you test, you can set the following option in the CLI configuration file, `angular.json`:
+
+```
+  "test": {
+    "options": {
+      "codeCoverage": true
+    }
+  }
+```
+
+### Code coverage enforcement
+
+The code coverage percentages let you estimate how much of your code is tested.  
+If your team decides on a set minimum amount to be unit tested, you can enforce this minimum with the Angular CLI. 
+
+For example, suppose you want the code base to have a minimum of 80% code coverage. 
+To enable this, open the [Karma](http://karma-runner.github.io/0.13/index.html) test platform configuration file, `karma.conf.js`, and add the following in the `coverageIstanbulReporter:` key.
+
+```
+coverageIstanbulReporter: {
+  reports: [ 'html', 'lcovonly' ],
+  fixWebpackSourcePaths: true,
+  thresholds: {
+    statements: 80,
+    lines: 80,
+    branches: 80,
+    functions: 80
+  }
+}
+```
+
+The `thresholds` property causes the tool to enforce a minimum of 80% code coverage when the unit tests are run in the project.
+
 ## Service Tests
 
 Services are often the easiest files to unit test.

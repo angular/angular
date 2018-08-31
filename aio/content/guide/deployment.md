@@ -1,6 +1,7 @@
 # Deployment
 
-This page describes techniques for deploying your Angular application to a remote server.
+When you are ready to deploy your Angular application to a remote server, you have various options for
+deployment. You may need to configure
 
 {@a dev-deploy}
 {@a copy-files}
@@ -18,27 +19,214 @@ For the simplest deployment, build for development and copy the output directory
 
 2. Copy _everything_ within the output folder (`dist/` by default) to a folder on the server.
 
-
-3. If you copy the files into a server _sub-folder_, append the build flag, `--base-href` and set the `<base href>` appropriately.<br><br>
-
-  For example, if the `index.html` is on the server at `/my/app/index.html`, set the _base href_  to
-  `<base href="/my/app/">` like this.
-
-  <code-example language="none" class="code-shell">
-    ng build --base-href=/my/app/
-  </code-example>
-
-  You'll see that the `<base href>` is set properly in the generated `dist/index.html`.<br><br>
-  If you copy to the server's root directory, omit this step and leave the `<base href>` alone.<br><br>
-  Learn more about the role of `<base href>` [below](guide/deployment#base-tag).
-
-
-4. Configure the server to redirect requests for missing files to `index.html`.
+3. Configure the server to redirect requests for missing files to `index.html`.
 Learn more about server-side redirects [below](guide/deployment#fallback).
 
-
 This is _not_ a production deployment. It's not optimized and it won't be fast for users.
-It might be good enough for sharing your progress and ideas internally with managers, teammates, and other stakeholders.
+It might be good enough for sharing your progress and ideas internally with managers, teammates, and other stakeholders. For the next steps in deployment, see [Optimize for production](#optimize).
+
+{@a deploy-to-github}
+
+## Deploy to GitHub pages
+
+Another simple way to deploy your Angular app is to use [GitHub Pages](https://help.github.com/articles/what-is-github-pages/).
+
+1. You will need to [create a GitHub account](https://github.com/join) if you don't have one, then [create a repository](https://help.github.com/articles/create-a-repo/) for your project. 
+Make a note of the user name and project name in GitHub.
+
+1. Build your project using Github project name, with the following CLI command:
+   <code-example language="none" class="code-shell">
+     ng build --prod --output-path docs --base-href <project_name>
+    </code-example>
+
+1. When the build is complete, make a copy of `docs/index.html` and name it `docs/404.html`. 
+
+1. Commit your changes and push. 
+
+1. On the GitHub project page, configure it to [publish from the docs folder](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch).
+
+You can see your deployed page at `https://<user_name>.github.io/<project_name>/`.
+
+<div class="alert-is-helpful>
+
+ Check out [angular-cli-ghpages](https://github.com/angular-buch/angular-cli-ghpages), a full featured package that does all this for you and has extra functionality.
+
+</div>
+
+<hr>
+
+{@a server-configuration}
+
+## Server configuration
+
+This section covers changes you may have make to the server or to files deployed to the server.
+
+{@a fallback}
+
+### Routed apps must fallback to `index.html`
+
+Angular apps are perfect candidates for serving with a simple static HTML server.
+You don't need a server-side engine to dynamically compose application pages because
+Angular does that on the client-side.
+
+If the app uses the Angular router, you must configure the server
+to return the application's host page (`index.html`) when asked for a file that it does not have.
+
+{@a deep-link}
+
+A routed application should support "deep links".
+A _deep link_ is a URL that specifies a path to a component inside the app.
+For example, `http://www.mysite.com/heroes/42` is a _deep link_ to the hero detail page
+that displays the hero with `id: 42`.
+
+There is no issue when the user navigates to that URL from within a running client.
+The Angular router interprets the URL and routes to that page and hero.
+
+But clicking a link in an email, entering it in the browser address bar,
+or merely refreshing the browser while on the hero detail page &mdash;
+all of these actions are handled by the browser itself, _outside_ the running application.
+The browser makes a direct request to the server for that URL, bypassing the router.
+
+A static server routinely returns `index.html` when it receives a request for `http://www.mysite.com/`.
+But it rejects `http://www.mysite.com/heroes/42` and returns a `404 - Not Found` error *unless* it is
+configured to return `index.html` instead.
+
+#### Fallback configuration examples
+
+There is no single configuration that works for every server.
+The following sections describe configurations for some of the most popular servers.
+The list is by no means exhaustive, but should provide you with a good starting point.
+
+#### Development servers
+
+During development, the `ng serve` command lets you run your app in a local browser. 
+The CLI recompiles the application each time you save a file, 
+and reloads the browser with the newly compiled application. 
+
+The app is hosted in local memory and served on `http://localhost:4200/`, using [webpack-dev-server](https://webpack.js.org/guides/development/#webpack-dev-server).
+
+{@a serve-from-disk}
+
+Later in development, you might want a closer approximation of how your app will behave when deployed. 
+You can output your distribution folder (`dist`) to disk, but you need to install a different web server. 
+Try installing  [lite-server](https://github.com/johnpapa/lite-server); like `webpack-dev-server`, it can automatically reload your browser when you write new files.
+
+To get the live-reload experience, you will need to run two terminals. 
+The first runs the build in a watch mode and compiles the application to the `dist` folder. 
+The second runs the web server against the `dist` folder. 
+The combination of these two processes provides the same behavior as `ng serve`.
+
+1. Start the build in terminal A:
+<code-example language="none" class="code-shell">
+ng build --watch
+</code-example>
+
+1. Start the web server in terminal B:
+<code-example language="none" class="code-shell">
+lite-server --baseDir="dist"
+</code-example>
+The default browser opens to the appropriate URL.
+
+* [Lite-Server](https://github.com/johnpapa/lite-server): the default dev server installed with the
+[Quickstart repo](https://github.com/angular/quickstart) is pre-configured to fallback to `index.html`.
+
+* [Webpack-Dev-Server](https://github.com/webpack/webpack-dev-server):  setup the
+`historyApiFallback` entry in the dev server options as follows:
+
+  <code-example>
+    historyApiFallback: {
+      disableDotRule: true,
+      htmlAcceptHeaders: ['text/html', 'application/xhtml+xml']
+    }
+  </code-example>
+
+#### Production servers
+
+* [Apache](https://httpd.apache.org/): add a
+[rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html) to the `.htaccess` file as shown
+  (https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/):
+
+  <code-example format=".">
+    RewriteEngine On
+    &#35 If an existing asset or directory is requested go to it as it is
+    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
+    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
+    RewriteRule ^ - [L]
+
+    &#35 If the requested resource doesn't exist, use index.html
+    RewriteRule ^ /index.html
+  </code-example>
+
+
+* [Nginx](http://nginx.org/): use `try_files`, as described in
+[Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps),
+modified to serve `index.html`:
+
+  <code-example format=".">
+    try_files $uri $uri/ /index.html;
+  </code-example>
+
+
+* [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
+[here](http://stackoverflow.com/a/26152011/2116927):
+
+  <code-example format='.'>
+    &lt;system.webServer&gt;
+      &lt;rewrite&gt;
+        &lt;rules&gt;
+          &lt;rule name="Angular Routes" stopProcessing="true"&gt;
+            &lt;match url=".*" /&gt;
+            &lt;conditions logicalGrouping="MatchAll"&gt;
+              &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /&gt;
+              &lt;add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /&gt;
+            &lt;/conditions&gt;
+            &lt;action type="Rewrite" url="/index.html" /&gt;
+          &lt;/rule&gt;
+        &lt;/rules&gt;
+      &lt;/rewrite&gt;
+    &lt;/system.webServer&gt;
+
+  </code-example>
+
+
+* [GitHub Pages](https://pages.github.com/): you can't
+[directly configure](https://github.com/isaacs/github/issues/408)
+the GitHub Pages server, but you can add a 404 page.
+Copy `index.html` into `404.html`.
+It will still be served as the 404 response, but the browser will process that page and load the app properly.
+It's also a good idea to
+[serve from `docs/` on master](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch)
+and to
+[create a `.nojekyll` file](https://www.bennadel.com/blog/3181-including-node-modules-and-vendors-folders-in-your-github-pages-site.htm)
+
+
+* [Firebase hosting](https://firebase.google.com/docs/hosting/): add a
+[rewrite rule](https://firebase.google.com/docs/hosting/url-redirects-rewrites#section-rewrites).
+
+  <code-example format=".">
+    "rewrites": [ {
+      "source": "**",
+      "destination": "/index.html"
+    } ]
+
+  </code-example>
+
+{@a cors}
+
+### Requesting services from a different server (CORS)
+
+Angular developers may encounter a
+<a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing" title="Cross-origin resource sharing">
+<i>cross-origin resource sharing</i></a> error when making a service request (typically a data service request)
+to a server other than the application's own host server.
+Browsers forbid such requests unless the server permits them explicitly.
+
+There isn't anything the client application can do about these errors.
+The server must be configured to accept the application's requests.
+Read about how to enable CORS for specific servers at
+<a href="http://enable-cors.org/server.html" title="Enabling CORS server">enable-cors.org</a>.
+
+<hr>
 
 {@a optimize}
 
@@ -65,14 +253,8 @@ The `--prod` _meta-flag_ engages the following optimization features.
 
 The remaining [copy deployment steps](#copy-files) are the same as before.
 
-You may further reduce bundle sizes by adding the `build-optimizer` flag.
-
-<code-example language="none" class="code-shell">
-  ng build --prod --build-optimizer
-</code-example>
-
-See the [CLI Documentation](https://github.com/angular/angular-cli/wiki/build) 
-for details about available build options and what they do.
+See [Building and serving Angular apps](guide/build) 
+for more about about CLI build options and what they do.
 
 {@a enable-prod-mode}
 
@@ -102,22 +284,24 @@ Configure the Angular Router to defer loading of all other modules (and their as
 or by [_lazy loading_](guide/router#asynchronous-routing "Lazy loading")
 them on demand.
 
-#### Don't eagerly import something from a lazy loaded module
+<div class="alert-is-helpful>
 
-It's a common mistake.
-You've arranged to lazy load a module.
-But you unintentionally import it, with a JavaScript `import` statement,
-in a file that's eagerly loaded when the app starts, a file such as the root `AppModule`.
+#### Don't eagerly import something from a lazy-loaded module
+
+If you mean to lazy-load a module, be careful not import it
+in a file that's eagerly loaded when the app starts (such as the root `AppModule`).
 If you do that, the module will be loaded immediately.
 
 The bundling configuration must take lazy loading into consideration.
-Because lazy loaded modules aren't imported in JavaScript (as just noted), bundlers exclude them by default.
-Bundlers don't know about the router configuration and won't create separate bundles for lazy loaded modules.
-You have to create these bundles manually.
+Because lazy-loaded modules aren't imported in JavaScript, bundlers exclude them by default.
+Bundlers don't know about the router configuration and can't create separate bundles for lazy-loaded modules. 
+You would have to create these bundles manually.
 
 The CLI runs the
 [Angular Ahead-of-Time Webpack Plugin](https://github.com/angular/angular-cli/tree/master/packages/%40ngtools/webpack)
-which automatically recognizes lazy loaded `NgModules` and creates separate bundles for them.
+which automatically recognizes lazy-loaded `NgModules` and creates separate bundles for them.
+
+</div>
 
 {@a measure}
 
@@ -203,17 +387,12 @@ the subfolder is `my/app/` and you should add `<base href="/my/app/">` to the se
 When the `base` tag is mis-configured, the app fails to load and the browser console displays `404 - Not Found` errors
 for the missing files. Look at where it _tried_ to find those files and adjust the base tag appropriately.
 
-## _build_ vs. _serve_
+## Building and serving for deployment
 
-You'll probably prefer `ng build` for deployments.
+When you are designing and developing applications, you typically use `ng serve` to build your app for fast, local, iterative development. 
+When you are ready to deploy, however, you must use the `ng build` command to build the app and deploy the build artifacts elsewhere.
 
-The **ng build** command is intended for building the app and deploying the build artifacts elsewhere.
-The **ng serve** command is intended for fast, local, iterative development.
-
-Both `ng build` and `ng serve` **clear the output folder** before they build the project.
-The `ng build` command writes generated build artifacts to the output folder.
-The `ng serve` command does not.
-It serves build artifacts from memory instead for a faster development experience.
+Both `ng build` and `ng serve` clear the output folder before they build the project, but only the `build` command writes the generated build artifacts to the output folder.
 
 <div class="alert is-helpful">
 
@@ -222,160 +401,13 @@ To output to a different folder, change the `outputPath` in `angular.json`.
 
 </div>
 
-The `ng serve` command builds, watches, and serves the application from a local CLI development server.
+The`serve` command builds, watches, and serves the application from local memory, using a local development server.
+When you have deployed your app to another server, however, you might still want to serve the app so that you can continue to see changes that you make in it. 
+You can do this by adding the `--watch` option to the `build` command.
 
-The `ng build` command generates output files just once and does not serve them.
-The `ng build --watch` command will regenerate output files when source files change.
-This `--watch` flag is useful if you're building during development and 
-are automatically re-deploying changes to another server.
+```
+ng build --watch
+```
+Like the `serve` command, this regenerates output files when source files change. 
 
-
-See the [CLI `build` topic](https://github.com/angular/angular-cli/wiki/build) for more details and options.
-
-<hr>
-
-{@a server-configuration}
-
-## Server configuration
-
-This section covers changes you may have make to the server or to files deployed to the server.
-
-{@a fallback}
-
-### Routed apps must fallback to `index.html`
-
-Angular apps are perfect candidates for serving with a simple static HTML server.
-You don't need a server-side engine to dynamically compose application pages because
-Angular does that on the client-side.
-
-If the app uses the Angular router, you must configure the server
-to return the application's host page (`index.html`) when asked for a file that it does not have.
-
-{@a deep-link}
-
-
-A routed application should support "deep links".
-A _deep link_ is a URL that specifies a path to a component inside the app.
-For example, `http://www.mysite.com/heroes/42` is a _deep link_ to the hero detail page
-that displays the hero with `id: 42`.
-
-There is no issue when the user navigates to that URL from within a running client.
-The Angular router interprets the URL and routes to that page and hero.
-
-But clicking a link in an email, entering it in the browser address bar,
-or merely refreshing the browser while on the hero detail page &mdash;
-all of these actions are handled by the browser itself, _outside_ the running application.
-The browser makes a direct request to the server for that URL, bypassing the router.
-
-A static server routinely returns `index.html` when it receives a request for `http://www.mysite.com/`.
-But it rejects `http://www.mysite.com/heroes/42` and returns a `404 - Not Found` error *unless* it is
-configured to return `index.html` instead.
-
-#### Fallback configuration examples
-
-There is no single configuration that works for every server.
-The following sections describe configurations for some of the most popular servers.
-The list is by no means exhaustive, but should provide you with a good starting point.
-
-#### Development servers
-
-* [Lite-Server](https://github.com/johnpapa/lite-server): the default dev server installed with the
-[Quickstart repo](https://github.com/angular/quickstart) is pre-configured to fallback to `index.html`.
-
-
-* [Webpack-Dev-Server](https://github.com/webpack/webpack-dev-server):  setup the
-`historyApiFallback` entry in the dev server options as follows:
-
-  <code-example>
-    historyApiFallback: {
-      disableDotRule: true,
-      htmlAcceptHeaders: ['text/html', 'application/xhtml+xml']
-    }
-  </code-example>
-
-
-#### Production servers
-
-* [Apache](https://httpd.apache.org/): add a
-[rewrite rule](http://httpd.apache.org/docs/current/mod/mod_rewrite.html) to the `.htaccess` file as shown
-  (https://ngmilk.rocks/2015/03/09/angularjs-html5-mode-or-pretty-urls-on-apache-using-htaccess/):
-
-  <code-example format=".">
-    RewriteEngine On
-    &#35 If an existing asset or directory is requested go to it as it is
-    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -f [OR]
-    RewriteCond %{DOCUMENT_ROOT}%{REQUEST_URI} -d
-    RewriteRule ^ - [L]
-
-    &#35 If the requested resource doesn't exist, use index.html
-    RewriteRule ^ /index.html
-  </code-example>
-
-
-* [NGinx](http://nginx.org/): use `try_files`, as described in
-[Front Controller Pattern Web Apps](https://www.nginx.com/resources/wiki/start/topics/tutorials/config_pitfalls/#front-controller-pattern-web-apps),
-modified to serve `index.html`:
-
-  <code-example format=".">
-    try_files $uri $uri/ /index.html;
-  </code-example>
-
-
-* [IIS](https://www.iis.net/): add a rewrite rule to `web.config`, similar to the one shown
-[here](http://stackoverflow.com/a/26152011/2116927):
-
-  <code-example format='.'>
-    &lt;system.webServer&gt;
-      &lt;rewrite&gt;
-        &lt;rules&gt;
-          &lt;rule name="Angular Routes" stopProcessing="true"&gt;
-            &lt;match url=".*" /&gt;
-            &lt;conditions logicalGrouping="MatchAll"&gt;
-              &lt;add input="{REQUEST_FILENAME}" matchType="IsFile" negate="true" /&gt;
-              &lt;add input="{REQUEST_FILENAME}" matchType="IsDirectory" negate="true" /&gt;
-            &lt;/conditions&gt;
-            &lt;action type="Rewrite" url="/index.html" /&gt;
-          &lt;/rule&gt;
-        &lt;/rules&gt;
-      &lt;/rewrite&gt;
-    &lt;/system.webServer&gt;
-
-  </code-example>
-
-
-* [GitHub Pages](https://pages.github.com/): you can't
-[directly configure](https://github.com/isaacs/github/issues/408)
-the GitHub Pages server, but you can add a 404 page.
-Copy `index.html` into `404.html`.
-It will still be served as the 404 response, but the browser will process that page and load the app properly.
-It's also a good idea to
-[serve from `docs/` on master](https://help.github.com/articles/configuring-a-publishing-source-for-github-pages/#publishing-your-github-pages-site-from-a-docs-folder-on-your-master-branch)
-and to
-[create a `.nojekyll` file](https://www.bennadel.com/blog/3181-including-node-modules-and-vendors-folders-in-your-github-pages-site.htm)
-
-
-* [Firebase hosting](https://firebase.google.com/docs/hosting/): add a
-[rewrite rule](https://firebase.google.com/docs/hosting/url-redirects-rewrites#section-rewrites).
-
-  <code-example format=".">
-    "rewrites": [ {
-      "source": "**",
-      "destination": "/index.html"
-    } ]
-
-  </code-example>
-
-{@a cors}
-
-### Requesting services from a different server (CORS)
-
-Angular developers may encounter a
-<a href="https://en.wikipedia.org/wiki/Cross-origin_resource_sharing" title="Cross-origin resource sharing">
-<i>cross-origin resource sharing</i></a> error when making a service request (typically a data service request)
-to a server other than the application's own host server.
-Browsers forbid such requests unless the server permits them explicitly.
-
-There isn't anything the client application can do about these errors.
-The server must be configured to accept the application's requests.
-Read about how to enable CORS for specific servers at
-<a href="http://enable-cors.org/server.html" title="Enabling CORS server">enable-cors.org</a>.
+For complete details of the CLI commands and configuration options, see the *CLI Reference (link TBD)*.
