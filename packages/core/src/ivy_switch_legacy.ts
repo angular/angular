@@ -27,12 +27,6 @@ export const R3_COMPILE_NGMODULE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMP
 export const R3_COMPILE_PIPE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_PIPE;
 export const ivyEnable__POST_NGCC__: boolean = ivyOn.ivyEnabled;
 
-const compileComponentQueue: any[] = [];
-const compileDirectiveQueue: any[] = [];
-const compileInjectableQueue: any[] = [];
-const compileNgModuleQueue: any[] = [];
-const compilePipeQueue: any[] = [];
-
 const R3_COMPILE_COMPONENT__PRE_NGCC__: DirectiveCompiler = noop;
 const R3_COMPILE_DIRECTIVE__PRE_NGCC__: DirectiveCompiler = noop;
 const R3_COMPILE_INJECTABLE__PRE_NGCC__: DirectiveCompiler = preR3InjectableCompile;
