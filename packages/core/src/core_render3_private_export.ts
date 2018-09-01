@@ -165,4 +165,17 @@ export {
   ElementContext as ɵElementContext,
   getElementContext as ɵgetElementContext
 } from './render3/element_discovery';
+
+// we reexport these symbols just so that they are retained during the dead code elimination
+// performed by rollup while it's creating fesm files.
+//
+// no code actually imports these symbols from the @angular/core entry point
+export {
+  R3_COMPILE_COMPONENT__POST_NGCC__ as ɵR3_COMPILE_COMPONENT__POST_NGCC__,
+  R3_COMPILE_DIRECTIVE__POST_NGCC__ as ɵR3_COMPILE_DIRECTIVE__POST_NGCC__,
+  R3_COMPILE_INJECTABLE__POST_NGCC__ as ɵR3_COMPILE_INJECTABLE__POST_NGCC__,
+  R3_COMPILE_NGMODULE__POST_NGCC__ as ɵR3_COMPILE_NGMODULE__POST_NGCC__,
+  R3_COMPILE_PIPE__POST_NGCC__ as ɵR3_COMPILE_PIPE__POST_NGCC__,
+  ivyEnable__POST_NGCC__ as ɵivyEnable__POST_NGCC__
+} from './ivy_switch_legacy';
 // clang-format on
