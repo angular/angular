@@ -8,7 +8,7 @@
 
 import {Injectable} from '@angular/core';
 import {NEVER, Observable, Subject, merge} from 'rxjs';
-import {map, switchMap, take} from 'rxjs/operators';
+import {filter, map, switchMap, take} from 'rxjs/operators';
 
 import {ERR_SW_NOT_SUPPORTED, NgswCommChannel} from './low_level';
 
@@ -37,7 +37,8 @@ export class SwPush {
     this.messages = this.sw.eventsOfType('PUSH').pipe(map((message: any) => message.data));
 
     this.pushManager = this.sw.registration.pipe(
-        map((registration: ServiceWorkerRegistration) => { return registration.pushManager; }));
+        map((registration: ServiceWorkerRegistration) => { return registration.pushManager; }),
+        filter((pm: PushManager) => { return typeof pm !== 'undefined'; }));
 
     const workerDrivenSubscriptions = this.pushManager.pipe(
         switchMap((pm: PushManager) => pm.getSubscription().then(sub => { return sub; })));
