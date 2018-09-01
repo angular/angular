@@ -20,12 +20,12 @@ function noop() {}
 
 export interface DirectiveCompiler { (type: any, meta: any): void; }
 
-const R3_COMPILE_COMPONENT__POST_NGCC__ = ivyOn.R3_COMPILE_COMPONENT;
-const R3_COMPILE_DIRECTIVE__POST_NGCC__ = ivyOn.R3_COMPILE_DIRECTIVE;
-const R3_COMPILE_INJECTABLE__POST_NGCC__ = ivyOn.R3_COMPILE_INJECTABLE;
-const R3_COMPILE_NGMODULE__POST_NGCC__ = ivyOn.R3_COMPILE_NGMODULE;
-const R3_COMPILE_PIPE__POST_NGCC__ = ivyOn.R3_COMPILE_PIPE;
-const ivyEnable__POST_NGCC__ = ivyOn.ivyEnabled;
+export const R3_COMPILE_COMPONENT__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_COMPONENT;
+export const R3_COMPILE_DIRECTIVE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_DIRECTIVE;
+export const R3_COMPILE_INJECTABLE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_INJECTABLE;
+export const R3_COMPILE_NGMODULE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_NGMODULE;
+export const R3_COMPILE_PIPE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_PIPE;
+export const ivyEnable__POST_NGCC__: boolean = ivyOn.ivyEnabled;
 
 const compileComponentQueue: any[] = [];
 const compileDirectiveQueue: any[] = [];
