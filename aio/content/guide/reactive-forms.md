@@ -319,28 +319,20 @@ A form group tracks the status and changes for each of its controls, so if one o
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-Note that just as the `FormGroup` contains a group of controls, the _profileForm_ `FormGroup` is bound to the `form` element with the `FormGroup` directive, creating a communication layer between the model and the form containing the inputs. The `formControlName` input provided by the `FormControlName` directive binds each individual input to the form control defined in the `FormGroup`. The form controls communicate with their respective elements. The also communicate changes to the `FormGroup`, which provides the source of truth for the model value.
+Note that just as a form group contains a group of controls, the *profile form* `FormGroup` is bound to the `form` element with the `FormGroup` directive, creating a communication layer between the model and the form containing the inputs. The `formControlName` input provided by the `FormControlName` directive binds each individual input to the form control defined in `FormGroup`. The form controls communicate with their respective elements. They also communicate changes to the form group instance, which provides the source of truth for the model value.
 -->
-`FormGroup`은 폼 컨트롤의 묶음을 표현하며, 이 예제 코드에서는 `FormGroup` 타입의 _profileForm_ 이 `form` 엘리먼트와 바인딩되어 폼 모델과 입력 필드를 연결합니다. 이 코드에 사용된 `formControlName` 은 `FormControlName` 디렉티브이며, 개별 입력 필드를 `FormGroup` 안에 있는 폼 컨트롤과 연결하는 동작을 수행합니다. 그러면 각각의 폼 컨트롤에 연결된 엘리먼트는 해당 폼 컨트롤이 관리하며, `FormGroup`을 통해서 전체 모델에 접근할 수도 있습니다.
+폼 그룹은 폼 컨트롤의 묶음을 표현하며, 이 예제 코드에서는 `FormGroup` 타입의 *profileForm* 이 `form` 엘리먼트와 바인딩되어 폼 모델과 입력 필드를 연결합니다. 이 코드에 사용된 `formControlName` 은 `FormControlName` 디렉티브의 셀렉터이며, 개별 입력 필드를 `FormGroup` 안에 있는 폼 컨트롤과 연결하는 동작을 수행합니다. 그러면 각각의 폼 컨트롤에 연결된 엘리먼트는 해당 폼 컨트롤이 관리하며, 폼 그룹 인스턴스를 통해 전체 모델에 접근할 수도 있습니다.
 
 <!--
-### Save form data
+### Saving form data
 -->
 ### 데이터 저장하기
 
 <!--
-The `ProfileEditor` component takes input from the user, but in a real scenario you want to capture the form value for further processing outside the component. The `FormGroup` directive listens for the `submit` event emitted by the `form` element and emits an `ngSubmit` event that you can bind to a callback function. 
--->
-이 예제에서는 `ProfileEditor` 컴포넌트가 사용자의 입력을 받기만 하지만, 실제 애플리케이션이라면 폼에 입력된 값을 컴포넌트 외부로 전달해서 어떤 동작을 수행해야 합니다. 이 때 `FormGroup` 디렉티브는 `form` 엘리먼트에서 발생하는 `submit` 이벤트를 감지하며, `submit` 이벤트가 발생했을 때 `ngSubmit` 이벤트를 새로 발생시킵니다.
-=======
-Note that just as a form group contains a group of controls, the *profile form* `FormGroup` is bound to the `form` element with the `FormGroup` directive, creating a communication layer between the model and the form containing the inputs. The `formControlName` input provided by the `FormControlName` directive binds each individual input to the form control defined in `FormGroup`. The form controls communicate with their respective elements. They also communicate changes to the form group instance, which provides the source of truth for the model value.
-
-### Saving form data
-
 The `ProfileEditor` component accepts input from the user, but in a real scenario you want to capture the form value and make available for further processing outside the component. The `FormGroup` directive listens for the `submit` event emitted by the `form` element and emits an `ngSubmit` event that you can bind to a callback function. 
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+이 예제에서는 `ProfileEditor` 컴포넌트가 사용자의 입력을 받기만 하지만, 실제 애플리케이션이라면 폼에 입력된 값을 컴포넌트 외부로 전달해서 어떤 동작을 수행해야 할 것입니다.  `FormGroup` 디렉티브는 `form` 엘리먼트에서 발생하는 `submit` 이벤트를 감지하며, `submit` 이벤트가 발생했을 때 폼에 바인딩 된 콜백 함수를 실행하기 위해 `ngSubmit` 이벤트를 새로 발생시킵니다.
 
 <!--
 Add an `ngSubmit` event listener to the `form` tag with the `onSubmit()` callback method.
@@ -351,34 +343,24 @@ Add an `ngSubmit` event listener to the `form` tag with the `onSubmit()` callbac
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-The `onSubmit()` method in the `ProfileEditor` component captures the current value of the `profileForm`. To keep the form encapsulated, to provide the form value outside the component, use an `EventEmitter`. The following example uses `console.warn` to log to the browser console.
--->
-그러면 `ProfileEditor`에 정의된 `onSubmit()` 메소드가 `profileForm`에 저장된 값을 읽어서 특정 동작을 실행하게 할 수 있습니다. 폼의 캡슐화를 보장하려면 이 함수에서 `EventEmitter` 타입으로 폼의 내용을 컴포넌트 밖으로 전달하는 것이 좋지만, 이 예제에서는 간단하게 `console.warn`으로 브라우저 콘솔에 폼 값을 출력해 봅시다.
-=======
 The `onSubmit()` method in the `ProfileEditor` component captures the current value of `profileForm`. Use `EventEmitter` to keep the form encapsulated and to provide the form value outside the component. The following example uses `console.warn` to log a message to the browser console.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+그러면 `ProfileEditor` 컴포넌트에 정의된 `onSubmit()` 메소드가 `profileForm`의 현재 값을 읽어서 특정 동작을 실행하게 할 수 있습니다. 이 때 컴포넌트와 폼의 캡슐화를 보장하기 위해 `EventEmitter`를 사용해서 폼 값을 컴포넌트 외부로 전달하는 것이 좋습니다. 다음 예제는 이렇게 가져온 폼 값을 `console.warn` 함수로 브라우저 콘솔에 출력하는 예제입니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="on-submit" title="src/app/profile-editor/profile-editor.component.ts (submit 메소드)">
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-The `submit` event is emitted by the `form` tag using the native DOM event. You trigger the event by clicking a button with `submit` type. This allows the user to use the enter key to trigger submission after filling out the form. 
+The `submit` event is emitted by the `form` tag using the native DOM event. You trigger the event by clicking a button with `submit` type. This allows the user to press the **Enter** key to submit the completed form. 
 -->
-`submit` 이벤트는 `form` 태그에서 발생하는 네이티브 DOM 이벤트입니다. 이 이벤트는 `submit` 타입의 버튼을 클릭했을 때 발생하며, 사용자가 폼 내용을 입력하고 엔터 키를 눌렀을 때도 발생합니다.
+`submit` 이벤트는 `form` 태그에서 발생하는 네이티브 DOM 이벤트입니다. 이 이벤트는 `submit` 타입의 버튼을 클릭했을 때 발생하며, 사용자가 폼 내용을 입력하고 **엔터** 키를 눌렀을 때도 발생합니다.
 
 <!--
-Add a `button` to the bottom of the form to trigger the form submission.
+Use a `button` element to add a button to the bottom of the form to trigger the form submission.
 -->
 이 이벤트를 발생시키기 위해 폼 아래에 `button` 엘리먼트를 다음과 같이 추가합니다.
-=======
-The `submit` event is emitted by the `form` tag using the native DOM event. You trigger the event by clicking a button with `submit` type. This allows the user to press the **Enter** key to submit the completed form. 
-
-Use a `button` element to add a button to the bottom of the form to trigger the form submission.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="submit-button" linenums="false" title="src/app/profile-editor/profile-editor.component.html (submit button)">
 
@@ -386,106 +368,74 @@ Use a `button` element to add a button to the bottom of the form to trigger the 
 
 <div class="alert is-helpful">
 
-<<<<<<< HEAD
 <!--
-*Note:* The button in the snippet above also has a `disabled` binding attached to it to disable the button when the `profileForm` is invalid. You aren't performing any validation yet, so the button is always enabled. Simple form validation is covered later in the [Form Validation](#simple-form-validation) section.
+**Note:** The button in the snippet above also has a `disabled` binding attached to it to disable the button when `profileForm` is invalid. You aren't performing any validation yet, so the button is always enabled. Simple form validation is covered in the [Simple form validation](#simple-form-validation) section.
 -->
-*참고:* 예제로 구현한 버튼은 `profileForm`의 유효성 검사 결과가 유효하지 않을 때 `disabled` 어트리뷰트를 지정하도록 바인딩되어 있습니다. 아직 유효성 검사 로직은 아무것도 적용하지 않았기 때문에 버튼은 항상 활성화되어 있을 것이며, 이후에 [폼 유효성 검사하기](#폼-유효성-검사하기-기본) 섹션에서 이 내용을 다시 한 번 살펴봅니다.
+**참고:** 예제로 구현한 버튼은 `profileForm`의 유효성 검사 결과가 유효하지 않을 때 `disabled` 어트리뷰트를 지정하도록 바인딩되어 있습니다. 아직 유효성 검사 로직은 아무것도 적용하지 않았기 때문에 버튼은 항상 활성화되어 있을 것이며, 이후에 [폼 유효성 검사하기](#폼-유효성-검사하기-기본) 섹션에서 이 내용을 다시 한 번 살펴봅니다.
 
 </div>
 
 <!--
-#### Display the component
+#### Displaying the component
 -->
 #### 컴포넌트 표시하기
 
 <!--
-The `ProileEditor` component that contains the form is displayed when added to a component template.
+To display the `ProfileEditor` component that contains the form, add it to a component template.
 -->
 `ProileEditor` 컴포넌트를 화면에 표시하기 위해 `AppComponent` 템플릿에 다음과 같이 컴포넌트를 추가합니다.
-=======
-**Note:** The button in the snippet above also has a `disabled` binding attached to it to disable the button when `profileForm` is invalid. You aren't performing any validation yet, so the button is always enabled. Simple form validation is covered in the [Simple form validation](#simple-form-validation) section.
-
-</div>
-
-#### Displaying the component
-
-To display the `ProfileEditor` component that contains the form, add it to a component template.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 
 <code-example path="reactive-forms/src/app/app.component.1.html" region="app-profile-editor" linenums="false" title="src/app/app.component.html (profile editor)">
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-The `ProfileEditor` allows you to manage the `FormControl` instances for the `firstName` and `lastName` controls within the `FormGroup`.
--->
-그러면 `ProfileEditor` 컴포넌트가 화면에 표시되며, 이 컴포넌트에 정의된 `FormGroup` 안에 있는 `firstName`과 `lastName` 폼 컨트롤도 화면에 함께 표시됩니다.
-=======
 `ProfileEditor` allows you to manage the form control instances for the `firstName` and `lastName` controls within the form group instance.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+그러면 `ProfileEditor` 컴포넌트가 화면에 표시되며, 이 컴포넌트에 정의된 폼 그룹 안에 있는 `firstName`과 `lastName` 폼 컨트롤도 화면에 함께 표시됩니다.
 
 <figure>
   <img src="generated/images/guide/reactive-forms/profile-editor-1.png" alt="Profile Editor">
 </figure>
 
-<<<<<<< HEAD
 <!--
-## Nesting form groups
--->
-## 중첩 폼 그룹 (Nesting form groups)
-
-<!--
-When building complex forms, managing the different areas of information is easier in smaller sections, and some groups of information naturally fall into the same group. Using a nested `FormGroup` allows you to break large forms groups into smaller, more manageable ones.
--->
-복잡한 폼을 구현하다 보면, 폼 전체를 한 번에 다루는 것보다 관련된 입력 필드끼리 묶어서 관리하는 것이 좀 더 편합니다. 이 때 서로 연관된 정보가 자연스럽게 같은 그룹으로 묶이며, 아주 복잡한 폼이라면 `FormGroup` 안에 다시 `FormGroup`을 구현하는 것이 더 효과적인 경우도 있습니다.
-
-<!--
-### Step 1 - Create a nested group
--->
-### 1단계 - 중첩 그룹 만들기
-
-<!--
-An address is a good example of information that can be grouped together. A `FormGroup` can accept both `FormControl` and `FormGroup` instances as children. This makes composing complex form models easier to maintain and logically group together. To create a nested group in the `profileForm`, add a nested `address` `FormGroup`.
--->
-주소를 입력받는 폼을 생각해 봅시다. `FormGroup`은 `FormControl`이나 `FormGroup` 인스턴스를 자식으로 가질 수 있습니다. 그래서 복잡한 폼 필드를 연관된 것끼리 묶어서 `FormGroup`으로 처리할 수 있으며, 이 내용을 적용하면 `profileForm` 안에 `address` `FormGroup`을 생성할 수 있습니다.
-=======
 ## Creating nested form groups
+-->
+## 중첩 폼 그룹(Nesting form groups) 만들기
 
+<!--
 When building complex forms, managing the different areas of information is easier in smaller sections, and some groups of information naturally fall into the same group. Using a nested form group instance allows you to break large forms groups into smaller, more manageable ones.
+-->
+복잡한 폼을 구현하다 보면, 폼 전체를 한 번에 다루는 것보다 관련된 입력 필드끼리 묶어서 관리하는 것이 좀 더 편합니다. 이 때 서로 연관된 정보가 자연스럽게 같은 그룹으로 묶이며, 아주 복잡한 폼이라면 폼 그룹 안에 다시 폼 그룹을 구현하는 것이 더 효과적인 경우도 있습니다.
 
+<!--
 ### Step 1: Creating a nested group
+-->
+### 1단계: 중첩 그룹 만들기
 
+<!--
 An address is a good example of information that can be grouped together. Form groups can accept both form control and form group instances as children. This makes composing complex form models easier to maintain and logically group together. To create a nested group in `profileForm`, add a nested `address` element to the form group instance.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+주소를 입력받는 폼을 생각해 봅시다. 폼 그룹은 폼 컨트롤이나 폼 그룹 인스턴스를 자식으로 가질 수 있습니다. 그래서 복잡한 폼 필드를 연관된 것끼리 묶어서 `FormGroup`으로 처리할 수 있으며, 이 내용을 적용하면 `profileForm` 안에 `address` `FormGroup`을 생성할 수 있습니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="nested-formgroup" linenums="false" title="src/app/profile-editor/profile-editor.component.ts (nested form group)">
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-In this example, the `address group` combines the current `firstName` and `lastName` controls with the new `street`, `city`, `state` and `zip` controls. Even though the `address` `FormGroup` is a child of the overall `profileForm` `FormGroup`, the same rules still apply with value and status changes. Changes in status and value from the nested form group will propagate up to the parent form group, maintaining consistency with the overall model.
--->
-이 예제에서 `firstName`과 `lastName`은 폼 컨트롤이지만 `address`는 `street`와 `city`, `state`, `zip`으로 이루어진 폼 그룹입니다. `address` `FormGroup`은 그 자체로도 `FormGroup`이지만 부모 그룹인 `profileForm` `FormGroup`의 자식 폼 그룹이며, 기존에 사용하던 폼 상태와 값이 변경되는 상황도 이전과 마찬가지로 참조할 수 있습니다. 그리고 자식 객체에서 발생하는 상태/값 변화는 부모 폼 그룹으로 전파되기 때문에, 전체 폼 그룹을 참조해도 개별 값이 변경되는 것을 감지할 수 있습니다.
-
-<!--
-### Step 2 - Group the nested form in the template
--->
-### 2단계 - 템플릿에서 중첩 폼 묶기
-
-<!--
-After you update the model in the component class, update the template to connect the `FormGroup` instance and its input elements.
--->
-컴포넌트 클래스의 모델을 수정하고 나면, 템플릿에도 이 내용과 관련된 `FormGroup` 인스턴스와 입력 엘리먼트를 수정해야 합니다.
-=======
 In this example, `address group` combines the current `firstName` and `lastName` controls with the new `street`, `city`, `state`, and `zip` controls. Even though the `address` element in the form group is a child of the overall `profileForm` element in the form group, the same rules apply with value and status changes. Changes in status and value from the nested form group propagate to the parent form group, maintaining consistency with the overall model.
+-->
+이 예제에서 `firstName`과 `lastName`은 폼 컨트롤이지만 `address`는 `street`와 `city`, `state`, `zip`으로 이루어진 폼 그룹입니다. `address` `FormGroup`은 그 자체로도 폼 그룹이지만 부모 폼 그룹인 `profileForm`의 자식 폼 그룹이며, 기존에 사용하던 폼 상태와 값이 변경되는 상황도 이전과 마찬가지로 참조할 수 있습니다. 자식 객체에서 발생하는 상태/값 변화는 부모 폼 그룹으로 전파되기 때문에, 전체 폼 그룹을 참조해도 개별 값이 변경되는 것을 감지할 수 있습니다.
 
+<!--
 ### Step 2: Grouping the nested form in the template
+-->
+### 2단계: 템플릿에서 중첩 폼 묶기
 
+<!--
 After you update the model in the component class, update the template to connect the form group instance and its input elements.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+컴포넌트 클래스의 모델을 수정하고 나면, 템플릿에도 이 내용과 관련된 폼 그룹 인스턴스와 입력 엘리먼트를 수정해야 합니다.
 
 <!--
 Add the `address` form group containing the `firstName` and `lastName` fields to the `ProfileEditor` template.
@@ -507,14 +457,10 @@ The `ProfileEditor` form is displayed as one group, but the model is broken down
 
 <div class="alert is-helpful">
 
-<<<<<<< HEAD
 <!--
-*Note*: Display the value for the `FormGroup` in the component template using the `value` property and the `JsonPipe`.
--->
-*참고*: `FormGroup`의 내용을 컴포넌트 템플릿에 표시하려면 `value` 프로퍼티에 `JsonPipe`를 사용하면 됩니다.
-=======
 **Note:** Display the value for the form group instance in the component template using the `value` property and `JsonPipe`.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+**참고:** 폼 그룹의 내용을 컴포넌트 템플릿에 표시하려면 `value` 프로퍼티에 `JsonPipe`를 사용하면 됩니다.
 
 </div>
 
@@ -523,43 +469,45 @@ The `ProfileEditor` form is displayed as one group, but the model is broken down
 -->
 ## 모델 일부만 갱신하기
 
-<<<<<<< HEAD
 <!--
-When updating the value for a `FormGroup` that contains multiple controls, you may only want to update parts of the model instead of replacing its entire value. This section covers how to update specific parts of an `AbstractControl` model.
+When updating the value for a form group instance that contains multiple controls, you may only want to update parts of the model. This section covers how to update specific parts of a form control data model.
 -->
-`FormGroup`을 처리하면서 매번 전체 폼 값을 한 번에 갱신하는 것은 번거롭기 때문에, 일부 폼 컨트롤의 값만 변경하는 것이 더 편한 경우도 있습니다. 이번에는 `AbstractControl` 모델의 일부 값만 변경하는 방법을 알아봅시다.
+폼 그룹을 처리하면서 매번 전체 폼 값을 한 번에 갱신하는 것은 번거롭기 때문에, 일부 폼 컨트롤의 값만 변경하는 것이 더 편한 경우도 있습니다. 이번에는 `AbstractControl` 모델의 일부 값만 변경하는 방법을 알아봅시다.
 
 <!--
-### Patch the model value
+### Patching the model value
 -->
 ### 모델 값 일부만 갱신하기
 
 <!--
-With a single control, you used the `setValue()` method to set the new value for an individual control. The `setValue()` method is more strict about adhering to the structure of the `FormGroup` and replaces the entire value for the control. The `patchValue()` method is more forgiving; it only replaces properties defined in the object that have changed in the form model, because you’re only providing partial updates. The strict checks in `setValue()` help catch errors in the nesting of complex forms, while `patchValue()` will fail silently in those cases.
+There are two ways to update the model value: 
 -->
-폼 컨트롤이 하나라면 `setValue()` 메소드를 사용해도 폼 컨트롤의 값을 간단하게 변경할 수 있습니다. 하지만 `FormGroup`에 `setValue()` 메소드를 실행하면 폼 그룹의 구조와 정확히 일치해야 하는 경우에만 값이 변경되고, 전체 구조를 한 번에 변경해야 합니다. 그래서 폼 값의 일부만 변경하는 경우라면 `patchValue()` 메소드를 사용하는 것이 더 편합니다. 이 메소드는 인자로 전달된 객체에 해당하는 폼 컨트롤의 값만 변경하기 때문에, 폼 모델을 일부만 변경하는 역할을 합니다. 다만, `setValue()`를 사용했을 때 폼 그룹의 구조에 맞지 않은 객체를 전달하면 에러를 발생해서 알려주지만, `patchValue()`를 사용했을 때는 폼 그룹의 구조와 다른 객체가 전달되어도 에러를 표시하지 않습니다. 복잡한 폼에 `patchValue()`를 사용한다면 이 점에 주의해야 합니다.
+모델의 값을 변경하는 방법은 두 가지가 있습니다:
 
 <!--
-In the `ProfileEditorComponent`, the `updateProfile` method with the following example below to update the first name and street address for the user.
--->
-`ProfileEditorComponent`의 `updateProfile` 메소드를 다음과 같이 정의합니다. 이 메소드는 전체 폼 모델 중 `firstName` 값과 `address`의 `street` 값만 변경합니다.
-=======
-When updating the value for a form group instance that contains multiple controls, you may only want to update parts of the model. This section covers how to update specific parts of a form control data model.
-
-### Patching the model value
-
-There are two ways to update the model value: 
-
 * Use the `setValue()` method to set a new value for an individual control. The `setValue()` method strictly adheres to the structure of the form group and replaces the entire value for the control. 
+-->
+* 폼 컨트롤에 `setValue()` 메소드를 사용할 수 있습니다. `setValue()` 메소드는 폼 그룹의 구조와 정확하게 일치하는 객체를 받았을 때만 폼 그룹 전체값을 한 번에 갱신합니다.
 
+<!--
 * Use the `patchValue()` method to replace any properties defined in the object that have changed in the form model. 
+-->
+* 폼 모델의 특정 부분만 변경하려면 `patchValue()` 메소드를 사용할 수 있습니다.
 
+<!--
 The strict checks of the `setValue()` method help catch nesting errors in complex forms, while `patchValue()` fails silently on those errors.
+-->
+`setValue()` 메소드를 사용하면 복잡한 폼이라도 구조에 맞게 값을 변경할 수 있습니다. 반면에 `patchValue()` 메소드는 폼 그룹의 구조와 다른 인자가 전달되어도 에러를 발생하지 않습니다.
 
+<!--
 In `ProfileEditorComponent`, use the `updateProfile` method with the example below to update the first name and street address for the user.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+아래 예제는 `ProfileEditorComponent`에 선언된 `updateProfile` 메소드를 사용해서 사용자의 이름과 주소를 변경하는 예제 코드입니다.
 
+<!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="patch-value" title="src/app/profile-editor/profile-editor.component.ts (patch value)">
+-->
+<code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.1.ts" region="patch-value" title="src/app/profile-editor/profile-editor.component.ts (일부 값 변경)">
 
 </code-example>
 
