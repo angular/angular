@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import * as path from 'canonical-path';
 import {existsSync, lstatSync, readFileSync, readdirSync} from 'fs';
-import {posix as path} from 'path';
 
 import {PackageTransformer} from './transform/package_transformer';
 
