@@ -1,0 +1,7 @@
+load("//tools:defaults.bzl", "ts_library")
+
+ts_library(
+    name = "webworker",
+    srcs = ["index.ts"],
+    visibility = ["//packages/labs:__subpackages__"],
+)

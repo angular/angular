@@ -1,0 +1,34 @@
+package(default_visibility = ["//visibility:public"])
+
+load("//tools:defaults.bzl", "npm_package")
+
+genrule(
+    name = "copy_LICENSE",
+    srcs = ["//:LICENSE"],
+    outs = ["LICENSE"],
+    cmd = "cp $< $@",
+)
+
+genrule(
+    name = "copy_README",
+    srcs = ["//packages:README.md"],
+    outs = ["README.md"],
+    cmd = "cp $< $@",
+)
+
+npm_package(
+    name = "npm_package",
+    srcs = [
+        "package.json",
+        "schematics.json"
+    ],
+    deps = [
+        ":copy_LICENSE",
+        ":copy_README",
+        "//packages/labs/webworker",
+    ],
+    tags = [
+        "ivy-jit",
+        "release-with-framework",
+    ],
+)
