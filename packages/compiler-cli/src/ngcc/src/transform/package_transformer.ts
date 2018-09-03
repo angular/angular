@@ -5,8 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
+import {dirname, relative, resolve} from 'canonical-path';
 import {existsSync, readFileSync, writeFileSync} from 'fs';
-import {dirname, relative, resolve} from 'path';
 import {mkdir, mv} from 'shelljs';
 import * as ts from 'typescript';
 
@@ -26,6 +26,7 @@ import {Esm5Renderer} from '../rendering/esm5_renderer';
 import {FileInfo, Renderer} from '../rendering/renderer';
 
 import {checkMarkerFile, findAllPackageJsonFiles, getEntryPoints, writeMarkerFile} from './utils';
+
 
 /**
  * A Package is stored in a directory on disk and that directory can contain one or more package
