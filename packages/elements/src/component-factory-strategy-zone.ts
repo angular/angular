@@ -7,6 +7,7 @@
  */
 
 import {ComponentFactory, ComponentRef, Injector, NgZone} from '@angular/core';
+import {} from 'zone.js';
 
 import {ComponentNgElementStrategy, ComponentNgElementStrategyFactory} from './component-factory-strategy';
 
@@ -28,10 +29,12 @@ export class ComponentNgElementZoneStrategyFactory extends ComponentNgElementStr
  */
 export class ComponentNgElementZoneStrategy extends ComponentNgElementStrategy {
   private readonly ngZone: NgZone;
+  private elementZone: Zone;
 
   constructor(componentFactory: ComponentFactory<any>, injector: Injector) {
     super(componentFactory, injector);
     this.ngZone = this.injector.get<NgZone>(NgZone);
+    this.ngZone.run(() => { this.elementZone = Zone.current; });
   }
 
   connect(element: HTMLElement) {
@@ -50,5 +53,11 @@ export class ComponentNgElementZoneStrategy extends ComponentNgElementStrategy {
     this.runInZone(() => { super.setInputValue(propName, value); });
   }
 
-  private runInZone(fn: () => any) { return NgZone.isInAngularZone() ? fn() : this.ngZone.run(fn); }
+  /**
+   * Multiple elements may have their own NgZone and NgZone.isInAngularZone() doesn't
+   * distinguish between them
+   */
+  private runInZone(fn: () => any) {
+    return (Zone.current === this.elementZone) ? fn() : this.ngZone.run(fn);
+  }
 }

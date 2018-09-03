@@ -56,8 +56,7 @@ describe('ComponentNgElementZoneStrategyFactory', () => {
 
   it('should connect already in NgZone', () => {
     const parent = spyOn(ComponentNgElementStrategy.prototype, 'connect');
-    const isInAngularZone =
-        spyOn(NgZone, 'isInAngularZone').and.callFake(function() { return true; });
+    strategy['elementZone'] = Zone.current;
     ngZone.run.calls.reset();
     strategy.connect(document.createElement('div'));
     expect(parent).toHaveBeenCalled();
@@ -66,8 +65,7 @@ describe('ComponentNgElementZoneStrategyFactory', () => {
 
   it('should connect not already in NgZone', () => {
     const parent = spyOn(ComponentNgElementStrategy.prototype, 'connect');
-    const isInAngularZone =
-        spyOn(NgZone, 'isInAngularZone').and.callFake(function() { return false; });
+    strategy['elementZone'] = Zone.current.parent;
     ngZone.run.calls.reset();
     strategy.connect(document.createElement('div'));
     expect(parent).toHaveBeenCalled();
@@ -76,8 +74,7 @@ describe('ComponentNgElementZoneStrategyFactory', () => {
 
   describe('after connected not in NgZone', () => {
     beforeEach(() => {
-      const isInAngularZone =
-          spyOn(NgZone, 'isInAngularZone').and.callFake(function() { return false; });
+      strategy['elementZone'] = Zone.current.parent;
       strategy.connect(document.createElement('div'));
       ngZone.run.calls.reset();
     });
