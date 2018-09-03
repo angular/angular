@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {dirname, resolve} from 'canonical-path';
 import {existsSync, readFileSync, writeFileSync} from 'fs';
-import {dirname, resolve} from 'path';
 import {find} from 'shelljs';
 
 import {isDefined} from '../utils';

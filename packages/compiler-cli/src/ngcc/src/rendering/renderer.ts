@@ -9,7 +9,7 @@ import {ConstantPool, Expression, Statement, WrappedNodeExpr, WritePropExpr} fro
 import {SourceMapConverter, commentRegex, fromJSON, fromMapFileSource, fromObject, fromSource, generateMapFileComment, mapFileCommentRegex, removeComments, removeMapFileComments} from 'convert-source-map';
 import {readFileSync, statSync} from 'fs';
 import MagicString from 'magic-string';
-import {basename, dirname} from 'path';
+import {basename, dirname} from 'canonical-path';
 import {SourceMapConsumer, SourceMapGenerator, RawSourceMap} from 'source-map';
 import * as ts from 'typescript';
 
