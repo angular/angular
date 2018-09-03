@@ -415,6 +415,38 @@ describe('Router', () => {
           expect(logger.logs).toEqual([CDA_CHILD_FALSE]);
         });
       });
+
+      // https://github.com/angular/angular/issues/25086
+      it('should not run child deactivate if grandchild deactivate fails', () => {
+        /**
+         *      R     -->      R
+         *     /
+         *    child (CDA)
+         *   /
+         *  grandchild(CDA)
+         */
+
+        const prevChildSnapshot = createActivatedRouteSnapshot(
+            {component: 'child', routeConfig: {canDeactivate: [CDA_CHILD]}});
+        const prevGrandchildSnapshot = createActivatedRouteSnapshot(
+            {component: 'grandchild', routeConfig: {canDeactivate: [CDA_GRANDCHILD_FALSE]}});
+
+        const currentState = new (RouterStateSnapshot as any)(
+            'prev', new TreeNode(empty.root, [
+                new TreeNode(prevChildSnapshot, [new TreeNode(prevGrandchildSnapshot, [])])
+            ]));
+
+        const futureState = new (RouterStateSnapshot as any)(
+            'url',
+            new TreeNode(
+                empty.root, []));
+
+        checkGuards(futureState, currentState, TestBed, (result) => {
+            expect(result).toBe(false);
+            expect(logger.logs).toEqual([CDA_GRANDCHILD_FALSE]);
+        });
+      });
+
       it('should deactivate from bottom up, then activate top down', () => {
         /**
          *      R     -->      R
