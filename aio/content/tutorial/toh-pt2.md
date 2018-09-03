@@ -47,7 +47,7 @@ Make it look like this:
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" title="heroes.component.html (heroes template)" linenums="false">
 </code-example>
 
-Now change the `<li>` to this:
+Now change the `<li>` opening bracket to this:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="li">
 </code-example>
