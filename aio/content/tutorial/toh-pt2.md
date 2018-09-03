@@ -42,7 +42,7 @@ Open the `HeroesComponent` template file and make the following changes:
 * Insert an `<li>` within the `<ul>` that displays properties of a `hero`.
 * Sprinkle some CSS classes for styling (you'll add the CSS styles shortly).
 
-Make it look like this:
+Make the list part of the template look like this:
 
 <code-example path="toh-pt2/src/app/heroes/heroes.component.1.html" region="list" title="heroes.component.html (heroes template)" linenums="false">
 </code-example>
