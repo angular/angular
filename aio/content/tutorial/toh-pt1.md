@@ -46,7 +46,7 @@ Always `export` the component class so you can `import` it elsewhere ... like in
 
 ### Add a _hero_ property
 
-Add a `hero` property to the `HeroesComponent` for a hero named "Windstorm."
+Add a `hero` property to the `HeroesComponent` class for a hero named "Windstorm."
 
 <code-example path="toh-pt1/src/app/heroes/heroes.component.ts" region="add-hero" title="heroes.component.ts (hero property)" linenums="false">
 </code-example>
