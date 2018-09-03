@@ -8,7 +8,7 @@
 
 import {Injector} from '@angular/core';
 import {Observable, from, of } from 'rxjs';
-import {concatMap, every, first, last, map, mergeMap, reduce} from 'rxjs/operators';
+import {concatMap, count, every, first, last, map, mergeMap, reduce, takeWhile} from 'rxjs/operators';
 
 import {LoadedRouterConfig, ResolveData, RunGuardsAndResolvers} from './config';
 import {ActivationStart, ChildActivationStart, Event} from './events';
@@ -188,8 +188,10 @@ export class PreActivation {
   private runCanDeactivateChecks(): Observable<boolean> {
     return from(this.canDeactivateChecks)
         .pipe(
-            mergeMap((check: CanDeactivate) => this.runCanDeactivate(check.component, check.route)),
-            every((result: boolean) => result === true));
+            concatMap(
+                (check: CanDeactivate) => this.runCanDeactivate(check.component, check.route)),
+            takeWhile((result: boolean) => result === true), count(),
+            map((counter: number) => counter === this.canDeactivateChecks.length));
   }
 
   private runCanActivateChecks(): Observable<boolean> {
