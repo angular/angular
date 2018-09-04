@@ -1,7 +1,8 @@
-import {task, src, dest} from 'gulp';
+import {grey, red, yellow} from 'chalk';
+import {readFileSync} from 'fs';
+import {dest, src, task} from 'gulp';
 import {buildConfig} from 'material2-build-tools';
 import {join} from 'path';
-import {yellow, red} from 'chalk';
 
 // This imports lack of type definitions.
 const gulpChangelog = require('gulp-conventional-changelog');
@@ -26,7 +27,7 @@ task('changelog', async () => {
   }
 
   return src(changelogFile)
-    .pipe(gulpChangelog(changelogOptions))
+    .pipe(gulpChangelog(changelogOptions, null, null, null, createDedupeWriterOptions()))
     .pipe(dest('./'));
 });
 
@@ -57,4 +58,34 @@ function getLatestSemverTag(): Promise<string> {
   return new Promise((resolve, reject) => {
     return gitSemverTags((err: Error, tags: string[]) => err ? reject(err) : resolve(tags[0]));
   });
+}
+
+/**
+ * Creates changelog writer options which ensure that commits are not showing up multiple times.
+ *
+ * Commits can show up multiple times, if a changelog has been generated on a publish branch
+ * and has been copied over to "master". In that case, the changelog will already contain the
+ * commits that have been cherry-picked into the publish branch. These shouldn't be added twice.
+ */
+function createDedupeWriterOptions() {
+  const previousContent = readFileSync(changelogFile, 'utf8');
+
+  return {
+    // Change writer option that can be used to modify the content of a new changelog section.
+    // See: conventional-changelog/tree/master/packages/conventional-changelog-writer
+    finalizeContext: (context: any) => {
+      context.commitGroups.forEach((group: any) => {
+        group.commits = group.commits.filter((commit: any) => {
+          // Note that we cannot compare the SHA's because the commits will have a different SHA
+          // if they are being cherry-picked into a different branch.
+          if (previousContent.includes(commit.header)) {
+            console.log(grey(`Skipping: "${commit.header}" (${commit.hash})`));
+            return false;
+          }
+          return true;
+        });
+      });
+      return context;
+    }
+  };
 }
