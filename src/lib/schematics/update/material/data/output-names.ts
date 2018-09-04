@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {transformChanges} from '../transform-change-data';
+import {TargetVersion} from '../../index';
+import {VersionChanges} from '../transform-change-data';
 
 export interface MaterialOutputNameData {
   /** The @Output() name to replace. */
@@ -22,93 +23,95 @@ export interface MaterialOutputNameData {
   };
 }
 
-export const outputNames = transformChanges<MaterialOutputNameData>([
-  {
-    pr: 'https://github.com/angular/material2/pull/10163',
-    changes: [
-      {
-        replace: 'change',
-        replaceWith: 'selectionChange',
-        whitelist: {
-          elements: ['mat-select']
-        }
-      },
-      {
-        replace: 'onClose',
-        replaceWith: 'closed',
-        whitelist: {
-          elements: ['mat-select']
-        }
-      },
-      {
-        replace: 'onOpen',
-        replaceWith: 'opened',
-        whitelist: {
-          elements: ['mat-select']
-        }
-      }
-    ]
-  },
+export const outputNames: VersionChanges<MaterialOutputNameData> = {
+  [TargetVersion.V6]: [
+    {
+      pr: 'https://github.com/angular/material2/pull/10163',
+      changes: [
+        {
+          replace: 'change',
+          replaceWith: 'selectionChange',
+          whitelist: {
+            elements: ['mat-select'],
+          },
+        },
+        {
+          replace: 'onClose',
+          replaceWith: 'closed',
+          whitelist: {
+            elements: ['mat-select'],
+          },
+        },
+        {
+          replace: 'onOpen',
+          replaceWith: 'opened',
+          whitelist: {
+            elements: ['mat-select'],
+          },
+        },
+      ],
+    },
 
-  {
-    pr: 'https://github.com/angular/material2/pull/10279',
-    changes: [
-      {
-        replace: 'align-changed',
-        replaceWith: 'positionChanged',
-        whitelist: {
-          elements: ['mat-drawer', 'mat-sidenav']
-        }
-      },
-      {
-        replace: 'close',
-        replaceWith: 'closed',
-        whitelist: {
-          elements: ['mat-drawer', 'mat-sidenav']
-        }
-      },
-      {
-        replace: 'open',
-        replaceWith: 'opened',
-        whitelist: {
-          elements: ['mat-drawer', 'mat-sidenav']
-        }
-      }
-    ]
-  },
+    {
+      pr: 'https://github.com/angular/material2/pull/10279',
+      changes: [
+        {
+          replace: 'align-changed',
+          replaceWith: 'positionChanged',
+          whitelist: {
+            elements: ['mat-drawer', 'mat-sidenav'],
+          },
+        },
+        {
+          replace: 'close',
+          replaceWith: 'closed',
+          whitelist: {
+            elements: ['mat-drawer', 'mat-sidenav'],
+          },
+        },
+        {
+          replace: 'open',
+          replaceWith: 'opened',
+          whitelist: {
+            elements: ['mat-drawer', 'mat-sidenav'],
+          },
+        },
+      ],
+    },
 
-  {
-    pr: 'https://github.com/angular/material2/pull/10309',
-    changes: [
-      {
-        replace: 'selectChange',
-        replaceWith: 'selectedTabChange',
-        whitelist: {
-          elements: ['mat-tab-group']
-        }
-      }
-    ]
-  },
+    {
+      pr: 'https://github.com/angular/material2/pull/10309',
+      changes: [
+        {
+          replace: 'selectChange',
+          replaceWith: 'selectedTabChange',
+          whitelist: {
+            elements: ['mat-tab-group'],
+          },
+        },
+      ],
+    },
 
-  {
-    pr: 'https://github.com/angular/material2/pull/10311',
-    changes: [
-      {
-        replace: 'remove',
-        replaceWith: 'removed',
-        whitelist: {
-          attributes: ['mat-chip', 'mat-basic-chip'],
-          elements: ['mat-chip', 'mat-basic-chip']
-        }
-      },
-      {
-        replace: 'destroy',
-        replaceWith: 'destroyed',
-        whitelist: {
-          attributes: ['mat-chip', 'mat-basic-chip'],
-          elements: ['mat-chip', 'mat-basic-chip']
-        }
-      }
-    ]
-  }
-]);
+    {
+      pr: 'https://github.com/angular/material2/pull/10311',
+      changes: [
+        {
+          replace: 'remove',
+          replaceWith: 'removed',
+          whitelist: {
+            attributes: ['mat-chip', 'mat-basic-chip'],
+            elements: ['mat-chip', 'mat-basic-chip'],
+          },
+        },
+        {
+          replace: 'destroy',
+          replaceWith: 'destroyed',
+          whitelist: {
+            attributes: ['mat-chip', 'mat-basic-chip'],
+            elements: ['mat-chip', 'mat-basic-chip'],
+          },
+        },
+      ],
+    },
+  ],
+};

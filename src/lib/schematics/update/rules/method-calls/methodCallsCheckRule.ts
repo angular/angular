@@ -11,6 +11,7 @@ import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 import {color} from '../../material/color';
 import {methodCallChecks} from '../../material/data/method-call-checks';
+import {getChangesForTarget} from '../../material/transform-change-data';
 
 /**
  * Rule that visits every TypeScript call expression or TypeScript new expression and checks
@@ -23,6 +24,9 @@ export class Rule extends Rules.TypedRule {
 }
 
 export class Walker extends ProgramAwareRuleWalker {
+
+  /** Change data that upgrades to the specified target version. */
+  data = getChangesForTarget(this.getOptions()[0], methodCallChecks);
 
   visitNewExpression(expression: ts.NewExpression) {
     const classType = this.getTypeChecker().getTypeAtLocation(expression);
@@ -64,7 +68,7 @@ export class Walker extends ProgramAwareRuleWalker {
       return;
     }
 
-    const failure = methodCallChecks
+    const failure = this.data
         .filter(data => data.method === methodName && data.className === hostTypeName)
         .map(data => data.invalidArgCounts.find(f => f.count === node.arguments.length))[0];
 
@@ -78,7 +82,7 @@ export class Walker extends ProgramAwareRuleWalker {
 
   private checkConstructor(node: ts.NewExpression | ts.CallExpression, className: string) {
     const argumentsLength = node.arguments ? node.arguments.length : 0;
-    const failure = methodCallChecks
+    const failure = this.data
         .filter(data => data.method === 'constructor' && data.className === className)
         .map(data => data.invalidArgCounts.find(f => f.count === argumentsLength))[0];
 

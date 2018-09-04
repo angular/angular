@@ -11,6 +11,7 @@ import {sync as globSync} from 'glob';
 import {IOptions, Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 import {cssSelectors} from '../../material/data/css-selectors';
+import {getChangesForTarget} from '../../material/transform-change-data';
 import {ExternalResource} from '../../tslint/component-file';
 import {ComponentWalker} from '../../tslint/component-walker';
 import {
@@ -31,15 +32,16 @@ export class Rule extends Rules.AbstractRule {
 
 export class Walker extends ComponentWalker {
 
+  /** Change data that upgrades to the specified target version. */
+  data = getChangesForTarget(this.getOptions()[0], cssSelectors);
+
   constructor(sourceFile: ts.SourceFile, options: IOptions) {
     // In some applications, developers will have global stylesheets that are not specified in any
     // Angular component. Therefore we glob up all css and scss files outside of node_modules and
     // dist and check them as well.
-    const extraFiles = globSync('!(node_modules|dist)/**/*.+(css|scss)');
-    super(sourceFile, options, extraFiles);
-    extraFiles.forEach(styleUrl => this._reportExternalStyle(styleUrl));
+    super(sourceFile, options, globSync('!(node_modules|dist)/**/*.+(css|scss)'));
+    this._reportExtraStylesheetFiles();
   }
-
 
   visitInlineStylesheet(literal: ts.StringLiteral) {
     this._createReplacementsForContent(literal, literal.getText())
@@ -60,7 +62,7 @@ export class Walker extends ComponentWalker {
   private _createReplacementsForContent(node: ts.Node, stylesheetContent: string) {
     const replacements: {failureMessage: string, replacement: Replacement}[] = [];
 
-    cssSelectors.forEach(data => {
+    this.data.forEach(data => {
       if (data.whitelist && !data.whitelist.stylesheet) {
         return;
       }

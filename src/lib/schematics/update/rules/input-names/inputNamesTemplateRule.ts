@@ -11,6 +11,7 @@ import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 import {findInputsOnElementWithAttr, findInputsOnElementWithTag} from '../../html/angular';
 import {inputNames} from '../../material/data/input-names';
+import {getChangesForTarget} from '../../material/transform-change-data';
 import {ExternalResource} from '../../tslint/component-file';
 import {ComponentWalker} from '../../tslint/component-walker';
 import {
@@ -29,6 +30,9 @@ export class Rule extends Rules.AbstractRule {
 }
 
 export class Walker extends ComponentWalker {
+
+  /** Change data that upgrades to the specified target version. */
+  data = getChangesForTarget(this.getOptions()[0], inputNames);
 
   visitInlineTemplate(template: ts.StringLiteral) {
     this._createReplacementsForContent(template, template.getText())
@@ -49,7 +53,7 @@ export class Walker extends ComponentWalker {
   private _createReplacementsForContent(node: ts.Node, templateContent: string) {
     const replacements: {failureMessage: string, replacement: Replacement}[] = [];
 
-    inputNames.forEach(name => {
+    this.data.forEach(name => {
       const whitelist = name.whitelist;
       const relativeOffsets = [];
       const failureMessage = `Found deprecated @Input() "${red(name.replace)}"` +

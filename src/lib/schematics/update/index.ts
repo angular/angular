@@ -12,7 +12,7 @@ import {createUpdateRule} from './update';
 /** Possible versions that can be automatically migrated by `ng update`. */
 export enum TargetVersion {
   V6,
-  V7
+  V7,
 }
 
 /** Entry point for the migration schematics with target of Angular Material 6.0.0 */

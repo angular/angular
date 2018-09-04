@@ -10,6 +10,7 @@ import {green, red} from 'chalk';
 import {RuleFailure, Rules, RuleWalker} from 'tslint';
 import * as ts from 'typescript';
 import {classNames} from '../../material/data/class-names';
+import {getChangesForTarget} from '../../material/transform-change-data';
 import {
   isMaterialExportDeclaration,
   isMaterialImportDeclaration,
@@ -33,6 +34,9 @@ export class Rule extends Rules.AbstractRule {
 
 export class Walker extends RuleWalker {
 
+  /** Change data that upgrades to the specified target version. */
+  data = getChangesForTarget(this.getOptions()[0], classNames);
+
   /**
    * List of identifier names that have been imported from `@angular/material` or `@angular/cdk`
    * in the current source file and therefore can be considered trusted.
@@ -46,7 +50,7 @@ export class Walker extends RuleWalker {
   visitIdentifier(identifier: ts.Identifier) {
     // For identifiers that aren't listed in the className data, the whole check can be
     // skipped safely.
-    if (!classNames.some(data => data.replace === identifier.text)) {
+    if (!this.data.some(data => data.replace === identifier.text)) {
       return;
     }
 
@@ -89,7 +93,7 @@ export class Walker extends RuleWalker {
 
   /** Creates a failure and replacement for the specified identifier. */
   private _createFailureWithReplacement(identifier: ts.Identifier) {
-    const classData = classNames.find(data => data.replace === identifier.text);
+    const classData = this.data.find(data => data.replace === identifier.text);
 
     if (!classData) {
       console.error(`Could not find updated name for identifier "${identifier.text}" in ` +

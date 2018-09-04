@@ -10,6 +10,7 @@ import {green, red} from 'chalk';
 import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 import {propertyNames} from '../../material/data/property-names';
+import {getChangesForTarget} from '../../material/transform-change-data';
 
 /**
  * Rule that walks through every property access expression and updates properties that have
@@ -23,11 +24,14 @@ export class Rule extends Rules.TypedRule {
 
 export class Walker extends ProgramAwareRuleWalker {
 
+  /** Change data that upgrades to the specified target version. */
+  data = getChangesForTarget(this.getOptions()[0], propertyNames);
+
   visitPropertyAccessExpression(node: ts.PropertyAccessExpression) {
     const hostType = this.getTypeChecker().getTypeAtLocation(node.expression);
     const typeName = hostType && hostType.symbol && hostType.symbol.getName();
 
-    propertyNames.forEach(data => {
+    this.data.forEach(data => {
       if (node.name.text !== data.replace) {
         return;
       }

@@ -7,20 +7,11 @@
  */
 
 import {bold, green, red} from 'chalk';
-import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
+import {IOptions, ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 import {MaterialPropertyNameData, propertyNames} from '../../material/data/property-names';
+import {getChangesForTarget} from '../../material/transform-change-data';
 import {determineBaseTypes} from '../../typescript/base-types';
-
-/**
- * Map of classes that have been updated. Each class name maps to the according property change
- * data.
- */
-const changedClassesMap = new Map<string, MaterialPropertyNameData>();
-
-propertyNames.filter(data => data.whitelist && data.whitelist.classes).forEach(data => {
-  data.whitelist.classes.forEach(name => changedClassesMap.set(name, data));
-});
 
 /**
  * Rule that identifies class declarations that extend CDK or Material classes and had
@@ -34,6 +25,20 @@ export class Rule extends Rules.TypedRule {
 
 export class Walker extends ProgramAwareRuleWalker {
 
+  /**
+   * Map of classes that have been updated. Each class name maps to the according property
+   * change data.
+   */
+  propertyNames = new Map<string, MaterialPropertyNameData>();
+
+  constructor(sourceFile: ts.SourceFile, options: IOptions, program: ts.Program) {
+    super(sourceFile, options, program);
+
+    getChangesForTarget(options.ruleArguments[0], propertyNames)
+      .filter(data => data.whitelist && data.whitelist.classes)
+      .forEach(data => data.whitelist.classes.forEach(name => this.propertyNames.set(name, data)));
+  }
+
   visitClassDeclaration(node: ts.ClassDeclaration) {
     const baseTypes = determineBaseTypes(node);
 
@@ -42,7 +47,7 @@ export class Walker extends ProgramAwareRuleWalker {
     }
 
     baseTypes.forEach(typeName => {
-      const data = changedClassesMap.get(typeName);
+      const data = this.propertyNames.get(typeName);
 
       if (data) {
         this.addFailureAtNode(node, `Found class "${bold(node.name.text)}" which extends class ` +

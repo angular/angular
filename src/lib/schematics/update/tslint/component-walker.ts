@@ -28,11 +28,12 @@ export class ComponentWalker extends RuleWalker {
   protected visitExternalTemplate(_template: ExternalResource) {}
   protected visitExternalStylesheet(_stylesheet: ExternalResource) {}
 
-  private skipFiles: Set<string>;
+  private extraFiles: Set<string>;
 
-  constructor(sourceFile: ts.SourceFile, options: IOptions, skipFiles: string[] = []) {
+  constructor(sourceFile: ts.SourceFile, options: IOptions, extraFiles: string[] = []) {
     super(sourceFile, options);
-    this.skipFiles = new Set(skipFiles.map(p => resolve(p)));
+
+    this.extraFiles = new Set(extraFiles.map(p => resolve(p)));
   }
 
   visitNode(node: ts.Node) {
@@ -95,7 +96,8 @@ export class ComponentWalker extends RuleWalker {
       const styleUrl = getLiteralTextWithoutQuotes(styleUrlLiteral as ts.StringLiteral);
       const stylePath = resolve(join(dirname(this.getSourceFile().fileName), styleUrl));
 
-      if (!this.skipFiles.has(stylePath)) {
+      // Do not report the specified additional files multiple times.
+      if (!this.extraFiles.has(stylePath)) {
         this._reportExternalStyle(stylePath);
       }
     });
@@ -105,7 +107,8 @@ export class ComponentWalker extends RuleWalker {
     const templateUrl = getLiteralTextWithoutQuotes(templateUrlLiteral);
     const templatePath = resolve(join(dirname(this.getSourceFile().fileName), templateUrl));
 
-    if (this.skipFiles.has(templatePath)) {
+    // Do not report the specified additional files multiple times.
+    if (this.extraFiles.has(templatePath)) {
       return;
     }
 
@@ -134,6 +137,13 @@ export class ComponentWalker extends RuleWalker {
     const stylesheetFile = createComponentFile(stylePath, readFileSync(stylePath, 'utf8'));
 
     this.visitExternalStylesheet(stylesheetFile);
+  }
+
+  /** Reports all extra files that have been specified at initialization. */
+  // TODO(devversion): this should be done automatically but deferred because
+  // the base class "data" property member is not ready at initialization.
+  _reportExtraStylesheetFiles() {
+    this.extraFiles.forEach(file => this._reportExternalStyle(file));
   }
 
   /**

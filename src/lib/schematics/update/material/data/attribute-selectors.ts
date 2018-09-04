@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {transformChanges} from '../transform-change-data';
+import {VersionChanges} from '../transform-change-data';
+import {TargetVersion} from '../../index';
 
 export interface MaterialAttributeSelectorData {
   /** The attribute name to replace. */
@@ -15,18 +16,20 @@ export interface MaterialAttributeSelectorData {
   replaceWith: string;
 }
 
-export const attributeSelectors = transformChanges<MaterialAttributeSelectorData>([
-  {
-    pr: 'https://github.com/angular/material2/pull/10257',
-    changes: [
-      {
-        replace: 'cdkPortalHost',
-        replaceWith: 'cdkPortalOutlet'
-      },
-      {
-        replace: 'portalHost',
-        replaceWith: 'cdkPortalOutlet'
-      }
-    ]
-  }
-]);
+export const attributeSelectors: VersionChanges<MaterialAttributeSelectorData> = {
+  [TargetVersion.V6]: [
+    {
+      pr: 'https://github.com/angular/material2/pull/10257',
+      changes: [
+        {
+          replace: 'cdkPortalHost',
+          replaceWith: 'cdkPortalOutlet'
+        },
+        {
+          replace: 'portalHost',
+          replaceWith: 'cdkPortalOutlet'
+        }
+      ]
+    }
+  ]
+};

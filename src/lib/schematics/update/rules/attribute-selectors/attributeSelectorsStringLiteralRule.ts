@@ -12,6 +12,7 @@ import {
   attributeSelectors,
   MaterialAttributeSelectorData,
 } from '../../material/data/attribute-selectors';
+import {getChangesForTarget} from '../../material/transform-change-data';
 import {findAllSubstringIndices} from '../../typescript/literal';
 import * as ts from 'typescript';
 
@@ -27,6 +28,9 @@ export class Rule extends Rules.AbstractRule {
 
 class Walker extends RuleWalker {
 
+  /** Change data that upgrades to the specified target version. */
+  data = getChangesForTarget(this.getOptions()[0], attributeSelectors);
+
   visitStringLiteral(literal: ts.StringLiteral) {
     if (literal.parent && literal.parent.kind !== ts.SyntaxKind.CallExpression) {
       return;
@@ -34,7 +38,7 @@ class Walker extends RuleWalker {
 
     const literalText = literal.getFullText();
 
-    attributeSelectors.forEach(selector => {
+    this.data.forEach(selector => {
       findAllSubstringIndices(literalText, selector.replace)
         .map(offset => literal.getStart() + offset)
         .map(start => new Replacement(start, selector.replace.length, selector.replaceWith))

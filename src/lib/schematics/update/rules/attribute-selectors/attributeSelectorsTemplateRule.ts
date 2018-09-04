@@ -10,6 +10,7 @@ import {green, red} from 'chalk';
 import {Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 import {attributeSelectors} from '../../material/data/attribute-selectors';
+import {getChangesForTarget} from '../../material/transform-change-data';
 import {ExternalResource} from '../../tslint/component-file';
 import {ComponentWalker} from '../../tslint/component-walker';
 import {
@@ -30,6 +31,9 @@ export class Rule extends Rules.AbstractRule {
 
 export class Walker extends ComponentWalker {
 
+  /** Change data that upgrades to the specified target version. */
+  data = getChangesForTarget(this.getOptions()[0], attributeSelectors);
+
   visitInlineTemplate(template: ts.StringLiteral) {
     this._createReplacementsForContent(template, template.getText())
       .forEach(data => addFailureAtReplacement(this, data.failureMessage, data.replacement));
@@ -49,7 +53,7 @@ export class Walker extends ComponentWalker {
   private _createReplacementsForContent(node: ts.Node, templateContent: string) {
     const replacements: {failureMessage: string, replacement: Replacement}[] = [];
 
-    attributeSelectors.forEach(selector => {
+    this.data.forEach(selector => {
       const failureMessage = `Found deprecated attribute selector "[${red(selector.replace)}]"` +
         ` which has been renamed to "[${green(selector.replaceWith)}]"`;
 

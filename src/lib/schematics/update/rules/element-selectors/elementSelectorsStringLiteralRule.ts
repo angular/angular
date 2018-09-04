@@ -10,6 +10,7 @@ import {green, red} from 'chalk';
 import {Replacement, RuleFailure, Rules, RuleWalker} from 'tslint';
 import * as ts from 'typescript';
 import {elementSelectors, MaterialElementSelectorData} from '../../material/data/element-selectors';
+import {getChangesForTarget} from '../../material/transform-change-data';
 import {findAllSubstringIndices} from '../../typescript/literal';
 
 /**
@@ -24,6 +25,9 @@ export class Rule extends Rules.AbstractRule {
 
 export class Walker extends RuleWalker {
 
+  /** Change data that upgrades to the specified target version. */
+  data = getChangesForTarget(this.getOptions()[0], elementSelectors);
+
   visitStringLiteral(node: ts.StringLiteral) {
     if (node.parent && node.parent.kind !== ts.SyntaxKind.CallExpression) {
       return;
@@ -31,7 +35,7 @@ export class Walker extends RuleWalker {
 
     const textContent = node.getFullText();
 
-    elementSelectors.forEach(selector => {
+    this.data.forEach(selector => {
       findAllSubstringIndices(textContent, selector.replace)
         .map(offset => node.getStart() + offset)
         .map(start => new Replacement(start, selector.replace.length, selector.replaceWith))
