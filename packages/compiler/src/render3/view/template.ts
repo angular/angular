@@ -96,17 +96,24 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // Number of binding slots
   private _bindingSlots = 0;
 
+  private fileBasedI18nSuffix: string;
+
   constructor(
       private constantPool: ConstantPool, parentBindingScope: BindingScope, private level = 0,
       private contextName: string|null, private templateName: string|null,
       private viewQueries: R3QueryMetadata[], private directiveMatcher: SelectorMatcher|null,
       private directives: Set<o.Expression>, private pipeTypeByName: Map<string, o.Expression>,
-      private pipes: Set<o.Expression>, private _namespace: o.ExternalReference) {
+      private pipes: Set<o.Expression>, private _namespace: o.ExternalReference,
+      private relativeContextFilePath: string) {
     // view queries can take up space in data and allocation happens earlier (in the "viewQuery"
     // function)
     this._dataIndex = viewQueries.length;
 
     this._bindingScope = parentBindingScope.nestedScope(level);
+
+    // Turn the relative context file path into an identifier by replacing non-alphanumeric
+    // characters with underscores.
+    this.fileBasedI18nSuffix = relativeContextFilePath.replace(/[^A-Za-z0-9]/g, '_') + '_';
 
     this._valueConverter = new ValueConverter(
         constantPool, () => this.allocateDataSlot(),
@@ -385,7 +392,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         attributes.push(o.literal(name));
         if (attrI18nMetas.hasOwnProperty(name)) {
           const meta = parseI18nMeta(attrI18nMetas[name]);
-          const variable = this.constantPool.getTranslation(value, meta);
+          const variable = this.constantPool.getTranslation(value, meta, this.fileBasedI18nSuffix);
           attributes.push(variable);
         } else {
           attributes.push(o.literal(value));
@@ -698,7 +705,8 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     // Create the template function
     const templateVisitor = new TemplateDefinitionBuilder(
         this.constantPool, this._bindingScope, this.level + 1, contextName, templateName, [],
-        this.directiveMatcher, this.directives, this.pipeTypeByName, this.pipes, this._namespace);
+        this.directiveMatcher, this.directives, this.pipeTypeByName, this.pipes, this._namespace,
+        this.fileBasedI18nSuffix);
 
     // Nested templates must not be visited until after their parent templates have completed
     // processing, so they are queued here until after the initial pass. Otherwise, we wouldn't
@@ -764,7 +772,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
   // ```
   visitSingleI18nTextChild(text: t.Text, i18nMeta: string) {
     const meta = parseI18nMeta(i18nMeta);
-    const variable = this.constantPool.getTranslation(text.value, meta);
+    const variable = this.constantPool.getTranslation(text.value, meta, this.fileBasedI18nSuffix);
     this.creationInstruction(
         text.sourceSpan, R3.text, [o.literal(this.allocateDataSlot()), variable]);
   }
@@ -1336,14 +1344,25 @@ function interpolate(args: o.Expression[]): o.Expression {
  * @param templateUrl URL to use for source mapping of the parsed template
  */
 export function parseTemplate(
-    template: string, templateUrl: string, options: {preserveWhitespaces?: boolean} = {}):
-    {errors?: ParseError[], nodes: t.Node[], hasNgContent: boolean, ngContentSelectors: string[]} {
+    template: string, templateUrl: string, options: {preserveWhitespaces?: boolean} = {},
+    relativeContextFilePath: string): {
+  errors?: ParseError[],
+  nodes: t.Node[],
+  hasNgContent: boolean,
+  ngContentSelectors: string[],
+  relativeContextFilePath: string
+} {
   const bindingParser = makeBindingParser();
   const htmlParser = new HtmlParser();
   const parseResult = htmlParser.parse(template, templateUrl);
 
   if (parseResult.errors && parseResult.errors.length > 0) {
-    return {errors: parseResult.errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
+    return {
+      errors: parseResult.errors,
+      nodes: [],
+      hasNgContent: false,
+      ngContentSelectors: [], relativeContextFilePath
+    };
   }
 
   let rootNodes: html.Node[] = parseResult.rootNodes;
@@ -1354,10 +1373,15 @@ export function parseTemplate(
   const {nodes, hasNgContent, ngContentSelectors, errors} =
       htmlAstToRender3Ast(rootNodes, bindingParser);
   if (errors && errors.length > 0) {
-    return {errors, nodes: [], hasNgContent: false, ngContentSelectors: []};
+    return {
+      errors,
+      nodes: [],
+      hasNgContent: false,
+      ngContentSelectors: [], relativeContextFilePath
+    };
   }
 
-  return {nodes, hasNgContent, ngContentSelectors};
+  return {nodes, hasNgContent, ngContentSelectors, relativeContextFilePath};
 }
 
 /**
