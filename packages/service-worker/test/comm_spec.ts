@@ -159,6 +159,22 @@ import {async_fit, async_it} from './async';
         expect(() => TestBed.get(SwPush)).not.toThrow();
       });
 
+      it('is injectable when pushManager is undefined', () => {
+        const originalPushManager =
+            (mock.mockRegistration as MockServiceWorkerRegistration).pushManager;
+        (mock.mockRegistration as MockServiceWorkerRegistration).pushManager = undefined;
+
+        TestBed.configureTestingModule({
+          providers: [
+            SwPush,
+            {provide: NgswCommChannel, useValue: comm},
+          ]
+        });
+        expect(() => TestBed.get(SwPush)).not.toThrow();
+
+        (mock.mockRegistration as MockServiceWorkerRegistration).pushManager = originalPushManager;
+      });
+
       describe('requestSubscription()', () => {
         async_it('returns a promise that resolves to the subscription', async() => {
           const promise = push.requestSubscription({serverPublicKey: 'test'});

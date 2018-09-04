@@ -71,7 +71,7 @@ export class MockServiceWorker {
 }
 
 export class MockServiceWorkerRegistration {
-  pushManager: PushManager = new MockPushManager() as any;
+  pushManager: PushManager|undefined = new MockPushManager() as any;
 }
 
 export class MockPushManager {
