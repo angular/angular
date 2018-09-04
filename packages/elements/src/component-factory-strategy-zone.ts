@@ -5,10 +5,8 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  */
-
+///<reference path="../../../node_modules/zone.js/dist/zone.js.d.ts" />
 import {ComponentFactory, ComponentRef, Injector, NgZone} from '@angular/core';
-import {} from 'zone.js';
-
 import {ComponentNgElementStrategy, ComponentNgElementStrategyFactory} from './component-factory-strategy';
 
 /**
@@ -29,12 +27,12 @@ export class ComponentNgElementZoneStrategyFactory extends ComponentNgElementStr
  */
 export class ComponentNgElementZoneStrategy extends ComponentNgElementStrategy {
   private readonly ngZone: NgZone;
-  private elementZone !: Zone;
+  private readonly elementZone: Zone;
 
   constructor(componentFactory: ComponentFactory<any>, injector: Injector) {
     super(componentFactory, injector);
     this.ngZone = this.injector.get<NgZone>(NgZone);
-    this.ngZone.run(() => { this.elementZone = Zone.current; });
+    this.elementZone = this.ngZone.run(() => { return Zone.current; });
   }
 
   connect(element: HTMLElement) {
