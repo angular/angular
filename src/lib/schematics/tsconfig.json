@@ -22,5 +22,8 @@
     "*/files/**/*",
     // Exclude all test-case files because those should not be included in the schematics output.
     "update/test-cases/**/*"
-  ]
+  ],
+  "bazelOptions": {
+    "suppressTsconfigOverrideWarnings": true
+  }
 }
