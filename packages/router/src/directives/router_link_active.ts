@@ -89,6 +89,8 @@ export class RouterLinkActive implements OnChanges,
   private subscription: Subscription;
   public readonly isActive: boolean = false;
 
+  @Input() routerLink: any[]|string = '';
+
   @Input() routerLinkActiveOptions: {exact: boolean} = {exact: false};
 
   constructor(

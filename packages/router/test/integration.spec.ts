@@ -13,7 +13,7 @@ import {ComponentFixture, TestBed, fakeAsync, inject, tick} from '@angular/core/
 import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
-import {Observable, Observer, of } from 'rxjs';
+import {Observable, Observer, Subject, of } from 'rxjs';
 import {map} from 'rxjs/operators';
 
 import {forEach} from '../src/utils/collection';
@@ -2975,6 +2975,35 @@ describe('Integration', () => {
          expect(link.className).toEqual('active');
        }));
 
+    it('should set the class when the routerLink changes asynchronously',
+       fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
+         const fixture = createRoot(router, RootCmp);
+
+         router.resetConfig([{
+           path: 'team',
+           component: AsyncLinkCmp,
+           children: [{path: ':id', component: BlankCmp}]
+         }]);
+
+         router.navigateByUrl('/team/22');
+         advance(fixture);
+         advance(fixture);
+         expect(location.path()).toEqual('/team/22');
+
+         const asyncLinkCmp =
+             fixture.debugElement.query(By.directive(AsyncLinkCmp)).componentInstance;
+         asyncLinkCmp.subject.next(['/team/22']);
+         advance(fixture);
+         advance(fixture);
+
+         const link = fixture.nativeElement.querySelector('a');
+         expect(link.className).toEqual('active');
+
+         asyncLinkCmp.subject.next(['/team/21']);
+         advance(fixture);
+         advance(fixture);
+         expect(link.className).toEqual('');
+       })));
 
     it('should set the class on a parent element when the link is active',
        fakeAsync(inject([Router, Location], (router: Router, location: Location) => {
@@ -4174,6 +4203,16 @@ class OutletInNgIf {
 }
 
 @Component({
+  selector: 'async-link-cmp',
+  template:
+      `<router-outlet></router-outlet><a [routerLink]="observable$ | async" routerLinkActive="active"></a>`
+})
+class AsyncLinkCmp {
+  subject = new Subject<string>();
+  observable$ = this.subject.asObservable();
+}
+
+@Component({
   selector: 'link-cmp',
   template: `<router-outlet></router-outlet>
              <div id="link-parent" routerLinkActive="active" [routerLinkActiveOptions]="{exact: exact}">
@@ -4252,6 +4291,7 @@ class LazyComponent {
     DummyLinkCmp,
     AbsoluteLinkCmp,
     RelativeLinkCmp,
+    AsyncLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
     CollectParamsCmp,
@@ -4279,6 +4319,7 @@ class LazyComponent {
     DummyLinkCmp,
     AbsoluteLinkCmp,
     RelativeLinkCmp,
+    AsyncLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
     CollectParamsCmp,
@@ -4308,6 +4349,7 @@ class LazyComponent {
     DummyLinkCmp,
     AbsoluteLinkCmp,
     RelativeLinkCmp,
+    AsyncLinkCmp,
     DummyLinkWithParentCmp,
     LinkWithQueryParamsAndFragment,
     CollectParamsCmp,
