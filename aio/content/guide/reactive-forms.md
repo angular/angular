@@ -520,126 +520,91 @@ Simulate an update by adding a button to the template to update the user profile
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-When the button is clicked, the `profileForm` model is updated with just the `firstName` and `street` being modified. Notice that the `street` is provided in an object inside the `address` property. This is necessary because the `patchValue()` method applies the update against the model structure. `PatchValue()` only updates properties that the form model defines.
--->
-이제 이 버튼을 클릭하면 `profileForm` 모델 중 `firstName` 값과 `street` 값만 지정된 값으로 변경됩니다. 이 때 폼 그룹의 구조에 맞추기 위해 `street` 필드의 값은 `address` 객체에 `street` 프로퍼티 값으로 지정합니다. `patchValue()` 메소드는 전달된 인자 중에서 폼 모델의 구조에 맞는 값만 변경합니다.
-
-<!--
-## Generating form controls with `FormBuilder`
--->
-## `FormBuilder`로 폼 컨트롤 생성하기
-
-<!--
-Creating multiple form control instances manually can become very repetitive when dealing with multiple forms. The `FormBuilder` service provides convenience methods to handle generating controls. Underneath, the `FormBuilder` is creating and returning the instances in the same manner, but with much less work. The following section refactors the `ProfileEditor` component to use the `FormBuilder` instead of creating each `FormControl` and `FormGroup` by hand.
--->
-폼 컨트롤을 매번 직접 생성하는데, 이런 폼이 여러개라면 폼을 구성하는 일은 귀찮은 일을 반복하는 일이 될 것입니다. 이런 경우에 `FormBuilder` 서비스를 사용하면 좀 더 편하게 폼을 구성할 수 있습니다. `FormBuilder`를 사용하면 인자로 전달하는 객체의 구조에 맞게 `FormControl` 인스턴스를 생성해서 반환합니다. 이번 섹션에서는 `ProfileEditor` 컴포넌트에 `FormControl`이나 `FromGroup`을 직접 생성했던 방식 대신, `FormBuilder`를 사용하는 방식으로 리팩토링 해봅시다.
-
-<!--
-### Step 1 - Import the `FormBuilder` class
--->
-### 1단계 - `FormBuilder` 클래스 로드하기
-
-<!--
-To use the `FormBuilder` service, import its class from the `@angular/forms` package.
--->
-`FormBuilder` 서비스를 사용하려면 `@angular/forms` 패키지에서 `FormBuilder` 클래스를 로드해야 합니다.
-=======
 When a user clicks the button, the `profileForm` model is updated with new values for `firstName` and `street`. Notice that `street` is provided in an object inside the `address` property. This is necessary because the `patchValue()` method applies the update against the model structure. `PatchValue()` only updates properties that the form model defines.
+-->
+이제 사용자가 이 버튼을 클릭하면 `profileForm` 모델의 `firstName` 값과 `street` 값이 새로운 값으로 변경됩니다. 이 때 폼 그룹의 구조에 맞추기 위해 `street` 필드의 값은 `address` 객체 안에 지정했습니다. `patchValue()` 메소드는 전달된 인자 중에서 폼 모델의 구조에 맞는 값만 변경합니다.
 
+<!--
 ## Generating form controls with FormBuilder
+-->
+## FormBuilder로 폼 컨트롤 생성하기
 
+<!--
 Creating form control instances manually can become repetitive when dealing with multiple forms. The `FormBuilder` service provides convenient methods for generating controls. 
+-->
+폼 컨트롤을 매번 직접 생성해야 하는데, 이런 폼이 여러개라면 귀찮은 반복작업이 될 것입니다. 이 때 `FormBuilder` 서비스를 사용하면 좀 더 편하게 폼을 구성할 수 있습니다.
 
+<!--
 The following section refactors the `ProfileEditor` component to use the form builder service to create form control and form group instances.
+-->
+이번에는 `ProfileEditor` 컴포넌트에 폼 컨트롤이나 폼 그룹을 직접 생성했던 방식 대신, 폼 빌더를 사용하는 방식으로 리팩토링 해봅시다.
 
+<!--
 ### Step 1: Importing the FormBuilder class
+-->
+### 1단계: `FormBuilder` 클래스 로드하기
 
+<!--
 Import the `FormBuilder` class from the `@angular/forms` package.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+먼저 `@angular/forms` 패키지에서 `FormBuilder` 클래스를 로드합니다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-builder-imports" title="src/app/profile-editor/profile-editor.component.ts (import)">
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-### Step 2 - Inject the `FormBuilder` service
+### Step 2: Injecting the FormBuilder service
 -->
-### 2단계 - `FormBuilder` 서비스를 의존성으로 주입하기
+### 2단계: `FormBuilder` 서비스를 의존성으로 주입하기
 
 <!--
-The FormBuilder is an injectable service that is provided with the `ReactiveFormsModule`. Inject this dependency by adding it to the component constructor.
+The `FormBuilder` service is an injectable provider that is provided with the reactive forms module. Inject this dependency by adding it to the component constructor.
 -->
 폼 빌더는 `ReactiveFormsModule`에서 제공하며, 의존성으로 주입할 수 있도록 서비스로 정의되어 있습니다. 다음과 같이 컴포넌트 생성자에 `FormBuilder` 서비스를 주입합니다.
-=======
-### Step 2: Injecting the FormBuilder service
-
-The `FormBuilder` service is an injectable provider that is provided with the reactive forms module. Inject this dependency by adding it to the component constructor.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="inject-form-builder" title="src/app/profile-editor/profile-editor.component.ts (constructor)">
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-### Step 3 - Generate form controls
--->
-### 3단계 - 폼 컨트롤 생성하기
-
-<!--
-The `FormBuilder` service has three methods: `control()`, `group()`, and `array()`. These methods are factory methods for generating form controls in your component class including a `FormControl`, `FormGroup`, and `FormArray` respectively. 
--->
-`FormBuilder` 서비스는 `control()`, `group()`, `array()` 메소드를 제공하는데, 이 메소드는 각각 `FormControl`, `FormGroup`, `FormArray`를 생성해서 반환하는 팩토리 메소드입니다.
-
-<!--
-Replace the creation of the `profileForm` by using the `group` method to create the controls.
--->
-컴포넌트 클래스에서 `profileForm`을 생성하던 코드를 제거하고 `group()` 메소드를 사용하는 방식으로 다음과 같이 변경합니다.
-=======
 ### Step 3: Generating form controls
+-->
+### 3단계: 폼 컨트롤 생성하기
 
+<!--
 The `FormBuilder` service has three methods: `control()`, `group()`, and `array()`. These are factory methods for generating instances in your component classes including form controls, form groups, and form arrays. 
+-->
+`FormBuilder` 서비스는 `control()`, `group()`, `array()` 메소드를 제공하는데, 이 메소드는 각각 폼 컨트롤, 폼 그룹, 폼 배열 인스턴스를 생성해서 반환하는 팩토리 메소드입니다.
 
+<!--
 Use the `group` method to create the `profileForm` controls.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+`group()` 메소드를 사용해서 `profileForm` 컨트롤을 만들어 봅시다.
 
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.2.ts" region="form-builder" title="src/app/profile-editor/profile-editor.component.ts (form builder)">
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-In the example above, you use the `group()` method with the same names to define the properties in the model. Here, the value for each control name is an array containing the initial value as the first item.
--->
-위 코드에서 `group()` 메소드에 전달하는 객체의 프로퍼티 이름은 폼 모델의 이름과 같습니다. 그리고 프로퍼티 값으로는 배열을 전달하는데, 폼 컨트롤의 초기값은 배열의 첫번째 항목으로 전달합니다.
-
-<div class="alert is-helpful">
-
-<!--
-*Note*: You can define the control with just the initial value, but if your controls need sync or async validation, add sync and async validators as the second and third items in the array.
--->
-*참고*: 폼 컨트롤의 초기값만 지정한다면 배열을 사용하지 않아도 됩니다. 하지만 폼 컨트롤에 유효성 검사기를 지정하려면 프로퍼티 값에 배열을 사용해야 합니다. 이 때 동기 유효성 검사기는 두번째 인자로, 비동기 유효성 검사기는 세번째 인자로 지정합니다.
-
-</div>
-
-<!--
-Compare the two paths to achieve the same result.
--->
-폼 컨트롤을 직접 생성하는 방식과, `FormBuilder`를 사용하는 방식이 어떻게 다른지 비교해 보세요.
-=======
 In the example above, you use the `group()` method with the same object to define the properties in the model. The value for each control name is an array containing the initial value as the first item in the array.
+-->
+위 코드에서 `group()` 메소드에 전달하는 객체의 구조는 폼 모델의 구조와 같습니다. 그리고 프로퍼티 값으로는 배열을 전달하는데, 폼 컨트롤의 초기값은 배열의 첫번째 항목으로 전달합니다.
 
 <div class="alert is-helpful">
 
+<!--
 **Note:** You can define the control with just the initial value, but if your controls need sync or async validation, add sync and async validators as the second and third items in the array.
+-->
+**참고:** 폼 컨트롤의 초기값만 지정한다면 배열을 사용하지 않아도 됩니다. 하지만 폼 컨트롤에 유효성 검사기를 지정하려면 프로퍼티 값에 배열을 사용해야 합니다. 이 때 동기 유효성 검사기는 두번째 인자로, 비동기 유효성 검사기는 세번째 인자로 지정합니다.
 
 </div>
 
+<!--
 Compare using the form builder to creating the instances manually.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+폼 컨트롤을 직접 생성하는 방식과 폼 빌더를 사용하는 방식이 어떻게 다른지 비교해 보세요.
 
 <code-tabs>
 
@@ -668,28 +633,20 @@ Compare using the form builder to creating the instances manually.
 -->
 ## 폼 유효성 검사하기 - 기본
 
-<<<<<<< HEAD
 <!--
-Form validation is necessary when receiving user input through forms. This section covers adding a single validator to a form control and displaying the overall form status. Form validation is covered more extensively in the [Form Validation](guide/form-validation) guide.
+_Form validation_ is used to validate user input to ensure it's complete and correct. This section covers adding a single validator to a form control and displaying the overall form status. Form validation is covered more extensively in the [Form Validation](guide/form-validation) guide.
 -->
-사용자가 폼에 데이터를 입력했다면 폼 유효성 검사를 해야합니다. 이번 섹션에서는 폼 컨트롤에 유효성 검사기를 추가해보고, 폼 상태에 대한 메시지를 화면에 표시해 봅시다. 폼 유효성 검사에 대해서는 [폼 유효성 검사](guide/form-validation) 문서에서 자세하게 다룹니다.
+_폼 유효성 검사_ 는 사용자가 폼에 필요한 내용을 모두 입력했는지, 입력한 내용이 유효한지 확인하는 과정입니다. 이번에는 폼 컨트롤에 유효성 검사기를 어떻게 추가할 수 있는지 알아보고, 폼 상태에 대한 메시지를 화면에 표시해 봅시다. 폼 유효성 검사에 대해서는 [폼 유효성 검사](guide/form-validation) 문서에서 자세하게 다룹니다.
 
 <!--
-### Step 1 - Import a validator function
+### Step 1: Importing a validator function
 -->
-### 1단계 - 유효성 검사 함수 로드하기
+### 1단계: 유효성 검사 함수 로드하기
 
 <!--
-Reactive forms include a set of validator functions out of the box for common use cases. These functions receive a control to validate against and return an error object or null based on the validation check.
+Reactive forms include a set of validator functions for common use cases. These functions receive a control to validate against and return an error object or a null value based on the validation check.
 -->
 반응형 폼 모듈은 다양한 유효성 검사 함수도 함께 제공합니다. 이 함수들은 폼 컨트롤 인스턴스를 인자로 받으며, 유효성 검사에 실패한 경우에 에러 객체를 반환하고 유효성 검사를 통과하면 null을 반환합니다.
-=======
-_Form validation_ is used to validate user input to ensure it's complete and correct. This section covers adding a single validator to a form control and displaying the overall form status. Form validation is covered more extensively in the [Form Validation](guide/form-validation) guide.
-
-### Step 1: Importing a validator function
-
-Reactive forms include a set of validator functions for common use cases. These functions receive a control to validate against and return an error object or a null value based on the validation check.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 
 <!--
 Import the `Validators` class from the `@angular/forms` package.
@@ -703,14 +660,10 @@ Import the `Validators` class from the `@angular/forms` package.
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-### Step 2 - Make a field required
--->
-### 2단계 - 필수 항목 지정하기
-=======
 ### Step 2: Making a field required
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+### 2단계: 필수 항목 지정하기
 
 <!--
 The most common validation is making a field required. This section describes how to add a required validation to the `firstName` control.
@@ -729,14 +682,10 @@ In the `ProfileEditor` component, add the `Validators.required` static method as
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-HTML5 has a set of built-in attributes that can be used for native validation, including `required`, `minlength`, `maxlength`, and more. Although _optional_, you can take advantage of these as additional attributes on your form input elements. Add the `required` attribute to the `firstName` input element.
--->
-HTML5에서도 `required`나 `minlength`, `maxlength`와 같은 어트리뷰트를 지정해서 네이티브 유효성 검사 로직을 활용할 수 있습니다. 입력 필드에 유효성 검사기를 지정하는 것은 선택사항이며, 이 기능을 활성화하려면 다음과 같이 `firstName` `input` 엘리먼트에 `required` 어트리뷰트를 지정하기만 하면 됩니다.
-=======
 HTML5 has a set of built-in attributes that you can use for native validation, including `required`, `minlength`, and `maxlength`. You can take advantage of these optional attributes on your form input elements. Add the `required` attribute to the `firstName` input element.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+HTML5에서도 `required`나 `minlength`, `maxlength`와 같은 어트리뷰트를 지정해서 네이티브 유효성 검사 로직을 활용할 수 있습니다. 이 기능을 활성화하려면 다음과 같이 `firstName` `input` 엘리먼트에 `required` 어트리뷰트를 지정하기만 하면 됩니다.
 
 <!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="required-attribute" linenums="false" title="src/app/profile-editor/profile-editor.component.html (required attribute)">
@@ -747,39 +696,27 @@ HTML5 has a set of built-in attributes that you can use for native validation, i
 
 <div class="alert is-important">
 
-<<<<<<< HEAD
 <!--
-*Note:* These HTML5 validation attributes should be used _in combination with_ the built-in validators provided by Angular's reactive forms. Using these two validation practices in combination prevents errors about the expression being changed after the template has been checked.
+**Caution:** Use these HTML5 validation attributes *in combination with* the built-in validators provided by Angular's reactive forms. Using these in combination prevents errors when the expression is changed after the template has been checked.
 -->
-*참고:* HTML5 유효성 검사 어트리뷰트는 반드시 Angular 반응형 폼이 제공하는 관련 유효성 검사기와 _함께_ 사용해야 합니다. 양쪽 기능을 함께 사용해야 해당 기능이 정상적으로 동작하며, 템플릿 검사를 마친 이후에 상태가 다시 변경되는 에러도 방지할 수 있습니다.
+**주의:** HTML5 유효성 검사 어트리뷰트는 반드시 Angular 반응형 폼이 제공하는 관련 유효성 검사기와 _함께_ 사용해야 합니다. 양쪽 기능을 함께 사용해야 해당 기능이 정상적으로 동작하며, 템플릿 검사를 마친 이후에 상태가 다시 변경되는 에러도 방지할 수 있습니다.
 
 </div>
 
 <!--
-### Display form status
+### Displaying form status
 -->
 ### 폼 상태 표시하기
 
 <!--
-Now that you’ve added a required field to the form control, its initial status is invalid. This invalid status propagates to the parent `FormGroup`, making its status invalid. You have access to the current status of the `FormGroup` through the `status` property on the instance.
+When you add a required field to the form control, its initial status is invalid. This invalid status propagates to the parent form group element, making its status invalid. Access the current status of the form group instance through its `status` property.
 -->
-이제 폼 컨트롤을 필수 항목으로 지정했기 때문에, 초기값은 더이상 유효하지 않은 값이 됩니다. 그래서 폼 컨트롤의 유효성 검사 상태는 부모 폼 컨트롤인 `FormGroup`으로 전파되며, 결과적으로 `FormGroup` 전체가 유효성 검사를 통과하지 못한 것으로 처리됩니다. 그러면 `FormGroup`의 `status` 프로퍼티를 참조해서 이 폼의 상태가 어떤지 확인할 수 있습니다.
+폼 컨트롤을 필수항목으로 지정하면 이 폼 컨트롤의 초기 상태는 유효하지 않은 것이 됩니다. 폼 컨트롤의 상태는 부모 폼 그룹 엘리먼트로 전파되며, 결과적으로 폼 그룹 전체가 유효성 검사를 통과하지 못한 것으로 처리됩니다. 그러면 폼 그룹 인스턴스의 `status` 프로퍼티를 참조해서 이 폼의 상태를 확인할 수 있습니다.
 
 <!--
-Display the current status of the `profileForm` using interpolation.
--->
-`profileForm`의 상태를 표시하기 위해 다음과 같이 템플릿을 작성합니다.
-=======
-**Caution:** Use these HTML5 validation attributes *in combination with* the built-in validators provided by Angular's reactive forms. Using these in combination prevents errors when the expression is changed after the template has been checked.
-
-</div>
-
-### Displaying form status
-
-When you add a required field to the form control, its initial status is invalid. This invalid status propagates to the parent form group element, making its status invalid. Access the current status of the form group instance through its `status` property.
-
 Display the current status of `profileForm` using interpolation.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+`profileForm`의 상태를 표시하려면 다음과 같이 템플릿을 작성합니다.
 
 <!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="display-status" linenums="false" title="src/app/profile-editor/profile-editor.component.html (display status)">
@@ -792,14 +729,10 @@ Display the current status of `profileForm` using interpolation.
   <img src="generated/images/guide/reactive-forms/profile-editor-3.png" alt="Profile Editor Validation">
 </figure>
 
-<<<<<<< HEAD
 <!--
-The submit button is disabled because the `profileForm` is invalid due to the required `firstName` form control. After you fill out the `firstName` input, the form becomes valid and the submit button is enabled.
--->
-`firstName` 폼 컨트롤이 필수항목으로 지정되었지만 유효성 검사를 통과하지 못했기 때문에 `profileForm` 전체가 유효하지 않은 것으로 판단되고, 이에 따라 _Submit_ 버튼도 비활성화 됩니다. `firstName` 입력 필드에 데이터를 입력하면 폼 전체의 유효성 검사가 통과되면서, 제출 버튼도 활성화될 것입니다.
-=======
 The **Submit** button is disabled because `profileForm` is invalid due to the required `firstName` form control. After you fill out the `firstName` input, the form becomes valid and the **Submit** button is enabled.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+`firstName` 폼 컨트롤이 필수항목으로 지정되었지만 유효성 검사를 통과하지 못했기 때문에 `profileForm` 전체가 유효하지 않은 것으로 판단되고, **Submit** 버튼도 비활성화 됩니다. `firstName` 입력 필드에 데이터를 입력하면 폼 전체의 유효성 검사가 통과되면서, **Submit** 버튼도 활성화될 것입니다.
 
 <!--
 For more on form validation, visit the [Form Validation](guide/form-validation) guide.
@@ -811,21 +744,15 @@ For more on form validation, visit the [Form Validation](guide/form-validation) 
 -->
 ## 폼 배열
 
-<<<<<<< HEAD
 <!--
-A `FormArray` is an alternative to a `FormGroup` for managing  any number of unnamed controls. As with `FormGroup` instances, you can dynamically insert and remove controls from a `FormArray`, and the `FormArray` instance's value and validation status is calculated from its child controls. However, you don't need to define a key for each control by name, so this is a great option if you don't know the number of child values in advance. The following example shows you how to manage an array of _aliases_ in the `ProfileEditor`.
--->
-폼 컨트롤의 개수가 변하는 경우라면 `FormGroup` 대신 `FormArray`를 사용할 수 있습니다. `FormArray`를 사용하면 `FormGroup`을 사용했던 것처럼 자식 폼 컨트롤을 동적으로 추가하고 제거할 수 있으며, 자식 폼 컨트롤의 모든 값과 유효성 검사 상태도 `FormArray`로 전파됩니다. 그리고 `FormGroup`과는 다르게, 각 폼 컨트롤에 이름을 지정해서 참조하는 방식을 사용하지 않습니다. 이번에는 `ProfileEditor`에 `FormArray`를 사용하는 예제를 보면서 폼 배열에 대해 알아봅시다.
-
-<!--
-### Step 1 - Import the `FormArray`
--->
-### 1단계 - `FormArray` 로드하기
-=======
 `FormArray` is an alternative to `FormGroup` for managing any number of unnamed controls. As with form group instances, you can dynamically insert and remove controls from form array instances, and the form array instance value and validation status is calculated from its child controls. However, you don't need to define a key for each control by name, so this is a great option if you don't know the number of child values in advance. The following example shows you how to manage an array of *aliases* in `ProfileEditor`.
+-->
+폼 컨트롤의 개수가 변하는 경우라면 `FormGroup` 대신 `FormArray`를 사용할 수 있습니다. `FormArray`를 사용하면 `FormGroup`을 사용했던 것처럼 자식 폼 컨트롤을 동적으로 추가하고 제거할 수 있으며, 자식 폼 컨트롤의 모든 값과 유효성 검사 상태도 `FormArray`로 전파됩니다. 하지만 `FormGroup`과는 다르게, 각 폼 컨트롤에 이름을 지정해서 참조하는 방식을 사용하지 않습니다. 이번에는 `ProfileEditor`에 `FormArray`를 사용하는 예제를 보면서 폼 배열에 대해 알아봅시다.
 
+<!--
 ### Step 1: Importing the FormArray class
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+### 1단계: `FormArray` 클래스 로드하기
 
 <!--
 Import the `FormArray` class from `@angular/forms` to use for type information. The `FormBuilder` service is ready to create a `FormArray` instance.
@@ -846,11 +773,11 @@ Import the `FormArray` class from `@angular/forms` to use for type information. 
 You can initialize a `FormArray` with any number of controls, from zero to many, by defining them in an array. Add an `aliases` property to the `FormGroup` for the `profileForm` to define the `FormArray`.
 -->
 `FormArray`는 배열로 초기화하며, 이 때 배열의 길이는 어떠한 것이라도 가능합니다. `profileForm`에 `aliases` 프로퍼티를 추가하고, 이 프로퍼티를 `FormArray`로 정의해 봅시다.
-=======
-### Step 2: Defining a FormArray control
 
+<!--
 You can initialize a form array with any number of controls, from zero to many, by defining them in an array. Add an `aliases` property to the form group instance for `profileForm` to define the form array.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+폼 배열은 배열로 초기화하며, 이 때 배열의 길이는 어떠한 것이라도 가능합니다. `profileForm`에 `aliases` 프로퍼티를 추가하고, 이 프로퍼티를 폼 배열로 정의해 봅시다.
 
 <!--
 Use the `FormBuilder.array()` method to define the array, and the `FormBuilder.control()` method to populate the array with an initial control.
@@ -861,30 +788,25 @@ Use the `FormBuilder.array()` method to define the array, and the `FormBuilder.c
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-The _aliases_ control in the `FormGroup` is now populated with a single control until more are added dynamically.
--->
-그러면 _aliases_ 폼 컨트롤은 `FormGroup` 안에 폼 배열로 선언되며, 이후에 동적으로 추가되기 전까지는 폼 컨트롤 1개로 구성됩니다.
-
-<!--
-### Step 3 - Access the `FormArray` control
--->
-### 3단계 - `FormArray` 활용하기
-
-<!--
-Because a `FormArray` represents an undefined number of controls in array, accessing the control through a getter provides convenience and reusability. Use the _getter_ syntax to create an _aliases_ class property to retrieve the alias's `FormArray` control from the parent `FormGroup`.
--->
-`FormArray`는 개수가 변하는 폼 컨트롤을 배열로 표현하기 때문에, _aliases_ 프로퍼티에 게터(_getter_)를 사용하는 것이 편합니다. 다음과 같이 게터 함수를 정의합니다.
-=======
 The aliases control in the form group instance is now populated with a single control until more controls are added dynamically.
+-->
+그러면 aliases 폼 컨트롤은 `FormGroup` 안에 폼 배열로 선언되며, 이후에 동적으로 추가되기 전까지는 폼 컨트롤 1개로 구성됩니다.
 
+<!--
 ### Step 3: Accessing the FormArray control
+-->
+### 3단계: `FormArray`에 접근하기
 
+<!--
 A getter provides easy access to the aliases in the form array instance compared to repeating the `profileForm.get()` method to get each instance. The form array instance represents an undefined number of controls in an array. It's convenient to access a control through a getter, and this approach is easy to repeat for additional controls. 
+-->
+폼 배열을 사용한다면 폼 배열 안의 각 인스턴스를 `profileForm.get()` 메소드로 참조하는 것보다 게터(getter) 함수를 사용하는 것이 편합니다. 게터 함수를 사용하면  폼 배열 안에 있는 폼 컨트롤의 개수에 관계없이 간단하게 폼 컨트롤의 값을 참조할 수 있고, 반복문을 작성할 때도 편합니다.
 
+<!--
 Use the getter syntax to create an `aliases` class property to retrieve the alias's form array  control from the parent form group.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+게터 함수는 다음과 같이 정의합니다.
 
 <!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="aliases-getter" title="src/app/profile-editor/profile-editor.component.ts (aliases getter)">
@@ -893,34 +815,19 @@ Use the getter syntax to create an `aliases` class property to retrieve the alia
 
 </code-example>
 
-<<<<<<< HEAD
-<!--
-The getter provides easy access to the aliases `FormArray` instead of repeating the `profileForm.get()` method to get the instance.
--->
-그러면 이제 `profileForm.get()` 메소드를 사용하지 않아도 이 게터 함수를 사용해서 `FormArray` 인스턴스에 편하게 접근할 수 있습니다.
-
 <div class="alert is-helpful">
 
 <!--
-*Note*: Because the returned control is of type `AbstractControl`, you provide an explicit type to access the `FormArray` specific syntax for the methods.
+**Note:** Because the returned control is of the type `AbstractControl`, you need to provide an explicit type to access the method syntax for the form array instance.
 -->
-*참고*: 폼 컨트롤을 참조하기 위해 `get()` 메소드를 사용하면 `AbstractControl` 타입으로 폼 컨트롤을 받습니다. 공통 메소드를 사용한다면 이대로 활용해도 되지만, `FormArray`에 해당되는 메소드를 사용하려면 타입 캐스팅을 해야 합니다.
+**참고:** 폼 컨트롤을 참조하기 위해 `get()` 메소드를 사용하면 `AbstractControl` 타입으로 폼 컨트롤을 받습니다. 공통 메소드를 사용한다면 이대로 활용해도 되지만, `FormArray`에 해당되는 메소드를 사용하려면 타입 캐스팅 해야 합니다.
 
 </div>
 
 <!--
-Define a method to dynamically insert an alias control into the alias's `FormArray`. The `FormArray.push()` method inserts the control as a new item in the array.
+Define a method to dynamically insert an alias control into the alias's form array. The `FormArray.push()` method inserts the control as a new item in the array.
 -->
 이번에는 `FormArray`에 동적으로 폼 컨트롤을 추가하는 함수를 정의해 봅시다. 폼 배열에 새로운 폼 컨트롤을 추가할 때는 `FormArray.push()` 메소드를 사용합니다.
-=======
-<div class="alert is-helpful">
-
-**Note:** Because the returned control is of the type `AbstractControl`, you need to provide an explicit type to access the method syntax for the form array instance.
-
-</div>
-
-Define a method to dynamically insert an alias control into the alias's form array. The `FormArray.push()` method inserts the control as a new item in the array.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 
 <!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.ts" region="add-alias" title="src/app/profile-editor/profile-editor.component.ts (add alias)">
@@ -929,35 +836,25 @@ Define a method to dynamically insert an alias control into the alias's form arr
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
-In the template, the controls are iterated over to display each control as a separate input field.
+In the template, each control is displayed as a separate input field.
 -->
 이제 이렇게 만든 폼 배열을 템플릿에 표시해 봅시다.
 
 <!--
-### Step 4 - Display the form array in the template
+### Step 4: Displaying the form array in the template
 -->
-### 4단계 - 템플릿에 폼 배열 표시하기
+### 4단계: 템플릿에 폼 배열 표시하기
 
 <!--
-After you define the aliases `FormArray` in your model, you must add it to the template for user input. Similar to the `formGroupName` input provided by the `FormGroupNameDirective`, a `formArrayName` binds communication from the `FormArray` to the template with the `FormArrayNameDirective`. 
+To attach the aliases from your form model, you must add it to the template. Similar to the `formGroupName` input provided by `FormGroupNameDirective`, `formArrayName` binds communication from the form array instance to the template with `FormArrayNameDirective`. 
 -->
-폼 모델에 `FormArray`를 추가하고 나면 이 모델이 템플릿에 표시되도록 템플릿을 수정해야 합니다. 이때 이전 예제에서 `FormGroupNameDirective`를 `formGroupName` 어트리뷰트로 바인딩했던 것과 비슷하게, `FormArrayNameDirective`를 사용해서 `formArrayName` 어트리뷰트를 사용해서 `FormArray`를 템플릿에 바인딩 하면 됩니다.
+사용자가 폼 모델에 aliases 값을 입력하려면 이 폼 컨트롤을 템플릿에 추가해야 합니다. 이전 예제에서 `FormGroupNameDirective`를 `formGroupName` 어트리뷰트로 바인딩했던 것과 비슷하게, `FormArrayNameDirective`가 제공하는 `formArrayName` 어트리뷰트를 사용해서 `FormArray`를 템플릿에 바인딩 하면 됩니다.
 
 <!--
-Add the template HTML below after the closing `formGroupName` `<div>` element.
+Add the template HTML below after the `<div>` closing the `formGroupName` element.
 -->
 `formGroupName` `<div>` 엘리먼트 뒤에 다음과 같은 템플릿을 추가합니다.
-=======
-In the template, each control is displayed as a separate input field.
-
-### Step 4: Displaying the form array in the template
-
-To attach the aliases from your form model, you must add it to the template. Similar to the `formGroupName` input provided by `FormGroupNameDirective`, `formArrayName` binds communication from the form array instance to the template with `FormArrayNameDirective`. 
-
-Add the template HTML below after the `<div>` closing the `formGroupName` element.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 
 <!--
 <code-example path="reactive-forms/src/app/profile-editor/profile-editor.component.html" region="formarrayname" linenums="false" title="src/app/profile-editor/profile-editor.component.html (aliases form array template)">
