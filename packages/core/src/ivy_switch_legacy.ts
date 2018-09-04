@@ -22,7 +22,7 @@ export interface DirectiveCompiler { (type: any, meta: any): void; }
 
 export const R3_COMPILE_COMPONENT__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_COMPONENT;
 export const R3_COMPILE_DIRECTIVE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_DIRECTIVE;
-export const R3_COMPILE_INJECTABLE__POST_NGCC__: DirectiveCompiler= ivyOn.R3_COMPILE_INJECTABLE;
+export const R3_COMPILE_INJECTABLE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_INJECTABLE;
 export const R3_COMPILE_NGMODULE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_NGMODULE;
 export const R3_COMPILE_PIPE__POST_NGCC__: DirectiveCompiler = ivyOn.R3_COMPILE_PIPE;
 export const ivyEnable__POST_NGCC__: boolean = ivyOn.ivyEnabled;
