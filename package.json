@@ -22,7 +22,8 @@
     "deploy": "gulp deploy:devapp",
     "webdriver-manager": "webdriver-manager",
     "docs": "gulp docs",
-    "api": "gulp api-docs"
+    "api": "gulp api-docs",
+    "breaking-changes": "gulp breaking-changes"
   },
   "version": "7.0.0-beta.0",
   "requiredAngularVersion": ">=7.0.0-beta.4",
