@@ -1,8 +1,8 @@
 # View Data Explanation
 
 `LViewData` and `TView.data` are how the Ivy renderer keeps track of the internal data needed to render the template.
-The `LViewData` is designed so that a single array can contain all of the necessary data for the template rendering in a compact form.
-The `TView.data` is a corollary to the `LViewData` and contains information which can be shared across the template instances.
+`LViewData` is designed so that a single array can contain all of the necessary data for the template rendering in a compact form.
+`TView.data` is a corollary to the `LViewData` and contains information which can be shared across the template instances.
 
 ## `LViewData` / `TView.data` layout.
 
@@ -90,7 +90,7 @@ class MyApp {
   static ngComponentDef = defineComponent({
     ...,
     consts: 2, // Two DOM Element.
-    vars: 2,   // One binding.
+    vars: 2,   // Two binding.
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'div');
