@@ -24,7 +24,7 @@ import {Type} from '../type';
 
 import {assertDefined, assertGreaterThan, assertLessThan} from './assert';
 import {ComponentFactoryResolver} from './component_ref';
-import {addToViewTree, assertPreviousIsParent, createEmbeddedViewNode, createLContainer, createLNodeObject, createTNode, getPreviousOrParentNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
+import {addToViewTree, assertPreviousIsParent, createEmbeddedViewNode, createLContainer, createLNodeObject, createTNode, getPreviousOrParentNode, getPreviousOrParentTNode, getRenderer, isComponent, renderEmbeddedTemplate, resolveDirective} from './instructions';
 import {VIEWS} from './interfaces/container';
 import {DirectiveDefInternal, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
@@ -273,10 +273,9 @@ export function injectRenderer2(): Renderer2 {
  * @experimental
  */
 export function injectAttribute(attrNameToInject: string): string|undefined {
-  const lNode = getPreviousOrParentNode();
+  const tNode = getPreviousOrParentTNode();
   ngDevMode && assertNodeOfPossibleTypes(
-                   lNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
-  const tNode = lNode.tNode;
+                   tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
   ngDevMode && assertDefined(tNode, 'expecting tNode');
   const attrs = tNode.attrs;
   if (attrs) {
@@ -573,8 +572,9 @@ export const QUERY_READ_ELEMENT_REF =
 
 export const QUERY_READ_FROM_NODE =
     (new ReadFromInjectorFn<any>((injector: LInjector, node: LNode, directiveIdx: number) => {
-      ngDevMode && assertNodeOfPossibleTypes(
-                       node, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
+      ngDevMode &&
+          assertNodeOfPossibleTypes(
+              node.tNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
       if (directiveIdx > -1) {
         return node.view[DIRECTIVES] ![directiveIdx];
       }
@@ -605,17 +605,17 @@ class ElementRef implements viewEngine_ElementRef {
 export function getOrCreateContainerRef(di: LInjector): viewEngine_ViewContainerRef {
   if (!di.viewContainerRef) {
     const vcRefHost = di.node;
+    const hostTNode = vcRefHost.tNode as TElementNode | TContainerNode;
 
     ngDevMode && assertNodeOfPossibleTypes(
-                     vcRefHost, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
+                     hostTNode, TNodeType.Container, TNodeType.Element, TNodeType.ElementContainer);
     const hostParent = getParentLNode(vcRefHost) !;
     const lContainer = createLContainer(hostParent, vcRefHost.view, true);
     const comment = vcRefHost.view[RENDERER].createComment(ngDevMode ? 'container' : '');
-    const lContainerNode: LContainerNode =
-        createLNodeObject(TNodeType.Container, vcRefHost.view, hostParent, comment, lContainer);
+    const lContainerNode: LContainerNode = createLNodeObject(
+        TNodeType.Container, vcRefHost.view, vcRefHost.nodeInjector, comment, lContainer);
     appendChild(hostParent, comment, vcRefHost.view);
 
-    const hostTNode = vcRefHost.tNode as TElementNode | TContainerNode;
     if (!hostTNode.dynamicContainerNode) {
       hostTNode.dynamicContainerNode =
           createTNode(TNodeType.Container, -1, null, null, hostTNode, null);
@@ -785,9 +785,9 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
  */
 export function getOrCreateTemplateRef<T>(di: LInjector): viewEngine_TemplateRef<T> {
   if (!di.templateRef) {
-    ngDevMode && assertNodeType(di.node, TNodeType.Container);
     const hostNode = di.node as LContainerNode;
     const hostTNode = hostNode.tNode;
+    ngDevMode && assertNodeType(hostTNode, TNodeType.Container);
     ngDevMode && assertDefined(hostTNode.tViews, 'TView must be allocated');
     di.templateRef = new TemplateRef<any>(
         hostNode.view, getOrCreateElementRef(di), hostTNode.tViews as TView, getRenderer(),

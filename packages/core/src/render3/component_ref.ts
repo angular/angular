@@ -126,7 +126,7 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
     rootView[INJECTOR] = ngModule && ngModule.injector || null;
 
     // rootView is the parent when bootstrapping
-    const oldView = enterView(rootView, null !);
+    const oldView = enterView(rootView, null);
 
     let component: T;
     let elementNode: LElementNode;
@@ -137,7 +137,8 @@ export class ComponentFactory<T> extends viewEngine_ComponentFactory<T> {
       elementNode = hostElement(componentTag, hostNode, this.componentDef);
 
       // Create directive instance with factory() and store at index 0 in directives array
-      component = baseDirectiveCreate(0, this.componentDef.factory(), this.componentDef);
+      component =
+          baseDirectiveCreate(0, this.componentDef.factory(), this.componentDef, elementNode);
       if (this.componentDef.hostBindings) {
         queueHostBindingForCheck(0, this.componentDef.hostVars);
       }
