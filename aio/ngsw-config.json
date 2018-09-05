@@ -1,5 +1,5 @@
 {
-  "index": "/",
+  "index": "/index.html",
   "assetGroups": [
     {
       "name": "app-shell",
@@ -7,6 +7,7 @@
       "updateMode": "prefetch",
       "resources": {
         "files": [
+          "/index.html",
           "/pwa-manifest.json",
           "/app/search/search-worker.js",
           "/assets/images/favicons/favicon.ico",
