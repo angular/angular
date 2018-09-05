@@ -3,11 +3,12 @@ workspace(name = "angular")
 #
 # Download Bazel toolchain dependencies as needed by build actions
 #
+# TODO(gregmagolan): update to tagged release
 http_archive(
     name = "build_bazel_rules_nodejs",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.12.0.zip"],
-    strip_prefix = "rules_nodejs-0.12.0",
-    sha256 = "2977cdbc8ae0eed7d4186385af56a50a3321a549e2136a959998bba89d2edb6e",
+    url = "https://github.com/bazelbuild/rules_nodejs/archive/8062f004a2a9a5d02ccc49c238aea6a61f15a167.zip",
+    strip_prefix = "rules_nodejs-8062f004a2a9a5d02ccc49c238aea6a61f15a167",
+    sha256 = "788aec5e6a40510304a98e796d8626fefff097344d0e7806d04b2a01fc5d9f65",
 )
 
 http_archive(
