@@ -23,7 +23,6 @@ Try the <live-example title="Reactive Forms in Stackblitz">Reactive Forms live-e
 -->
 ## 반응형 폼 소개
 
-<<<<<<< HEAD
 <!--
 Reactive forms use an explicit and immutable approach to managing the state of a form at a given point in time. Each change to the form state returns a new state, which maintains the integrity of the model between changes. Reactive forms are built around observable streams, where form inputs and values are provided as streams of input values, which can be accessed synchronously. 
 -->
@@ -763,7 +762,6 @@ Import the `FormArray` class from `@angular/forms` to use for type information. 
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
 ### Step 2 - Define a `FormArray`
 -->
@@ -863,52 +861,36 @@ Add the template HTML below after the `<div>` closing the `formGroupName` elemen
 
 </code-example>
 
-<<<<<<< HEAD
 <!--
 The `*ngFor` directive iterates over each `FormControl` provided by the aliases `FormArray`. Because `FormArray` elements are unnamed, you assign the _index_ to the `i` variable and pass it to each control to bind it to the `formControlName` input. 
 -->
-그러면 `*ngFor` 디렉티브가 `aliases` `FormArray`에 있는 각각의 `FormControl`를 순회합니다. 이 때 `FormArray` 안에 있는 엘리먼트에는 이름을 지정하지 않았기 때문에, `*ngFor`의 인덱스를 템플릿 변수 `i`로 선언하고 `formControlName`을 사용해서 각 입력 필드에 연결해 줍니다.
-=======
-The `*ngFor` directive iterates over each form control instance provided by the aliases form array instance. Because form array elements are unnamed, you assign the index to the `i` variable and pass it to each control to bind it to the `formControlName` input. 
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+그러면 `*ngFor` 디렉티브가 `aliases` 폼 배열에 있는 각각의 폼 컨트롤을 순회합니다. 이 때 `FormArray` 안에 있는 엘리먼트에는 이름을 지정하지 않았기 때문에, `*ngFor`의 _인덱스_ 를 템플릿 변수 `i`로 선언하고 `formControlName`을 사용해서 각 입력 필드에 연결해 줍니다.
 
 <figure>
   <img src="generated/images/guide/reactive-forms/profile-editor-4.png" alt="Profile Editor Aliases">
 </figure>
 
-<<<<<<< HEAD
 <!--
-Each time a new `alias` is added, the `FormArray` is provided its control based on the index. This allows you to track each individual control when calculating the status and value of the root control.
+Each time a new alias instance is added, the new form array instance is provided its control based on the index. This allows you to track each individual control when calculating the status and value of the root control.
 -->
-이제는 폼 배열의 개수가 변하더라도 각각의 폼 컨트롤은 인덱스로 관리됩니다. 이 폼 배열이나 전체 폼 그룹의 값, 상태를 확인할 때도 같은 인덱스를 활용할 수 있습니다.
+이제는 폼 배열의 개수가 변하더라도 각각의 폼컨트롤은 인덱스로 관리됩니다. 이 폼 배열이나 전체 폼 그룹의 값, 상태를 확인할 때도 같은 인덱스를 활용할 수 있습니다.
 
 <!--
-#### Add an Alias
+#### Adding an alias
 -->
 #### 별칭 추가하기
 
 <!--
-Initially, the form only contains one `Alias` field. Click the `Add Alias` button, and another field appears. You can also validate the array of aliases reported by the form model displayed by the `Form Value` at the bottom of the template.
+Initially, the form contains one `Alias` field. To add another field, click the **Add Alias** button. You can also validate the array of aliases reported by the form model displayed by `Form Value` at the bottom of the template.
 -->
-이 폼의 `Alias` 필드는 기본적으로 폼 컨트롤이 하나 존재합니다. 그리고 `Add Alias` 버튼을 누르면 폼 컨트롤이 추가되며, 이렇게 추가된 폼 컨트롤의 유효성 상태도 템플릿 아래에 추가했던 `Form Value` 부분을 통해 확인할 수 있습니다.
+이 폼의 `Alias` 필드는 기본적으로 폼 컨트롤이 하나 존재합니다. 그리고 **Add Alias** 버튼을 누르면 폼 컨트롤이 추가되며, 이렇게 추가된 폼 컨트롤의 유효성 상태도 템플릿 아래에 추가했던 `Form Value` 부분을 통해 확인할 수 있습니다.
 
 <div class="alert is-helpful">
 
 <!--
-*Note*: Instead of a `FormControl` for each alias, you could compose another `FormGroup` with additional fields. The process of defining a control for each item is the same.
--->
-*참고*: _aliases_ 필드는 `FormControl` 단위로 추가할 수도 있지만 `FormGroup` 단위로 추가할 수도 있습니다. 폼 컨트롤을 정의하고 활용하는 방법은 같습니다.
-=======
-Each time a new alias instance is added, the new form array instance is provided its control based on the index. This allows you to track each individual control when calculating the status and value of the root control.
-
-#### Adding an alias
-
-Initially, the form contains one `Alias` field. To add another field, click the **Add Alias** button. You can also validate the array of aliases reported by the form model displayed by `Form Value` at the bottom of the template.
-
-<div class="alert is-helpful">
-
 **Note:** Instead of a form control instance for each alias, you can compose another form group instance with additional fields. The process of defining a control for each item is the same.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+**참고:** _aliases_ 필드는 폼 컨트롤 단위로 추가할 수도 있지만 폼 그룹 단위로 추가할 수도 있습니다. 폼 컨트롤을 정의하고 활용하는 방법은 같습니다.
 
 </div>
 
@@ -964,14 +946,10 @@ Listed below are the base classes and services used to create and manage form co
 
     <td>
 
-<<<<<<< HEAD
       <!--
-      The abstract base class for the three concrete form control classes; `FormControl`, `FormGroup`, and `FormArray`. It provides their common behaviors and properties.
+      The abstract base class for the concrete form control classes `FormControl`, `FormGroup`, and `FormArray`. It provides their common behaviors and properties.
       -->
       폼 컨트롤을 표현하는 `FormControl`, `FormGroup`, `FormArray`의 추상 클래스입니다. 폼 컨트롤의 공통 기능과 프로퍼티를 정의합니다.
-=======
-      The abstract base class for the concrete form control classes `FormControl`, `FormGroup`, and `FormArray`. It provides their common behaviors and properties.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 
     </td>
 
@@ -985,14 +963,10 @@ Listed below are the base classes and services used to create and manage form co
 
     <td>
 
-<<<<<<< HEAD
       <!--
-      Manages the value and validity status of an individual form control. It corresponds to an HTML form control such as an `<input>` or `<select>`.
+      Manages the value and validity status of an individual form control. It corresponds to an HTML form control such as `<input>` or `<select>`.
       -->
       개별 폼 컨트롤의 값과 유효성 검사 상태를 관리하는 클래스입니다. 이 클래스는 HTML 문서의 `<input>`이나 `<select>` 엘리먼트와 연동됩니다.
-=======
-      Manages the value and validity status of an individual form control. It corresponds to an HTML form control such as `<input>` or `<select>`.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 
     </td>
 
@@ -1006,14 +980,10 @@ Listed below are the base classes and services used to create and manage form co
 
     <td>
 
-<<<<<<< HEAD
       <!--
-      Manages the value and validity state of a group of `AbstractControl` instances. The group's properties include its child controls. The top-level form in your component is a `FormGroup`.
+      Manages the value and validity state of a group of `AbstractControl` instances. The group's properties include its child controls. The top-level form in your component is `FormGroup`.
       -->
       연관된 `AbstractControl` 인스턴스를 그룹으로 관리할 때 사용하는 클래스입니다. 이 그룹은 자식 폼 컨트롤을 프로퍼티로 관리하며, 그룹에 접근해도 자식 폼 컨트롤의 값이나 유효성 검사 상태도 확인할 수 있습니다. 컴포넌트의 최상위 폼도 `FormGroup` 입니다.
-=======
-      Manages the value and validity state of a group of `AbstractControl` instances. The group's properties include its child controls. The top-level form in your component is `FormGroup`.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 
     </td>
 
@@ -1055,15 +1025,7 @@ Listed below are the base classes and services used to create and manage form co
 
 </table>
 
-<<<<<<< HEAD
 <!--
-When importing the `ReactiveFormsModule`, you also gain access to directives to use in your templates for binding the data model to the forms declaratively.
--->
-애플리케이션에 `ReactiveFormsModule`을 로드하면 템플릿에 다음과 같은 디렉티브를 자유롭게 사용할 수 있습니다. 이 디렉티브들은 데이터 모델과 폼을 바인딩할 때 사용합니다.
-
-<!--
-=======
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 #### Directives
 -->
 #### 디렉티브
@@ -1113,14 +1075,10 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 
     <td>
 
-<<<<<<< HEAD
       <!--
-      Syncs a `FormControl` in an existing `FormGroup` to a form control element by name.
+      Syncs `FormControl` in an existing `FormGroup` instance to a form control element by name.
       -->
       이름으로 기준으로 `FormGroup` 안에 있는 `FormControl`을 연결합니다.
-=======
-      Syncs `FormControl` in an existing `FormGroup` instance to a form control element by name.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 
     </td>
 
@@ -1134,14 +1092,10 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 
     <td>
 
-<<<<<<< HEAD
       <!--
-      Syncs an existing `FormGroup` to a DOM element.
-      -->
-      `FormGroup`을 DOM 엘리먼트와 연결합니다.
-=======
       Syncs an existing `FormGroup` instance to a DOM element.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+      -->
+      `FormGroup` 인스턴스를 DOM 엘리먼트와 연결합니다.
 
     </td>
 
@@ -1155,14 +1109,10 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 
     <td>
 
-<<<<<<< HEAD
       <!--
-      Syncs a nested `FormGroup` to a DOM element.
-      -->
-      중첩된 `FormGroup`을 DOM 엘리먼트와 연결합니다.
-=======
       Syncs a nested `FormGroup` instance to a DOM element.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+      -->
+      중첩된 `FormGroup` 인스턴스를 DOM 엘리먼트와 연결합니다.
 
     </td>
 
@@ -1176,14 +1126,10 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 
     <td>
 
-<<<<<<< HEAD
       <!--
-      Syncs a nested `FormArray` to a DOM element.
-      -->
-      `FormArray`를 DOM 엘리먼트와 연결합니다.
-=======
       Syncs a nested `FormArray` instance to a DOM element.
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+      -->
+      `FormArray` 인스턴스를 DOM 엘리먼트와 연결합니다.
 
     </td>
 
@@ -1196,47 +1142,33 @@ When importing the `ReactiveFormsModule`, you also gain access to directives to 
 -->
 ## 템플릿 기반 폼과 비교
 
-<<<<<<< HEAD
 <!--
-_Template-driven_ forms, introduced in the [Template-driven forms guide](guide/forms), take a completely different approach.
--->
-반응형 폼을 구현하는 방식은 [템플릿 기반의 폼](guide/forms)을 구현하는 방식과 완전히 다릅니다.
-
-<!--
-* You place HTML form controls (such as `<input>` and `<select>`) in the component template and bind them to _data model_ properties in the component, using directives such as `ngModel`.
--->
-* 반응형 폼을 구현할 때는 `<input>`이나 `<select>`와 같은 HTML 폼 컨트롤을 컴포넌트 템플릿에 선언하고 이 엘리먼트를 컴포넌트에 있는 프로퍼티 _데이터 모델_ 과 바인딩합니다. 이 때 `ngModel`과 같은 디렉티브를 사용합니다.
-
-<!--
-* You don't create Angular form control objects. Angular directives create them for you, using the information in your data bindings.
--->
-* 반응형 폼을 구현할 때는 Angular 폼 컨트롤 객체를 직접 생성하지 않습니다. 폼 컨트롤 객체는 Angular 디렉티브가 생성하고, 개발자는 데이터 바인딩을 통해 폼 컨트롤을 활용할 뿐입니다.
-
-<!--
-* You don't push and pull data values. Angular handles that for you with `ngModel`. Angular updates the mutable _data model_ with user changes as they happen.
--->
-* 반응형 폼에서는 데이터를 폼에 직접 반영하거나 폼에서 데이터를 직접 가져오지 않습니다. 이 동작은 Angular의 `ngModel`이 대신 수행하며, 사용자가 입력 필드의 값을 변경했을 때 자동으로 _데이터 모델_ 을 갱신합니다.
-
-<!--
-While this means less code in the component class,
-[template-driven forms are asynchronous](guide/reactive-forms#async-vs-sync "Async vs sync")
-which may complicate development in more advanced scenarios.
--->
-템플릿 기반의 폼을 사용하면 컴포넌트 클래스에 상대적으로 적은 코드를 작성하기 때문에 더 간단해 보일 수 있지만, [템플릿 기반의 폼은 비동기로 동작하기 때문에](guide/reactive-forms#async-vs-sync "Async vs sync") 복잡한 시나리오를 처리하기에는 적합하지 않습니다.
-=======
 *Template-driven* forms, introduced in the [Template-driven forms guide](guide/forms), take a completely different approach compared to reactive forms. With template-drive forms, you follow these rules:
+-->
+반응형 폼을 구현하는 방식은 [템플릿 기반의 폼](guide/forms)을 구현하는 방식과 완전히 다릅니다. 템플릿 기반의 폼은 다음 순서로 개발합니다:
 
+<!--
 * Place HTML form controls (such as `<input>` and `<select>`) in the component template and bind them to data model properties in the component, using directives such as `ngModel`.
+-->
+* `<input>`이나 `<select>`와 같은 HTML 폼 컨트롤을 컴포넌트 템플릿에 선언하고 이 엘리먼트를 컴포넌트에 있는 프로퍼티 데이터 모델과 바인딩합니다. 이 때 `ngModel`과 같은 디렉티브를 사용합니다.
 
+<!--
 * Don't create Angular form control objects. Angular directives create them for you, using the information in your data bindings.
+-->
+* Angular 폼 컨트롤 객체는 생성하지 않습니다. 폼 컨트롤은 Angular 디렉티브가 생성하며, 템플릿에서는 디렉티브로 데이터를 바인딩해서 사용하기만 합니다.
 
+<!--
 * Don't push and pull data values. Angular handles that for you with `ngModel`. Angular updates the mutable data model with user changes as they happen.
+-->
+* 폼 컨트롤의 값을 직접 가져오거나 수동으로 갱신하지 않습니다. 이 동작은 모두 Angular가 제공하는 `ngModel`이 수행하며, 사용자가 입력필드의 값을 변경했을 때 자동으로 데이터 모델을 갱신합니다.
 
+<!--
 While using template-driven forms means less code in the component class, 
 they are [asynchronous](guide/reactive-forms#async-vs-sync "Async vs sync"), 
 which can complicate development in more advanced scenarios.
+-->
+템플릿 기반의 폼을 사용하면 컴포넌트 클래스에 상대적으로 적은 코드를 작성하기 때문에 더 간단해 보일 수 있지만, [템플릿 기반의 폼은 비동기로 동작하기 때문에](guide/reactive-forms#async-vs-sync "Async vs sync") 복잡한 시나리오를 처리하기에는 적합하지 않습니다.
 
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 
 {@a async-vs-sync}
 
@@ -1251,69 +1183,41 @@ Reactive forms are synchronous, and template-driven forms are asynchronous.
 -->
 반응형 폼은 동기 방식으로 동작하며, 템플릿 기반의 폼은 비동기로 동작합니다.
 
-<<<<<<< HEAD
 <!--
-In reactive forms, you create the entire form control tree in code.
-You can immediately update a value or drill down through the descendants of the parent form
-=======
 In reactive forms, you create the entire form control tree in code. 
 You can immediately update a value or drill down through the descendants of the parent form 
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 because all controls are always available.
 -->
 반응형 폼을 사용할 때는 폼 컨트롤의 전체 구조를 코드에 정의합니다.
 그래서 폼 컨트롤도 코드에서 자유롭게 접근할 수 있기 때문에 폼 컨트롤의 값을 변경하거나 폼 안쪽에 있는 폼 컨트롤에 접근하는 것도 자유롭습니다.
 
-<<<<<<< HEAD
 <!--
-Template-driven forms delegate creation of their form controls to directives.
-To avoid "_changed after checked_" errors,
-these directives take more than one cycle to build the entire control tree.
-That means you must wait a tick before manipulating any of the controls
-=======
 Template-driven forms delegate the creation of their form controls to directives. 
 To avoid *changed after checked* errors, 
 these directives take more than one cycle to build the entire control tree. 
 That means you must wait until the next change detection cycle happens before manipulating any of the controls 
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 from within the component class.
 -->
 하지만 템플릿 기반의 폼은 폼 컨트롤의 구조를 디렉티브로 정의합니다.
-그래서 "_값이 체크된 이후에 다시 변경되는_" 에러를 방지하기 위해, 템플릿 기반 폼의 디렉티브를 사용하면 실행 싸이클을 최소한 한 번 기다려야 합니다.
+그래서 *값이 체크된 이후에 다시 변경되는* 에러를 방지하기 위해, 템플릿 기반 폼의 디렉티브를 사용하면 실행 싸이클을 최소한 한 번 기다려야 합니다.
 컴포넌트 클래스에서 템플릿 기반의 폼 컨트롤을 처리할 때도 마찬가지입니다.
 
-<<<<<<< HEAD
 <!--
-For example, if you inject the form control with a `@ViewChild(NgForm)` query and examine it in the
-[`ngAfterViewInit` lifecycle hook](guide/lifecycle-hooks#afterview "Lifecycle hooks guide: AfterView"),
-you'll discover that it has no children.
-You must wait a tick, using `setTimeout`, before you can
-=======
 For example, if you inject the form control with a `@ViewChild(NgForm)` query and examine it in the 
 [`ngAfterViewInit` lifecycle hook](guide/lifecycle-hooks#afterview "Lifecycle hooks guide: AfterView"), 
 you'll discover that it has no children. 
 You must trigger a change detection cycle using `setTimeout()` before you can 
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
 extract a value from a control, test its validity, or set it to a new value.
 -->
 예를 들어 폼 컨트롤을 `@ViewChild(NgForm)` 쿼리로 참조하고, 이 프로퍼티를 [`ngAfterViewInit` 라이프싸이클 후킹 함수](guide/lifecycle-hooks#afterview "Lifecycle hooks guide: AfterView")에서 확인하면 이 프로퍼티는 빈 값이기 때문에 바로 사용할 수 없습니다.
-이런 경우에 폼 컨트롤의 값을 확인하거나 유효성을 검사할 때, 새로운 값을 지정할 때는 `setTimeout` 함수를 사용해서 한 싸이클 기다려야 합니다.
+이런 경우에 폼 컨트롤의 값을 확인하거나 유효성을 검사할 때, 새로운 값을 지정할 때는 `setTimeout()` 함수를 사용해서 한 싸이클 기다려야 합니다.
 
-<<<<<<< HEAD
 <!--
-The asynchrony of template-driven forms also complicates unit testing.
-You must wrap your test block in `async()` or `fakeAsync()` to
-avoid looking for values in the form that aren't there yet.
-With reactive forms, everything is available when you expect it to be.
--->
-템플릿 기반의 폼은 비동기로 동작하기 때문에 유닛 테스트를 적용하기도 어렵습니다.
-폼 컨트롤의 값이 제대로 지정된 것을 보장하려면 모든 테스트 코드에 `async()`나 `fakeAsync()`를 사용해야 하기 때문입니다.
-하지만 반응형 폼이라면 모든 것이 비동기이기 때문에 개발자가 예상한 대로 모두 동작합니다.
-=======
 The asynchrony of template-driven forms also complicates unit testing. 
 You must wrap your test block in `async()` or `fakeAsync()` to 
 avoid looking for values in the form that aren't there yet. 
 With reactive forms, everything is available immediately.
-
-
->>>>>>> 8fa099158e54f96dd60f4612862e3400a6f0d9bd
+-->
+템플릿 기반의 폼은 비동기로 동작하기 때문에 유닛 테스트를 적용하기도 어렵습니다.
+폼 컨트롤의 값이 제대로 지정된 것을 보장하려면 모든 테스트 코드에 `async()`나 `fakeAsync()`를 사용해야 하기 때문입니다.
+하지만 반응형 폼이라면 모든 것이 동기 방식으로 동작하기 때문에 JavaScript 실행 싸이클을 기다리지 않아도 됩니다.
