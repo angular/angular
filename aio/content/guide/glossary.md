@@ -132,7 +132,7 @@ A [decorator](guide/glossary#decorator) statement immediately before a field in 
 
 The [Angular CLI](https://cli.angular.io/) is a command-line tool for managing the Angular development cycle. Use it to create the initial filesystem scaffolding for a [workspace](guide/glossary#workspace) or [project](guide/glossary#project), and to run [schematics](guide/glossary#schematic) that add and modify code for initial generic versions of various elements. The CLI supports all stages of the development cycle, including building, testing, bundling, and deployment.
 
-* To begin using the CLI for a new project, see [QuickStart](guide/quickstart).
+* To begin using the CLI for a new project, see [Getting Started](guide/quickstart).
 * To learn more about the full capabilities of the CLI, see the [Angular CLI documentation](https://github.com/angular/angular-cli/wiki).
 
 {@a component}

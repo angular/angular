@@ -1,4 +1,4 @@
-# QuickStart
+# Getting Started
 
 Good tools make application development quicker and easier to maintain than
 if you did everything by hand.
@@ -147,7 +147,7 @@ Open `src/app/app.component.css` and give the component some style.
 
 
 <figure>
-  <img src='generated/images/guide/cli-quickstart/my-first-app.png' alt="Output of QuickStart app">
+  <img src='generated/images/guide/cli-quickstart/my-first-app.png' alt="Output of Getting Started app">
 </figure>
 
 
