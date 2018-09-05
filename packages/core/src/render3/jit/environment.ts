@@ -102,10 +102,10 @@ export const angularCoreEnv: {[name: string]: Function} = {
   'ɵembeddedViewStart': r3.embeddedViewStart,
   'ɵembeddedViewEnd': r3.embeddedViewEnd,
 
-  'ɵzh': sanitization.sanitizeHtml,
-  'ɵzs': sanitization.sanitizeStyle,
-  'ɵzss': sanitization.defaultStyleSanitizer,
-  'ɵzr': sanitization.sanitizeResourceUrl,
-  'ɵzc': sanitization.sanitizeScript,
-  'ɵzu': sanitization.sanitizeUrl
+  'ɵsanitizeHtml': sanitization.sanitizeHtml,
+  'ɵsanitizeStyle': sanitization.sanitizeStyle,
+  'ɵdefaultStyleSanitizer': sanitization.defaultStyleSanitizer,
+  'ɵsanitizeResourceUrl': sanitization.sanitizeResourceUrl,
+  'ɵsanitizeScript': sanitization.sanitizeScript,
+  'ɵsanitizeUrl': sanitization.sanitizeUrl
 };
