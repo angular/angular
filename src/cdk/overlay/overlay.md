@@ -1,5 +1,15 @@
 The `overlay` package provides a way to open floating panels on the screen.
 
+### Initial setup
+The CDK overlays depend on a small set of structural styles to work correctly. If you're using
+Angular Material, these styles have been included together with the theme, otherwise if you're
+using the CDK on its own, you'll have to include the styles yourself. You can do so by importing
+the prebuilt styles in your global stylesheet:
+
+```scss
+@import '~@angular/cdk/overlay-prebuilt.css';
+```
+
 ### Creating overlays
 Calling `overlay.create()` will return an `OverlayRef` instance. This instance is a handle for
 managing that specific overlay.
