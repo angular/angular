@@ -330,7 +330,7 @@ You may need [nvm](https://github.com/creationix/nvm) if you already have projec
 Links on almost every documentation page open completed samples in the browser.
 You can play with the sample code, share your changes with friends, and download and run the code on your own machine.
 
-The [QuickStart](guide/quickstart "Angular QuickStart Playground") shows just the `AppComponent` file.
+The [Getting Started](guide/quickstart "Angular QuickStart Playground") shows just the `AppComponent` file.
 It creates the equivalent of `app.module.ts` and `main.ts` internally _for the playground only_.
 so the reader can discover Angular without distraction.
 The other samples are based on the QuickStart seed.
