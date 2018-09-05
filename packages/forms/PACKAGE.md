@@ -17,8 +17,8 @@ You can build forms in one of two ways:
 * *Reactive forms* use existing instances of a `FormControl` or `FormGroup` to build a form model. This form
 model is synced with form input elements through directives to track and communicate changes back to the form model. Changes
 to the value and status of the controls are provided as observables.
-* *Template-driven* use directives such as `NgModel` and `NgModelGroup` that provide two-way data binding to 
-track changes within the template using the change detection cycle.
+* *Template-driven forms* rely on directives such as `NgModel` and `NgModelGroup` create the form model for you,
+so any changes to the form are communicated through the template.
 
 
 @see Find out more in the [Forms Overview](guide/forms-overview).

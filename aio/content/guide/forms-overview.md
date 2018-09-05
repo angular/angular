@@ -15,7 +15,7 @@ Both reactive and template-driven forms share underlying building blocks, the `F
 
 ## Control value accessors
 
-Control value accessors define a bridge between Angular forms and native DOM elements. The `ControlValueAccessor` interface defines methods for interacting with native elements including: reading from and writing values to them, disabling or enabling their elements, and providing callback functions for when the control's value changes in the UI or becomes touched. A built-in accessor is attached to every form field when using either forms modules in Angular, unless a custom value accessor has been activated on that field. 
+Control value accessors define a bridge between Angular forms and native DOM elements. The `ControlValueAccessor` interface defines methods for interacting with native elements including: reading from and writing values to them, disabling or enabling their elements, and providing callback functions for when the control's value changes in the UI or becomes touched. A built-in accessor is attached to every form field when using either forms module in Angular, unless a custom value accessor has been activated on that field. 
 
 ## Data flow in forms
 
