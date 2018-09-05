@@ -7,19 +7,19 @@
  */
 
 import {assertDefined, assertEqual} from './assert';
-import {LNode, TNodeType} from './interfaces/node';
+import {LNode, TNode, TNodeType} from './interfaces/node';
 
-export function assertNodeType(node: LNode, type: TNodeType) {
-  assertDefined(node, 'should be called with a node');
-  assertEqual(node.tNode.type, type, `should be a ${typeName(type)}`);
+export function assertNodeType(tNode: TNode, type: TNodeType) {
+  assertDefined(tNode, 'should be called with a TNode');
+  assertEqual(tNode.type, type, `should be a ${typeName(type)}`);
 }
 
-export function assertNodeOfPossibleTypes(node: LNode, ...types: TNodeType[]) {
-  assertDefined(node, 'should be called with a node');
-  const found = types.some(type => node.tNode.type === type);
+export function assertNodeOfPossibleTypes(tNode: TNode, ...types: TNodeType[]) {
+  assertDefined(tNode, 'should be called with a TNode');
+  const found = types.some(type => tNode.type === type);
   assertEqual(
       found, true,
-      `Should be one of ${types.map(typeName).join(', ')} but got ${typeName(node.tNode.type)}`);
+      `Should be one of ${types.map(typeName).join(', ')} but got ${typeName(tNode.type)}`);
 }
 
 function typeName(type: TNodeType): string {

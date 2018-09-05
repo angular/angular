@@ -12,7 +12,7 @@ import {Sanitizer} from '../../sanitization/security';
 
 import {LContainer} from './container';
 import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDefInternal, PipeDefList} from './definition';
-import {LElementNode, LViewNode, TNode} from './node';
+import {LElementNode, LViewNode, TElementNode, TNode, TViewNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
 
@@ -277,9 +277,15 @@ export interface TView {
    * We need this pointer to be able to efficiently find this node when inserting the view
    * into an anchor.
    *
-   * If this is a `TNode` for an `LElementNode`, this is the TView of a component.
+   * If this is a `TElementNode`, this is the view of a root component. It has exactly one
+   * root TNode.
+   *
+   * If this is null, this is the view of a component that is not at root. We do not store
+   * the host TNodes for child component views because they can potentially have several
+   * different host TNodes, depending on where the component is being used. These host
+   * TNodes cannot be shared (due to different indices, etc).
    */
-  node: TNode;
+  node: TViewNode|TElementNode|null;
 
   /** Whether or not this template has been processed. */
   firstTemplatePass: boolean;
