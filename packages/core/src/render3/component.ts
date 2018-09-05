@@ -111,7 +111,7 @@ export function renderComponent<T>(
       componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
   rootView[INJECTOR] = opts.injector || null;
 
-  const oldView = enterView(rootView, null !);
+  const oldView = enterView(rootView, null);
   let elementNode: LElementNode;
   let component: T;
   try {
@@ -121,7 +121,7 @@ export function renderComponent<T>(
     elementNode = hostElement(componentTag, hostNode, componentDef, sanitizer);
 
     // Create directive instance with factory() and store at index 0 in directives array
-    component = baseDirectiveCreate(0, componentDef.factory() as T, componentDef);
+    component = baseDirectiveCreate(0, componentDef.factory() as T, componentDef, elementNode);
     if (componentDef.hostBindings) {
       queueHostBindingForCheck(0, componentDef.hostVars);
     }

@@ -1722,6 +1722,9 @@
     "name": "getPreviousOrParentNode"
   },
   {
+    "name": "getPreviousOrParentTNode"
+  },
+  {
     "name": "getPromiseCtor"
   },
   {

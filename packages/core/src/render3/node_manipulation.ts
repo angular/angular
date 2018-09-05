@@ -13,7 +13,7 @@ import {LContainer, RENDER_PARENT, VIEWS, unusedValueExportToPlacateAjd as unuse
 import {LContainerNode, LElementContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, TNode, TNodeFlags, TNodeType, unusedValueExportToPlacateAjd as unused2} from './interfaces/node';
 import {unusedValueExportToPlacateAjd as unused3} from './interfaces/projection';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, isProceduralRenderer, unusedValueExportToPlacateAjd as unused4} from './interfaces/renderer';
-import {CLEANUP, CONTAINER_INDEX, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
+import {CLEANUP, CONTAINER_INDEX, DECLARATION_VIEW, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, HookData, LViewData, LViewFlags, NEXT, PARENT, QUERIES, RENDERER, TVIEW, unusedValueExportToPlacateAjd as unused5} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {readElementValue, stringify} from './util';
 
@@ -194,7 +194,7 @@ export function findComponentHost(lViewData: LViewData): LElementNode {
     viewRootLNode = lViewData[HOST_NODE];
   }
 
-  ngDevMode && assertNodeType(viewRootLNode, TNodeType.Element);
+  ngDevMode && assertNodeType(viewRootLNode.tNode, TNodeType.Element);
   ngDevMode && assertDefined(viewRootLNode.data, 'node.data');
 
   return viewRootLNode as LElementNode;
@@ -246,8 +246,8 @@ export function addRemoveViewFromContainer(
 export function addRemoveViewFromContainer(
     container: LContainerNode, rootNode: LViewNode, insertMode: boolean,
     beforeNode?: RNode | null): void {
-  ngDevMode && assertNodeType(container, TNodeType.Container);
-  ngDevMode && assertNodeType(rootNode, TNodeType.View);
+  ngDevMode && assertNodeType(container.tNode, TNodeType.Container);
+  ngDevMode && assertNodeType(rootNode.tNode, TNodeType.View);
   const parentNode = container.data[RENDER_PARENT];
   const parent = parentNode ? parentNode.native : null;
   if (parent) {
@@ -544,7 +544,7 @@ function canInsertNativeChildOfElement(parent: LElementNode, currentView: LViewD
  * the container itself has it render parent determined.
  */
 function canInsertNativeChildOfView(parent: LViewNode): boolean {
-  ngDevMode && assertNodeType(parent, TNodeType.View);
+  ngDevMode && assertNodeType(parent.tNode, TNodeType.View);
 
   // Because we are inserting into a `View` the `View` may be disconnected.
   const grandParentContainer = getParentLNode(parent) as LContainerNode;
@@ -552,7 +552,7 @@ function canInsertNativeChildOfView(parent: LViewNode): boolean {
     // The `View` is not inserted into a `Container` we have to delay insertion.
     return false;
   }
-  ngDevMode && assertNodeType(grandParentContainer, TNodeType.Container);
+  ngDevMode && assertNodeType(grandParentContainer.tNode, TNodeType.Container);
   if (grandParentContainer.data[RENDER_PARENT] == null) {
     // The parent `Container` itself is disconnected. So we have to delay.
     return false;
@@ -584,7 +584,7 @@ function canInsertNativeChildOfView(parent: LViewNode): boolean {
 export function canInsertNativeNode(parent: LNode, currentView: LViewData): boolean {
   // We can only insert into a Component or View. Any other type should be an Error.
   ngDevMode && assertNodeOfPossibleTypes(
-                   parent, TNodeType.Element, TNodeType.ElementContainer, TNodeType.View);
+                   parent.tNode, TNodeType.Element, TNodeType.ElementContainer, TNodeType.View);
 
   if (parent.tNode.type === TNodeType.Element) {
     // Parent is a regular element or a component
