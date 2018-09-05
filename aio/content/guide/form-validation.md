@@ -446,8 +446,12 @@ This completes the cross validation example. We managed to:
 - validate the form based on the values of two sibling controls,
 - show a descriptive error message after the user interacted with the form and the validation failed.
 
+<!--
 ## Async Validation
 This section shows how to create asynchronous validators. It assumes some basic knowledge of creating [custom validators](guide/form-validation#custom-validators).
+-->
+## Async Validation
+This section shows how to create asynchronous validators. It assumes some basic knowledge of creating [custom validators](guide/form-validation#커스텀-유효성-검사기).
 
 ### The Basics
 Just like synchronous validators have the `ValidatorFn` and `Validator` interfaces, asynchronous validators have their own counterparts: `AsyncValidatorFn` and `AsyncValidator`.

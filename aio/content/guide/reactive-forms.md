@@ -192,7 +192,7 @@ The displayed value changes as you update the form control element.
 <!--
 Reactive forms provide access to information about a given control through properties and methods provided with each instance. These properties and methods of the underlying [AbstractControl](api/forms/AbstractControl) class are used to control form state and determine when to display messages when handling validation. For more information, see [Simple form validation](#simple-form-validation) later in this guide.
 -->
-반응형 폼에서는 각 폼 컨트롤의 프로퍼티나 메소드를 사용해서 폼 컨트롤이 제공하는 정보에 접근할 수 있습니다. 프로퍼티와 메소드는 [AbstractControl](api/forms/AbstractControl) 클래스에 정의되어 있으며, 폼 컨트롤의 값을 확인하는 것외에도 폼 컨트롤의 상태를 확인하거나 유효성을 검사하는 용도로도 사용할 수 있습니다. 더 자세한 내용은 이후에 나오는 [간단한 폼 유효성 검사](#simple-form-validation) 섹션을 참고하세요.
+반응형 폼에서는 각 폼 컨트롤의 프로퍼티나 메소드를 사용해서 폼 컨트롤이 제공하는 정보에 접근할 수 있습니다. 프로퍼티와 메소드는 [AbstractControl](api/forms/AbstractControl) 클래스에 정의되어 있으며, 폼 컨트롤의 값을 확인하는 것외에도 폼 컨트롤의 상태를 확인하거나 유효성을 검사하는 용도로도 사용할 수 있습니다. 더 자세한 내용은 이후에 나오는 [폼 유효성 검사하기](#폼-유효성-검사하기-기본) 섹션을 참고하세요.
 
 <!--
 Read about other `FormControl` properties and methods in the [Reactive forms API](#reactive-forms-api) section.
