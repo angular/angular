@@ -35,7 +35,6 @@
     "example-use-local": "node tools/ng-packages-installer overwrite ./tools/examples/shared --debug",
     "example-use-npm": "node tools/ng-packages-installer restore ./tools/examples/shared",
     "example-check-local": "node tools/ng-packages-installer check ./tools/examples/shared",
-    "deploy-preview": "scripts/deploy-preview.sh",
     "deploy-production": "scripts/deploy-to-firebase.sh",
     "check-env": "yarn ~~check-env",
     "postcheck-env": "yarn aio-check-local",
@@ -58,11 +57,12 @@
     "generate-zips": "node ./tools/example-zipper/generateZips",
     "sw-manifest": "ngu-sw-manifest --dist dist --in ngsw-manifest.json --out dist/ngsw-manifest.json",
     "sw-copy": "cp node_modules/@angular/service-worker/bundles/worker-basic.min.js dist/",
+    "build-404-page": "node scripts/build-404-page",
     "build-ie-polyfills": "yarn webpack-cli src/ie-polyfills.js -o src/generated/ie-polyfills.min.js --mode production",
     "update-webdriver": "webdriver-manager update --standalone false --gecko false $CHROMEDRIVER_VERSION_ARG",
     "~~check-env": "node scripts/check-environment",
     "~~build": "ng build",
-    "post~~build": "yarn sw-manifest && yarn sw-copy"
+    "post~~build": "yarn build-404-page && yarn sw-manifest && yarn sw-copy"
   },
   "engines": {
     "node": ">=8.9.1 <9.0.0",
@@ -112,7 +112,7 @@
     "cross-spawn": "^5.1.0",
     "css-selector-parser": "^1.3.0",
     "dgeni": "^0.4.7",
-    "dgeni-packages": "^0.26.2",
+    "dgeni-packages": "^0.26.3",
     "entities": "^1.1.1",
     "eslint": "^3.19.0",
     "eslint-plugin-jasmine": "^2.2.0",

@@ -6,6 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
+import {ViewEncapsulation} from '../../core';
 import * as o from '../../output/output_ast';
 import {ParseSourceSpan} from '../../parse_util';
 import * as t from '../r3_ast';
@@ -38,7 +39,7 @@ export interface R3DirectiveMetadata {
   /**
    * Dependencies of the directive's constructor.
    */
-  deps: R3DependencyMetadata[];
+  deps: R3DependencyMetadata[]|null;
 
   /**
    * Unparsed selector of the directive, or `null` if there was no selector.
@@ -96,6 +97,12 @@ export interface R3DirectiveMetadata {
    * Whether or not the component or directive inherits from another class
    */
   usesInheritance: boolean;
+
+  /**
+   * Reference name under which to export the directive's type in a template,
+   * if any.
+   */
+  exportAs: string|null;
 }
 
 /**
@@ -138,6 +145,29 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
    * scope of the compilation.
    */
   directives: Map<string, o.Expression>;
+
+  /**
+   * Whether to wrap the 'directives' array, if one is generated, in a closure.
+   *
+   * This is done when the directives contain forward references.
+   */
+  wrapDirectivesInClosure: boolean;
+
+  /**
+   * A collection of styling data that will be applied and scoped to the component.
+   */
+  styles: string[];
+
+  /**
+   * An encapsulation policy for the template and CSS styles. One of:
+   * - `ViewEncapsulation.Native`: Use shadow roots. This works only if natively available on the
+   *   platform (note that this is marked the as the "deprecated shadow DOM" as of Angular v6.1.
+   * - `ViewEncapsulation.Emulated`: Use shimmed CSS that emulates the native behavior.
+   * - `ViewEncapsulation.None`: Use global CSS without any encapsulation.
+   * - `ViewEncapsulation.ShadowDom`: Use the latest ShadowDOM API to natively encapsulate styles
+   * into a shadow root.
+   */
+  encapsulation: ViewEncapsulation;
 }
 
 /**
@@ -177,6 +207,7 @@ export interface R3QueryMetadata {
 export interface R3DirectiveDef {
   expression: o.Expression;
   type: o.Type;
+  statements: o.Statement[];
 }
 
 /**
@@ -185,4 +216,5 @@ export interface R3DirectiveDef {
 export interface R3ComponentDef {
   expression: o.Expression;
   type: o.Type;
+  statements: o.Statement[];
 }

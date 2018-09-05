@@ -6,10 +6,11 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, Statement, Type} from '@angular/compiler';
+import {ConstantPool, Expression, Statement, Type} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {Decorator} from '../../host';
+
 
 /**
  * Provides the interface between a decorator compiler from @angular/compiler and the Typescript
@@ -19,12 +20,12 @@ import {Decorator} from '../../host';
  * responsible for extracting the information required to perform compilation from the decorators
  * and Typescript source, invoking the decorator compiler, and returning the result.
  */
-export interface DecoratorHandler<A> {
+export interface DecoratorHandler<A, M> {
   /**
    * Scan a set of reflected decorators and determine if this handler is responsible for compilation
    * of one of them.
    */
-  detect(decorator: Decorator[]): Decorator|undefined;
+  detect(node: ts.Declaration, decorators: Decorator[]|null): M|undefined;
 
 
   /**
@@ -33,20 +34,21 @@ export interface DecoratorHandler<A> {
    * `preAnalyze` is optional and is not guaranteed to be called through all compilation flows. It
    * will only be called if asynchronicity is supported in the CompilerHost.
    */
-  preanalyze?(node: ts.Declaration, decorator: Decorator): Promise<void>|undefined;
+  preanalyze?(node: ts.Declaration, metadata: M): Promise<void>|undefined;
 
   /**
    * Perform analysis on the decorator/class combination, producing instructions for compilation
    * if successful, or an array of diagnostic messages if the analysis fails or the decorator
    * isn't valid.
    */
-  analyze(node: ts.Declaration, decorator: Decorator): AnalysisOutput<A>;
+  analyze(node: ts.Declaration, metadata: M): AnalysisOutput<A>;
 
   /**
    * Generate a description of the field which should be added to the class, including any
    * initialization code to be generated.
    */
-  compile(node: ts.Declaration, analysis: A): CompileResult|CompileResult[];
+  compile(node: ts.Declaration, analysis: A, constantPool: ConstantPool): CompileResult
+      |CompileResult[];
 }
 
 /**
@@ -57,6 +59,7 @@ export interface DecoratorHandler<A> {
 export interface AnalysisOutput<A> {
   analysis?: A;
   diagnostics?: ts.Diagnostic[];
+  factorySymbolName?: string;
 }
 
 /**

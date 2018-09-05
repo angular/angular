@@ -338,6 +338,8 @@ export class WriteVarExpr extends Expression {
   toDeclStmt(type?: Type|null, modifiers?: StmtModifier[]|null): DeclareVarStmt {
     return new DeclareVarStmt(this.name, this.value, type, modifiers, this.sourceSpan);
   }
+
+  toConstDecl(): DeclareVarStmt { return this.toDeclStmt(INFERRED_TYPE, [StmtModifier.Final]); }
 }
 
 

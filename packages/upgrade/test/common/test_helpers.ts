@@ -15,6 +15,10 @@ const ng1Versions = [
   },
   {
     label: '1.6',
+    files: ['angular-1.6/angular.js', 'angular-mocks-1.6/angular-mocks.js'],
+  },
+  {
+    label: '1.7',
     files: ['angular/angular.js', 'angular-mocks/angular-mocks.js'],
   },
 ];
@@ -49,31 +53,48 @@ export function createWithEachNg1VersionFn(setNg1: typeof setAngularJSGlobal) {
       }
 
       beforeAll(done => {
+        const restoreJasmineMethods = patchJasmineMethods();
+        const onSuccess = () => {
+          restoreJasmineMethods();
+          done();
+        };
+        const onError = (err: any) => {
+          restoreJasmineMethods();
+          done.fail(err);
+        };
+
         // Load AngularJS before running tests.
         files
             .reduce(
                 (prev, file) => prev.then(() => new Promise<void>((resolve, reject) => {
-                                            const restoreMethods = patchJasmineMethods();
                                             const script = document.createElement('script');
-                                            script.src = `base/angular_deps/node_modules/${file}`;
+                                            script.async = true;
                                             script.onerror = reject;
                                             script.onload = () => {
                                               document.body.removeChild(script);
-                                              restoreMethods();
                                               resolve();
                                             };
+                                            script.src = `base/angular_deps/node_modules/${file}`;
                                             document.body.appendChild(script);
                                           })),
                 Promise.resolve())
             .then(() => setNg1(win.angular))
-            .then(done, done.fail);
-      });
+            .then(onSuccess, onError);
+
+        // When Saucelabs is flaky, some browsers (esp. mobile) take some time to load and execute
+        // the AngularJS scripts. Specifying a higher timeout here, reduces flaky-ness.
+      }, 60000);
 
       afterAll(() => {
-        // In these tests we are loading different versions of AngularJS on the same window.
-        // AngularJS leaves an "expandoId" property on `document`, which can trick subsequent
-        // `window.angular` instances into believing an app is already bootstrapped.
-        win.angular.element(document).removeData();
+        // `win.angular` will not be defined if loading the script in `berofeAll()` failed. In that
+        // case, avoid causing another error in `afterAll()`, because the reporter only shows the
+        // most recent error (thus hiding the original, possibly more informative, error message).
+        if (win.angular) {
+          // In these tests we are loading different versions of AngularJS on the same window.
+          // AngularJS leaves an "expandoId" property on `document`, which can trick subsequent
+          // `window.angular` instances into believing an app is already bootstrapped.
+          win.angular.element.cleanData([document]);
+        }
 
         // Remove AngularJS to leave a clean state for subsequent tests.
         setNg1(undefined);

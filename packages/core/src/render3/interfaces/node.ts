@@ -21,11 +21,12 @@ import {LViewData, TView} from './view';
  * on how to map a particular set of bits in LNode.flags to the node type.
  */
 export const enum TNodeType {
-  Container = 0b00,
-  Projection = 0b01,
-  View = 0b10,
-  Element = 0b11,
-  ViewOrElement = 0b10,
+  Container = 0b000,
+  Projection = 0b001,
+  View = 0b010,
+  Element = 0b011,
+  ViewOrElement = 0b010,
+  ElementContainer = 0b100,
 }
 
 /**
@@ -41,8 +42,11 @@ export const enum TNodeFlags {
   /** This bit is set if the node has been projected */
   isProjected = 0b00000000000000000010000000000000,
 
+  /** This bit is set if the node has any content queries */
+  hasContentQuery = 0b00000000000000000100000000000000,
+
   /** The index of the first directive on this node is encoded on the most significant bits  */
-  DirectiveStartingIndexShift = 14,
+  DirectiveStartingIndexShift = 15,
 }
 
 /**
@@ -70,11 +74,10 @@ export interface LNode {
   readonly native: RComment|RElement|RText|null;
 
   /**
-   * If regular LElementNode, then `data` will be null.
-   * If LElementNode with component, then `data` contains LView.
-   * If LViewNode, then `data` contains the LView.
+   * If regular LElementNode, LTextNode, and LProjectionNode then `data` will be null.
+   * If LElementNode with component, then `data` contains LViewData.
+   * If LViewNode, then `data` contains the LViewData.
    * If LContainerNode, then `data` contains LContainer.
-   * If LProjectionNode, then `data` contains LProjection.
    */
   readonly data: LViewData|LContainer|null;
 
@@ -88,13 +91,6 @@ export interface LNode {
 
   /** The injector associated with this node. Necessary for DI. */
   nodeInjector: LInjector|null;
-
-  /**
-   * Optional set of queries that track query-related events for this node.
-   *
-   * If present the node creation/updates are reported to the `LQueries`.
-   */
-  queries: LQueries|null;
 
   /**
    * Pointer to the corresponding TNode object, which stores static
@@ -117,6 +113,13 @@ export interface LElementNode extends LNode {
 
   /** If Component then data has LView (light DOM) */
   readonly data: LViewData|null;
+}
+
+/** LNode representing <ng-container>. */
+export interface LElementContainerNode extends LNode {
+  /** The DOM comment associated with this node. */
+  readonly native: RComment;
+  readonly data: null;
 }
 
 /** LNode representing a #text node. */
@@ -521,3 +524,16 @@ export type InitialInputs = string[];
 // Note: This hack is necessary so we don't erroneously get a circular dependency
 // failure based on types.
 export const unusedValueExportToPlacateAjd = 1;
+
+/**
+ * Type representing a set of LNodes that can have local refs (`#foo`) placed on them.
+ */
+export type LNodeWithLocalRefs = LContainerNode | LElementNode | LElementContainerNode;
+
+/**
+ * Type for a function that extracts a value for a local refs.
+ * Example:
+ * - `<div #nativeDivEl>` - `nativeDivEl` should point to the native `<div>` element;
+ * - `<ng-template #tplRef>` - `tplRef` should point to the `TemplateRef` instance;
+ */
+export type LocalRefExtractor = (lNode: LNodeWithLocalRefs) => any;

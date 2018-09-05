@@ -7,7 +7,7 @@
 Improve overall data quality by validating user input for accuracy and completeness.
 
 This page shows how to validate user input in the UI and display useful validation messages
-using both reactive and template-driven forms. It assumes some basic knowledge of the two 
+using both reactive and template-driven forms. It assumes some basic knowledge of the two
 forms modules.
 -->
 폼 유효성 검사는 사용자가 폼에 입력한 내용이 올바른지 확인할 때 사용합니다.
@@ -17,7 +17,7 @@ forms modules.
 <div class="alert is-helpful">
 
 <!--
-If you're new to forms, start by reviewing the [Forms](guide/forms) and 
+If you're new to forms, start by reviewing the [Forms](guide/forms) and
 [Reactive Forms](guide/reactive-forms) guides.
 -->
 폼에 대해 익숙하지 않다면 [폼](guide/forms) 문서와 [반응형 폼](guide/reactive-forms) 문서를 참고하세요.
@@ -31,14 +31,14 @@ If you're new to forms, start by reviewing the [Forms](guide/forms) and
 ## 템플릿 기반 폼 유효성 검사
 
 <!--
-To add validation to a template-driven form, you add the same validation attributes as you 
-would with [native HTML form validation](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation). 
+To add validation to a template-driven form, you add the same validation attributes as you
+would with [native HTML form validation](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation).
 Angular uses directives to match these attributes with validator functions in the framework.
 -->
 템플릿 기반 폼에서는 [네이티브 HTML 폼 유효성 검사](https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation)를 그대로 활용할 수 있습니다. 네이티브 유효성 검사 어트리뷰트를 사용하면, Angular가 이 어트리뷰트들을 적당한 디렉티브로 연결해서 Angular 내부 로직으로 처리합니다.
 
 <!--
-Every time the value of a form control changes, Angular runs validation and generates 
+Every time the value of a form control changes, Angular runs validation and generates
 either a list of validation errors, which results in an INVALID status, or null, which results in a VALID status.
 -->
 Angular는 폼의 내용이 바뀔때마다 다시 유효성을 검사하며, 유효성 검사 결과를 새로 반환합니다.
@@ -60,15 +60,15 @@ Note the following:
 다음 내용을 확인해 보세요:
 
 <!--
-* The `<input>` element carries the HTML validation attributes: `required` and `minlength`. It 
-also carries a custom validator directive, `forbiddenName`. For more 
-information, see [Custom validators](guide/form-validation#커스텀-유효성-검사기) section.
+* The `<input>` element carries the HTML validation attributes: `required` and `minlength`. It
+also carries a custom validator directive, `forbiddenName`. For more
+information, see [Custom validators](guide/form-validation#custom-validators) section.
 -->
 * `<input>` 엘리먼트에는 HTML 유효성 검사 어트리뷰트인 `required`와 `minlength`가 적용되었으며, 커스텀 유효성 검사 디렉티브인 `forbiddenName`도 적용되었습니다. 커스텀 유효성 검사기에 대해서는 [커스텀 유효성 검사기](guide/form-validation#커스텀-유효성-검사기) 문서를 참고하세요.
 
 <!--
-* `#name="ngModel"` exports `NgModel` into a local variable called `name`. `NgModel` mirrors many of the properties of its underlying 
-`FormControl` instance, so you can use this in the template to check for control states such as `valid` and `dirty`. For a full list of control properties, see the [AbstractControl](api/forms/AbstractControl) 
+* `#name="ngModel"` exports `NgModel` into a local variable called `name`. `NgModel` mirrors many of the properties of its underlying
+`FormControl` instance, so you can use this in the template to check for control states such as `valid` and `dirty`. For a full list of control properties, see the [AbstractControl](api/forms/AbstractControl)
 API reference.
 -->
 * `#name="ngModel"`을 사용하면 `NgModel` 폼 컨트롤을 템플릿 변수 `name`에 연결합니다. 이 변수를 활용하면 `FormControl` 인스턴스에 있는 모든 프로퍼티에 접근할 수 있으며, 폼 컨트롤의 상태를 나타내는 `valid`나 `dirty`도 물론 템플릿에서 활용할 수 있습니다. 폼 컨트롤 프로퍼티의 전체 목록은 [AbstractControl](api/forms/AbstractControl) 문서를 확인하세요.
@@ -95,8 +95,8 @@ There are messages for `required`, `minlength`, and `forbiddenName`.
 
 <!--
 You may not want your application to display errors before the user has a chance to edit the form.
-The checks for `dirty` and `touched` prevent errors from showing until the user 
-does one of two things: changes the value, 
+The checks for `dirty` and `touched` prevent errors from showing until the user
+does one of two things: changes the value,
 turning the control dirty; or blurs the form control element, setting the control to touched.
 -->
 사용자가 폼의 내용을 수정하기 전에는 에러 메시지를 표시하지 않는 것이 자연스럽습니다.
@@ -120,13 +120,13 @@ In a reactive form, the source of truth is the component class. Instead of addin
 ### 유효성 검사기
 
 <!--
-There are two types of validator functions: sync validators and async validators.  
+There are two types of validator functions: sync validators and async validators.
 
 * **Sync validators**: functions that take a control instance and immediately return either a set of validation errors or `null`. You can pass these in as the second argument when you instantiate a `FormControl`.
 
-* **Async validators**: functions that take a control instance and return a Promise 
-or Observable that later emits a set of validation errors or `null`. You can 
-pass these in as the third argument when you instantiate a `FormControl`. 
+* **Async validators**: functions that take a control instance and return a Promise
+or Observable that later emits a set of validation errors or `null`. You can
+pass these in as the third argument when you instantiate a `FormControl`.
 
 Note: for performance reasons, Angular only runs async validators if all sync validators pass. Each must complete before errors are set.
 -->
@@ -144,8 +144,8 @@ Note: for performance reasons, Angular only runs async validators if all sync va
 ### 기본 유효성 검사기
 
 <!--
-You can choose to [write your own validator functions](guide/form-validation#커스텀-유효성-검사기), or you can use some of 
-Angular's built-in validators. 
+You can choose to [write your own validator functions](guide/form-validation#custom-validators), or you can use some of
+Angular's built-in validators.
 -->
 유효성 검사기는 [커스텀 유효성 검사기](guide/form-validation#커스텀-유효성-검사기)를 만들어서 활용할 수도 있고, Angular 기본 유효성 검사기를 활용할 수도 있습니다.
 
@@ -155,7 +155,7 @@ The same built-in validators that are available as attributes in template-driven
 템플릿 기반 폼에서 사용한 `required`나 `minlength`와 같은 어트리뷰트는 Angular 기본 유효성 검사기로 모두 제공됩니다. 이 유효성 검사기들은 `Validators` 클래스에 선언되어 있으며, 목록을 확인하려면 [Validators](api/forms/Validators) API 문서를 확인하세요.
 
 <!--
-To update the hero form to be a reactive form, you can use some of the same 
+To update the hero form to be a reactive form, you can use some of the same
 built-in validators&mdash;this time, in function form. See below:
 -->
 그래서 폼을 반응형으로 변경하더라도 기존에 사용하던 유효성 검사기는 모두 사용할 수 있습니다. 다음 코드를 참고하세요:
@@ -172,9 +172,9 @@ Note that:
 
 <!--
 * The name control sets up two built-in validators&mdash;`Validators.required` and `Validators.minLength(4)`&mdash;and one custom validator, `forbiddenNameValidator`. For more details see the [Custom validators](guide/form-validation#custom-validators) section in this guide.
-* As these validators are all sync validators, you pass them in as the second argument. 
+* As these validators are all sync validators, you pass them in as the second argument.
 * Support multiple validators by passing the functions in as an array.
-* This example adds a few getter methods. In a reactive form, you can always access any form control through the `get` method on its parent group, but sometimes it's useful to define getters as shorthands 
+* This example adds a few getter methods. In a reactive form, you can always access any form control through the `get` method on its parent group, but sometimes it's useful to define getters as shorthands
 for the template.
 -->
 * 이름에 해당하는 폼 컨트롤에는 기본 유효성 검사기인 `Validators.required`와 `Validators.minLength(4)`가 적용되었으며, 커스텀 유효성 검사기인 `forbiddenNameValidator`가 적용되었습니다. [커스텀 유효성 검사기](guide/form-validation#커스텀-유효성-검사기)는 아래에서 다시 설명합니다.
@@ -183,7 +183,7 @@ for the template.
 * 이 예제에는 `name`과 `power` 필드에 게터(getter) 함수가 지정되었습니다. 반응형으로 폼을 구성하고, 템플릿에서 폼 컨트롤의 상태나 값을 참조한다면 게터 함수를 사용하는 것이 편합니다.
 
 <!--
-If you look at the template for the name input again, it is fairly similar to the template-driven example. 
+If you look at the template for the name input again, it is fairly similar to the template-driven example.
 -->
 이 내용은 템플릿 기반 폼을 다룰 때와 비슷하게 템플릿에 적용할 수 있습니다.
 
@@ -196,9 +196,9 @@ Key takeaways:
 다음 내용을 확인해 보세요:
  
 <!--
- * The form no longer exports any directives, and instead uses the `name` getter defined in 
+ * The form no longer exports any directives, and instead uses the `name` getter defined in
  the component class.
- * The `required` attribute is still present. While it's not necessary for validation purposes, 
+ * The `required` attribute is still present. While it's not necessary for validation purposes,
  you may want to keep it in your template for CSS styling or accessibility reasons.
 -->
 * 템플릿 기반 폼에서 사용하던 템플릿 참조 변수 대신 컴포넌트 클래스에 선언된 `name` 게터 함수를 사용합니다.
@@ -210,10 +210,10 @@ Key takeaways:
 ## 커스텀 유효성 검사기
 
 <!--
-Since the built-in validators won't always match the exact use case of your application, sometimes you'll want to create a custom validator. 
+Since the built-in validators won't always match the exact use case of your application, sometimes you'll want to create a custom validator.
 
 Consider the `forbiddenNameValidator` function from previous
-[examples](guide/form-validation#reactive-component-class) in 
+[examples](guide/form-validation#reactive-component-class) in
 this guide. Here's what the definition of that function looks like:
 -->
 Angular의 기본 유효성 검사기가 애플리케이션의 요구사항을 모두 만족시킬 수는 없기 때문에, 커스텀 유효성 검사기를 만들어서 활용할 수도 있습니다.
@@ -260,7 +260,7 @@ at which point the form uses the last value emitted for validation.
 ### 반응형 폼에 적용하기
 
 <!--
-In reactive forms, custom validators are fairly simple to add. All you have to do is pass the function directly 
+In reactive forms, custom validators are fairly simple to add. All you have to do is pass the function directly
 to the `FormControl`.
 -->
 커스텀 유효성 검사기를 반응형 폼에 적용하는 것은 아주 간단합니다. `FormControl` 인스턴스를 생성할 때 인자로 전달하기만 하면 됩니다.
@@ -274,7 +274,7 @@ to the `FormControl`.
 ### 템플릿 기반 폼에 적용하기
 
 <!--
-In template-driven forms, you don't have direct access to the `FormControl` instance, so you can't pass the 
+In template-driven forms, you don't have direct access to the `FormControl` instance, so you can't pass the
 validator in like you can for reactive forms. Instead, you need to add a directive to the template.
 -->
 템플릿 기반 폼에서는 `FormControl` 인스턴스에 직접 접근할 수 없기 때문에 반응형 폼의 방식을 사용할 수 없습니다. 대신 유효성 검사기를 디렉티브로 감싸서 활용합니다.
@@ -294,8 +294,8 @@ with the `NG_VALIDATORS` provider, a provider with an extensible collection of v
 </code-example>
 
 <!--
-The directive class then implements the `Validator` interface, so that it can easily integrate 
-with Angular forms. Here is the rest of the directive to help you get an idea of how it all 
+The directive class then implements the `Validator` interface, so that it can easily integrate
+with Angular forms. Here is the rest of the directive to help you get an idea of how it all
 comes together:
 -->
 그리고 디렉티브 클래스는 `Validator` 인터페이스를 사용해서 구현하는데, 이 인터페이스를 사용하면 Angular 폼과 호환되도록 클래스를 정의할 수 있습니다.
@@ -348,7 +348,7 @@ AngularJS와 비슷하게, Angular도 폼 컨트롤의 상태에 맞는 CSS 클�
 * `.ng-touched`
 
 <!--
-The hero form uses the `.ng-valid` and `.ng-invalid` classes to 
+The hero form uses the `.ng-valid` and `.ng-invalid` classes to
 set the color of each form control's border.
 -->
 이 중 `.ng-valid`와 `.ng-invalid` 클래스를 활용해서 폼 컨트롤의 외곽선을 다르게 표시하려면 다음과 같이 작성합니다.
@@ -357,7 +357,7 @@ set the color of each form control's border.
 
 </code-example>
 
-## Cross field validation 
+## Cross field validation
 This section shows how to perform cross field validation. It assumes some basic knowledge of creating custom validators.
 
 <div class="alert is-helpful">
@@ -369,7 +369,7 @@ If you haven't created custom validators before, start by reviewing the [custom 
 
 </div>
 
-In the following section, we will make sure that our heroes do not reveal their true identities by filling out the Hero Form. We will do that by validating that the hero names and alter egos do not match. 
+In the following section, we will make sure that our heroes do not reveal their true identities by filling out the Hero Form. We will do that by validating that the hero names and alter egos do not match.
 
 ### Adding to reactive forms
 
@@ -402,7 +402,7 @@ The validator code is as follows:
 
 The identity validator implements the `ValidatorFn` interface. It takes an Angular control object as an argument and returns either null if the form is valid, or `ValidationErrors` otherwise.
 
-First we retrieve the child controls by calling the `FormGroup`'s [get](api/forms/AbstractControl#get) method. Then we simply compare the values of the `name` and `alterEgo` controls. 
+First we retrieve the child controls by calling the `FormGroup`'s [get](api/forms/AbstractControl#get) method. Then we simply compare the values of the `name` and `alterEgo` controls.
 
 If the values do not match, the hero's identity remains secret, and we can safely return null. Otherwise, the hero's identity is revealed and we must mark the form as invalid by returning an error object.
 
@@ -412,7 +412,7 @@ Next, to provide better user experience, we show an appropriate error message wh
 
 <!--
 Note that we check if:
-- the `FormGroup` has the cross validation error returned by the `identityRevealed` validator, 
+- the `FormGroup` has the cross validation error returned by the `identityRevealed` validator,
 - the user is yet to [interact](guide/form-validation#why-check-dirty-and-touched) with the form.
 -->
 Note that we check if:
@@ -435,7 +435,7 @@ To provide better user experience, we show an appropriate error message when the
 
 <!--
 Note that we check if:
-- the form has the cross validation error returned by the `identityRevealed` validator, 
+- the form has the cross validation error returned by the `identityRevealed` validator,
 - the user is yet to [interact](guide/form-validation#why-check-dirty-and-touched) with the form.
 -->
 Note that we check if:
@@ -443,8 +443,79 @@ Note that we check if:
 - the user is yet to [interact](guide/form-validation#왜-dirty-와-touched-를-확인할까요) with the form.
 
 This completes the cross validation example. We managed to:
-- validate the form based on the values of two sibling controls, 
+- validate the form based on the values of two sibling controls,
 - show a descriptive error message after the user interacted with the form and the validation failed.
+
+<!--
+## Async Validation
+This section shows how to create asynchronous validators. It assumes some basic knowledge of creating [custom validators](guide/form-validation#custom-validators).
+-->
+## Async Validation
+This section shows how to create asynchronous validators. It assumes some basic knowledge of creating [custom validators](guide/form-validation#커스텀-유효성-검사기).
+
+### The Basics
+Just like synchronous validators have the `ValidatorFn` and `Validator` interfaces, asynchronous validators have their own counterparts: `AsyncValidatorFn` and `AsyncValidator`.
+
+They are very similar with the only difference being:
+
+* They must return a Promise or an Observable,
+* The observable returned must be finite, meaning it must complete at some point. To convert an infinite observable into a finite one, pipe the observable through a filtering operator such as `first`, `last`, `take`, or `takeUntil`.
+
+It is important to note that the asynchronous validation happens after the synchronous validation, and is performed only if the synchronous validation is successful. This check allows forms to avoid potentially expensive async validation processes such as an HTTP request if more basic validation methods fail.
+
+After asynchronous validation begins, the form control enters a `pending` state. You can inspect the control's `pending` property and use it to give visual feedback about the ongoing validation.
+
+A common UI pattern is to show a spinner while the async validation is being performed. The following example presents how to achieve this with template-driven forms:
+
+```html
+<input [(ngModel)}="name" #model="ngModel" appSomeAsyncValidator>
+<app-spinner *ngIf="model.pending"></app-spinner>
+```
+
+### Implementing Custom Async Validator
+In the following section, validation is performed asynchronously to ensure that our heroes pick an alter ego that is not already taken. New heroes are constantly enlisting and old heroes are leaving the service. That means that we do not have the list of available alter egos ahead of time.
+
+To validate the potential alter ego, we need to consult a central database of all currently enlisted heroes. The process is asynchronous, so we need a special validator for that.
+
+Let's start by creating the validator class.
+
+<code-example path="form-validation/src/app/shared/alter-ego.directive.ts" region="async-validator" linenums="false"></code-example>
+
+As you can see, the `UniqueAlterEgoValidator` class implements the `AsyncValidator` interface. In the constructor, we inject the `HeroesService` that has the following interface:
+
+```typescript
+interface HeroesService {
+  isAlterEgoTaken: (alterEgo: string) => Observable<boolean>;
+}
+```
+
+In a real world application, the `HeroesService` is responsible for making an HTTP request to the hero database to check if the alter ego is available. From the validator's point of view, the actual implementation of the service is not important, so we can just code against the `HeroesService` interface.
+
+As the validation begins, the `UniqueAlterEgoValidator` delegates to the `HeroesService` `isAlterEgoTaken()` method with the current control value. At this point the control is marked as `pending` and remains in this state until the observable chain returned from the `validate()` method completes.
+
+The `isAlterEgoTaken()` method dispatches an HTTP request that checks if the alter ego is available, and returns `Observable<boolean>` as the result. We pipe the response through the `map` operator and transform it into a validation result. As always, we return `null` if the form is valid, and `ValidationErrors` if it is not. We make sure to handle any potential errors with the `catchError` operator.
+
+Here we decided that `isAlterEgoTaken()` error is treated as a successful validation, because failure to make a validation request does not necessarily mean that the alter ego is invalid. You could handle the error differently and return the `ValidationError` object instead.
+
+After some time passes, the observable chain completes and the async validation is done. The `pending` flag is set to `false`, and the form validity is updated.
+
+### Note on performance
+
+By default, all validators are run after every form value change. With synchronous validators, this will not likely have a noticeable impact on application performance. However, it's common for async validators to perform some kind of HTTP request to validate the control. Dispatching an HTTP request after every keystroke could put a strain on the backend API, and should be avoided if possible.
+
+We can delay updating the form validity by changing the `updateOn` property from `change` (default) to `submit` or `blur`.
+
+With template-driven forms:
+
+```html
+<input [(ngModel)]="name" [ngModelOptions]="{updateOn: 'blur'}">
+```
+
+With reactive forms:
+
+```typescript
+new FormControl('', {updateOn: 'blur'});
+```
 
 <!--
 **You can run the <live-example></live-example> to see the complete reactive and template-driven example code.**

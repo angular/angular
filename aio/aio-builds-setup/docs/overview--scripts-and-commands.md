@@ -21,7 +21,7 @@ available:
   from a git repository. See [here](vm-setup--update-docker-container.md) for more info.
 
 
-## Commands
+## Production Commands
 The following commands are available globally from inside the docker container. They are either used
 by the container to perform its various operations or can be used ad-hoc, mainly for testing
 purposes. Each command is backed by a corresponding script inside
@@ -40,14 +40,27 @@ purposes. Each command is backed by a corresponding script inside
   Initializes the container (mainly by starting the necessary services).
   _It is run (by default) when starting the container._
 
-- `aio-upload-server-prod`:
-  Spins up a Node.js upload-server instance.
+- `aio-preview-server-prod`:
+  Spins up a Node.js preview-server instance.
   _It is used in `aio-init` (see above) during initialization._
 
-- `aio-upload-server-test`:
-  Spins up a Node.js upload-server instance for tests.
+
+## Developer Commands
+
+- `aio-preview-server-test`:
+  Spins up a Node.js preview-server instance for tests.
   _It is used in `aio-verify-setup` (see below) for running tests._
 
 - `aio-verify-setup`:
   Runs a suite of e2e-like tests, mainly verifying the correct (inter)operation of nginx and the
-  Node.js upload-server.
+  Node.js preview-server.
+
+- `aio-verify-setup-and-log`:
+  Runs the `aio-verify-setup` command but also then dumps the logs from the preview server, which
+  gives additional useful debugging information. See the [debugging docs](misc--debug-docker-container.md)
+  for more info.
+
+- `aio-dev-mode`:
+  Links external source files (from the Docker host) to interal source files (in the Docker
+  container). This makes it easier to use an IDE to edit files in the host that are then
+  tested in the container. See the [debugging docs](misc--debug-docker-container.md) for more info.

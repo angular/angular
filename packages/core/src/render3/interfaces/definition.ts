@@ -6,13 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Provider} from '../../core';
-import {RendererType2} from '../../render/api';
+import {Provider, ViewEncapsulation} from '../../core';
 import {Type} from '../../type';
 import {CssSelectorList} from './projection';
 
+
 /**
- * Definition of what a template rendering function should look like.
+ * Definition of what a template rendering function should look like for a component.
  */
 export type ComponentTemplate<T> = {
   (rf: RenderFlags, ctx: T): void; ngPrivateData?: never;
@@ -66,29 +66,15 @@ export interface PipeType<T> extends Type<T> { ngPipeDef: never; }
 export type DirectiveDefInternal<T> = DirectiveDef<T, string>;
 
 /**
- * Runtime link information for Directives.
+ * Runtime information for classes that are inherited by components or directives
+ * that aren't defined as components or directives.
  *
- * This is internal data structure used by the render to link
- * directives into templates.
+ * This is an internal data structure used by the render to determine what inputs
+ * and outputs should be inherited.
  *
- * NOTE: Always use `defineDirective` function to create this object,
- * never create the object directly since the shape of this object
- * can change between versions.
- *
- * @param Selector type metadata specifying the selector of the directive or component
- *
- * See: {@link defineDirective}
+ * See: {@link defineBase}
  */
-export interface DirectiveDef<T, Selector extends string> {
-  /** Token representing the directive. Used by DI. */
-  type: Type<T>;
-
-  /** Function that makes a directive public to the DI system. */
-  diPublic: ((def: DirectiveDef<T, string>) => void)|null;
-
-  /** The selectors that will be used to match nodes to this directive. */
-  selectors: CssSelectorList;
-
+export interface BaseDef<T> {
   /**
    * A dictionary mapping the inputs' minified property names to their public API names, which
    * are their aliases if any, or their original unminified property names
@@ -108,6 +94,31 @@ export interface DirectiveDef<T, Selector extends string> {
    * (as in `@Output('alias') propertyName: any;`).
    */
   readonly outputs: {[P in keyof T]: P};
+}
+
+/**
+ * Runtime link information for Directives.
+ *
+ * This is internal data structure used by the render to link
+ * directives into templates.
+ *
+ * NOTE: Always use `defineDirective` function to create this object,
+ * never create the object directly since the shape of this object
+ * can change between versions.
+ *
+ * @param Selector type metadata specifying the selector of the directive or component
+ *
+ * See: {@link defineDirective}
+ */
+export interface DirectiveDef<T, Selector extends string> extends BaseDef<T> {
+  /** Token representing the directive. Used by DI. */
+  type: Type<T>;
+
+  /** Function that makes a directive public to the DI system. */
+  diPublic: ((def: DirectiveDef<T, string>) => void)|null;
+
+  /** The selectors that will be used to match nodes to this directive. */
+  selectors: CssSelectorList;
 
   /**
    * Name under which the directive is exported (for use with local references in template)
@@ -129,6 +140,14 @@ export interface DirectiveDef<T, Selector extends string> {
 
   /** Refreshes content queries associated with directives in a given view */
   contentQueriesRefresh: ((directiveIndex: number, queryIndex: number) => void)|null;
+
+  /**
+   * The number of host bindings (including pure fn bindings) in this directive/component.
+   *
+   * Used to calculate the length of the LViewData array for the *parent* component
+   * of this directive/component.
+   */
+  hostVars: number;
 
   /** Refreshes host bindings on the associated directive. */
   hostBindings: ((directiveIndex: number, elementIndex: number) => void)|null;
@@ -176,19 +195,58 @@ export type ComponentDefInternal<T> = ComponentDef<T, string>;
  */
 export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T, Selector> {
   /**
+   * Runtime unique component ID.
+   */
+  id: string;
+
+  /**
    * The View template of the component.
    */
   readonly template: ComponentTemplate<T>;
 
   /**
-   * Query-related instructions for a component.
+   * A set of styles that the component needs to be present for component to render correctly.
    */
-  readonly viewQuery: ComponentQuery<T>|null;
+  readonly styles: string[];
 
   /**
-   * Renderer type data of the component.
+   * The number of nodes, local refs, and pipes in this component template.
+   *
+   * Used to calculate the length of the component's LViewData array, so we
+   * can pre-fill the array and set the binding start index.
    */
-  readonly rendererType: RendererType2|null;
+  // TODO(kara): remove queries from this count
+  consts: number;
+
+  /**
+   * The number of bindings in this component template (including pure fn bindings).
+   *
+   * Used to calculate the length of the component's LViewData array, so we
+   * can pre-fill the array and set the host binding start index.
+   */
+  vars: number;
+
+  /**
+   * Query-related instructions for a component.
+   */
+  viewQuery: ComponentQuery<T>|null;
+
+  /**
+   * The view encapsulation type, which determines how styles are applied to
+   * DOM elements. One of
+   * - `Emulated` (default): Emulate native scoping of styles.
+   * - `Native`: Use the native encapsulation mechanism of the renderer.
+   * - `ShadowDom`: Use modern [ShadowDOM](https://w3c.github.io/webcomponents/spec/shadow/) and
+   *   create a ShadowRoot for component's host element.
+   * - `None`: Do not provide any template or style encapsulation.
+   */
+  readonly encapsulation: ViewEncapsulation;
+
+  /**
+   * Defines arbitrary developer-defined data to be stored on a renderer instance.
+   * This is useful for renderers that delegate to other renderers.
+   */
+  readonly data: {[kind: string]: any};
 
   /** Whether or not this component's ChangeDetectionStrategy is OnPush */
   readonly onPush: boolean;
@@ -197,13 +255,13 @@ export interface ComponentDef<T, Selector extends string> extends DirectiveDef<T
    * Defines the set of injectable providers that are visible to a Directive and its content DOM
    * children.
    */
-  readonly providers?: Provider[];
+  readonly providers: Provider[]|null;
 
   /**
    * Defines the set of injectable providers that are visible to a Directive and its view DOM
    * children only.
    */
-  readonly viewProviders?: Provider[];
+  readonly viewProviders: Provider[]|null;
 
   /**
    * Registry of directives and components that may be found in this view.

@@ -46,6 +46,8 @@ describe('lifecycle hooks', () => {
       type: LifecycleComp,
       selectors: [['lifecycle-comp']],
       factory: function LifecycleComp_Factory() { return new LifecycleComp(); },
+      consts: 0,
+      vars: 0,
       template: function LifecycleComp_Template(rf: $RenderFlags$, ctx: $LifecycleComp$) {},
       inputs: {nameMin: ['name', 'nameMin']},
       features: [$r3$.ɵNgOnChangesFeature]
@@ -69,14 +71,16 @@ describe('lifecycle hooks', () => {
       type: SimpleLayout,
       selectors: [['simple-layout']],
       factory: function SimpleLayout_Factory() { return simpleLayout = new SimpleLayout(); },
+      consts: 2,
+      vars: 2,
       template: function SimpleLayout_Template(rf: $RenderFlags$, ctx: $SimpleLayout$) {
         if (rf & 1) {
-          $r3$.ɵEe(0, 'lifecycle-comp');
-          $r3$.ɵEe(1, 'lifecycle-comp');
+          $r3$.ɵelement(0, 'lifecycle-comp');
+          $r3$.ɵelement(1, 'lifecycle-comp');
         }
         if (rf & 2) {
-          $r3$.ɵp(0, 'name', $r3$.ɵb(ctx.name1));
-          $r3$.ɵp(1, 'name', $r3$.ɵb(ctx.name2));
+          $r3$.ɵelementProperty(0, 'name', $r3$.ɵbind(ctx.name1));
+          $r3$.ɵelementProperty(1, 'name', $r3$.ɵbind(ctx.name2));
         }
       }
     });

@@ -8,8 +8,12 @@ exports_files(["tsconfig.json"])
 ng_module(
     name = "src",
     srcs = glob(["*.ts"]),
-    tsconfig = ":tsconfig.json",
-    deps = ["//src/hello-world"],
+    deps = [
+        "//src/hello-world",
+        "@angular//packages/common/http",
+        "@angular//packages/core",
+        "@angular//packages/platform-browser",
+    ],
 )
 
 load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
@@ -17,12 +21,13 @@ load("@build_bazel_rules_typescript//:defs.bzl", "ts_devserver")
 ts_devserver(
     name = "devserver",
     additional_root_paths = [
+        "bazel_integration_test/node_modules/tslib",
         "bazel_integration_test/node_modules/zone.js/dist",
     ],
     entry_module = "bazel_integration_test/src/main",
-    scripts = ["//:angular_bundles"],
     serving_path = "/bundle.min.js",
     static_files = [
+        "//:node_modules/tslib/tslib.js",
         "//:node_modules/zone.js/dist/zone.min.js",
         "index.html",
     ],

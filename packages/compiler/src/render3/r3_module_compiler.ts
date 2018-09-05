@@ -85,31 +85,32 @@ export function compileNgModule(meta: R3NgModuleMetadata): R3NgModuleDef {
 export interface R3InjectorDef {
   expression: o.Expression;
   type: o.Type;
+  statements: o.Statement[];
 }
 
 export interface R3InjectorMetadata {
   name: string;
   type: o.Expression;
-  deps: R3DependencyMetadata[];
+  deps: R3DependencyMetadata[]|null;
   providers: o.Expression;
   imports: o.Expression;
 }
 
 export function compileInjector(meta: R3InjectorMetadata): R3InjectorDef {
+  const result = compileFactoryFunction({
+    name: meta.name,
+    type: meta.type,
+    deps: meta.deps,
+    injectFn: R3.inject,
+  });
   const expression = o.importExpr(R3.defineInjector).callFn([mapToMapExpression({
-    factory: compileFactoryFunction({
-      name: meta.name,
-      fnOrClass: meta.type,
-      deps: meta.deps,
-      useNew: true,
-      injectFn: R3.inject,
-    }),
+    factory: result.factory,
     providers: meta.providers,
     imports: meta.imports,
   })]);
   const type =
       new o.ExpressionType(o.importExpr(R3.InjectorDef, [new o.ExpressionType(meta.type)]));
-  return {expression, type};
+  return {expression, type, statements: result.statements};
 }
 
 // TODO(alxhub): integrate this with `compileNgModule`. Currently the two are separate operations.

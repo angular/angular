@@ -591,7 +591,7 @@ export class TsCompilerAotCompilerTypeCheckHostAdapter implements ts.CompilerHos
   getNewLine = () => this.context.getNewLine();
   // Make sure we do not `host.realpath()` from TS as we do not want to resolve symlinks.
   // https://github.com/Microsoft/TypeScript/issues/9552
-  realPath = (p: string) => p;
+  realpath = (p: string) => p;
   writeFile = this.context.writeFile.bind(this.context);
 }
 

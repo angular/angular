@@ -9,7 +9,7 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, Injectable, NgModule, ViewEncapsulation, ɵrenderComponent as renderComponent} from '@angular/core';
 
 class Todo {
   editing: boolean;
@@ -59,6 +59,7 @@ class TodoStore {
 @Component({
   selector: 'todo-app',
   // TODO(misko): make this work with `[(ngModel)]`
+  encapsulation: ViewEncapsulation.None,
   template: `
   <section class="todoapp">
     <header class="header">

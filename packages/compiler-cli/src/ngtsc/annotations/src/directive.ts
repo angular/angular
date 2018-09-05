@@ -18,12 +18,15 @@ import {getConstructorDependencies, isAngularCore, unwrapExpression, unwrapForwa
 
 const EMPTY_OBJECT: {[key: string]: string} = {};
 
-export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMetadata> {
+export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMetadata, Decorator> {
   constructor(
       private checker: ts.TypeChecker, private reflector: ReflectionHost,
       private scopeRegistry: SelectorScopeRegistry, private isCore: boolean) {}
 
-  detect(decorators: Decorator[]): Decorator|undefined {
+  detect(node: ts.Declaration, decorators: Decorator[]|null): Decorator|undefined {
+    if (!decorators) {
+      return undefined;
+    }
     return decorators.find(
         decorator => decorator.name === 'Directive' && (this.isCore || isAngularCore(decorator)));
   }
@@ -42,13 +45,13 @@ export class DirectiveDecoratorHandler implements DecoratorHandler<R3DirectiveMe
     return {analysis};
   }
 
-  compile(node: ts.ClassDeclaration, analysis: R3DirectiveMetadata): CompileResult {
-    const pool = new ConstantPool();
+  compile(node: ts.ClassDeclaration, analysis: R3DirectiveMetadata, pool: ConstantPool):
+      CompileResult {
     const res = compileDirectiveFromMetadata(analysis, pool, makeBindingParser());
     return {
       name: 'ngDirectiveDef',
       initializer: res.expression,
-      statements: pool.statements,
+      statements: res.statements,
       type: res.type,
     };
   }
@@ -131,6 +134,16 @@ export function extractDirectiveMetadata(
       member => !member.isStatic && member.kind === ClassMemberKind.Method &&
           member.name === 'ngOnChanges');
 
+  // Parse exportAs.
+  let exportAs: string|null = null;
+  if (directive.has('exportAs')) {
+    const resolved = staticallyResolve(directive.get('exportAs') !, reflector, checker);
+    if (typeof resolved !== 'string') {
+      throw new Error(`exportAs must be a string`);
+    }
+    exportAs = resolved;
+  }
+
   // Detect if the component inherits from another class
   const usesInheritance = clazz.heritageClauses !== undefined &&
       clazz.heritageClauses.some(hc => hc.token === ts.SyntaxKind.ExtendsKeyword);
@@ -143,8 +156,8 @@ export function extractDirectiveMetadata(
     inputs: {...inputsFromMeta, ...inputsFromFields},
     outputs: {...outputsFromMeta, ...outputsFromFields}, queries, selector,
     type: new WrappedNodeExpr(clazz.name !),
-    typeArgumentCount: (clazz.typeParameters || []).length,
-    typeSourceSpan: null !, usesInheritance,
+    typeArgumentCount: reflector.getGenericArityOfClass(clazz) || 0,
+    typeSourceSpan: null !, usesInheritance, exportAs,
   };
   return {decoratedElements, decorator: directive, metadata};
 }
@@ -248,6 +261,22 @@ function isStringArrayOrDie(value: any, name: string): value is string[] {
   return true;
 }
 
+export function parseFieldArrayValue(
+    directive: Map<string, ts.Expression>, field: string, reflector: ReflectionHost,
+    checker: ts.TypeChecker): null|string[] {
+  if (!directive.has(field)) {
+    return null;
+  }
+
+  // Resolve the field of interest from the directive metadata to a string[].
+  const value = staticallyResolve(directive.get(field) !, reflector, checker);
+  if (!isStringArrayOrDie(value, field)) {
+    throw new Error(`Failed to resolve @Directive.${field}`);
+  }
+
+  return value;
+}
+
 /**
  * Interpret property mapping fields on the decorator (e.g. inputs or outputs) and return the
  * correctly shaped metadata object.
@@ -255,14 +284,9 @@ function isStringArrayOrDie(value: any, name: string): value is string[] {
 function parseFieldToPropertyMapping(
     directive: Map<string, ts.Expression>, field: string, reflector: ReflectionHost,
     checker: ts.TypeChecker): {[field: string]: string} {
-  if (!directive.has(field)) {
+  const metaValues = parseFieldArrayValue(directive, field, reflector, checker);
+  if (!metaValues) {
     return EMPTY_OBJECT;
-  }
-
-  // Resolve the field of interest from the directive metadata to a string[].
-  const metaValues = staticallyResolve(directive.get(field) !, reflector, checker);
-  if (!isStringArrayOrDie(metaValues, field)) {
-    throw new Error(`Failed to resolve @Directive.${field}`);
   }
 
   return metaValues.reduce(

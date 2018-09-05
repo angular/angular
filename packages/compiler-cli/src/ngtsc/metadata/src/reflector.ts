@@ -8,7 +8,7 @@
 
 import * as ts from 'typescript';
 
-import {ClassMember, ClassMemberKind, Declaration, Decorator, Import, Parameter, ReflectionHost} from '../../host';
+import {ClassMember, ClassMemberKind, CtorParameter, Declaration, Decorator, FunctionDefinition, Import, ReflectionHost} from '../../host';
 
 /**
  * reflector.ts implements static reflection of declarations using the TypeScript `ts.TypeChecker`.
@@ -31,7 +31,7 @@ export class TypeScriptReflectionHost implements ReflectionHost {
         .filter((member): member is ClassMember => member !== null);
   }
 
-  getConstructorParameters(declaration: ts.Declaration): Parameter[]|null {
+  getConstructorParameters(declaration: ts.Declaration): CtorParameter[]|null {
     const clazz = castDeclarationToClassOrDie(declaration);
 
     // First, find the constructor.
@@ -127,9 +127,14 @@ export class TypeScriptReflectionHost implements ReflectionHost {
     return map;
   }
 
-  isClass(node: ts.Declaration): boolean {
+  isClass(node: ts.Node): boolean {
     // In TypeScript code, classes are ts.ClassDeclarations.
     return ts.isClassDeclaration(node);
+  }
+
+  hasBaseClass(node: ts.Declaration): boolean {
+    return ts.isClassDeclaration(node) && node.heritageClauses !== undefined &&
+        node.heritageClauses.some(clause => clause.token === ts.SyntaxKind.ExtendsKeyword);
   }
 
   getDeclarationOfIdentifier(id: ts.Identifier): Declaration|null {
@@ -139,6 +144,26 @@ export class TypeScriptReflectionHost implements ReflectionHost {
       return null;
     }
     return this.getDeclarationOfSymbol(symbol);
+  }
+
+  getDefinitionOfFunction<T extends ts.FunctionDeclaration|ts.MethodDeclaration|
+                          ts.FunctionExpression>(node: T): FunctionDefinition<T> {
+    return {
+      node,
+      body: node.body !== undefined ? Array.from(node.body.statements) : null,
+      parameters: node.parameters.map(param => {
+        const name = parameterName(param.name);
+        const initializer = param.initializer || null;
+        return {name, node: param, initializer};
+      }),
+    };
+  }
+
+  getGenericArityOfClass(clazz: ts.Declaration): number|null {
+    if (!ts.isClassDeclaration(clazz)) {
+      return null;
+    }
+    return clazz.typeParameters !== undefined ? clazz.typeParameters.length : 0;
   }
 
   /**

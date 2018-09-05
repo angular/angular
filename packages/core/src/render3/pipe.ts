@@ -68,7 +68,7 @@ function getPipeDef(name: string, registry: PipeDefList | null): PipeDefInternal
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
- * @param slotOffset the offset in the reserved slot space {@link reserveSlots}
+ * @param slotOffset the offset in the reserved slot space
  * @param v1 1st argument to {@link PipeTransform#transform}.
  */
 export function pipeBind1(index: number, slotOffset: number, v1: any): any {
@@ -84,7 +84,7 @@ export function pipeBind1(index: number, slotOffset: number, v1: any): any {
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
- * @param slotOffset the offset in the reserved slot space {@link reserveSlots}
+ * @param slotOffset the offset in the reserved slot space
  * @param v1 1st argument to {@link PipeTransform#transform}.
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  */
@@ -101,7 +101,7 @@ export function pipeBind2(index: number, slotOffset: number, v1: any, v2: any): 
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
- * @param slotOffset the offset in the reserved slot space {@link reserveSlots}
+ * @param slotOffset the offset in the reserved slot space
  * @param v1 1st argument to {@link PipeTransform#transform}.
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  * @param v3 4rd argument to {@link PipeTransform#transform}.
@@ -120,7 +120,7 @@ export function pipeBind3(index: number, slotOffset: number, v1: any, v2: any, v
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
- * @param slotOffset the offset in the reserved slot space {@link reserveSlots}
+ * @param slotOffset the offset in the reserved slot space
  * @param v1 1st argument to {@link PipeTransform#transform}.
  * @param v2 2nd argument to {@link PipeTransform#transform}.
  * @param v3 3rd argument to {@link PipeTransform#transform}.
@@ -141,7 +141,7 @@ export function pipeBind4(
  * the pipe only when an input to the pipe changes.
  *
  * @param index Pipe index where the pipe was stored on creation.
- * @param slotOffset the offset in the reserved slot space {@link reserveSlots}
+ * @param slotOffset the offset in the reserved slot space
  * @param values Array of arguments to pass to {@link PipeTransform#transform} method.
  */
 export function pipeBindV(index: number, slotOffset: number, values: any[]): any {

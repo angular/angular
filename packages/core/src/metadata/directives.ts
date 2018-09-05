@@ -11,6 +11,7 @@ import {Provider} from '../di';
 import {R3_COMPILE_COMPONENT, R3_COMPILE_DIRECTIVE, R3_COMPILE_PIPE} from '../ivy_switch';
 import {Type} from '../type';
 import {TypeDecorator, makeDecorator, makePropDecorator} from '../util/decorators';
+import {fillProperties} from '../util/property';
 import {ViewEncapsulation} from './view';
 
 
@@ -26,7 +27,7 @@ export interface DirectiveDecorator {
    * runtime.
    *
    * Directive classes, like component classes, can implement
-   * [life-cycle hoooks](guide/lifecycle-hooks) to influence their configuration and behavior.
+   * [life-cycle hooks](guide/lifecycle-hooks) to influence their configuration and behavior.
    *
    *
    * @usageNotes
@@ -136,7 +137,7 @@ export interface Directive {
    * Enumerates the set of event-bound output properties.
    *
    * When an output property emits an event, an event handler attached to that event
-   * the template is invoked.
+   * in the template is invoked.
    *
    * The `outputs` property defines a set of `directiveProperty` to `bindingProperty`
    * configuration:
@@ -346,7 +347,7 @@ export interface Directive {
  */
 export const Directive: DirectiveDecorator = makeDecorator(
     'Directive', (dir: Directive = {}) => dir, undefined, undefined,
-    (type: Type<any>, meta: Directive) => (R3_COMPILE_DIRECTIVE || (() => {}))(type, meta));
+    (type: Type<any>, meta: Directive) => R3_COMPILE_DIRECTIVE(type, meta));
 
 /**
  * Component decorator interface
@@ -630,8 +631,7 @@ export interface Component extends Directive {
  */
 export const Component: ComponentDecorator = makeDecorator(
     'Component', (c: Component = {}) => ({changeDetection: ChangeDetectionStrategy.Default, ...c}),
-    Directive, undefined,
-    (type: Type<any>, meta: Component) => (R3_COMPILE_COMPONENT || (() => {}))(type, meta));
+    Directive, undefined, (type: Type<any>, meta: Component) => R3_COMPILE_COMPONENT(type, meta));
 
 /**
  * Type of the Pipe decorator / constructor function.
@@ -679,7 +679,7 @@ export interface Pipe {
  */
 export const Pipe: PipeDecorator = makeDecorator(
     'Pipe', (p: Pipe) => ({pure: true, ...p}), undefined, undefined,
-    (type: Type<any>, meta: Pipe) => (R3_COMPILE_PIPE || (() => {}))(type, meta));
+    (type: Type<any>, meta: Pipe) => R3_COMPILE_PIPE(type, meta));
 
 
 /**
@@ -734,7 +734,7 @@ export interface Input {
    *   selector: 'bank-account',
    *   template: `
    *     Bank Name: {{bankName}}
-  *      Account Id: {{id}}
+   *     Account Id: {{id}}
    *   `
    * })
    * class BankAccount {
@@ -761,12 +761,52 @@ export interface Input {
   bindingPropertyName?: string;
 }
 
+const initializeBaseDef = (target: any): void => {
+  const constructor = target.constructor;
+  const inheritedBaseDef = constructor.ngBaseDef;
+
+  const baseDef = constructor.ngBaseDef = {
+    inputs: {},
+    outputs: {},
+    declaredInputs: {},
+  };
+
+  if (inheritedBaseDef) {
+    fillProperties(baseDef.inputs, inheritedBaseDef.inputs);
+    fillProperties(baseDef.outputs, inheritedBaseDef.outputs);
+    fillProperties(baseDef.declaredInputs, inheritedBaseDef.declaredInputs);
+  }
+};
+
+/**
+ * Used to get the minified alias of ngBaseDef
+ */
+const NG_BASE_DEF = Object.keys({ngBaseDef: true})[0];
+
+/**
+ * Does the work of creating the `ngBaseDef` property for the @Input and @Output decorators.
+ * @param key "inputs" or "outputs"
+ */
+const updateBaseDefFromIOProp = (getProp: (baseDef: {inputs?: any, outputs?: any}) => any) =>
+    (target: any, name: string, ...args: any[]) => {
+      const constructor = target.constructor;
+
+      if (!constructor.hasOwnProperty(NG_BASE_DEF)) {
+        initializeBaseDef(target);
+      }
+
+      const baseDef = constructor.ngBaseDef;
+      const defProp = getProp(baseDef);
+      defProp[name] = args[0];
+    };
+
 /**
  *
  * @Annotation
  */
-export const Input: InputDecorator =
-    makePropDecorator('Input', (bindingPropertyName?: string) => ({bindingPropertyName}));
+export const Input: InputDecorator = makePropDecorator(
+    'Input', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
+    updateBaseDefFromIOProp(baseDef => baseDef.inputs || {}));
 
 /**
  * Type of the Output decorator / constructor function.
@@ -800,8 +840,10 @@ export interface Output { bindingPropertyName?: string; }
  *
  * @Annotation
  */
-export const Output: OutputDecorator =
-    makePropDecorator('Output', (bindingPropertyName?: string) => ({bindingPropertyName}));
+export const Output: OutputDecorator = makePropDecorator(
+    'Output', (bindingPropertyName?: string) => ({bindingPropertyName}), undefined,
+    updateBaseDefFromIOProp(baseDef => baseDef.outputs || {}));
+
 
 
 /**

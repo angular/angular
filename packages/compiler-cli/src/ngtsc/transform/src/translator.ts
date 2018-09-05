@@ -46,6 +46,7 @@ const CORE_SUPPORTED_SYMBOLS = new Set<string>([
   'ɵInjectableDef',
   'ɵInjectorDef',
   'ɵNgModuleDef',
+  'ɵNgModuleFactory',
 ]);
 
 export class ImportManager {
@@ -309,7 +310,7 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
     const exprStr = type.value.visitExpression(this, context);
     if (type.typeParams !== null) {
       const typeSegments = type.typeParams.map(param => param.visitType(this, context));
-      return `${exprStr}<${typeSegments.join(',')}>`;
+      return `${exprStr}<${typeSegments.join(', ')}>`;
     } else {
       return exprStr;
     }
@@ -411,7 +412,7 @@ export class TypeTranslatorVisitor implements ExpressionVisitor, TypeVisitor {
 
   visitLiteralArrayExpr(ast: LiteralArrayExpr, context: Context): string {
     const values = ast.entries.map(expr => expr.visitExpression(this, context));
-    return `[${values.join(',')}]`;
+    return `[${values.join(', ')}]`;
   }
 
   visitLiteralMapExpr(ast: LiteralMapExpr, context: Context) {

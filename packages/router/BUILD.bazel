@@ -15,8 +15,8 @@ ng_module(
         "//packages/common",
         "//packages/core",
         "//packages/platform-browser",
-        "//packages/upgrade/static",
         "@rxjs",
+        "@rxjs//operators",
     ],
 )
 

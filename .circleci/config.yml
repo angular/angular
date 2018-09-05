@@ -48,7 +48,7 @@ jobs:
 
       # Check BUILD.bazel formatting before we have a node_modules directory
       # Then we don't need any exclude pattern to avoid checking those files
-      - run: 'buildifier -mode=check $(find . -type f \( -name BUILD.bazel -or -name BUILD \)) ||
+      - run: 'buildifier -mode=check $(find . -type f \( -name "*.bzl" -or -name BUILD.bazel -or -name BUILD \)) ||
               (echo "BUILD files not formatted. Please run ''yarn buildifier''" ; exit 1)'
       # Run the skylark linter to check our Bazel rules
       # deprecated-api is disabled because we use actions.new_file(genfiles_dir)
@@ -148,6 +148,23 @@ jobs:
       - run: bazel run @yarn//:yarn
       - run: bazel query --output=label //... | xargs bazel test --define=compile=local --build_tag_filters=ivy-local --test_tag_filters=-manual,ivy-local
 
+  aio_preview:
+    <<: *job_defaults
+    environment:
+       AIO_SNAPSHOT_ARTIFACT_PATH: &aio_preview_artifact_path 'aio/tmp/snapshot.tgz'
+    steps:
+      - checkout:
+          <<: *post_checkout
+      - restore_cache:
+          key: *cache_key
+      - run: yarn install --frozen-lockfile --non-interactive
+      - run: ./aio/scripts/build-artifacts.sh $AIO_SNAPSHOT_ARTIFACT_PATH
+      - store_artifacts:
+          path: *aio_preview_artifact_path
+          # The `destination` needs to be kept in synch with the value of
+          # `AIO_ARTIFACT_PATH` in `aio/aio-builds-setup/Dockerfile`
+          destination: aio/dist/aio-snapshot.tgz
+
   # This job exists only for backwards-compatibility with old scripts and tests
   # that rely on the pre-Bazel dist/packages-dist layout.
   # It duplicates some work with the job above: we build the bazel packages
@@ -163,12 +180,20 @@ jobs:
       - checkout:
           <<: *post_checkout
       # See remote cache documentation in /docs/BAZEL.md
-      - run: .circleci/setup_cache.sh
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
-      - *setup-bazel-remote-cache
-
       - run: bazel run @nodejs//:yarn
-      - run: scripts/build-packages-dist.sh
+      - run:
+          # RBE is enabled by appending rbe-bazel.rc.
+          name: Enable RBE
+          command: 'sudo bash -c "cat .circleci/rbe-bazel.rc >> /etc/bazel.bazelrc"'
+      - run:
+          name: "Setup GCP environment"
+          command: 'openssl aes-256-cbc -d -in .circleci/gcp_token -k "${CIRCLE_PROJECT_REPONAME}" -out /home/circleci/.gcp_credentials'
+      - run:
+          name: build-packages-dist
+          command: scripts/build-packages-dist.sh
+          environment:
+            GOOGLE_APPLICATION_CREDENTIALS: /home/circleci/.gcp_credentials
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs
@@ -245,6 +270,7 @@ workflows:
       - test_ivy_jit
       - test_ivy_aot
       - build-packages-dist
+      - aio_preview
       - integration_test:
           requires:
             - build-packages-dist
@@ -273,3 +299,6 @@ workflows:
             branches:
               only:
                 - master
+notify:
+  webhooks:
+    - url: https://ngbuilds.io/circle-build

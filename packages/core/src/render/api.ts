@@ -6,7 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, Injector} from '../di';
+import {InjectionToken} from '../di/injection_token';
+import {Injector} from '../di/injector';
 import {ViewEncapsulation} from '../metadata/view';
 
 /**

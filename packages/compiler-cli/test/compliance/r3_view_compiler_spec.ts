@@ -11,9 +11,9 @@ import {compile, expectEmit} from './mock_compile';
 
 describe('r3_view_compiler', () => {
   const angularFiles = setup({
-    compileAngular: true,
+    compileAngular: false,
+    compileFakeCore: true,
     compileAnimations: false,
-    compileCommon: true,
   });
 
   describe('hello world', () => {
@@ -47,7 +47,6 @@ describe('r3_view_compiler', () => {
       app: {
         'example.ts': `
         import {Component, OnInit, OnDestroy, ElementRef, Input, NgModule} from '@angular/core';
-        import {CommonModule} from '@angular/common';
 
         @Component({
           selector: 'my-app',
@@ -83,7 +82,6 @@ describe('r3_view_compiler', () => {
 
         @NgModule({
           declarations: [TodoComponent, MyApp],
-          imports: [CommonModule]
         })
         export class TodoModule{}
         `
@@ -114,7 +112,8 @@ describe('r3_view_compiler', () => {
         }
       };
 
-      const bV_call = `$r3$.ɵiV([" ",ctx.list[0]," ",ctx.list[1]," ",ctx.list[2]," ",ctx.list[3],
+      const bV_call =
+          `$r3$.ɵinterpolationV([" ",ctx.list[0]," ",ctx.list[1]," ",ctx.list[2]," ",ctx.list[3],
         " ",ctx.list[4]," ",ctx.list[5]," ",ctx.list[6]," ",ctx.list[7]," ",ctx.list[8],
         " "])`;
       const result = compile(files, angularFiles);

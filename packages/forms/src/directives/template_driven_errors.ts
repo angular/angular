@@ -57,4 +57,21 @@ export class TemplateDrivenErrors {
 
       ${Examples.ngModelGroup}`);
   }
+
+  static ngFormWarning() {
+    console.warn(`
+    It looks like you're using 'ngForm'.
+
+    Support for using the 'ngForm' element selector has been deprecated in Angular v6 and will be removed
+    in Angular v9.
+
+    Use 'ng-form' instead.
+
+    Before:
+    <ngForm #myForm="ngForm">
+
+    After:
+    <ng-form #myForm="ngForm">
+    `);
+  }
 }

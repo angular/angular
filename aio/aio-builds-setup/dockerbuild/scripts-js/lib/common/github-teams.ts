@@ -1,45 +1,72 @@
-// Imports
-import {assertNotMissingOrEmpty} from '../common/utils';
 import {GithubApi} from './github-api';
+import {assertNotMissingOrEmpty} from './utils';
 
-// Interfaces - Types
-interface Team {
+export interface Team {
   id: number;
   slug: string;
 }
 
-interface TeamMembership {
+export interface TeamMembership {
   state: string;
 }
 
-// Classes
-export class GithubTeams extends GithubApi {
-  // Constructor
-  constructor(githubToken: string, protected organization: string) {
-    super(githubToken);
-    assertNotMissingOrEmpty('organization', organization);
+export class GithubTeams {
+  /**
+   * Create an instance of this helper
+   * @param api An instance of the Github API helper.
+   * @param githubOrg The organisation on GitHub whose repo we will interrogate.
+   */
+  constructor(private api: GithubApi, protected githubOrg: string) {
+    assertNotMissingOrEmpty('githubOrg', githubOrg);
   }
 
-  // Methods - Public
+  /**
+   * Request information about all the organisation's teams in GitHub.
+   * @returns A promise that is resolved with information about the teams.
+   */
   public fetchAll(): Promise<Team[]> {
-    return this.getPaginated<Team>(`/orgs/${this.organization}/teams`);
+    return this.api.getPaginated<Team>(`/orgs/${this.githubOrg}/teams`);
   }
 
-  public isMemberById(username: string, teamIds: number[]): Promise<boolean> {
-    const getMembership = (teamId: number) =>
-      this.get<TeamMembership>(`/teams/${teamId}/memberships/${username}`).
-        then(membership => membership.state === 'active').
-        catch(() => false);
-    const reduceFn = (promise: Promise<boolean>, teamId: number) =>
-      promise.then(isMember => isMember || getMembership(teamId));
+  /**
+   * Check whether the specified username is a member of the specified team.
+   * @param username The usernane to check for in the team.
+   * @param teamIds The team to check for the username.
+   * @returns a Promise that resolves to `true` if the username is a member of the team.
+   */
+  public async isMemberById(username: string, teamIds: number[]): Promise<boolean> {
 
-    return teamIds.reduce(reduceFn, Promise.resolve(false));
+    const getMembership = async (teamId: number) => {
+      try {
+        const {state} = await this.api.get<TeamMembership>(`/teams/${teamId}/memberships/${username}`);
+        return state === 'active';
+      } catch (error) {
+        return false;
+      }
+    };
+
+    for (const teamId of teamIds) {
+      if (await getMembership(teamId)) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
-  public isMemberBySlug(username: string, teamSlugs: string[]): Promise<boolean> {
-    return this.fetchAll().
-      then(teams => teams.filter(team => teamSlugs.includes(team.slug)).map(team => team.id)).
-      then(teamIds => this.isMemberById(username, teamIds)).
-      catch(() => false);
+  /**
+   * Check whether the given username is a member of the teams specified by the team slugs.
+   * @param username The username to check for in the teams.
+   * @param teamSlugs A collection of slugs that represent the teams to check for the the username.
+   * @returns a Promise that resolves to `true` if the usernane is a member of at least one of the specified teams.
+   */
+  public async isMemberBySlug(username: string, teamSlugs: string[]): Promise<boolean> {
+    try {
+      const teams = await this.fetchAll();
+      const teamIds = teams.filter(team => teamSlugs.includes(team.slug)).map(team => team.id);
+      return await this.isMemberById(username, teamIds);
+    } catch (error) {
+      return false;
+    }
   }
 }

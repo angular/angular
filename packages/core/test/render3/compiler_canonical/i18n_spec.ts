@@ -18,7 +18,7 @@ describe('i18n', () => {
   it('should support html', () => {
     type $MyApp$ = MyApp;
     const $msg_1$ = `{$START_P}contenu{$END_P}`;
-    const $i18n_1$ = $r3$.ɵiM($msg_1$, [{START_P: 1}]);
+    const $i18n_1$ = $r3$.ɵi18nMapping($msg_1$, [{START_P: 1}]);
 
     @Component({selector: 'my-app', template: `<div i18n><p>content</p></div>`})
     class MyApp {
@@ -26,13 +26,15 @@ describe('i18n', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: () => new MyApp(),
+        consts: 2,
+        vars: 0,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'div');
-            $r3$.ɵE(1, 'p');
-            $r3$.ɵe();
-            $r3$.ɵe();
-            $r3$.ɵiA(1, $i18n_1$[0]);
+            $r3$.ɵelementStart(0, 'div');
+            $r3$.ɵelementStart(1, 'p');
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementEnd();
+            $r3$.ɵi18nApply(1, $i18n_1$[0]);
           }
         }
       });
@@ -42,7 +44,7 @@ describe('i18n', () => {
   it('should support expressions', () => {
     type $MyApp$ = MyApp;
     const $msg_1$ = `contenu: {$EXP_1}`;
-    const $i18n_1$ = $r3$.ɵiM($msg_1$, null, [{EXP_1: 1}]);
+    const $i18n_1$ = $r3$.ɵi18nMapping($msg_1$, null, [{EXP_1: 1}]);
 
     @Component({selector: 'my-app', template: `<div i18n>content: {{exp1}}</div>`})
     class MyApp {
@@ -51,15 +53,17 @@ describe('i18n', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: () => new MyApp(),
+        consts: 2,
+        vars: 1,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'div');
-            $r3$.ɵT(1);
-            $r3$.ɵe();
-            $r3$.ɵiA(1, $i18n_1$[0]);
+            $r3$.ɵelementStart(0, 'div');
+            $r3$.ɵtext(1);
+            $r3$.ɵelementEnd();
+            $r3$.ɵi18nApply(1, $i18n_1$[0]);
           }
           if (rf & 2) {
-            $r3$.ɵt(3, $r3$.ɵb(ctx.exp1));
+            $r3$.ɵtextBinding(3, $r3$.ɵbind(ctx.exp1));
           }
         }
       });
@@ -69,7 +73,7 @@ describe('i18n', () => {
   it('should support expressions in attributes', () => {
     type $MyApp$ = MyApp;
     const $msg_1$ = `titre: {$EXP_1}`;
-    const $i18n_1$ = $r3$.ɵiEM($msg_1$, {EXP_1: 1});
+    const $i18n_1$ = $r3$.ɵi18nExpMapping($msg_1$, {EXP_1: 1});
 
     @Component({selector: 'my-app', template: `<div i18n><p title="title: {{exp1}}"></p></div>`})
     class MyApp {
@@ -78,15 +82,17 @@ describe('i18n', () => {
         type: MyApp,
         selectors: [['my-app']],
         factory: () => new MyApp(),
+        consts: 2,
+        vars: 1,
         template: function(rf: $RenderFlags$, ctx: $MyApp$) {
           if (rf & 1) {
-            $r3$.ɵE(0, 'div');
-            $r3$.ɵE(1, 'p');
-            $r3$.ɵe();
-            $r3$.ɵe();
+            $r3$.ɵelementStart(0, 'div');
+            $r3$.ɵelementStart(1, 'p');
+            $r3$.ɵelementEnd();
+            $r3$.ɵelementEnd();
           }
           if (rf & 2) {
-            $r3$.ɵp(0, 'title', $r3$.ɵiI1($i18n_1$, ctx.exp1));
+            $r3$.ɵelementProperty(0, 'title', $r3$.ɵi18nInterpolation1($i18n_1$, ctx.exp1));
           }
         }
       });
@@ -96,8 +102,20 @@ describe('i18n', () => {
   it('should support embedded templates', () => {
     type $MyApp$ = MyApp;
     const $msg_1$ = `{$START_LI}valeur: {$EXP_1}!{$END_LI}`;
-    const $i18n_1$ =
-        $r3$.ɵiM($msg_1$, [{START_LI: 1}, {START_LI: 0}], [null, {EXP_1: 1}], ['START_LI']);
+    const $i18n_1$ = $r3$.ɵi18nMapping(
+        $msg_1$, [{START_LI: 1}, {START_LI: 0}], [null, {EXP_1: 1}], ['START_LI']);
+
+    function liTemplate(rf1: $RenderFlags$, row: NgForOfContext<string>) {
+      if (rf1 & 1) {
+        $r3$.ɵelementStart(0, 'li');
+        $r3$.ɵtext(1);
+        $r3$.ɵelementEnd();
+        $r3$.ɵi18nApply(0, $i18n_1$[1]);
+      }
+      if (rf1 & 2) {
+        $r3$.ɵtextBinding(1, $r3$.ɵbind(row.$implicit));
+      }
+    }
 
     @Component({
       selector: 'my-app',
@@ -109,27 +127,17 @@ describe('i18n', () => {
         type: MyApp,
         factory: () => new MyApp(),
         selectors: [['my-app']],
+        consts: 2,
+        vars: 1,
         template: (rf: $RenderFlags$, myApp: $MyApp$) => {
           if (rf & 1) {
-            $r3$.ɵE(0, 'ul');
-            $r3$.ɵC(1, liTemplate, null, ['ngForOf', '']);
-            $r3$.ɵe();
-            $r3$.ɵiA(1, $i18n_1$[0]);
+            $r3$.ɵelementStart(0, 'ul');
+            $r3$.ɵtemplate(1, liTemplate, 2, 1, null, ['ngForOf', '']);
+            $r3$.ɵelementEnd();
+            $r3$.ɵi18nApply(1, $i18n_1$[0]);
           }
           if (rf & 2) {
-            $r3$.ɵp(1, 'ngForOf', $r3$.ɵb(myApp.items));
-          }
-
-          function liTemplate(rf1: $RenderFlags$, row: NgForOfContext<string>) {
-            if (rf1 & 1) {
-              $r3$.ɵE(0, 'li');
-              $r3$.ɵT(1);
-              $r3$.ɵe();
-              $r3$.ɵiA(0, $i18n_1$[1]);
-            }
-            if (rf1 & 2) {
-              $r3$.ɵt(1, $r3$.ɵb(row.$implicit));
-            }
+            $r3$.ɵelementProperty(1, 'ngForOf', $r3$.ɵbind(myApp.items));
           }
         },
         directives: () => [NgForOf]

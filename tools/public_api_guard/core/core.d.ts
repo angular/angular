@@ -23,10 +23,8 @@ export declare const APP_BOOTSTRAP_LISTENER: InjectionToken<((compRef: Component
 /** @experimental */
 export declare const APP_ID: InjectionToken<string>;
 
-/** @experimental */
 export declare const APP_INITIALIZER: InjectionToken<(() => void)[]>;
 
-/** @experimental */
 export declare class ApplicationInitStatus {
     readonly done: boolean;
     readonly donePromise: Promise<any>;
@@ -267,6 +265,10 @@ export declare const Directive: DirectiveDecorator;
 export interface DirectiveDecorator {
     (obj: Directive): TypeDecorator;
     new (obj: Directive): Directive;
+}
+
+export interface DoBootstrap {
+    ngDoBootstrap(appRef: ApplicationRef): void;
 }
 
 export interface DoCheck {
@@ -922,7 +924,7 @@ export declare abstract class ViewContainerRef {
     abstract readonly element: ElementRef;
     abstract readonly injector: Injector;
     abstract readonly length: number;
-    abstract readonly parentInjector: Injector;
+    /** @deprecated */ abstract readonly parentInjector: Injector;
     abstract clear(): void;
     abstract createComponent<C>(componentFactory: ComponentFactory<C>, index?: number, injector?: Injector, projectableNodes?: any[][], ngModule?: NgModuleRef<any>): ComponentRef<C>;
     abstract createEmbeddedView<C>(templateRef: TemplateRef<C>, context?: C, index?: number): EmbeddedViewRef<C>;

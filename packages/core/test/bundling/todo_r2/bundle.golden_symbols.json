@@ -1,0 +1,2402 @@
+[
+  {
+    "name": "ACTIVE_INDEX"
+  },
+  {
+    "name": "ADD_EVENT_LISTENER"
+  },
+  {
+    "name": "ALLOW_MULTIPLE_PLATFORMS"
+  },
+  {
+    "name": "ANGULAR"
+  },
+  {
+    "name": "APPLICATION_MODULE_PROVIDERS"
+  },
+  {
+    "name": "APP_BOOTSTRAP_LISTENER"
+  },
+  {
+    "name": "APP_ID"
+  },
+  {
+    "name": "APP_ID_RANDOM_PROVIDER"
+  },
+  {
+    "name": "APP_INITIALIZER"
+  },
+  {
+    "name": "APP_ROOT"
+  },
+  {
+    "name": "AT_CHARCODE"
+  },
+  {
+    "name": "AnonymousSubject"
+  },
+  {
+    "name": "ApplicationInitStatus"
+  },
+  {
+    "name": "ApplicationModule"
+  },
+  {
+    "name": "ApplicationRef"
+  },
+  {
+    "name": "AsyncPipe"
+  },
+  {
+    "name": "BINDING_INDEX"
+  },
+  {
+    "name": "BLOOM_MASK"
+  },
+  {
+    "name": "BROWSER_MODULE_PROVIDERS"
+  },
+  {
+    "name": "BROWSER_SANITIZATION_PROVIDERS"
+  },
+  {
+    "name": "BrowserDomAdapter"
+  },
+  {
+    "name": "BrowserGetTestability"
+  },
+  {
+    "name": "BrowserModule"
+  },
+  {
+    "name": "BrowserPlatformLocation"
+  },
+  {
+    "name": "CIRCULAR"
+  },
+  {
+    "name": "CIRCULAR$1"
+  },
+  {
+    "name": "CIRCULAR$2"
+  },
+  {
+    "name": "CLEANUP"
+  },
+  {
+    "name": "CLEAN_PROMISE"
+  },
+  {
+    "name": "COMMON_DIRECTIVES"
+  },
+  {
+    "name": "COMMON_PIPES"
+  },
+  {
+    "name": "COMPONENT_FACTORY_RESOLVER"
+  },
+  {
+    "name": "COMPONENT_REGEX"
+  },
+  {
+    "name": "COMPONENT_VARIABLE$1"
+  },
+  {
+    "name": "CONTAINER_INDEX"
+  },
+  {
+    "name": "CONTENT_ATTR$1"
+  },
+  {
+    "name": "CONTEXT"
+  },
+  {
+    "name": "CORE_TOKENS"
+  },
+  {
+    "name": "CORE_TOKENS_GLOBAL_NAME"
+  },
+  {
+    "name": "CURRENCIES_EN"
+  },
+  {
+    "name": "CURRENCY_CHAR"
+  },
+  {
+    "name": "ChangeDetectionStrategy"
+  },
+  {
+    "name": "ChangeDetectorRef"
+  },
+  {
+    "name": "CommonModule"
+  },
+  {
+    "name": "Compiler"
+  },
+  {
+    "name": "CompilerFactory"
+  },
+  {
+    "name": "ComponentFactory"
+  },
+  {
+    "name": "ComponentFactory$1"
+  },
+  {
+    "name": "ComponentFactoryBoundToModule"
+  },
+  {
+    "name": "ComponentFactoryResolver"
+  },
+  {
+    "name": "ComponentFactoryResolver$1"
+  },
+  {
+    "name": "ComponentRef"
+  },
+  {
+    "name": "ComponentRef$1"
+  },
+  {
+    "name": "ConnectableSubscriber"
+  },
+  {
+    "name": "Console"
+  },
+  {
+    "name": "CurrencyPipe"
+  },
+  {
+    "name": "DATA_URL_PATTERN"
+  },
+  {
+    "name": "DATE_FORMATS"
+  },
+  {
+    "name": "DATE_FORMATS_SPLIT"
+  },
+  {
+    "name": "DECIMAL_SEP"
+  },
+  {
+    "name": "DECLARATION_VIEW"
+  },
+  {
+    "name": "DEFAULT_NB_OF_CURRENCY_DIGITS"
+  },
+  {
+    "name": "DEPRECATED_PLURAL_FN"
+  },
+  {
+    "name": "DIGIT_CHAR"
+  },
+  {
+    "name": "DIRECTIVES"
+  },
+  {
+    "name": "DOCUMENT"
+  },
+  {
+    "name": "DOCUMENT$1"
+  },
+  {
+    "name": "DOM_KEY_LOCATION_NUMPAD"
+  },
+  {
+    "name": "DatePipe"
+  },
+  {
+    "name": "DateType"
+  },
+  {
+    "name": "DecimalPipe"
+  },
+  {
+    "name": "DefaultDomRenderer2"
+  },
+  {
+    "name": "DefaultIterableDiffer"
+  },
+  {
+    "name": "DefaultIterableDifferFactory"
+  },
+  {
+    "name": "DefaultKeyValueDiffer"
+  },
+  {
+    "name": "DefaultKeyValueDifferFactory"
+  },
+  {
+    "name": "DomEventsPlugin"
+  },
+  {
+    "name": "DomRendererFactory2"
+  },
+  {
+    "name": "DomSanitizer"
+  },
+  {
+    "name": "DomSanitizerImpl"
+  },
+  {
+    "name": "DomSharedStylesHost"
+  },
+  {
+    "name": "ELEMENT_PROBE_PROVIDERS"
+  },
+  {
+    "name": "EMPTY"
+  },
+  {
+    "name": "EMPTY$1"
+  },
+  {
+    "name": "EMPTY_ARRAY$1"
+  },
+  {
+    "name": "EMPTY_ARRAY$2"
+  },
+  {
+    "name": "EMPTY_PAYLOAD"
+  },
+  {
+    "name": "ERROR_COMPONENT"
+  },
+  {
+    "name": "ERROR_DEBUG_CONTEXT"
+  },
+  {
+    "name": "ERROR_LOGGER"
+  },
+  {
+    "name": "ERROR_ORIGINAL_ERROR"
+  },
+  {
+    "name": "EVENT_MANAGER_PLUGINS"
+  },
+  {
+    "name": "EVENT_NAMES"
+  },
+  {
+    "name": "ElementRef"
+  },
+  {
+    "name": "ElementRef$1"
+  },
+  {
+    "name": "EmulatedEncapsulationDomRenderer2"
+  },
+  {
+    "name": "ErrorHandler"
+  },
+  {
+    "name": "EventEmitter"
+  },
+  {
+    "name": "EventManager"
+  },
+  {
+    "name": "EventManagerPlugin"
+  },
+  {
+    "name": "FALSE"
+  },
+  {
+    "name": "FLAGS"
+  },
+  {
+    "name": "FormStyle"
+  },
+  {
+    "name": "FormatWidth"
+  },
+  {
+    "name": "GET_PROPERTY_NAME"
+  },
+  {
+    "name": "GROUP_SEP"
+  },
+  {
+    "name": "HAMMER_GESTURE_CONFIG"
+  },
+  {
+    "name": "HAMMER_LOADER"
+  },
+  {
+    "name": "HEADER_FILLER"
+  },
+  {
+    "name": "HEADER_OFFSET"
+  },
+  {
+    "name": "HOST_ATTR$1"
+  },
+  {
+    "name": "HOST_NODE"
+  },
+  {
+    "name": "HammerGestureConfig"
+  },
+  {
+    "name": "HammerGesturesPlugin"
+  },
+  {
+    "name": "I18nPluralPipe"
+  },
+  {
+    "name": "I18nSelectPipe"
+  },
+  {
+    "name": "IDENT"
+  },
+  {
+    "name": "INJECTOR"
+  },
+  {
+    "name": "INJECTOR$1"
+  },
+  {
+    "name": "INSPECT_GLOBAL_NAME"
+  },
+  {
+    "name": "ISO8601_DATE_REGEX"
+  },
+  {
+    "name": "InertBodyHelper"
+  },
+  {
+    "name": "Inject"
+  },
+  {
+    "name": "InjectionToken"
+  },
+  {
+    "name": "Injector"
+  },
+  {
+    "name": "InnerSubscriber"
+  },
+  {
+    "name": "IterableChangeRecord_"
+  },
+  {
+    "name": "IterableDiffers"
+  },
+  {
+    "name": "JANUARY"
+  },
+  {
+    "name": "JsonPipe"
+  },
+  {
+    "name": "KeyEventsPlugin"
+  },
+  {
+    "name": "KeyValueChangeRecord_"
+  },
+  {
+    "name": "KeyValueDiffers"
+  },
+  {
+    "name": "KeyValuePipe"
+  },
+  {
+    "name": "LOCALE_DATA"
+  },
+  {
+    "name": "LOCALE_ID"
+  },
+  {
+    "name": "LifecycleHooksFeature"
+  },
+  {
+    "name": "LowerCasePipe"
+  },
+  {
+    "name": "MAX_DIGITS"
+  },
+  {
+    "name": "MODIFIER_KEYS"
+  },
+  {
+    "name": "MODIFIER_KEY_GETTERS"
+  },
+  {
+    "name": "MULTI_PROVIDER_FN"
+  },
+  {
+    "name": "MapOperator"
+  },
+  {
+    "name": "MapSubscriber"
+  },
+  {
+    "name": "MergeMapOperator"
+  },
+  {
+    "name": "MergeMapSubscriber"
+  },
+  {
+    "name": "MulticastOperator"
+  },
+  {
+    "name": "NAMED_FORMATS"
+  },
+  {
+    "name": "NAMESPACE_URIS"
+  },
+  {
+    "name": "NATIVE_ADD_LISTENER"
+  },
+  {
+    "name": "NATIVE_REMOVE_LISTENER"
+  },
+  {
+    "name": "NEW_LINE"
+  },
+  {
+    "name": "NEXT"
+  },
+  {
+    "name": "NG_ELEMENT_ID"
+  },
+  {
+    "name": "NG_HOST_SYMBOL"
+  },
+  {
+    "name": "NG_PROJECT_AS_ATTR_NAME"
+  },
+  {
+    "name": "NG_TEMP_TOKEN_PATH"
+  },
+  {
+    "name": "NG_TOKEN_PATH"
+  },
+  {
+    "name": "NON_ALPHANUMERIC_REGEXP"
+  },
+  {
+    "name": "NOT_YET"
+  },
+  {
+    "name": "NO_CHANGE"
+  },
+  {
+    "name": "NO_NEW_LINE"
+  },
+  {
+    "name": "NULL_INJECTOR"
+  },
+  {
+    "name": "NULL_INJECTOR$2"
+  },
+  {
+    "name": "NUMBER_FORMAT_REGEXP"
+  },
+  {
+    "name": "NgClass"
+  },
+  {
+    "name": "NgComponentOutlet"
+  },
+  {
+    "name": "NgForOf"
+  },
+  {
+    "name": "NgForOfContext"
+  },
+  {
+    "name": "NgIf"
+  },
+  {
+    "name": "NgIfContext"
+  },
+  {
+    "name": "NgLocaleLocalization"
+  },
+  {
+    "name": "NgLocalization"
+  },
+  {
+    "name": "NgModuleFactory"
+  },
+  {
+    "name": "NgModuleFactory$1"
+  },
+  {
+    "name": "NgModuleRef"
+  },
+  {
+    "name": "NgModuleRef$1"
+  },
+  {
+    "name": "NgOnChangesFeature"
+  },
+  {
+    "name": "NgPlural"
+  },
+  {
+    "name": "NgPluralCase"
+  },
+  {
+    "name": "NgProbeToken"
+  },
+  {
+    "name": "NgStyle"
+  },
+  {
+    "name": "NgSwitch"
+  },
+  {
+    "name": "NgSwitchCase"
+  },
+  {
+    "name": "NgSwitchDefault"
+  },
+  {
+    "name": "NgTemplateOutlet"
+  },
+  {
+    "name": "NgZone"
+  },
+  {
+    "name": "NodeInjector"
+  },
+  {
+    "name": "NoopNgZone"
+  },
+  {
+    "name": "NullInjector"
+  },
+  {
+    "name": "NumberFormatStyle"
+  },
+  {
+    "name": "NumberSymbol"
+  },
+  {
+    "name": "OPTIONAL_END_TAG_BLOCK_ELEMENTS"
+  },
+  {
+    "name": "OPTIONAL_END_TAG_ELEMENTS"
+  },
+  {
+    "name": "OPTIONAL_END_TAG_INLINE_ELEMENTS"
+  },
+  {
+    "name": "ObjectUnsubscribedError"
+  },
+  {
+    "name": "Observable"
+  },
+  {
+    "name": "ObservableStrategy"
+  },
+  {
+    "name": "Optional"
+  },
+  {
+    "name": "OuterSubscriber"
+  },
+  {
+    "name": "PARAMETERS"
+  },
+  {
+    "name": "PARENT"
+  },
+  {
+    "name": "PATTERN_SEP"
+  },
+  {
+    "name": "PERCENT_CHAR"
+  },
+  {
+    "name": "PLATFORM_BROWSER_ID"
+  },
+  {
+    "name": "PLATFORM_ID"
+  },
+  {
+    "name": "PLATFORM_INITIALIZER"
+  },
+  {
+    "name": "PLATFORM_SERVER_ID"
+  },
+  {
+    "name": "PRIVATE_PREFIX"
+  },
+  {
+    "name": "PercentPipe"
+  },
+  {
+    "name": "PlatformLocation"
+  },
+  {
+    "name": "PlatformRef"
+  },
+  {
+    "name": "Plural"
+  },
+  {
+    "name": "PublicFeature"
+  },
+  {
+    "name": "QUERIES"
+  },
+  {
+    "name": "R3Injector"
+  },
+  {
+    "name": "REMOVE_EVENT_LISTENER"
+  },
+  {
+    "name": "RENDERER"
+  },
+  {
+    "name": "RENDER_PARENT"
+  },
+  {
+    "name": "ROOT_CONTEXT"
+  },
+  {
+    "name": "RecordViewTuple"
+  },
+  {
+    "name": "RefCountOperator"
+  },
+  {
+    "name": "RefCountSubscriber"
+  },
+  {
+    "name": "Renderer2"
+  },
+  {
+    "name": "RendererFactory2"
+  },
+  {
+    "name": "RendererStyleFlags2"
+  },
+  {
+    "name": "RendererStyleFlags3"
+  },
+  {
+    "name": "RootViewRef"
+  },
+  {
+    "name": "SAFE_STYLE_VALUE"
+  },
+  {
+    "name": "SAFE_URL_PATTERN"
+  },
+  {
+    "name": "SANITIZER"
+  },
+  {
+    "name": "SCHEDULER"
+  },
+  {
+    "name": "SERVER_TRANSITION_PROVIDERS"
+  },
+  {
+    "name": "SOURCE"
+  },
+  {
+    "name": "SRCSET_ATTRS"
+  },
+  {
+    "name": "SURROGATE_PAIR_REGEXP"
+  },
+  {
+    "name": "SafeHtmlImpl"
+  },
+  {
+    "name": "SafeResourceUrlImpl"
+  },
+  {
+    "name": "SafeScriptImpl"
+  },
+  {
+    "name": "SafeStyleImpl"
+  },
+  {
+    "name": "SafeSubscriber"
+  },
+  {
+    "name": "SafeUrlImpl"
+  },
+  {
+    "name": "SafeValueImpl"
+  },
+  {
+    "name": "Sanitizer"
+  },
+  {
+    "name": "SanitizingHtmlSerializer"
+  },
+  {
+    "name": "SecurityContext$1"
+  },
+  {
+    "name": "Self"
+  },
+  {
+    "name": "ShadowDomRenderer"
+  },
+  {
+    "name": "SharedStylesHost"
+  },
+  {
+    "name": "SimpleChange"
+  },
+  {
+    "name": "SkipSelf"
+  },
+  {
+    "name": "SlicePipe"
+  },
+  {
+    "name": "StaticInjector"
+  },
+  {
+    "name": "Subject"
+  },
+  {
+    "name": "SubjectSubscriber"
+  },
+  {
+    "name": "SubjectSubscription"
+  },
+  {
+    "name": "Subscriber"
+  },
+  {
+    "name": "Subscription"
+  },
+  {
+    "name": "SwitchView"
+  },
+  {
+    "name": "TAIL"
+  },
+  {
+    "name": "THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "THURSDAY"
+  },
+  {
+    "name": "TRANSITION_ID"
+  },
+  {
+    "name": "TVIEW"
+  },
+  {
+    "name": "TemplateRef"
+  },
+  {
+    "name": "TemplateRef$1"
+  },
+  {
+    "name": "Testability"
+  },
+  {
+    "name": "TestabilityRegistry"
+  },
+  {
+    "name": "TitleCasePipe"
+  },
+  {
+    "name": "ToDoAppComponent"
+  },
+  {
+    "name": "ToDoAppComponent_footer_Template_6"
+  },
+  {
+    "name": "ToDoAppComponent_footer_button_Template_5"
+  },
+  {
+    "name": "ToDoAppComponent_section_Template_5"
+  },
+  {
+    "name": "ToDoAppComponent_section_input_Template_1"
+  },
+  {
+    "name": "ToDoAppComponent_section_li_Template_3"
+  },
+  {
+    "name": "ToDoAppComponent_section_li_input_Template_6"
+  },
+  {
+    "name": "ToDoAppModule"
+  },
+  {
+    "name": "Todo"
+  },
+  {
+    "name": "TodoStore"
+  },
+  {
+    "name": "TranslationType"
+  },
+  {
+    "name": "TranslationWidth"
+  },
+  {
+    "name": "URI_ATTRS"
+  },
+  {
+    "name": "URL_RE"
+  },
+  {
+    "name": "USE_VALUE$1"
+  },
+  {
+    "name": "UnsubscriptionError"
+  },
+  {
+    "name": "UpperCasePipe"
+  },
+  {
+    "name": "VALID_ATTRS"
+  },
+  {
+    "name": "VALID_ELEMENTS"
+  },
+  {
+    "name": "VIEWS"
+  },
+  {
+    "name": "VOID_ELEMENTS"
+  },
+  {
+    "name": "Version$1"
+  },
+  {
+    "name": "ViewContainerRef"
+  },
+  {
+    "name": "ViewContainerRef$1"
+  },
+  {
+    "name": "ViewEncapsulation$1"
+  },
+  {
+    "name": "ViewRef"
+  },
+  {
+    "name": "WRAP_RENDERER_FACTORY2"
+  },
+  {
+    "name": "WrappedValue"
+  },
+  {
+    "name": "ZERO_CHAR"
+  },
+  {
+    "name": "ZoneWidth"
+  },
+  {
+    "name": "_CLEAN_PROMISE"
+  },
+  {
+    "name": "_DOM"
+  },
+  {
+    "name": "_DuplicateItemRecordList"
+  },
+  {
+    "name": "_DuplicateMap"
+  },
+  {
+    "name": "_INTERPOLATION_REGEXP"
+  },
+  {
+    "name": "_NullComponentFactoryResolver"
+  },
+  {
+    "name": "_THROW_IF_NOT_FOUND"
+  },
+  {
+    "name": "__assign"
+  },
+  {
+    "name": "__extends"
+  },
+  {
+    "name": "__extends$1"
+  },
+  {
+    "name": "__extends$2"
+  },
+  {
+    "name": "__extends$3"
+  },
+  {
+    "name": "__extends$4"
+  },
+  {
+    "name": "__extends$5"
+  },
+  {
+    "name": "__extends$6"
+  },
+  {
+    "name": "__extends$7"
+  },
+  {
+    "name": "__extends$q"
+  },
+  {
+    "name": "__extends$r"
+  },
+  {
+    "name": "__extends$s"
+  },
+  {
+    "name": "__extends$u"
+  },
+  {
+    "name": "__read"
+  },
+  {
+    "name": "__self"
+  },
+  {
+    "name": "__spread"
+  },
+  {
+    "name": "__symbol__"
+  },
+  {
+    "name": "__values"
+  },
+  {
+    "name": "__window"
+  },
+  {
+    "name": "_appIdRandomProviderFactory"
+  },
+  {
+    "name": "_attrToPropMap"
+  },
+  {
+    "name": "_c0"
+  },
+  {
+    "name": "_c1"
+  },
+  {
+    "name": "_c10"
+  },
+  {
+    "name": "_c11"
+  },
+  {
+    "name": "_c12"
+  },
+  {
+    "name": "_c13"
+  },
+  {
+    "name": "_c14"
+  },
+  {
+    "name": "_c15"
+  },
+  {
+    "name": "_c16"
+  },
+  {
+    "name": "_c17"
+  },
+  {
+    "name": "_c18"
+  },
+  {
+    "name": "_c19"
+  },
+  {
+    "name": "_c2"
+  },
+  {
+    "name": "_c3"
+  },
+  {
+    "name": "_c4"
+  },
+  {
+    "name": "_c5"
+  },
+  {
+    "name": "_c6"
+  },
+  {
+    "name": "_c7"
+  },
+  {
+    "name": "_c8"
+  },
+  {
+    "name": "_c9"
+  },
+  {
+    "name": "_callAndReportToErrorHandler"
+  },
+  {
+    "name": "_chromeNumKeyPadMap"
+  },
+  {
+    "name": "_createNgProbe"
+  },
+  {
+    "name": "_currentInjector"
+  },
+  {
+    "name": "_currentNamespace"
+  },
+  {
+    "name": "_devMode"
+  },
+  {
+    "name": "_document"
+  },
+  {
+    "name": "_enable_super_gross_mode_that_will_cause_bad_things"
+  },
+  {
+    "name": "_getComponentHostLElementNode"
+  },
+  {
+    "name": "_global"
+  },
+  {
+    "name": "_iterableDiffersFactory"
+  },
+  {
+    "name": "_keyMap"
+  },
+  {
+    "name": "_keyValueDiffersFactory"
+  },
+  {
+    "name": "_localeFactory"
+  },
+  {
+    "name": "_nativeNodeToDebugNode"
+  },
+  {
+    "name": "_ngProbeTokensToMap"
+  },
+  {
+    "name": "_observableStrategy"
+  },
+  {
+    "name": "_promiseStrategy"
+  },
+  {
+    "name": "_randomChar"
+  },
+  {
+    "name": "_renderCompCount"
+  },
+  {
+    "name": "_sanitizeHtml"
+  },
+  {
+    "name": "_sanitizeStyle"
+  },
+  {
+    "name": "_sanitizeUrl"
+  },
+  {
+    "name": "_symbolIterator"
+  },
+  {
+    "name": "_testabilityGetter"
+  },
+  {
+    "name": "_throwError"
+  },
+  {
+    "name": "addComponentLogic"
+  },
+  {
+    "name": "addDateMinutes"
+  },
+  {
+    "name": "addRemoveViewFromContainer"
+  },
+  {
+    "name": "addToViewTree"
+  },
+  {
+    "name": "adjustBlueprintForNewNode"
+  },
+  {
+    "name": "allocStylingContext"
+  },
+  {
+    "name": "appInitializerFactory"
+  },
+  {
+    "name": "appendChild"
+  },
+  {
+    "name": "assertPlatform"
+  },
+  {
+    "name": "assertTemplate"
+  },
+  {
+    "name": "baseDirectiveCreate"
+  },
+  {
+    "name": "baseElement"
+  },
+  {
+    "name": "bind"
+  },
+  {
+    "name": "bindingRootIndex"
+  },
+  {
+    "name": "bindingUpdated"
+  },
+  {
+    "name": "blackListedEvents"
+  },
+  {
+    "name": "bloomAdd"
+  },
+  {
+    "name": "bloomFindPossibleInjector"
+  },
+  {
+    "name": "bloomHashBit"
+  },
+  {
+    "name": "cacheMatchingDirectivesForNode"
+  },
+  {
+    "name": "cacheMatchingLocalNames"
+  },
+  {
+    "name": "callHooks"
+  },
+  {
+    "name": "canInsertNativeChildOfElement"
+  },
+  {
+    "name": "canInsertNativeChildOfView"
+  },
+  {
+    "name": "canInsertNativeNode"
+  },
+  {
+    "name": "checkFullData"
+  },
+  {
+    "name": "checkNoChanges"
+  },
+  {
+    "name": "checkNoChangesInRootView"
+  },
+  {
+    "name": "checkNoChangesMode"
+  },
+  {
+    "name": "checkNoSyntheticProp"
+  },
+  {
+    "name": "checkStable"
+  },
+  {
+    "name": "cleanUpView"
+  },
+  {
+    "name": "compileNgModuleFactory"
+  },
+  {
+    "name": "compileNgModuleFactory__PRE_NGCC__"
+  },
+  {
+    "name": "componentRefresh"
+  },
+  {
+    "name": "computeDeps"
+  },
+  {
+    "name": "config"
+  },
+  {
+    "name": "connectableObservableDescriptor"
+  },
+  {
+    "name": "connectableProto"
+  },
+  {
+    "name": "containerInternal"
+  },
+  {
+    "name": "contextViewData"
+  },
+  {
+    "name": "convertTimezoneToLocal"
+  },
+  {
+    "name": "couldBeInjectableType"
+  },
+  {
+    "name": "createDirectivesAndLocals"
+  },
+  {
+    "name": "createEmbeddedViewNode"
+  },
+  {
+    "name": "createInjector"
+  },
+  {
+    "name": "createLContainer"
+  },
+  {
+    "name": "createLNode"
+  },
+  {
+    "name": "createLNodeObject"
+  },
+  {
+    "name": "createLViewData"
+  },
+  {
+    "name": "createOutput$1"
+  },
+  {
+    "name": "createPlatform"
+  },
+  {
+    "name": "createPlatformFactory"
+  },
+  {
+    "name": "createRootContext"
+  },
+  {
+    "name": "createScope"
+  },
+  {
+    "name": "createStylingContextTemplate"
+  },
+  {
+    "name": "createTNode"
+  },
+  {
+    "name": "createTView"
+  },
+  {
+    "name": "createTextNode"
+  },
+  {
+    "name": "createViewBlueprint"
+  },
+  {
+    "name": "createViewQuery"
+  },
+  {
+    "name": "currentElementNode"
+  },
+  {
+    "name": "dateGetter"
+  },
+  {
+    "name": "dateStrGetter"
+  },
+  {
+    "name": "decoratePreventDefault"
+  },
+  {
+    "name": "deepForEach"
+  },
+  {
+    "name": "defaultComparator"
+  },
+  {
+    "name": "defaultErrorLogger"
+  },
+  {
+    "name": "defaultIterableDiffers"
+  },
+  {
+    "name": "defaultKeyValueDiffers"
+  },
+  {
+    "name": "defineComponent"
+  },
+  {
+    "name": "defineDirective"
+  },
+  {
+    "name": "defineInjectable"
+  },
+  {
+    "name": "defineInjector"
+  },
+  {
+    "name": "defineNgModule"
+  },
+  {
+    "name": "definePipe"
+  },
+  {
+    "name": "destroyLView"
+  },
+  {
+    "name": "destroyViewTree"
+  },
+  {
+    "name": "detachView"
+  },
+  {
+    "name": "detectChanges"
+  },
+  {
+    "name": "detectChangesInRootView"
+  },
+  {
+    "name": "detectChangesInternal"
+  },
+  {
+    "name": "detectWTF"
+  },
+  {
+    "name": "diPublic"
+  },
+  {
+    "name": "diPublicInInjector"
+  },
+  {
+    "name": "directiveCreate"
+  },
+  {
+    "name": "directiveInject"
+  },
+  {
+    "name": "domRendererFactory3"
+  },
+  {
+    "name": "elementClassProp"
+  },
+  {
+    "name": "elementCreate"
+  },
+  {
+    "name": "elementEnd"
+  },
+  {
+    "name": "elementProperty"
+  },
+  {
+    "name": "elementStart"
+  },
+  {
+    "name": "elementStyling"
+  },
+  {
+    "name": "elementStylingApply"
+  },
+  {
+    "name": "empty"
+  },
+  {
+    "name": "encodeEntities"
+  },
+  {
+    "name": "enterView"
+  },
+  {
+    "name": "errorHandler"
+  },
+  {
+    "name": "errorObject"
+  },
+  {
+    "name": "executeHooks"
+  },
+  {
+    "name": "executeInitAndContentHooks"
+  },
+  {
+    "name": "executeInitHooks"
+  },
+  {
+    "name": "executeNodeAction"
+  },
+  {
+    "name": "executeOnDestroys"
+  },
+  {
+    "name": "executePipeOnDestroys"
+  },
+  {
+    "name": "exportNgVar"
+  },
+  {
+    "name": "extendStatics"
+  },
+  {
+    "name": "extractDirectiveDef"
+  },
+  {
+    "name": "extractPipeDef"
+  },
+  {
+    "name": "extractTime"
+  },
+  {
+    "name": "findAttrIndexInNode"
+  },
+  {
+    "name": "findComponentHost"
+  },
+  {
+    "name": "findDirectiveMatches"
+  },
+  {
+    "name": "findLocaleData"
+  },
+  {
+    "name": "firstTemplatePass"
+  },
+  {
+    "name": "flattenStyles"
+  },
+  {
+    "name": "flattenUnsubscriptionErrors"
+  },
+  {
+    "name": "forkInnerZoneWithAngularBehavior"
+  },
+  {
+    "name": "formatCurrency"
+  },
+  {
+    "name": "formatDate"
+  },
+  {
+    "name": "formatDateTime"
+  },
+  {
+    "name": "formatError"
+  },
+  {
+    "name": "formatFractionalSeconds"
+  },
+  {
+    "name": "formatNumber"
+  },
+  {
+    "name": "formatNumberToLocaleString"
+  },
+  {
+    "name": "formatPercent"
+  },
+  {
+    "name": "forwardRef"
+  },
+  {
+    "name": "from"
+  },
+  {
+    "name": "fromArray"
+  },
+  {
+    "name": "fromIterable"
+  },
+  {
+    "name": "fromObservable"
+  },
+  {
+    "name": "fromPromise"
+  },
+  {
+    "name": "generateInitialInputs"
+  },
+  {
+    "name": "generatePropertyAliases"
+  },
+  {
+    "name": "getBaseElementHref"
+  },
+  {
+    "name": "getChildLNode"
+  },
+  {
+    "name": "getCleanup"
+  },
+  {
+    "name": "getClosestComponentAncestor"
+  },
+  {
+    "name": "getClosureSafeProperty"
+  },
+  {
+    "name": "getCurrencySymbol"
+  },
+  {
+    "name": "getCurrentSanitizer"
+  },
+  {
+    "name": "getCurrentView"
+  },
+  {
+    "name": "getDOM"
+  },
+  {
+    "name": "getDateFormatter"
+  },
+  {
+    "name": "getDatePart"
+  },
+  {
+    "name": "getDateTranslation"
+  },
+  {
+    "name": "getDebugContext"
+  },
+  {
+    "name": "getDebugNode"
+  },
+  {
+    "name": "getErrorLogger"
+  },
+  {
+    "name": "getFirstThursdayOfYear"
+  },
+  {
+    "name": "getInitialIndex"
+  },
+  {
+    "name": "getInitialValue"
+  },
+  {
+    "name": "getLViewChild"
+  },
+  {
+    "name": "getLastDefinedValue"
+  },
+  {
+    "name": "getLocaleCurrencies"
+  },
+  {
+    "name": "getLocaleDateFormat"
+  },
+  {
+    "name": "getLocaleDateTimeFormat"
+  },
+  {
+    "name": "getLocaleDayNames"
+  },
+  {
+    "name": "getLocaleDayPeriods"
+  },
+  {
+    "name": "getLocaleEraNames"
+  },
+  {
+    "name": "getLocaleExtraDayPeriodRules"
+  },
+  {
+    "name": "getLocaleExtraDayPeriods"
+  },
+  {
+    "name": "getLocaleId"
+  },
+  {
+    "name": "getLocaleMonthNames"
+  },
+  {
+    "name": "getLocaleNumberFormat"
+  },
+  {
+    "name": "getLocaleNumberSymbol"
+  },
+  {
+    "name": "getLocalePluralCase"
+  },
+  {
+    "name": "getLocaleTimeFormat"
+  },
+  {
+    "name": "getMultiOrSingleIndex"
+  },
+  {
+    "name": "getMultiStartIndex"
+  },
+  {
+    "name": "getNamedFormat"
+  },
+  {
+    "name": "getNextLNode"
+  },
+  {
+    "name": "getNgZone"
+  },
+  {
+    "name": "getNullInjector"
+  },
+  {
+    "name": "getNumberOfCurrencyDigits"
+  },
+  {
+    "name": "getOrCreateChangeDetectorRef"
+  },
+  {
+    "name": "getOrCreateContainerRef"
+  },
+  {
+    "name": "getOrCreateElementRef"
+  },
+  {
+    "name": "getOrCreateHostChangeDetector"
+  },
+  {
+    "name": "getOrCreateInjectable"
+  },
+  {
+    "name": "getOrCreateNodeInjector"
+  },
+  {
+    "name": "getOrCreateNodeInjectorForNode"
+  },
+  {
+    "name": "getOrCreateTView"
+  },
+  {
+    "name": "getOrCreateTemplateRef"
+  },
+  {
+    "name": "getOriginalError"
+  },
+  {
+    "name": "getParentLNode"
+  },
+  {
+    "name": "getParentState"
+  },
+  {
+    "name": "getPlatform"
+  },
+  {
+    "name": "getPluralCategory"
+  },
+  {
+    "name": "getPointers"
+  },
+  {
+    "name": "getPreviousIndex"
+  },
+  {
+    "name": "getPreviousOrParentNode"
+  },
+  {
+    "name": "getPromiseCtor"
+  },
+  {
+    "name": "getProp"
+  },
+  {
+    "name": "getRenderFlags"
+  },
+  {
+    "name": "getRenderParent"
+  },
+  {
+    "name": "getRenderer"
+  },
+  {
+    "name": "getRendererFactory"
+  },
+  {
+    "name": "getRootView"
+  },
+  {
+    "name": "getStyleSanitizer"
+  },
+  {
+    "name": "getStylingContext"
+  },
+  {
+    "name": "getSymbolIterator"
+  },
+  {
+    "name": "getSymbolIterator$1"
+  },
+  {
+    "name": "getTViewCleanup"
+  },
+  {
+    "name": "getTemplateContent"
+  },
+  {
+    "name": "getThursdayThisWeek"
+  },
+  {
+    "name": "getTypeNameForDebugging"
+  },
+  {
+    "name": "getTypeNameForDebugging$1"
+  },
+  {
+    "name": "getValue"
+  },
+  {
+    "name": "globalListener"
+  },
+  {
+    "name": "hasBalancedQuotes"
+  },
+  {
+    "name": "hasDeps"
+  },
+  {
+    "name": "hasOnDestroy"
+  },
+  {
+    "name": "hasValueChanged"
+  },
+  {
+    "name": "hostElement"
+  },
+  {
+    "name": "hostReportError"
+  },
+  {
+    "name": "identity"
+  },
+  {
+    "name": "initChangeDetectorIfExisting"
+  },
+  {
+    "name": "initDomAdapter"
+  },
+  {
+    "name": "inject"
+  },
+  {
+    "name": "injectArgs"
+  },
+  {
+    "name": "injectAttribute"
+  },
+  {
+    "name": "injectChangeDetectorRef"
+  },
+  {
+    "name": "injectElementRef"
+  },
+  {
+    "name": "injectTemplateRef"
+  },
+  {
+    "name": "injectViewContainerRef"
+  },
+  {
+    "name": "injectableDefRecord"
+  },
+  {
+    "name": "insertView"
+  },
+  {
+    "name": "inspectNativeElement"
+  },
+  {
+    "name": "instantiateDirectivesDirectly"
+  },
+  {
+    "name": "interpolation1"
+  },
+  {
+    "name": "invalidPipeArgumentError"
+  },
+  {
+    "name": "invertObject"
+  },
+  {
+    "name": "isArray"
+  },
+  {
+    "name": "isArrayLike"
+  },
+  {
+    "name": "isBlackListedEvent"
+  },
+  {
+    "name": "isComponent"
+  },
+  {
+    "name": "isContentQueryHost"
+  },
+  {
+    "name": "isContextDirty"
+  },
+  {
+    "name": "isCssClassMatching"
+  },
+  {
+    "name": "isDOMParserAvailable"
+  },
+  {
+    "name": "isDate$1"
+  },
+  {
+    "name": "isDevMode"
+  },
+  {
+    "name": "isDifferent"
+  },
+  {
+    "name": "isDirty"
+  },
+  {
+    "name": "isEmpty$1"
+  },
+  {
+    "name": "isExistingProvider"
+  },
+  {
+    "name": "isFactoryProvider"
+  },
+  {
+    "name": "isFunction"
+  },
+  {
+    "name": "isIterable"
+  },
+  {
+    "name": "isJsObject"
+  },
+  {
+    "name": "isListLikeIterable"
+  },
+  {
+    "name": "isNodeMatchingSelector"
+  },
+  {
+    "name": "isNodeMatchingSelectorList"
+  },
+  {
+    "name": "isObject"
+  },
+  {
+    "name": "isObservable"
+  },
+  {
+    "name": "isObservable$1"
+  },
+  {
+    "name": "isPlatformServer"
+  },
+  {
+    "name": "isPositive"
+  },
+  {
+    "name": "isProceduralRenderer"
+  },
+  {
+    "name": "isPromise$1"
+  },
+  {
+    "name": "isPromise$2"
+  },
+  {
+    "name": "isScheduler"
+  },
+  {
+    "name": "isTemplateElement"
+  },
+  {
+    "name": "isTrustedSubscriber"
+  },
+  {
+    "name": "isTypeProvider"
+  },
+  {
+    "name": "isValueProvider"
+  },
+  {
+    "name": "isoStringToDate"
+  },
+  {
+    "name": "iterateListLike"
+  },
+  {
+    "name": "iterator"
+  },
+  {
+    "name": "keyValDiff"
+  },
+  {
+    "name": "leave"
+  },
+  {
+    "name": "leaveView"
+  },
+  {
+    "name": "listener"
+  },
+  {
+    "name": "load"
+  },
+  {
+    "name": "loadElement"
+  },
+  {
+    "name": "loadElementInternal"
+  },
+  {
+    "name": "loadInternal"
+  },
+  {
+    "name": "localeEn"
+  },
+  {
+    "name": "locateHostElement"
+  },
+  {
+    "name": "looseIdentical"
+  },
+  {
+    "name": "makeKeyValuePair"
+  },
+  {
+    "name": "makeMetadataCtor"
+  },
+  {
+    "name": "makeParamDecorator"
+  },
+  {
+    "name": "makeRecord"
+  },
+  {
+    "name": "map"
+  },
+  {
+    "name": "markDirtyIfOnPush"
+  },
+  {
+    "name": "markViewDirty"
+  },
+  {
+    "name": "merge"
+  },
+  {
+    "name": "merge$1"
+  },
+  {
+    "name": "mergeAll"
+  },
+  {
+    "name": "mergeMap"
+  },
+  {
+    "name": "multiProviderMixError"
+  },
+  {
+    "name": "multicast"
+  },
+  {
+    "name": "namespaceHTML"
+  },
+  {
+    "name": "nativeInsertBefore"
+  },
+  {
+    "name": "nativeNodeLocalRefExtractor"
+  },
+  {
+    "name": "nextContext"
+  },
+  {
+    "name": "nextNgElementId"
+  },
+  {
+    "name": "noComponentFactoryError"
+  },
+  {
+    "name": "noop$1"
+  },
+  {
+    "name": "noop$2"
+  },
+  {
+    "name": "noopScope"
+  },
+  {
+    "name": "observable"
+  },
+  {
+    "name": "onChangesWrapper"
+  },
+  {
+    "name": "onEnter"
+  },
+  {
+    "name": "onLeave"
+  },
+  {
+    "name": "optionsReducer"
+  },
+  {
+    "name": "padNumber"
+  },
+  {
+    "name": "parseCookieValue"
+  },
+  {
+    "name": "parseIntAutoRadix$1"
+  },
+  {
+    "name": "parseNumber"
+  },
+  {
+    "name": "parseNumberFormat"
+  },
+  {
+    "name": "pipeFromArray"
+  },
+  {
+    "name": "platformBrowser"
+  },
+  {
+    "name": "platformCore"
+  },
+  {
+    "name": "plural"
+  },
+  {
+    "name": "pointers"
+  },
+  {
+    "name": "prepareInitialFlag"
+  },
+  {
+    "name": "projectionNodeStack"
+  },
+  {
+    "name": "promise"
+  },
+  {
+    "name": "providerToRecord"
+  },
+  {
+    "name": "queueComponentIndexForCheck"
+  },
+  {
+    "name": "queueContentHooks"
+  },
+  {
+    "name": "queueDestroyHooks"
+  },
+  {
+    "name": "queueHostBindingForCheck"
+  },
+  {
+    "name": "queueInitHooks"
+  },
+  {
+    "name": "queueLifecycleHooks"
+  },
+  {
+    "name": "queueViewHooks"
+  },
+  {
+    "name": "readElementValue"
+  },
+  {
+    "name": "recursivelyProcessProviders"
+  },
+  {
+    "name": "refCount"
+  },
+  {
+    "name": "reference"
+  },
+  {
+    "name": "refreshChildComponents"
+  },
+  {
+    "name": "refreshContentQueries"
+  },
+  {
+    "name": "refreshDescendantViews"
+  },
+  {
+    "name": "refreshDynamicEmbeddedViews"
+  },
+  {
+    "name": "relativePath"
+  },
+  {
+    "name": "remove"
+  },
+  {
+    "name": "removeListeners"
+  },
+  {
+    "name": "removeView"
+  },
+  {
+    "name": "renderComponentOrTemplate"
+  },
+  {
+    "name": "renderEmbeddedTemplate"
+  },
+  {
+    "name": "renderStyling"
+  },
+  {
+    "name": "resetApplicationState"
+  },
+  {
+    "name": "resolveDirective"
+  },
+  {
+    "name": "resolveForwardRef$1"
+  },
+  {
+    "name": "resolveProvider"
+  },
+  {
+    "name": "resolveToken"
+  },
+  {
+    "name": "restoreView"
+  },
+  {
+    "name": "roundNumber"
+  },
+  {
+    "name": "rxSubscriber"
+  },
+  {
+    "name": "sameHostView"
+  },
+  {
+    "name": "sanitizeSrcset"
+  },
+  {
+    "name": "saveNameToExportMap"
+  },
+  {
+    "name": "saveResolvedLocalsInData"
+  },
+  {
+    "name": "scheduleMicroTask"
+  },
+  {
+    "name": "scheduleTick"
+  },
+  {
+    "name": "searchMatchesQueuedForCreation"
+  },
+  {
+    "name": "setClass"
+  },
+  {
+    "name": "setContextDirty"
+  },
+  {
+    "name": "setCurrentInjector"
+  },
+  {
+    "name": "setDirty"
+  },
+  {
+    "name": "setFlag"
+  },
+  {
+    "name": "setHostBindings"
+  },
+  {
+    "name": "setInputsForProperty"
+  },
+  {
+    "name": "setInputsFromAttrs"
+  },
+  {
+    "name": "setProp"
+  },
+  {
+    "name": "setRootDomAdapter"
+  },
+  {
+    "name": "setStyle"
+  },
+  {
+    "name": "setTestabilityGetter"
+  },
+  {
+    "name": "setUpAttributes"
+  },
+  {
+    "name": "setValue"
+  },
+  {
+    "name": "share"
+  },
+  {
+    "name": "shareSubjectFactory"
+  },
+  {
+    "name": "shimContentAttribute"
+  },
+  {
+    "name": "shimHostAttribute"
+  },
+  {
+    "name": "staticError"
+  },
+  {
+    "name": "stopMethodSymbol"
+  },
+  {
+    "name": "stopSymbol"
+  },
+  {
+    "name": "storeCleanupFn"
+  },
+  {
+    "name": "storeCleanupWithContext"
+  },
+  {
+    "name": "strToNumber"
+  },
+  {
+    "name": "stringify$1"
+  },
+  {
+    "name": "stringify$2"
+  },
+  {
+    "name": "subscribeTo"
+  },
+  {
+    "name": "subscribeToArray"
+  },
+  {
+    "name": "subscribeToIterable"
+  },
+  {
+    "name": "subscribeToObservable"
+  },
+  {
+    "name": "subscribeToPromise"
+  },
+  {
+    "name": "subscribeToResult"
+  },
+  {
+    "name": "supportsState"
+  },
+  {
+    "name": "symbolNames"
+  },
+  {
+    "name": "tagSet"
+  },
+  {
+    "name": "template"
+  },
+  {
+    "name": "text"
+  },
+  {
+    "name": "textBinding"
+  },
+  {
+    "name": "throwCyclicDependencyError"
+  },
+  {
+    "name": "throwErrorIfNoChangesMode"
+  },
+  {
+    "name": "throwMultipleComponentError"
+  },
+  {
+    "name": "tickRootContext"
+  },
+  {
+    "name": "timeZoneGetter"
+  },
+  {
+    "name": "timezoneToOffset"
+  },
+  {
+    "name": "toDate"
+  },
+  {
+    "name": "toPercent"
+  },
+  {
+    "name": "toRefArray"
+  },
+  {
+    "name": "toSubscriber"
+  },
+  {
+    "name": "trackByIdentity"
+  },
+  {
+    "name": "tryCatch"
+  },
+  {
+    "name": "tryCatcher"
+  },
+  {
+    "name": "tryResolveToken"
+  },
+  {
+    "name": "u"
+  },
+  {
+    "name": "unicodeWordMatch"
+  },
+  {
+    "name": "updateClassProp"
+  },
+  {
+    "name": "updateStyleProp"
+  },
+  {
+    "name": "updateViewQuery"
+  },
+  {
+    "name": "valueExists"
+  },
+  {
+    "name": "viewAttached"
+  },
+  {
+    "name": "walkLNodeTree"
+  },
+  {
+    "name": "walkUpViews"
+  },
+  {
+    "name": "weekGetter"
+  },
+  {
+    "name": "wrapListenerWithDirtyAndDefault"
+  },
+  {
+    "name": "wrapListenerWithDirtyLogic"
+  },
+  {
+    "name": "wtfCreateScope"
+  },
+  {
+    "name": "wtfEnabled"
+  },
+  {
+    "name": "wtfLeave"
+  }
+]

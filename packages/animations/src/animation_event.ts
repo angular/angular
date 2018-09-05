@@ -38,11 +38,33 @@
  * @experimental Animation support is experimental.
  */
 export interface AnimationEvent {
+  /**
+   * The name of the state from which the animation is triggered.
+   */
   fromState: string;
+  /**
+   * The name of the state in which the animation completes.
+   */
   toState: string;
+  /**
+   * The time it takes the animation to complete, in milliseconds.
+   */
   totalTime: number;
+  /**
+   * The animation phase in which the callback was invoked, one of
+   * "start" or "done".
+   */
   phaseName: string;
+  /**
+   * The element to which the animation is attached.
+   */
   element: any;
+  /**
+   * Internal.
+   */
   triggerName: string;
+  /**
+   * Internal.
+   */
   disabled: boolean;
 }

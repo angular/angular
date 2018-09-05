@@ -35,6 +35,8 @@ describe('iv perf test', () => {
           static ngComponentDef = defineComponent({
             type: Component,
             selectors: [['div']],
+            consts: 1,
+            vars: 0,
             template: function Template(rf: RenderFlags, ctx: any) {
               if (rf & RenderFlags.Create) {
                 container(0);
@@ -43,7 +45,7 @@ describe('iv perf test', () => {
                 containerRefreshStart(0);
                 {
                   for (let i = 0; i < count; i++) {
-                    let rf0 = embeddedViewStart(0);
+                    let rf0 = embeddedViewStart(0, 2, 0);
                     {
                       if (rf0 & RenderFlags.Create) {
                         elementStart(0, 'div');

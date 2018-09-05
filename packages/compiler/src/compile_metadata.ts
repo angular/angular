@@ -188,6 +188,7 @@ export class CompileStylesheetMetadata {
 export interface CompileTemplateSummary {
   ngContentSelectors: string[];
   encapsulation: ViewEncapsulation|null;
+  styles: string[];
 }
 
 /**
@@ -243,6 +244,7 @@ export class CompileTemplateMetadata {
     return {
       ngContentSelectors: this.ngContentSelectors,
       encapsulation: this.encapsulation,
+      styles: this.styles
     };
   }
 }

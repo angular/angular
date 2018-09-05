@@ -16,6 +16,8 @@ import {LifecycleHooks} from '../../lifecycle_reflector';
 import * as o from '../../output/output_ast';
 import {typeSourceSpan} from '../../parse_util';
 import {CssSelector, SelectorMatcher} from '../../selector';
+import {ShadowCss} from '../../shadow_css';
+import {CONTENT_ATTR, HOST_ATTR} from '../../style_compiler';
 import {BindingParser} from '../../template_parser/binding_parser';
 import {OutputContext, error} from '../../util';
 import {compileFactoryFunction, dependenciesFromGlobalMetadata} from '../r3_factory';
@@ -27,9 +29,11 @@ import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata
 import {BindingScope, TemplateDefinitionBuilder, renderFlagCheckIfStmt} from './template';
 import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
 
+const EMPTY_ARRAY: any[] = [];
+
 function baseDirectiveFields(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
-    bindingParser: BindingParser): DefinitionMap {
+    bindingParser: BindingParser): {definitionMap: DefinitionMap, statements: o.Statement[]} {
   const definitionMap = new DefinitionMap();
 
   // e.g. `type: MyDirective`
@@ -40,13 +44,13 @@ function baseDirectiveFields(
 
 
   // e.g. `factory: () => new MyApp(injectElementRef())`
-  definitionMap.set('factory', compileFactoryFunction({
-                      name: meta.name,
-                      fnOrClass: meta.type,
-                      deps: meta.deps,
-                      useNew: true,
-                      injectFn: R3.directiveInject,
-                    }));
+  const result = compileFactoryFunction({
+    name: meta.name,
+    type: meta.type,
+    deps: meta.deps,
+    injectFn: R3.directiveInject,
+  });
+  definitionMap.set('factory', result.factory);
 
   definitionMap.set('contentQueries', createContentQueriesFunction(meta, constantPool));
 
@@ -67,6 +71,9 @@ function baseDirectiveFields(
   // e.g. `features: [NgOnChangesFeature]`
   const features: o.Expression[] = [];
 
+  // TODO: add `PublicFeature` so that directives get registered to the DI - make this configurable
+  features.push(o.importExpr(R3.PublicFeature));
+
   if (meta.usesInheritance) {
     features.push(o.importExpr(R3.InheritDefinitionFeature));
   }
@@ -76,8 +83,11 @@ function baseDirectiveFields(
   if (features.length) {
     definitionMap.set('features', o.literalArr(features));
   }
+  if (meta.exportAs !== null) {
+    definitionMap.set('exportAs', o.literal(meta.exportAs));
+  }
 
-  return definitionMap;
+  return {definitionMap, statements: result.statements};
 }
 
 /**
@@ -86,7 +96,7 @@ function baseDirectiveFields(
 export function compileDirectiveFromMetadata(
     meta: R3DirectiveMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3DirectiveDef {
-  const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
+  const {definitionMap, statements} = baseDirectiveFields(meta, constantPool, bindingParser);
   const expression = o.importExpr(R3.defineDirective).callFn([definitionMap.toLiteralMap()]);
 
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
@@ -97,6 +107,42 @@ export function compileDirectiveFromMetadata(
     typeWithParameters(meta.type, meta.typeArgumentCount),
     new o.ExpressionType(o.literal(selectorForType))
   ]));
+  return {expression, type, statements};
+}
+
+export interface R3BaseRefMetaData {
+  inputs?: {[key: string]: string | [string, string]};
+  outputs?: {[key: string]: string};
+}
+
+/**
+ * Compile a base definition for the render3 runtime as defined by {@link R3BaseRefMetadata}
+ * @param meta the metadata used for compilation.
+ */
+export function compileBaseDefFromMetadata(meta: R3BaseRefMetaData) {
+  const definitionMap = new DefinitionMap();
+  if (meta.inputs) {
+    const inputs = meta.inputs;
+    const inputsMap = Object.keys(inputs).map(key => {
+      const v = inputs[key];
+      const value = Array.isArray(v) ? o.literalArr(v.map(vx => o.literal(vx))) : o.literal(v);
+      return {key, value, quoted: false};
+    });
+    definitionMap.set('inputs', o.literalMap(inputsMap));
+  }
+  if (meta.outputs) {
+    const outputs = meta.outputs;
+    const outputsMap = Object.keys(outputs).map(key => {
+      const value = o.literal(outputs[key]);
+      return {key, value, quoted: false};
+    });
+    definitionMap.set('outputs', o.literalMap(outputsMap));
+  }
+
+  const expression = o.importExpr(R3.defineBase).callFn([definitionMap.toLiteralMap()]);
+
+  const type = new o.ExpressionType(o.importExpr(R3.BaseDef));
+
   return {expression, type};
 }
 
@@ -106,7 +152,7 @@ export function compileDirectiveFromMetadata(
 export function compileComponentFromMetadata(
     meta: R3ComponentMetadata, constantPool: ConstantPool,
     bindingParser: BindingParser): R3ComponentDef {
-  const definitionMap = baseDirectiveFields(meta, constantPool, bindingParser);
+  const {definitionMap, statements} = baseDirectiveFields(meta, constantPool, bindingParser);
 
   const selector = meta.selector && CssSelector.parse(meta.selector);
   const firstSelector = selector && selector[0];
@@ -147,24 +193,42 @@ export function compileComponentFromMetadata(
   const pipesUsed = new Set<o.Expression>();
 
   const template = meta.template;
-  const templateFunctionExpression =
-      new TemplateDefinitionBuilder(
-          constantPool, CONTEXT_NAME, BindingScope.ROOT_SCOPE, 0, templateTypeName, templateName,
-          meta.viewQueries, directiveMatcher, directivesUsed, meta.pipes, pipesUsed,
-          R3.namespaceHTML)
-          .buildTemplateFunction(
-              template.nodes, [], template.hasNgContent, template.ngContentSelectors);
+  const templateBuilder = new TemplateDefinitionBuilder(
+      constantPool, BindingScope.ROOT_SCOPE, 0, templateTypeName, templateName, meta.viewQueries,
+      directiveMatcher, directivesUsed, meta.pipes, pipesUsed, R3.namespaceHTML);
+
+  const templateFunctionExpression = templateBuilder.buildTemplateFunction(
+      template.nodes, [], template.hasNgContent, template.ngContentSelectors);
+
+  // e.g. `consts: 2`
+  definitionMap.set('consts', o.literal(templateBuilder.getConstCount()));
+
+  // e.g. `vars: 2`
+  definitionMap.set('vars', o.literal(templateBuilder.getVarCount()));
 
   definitionMap.set('template', templateFunctionExpression);
 
   // e.g. `directives: [MyDirective]`
   if (directivesUsed.size) {
-    definitionMap.set('directives', o.literalArr(Array.from(directivesUsed)));
+    let directivesExpr: o.Expression = o.literalArr(Array.from(directivesUsed));
+    if (meta.wrapDirectivesInClosure) {
+      directivesExpr = o.fn([], [new o.ReturnStatement(directivesExpr)]);
+    }
+    definitionMap.set('directives', directivesExpr);
   }
 
   // e.g. `pipes: [MyPipe]`
   if (pipesUsed.size) {
     definitionMap.set('pipes', o.literalArr(Array.from(pipesUsed)));
+  }
+
+  // e.g. `styles: [str1, str2]`
+  if (meta.styles && meta.styles.length) {
+    const styleValues = meta.encapsulation == core.ViewEncapsulation.Emulated ?
+        compileStyles(meta.styles, CONTENT_ATTR, HOST_ATTR) :
+        meta.styles;
+    const strings = styleValues.map(str => o.literal(str));
+    definitionMap.set('styles', o.literalArr(strings));
   }
 
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
@@ -177,7 +241,7 @@ export function compileComponentFromMetadata(
     new o.ExpressionType(o.literal(selectorForType))
   ]));
 
-  return {expression, type};
+  return {expression, type, statements};
 }
 
 /**
@@ -235,6 +299,10 @@ export function compileComponentFromRender2(
     directives: typeMapToExpressionMap(directiveTypeBySel, outputCtx),
     pipes: typeMapToExpressionMap(pipeTypeByName, outputCtx),
     viewQueries: queriesFromGlobalMetadata(component.viewQueries, outputCtx),
+    wrapDirectivesInClosure: false,
+    styles: (summary.template && summary.template.styles) || EMPTY_ARRAY,
+    encapsulation:
+        (summary.template && summary.template.encapsulation) || core.ViewEncapsulation.Emulated
   };
   const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
 
@@ -276,6 +344,7 @@ function directiveMetadataFromGlobalMetadata(
     inputs: directive.inputs,
     outputs: directive.outputs,
     usesInheritance: false,
+    exportAs: null,
   };
 }
 
@@ -388,7 +457,7 @@ function createContentQueriesRefreshFunction(meta: R3DirectiveMetadata): o.Expre
     // var $tmp$: any;
     const temporary = temporaryAllocator(statements, TEMPORARY_NAME);
 
-    // const $instance$ = $r3$.ɵd(dirIndex);
+    // const $instance$ = $r3$.ɵloadDirective(dirIndex);
     statements.push(
         directiveInstanceVar.set(o.importExpr(R3.loadDirective).callFn([o.variable('dirIndex')]))
             .toDeclStmt(o.INFERRED_TYPE, [o.StmtModifier.Final]));
@@ -430,7 +499,7 @@ function createViewQueriesFunction(
     const queryDefinition = createQueryDefinition(query, constantPool, i);
     createStatements.push(queryDefinition.toStmt());
 
-    // update, e.g. (r3.qR(tmp = r3.ɵld(0)) && (ctx.someDir = tmp));
+    // update, e.g. (r3.qR(tmp = r3.ɵload(0)) && (ctx.someDir = tmp));
     const temporary = tempAllocator();
     const getQueryList = o.importExpr(R3.load).callFn([o.literal(i)]);
     const refresh = o.importExpr(R3.queryRefresh).callFn([temporary.set(getQueryList)]);
@@ -570,4 +639,9 @@ export function parseHostBindings(host: {[key: string]: string}): {
   });
 
   return {attributes, listeners, properties, animations};
+}
+
+function compileStyles(styles: string[], selector: string, hostSelector: string): string[] {
+  const shadowCss = new ShadowCss();
+  return styles.map(style => { return shadowCss !.shimCssText(style, selector, hostSelector); });
 }

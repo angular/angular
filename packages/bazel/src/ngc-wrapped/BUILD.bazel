@@ -30,7 +30,7 @@ nodejs_binary(
     name = "ngc-wrapped",
     data = [
         ":ngc_lib",
-        "@build_bazel_rules_typescript//internal:worker_protocol.proto",
+        "@build_bazel_rules_typescript//third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
     ],
     entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js",
     visibility = ["//visibility:public"],

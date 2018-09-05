@@ -18,9 +18,8 @@ import {Pipe, PipeTransform} from '@angular/core';
  *
  * The following component uses a JSON pipe to convert an object
  * to JSON format, and displays the string in both formats for comparison.
-
- * {@example common/pipes/ts/json_pipe.ts region='JsonPipe'}
  *
+ * {@example common/pipes/ts/json_pipe.ts region='JsonPipe'}
  *
  */
 @Pipe({name: 'json', pure: false})
