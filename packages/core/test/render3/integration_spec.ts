@@ -1394,6 +1394,54 @@ describe('render3 integration test', () => {
     });
   });
 
+  describe('component animations', () => {
+    it('should pass in the component styles directly into the underlying renderer', () => {
+      const animA = {name: 'a'};
+      const animB = {name: 'b'};
+
+      class AnimComp {
+        static ngComponentDef = defineComponent({
+          type: AnimComp,
+          consts: 0,
+          vars: 0,
+          animations: [
+            animA,
+            animB,
+          ],
+          selectors: [['foo']],
+          factory: () => new AnimComp(),
+          template: (rf: RenderFlags, ctx: AnimComp) => {}
+        });
+      }
+      const rendererFactory = new MockRendererFactory();
+      new ComponentFixture(AnimComp, {rendererFactory});
+
+      const capturedAnimations = rendererFactory.lastCapturedType !.data !['animations'];
+      expect(Array.isArray(capturedAnimations)).toBeTruthy();
+      expect(capturedAnimations.length).toEqual(2);
+      expect(capturedAnimations).toContain(animA);
+      expect(capturedAnimations).toContain(animB);
+    });
+
+    it('should include animations in the renderType data array even if the array is empty', () => {
+      class AnimComp {
+        static ngComponentDef = defineComponent({
+          type: AnimComp,
+          consts: 0,
+          vars: 0,
+          animations: [],
+          selectors: [['foo']],
+          factory: () => new AnimComp(),
+          template: (rf: RenderFlags, ctx: AnimComp) => {}
+        });
+      }
+      const rendererFactory = new MockRendererFactory();
+      new ComponentFixture(AnimComp, {rendererFactory});
+      const data = rendererFactory.lastCapturedType !.data;
+      expect(data.animations).toEqual([]);
+    });
+  });
+
   describe('element discovery', () => {
     it('should only monkey-patch immediate child nodes in a component', () => {
       class StructuredComp {

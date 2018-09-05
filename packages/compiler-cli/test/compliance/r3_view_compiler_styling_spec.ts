@@ -100,6 +100,88 @@ describe('compiler compliance: styling', () => {
        });
   });
 
+  describe('@Component.animations', () => {
+    it('should pass in the component metadata animations into the component definition', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: "my-component",
+                  animations: [{name: 'foo123'}, {name: 'trigger123'}],
+                  template: ""
+                })
+                export class MyComponent {
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+        MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyComponent,
+          selectors:[["my-component"]],
+          factory:function MyComponent_Factory(t){
+            return new (t || MyComponent)();
+          },
+          features: [$r3$.ɵPublicFeature],
+          consts: 0,
+          vars: 0,
+          template:  function MyComponent_Template(rf, $ctx$) {
+          },
+          animations: [{name: "foo123"}, {name: "trigger123"}]
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should include animations even if the provided array is empty', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: "my-component",
+                  animations: [],
+                  template: ""
+                })
+                export class MyComponent {
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+        MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyComponent,
+          selectors:[["my-component"]],
+          factory:function MyComponent_Factory(t){
+            return new (t || MyComponent)();
+          },
+          features: [$r3$.ɵPublicFeature],
+          consts: 0,
+          vars: 0,
+          template:  function MyComponent_Template(rf, $ctx$) {
+          },
+          animations: []
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+  });
+
   describe('[style] and [style.prop]', () => {
     it('should create style instructions on the element', () => {
       const files = {
