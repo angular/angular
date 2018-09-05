@@ -8,7 +8,7 @@
 import {devModeEqual} from '../change_detection/change_detection_util';
 import {assertLessThan} from './assert';
 import {LElementNode} from './interfaces/node';
-import {HEADER_OFFSET, LViewData} from './interfaces/view';
+import {HEADER_OFFSET, LViewData, TData} from './interfaces/view';
 
 /**
  * Returns wether the values are different from a change detection stand point.
@@ -66,8 +66,8 @@ export function flatten(list: any[]): any[] {
   return result;
 }
 
-/** Retrieves a value from any `LViewData`. */
-export function loadInternal<T>(index: number, arr: LViewData): T {
+/** Retrieves a value from any `LViewData` or `TData`. */
+export function loadInternal<T>(index: number, arr: LViewData | TData): T {
   ngDevMode && assertDataInRangeInternal(index + HEADER_OFFSET, arr);
   return arr[index + HEADER_OFFSET];
 }
