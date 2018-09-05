@@ -40,6 +40,12 @@ export interface ILinkFnOptions {
   transcludeControllers?: {[key: string]: any};
   futureParentElement?: Node;
 }
+export interface ITranscludeFn {
+  (scope: IScope, cloneAttachFn?: ICloneAttachFunction, futureParentElement?: Node,
+   slotName?: string): IAugmentedJQuery;
+  $$slots?: {[slotName: string]: ILinkFn};
+  isSlotFilled?: (slotName: string) => boolean;
+}
 export interface IRootScopeService {
   $new(isolate?: boolean): IScope;
   $id: string;
