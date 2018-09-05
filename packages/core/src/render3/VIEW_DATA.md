@@ -1,12 +1,12 @@
 # View Data Explanation
 
-`LViewData` and `TView.data` is how the Ivy renderer keeps track of the internal data needed to render the template.
-The `LViewData` is design so that a single array can contain all of the necessary data for the template rendering in a compact form.
+`LViewData` and `TView.data` are how the Ivy renderer keeps track of the internal data needed to render the template.
+The `LViewData` is designed so that a single array can contain all of the necessary data for the template rendering in a compact form.
 The `TView.data` is a corollary to the `LViewData` and contains information which can be shared across the template instances.
 
 ## `LViewData` / `TView.data` layout.
 
-Both `LViewData` and `TView.data` are arrays whose indexes refer to the same item.
+Both `LViewData` and `TView.data` are arrays whose indices refer to the same item.
 For example index `123` may point to a component instance in the `LViewData` but a component type in `TView.data`.
 
 The layout is as such:
@@ -14,7 +14,7 @@ The layout is as such:
 | Section    | `LViewData`                                   | `TView.data`
 | ---------- | --------------------------------------------- | --------------------------------------------------
 | `HEADER`   | contextual data                               |  mostly `null`
-| `CONSTS`   | DOM instances                                 |
+| `CONSTS`   | DOM, pipe, and local ref instances            |
 | `VARS`     | binding values                                |  property names
 | `EXPANDO`  | host bindings; directive instances; providers | host prop names; directive tokens; provider tokens
 
@@ -27,8 +27,8 @@ Mostly information such as parent `LViewData`, `Sanitizer`, `TView`, and many mo
 
 ## `CONSTS`
 
-`CONSTS` contain the DOM elements of the rendering.
-The size of `CONSTS` section is declared in `consts` of component definition.
+`CONSTS` contain the DOM elements, pipe instances, and local refs.
+The size of the `CONSTS` section is declared in the property `consts` of the component definition.
 
 ```typescript
 @Component({
@@ -70,15 +70,15 @@ The above will create following layout:
 
 NOTE:
 - The `10` is not the actual size of `HEADER` but it is left here for simplification.
-- `LViewData` contain DOM instances only
+- `LViewData` contains DOM instances only
 - `TView.data` contains information on relationships such as where the parent is.
   You need the `TView.data` information to make sense of the `LViewData` information.
 
 
 ## `VARS`
 
-`VARS` contains information on how the bindings should be processed.
-The size of `VARS` section is declared in `vars` of component definition.
+`VARS` contains information on how to process the bindings.
+The size of the `VARS `section is declared in the property `vars` of the component definition.
 
 ```typescript
 @Component({
@@ -90,7 +90,7 @@ class MyApp {
   static ngComponentDef = defineComponent({
     ...,
     consts: 2, // Two DOM Element.
-    vars: 1,   // One binding.
+    vars: 2,   // One binding.
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'div');
@@ -98,7 +98,7 @@ class MyApp {
         elementEnd();
       }
       if (rf & RenderFlags.Update) {
-        elementProperty(0, 'title', ctx.name);
+        elementProperty(0, 'title', bind(ctx.name));
         textBinding(1, interpolation1('Hello ', ctx.name, '!'));
       }
       ...
@@ -130,10 +130,10 @@ NOTE:
 
 *TODO*: This section is to be implemented.
 
-`EXPANDO` contains information on data which size is not know at compile time.
+`EXPANDO` contains information on data which size is not known at compile time.
 Examples include:
-- `Component`/`Directives` since we don't know at compile which directives will match.
-- Host bindings, since until we match the directives it is unclear if
+- `Component`/`Directives` since we don't know at compile time which directives will match.
+- Host bindings, since until we match the directives it is unclear how many host bindings need to be allocated.
 
 ```typescript
 @Component({
@@ -146,7 +146,7 @@ class MyApp {
     consts: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child', ['tooltip', null]);
+        element(0, 'child', ['tooltip', null]);
       }
       ...
     },
@@ -182,7 +182,7 @@ class Tooltip {
 ```
 
 
-The above will create following layout:
+The above will create the following layout:
 
 | Index | `LViewData`         | `TView.data`
 | ----: | -----------         | ------------
@@ -214,12 +214,12 @@ The reason for this layout is to make the host binding update efficient using th
 ```typescript
 let currentDirectiveIndex = -1;
 let currentElementIndex = -1;
-// This is global state which is used internally be hosBindings to know where the offset is
-let bindingRootIndex = tView[EXPANDO_START];
+// This is global state which is used internally by hostBindings to know where the offset is
+let bindingRootIndex = tView.expandoStart;
 for(var i = 0; i < tview.expandoInstructions.length; i++) {
   let instruction = tview.expandoInstructions[i];
-  if (typeof i === 'number') {
-    // Numbers are used to update the indexes.
+  if (typeof instruction === 'number') {
+    // Numbers are used to update the indices.
     if (instruction < 0) {
       // Negative numbers means that we are starting new EXPANDO block and need to update current element and directive index
       bindingRootIndex += BLOOM_OFFSET;
@@ -267,7 +267,7 @@ class MyApp {
     consts: 1,
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
-        elementStart(0, 'child');
+        element(0, 'child');
       }
       ...
     },
@@ -293,7 +293,7 @@ class Child {
 }
 ```
 
-The above will create following layout:
+The above will create the following layout:
 
 | Index | `LViewData`           | `TView.data`
 | ----: | -----------           | ------------
@@ -310,7 +310,7 @@ The above will create following layout:
 | ...   | ...                   | ...
 
 NOTICE:
-- That `TView.data` has `expando` and `expandoInjectorCount` property which points to where the element injection data is stored.
+- That `TView.data` has `expando` and `expandoInjectorCount` properties which point to where the element injection data is stored.
 - That all injectable tokens are stored in linear sequence making it easy to search for instances to match.
 - That `viewProviders` which are private to the view are wrapped in `ViewOnlyToken` object which excludes them from injection unless extra work is performed.
 
