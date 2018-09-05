@@ -99,7 +99,7 @@
     "name": "appendChild"
   },
   {
-    "name": "attchContextDataToTarget"
+    "name": "attachLContext"
   },
   {
     "name": "baseDirectiveCreate"
@@ -127,6 +127,9 @@
   },
   {
     "name": "componentRefresh"
+  },
+  {
+    "name": "createLContext"
   },
   {
     "name": "createLNode"
@@ -168,6 +171,12 @@
     "name": "diPublicInInjector"
   },
   {
+    "name": "discoverDirectiveIndices"
+  },
+  {
+    "name": "discoverDirectives"
+  },
+  {
     "name": "domRendererFactory3"
   },
   {
@@ -195,7 +204,7 @@
     "name": "findViaDirective"
   },
   {
-    "name": "findViaElement"
+    "name": "findViaNativeElement"
   },
   {
     "name": "firstTemplatePass"
@@ -207,7 +216,16 @@
     "name": "getContext"
   },
   {
+    "name": "getDirectiveEndIndex"
+  },
+  {
+    "name": "getDirectiveStartIndex"
+  },
+  {
     "name": "getLElementNode"
+  },
+  {
+    "name": "getLNode"
   },
   {
     "name": "getLViewChild"
@@ -276,6 +294,9 @@
     "name": "readElementValue"
   },
   {
+    "name": "readLContext"
+  },
+  {
     "name": "refreshChildComponents"
   },
   {
@@ -313,9 +334,6 @@
   },
   {
     "name": "tickRootContext"
-  },
-  {
-    "name": "unwrapLNode"
   },
   {
     "name": "updateViewQuery"

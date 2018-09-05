@@ -330,7 +330,7 @@
     "name": "assertTemplate"
   },
   {
-    "name": "attchContextDataToTarget"
+    "name": "attachLContext"
   },
   {
     "name": "baseDirectiveCreate"
@@ -397,6 +397,9 @@
   },
   {
     "name": "createLContainer"
+  },
+  {
+    "name": "createLContext"
   },
   {
     "name": "createLNode"
@@ -468,6 +471,12 @@
     "name": "directiveInject"
   },
   {
+    "name": "discoverDirectiveIndices"
+  },
+  {
+    "name": "discoverDirectives"
+  },
+  {
     "name": "domRendererFactory3"
   },
   {
@@ -534,7 +543,7 @@
     "name": "findViaDirective"
   },
   {
-    "name": "findViaElement"
+    "name": "findViaNativeElement"
   },
   {
     "name": "firstTemplatePass"
@@ -564,6 +573,12 @@
     "name": "getCurrentView"
   },
   {
+    "name": "getDirectiveEndIndex"
+  },
+  {
+    "name": "getDirectiveStartIndex"
+  },
+  {
     "name": "getInitialIndex"
   },
   {
@@ -571,6 +586,9 @@
   },
   {
     "name": "getLElementNode"
+  },
+  {
+    "name": "getLNode"
   },
   {
     "name": "getLViewChild"
@@ -831,6 +849,9 @@
     "name": "readElementValue"
   },
   {
+    "name": "readLContext"
+  },
+  {
     "name": "reference"
   },
   {
@@ -958,9 +979,6 @@
   },
   {
     "name": "trackByIdentity"
-  },
-  {
-    "name": "unwrapLNode"
   },
   {
     "name": "updateClassProp"

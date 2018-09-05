@@ -13,7 +13,7 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
-import {Context, attchContextDataToTarget, getLElementNode} from './context_discovery';
+import {LContext, attachLContext, getLElementNode} from './context_discovery';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
@@ -465,7 +465,11 @@ export function createLNode(
         if (previousTNode.dynamicContainerNode) previousTNode.dynamicContainerNode.next = tNode;
       }
     }
+
     node.tNode = tData[adjustedIndex] as TNode;
+    if (!tView.firstChild && type === TNodeType.Element) {
+      tView.firstChild = node.tNode;
+    }
 
     // Now link ourselves into the tree.
     if (isParent) {
@@ -800,7 +804,7 @@ export function elementStart(
   // monkey-patched with the component view data so that the element can be inspected
   // later on using any element discovery utility methods (see `element_discovery.ts`)
   if (elementDepthCount === 0) {
-    attchContextDataToTarget(native, viewData);
+    attachLContext(native, viewData);
   }
   elementDepthCount++;
 }
@@ -1090,7 +1094,8 @@ export function createTView(
     components: null,
     directiveRegistry: typeof directives === 'function' ? directives() : directives,
     pipeRegistry: typeof pipes === 'function' ? pipes() : pipes,
-    currentMatches: null
+    currentMatches: null,
+    firstChild: null,
   };
 }
 
@@ -1754,7 +1759,7 @@ export function baseDirectiveCreate<T>(
                    'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
 
-  attchContextDataToTarget(directive, viewData);
+  attachLContext(directive, viewData);
 
   if (directives == null) viewData[DIRECTIVES] = directives = [];
 

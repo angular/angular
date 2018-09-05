@@ -1158,7 +1158,7 @@
     "name": "assertTemplate"
   },
   {
-    "name": "attchContextDataToTarget"
+    "name": "attachLContext"
   },
   {
     "name": "baseDirectiveCreate"
@@ -1270,6 +1270,9 @@
   },
   {
     "name": "createLContainer"
+  },
+  {
+    "name": "createLContext"
   },
   {
     "name": "createLNode"
@@ -1389,6 +1392,12 @@
     "name": "directiveInject"
   },
   {
+    "name": "discoverDirectiveIndices"
+  },
+  {
+    "name": "discoverDirectives"
+  },
+  {
     "name": "domRendererFactory3"
   },
   {
@@ -1479,7 +1488,7 @@
     "name": "findViaDirective"
   },
   {
-    "name": "findViaElement"
+    "name": "findViaNativeElement"
   },
   {
     "name": "firstTemplatePass"
@@ -1587,6 +1596,12 @@
     "name": "getDebugNode"
   },
   {
+    "name": "getDirectiveEndIndex"
+  },
+  {
+    "name": "getDirectiveStartIndex"
+  },
+  {
     "name": "getErrorLogger"
   },
   {
@@ -1600,6 +1615,9 @@
   },
   {
     "name": "getLElementNode"
+  },
+  {
+    "name": "getLNode"
   },
   {
     "name": "getLViewChild"
@@ -2148,6 +2166,9 @@
     "name": "readElementValue"
   },
   {
+    "name": "readLContext"
+  },
+  {
     "name": "recursivelyProcessProviders"
   },
   {
@@ -2395,9 +2416,6 @@
   },
   {
     "name": "unicodeWordMatch"
-  },
-  {
-    "name": "unwrapLNode"
   },
   {
     "name": "updateClassProp"

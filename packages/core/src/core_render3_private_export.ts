@@ -162,7 +162,7 @@ export {
 } from './sanitization/bypass';
 
 export {
-  Context as ɵContext,
+  LContext as ɵLContext,
   getContext as ɵgetContext
 } from './render3/context_discovery';
 
