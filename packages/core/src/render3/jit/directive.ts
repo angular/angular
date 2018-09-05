@@ -76,7 +76,8 @@ export function compileComponent(type: Type<any>, metadata: Component): void {
               viewQueries: [],
               wrapDirectivesInClosure: false,
               styles: metadata.styles || [],
-              encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated
+              encapsulation: metadata.encapsulation || ViewEncapsulation.Emulated,
+              animations: metadata.animations || null
             },
             constantPool, makeBindingParser());
         const preStatements = [...constantPool.statements, ...res.statements];
