@@ -2145,8 +2145,7 @@ withEachNg1Version(() => {
              }
 
              // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
-             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be
-             // on
+             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be on
              // the queue at the end of the test, causing it to fail.
              // Mocking animations (via `ngAnimateMock`) avoids the issue.
              angular.module('ng1', ['ngAnimateMock'])
@@ -2190,8 +2189,7 @@ withEachNg1Version(() => {
              }
 
              // On browsers that don't support `requestAnimationFrame` (IE 9, Android <= 4.3),
-             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be
-             // on
+             // `$animate` will use `setTimeout(..., 16.6)` instead. This timeout will still be on
              // the queue at the end of the test, causing it to fail.
              // Mocking animations (via `ngAnimateMock`) avoids the issue.
              angular.module('ng1', ['ngAnimateMock'])
