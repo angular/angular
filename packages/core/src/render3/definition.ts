@@ -262,6 +262,11 @@ export function defineComponent<T>(componentDefinition: {
    * `PipeDefs`s. The function is necessary to be able to support forward declarations.
    */
   pipes?: PipeTypesOrFactory | null;
+
+  /**
+   * Registry of the animation triggers present on the component that will be used by the view.
+   */
+  animations?: any[] | null;
 }): never {
   const type = componentDefinition.type;
   const pipeTypes = componentDefinition.pipes !;
@@ -269,6 +274,11 @@ export function defineComponent<T>(componentDefinition: {
   const declaredInputs: {[key: string]: string} = {} as any;
   const encapsulation = componentDefinition.encapsulation || ViewEncapsulation.Emulated;
   const styles: string[] = componentDefinition.styles || EMPTY_ARRAY;
+  const animations: any[]|null = componentDefinition.animations || null;
+  let data = componentDefinition.data || {};
+  if (animations) {
+    data.animations = animations;
+  }
   const def: ComponentDefInternal<any> = {
     type: type,
     diPublic: null,
@@ -303,7 +313,7 @@ export function defineComponent<T>(componentDefinition: {
     selectors: componentDefinition.selectors,
     viewQuery: componentDefinition.viewQuery || null,
     features: componentDefinition.features || null,
-    data: componentDefinition.data || EMPTY,
+    data,
     // TODO(misko): convert ViewEncapsulation into const enum so that it can be used directly in the
     // next line. Also `None` should be 0 not 2.
     encapsulation,

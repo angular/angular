@@ -175,6 +175,11 @@ export interface R3ComponentMetadata extends R3DirectiveMetadata {
    * into a shadow root.
    */
   encapsulation: ViewEncapsulation;
+
+  /**
+   * A collection of animation triggers that will be used in the component template.
+   */
+  animations: {[key: string]: any}[]|null;
 }
 
 /**
