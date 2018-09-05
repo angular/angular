@@ -100,6 +100,57 @@ describe('compiler compliance: styling', () => {
        });
   });
 
+  describe('@Component.animations', () => {
+    it('should pass in the component metadata animations into the component definition', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: "my-component",
+                  animations: [{name: 'foo123'}, {name: 'trigger123'}],
+                  template: "..."
+                })
+                export class MyComponent {
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `animations: [{name: "foo123"}, {name: "trigger123"}]`;
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
+
+    it('should not include animations if the provided array is empty', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: "my-component",
+                  animations: [],
+                  template: "..."
+                })
+                export class MyComponent {
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const result = compile(files, angularFiles);
+      expect(result.source.indexOf('animations:')).toEqual(-1);
+    });
+  });
+
   describe('[style] and [style.prop]', () => {
     it('should create style instructions on the element', () => {
       const files = {
