@@ -15,7 +15,7 @@ export interface MaterialOutputNameData {
   /** The new name for the @Output(). */
   replaceWith: string;
   /** Whitelist where this replacement is made. If omitted it is made in all HTML & CSS */
-  whitelist?: {
+  whitelist: {
     /** Limit to elements with any of these element tags. */
     elements?: string[],
     /** Limit to elements with any of these attributes. */

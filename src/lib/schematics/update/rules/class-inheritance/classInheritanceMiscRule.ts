@@ -25,6 +25,7 @@ export class Walker extends ProgramAwareRuleWalker {
 
   visitClassDeclaration(node: ts.ClassDeclaration) {
     const baseTypes = determineBaseTypes(node);
+    const className = node.name ? node.name.text : '{unknown-name}';
 
     if (!baseTypes) {
       return;
@@ -32,10 +33,11 @@ export class Walker extends ProgramAwareRuleWalker {
 
     if (baseTypes.includes('MatFormFieldControl')) {
       const hasFloatLabelMember = node.members
-          .find(member => member.name && member.name.getText() === 'shouldFloatLabel');
+          .filter(member => member.name)
+          .find(member => member.name!.getText() === 'shouldFloatLabel');
 
       if (!hasFloatLabelMember) {
-        this.addFailureAtNode(node, `Found class "${bold(node.name.text)}" which extends ` +
+        this.addFailureAtNode(node, `Found class "${bold(className)}" which extends ` +
             `"${bold('MatFormFieldControl')}". This class must define ` +
             `"${green('shouldLabelFloat')}" which is now a required property.`);
       }

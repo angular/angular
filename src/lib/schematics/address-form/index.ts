@@ -30,7 +30,7 @@ export default function(options: Schema): Rule {
  */
 function addFormModulesToModule(options: Schema) {
   return (host: Tree) => {
-    const modulePath = findModuleFromOptions(host, options);
+    const modulePath = findModuleFromOptions(host, options)!;
     addModuleImportToModule(host, modulePath, 'MatInputModule', '@angular/material');
     addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material');
     addModuleImportToModule(host, modulePath, 'MatSelectModule', '@angular/material');

@@ -5,6 +5,7 @@
     "moduleResolution": "node",
     "outDir": "../../../dist/schematics",
     "noEmitOnError": false,
+    "strictNullChecks": true,
     "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "sourceMap": true,

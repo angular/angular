@@ -17,7 +17,7 @@ export interface MaterialPropertyNameData {
   /** Whitelist where this replacement is made. If omitted it is made for all Classes. */
   whitelist: {
     /** Replace the property only when its type is one of the given Classes. */
-    classes?: string[];
+    classes: string[];
   };
 }
 

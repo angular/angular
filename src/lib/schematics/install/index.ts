@@ -94,9 +94,9 @@ function addMaterialAppStyles(options: Schema) {
     const workspace = getWorkspace(host);
     const project = getProjectFromWorkspace(workspace, options.project);
     const styleFilePath = getProjectStyleFile(project);
-    const buffer = host.read(styleFilePath);
+    const buffer = host.read(styleFilePath!);
 
-    if (!buffer) {
+    if (!styleFilePath || !buffer) {
       return console.warn(`Could not find styles file: "${styleFilePath}". Skipping styles ` +
         `generation. Please consider manually adding the "Roboto" font and resetting the ` +
         `body margin.`);

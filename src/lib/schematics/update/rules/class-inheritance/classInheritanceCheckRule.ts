@@ -41,6 +41,7 @@ export class Walker extends ProgramAwareRuleWalker {
 
   visitClassDeclaration(node: ts.ClassDeclaration) {
     const baseTypes = determineBaseTypes(node);
+    const className = node.name ? node.name.text : '{unknown-name}';
 
     if (!baseTypes) {
       return;
@@ -50,7 +51,7 @@ export class Walker extends ProgramAwareRuleWalker {
       const data = this.propertyNames.get(typeName);
 
       if (data) {
-        this.addFailureAtNode(node, `Found class "${bold(node.name.text)}" which extends class ` +
+        this.addFailureAtNode(node, `Found class "${bold(className)}" which extends class ` +
             `"${bold(typeName)}". Please note that the base class property ` +
             `"${red(data.replace)}" has changed to "${green(data.replaceWith)}". ` +
             `You may need to update your class as well`);

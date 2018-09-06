@@ -1,6 +1,6 @@
 import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {getProjectStyleFile} from '@angular/material/schematics/utils/project-style-file';
+import {getProjectStyleFile} from '../utils/project-style-file';
 import {getIndexHtmlPath} from './fonts/project-index-html';
 import {getProjectFromWorkspace} from '../utils/get-project';
 import {getFileContent} from '@schematics/angular/utility/test';
@@ -71,10 +71,10 @@ describe('material-install-schematic', () => {
     const expectedStylesPath = normalize(`/${project.root}/src/styles.scss`);
 
     const buffer = tree.read(expectedStylesPath);
-    const src = buffer!.toString();
+    const themeContent = buffer!.toString();
 
-    expect(src.indexOf(`@import '~@angular/material/theming';`)).toBeGreaterThan(-1);
-    expect(src.indexOf(`$app-primary`)).toBeGreaterThan(-1);
+    expect(themeContent).toContain(`@import '~@angular/material/theming';`);
+    expect(themeContent).toContain(`$app-primary: mat-palette(`);
   });
 
   it('should create a custom theme file if no SCSS file could be found', () => {
@@ -112,7 +112,7 @@ describe('material-install-schematic', () => {
     const workspace = getWorkspace(tree);
     const project = getProjectFromWorkspace(workspace);
 
-    const defaultStylesPath = getProjectStyleFile(project);
+    const defaultStylesPath = getProjectStyleFile(project)!;
     const htmlContent = tree.read(defaultStylesPath)!.toString();
 
     expect(htmlContent).toContain('html, body { height: 100%; }');

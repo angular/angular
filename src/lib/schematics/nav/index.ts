@@ -30,7 +30,7 @@ export default function(options: Schema): Rule {
  */
 function addNavModulesToModule(options: Schema) {
   return (host: Tree) => {
-    const modulePath = findModuleFromOptions(host, options);
+    const modulePath = findModuleFromOptions(host, options)!;
     addModuleImportToModule(host, modulePath, 'LayoutModule', '@angular/cdk/layout');
     addModuleImportToModule(host, modulePath, 'MatToolbarModule', '@angular/material');
     addModuleImportToModule(host, modulePath, 'MatButtonModule', '@angular/material');

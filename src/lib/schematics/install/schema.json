@@ -4,6 +4,13 @@
   "title": "Material Install Options Schema",
   "type": "object",
   "properties": {
+    "project": {
+      "type": "string",
+      "description": "The name of the project.",
+      "$default": {
+        "$source": "projectName"
+      }
+    },
     "skipPackageJson": {
       "type": "boolean",
       "default": false,

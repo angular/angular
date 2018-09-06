@@ -39,6 +39,7 @@ import {validateHtmlSelector, validateName} from '@schematics/angular/utility/va
 import {readFileSync} from 'fs';
 import {dirname, join, resolve} from 'path';
 import * as ts from 'typescript';
+import {getProjectFromWorkspace} from './get-project';
 import {getDefaultComponentOptions} from './schematic-options';
 
 function readIntoSourceFile(host: Tree, modulePath: string): ts.SourceFile {
@@ -162,7 +163,7 @@ export function buildComponent(options: ComponentOptions,
 
   return (host: Tree, context: FileSystemSchematicContext) => {
     const workspace = getWorkspace(host);
-    const project = workspace.projects[options.project || workspace.defaultProject];
+    const project = getProjectFromWorkspace(workspace, options.project);
     const defaultComponentOptions = getDefaultComponentOptions(project);
 
     const schematicFilesUrl = './files';
@@ -216,8 +217,10 @@ export function buildComponent(options: ComponentOptions,
       options.inlineTemplate ? filter(path => !path.endsWith('.html')) : noop(),
       // Treat the template options as any, because the type definition for the template options
       // is made unnecessarily explicit. Every type of object can be used in the EJS template.
-      template({ indentTextContent, resolvedFiles, ...baseTemplateContext} as any),
-      move(null, parsedPath.path),
+      template({indentTextContent, resolvedFiles, ...baseTemplateContext} as any),
+      // TODO(devversion): figure out why we cannot just remove the first parameter
+      // See for example: angular-cli#schematics/angular/component/index.ts#L160
+      move(null as any, parsedPath.path),
     ]);
 
     return chain([
@@ -228,5 +231,3 @@ export function buildComponent(options: ComponentOptions,
     ])(host, context);
   };
 }
-
-// TODO(paul): move this utility out of the `devkit-utils` because it's no longer taken from there.

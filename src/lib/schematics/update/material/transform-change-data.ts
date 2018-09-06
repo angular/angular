@@ -33,5 +33,5 @@ export function getChangesForTarget<T>(target: TargetVersion, data: VersionChang
     return [];
   }
 
-  return data[target].reduce((result, changes) => result.concat(changes.changes), []);
+  return data[target]!.reduce((result, prData) => result.concat(prData.changes), [] as T[]);
 }

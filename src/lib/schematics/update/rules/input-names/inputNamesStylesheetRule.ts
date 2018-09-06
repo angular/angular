@@ -68,10 +68,6 @@ export class Walker extends ComponentWalker {
     const replacements: {failureMessage: string, replacement: Replacement}[] = [];
 
     this.data.forEach(name => {
-      if (name.whitelist && !name.whitelist.stylesheet) {
-        return;
-      }
-
       const currentSelector = `[${name.replace}]`;
       const updatedSelector = `[${name.replaceWith}]`;
 

@@ -55,16 +55,16 @@ export class Walker extends ComponentWalker {
 
     this.data.forEach(name => {
       const whitelist = name.whitelist;
-      const relativeOffsets = [];
+      const relativeOffsets: number[] = [];
       const failureMessage = `Found deprecated @Output() "${red(name.replace)}"` +
         ` which has been renamed to "${green(name.replaceWith)}"`;
 
-      if (!whitelist || whitelist.attributes) {
+      if (whitelist.attributes) {
         relativeOffsets.push(
           ...findOutputsOnElementWithAttr(templateContent, name.replace, whitelist.attributes));
       }
 
-      if (!whitelist || whitelist.elements) {
+      if (whitelist.elements) {
         relativeOffsets.push(
           ...findOutputsOnElementWithTag(templateContent, name.replace, whitelist.elements));
       }
