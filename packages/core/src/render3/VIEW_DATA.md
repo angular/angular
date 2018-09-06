@@ -46,7 +46,7 @@ class MyApp {
         elementStart(2, 'b');
         text(3, 'World');
         elementEnd();
-        text(4,' '!')
+        text(4, '!');
         elementEnd();
       }
       ...
@@ -371,6 +371,68 @@ Pseudo code:
 3. Read the value of `lViewData[index]` at that location.
    - if `isFactory(lViewData[index])` than mark it as resolving and invoke it. Replace `lViewData[index]` with the value returned from factory (caching mechanism).
    - if `!isFactory(lViewData[index])` then return the cached value as is.
+
+# `EXPANDO` and Injecting Special Objects.
+
+There are several special objects such as `ElementRef`, `ViewContainerRef`, etc...
+These objects behave as if they are always included in the `providers` array of every component and directive.
+Adding them always there would prevent tree shaking so they need to be lazily included.
+
+NOTE: 
+An interesting thing about these objects is that they are not memoized `injector.get(ElementRef) !== injector.get(ElementRef)`.
+This could be considered a bug, it means that we don't have to allocate storage space for them.
+
+```typescript
+@Injectable({
+  provideIn: '__node__' as any // Special token not available to the developer
+  useFactory: injectElementRef // existing function which generates ElementRef
+})
+class ElementRef {
+  ...
+}
+```
+
+Consequence of the above is that `injector.get(ElementRef)` returns an instance of `ElementRef` without `Injector` having to know about `ElementRef` at compile time.
+
+# `EXPANDO` and Injecting the `Injector`.
+
+`Injector` can be injected using `inject(Injector)` method.
+To achieve this in tree shakable way we can declare the `Injector` in this way:
+
+```typescript
+@Injectable({
+  provideIn: '__node_injector__' as any // Special token not available to the developer
+})
+class Injector {
+  ...
+}
+```
+
+NOTE:
+We can't declare `useFactory` in this case because it would make the generic DI system depend on the Ivy renderer.
+Instead we have unique token `'__node_injector__'` which we use for recognizing the `Injector` in tree shakable way.
+
+## `inject` Implementation
+
+A pseudo-implementation of `inject` function.
+
+```typescript
+function inject(token: any): any {
+  let injectableDef;
+  if (typeof token === 'function' && injectableDef = token.ngInjectableDef) {
+    const provideIn = injectableDef.provideIn;
+    if (provideIn === '__node__') {
+      // if it is a special object just call its factory
+      return injectableDef.useFactory();
+    } else if (provideIn === '__node_injector__') {
+      // if we are injecting `Injector` than create a wrapper object around the inject but which 
+      // is bound to the current node.
+      return createInjector();
+    }
+  }
+  return lookupTokenInExpando(token);
+}
+```
 
 
 
