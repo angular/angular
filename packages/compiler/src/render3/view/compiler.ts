@@ -247,7 +247,7 @@ export function compileComponentFromMetadata(
   }
 
   // e.g. `animations: [trigger('123', [])]`
-  if (meta.animations && meta.animations.length) {
+  if (meta.animations) {
     const animationValues = meta.animations.map(entry => mapToExpression(entry));
     definitionMap.set('animations', o.literalArr(animationValues));
   }

@@ -184,7 +184,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
         // analyzed and the full compilation scope for the component can be realized.
         pipes: EMPTY_MAP,
         directives: EMPTY_MAP,
-        wrapDirectivesInClosure: false, animations
+        wrapDirectivesInClosure: false, animations,
       }
     };
   }

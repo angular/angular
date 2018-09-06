@@ -110,7 +110,7 @@ describe('compiler compliance: styling', () => {
                 @Component({
                   selector: "my-component",
                   animations: [{name: 'foo123'}, {name: 'trigger123'}],
-                  template: "..."
+                  template: ""
                 })
                 export class MyComponent {
                 }
@@ -121,12 +121,27 @@ describe('compiler compliance: styling', () => {
         }
       };
 
-      const template = `animations: [{name: "foo123"}, {name: "trigger123"}]`;
+      const template = `
+        MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyComponent,
+          selectors:[["my-component"]],
+          factory:function MyComponent_Factory(t){
+            return new (t || MyComponent)();
+          },
+          features: [$r3$.ɵPublicFeature],
+          consts: 0,
+          vars: 0,
+          template:  function MyComponent_Template(rf, $ctx$) {
+          },
+          animations: [{name: "foo123"}, {name: "trigger123"}]
+        });
+      `;
+
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect template');
     });
 
-    it('should not include animations if the provided array is empty', () => {
+    it('should include animations even if the provided array is empty', () => {
       const files = {
         app: {
           'spec.ts': `
@@ -135,7 +150,7 @@ describe('compiler compliance: styling', () => {
                 @Component({
                   selector: "my-component",
                   animations: [],
-                  template: "..."
+                  template: ""
                 })
                 export class MyComponent {
                 }
@@ -146,8 +161,24 @@ describe('compiler compliance: styling', () => {
         }
       };
 
+      const template = `
+        MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
+          type: MyComponent,
+          selectors:[["my-component"]],
+          factory:function MyComponent_Factory(t){
+            return new (t || MyComponent)();
+          },
+          features: [$r3$.ɵPublicFeature],
+          consts: 0,
+          vars: 0,
+          template:  function MyComponent_Template(rf, $ctx$) {
+          },
+          animations: []
+        });
+      `;
+
       const result = compile(files, angularFiles);
-      expect(result.source.indexOf('animations:')).toEqual(-1);
+      expectEmit(result.source, template, 'Incorrect template');
     });
   });
 

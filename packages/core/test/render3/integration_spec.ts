@@ -1423,7 +1423,7 @@ describe('render3 integration test', () => {
       expect(capturedAnimations).toContain(animB);
     });
 
-    it('should not include animations in the renderType data array if the array is empty', () => {
+    it('should include animations in the renderType data array even if the array is empty', () => {
       class AnimComp {
         static ngComponentDef = defineComponent({
           type: AnimComp,
@@ -1438,7 +1438,7 @@ describe('render3 integration test', () => {
       const rendererFactory = new MockRendererFactory();
       new ComponentFixture(AnimComp, {rendererFactory});
       const data = rendererFactory.lastCapturedType !.data;
-      expect(data.hasOwnProperty('animation')).toBeFalsy();
+      expect(data.animations).toEqual([]);
     });
   });
 

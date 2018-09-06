@@ -277,7 +277,7 @@ export function defineComponent<T>(componentDefinition: {
   const animations: any[]|null = componentDefinition.animations || null;
   let data = componentDefinition.data || {};
   if (animations) {
-    data['animations'] = animations;
+    data.animations = animations;
   }
   const def: ComponentDefInternal<any> = {
     type: type,
