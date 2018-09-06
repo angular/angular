@@ -1,3 +1,22 @@
+<a name="6.1.7"></a>
+## [6.1.7](https://github.com/angular/angular/compare/6.1.6...6.1.7) (2018-09-06)
+
+
+### Bug Fixes
+
+* **bazel:** protractor rule should include *.e2e-spec.js ([#25701](https://github.com/angular/angular/issues/25701)) ([ed6b68b](https://github.com/angular/angular/commit/ed6b68b))
+* **core:** size regression with closure compiler ([#25531](https://github.com/angular/angular/issues/25531)) ([ebcf762](https://github.com/angular/angular/commit/ebcf762))
+* **docs-infra:** show "suggest edits" only for /guide and /tutorial dirs ([#24378](https://github.com/angular/angular/issues/24378)) ([66b7870](https://github.com/angular/angular/commit/66b7870))
+* **upgrade:** trigger `$destroy` event on upgraded component element ([#25357](https://github.com/angular/angular/issues/25357)) ([82e0676](https://github.com/angular/angular/commit/82e0676)), closes [#25334](https://github.com/angular/angular/issues/25334)
+
+
+### Features
+
+* **docs-infra:** add "suggest edits" feature to all docs ([#24378](https://github.com/angular/angular/issues/24378)) ([82088a8](https://github.com/angular/angular/commit/82088a8))
+* **docs-infra:** disable "status" selector in API list when displaying only packages ([#25718](https://github.com/angular/angular/issues/25718)) ([6f7df8a](https://github.com/angular/angular/commit/6f7df8a)), closes [#25708](https://github.com/angular/angular/issues/25708)
+* **router:** warn if navigation triggered outside Angular zone ([#24959](https://github.com/angular/angular/issues/24959)) ([23a96dc](https://github.com/angular/angular/commit/23a96dc)), closes [#15770](https://github.com/angular/angular/issues/15770) [#15946](https://github.com/angular/angular/issues/15946) [#24728](https://github.com/angular/angular/issues/24728)
+
+
 <a name="7.0.0-beta.4"></a>
 # [7.0.0-beta.4](https://github.com/angular/angular/compare/7.0.0-beta.3...7.0.0-beta.4) (2018-08-29)
 
