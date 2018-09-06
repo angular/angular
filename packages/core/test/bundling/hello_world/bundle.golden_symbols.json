@@ -99,7 +99,7 @@
     "name": "appendChild"
   },
   {
-    "name": "attachLContext"
+    "name": "attachPatchData"
   },
   {
     "name": "baseDirectiveCreate"
@@ -171,12 +171,6 @@
     "name": "diPublicInInjector"
   },
   {
-    "name": "discoverDirectiveIndices"
-  },
-  {
-    "name": "discoverDirectives"
-  },
-  {
     "name": "domRendererFactory3"
   },
   {
@@ -201,31 +195,13 @@
     "name": "findViaComponent"
   },
   {
-    "name": "findViaDirective"
-  },
-  {
-    "name": "findViaNativeElement"
-  },
-  {
     "name": "firstTemplatePass"
   },
   {
     "name": "getChildLNode"
   },
   {
-    "name": "getContext"
-  },
-  {
-    "name": "getDirectiveEndIndex"
-  },
-  {
-    "name": "getDirectiveStartIndex"
-  },
-  {
-    "name": "getLElementNode"
-  },
-  {
-    "name": "getLNode"
+    "name": "getLElementFromComponent"
   },
   {
     "name": "getLViewChild"
@@ -264,12 +240,6 @@
     "name": "invertObject"
   },
   {
-    "name": "isComponentInstance"
-  },
-  {
-    "name": "isDirectiveInstance"
-  },
-  {
     "name": "isProceduralRenderer"
   },
   {
@@ -294,7 +264,7 @@
     "name": "readElementValue"
   },
   {
-    "name": "readLContext"
+    "name": "readPatchedData"
   },
   {
     "name": "refreshChildComponents"

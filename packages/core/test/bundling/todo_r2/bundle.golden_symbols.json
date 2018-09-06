@@ -1158,7 +1158,7 @@
     "name": "assertTemplate"
   },
   {
-    "name": "attachLContext"
+    "name": "attachPatchData"
   },
   {
     "name": "baseDirectiveCreate"
@@ -1392,12 +1392,6 @@
     "name": "directiveInject"
   },
   {
-    "name": "discoverDirectiveIndices"
-  },
-  {
-    "name": "discoverDirectives"
-  },
-  {
     "name": "domRendererFactory3"
   },
   {
@@ -1485,12 +1479,6 @@
     "name": "findViaComponent"
   },
   {
-    "name": "findViaDirective"
-  },
-  {
-    "name": "findViaNativeElement"
-  },
-  {
     "name": "firstTemplatePass"
   },
   {
@@ -1566,9 +1554,6 @@
     "name": "getClosureSafeProperty"
   },
   {
-    "name": "getContext"
-  },
-  {
     "name": "getCurrencySymbol"
   },
   {
@@ -1596,12 +1581,6 @@
     "name": "getDebugNode"
   },
   {
-    "name": "getDirectiveEndIndex"
-  },
-  {
-    "name": "getDirectiveStartIndex"
-  },
-  {
     "name": "getErrorLogger"
   },
   {
@@ -1614,10 +1593,7 @@
     "name": "getInitialValue"
   },
   {
-    "name": "getLElementNode"
-  },
-  {
-    "name": "getLNode"
+    "name": "getLElementFromComponent"
   },
   {
     "name": "getLViewChild"
@@ -1881,9 +1857,6 @@
     "name": "isComponent"
   },
   {
-    "name": "isComponentInstance"
-  },
-  {
     "name": "isContentQueryHost"
   },
   {
@@ -1903,9 +1876,6 @@
   },
   {
     "name": "isDifferent"
-  },
-  {
-    "name": "isDirectiveInstance"
   },
   {
     "name": "isDirty"
@@ -2166,7 +2136,7 @@
     "name": "readElementValue"
   },
   {
-    "name": "readLContext"
+    "name": "readPatchedData"
   },
   {
     "name": "recursivelyProcessProviders"

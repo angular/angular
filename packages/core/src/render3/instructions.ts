@@ -13,7 +13,7 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
-import {LContext, attachLContext, getLElementNode} from './context_discovery';
+import {attachPatchData, getLElementFromComponent} from './context_discovery';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
@@ -804,7 +804,7 @@ export function elementStart(
   // monkey-patched with the component view data so that the element can be inspected
   // later on using any element discovery utility methods (see `element_discovery.ts`)
   if (elementDepthCount === 0) {
-    attachLContext(native, viewData);
+    attachPatchData(native, viewData);
   }
   elementDepthCount++;
 }
@@ -1759,7 +1759,7 @@ export function baseDirectiveCreate<T>(
                    'directives should be created before any bindings');
   ngDevMode && assertPreviousIsParent();
 
-  attachLContext(directive, viewData);
+  attachPatchData(directive, viewData);
 
   if (directives == null) viewData[DIRECTIVES] = directives = [];
 
@@ -2414,7 +2414,7 @@ export function tick<T>(component: T): void {
 function tickRootContext(rootContext: RootContext) {
   for (let i = 0; i < rootContext.components.length; i++) {
     const rootComponent = rootContext.components[i];
-    const hostNode = _getComponentHostLElementNode(rootComponent);
+    const hostNode = _getComponentHostLElementNode(rootComponent, true);
 
     ngDevMode && assertDefined(hostNode.data, 'Component host node should be attached to an LView');
     renderComponentOrTemplate(hostNode, getRootView(rootComponent), rootComponent);
@@ -2863,9 +2863,10 @@ function assertDataNext(index: number, arr?: any[]) {
       arr.length, index, `index ${index} expected to be at the end of arr (length ${arr.length})`);
 }
 
-export function _getComponentHostLElementNode<T>(component: T): LElementNode {
+export function _getComponentHostLElementNode<T>(
+    component: T, isRootComponent?: boolean): LElementNode {
   ngDevMode && assertDefined(component, 'expecting component got null');
-  const lElementNode = getLElementNode(component) !;
+  const lElementNode = getLElementFromComponent(component, isRootComponent) !;
   ngDevMode && assertDefined(component, 'object is not a component');
   return lElementNode;
 }

@@ -1814,10 +1814,7 @@ describe('render3 integration test', () => {
           factory: () => new StructuredComp(),
           consts: 0,
           vars: 0,
-          template: (rf: RenderFlags, ctx: StructuredComp) => {
-            if (rf & RenderFlags.Create) {
-            }
-          }
+          template: (rf: RenderFlags, ctx: StructuredComp) => {}
         });
       }
 
@@ -1826,22 +1823,21 @@ describe('render3 integration test', () => {
 
       const hostElm = fixture.hostElement;
       const component = fixture.component;
-      const hostContext = (hostElm as any)[MONKEY_PATCH_KEY_NAME];
+
       const componentContext = (component as any)[MONKEY_PATCH_KEY_NAME];
-      expect(hostContext).toBeTruthy();
-      expect(componentContext).toBeTruthy();
+      expect(Array.isArray(componentContext)).toBeFalsy();
+
+      const hostContext = (hostElm as any)[MONKEY_PATCH_KEY_NAME];
       expect(hostContext).toBe(componentContext);
 
       const context1 = getContext(hostElm) !;
       expect(context1).toBe(hostContext);
-      expect(context1).toBe(componentContext);
+      expect(context1.native).toEqual(hostElm);
 
       const context2 = getContext(component) !;
-      expect(context2).toBe(hostContext);
-      expect(context2).toBe(componentContext);
       expect(context2).toBe(context1);
-
-      expect(context1.native).toEqual(hostElm);
+      expect(context2).toBe(hostContext);
+      expect(context2.native).toEqual(hostElm);
     });
 
     it('should by default monkey-patch the directives with LViewData so that they can be examined',
