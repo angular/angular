@@ -2,7 +2,6 @@
 import * as express from 'express';
 import * as http from 'http';
 import * as supertest from 'supertest';
-import {promisify} from 'util';
 import {CircleCiApi} from '../../lib/common/circle-ci-api';
 import {GithubApi} from '../../lib/common/github-api';
 import {GithubPullRequests} from '../../lib/common/github-pull-requests';
@@ -244,10 +243,6 @@ describe('PreviewServerFactory', () => {
     let buildCreator: BuildCreator;
     let agent: supertest.SuperTest<supertest.Test>;
 
-    // Helpers
-    const promisifyRequest = async (req: supertest.Request) => await promisify(req.end.bind(req))();
-    const verifyRequests = async (reqs: supertest.Request[]) => await Promise.all(reqs.map(promisifyRequest));
-
     beforeEach(() => {
       const circleCiApi = new CircleCiApi(defaultConfig.githubOrg, defaultConfig.githubRepo,
                                           defaultConfig.circleCiToken);
@@ -260,14 +255,15 @@ describe('PreviewServerFactory', () => {
       buildCreator = new BuildCreator(defaultConfig.buildsDir);
 
       const middleware = PreviewServerFactory.createMiddleware(buildRetriever, buildVerifier, buildCreator,
-                                                              defaultConfig);
+                                                               defaultConfig);
       agent = supertest.agent(middleware);
     });
+
 
     describe('GET /health-check', () => {
 
       it('should respond with 200', async () => {
-        await verifyRequests([
+        await Promise.all([
           agent.get('/health-check').expect(200),
           agent.get('/health-check/').expect(200),
         ]);
@@ -275,7 +271,7 @@ describe('PreviewServerFactory', () => {
 
 
       it('should respond with 404 for non-GET requests', async () => {
-        await verifyRequests([
+        await Promise.all([
           agent.put('/health-check').expect(404),
           agent.post('/health-check').expect(404),
           agent.patch('/health-check').expect(404),
@@ -285,7 +281,7 @@ describe('PreviewServerFactory', () => {
 
 
       it('should respond with 404 if the path does not match exactly', async () => {
-        await verifyRequests([
+        await Promise.all([
           agent.get('/health-check/foo').expect(404),
           agent.get('/health-check-foo').expect(404),
           agent.get('/health-checknfoo').expect(404),
@@ -393,7 +389,8 @@ describe('PreviewServerFactory', () => {
 
     });
 
-    describe('/circle-build', () => {
+
+    describe('POST /circle-build', () => {
       let getGithubInfoSpy: jasmine.Spy;
       let getSignificantFilesChangedSpy: jasmine.Spy;
       let downloadBuildArtifactSpy: jasmine.Spy;
@@ -566,7 +563,7 @@ describe('PreviewServerFactory', () => {
 
 
       it('should respond with 404 for non-POST requests', async () => {
-        await verifyRequests([
+        await Promise.all([
           agent.get(url).expect(404),
           agent.put(url).expect(404),
           agent.patch(url).expect(404),
@@ -581,7 +578,7 @@ describe('PreviewServerFactory', () => {
         const request1 = agent.post(url);
         const request2 = agent.post(url).send();
 
-        await verifyRequests([
+        await Promise.all([
           request1.expect(400, responseBody),
           request2.expect(400, responseBody),
         ]);
@@ -594,7 +591,7 @@ describe('PreviewServerFactory', () => {
         const request1 = agent.post(url).send({});
         const request2 = agent.post(url).send({number: null});
 
-        await verifyRequests([
+        await Promise.all([
           request1.expect(400, `${responseBodyPrefix} {}`),
           request2.expect(400, `${responseBodyPrefix} {"number":null}`),
         ]);
@@ -602,7 +599,7 @@ describe('PreviewServerFactory', () => {
 
 
       it('should call \'BuildVerifier#gtPrIsTrusted()\' with the correct arguments', async () => {
-        await promisifyRequest(createRequest(+pr));
+        await createRequest(+pr);
         expect(bvGetPrIsTrustedSpy).toHaveBeenCalledWith(9);
       });
 
@@ -610,9 +607,8 @@ describe('PreviewServerFactory', () => {
       it('should propagate errors from BuildVerifier', async () => {
         bvGetPrIsTrustedSpy.and.callFake(() => Promise.reject('Test'));
 
-        const req = createRequest(+pr).expect(500, 'Test');
+        await createRequest(+pr).expect(500, 'Test');
 
-        await promisifyRequest(req);
         expect(bvGetPrIsTrustedSpy).toHaveBeenCalledWith(9);
         expect(bcUpdatePrVisibilitySpy).not.toHaveBeenCalled();
       });
@@ -621,19 +617,17 @@ describe('PreviewServerFactory', () => {
       it('should call \'BuildCreator#updatePrVisibility()\' with the correct arguments', async () => {
         bvGetPrIsTrustedSpy.and.callFake((pr2: number) => Promise.resolve(pr2 === 42));
 
-        await promisifyRequest(createRequest(24));
+        await createRequest(24);
         expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledWith(24, false);
 
-        await promisifyRequest(createRequest(42));
+        await createRequest(42);
         expect(bcUpdatePrVisibilitySpy).toHaveBeenCalledWith(42, true);
       });
 
 
       it('should propagate errors from BuildCreator', async () => {
         bcUpdatePrVisibilitySpy.and.callFake(() => Promise.reject('Test'));
-
-        const req = createRequest(+pr).expect(500, 'Test');
-        await verifyRequests([req]);
+        await createRequest(+pr).expect(500, 'Test');
       });
 
 
@@ -643,7 +637,7 @@ describe('PreviewServerFactory', () => {
           bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
 
           const reqs = [4, 2].map(num => createRequest(num).expect(200, http.STATUS_CODES[200]));
-          await verifyRequests(reqs);
+          await Promise.all(reqs);
         });
 
 
@@ -651,7 +645,7 @@ describe('PreviewServerFactory', () => {
           bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
 
           const reqs = [4, 2].map(num => createRequest(num, 'labeled').expect(200, http.STATUS_CODES[200]));
-          await verifyRequests(reqs);
+          await Promise.all(reqs);
         });
 
 
@@ -659,14 +653,13 @@ describe('PreviewServerFactory', () => {
           bvGetPrIsTrustedSpy.and.returnValues(Promise.resolve(true), Promise.resolve(false));
 
           const reqs = [4, 2].map(num => createRequest(num, 'unlabeled').expect(200, http.STATUS_CODES[200]));
-          await verifyRequests(reqs);
+          await Promise.all(reqs);
         });
 
 
         it('should respond with 200 (and do nothing) if \'action\' implies no visibility change', async () => {
           const promises = ['foo', 'notlabeled'].
-            map(action => createRequest(+pr, action).expect(200, http.STATUS_CODES[200])).
-            map(promisifyRequest);
+            map(action => createRequest(+pr, action).expect(200, http.STATUS_CODES[200]));
 
           await Promise.all(promises);
           expect(bvGetPrIsTrustedSpy).not.toHaveBeenCalled();
@@ -683,7 +676,7 @@ describe('PreviewServerFactory', () => {
       it('should respond with 404', async () => {
         const responseFor = (method: string) => `Unknown resource in request: ${method.toUpperCase()} /some/url`;
 
-        await verifyRequests([
+        await Promise.all([
           agent.get('/some/url').expect(404, responseFor('get')),
           agent.put('/some/url').expect(404, responseFor('put')),
           agent.post('/some/url').expect(404, responseFor('post')),
