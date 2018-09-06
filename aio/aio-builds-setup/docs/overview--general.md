@@ -34,34 +34,31 @@ container:
 
 
 ### On CI (CircleCI)
-- Build job completes successfully.
-- The CI script checks whether the build job was initiated by a PR against the angular/angular
-  master branch.
-- The CI script checks whether the PR has touched any files that might affect the angular.io app
-  (currently the `aio/` or `packages/` directories, ignoring spec files).
+- The CI script builds the angular.io project.
 - The CI script gzips and stores the build artifacts in the CI infrastructure.
-- When the build completes CircleCI triggers a webhook on the preview-server.
+- When the build completes, CircleCI triggers a webhook on the preview-server.
 
 More info on how to set things up on CI can be found [here](misc--integrate-with-ci.md).
 
 
 ### Hosting build artifacts
-
 - nginx receives the webhook trigger and passes it through to the preview server.
+- The preview-server runs several preliminary checks to determine whether the request is valid and
+  whether the corresponding PR can have a (public or non-public) preview (more details can be found
+  [here](overview--security-model.md)).
 - The preview-server makes a request to CircleCI for the URL of the AIO build artifacts.
 - The preview-server makes a request to this URL to receive the artifact - failing if the size
   exceeds the specified max file size - and stores it in a temporary location.
-- The preview-server runs several checks to determine whether the request should be accepted and
-  whether it should be publicly accessible or stored for later verification (more details can be
-  found [here](overview--security-model.md)).
+- The preview-server runs more checks to determine whether the preview should be publicly accessible
+  or stored for later verification (more details can be found [here](overview--security-model.md)).
 - The preview-server changes the "visibility" of the associated PR, if necessary. For example, if
   builds for the same PR had been previously deployed as non-public and the current build has been
   automatically verified, all previous builds are made public as well.
   If the PR transitions from "non-public" to "public", the preview-server posts a comment on the
   corresponding PR on GitHub mentioning the SHAs and the links where the previews can be found.
 - The preview-server verifies that it is not trying to overwrite an existing build.
-- The preview-server deploys the artifacts to a sub-directory named after the PR number and the first
-  few characters of the SHA: `<PR>/<SHA>/`
+- The preview-server deploys the artifacts to a sub-directory named after the PR number and the
+  first few characters of the SHA: `<PR>/<SHA>/`
   (Non-publicly accessible PRs will be stored in a different location, but again derived from the PR
   number and SHA.)
 - If the PR is publicly accessible, the preview-server posts a comment on the corresponding PR on
@@ -101,8 +98,8 @@ More info on the possible HTTP status codes and their meaning can be found
 
 ### Removing obsolete artifacts
 In order to avoid flooding the disk with unnecessary build artifacts, there is a cronjob that runs a
-clean-up tasks once a day. The task retrieves all open PRs from GitHub and removes all directories
-that do not correspond with an open PR.
+clean-up task once a day. The task retrieves all open PRs from GitHub and removes all directories
+that do not correspond to an open PR.
 
 
 ### Health-check
