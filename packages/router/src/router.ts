@@ -488,7 +488,7 @@ export class Router {
     this.ngModule = injector.get(NgModuleRef);
     this.console = injector.get(Console);
     const ngZone = injector.get(NgZone);
-    this.isNgZoneEnabled = ngZone instanceof NgZone;
+    this.isNgZoneEnabled = ngZone instanceof NgZone && NgZone.isInAngularZone();
 
     this.resetConfig(config);
     this.currentUrlTree = createEmptyUrlTree();
