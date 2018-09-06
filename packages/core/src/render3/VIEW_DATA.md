@@ -256,6 +256,19 @@ The above code should execute as:
 This is because at the time of compilation we don't know about all of the injection tokens which will need to be created.
 (The injection tokens are part of the Component hence hide behind a selector and are not available to the parent component.)
 
+Injection needs to store three things:
+- The injection token stored in `TView.data`
+- The token factory stored in `LProtoViewData` and subsequently in `LViewData`
+- The value for the injection token stored in `LViewData`. (Replacing token factory upon creation).
+
+To save time when creating `LViewData` we use an array clone operation to copy data from `LProtoViewdata` to `LViewData`.
+The `LProtoViewData` is initialized by the `ProvidesFeature`.
+
+Injection tokens are sorted into three sections:
+1. `directives`: Used to denote eagerly created items representing directives and component.
+2. `providers`: Used to denote items visible to component, component's view and component's content.
+3. `viewProviders`: Used to denote items only visible to the component's view.
+
 ```typescript
 @Component({
   template: `<child></child>`
@@ -278,16 +291,31 @@ class MyApp {
 
 @Component({
   selector: 'child',
-  providers: [ServiceA],
-  viewProviders: [{provide: ServiceB, useValue: 'someServiceBValue'}]
+  providers: [
+    ServiceA,
+    {provide: ServiceB, useValue: 'someServiceBValue'},
+  ],
+  viewProviders: [
+    {provide: ServiceC, useFactory: () => new ServiceC)}
+    {provide: ServiceD, useClass: ServiceE},
+  ]
   ...
 })
 class Child {
   construction(injector: Injector) {}
   static ngComponentDef = defineComponent({
     ...
-    providers: [ServiceA],
-    viewProviders: [{provide: ServiceB, useValue: 'someServiceBValue'}]
+    features: [
+      ProvidesFeature(
+        [
+          ServiceA,
+          {provide: ServiceB, useValue: 'someServiceBValue'},
+        ],[
+          {provide: ServiceC, useFactory: () => new ServiceC())}
+          {provide: ServiceD, useClass: ServiceE},
+        ]
+      )
+    ]
   });
   ...
 }
@@ -295,24 +323,54 @@ class Child {
 
 The above will create the following layout:
 
-| Index | `LViewData`           | `TView.data`
-| ----: | -----------           | ------------
+| Index | `LViewData`                                  | `TView.data`
+| ----: | ------------                                 | -------------
 | `HEADER`
 | `CONSTS`
-| 10    | `[<child>, ...]`      | `{type: Element, index: 10, parent: null, expando: 11, expandoInjectorCount: 4}`
+| 10    | `[<child>, ...]`                             | `{type: Element, index: 10, parent: null, expandoIndex: 11, directivesIndex: 19, providersIndex: 20, viewProvidersIndex: 22, expandoEnd: 23}`
 | `VARS`
 | `EXPANDO`
-| 11..18| cumulativeBloom       | templateBloom
-| 19    | `new Child()`         | `Child`
-| 20    | `new Injector()`      | `Injector`
-| 21    | `new ServiceA()`      | `ServiceA`
-| 22    | `'someServiceBValue'` | `new ViewOnlyToken(ServiceB)`
+| 11..18| cumulativeBloom                              | templateBloom
+|       | *sub-section: `component` and `directives`*
+| 19    | `factory(Child.ngComponentDef.factory)`*     | `Child`
+|       | *sub-section: `providers`*
+| 20    | `factory(ServiceA.ngInjectableDef.factory)`* | `ServiceA`
+| 22    | `'someServiceBValue'`*                       | `ServiceB`
+|       | *sub-section: `viewProviders`*
+| 22    | `factory(()=> new Service())`*               | `ServiceC`
+| 22    | `factory(()=> directiveInject(ServiceE))`*   | `ServiceD`
 | ...   | ...                   | ...
 
 NOTICE:
+- `*` denotes initial value copied form the `LProtoViewData`, as the tokens get instantiated the factories are replaced with actual value.
 - That `TView.data` has `expando` and `expandoInjectorCount` properties which point to where the element injection data is stored.
 - That all injectable tokens are stored in linear sequence making it easy to search for instances to match.
-- That `viewProviders` which are private to the view are wrapped in `ViewOnlyToken` object which excludes them from injection unless extra work is performed.
+- That `directive` sub-section gets eagerly instantiated.
+
+Where `factory` is a function which wraps the factory into object which can be monomorphically detected at runtime in an efficient way.
+```TypeScript
+class Factory {
+  /// Marker set to true during factory invocation to see if we get into recursive loop. 
+  /// Recursive loop causes an error to be displayed.
+  resolving = false;
+  constructor(public factory: Function) { }
+}
+function factory(fn) {
+  return new Factory(fn);
+}
+const FactoryPrototype = Factory.prototype;
+function isFactory(obj: any): obj is Factory {
+  // See: https://jsperf.com/instanceof-vs-getprototypeof
+  return typeof obj == 'object' && Object.getPrototypeOf(obj) = FactoryPrototype;
+}
+```
+
+Pseudo code:
+1. Check if bloom filter has the value of the token. (If not exit)
+2. Locate the token in the expando honoring `directives`, `providers` and `viewProvider` rules by limiting the search scope.
+3. Read the value of `lViewData[index]` at that location.
+   - if `isFactory(lViewData[index])` than mark it as resolving and invoke it. Replace `lViewData[index]` with the value returned from factory (caching mechanism).
+   - if `!isFactory(lViewData[index])` then return the cached value as is.
 
 
 
