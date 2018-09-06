@@ -204,6 +204,9 @@
     "name": "getLElementFromComponent"
   },
   {
+    "name": "getLElementFromRootComponent"
+  },
+  {
     "name": "getLViewChild"
   },
   {

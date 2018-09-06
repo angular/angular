@@ -13,7 +13,7 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
-import {attachPatchData, getLElementFromComponent} from './context_discovery';
+import {attachPatchData, getLElementFromComponent, getLElementFromRootComponent} from './context_discovery';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
@@ -2866,7 +2866,8 @@ function assertDataNext(index: number, arr?: any[]) {
 export function _getComponentHostLElementNode<T>(
     component: T, isRootComponent?: boolean): LElementNode {
   ngDevMode && assertDefined(component, 'expecting component got null');
-  const lElementNode = getLElementFromComponent(component, isRootComponent) !;
+  const lElementNode = isRootComponent ? getLElementFromRootComponent(component) ! :
+                                         getLElementFromComponent(component) !;
   ngDevMode && assertDefined(component, 'object is not a component');
   return lElementNode;
 }

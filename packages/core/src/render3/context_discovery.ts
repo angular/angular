@@ -185,6 +185,12 @@ export function getLElementNode(target: any): LElementNode|null {
   return context ? getLNodeFromViewData(context.lViewData, context.lNodeIndex) : null;
 }
 
+export function getLElementFromRootComponent(componentInstance: {}): LElementNode|null {
+  // the host element for the root component is ALWAYS the first element
+  // in the lViewData array (which is where HEADER_OFFSET points to)
+  return getLElementFromComponent(componentInstance, HEADER_OFFSET);
+}
+
 /**
  * A simplified lookup function for finding the LElementNode from a component instance.
  *
@@ -193,27 +199,22 @@ export function getLElementNode(target: any): LElementNode|null {
  * any programmatic access to an element's context (only change detection uses this function).
  */
 export function getLElementFromComponent(
-    componentInstance: {}, isRootViewComponent?: boolean): LElementNode|null {
-  let applyPatch = false;
-  let lNodeIndex = -1;
+    componentInstance: {}, expectedLNodeIndex?: number): LElementNode|null {
   let lViewData = readPatchedData(componentInstance);
-  if (Array.isArray(lViewData)) {
-    applyPatch = true;
-    lNodeIndex =
-        isRootViewComponent ? HEADER_OFFSET : findViaComponent(lViewData !, componentInstance);
-  } else {
-    const context = lViewData as any as LContext;
-    lViewData = context.lViewData;
-    lNodeIndex = context.lNodeIndex;
-  }
+  let lNode: LElementNode;
 
-  const lNode = lNodeIndex >= 0 ? readElementValue(lViewData[lNodeIndex]) : null;
-  if (lNode && applyPatch) {
-    const context = createLContext(lViewData, lNodeIndex, lNode.native);
+  if (Array.isArray(lViewData)) {
+    expectedLNodeIndex = expectedLNodeIndex || findViaComponent(lViewData, componentInstance);
+    lNode = readElementValue(lViewData[expectedLNodeIndex]);
+    const context = createLContext(lViewData, expectedLNodeIndex, lNode.native);
     context.component = componentInstance;
     attachPatchData(componentInstance, context);
-    attachPatchData(lNode.native, context);
+    attachPatchData(context.native, context);
+  } else {
+    const context = lViewData as any as LContext;
+    lNode = readElementValue(context.lViewData[context.lNodeIndex]);
   }
+
   return lNode;
 }
 
