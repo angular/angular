@@ -89,7 +89,6 @@ Angular inserts an instance of the `HeroListComponent` view between those tags.
 -->
 * `selector`: 컴포넌트 인스턴스가 DOM 트리의 어떤 자리에 위치할지 CSS 셀렉터로 지정합니다. 위 코드에서는 HTML 문서의 `<app-hero-list></app-hero-list>`라고 작성한 위치에 `HeroListComponent`의 인스턴스가 생성되며, 이 엘리먼트가 `HeroListComponent`의 뷰로 대체됩니다.
 
-<<<<<<< HEAD
 <!--
 * `templateUrl`: The module-relative address of this component's HTML template. Alternatively, you can provide the HTML template inline, as the value of the `template` property. This template defines the component's *host view*.
 -->
@@ -221,9 +220,13 @@ displays the component's `hero.name` property value within the `<li>` element.
 -->
 * `(click)` 과 같이 [*이벤트 바인딩*](guide/user-input#click) 하면 사용자가 히어로의 이름을 클릭했을 때 컴포넌트의 `selectHero` 메소드를 실행합니다.
 
+<!--
 Two-way data binding (used mainly in [template-driven forms](guide/forms)) 
 combines property and event binding in a single notation. 
 Here's an example from the `HeroDetailComponent` template that uses two-way data binding with the `ngModel` directive.
+-->
+[템플릿 기반의 폼](guide/forms)에서 많이 사용하는 양방향 데이터 바인딩은 프로퍼티 바인딩과 이벤트 바인딩을 합쳐놓은 문법입니다.
+`HeroDetailComponent`의 템플릿에 히어로의 이름을 양방향 바인딩한다면 `noModel` 디렉티브를 사용해서 다음과 같이 구현할 수 있습니다.
 
 <code-example path="architecture/src/app/hero-detail.component.html" linenums="false" title="src/app/hero-detail.component.html (ngModel)" region="ngModel"></code-example>
 
@@ -338,17 +341,23 @@ template-oriented features.
 -->
 컴포넌트도 문법적으로는 디렉티브의 한 종류입니다. 하지만 컴포넌트는 Angular 애플리케이션의 구성요소로써 중요한 역할을 하기 때문에, `@Directive()` 데코레이터에 템플릿 관련 기능을 추가한 `@Component()` 데코레이터를 대신 사용합니다.
 
+<!--
 In addition to components, there are two other kinds of directives:  *structural* and *attribute*. 
 Angular defines a number of directives of both kinds, and you can define your own using the  `@Directive()` decorator.
+-->
+컴포넌트의 일반적인 내용 외에, 디렉티브는 *구조* 디렉티브와 *어트리뷰트* 디렉티브로 나뉘어 집니다.
+Angular 프레임워크는 종류에 관계없이 자유롭게 사용할 수 있는 디렉티브를 방대하게 제공하며, 필요하다면 `@Directive()` 데코레이터로 커스텀 디렉티브를 정의할 수도 있습니다.
 
+<!--
 Just as for components, the metadata for a directive associates the decorated class with a `selector` element that you use to insert it into HTML. In templates, directives typically appear within an element tag as attributes, either by name or as the target of an assignment or a binding.
+-->
+그리고 컴포넌트와 비슷하게 디렉티브도 데코레이터에 지정하는 메타데이터로 클래스의 동작을 변형시킵니다. 예를 들면 디렉티브를 HTML 엘리먼트에 적용할 때 사용하는 `selector`를 지정하는 것도 메타데이터가 하는 역할 중 하나 입니다. 디렉티브를 엘리먼트에 적용하면 템플릿이 렌더링 됐을 때 엘리먼트의 어트리뷰트처럼 표현되며, 이 어트리뷰트에 템플릿 표현식을 연결하거나 데이터를 바인딩할 수 있습니다.
 
 <!--
 #### Structural directives
 -->
 #### 구조 디렉티브
 
-<<<<<<< HEAD
 <!--
 *Structural directives* alter layout by adding, removing, and replacing elements in the DOM. 
 The example template uses two built-in structural directives to add application logic to how the view is rendered.
