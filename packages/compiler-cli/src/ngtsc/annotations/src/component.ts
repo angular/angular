@@ -164,6 +164,14 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
           component.get('encapsulation') !, this.reflector, this.checker) as string);
     }
 
+    let animations: any[]|null = null;
+    if (component.has('animations')) {
+      animations =
+          (staticallyResolve(component.get('animations') !, this.reflector, this.checker) as any |
+           null[]);
+      animations = animations ? animations.map(entry => convertMapToStringMap(entry)) : null;
+    }
+
     return {
       analysis: {
         ...metadata,
@@ -176,7 +184,7 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
         // analyzed and the full compilation scope for the component can be realized.
         pipes: EMPTY_MAP,
         directives: EMPTY_MAP,
-        wrapDirectivesInClosure: false,
+        wrapDirectivesInClosure: false, animations,
       }
     };
   }
@@ -223,4 +231,10 @@ export class ComponentDecoratorHandler implements DecoratorHandler<R3ComponentMe
     this.literalCache.set(decorator, meta);
     return meta;
   }
+}
+
+function convertMapToStringMap<T>(map: Map<string, T>): {[key: string]: T} {
+  const stringMap: {[key: string]: T} = {};
+  map.forEach((value: T, key: string) => { stringMap[key] = value; });
+  return stringMap;
 }

@@ -27,7 +27,7 @@ import {typeWithParameters} from '../util';
 
 import {R3ComponentDef, R3ComponentMetadata, R3DirectiveDef, R3DirectiveMetadata, R3QueryMetadata} from './api';
 import {BindingScope, TemplateDefinitionBuilder, ValueConverter, renderFlagCheckIfStmt} from './template';
-import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, temporaryAllocator} from './util';
+import {CONTEXT_NAME, DefinitionMap, RENDER_FLAGS, TEMPORARY_NAME, asLiteral, conditionallyCreateMapObjectLiteral, getQueryPredicate, mapToExpression, temporaryAllocator} from './util';
 
 const EMPTY_ARRAY: any[] = [];
 
@@ -246,6 +246,12 @@ export function compileComponentFromMetadata(
     definitionMap.set('styles', o.literalArr(strings));
   }
 
+  // e.g. `animations: [trigger('123', [])]`
+  if (meta.animations) {
+    const animationValues = meta.animations.map(entry => mapToExpression(entry));
+    definitionMap.set('animations', o.literalArr(animationValues));
+  }
+
   // On the type side, remove newlines from the selector as it will need to fit into a TypeScript
   // string literal, which must be on one line.
   const selectorForType = (meta.selector || '').replace(/\n/g, '');
@@ -301,6 +307,7 @@ export function compileComponentFromRender2(
   const definitionField = outputCtx.constantPool.propertyNameOf(DefinitionKind.Component);
 
   const summary = component.toSummary();
+  const animations = summary.template && summary.template.animations || null;
 
   // Compute the R3ComponentMetadata from the CompileDirectiveMetadata
   const meta: R3ComponentMetadata = {
@@ -318,7 +325,8 @@ export function compileComponentFromRender2(
     wrapDirectivesInClosure: false,
     styles: (summary.template && summary.template.styles) || EMPTY_ARRAY,
     encapsulation:
-        (summary.template && summary.template.encapsulation) || core.ViewEncapsulation.Emulated
+        (summary.template && summary.template.encapsulation) || core.ViewEncapsulation.Emulated,
+    animations
   };
   const res = compileComponentFromMetadata(meta, outputCtx.constantPool, bindingParser);
 
