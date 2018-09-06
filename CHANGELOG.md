@@ -1,3 +1,28 @@
+<a name="7.0.0-beta.5"></a>
+# [7.0.0-beta.5](https://github.com/angular/angular/compare/7.0.0-beta.4...7.0.0-beta.5) (2018-09-06)
+
+
+### Bug Fixes
+
+* **bazel:** protractor rule should include *.e2e-spec.js ([#25701](https://github.com/angular/angular/issues/25701)) ([3809e0f](https://github.com/angular/angular/commit/3809e0f))
+* **benchpress:** Use performance.mark() instead of console.time() ([#24114](https://github.com/angular/angular/issues/24114)) ([06d0400](https://github.com/angular/angular/commit/06d0400))
+* **compiler:** add hostVars and support pure functions in host bindings ([#25626](https://github.com/angular/angular/issues/25626)) ([b424b31](https://github.com/angular/angular/commit/b424b31))
+* **core:** do not clear element content when using shadow dom ([#24861](https://github.com/angular/angular/issues/24861)) ([6e828bb](https://github.com/angular/angular/commit/6e828bb))
+* **core:** size regression with closure compiler ([#25531](https://github.com/angular/angular/issues/25531)) ([1f59f2f](https://github.com/angular/angular/commit/1f59f2f))
+* **elements:** add compiler dependency ([#24861](https://github.com/angular/angular/issues/24861)) ([6143da6](https://github.com/angular/angular/commit/6143da6))
+* **elements:** add compiler to integration ([#24861](https://github.com/angular/angular/issues/24861)) ([a080ffc](https://github.com/angular/angular/commit/a080ffc))
+* **elements:** strict null checks ([#24861](https://github.com/angular/angular/issues/24861)) ([a8210d0](https://github.com/angular/angular/commit/a8210d0))
+* **upgrade:** trigger `$destroy` event on upgraded component element ([#25357](https://github.com/angular/angular/issues/25357)) ([2a672a9](https://github.com/angular/angular/commit/2a672a9)), closes [#25334](https://github.com/angular/angular/issues/25334)
+
+
+### Features
+
+* **elements:** enable Shadow DOM v1 and slots ([#24861](https://github.com/angular/angular/issues/24861)) ([c9844a2](https://github.com/angular/angular/commit/c9844a2))
+* **router:** warn if navigation triggered outside Angular zone ([#24959](https://github.com/angular/angular/issues/24959)) ([010e35d](https://github.com/angular/angular/commit/010e35d)), closes [#15770](https://github.com/angular/angular/issues/15770) [#15946](https://github.com/angular/angular/issues/15946) [#24728](https://github.com/angular/angular/issues/24728)
+
+
+
+
 <a name="6.1.7"></a>
 ## [6.1.7](https://github.com/angular/angular/compare/6.1.6...6.1.7) (2018-09-06)
 
