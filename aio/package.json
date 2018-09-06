@@ -22,7 +22,7 @@
     "test": "yarn check-env && ng test",
     "pree2e": "yarn check-env && yarn update-webdriver",
     "e2e": "ng e2e --no-webdriver-update",
-    "presetup": "yarn --cwd .. install && yarn install --frozen-lockfile && yarn ~~check-env && yarn boilerplate:remove",
+    "presetup": "yarn --cwd .. install && yarn install --frozen-lockfile && yarn ~~check-env && yarn ~~clean-generated && yarn boilerplate:remove",
     "setup": "yarn aio-use-npm && yarn example-use-npm",
     "postsetup": "yarn boilerplate:add && yarn build-ie-polyfills && yarn docs",
     "presetup-local": "yarn presetup",
@@ -59,6 +59,7 @@
     "build-ie-polyfills": "yarn webpack-cli src/ie-polyfills.js -o src/generated/ie-polyfills.min.js --mode production",
     "update-webdriver": "webdriver-manager update --standalone false --gecko false $CHROMEDRIVER_VERSION_ARG",
     "~~check-env": "node scripts/check-environment",
+    "~~clean-generated": "node --eval \"require('shelljs').rm('-rf', 'src/generated')\"",
     "~~build": "ng build",
     "post~~build": "yarn build-404-page"
   },
