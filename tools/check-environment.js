@@ -22,11 +22,6 @@ var checkNodeModules;
 var semver;
 var issues = [];
 
-// coarse Node version check
-if (+process.version[1] < 5) {
-  issues.push('Angular build currently requires Node 5+. Use nvm to update your node version.');
-}
-
 try {
   semver = require('semver');
 } catch (e) {
