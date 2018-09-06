@@ -306,7 +306,9 @@ describe('Integration', () => {
   });
 
   describe('navigation warning', () => {
+    const isInAngularZoneFn = NgZone.isInAngularZone;
     let warnings: string[] = [];
+    let isInAngularZone = true;
 
     class MockConsole {
       warn(message: string) {
@@ -316,15 +318,20 @@ describe('Integration', () => {
 
     beforeEach(() => {
       warnings = [];
+      isInAngularZone = true;
+      NgZone.isInAngularZone = () => isInAngularZone;
       TestBed.overrideProvider(Console, {useValue: new MockConsole()});
+    });
+
+    afterEach(() => {
+      NgZone.isInAngularZone = isInAngularZoneFn;
     });
 
     describe('with NgZone enabled', () => {
       it('should warn when triggered outside Angular zone',
-         fakeAsync(inject([Router, NgZone], (router: Router, ngZone: NgZone) => {
-           ngZone.runOutsideAngular(() => {
-             router.navigateByUrl('/simple');
-           });
+         fakeAsync(inject([Router], (router: Router) => {
+           isInAngularZone = false;
+           router.navigateByUrl('/simple');
 
            expect(warnings.length).toBe(1);
            expect(warnings[0])
@@ -333,10 +340,8 @@ describe('Integration', () => {
          })));
 
       it('should not warn when triggered inside Angular zone',
-         fakeAsync(inject([Router, NgZone], (router: Router, ngZone: NgZone) => {
-           ngZone.run(() => {
-             router.navigateByUrl('/simple');
-           });
+         fakeAsync(inject([Router], (router: Router) => {
+           router.navigateByUrl('/simple');
 
            expect(warnings.length).toBe(0);
          })));
@@ -348,10 +353,9 @@ describe('Integration', () => {
       });
 
       it('should not warn when triggered outside Angular zone',
-         fakeAsync(inject([Router, NgZone], (router: Router, ngZone: NgZone) => {
-           ngZone.runOutsideAngular(() => {
-             router.navigateByUrl('/simple');
-           });
+         fakeAsync(inject([Router], (router: Router) => {
+           isInAngularZone = false;
+           router.navigateByUrl('/simple');
 
            expect(warnings.length).toBe(0);
          })));
