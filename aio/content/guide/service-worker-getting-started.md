@@ -55,7 +55,7 @@ To serve with `http-server`, change to the directory containing your web files a
 
 ```sh
 cd dist/*project-name*
-http-server -p 8080 -c-1
+http-server -p 8080 -c-1 dist/<project-name>
 ```
 
 ### Initial load
@@ -122,7 +122,7 @@ next step is understanding how updates work.
 ```sh
 ng build --prod
 cd dist
-http-server -p 8080
+http-server -p 8080 -c-1 dist/<project-name>
 ```
 
 ### Updating your application in the browser
