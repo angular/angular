@@ -88,6 +88,7 @@ const serverUpdate =
       scope.clients.getMock('default') !.queue.subscribe(msg => { mock.sendMessage(msg); });
 
       mock.messages.subscribe(msg => { scope.handleMessage(msg, 'default'); });
+      mock.messagesClicked.subscribe(msg => { scope.handleMessage(msg, 'default'); });
 
       mock.setupSw();
       reg = mock.mockRegistration !;
@@ -127,6 +128,19 @@ const serverUpdate =
         test: 'success',
       });
       await gotPushNotice;
+    });
+
+    async_it('receives push message click events', async() => {
+      const push = new SwPush(comm);
+      scope.updateServerState(serverUpdate);
+
+      const gotNotificationClick = (async() => {
+        const event = await obsToSinglePromise(push.messagesClicked);
+        expect(event).toEqual({action: 'clicked', notification: {clicked: true}});
+      })();
+
+      await scope.handleClick({clicked: true}, 'clicked');
+      await gotNotificationClick;
     });
   });
 })();
