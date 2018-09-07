@@ -9,12 +9,13 @@
 import {ElementRef, TemplateRef, ViewContainerRef} from '@angular/core';
 import {RenderFlags} from '@angular/core/src/render3';
 
-import {RendererType2} from '../../src/render/api';
+import {RendererStyleFlags2, RendererType2} from '../../src/render/api';
 import {getOrCreateNodeInjectorForNode, getOrCreateTemplateRef} from '../../src/render3/di';
 import {AttributeMarker, defineComponent, defineDirective, injectElementRef, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
+
 import {NO_CHANGE, bind, container, containerRefreshEnd, containerRefreshStart, element, elementAttribute, elementClassProp, elementContainerEnd, elementContainerStart, elementEnd, elementProperty, elementStart, elementStyleProp, elementStyling, elementStylingApply, embeddedViewEnd, embeddedViewStart, interpolation1, interpolation2, interpolation3, interpolation4, interpolation5, interpolation6, interpolation7, interpolation8, interpolationV, listener, load, loadDirective, projection, projectionDef, text, textBinding, template} from '../../src/render3/instructions';
 import {InitialStylingFlags} from '../../src/render3/interfaces/definition';
-import {RElement, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
+import {RElement, Renderer3, RendererFactory3, domRendererFactory3, RText, RComment, RNode, RendererStyleFlags3, ProceduralRenderer3} from '../../src/render3/interfaces/renderer';
 import {HEADER_OFFSET, CONTEXT, DIRECTIVES} from '../../src/render3/interfaces/view';
 import {sanitizeUrl} from '../../src/sanitization/sanitization';
 import {Sanitizer, SecurityContext} from '../../src/sanitization/security';
@@ -1387,7 +1388,7 @@ describe('render3 integration test', () => {
           }
         });
       }
-      const rendererFactory = new MockRendererFactory();
+      const rendererFactory = new ProxyRenderer3Factory();
       new ComponentFixture(StyledComp, {rendererFactory});
       expect(rendererFactory.lastCapturedType !.styles).toEqual(['div { color: red; }']);
       expect(rendererFactory.lastCapturedType !.encapsulation).toEqual(100);
@@ -1413,7 +1414,7 @@ describe('render3 integration test', () => {
           template: (rf: RenderFlags, ctx: AnimComp) => {}
         });
       }
-      const rendererFactory = new MockRendererFactory();
+      const rendererFactory = new ProxyRenderer3Factory();
       new ComponentFixture(AnimComp, {rendererFactory});
 
       const capturedAnimations = rendererFactory.lastCapturedType !.data !['animations'];
@@ -1435,11 +1436,74 @@ describe('render3 integration test', () => {
           template: (rf: RenderFlags, ctx: AnimComp) => {}
         });
       }
-      const rendererFactory = new MockRendererFactory();
+      const rendererFactory = new ProxyRenderer3Factory();
       new ComponentFixture(AnimComp, {rendererFactory});
       const data = rendererFactory.lastCapturedType !.data;
       expect(data.animations).toEqual([]);
     });
+
+    it('should allow [@trigger] bindings to be picked up by the underlying renderer', () => {
+      class AnimComp {
+        static ngComponentDef = defineComponent({
+          type: AnimComp,
+          consts: 1,
+          vars: 1,
+          selectors: [['foo']],
+          factory: () => new AnimComp(),
+          template: (rf: RenderFlags, ctx: AnimComp) => {
+            if (rf & RenderFlags.Create) {
+              element(0, 'div', [AttributeMarker.SelectOnly, '@fooAnimation']);
+            }
+            if (rf & RenderFlags.Update) {
+              elementAttribute(0, '@fooAnimation', bind(ctx.animationValue));
+            }
+          }
+        });
+
+        animationValue = '123';
+      }
+
+      const rendererFactory = new MockRendererFactory(['setAttribute']);
+      const fixture = new ComponentFixture(AnimComp, {rendererFactory});
+
+      const renderer = rendererFactory.lastRenderer !;
+      fixture.component.animationValue = '456';
+      fixture.update();
+
+      const spy = renderer.spies['setAttribute'];
+      const [elm, attr, value] = spy.calls.mostRecent().args;
+
+      expect(attr).toEqual('@fooAnimation');
+      expect(value).toEqual('456');
+    });
+
+    it('should allow creation-level [@trigger] properties to be picked up by the underlying renderer',
+       () => {
+         class AnimComp {
+           static ngComponentDef = defineComponent({
+             type: AnimComp,
+             consts: 1,
+             vars: 1,
+             selectors: [['foo']],
+             factory: () => new AnimComp(),
+             template: (rf: RenderFlags, ctx: AnimComp) => {
+               if (rf & RenderFlags.Create) {
+                 element(0, 'div', ['@fooAnimation', '']);
+               }
+             }
+           });
+         }
+
+         const rendererFactory = new MockRendererFactory(['setAttribute']);
+         const fixture = new ComponentFixture(AnimComp, {rendererFactory});
+
+         const renderer = rendererFactory.lastRenderer !;
+         fixture.update();
+
+         const spy = renderer.spies['setAttribute'];
+         const [elm, attr, value] = spy.calls.mostRecent().args;
+         expect(attr).toEqual('@fooAnimation');
+       });
   });
 
   describe('element discovery', () => {
@@ -2201,11 +2265,63 @@ class LocalSanitizer implements Sanitizer {
   bypassSecurityTrustUrl(value: string) { return new LocalSanitizedValue(value); }
 }
 
-class MockRendererFactory implements RendererFactory3 {
+class ProxyRenderer3Factory implements RendererFactory3 {
   lastCapturedType: RendererType2|null = null;
 
   createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 {
     this.lastCapturedType = rendererType;
     return domRendererFactory3.createRenderer(hostElement, rendererType);
+  }
+}
+
+class MockRendererFactory implements RendererFactory3 {
+  lastRenderer: any;
+  private _spyOnMethods: string[];
+
+  constructor(spyOnMethods?: string[]) { this._spyOnMethods = spyOnMethods || []; }
+
+  createRenderer(hostElement: RElement|null, rendererType: RendererType2|null): Renderer3 {
+    const renderer = this.lastRenderer = new MockRenderer(this._spyOnMethods);
+    return renderer;
+  }
+}
+
+class MockRenderer implements ProceduralRenderer3 {
+  public spies: {[methodName: string]: any} = {};
+
+  constructor(spyOnMethods: string[]) {
+    spyOnMethods.forEach(methodName => {
+      this.spies[methodName] = spyOn(this as any, methodName).and.callThrough();
+    });
+  }
+
+  destroy(): void {}
+  createComment(value: string): RComment { return document.createComment(value); }
+  createElement(name: string, namespace?: string|null): RElement {
+    return document.createElement(name);
+  }
+  createText(value: string): RText { return document.createTextNode(value); }
+  appendChild(parent: RElement, newChild: RNode): void { parent.appendChild(newChild); }
+  insertBefore(parent: RNode, newChild: RNode, refChild: RNode|null): void {
+    parent.insertBefore(newChild, refChild, false);
+  }
+  removeChild(parent: RElement, oldChild: RNode): void { parent.removeChild(oldChild); }
+  selectRootElement(selectorOrNode: string|any): RElement {
+    return ({} as any);
+  }
+  setAttribute(el: RElement, name: string, value: string, namespace?: string|null): void {}
+  removeAttribute(el: RElement, name: string, namespace?: string|null): void {}
+  addClass(el: RElement, name: string): void {}
+  removeClass(el: RElement, name: string): void {}
+  setStyle(
+      el: RElement, style: string, value: any,
+      flags?: RendererStyleFlags2|RendererStyleFlags3): void {}
+  removeStyle(el: RElement, style: string, flags?: RendererStyleFlags2|RendererStyleFlags3): void {}
+  setProperty(el: RElement, name: string, value: any): void {}
+  setValue(node: RText, value: string): void {}
+
+  // TODO(misko): Deprecate in favor of addEventListener/removeEventListener
+  listen(target: RNode, eventName: string, callback: (event: any) => boolean | void): () => void {
+    return () => {};
   }
 }
