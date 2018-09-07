@@ -36,7 +36,7 @@ There are three main reasons to create a Universal version of your app.
 
 Google, Bing, Facebook, Twitter and other social media sites rely on web crawlers to index your application content and make that content searchable on the web.
 
-These web crawlers may be unable to navigate and index your highly-interactive, Angular application as a human user could do.
+These web crawlers may be unable to navigate and index your highly-interactive Angular application as a human user could do.
 
 Angular Universal can generate a static version of your app that is easily searchable, linkable, and navigable without JavaScript.
 It also makes a site preview available since each URL returns a fully-rendered page.
