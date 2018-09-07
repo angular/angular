@@ -22,9 +22,14 @@ var_3: &define_env_vars
 # See remote cache documentation in /docs/BAZEL.md
 var_4: &setup-bazel-remote-cache
   run:
-    name: Start up bazel remote cache proxy
-    command: ~/bazel-remote-proxy -backend circleci://
-    background: true
+    name: "Setup bazel RBE remote cache"
+    command: openssl aes-256-cbc -d -in .circleci/gcp_cache_token -k "${CIRCLE_PROJECT_REPONAME}" -out /home/circleci/.gcp_credentials && echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV && sudo bash -c "cat .circleci/rbe-cache-bazel.rc >> /etc/bazel.bazelrc"
+
+var_5: &setup-bazel-remote-execution
+  run:
+    name: "Setup bazel RBE remote execution"
+    command: openssl aes-256-cbc -d -in .circleci/gcp_token -k "${CIRCLE_PROJECT_REPONAME}" -out /home/circleci/.gcp_credentials && echo "export GOOGLE_APPLICATION_CREDENTIALS=/home/circleci/.gcp_credentials" >> $BASH_ENV && sudo bash -c "cat .circleci/rbe-bazel.rc >> /etc/bazel.bazelrc"
+
 
 # Settings common to each job
 anchor_1: &job_defaults
@@ -70,15 +75,9 @@ jobs:
       - *define_env_vars
       - checkout:
           <<: *post_checkout
-      # See remote cache documentation in /docs/BAZEL.md
-      - run: .circleci/setup_cache.sh
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
       - *setup-bazel-remote-cache
 
-      - restore_cache:
-          key: *cache_key
-
-      - run: ls /home/circleci/bazel_repository_cache || true
       - run: bazel info release
       - run: bazel run @nodejs//:yarn
       # Use bazel query so that we explicitly ask for all buildable targets to be built as well
@@ -119,13 +118,8 @@ jobs:
       - *define_env_vars
       - checkout:
           <<: *post_checkout
-      # See remote cache documentation in /docs/BAZEL.md
-      - run: .circleci/setup_cache.sh
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
       - *setup-bazel-remote-cache
-
-      - restore_cache:
-          key: *cache_key
 
       - run: bazel run @yarn//:yarn
       - run: bazel query --output=label //... | xargs bazel test --define=compile=jit --build_tag_filters=ivy-jit --test_tag_filters=-manual,ivy-jit
@@ -138,12 +132,8 @@ jobs:
       - checkout:
           <<: *post_checkout
       # See remote cache documentation in /docs/BAZEL.md
-      - run: .circleci/setup_cache.sh
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
       - *setup-bazel-remote-cache
-
-      - restore_cache:
-          key: *cache_key
 
       - run: bazel run @yarn//:yarn
       - run: bazel query --output=label //... | xargs bazel test --define=compile=local --build_tag_filters=ivy-local --test_tag_filters=-manual,ivy-local
@@ -182,18 +172,8 @@ jobs:
       # See remote cache documentation in /docs/BAZEL.md
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
       - run: bazel run @nodejs//:yarn
-      - run:
-          # RBE is enabled by appending rbe-bazel.rc.
-          name: Enable RBE
-          command: 'sudo bash -c "cat .circleci/rbe-bazel.rc >> /etc/bazel.bazelrc"'
-      - run:
-          name: "Setup GCP environment"
-          command: 'openssl aes-256-cbc -d -in .circleci/gcp_token -k "${CIRCLE_PROJECT_REPONAME}" -out /home/circleci/.gcp_credentials'
-      - run:
-          name: build-packages-dist
-          command: scripts/build-packages-dist.sh
-          environment:
-            GOOGLE_APPLICATION_CREDENTIALS: /home/circleci/.gcp_credentials
+      - *setup-bazel-remote-execution
+      - run: scripts/build-packages-dist.sh
 
       # Save the npm packages from //packages/... for other workflow jobs to read
       # https://circleci.com/docs/2.0/workflows/#using-workspaces-to-share-data-among-jobs

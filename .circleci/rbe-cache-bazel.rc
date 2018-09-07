@@ -1,0 +1,19 @@
+# Enable the remote cache so action results can be shared across machines,
+# developers, and workspaces.
+build --remote_cache=remotebuildexecution.googleapis.com
+
+# Remote instance.
+build --remote_instance_name=projects/internal-200822/instances/default_instance
+
+# Enable encryption.
+build --tls_enabled=true
+
+# Enforce stricter environment rules, which eliminates some non-hermetic
+# behavior and therefore improves both the remote cache hit rate and the
+# correctness and repeatability of the build.
+build --experimental_strict_action_env=true
+
+# Enable authentication. This will pick up application default credentials by
+# default. You can use --auth_credentials=some_file.json to use a service
+# account credential instead.
+build --auth_enabled=true
