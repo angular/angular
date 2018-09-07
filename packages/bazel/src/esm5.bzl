@@ -90,6 +90,7 @@ def _esm5_outputs_aspect(target, ctx):
             # TODO(alexeagle): enable worker mode for these compilations
             "supports-workers": "0",
         },
+        mnemonic = "ESM5",
     )
 
     root_dir = _join([
