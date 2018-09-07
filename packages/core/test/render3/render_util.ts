@@ -10,9 +10,10 @@ import {stringifyElement} from '@angular/platform-browser/testing/src/browser_ut
 
 import {Injector} from '../../src/di/injector';
 import {CreateComponentOptions} from '../../src/render3/component';
+import {getContext, isComponentInstance} from '../../src/render3/context_discovery';
 import {extractDirectiveDef, extractPipeDef} from '../../src/render3/definition';
 import {ComponentTemplate, ComponentType, DirectiveDefInternal, DirectiveType, PublicFeature, RenderFlags, defineComponent, defineDirective, renderComponent as _renderComponent, tick} from '../../src/render3/index';
-import {NG_HOST_SYMBOL, renderTemplate} from '../../src/render3/instructions';
+import {renderTemplate} from '../../src/render3/instructions';
 import {DirectiveDefList, DirectiveTypesOrFactory, PipeDefInternal, PipeDefList, PipeTypesOrFactory} from '../../src/render3/interfaces/definition';
 import {LElementNode} from '../../src/render3/interfaces/node';
 import {RElement, RText, Renderer3, RendererFactory3, domRendererFactory3} from '../../src/render3/interfaces/renderer';
@@ -219,17 +220,24 @@ export function renderComponent<T>(type: ComponentType<T>, opts?: CreateComponen
  * @deprecated use `TemplateFixture` or `ComponentFixture`
  */
 export function toHtml<T>(componentOrElement: T | RElement): string {
-  const node = (componentOrElement as any)[NG_HOST_SYMBOL] as LElementNode;
-  if (node) {
-    return toHtml(node.native);
+  let element: any;
+  if (isComponentInstance(componentOrElement)) {
+    const context = getContext(componentOrElement);
+    element = context ? context.native : null;
   } else {
-    return stringifyElement(componentOrElement)
+    element = componentOrElement;
+  }
+
+  if (element) {
+    return stringifyElement(element)
         .replace(/^<div host="">/, '')
         .replace(/^<div fixture="mark">/, '')
         .replace(/<\/div>$/, '')
         .replace(' style=""', '')
         .replace(/<!--container-->/g, '')
         .replace(/<!--ng-container-->/g, '');
+  } else {
+    return '';
   }
 }
 

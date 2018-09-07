@@ -465,9 +465,6 @@
     "name": "NG_ELEMENT_ID"
   },
   {
-    "name": "NG_HOST_SYMBOL"
-  },
-  {
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
@@ -1161,7 +1158,7 @@
     "name": "assertTemplate"
   },
   {
-    "name": "attachLViewDataToNode"
+    "name": "attachPatchData"
   },
   {
     "name": "baseDirectiveCreate"
@@ -1273,6 +1270,9 @@
   },
   {
     "name": "createLContainer"
+  },
+  {
+    "name": "createLContext"
   },
   {
     "name": "createLNode"
@@ -1476,6 +1476,9 @@
     "name": "findLocaleData"
   },
   {
+    "name": "findViaComponent"
+  },
+  {
     "name": "firstTemplatePass"
   },
   {
@@ -1588,6 +1591,12 @@
   },
   {
     "name": "getInitialValue"
+  },
+  {
+    "name": "getLElementFromComponent"
+  },
+  {
+    "name": "getLElementFromRootComponent"
   },
   {
     "name": "getLViewChild"
@@ -2128,6 +2137,9 @@
   },
   {
     "name": "readElementValue"
+  },
+  {
+    "name": "readPatchedData"
   },
   {
     "name": "recursivelyProcessProviders"

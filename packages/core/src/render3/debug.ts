@@ -11,8 +11,9 @@ import {Renderer2, RendererType2} from '../render/api';
 import {DebugContext} from '../view';
 import {DebugRenderer2, DebugRendererFactory2} from '../view/services';
 
+import {getLElementNode} from './context_discovery';
 import * as di from './di';
-import {NG_HOST_SYMBOL, _getViewData} from './instructions';
+import {_getViewData} from './instructions';
 import {LElementNode} from './interfaces/node';
 import {CONTEXT, DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
 
@@ -85,7 +86,7 @@ class Render3DebugContext implements DebugContext {
       const currentNode = this.view[this.nodeIndex];
       for (let dirIndex = 0; dirIndex < directives.length; dirIndex++) {
         const directive = directives[dirIndex];
-        if (directive[NG_HOST_SYMBOL] === currentNode) {
+        if (getLElementNode(directive) === currentNode) {
           matchedDirectives.push(directive.constructor);
         }
       }
