@@ -29,7 +29,9 @@ function loadTask(fileName, taskName) {
 
 gulp.task('format:enforce', loadTask('format', 'enforce'));
 gulp.task('format', loadTask('format', 'format'));
-gulp.task('format:changed', loadTask('format', 'format-changed'));
+gulp.task('format:changes', loadTask('format', 'format-changes'));
+gulp.task('format:diff', loadTask('format', 'format-diff'));
+gulp.task('format:changed', ['format:changes', 'format:diff']);
 gulp.task('build.sh', loadTask('build', 'all'));
 gulp.task('build.sh:no-bundle', loadTask('build', 'no-bundle'));
 gulp.task('lint', ['format:enforce', 'validate-commit-messages', 'tslint']);
