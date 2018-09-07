@@ -221,6 +221,9 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
           // will select the second option (NY).
           const select = fixture.debugElement.query(By.css('select'));
+
+          expect(select.nativeElement.value).toEqual('0: Object');
+
           select.nativeElement.value = '1: Object';
           dispatchEvent(select.nativeElement, 'change');
           fixture.detectChanges();
@@ -237,6 +240,99 @@ import {dispatchEvent} from '@angular/platform-browser/testing/src/browser_util'
           const nyOption = fixture.debugElement.queryAll(By.css('option'))[1];
           expect(select.nativeElement.value).toEqual('3: Object');
           expect(nyOption.nativeElement.selected).toBe(true);
+        });
+
+        it('should support re-assigning the options array with compareWith and trackBy', () => {
+          if (isNode) return;
+          const fixture = initTest(FormControlSelectWithCompareTrackByFn);
+          fixture.detectChanges();
+
+          // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
+          // will select the second option (NY).
+          const select = fixture.debugElement.query(By.css('select'));
+
+          expect(select.nativeElement.value).toEqual('0: Object');
+
+          select.nativeElement.value = '1: Object';
+          dispatchEvent(select.nativeElement, 'change');
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.form.value).toEqual({city: {id: 2, name: 'NY'}});
+
+          fixture.componentInstance.cities = [{id: 3, name: 'LA'}, {id: 4, name: 'BXL'}];
+          fixture.detectChanges();
+
+          // using trackBy, instances can be re-used, the option IDs stays the same but their
+          // (ng)value can change
+          const bxlOption = fixture.debugElement.queryAll(By.css('option'))[1];
+          expect(select.nativeElement.value)
+              .not.toEqual('1: Object', 'expected option related value to have been unset');
+          expect(bxlOption.nativeElement.selected)
+              .toBe(false, 'expected option to have been unset');
+          expect(fixture.componentInstance.form.value).toEqual({city: {id: 2, name: 'NY'}});
+
+        });
+
+        it('should keep current value when selected option is removed/replaced', () => {
+          if (isNode) return;
+          const fixture = initTest(FormControlSelectWithCompareFn);
+          fixture.detectChanges();
+
+          // Option IDs start out as 0 and 1, so setting the select value to "1: Object"
+          // will select the second option (NY).
+          const select = fixture.debugElement.query(By.css('select'));
+
+          expect(select.nativeElement.value).toEqual('0: Object');
+
+          select.nativeElement.value = '1: Object';
+          dispatchEvent(select.nativeElement, 'change');
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.form.value).toEqual({city: {id: 2, name: 'NY'}});
+
+
+          fixture.componentInstance.cities = [{id: 1, name: 'SF'}, {id: 3, name: 'LA'}];
+          fixture.detectChanges();
+
+          // Now that the options array has been re-assigned, new option instances will
+          // be created by ngFor. These instances will have different option IDs, subsequent
+          // to the first: 2 and 3.
+          // removing the currently selected option should not unset the formValue
+          const laOption = fixture.debugElement.queryAll(By.css('option'))[1];
+          expect(select.nativeElement.value)
+              .not.toEqual(
+                  '3: Object',
+                  'expected removal of currently selected option to unset replacement option');
+          expect(laOption.nativeElement.selected)
+              .toBe(
+                  false,
+                  'expected removal of currently selected option to unset replacement option (by index)');
+          expect(fixture.componentInstance.form.value)
+              .toEqual(
+                  {city: {id: 2, name: 'NY'}},
+                  'expected removal of currently selected option not to unset the form value');
+        });
+
+        it('should call compareWith once for each added option (before init)', () => {
+          if (isNode) return;
+          const fixture = initTest(FormControlSelectWithComparePerfFn);
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.compareFnCalls)
+              .toEqual(fixture.componentInstance.cities.length);
+        });
+
+        it('should call compareWith once for each removed option (before destruction)', () => {
+          if (isNode) return;
+          const fixture = initTest(FormControlSelectWithComparePerfFn);
+          fixture.detectChanges();
+
+          fixture.componentInstance.compareFnCalls = 0;
+          fixture.componentInstance.includeSelect = false;
+          fixture.detectChanges();
+
+          expect(fixture.componentInstance.compareFnCalls)
+              .toEqual(fixture.componentInstance.cities.length);
         });
 
       });
@@ -1153,6 +1249,47 @@ class FormControlSelectNgValue {
 class FormControlSelectWithCompareFn {
   compareFn:
       (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
+  cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
+  form = new FormGroup({city: new FormControl({id: 1, name: 'SF'})});
+}
+
+@Component({
+  selector: 'form-control-select-compare-with-perf',
+  template: `
+    <div [formGroup]="form">
+      <select *ngIf="includeSelect" formControlName="city" [compareWith]="compareFn">
+        <option *ngFor="let c of cities" [ngValue]="c">{{c.name}}</option>
+      </select>
+    </div>`
+})
+class FormControlSelectWithComparePerfFn {
+  includeSelect = true;
+  compareFnCalls = 0;
+
+  compareFn: (o1: any, o2: any) => boolean =
+      (o1: any, o2: any) => {
+        ++this.compareFnCalls;
+        return o1 && o2 ? o1.id === o2.id : o1 === o2;
+      }
+
+  cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}, {id: 3, name: 'LA'}, {id: 4, name: 'BXL'}];
+
+  form = new FormGroup({city: new FormControl({id: void 0})});
+}
+
+@Component({
+  selector: 'form-control-select-compare-with-track-by',
+  template: `
+    <div [formGroup]="form">
+      <select formControlName="city" [compareWith]="compareFn">
+        <option *ngFor="let c of cities; trackBy: trackByFn" [ngValue]="c">{{c.name}}</option>
+      </select>
+    </div>`
+})
+class FormControlSelectWithCompareTrackByFn {
+  compareFn:
+      (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
+  trackByFn: (index: number, item: any) => any = (index: number, item: any): any => index
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl({id: 1, name: 'SF'})});
 }
