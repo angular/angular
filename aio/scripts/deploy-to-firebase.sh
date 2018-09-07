@@ -94,7 +94,7 @@ fi
 
   # Set deployedUrl as parameter in the opensearch description
   # deployedUrl must end with /
-  sed -i "s|PLACEHOLDERURL|$deployedUrl|g" dist/assets/opensearch.xml 
+  yarn set-opensearch-url $deployedUrl
 
   # Check payload size
   yarn payload-size

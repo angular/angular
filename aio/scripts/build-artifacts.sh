@@ -16,7 +16,7 @@ readonly deployedUrl=https://pr${CIRCLE_PR_NUMBER}-${CIRCLE_SHA1:0:7}.ngbuilds.i
   
   # Set deployedUrl as parameter in the opensearch description
   # deployedUrl must end with /
-  sed -i "s|PLACEHOLDERURL|$deployedUrl|g" dist/assets/opensearch.xml
+  yarn set-opensearch-url $deployedUrl
 
   mkdir -p "`dirname $OUTPUT_FILE`"
   tar --create --gzip --directory "$INPUT_DIR" --file "$OUTPUT_FILE" .
