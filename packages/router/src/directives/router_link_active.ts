@@ -104,8 +104,17 @@ export class RouterLinkActive implements OnChanges,
 
 
   ngAfterContentInit(): void {
-    this.links.changes.subscribe(_ => this.update());
-    this.linksWithHrefs.changes.subscribe(_ => this.update());
+    this.links.changes.subscribe(_ => {
+      this.connectWithContentChildrenLinks();
+      this.update();
+    });
+    this.linksWithHrefs.changes.subscribe(_ => {
+      this.connectWithContentChildrenLinks();
+      this.update();
+    });
+
+    this.connectWithInjectedLinks();
+    this.connectWithContentChildrenLinks();
     this.update();
   }
 
@@ -118,7 +127,8 @@ export class RouterLinkActive implements OnChanges,
   ngOnChanges(changes: SimpleChanges): void { this.update(); }
   ngOnDestroy(): void { this.subscription.unsubscribe(); }
 
-  private update(): void {
+  /** @internal */
+  update(): void {
     if (!this.links || !this.linksWithHrefs || !this.router.navigated) return;
     Promise.resolve().then(() => {
       const hasActiveLinks = this.hasActiveLinks();
@@ -133,6 +143,16 @@ export class RouterLinkActive implements OnChanges,
         });
       }
     });
+  }
+
+  private connectWithInjectedLinks() {
+    if (this.link) this.link.addRouterLinkActive(this);
+    if (this.linkWithHref) this.linkWithHref.addRouterLinkActive(this);
+  }
+
+  private connectWithContentChildrenLinks() {
+    this.links.forEach(link => link.addRouterLinkActive(this));
+    this.linksWithHrefs.forEach(linkWithHref => linkWithHref.addRouterLinkActive(this));
   }
 
   private isLinkActive(router: Router): (link: (RouterLink|RouterLinkWithHref)) => boolean {

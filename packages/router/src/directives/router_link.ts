@@ -7,7 +7,7 @@
  */
 
 import {LocationStrategy} from '@angular/common';
-import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, isDevMode} from '@angular/core';
+import {Attribute, Directive, ElementRef, HostBinding, HostListener, Input, OnChanges, OnDestroy, Renderer2, SimpleChanges, isDevMode} from '@angular/core';
 import {Subscription} from 'rxjs';
 
 import {QueryParamsHandling} from '../config';
@@ -16,6 +16,7 @@ import {Router} from '../router';
 import {ActivatedRoute} from '../router_state';
 import {UrlTree} from '../url_tree';
 
+import {RouterLinkActive} from './router_link_active';
 
 /**
  * @description
@@ -112,7 +113,7 @@ import {UrlTree} from '../url_tree';
  * @publicApi
  */
 @Directive({selector: ':not(a):not(area)[routerLink]'})
-export class RouterLink {
+export class RouterLink implements OnChanges {
   // TODO(issue/24571): remove '!'.
   @Input() queryParams !: {[k: string]: any};
   // TODO(issue/24571): remove '!'.
@@ -129,6 +130,7 @@ export class RouterLink {
   private commands: any[] = [];
   // TODO(issue/24571): remove '!'.
   private preserve !: boolean;
+  private routerLinkActives: RouterLinkActive[] = [];
 
   constructor(
       private router: Router, private route: ActivatedRoute,
@@ -178,6 +180,19 @@ export class RouterLink {
       preserveFragment: attrBoolValue(this.preserveFragment),
     });
   }
+
+  ngOnChanges(changes: SimpleChanges): void { this.updateRouterLinkActives(); }
+
+  /** @internal */
+  addRouterLinkActive(routerLinkActive: RouterLinkActive) {
+    if (this.routerLinkActives.indexOf(routerLinkActive) === -1) {
+      this.routerLinkActives.push(routerLinkActive);
+    }
+  }
+
+  private updateRouterLinkActives() {
+    this.routerLinkActives.forEach(routerLinkActive => routerLinkActive.update());
+  }
 }
 
 /**
@@ -212,6 +227,7 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
   private subscription: Subscription;
   // TODO(issue/24571): remove '!'.
   private preserve !: boolean;
+  private routerLinkActives: RouterLinkActive[] = [];
 
   // the url displayed on the anchor element.
   // TODO(issue/24571): remove '!'.
@@ -244,7 +260,11 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     this.preserve = value;
   }
 
-  ngOnChanges(changes: {}): any { this.updateTargetUrlAndHref(); }
+  ngOnChanges(changes: SimpleChanges): any {
+    this.updateTargetUrlAndHref();
+    this.updateRouterLinkActives();
+  }
+
   ngOnDestroy(): any { this.subscription.unsubscribe(); }
 
   @HostListener('click', ['$event.button', '$event.ctrlKey', '$event.metaKey', '$event.shiftKey'])
@@ -264,6 +284,17 @@ export class RouterLinkWithHref implements OnChanges, OnDestroy {
     };
     this.router.navigateByUrl(this.urlTree, extras);
     return false;
+  }
+
+  /** @internal */
+  addRouterLinkActive(routerLinkActive: RouterLinkActive) {
+    if (this.routerLinkActives.indexOf(routerLinkActive) === -1) {
+      this.routerLinkActives.push(routerLinkActive);
+    }
+  }
+
+  private updateRouterLinkActives() {
+    this.routerLinkActives.forEach(routerLinkActive => routerLinkActive.update());
   }
 
   private updateTargetUrlAndHref(): void {
