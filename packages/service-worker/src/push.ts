@@ -25,6 +25,8 @@ export class SwPush {
    */
   readonly messages: Observable<object>;
 
+  readonly messagesClicked: Observable<object>;
+
   /**
    * Emits the currently active
    * [PushSubscription](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
@@ -45,11 +47,15 @@ export class SwPush {
   constructor(private sw: NgswCommChannel) {
     if (!sw.isEnabled) {
       this.messages = NEVER;
+      this.messagesClicked = NEVER;
       this.subscription = NEVER;
       return;
     }
 
     this.messages = this.sw.eventsOfType<PushEvent>('PUSH').pipe(map(message => message.data));
+
+    this.messagesClicked =
+        this.sw.eventsOfType('NOTIFICATION_CLICK').pipe(map((message: any) => message.data));
 
     this.pushManager = this.sw.registration.pipe(map(registration => registration.pushManager));
 

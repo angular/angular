@@ -589,6 +589,16 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
       }]);
     });
 
+    async_it('broadcasts notification click events', async() => {
+      expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
+      await driver.initialized;
+      await scope.handleClick({title: 'This is a test', body: 'Test body'}, 'button');
+      expect(scope.clients.getMock('default') !.messages).toEqual([{
+        type: 'NOTIFICATION_CLICK',
+        data: {action: 'button', notification: {title: 'This is a test', body: 'Test body'}}
+      }]);
+    });
+
     async_it('prefetches updates to lazy cache when set', async() => {
       expect(await makeRequest(scope, '/foo.txt')).toEqual('this is foo');
       await driver.initialized;
