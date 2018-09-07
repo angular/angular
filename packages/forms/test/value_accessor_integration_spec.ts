@@ -1289,7 +1289,7 @@ class FormControlSelectWithComparePerfFn {
 class FormControlSelectWithCompareTrackByFn {
   compareFn:
       (o1: any, o2: any) => boolean = (o1: any, o2: any) => o1 && o2? o1.id === o2.id: o1 === o2
-  trackByFn: (index: number, item: any) => any = (index: number, item: any): any => index
+  trackByFn: (index: number, item: any) => any = (index: number, item: any): any => index;
   cities = [{id: 1, name: 'SF'}, {id: 2, name: 'NY'}];
   form = new FormGroup({city: new FormControl({id: 1, name: 'SF'})});
 }
