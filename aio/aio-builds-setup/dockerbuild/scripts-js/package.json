@@ -12,7 +12,6 @@
     "clean-dist": "node --eval \"require('shelljs').rm('-rf', 'dist')\"",
     "dev": "concurrently --kill-others --raw --success first \"yarn build-watch\" \"yarn test-watch\"",
     "lint": "tslint --project tsconfig.json",
-    "set-opensearch-url": "node --eval \"const sh = require('shelljs'); sh.set('-e'); sh.sed('-i', /PLACEHOLDER_URL/g, process.argv[1], 'dist/assets/opensearch.xml');\"",
     "pre~~test-only": "yarn lint",
     "~~test-only": "node dist/test",
     "pretest": "yarn build",
