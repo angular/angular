@@ -126,12 +126,16 @@ function generateAllLocalesFile(LOCALES, ALIASES) {
 
   function generateCases(locale) {
     let str = '';
+    let locales = [];
     const eqLocales = existingLocalesAliases[locale];
     for (let l of eqLocales) {
       str += `case '${l}':\n`;
+      locales.push(`'${l}'`);
     }
+    let localesStr = '[' + locales.join(',') + ']';
 
     str += `  l = locale_${formatLocale(locale)};
+    locales = ${localesStr};
     break;\n`;
     return str;
   }
@@ -146,12 +150,13 @@ const u = undefined;
 ${LOCALES.map(locale => `${existingLocalesData[locale]}`).join('\n')}
 
 let l: any;
+let locales: string[] = [];
 
 switch (goog.LOCALE) {
 ${LOCALES.map(locale => generateCases(locale)).join('')}}
 
 if(l) {
-  registerLocaleData(l, goog.LOCALE);
+  locales.forEach(locale => registerLocaleData(l, locale));
 }
 `;
   // clang-format on
