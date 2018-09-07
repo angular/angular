@@ -159,6 +159,7 @@ export class Driver implements Debuggable, UpdateSource {
     this.scope.addEventListener('fetch', (event) => this.onFetch(event !));
     this.scope.addEventListener('message', (event) => this.onMessage(event !));
     this.scope.addEventListener('push', (event) => this.onPush(event !));
+    this.scope.addEventListener('notificationclick', (event) => this.onClick(event !));
 
     // The debugger generates debug pages in response to debugging requests.
     this.debugger = new DebugHandler(this, this.adapter);
@@ -275,6 +276,11 @@ export class Driver implements Debuggable, UpdateSource {
     msg.waitUntil(this.handlePush(msg.data.json()));
   }
 
+  private onClick(event: NotificationClickEvent): void {
+    // Handle the click event and keep the SW alive until it's handled.
+    event.waitUntil(this.handleClick(event.notification, event.action));
+  }
+
   private async handleMessage(msg: MsgAny&{action: string}, from: Client): Promise<void> {
     if (isMsgCheckForUpdates(msg)) {
       const action = (async() => { await this.checkForUpdate(); })();
@@ -297,6 +303,13 @@ export class Driver implements Debuggable, UpdateSource {
     NOTIFICATION_OPTION_NAMES.filter(name => desc.hasOwnProperty(name))
         .forEach(name => options[name] = desc[name]);
     await this.scope.registration.showNotification(desc['title'] !, options);
+  }
+
+  private async handleClick(notification: Notification, action?: string): Promise<void> {
+    await this.broadcast({
+      type: 'NOTIFICATION_CLICK',
+      data: {action, notification},
+    });
   }
 
   private async reportStatus(client: Client, promise: Promise<void>, nonce: number): Promise<void> {

@@ -83,6 +83,8 @@ interface PushEvent extends ExtendableEvent {
   data: PushMessageData;
 }
 
+interface NotificationClickEvent extends NotificationEvent, ExtendableEvent {}
+
 interface PushMessageData {
   arrayBuffer(): ArrayBuffer;
   blob(): Blob;
@@ -114,6 +116,7 @@ interface ServiceWorkerGlobalScope {
   addEventListener(event: 'fetch', fn: (event?: FetchEvent) => any): void;
   addEventListener(event: 'install', fn: (event?: ExtendableEvent) => any): void;
   addEventListener(event: 'push', fn: (event?: PushEvent) => any): void;
+  addEventListener(event: 'notificationclick', fn: (event?: NotificationClickEvent) => any): void;
   addEventListener(event: 'sync', fn: (event?: SyncEvent) => any): void;
 
   fetch(request: Request|string): Promise<Response>;

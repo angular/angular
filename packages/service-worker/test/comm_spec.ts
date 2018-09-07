@@ -303,6 +303,26 @@ import {async_fit, async_it} from './async';
           ]);
         });
       });
+      describe('messagesClicked', () => {
+        it('receives notification clicked messages', () => {
+          const sendMessage = (type: string, message: string) =>
+              mock.sendMessage({type, data: {message}});
+
+          const receivedMessages: string[] = [];
+          push.messagesClicked.subscribe(
+              (msg: {message: string}) => receivedMessages.push(msg.message));
+
+          sendMessage('NOTIFICATION_CLICK', 'this was a click');
+          sendMessage('NOT_OTIFICATION_CLICK', 'this was not a click');
+          sendMessage('NOTIFICATION_CLICK', 'this was a click too');
+          sendMessage('KCILC_NOITACIFITON', 'this was a KCILC_NOITACIFITON message');
+
+          expect(receivedMessages).toEqual([
+            'this was a click',
+            'this was a click too',
+          ]);
+        });
+      });
 
       describe('subscription', () => {
         let nextSubEmitResolve: () => void;
@@ -367,6 +387,7 @@ import {async_fit, async_it} from './async';
 
         it('does not crash on subscription to observables', () => {
           push.messages.toPromise().catch(err => fail(err));
+          push.messagesClicked.toPromise().catch(err => fail(err));
           push.subscription.toPromise().catch(err => fail(err));
         });
 
