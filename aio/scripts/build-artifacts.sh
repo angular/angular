@@ -6,7 +6,9 @@ source "`dirname $0`/../../scripts/ci/env.sh" print
 
 readonly INPUT_DIR=dist/
 readonly OUTPUT_FILE=$PROJECT_ROOT/$1
-readonly deployedUrl=https://pr${CIRCLE_PR_NUMBER}-${CIRCLE_SHA1:0:7}.ngbuilds.io/
+readonly PR_NUMBER=$2
+readonly PR_LAST_SHA=$3
+readonly deployedUrl=https://pr${PR_NUMBER}-${PR_LAST_SHA:0:7}.ngbuilds.io/
  
 (
   cd $PROJECT_ROOT/aio
