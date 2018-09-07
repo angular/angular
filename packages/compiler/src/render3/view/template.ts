@@ -36,10 +36,11 @@ function mapBindingToInstruction(type: BindingType): o.ExternalReference|undefin
   switch (type) {
     case BindingType.Property:
       return R3.elementProperty;
-    case BindingType.Attribute:
-      return R3.elementAttribute;
     case BindingType.Class:
       return R3.elementClassProp;
+    case BindingType.Attribute:
+    case BindingType.Animation:
+      return R3.elementAttribute;
     default:
       return undefined;
   }
@@ -459,7 +460,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
         initialClassDeclarations.length || classInputs.length;
 
     // add attributes for directive matching purposes
-    attributes.push(...this.prepareSelectOnlyAttrs(allOtherInputs, element.outputs));
+    attributes.push(...this.prepareSyntheticAndSelectOnlyAttrs(allOtherInputs, element.outputs));
     parameters.push(this.toAttrsParam(attributes));
 
     // local refs (ex.: <div #foo #bar="baz">)
@@ -608,20 +609,27 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
 
     // Generate element input bindings
     allOtherInputs.forEach((input: t.BoundAttribute) => {
-      if (input.type === BindingType.Animation) {
-        console.error('warning: animation bindings not yet supported');
-        return;
-      }
-
       const instruction = mapBindingToInstruction(input.type);
-      if (instruction) {
+      if (input.type === BindingType.Animation) {
+        const value = input.value.visit(this._valueConverter);
+        // setAttribute without a value doesn't make any sense
+        if (value.name || value.value) {
+          const name = prepareSyntheticAttributeName(input.name);
+          this.updateInstruction(input.sourceSpan, R3.elementAttribute, () => {
+            return [
+              o.literal(elementIndex), o.literal(name), this.convertPropertyBinding(implicit, value)
+            ];
+          });
+        }
+      } else if (instruction) {
         const params: any[] = [];
         const sanitizationRef = resolveSanitizationFn(input, input.securityContext);
         if (sanitizationRef) params.push(sanitizationRef);
 
-        // TODO(chuckj): runtime: security context?
+        // TODO(chuckj): runtime: security context
         const value = input.value.visit(this._valueConverter);
         this.allocateBindingSlots(value);
+
         this.updateInstruction(input.sourceSpan, instruction, () => {
           return [
             o.literal(elementIndex), o.literal(input.name),
@@ -680,7 +688,7 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     const attrsExprs: o.Expression[] = [];
     template.attributes.forEach(
         (a: t.TextAttribute) => { attrsExprs.push(asLiteral(a.name), asLiteral(a.value)); });
-    attrsExprs.push(...this.prepareSelectOnlyAttrs(template.inputs, template.outputs));
+    attrsExprs.push(...this.prepareSyntheticAndSelectOnlyAttrs(template.inputs, template.outputs));
     parameters.push(this.toAttrsParam(attrsExprs));
 
     // local refs (ex.: <ng-template #foo>)
@@ -856,14 +864,30 @@ export class TemplateDefinitionBuilder implements t.Visitor<void>, LocalResolver
     return attributesMap;
   }
 
-  private prepareSelectOnlyAttrs(inputs: t.BoundAttribute[], outputs: t.BoundEvent[]):
+  private prepareSyntheticAndSelectOnlyAttrs(inputs: t.BoundAttribute[], outputs: t.BoundEvent[]):
       o.Expression[] {
     const attrExprs: o.Expression[] = [];
+    const nonSyntheticInputs: t.BoundAttribute[] = [];
 
-    if (inputs.length || outputs.length) {
+    if (inputs.length) {
+      const EMPTY_STRING_EXPR = asLiteral('');
+      inputs.forEach(input => {
+        if (input.type === BindingType.Animation) {
+          // @attributes are for Renderer2 animation @triggers, but this feature
+          // may be supported differently in future versions of angular. However,
+          // @triggers should always just be treated as regular attributes (it's up
+          // to the renderer to detect and use them in a special way).
+          attrExprs.push(asLiteral(prepareSyntheticAttributeName(input.name)), EMPTY_STRING_EXPR);
+        } else {
+          nonSyntheticInputs.push(input);
+        }
+      });
+    }
+
+    if (nonSyntheticInputs.length || outputs.length) {
       attrExprs.push(o.literal(core.AttributeMarker.SelectOnly));
-      inputs.forEach((i: t.BoundAttribute) => { attrExprs.push(asLiteral(i.name)); });
-      outputs.forEach((o: t.BoundEvent) => { attrExprs.push(asLiteral(o.name)); });
+      nonSyntheticInputs.forEach((i: t.BoundAttribute) => attrExprs.push(asLiteral(i.name)));
+      outputs.forEach((o: t.BoundEvent) => attrExprs.push(asLiteral(o.name)));
     }
 
     return attrExprs;
@@ -1428,4 +1452,8 @@ function isStyleSanitizable(prop: string): boolean {
       return true;
   }
   return false;
+}
+
+function prepareSyntheticAttributeName(name: string) {
+  return '@' + name;
 }
