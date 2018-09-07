@@ -180,6 +180,52 @@ describe('compiler compliance: styling', () => {
       const result = compile(files, angularFiles);
       expectEmit(result.source, template, 'Incorrect template');
     });
+
+    it('should generate any animation triggers into the component template', () => {
+      const files = {
+        app: {
+          'spec.ts': `
+                import {Component, NgModule} from '@angular/core';
+
+                @Component({
+                  selector: "my-component",
+                  template: \`
+                    <div [@foo]='exp'></div>
+                    <div @bar></div>
+                    <div [@baz]></div>\`,
+                })
+                export class MyComponent {
+                }
+
+                @NgModule({declarations: [MyComponent]})
+                export class MyModule {}
+            `
+        }
+      };
+
+      const template = `
+        const $e0_attrs$ = ["@foo", ""];
+        const $e1_attrs$ = ["@bar", ""];
+        const $e2_attrs$ = ["@baz", ""];
+        …
+        MyComponent.ngComponentDef = $r3$.ɵdefineComponent({
+          …
+          template:  function MyComponent_Template(rf, $ctx$) {
+            if (rf & 1) {
+              $r3$.ɵelement(0, "div", $e0_attrs$);
+              $r3$.ɵelement(1, "div", $e1_attrs$);
+              $r3$.ɵelement(2, "div", $e2_attrs$);
+            }
+            if (rf & 2) {
+              $r3$.ɵelementAttribute(0, "@foo", $r3$.ɵbind(ctx.exp));
+            }
+          }
+        });
+      `;
+
+      const result = compile(files, angularFiles);
+      expectEmit(result.source, template, 'Incorrect template');
+    });
   });
 
   describe('[style] and [style.prop]', () => {
