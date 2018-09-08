@@ -35,6 +35,14 @@ export type EntryPoint = EntryPointPaths & {
   typings: string;
 };
 
+interface EntryPointPackageJson {
+  fesm2015?: string;
+  fesm5?: string;
+  esm2015?: string;
+  esm5?: string;
+  main?: string;
+  typings?: string;
+}
 
 /**
  * Try to get entry point info from the given path.
@@ -47,7 +55,7 @@ export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoi
   if (!fs.existsSync(packageJsonPath)) {
     return null;
   }
-  const {fesm2015, fesm5, esm2015, esm5, main, typings}: any =
+  const {fesm2015, fesm5, esm2015, esm5, main, typings}: EntryPointPackageJson =
       JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
   // Minimum requirement is that we have esm2015 format and typings.
