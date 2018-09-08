@@ -414,6 +414,13 @@
             "rev": true,
             "title": "Truly UI",
             "url": "http://truly-ui.com"
+          },
+          "ngsqui": {
+            "desc": "Simple Quality UI (SQ-UI) is a flexible and easily customizable UI-kit, aiming to provide maximum efficiency with as little overhead as possible. Driven by the idea that it should be strictly \"for developers by developers\", every new feature release includes functionalities demanded by the developers who are using it.",
+            "logo": "https://sq-ui.github.io/ng-sq-ui/_media/sq-ui-logo.png",
+            "rev": true,
+            "title": "Simple Quality UI",
+            "url": "https://sq-ui.github.io/ng-sq-ui/#/"
           }
         }
       }
