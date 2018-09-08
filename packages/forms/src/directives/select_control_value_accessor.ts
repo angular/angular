@@ -85,9 +85,8 @@ function _extractId(valueString: string): string {
  * https://bugzilla.mozilla.org/show_bug.cgi?id=1024350
  * https://developer.microsoft.com/en-us/microsoft-edge/platform/issues/4660045/
  *
- * * **npm package**: `@angular/forms`
- *
- *
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector:
@@ -164,7 +163,8 @@ export class SelectControlValueAccessor implements ControlValueAccessor {
  *
  * See docs for `SelectControlValueAccessor` for usage examples.
  *
- *
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({selector: 'option'})
 export class NgSelectOption implements OnDestroy {

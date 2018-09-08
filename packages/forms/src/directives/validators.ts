@@ -70,7 +70,8 @@ export const CHECKBOX_REQUIRED_VALIDATOR: StaticProvider = {
  * <input name="fullName" ngModel required>
  * ```
  *
- *
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector:
@@ -111,6 +112,8 @@ export class RequiredValidator implements Validator {
  * ```
  *
  * @experimental
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector:
@@ -146,6 +149,8 @@ export const EMAIL_VALIDATOR: any = {
  * ```
  *
  * @experimental
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector: '[email][formControlName],[email][formControl],[email][ngModel]',
@@ -193,7 +198,8 @@ export const MIN_LENGTH_VALIDATOR: any = {
  * A directive which installs the `MinLengthValidator` for any `formControlName`,
  * `formControl`, or control with `ngModel` that also has a `minlength` attribute.
  *
- *
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector: '[minlength][formControlName],[minlength][formControl],[minlength][ngModel]',
@@ -245,7 +251,8 @@ export const MAX_LENGTH_VALIDATOR: any = {
  * A directive which installs the `MaxLengthValidator` for any `formControlName`,
  * `formControl`, or control with `ngModel` that also has a `maxlength` attribute.
  *
- *
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector: '[maxlength][formControlName],[maxlength][formControl],[maxlength][ngModel]',
@@ -300,6 +307,8 @@ export const PATTERN_VALIDATOR: any = {
  * <input [name]="fullName" pattern="[a-zA-Z ]*" ngModel>
  * ```
  *
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector: '[pattern][formControlName],[pattern][formControl],[pattern][ngModel]',

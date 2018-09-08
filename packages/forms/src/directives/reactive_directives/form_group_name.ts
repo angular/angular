@@ -61,11 +61,7 @@ export const formGroupNameProvider: any = {
  *
  * {@example forms/ts/nestedFormGroup/nested_form_group_example.ts region='Component'}
  *
- * * **npm package**: `@angular/forms`
- *
- * * **NgModule**: `ReactiveFormsModule`
- *
- *
+ * @ngModule ReactiveFormsModule
  */
 @Directive({selector: '[formGroupName]', providers: [formGroupNameProvider]})
 export class FormGroupName extends AbstractFormGroupDirective implements OnInit, OnDestroy {
@@ -136,11 +132,7 @@ export const formArrayNameProvider: any = {
  *
  * {@example forms/ts/nestedFormArray/nested_form_array_example.ts region='Component'}
  *
- * * **npm package**: `@angular/forms`
- *
- * * **NgModule**: `ReactiveFormsModule`
- *
- *
+ * @ngModule ReactiveFormsModule
  */
 @Directive({selector: '[formArrayName]', providers: [formArrayNameProvider]})
 export class FormArrayName extends ControlContainer implements OnInit, OnDestroy {

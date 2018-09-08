@@ -60,8 +60,6 @@ function formatNumber(
 }
 
 /**
- * @ngModule CommonModule
- *
  * Formats a number as text. Group sizing and separator and other locale-specific
  * configurations are based on the active locale.
  *
@@ -84,6 +82,7 @@ function formatNumber(
  *
  * {@example common/pipes/ts/number_pipe.ts region='DeprecatedNumberPipe'}
  *
+ * @ngModule CommonModule
  */
 @Pipe({name: 'number'})
 export class DeprecatedDecimalPipe implements PipeTransform {
