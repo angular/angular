@@ -1656,9 +1656,6 @@
     "name": "getNamedFormat"
   },
   {
-    "name": "getNextLNode"
-  },
-  {
     "name": "getNgZone"
   },
   {
@@ -2409,7 +2406,7 @@
     "name": "viewAttached"
   },
   {
-    "name": "walkLNodeTree"
+    "name": "walkTNodeTree"
   },
   {
     "name": "walkUpViews"

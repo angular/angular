@@ -734,7 +734,7 @@ class ViewContainerRef implements viewEngine_ViewContainerRef {
     const beforeNode = adjustedIdx + 1 < views.length ?
         (getChildLNode(views[adjustedIdx + 1]) !).native :
         this._lContainerNode.native;
-    addRemoveViewFromContainer(this._lContainerNode, lViewNode, true, beforeNode);
+    addRemoveViewFromContainer(this._lContainerNode, lViewNode.data, true, beforeNode);
 
     (viewRef as ViewRef<any>).attachToViewContainerRef(this);
     this._viewRefs.splice(adjustedIdx, 0, viewRef);

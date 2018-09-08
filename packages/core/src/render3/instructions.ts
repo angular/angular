@@ -25,7 +25,7 @@ import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
 import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_VIEW, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getChildLNode, getLViewChild, getNextLNode, getParentLNode, insertView, removeView} from './node_manipulation';
+import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getLViewChild, getParentLNode, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {StylingContext, allocStylingContext, createStylingContextTemplate, renderStyling as renderElementStyles, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling';
 import {assertDataInRangeInternal, isDifferent, loadElementInternal, loadInternal, readElementValue, stringify} from './util';
@@ -2264,49 +2264,54 @@ export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?:
   // re-distribution of projectable nodes is stored on a component's view level
   const parent = getParentLNode(node);
 
-  if (canInsertNativeNode(parent, viewData)) {
-    const componentNode = findComponentHost(viewData);
-    let nodeToProject = (componentNode.tNode.projection as(TNode | null)[])[selectorIndex];
-    let projectedView = componentNode.view;
-    let projectionNodeIndex = -1;
-    let grandparent: LContainerNode;
-    const renderParent = parent.tNode.type === TNodeType.View ?
-        (grandparent = getParentLNode(parent) as LContainerNode) &&
-            grandparent.data[RENDER_PARENT] ! :
-        parent as LElementNode;
+  const componentNode = findComponentHost(viewData);
+  let nodeToProject = (componentNode.tNode.projection as(TNode | null)[])[selectorIndex];
+  let projectedView = componentNode.view;
+  let projectionNodeIndex = -1;
+  let renderParent: LElementNode|null = null;
 
-    const parentView = viewData[HOST_NODE].view;
-    while (nodeToProject) {
-      if (nodeToProject.type === TNodeType.Projection) {
-        // This node is re-projected, so we must go up the tree to get its projected nodes.
-        const currentComponentHost = findComponentHost(projectedView);
-        const firstProjectedNode = (currentComponentHost.tNode.projection as(
-            TNode | null)[])[nodeToProject.projection as number];
+  while (nodeToProject) {
+    if (nodeToProject.type === TNodeType.Projection) {
+      // This node is re-projected, so we must go up the tree to get its projected nodes.
+      const currentComponentHost = findComponentHost(projectedView);
+      const firstProjectedNode = (currentComponentHost.tNode.projection as(
+          TNode | null)[])[nodeToProject.projection as number];
 
-        if (firstProjectedNode) {
-          projectionNodeStack[++projectionNodeIndex] = projectedView[nodeToProject.index];
-          nodeToProject = firstProjectedNode;
-          projectedView = currentComponentHost.view;
-          continue;
+      if (firstProjectedNode) {
+        projectionNodeStack[++projectionNodeIndex] = projectedView[nodeToProject.index];
+        nodeToProject = firstProjectedNode;
+        projectedView = currentComponentHost.view;
+        continue;
+      }
+    } else {
+      const lNode = projectedView[nodeToProject.index];
+      // This flag must be set now or we won't know that this node is projected
+      // if the nodes are inserted into a container later.
+      lNode.tNode.flags |= TNodeFlags.isProjected;
+      if (canInsertNativeNode(parent, viewData)) {
+        let grandparent: LContainerNode;
+        if (renderParent == null) {
+          renderParent = parent.tNode.type === TNodeType.View ?
+              (grandparent = getParentLNode(parent) as LContainerNode) &&
+                  grandparent.data[RENDER_PARENT] ! :
+              parent as LElementNode;
         }
-      } else {
-        const lNode = projectedView[nodeToProject.index];
-        lNode.tNode.flags |= TNodeFlags.isProjected;
+
         appendProjectedNode(
             lNode as LTextNode | LElementNode | LContainerNode, parent, viewData, renderParent,
-            parentView);
+            projectedView);
       }
-
-      // If we are finished with a list of re-projected nodes, we need to get
-      // back to the root projection node that was re-projected.
-      if (nodeToProject.next === null && projectedView !== componentNode.view) {
-        // move down into the view of the component we're projecting right now
-        const lNode = projectionNodeStack[projectionNodeIndex--];
-        nodeToProject = lNode.tNode;
-        projectedView = lNode.view;
-      }
-      nodeToProject = nodeToProject.next;
     }
+
+    // If we are finished with a list of re-projected nodes, we need to get
+    // back to the root projection node that was re-projected.
+    if (nodeToProject.next === null && projectedView !== componentNode.view) {
+      // move down into the view of the component we're projecting right now
+      const lNode = projectionNodeStack[projectionNodeIndex--];
+      nodeToProject = lNode.tNode;
+      projectedView = lNode.view;
+    }
+    nodeToProject = nodeToProject.next;
   }
 }
 
