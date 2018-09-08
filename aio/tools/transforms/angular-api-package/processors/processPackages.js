@@ -26,6 +26,7 @@ module.exports = function processPackages() {
 
           // Partition the exports into groups by type
           if (doc.exports) {
+            doc.ngmodules = doc.exports.filter(doc => doc.docType === 'ngmodule');
             doc.classes = doc.exports.filter(doc => doc.docType === 'class');
             doc.decorators = doc.exports.filter(doc => doc.docType === 'decorator');
             doc.functions = doc.exports.filter(doc => doc.docType === 'function');

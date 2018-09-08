@@ -4,7 +4,8 @@
 
 {% block overview %}{% include "includes/directive-overview.html" %}{% endblock %}
 {% block additional -%}
-  {% include "includes/selectors.html" %}
+{% include "includes/ngmodule.html" %}
+{% include "includes/selectors.html" %}
   {$ directiveHelper.renderBindings(doc.inputs, 'inputs', 'input', 'Inputs') $}
   {$ directiveHelper.renderBindings(doc.outputs, 'outputs', 'output', 'Outputs') $}
   {% include "includes/export-as.html" %}

@@ -32,6 +32,7 @@
   {% endif %}
 
   <h2>{% if doc.isPrimaryPackage %}Primary entry{% else %}Entry{% endif %} point exports</h2>
+  {$ listItems(doc.ngmodules, 'NgModules') $}
   {$ listItems(doc.classes, 'Classes') $}
   {$ listItems(doc.decorators, 'Decorators') $}
   {$ listItems(doc.functions, 'Functions') $}
