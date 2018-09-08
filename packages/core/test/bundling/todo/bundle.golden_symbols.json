@@ -579,9 +579,6 @@
     "name": "getMultiStartIndex"
   },
   {
-    "name": "getNextLNode"
-  },
-  {
     "name": "getOrCreateChangeDetectorRef"
   },
   {
@@ -969,7 +966,7 @@
     "name": "viewAttached"
   },
   {
-    "name": "walkLNodeTree"
+    "name": "walkTNodeTree"
   },
   {
     "name": "walkUpViews"
