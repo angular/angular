@@ -84,7 +84,7 @@ export function sortEntryPointsByDependency(entryPoints: EntryPoint[]): SortedEn
 
     const dependencies = new Set<string>();
     const missing = new Set<string>();
-    Helpers.getDependencies(entryPointPath, dependencies, missing);
+    Helpers.computeDependencies(entryPointPath, dependencies, missing);
 
     if (missing.size > 0) {
       const nodesToRemove = [entryPoint.path, ...graph.dependantsOf(entryPoint.path)];
@@ -127,7 +127,7 @@ export class Helpers {
    * array of
    * import specifiers for dependencies that were `missing`.
    */
-  static getDependencies(
+  static computeDependencies(
       from: string, resolved: Set<string>, missing: Set<string>,
       internal: Set<string> = new Set()): void {
     const fromContents = fs.readFileSync(from, 'utf8');
@@ -151,7 +151,7 @@ export class Helpers {
             // Avoid circular dependencies
             if (!internal.has(internalDependency)) {
               internal.add(internalDependency);
-              Helpers.getDependencies(internalDependency, resolved, missing, internal);
+              Helpers.computeDependencies(internalDependency, resolved, missing, internal);
             }
           } else {
             const externalDependency = Helpers.tryResolveExternal(from, importPath);

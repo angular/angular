@@ -82,7 +82,7 @@ describe('getDependencies()', () => {
   it('should not generate a TS AST if the source does not contain any imports or re-exports',
      () => {
        spyOn(ts, 'createSourceFile');
-       deps.getDependencies('/no/imports/or/re-exports.js', new Set(), new Set());
+       deps.computeDependencies('/no/imports/or/re-exports.js', new Set(), new Set());
        expect(ts.createSourceFile).not.toHaveBeenCalled();
      });
 
@@ -91,7 +91,7 @@ describe('getDependencies()', () => {
         .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
     const resolved = new Set();
     const missing = new Set();
-    deps.getDependencies('/external/imports.js', resolved, missing);
+    deps.computeDependencies('/external/imports.js', resolved, missing);
     expect(resolved.size).toBe(2);
     expect(resolved.has('RESOLVED/path/to/x'));
     expect(resolved.has('RESOLVED/path/to/y'));
@@ -102,7 +102,7 @@ describe('getDependencies()', () => {
         .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
     const resolved = new Set();
     const missing = new Set();
-    deps.getDependencies('/external/re-exports.js', resolved, missing);
+    deps.computeDependencies('/external/re-exports.js', resolved, missing);
     expect(resolved.size).toBe(2);
     expect(resolved.has('RESOLVED/path/to/x'));
     expect(resolved.has('RESOLVED/path/to/y'));
@@ -115,7 +115,7 @@ describe('getDependencies()', () => {
                 importPath === 'missing' ? null : `RESOLVED/${importPath}`);
     const resolved = new Set();
     const missing = new Set();
-    deps.getDependencies('/external/imports-missing.js', resolved, missing);
+    deps.computeDependencies('/external/imports-missing.js', resolved, missing);
     expect(resolved.size).toBe(1);
     expect(resolved.has('RESOLVED/path/to/x'));
     expect(missing.size).toBe(1);
@@ -131,7 +131,7 @@ describe('getDependencies()', () => {
     const getDependenciesSpy = spyOn(deps, 'getDependencies').and.callThrough();
     const resolved = new Set();
     const missing = new Set();
-    deps.getDependencies('/internal/outer.js', resolved, missing);
+    deps.computeDependencies('/internal/outer.js', resolved, missing);
     expect(getDependenciesSpy).toHaveBeenCalledWith('/internal/outer.js', resolved, missing);
     expect(getDependenciesSpy)
         .toHaveBeenCalledWith('/internal/inner.js', resolved, missing, jasmine.any(Set));
@@ -148,7 +148,7 @@ describe('getDependencies()', () => {
         .and.callFake((from: string, importPath: string) => `RESOLVED/${importPath}`);
     const resolved = new Set();
     const missing = new Set();
-    deps.getDependencies('/internal/circular-a.js', resolved, missing);
+    deps.computeDependencies('/internal/circular-a.js', resolved, missing);
     expect(resolved.size).toBe(2);
     expect(resolved.has('RESOLVED/path/to/x'));
     expect(resolved.has('RESOLVED/path/to/y'));
