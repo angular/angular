@@ -97,11 +97,7 @@ const resolvedPromise = Promise.resolve(null);
  * * Radio buttons: `RadioControlValueAccessor`
  * * Selects: `SelectControlValueAccessor`
  *
- * **npm package**: `@angular/forms`
- *
- * **NgModule**: `FormsModule`
- *
- *
+ * @ngModule FormsModule
  */
 @Directive({
   selector: '[ngModel]:not([formControlName]):not([formControl])',
