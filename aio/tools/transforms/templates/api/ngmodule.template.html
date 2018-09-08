@@ -27,6 +27,31 @@
   </section>
 {% endmacro %}
 
+{% macro renderExports(items, cssClass, itemType) %}
+<section class="{$ cssClass $}s">
+  <h2>{$ itemType $}</h2>
+  <table class="is-full-width list-table {$ cssClass $}-table">
+    <thead>
+      <tr><th>Name</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+    {% for item in items %}
+      <tr>
+        <td>
+          <a href="{$ item.path $}">
+            <code-example language="ts" hideCopy="true" linenums="false" class="no-box">{$ item.name | escape $}</code-example>
+          </a>
+        </td>
+        <td>
+          {$ item.shortDescription | marked $}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</section>
+{% endmacro %}
+
 {% block overview %}
   {% include "includes/class-overview.html" %}
 {% endblock %}
@@ -47,8 +72,11 @@
   {$ renderTable(doc.ngmoduleOptions.providers, 'providers', 'Providers', 'Provider') $}
   {% endif %}
 
-  {% if doc.ngmoduleOptions.exports %}
-  {$ renderTable(doc.ngmoduleOptions.exports, 'exports', 'Exports', 'Export') $}
+  {% if doc.directives.length %}
+    {$ renderExports(doc.directives, 'directive', 'Directives') $}
+  {% endif %}
+  {% if doc.pipes.length %}
+    {$ renderExports(doc.pipes, 'pipe', 'Pipes') $}
   {% endif %}
 
 {% endblock %}

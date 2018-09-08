@@ -102,10 +102,15 @@
         clear: left;
       }
     }
-}
+  }
 
   .from-constructor, .read-only-property {
     font-style: italic;
     color: $blue;
+  }
+
+  .ngmodule-list {
+    list-style: none;
+    padding: 0;
   }
 }
