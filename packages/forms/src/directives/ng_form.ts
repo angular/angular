@@ -73,10 +73,7 @@ const resolvedPromise = Promise.resolve(null);
  *
  * {@example forms/ts/simpleForm/simple_form_example.ts region='Component'}
  *
- * * **npm package**: `@angular/forms`
- *
- * * **NgModule**: `FormsModule`
- *
+ * @ngModule FormsModule
  */
 @Directive({
   selector: 'form:not([ngNoForm]):not([formGroup]),ngForm,ng-form,[ngForm]',

@@ -24,6 +24,8 @@ export const NUMBER_VALUE_ACCESSOR: any = {
  *  ```
  *  <input type="number" [(ngModel)]="age">
  *  ```
+ * @ngModule FormsModule
+ * @ngModule ReactiveFormsModule
  */
 @Directive({
   selector:
