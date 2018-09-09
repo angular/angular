@@ -23,6 +23,7 @@ describe('DepencencyResolver', () => {
     const third = { path: 'third', esm2015: 'third/index.ts' } as EntryPoint;
     const fourth = { path: 'fourth', esm2015: 'fourth/index.ts' } as EntryPoint;
     const fifth = { path: 'fifth', esm2015: 'fifth/index.ts' } as EntryPoint;
+
     const dependencies = {
       'first/index.ts': {resolved: ['second', 'third', 'ignored-1'], missing: []},
       'second/index.ts': {resolved: ['third', 'fifth'], missing: []},
@@ -37,17 +38,45 @@ describe('DepencencyResolver', () => {
       expect(result.entryPoints).toEqual([fifth, fourth, third, second, first]);
     });
 
-    it('should remove entry points that have missing dependencies, transitively', () => {
+    it('should remove entry-points that have missing direct dependencies', () => {
       spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies({
-        ...dependencies,
-        'third/index.ts': {resolved: ['fourth'], missing: ['sixth']},
+        'first/index.ts': {resolved: [], missing: ['missing']},
+        'second/index.ts': {resolved: [], missing: []},
       }));
-      const result = resolver.sortEntryPointsByDependency([fifth, first, fourth, second, third]);
-      expect(result.entryPoints).toEqual([fifth, fourth]);
-      expect(result.ignoredEntryPoints).toEqual([
-        {entryPoint: third, missingDeps: ['sixth']},
-        {entryPoint: first, missingDeps: ['sixth']},
-        {entryPoint: second, missingDeps: ['sixth']},
+      const result = resolver.sortEntryPointsByDependency([first, second]);
+      expect(result.entryPoints).toEqual([second]);
+      expect(result.invalidEntryPoints).toEqual([
+        {entryPoint: first, invalidDependencies: ['missing']},
+      ]);
+    });
+
+    it('should remove entry points that depended upon an invalid entry-point', () => {
+      spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies({
+        'first/index.ts': {resolved: ['second'], missing: []},
+        'second/index.ts': {resolved: [], missing: ['missing']},
+        'third/index.ts': {resolved: [], missing: []},
+      }));
+      // Note that we will process `first` before `second`, which has the missing dependency.
+      const result = resolver.sortEntryPointsByDependency([first, second, third]);
+      expect(result.entryPoints).toEqual([third]);
+      expect(result.invalidEntryPoints).toEqual([
+        {entryPoint: second, invalidDependencies: ['missing']},
+        {entryPoint: first, invalidDependencies: ['missing']},
+      ]);
+    });
+
+    it('should remove entry points that will depend upon an invalid entry-point', () => {
+      spyOn(host, 'computeDependencies').and.callFake(createFakeComputeDependencies({
+        'first/index.ts': {resolved: ['second'], missing: []},
+        'second/index.ts': {resolved: [], missing: ['missing']},
+        'third/index.ts': {resolved: [], missing: []},
+      }));
+      // Note that we will process `first` after `second`, which has the missing dependency.
+      const result = resolver.sortEntryPointsByDependency([second, first, third]);
+      expect(result.entryPoints).toEqual([third]);
+      expect(result.invalidEntryPoints).toEqual([
+        {entryPoint: second, invalidDependencies: ['missing']},
+        {entryPoint: first, invalidDependencies: ['second']},
       ]);
     });
 

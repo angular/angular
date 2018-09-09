@@ -12,23 +12,23 @@ import {EntryPoint} from './entry_point';
 
 
 /**
- * Holds information about entry points that were ignored because
- * they have depedencies that are missing.
+ * Holds information about entry points that are removed because
+ * they have dependencies that are missing (directly or transitively).
  *
- * This might not be an error, because the entry point might not actually be used
+ * This might not be an error, because such an entry point might not actually be used
  * in the application. If it is used then the `ngc` application compilation would
- * fail also.
+ * fail also, so we don't need ngcc to catch this.
  *
- * For example, an application use the `@angular/router` package. This package includes an
- * entry-point called `@angular/router/upgrade`, which has a dependency on the
- * `@angular/upgrade` package. If the application never uses code from `@angular/router/upgrade`
- * then there is no need for `@angular/upgrade` to be installed.
- *
+ * For example, consider an application that uses the `@angular/router` package.
+ * This package includes an entry-point called `@angular/router/upgrade`, which has a dependency
+ * on the `@angular/upgrade` package.
+ * If the application never uses code from `@angular/router/upgrade` then there is no need for
+ * `@angular/upgrade` to be installed.
  * In this case the ngcc tool should just ignore the `@angular/router/upgrade` end-point.
  */
-export interface IgnoredEntryPoint {
+export interface InvalidEntryPoint {
   entryPoint: EntryPoint;
-  missingDeps: string[];
+  invalidDependencies: string[];
 }
 
 /**
@@ -54,7 +54,7 @@ export interface IgnoredDependency {
  */
 export interface SortedEntryPointsInfo {
   entryPoints: EntryPoint[];
-  ignoredEntryPoints: IgnoredEntryPoint[];
+  invalidEntryPoints: InvalidEntryPoint[];
   ignoredDependencies: IgnoredDependency[];
 }
 
@@ -70,9 +70,9 @@ export class DependencyResolver {
    * @returns the result of sorting the entry points.
    */
   sortEntryPointsByDependency(entryPoints: EntryPoint[]): SortedEntryPointsInfo {
-    const ignoredEntryPoints: IgnoredEntryPoint[] = [];
+    const invalidEntryPoints: InvalidEntryPoint[] = [];
     const ignoredDependencies: IgnoredDependency[] = [];
-    const graph = new DepGraph();
+    const graph = new DepGraph<EntryPoint>();
 
     // Add the entry ponts to the graph as nodes
     entryPoints.forEach(entryPoint => graph.addNode(entryPoint.path, entryPoint));
@@ -89,29 +89,41 @@ export class DependencyResolver {
       this.host.computeDependencies(entryPointPath, dependencies, missing);
 
       if (missing.size > 0) {
-        const nodesToRemove = [entryPoint.path, ...graph.dependantsOf(entryPoint.path)];
-        nodesToRemove.forEach(node => {
-          ignoredEntryPoints.push({
-            entryPoint: graph.getNodeData(node) as EntryPoint,
-            missingDeps: Array.from(missing)
-          });
-          graph.removeNode(node);
-        });
+        // This entry point has dependencies that are missing
+        // so remove it from the graph.
+        removeNodes(entryPoint, Array.from(missing));
       } else {
         dependencies.forEach(dependencyPath => {
           if (graph.hasNode(dependencyPath)) {
+            // The dependency path maps to an entry point that exists in the graph
+            // so add the dependency.
             graph.addDependency(entryPoint.path, dependencyPath);
+          } else if (invalidEntryPoints.some(i => i.entryPoint.path === dependencyPath)) {
+            // The dependency path maps to an entry-point that was previously removed
+            // from the graph, so remove this entry-point as well.
+            removeNodes(entryPoint, [dependencyPath]);
           } else {
+            // The dependency path points to a package that ngcc does not care about.
             ignoredDependencies.push({entryPoint, dependencyPath});
           }
         });
       }
     });
 
+    // The map now only holds entry-points that ngcc cares about and whose dependencies
+    // (direct and transitive) all exist.
     return {
-      entryPoints: graph.overallOrder().map(path => graph.getNodeData(path) as EntryPoint),
-      ignoredEntryPoints,
+      entryPoints: graph.overallOrder().map(path => graph.getNodeData(path)),
+      invalidEntryPoints,
       ignoredDependencies
     };
+
+    function removeNodes(entryPoint: EntryPoint, invalidDependencies: string[]) {
+      const nodesToRemove = [entryPoint.path, ...graph.dependantsOf(entryPoint.path)];
+      nodesToRemove.forEach(node => {
+        invalidEntryPoints.push({entryPoint: graph.getNodeData(node), invalidDependencies});
+        graph.removeNode(node);
+      });
+    }
   }
 }
