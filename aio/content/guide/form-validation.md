@@ -463,7 +463,7 @@ Note that we check if:
 <!--
 First we must create a directive that will wrap the validator function. We provide it as the validator using the `NG_VALIDATORS` token. If you are not sure why, or you do not fully understand the syntax, revisit the previous [section](guide/form-validation#adding-to-template-driven-forms).
 -->
-먼저, 유효성 검사 함수를 디렉티브로 랩핑해서 `NG_VALIDATORS` 토큰으로 만들어야 합니다. 왜 이렇게 해야하는지, 어떻게 해야하는지 잘 모르겠다면 [이 문서](guide/form-validation#adding-to-template-driven-forms)를 참고하세요.
+먼저, 유효성 검사 함수를 디렉티브로 랩핑해서 `NG_VALIDATORS` 토큰으로 만들어야 합니다. 왜 이렇게 해야하는지, 어떻게 해야하는지 잘 모르겠다면 [이 문서](guide/form-validation#템플릿-기반-폼에-적용하기)를 참고하세요.
 
 <code-example path="form-validation/src/app/shared/identity-revealed.directive.ts" region="cross-validation-directive" title="shared/identity-revealed.directive.ts" linenums="false">
 </code-example>
