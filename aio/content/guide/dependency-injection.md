@@ -133,127 +133,235 @@ _injecting the service_ into the `HeroList` component.
 {@a injector-config}
 {@a bootstrap}
 
+<!--
 ## Injectors
+-->
+## 인젝터 (Injectors)
 
+<!--
 A _service_ like `HeroService` is just a class in Angular until you register it with an Angular dependency injector.
+-->
+`HeroService`와 같은 _서비스_ 는 Angular 의존성 주입의 대상으로 등록되기 전까지는 단순하게 클래스일 뿐입니다.
 
+<!--
 An Angular injector is responsible for creating service instances and injecting them into classes like the `HeroListComponent`.
+-->
+그리고 Angular 인젝터는 이 서비스의 인스턴스를 생성하며, `HeroListComponent`와 같이 의존성이 주입되어야 할 클래스에 의존성을 주입합니다.
 
+<!--
 You rarely create an Angular injector yourself.
 Angular creates injectors for you as it executes the app,
 starting with the _root injector_ that it creates during the [bootstrap process](guide/bootstrapping).
+-->
+인젝터를 개발자가 생성해야 하는 경우는 거의 없습니다.
+인젝터는 Angular가 직접 생성하며, 특히 _최상위 인젝터_ 는 애플리케이션이 [부트스트랩 되는 과정](guide/bootstrapping)에 생성됩니다.
 
+<!--
 Angular doesn't automatically know how you want to create instances of your services or the injector to create your service. You must configure it by specifying providers for every service.
+-->
+서비스를 생성하는 방법을 Angular가 자동으로 알 수는 없습니다. 그래서 서비스 인스턴스를 생성하는 방법은 프로바이더로 등록해야 합니다.
 
+<!--
 **Providers** tell the injector _how to create the service_.
 Without a provider, the injector would not know
 that it is responsible for injecting the service
 nor be able to create the service.
+-->
+**프로바이더** 는 _서비스 인스턴스를 어떻게 생성하는지_ 인젝터에게 알려주는 객체입니다.
+그래서 프로바이더가 없으면 서비스 인스턴스를 어떻게 생성해야 할지 알지 못하기 때문에 인스턴스를 생성할 수 없습니다.
 
 <div class="alert is-helpful">
 
+<!--
 You'll learn much more about _providers_ [below](#providers).
 For now, it is sufficient to know that they configure where and how services are created.
+-->
+_프로바이더_ 에 대해서는 [아래](#providers)에서 자세하게 설명합니다.
+지금은 프로바이더가 어떤 역할을 하는지만 이해하고 넘어가면 충분합니다.
 
 </div>
 
+<!--
 There are many ways to register a service provider with an injector. This section shows the most common ways 
 of configuring a provider for your services.
+-->
+인젝터에 서비스 프로바이더를 등록하는 방법은 여러가지입니다. 이 중 가장 많이 쓰이는 방법부터 알아봅시다.
 
 {@a register-providers-injectable}
 
+<!--
 ## @Injectable providers
+-->
+## @Injectable 프로바이더
 
+<!--
 The `@Injectable` decorator identifies services and other classes that are intended to be injected. It can also be used to configure a provider for those services.
+-->
+서비스에 `@Injectable` 데코레이터를 사용하면 이 클래스가 의존성 주입의 대상이라는 것을 지정할 수 있습니다. 그리고 이 데코레이터는 프로바이더를 설정하는 용도로도 사용합니다.
 
+<!--
 Here we configure a provider for `HeroService` using the `@Injectable` decorator on the class.
+-->
+`HeroService` 클래스를 프로바이더에 등록하려면 다음과 같이 클래스 선언 위에 `@Injecdtable` 데코레이터를 지정하면 됩니다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.0.ts"  title="src/app/heroes/heroes.service.ts" linenums="false"> </code-example> 
 
+<!--
 `providedIn` tells Angular that the root injector is responsible for creating an instance of the `HeroService` (by invoking its constructor) and making it available across the application. The CLI sets up this kind of a provider automatically for you when generating a new service.
+-->
+`providedIn`을 사용하면 이 서비스의 프로바이더가 등록될 위치를 지정할 수 있습니다. 그래서 `providedIn: root`라고 사용하면 이 서비스 프로바이더는 애플리케이션 최상위 인젝터에 등록되며, 앱 전체에서 딱 하나의 인스턴스만 생성됩니다. Angular CLI를 사용해서 서비스를 생성하면 이 설정이 기본값입니다.
 
+<!--
 Sometimes it's not desirable to have a service always be provided in the application root injector. Perhaps users should explicitly opt-in to using the service, or the service should be provided in a lazily-loaded context. In this case, the provider should be associated with a specific `@NgModule` class, and will be used by whichever injector includes that module.
+-->
+모든 서비스가 최상위 인젝터에 등록되어야 하는 것은 아닙니다. 어떤 서비스는 특정 범위 안에 등록되어야 하는 경우도 있고, 지연로딩 되는 모듈에 등록되어야 하는 경우도 있습니다. 이런 경우에는 서비스 프로바이더가 특정 `@NgModule`에 등록되어야 하며, 서비스의 인스턴스를 생성할 때도 이 모듈에 있는 인젝터를 사용합니다.
 
+<!--
 In the following excerpt, the `@Injectable` decorator is used to configure a provider that will be available in any injector that includes the HeroModule.
+-->
+그래서 `@Injectable` 데코레이터를 다음과 같이 사용하면 이 서비스 인스턴스는 `HeroModule`안에서만 사용할 수 있습니다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.4.ts"  title="src/app/heroes/hero.service.ts" linenums="false"> </code-example>
 
 {@a register-providers-ngmodule}
 
+<!--
 ### _@NgModule_ providers
+-->
+### _@NgModule_ 프로바이더
 
+<!--
 In the following excerpt, the root `AppModule` registers two providers in its `providers` array.
+-->
+다음 예제에서 `AppModule`의 `providers` 프로퍼티에는 두 개의 프로바이더가 배열로 등록되어 있습니다.
 
 <code-example path="dependency-injection/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (providers)" region="providers">
 </code-example>
 
+<!--
 The first entry registers the `UserService` class (_not shown_) under the `UserService` _injection token_.
 The second registers a value (`HERO_DI_CONFIG`) under the `APP_CONFIG` _injection token_.
+-->
+첫 번째는 _명시적으로 표현되어 있지는 않지만_ `UserService` 클래스가 `UserService` _인젝션 토큰으로_ 등록되어 있고, 두 번째는 `HERO_DI_CONFIG`라는 값이 `APP_CONFIG` _인젝션 토큰_ 으로 등록되어 있습니다.
 
+<!--
 With the above registrations, Angular can inject the `UserService` or the `HERO_DI_CONFIG` value
 into any class that it creates.
+-->
+이렇게 등록하면 이 인젝터의 범위 안에서 `UserService`와 `HERO_DI_CONFIG` 값을 의존성으로 주입받아 사용할 수 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 You'll learn about _injection tokens_ and _provider_ syntax [below](#providers).
+-->
+_인젝션 토큰_ 과 _프로바이더_ 문법은 [아래](#providers)에서 자세히 살펴봅니다.
+
 </div>
 
 {@a register-providers-component}
 
+<!--
 ### _@Component_ providers
+-->
+### _@Component_ 프로바이더
 
+<!--
 In addition to providing the service application-wide or within a particular `@NgModule`, services can also be provided in specific components. Services provided in component-level is only available within that component injector or in any of its child components.
+-->
+서비스 프로바이더는 앱 전체 범위나 특정 `@NgModule` 범위에 등록할 수도 있지만, 특정 컴포넌트 범위로 등록할 수도 있습니다. 그러면 이 서비스는 컴포넌트 인젝터에 등록되며, 컴포넌트의 하위 컴포넌트에서만 사용할 수 있습니다.
 
+<!--
 The example below shows a revised `HeroesComponent` that registers the `HeroService` in its `providers` array.
+-->
+다음 예제는 `HeroService`를 `HeroesComponent` `providers`에 등록하는 예제입니다.
 
 <code-example path="dependency-injection/src/app/heroes/heroes.component.1.ts" title="src/app/heroes/heroes.component.ts" linenums="false">
 </code-example>
 
 {@a ngmodule-vs-comp}
 
+<!--
 ### @Injectable, _@NgModule_ or _@Component_?
+-->
+### 어떤 것을 사용해야 할까?
 
+<!--
 Should you provide a service with an `@Injectable` decorator, in an `@NgModule`, or within an `@Component`?
 The choices lead to differences in the final bundle size, service _scope_, and service _lifetime_.
+-->
+그러면 서비스 프로바이더를 등록하는 3가지 방법 중 어떤 것을 선택해야 할까요?
+이 답은 번들 파일의 크기, 서비스의 _사용 범위_, 서비스의 _실행 주기_ 에 따라 달라집니다.
 
+<!--
 When you register providers in the **@Injectable** decorator of the service itself, optimization tools such as those used by the CLI's production builds can perform tree shaking, which removes services that aren't used by your app. Tree shaking results in smaller bundle sizes.
+-->
+서비스에 **@Injectable** 데코레이터를 사용하면 Angular CLI와 같은 빌드 툴의 트리 셰이킹 기능을 활용할 수 있습니다. 이 서비스가 실제로 사용되지 않는다면 트리 셰이킹 과정에 이 코드는 제거됩니다.
 
+<!--
 **Angular module providers** (`@NgModule.providers`) are registered with the application's root injector.
 Angular can inject the corresponding services in any class it creates.
 Once created, a service instance lives for the life of the app and Angular injects this one service instance in every class that needs it.
+-->
+서비스 프로바이더를 **모듈 프로바이더 (`@NgModule.providers`)**에 등록하면 애플리케이션 최상위 인젝터에 등록한 것과 같은 동작을 합니다.
+그래서 모듈에 등록된 프로바이더를 사용해서 서비스의 인스턴스를 생성할 수 있으며, 한 번 생성된 서비스 인스턴스는 애플리케이션이 종료될때까지 계속 유지되면서 필요한 곳에 주입됩니다.
 
+<!--
 You're likely to inject the `UserService` in many places throughout the app
 and will want to inject the same service instance every time.
 Providing the `UserService` with an Angular module is a good choice if an `@Injectable` provider is not an option..
+-->
+`UserService`를 앱 전역에 사용하며, 항상 같은 인스턴스가 주입되기를 원한다면 `@Injectable` 데코레이터를 사용하는 것이 좋습니다. 그리고 이 데코레이터를 사용할 수 없다면 모듈 프로바이더로 등록하는 방법을 고려해볼 수 있습니다.
 
 <div class="alert is-helpful">
 
+<!--
 To be precise, Angular module providers are registered with the root injector
 _unless the module is_ [lazy loaded](guide/lazy-loading-ngmodules).
 In this sample, all modules are _eagerly loaded_ when the application starts,
 so all module providers are registered with the app's root injector.
+-->
+좀 더 자세하게 이야기하면, Angular는 _[지연 로딩]((guide/lazy-loading-ngmodules))되지 않는_ 모듈의 프로바이더를 최상위 인젝터에 등록합니다. 지금까지 살펴봤던 모듈은 모두 애플리케이션이 시작될 때 _즉시 로드되는_ 모듈이기 때문에, 모든 프로바이더가 애플리케이션 최상위 인젝터에 등록됩니다.
 
 </div><br>
 
 <hr>
 
+<!--
 **A component's providers** (`@Component.providers`) are registered with each component instance's own injector.
+-->
+**컴포넌트 프로바이더 (`@Component.providers`)**를 사용하면 각 컴포넌트의 인젝터마다 서비스의 인스턴스가 생성됩니다.
 
+<!--
 Angular can only inject the corresponding services in that component instance or one of its descendant component instances.
 Angular cannot inject the same service instance anywhere else.
+-->
+그러면 이 컴포넌트와 이 컴포넌트의 하위 컴포넌트에서 서비스 인스턴스를 공유합니다. 컴포넌트 밖과는 인스턴스를 공유하지 않습니다.
 
+<!--
 Note that a component-provided service may have a limited lifetime. Each new instance of the component gets its own instance of the service
 and, when the component instance is destroyed, so is that service instance.
+-->
+컴포넌트 프로바이더로 등록된 서비스의 인스턴스는 컴포넌트가 생성되고 종료되는 시점을 함께 따라갑니다. 그래서 이 서비스 인스턴스는 컴포넌트의 인스턴스가 생성될 때 함께 생성되며, 이 컴포넌트가 종료될 때 서비스 인스턴스도 함께 종료됩니다.
 
+<!--
 In this sample app, the `HeroComponent` is created when the application starts
 and is never destroyed so the `HeroService` created for the `HeroComponent` also live for the life of the app.
+-->
+예제로 살펴본 애플리케이션에서 `HeroComponent`는 애플리케이션이 시작될 때 생성되며 따로 종료되지 않기 때문에, `HeroComponent`에 의존성으로 주입되는 `HeroService`의 인스턴스도 애플리케이션이 종료되기 전까지 없어지지 않습니다.
 
+<!--
 If you want to restrict `HeroService` access to the `HeroComponent` and its nested `HeroListComponent`,
 providing the `HeroService` in the `HeroComponent` may be a good choice.
+-->
+`HeroService`에 접근할 수 있는 범위를 `HeroComponent`와 하위 컴포넌트인 `HeroListComponent`로만 제한하려면, `HeroService`의 프로바이더를 `HeroComponent`에 등록하는 것이 가장 좋습니다.
 
 <div class="alert is-helpful">
 
+<!--
 The scope and lifetime of component-provided services is a consequence of [the way Angular creates component instances](#component-child-injectors). 
+-->
+컴포넌트 프로바이더에 등록된 서비스의 인스턴스는 [컴포넌트 인스턴스가 생성된](#component-child-injectors) 직후에 생성됩니다.
 
 </div>
 
