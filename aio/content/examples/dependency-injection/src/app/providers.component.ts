@@ -116,7 +116,7 @@ export class OldLogger {
   providers:
     // #docregion providers-6a
     [ NewLogger,
-      // Not aliased! Creates two instances of `NewLogger`
+      // 별칭으로 지정한 것이 아닙니다! `NewLogger`의 인스턴스는 2개 생성됩니다.
       { provide: OldLogger, useClass: NewLogger}]
     // #enddocregion providers-6a
 })
@@ -139,7 +139,7 @@ export class Provider6aComponent {
   providers:
     // #docregion providers-6b
     [ NewLogger,
-      // Alias OldLogger w/ reference to NewLogger
+      // OldLogger는 NewLogger를 가리키는 이름으로 지정됩니다.
       { provide: OldLogger, useExisting: NewLogger}]
     // #enddocregion providers-6b
 })
@@ -157,7 +157,7 @@ export class Provider6bComponent {
 //////////////////////////////////////////
 
 // #docregion silent-logger
-// An object in the shape of the logger service
+// Logger 서비스와 모양이 같은 객체
 export function SilentLoggerFn() {}
 
 const silentLogger = {

@@ -321,7 +321,7 @@ _unless the module is_ [lazy loaded](guide/lazy-loading-ngmodules).
 In this sample, all modules are _eagerly loaded_ when the application starts,
 so all module providers are registered with the app's root injector.
 -->
-좀 더 자세하게 이야기하면, Angular는 _[지연 로딩]((guide/lazy-loading-ngmodules))되지 않는_ 모듈의 프로바이더를 최상위 인젝터에 등록합니다. 지금까지 살펴봤던 모듈은 모두 애플리케이션이 시작될 때 _즉시 로드되는_ 모듈이기 때문에, 모든 프로바이더가 애플리케이션 최상위 인젝터에 등록됩니다.
+좀 더 자세하게 이야기하면, Angular는 _[지연 로딩](guide/lazy-loading-ngmodules)되지 않는_ 모듈의 프로바이더를 최상위 인젝터에 등록합니다. 지금까지 살펴봤던 모듈은 모두 애플리케이션이 시작될 때 _즉시 로드되는_ 모듈이기 때문에, 모든 프로바이더가 애플리케이션 최상위 인젝터에 등록됩니다.
 
 </div><br>
 
@@ -368,130 +368,230 @@ The scope and lifetime of component-provided services is a consequence of [the w
 
 {@a providers}
 
+<!--
 ## Providers
+-->
+## 프로바이더 (Providers)
 
+<!--
 A service provider *provides* the concrete, runtime version of a dependency value.
 The injector relies on **providers** to create instances of the services
 that the injector injects into components, directives, pipes, and other services.
+-->
+서비스 프로바이더가 *제공*하는 것은 실행 시점에 사용되는 의존성 객체의 인스턴스입니다.
+이 인스턴스는 **서비스 프로바이더**를 사용하는 인젝터가 생성하며, 컴포넌트나 디렉티브, 파이프, 다른 서비스에 인스턴스를 의존성으로 주입하는 것도 인젝터입니다.
 
+<!--
 You must register a service *provider* with an injector, or it won't know how to create the service.
+-->
+그래서 서비스의 *프로바이더*는 인젝터에 등록해야 하며, 프로바이더를 등록하지 않으면 인젝터는 서비스를 생성할 수 없습니다.
 
+<!--
 The next few sections explain the many ways you can specify a provider.
+-->
+이번에는 서비스 프로바이더를 사용하는 몇가지 방법을 알아봅시다.
 
+<!--
 ### The class as its own provider
+-->
+### 그 자체로 프로바이더 역할을 하는 클래스
 
+<!--
 There are many ways to *provide* something that looks and behaves like a `Logger`.
 The `Logger` class itself is an obvious and natural provider.
+-->
+무언가를 제공하는 *프로바이더*는 여러가지가 있겠지만, 이번 예제에서는 `Logger` 서비스를 예로 들어봅시다.
+다음과 같이 지정된 `Logger` 클래스는 그 자체로 서비스 프로바이더의 역할을 합니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-logger">
 </code-example>
 
+<!--
 But it's not the only way.
+-->
+하지만 이 방법만 있는 것은 아닙니다.
 
+<!--
 You can configure the injector with alternative providers that can deliver an object that behaves like a `Logger`.
 You could provide a substitute class. You could provide a logger-like object.
 You could give it a provider that calls a logger factory function.
 Any of these approaches might be a good choice under the right circumstances.
+-->
+인젝터를 사용하면서 `Logger`의 역할을 하는 다른 객체를 대신 지정할 수도 있습니다.
+`Logger` 클래스 대신 다른 클래스를 지정할 수도 있으며, 이 클래스와 비슷하게 생긴 객체를 지정할 수도 있고, 팩토리 함수를 서비스 프로바이더로 지정할 수도 있습니다.
+상황에 따라 어떠한 형태로든 사용할 수 있습니다.
 
+<!--
 What matters is that the injector has a provider to go to when it needs a `Logger`.
+-->
+중요한 것은 `Logger`가 필요한 경우에는 프로바이더가 인젝터에 미리 등록되어 있어야 한다는 것입니다.
 
 {@a provide}
 
+<!--
 ### The _provide_ object literal
+-->
+### 오브젝트 리터럴 사용하기
 
+<!--
 Here's the class-provider syntax again.
+-->
+클래스를 서비스 프로바이더로 사용하는 코드를 다시 확인해 봅시다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-logger">
 </code-example>
 
+<!--
 This is actually a shorthand expression for a provider registration
 using a _provider_ object literal with two properties:
+-->
+이 문법은 프로바이더로 등록하는 문법을 간략화한 표현입니다. 원래 프로바이더를 등록할 때는 프로퍼티 2개가 필요하며 다음처럼 사용해야 합니다:
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-3" >
 </code-example>
 
+<!--
 The `provide` property holds the [token](guide/dependency-injection#token) that serves as the key for both locating a dependency value
 and registering the provider.
+-->
+`provide` 프로퍼티에는 의존성으로 주입하는 객체의 식별자인 [토큰](guide/dependency-injection#token)을 지정합니다.
 
+<!--
 The second property is always a provider definition object,
 which you can think of as a *recipe* for creating the dependency value.
 There are many ways to create dependency values just as there are many ways to write a recipe.
+-->
+그리고 두 번째 프로퍼티에는 의존성 객체를 *만드는 구체적인 방법*을 지정합니다. 이 예제에서는 클래스 객체를 프로바이더로 지정했으며, 이 외에도 의존성 객체를 만드는 방법은 여러가지입니다.
 
 {@a class-provider}
 
+<!--
 ### Alternative class providers
+-->
+### 대체 클래스 프로바이더
 
+<!--
 Occasionally you'll ask a different class to provide the service.
 The following code tells the injector
 to return a `BetterLogger` when something asks for the `Logger`.
+-->
+서비스 프로바이더를 다른 클래스로 지정해야 하는 경우는 종종 발생합니다.
+그래서 다음과 같이 작성하면 `Logger`를 의존성으로 주입해야 하는 곳에 `BetterLogger` 클래스를 주입하라고 인젝터에게 지정할 수 있습니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-4" >
 </code-example>
 
 {@a class-provider-dependencies}
 
+<!--
 ### Class provider with dependencies
+-->
+### 추가 의존성이 있는 클래스 프로바이더
 
+<!--
 Maybe an `EvenBetterLogger` could display the user name in the log message.
 This logger gets the user from the injected `UserService`,
 which is also injected at the application level.
+-->
+어쩌면 `EvenBetterLogger`가 현재 사용자의 이름을 로그로 출력하는 기능을 제공할 수도 있습니다.
+그러면 이 서비스는 애플리케이션 계층에 등록된 `UserService`에서 사용자 정보를 가져와야 합니다.
+이 클래스가 다음과 같이 정의되어 있다고 합시다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="EvenBetterLogger"  linenums="false">
 </code-example>
 
+<!--
 Configure it like `BetterLogger`.
+-->
+그러면 다음과 같이 프로바이더를 등록하면 됩니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-5"  linenums="false">
 </code-example>
 
 {@a aliased-class-providers}
 
+<!--
 ### Aliased class providers
+-->
+### 클래스 프로바이더 별칭 지정하기
 
+<!--
 Suppose an old component depends upon an `OldLogger` class.
 `OldLogger` has the same interface as the `NewLogger`, but for some reason
 you can't update the old component to use it.
+-->
+이전에 작성되어 있던 어떤 컴포넌트가 `OldLogger` 클래스를 사용한다고 합시다.
+`OldLogger`의 모든 인터페이스는 `NewLogger`와 같지만, 뭔가 이유가 있어서 그 컴포넌트가 사용하는 `OldLogger`를 변경할 수 없다고 합시다.
 
+<!--
 When the *old* component logs a message with `OldLogger`,
 you'd like the singleton instance of `NewLogger` to handle it instead.
+-->
+이 때 *이전의* 컴포넌트가 `OldLogger`를 사용해서 로그를 출력하는 것을, `NewLogger`가 대신 처리하게 하려고 합니다.
 
+<!--
 The dependency injector should inject that singleton instance
 when a component asks for either the new or the old logger.
 The `OldLogger` should be an alias for `NewLogger`.
+-->
+의존성을 주입하는 인젝터는 그 의존성이 어떤 것이냐에 관계없이 적당한 인스턴스를 제공하기만 하면 됩니다.
+이 관점에서 `OldLogger`는 `NewLogger`를 가리키는 또 다른 이름으로 사용할 수 있습니다.
 
+<!--
 You certainly do not want two different `NewLogger` instances in your app.
 Unfortunately, that's what you get if you try to alias `OldLogger` to `NewLogger` with `useClass`.
+-->
+물론 `NewLogger` 인스턴스가 애플리케이션에 2개 존재하는 것은 원하는 상황이 아닙니다.
+그런데 다음과 같이 `useClass`를 사용하면 `OldLogger`로 연결되는 인스턴스와 `NewLogger`로 연결되는 인스턴스가 따로 만들어집니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6a"  linenums="false">
 </code-example>
 
+<!--
 The solution: alias with the `useExisting` option.
+-->
+해결방법: 프로바이더의 별칭을 지정하려면 `useExisting` 옵션을 사용합니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-6b" linenums="false">
 </code-example>
 
 {@a value-provider}
 
+<!--
 ### Value providers
+-->
+### 값/객체 프로바이더
 
+<!--
 Sometimes it's easier to provide a ready-made object rather than ask the injector to create it from a class.
+-->
+어떤 경우에는 클래스를 사용해서 인스턴스를 만들지 않고 미리 만들어둔 객체를 사용하는 것이 간편한 경우도 있습니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="silent-logger"  linenums="false">
 </code-example>
 
+<!--
 Then you register a provider with the `useValue` option,
 which makes this object play the logger role.
+-->
+이 때는 `useValue` 옵션을 사용해서 로거 역할을 하는 객체를 프로바이더로 등록할 수 있습니다.
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-7" linenums="false">
 </code-example>
 
+<!--
 See more `useValue` examples in the
 [Non-class dependencies](guide/dependency-injection#non-class-dependencies) and
 [InjectionToken](guide/dependency-injection#injection-token) sections.
+-->
+`useValue`를 사용하는 예제는 [클래스가 아닌 의존성](guide/dependency-injection#non-class-dependencies) 섹션과 [InjectionToken](guide/dependency-injection#injection-token) 섹션에서 더 확인할 수 있습니다.
 
 {@a factory-provider}
 
+<!--
 ### Factory providers
+-->
+### 팩토리 프로바이더
 
 Sometimes you need to create the dependent value dynamically,
 based on information you won't have until the last possible moment.
