@@ -8,17 +8,20 @@
 import * as path from 'canonical-path';
 import * as fs from 'fs';
 
-import * as deps from './dependencies';
+import {DependencyResolver, SortedEntryPointsInfo} from './dependency_resolver';
 import {EntryPoint, getEntryPointInfo} from './entry_point';
 
 
-/**
- * Search the given directory, and sub-directories, for Angular package entry points.
- * @param sourceDirectory An absolute path to the directory to search for entry points.
- */
-export function findEntryPoints(sourceDirectory: string): deps.SortedEntryPointsInfo {
-  const unsortedEntryPoints = walkDirectoryForEntryPoints(sourceDirectory);
-  return deps.sortEntryPointsByDependency(unsortedEntryPoints);
+export class EntryPointFinder {
+  constructor(private resolver: DependencyResolver) {}
+  /**
+   * Search the given directory, and sub-directories, for Angular package entry points.
+   * @param sourceDirectory An absolute path to the directory to search for entry points.
+   */
+  findEntryPoints(sourceDirectory: string): SortedEntryPointsInfo {
+    const unsortedEntryPoints = walkDirectoryForEntryPoints(sourceDirectory);
+    return this.resolver.sortEntryPointsByDependency(unsortedEntryPoints);
+  }
 }
 
 /**

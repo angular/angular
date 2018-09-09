@@ -9,8 +9,10 @@ import * as path from 'canonical-path';
 import {existsSync, lstatSync, readFileSync, readdirSync} from 'fs';
 import * as yargs from 'yargs';
 
+import {DependencyHost} from './packages/dependency_host';
+import {DependencyResolver} from './packages/dependency_resolver';
 import {EntryPointFormat} from './packages/entry_point';
-import {findEntryPoints} from './packages/entry_point_finder';
+import {EntryPointFinder} from './packages/entry_point_finder';
 import {Transformer} from './packages/transformer';
 
 export function mainNgcc(args: string[]): number {
@@ -40,9 +42,12 @@ export function mainNgcc(args: string[]): number {
   const targetPath: string = options['t'] || sourcePath;
 
   const transformer = new Transformer(sourcePath, targetPath);
+  const host = new DependencyHost();
+  const resolver = new DependencyResolver(host);
+  const finder = new EntryPointFinder(resolver);
 
   try {
-    const {entryPoints} = findEntryPoints(sourcePath);
+    const {entryPoints} = finder.findEntryPoints(sourcePath);
     entryPoints.forEach(
         entryPoint => formats.forEach(format => transformer.transform(entryPoint, format)));
   } catch (e) {

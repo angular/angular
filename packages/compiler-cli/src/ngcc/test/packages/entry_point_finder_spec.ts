@@ -7,23 +7,26 @@
  */
 
 import * as mockFs from 'mock-fs';
-import * as deps from '../../src/packages/dependencies';
+import {DependencyHost} from '../../src/packages/dependency_host';
+import {DependencyResolver} from '../../src/packages/dependency_resolver';
 import {EntryPoint} from '../../src/packages/entry_point';
-import {findEntryPoints} from '../../src/packages/entry_point_finder';
+import {EntryPointFinder} from '../../src/packages/entry_point_finder';
 
 describe('findEntryPoints()', () => {
-  let sortEntryPointsByDependencySpy: jasmine.Spy;
+  let resolver: DependencyResolver;
+  let finder: EntryPointFinder;
   beforeEach(() => {
-    sortEntryPointsByDependencySpy =
-        spyOn(deps, 'sortEntryPointsByDependency').and.callFake((entryPoints: EntryPoint[]) => {
-          return {entryPoints, ignoredEntryPoints: [], ignoredDependencies: []};
-        });
+    resolver = new DependencyResolver(new DependencyHost());
+    spyOn(resolver, 'sortEntryPointsByDependency').and.callFake((entryPoints: EntryPoint[]) => {
+      return {entryPoints, ignoredEntryPoints: [], ignoredDependencies: []};
+    });
+    finder = new EntryPointFinder(resolver);
   });
   beforeEach(createMockFileSystem);
   afterEach(restoreRealFileSystem);
 
   it('should find sub-entry-points within a  package', () => {
-    const {entryPoints} = findEntryPoints('/sub_entry_points');
+    const {entryPoints} = finder.findEntryPoints('/sub_entry_points');
     const entryPointPaths = entryPoints.map(x => [x.package, x.path]);
     expect(entryPointPaths).toEqual([
       ['/sub_entry_points/common', '/sub_entry_points/common'],
@@ -34,7 +37,7 @@ describe('findEntryPoints()', () => {
   });
 
   it('should find packages inside a namespace', () => {
-    const {entryPoints} = findEntryPoints('/namespaced');
+    const {entryPoints} = finder.findEntryPoints('/namespaced');
     const entryPointPaths = entryPoints.map(x => [x.package, x.path]);
     expect(entryPointPaths).toEqual([
       ['/namespaced/@angular/common', '/namespaced/@angular/common'],
@@ -45,27 +48,27 @@ describe('findEntryPoints()', () => {
   });
 
   it('should return an empty array if there are no packages', () => {
-    const {entryPoints} = findEntryPoints('/no_packages');
+    const {entryPoints} = finder.findEntryPoints('/no_packages');
     expect(entryPoints).toEqual([]);
   });
 
   it('should return an empty array if there are no valid entry-points', () => {
-    const {entryPoints} = findEntryPoints('/no_valid_entry_points');
+    const {entryPoints} = finder.findEntryPoints('/no_valid_entry_points');
     expect(entryPoints).toEqual([]);
   });
 
   it('should ignore folders starting with .', () => {
-    const {entryPoints} = findEntryPoints('/dotted_folders');
+    const {entryPoints} = finder.findEntryPoints('/dotted_folders');
     expect(entryPoints).toEqual([]);
   });
 
   it('should ignore folders that are symlinked', () => {
-    const {entryPoints} = findEntryPoints('/symlinked_folders');
+    const {entryPoints} = finder.findEntryPoints('/symlinked_folders');
     expect(entryPoints).toEqual([]);
   });
 
   it('should handle nested node_modules folders', () => {
-    const {entryPoints} = findEntryPoints('/nested_node_modules');
+    const {entryPoints} = finder.findEntryPoints('/nested_node_modules');
     const entryPointPaths = entryPoints.map(x => [x.package, x.path]);
     expect(entryPointPaths).toEqual([
       ['/nested_node_modules/outer', '/nested_node_modules/outer'],

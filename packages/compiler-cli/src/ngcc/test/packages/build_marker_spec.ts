@@ -94,7 +94,7 @@ function restoreRealFileSystem() {
 }
 
 function createEntryPoint(path: string): EntryPoint {
-  return { path, package: '', typings: '' };
+  return {path, package: '', typings: ''};
 }
 
 describe('Marker files', () => {
