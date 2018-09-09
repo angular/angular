@@ -98,16 +98,17 @@ class SanitizingHtmlSerializer {
     // However this code never accesses properties off of `document` before deleting its contents
     // again, so it shouldn't be vulnerable to DOM clobbering.
     let current: Node = el.firstChild !;
+    let elementValid = true;
     while (current) {
       if (current.nodeType === Node.ELEMENT_NODE) {
-        this.startElement(current as Element);
+        elementValid = this.startElement(current as Element);
       } else if (current.nodeType === Node.TEXT_NODE) {
         this.chars(current.nodeValue !);
       } else {
         // Strip non-element, non-text nodes.
         this.sanitizedSomething = true;
       }
-      if (current.firstChild) {
+      if (elementValid && current.firstChild) {
         current = current.firstChild !;
         continue;
       }
@@ -130,11 +131,19 @@ class SanitizingHtmlSerializer {
     return this.buf.join('');
   }
 
-  private startElement(element: Element) {
+  /**
+   * Outputs only valid Elements.
+   *
+   * Invalid elements are skipped.
+   *
+   * @param element element to sanitize
+   * Returns true if the element is valid.
+   */
+  private startElement(element: Element): boolean {
     const tagName = element.nodeName.toLowerCase();
     if (!VALID_ELEMENTS.hasOwnProperty(tagName)) {
       this.sanitizedSomething = true;
-      return;
+      return false;
     }
     this.buf.push('<');
     this.buf.push(tagName);
@@ -154,6 +163,7 @@ class SanitizingHtmlSerializer {
       this.buf.push(' ', attrName, '="', encodeEntities(value), '"');
     }
     this.buf.push('>');
+    return true;
   }
 
   private endElement(current: Element) {
