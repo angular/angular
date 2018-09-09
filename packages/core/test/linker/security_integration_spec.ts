@@ -239,7 +239,7 @@ function declareTests({useJit}: {useJit: boolean}) {
 
         ci.ctxProp = 'ha <script>evil()</script>';
         fixture.detectChanges();
-        expect(getDOM().getInnerHTML(e)).toEqual('ha evil()');
+        expect(getDOM().getInnerHTML(e)).toEqual('ha ');
 
         ci.ctxProp = 'also <img src="x" onerror="evil()"> evil';
         fixture.detectChanges();
