@@ -13,7 +13,7 @@ import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 
 import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
-import {attachPatchData, getLElementFromComponent, getLElementFromRootComponent} from './context_discovery';
+import {attachPatchData, getLElementFromComponent, getLElementFromRootComponent, readPatchedData, readPatchedLViewData} from './context_discovery';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
@@ -1769,6 +1769,9 @@ export function baseDirectiveCreate<T>(
   ngDevMode && assertPreviousIsParent();
 
   attachPatchData(directive, viewData);
+  if (hostNode) {
+    attachPatchData(hostNode.native, viewData);
+  }
 
   if (directives == null) viewData[DIRECTIVES] = directives = [];
 
@@ -2175,7 +2178,7 @@ export function componentRefresh<T>(adjustedElementIndex: number): void {
 
   // Only attached CheckAlways components or attached, dirty OnPush components should be checked
   if (viewAttached(hostView) && hostView[FLAGS] & (LViewFlags.CheckAlways | LViewFlags.Dirty)) {
-    detectChangesInternal(hostView, element, hostView[CONTEXT]);
+    detectChangesInternal(hostView, hostView[CONTEXT]);
   }
 }
 
@@ -2435,7 +2438,7 @@ export function tick<T>(component: T): void {
 function tickRootContext(rootContext: RootContext) {
   for (let i = 0; i < rootContext.components.length; i++) {
     const rootComponent = rootContext.components[i];
-    renderComponentOrTemplate(getRootView(rootComponent), rootComponent);
+    renderComponentOrTemplate(readPatchedLViewData(rootComponent) !, rootComponent);
   }
 }
 
@@ -2448,8 +2451,7 @@ function tickRootContext(rootContext: RootContext) {
 
 export function getRootView(component: any): LViewData {
   ngDevMode && assertDefined(component, 'component');
-  const lElementNode = _getComponentHostLElementNode(component);
-  let lViewData = lElementNode.view;
+  let lViewData = readPatchedLViewData(component) !;
   while (lViewData[PARENT]) {
     lViewData = lViewData[PARENT] !;
   }
@@ -2470,11 +2472,10 @@ export function getRootView(component: any): LViewData {
  * @param component The component which the change detection should be performed on.
  */
 export function detectChanges<T>(component: T): void {
-  const hostNode = _getComponentHostLElementNode(component);
+  const hostNode = getLElementFromComponent(component) !;
   ngDevMode &&
-      assertDefined(
-          hostNode.data, 'Component host node should be attached to an LViewData instance.');
-  detectChangesInternal(hostNode.data as LViewData, hostNode, component);
+      assertDefined(hostNode, 'Component host node should be attached to an LViewData instance.');
+  detectChangesInternal(hostNode.data !, component);
 }
 
 /**
@@ -2521,8 +2522,7 @@ export function checkNoChangesInRootView(lViewData: LViewData): void {
 }
 
 /** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck. */
-export function detectChangesInternal<T>(
-    hostView: LViewData, hostNode: LElementNode, component: T) {
+export function detectChangesInternal<T>(hostView: LViewData, component: T) {
   const hostTView = hostView[TVIEW];
   const oldView = enterView(hostView, null);
   const templateFn = hostTView.template !;
@@ -2569,8 +2569,8 @@ function updateViewQuery<T>(viewQuery: ComponentQuery<{}>| null, component: T): 
  */
 export function markDirty<T>(component: T) {
   ngDevMode && assertDefined(component, 'component');
-  const lElementNode = _getComponentHostLElementNode(component);
-  markViewDirty(lElementNode.view);
+  const lViewData = readPatchedLViewData(component) !;
+  markViewDirty(lViewData);
 }
 
 ///////////////////////////////
@@ -2881,11 +2881,9 @@ function assertDataNext(index: number, arr?: any[]) {
       arr.length, index, `index ${index} expected to be at the end of arr (length ${arr.length})`);
 }
 
-export function _getComponentHostLElementNode<T>(
-    component: T, isRootComponent?: boolean): LElementNode {
+export function _getComponentHostLElementNode(component: any): LElementNode {
   ngDevMode && assertDefined(component, 'expecting component got null');
-  const lElementNode = isRootComponent ? getLElementFromRootComponent(component) ! :
-                                         getLElementFromComponent(component) !;
+  const lElementNode = getLElementFromComponent(component) !;
   ngDevMode && assertDefined(component, 'object is not a component');
   return lElementNode;
 }

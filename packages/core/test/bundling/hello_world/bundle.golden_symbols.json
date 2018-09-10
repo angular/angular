@@ -99,9 +99,6 @@
     "name": "_CLEAN_PROMISE"
   },
   {
-    "name": "_getComponentHostLElementNode"
-  },
-  {
     "name": "_renderCompCount"
   },
   {
@@ -136,9 +133,6 @@
   },
   {
     "name": "componentRefresh"
-  },
-  {
-    "name": "createLContext"
   },
   {
     "name": "createLNode"
@@ -201,9 +195,6 @@
     "name": "extractPipeDef"
   },
   {
-    "name": "findViaComponent"
-  },
-  {
     "name": "firstTemplatePass"
   },
   {
@@ -217,12 +208,6 @@
   },
   {
     "name": "getDirectiveDef"
-  },
-  {
-    "name": "getLElementFromComponent"
-  },
-  {
-    "name": "getLElementFromRootComponent"
   },
   {
     "name": "getLViewChild"
@@ -250,9 +235,6 @@
   },
   {
     "name": "getRenderParent"
-  },
-  {
-    "name": "getRootView"
   },
   {
     "name": "hostElement"
@@ -289,6 +271,9 @@
   },
   {
     "name": "readPatchedData"
+  },
+  {
+    "name": "readPatchedLViewData"
   },
   {
     "name": "refreshChildComponents"
