@@ -179,7 +179,7 @@ function maybeUnwrapEmpty<T>(value: T): T;
 function maybeUnwrapEmpty(value: any): any {
   if (value === EMPTY) {
     return {};
-  } else if (Array.isArray(value) && value === EMPTY_ARRAY) {
+  } else if (value === EMPTY_ARRAY) {
     return [];
   } else {
     return value;
