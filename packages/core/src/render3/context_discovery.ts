@@ -185,10 +185,11 @@ export function getLElementNode(target: any): LElementNode|null {
   return context ? getLNodeFromViewData(context.lViewData, context.lNodeIndex) : null;
 }
 
-export function getLElementFromRootComponent(componentInstance: {}): LElementNode|null {
+export function getLElementFromRootComponent(rootComponentInstance: {}): LElementNode|null {
   // the host element for the root component is ALWAYS the first element
   // in the lViewData array (which is where HEADER_OFFSET points to)
-  return getLElementFromComponent(componentInstance, HEADER_OFFSET);
+  const lViewData = readPatchedLViewData(rootComponentInstance) !;
+  return readElementValue(lViewData[HEADER_OFFSET]);
 }
 
 /**
@@ -198,15 +199,14 @@ export function getLElementFromRootComponent(componentInstance: {}): LElementNod
  * that `getContext` has in the event that an Angular application doesn't need to have
  * any programmatic access to an element's context (only change detection uses this function).
  */
-export function getLElementFromComponent(
-    componentInstance: {}, expectedLNodeIndex?: number): LElementNode|null {
+export function getLElementFromComponent(componentInstance: {}): LElementNode|null {
   let lViewData = readPatchedData(componentInstance);
   let lNode: LElementNode;
 
   if (Array.isArray(lViewData)) {
-    expectedLNodeIndex = expectedLNodeIndex || findViaComponent(lViewData, componentInstance);
-    lNode = readElementValue(lViewData[expectedLNodeIndex]);
-    const context = createLContext(lViewData, expectedLNodeIndex, lNode.native);
+    const lNodeIndex = findViaComponent(lViewData, componentInstance);
+    lNode = readElementValue(lViewData[lNodeIndex]);
+    const context = createLContext(lViewData, lNodeIndex, lNode.native);
     context.component = componentInstance;
     attachPatchData(componentInstance, context);
     attachPatchData(context.native, context);
@@ -232,6 +232,14 @@ export function attachPatchData(target: any, data: LViewData | LContext) {
  */
 export function readPatchedData(target: any): LViewData|LContext|null {
   return target[MONKEY_PATCH_KEY_NAME];
+}
+
+export function readPatchedLViewData(target: any): LViewData|null {
+  const value = readPatchedData(target);
+  if (value) {
+    return Array.isArray(value) ? value : (value as LContext).lViewData;
+  }
+  return null;
 }
 
 export function isComponentInstance(instance: any): boolean {
