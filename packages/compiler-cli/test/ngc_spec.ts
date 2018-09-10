@@ -1940,6 +1940,37 @@ describe('ngc transformer command-line', () => {
       `);
       expect(main(['-p', path.join(basePath, 'src/tsconfig.json')])).toBe(0);
     });
+
+    // Regression test for #25456
+    it('should work with typescript json module', () => {
+      write('src/tsconfig.json', `{
+        "extends": "../tsconfig-base.json",
+        "files": ["test-module.ts"],
+        "compilerOptions": {
+          "module": "commonjs",
+          "resolveJsonModule": true,
+          "allowSyntheticDefaultImports": true
+        }
+      }`);
+
+      write('src/test.json', `{
+        "foo": "bar"
+      }`);
+
+      write('src/test-module.ts', `
+        import { NgModule, Component } from '@angular/core';
+        import Foo from './test.json'
+
+        @Component({template: '{{name}}'})
+        export class TestComponent {
+          name: string = Foo.foo;
+        }
+
+        @NgModule({declarations: [TestComponent]})
+        export class TestModule {}
+      `);
+      expect(main(['-p', path.join(basePath, 'src/tsconfig.json')])).toBe(0);
+    });
   });
 
   describe('formatted messages', () => {

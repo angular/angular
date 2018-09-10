@@ -622,7 +622,7 @@ function addReferencesToSourceFile(sf: ts.SourceFile, genFileNames: string[]) {
     originalReferencedFiles = sf.referencedFiles;
     (sf as any).originalReferencedFiles = originalReferencedFiles;
   }
-  const newReferencedFiles = [...originalReferencedFiles];
+  const newReferencedFiles = [...(originalReferencedFiles || [])];
   genFileNames.forEach(gf => newReferencedFiles.push({fileName: gf, pos: 0, end: 0}));
   sf.referencedFiles = newReferencedFiles;
 }
