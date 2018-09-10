@@ -52,7 +52,7 @@
     "@types/jasminewd2": "^2.0.3",
     "@types/minimist": "^1.2.0",
     "@types/mock-fs": "^3.6.30",
-    "@types/node": "6.0.88",
+    "@types/node": "^10.9.4",
     "@types/selenium-webdriver": "3.0.7",
     "@types/shelljs": "^0.7.8",
     "@types/source-map": "^0.5.1",
