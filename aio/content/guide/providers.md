@@ -178,5 +178,5 @@ You may also be interested in:
 다음 내용에 대해서도 알아보세요.
 * [싱글턴 서비스](guide/singleton-services)
 * [모듈 지연 로딩](guide/lazy-loading-ngmodules)
-* [트리 셰이킹 프로바이더](guide/dependency-injection#tree-shakable-providers)
+* [트리 셰이킹 프로바이더](guide/dependency-injection#트리-셰이킹-대상이-되는-프로바이더)
 * [NgModule FAQ](guide/ngmodule-faq)

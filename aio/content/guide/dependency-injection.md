@@ -586,73 +586,131 @@ See more `useValue` examples in the
 -->
 `useValue`를 사용하는 예제는 [클래스가 아닌 의존성](guide/dependency-injection#non-class-dependencies) 섹션과 [InjectionToken](guide/dependency-injection#injection-token) 섹션에서 더 확인할 수 있습니다.
 
+<!--
 {@a factory-provider}
+-->
 
 <!--
 ### Factory providers
 -->
 ### 팩토리 프로바이더
 
+<!--
 Sometimes you need to create the dependent value dynamically,
 based on information you won't have until the last possible moment.
 Maybe the information changes repeatedly in the course of the browser session.
+-->
+어떤 경우에는 실행환경에서 가져온 정보를 바탕으로 의존성 객체를 동적으로 생성해야 하는 경우가 있습니다.
+그리고 어쩌면 이 정보가 브라우저 세션 상태에 따라 지속적으로 변경되는 경우도 있습니다.
 
+<!--
 Suppose also that the injectable service has no independent access to the source of this information.
+-->
+그런데 이 서비스의 입장에서는 정보를 직접 가져올 수 없는 상황이라고 가정해 봅시다.
 
+<!--
 This situation calls for a **factory provider**.
+-->
+**팩토리 프로바이더** 는 이런 경우에 사용합니다.
 
+<!--
 To illustrate the point, add a new business requirement:
 the `HeroService` must hide *secret* heroes from normal users.
 Only authorized users should see secret heroes.
+-->
+이해를 돕기 위해 이런 내용이 필요하다고 합시다:
+`HeroService`는 *비밀* 히어로를 보호하기 위해 일반 사용자가 접근할 수 없어야 합니다.
+오직 승인된 사용자만 비밀 히어로가 누구인지 확인할 수 있어야 합니다.
 
+<!--
 Like the `EvenBetterLogger`, the `HeroService` needs a fact about the user.
 It needs to know if the user is authorized to see secret heroes.
 That authorization can change during the course of a single application session,
 as when you log in a different user.
+-->
+앞서 살펴봤던 `EvenBetterLogger`처럼, `HeroService`도 이제 사용자에 대한 정보가 필요합니다.
+왜냐하면 지금 접속한 사용자가 비밀 히어로의 정보를 볼 수 있는지 확인해야 하기 때문입니다.
+어떤 시점에는 이 정보가 유효하더라도 다른 사용자가 로그인하게 되면 같은 애플리케이션 세션 중에 다른값으로 변경될 수 있습니다.
 
+<!--
 Unlike `EvenBetterLogger`, you can't inject the `UserService` into the `HeroService`.
 The `HeroService` won't have direct access to the user information to decide
 who is authorized and who is not.
+-->
+그런데 `EventBetterLogger`에서 했던 것처럼 `HeroService`에 `UserService`를 주입하는 방법은 사용할 수 없습니다. `HeroService`에서 직접 현재 사용자 정보를 확인하는 것은 최선의 방법이 아니기 때문입니다.
 
+<!--
 Instead, the `HeroService` constructor takes a boolean flag to control display of secret heroes.
+-->
+대신, `HeroService`의 정보에 자유롭게 접근할 수 있는지 판단하는 불리언 값을 생성자에 추가해 봅시다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.ts" region="internals" title="src/app/heroes/hero.service.ts (excerpt)" linenums="false">
 </code-example>
 
+<!--
 You can inject the `Logger`, but you can't inject the  boolean `isAuthorized`.
 You'll have to take over the creation of new instances of this `HeroService` with a factory provider.
+-->
+이제 `Logger` 서비스를 의존성으로 주입하는 데에는 문제가 없지만, `isAuthorized` 불리언 값은 값을 지정하지 않으면 의존성으로 주입할 수 없습니다.
+그래서 `HeroService`의 인스턴스를 생성하는 로직은 팩토리 프로바이더로 변경되어야 합니다.
 
+<!--
 A factory provider needs a factory function:
+-->
+팩토리 프로바이더는 팩토리 함수를 사용합니다:
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="factory" title="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
 </code-example>
 
+<!--
 Although the `HeroService` has no access to the `UserService`, the factory function does.
+-->
+이 코드에서 `HeroService`는 `UserService`에 직접 접근할 수 없지만, 팩토리 함수는 접근할 수 있습니다.
 
+<!--
 You inject both the `Logger` and the `UserService` into the factory provider
 and let the injector pass them along to the factory function:
+-->
+그러면 이 팩토리 함수를 동작시키기 위해 팩토리 함수에 대한 의존성을 다음과 같이 지정해야 합니다:
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.provider.ts" region="provider" title="src/app/heroes/hero.service.provider.ts (excerpt)" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
 
+<!--
 The `useFactory` field tells Angular that the provider is a factory function
 whose implementation is the `heroServiceFactory`.
+-->
+서비스 프로바이더를 등록할 때 `useFactory` 필드를 사용하면 이 의존성 객체는 `heroServiceFactory`와 같은 팩토리 함수가 사용된다는 것을 의미합니다.
 
+<!--
 The `deps` property is an array of [provider tokens](guide/dependency-injection#token).
 The `Logger` and `UserService` classes serve as tokens for their own class providers.
 The injector resolves these tokens and injects the corresponding services into the matching factory function parameters.
+-->
+그리고 팩토리 함수에 필요한 [프로바이더 토큰](guide/dependency-injection#token)은 `deps` 프로퍼티로 지정합니다.
+그래서 이 코드에는 `Logger`와 `UserService` 클래스가 각각 클래스 프로바이더 토큰으로 사용되었습니다.
+이 토큰들은 인젝터가 확인한 후에 각 토큰에 적합한 서비스 인스턴스를 팩토리 함수의 인자로 주입하게 됩니다.
 
 </div>
 
+<!--
 Notice that you captured the factory provider in an exported variable, `heroServiceProvider`.
 This extra step makes the factory provider reusable.
 You can register the `HeroService` with this variable wherever you need it.
+-->
+팩토리 프로바이더는 `heroServiceProvider`와 같이 변수에 할당하고 파일 외부로 공개한다는 것을 잊지 마세요.
+팩토리 프로바이더는 이렇게 사용해야 다음번에도 재사용할 수 있습니다.
+`HeroService`가 필요한 곳이라면 이 변수를 가져다 사용할 수 있습니다.
 
+<!--
 In this sample, you need it only in the `HeroesComponent`,
 where it replaces the previous `HeroService` registration in the metadata `providers` array.
 Here you see the new and the old implementation side-by-side:
+-->
+지금까지 예제에서는 `HeroesComponent`만 이 서비스 프로바이더를 사용하며, 기존에 사용되던 `HeroService` 프로바이더를 대체하기 위해 컴포넌트 메타데이터의 `providers` 배열에 이 서비스 프로바이더를 등록해야 합니다.
+지금까지 작성한 코드를 단계별로 살펴보면 다음과 같습니다:
 
 <code-tabs>
 
@@ -664,45 +722,89 @@ Here you see the new and the old implementation side-by-side:
 
 </code-tabs>
 
+<!--
 {@a tree-shakable-provider}
+-->
 
+<!--
 ### Tree-shakable providers
+-->
+### 트리 셰이킹 대상이 되는 프로바이더
 
+<!--
 Tree shaking is the ability to remove code that is not referenced in an application from the final bundle. Tree-shakable providers give Angular the ability to remove services that are not used in your application from the final output. This significantly reduces the size of your bundles.
+-->
+트리 셰이킹은 애플리케이션에 실제로 사용되지 않은 코드를 최종 빌드 결과물에서 제외하는 기능입니다. 그리고 트리 셰이킹 대상이 되는 프로바이더는 마찬가지로 애플리케이션에 실제로 사용되지 않은 서비스를 최종 빌드 결과물에서 제외할 수 있습니다. 이 과정을 통해 불필요한 코드를 줄임으로써 최종 빌드 결과물의 용량을 줄일 수 있습니다.
 
+<!--
 Ideally, if an application is not injecting a service, it should not be included in the final output. However, it turns out that the Angular compiler cannot identify at build time if the service will be required or not. Because it's always possible to inject a service directly using `injector.get(Service)`, Angular cannot identify all of the places in your code where this injection could happen, so it has no choice but to include the service in the injector regardless. Thus, services provided in modules are not tree-shakable.
+-->
+이상적인 경우를 생각해 봤을 때 애플리케이션에 사용되는 서비스가 아무것도 없다면, 최종 결과물에는 어떠한 서비스도 포함되지 않는 것이 좋습니다. 하지만 이 경우는 Angular 컴파일러가 빌드 시점에 확인할 수 없는 내용입니다. 왜냐하면 의존성 객체는 클래스 생성자 뿐 아니라 `injector.get(서비스)`를 사용해서 어디에서라도 자유롭게 가져올 수 있기 때문입니다. 이 경우에 Angular는 의존성 객체가 참조되었는지 알아내기 위해서 모든 코드를 확인할 수는 없으며, 트리 셰이킹할 수 있는 타이밍을 놓치게 됩니다. 그래서 모듈에 등록된 서비스는 트리 셰이킹의 대상이 될 수 없습니다.
 
+<!--
 Let us consider an example of non-tree-shakable providers in Angular.
+-->
+트리 셰이킹 대상이 아닌 서비스 프로바이더를 예제와 함께 살펴봅시다.
 
+<!--
 In this example, to provide services in Angular, you include them in an `@NgModule`:
+-->
+이 예제에서는 서비스를 사용하기 위해 `@NgModule`에 다음과 같이 서비스 프로바이더를 등록했습니다:
 
 <code-example path="dependency-injection/src/app/tree-shaking/service-and-module.ts"  title="src/app/tree-shaking/service-and-modules.ts" linenums="false"> </code-example>
 
+<!--
 This module can then be imported into your application module, to make the service available for injection in your app:
+-->
+그리고 이 모듈을 앱 모듈에 로드하면 이 서비스를 애플리케이션 전체 범위에 자유롭게 사용할 수 있습니다:
 
 <code-example path="dependency-injection/src/app/tree-shaking/app.module.ts"  title="src/app/tree-shaking/app.modules.ts" linenums="false"> </code-example>
 
+<!--
 When `ngc` runs, it compiles AppModule into a module factory, which contains definitions for all the providers declared in all the modules it includes. At runtime, this factory becomes an injector that instantiates these services.
+-->
+이제 `ngc`가 동작하면 `AppModule`을 모듈 팩토리로 컴파일되는데, 이 때 이 모듈에 등록된 모든 서비스 프로바이더도 함께 컴파일됩니다. 그래서 애플리케이션이 실행되는 시점에는 모듈 팩토리가 인젝터의 역할을 하며 동작합니다.
 
+<!--
 Tree-shaking doesn't work in the method above because Angular cannot decide to exclude one chunk of code (the provider definition for the service within the module factory) based on whether another chunk of code (the service class) is used. To make services tree-shakable, the information about how to construct an instance of the service (the provider definition) needs to be a part of the service class itself.
+-->
+하지만 트리 셰이킹은 이런 방식으로 동작할 수 없습니다. 왜냐하면 Angular는 모듈 팩토리와 같은 코드 덩어리와 서비스 클래스와 같은 코드 덩어리만 보고는 이 서비스가 실제로 사용되었는지 판단할 수 없기 때문입니다. 그래서 서비스를 트리 셰이킹 대상으로 만들려면, 이 서비스가 어떻게 사용되는지에 대한 정보를 추가로 제공해야 합니다.
 
+<!--
 #### Creating tree-shakable providers
+-->
+#### 트리 셰이킹 대상이 되는 프로바이더 만들기
 
+<!--
 To create providers that are tree-shakable, the information that used to be specified in the module should be specified in the `@Injectable` decorator on the service itself.
+-->
+트리 셰이킹 대상이 되는 프로바이더를 만들려면 `@Injectable` 데코레이터에 이 서비스가 어떤 모듈에 사용되는지 지정해야 합니다.
 
+<!--
 The following example shows the tree-shakable equivalent to the `ServiceModule` example above:
+-->
+그래서 위에서 살펴본 `ServiceModule`에는 `Service`가 다음과 같이 지정되어 있었습니다:
 
 <code-example path="dependency-injection/src/app/tree-shaking/service.ts"  title="src/app/tree-shaking/service.ts" linenums="false"> </code-example>
 
+<!--
 In the example above, `providedIn` allows you to declare the injector which injects this service. Unless there is a special case, the value should always be root. Setting the value to root ensures that the service is scoped to the root injector, without naming a particular module that is present in that injector.
+-->
+이 예제처럼 `providedIn` 프로퍼티를 사용하면 이 서비스가 어떤 인젝터에 등록될지 지정할 수 있습니다. 특별한 이유가 없다면 보통 이 값은 `root`이며, `providedIn: root`로 지정된 서비스는 애플리케이션 최상위 인젝터에 등록되면서 이 인젝터 범위 안에 있는 모든 모듈에서 이 서비스를 사용할 수 있습니다.
 
+<!--
 The service can be instantiated by configuring a factory function as shown below:
+-->
+이 서비스가 팩토리 함수를 사용한다면 다음과 같이 선언됩니다:
 
 <code-example path="dependency-injection/src/app/tree-shaking/service.0.ts"  title="src/app/tree-shaking/service.0.ts" linenums="false"> </code-example>
 
 <div class="alert is-helpful">
 
+<!--
 To override tree-shakable providers, register the provider using the `providers: []` array syntax of any Angular decorator that supports it.
+-->
+그리고 트리 셰이킹 대상이 되는 서비스 프로바이더를 오버라이드 하려면, 필요한 모듈의 `@NgModule` 데코레이터에 `providers: []`를 지정하면 됩니다.
 
 </div>
 
