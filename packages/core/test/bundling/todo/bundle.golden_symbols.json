@@ -315,9 +315,6 @@
     "name": "_devMode"
   },
   {
-    "name": "_getComponentHostLElementNode"
-  },
-  {
     "name": "_global"
   },
   {
@@ -597,9 +594,6 @@
     "name": "getLElementFromComponent"
   },
   {
-    "name": "getLElementFromRootComponent"
-  },
-  {
     "name": "getLViewChild"
   },
   {
@@ -670,9 +664,6 @@
   },
   {
     "name": "getRendererFactory"
-  },
-  {
-    "name": "getRootView"
   },
   {
     "name": "getStyleSanitizer"
@@ -853,6 +844,9 @@
   },
   {
     "name": "readPatchedData"
+  },
+  {
+    "name": "readPatchedLViewData"
   },
   {
     "name": "reference"

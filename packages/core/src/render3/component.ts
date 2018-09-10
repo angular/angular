@@ -133,7 +133,7 @@ export function renderComponent<T>(
 
     executeInitAndContentHooks();
     setHostBindings(rootView[TVIEW].hostBindings);
-    detectChangesInternal(elementNode.data as LViewData, elementNode, component);
+    detectChangesInternal(elementNode.data as LViewData, component);
   } finally {
     leaveView(oldView);
     if (rendererFactory.end) rendererFactory.end();

@@ -1581,7 +1581,7 @@ describe('render3 integration test', () => {
 
       const host = fixture.hostElement;
       const child = host.querySelector('child-comp') as any;
-      expect(child[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+      expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
       const [kid1, kid2, kid3] = Array.from(host.querySelectorAll('child-comp > *'));
       expect(kid1[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
@@ -1859,7 +1859,7 @@ describe('render3 integration test', () => {
 
          expect(textNode[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
          expect(section[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
-         expect(projectorComp[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+         expect(projectorComp[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
          expect(header[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
          expect(h1[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
          expect(p[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
@@ -1936,19 +1936,19 @@ describe('render3 integration test', () => {
       const hostElm = fixture.hostElement;
       const component = fixture.component;
 
-      const componentContext = (component as any)[MONKEY_PATCH_KEY_NAME];
-      expect(Array.isArray(componentContext)).toBeFalsy();
+      const componentLViewData = (component as any)[MONKEY_PATCH_KEY_NAME];
+      expect(Array.isArray(componentLViewData)).toBeTruthy();
 
-      const hostContext = (hostElm as any)[MONKEY_PATCH_KEY_NAME];
-      expect(hostContext).toBe(componentContext);
+      const hostLViewData = (hostElm as any)[MONKEY_PATCH_KEY_NAME];
+      expect(hostLViewData).toBe(componentLViewData);
 
       const context1 = getContext(hostElm) !;
-      expect(context1).toBe(hostContext);
+      expect(context1.lViewData).toBe(hostLViewData);
       expect(context1.native).toEqual(hostElm);
 
       const context2 = getContext(component) !;
       expect(context2).toBe(context1);
-      expect(context2).toBe(hostContext);
+      expect(context2.lViewData).toBe(hostLViewData);
       expect(context2.native).toEqual(hostElm);
     });
 
@@ -2183,7 +2183,7 @@ describe('render3 integration test', () => {
 
          const host = fixture.hostElement;
          const child = host.querySelector('child-comp') as any;
-         expect(child[MONKEY_PATCH_KEY_NAME]).toBeFalsy();
+         expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
 
          const context = getContext(child) !;
          expect(child[MONKEY_PATCH_KEY_NAME]).toBeTruthy();
