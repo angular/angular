@@ -2,7 +2,7 @@ import {spawnSync} from 'child_process';
 import {buildConfig} from 'material2-build-tools';
 
 /** Regular expression that matches version names and the individual version segments. */
-export const versionNameRegex = /^(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d)+)?/;
+export const versionNameRegex = /^(\d+)\.(\d+)\.(\d+)(?:-(alpha|beta|rc)\.(\d)+)?$/;
 
 /** Checks if the specified version can be released from the current Git branch. */
 export function checkPublishBranch(version: string) {

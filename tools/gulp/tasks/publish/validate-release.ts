@@ -1,16 +1,12 @@
-import {task} from 'gulp';
-import {readFileSync, existsSync} from 'fs';
-import {join} from 'path';
 import {green, red} from 'chalk';
-import {releasePackages} from './publish-task';
+import {existsSync, readFileSync} from 'fs';
 import {sync as glob} from 'glob';
-import {spawnSync} from 'child_process';
+import {task} from 'gulp';
 import {buildConfig, sequenceTask} from 'material2-build-tools';
+import {join} from 'path';
+import {releasePackages} from './publish-task';
 
-const {projectDir, projectVersion, outputDir} = buildConfig;
-
-/** Git repository URL that has been read out from the project package.json file. */
-const repositoryGitUrl = require('../../../../package.json').repository.url;
+const {outputDir} = buildConfig;
 
 /** Path to the directory where all releases are created. */
 const releasesDir = join(outputDir, 'releases');
@@ -22,18 +18,6 @@ const inlineStylesSourcemapRegex = /styles: ?\[["'].*sourceMappingURL=.*["']/;
 const externalReferencesRegex = /(templateUrl|styleUrls): *["'[]/;
 
 task('validate-release', sequenceTask(':publish:build-releases', 'validate-release:check-bundles'));
-
-task('validate-release:check-remote-tag', () => {
-  // Since we cannot assume that every developer uses `origin` as the default name for the upstream
-  // remote, we just pass in the Git URL that refers to angular/material2 repository on Github.
-  const tagCommitSha = spawnSync('git', ['ls-remote', '--tags', repositoryGitUrl, projectVersion],
-    {cwd: projectDir}).stdout.toString().trim();
-
-  if (!tagCommitSha) {
-    throw Error(red(`Cannot publish v${projectVersion} because the release is not ` +
-    `tagged on upstream yet. Please tag the release before publishing to NPM.`));
-  }
-});
 
 /** Task that checks the release bundles for any common mistakes before releasing to the public. */
 task('validate-release:check-bundles', () => {
