@@ -3,8 +3,8 @@ import {MatCardModule, MatProgressSpinnerModule, MatToolbarModule} from '@angula
 import {BrowserModule} from '@angular/platform-browser';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NgxChartsModule} from '@swimlane/ngx-charts';
-import {AngularFireModule} from 'angularfire2';
-import {AngularFireDatabaseModule} from 'angularfire2/database';
+import {AngularFireModule} from '@angular/fire';
+import {AngularFireDatabaseModule} from '@angular/fire/database';
 import {environment} from '../environments/environment';
 import {CoverageChart} from './coverage-chart/coverage-chart';
 import {DashboardApp} from './dashboard-app';
