@@ -148,12 +148,9 @@ If you need to see what events are happening during the navigation lifecycle, th
 
 ### Router outlet
 
-Given this configuration, when the browser URL for this application becomes `/heroes`,
-the router matches that URL to the route path `/heroes` and displays the `HeroListComponent`
-_after_ a `RouterOutlet` that you've placed in the host component's template.
-
-The `RouterOutlet` is a directive from the router library that marks
-the spot in the template where the router should display the components for that outlet.
+The `RouterOutlet` is a directive from the router library that is used like a component. 
+It acts as a placeholder that marks the spot in the template where the router should 
+display the components for that outlet.
 
 
 <code-example language="html">
@@ -161,6 +158,10 @@ the spot in the template where the router should display the components for that
   &lt;!-- Routed components go here -->
 
 </code-example>
+
+Given the configuration above, when the browser URL for this application becomes `/heroes`,
+the router matches that URL to the route path `/heroes` and displays the `HeroListComponent`
+as a sibling element to the `RouterOutlet` that you've placed in the host component's template.
 
 {@a basics-router-links}
 {@a router-link}
@@ -191,21 +192,18 @@ The router resolves that array into a complete URL.
 {@a router-link-active}
 
 
-### Active Router Links
+### Active router links
 
-The **`RouterLinkActive`** directive on each anchor tag helps visually distinguish the anchor for the currently selected "active" route.
+The `RouterLinkActive` directive toggles css classes for active `RouterLink` bindings based on the current `RouterState`.
 
-On each anchor tag, you also see [property bindings](guide/template-syntax#property-binding) to the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
+On each anchor tag, you see a [property binding](guide/template-syntax#property-binding) to the `RouterLinkActive` directive that look like `routerLinkActive="..."`.
 
 The template expression to the right of the equals (=) contains a space-delimited string of CSS classes
-that the Router will add when this link is active (and remove when the link is inactive).
-You can also set the `RouterLinkActive` directive to a string of classes such as `[routerLinkActive]="'active fluffy'"`
-or bind it to a component property that returns such a string.
+that the Router will add when this link is active (and remove when the link is inactive). You set the `RouterLinkActive` 
+directive to a string of classes such as `[routerLinkActive]="'active fluffy'"` or bind it to a component 
+property that returns such a string. 
 
-The `RouterLinkActive` directive toggles css classes for active `RouterLink`s based on the current `RouterState`.
-This cascades down through each level of the route tree, so parent and child router links can be active at the same time.
-To override this behavior, you can bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression.
-By using `{ exact: true }`, a given `RouterLink` will only be active if its URL is an exact match to the current URL.
+Active route links cascade down through each level of the route tree, so parent and child router links can be active at the same time. To override this behavior, you can bind to the `[routerLinkActiveOptions]` input binding with the `{ exact: true }` expression. By using `{ exact: true }`, a given `RouterLink` will only be active if its URL is an exact match to the current URL.
 
 
 {@a basics-router-state}
@@ -440,8 +438,18 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
-      An [event](api/router/ChildActivationStart) triggered when the Router begins activating a route's children. This
-      event receives the Route config for the parent route.
+      An [event](api/router/ChildActivationStart) triggered when the Router begins activating a route's children.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>ActivationStart</code>
+    </td>
+    <td>
+
+      An [event](api/router/ActivationStart) triggered when the Router begins activating a route.
 
     </td>
   </tr>
@@ -485,8 +493,18 @@ During each navigation, the `Router` emits navigation events through the `Router
     </td>
     <td>
 
-      An [event](api/router/ChildActivationEnd) triggered when the Router finishes activating a route's children. This
-      event receives the Route config for the parent route.
+      An [event](api/router/ChildActivationEnd) triggered when the Router finishes activating a route's children.
+
+    </td>
+  </tr>
+
+  <tr>
+    <td>
+      <code>ActivationEnd</code>
+    </td>
+    <td>
+
+      An [event](api/router/ActivationStart) triggered when the Router finishes activating a route.
 
     </td>
   </tr>
@@ -537,8 +555,7 @@ During each navigation, the `Router` emits navigation events through the `Router
   </tr>
 </table>
 
-These events are logged to the console when the `enableTracing` option is enabled also. Because the events are provided as an `Observable`, you can `filter()` for events of interest and `subscribe()` to them to make decisions based on the sequence of events in the navigation process.
-
+These events are logged to the console when the `enableTracing` option is enabled also. For an example of filtering router navigation events, visit the [router section](guide/observables-in-angular#router) of the [Observables in Angular](guide/observables-in-angular) guide.
 
 {@a basics-summary}
 
@@ -891,8 +908,13 @@ Replace the contents of each component with the sample HTML below.
 
 ### Register Router and Routes
 
-In order to use the Router, you must first register the `RouterModule` from the `@angular/router` package. Define an array of routes, `appRoutes`, and pass them to the `RouterModule.forRoot` method. It returns a module, containing the configured `Router` service provider, plus other providers that the routing library requires. Once the application is bootstrapped, the `Router` performs the initial navigation based on the current browser URL.
+In order to use the Router, you must first register the `RouterModule` from the `@angular/router` package. Define an array of routes, `appRoutes`, and pass them to the `RouterModule.forRoot()` method. It returns a module, containing the configured `Router` service provider, plus other providers that the routing library requires. Once the application is bootstrapped, the `Router` performs the initial navigation based on the current browser URL.
 
+<div class="alert is-important">
+
+  **Note:** The `RouterModule.forRoot` method is a pattern used to register application-wide providers. Read more about application-wide providers in the [Singleton services](guide/singleton-services#forroot) guide.
+
+</div>
 
 <code-example path="router/src/app/app.module.1.ts" linenums="false" title="src/app/app.module.ts (first-config)" region="first-config">
 
@@ -900,25 +922,25 @@ In order to use the Router, you must first register the `RouterModule` from the 
 
 <div class="alert is-helpful">
 
-Adding the configured `RouterModule` to the `AppModule` is sufficient for simple route configurations. As the application grows, you'll want to refactor the routing configuration into a separate file and create a **[Routing Module](#routing-module)**, a special type of `Service Module` dedicated to the purpose of routing in feature modules.
+Adding the configured `RouterModule` to the `AppModule` is sufficient for simple route configurations. As the application grows, you'll want to [refactor the routing configuration](#refactor-the-routing-configuration-into-a-routing-module) into a separate file and create a **[Routing Module](#routing-module)**, a special type of `Service Module` dedicated to the purpose of routing in feature modules.
 
 </div>
 
-Providing the `RouterModule` in the `AppModule` makes the Router available everywhere in the application.
+Registering the `RouterModule.forRoot()` in the `AppModule` imports makes the `Router` service available everywhere in the application.
 
 {@a shell}
 
 
 ### Add the Router Outlet
 
-The root `AppComponent` is the application shell. It has a title, a navigation bar with two links, and a *router outlet* where the router swaps views on and off the page. Here's what you get:
+The root `AppComponent` is the application shell. It has a title, a navigation bar with two links, and a router outlet where the router swaps components on and off the page. Here's what you get:
 
 
 <figure>
   <img src='generated/images/guide/router/shell-and-outlet.png' alt="Shell">
 </figure>
 
-The `router-outlet` serves as a placeholder when the routed components will be rendered below it.
+The router outlet serves as a placeholder when the routed components will be rendered below it.
 
 {@a shell-template}
 
@@ -3021,7 +3043,7 @@ That's not always the right thing to do.
 * You might want to save pending changes before leaving a component.
 * You might ask the user if it's OK to discard pending changes rather than save them.
 
-You can add _guards_ to the route configuration to handle these scenarios.
+You add _guards_ to the route configuration to handle these scenarios.
 
 A guard's return value controls the router's behavior:
 
@@ -3031,14 +3053,9 @@ A guard's return value controls the router's behavior:
 
 <div class="alert is-helpful">
 
-
-
-The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation.
-
+**Note:** The guard can also tell the router to navigate elsewhere, effectively canceling the current navigation.
 
 </div>
-
-
 
 The guard *might* return its boolean answer synchronously.
 But in many cases, the guard can't produce an answer synchronously.
@@ -3047,6 +3064,12 @@ These are all asynchronous operations.
 
 Accordingly, a routing guard can return an `Observable<boolean>` or a `Promise<boolean>` and the
 router will wait for the observable to resolve to `true` or `false`.
+
+<div class="alert is-critical">
+
+**Note:** The observable provided to the Router _must_ also complete. If the observable does not complete, the navigation will not continue.
+
+</div>
 
 The router supports multiple guard interfaces:
 
@@ -3223,11 +3246,11 @@ feature module, a dashboard route and two unfinished components to manage crises
 
 <code-tabs>
 
-  <code-pane title="src/app/admin/admin-dashboard/admin-dashboard.component.html" linenums="false" path="router/src/app/admin/admin-dashboard/admin-dashboard.component.1.html">
+  <code-pane title="src/app/admin/admin/admin.component.html" linenums="false"  path="router/src/app/admin/admin/admin.component.html">
 
   </code-pane>
 
-  <code-pane title="src/app/admin/admin/admin.component.html" linenums="false"  path="router/src/app/admin/admin/admin.component.html">
+  <code-pane title="src/app/admin/admin-dashboard/admin-dashboard.component.html" linenums="false" path="router/src/app/admin/admin-dashboard/admin-dashboard.component.1.html">
 
   </code-pane>
 
@@ -3251,12 +3274,8 @@ feature module, a dashboard route and two unfinished components to manage crises
 
 
 
-Although the admin dashboard `RouterLink` is an empty path route in the `AdminComponent`, it
-is considered a match to any route within the admin feature area.
-You only want the `Dashboard` link to be active when the user visits that route.
-Adding an additional binding to the `Dashboard` routerLink,
-`[routerLinkActiveOptions]="{ exact: true }"`, marks the `./` link as active when
-the user navigates to the `/admin` URL and not when navigating to any of the child routes.
+Although the admin dashboard `RouterLink` only contains a relative slash without an additional URL segment, it
+is considered a match to any route within the admin feature area. You only want the `Dashboard` link to be active when the user visits that route. Adding an additional binding to the `Dashboard` routerLink,`[routerLinkActiveOptions]="{ exact: true }"`, marks the `./` link as active when the user navigates to the `/admin` URL and not when navigating to any of the child routes.
 
 
 </div>
@@ -3715,7 +3734,7 @@ It will be there when the `CrisisDetailComponent` ask for it.
 
 
 
-**Three critical points**
+**Two critical points**
 
 1. The router's `Resolve` interface is optional.
 The `CrisisDetailResolverService` doesn't inherit from a base class.
@@ -3724,9 +3743,6 @@ The router looks for that method and calls it if found.
 1. Rely on the router to call the resolver.
 Don't worry about all the ways that the user  could navigate away.
 That's the router's job. Write this class and let the router take it from there.
-
-1. The observable provided to the Router _must_ complete.
-If the observable does not complete, the navigation will not continue.
 
 The relevant *Crisis Center* code for this milestone follows.
 
