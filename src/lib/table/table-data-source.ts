@@ -200,11 +200,11 @@ export class MatTableDataSource<T> extends DataSource<T> {
     // The `sortChange` and `pageChange` acts as a signal to the combineLatests below so that the
     // pipeline can progress to the next step. Note that the value from these streams are not used,
     // they purely act as a signal to progress in the pipeline.
-    const sortChange: Observable<Sort|null> = this._sort ?
-        merge<Sort>(this._sort.sortChange, this._sort.initialized) :
+    const sortChange: Observable<Sort|null|void> = this._sort ?
+        merge<Sort|void>(this._sort.sortChange, this._sort.initialized) :
         observableOf(null);
-    const pageChange: Observable<PageEvent|null> = this._paginator ?
-        merge<PageEvent>(this._paginator.page, this._paginator.initialized) :
+    const pageChange: Observable<PageEvent|null|void> = this._paginator ?
+        merge<PageEvent|void>(this._paginator.page, this._paginator.initialized) :
         observableOf(null);
 
     const dataStream = this._data;

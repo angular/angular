@@ -191,7 +191,7 @@ export class MatProgressBar extends _MatProgressBarMixinBase implements CanColor
       // instead only on the animation that we care about (primary value bar's transitionend)
       this._ngZone.runOutsideAngular((() => {
         this._animationEndSubscription =
-            fromEvent(this._primaryValueBar.nativeElement, 'transitionend')
+            fromEvent<TransitionEvent>(this._primaryValueBar.nativeElement, 'transitionend')
             .pipe(filter(((e: TransitionEvent) =>
               e.target === this._primaryValueBar.nativeElement)))
             .subscribe(_ => this._ngZone.run(() => this.emitAnimationEnd()));
