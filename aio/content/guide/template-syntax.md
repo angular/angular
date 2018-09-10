@@ -895,108 +895,103 @@ of the `evilTitle` examples.
 
 ## Attribute, class, and style bindings
 
-The template syntax provides specialized one-way bindings for scenarios less well suited to property binding.
+The template syntax provides specialized one-way bindings for scenarios less well-suited to property binding.
+
+To see attribute, class, and style bindings in a functioning app, see the <live-example name="attribute-binding"></live-example> especially for this section.
+
 
 ### Attribute binding
 
-You can set the value of an attribute directly with an **attribute binding**.
+Set the value of an attribute directly with an **attribute binding**. This is the only exception to the rule that a binding sets a target property and the only binding that creates and sets an attribute.
+
+Usually, setting an element property with a [property binding](guide/template-syntax#property-binding)
+is preferable to setting the attribute with a string. However, sometimes
+there is no element property to bind, so attribute binding is the solution.
+
+Consider the [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) and
+[SVG](https://developer.mozilla.org/en-US/docs/Web/SVG). They are purely attributes, don't correspond to element properties, and don't set element properties. In these cases, there are no property targets to bind to.
+
+Attribute binding syntax resembles property binding, but
+instead of an element property between brackets, start with the prefix `attr`,
+followed by a dot (`.`), and the name of the attribute.
+You then set the attribute value, using an expression that resolves to a string,
+or remove the attribute when the expression resolves to `null`.
+
+One of the primary use cases for attribute binding
+is to set ARIA attributes, as in this example:
+
+<code-example path="attribute-binding/src/app/app.component.html" region="attrib-binding-aria" header="src/app/app.component.html" linenums="false">
+</code-example>
 
 <div class="alert is-helpful">
 
-This is the only exception to the rule that a binding sets a target property.
-This is the only binding that creates and sets an attribute.
+#### `colspan` and `colSpan`
 
-</div>
+Notice the difference between the `colspan` attribute and the `colSpan` property.
 
-This guide stresses repeatedly that setting an element property with a property binding
-is always preferred to setting the attribute with a string. Why does Angular offer attribute binding?
-
-**You must use attribute binding when there is no element property to bind.**
-
-Consider the [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA),
-[SVG](https://developer.mozilla.org/en-US/docs/Web/SVG), and
-table span attributes. They are pure attributes.
-They do not correspond to element properties, and they do not set element properties.
-There are no property targets to bind to.
-
-This fact becomes obvious when you write something like this.
+If you wrote something like this:
 
 <code-example language="html">
   &lt;tr&gt;&lt;td colspan="{{1 + 1}}"&gt;Three-Four&lt;/td&gt;&lt;/tr&gt;
 </code-example>
 
-And you get this error:
+You'd get this error:
 
 <code-example format="nocode">
   Template parse errors:
   Can't bind to 'colspan' since it isn't a known native property
 </code-example>
 
-As the message says, the `<td>` element does not have a `colspan` property.
-It has the "colspan" *attribute*, but
-interpolation and property binding can set only *properties*, not attributes.
+As the message says, the `<td>` element does not have a `colspan` property. This is true
+because `colspan` is an attribute&mdash;`colSpan`, with a capital `S`, is the
+corresponding property. Interpolation and property binding can set only *properties*, not attributes.
 
-You need attribute bindings to create and bind to such attributes.
+Instead, you'd use property binding and write it like this:
 
-Attribute binding syntax resembles property binding.
-Instead of an element property between brackets, start with the prefix **`attr`**,
-followed by a dot (`.`) and the name of the attribute.
-You then set the attribute value, using an expression that resolves to a string.
-
-Bind `[attr.colspan]` to a calculated value:
-
-<code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-colspan" header="src/app/app.component.html" linenums="false">
+<code-example path="attribute-binding/src/app/app.component.html" region="colSpan" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-Here's how the table renders:
-
-<table border="1px">
-  <tr><td colspan="2">One-Two</td></tr>
-  <tr><td>Five</td><td>Six</td></tr>
- </table>
-
-One of the primary use cases for attribute binding
-is to set ARIA attributes, as in this example:
-
-<code-example path="template-syntax/src/app/app.component.html" region="attrib-binding-aria" header="src/app/app.component.html" linenums="false">
-</code-example>
+</div>
 
 
 <hr/>
 
 ### Class binding
 
-You can add and remove CSS class names from an element's `class` attribute with
+Add and remove CSS class names from an element's `class` attribute with
 a **class binding**.
 
-Class binding syntax resembles property binding.
-Instead of an element property between brackets, start with the prefix `class`,
+Here's how to set the attribute without binding in plain HTML:
+
+```html
+<!-- standard class attribute setting -->
+<div class="item clearance special">Item clearance special</div>
+```
+
+Class binding syntax resembles property binding, but instead of an element property between brackets, start with the prefix `class`,
 optionally followed by a dot (`.`) and the name of a CSS class: `[class.class-name]`.
-
-The following examples show how to add and remove the application's "special" class
-with class bindings. Here's how to set the attribute without binding:
-
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-1" header="src/app/app.component.html" linenums="false">
-</code-example>
 
 You can replace that with a binding to a string of the desired class names; this is an all-or-nothing, replacement binding.
 
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-2" header="src/app/app.component.html" linenums="false">
+
+ <code-example path="attribute-binding/src/app/app.component.html" region="class-override" header="src/app/app.component.html" linenums="false">
+</code-example>
+
+You can also add append a class to an element without overwriting the classes already on the element:
+
+ <code-example path="attribute-binding/src/app/app.component.html" region="add-class" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 Finally, you can bind to a specific class name.
 Angular adds the class when the template expression evaluates to truthy.
 It removes the class when the expression is falsy.
 
-<code-example path="template-syntax/src/app/app.component.html" region="class-binding-3" header="src/app/app.component.html" linenums="false">
+<code-example path="attribute-binding/src/app/app.component.html" region="is-special" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="alert is-helpful">
-
-While this is a fine way to toggle a single class name,
-the [NgClass directive](guide/template-syntax#ngClass) is usually preferred when managing multiple class names at the same time.
-
-</div>
+While this technique is suitable for toggling a single class name,
+consider the [`NgClass`](guide/template-syntax#ngClass) directive when
+managing multiple class names at the same time.
 
 
 <hr/>
@@ -1009,21 +1004,17 @@ Style binding syntax resembles property binding.
 Instead of an element property between brackets, start with the prefix `style`,
 followed by a dot (`.`) and the name of a CSS style property: `[style.style-property]`.
 
-<code-example path="template-syntax/src/app/app.component.html" region="style-binding-1" header="src/app/app.component.html" linenums="false">
+<code-example path="attribute-binding/src/app/app.component.html" region="style-binding" header="src/app/app.component.html" linenums="false">
 </code-example>
 
 Some style binding styles have a unit extension.
 The following example conditionally sets the font size in  “em” and “%” units .
 
-<code-example path="template-syntax/src/app/app.component.html" region="style-binding-2" header="src/app/app.component.html" linenums="false">
+<code-example path="attribute-binding/src/app/app.component.html" region="style-binding-condition" header="src/app/app.component.html" linenums="false">
 </code-example>
 
-<div class="alert is-helpful">
-
-While this is a fine way to set a single style,
-the [NgStyle directive](guide/template-syntax#ngStyle) is generally preferred when setting several inline styles at the same time.
-
-</div>
+**This technique is suitable for setting a single style, but consider
+the [`NgStyle`](guide/template-syntax#ngStyle) directive when setting several inline styles at the same time.**
 
 <div class="alert is-helpful">
 
