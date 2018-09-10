@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as ts from 'typescript';
 
 import * as api from '../transformers/api';
+import {nocollapseHack} from '../transformers/nocollapse_hack';
 
 import {ComponentDecoratorHandler, DirectiveDecoratorHandler, InjectableDecoratorHandler, NgModuleDecoratorHandler, PipeDecoratorHandler, ResourceLoader, SelectorScopeRegistry} from './annotations';
 import {BaseDefDecoratorHandler} from './annotations/src/base_def';
@@ -30,6 +31,7 @@ export class NgtscProgram implements api.Program {
   private _reflector: TypeScriptReflectionHost|undefined = undefined;
   private _isCore: boolean|undefined = undefined;
   private rootDirs: string[];
+  private closureCompilerEnabled: boolean;
 
 
   constructor(
@@ -43,6 +45,7 @@ export class NgtscProgram implements api.Program {
     } else {
       this.rootDirs.push(host.getCurrentDirectory());
     }
+    this.closureCompilerEnabled = !!options.annotateForClosureCompiler;
     this.resourceLoader = host.readResource !== undefined ?
         new HostResourceLoader(host.readResource.bind(host)) :
         new FileResourceLoader();
@@ -156,6 +159,8 @@ export class NgtscProgram implements api.Program {
           if (fileName.endsWith('.d.ts')) {
             data = sourceFiles.reduce(
                 (data, sf) => this.compilation !.transformedDtsFor(sf.fileName, data), data);
+          } else if (this.closureCompilerEnabled && fileName.endsWith('.ts')) {
+            data = nocollapseHack(data);
           }
           this.host.writeFile(fileName, data, writeByteOrderMark, onError, sourceFiles);
         };
