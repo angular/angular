@@ -175,6 +175,7 @@ jobs:
   build-packages-dist:
     <<: *job_defaults
     resource_class: xlarge
+    context: core-team-prs
     steps:
       - *define_env_vars
       - checkout:
@@ -182,6 +183,7 @@ jobs:
       # See remote cache documentation in /docs/BAZEL.md
       - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
       - run: bazel run @nodejs//:yarn
+      - run: echo $TEST_BIG_SECRET
       - run:
           # RBE is enabled by appending rbe-bazel.rc.
           name: Enable RBE
