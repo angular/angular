@@ -89,8 +89,8 @@ class MyApp {
 
   static ngComponentDef = defineComponent({
     ...,
-    consts: 2, // Two DOM Element.
-    vars: 2,   // Two binding.
+    consts: 2, // Two DOM Elements.
+    vars: 2,   // Two bindings.
     template: function(rf: RenderFlags, ctx: MyApp) {
       if (rf & RenderFlags.Create) {
         elementStart(0, 'div');
@@ -342,7 +342,7 @@ The above will create the following layout:
 | ...   | ...                   | ...
 
 NOTICE:
-- `*` denotes initial value copied form the `LProtoViewData`, as the tokens get instantiated the factories are replaced with actual value.
+- `*` denotes initial value copied from the `LProtoViewData`, as the tokens get instantiated the factories are replaced with actual value.
 - That `TView.data` has `expando` and `expandoInjectorCount` properties which point to where the element injection data is stored.
 - That all injectable tokens are stored in linear sequence making it easy to search for instances to match.
 - That `directive` sub-section gets eagerly instantiated.
@@ -361,7 +361,7 @@ function factory(fn) {
 const FactoryPrototype = Factory.prototype;
 function isFactory(obj: any): obj is Factory {
   // See: https://jsperf.com/instanceof-vs-getprototypeof
-  return typeof obj == 'object' && Object.getPrototypeOf(obj) = FactoryPrototype;
+  return typeof obj === 'object' && Object.getPrototypeOf(obj) === FactoryPrototype;
 }
 ```
 
@@ -369,7 +369,7 @@ Pseudo code:
 1. Check if bloom filter has the value of the token. (If not exit)
 2. Locate the token in the expando honoring `directives`, `providers` and `viewProvider` rules by limiting the search scope.
 3. Read the value of `lViewData[index]` at that location.
-   - if `isFactory(lViewData[index])` than mark it as resolving and invoke it. Replace `lViewData[index]` with the value returned from factory (caching mechanism).
+   - if `isFactory(lViewData[index])` then mark it as resolving and invoke it. Replace `lViewData[index]` with the value returned from factory (caching mechanism).
    - if `!isFactory(lViewData[index])` then return the cached value as is.
 
 # `EXPANDO` and Injecting Special Objects.
