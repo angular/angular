@@ -1,12 +1,12 @@
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {runPostScheduledTasks} from '../../../../test-setup/post-scheduled-tasks';
-import {migrationCollection} from '../../../../test-setup/test-app';
-import {createTestAppWithTestCase, resolveBazelDataFile} from '../../index.spec';
+import {runPostScheduledTasks} from '../../../test-setup/post-scheduled-tasks';
+import {migrationCollection} from '../../../test-setup/test-app';
+import {createTestAppWithTestCase, resolveBazelDataFile} from '../index.spec';
 
 describe('v5 constructor checks', () => {
 
   it('should properly report invalid constructor expression signatures', async () => {
-    const inputPath = resolveBazelDataFile(`v5/checks/constructor-checks_input.ts`);
+    const inputPath = resolveBazelDataFile(`misc/constructor-checks_input.ts`);
     const runner = new SchematicTestRunner('schematics', migrationCollection);
 
     runner.runSchematic('migration-01', {}, createTestAppWithTestCase(inputPath));
@@ -30,6 +30,13 @@ describe('v5 constructor checks', () => {
 
     expect(output).toMatch(/Found "MatCalendar".*super.*: super\(any, any, any, any\)/);
     expect(output).toMatch(/Found "MatCalendar".*: new \w+\(any, any, any, any\)/);
+
+    expect(output).toMatch(/\[97.*Found "NativeDateAdapter"/,
+      'Expected the constructor checks to report if an argument is not assignable.');
+    expect(output).not.toMatch(/\[99.*Found "NativeDateAdapter".*/,
+      'Expected the constructor to not report if an argument is assignable.');
+
+    expect(output).not.toMatch(/Found "NonMaterialClass".*: new NonMaterialClass\(\)/);
   });
 });
 

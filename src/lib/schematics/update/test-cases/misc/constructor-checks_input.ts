@@ -40,6 +40,12 @@ class MatCalendar {
   constructor(_intl: any, _adapter: any, _formats: any, _changeDetector: any) {}
 }
 
+class NonMaterialClass {}
+
+class DelegateClass {
+  constructor(_adapter: NativeDateAdapter) {}
+}
+
 /* Actual test case using the previously defined definitions. */
 
 class A extends NativeDateAdapter {
@@ -87,3 +93,9 @@ class E extends MatCalendar {
 }
 
 const _E = new MatCalendar({}, {}, {}, {}, {}, {}, {});
+
+const _F = new NativeDateAdapter('b', 'invalid-argument');
+
+const _G = new NativeDateAdapter('a', {IOS: true});
+
+const _H = new NonMaterialClass('invalid-argument');
