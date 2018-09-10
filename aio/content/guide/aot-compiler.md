@@ -1482,6 +1482,14 @@ to allow it to be imported from template factory modules. See
 Setting this option to `false` disables this rewriting, requiring the rewriting to be
 done manually.
 
+### *disableTypeScriptVersionCheck*
+
+When `true`, this option tells the compiler not to check the TypeScript version.
+The compiler will skip checking and will not error out when an unsupported version of TypeScript is used.
+Setting this option to `true` is not recommended because unsupported versions of TypeScript might have undefined behaviour.
+
+This option is `false` by default.
+
 ### *preserveWhitespaces*
 
 This option tells the compiler whether to remove blank text nodes from compiled templates.
