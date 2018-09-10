@@ -110,6 +110,9 @@ function createTestSupportFor(basePath: string) {
 }
 
 export function setupBazelTo(basePath: string) {
+  if (!process.env.TEST_SRCDIR) {
+    throw new Error('`setupBazelTo()` must only be called from in a Bazel job.');
+  }
   const sources = process.env.TEST_SRCDIR;
   const packages = path.join(sources, 'angular/packages');
   const nodeModulesPath = path.join(basePath, 'node_modules');

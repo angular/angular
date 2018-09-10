@@ -14,6 +14,9 @@ import {main, readCommandLineAndConfiguration, watchMode} from '../../src/main';
 import {TestSupport, isInBazel, makeTempDir, setup} from '../test_support';
 
 function setupFakeCore(support: TestSupport): void {
+  if (!process.env.TEST_SRCDIR) {
+    throw new Error('`setupFakeCore` must be run within a Bazel test');
+  }
   const fakeCore = path.join(
       process.env.TEST_SRCDIR, 'angular/packages/compiler-cli/test/ngtsc/fake_core/npm_package');
 

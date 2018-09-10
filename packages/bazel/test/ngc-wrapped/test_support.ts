@@ -152,7 +152,7 @@ export function setup(
   function runOneBuildImpl(): boolean { return runOneBuild(['@' + tsConfigJsonPath]); }
 }
 
-function makeTempDir(baseDir): string {
+function makeTempDir(baseDir: string): string {
   const id = (Math.random() * 1000000).toFixed(0);
   const dir = path.join(baseDir, `tmp.${id}`);
   fs.mkdirSync(dir);
