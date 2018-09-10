@@ -13,12 +13,11 @@ import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace, WorkspaceProject} from '@schematics/angular/utility/config';
 import {findModuleFromOptions as internalFindModule} from '@schematics/angular/utility/find-module';
 import {getAppModulePath} from '@schematics/angular/utility/ng-ast-utils';
-import * as ts from 'typescript';
 import {getProjectMainFile} from './project-main-file';
-
+import {ts} from './version-agnostic-typescript';
 
 /** Reads file given path and returns TypeScript source file. */
-export function getSourceFile(host: Tree, path: string): ts.SourceFile {
+export function getSourceFile(host: Tree, path: string) {
   const buffer = host.read(path);
   if (!buffer) {
     throw new SchematicsException(`Could not find file for path: ${path}`);
@@ -50,8 +49,9 @@ export function addModuleImportToModule(host: Tree, modulePath: string, moduleNa
     throw new SchematicsException(`Module not found: ${modulePath}`);
   }
 
-  // TODO: cast to any, because the types for ts.SourceFile
-  // aren't compatible with `strictFunctionTypes`.
+  // TODO(devversion): Cast to any because the Bazel typescript rules seem to incorrectly resolve
+  // the the required TypeScript version for the @schematics/angular utility functions. Meaning
+  // that is a type signature mismatch at compilation which is not valid.
   const changes = addImportToModule(moduleSource as any, modulePath, moduleName, src);
   const recorder = host.beginUpdate(modulePath);
 

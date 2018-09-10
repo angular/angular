@@ -47,7 +47,11 @@ jobs:
           <<: *post_checkout
       - restore_cache:
           key: *cache_key
-      - run: echo "Temporarily disabled until Bazel setup can be fixed"
+
+      - run: bazel run @nodejs//:npm install
+        # TODO(jelbourn): Update this command to run all tests if the Bazel issues have been fixed.
+      - run: bazel test src/lib/schematics:unit_tests
+
       - save_cache:
           key: *cache_key
           paths:
