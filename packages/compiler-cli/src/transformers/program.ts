@@ -1021,7 +1021,7 @@ export function i18nExtract(
   const ext = i18nGetExtension(formatName);
   const content = i18nSerialize(bundle, formatName, options);
   const dstFile = outFile || `messages.${ext}`;
-  const dstPath = path.resolve(options.outDir || options.basePath, dstFile);
+  const dstPath = path.resolve(options.outDir || options.basePath !, dstFile);
   host.writeFile(dstPath, content, false, undefined, []);
   return [dstPath];
 }
