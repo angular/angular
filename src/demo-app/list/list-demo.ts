@@ -69,4 +69,8 @@ export class ListDemo {
     this.selectedOptions = values;
     this.modelChangeEventCount++;
   }
+
+  alertItem(msg: string) {
+    alert(msg);
+  }
 }

@@ -105,6 +105,15 @@
   </div>
 
   <div>
+    <h2>Action list</h2>
+    <mat-action-list>
+      <button mat-list-item *ngFor="let link of links" (click)="alertItem(link.name)">
+        {{link.name}}
+      </button>
+    </mat-action-list>
+  </div>
+
+  <div>
     <h2>Selection list</h2>
 
     <mat-selection-list #groceries [ngModel]="selectedOptions"
