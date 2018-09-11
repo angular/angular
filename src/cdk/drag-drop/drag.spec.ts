@@ -683,6 +683,56 @@ describe('CdkDrag', () => {
           .toBeFalsy('Expected preview to be removed from the DOM if the transition timed out');
     }));
 
+    it('should not wait for transition that are not on the `transform` property', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+      const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+      dispatchMouseEvent(item, 'mousedown');
+      fixture.detectChanges();
+
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+      preview.style.transition = 'opacity 500ms ease';
+
+      dispatchTouchEvent(document, 'mousemove', 50, 50);
+      fixture.detectChanges();
+
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      tick(0);
+
+      expect(preview.parentNode)
+          .toBeFalsy('Expected preview to be removed from the DOM immediately');
+    }));
+
+    it('should pick out the `transform` duration if multiple properties are being transitioned',
+      fakeAsync(() => {
+        const fixture = createComponent(DraggableInDropZone);
+        fixture.detectChanges();
+        const item = fixture.componentInstance.dragItems.toArray()[1].element.nativeElement;
+
+        dispatchMouseEvent(item, 'mousedown');
+        fixture.detectChanges();
+
+        const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+        preview.style.transition = 'opacity 500ms ease, transform 1000ms ease';
+
+        dispatchTouchEvent(document, 'mousemove', 50, 50);
+        fixture.detectChanges();
+
+        dispatchMouseEvent(document, 'mouseup');
+        fixture.detectChanges();
+        tick(500);
+
+        expect(preview.parentNode)
+            .toBeTruthy('Expected preview to be in the DOM at the end of the opacity transition');
+
+        tick(1000);
+
+        expect(preview.parentNode).toBeFalsy(
+            'Expected preview to be removed from the DOM at the end of the transform transition');
+      }));
+
     it('should create a placeholder element while the item is dragged', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();

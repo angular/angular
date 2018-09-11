@@ -536,7 +536,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     // we need to trigger a style recalculation in order for the `cdk-drag-animating` class to
     // apply its style, we take advantage of the available info to figure out whether we need to
     // bind the event in the first place.
-    const duration = getTransitionDurationInMs(this._preview);
+    const duration = getTransformTransitionDurationInMs(this._preview);
 
     if (duration === 0) {
       return Promise.resolve();
@@ -545,7 +545,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     return this._ngZone.runOutsideAngular(() => {
       return new Promise(resolve => {
         const handler = ((event: TransitionEvent) => {
-          if (!event || event.target === this._preview) {
+          if (!event || (event.target === this._preview && event.propertyName === 'transform')) {
             this._preview.removeEventListener('transitionend', handler);
             resolve();
             clearTimeout(timeout);
@@ -686,13 +686,31 @@ function parseCssTimeUnitsToMs(value: string): number {
   return parseFloat(value) * multiplier;
 }
 
-/** Gets the transition duration, including the delay, of an element in milliseconds. */
-function getTransitionDurationInMs(element: HTMLElement): number {
+/** Gets the transform transition duration, including the delay, of an element in milliseconds. */
+function getTransformTransitionDurationInMs(element: HTMLElement): number {
   const computedStyle = getComputedStyle(element);
-  const rawDuration = computedStyle.getPropertyValue('transition-duration');
-  const rawDelay = computedStyle.getPropertyValue('transition-delay');
+  const transitionedProperties = parseCssPropertyValue(computedStyle, 'transition-property');
+  const property = transitionedProperties.find(prop => prop === 'transform' || prop === 'all');
 
-  return parseCssTimeUnitsToMs(rawDuration) + parseCssTimeUnitsToMs(rawDelay);
+  // If there's no transition for `all` or `transform`, we shouldn't do anything.
+  if (!property) {
+    return 0;
+  }
+
+  // Get the index of the property that we're interested in and match
+  // it up to the same index in `transition-delay` and `transition-duration`.
+  const propertyIndex = transitionedProperties.indexOf(property);
+  const rawDurations = parseCssPropertyValue(computedStyle, 'transition-duration');
+  const rawDelays = parseCssPropertyValue(computedStyle, 'transition-delay');
+
+  return parseCssTimeUnitsToMs(rawDurations[propertyIndex]) +
+         parseCssTimeUnitsToMs(rawDelays[propertyIndex]);
+}
+
+/** Parses out multiple values from a computed style into an array. */
+function parseCssPropertyValue(computedStyle: CSSStyleDeclaration, name: string): string[] {
+  const value = computedStyle.getPropertyValue(name);
+  return value.split(',').map(part => part.trim());
 }
 
 /** Point on the page or within an element. */
