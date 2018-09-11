@@ -1,7 +1,7 @@
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {Component, ElementRef, ViewChild} from '@angular/core';
 import {FormControl} from '@angular/forms';
-import {MatAutocompleteSelectedEvent, MatChipInputEvent} from '@angular/material';
+import {MatAutocompleteSelectedEvent, MatChipInputEvent, MatAutocomplete} from '@angular/material';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
@@ -17,7 +17,7 @@ export class ChipsAutocompleteExample {
   visible = true;
   selectable = true;
   removable = true;
-  addOnBlur = false;
+  addOnBlur = true;
   separatorKeysCodes: number[] = [ENTER, COMMA];
   fruitCtrl = new FormControl();
   filteredFruits: Observable<string[]>;
@@ -25,6 +25,7 @@ export class ChipsAutocompleteExample {
   allFruits: string[] = ['Apple', 'Lemon', 'Lime', 'Orange', 'Strawberry'];
 
   @ViewChild('fruitInput') fruitInput: ElementRef<HTMLInputElement>;
+  @ViewChild('auto') matAutocomplete: MatAutocomplete;
 
   constructor() {
     this.filteredFruits = this.fruitCtrl.valueChanges.pipe(
@@ -33,20 +34,24 @@ export class ChipsAutocompleteExample {
   }
 
   add(event: MatChipInputEvent): void {
-    const input = event.input;
-    const value = event.value;
+    // Add fruit only when MatAutocomplete is not open
+    // To make sure this does not conflict with OptionSelected Event
+    if (!this.matAutocomplete.isOpen) {
+      const input = event.input;
+      const value = event.value;
 
-    // Add our fruit
-    if ((value || '').trim()) {
-      this.fruits.push(value.trim());
+      // Add our fruit
+      if ((value || '').trim()) {
+        this.fruits.push(value.trim());
+      }
+
+      // Reset the input value
+      if (input) {
+        input.value = '';
+      }
+
+      this.fruitCtrl.setValue(null);
     }
-
-    // Reset the input value
-    if (input) {
-      input.value = '';
-    }
-
-    this.fruitCtrl.setValue(null);
   }
 
   remove(fruit: string): void {
