@@ -70,7 +70,9 @@ export class MatGridList implements OnInit, AfterContentChecked {
   /** Amount of columns in the grid list. */
   @Input()
   get cols(): number { return this._cols; }
-  set cols(value: number) { this._cols = Math.round(coerceNumberProperty(value)); }
+  set cols(value: number) {
+    this._cols = Math.max(1, Math.round(coerceNumberProperty(value)));
+  }
 
   /** Size of the grid list's gutter in pixels. */
   @Input()

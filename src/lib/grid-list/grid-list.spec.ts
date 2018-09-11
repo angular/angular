@@ -1,5 +1,5 @@
 import {TestBed, ComponentFixture} from '@angular/core/testing';
-import {Component, DebugElement, Type} from '@angular/core';
+import {Component, DebugElement, Type, ViewChild} from '@angular/core';
 import {By} from '@angular/platform-browser';
 import {MatGridList, MatGridListModule} from './index';
 import {MatGridTile, MatGridTileText} from './grid-tile';
@@ -32,6 +32,20 @@ describe('MatGridList', () => {
     const fixture = createComponent(GridListWithTooWideColspan);
 
     expect(() => fixture.detectChanges()).toThrowError(/tile with colspan 5 is wider than grid/);
+  });
+
+  it('should set the columns to zero if a negative number is passed in', () => {
+    const fixture = createComponent(GridListWithDynamicCols);
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.gridList.cols).toBe(2);
+
+    expect(() => {
+      fixture.componentInstance.cols = -2;
+      fixture.detectChanges();
+    }).not.toThrow();
+
+    expect(fixture.componentInstance.gridList.cols).toBe(1);
   });
 
   it('should default to 1:1 row height if undefined ', () => {
@@ -333,6 +347,12 @@ class GridListWithInvalidRowHeightRatio { }
 @Component({template:
     '<mat-grid-list cols="4"><mat-grid-tile colspan="5"></mat-grid-tile></mat-grid-list>'})
 class GridListWithTooWideColspan { }
+
+@Component({template: '<mat-grid-list [cols]="cols"></mat-grid-list>'})
+class GridListWithDynamicCols {
+  @ViewChild(MatGridList) gridList: MatGridList;
+  cols = 2;
+}
 
 @Component({template: `
     <div style="width:200px">
