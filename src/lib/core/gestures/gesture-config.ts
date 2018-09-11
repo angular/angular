@@ -100,6 +100,13 @@ export class GestureConfig extends HammerGestureConfig {
     // Overwrite the default `pan` event to use the swipe event.
     pan.recognizeWith(swipe);
 
+    // Since the slide event threshold is set to zero, the slide recognizer can fire and
+    // accidentally reset the longpress recognizer. In order to make sure that the two
+    // recognizers can run simultaneously but don't affect each other, we allow the slide
+    // recognizer to recognize while a longpress is being processed.
+    // See: https://github.com/hammerjs/hammer.js/blob/master/src/manager.js#L123-L124
+    longpress.recognizeWith(slide);
+
     // Add customized gestures to Hammer manager
     mc.add([swipe, press, pan, slide, longpress]);
 
