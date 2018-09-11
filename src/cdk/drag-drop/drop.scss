@@ -8,7 +8,8 @@ $cdk-z-index-drag-preview: 1000;
 }
 
 .cdk-drag,
-.cdk-drag-handle {
+.cdk-drag-handle,
+.cdk-drag-drop-disable-native-interactions {
   touch-action: none;
   -webkit-user-drag: none;
   -webkit-tap-highlight-color: transparent;

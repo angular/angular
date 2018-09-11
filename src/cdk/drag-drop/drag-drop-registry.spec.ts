@@ -155,6 +155,16 @@ describe('DragDropRegistry', () => {
     expect(dispatchTouchEvent(document, 'touchmove').defaultPrevented).toBe(true);
   });
 
+  it('should disable the native interactions on the body while dragging', () => {
+    const firstItem = testComponent.dragItems.first;
+
+    registry.startDragging(firstItem, createMouseEvent('mousedown'));
+    expect(document.body.classList).toContain('cdk-drag-drop-disable-native-interactions');
+
+    registry.stopDragging(firstItem);
+    expect(document.body.classList).not.toContain('cdk-drag-drop-disable-native-interactions');
+  });
+
 });
 
 @Component({
