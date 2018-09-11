@@ -314,6 +314,7 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
 
   /** Refreshes the position cache of the items and sibling containers. */
   private _cachePositions() {
+    const isHorizontal = this.orientation === 'horizontal';
     this._positionCache.items = this._activeDraggables
       .map(drag => {
         const elementToMeasure = this._dragDropRegistry.isDragging(drag) ?
@@ -340,7 +341,10 @@ export class CdkDrop<T = any> implements OnInit, OnDestroy {
           }
         };
       })
-      .sort((a, b) => a.clientRect.top - b.clientRect.top);
+      .sort((a, b) => {
+        return isHorizontal ? a.clientRect.left - b.clientRect.left :
+                              a.clientRect.top - b.clientRect.top;
+      });
 
     this._positionCache.siblings = coerceArray(this.connectedTo)
       .map(drop => typeof drop === 'string' ? this._dragDropRegistry.getDropContainer(drop)! : drop)
