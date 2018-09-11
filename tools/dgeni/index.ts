@@ -5,7 +5,7 @@ import {DocsPrivateFilter} from './processors/docs-private-filter';
 import {Categorizer} from './processors/categorizer';
 import {FilterDuplicateExports} from './processors/filter-duplicate-exports';
 import {MergeInheritedProperties} from './processors/merge-inherited-properties';
-import {ComponentGrouper} from './processors/component-grouper';
+import {EntryPointGrouper} from './processors/entry-point-grouper';
 import {ReadTypeScriptModules} from 'dgeni-packages/typescript/processors/readTypeScriptModules';
 import {TsParser} from 'dgeni-packages/typescript/services/TsParser';
 import {sync as globSync} from 'glob';
@@ -62,8 +62,8 @@ apiDocsPackage.processor(new DocsPrivateFilter());
 // Processor that appends categorization flags to the docs, e.g. `isDirective`, `isNgModule`, etc.
 apiDocsPackage.processor(new Categorizer());
 
-// Processor to group components into top-level groups such as "Tabs", "Sidenav", etc.
-apiDocsPackage.processor(new ComponentGrouper());
+// Processor to group docs into top-level entry-points such as "tabs", "sidenav", etc.
+apiDocsPackage.processor(new EntryPointGrouper());
 
 // Configure the log level of the API docs dgeni package.
 apiDocsPackage.config((log: any) => log.level = 'info');
@@ -82,7 +82,7 @@ apiDocsPackage.config((log: any) => patchLogService(log));
 // Configure the output path for written files (i.e., file names).
 apiDocsPackage.config((computePathsProcessor: any) => {
   computePathsProcessor.pathTemplates = [{
-    docTypes: ['componentGroup'],
+    docTypes: ['entry-point'],
     pathTemplate: '${name}',
     outputPathTemplate: '${name}.html',
   }];

@@ -1,23 +1,23 @@
 import {DocCollection, Document, Processor} from 'dgeni';
+import {FunctionExportDoc} from 'dgeni-packages/typescript/api-doc-types/FunctionExportDoc';
 import {InterfaceExportDoc} from 'dgeni-packages/typescript/api-doc-types/InterfaceExportDoc';
 import {TypeAliasExportDoc} from 'dgeni-packages/typescript/api-doc-types/TypeAliasExportDoc';
-import {FunctionExportDoc} from 'dgeni-packages/typescript/api-doc-types/FunctionExportDoc';
-import {CategorizedClassDoc} from '../common/dgeni-definitions';
 import * as path from 'path';
+import {CategorizedClassDoc} from '../common/dgeni-definitions';
 
-/** Component group data structure. */
-export class ComponentGroup {
+/** Document type for an entry-point. */
+export class EntryPointDoc {
 
   /** Unique document type for Dgeni. */
-  docType = 'componentGroup';
+  docType = 'entry-point';
 
   /** Name of the component group. */
   name: string;
 
-  /** Display name of the component group */
+  /** Display name of the entry-point. */
   displayName: string;
 
-  /** Module import path for the component group. */
+  /** Module import path for the entry-point. */
   moduleImportPath: string;
 
   /** Name of the package, either material or cdk */
@@ -26,10 +26,10 @@ export class ComponentGroup {
   /** Display name of the package. */
   packageDisplayName: string;
 
-  /** Unique id for the component group. */
+  /** Unique id for the entry-point. */
   id: string;
 
-  /** Known aliases for the component group. */
+  /** Known aliases for the entry-point. This is only needed for the `computeIdsProcessor`. */
   aliases: string[] = [];
 
   /** List of categorized class docs that are defining a directive. */
@@ -38,38 +38,37 @@ export class ComponentGroup {
   /** List of categorized class docs that are defining a service. */
   services: CategorizedClassDoc[] = [];
 
-  /** Additional classes that belong to the component group. */
-  additionalClasses: CategorizedClassDoc[] = [];
+  /** Classes that belong to the entry-point. */
+  classes: CategorizedClassDoc[] = [];
 
-  /** Additional interfaces that belong to the component group. */
-  additionalInterfaces: InterfaceExportDoc[] = [];
+  /** Interfaces that belong to the entry-point. */
+  interfaces: InterfaceExportDoc[] = [];
 
-  /** Additional type aliases that belong to the component group. */
-  additionalTypeAliases: TypeAliasExportDoc[] = [];
+  /** Type aliases that belong to the entry-point. */
+  typeAliases: TypeAliasExportDoc[] = [];
 
-  /** Additional functions that belong to the component group. */
-  additionalFunctions: FunctionExportDoc[] = [];
+  /** Functions that belong to the entry-point. */
+  functions: FunctionExportDoc[] = [];
 
-  /** NgModule that defines the current component group. */
+  /** NgModule that defines the current entry-point. */
   ngModule: CategorizedClassDoc | null = null;
 
   constructor(name: string) {
     this.name = name;
-    this.id = `component-group-${name}`;
+    this.id = `entry-point-${name}`;
   }
 }
 
 /**
- * Processor to group docs into top-level "Components" WRT material design, e.g., "Button", "Tabs",
- * where each group may conists of several directives and services.
+ * Processor to group docs into entry-points that consist of directives, component, classes,
+ * interfaces, functions or type aliases.
  */
-export class ComponentGrouper implements Processor {
-  name = 'component-grouper';
+export class EntryPointGrouper implements Processor {
+  name = 'entry-point-grouper';
   $runBefore = ['docs-processed'];
 
   $process(docs: DocCollection) {
-    // Map of group name to group instance.
-    const groups = new Map<string, ComponentGroup>();
+    const entryPoints = new Map<string, EntryPointDoc>();
 
     docs.forEach(doc => {
       const documentInfo = getDocumentPackageInfo(doc);
@@ -78,41 +77,41 @@ export class ComponentGrouper implements Processor {
       const packageDisplayName = documentInfo.packageName === 'cdk' ? 'CDK' : 'Material';
 
       const moduleImportPath = `@angular/${packageName}/${documentInfo.entryPointName}`;
-      const groupName = packageName + '-' + documentInfo.name;
+      const entryPointName = packageName + '-' + documentInfo.name;
 
-      // Get the group for this doc, or, if one does not exist, create it.
-      let group;
-      if (groups.has(groupName)) {
-        group = groups.get(groupName)!;
+      // Get the entry-point for this doc, or, if one does not exist, create it.
+      let entryPoint;
+      if (entryPoints.has(entryPointName)) {
+        entryPoint = entryPoints.get(entryPointName)!;
       } else {
-        group = new ComponentGroup(groupName);
-        groups.set(groupName, group);
+        entryPoint = new EntryPointDoc(entryPointName);
+        entryPoints.set(entryPointName, entryPoint);
       }
 
-      group.displayName = documentInfo.name;
-      group.moduleImportPath = moduleImportPath;
-      group.packageName = packageName;
-      group.packageDisplayName = packageDisplayName;
+      entryPoint.displayName = documentInfo.name;
+      entryPoint.moduleImportPath = moduleImportPath;
+      entryPoint.packageName = packageName;
+      entryPoint.packageDisplayName = packageDisplayName;
 
-      // Put this doc into the appropriate list in this group.
+      // Put this doc into the appropriate list in the entry-point doc.
       if (doc.isDirective) {
-        group.directives.push(doc);
+        entryPoint.directives.push(doc);
       } else if (doc.isService) {
-        group.services.push(doc);
+        entryPoint.services.push(doc);
       } else if (doc.isNgModule) {
-        group.ngModule = doc;
+        entryPoint.ngModule = doc;
       } else if (doc.docType === 'class') {
-        group.additionalClasses.push(doc);
+        entryPoint.classes.push(doc);
       } else if (doc.docType === 'interface') {
-        group.additionalInterfaces.push(doc);
+        entryPoint.interfaces.push(doc);
       } else if (doc.docType === 'type-alias') {
-        group.additionalTypeAliases.push(doc);
+        entryPoint.typeAliases.push(doc);
       } else if (doc.docType === 'function') {
-        group.additionalFunctions.push(doc);
+        entryPoint.functions.push(doc);
       }
     });
 
-    return Array.from(groups.values());
+    return Array.from(entryPoints.values());
   }
 }
 
@@ -127,8 +126,9 @@ function getDocumentPackageInfo(doc: Document) {
   const pathSegments = path.relative(basePath, filePath).split(path.sep);
   let groupName = pathSegments[1];
 
-  // For the ripples there should be a component group in the docs. Even it's not a
-  // secondary-entry point it can be still documented with its own `material-ripple.html` file.
+  // The ripples are technically part of the `@angular/material/core` entry-point, but we
+  // want to show the ripple API separately in the docs. In order to archive this, we treat
+  // the ripple folder as its own entry-point.
   if (pathSegments[1] === 'core' && pathSegments[2] === 'ripple') {
     groupName = 'ripple';
   }
