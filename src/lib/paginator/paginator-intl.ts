@@ -17,8 +17,8 @@ import {Subject} from 'rxjs';
 @Injectable({providedIn: 'root'})
 export class MatPaginatorIntl {
   /**
-   * Stream that emits whenever the labels here are changed. Use this to notify
-   * components if the labels have changed after initialization.
+   * Stream to emit from when labels are changed. Use this to notify components when the labels have
+   * changed after initialization.
    */
   readonly changes: Subject<void> = new Subject<void>();
 
