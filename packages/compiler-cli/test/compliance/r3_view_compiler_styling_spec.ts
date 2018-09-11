@@ -253,7 +253,7 @@ describe('compiler compliance: styling', () => {
           template: function MyComponent_Template(rf, $ctx$) {
             if (rf & 1) {
               $r3$.ɵelementStart(0, "div");
-              $r3$.ɵelementStyling(null, null, $r3$.ɵzss);
+              $r3$.ɵelementStyling(null, null, $r3$.ɵdefaultStyleSanitizer);
               $r3$.ɵelementEnd();
             }
             if (rf & 2) {
@@ -310,7 +310,7 @@ describe('compiler compliance: styling', () => {
               template:  function MyComponent_Template(rf, $ctx$) {
                 if (rf & 1) {
                   $r3$.ɵelementStart(0, "div", $e0_attrs$);
-                  $r3$.ɵelementStyling(null, $e0_styling$, $r3$.ɵzss);
+                  $r3$.ɵelementStyling(null, $e0_styling$, $r3$.ɵdefaultStyleSanitizer);
                   $r3$.ɵelementEnd();
                 }
                 if (rf & 2) {
@@ -318,7 +318,7 @@ describe('compiler compliance: styling', () => {
                   $r3$.ɵelementStylingProp(0, 1, $ctx$.myWidth);
                   $r3$.ɵelementStylingProp(0, 2, $ctx$.myHeight);
                   $r3$.ɵelementStylingApply(0);
-                  $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("border-width: 10px"), $r3$.ɵzs);
+                  $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("border-width: 10px"), $r3$.ɵsanitizeStyle);
                 }
               }
             });
@@ -369,7 +369,7 @@ describe('compiler compliance: styling', () => {
             template:  function MyComponent_Template(rf, ctx) {
               if (rf & 1) {
                 $r3$.ɵelementStart(0, "div");
-                $r3$.ɵelementStyling(null, _c0, $r3$.ɵzss);
+                $r3$.ɵelementStyling(null, _c0, $r3$.ɵdefaultStyleSanitizer);
                 $r3$.ɵelementEnd();
               }
               if (rf & 2) {
@@ -529,7 +529,7 @@ describe('compiler compliance: styling', () => {
                 }
                 if (rf & 2) {
                   $r3$.ɵelementAttribute(0, "class", $r3$.ɵbind("round"));
-                  $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("height:100px"), $r3$.ɵzs);
+                  $r3$.ɵelementAttribute(0, "style", $r3$.ɵbind("height:100px"), $r3$.ɵsanitizeStyle);
                 }
               }
             });

@@ -193,10 +193,12 @@ export class Identifiers {
   };
 
   // sanitization-related functions
-  static sanitizeHtml: o.ExternalReference = {name: 'ɵzh', moduleName: CORE};
-  static sanitizeStyle: o.ExternalReference = {name: 'ɵzs', moduleName: CORE};
-  static defaultStyleSanitizer: o.ExternalReference = {name: 'ɵzss', moduleName: CORE};
-  static sanitizeResourceUrl: o.ExternalReference = {name: 'ɵzr', moduleName: CORE};
-  static sanitizeScript: o.ExternalReference = {name: 'ɵzc', moduleName: CORE};
-  static sanitizeUrl: o.ExternalReference = {name: 'ɵzu', moduleName: CORE};
+  static sanitizeHtml: o.ExternalReference = {name: 'ɵsanitizeHtml', moduleName: CORE};
+  static sanitizeStyle: o.ExternalReference = {name: 'ɵsanitizeStyle', moduleName: CORE};
+  static defaultStyleSanitizer:
+      o.ExternalReference = {name: 'ɵdefaultStyleSanitizer', moduleName: CORE};
+  static sanitizeResourceUrl:
+      o.ExternalReference = {name: 'ɵsanitizeResourceUrl', moduleName: CORE};
+  static sanitizeScript: o.ExternalReference = {name: 'ɵsanitizeScript', moduleName: CORE};
+  static sanitizeUrl: o.ExternalReference = {name: 'ɵsanitizeUrl', moduleName: CORE};
 }
