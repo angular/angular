@@ -31,23 +31,14 @@ import {
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
-  CanDisable,
-  CanDisableCtor,
   CanDisableRipple,
-  CanDisableRippleCtor,
-  mixinDisabled,
   mixinDisableRipple,
+  CanDisableRippleCtor,
 } from '@angular/material/core';
 
 
 /** Acceptable types for a button toggle. */
 export type ToggleType = 'checkbox' | 'radio';
-
-// Boilerplate for applying mixins to MatButtonToggleGroup and MatButtonToggleGroupMultiple
-/** @docs-private */
-export class MatButtonToggleGroupBase {}
-export const _MatButtonToggleGroupMixinBase: CanDisableCtor & typeof MatButtonToggleGroupBase =
-    mixinDisabled(MatButtonToggleGroupBase);
 
 /**
  * Provider Expression that allows mat-button-toggle-group to register as a ControlValueAccessor.
@@ -85,7 +76,6 @@ export class MatButtonToggleChange {
     MAT_BUTTON_TOGGLE_GROUP_VALUE_ACCESSOR,
     {provide: MatButtonToggleGroupMultiple, useExisting: MatButtonToggleGroup},
   ],
-  inputs: ['disabled'],
   host: {
     'role': 'group',
     'class': 'mat-button-toggle-group',
@@ -94,11 +84,11 @@ export class MatButtonToggleChange {
   },
   exportAs: 'matButtonToggleGroup',
 })
-export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase implements
-  ControlValueAccessor, CanDisable, OnInit, AfterContentInit {
+export class MatButtonToggleGroup implements ControlValueAccessor, OnInit, AfterContentInit {
 
   private _vertical = false;
   private _multiple = false;
+  private _disabled = false;
   private _selectionModel: SelectionModel<MatButtonToggle>;
 
   /**
@@ -176,13 +166,22 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase impleme
     this._multiple = coerceBooleanProperty(value);
   }
 
+  /** Whether multiple button toggle group is disabled. */
+  @Input()
+  get disabled(): boolean { return this._disabled; }
+  set disabled(value: boolean) {
+    this._disabled = coerceBooleanProperty(value);
+
+    if (this._buttonToggles) {
+      this._buttonToggles.forEach(toggle => toggle._markForCheck());
+    }
+  }
+
   /** Event emitted when the group's value changes. */
   @Output() readonly change: EventEmitter<MatButtonToggleChange> =
       new EventEmitter<MatButtonToggleChange>();
 
-  constructor(private _changeDetector: ChangeDetectorRef) {
-    super();
-  }
+  constructor(private _changeDetector: ChangeDetectorRef) {}
 
   ngOnInit() {
     this._selectionModel = new SelectionModel<MatButtonToggle>(this.multiple, undefined, false);
@@ -214,10 +213,6 @@ export class MatButtonToggleGroup extends _MatButtonToggleGroupMixinBase impleme
   // Implemented as part of ControlValueAccessor.
   setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled;
-
-    if (this._buttonToggles) {
-      this._buttonToggles.forEach(toggle => toggle._markForCheck());
-    }
   }
 
   /** Dispatch change event with current selection and group value. */
