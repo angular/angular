@@ -30,8 +30,9 @@ const srcsToFmt = [
 ];
 
 /**
- * Gulp stream that wraps the gulp-git status task
- * and converts the stdout into a stream of files
+ * Gulp stream that wraps the gulp-git status,
+ * only returns untracked files, and converts
+ * the stdout into a stream of files.
  */
 function gulpStatus() {
   const Vinyl = require('vinyl');
@@ -43,7 +44,7 @@ function gulpStatus() {
   const opt = {cwd: process.cwd()};
 
   // https://git-scm.com/docs/git-status#_short_format
-  const RE_STATUS = /^((\s\w)|(\w+)|\?{0,2})\s([\w\+\-\/\\\.]+)(\s->\s)?([\w\+\-\/\\\.]+)*\n/gm;
+  const RE_STATUS = /((\s\w)|(\w+)|\?{0,2})\s([\w\+\-\/\\\.]+)(\s->\s)?([\w\+\-\/\\\.]+)*\n{0,1}/gm;
 
   gulpGit.status({args: '--porcelain', quiet: true}, function(err, stdout) {
     if (err) return srcStream.emit('error', err);
@@ -52,16 +53,11 @@ function gulpStatus() {
     let currentMatch;
 
     while ((currentMatch = RE_STATUS.exec(data)) !== null) {
-      // This is necessary to avoid infinite loops with zero-width matches
-      if (currentMatch.index === RE_STATUS.lastIndex) {
-        RE_STATUS.lastIndex++;
-      }
-
       // status
       const status = currentMatch[1].trim().toLowerCase();
 
-      // File has been deleted
-      if (status.includes('d')) {
+      // We only care about untracked files and renamed files
+      if (!new RegExp(/r|\?/i).test(status)) {
         continue;
       }
 
@@ -76,6 +72,8 @@ function gulpStatus() {
         path: path.resolve(opt.cwd, filePath),
         cwd: opt.cwd,
       }));
+
+      RE_STATUS.lastIndex++;
     }
 
     srcStream.end();
@@ -102,8 +100,8 @@ module.exports = {
         .pipe(gulp.dest('.'));
   },
 
-  // Format only the changed source code files with clang-format (see .clang-format)
-  'format-changes': (gulp) => () => {
+  // Format only the untracked source code files with clang-format (see .clang-format)
+  'format-untracked': (gulp) => () => {
     const format = require('gulp-clang-format');
     const clangFormat = require('clang-format');
     const gulpFilter = require('gulp-filter');
