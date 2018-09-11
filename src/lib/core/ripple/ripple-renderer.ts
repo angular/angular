@@ -110,12 +110,14 @@ export class RippleRenderer {
       this._containerElement = elementRef.nativeElement;
 
       // Specify events which need to be registered on the trigger.
-      this._triggerEvents.set('mousedown', this.onMousedown);
-      this._triggerEvents.set('mouseup', this.onPointerUp);
-      this._triggerEvents.set('mouseleave', this.onPointerUp);
+      this._triggerEvents
+        .set('mousedown', this.onMousedown)
+        .set('mouseup', this.onPointerUp)
+        .set('mouseleave', this.onPointerUp)
 
-      this._triggerEvents.set('touchstart', this.onTouchStart);
-      this._triggerEvents.set('touchend', this.onPointerUp);
+        .set('touchstart', this.onTouchStart)
+        .set('touchend', this.onPointerUp)
+        .set('touchcancel', this.onPointerUp);
     }
   }
 

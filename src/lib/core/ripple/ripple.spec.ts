@@ -127,6 +127,17 @@ describe('MatRipple', () => {
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
     }));
 
+    it('should clear ripples if the touch sequence is cancelled', fakeAsync(() => {
+      dispatchTouchEvent(rippleTarget, 'touchstart');
+      tick(enterDuration);
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(1);
+
+      dispatchTouchEvent(rippleTarget, 'touchcancel');
+      tick(exitDuration);
+
+      expect(rippleTarget.querySelectorAll('.mat-ripple-element').length).toBe(0);
+    }));
+
     it('should launch multiple ripples for multi-touch', fakeAsync(() => {
       const touchEvent = createTouchEvent('touchstart');
 
