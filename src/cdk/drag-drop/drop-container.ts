@@ -6,11 +6,14 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectionToken, QueryList} from '@angular/core';
+import {InjectionToken, QueryList, ElementRef} from '@angular/core';
 import {CdkDrag} from './drag';
 
 
 export interface CdkDropContainer<T = any> {
+  /** DOM node that corresponds to the drop container. */
+  element: ElementRef<HTMLElement>;
+
   /** Arbitrary data to attach to all events emitted by this container. */
   data: T;
 

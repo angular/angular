@@ -396,7 +396,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     if (this._nextSibling) {
       this._nextSibling.parentNode!.insertBefore(this._rootElement, this._nextSibling);
     } else {
-      this._placeholder.parentNode!.appendChild(this._rootElement);
+      this._initialContainer.element.nativeElement.appendChild(this._rootElement);
     }
 
     this._destroyPreview();
@@ -415,6 +415,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
         previousContainer: this._initialContainer
       });
       this.dropContainer.drop(this, currentIndex, this._initialContainer);
+      this.dropContainer = this._initialContainer;
     });
   }
 

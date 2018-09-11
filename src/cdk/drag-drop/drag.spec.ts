@@ -1435,6 +1435,45 @@ describe('CdkDrag', () => {
       });
     }));
 
+    it('should return DOM element to its initial container after it is dropped, in a container ' +
+      'with one draggable item', fakeAsync(() => {
+      const fixture = createComponent(ConnectedDropZonesWithSingleItems);
+      fixture.detectChanges();
+
+      const items = fixture.componentInstance.dragItems.toArray();
+      const item = items[0];
+      const targetRect = items[1].element.nativeElement.getBoundingClientRect();
+      const dropContainers = fixture.componentInstance.dropInstances
+          .map(drop => drop.element.nativeElement);
+
+      expect(dropContainers[0].contains(item.element.nativeElement)).toBe(true,
+          'Expected DOM element to be in first container');
+      expect(item.dropContainer).toBe(fixture.componentInstance.dropInstances.first,
+          'Expected CdkDrag to be in first container in memory');
+
+      dragElementViaMouse(fixture, item.element.nativeElement,
+          targetRect.left + 1, targetRect.top + 1);
+      flush();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.droppedSpy).toHaveBeenCalledTimes(1);
+
+      const event = fixture.componentInstance.droppedSpy.calls.mostRecent().args[0];
+
+      expect(event).toEqual({
+        previousIndex: 0,
+        currentIndex: 0,
+        item,
+        container: fixture.componentInstance.dropInstances.toArray()[1],
+        previousContainer: fixture.componentInstance.dropInstances.first
+      });
+
+      expect(dropContainers[0].contains(item.element.nativeElement)).toBe(true,
+          'Expected DOM element to be returned to first container');
+      expect(item.dropContainer).toBe(fixture.componentInstance.dropInstances.first,
+          'Expected CdkDrag to be returned to first container in memory');
+    }));
+
   });
 
 });
@@ -1680,6 +1719,39 @@ class DraggableWithAlternateRoot {
   @ViewChild(CdkDrag) dragInstance: CdkDrag;
 }
 
+
+@Component({
+  encapsulation: ViewEncapsulation.None,
+  styles: [`
+    .cdk-drop {
+      display: block;
+      width: 100px;
+      min-height: ${ITEM_HEIGHT}px;
+      background: hotpink;
+    }
+
+    .cdk-drag {
+      display: block;
+      height: ${ITEM_HEIGHT}px;
+      background: red;
+    }
+  `],
+  template: `
+    <cdk-drop #todoZone [connectedTo]="[doneZone]" (dropped)="droppedSpy($event)">
+      <div cdkDrag>One</div>
+    </cdk-drop>
+
+    <cdk-drop #doneZone [connectedTo]="[todoZone]" (dropped)="droppedSpy($event)">
+      <div cdkDrag>Two</div>
+    </cdk-drop>
+  `
+})
+class ConnectedDropZonesWithSingleItems {
+  @ViewChildren(CdkDrag) dragItems: QueryList<CdkDrag>;
+  @ViewChildren(CdkDrop) dropInstances: QueryList<CdkDrop>;
+
+  droppedSpy = jasmine.createSpy('dropped spy');
+}
 
 /**
  * Drags an element to a position on the page using the mouse.
