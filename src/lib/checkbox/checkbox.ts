@@ -9,6 +9,7 @@
 import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
+  AfterViewChecked,
   AfterViewInit,
   Attribute,
   ChangeDetectionStrategy,
@@ -49,6 +50,11 @@ import {MAT_CHECKBOX_CLICK_ACTION, MatCheckboxClickAction} from './checkbox-conf
 
 // Increasing integer for generating unique ids for checkbox components.
 let nextUniqueId = 0;
+
+// TODO(josephperrott): Revert to constants for ripple radius once 2018 Checkbox updates have
+// landed.
+// The radius for the checkbox's ripple, in pixels.
+let calculatedRippleRadius = 0;
 
 /**
  * Provider Expression that allows mat-checkbox to register as a ControlValueAccessor.
@@ -127,7 +133,8 @@ export const _MatCheckboxMixinBase:
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAccessor,
-    AfterViewInit, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple {
+    AfterViewChecked, AfterViewInit, OnDestroy, CanColor, CanDisable, HasTabIndex,
+    CanDisableRipple {
 
   /**
    * Attached to the aria-label attribute of the host element. In most cases, arial-labelledby will
@@ -208,6 +215,10 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     this._focusMonitor
       .monitor(this._inputElement)
       .subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
+  }
+
+  ngAfterViewChecked() {
+    this._calculateRippleRadius();
   }
 
   ngOnDestroy() {
@@ -456,5 +467,20 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     }
 
     return `mat-checkbox-anim-${animSuffix}`;
+  }
+
+  // TODO(josephperrott): Revert to constants for ripple radius once 2018 Checkbox updates have
+  // landed.
+  /**
+   * Calculate the radius for the ripple based on the ripple elements width.  Only calculated once
+   * for the application.
+   */
+  private _calculateRippleRadius() {
+    if (!calculatedRippleRadius) {
+      const rippleWidth =
+          this._elementRef.nativeElement.querySelector('.mat-checkbox-ripple').clientWidth || 0;
+      calculatedRippleRadius = rippleWidth / 2;
+    }
+    this.ripple.radius = calculatedRippleRadius;
   }
 }
