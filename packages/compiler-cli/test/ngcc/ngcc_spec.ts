@@ -9,6 +9,7 @@
 import {existsSync, readFileSync, readdirSync, statSync} from 'fs';
 import * as mockFs from 'mock-fs';
 import {join} from 'path';
+const Module = require('module');
 
 import {mainNgcc} from '../../src/ngcc/src/main';
 
@@ -46,6 +47,7 @@ describe('ngcc main()', () => {
 function createMockFileSystem() {
   const packagesPath = join(process.env.TEST_SRCDIR !, 'angular/packages');
   mockFs({'/node_modules/@angular': loadPackages(packagesPath)});
+  spyOn(Module, '_resolveFilename').and.callFake(mockResolve);
 }
 
 function restoreRealFileSystem() {
@@ -100,4 +102,24 @@ interface Directory {
 
 function isInBazel() {
   return process.env.TEST_SRCDIR != null;
+}
+
+function mockResolve(p: string): string|null {
+  if (existsSync(p)) {
+    const stat = statSync(p);
+    if (stat.isFile()) {
+      return p;
+    } else if (stat.isDirectory()) {
+      const pIndex = mockResolve(p + '/index');
+      if (pIndex && existsSync(pIndex)) {
+        return pIndex;
+      }
+    }
+  }
+  for (const ext of ['.js', '.d.ts']) {
+    if (existsSync(p + ext)) {
+      return p + ext;
+    }
+  }
+  return null;
 }
