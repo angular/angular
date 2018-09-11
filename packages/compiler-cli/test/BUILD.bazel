@@ -133,3 +133,30 @@ jasmine_node_test(
         "//tools/testing:node",
     ],
 )
+
+# perform_compile_spec
+ts_library(
+    name = "perform_compile_lib",
+    testonly = 1,
+    srcs = [
+        "perform_compile_spec.ts",
+    ],
+    deps = [
+        ":test_utils",
+        "//packages/compiler",
+        "//packages/compiler-cli",
+    ],
+)
+
+jasmine_node_test(
+    name = "perform_compile",
+    bootstrap = ["angular/tools/testing/init_node_spec.js"],
+    data = [
+        "//packages/core:npm_package",
+    ],
+    deps = [
+        ":perform_compile_lib",
+        "//packages/core",
+        "//tools/testing:node",
+    ],
+)
