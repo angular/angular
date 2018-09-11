@@ -84,7 +84,7 @@ export class KitchenSink {
     focusMonitor: FocusMonitor,
     elementRef: ElementRef<HTMLElement>,
     bottomSheet: MatBottomSheet) {
-    focusMonitor.focusVia(elementRef.nativeElement, 'program');
+    focusMonitor.focusVia(elementRef, 'program');
     snackBar.open('Hello there');
     dialog.open(TestEntryComponent);
     bottomSheet.open(TestEntryComponent);

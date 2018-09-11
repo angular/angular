@@ -491,7 +491,7 @@ export class MatRadioButton extends _MatRadioButtonMixinBase
 
   /** Focuses the radio button. */
   focus(): void {
-    this._focusMonitor.focusVia(this._inputElement.nativeElement, 'keyboard');
+    this._focusMonitor.focusVia(this._inputElement, 'keyboard');
   }
 
   /**
