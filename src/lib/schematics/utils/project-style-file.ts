@@ -8,7 +8,7 @@
 
 import {normalize} from '@angular-devkit/core';
 import {WorkspaceProject} from '@schematics/angular/utility/config';
-import {getArchitectOptions} from './architect-options';
+import {getProjectTargetOptions} from './project-targets';
 
 /** Regular expression that matches all possible Angular CLI default style files. */
 const defaultStyleFileRegex = /styles\.(c|le|sc)ss/;
@@ -21,7 +21,7 @@ const validStyleFileRegex = /\.(c|le|sc)ss/;
  * extension is specified, any style file with a valid extension will be returned.
  */
 export function getProjectStyleFile(project: WorkspaceProject, extension?: string): string | null {
-  const buildOptions = getArchitectOptions(project, 'build');
+  const buildOptions = getProjectTargetOptions(project, 'build');
 
   if (buildOptions.styles && buildOptions.styles.length) {
     const styles = buildOptions.styles.map(s => typeof s === 'string' ? s : s.input);

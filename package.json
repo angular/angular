@@ -44,8 +44,8 @@
     "zone.js": "^0.8.26"
   },
   "devDependencies": {
-    "@angular-devkit/core": "0.7.4",
-    "@angular-devkit/schematics": "0.7.4",
+    "@angular-devkit/core": "^0.9.0-beta.2",
+    "@angular-devkit/schematics": "^0.9.0-beta.2",
     "@angular/bazel": "7.0.0-beta.4",
     "@angular/compiler-cli": "7.0.0-beta.4",
     "@angular/http": "7.0.0-beta.4",
@@ -56,7 +56,7 @@
     "@bazel/ibazel": "0.3.1",
     "@google-cloud/storage": "^1.1.1",
     "@octokit/rest": "^15.9.4",
-    "@schematics/angular": "0.7.4",
+    "@schematics/angular": "^0.9.0-beta.2",
     "@types/chalk": "^0.4.31",
     "@types/fs-extra": "^4.0.3",
     "@types/glob": "^5.0.33",

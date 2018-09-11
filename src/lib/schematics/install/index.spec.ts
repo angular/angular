@@ -1,5 +1,6 @@
 import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
+import {getProjectTargetOptions} from '@angular/material/schematics/utils/project-targets';
 import {getProjectStyleFile} from '../utils/project-style-file';
 import {getIndexHtmlPath} from './fonts/project-index-html';
 import {getProjectFromWorkspace} from '../utils/get-project';
@@ -19,11 +20,7 @@ describe('material-install-schematic', () => {
 
   /** Expects the given file to be in the styles of the specified workspace project. */
   function expectProjectStyleFile(project: WorkspaceProject, filePath: string) {
-    const architect = project.architect!;
-
-    expect(architect!['build']).toBeTruthy();
-    expect(architect!['build']['options']).toBeTruthy();
-    expect(architect!['build']['options']['styles']).toContain(filePath,
+    expect(getProjectTargetOptions(project, 'build').styles).toContain(filePath,
         `Expected "${filePath}" to be added to the project styles in the workspace.`);
   }
 

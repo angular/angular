@@ -6,8 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/** This is just a type import and won't be generated in the release output. */
-import typescript = require('@schematics/angular/node_modules/typescript');
+/**
+ * This is just a type import and won't be generated in the release output.
+ *
+ * Note that we always need to adjust this type import based on the location of the Typescript
+ * dependency that will be shipped with `@schematics/angular`.
+ */
+import typescript = require('typescript');
 
 /**
  * This is an agnostic re-export of TypeScript. Depending on the context, this module file will

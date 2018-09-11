@@ -38,6 +38,9 @@ filegroup(
     "*.d.ts",
   ]] + [
     "node_modules/http-server/**",
+    # Reference all files of the "@schematics/angular" package because the schematic
+    # tests depend on the template files of the angular schematics.
+    "node_modules/@schematics/angular/**",
   ]),
 )
 
