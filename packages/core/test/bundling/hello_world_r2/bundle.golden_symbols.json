@@ -711,12 +711,6 @@
     "name": "FunctionExpr"
   },
   {
-    "name": "GET_PROPERTY_NAME"
-  },
-  {
-    "name": "GET_PROPERTY_NAME$2"
-  },
-  {
     "name": "GOOG_GET_MSG"
   },
   {
@@ -1000,6 +994,9 @@
   },
   {
     "name": "NG_CONTENT_SELECT_ATTR"
+  },
+  {
+    "name": "NG_INJECTABLE_DEF"
   },
   {
     "name": "NG_NON_BINDABLE_ATTR"
@@ -2940,9 +2937,6 @@
     "name": "getClosureSafeProperty"
   },
   {
-    "name": "getClosureSafeProperty$1"
-  },
-  {
     "name": "getComponentViewDefinitionFactory"
   },
   {
@@ -2968,6 +2962,9 @@
   },
   {
     "name": "getHtmlTagDefinition"
+  },
+  {
+    "name": "getInjectableDef"
   },
   {
     "name": "getNgZone"
