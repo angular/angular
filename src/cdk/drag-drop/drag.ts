@@ -218,8 +218,12 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     // their original DOM position and then they get transferred to the portal.
     this._ngZone.onStable.asObservable().pipe(take(1)).subscribe(() => {
       const rootElement = this._rootElement = this._getRootElement();
-      rootElement.addEventListener('mousedown', this._startDragging);
-      rootElement.addEventListener('touchstart', this._startDragging);
+
+      // We need to bring the events back into the `NgZone`, because of the `onStable` call.
+      this._ngZone.run(() => {
+        rootElement.addEventListener('mousedown', this._startDragging);
+        rootElement.addEventListener('touchstart', this._startDragging);
+      });
     });
   }
 
