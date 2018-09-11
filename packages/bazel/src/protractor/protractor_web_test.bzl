@@ -128,7 +128,6 @@ _protractor_web_test = rule(
         "configuration": attr.label(
             doc = "Protractor configuration file",
             allow_single_file = True,
-            cfg = "data",
             aspects = [sources_aspect],
         ),
         "srcs": attr.label_list(
@@ -140,7 +139,6 @@ _protractor_web_test = rule(
             If the script exports a function which returns a promise, protractor
             will wait for the promise to resolve before beginning tests.""",
             allow_single_file = True,
-            cfg = "data",
             aspects = [sources_aspect],
         ),
         "deps": attr.label_list(
@@ -150,19 +148,18 @@ _protractor_web_test = rule(
         ),
         "data": attr.label_list(
             doc = "Runtime dependencies",
-            cfg = "data",
         ),
         "server": attr.label(
             doc = "Optional server executable target",
             executable = True,
-            cfg = "data",
+            cfg = "target",
             single_file = False,
             allow_files = True,
         ),
         "protractor": attr.label(
             doc = "Protractor executable target (set by protractor_web_test macro)",
             executable = True,
-            cfg = "data",
+            cfg = "target",
             single_file = False,
             allow_files = True,
         ),
