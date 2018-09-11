@@ -4076,27 +4076,27 @@ describe('Integration', () => {
          // Activate 'tool-1'
          router.navigate([{outlets: {toolpanel: 'a'}}]);
          advance(fixture);
-         expect(fixture).toShow(Tool1Component, '(a)');
+         expect(fixture).toContainComponent(Tool1Component, '(a)');
 
          // Deactivate 'tool-1'
          router.navigate([{outlets: {toolpanel: null}}]);
          advance(fixture);
-         expect(fixture).not.toShow(Tool1Component, '(b)');
+         expect(fixture).not.toContainComponent(Tool1Component, '(b)');
 
          // Activate 'tool-1'
          router.navigate([{outlets: {toolpanel: 'a'}}]);
          advance(fixture);
-         expect(fixture).toShow(Tool1Component, '(c)');
+         expect(fixture).toContainComponent(Tool1Component, '(c)');
 
          // Deactivate 'tool-1'
          router.navigate([{outlets: {toolpanel: null}}]);
          advance(fixture);
-         expect(fixture).not.toShow(Tool1Component, '(d)');
+         expect(fixture).not.toContainComponent(Tool1Component, '(d)');
 
          // Activate 'tool-2'
          router.navigate([{outlets: {toolpanel: 'b'}}]);
          advance(fixture);
-         expect(fixture).toShow(Tool2Component, '(e)');
+         expect(fixture).toContainComponent(Tool2Component, '(e)');
        }));
   });
 });

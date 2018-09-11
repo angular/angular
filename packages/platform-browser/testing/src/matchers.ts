@@ -83,7 +83,7 @@ export interface NgMatchers<T = any> extends jasmine.Matchers<T> {
   /**
    * Expect a component of the given type to show.
    */
-  toShow(expectedComponentType: Type<any>, expectationFailOutput?: any): boolean;
+  toContainComponent(expectedComponentType: Type<any>, expectationFailOutput?: any): boolean;
 
   /**
    * Invert the matchers.
@@ -243,7 +243,7 @@ _global.beforeEach(function() {
       };
     },
 
-    toShow: function() {
+    toContainComponent: function() {
       return {
         compare: function(actualFixture: any, expectedComponentType: Type<any>) {
           const failOutput = arguments[2];
