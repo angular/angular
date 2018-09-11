@@ -8,15 +8,15 @@
   $warn: map-get($theme, warn);
 
   &.mat-primary .mat-button-focus-overlay {
-    background-color: mat-color($primary);
+    background-color: mat-color($primary, 0.12);
   }
 
   &.mat-accent .mat-button-focus-overlay {
-    background-color: mat-color($accent);
+    background-color: mat-color($accent, 0.12);
   }
 
   &.mat-warn .mat-button-focus-overlay {
-    background-color: mat-color($warn);
+    background-color: mat-color($warn, 0.12);
   }
 
   &[disabled] .mat-button-focus-overlay {
@@ -89,16 +89,6 @@
     // Setup the ripple color to be based on the color palette. The opacity can be a bit weaker
     // than for icon-buttons, because normal and stroked buttons have a focus overlay.
     @include _mat-button-ripple-color($theme, default);
-  }
-
-  .mat-button-focus-overlay {
-    background: map_get($foreground, base);
-  }
-
-  // Note: this needs a bit extra specificity, because we're not guaranteed the inclusion
-  // order of the theme styles and the button reset may end up resetting this as well.
-  .mat-stroked-button:not(.mat-button-disabled) {
-    border-color: mat-color($foreground, divider);
   }
 
   .mat-flat-button, .mat-raised-button, .mat-fab, .mat-mini-fab {

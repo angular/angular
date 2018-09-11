@@ -6,16 +6,17 @@
 
 // Flat and raised button standards
 $mat-button-padding: 0 16px !default;
-$mat-button-min-width: 64px !default;
+$mat-button-min-width: 88px !default;
 $mat-button-margin: 0 !default;
 $mat-button-line-height: 36px !default;
-$mat-button-border-radius: 4px !default;
+$mat-button-border-radius: 2px !default;
 $mat-button-focus-transition: opacity 200ms $swift-ease-in-out-timing-function,
                               background-color 200ms $swift-ease-in-out-timing-function !default;
 
+// Stroked Button standards
+$mat-stroked-button-line-height: $mat-button-line-height - 2;
 // Stroked button padding is 1px less horizontally than default/flat/raised
 // button's padding.
-$mat-stroked-button-line-height: $mat-button-line-height - 2;
 $mat-stroked-button-padding: 0 15px;
 
 // Icon Button standards
@@ -63,7 +64,7 @@ $mat-mini-fab-padding: 8px !default;
 
   &.cdk-keyboard-focused, &.cdk-program-focused {
     .mat-button-focus-overlay {
-      opacity: 0.12;
+      opacity: 1;
     }
   }
 
