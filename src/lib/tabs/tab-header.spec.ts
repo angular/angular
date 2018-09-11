@@ -19,6 +19,7 @@ import {MatInkBar} from './ink-bar';
 import {MatTabHeader} from './tab-header';
 import {MatTabLabelWrapper} from './tab-label-wrapper';
 import {Subject} from 'rxjs';
+import {ObserversModule, MutationObserverFactory} from '@angular/cdk/observers';
 
 
 describe('MatTabHeader', () => {
@@ -30,7 +31,7 @@ describe('MatTabHeader', () => {
   beforeEach(async(() => {
     dir = 'ltr';
     TestBed.configureTestingModule({
-      imports: [CommonModule, PortalModule, MatRippleModule, ScrollingModule],
+      imports: [CommonModule, PortalModule, MatRippleModule, ScrollingModule, ObserversModule],
       declarations: [
         MatTabHeader,
         MatInkBar,
@@ -345,6 +346,41 @@ describe('MatTabHeader', () => {
       discardPeriodicTasks();
     }));
 
+    it('should update the pagination state if the content of the labels changes', () => {
+      const mutationCallbacks: Function[] = [];
+      TestBed.overrideProvider(MutationObserverFactory, {
+        useValue: {
+          // Stub out the MutationObserver since the native one is async.
+          create: function(callback: Function) {
+            mutationCallbacks.push(callback);
+            return {observe: () => {}, disconnect: () => {}};
+          }
+        }
+      });
+
+      fixture = TestBed.createComponent(SimpleTabHeaderApp);
+      fixture.detectChanges();
+
+      const tabHeaderElement: HTMLElement =
+          fixture.nativeElement.querySelector('.mat-tab-header');
+      const labels =
+          Array.from<HTMLElement>(fixture.nativeElement.querySelectorAll('.label-content'));
+      const extraText = new Array(100).fill('w').join();
+      const enabledClass = 'mat-tab-header-pagination-controls-enabled';
+
+      expect(tabHeaderElement.classList).not.toContain(enabledClass);
+
+      labels.forEach(label => {
+        label.style.width = '';
+        label.textContent += extraText;
+      });
+
+      mutationCallbacks.forEach(callback => callback());
+      fixture.detectChanges();
+
+      expect(tabHeaderElement.classList).toContain(enabledClass);
+    });
+
   });
 });
 
@@ -359,7 +395,7 @@ interface Tab {
     <mat-tab-header [selectedIndex]="selectedIndex" [disableRipple]="disableRipple"
                (indexFocused)="focusedIndex = $event"
                (selectFocusedIndex)="selectedIndex = $event">
-      <div matTabLabelWrapper style="min-width: 30px; width: 30px"
+      <div matTabLabelWrapper class="label-content" style="min-width: 30px; width: 30px"
            *ngFor="let tab of tabs; let i = index"
            [disabled]="!!tab.disabled"
            (click)="selectedIndex = i">
