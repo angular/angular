@@ -107,8 +107,6 @@ export class MatListSubheaderCssMatStyler {}
     // @breaking-change 7.0.0 Remove `mat-list-item-avatar` in favor of `mat-list-item-with-avatar`.
     '[class.mat-list-item-avatar]': '_avatar || _icon',
     '[class.mat-list-item-with-avatar]': '_avatar || _icon',
-    '(focus)': '_handleFocus()',
-    '(blur)': '_handleBlur()',
   },
   inputs: ['disableRipple'],
   templateUrl: 'list-item.html',
@@ -146,14 +144,6 @@ export class MatListItem extends _MatListItemMixinBase implements AfterContentIn
   /** Whether this list item should show a ripple effect when clicked. */
   _isRippleDisabled() {
     return !this._isNavList || this.disableRipple || this._navList.disableRipple;
-  }
-
-  _handleFocus() {
-    this._element.nativeElement.classList.add('mat-list-item-focus');
-  }
-
-  _handleBlur() {
-    this._element.nativeElement.classList.remove('mat-list-item-focus');
   }
 
   /** Retrieves the DOM element of the component host. */

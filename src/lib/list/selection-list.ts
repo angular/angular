@@ -85,7 +85,6 @@ export class MatSelectionListChange {
     '(click)': '_handleClick()',
     'tabindex': '-1',
     '[class.mat-list-item-disabled]': 'disabled',
-    '[class.mat-list-item-focus]': '_hasFocus',
     '[class.mat-list-item-with-avatar]': '_avatar || _icon',
     '[attr.aria-selected]': 'selected.toString()',
     '[attr.aria-disabled]': 'disabled.toString()',
@@ -99,9 +98,6 @@ export class MatListOption extends _MatListOptionMixinBase
 
   private _selected = false;
   private _disabled = false;
-
-  /** Whether the option has focus. */
-  _hasFocus: boolean = false;
 
   @ContentChild(MatListAvatarCssMatStyler) _avatar: MatListAvatarCssMatStyler;
   @ContentChild(MatListIconCssMatStyler) _icon: MatListIconCssMatStyler;
@@ -212,12 +208,10 @@ export class MatListOption extends _MatListOptionMixinBase
   }
 
   _handleFocus() {
-    this._hasFocus = true;
     this.selectionList._setFocusedOption(this);
   }
 
   _handleBlur() {
-    this._hasFocus = false;
     this.selectionList._onTouched();
   }
 
@@ -392,9 +386,9 @@ export class MatSelectionList extends _MatSelectionListMixinBase implements Focu
 
   /** Removes an option from the selection list and updates the active item. */
   _removeOptionFromList(option: MatListOption) {
-    if (option._hasFocus) {
-      const optionIndex = this._getOptionIndex(option);
+    const optionIndex = this._getOptionIndex(option);
 
+    if (optionIndex > -1 && this._keyManager.activeItemIndex === optionIndex) {
       // Check whether the option is the last item
       if (optionIndex > 0) {
         this._keyManager.setPreviousItemActive();

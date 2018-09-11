@@ -28,23 +28,6 @@ describe('MatList', () => {
     TestBed.compileComponents();
   }));
 
-  it('should add and remove focus class on focus/blur', () => {
-    let fixture = TestBed.createComponent(ListWithOneAnchorItem);
-    fixture.detectChanges();
-    let listItem = fixture.debugElement.query(By.directive(MatListItem));
-    let listItemEl = fixture.debugElement.query(By.css('.mat-list-item'));
-
-    expect(listItemEl.nativeElement.classList).not.toContain('mat-list-item-focus');
-
-    listItem.componentInstance._handleFocus();
-    fixture.detectChanges();
-    expect(listItemEl.nativeElement.classList).toContain('mat-list-item-focus');
-
-    listItem.componentInstance._handleBlur();
-    fixture.detectChanges();
-    expect(listItemEl.nativeElement.classList).not.toContain('mat-list-item-focus');
-  });
-
   it('should not apply any additional class to a list without lines', () => {
     let fixture = TestBed.createComponent(ListWithOneItem);
     let listItem = fixture.debugElement.query(By.css('mat-list-item'));
