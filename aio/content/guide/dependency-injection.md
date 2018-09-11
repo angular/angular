@@ -811,22 +811,40 @@ To override tree-shakable providers, register the provider using the `providers:
 {@a injector-config} 
 {@a bootstrap}
 
+<!--
 ## Inject a service
+-->
+## 서비스 주입하기
 
+<!--
 The `HeroListComponent` should get heroes from the `HeroService`.
+-->
+`HeroListComponent`는 `HeroService`에서 히어로 목록을 가져와야 합니다.
 
+<!--
 The component shouldn't create the `HeroService` with `new`.
 It should ask for the `HeroService` to be injected.
+-->
+그런데 이 컴포넌트는 `HeroService`의 인스턴스를 생성하기 위해 `new` 키워드를 사용하지 않습니다.
+어딘가에서 `HeroService`가 주입되기를 요청하기만 할 뿐입니다.
 
+<!--
 You can tell Angular to inject a dependency in the component's constructor by specifying a **constructor parameter with the dependency type**.
 Here's the `HeroListComponent` constructor, asking for the `HeroService` to be injected.
+-->
+이때 컴포넌트의 생성자에서 **의존성으로 주입될 객체의 타입**을 지정하기만 하면 Angular가 확인하고 의존성 객체의 인스턴스를 주입합니다.
+그래서 `HeroListComponent`의 생성자를 다음과 같이 작성하면 `HeroService`를 주입받을 수 있습니다.
 
 <code-example title="src/app/heroes/hero-list.component (constructor signature)" path="dependency-injection/src/app/heroes/hero-list.component.ts"
 region="ctor-signature">
 </code-example>
 
+<!--
 Of course, the `HeroListComponent` should do something with the injected `HeroService`.
 Here's the revised component, making use of the injected service, side-by-side with the previous version for comparison.
+-->
+물론 `HeroListComponent`는 이렇게 주입된 `HeroService`로 어떤 작업을 할 것입니다.
+의존성 주입을 활용한 방식과 활용하지 않는 방식이 어떻게 다른지 비교해 보세요.
 
 <code-tabs>
   <code-pane title="hero-list.component (with DI)" path="dependency-injection/src/app/heroes/hero-list.component.2.ts">
@@ -836,50 +854,90 @@ Here's the revised component, making use of the injected service, side-by-side w
   </code-pane>
 </code-tabs>
 
+<!--
 Notice that the `HeroListComponent` doesn't know where the `HeroService` comes from.
 _You_ know that it comes from the parent `HeroesComponent`.
 If you decided instead to provide the `HeroService` in the `AppModule`,
 the `HeroListComponent` wouldn't change at all.
 The _only thing that matters_ is that the `HeroService` is provided in some parent injector.
+-->
+`HeroService`의 인스턴스는 `HeroesComponent`에 등록된 프로바이더를 통해 제공되지만, `HeroListComponent`의 입장에서는 이 인스턴스가 어디에서 오는지 알지 못합니다.
+그리고 이 상황에서 `HeroService`의 프로바이더가 등록된 위치를 `AppModule`로 옮긴다고 해도 `HeroListComponent`의 코드가 변경되는 것은 아무것도 없습니다.
+`HeroListComponent`의 입장에서는 `HeroService`가 부모 인젝터 중 _어딘가에서 오는 것만으로 충분합니다._
 
 {@a singleton-services}
 
+<!--
 ## Singleton services
+-->
+## 싱글턴 서비스 (Singleton services)
 
+<!--
 Services are singletons _within the scope of an injector_.
 There is at most one instance of a service in a given injector.
+-->
+_한 인젝터의 범위 안에서는_ 서비스는 모두 싱글턴입니다.
+그래서 서비스의 인스턴스는 각각 하나만 존재합니다.
 
+<!--
 There is only one root injector, and the `UserService` is registered with that injector.
 Therefore, there can be just one `UserService` instance in the entire app,
 and every class that injects `UserService` get this service instance.
+-->
+애플리케이션의 최상위 인젝터는 단 하나이며, `UserService`는 이 인젝터에 등록되어 있습니다.
+그래서 애플리케이션 전체 범위에서 `UserService`의 인스턴스는 딱 하나만 존재하며, `UserService`를 의존성으로 주입받는 클래스는 모두 같은 인스턴스를 공유합니다.
 
+<!--
 However, Angular DI is a 
 [hierarchical injection system](guide/hierarchical-dependency-injection), 
 which means that nested injectors can create their own service instances.
 Angular creates nested injectors all the time.
+-->
+그런데 Angular의 의존성 주입은 [계층을 이루는 체계](guide/hierarchical-dependency-injection)이기 때문에, 하위 인젝터에서 또 다른 서비스 인스턴스를 생성할 수 있습니다.
+Angular는 항상 중첩된 인젝터를 생성합니다.
 
 {@a component-child-injectors}
 
+<!--
 ## Component child injectors
+-->
+## 컴포넌트 자식 인젝터 (Component child injectors)
 
+<!--
 Component injectors are independent of each other and
 each of them creates its own instances of the component-provided services.
+-->
+컴포넌트 인젝터는 서로 독립적이며, 컴포넌트마다 각각 서비스 인스턴스를 생성합니다.
 
+<!--
 For example, when Angular creates a new instance of a component that has `@Component.providers`,
 it also creates a new _child injector_ for that instance.
+-->
+`@Component.providers`가 선언된 컴포넌트의 인스턴스를 Angular가 생성한다는 것은, 새로운 _자식 인젝터_ 를 생성한다는 것과 같은 의미입니다.
 
+<!--
 When Angular destroys one of these component instances, it also destroys the
 component's injector and that injector's service instances. 
+-->
+그리고 이 컴포넌트 인스턴스가 종료되면 컴포넌트 인젝터도 함께 종료되며, 이 인젝터가 생성한 서비스의 인스턴스도 함께 종료됩니다.
 
+<!--
 Because of [injector inheritance](guide/hierarchical-dependency-injection),
 you can still inject application-wide services into these components.
 A component's injector is a child of its parent component's injector,
 and a descendent of its parent's parent's injector, and so on all the way back to the application's _root_ injector.
 Angular can inject a service provided by any injector in that lineage.
+-->
+[의존성 주입은 상속관계를 갖기 때문에](guide/hierarchical-dependency-injection) 컴포넌트의 프로바이더에 등록되지 않고 앱 전역에 등록된 서비스도 이 컴포넌트에 주입될 수 있습니다.
+컴포넌트 인젝터는 부모 컴포넌트 인젝터의 자식이며, 이 계층 관계는 애플리케이션 _최상위_ 인젝터까지 올라갑니다.
+이 계층 안에 등록된 서비스는 자유롭게 의존성으로 주입될 수 있습니다.
 
+<!--
 For example, Angular could inject a `HeroListComponent`
 with both the `HeroService` provided in `HeroComponent`
 and the `UserService` provided in `AppModule`.
+-->
+그래서 `HeroComponent`와 `HeroListComponent`는 `HeroComponent`에 등록된 `HeroService`를 의존성으로 주입받을 수 있으며, 마찬가지로 `AppModule`에 등록된 `UserService`도 주입받을 수 있습니다.
 
 {@a testing-the-component}
 
