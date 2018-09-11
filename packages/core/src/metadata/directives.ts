@@ -608,21 +608,21 @@ export interface Component extends Directive {
  * </div>
  * ```
  *
- * You can force a single space to be preserved in a text node by using `&ngsp;`,
+ * You can force a single space to be preserved in a text node by using `&nbsp;`,
  * which is replaced with a space character by Angular's template
  * compiler:
  *
  * ```html
- * <a>Spaces</a>&ngsp;<a>between</a>&ngsp;<a>links.</a>
+ * <a>Spaces</a>&nbsp;<a>between</a>&nbsp;<a>links.</a>
  * <!-->compiled to be equivalent to:</>
  *  <a>Spaces</a> <a>between</a> <a>links.</a>
  * ```
  *
- * Note that sequences of `&ngsp;` are still collapsed to just one space character when
+ * Note that sequences of `&nbsp;` are still collapsed to just one space character when
  * the `preserveWhitespaces` option is set to `false`.
  *
  * ```html
- * <a>before</a>&ngsp;&ngsp;&ngsp;<a>after</a>
+ * <a>before</a>&nbsp;&nbsp;&nbsp;<a>after</a>
  * <!-->compiled to be equivalent to:</>
  *  <a>Spaces</a> <a>between</a> <a>links.</a>
  * ```
