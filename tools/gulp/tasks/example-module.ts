@@ -22,6 +22,7 @@ interface ParsedMetadata {
   component: string;
   title: string;
   templateUrl: string;
+  styleUrls: string[];
 }
 
 interface ParsedMetadataResults {
@@ -172,9 +173,16 @@ function parseExampleMetadata(fileName: string, sourceContent: string): ParsedMe
           if (decorator.expression.expression.text === 'Component') {
             for (const arg of decorator.expression.arguments) {
               for (const prop of arg.properties) {
-                const name = prop.name.text;
-                const value = prop.initializer.text;
-                meta[name] = value;
+                const propName = prop.name.text;
+
+                // Since additional files can be also stylesheets, we need to properly parse
+                // the styleUrls metadata property.
+                if (propName === 'styleUrls' && ts.isArrayLiteralExpression(prop.initializer)) {
+                  meta[propName] = prop.initializer.elements
+                    .map((literal: ts.StringLiteral) => literal.text);
+                } else {
+                  meta[propName] = prop.initializer.text;
+                }
               }
             }
 
@@ -204,8 +212,8 @@ task('build-examples-module', () => {
 
   for (const sourcePath of matchedFiles) {
     const sourceContent = fs.readFileSync(sourcePath, 'utf-8');
-    const { primaryComponent, secondaryComponents } =
-      parseExampleMetadata(sourcePath, sourceContent);
+    const {primaryComponent, secondaryComponents} =
+        parseExampleMetadata(sourcePath, sourceContent);
 
     if (primaryComponent) {
       // Generate a unique id for the component by converting the class name to dash-case.
@@ -226,9 +234,15 @@ task('build-examples-module', () => {
 
         for (const meta of secondaryComponents) {
           example.additionalComponents.push(meta.component);
+
           if (meta.templateUrl) {
             example.additionalFiles.push(meta.templateUrl);
           }
+
+          if (meta.styleUrls) {
+            example.additionalFiles.push(...meta.styleUrls);
+          }
+
           example.selectorName.push(meta.component);
         }
       }

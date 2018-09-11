@@ -5,17 +5,24 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {MatFormFieldControl} from '@angular/material';
 import {Subject} from 'rxjs';
 
+/** @title Form field with custom telephone number input control. */
+@Component({
+  selector: 'form-field-custom-control-example',
+  templateUrl: 'form-field-custom-control-example.html',
+  styleUrls: ['form-field-custom-control-example.css'],
+})
+export class FormFieldCustomControlExample {}
+
 /** Data structure for holding telephone number. */
 export class MyTel {
   constructor(public area: string, public exchange: string, public subscriber: string) {}
 }
 
-
 /** Custom `MatFormFieldControl` for telephone number input. */
 @Component({
   selector: 'my-tel-input',
-  templateUrl: 'form-field-custom-control-example.html',
-  styleUrls: ['form-field-custom-control-example.css'],
+  templateUrl: 'my-tel-input-example.html',
+  styleUrls: ['my-tel-input-example.css'],
   providers: [{provide: MatFormFieldControl, useExisting: MyTelInput}],
   host: {
     '[class.floating]': 'shouldLabelFloat',
@@ -109,17 +116,3 @@ export class MyTelInput implements MatFormFieldControl<MyTel>, OnDestroy {
     }
   }
 }
-
-
-/** @title Form field with custom telephone number input control. */
-@Component({
-  selector: 'form-field-custom-control-example',
-  template: `
-    <mat-form-field>
-      <my-tel-input placeholder="Phone number" required></my-tel-input>
-      <mat-icon matSuffix>phone</mat-icon>
-      <mat-hint>Include area code</mat-hint>
-    </mat-form-field>
-  `
-})
-export class FormFieldCustomControlExample {}
