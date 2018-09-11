@@ -28,6 +28,7 @@
              read if it comes before the control in the DOM. -->
         <label class="mat-form-field-label"
                (cdkObserveContent)="updateOutlineGap()"
+               [cdkObserveContentDisabled]="appearance != 'outline'"
                [id]="_labelId"
                [attr.for]="_control.id"
                [attr.aria-owns]="_control.id"
