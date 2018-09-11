@@ -1308,6 +1308,28 @@ Chuck: After reviewing your PR comment I'm still at a loss. See [comment there](
   }
   ```
 
+{@a tsconfig-extends}
+## Configuration inheritance with extends
+Similar to TypeScript Compiler, Angular Compiler also supports `extends` in the `tsconfig.json` on `angularCompilerOptions`. A tsconfig file can inherit configurations from another file using the `extends` property.
+ The `extends` is a top level property parallel to `compilerOptions` and `angularCompilerOptions`. 
+ The configuration from the base file are loaded first, then overridden by those in the inheriting config file.
+ Example:
+```json
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    ...
+  },
+  "angularCompilerOptions": {
+    "fullTemplateTypeCheck": true,
+    "preserveWhitespaces": true,
+    ...
+  }
+}
+```
+ More information about tsconfig extends can be found in the [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html).
+
 {@a compiler-options}
 ## Angular template compiler options
 
