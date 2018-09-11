@@ -10,7 +10,8 @@
     background: mat-color($background, 'card');
   }
 
-  .mat-tree-node {
+  .mat-tree-node,
+  .mat-nested-tree-node {
     color: mat-color($foreground, text);
   }
 }
@@ -20,7 +21,8 @@
     font-family: mat-font-family($config);
   }
 
-  .mat-tree-node {
+  .mat-tree-node,
+  .mat-nested-tree-node {
     font-weight: mat-font-weight($config, body-1);
     font-size: mat-font-size($config, body-1);
   }
