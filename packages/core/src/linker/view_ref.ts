@@ -50,6 +50,8 @@ export abstract class ViewRef extends ChangeDetectorRef {
  *
  * @see `ViewContainerRef`
  *
+ * @usageNotes
+ *
  * The following template breaks down into two separate `TemplateRef` instances,
  * an outer one and and an inner one.
  *
@@ -90,8 +92,14 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * @experimental
  */
 export abstract class EmbeddedViewRef<C> extends ViewRef {
+  /**
+   * The context for this view, inherited from the anchor element.
+   */
   abstract get context(): C;
 
+  /**
+   * The root nodes for this embedded view.
+   */
   abstract get rootNodes(): any[];
 }
 
