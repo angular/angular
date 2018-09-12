@@ -1281,9 +1281,10 @@ The **Routing Module** has several characteristics:
 
 The sample routing application does not include routing by default.
 When you use the CLI to create a project that will use routing, set the `--routing` option for the project or app, and for each NgModule. 
-When you create or initialize a new project (using the CLI new command) or a new app (using the generate app command), specify the `--routing` option to include the `@angular/router` npm package and create a file named `app-routing.module.ts`.
+When you create or initialize a new project (using the CLI `new` command) or a new app (using the `generate app` command), specify the `--routing` option.  This tells the CLI to include the `@angular/router` npm package and create a file named `app-routing.module.ts`.
 You can then use routing in any NgModule that you add to the project or app.
-To generate an NgModule that will use routing, specify the `--routing` option in the generate module command:
+
+For example, the following command generates an NgModule that can use routing.
 
 ```sh
 ng generate module my-module --routing
