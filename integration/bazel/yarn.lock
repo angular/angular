@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@bazel/typescript@0.16.2":
+"@bazel/typescript@github:bazelbuild/rules_typescript#87d892be147b66e5668ba14f89ef5df8259de102":
   version "0.16.2"
-  resolved "https://registry.yarnpkg.com/@bazel/typescript/-/typescript-0.16.2.tgz#42474e029b0c6fa42a058fc86e2f593b7a367d56"
+  resolved "https://codeload.github.com/bazelbuild/rules_typescript/tar.gz/87d892be147b66e5668ba14f89ef5df8259de102"
   dependencies:
     protobufjs "5.0.0"
     tsutils "2.20.0"
@@ -91,10 +91,6 @@ assert-plus@1.0.0, assert-plus@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/assert-plus/-/assert-plus-1.0.0.tgz#f12e0f3c5d77b0b1cdd9146942e4e96c1e4dd525"
 
-async@^1.5.2:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/async/-/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
-
 asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
@@ -174,10 +170,6 @@ code-point-at@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/code-point-at/-/code-point-at-1.1.0.tgz#0d070b4d043a5bea33a2f1a40e2edb3d9a4ccf77"
 
-colors@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/colors/-/colors-1.0.3.tgz#0433f44d809680fdeb60ed260f1b0c262e82a40b"
-
 colour@~0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/colour/-/colour-0.7.1.tgz#9cb169917ec5d12c0736d3e8685746df1cadf778"
@@ -196,25 +188,15 @@ core-util-is@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-corser@~2.0.0:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/corser/-/corser-2.0.1.tgz#8eda252ecaab5840dcd975ceb90d9370c819ff87"
-
 dashdash@^1.12.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/dashdash/-/dashdash-1.14.1.tgz#853cfa0f7cbe2fed5de20326b8dd581035f6e2f0"
   dependencies:
     assert-plus "^1.0.0"
 
-debug@2, debug@^2.2.0:
+debug@2:
   version "2.6.9"
   resolved "https://registry.yarnpkg.com/debug/-/debug-2.6.9.tgz#5d128515df134ff327e90a4c93f4e077a536341f"
-  dependencies:
-    ms "2.0.0"
-
-debug@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-3.1.0.tgz#5bb5a0672628b64149566ba16819e61518c67261"
   dependencies:
     ms "2.0.0"
 
@@ -249,22 +231,9 @@ ecc-jsbn@~0.1.1:
     jsbn "~0.1.0"
     safer-buffer "^2.1.0"
 
-ecstatic@^3.0.0:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/ecstatic/-/ecstatic-3.2.1.tgz#1196a74d63d71d28dea807ed2b6183062671a206"
-  dependencies:
-    he "^1.1.1"
-    mime "^1.6.0"
-    minimist "^1.1.0"
-    url-join "^2.0.5"
-
 escape-string-regexp@^1.0.2:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/escape-string-regexp/-/escape-string-regexp-1.0.5.tgz#1b61c0562190a8dff6ae3bb2cf0200ca130b86d4"
-
-eventemitter3@^3.0.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-3.1.0.tgz#090b4d6cdbd645ed10bf750d4b5407942d7ba163"
 
 exit@^0.1.2:
   version "0.1.2"
@@ -289,12 +258,6 @@ fast-deep-equal@^1.0.0:
 fast-json-stable-stringify@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/fast-json-stable-stringify/-/fast-json-stable-stringify-2.0.0.tgz#d5142c0caee6b1189f87d3a76111064f86c8bbf2"
-
-follow-redirects@^1.0.0:
-  version "1.5.6"
-  resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.5.6.tgz#44eb4fe1981dff25e2bd86b7d4033abcdb81e965"
-  dependencies:
-    debug "^3.1.0"
 
 forever-agent@~0.6.1:
   version "0.6.1"
@@ -366,31 +329,6 @@ has-ansi@^2.0.0:
   resolved "https://registry.yarnpkg.com/has-ansi/-/has-ansi-2.0.0.tgz#34f5049ce1ecdf2b0649af3ef24e45ed35416d91"
   dependencies:
     ansi-regex "^2.0.0"
-
-he@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/he/-/he-1.1.1.tgz#93410fd21b009735151f8868c2f271f3427e23fd"
-
-http-proxy@^1.8.1:
-  version "1.17.0"
-  resolved "https://registry.yarnpkg.com/http-proxy/-/http-proxy-1.17.0.tgz#7ad38494658f84605e2f6db4436df410f4e5be9a"
-  dependencies:
-    eventemitter3 "^3.0.0"
-    follow-redirects "^1.0.0"
-    requires-port "^1.0.0"
-
-http-server@0.11.1:
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/http-server/-/http-server-0.11.1.tgz#2302a56a6ffef7f9abea0147d838a5e9b6b6a79b"
-  dependencies:
-    colors "1.0.3"
-    corser "~2.0.0"
-    ecstatic "^3.0.0"
-    http-proxy "^1.8.1"
-    opener "~1.4.0"
-    optimist "0.6.x"
-    portfinder "^1.0.13"
-    union "~0.4.3"
 
 http-signature@~1.2.0:
   version "1.2.0"
@@ -524,10 +462,6 @@ mime-types@^2.1.12, mime-types@~2.1.19:
   dependencies:
     mime-db "~1.35.0"
 
-mime@^1.6.0:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
-
 "minimatch@2 || 3", minimatch@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.4.tgz#5166e286457f03306064be5497e8dbb0c3d32083"
@@ -538,7 +472,7 @@ minimist@0.0.8:
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.8.tgz#857fcabfc3397d2625b8228262e86aa7a011b05d"
 
-minimist@^1.1.0, minimist@^1.2.0:
+minimist@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.0.tgz#a35008b20f41383eec1fb914f4cd5df79a264284"
 
@@ -546,7 +480,7 @@ minimist@~0.0.1:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.10.tgz#de3f98543dbf96082be48ad1a0c7cda836301dcf"
 
-mkdirp@0.5.x, mkdirp@^0.5.1:
+mkdirp@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
   dependencies:
@@ -574,11 +508,7 @@ once@^1.3.0:
   dependencies:
     wrappy "1"
 
-opener@~1.4.0:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/opener/-/opener-1.4.3.tgz#5c6da2c5d7e5831e8ffa3964950f8d6674ac90b8"
-
-optimist@0.6.x, optimist@~0.6.0:
+optimist@~0.6.0:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/optimist/-/optimist-0.6.1.tgz#da3ea74686fa21a19a111c326e90eb15a0196686"
   dependencies:
@@ -629,14 +559,6 @@ pinkie@^2.0.0:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
 
-portfinder@^1.0.13:
-  version "1.0.17"
-  resolved "https://registry.yarnpkg.com/portfinder/-/portfinder-1.0.17.tgz#a8a1691143e46c4735edefcf4fbcccedad26456a"
-  dependencies:
-    async "^1.5.2"
-    debug "^2.2.0"
-    mkdirp "0.5.x"
-
 protobufjs@5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-5.0.0.tgz#4223063233ea96ac063ca2b554035204db524fa1"
@@ -681,10 +603,6 @@ q@^1.4.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
 
-qs@~2.3.3:
-  version "2.3.3"
-  resolved "https://registry.yarnpkg.com/qs/-/qs-2.3.3.tgz#e9e85adbe75da0bbe4c8e0476a086290f863b404"
-
 qs@~6.5.2:
   version "6.5.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
@@ -716,10 +634,6 @@ request@^2.87.0:
     tough-cookie "~2.4.3"
     tunnel-agent "^0.6.0"
     uuid "^3.3.2"
-
-requires-port@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
 
 rimraf@^2.2.8, rimraf@^2.5.2, rimraf@^2.5.4:
   version "2.6.2"
@@ -885,21 +799,11 @@ tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
 
 "typescript@file:../../node_modules/typescript":
-  version "2.9.2"
+  version "3.0.1"
 
 ultron@1.0.x:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/ultron/-/ultron-1.0.2.tgz#ace116ab557cd197386a4e88f4685378c8b2e4fa"
-
-union@~0.4.3:
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/union/-/union-0.4.6.tgz#198fbdaeba254e788b0efcb630bc11f24a2959e0"
-  dependencies:
-    qs "~2.3.3"
-
-url-join@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/url-join/-/url-join-2.0.5.tgz#5af22f18c052a000a48d7b82c5e9c2e2feeda728"
 
 uuid@^3.3.2:
   version "3.3.2"

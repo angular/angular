@@ -16,7 +16,7 @@ extract_flat_module_index(
     deps = [":test_module"],
 )
 
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
+load("//tools:defaults.bzl", "jasmine_node_test")
 
 jasmine_node_test(
     name = "test",

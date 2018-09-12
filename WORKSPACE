@@ -4,17 +4,10 @@ workspace(name = "angular")
 # Download Bazel toolchain dependencies as needed by build actions
 #
 http_archive(
-    name = "build_bazel_rules_nodejs",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.12.0.zip"],
-    strip_prefix = "rules_nodejs-0.12.0",
-    sha256 = "2977cdbc8ae0eed7d4186385af56a50a3321a549e2136a959998bba89d2edb6e",
-)
-
-http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.16.2.zip",
-    strip_prefix = "rules_typescript-0.16.2",
-    sha256 = "31601b777840fbf600dbd1893ade0d1de37166e7ba52b90735b107cfb67e38c7",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/0.17.0.zip",
+    strip_prefix = "rules_typescript-0.17.0",
+    sha256 = "1626ee2cc9770af6950bfc77dffa027f9aedf330fe2ea2ee7e504428927bd95d",
 )
 load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
 rules_typescript_dependencies()
@@ -112,18 +105,10 @@ See https://blog.bazel.build/2018/08/22/bazel-homebrew.html
 
 """)
 node_repositories(
-  package_json = ["//:package.json"],
-  preserve_symlinks = True,
-  node_version = "10.9.0",
-  yarn_version = "1.9.2",
-  node_repositories = {
-    "10.9.0-darwin_amd64": ("node-v10.9.0-darwin-x64.tar.gz", "node-v10.9.0-darwin-x64", "3c4fe75dacfcc495a432a7ba2dec9045cff359af2a5d7d0429c84a424ef686fc"),
-    "10.9.0-linux_amd64": ("node-v10.9.0-linux-x64.tar.xz", "node-v10.9.0-linux-x64", "c5acb8b7055ee0b6ac653dc4e458c5db45348cecc564b388f4ed1def84a329ff"),
-    "10.9.0-windows_amd64": ("node-v10.9.0-win-x64.zip", "node-v10.9.0-win-x64", "6a75cdbb69d62ed242d6cbf0238a470bcbf628567ee339d4d098a5efcda2401e"),
-  },
-  yarn_repositories = {
-    "1.9.2": ("yarn-v1.9.2.tar.gz", "yarn-v1.9.2", "3ad69cc7f68159a562c676e21998eb21b44138cae7e8fe0749a7d620cf940204"),
-  },
+    package_json = ["//:package.json"],
+    preserve_symlinks = True,
+    node_version = "10.9.0",
+    yarn_version = "1.9.2",
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_rules_dependencies", "go_register_toolchains")
