@@ -9,7 +9,7 @@ import { Crisis } from './crisis';
 import { CRISES } from './mock-crises';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CrisisService {
   static nextCrisisId = 100;
