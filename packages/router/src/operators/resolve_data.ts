@@ -11,8 +11,8 @@ import {map, mergeMap} from 'rxjs/operators';
 
 import {NavigationTransition} from '../router';
 
-export function resolveData(
-    paramsInheritanceStrategy: 'emptyOnly' | 'always'): MonoTypeOperatorFunction<NavigationTransition> {
+export function resolveData(paramsInheritanceStrategy: 'emptyOnly' | 'always'):
+    MonoTypeOperatorFunction<NavigationTransition> {
   return function(source: Observable<NavigationTransition>) {
     return source.pipe(mergeMap(t => {
       if (!t.preActivation) {
