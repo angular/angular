@@ -1,9 +1,10 @@
 """Re-export of some bazel rules with repository-wide defaults."""
 
-load("@build_bazel_rules_nodejs//:defs.bzl", _npm_package = "npm_package")
+load("@build_bazel_rules_nodejs//:defs.bzl", _jasmine_node_test = "jasmine_node_test", _nodejs_binary = "nodejs_binary", _npm_package = "npm_package")
 load("@build_bazel_rules_typescript//:defs.bzl", _ts_library = "ts_library", _ts_web_test_suite = "ts_web_test_suite")
 load("//packages/bazel:index.bzl", _ng_module = "ng_module", _ng_package = "ng_package")
 load("//packages/bazel/src:ng_module.bzl", _internal_global_ng_module = "internal_global_ng_module")
+load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 
 DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
 DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test.json"
@@ -71,7 +72,7 @@ def ivy_ng_module(name, tsconfig = None, entry_point = None, testonly = False, *
         entry_point = "public_api.ts"
     _internal_global_ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, testonly = testonly, **kwargs)
 
-def ng_package(name, readme_md = None, license_banner = None, **kwargs):
+def ng_package(name, node_modules = DEFAULT_NODE_MODULES, readme_md = None, license_banner = None, **kwargs):
     if not readme_md:
         readme_md = "//packages:README.md"
     if not license_banner:
@@ -82,6 +83,7 @@ def ng_package(name, readme_md = None, license_banner = None, **kwargs):
         readme_md = readme_md,
         license_banner = license_banner,
         replacements = PKG_GROUP_REPLACEMENTS,
+        node_modules = node_modules,
         **kwargs
     )
 
@@ -116,3 +118,12 @@ def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
         ],
         **kwargs
     )
+
+def nodejs_binary(node_modules = DEFAULT_NODE_MODULES, **kwargs):
+    _nodejs_binary(node_modules = node_modules, **kwargs)
+
+def jasmine_node_test(node_modules = DEFAULT_NODE_MODULES, **kwargs):
+    _jasmine_node_test(node_modules = node_modules, **kwargs)
+
+def ng_rollup_bundle(node_modules = DEFAULT_NODE_MODULES, **kwargs):
+    _ng_rollup_bundle(node_modules = node_modules, **kwargs)
