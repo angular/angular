@@ -119,7 +119,7 @@ function walkTNodeTree(
       }
 
       if (childContainerData[VIEWS].length) {
-        currentView = childContainerData[VIEWS][0].data;
+        currentView = childContainerData[VIEWS][0];
         nextTNode = currentView[TVIEW].node;
 
         // When the walker enters a container, then the beforeNode has to become the local native
@@ -293,7 +293,7 @@ export function destroyViewTree(rootView: LViewData): void {
     } else {
       // If container, traverse down to its first LViewData.
       const container = viewOrContainer as LContainer;
-      if (container[VIEWS].length) next = container[VIEWS][0].data;
+      if (container[VIEWS].length) next = container[VIEWS][0];
     }
 
     if (next == null) {
@@ -323,22 +323,21 @@ export function destroyViewTree(rootView: LViewData): void {
  * @param index The index at which to insert the view
  * @returns The inserted view
  */
-export function insertView(
-    container: LContainerNode, viewNode: LViewNode, index: number): LViewNode {
+export function insertView(container: LContainerNode, viewNode: LViewNode, index: number) {
   const state = container.data;
   const views = state[VIEWS];
   const lView = viewNode.data as LViewData;
 
   if (index > 0) {
     // This is a new view, we need to add it to the children.
-    views[index - 1].data[NEXT] = lView;
+    views[index - 1][NEXT] = lView;
   }
 
   if (index < views.length) {
-    lView[NEXT] = views[index].data;
-    views.splice(index, 0, viewNode);
+    lView[NEXT] = views[index];
+    views.splice(index, 0, lView);
   } else {
-    views.push(viewNode);
+    views.push(lView);
     lView[NEXT] = null;
   }
 
@@ -356,8 +355,6 @@ export function insertView(
 
   // Sets the attached flag
   lView[FLAGS] |= LViewFlags.Attached;
-
-  return viewNode;
 }
 
 /**
@@ -370,26 +367,25 @@ export function insertView(
  * @param removeIndex The index of the view to detach
  * @returns The detached view
  */
-export function detachView(container: LContainerNode, removeIndex: number): LViewNode {
+export function detachView(container: LContainerNode, removeIndex: number) {
   const views = container.data[VIEWS];
-  const viewNode = views[removeIndex];
+  const viewToDetach = views[removeIndex];
+  const viewNode = viewToDetach[HOST_NODE] as LViewNode;
   if (removeIndex > 0) {
-    views[removeIndex - 1].data[NEXT] = viewNode.data[NEXT] as LViewData;
+    views[removeIndex - 1][NEXT] = viewToDetach[NEXT] as LViewData;
   }
   views.splice(removeIndex, 1);
   if (!container.tNode.detached) {
-    addRemoveViewFromContainer(container, viewNode.data, false);
+    addRemoveViewFromContainer(container, viewToDetach, false);
   }
-  // Notify query that view has been removed
-  const removedLView = viewNode.data;
-  if (removedLView[QUERIES]) {
-    removedLView[QUERIES] !.removeView();
+
+  if (viewToDetach[QUERIES]) {
+    viewToDetach[QUERIES] !.removeView();
   }
-  removedLView[CONTAINER_INDEX] = -1;
+  viewToDetach[CONTAINER_INDEX] = -1;
   (viewNode as{view: LViewData | null}).view = null;
   // Unsets the attached flag
-  viewNode.data[FLAGS] &= ~LViewFlags.Attached;
-  return viewNode;
+  viewToDetach[FLAGS] &= ~LViewFlags.Attached;
 }
 
 /**
@@ -399,11 +395,10 @@ export function detachView(container: LContainerNode, removeIndex: number): LVie
  * @param removeIndex The index of the view to remove
  * @returns The removed view
  */
-export function removeView(container: LContainerNode, removeIndex: number): LViewNode {
-  const viewNode = container.data[VIEWS][removeIndex];
-  destroyLView(viewNode.data);
+export function removeView(container: LContainerNode, removeIndex: number) {
+  const viewToRemove = container.data[VIEWS][removeIndex];
+  destroyLView(viewToRemove);
   detachView(container, removeIndex);
-  return viewNode;
 }
 
 /** Gets the child of the given LViewData */
@@ -644,9 +639,10 @@ export function appendChild(parent: LNode, child: RNode | null, currentView: LVi
       const container = getParentLNode(parent) as LContainerNode;
       const renderParent = container.data[RENDER_PARENT];
       const views = container.data[VIEWS];
-      const index = views.indexOf(parent as LViewNode);
-      const beforeNode =
-          index + 1 < views.length ? (getChildLNode(views[index + 1]) !).native : container.native;
+      const index = views.indexOf(currentView);
+      const beforeNode = index + 1 < views.length ?
+          (getChildLNode(views[index + 1][HOST_NODE]) !).native :
+          container.native;
       nativeInsertBefore(renderer, renderParent !.native, child, beforeNode);
     } else if (parent.tNode.type === TNodeType.ElementContainer) {
       const beforeNode = parent.native;
@@ -717,8 +713,7 @@ export function appendProjectedNode(
     lContainer[RENDER_PARENT] = renderParent;
     const views = lContainer[VIEWS];
     for (let i = 0; i < views.length; i++) {
-      const viewNode = views[i];
-      addRemoveViewFromContainer(node as LContainerNode, viewNode.data, true, node.native);
+      addRemoveViewFromContainer(node as LContainerNode, views[i], true, node.native);
     }
   } else if (node.tNode.type === TNodeType.ElementContainer) {
     let ngContainerChild = getChildLNode(node as LElementContainerNode);
