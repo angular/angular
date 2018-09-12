@@ -606,26 +606,25 @@ export function createEmbeddedViewNode<T>(
  * TView for dynamically created views on their host TNode, which only has one instance.
  */
 export function renderEmbeddedTemplate<T>(
-    viewNode: LViewNode | LElementNode, tView: TView, context: T, rf: RenderFlags): LViewNode|
-    LElementNode {
+    viewToRender: LViewData, tView: TView, context: T, rf: RenderFlags) {
   const _isParent = isParent;
   const _previousOrParentTNode = previousOrParentTNode;
   let oldView: LViewData;
-  if (viewNode.data ![PARENT] == null && viewNode.data ![CONTEXT] && !tView.template) {
+  if (viewToRender[PARENT] == null && viewToRender[CONTEXT] && !tView.template) {
     // This is a root view inside the view tree
-    tickRootContext(viewNode.data ![CONTEXT] as RootContext);
+    tickRootContext(viewToRender[CONTEXT] as RootContext);
   } else {
     try {
       isParent = true;
       previousOrParentTNode = null !;
 
-      oldView = enterView(viewNode.data !, tView.node);
+      oldView = enterView(viewToRender, tView.node);
       namespaceHTML();
       tView.template !(rf, context);
       if (rf & RenderFlags.Update) {
         refreshDescendantViews();
       } else {
-        viewNode.data ![TVIEW].firstTemplatePass = firstTemplatePass = false;
+        viewToRender[TVIEW].firstTemplatePass = firstTemplatePass = false;
       }
     } finally {
       // renderEmbeddedTemplate() is called twice in fact, once for creation only and then once for
@@ -636,7 +635,6 @@ export function renderEmbeddedTemplate<T>(
       previousOrParentTNode = _previousOrParentTNode;
     }
   }
-  return viewNode;
 }
 
 /**
@@ -2039,12 +2037,12 @@ function refreshDynamicEmbeddedViews(lViewData: LViewData) {
     if (current.length < HEADER_OFFSET && current[ACTIVE_INDEX] === null) {
       const container = current as LContainer;
       for (let i = 0; i < container[VIEWS].length; i++) {
-        const lViewNode = container[VIEWS][i];
+        const dynamicViewData = container[VIEWS][i];
         // The directives and pipes are not needed here as an existing view is only being refreshed.
-        const dynamicViewData = lViewNode.data;
         ngDevMode && assertDefined(dynamicViewData[TVIEW], 'TView must be allocated');
         renderEmbeddedTemplate(
-            lViewNode, dynamicViewData[TVIEW], dynamicViewData[CONTEXT] !, RenderFlags.Update);
+            dynamicViewData, dynamicViewData[TVIEW], dynamicViewData[CONTEXT] !,
+            RenderFlags.Update);
       }
     }
   }
@@ -2061,10 +2059,10 @@ function refreshDynamicEmbeddedViews(lViewData: LViewData) {
  * @returns index of a found view or -1 if not found
  */
 function scanForView(
-    containerNode: LContainerNode, startIdx: number, viewBlockId: number): LViewNode|null {
+    containerNode: LContainerNode, startIdx: number, viewBlockId: number): LViewData|null {
   const views = containerNode.data[VIEWS];
   for (let i = startIdx; i < views.length; i++) {
-    const viewAtPositionId = views[i].data[TVIEW].id;
+    const viewAtPositionId = views[i][TVIEW].id;
     if (viewAtPositionId === viewBlockId) {
       return views[i];
     } else if (viewAtPositionId < viewBlockId) {
@@ -2096,25 +2094,26 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
 
   ngDevMode && assertNodeType(containerTNode, TNodeType.Container);
   const lContainer = container.data;
-  let viewNode: LViewNode|null = scanForView(container, lContainer[ACTIVE_INDEX] !, viewBlockId);
+  let viewNode: LViewNode|null;
+  let viewToRender = scanForView(container, lContainer[ACTIVE_INDEX] !, viewBlockId);
 
-  if (viewNode) {
-    const embeddedView = viewNode.data;
+  if (viewToRender) {
     isParent = true;
-    enterView(embeddedView, embeddedView[TVIEW].node);
+    viewNode = viewToRender[HOST_NODE] as LViewNode;
+    enterView(viewToRender, viewToRender[TVIEW].node);
   } else {
     // When we create a new LView, we always reset the state of the instructions.
-    const newView = createLViewData(
+    viewToRender = createLViewData(
         renderer,
         getOrCreateEmbeddedTView(viewBlockId, consts, vars, containerTNode as TContainerNode), null,
         LViewFlags.CheckAlways, getCurrentSanitizer());
 
     if (lContainer[QUERIES]) {
-      newView[QUERIES] = lContainer[QUERIES] !.createView();
+      viewToRender[QUERIES] = lContainer[QUERIES] !.createView();
     }
 
-    viewNode = createLNode(viewBlockId, TNodeType.View, null, null, null, newView);
-    enterView(newView, newView[TVIEW].node);
+    viewNode = createLNode(viewBlockId, TNodeType.View, null, null, null, viewToRender);
+    enterView(viewToRender, viewToRender[TVIEW].node);
   }
   if (container) {
     if (creationMode) {
@@ -2123,7 +2122,7 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
     }
     lContainer[ACTIVE_INDEX] !++;
   }
-  return getRenderFlags(viewNode.data);
+  return getRenderFlags(viewToRender);
 }
 
 /**
