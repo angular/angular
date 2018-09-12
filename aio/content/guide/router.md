@@ -96,7 +96,7 @@ When the browser's URL changes, that router looks for a corresponding `Route`
 from which it can determine the component to display.
 
 A router has no routes until you configure it.
-The following example creates four route definitions, configures the router via the `RouterModule.forRoot` method,
+The following example creates five route definitions, configures the router via the `RouterModule.forRoot` method,
 and adds the result to the `AppModule`'s `imports` array.
 
 
@@ -1275,6 +1275,22 @@ The **Routing Module** has several characteristics:
 * Provides a well-known location for routing service providers including guards and resolvers.
 * Does **not** declare components.
 
+{@a integrate-routing}
+
+### Integrate routing with your app
+
+The sample routing application does not include routing by default.
+When you use the CLI to create a project that will use routing, set the `--routing` option for the project or app, and for each NgModule. 
+When you create or initialize a new project (using the CLI new command) or a new app (using the generate app command), specify the `--routing` option to include the `@angular/router` npm package and create a file named `app-routing.module.ts`.
+You can then use routing in any NgModule that you add to the project or app.
+To generate an NgModule that will use routing, specify the `--routing` option in the generate module command:
+
+```sh
+ng generate module my-module --routing
+```
+
+This creates a separate file named `my-module-routing.module.ts` to store the NgModule's routes.
+The file includes an empty `Routes` object that you can fill with routes to different components and NgModules.
 
 {@a routing-refactor}
 
