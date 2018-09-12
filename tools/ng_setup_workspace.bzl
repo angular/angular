@@ -11,17 +11,17 @@ load("@angular//packages/bazel/src:ng_setup_workspace.bzl", _ng_setup_workspace 
 def ng_setup_workspace():
   """This repository rule should be called from your WORKSPACE file.
 
-  It creates some additional Bazel external repositories that are used internally
-  to build angular
-  """
-  yarn_install(
-      name = "angular_deps",
-      package_json = "@angular//:package.json",
-      yarn_lock = "@angular//:yarn.lock",
-      data = ["@angular//:tools/yarn/check-yarn.js", "@angular//:tools/postinstall-patches.js"],
-      manual_build_file_contents = """package(default_visibility = ["//visibility:public"])
+    It creates some additional Bazel external repositories that are used internally
+    to build angular
+    """
+    yarn_install(
+        name = "angular_deps",
+        package_json = "@angular//:package.json",
+        yarn_lock = "@angular//:yarn.lock",
+        data = ["@angular//:tools/yarn/check-yarn.js", "@angular//:tools/postinstall-patches.js"],
+        manual_build_file_contents = """package(default_visibility = ["//visibility:public"])
 filegroup(
-    name = "node_modules",  
+    name = "node_modules",
     srcs = glob(["/".join([
         "node_modules",
         pkg,

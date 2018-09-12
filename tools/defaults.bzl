@@ -73,18 +73,19 @@ def ivy_ng_module(name, tsconfig = None, entry_point = None, testonly = False, *
   _internal_global_ng_module(name = name, flat_module_out_file = name, tsconfig = tsconfig, entry_point = entry_point, testonly = testonly, **kwargs)
 
 def ng_package(name, node_modules = DEFAULT_NODE_MODULES, readme_md = None, license_banner = None, **kwargs):
-  if not readme_md:
-    readme_md = "//packages:README.md"
-  if not license_banner:
-    license_banner = "//packages:license-banner.txt"
+    if not readme_md:
+        readme_md = "//packages:README.md"
+    if not license_banner:
+        license_banner = "//packages:license-banner.txt"
 
-  _ng_package(
-      name = name,
-      readme_md = readme_md,
-      license_banner = license_banner,
-      replacements = PKG_GROUP_REPLACEMENTS,
-      node_modules = node_modules,
-      **kwargs)
+    _ng_package(
+        name = name,
+        readme_md = readme_md,
+        license_banner = license_banner,
+        replacements = PKG_GROUP_REPLACEMENTS,
+        node_modules = node_modules,
+        **kwargs
+    )
 
 def npm_package(name, replacements = {}, **kwargs):
   _npm_package(
@@ -100,27 +101,28 @@ def ts_web_test_suite(bootstrap = [], deps = [], **kwargs):
     "//tools/testing:browser",
   ] + deps
 
-  _ts_web_test_suite(
-      bootstrap = bootstrap,
-      deps = local_deps,
-      # Run unit tests on local Chromium by default.
-      # You can exclude tests based on tags, e.g. to skip Firefox testing,
-      #   `bazel test --test_tag_filters=-browser:firefox-local [targets]`
-      browsers = [
-          "@io_bazel_rules_webtesting//browsers:chromium-local",
-          # Don't test on local Firefox by default, for faster builds.
-          # We think that bugs in Angular tend to be caught the same in any
-          # evergreen browser.
-          # "@io_bazel_rules_webtesting//browsers:firefox-local",
-          # TODO(alexeagle): add remote browsers on SauceLabs
-      ],
-      **kwargs)
+    _ts_web_test_suite(
+        bootstrap = bootstrap,
+        deps = local_deps,
+        # Run unit tests on local Chromium by default.
+        # You can exclude tests based on tags, e.g. to skip Firefox testing,
+        #   `bazel test --test_tag_filters=-browser:firefox-local [targets]`
+        browsers = [
+            "@io_bazel_rules_webtesting//browsers:chromium-local",
+            # Don't test on local Firefox by default, for faster builds.
+            # We think that bugs in Angular tend to be caught the same in any
+            # evergreen browser.
+            # "@io_bazel_rules_webtesting//browsers:firefox-local",
+            # TODO(alexeagle): add remote browsers on SauceLabs
+        ],
+        **kwargs
+    )
 
 def nodejs_binary(node_modules = DEFAULT_NODE_MODULES, **kwargs):
-  _nodejs_binary(node_modules = node_modules, **kwargs)
+    _nodejs_binary(node_modules = node_modules, **kwargs)
 
 def jasmine_node_test(node_modules = DEFAULT_NODE_MODULES, **kwargs):
-  _jasmine_node_test(node_modules = node_modules, **kwargs)
+    _jasmine_node_test(node_modules = node_modules, **kwargs)
 
 def ng_rollup_bundle(node_modules = DEFAULT_NODE_MODULES, **kwargs):
-  _ng_rollup_bundle(node_modules = node_modules, **kwargs)
+    _ng_rollup_bundle(node_modules = node_modules, **kwargs)
