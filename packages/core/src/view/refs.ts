@@ -522,5 +522,7 @@ class NgModuleRef_ implements NgModuleData, InternalNgModuleRef<any> {
     this._destroyListeners.forEach((listener) => listener());
   }
 
+  get destroyed() { return this._destroyed; }
+
   onDestroy(callback: () => void): void { this._destroyListeners.push(callback); }
 }

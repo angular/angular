@@ -36,6 +36,7 @@ export class NgModuleRef<T> extends viewEngine_NgModuleRef<T> implements Interna
   injector: Injector = this;
   instance: T;
   destroyCbs: (() => void)[]|null = [];
+  get destroyed(): boolean { return this.destroyCbs === null; }
 
   constructor(ngModuleType: Type<T>, public _parent: Injector|null) {
     super();

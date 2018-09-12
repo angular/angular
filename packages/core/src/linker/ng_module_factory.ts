@@ -43,6 +43,11 @@ export abstract class NgModuleRef<T> {
   abstract destroy(): void;
 
   /**
+   * Returns whether the module has been destroyed.
+   */
+  abstract get destroyed(): boolean;
+
+  /**
    * Allows to register a callback that will be called when the module is destroyed.
    */
   abstract onDestroy(callback: () => void): void;
