@@ -293,7 +293,8 @@ class ApplyRedirects {
 
     if (route.loadChildren) {
       // lazy children belong to the loaded module
-      if (route._loadedConfig !== undefined) {
+      // & re-initialize the (lazy loaded) module if destroyed
+      if (route._loadedConfig !== undefined && !route._loadedConfig.module.destroyed) {
         return of (route._loadedConfig);
       }
 
