@@ -9,6 +9,7 @@ ls_rollup_bundle(
         "fs": "fs",
     },
     license_banner = "banner.js.txt",
+    node_modules = "//:node_modules",
     visibility = ["//packages/language-service:__pkg__"],
     deps = ["//packages/language-service"],
 )

@@ -10,10 +10,9 @@
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@bazel/typescript": "0.16.2",
+    "@bazel/typescript": "0.17.0",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/source-map": "0.5.1",
-    "http-server": "0.11.1",
     "protractor": "file:../../node_modules/protractor",
     "tsickle": "file:../../node_modules/tsickle",
     "typescript": "file:../../node_modules/typescript"
