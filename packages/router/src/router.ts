@@ -370,11 +370,15 @@ export class Router {
     this.processNavigations();
   }
 
-  private setupNavigations(transitions: Observable<NavigationTransition>): Observable<NavigationTransition> {
+  private setupNavigations(transitions: Observable<NavigationTransition>):
+      Observable<NavigationTransition> {
     return transitions.pipe(
-        filter(t => t.id !== 0),
+        filter(t => t.id !== 0), mergeMap(t => Promise.resolve(t)),
         // Extract URL
-        map(t => ({...t, extractedUrl: this.urlHandlingStrategy.extract(t.rawUrl)}) as NavigationTransition),
+        map(t => ({
+              ...t,                                                          //
+                  extractedUrl: this.urlHandlingStrategy.extract(t.rawUrl),  //
+            } as NavigationTransition)),
 
         // Using switchMap so we cancel executing navigations when a new one comes in
         switchMap(t => {
@@ -391,10 +395,16 @@ export class Router {
                       tap(t => this.urlUpdateStrategy === 'eager' && !t.extras.skipLocationChange &&
                               this.setBrowserUrl(t.rawUrl, !!t.extras.replaceUrl, t.id)),
                       // Fire NavigationStart event
-                      tap(t =>
-                              (this.events as Subject<Event>)
-                                  .next(new NavigationStart(
-                                      t.id, this.serializeUrl(t.extractedUrl), t.source, t.state))),
+                      mergeMap(t => {
+                        const transition = this.transitions.getValue();
+                        (this.events as Subject<Event>)
+                            .next(new NavigationStart(
+                                t.id, this.serializeUrl(t.extractedUrl), t.source, t.state));
+                        if (transition !== this.transitions.getValue()) {
+                          EMPTY;
+                        }
+                        return [t];
+                      }),
 
                       // This delay is required to match old behavior that forced navigation to
                       // always be async
@@ -450,11 +460,10 @@ export class Router {
                 preActivation.initialize(this.rootContexts);
                 return {...t, preActivation};
               }),
-              checkGuards(),
-              tap(t => this.triggerEvent(new GuardsCheckEnd(
-                      t.id, this.serializeUrl(t.extractedUrl),
-                      this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot !,
-                      !!t.guardsResult))),
+              checkGuards(), tap(t => this.triggerEvent(new GuardsCheckEnd(
+                                     t.id, this.serializeUrl(t.extractedUrl),
+                                     this.serializeUrl(t.urlAfterRedirects), t.targetSnapshot !,
+                                     !!t.guardsResult))),
 
               mergeMapIf(
                   t => !t.guardsResult,
@@ -533,7 +542,7 @@ export class Router {
                 }
                 return EMPTY;
               }), );
-            })) as any as Observable<NavigationTransition>;
+        })) as any as Observable<NavigationTransition>;
 
     function activate(
         rootContexts: ChildrenOutletContexts, routeReuseStrategy: RouteReuseStrategy,
