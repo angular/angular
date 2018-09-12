@@ -733,7 +733,7 @@ class ViewContainerRef extends viewEngine_ViewContainerRef {
     insertView(this._lContainerNode, lViewNode, adjustedIdx);
     const views = this._lContainerNode.data[VIEWS];
     const beforeNode = adjustedIdx + 1 < views.length ?
-        (getChildLNode(views[adjustedIdx + 1]) !).native :
+        (getChildLNode(views[adjustedIdx + 1][HOST_NODE]) !).native :
         this._lContainerNode.native;
     addRemoveViewFromContainer(this._lContainerNode, lViewNode.data, true, beforeNode);
 
@@ -835,7 +835,7 @@ class TemplateRef<T> extends viewEngine_TemplateRef<T> {
     if (containerNode) {
       insertView(containerNode, viewNode, index !);
     }
-    renderEmbeddedTemplate(viewNode, this._tView, context, RenderFlags.Create);
+    renderEmbeddedTemplate(viewNode.data, this._tView, context, RenderFlags.Create);
     const viewRef = new ViewRef(viewNode.data, context);
     viewRef._lViewNode = viewNode;
     return viewRef;
