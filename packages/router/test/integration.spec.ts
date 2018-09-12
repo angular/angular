@@ -14,7 +14,7 @@ import {By} from '@angular/platform-browser/src/dom/debug/by';
 import {expect} from '@angular/platform-browser/testing/src/matchers';
 import {ActivatedRoute, ActivatedRouteSnapshot, ActivationEnd, ActivationStart, CanActivate, CanDeactivate, ChildActivationEnd, ChildActivationStart, DetachedRouteHandle, Event, GuardsCheckEnd, GuardsCheckStart, NavigationCancel, NavigationEnd, NavigationError, NavigationStart, PRIMARY_OUTLET, ParamMap, Params, PreloadAllModules, PreloadingStrategy, Resolve, ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, RouteReuseStrategy, Router, RouterEvent, RouterModule, RouterPreloader, RouterStateSnapshot, RoutesRecognized, RunGuardsAndResolvers, UrlHandlingStrategy, UrlSegmentGroup, UrlSerializer, UrlTree} from '@angular/router';
 import {Observable, Observer, Subscription, of } from 'rxjs';
-import {filter, map} from 'rxjs/operators';
+import {filter, first, map, tap} from 'rxjs/operators';
 
 import {forEach} from '../src/utils/collection';
 import {RouterTestingModule, SpyNgModuleFactoryLoader} from '../testing';
@@ -2969,6 +2969,35 @@ describe('Integration', () => {
            [ResolveEnd, '/user/fedor'], [ActivationEnd], [ChildActivationEnd],
            [NavigationEnd, '/user/fedor']
          ]);
+       })));
+
+    it('should allow redirection in NavigationStart', fakeAsync(inject([Router], (router: Router) => {
+        const fixture = createRoot(router, RootCmp);
+
+        router.resetConfig([
+          {path: 'blank', component: UserCmp},
+          {path: 'user/:name', component: BlankCmp},
+        ]);
+
+        const navigateSpy = spyOn(router, 'navigate').and.callThrough();
+        const recordedEvents: any[] = [];
+
+        const navStart$ = router.events.pipe(
+          tap(e => recordedEvents.push(e)),
+          filter(e => e instanceof NavigationStart),
+          first()
+        );
+
+        navStart$.subscribe((e: NavigationStart | NavigationError) => {
+          router.navigate(['/blank'], {queryParams: {state: 'redirected'}, queryParamsHandling: 'merge'});
+          advance(fixture);
+        });
+
+        router.navigate(['/user/:fedor']);
+        advance(fixture);
+
+        expect(navigateSpy.calls.mostRecent().args[1].queryParams);
+
        })));
   });
 
