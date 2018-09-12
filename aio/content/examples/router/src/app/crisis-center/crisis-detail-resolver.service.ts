@@ -1,16 +1,19 @@
 
 // #docregion
 import { Injectable }             from '@angular/core';
-import { Router, Resolve, RouterStateSnapshot,
-         ActivatedRouteSnapshot } from '@angular/router';
-import { Observable, of, EMPTY as empty }             from 'rxjs';
-import { mergeMap, take }              from 'rxjs/operators';
+import {
+  Router, Resolve,
+  RouterStateSnapshot,
+  ActivatedRouteSnapshot
+}                                 from '@angular/router';
+import { Observable, of, EMPTY }  from 'rxjs';
+import { mergeMap, take }         from 'rxjs/operators';
 
 import { CrisisService }  from './crisis.service';
 import { Crisis } from './crisis';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CrisisDetailResolverService implements Resolve<Crisis> {
   constructor(private cs: CrisisService, private router: Router) {}
@@ -25,7 +28,7 @@ export class CrisisDetailResolverService implements Resolve<Crisis> {
           return of(crisis);
         } else { // id not found
           this.router.navigate(['/crisis-center']);
-          return empty;
+          return EMPTY;
         }
       })
     );

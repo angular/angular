@@ -8,7 +8,7 @@ import { CanDeactivate,
 import { CrisisDetailComponent } from './crisis-center/crisis-detail/crisis-detail.component';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CanDeactivateGuard implements CanDeactivate<CrisisDetailComponent> {
 

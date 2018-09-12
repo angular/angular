@@ -8,7 +8,7 @@ import { Observable, of } from 'rxjs';
  * TODO: better modal implementation that doesn't use window.confirm
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DialogService {
   /**
