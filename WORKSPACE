@@ -5,16 +5,17 @@ workspace(name = "angular")
 #
 http_archive(
     name = "build_bazel_rules_nodejs",
-    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.12.0.zip"],
-    strip_prefix = "rules_nodejs-0.12.0",
-    sha256 = "2977cdbc8ae0eed7d4186385af56a50a3321a549e2136a959998bba89d2edb6e",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/0.13.2.zip"],
+    strip_prefix = "rules_nodejs-0.13.2",
+    sha256 = "9a71783206b24665f7ec1be81ca4eec48bcf7e977d7d55dde1490cf27869fd0f",
 )
 
+# TODO(gregmagolan): update to tagged release
 http_archive(
     name = "build_bazel_rules_typescript",
-    url = "https://github.com/bazelbuild/rules_typescript/archive/0.16.2.zip",
-    strip_prefix = "rules_typescript-0.16.2",
-    sha256 = "31601b777840fbf600dbd1893ade0d1de37166e7ba52b90735b107cfb67e38c7",
+    url = "https://github.com/bazelbuild/rules_typescript/archive/87d892be147b66e5668ba14f89ef5df8259de102.zip",
+    strip_prefix = "rules_typescript-87d892be147b66e5668ba14f89ef5df8259de102",
+    sha256 = "fce9569a941c0eb0dedaccfb90b2fb94f2450b7fc588ed700479141f9c200433",
 )
 load("@build_bazel_rules_typescript//:package.bzl", "rules_typescript_dependencies")
 rules_typescript_dependencies()
