@@ -11,10 +11,6 @@
   $accent: map-get($theme, accent);
   $warn: map-get($theme, warn);
 
-  .mat-select-content, .mat-select-panel-done-animating {
-    background: mat-color($background, card);
-  }
-
   .mat-select-value {
     color: mat-color($foreground, text);
   }
@@ -32,6 +28,8 @@
   }
 
   .mat-select-panel {
+    background: mat-color($background, card);
+
     .mat-option.mat-selected:not(.mat-option-multiple) {
       background: mat-color($background, hover, 0.12);
     }

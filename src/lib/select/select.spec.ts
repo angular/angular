@@ -1672,14 +1672,11 @@ describe('MatSelect', () => {
 
     describe('animations', () => {
       let fixture: ComponentFixture<BasicSelect>;
-      let trigger: HTMLElement;
       let formField: HTMLElement;
 
       beforeEach(fakeAsync(() => {
         fixture = TestBed.createComponent(BasicSelect);
         fixture.detectChanges();
-
-        trigger = fixture.debugElement.query(By.css('.mat-select-trigger')).nativeElement;
         formField = fixture.debugElement.query(By.css('.mat-form-field')).nativeElement;
       }));
 
@@ -1702,19 +1699,6 @@ describe('MatSelect', () => {
             'Expected placeholder to animate back down to normal position.');
       }));
 
-      it('should add a class to the panel when the menu is done animating', fakeAsync(() => {
-        trigger.click();
-        fixture.detectChanges();
-
-        const panel = overlayContainerElement.querySelector('.mat-select-panel')!;
-
-        expect(panel.classList).not.toContain('mat-select-panel-done-animating');
-
-        flush();
-        fixture.detectChanges();
-
-        expect(panel.classList).toContain('mat-select-panel-done-animating');
-      }));
     });
 
     describe('keyboard scrolling', () => {

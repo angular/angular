@@ -13,9 +13,6 @@ import {
   style,
   transition,
   trigger,
-  query,
-  animateChild,
-  group,
 } from '@angular/animations';
 
 /**
@@ -39,7 +36,7 @@ export const matSelectAnimations: {
    */
   transformPanel: trigger('transformPanel', [
     state('void', style({
-      transform: 'scaleY(0)',
+      transform: 'scaleY(0.8)',
       minWidth: '100%',
       opacity: 0
     })),
@@ -53,19 +50,16 @@ export const matSelectAnimations: {
       minWidth: 'calc(100% + 64px)', // 64px = 48px padding on the left + 16px padding on the right
       transform: 'scaleY(1)'
     })),
-    transition('void => *', group([
-      query('@fadeInContent', animateChild()),
-      animate('150ms cubic-bezier(0.25, 0.8, 0.25, 1)')
-    ])),
-    transition('* => void', [
-      animate('250ms 100ms linear', style({opacity: 0}))
-    ])
+    transition('void => *', animate('120ms cubic-bezier(0, 0, 0.2, 1)')),
+    transition('* => void', animate('100ms 25ms linear', style({opacity: 0})))
   ]),
 
   /**
    * This animation fades in the background color and text content of the
    * select's options. It is time delayed to occur 100ms after the overlay
    * panel has transformed in.
+   * @deprecated Not used anymore. To be removed.
+   * @breaking-change 8.0.0
    */
   fadeInContent: trigger('fadeInContent', [
     state('showing', style({opacity: 1})),

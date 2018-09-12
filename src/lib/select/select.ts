@@ -218,8 +218,7 @@ export class MatSelectTrigger {}
     '(blur)': '_onBlur()',
   },
   animations: [
-    matSelectAnimations.transformPanel,
-    matSelectAnimations.fadeInContent
+    matSelectAnimations.transformPanel
   ],
   providers: [
     {provide: MatFormFieldControl, useExisting: MatSelect},
@@ -279,9 +278,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
   /** The value of the select panel's transform-origin property. */
   _transformOrigin: string = 'top';
-
-  /** Whether the panel's animation is done. */
-  _panelDoneAnimating: boolean = false;
 
   /** Emits when the panel element is finished transforming in. */
   _panelDoneAnimatingStream = new Subject<string>();
@@ -520,7 +516,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
           this.openedChange.emit(true);
         } else {
           this.openedChange.emit(false);
-          this._panelDoneAnimating = false;
           this.overlayDir.offsetX = 0;
           this._changeDetectorRef.markForCheck();
         }
@@ -741,15 +736,6 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
         manager.activeItem._selectViaInteraction();
       }
     }
-  }
-
-  /**
-   * When the panel content is done fading in, the _panelDoneAnimating property is
-   * set so the proper class can be added to the panel.
-   */
-  _onFadeInDone(): void {
-    this._panelDoneAnimating = this.panelOpen;
-    this._changeDetectorRef.markForCheck();
   }
 
   _onFocus() {
