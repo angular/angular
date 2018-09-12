@@ -39,6 +39,7 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "rollup_bundle")
 rollup_bundle(
     name = "bundle",
     entry_point = "src/main",
+    node_modules = "//:node_modules",
     deps = ["//src"],
 )
 
@@ -51,13 +52,13 @@ genrule(
     cmd = "cp $< $@",
 )
 
-nodejs_binary(
+load("@build_bazel_rules_nodejs//:defs.bzl", "http_server")
+
+http_server(
     name = "prodserver",
     data = [
         "index.html",
         ":bundle",
         ":zone.js",
     ],
-    entry_point = "http-server/bin/http-server",
-    templated_args = ["src"],
 )

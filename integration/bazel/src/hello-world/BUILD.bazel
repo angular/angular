@@ -24,6 +24,7 @@ ng_module(
 ng_package(
     name = "npm_package",
     entry_point = "src/hello-world/index.js",
+    node_modules = "//:node_modules",
     deps = [":hello-world"],
 )
 
