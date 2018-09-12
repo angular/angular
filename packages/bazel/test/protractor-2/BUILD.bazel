@@ -19,6 +19,7 @@ ts_devserver(
 rollup_bundle(
     name = "bundle",
     entry_point = "packages/bazel/test/protractor-2/app",
+    node_modules = "//:node_modules",
     deps = [":app"],
 )
 
