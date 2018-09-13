@@ -10,12 +10,11 @@ import {Injector} from '../di/injector';
 import {Renderer2, RendererType2} from '../render/api';
 import {DebugContext} from '../view';
 import {DebugRenderer2, DebugRendererFactory2} from '../view/services';
-
-import {getLElementNode} from './context_discovery';
+import {discoverDirectiveIndices, discoverDirectives} from './context_discovery';
 import * as di from './di';
 import {_getViewData} from './instructions';
 import {LElementNode} from './interfaces/node';
-import {CONTEXT, DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
+import {CONTEXT, LViewData, TVIEW} from './interfaces/view';
 
 /**
  * Adapts the DebugRendererFactory2 to create a DebugRenderer2 specific for IVY.
@@ -73,25 +72,18 @@ class Render3DebugContext implements DebugContext {
 
   // TODO(vicb): add view providers when supported
   get providerTokens(): any[] {
-    const matchedDirectives: any[] = [];
+    // TODO: why/when would the nodeIndex value not be set...
+    const directiveIndices =
+        this.nodeIndex ? discoverDirectiveIndices(this.view, this.nodeIndex, true) : null;
 
-    // TODO(vicb): why/when
-    if (this.nodeIndex === null) {
-      return matchedDirectives;
-    }
-
-    const directives = this.view[DIRECTIVES];
-
-    if (directives) {
-      const currentNode = this.view[this.nodeIndex];
-      for (let dirIndex = 0; dirIndex < directives.length; dirIndex++) {
-        const directive = directives[dirIndex];
-        if (getLElementNode(directive) === currentNode) {
-          matchedDirectives.push(directive.constructor);
-        }
+    const directiveTokens: any[] = [];
+    if (directiveIndices) {
+      const directiveInstances = discoverDirectives(this.view, directiveIndices);
+      for (let i = 0; i < directiveInstances.length; i++) {
+        directiveTokens.push(directiveInstances[i].constructor);
       }
     }
-    return matchedDirectives;
+    return directiveTokens;
   }
 
   get references(): {[key: string]: any} {

@@ -176,15 +176,6 @@ function createLContext(lViewData: LViewData, lNodeIndex: number, native: REleme
   };
 }
 
-/**
- * A utility function for retrieving the matching lElementNode
- * from a given DOM element, component or directive.
- */
-export function getLElementNode(target: any): LElementNode|null {
-  const context = getContext(target);
-  return context ? getLNodeFromViewData(context.lViewData, context.lNodeIndex) : null;
-}
-
 export function getLElementFromRootComponent(rootComponentInstance: {}): LElementNode|null {
   // the host element for the root component is ALWAYS the first element
   // in the lViewData array (which is where HEADER_OFFSET points to)
@@ -354,7 +345,8 @@ function getLNodeFromViewData(lViewData: LViewData, lElementIndex: number): LEle
  * Returns a collection of directive index values that are used on the element
  * (which is referenced by the lNodeIndex)
  */
-function discoverDirectiveIndices(lViewData: LViewData, lNodeIndex: number): number[]|null {
+export function discoverDirectiveIndices(
+    lViewData: LViewData, lNodeIndex: number, includeComponent?: boolean): number[]|null {
   const directivesAcrossView = lViewData[DIRECTIVES];
   const lNode = getLNodeFromViewData(lViewData, lNodeIndex);
   if (lNode && directivesAcrossView && directivesAcrossView.length) {
@@ -364,8 +356,8 @@ function discoverDirectiveIndices(lViewData: LViewData, lNodeIndex: number): num
     const directiveIndices: number[] = [];
     for (let i = directiveIndexStart; i < directiveIndexEnd; i++) {
       // special case since the instance of the component (if it exists)
-      // is stored in the directives array.
-      if (i > directiveIndexStart ||
+      // is stored in the directives array as the very first value.
+      if (includeComponent || i > directiveIndexStart ||
           !isComponentInstance(directivesAcrossView[directiveIndexStart])) {
         directiveIndices.push(i);
       }
@@ -375,12 +367,12 @@ function discoverDirectiveIndices(lViewData: LViewData, lNodeIndex: number): num
   return null;
 }
 
-function discoverDirectives(lViewData: LViewData, directiveIndices: number[]): number[]|null {
+export function discoverDirectives(lViewData: LViewData, indices: number[]): number[] {
   const directives: any[] = [];
   const directiveInstances = lViewData[DIRECTIVES];
   if (directiveInstances) {
-    for (let i = 0; i < directiveIndices.length; i++) {
-      const directiveIndex = directiveIndices[i];
+    for (let i = 0; i < indices.length; i++) {
+      const directiveIndex = indices[i];
       const directive = directiveInstances[directiveIndex];
       directives.push(directive);
     }
