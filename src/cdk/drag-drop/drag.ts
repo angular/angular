@@ -507,12 +507,9 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
     const elementRect = this._rootElement.getBoundingClientRect();
     const handleElement = referenceElement === this._rootElement ? null : referenceElement;
     const referenceRect = handleElement ? handleElement.getBoundingClientRect() : elementRect;
-    const x = this._isTouchEvent(event) ?
-        event.targetTouches[0].pageX - referenceRect.left - this._scrollPosition.left :
-        event.offsetX;
-    const y = this._isTouchEvent(event) ?
-        event.targetTouches[0].pageY - referenceRect.top - this._scrollPosition.top :
-        event.offsetY;
+    const point = this._isTouchEvent(event) ? event.targetTouches[0] : event;
+    const x = point.pageX - referenceRect.left - this._scrollPosition.left;
+    const y = point.pageY - referenceRect.top - this._scrollPosition.top;
 
     return {
       x: referenceRect.left - elementRect.left + x,
