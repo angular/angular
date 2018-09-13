@@ -129,7 +129,6 @@ export interface RElement extends RNode {
   setAttributeNS(namespaceURI: string, qualifiedName: string, value: string): void;
   addEventListener(type: string, listener: EventListener, useCapture?: boolean): void;
   removeEventListener(type: string, listener?: EventListener, options?: boolean): void;
-
   setProperty?(name: string, value: any): void;
 }
 

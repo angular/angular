@@ -10,8 +10,8 @@
 // correctly implementing its interfaces for backwards compatibility.
 import {Type} from '../core';
 import {Injector} from '../di/injector';
+import {NgLocalization} from '../i18n/tokens';
 import {Sanitizer} from '../sanitization/security';
-
 import {PlayerHandler} from './animations/interfaces';
 import {assertComponentType, assertDefined} from './assert';
 import {getLElementFromComponent, readPatchedLViewData} from './context_discovery';
@@ -73,6 +73,9 @@ export interface CreateComponentOptions {
    * It is also useful to override this function for testing purposes.
    */
   scheduler?: (work: () => void) => void;
+
+  /** A custom NgLocalization instance */
+  ngLocalization?: NgLocalization;
 }
 
 /** See CreateComponentOptions.hostFeatures */
@@ -96,7 +99,7 @@ export const NULL_INJECTOR: Injector = {
  * and object lifetime, use {@link ViewContainer#createComponent}.
  *
  * @param componentType Component to bootstrap
- * @param options Optional parameters which control bootstrapping
+ * @param opts Optional parameters which control bootstrapping
  */
 export function renderComponent<T>(
     componentType: ComponentType<T>|
@@ -106,6 +109,7 @@ export function renderComponent<T>(
   ngDevMode && assertComponentType(componentType);
   const rendererFactory = opts.rendererFactory || domRendererFactory3;
   const sanitizer = opts.sanitizer || null;
+  const ngLocalization = opts.ngLocalization || null;
   const componentDef = getComponentDef<T>(componentType) !;
   if (componentDef.type != componentType) componentDef.type = componentType;
 
@@ -129,7 +133,7 @@ export function renderComponent<T>(
     if (rendererFactory.begin) rendererFactory.begin();
 
     // Create element node at index 0 in data array
-    elementNode = hostElement(componentTag, hostNode, componentDef, sanitizer);
+    elementNode = hostElement(componentTag, hostNode, componentDef, sanitizer, ngLocalization);
     component = createRootComponent(
         elementNode, componentDef, rootView, rootContext, opts.hostFeatures || null);
 

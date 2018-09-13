@@ -7,18 +7,20 @@
  */
 
 import {Injector} from '../../di/injector';
+import {NgLocalization} from '../../i18n/tokens';
 import {QueryList} from '../../linker';
 import {Sanitizer} from '../../sanitization/security';
 import {PlayerHandler} from '../animations/interfaces';
-
 import {LContainer} from './container';
 import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDefInternal, PipeDefList} from './definition';
-import {LElementNode, LViewNode, TElementNode, TNode, TViewNode} from './node';
+import {I18nAttrInstruction, I18nInstruction} from './i18n';
+import {IcuExpression} from './icu';
+import {TElementNode, TNode, TViewNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
 
 /** Size of LViewData's header. Necessary to adjust for it when setting slots.  */
-export const HEADER_OFFSET = 17;
+export const HEADER_OFFSET = 18;
 
 // Below are constants for LViewData indices to help us look up LViewData members
 // without having to remember the specific indices.
@@ -40,6 +42,7 @@ export const TAIL = 13;
 export const CONTAINER_INDEX = 14;
 export const CONTENT_QUERIES = 15;
 export const DECLARATION_VIEW = 16;
+export const NG_LOCALIZATION = 17;
 
 // This interface replaces the real LViewData interface if it is an arg or a
 // return value of a public instruction. This ensures we don't need to expose
@@ -203,6 +206,9 @@ export interface LViewData extends Array<any> {
    * context.
    */
   [DECLARATION_VIEW]: LViewData|null;
+
+  /** An optional instance of NgLocalization. */
+  [NG_LOCALIZATION]: NgLocalization|null;
 }
 
 /** Flags associated with an LView (saved in LViewData[FLAGS]) */
@@ -498,6 +504,15 @@ export interface TView {
    * Odd indices: Starting index of content queries (stored in CONTENT_QUERIES) for this directive
    */
   contentQueries: number[]|null;
+
+  /**
+   * A list of instructions used to translate templates and attributes.
+   */
+  i18nInstructions: I18nAttrInstruction[][]|I18nInstruction[][][]|null;
+
+  icuExpressions: IcuExpression[]|null;
+
+  icuNodes: number[]|null;
 }
 
 export const enum RootContextFlags {Empty = 0b00, DetectChanges = 0b01, FlushPlayers = 0b10}

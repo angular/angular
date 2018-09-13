@@ -225,8 +225,8 @@ The goal is for the `@Component` (and friends) to be the compiler of template. S
 | Feature                             | Runtime | Spec     | Compiler |
 | ----------------------------------- | ------- | -------- | -------- |
 | translate text literals             |  ✅     |  ✅      |  ✅      |
-| rearrange text nodes                |  ❌     |  ❌      |  ❌      |
-| ICU                                 |  ❌     |  ❌      |  ❌      |
+| rearrange text nodes                |  ✅     |  ✅      |  ❌      |
+| ICU                                 |  ✅     |  ✅      |  ❌      |
 
 
 ### View Encapsulation

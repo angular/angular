@@ -6,8 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {NgLocalization} from '@angular/common';
-import {Component, DebugElement} from '@angular/core';
+import {Component, DebugElement, NgLocalization} from '@angular/core';
 import {ComponentFixture} from '@angular/core/testing';
 
 import {By} from '@angular/platform-browser/src/dom/debug/by';

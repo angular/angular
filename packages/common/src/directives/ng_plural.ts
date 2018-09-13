@@ -6,9 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Attribute, Directive, Host, Input, TemplateRef, ViewContainerRef} from '@angular/core';
+import {Attribute, Directive, Host, Input, NgLocalization, TemplateRef, ViewContainerRef} from '@angular/core';
 
-import {NgLocalization, getPluralCategory} from '../i18n/localization';
+import {getPluralCategory} from '../i18n/localization';
 
 import {SwitchView} from './ng_switch';
 

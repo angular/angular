@@ -9,6 +9,7 @@
 import {stringifyElement} from '@angular/platform-browser/testing/src/browser_util';
 
 import {Injector} from '../../src/di/injector';
+import {NgLocalization} from '../../src/i18n/tokens';
 import {PlayerHandler} from '../../src/render3/animations/interfaces';
 import {CreateComponentOptions} from '../../src/render3/component';
 import {getContext, isComponentInstance} from '../../src/render3/context_discovery';
@@ -52,6 +53,7 @@ export class TemplateFixture extends BaseFixture {
   private _pipeDefs: PipeDefList|null;
   private _sanitizer: Sanitizer|null;
   private _rendererFactory: RendererFactory3;
+  private _ngLocalization: NgLocalization|null;
 
   /**
    *
@@ -64,11 +66,12 @@ export class TemplateFixture extends BaseFixture {
       private createBlock: () => void, private updateBlock: () => void = noop, consts: number = 0,
       private vars: number = 0, directives?: DirectiveTypesOrFactory|null,
       pipes?: PipeTypesOrFactory|null, sanitizer?: Sanitizer|null,
-      rendererFactory?: RendererFactory3) {
+      rendererFactory?: RendererFactory3, ngLocalization?: NgLocalization) {
     super();
     this._directiveDefs = toDefs(directives, extractDirectiveDef);
     this._pipeDefs = toDefs(pipes, extractPipeDef);
     this._sanitizer = sanitizer || null;
+    this._ngLocalization = ngLocalization || null;
     this._rendererFactory = rendererFactory || domRendererFactory3;
     this.hostNode = renderTemplate(
         this.hostElement,
@@ -81,7 +84,7 @@ export class TemplateFixture extends BaseFixture {
           }
         },
         consts, vars, null !, this._rendererFactory, null, this._directiveDefs, this._pipeDefs,
-        sanitizer);
+        sanitizer, ngLocalization);
   }
 
   /**
@@ -92,7 +95,8 @@ export class TemplateFixture extends BaseFixture {
   update(updateBlock?: () => void): void {
     renderTemplate(
         this.hostNode.native, updateBlock || this.updateBlock, 0, this.vars, null !,
-        this._rendererFactory, this.hostNode, this._directiveDefs, this._pipeDefs, this._sanitizer);
+        this._rendererFactory, this.hostNode, this._directiveDefs, this._pipeDefs, this._sanitizer,
+        this._ngLocalization);
   }
 }
 
@@ -108,7 +112,8 @@ export class ComponentFixture<T> extends BaseFixture {
     injector?: Injector,
     sanitizer?: Sanitizer,
     rendererFactory?: RendererFactory3,
-    playerHandler?: PlayerHandler
+    playerHandler?: PlayerHandler,
+    ngLocalization?: NgLocalization
   } = {}) {
     super();
     this.requestAnimationFrame = function(fn: () => void) {
@@ -127,7 +132,8 @@ export class ComponentFixture<T> extends BaseFixture {
       injector: opts.injector,
       sanitizer: opts.sanitizer,
       rendererFactory: opts.rendererFactory || domRendererFactory3,
-      playerHandler: opts.playerHandler
+      playerHandler: opts.playerHandler,
+      ngLocalization: opts.ngLocalization,
     });
   }
 
@@ -217,6 +223,7 @@ export function renderComponent<T>(type: ComponentType<T>, opts?: CreateComponen
     host: containerEl,
     scheduler: requestAnimationFrame,
     sanitizer: opts ? opts.sanitizer : undefined,
+    ngLocalization: opts ? opts.ngLocalization : undefined,
     hostFeatures: opts && opts.hostFeatures
   });
 }
@@ -240,7 +247,8 @@ export function toHtml<T>(componentOrElement: T | RElement): string {
         .replace(/<\/div>$/, '')
         .replace(' style=""', '')
         .replace(/<!--container-->/g, '')
-        .replace(/<!--ng-container-->/g, '');
+        .replace(/<!--ng-container-->/g, '')
+        .replace(/<!--ICU-->/g, '');
   } else {
     return '';
   }

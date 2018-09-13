@@ -96,6 +96,9 @@
     "name": "NG_PIPE_DEF"
   },
   {
+    "name": "NG_LOCALIZATION"
+  },
+  {
     "name": "NG_PROJECT_AS_ATTR_NAME"
   },
   {
@@ -595,6 +598,9 @@
   },
   {
     "name": "getContainerRenderParent"
+  },
+  {
+    "name": "getCurrentNgLocalization"
   },
   {
     "name": "getCurrentSanitizer"

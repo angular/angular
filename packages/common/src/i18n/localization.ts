@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Inject, Injectable, InjectionToken, LOCALE_ID, Optional} from '@angular/core';
+import {Inject, Injectable, InjectionToken, LOCALE_ID, NgLocalization as NgLocalizationCore, Optional} from '@angular/core';
 import {Plural, getLocalePluralCase} from './locale_data_api';
 
 
@@ -16,11 +16,9 @@ import {Plural, getLocalePluralCase} from './locale_data_api';
 export const DEPRECATED_PLURAL_FN = new InjectionToken<boolean>('UseV4Plurals');
 
 /**
- * @experimental
+ * @deprecated import from @angular/core instead
  */
-export abstract class NgLocalization {
-  abstract getPluralCategory(value: any, locale?: string): string;
-}
+export const NgLocalization = NgLocalizationCore;
 
 
 /**
@@ -29,7 +27,7 @@ export abstract class NgLocalization {
  * - the plural category otherwise
  */
 export function getPluralCategory(
-    value: number, cases: string[], ngLocalization: NgLocalization, locale?: string): string {
+    value: number, cases: string[], ngLocalization: NgLocalizationCore, locale?: string): string {
   let key = `=${value}`;
 
   if (cases.indexOf(key) > -1) {
@@ -55,7 +53,7 @@ export function getPluralCategory(
  * @experimental
  */
 @Injectable()
-export class NgLocaleLocalization extends NgLocalization {
+export class NgLocaleLocalization extends NgLocalizationCore {
   constructor(
       @Inject(LOCALE_ID) protected locale: string,
       /** @deprecated from v5 */

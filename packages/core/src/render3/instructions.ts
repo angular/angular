@@ -7,30 +7,29 @@
  */
 
 import './ng_dev_mode';
-
+import {NgLocalization} from '../i18n/tokens';
 import {QueryList} from '../linker';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
-
 import {assertDefined, assertEqual, assertLessThan, assertNotEqual} from './assert';
 import {attachPatchData, getLElementFromComponent, readElementValue, readPatchedLViewData} from './context_discovery';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {ComponentDefInternal, ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
+import {LIcuData} from './interfaces/icu';
 import {LInjector} from './interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementContainerNode, LElementNode, LNode, LProjectionNode, LTextNode, LViewNode, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TIcuNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
 import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_VIEW, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RootContext, RootContextFlags, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_VIEW, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, NG_LOCALIZATION, OpaqueViewState, PARENT, QUERIES, RENDERER, RootContext, RootContextFlags, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
 import {appendChild, appendProjectedNode, createTextNode, findComponentView, getContainerNode, getHostElementNode, getLViewChild, getParentOrContainerNode, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {StylingContext, allocStylingContext, createStylingContextTemplate, renderStyling as renderElementStyles, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling';
 import {assertDataInRangeInternal, getLNode, getRootContext, getRootView, isContentQueryHost, isDifferent, loadElementInternal, loadInternal, stringify} from './util';
 import {ViewRef} from './view_ref';
-
 
 
 /**
@@ -140,6 +139,10 @@ export function getPreviousOrParentTNode(): TNode {
   return previousOrParentTNode;
 }
 
+export function setPreviousOrParentTNode(value: TNode): void {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  previousOrParentTNode = value;
+}
 
 /**
  * If `isParent` is:
@@ -147,6 +150,16 @@ export function getPreviousOrParentTNode(): TNode {
  *  - `false`: then `previousOrParentTNode` points to previous node (sibling).
  */
 let isParent: boolean;
+
+export function getIsParent(): boolean {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  return isParent;
+}
+
+export function setIsParent(value: boolean): void {
+  // top level variables should not be exported for performance reasons (PERF_NOTES.md)
+  isParent = value;
+}
 
 let tView: TView;
 
@@ -198,6 +211,14 @@ let viewData: LViewData;
 export function _getViewData(): LViewData {
   // top level variables should not be exported for performance reasons (PERF_NOTES.md)
   return viewData;
+}
+
+export function _setViewData(newView: LViewData) {
+  viewData = newView;
+}
+
+export function getCurrentNgLocalization(): NgLocalization|null {
+  return viewData && viewData[NG_LOCALIZATION];
 }
 
 /**
@@ -376,7 +397,7 @@ export function executeInitAndContentHooks(): void {
 
 export function createLViewData<T>(
     renderer: Renderer3, tView: TView, context: T | null, flags: LViewFlags,
-    sanitizer?: Sanitizer | null): LViewData {
+    sanitizer?: Sanitizer | null, ngLocalization?: NgLocalization | null): LViewData {
   const instance = tView.blueprint.slice() as LViewData;
   instance[PARENT] = viewData;
   instance[FLAGS] = flags | LViewFlags.CreationMode | LViewFlags.Attached | LViewFlags.RunInit;
@@ -384,6 +405,7 @@ export function createLViewData<T>(
   instance[INJECTOR] = viewData ? viewData[INJECTOR] : null;
   instance[RENDERER] = renderer;
   instance[SANITIZER] = sanitizer || null;
+  instance[NG_LOCALIZATION] = ngLocalization || null;
   return instance;
 }
 
@@ -413,11 +435,12 @@ export function createLNodeObject(
  * @param native The native element for this LNode, if applicable
  * @param name The tag name of the associated native element, if applicable
  * @param attrs Any attrs for the native element, if applicable
- * @param data Any data that should be saved on the LNode
+ * @param lViewData Any data that should be saved on the LNode
+ * @param offset An offset used to adjust the index when setting slots
  */
 export function createNodeAtIndex(
     index: number, type: TNodeType.Element, native: RElement | RText | null, name: string | null,
-    attrs: TAttributes | null, lViewData?: LViewData | null): TElementNode;
+    attrs: TAttributes | null, lViewData?: LViewData | null, offset?: number): TElementNode;
 export function createNodeAtIndex(
     index: number, type: TNodeType.View, native: null, name: null, attrs: null,
     lViewData: LViewData): TViewNode;
@@ -431,9 +454,13 @@ export function createNodeAtIndex(
     index: number, type: TNodeType.ElementContainer, native: RComment, name: null,
     attrs: TAttributes | null, data: null): TElementContainerNode;
 export function createNodeAtIndex(
+    index: number, type: TNodeType.IcuExpression, native: RComment, name: null, attrs: null,
+    lIcuData: LIcuData): TIcuNode;
+export function createNodeAtIndex(
     index: number, type: TNodeType, native: RText | RElement | RComment | null, name: string | null,
-    attrs: TAttributes | null, state?: null | LViewData | LContainer): TElementNode&TViewNode&
-    TContainerNode&TElementContainerNode&TProjectionNode {
+    attrs: TAttributes | null, state?: null | LViewData | LContainer | LIcuData,
+    offset: number = HEADER_OFFSET): TElementNode&TViewNode&TContainerNode&TElementContainerNode&
+    TProjectionNode&TIcuNode {
   const parent =
       isParent ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
 
@@ -451,8 +478,12 @@ export function createNodeAtIndex(
     // would cause indices to change). Their TNodes are instead stored in tView.node.
     tNode = (state ? (state as LViewData)[TVIEW].node : null) ||
         createTNode(type, index, null, null, tParent, null);
+  } else if (parent && parent.type === TNodeType.IcuExpression) {
+    const adjustedIndex = index + offset;
+    viewData[adjustedIndex] = node;
+    tNode = createTNode(type, adjustedIndex, name, attrs, tParent, null);
   } else {
-    const adjustedIndex = index + HEADER_OFFSET;
+    const adjustedIndex = index + offset;
 
     // This is an element or container or projection node
     const tData = tView.data;
@@ -508,12 +539,12 @@ export function createNodeAtIndex(
   previousOrParentTNode = tNode;
   isParent = true;
   return tNode as TElementNode & TViewNode & TContainerNode & TElementContainerNode &
-      TProjectionNode;
+      TProjectionNode & TIcuNode;
 }
 
 /**
  * When LNodes are created dynamically after a view blueprint is created (e.g. through
- * i18nApply() or ComponentFactory.create), we need to adjust the blueprint for future
+ * i18nApply() or ComponentFactory.create(), we need to adjust the blueprint for future
  * template passes.
  */
 export function adjustBlueprintForNewNode(view: LViewData) {
@@ -549,12 +580,16 @@ export function resetComponentState() {
  * @param host The host element node to use
  * @param directives Directive defs that should be used for matching
  * @param pipes Pipe defs that should be used for matching
+ * @param sanitizer An instance of Sanitizer used to transform the value typically used for
+ * sanitization
+ * @param ngLocalization An instance of NgLocalization used to determine the selected value of an
+ * ICU expression
  */
 export function renderTemplate<T>(
     hostNode: RElement, templateFn: ComponentTemplate<T>, consts: number, vars: number, context: T,
     providedRendererFactory: RendererFactory3, host: LElementNode | null,
     directives?: DirectiveDefListOrFactory | null, pipes?: PipeDefListOrFactory | null,
-    sanitizer?: Sanitizer | null): LElementNode {
+    sanitizer?: Sanitizer | null, ngLocalization?: NgLocalization | null): LElementNode {
   if (host == null) {
     resetComponentState();
     rendererFactory = providedRendererFactory;
@@ -566,8 +601,8 @@ export function renderTemplate<T>(
 
     const componentTView =
         getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null);
-    const componentLView =
-        createLViewData(renderer, componentTView, context, LViewFlags.CheckAlways, sanitizer);
+    const componentLView = createLViewData(
+        renderer, componentTView, context, LViewFlags.CheckAlways, sanitizer, ngLocalization);
     createNodeAtIndex(0, TNodeType.Element, hostNode, null, null, componentLView);
     host = loadElement(0);
   }
@@ -591,8 +626,9 @@ export function createEmbeddedViewAndNode<T>(
   isParent = true;
   previousOrParentTNode = null !;
 
-  const lView =
-      createLViewData(renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer());
+  const lView = createLViewData(
+      renderer, tView, context, LViewFlags.CheckAlways, getCurrentSanitizer(),
+      getCurrentNgLocalization());
   lView[DECLARATION_VIEW] = declarationView;
 
   if (queries) {
@@ -1067,11 +1103,14 @@ function getOrCreateTView(
  * @param consts The number of nodes, local refs, and pipes in this template
  * @param directives Registry of directives for this view
  * @param pipes Registry of pipes for this view
+ * @param viewQuery A function containing query-related instructions.
+ * @param headerFiller An array pre-filled with null values of the same length as LViewData header
+ * so the indices of nodes are consistent between LViewData and TView.data
  */
 export function createTView(
     viewIndex: number, templateFn: ComponentTemplate<any>| null, consts: number, vars: number,
     directives: DirectiveDefListOrFactory | null, pipes: PipeDefListOrFactory | null,
-    viewQuery: ComponentQuery<any>| null): TView {
+    viewQuery: ComponentQuery<any>| null, headerFiller = HEADER_FILLER): TView {
   ngDevMode && ngDevMode.tView++;
   const bindingStartIndex = HEADER_OFFSET + consts;
   // This length does not yet contain host bindings from child directives because at this point,
@@ -1085,8 +1124,8 @@ export function createTView(
     template: templateFn,
     viewQuery: viewQuery,
     node: null !,
-    data: HEADER_FILLER.slice(),  // Fill in to match HEADER_OFFSET in LViewData
-    childIndex: -1,               // Children set in addToViewTree(), if any
+    data: headerFiller.slice(),  // Fill in to match HEADER_OFFSET in LViewData
+    childIndex: -1,              // Children set in addToViewTree(), if any
     bindingStartIndex: bindingStartIndex,
     hostBindingStartIndex: initialViewLength,
     directives: null,
@@ -1107,6 +1146,9 @@ export function createTView(
     pipeRegistry: typeof pipes === 'function' ? pipes() : pipes,
     currentMatches: null,
     firstChild: null,
+    i18nInstructions: null,
+    icuExpressions: null,
+    icuNodes: null,
   };
 }
 
@@ -1186,14 +1228,17 @@ export function locateHostElement(
 /**
  * Creates the host LNode.
  *
+ * @param tag Name of the host element
  * @param rNode Render host element.
  * @param def ComponentDef
+ * @param sanitizer An optional instance of Sanitizer
+ * @param ngLocalization An optional instance of NgLocalization
  *
  * @returns LElementNode created
  */
 export function hostElement(
     tag: string, rNode: RElement | null, def: ComponentDefInternal<any>,
-    sanitizer?: Sanitizer | null): LElementNode {
+    sanitizer?: Sanitizer | null, ngLocalization?: NgLocalization | null): LElementNode {
   resetComponentState();
   const tNode = createNodeAtIndex(
       0, TNodeType.Element, rNode, null, null,
@@ -1201,7 +1246,7 @@ export function hostElement(
           renderer,
           getOrCreateTView(
               def.template, def.consts, def.vars, def.directiveDefs, def.pipeDefs, def.viewQuery),
-          null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer));
+          null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer, ngLocalization));
 
   if (firstTemplatePass) {
     tNode.flags = TNodeFlags.isComponent;
@@ -1443,8 +1488,8 @@ function setInputsForProperty(inputs: PropertyAliasValue, value: any): void {
 /**
  * Consolidates all inputs or outputs of all directives on this logical node.
  *
- * @param number lNodeFlags logical node flags
- * @param Direction direction whether to consider inputs or outputs
+ * @param tNodeFlags lNodeFlags logical node flags
+ * @param direction direction whether to consider inputs or outputs
  * @returns PropertyAliases|null aggregate of all properties if any, `null` otherwise
  */
 function generatePropertyAliases(
@@ -1741,7 +1786,8 @@ function addComponentLogic<T>(def: ComponentDefInternal<T>): void {
       viewData, previousOrParentTNode.index as number,
       createLViewData(
           rendererFactory.createRenderer(hostNode.native as RElement, def), tView, null,
-          def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, getCurrentSanitizer()));
+          def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, getCurrentSanitizer(),
+          getCurrentNgLocalization()));
 
   // We need to set the host node/data here because when the component LNode was created,
   // we didn't yet know it was a component (just an element).
@@ -2099,7 +2145,7 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
     viewToRender = createLViewData(
         renderer,
         getOrCreateEmbeddedTView(viewBlockId, consts, vars, containerTNode as TContainerNode), null,
-        LViewFlags.CheckAlways, getCurrentSanitizer());
+        LViewFlags.CheckAlways, getCurrentSanitizer(), getCurrentNgLocalization());
 
     if (lContainer[QUERIES]) {
       viewToRender[QUERIES] = lContainer[QUERIES] !.createView();
@@ -2424,6 +2470,24 @@ function tickRootContext(rootContext: RootContext) {
 }
 
 /**
+<<<<<<< master
+=======
+ * Retrieve the root view from any component by walking the parent `LViewData` until
+ * reaching the root `LViewData`.
+ *
+ * @param component any component
+ */
+export function getRootView(component: any): LViewData {
+  ngDevMode && assertDefined(component, 'component');
+  let lViewData = readPatchedLViewData(component) !;
+  while (lViewData && !(lViewData[FLAGS] & LViewFlags.IsRoot)) {
+    lViewData = lViewData[PARENT] !;
+  }
+  return lViewData;
+}
+
+/**
+>>>>>>> feat(ivy): support ICU expressions
  * Synchronously perform change detection on a component (and possibly its sub-components).
  *
  * This function triggers change detection in a synchronous way on a component. There should
@@ -2839,7 +2903,7 @@ function assertHasParent() {
   assertDefined(previousOrParentTNode.parent, 'previousOrParentTNode should have a parent');
 }
 
-function assertDataInRange(index: number, arr?: any[]) {
+export function assertDataInRange(index: number, arr?: any[]) {
   if (arr == null) arr = viewData;
   assertDataInRangeInternal(index, arr || viewData);
 }

@@ -103,6 +103,7 @@ export function isContentQueryHost(tNode: TNode): boolean {
 export function isComponent(tNode: TNode): boolean {
   return (tNode.flags & TNodeFlags.isComponent) === TNodeFlags.isComponent;
 }
+
 /**
  * Retrieve the root view from any component by walking the parent `LViewData` until
  * reaching the root `LViewData`.
@@ -120,4 +121,16 @@ export function getRootView(target: LViewData | {}): LViewData {
 
 export function getRootContext(viewOrComponent: LViewData | {}): RootContext {
   return getRootView(viewOrComponent)[CONTEXT] as RootContext;
+}
+
+/**
+ * Equivalent to ES6 spread, add each item to an array.
+ *
+ * @param items The items to add
+ * @param arr The array to which you want to add the items
+ */
+export function addAll(items: any[], arr: any[]) {
+  for (let i = 0; i < items.length; i++) {
+    arr.push(items[i]);
+  }
 }
