@@ -15,7 +15,7 @@
 """Runs ts_api_guardian
 """
 
-load("@build_bazel_rules_nodejs//internal/node:node.bzl", "nodejs_binary", "nodejs_test")
+load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "nodejs_test")
 
 COMMON_MODULE_IDENTIFIERS = ["angular", "jasmine", "protractor"]
 
@@ -25,7 +25,6 @@ def ts_api_guardian_test(name, golden, actual, data = [], strip_export_pattern =
     data += [
         "@angular//tools/ts-api-guardian:lib",
         "@angular//tools/ts-api-guardian:bin/ts-api-guardian",
-        "@bazel_tools//tools/bash/runfiles",
     ]
 
     args = [
@@ -44,7 +43,6 @@ def ts_api_guardian_test(name, golden, actual, data = [], strip_export_pattern =
         node_modules = "@ts-api-guardian_runtime_deps//:node_modules",
         entry_point = "angular/tools/ts-api-guardian/bin/ts-api-guardian",
         templated_args = args + ["--verify", golden, actual],
-        testonly = 1,
         **kwargs
     )
 
