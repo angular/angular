@@ -312,7 +312,7 @@ export interface Resolve<T> {
 /**
  * @description
  *
- * Interface that a class can implement to be a guard deciding if a children can be loaded.
+ * Interface that a class can implement to be a guard deciding if a child can be loaded.
  *
  * ```
  * class UserToken {}
