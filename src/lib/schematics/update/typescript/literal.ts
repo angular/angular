@@ -6,13 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
-
-/** Returns the text of a string literal without the quotes. */
-export function getLiteralTextWithoutQuotes(literal: ts.StringLiteral) {
-  return literal.getText().substring(1, literal.getText().length - 1);
-}
-
 /** Finds all start indices of the given search string in the input string. */
 export function findAllSubstringIndices(input: string, search: string): number[] {
   const result: number[] = [];

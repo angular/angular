@@ -9,7 +9,6 @@
 import {bold} from 'chalk';
 import {ProgramAwareRuleWalker, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
-import {color} from '../../material/color';
 import {methodCallChecks} from '../../material/data/method-call-checks';
 import {getChangesForTarget} from '../../material/transform-change-data';
 
@@ -60,6 +59,6 @@ export class Walker extends ProgramAwareRuleWalker {
     }
 
     this.addFailureAtNode(node, `Found call to "${bold(hostTypeName + '.' + methodName)}" ` +
-        `with ${bold(`${failure.count}`)} arguments. Message: ${color(failure.message)}`);
+        `with ${bold(`${failure.count}`)} arguments. Message: ${failure.message}`);
   }
 }

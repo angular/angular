@@ -13,7 +13,6 @@ import {existsSync, readFileSync} from 'fs';
 import {dirname, join, resolve} from 'path';
 import {IOptions, RuleWalker} from 'tslint';
 import * as ts from 'typescript';
-import {getLiteralTextWithoutQuotes} from '../typescript/literal';
 import {createComponentFile, ExternalResource} from './component-file';
 
 /**
@@ -22,11 +21,11 @@ import {createComponentFile, ExternalResource} from './component-file';
  */
 export class ComponentWalker extends RuleWalker {
 
-  protected visitInlineTemplate(_template: ts.StringLiteral) {}
-  protected visitInlineStylesheet(_stylesheet: ts.StringLiteral) {}
+  visitInlineTemplate(_template: ts.StringLiteral) {}
+  visitInlineStylesheet(_stylesheet: ts.StringLiteral) {}
 
-  protected visitExternalTemplate(_template: ExternalResource) {}
-  protected visitExternalStylesheet(_stylesheet: ExternalResource) {}
+  visitExternalTemplate(_template: ExternalResource) {}
+  visitExternalStylesheet(_stylesheet: ExternalResource) {}
 
   private extraFiles: Set<string>;
 
@@ -92,9 +91,8 @@ export class ComponentWalker extends RuleWalker {
   }
 
   private _visitExternalStylesArrayLiteral(styleUrls: ts.ArrayLiteralExpression) {
-    styleUrls.elements.forEach(styleUrlLiteral => {
-      const styleUrl = getLiteralTextWithoutQuotes(styleUrlLiteral as ts.StringLiteral);
-      const stylePath = resolve(join(dirname(this.getSourceFile().fileName), styleUrl));
+    styleUrls.elements.forEach((node: ts.StringLiteral) => {
+      const stylePath = resolve(join(dirname(this.getSourceFile().fileName), node.text));
 
       // Do not report the specified additional files multiple times.
       if (!this.extraFiles.has(stylePath)) {
@@ -103,9 +101,8 @@ export class ComponentWalker extends RuleWalker {
     });
   }
 
-  private _reportExternalTemplate(templateUrlLiteral: ts.StringLiteral) {
-    const templateUrl = getLiteralTextWithoutQuotes(templateUrlLiteral);
-    const templatePath = resolve(join(dirname(this.getSourceFile().fileName), templateUrl));
+  private _reportExternalTemplate(node: ts.StringLiteral) {
+    const templatePath = resolve(join(dirname(this.getSourceFile().fileName), node.text));
 
     // Do not report the specified additional files multiple times.
     if (this.extraFiles.has(templatePath)) {
@@ -116,7 +113,7 @@ export class ComponentWalker extends RuleWalker {
     if (!existsSync(templatePath)) {
       console.error(`PARSE ERROR: ${this.getSourceFile().fileName}:` +
         ` Could not find template: "${templatePath}".`);
-      process.exit(1);
+      return;
     }
 
     // Create a fake TypeScript source file that includes the template content.
@@ -128,9 +125,9 @@ export class ComponentWalker extends RuleWalker {
   _reportExternalStyle(stylePath: string) {
     // Check if the external stylesheet file exists before proceeding.
     if (!existsSync(stylePath)) {
-      console.error(`PARSE ERROR: ${this.getSourceFile().fileName}:` +
-        ` Could not find stylesheet: "${stylePath}".`);
-      process.exit(1);
+      console.error(`PARSE ERROR: ${this.getSourceFile().fileName}: ` +
+          `Could not find stylesheet: "${stylePath}".`);
+      return;
     }
 
     // Create a fake TypeScript source file that includes the stylesheet content.
