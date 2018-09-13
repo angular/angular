@@ -9,7 +9,7 @@ import {collectionPath, createTestApp} from '../test-setup/test-app';
 import {getWorkspace, WorkspaceProject} from '@schematics/angular/utility/config';
 import {normalize} from '@angular-devkit/core';
 
-describe('material-install-schematic', () => {
+describe('ng-add schematic', () => {
   let runner: SchematicTestRunner;
   let appTree: Tree;
 

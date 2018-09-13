@@ -5,8 +5,8 @@
     // Adds Angular Material to an application without changing any templates
     "ng-add": {
       "description": "Adds Angular Material to the application without affecting any templates",
-      "factory": "./install",
-      "schema": "./install/schema.json",
+      "factory": "./ng-add/index",
+      "schema": "./ng-add/schema.json",
       "aliases": ["material-shell", "install"]
     },
     // Create a dashboard component

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "id": "SchematicsMaterialInstall",
-  "title": "Material Install Options Schema",
+  "id": "angular-material-ng-add",
+  "title": "Angular Material ng-add schematic",
   "type": "object",
   "properties": {
     "project": {
@@ -19,12 +19,14 @@
     "theme": {
       "enum": ["indigo-pink", "deeppurple-amber", "pink-bluegrey", "purple-green", "custom"],
       "default": "indigo-pink",
-      "description": "The theme to apply"
+      "description": "The theme to apply",
+      "x-prompt": "Enter a prebuilt theme name, or \"custom\" for a custom theme:"
     },
     "gestures": {
       "type": "boolean",
       "default": true,
-      "description": "Whether gesture support should be set up or not."
+      "description": "Whether gesture support should be set up or not.",
+      "x-prompt": "Set up HammerJS for gesture recognition?"
     }
   },
   "required": []
