@@ -144,7 +144,7 @@ or pipe when the referenced class is declared in this module or
 the class was imported from another module.
 
 You don't have any services to provide yet.
-But you will create some before long and you may chose to provide many of them here.
+But you will create some before long and you may choose to provide many of them here.
 
 {@a bootstrap-array}
 
