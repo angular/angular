@@ -941,20 +941,33 @@ and the `UserService` provided in `AppModule`.
 
 {@a testing-the-component}
 
+<!--
 ## Testing the component
+-->
+## 컴포넌트 테스트하기
 
+<!--
 Earlier you saw that designing a class for dependency injection makes the class easier to test.
 Listing dependencies as constructor parameters may be all you need to test application parts effectively.
+-->
+위에서 언급한 것처럼, 의존성 패턴을 활용하면 컴포넌트 클래스를 테스트할 때 좀 더 편해집니다.
+왜냐하면 테스트할 컴포넌트에 필요한 의존성 객체들은 생성자에 인자로 지정하기만 하면 되기 때문입니다.
 
+<!--
 For example, you can create a new `HeroListComponent` with a mock service that you can manipulate
 under test:
+-->
+그래서 `HeroListComponent`를 테스트하면서 목 서비스를 사용한다면 다음과 같이 작성할 수 있습니다:
 
 <code-example path="dependency-injection/src/app/test.component.ts" region="spec" title="src/app/test.component.ts" linenums="false">
 </code-example>
 
 <div class="alert is-helpful">
 
+<!--
 Learn more in the [Testing](guide/testing) guide.
+-->
+더 자세한 내용은 [테스트](guide/testing) 문서를 참고하세요.
 
 </div>
 

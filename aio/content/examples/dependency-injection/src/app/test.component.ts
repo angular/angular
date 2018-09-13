@@ -27,7 +27,7 @@ function runTests() {
   const mockService = <HeroService> {getHeroes: () => expectedHeroes }
 
   it('should have heroes when HeroListComponent created', () => {
-    // Pass the mock to the constructor as the Angular injector would
+    // 목 객체를 생성자에 전달하면 Angular 인젝터가 알아서 처리합니다.
     const component = new HeroListComponent(mockService);
     expect(component.heroes.length).toEqual(expectedHeroes.length);
   });
