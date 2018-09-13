@@ -2,7 +2,6 @@ package(default_visibility = ["//visibility:public"])
 
 exports_files([
     "tsconfig-build.json",
-    "tsconfig-test.json",
     "tsconfig.json",
 ])
 
@@ -21,3 +20,13 @@ exports_files([
     "license-banner.txt",
     "README.md",
 ])
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_config")
+
+ts_config(
+    name = "tsconfig-test",
+    src = ":tsconfig-test.json",
+    deps = [
+        ":tsconfig-build.json",
+    ],
+)

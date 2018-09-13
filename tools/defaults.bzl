@@ -7,7 +7,7 @@ load("//packages/bazel/src:ng_module.bzl", _internal_global_ng_module = "interna
 load("//packages/bazel/src:ng_rollup_bundle.bzl", _ng_rollup_bundle = "ng_rollup_bundle")
 
 _DEFAULT_TSCONFIG_BUILD = "//packages:tsconfig-build.json"
-_DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test.json"
+_DEFAULT_TSCONFIG_TEST = "//packages:tsconfig-test"
 _DEFAULT_TS_TYPINGS = "@ngdeps//typescript:typescript__typings"
 _INTERNAL_NG_MODULE_COMPILER = "//packages/bazel/src/ngc-wrapped"
 _INTERNAL_NG_MODULE_XI18N = "//packages/bazel/src/ngc-wrapped:xi18n"

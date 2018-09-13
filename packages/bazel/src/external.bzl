@@ -18,6 +18,10 @@ load(
     _NodeModuleInfo = "NodeModuleInfo",
     _collect_node_modules_aspect = "collect_node_modules_aspect",
 )
+load(
+    "@build_bazel_rules_typescript//internal:ts_config.bzl",
+    _TsConfigInfo = "TsConfigInfo",
+)
 
 NodeModuleInfo = _NodeModuleInfo
 collect_node_modules_aspect = _collect_node_modules_aspect
@@ -27,6 +31,7 @@ COMMON_OUTPUTS = _COMMON_OUTPUTS
 compile_ts = _compile_ts
 DEPS_ASPECTS = _DEPS_ASPECTS
 ts_providers_dict_to_struct = _ts_providers_dict_to_struct
+TsConfigInfo = _TsConfigInfo
 
 DEFAULT_NG_COMPILER = "@angular//:@angular/bazel/ngc-wrapped"
 DEFAULT_NG_XI18N = "@npm//@angular/bazel/bin:xi18n"
