@@ -23,6 +23,7 @@ RUN echo "deb http://deb.debian.org/debian stretch main contrib" > /etc/apt/sour
 
 ###
 # Buildifier
+# TODO(alexeagle): remove this when all users use their locally built buildifier
 # BUILD file formatter
 # 'bazel clean --expunge' conserves size of the image
 RUN git clone https://github.com/bazelbuild/buildtools.git \
@@ -34,6 +35,7 @@ RUN git clone https://github.com/bazelbuild/buildtools.git \
 
 ###
 # Skylint
+# TODO(alexeagle): remove this when all users use their locally built skylint
 # .bzl file linter
 # Follows readme at https://github.com/bazelbuild/bazel/blob/master/site/docs/skylark/skylint.md#building-the-linter
 # 'bazel clean --expunge' conserves size of the image
