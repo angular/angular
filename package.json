@@ -17,6 +17,7 @@
   },
   "scripts": {
     "preskylint": "bazel build --noshow_progress @io_bazel//src/tools/skylark/java/com/google/devtools/skylark/skylint:Skylint",
+    "//": "deprecated-api is disabled because we use actions.new_file(genfiles_dir) which has no replacement, see https://github.com/bazelbuild/bazel/issues/4858",
     "skylint": "find . -type f -name \"*.bzl\" ! -path \"*/node_modules/*\" ! -path \"./dist/*\" | xargs $(bazel info bazel-bin)/external/io_bazel/src/tools/skylark/java/com/google/devtools/skylark/skylint/Skylint --disable-checks=deprecated-api",
     "prebuildifier": "bazel build --noshow_progress @com_github_bazelbuild_buildtools//buildifier",
     "buildifier": "find . -type f \\( -name \"*.bzl\" -or -name BUILD -or -name BUILD.bazel \\) ! -path \"*/node_modules/*\" | xargs $(bazel info bazel-bin)/external/com_github_bazelbuild_buildtools/buildifier/*/buildifier",

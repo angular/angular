@@ -42,19 +42,18 @@ version: 2
 jobs:
   lint:
     <<: *job_defaults
+    resource_class: xlarge
     steps:
       - checkout:
           <<: *post_checkout
+      - run: sudo cp .circleci/bazel.rc /etc/bazel.bazelrc
 
       # Check BUILD.bazel formatting before we have a node_modules directory
       # Then we don't need any exclude pattern to avoid checking those files
-      - run: 'buildifier -mode=check $(find . -type f \( -name "*.bzl" -or -name BUILD.bazel -or -name BUILD \)) ||
+      - run: 'yarn buildifier -mode=check ||
               (echo "BUILD files not formatted. Please run ''yarn buildifier''" ; exit 1)'
       # Run the skylark linter to check our Bazel rules
-      # deprecated-api is disabled because we use actions.new_file(genfiles_dir)
-      # which has no replacement, see https://github.com/bazelbuild/bazel/issues/4858
-      - run: 'find . -type f -name "*.bzl" |
-              xargs java -jar /usr/local/bin/Skylint_deploy.jar --disable-checks=deprecated-api ||
+      - run: 'yarn skylint ||
               (echo -e "\n.bzl files have lint errors. Please run ''yarn skylint''"; exit 1)'
 
       - restore_cache:
