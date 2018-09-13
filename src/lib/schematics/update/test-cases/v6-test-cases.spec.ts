@@ -3,20 +3,20 @@ import {runPostScheduledTasks} from '../../test-setup/post-scheduled-tasks';
 import {migrationCollection} from '../../test-setup/test-app';
 import {createTestAppWithTestCase, readFileContent, resolveBazelDataFile} from './index.spec';
 
-describe('v5 test cases', () => {
+describe('v6 upgrade test cases', () => {
 
   /**
    * Name of test cases that will be used to verify that update schematics properly update
    * a developers application.
    */
   const testCases = [
-    'v5/attribute-selectors',
-    'v5/class-names',
-    'v5/css-names',
-    'v5/element-selectors',
-    'v5/input-names',
-    'v5/output-names',
-    'v5/property-names',
+    'v6/attribute-selectors',
+    'v6/class-names',
+    'v6/css-names',
+    'v6/element-selectors',
+    'v6/input-names',
+    'v6/output-names',
+    'v6/property-names',
   ];
 
   // Iterates through every test case directory and generates a jasmine test block that will

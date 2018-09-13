@@ -17,6 +17,14 @@ class MatAutocomplete {
   constructor(_changeDetector: any, _elementRef: any, _defaults: string[]) {}
 }
 
+class NonMaterialClass {}
+
+const _t1 = new NativeDateAdapter('b', 'invalid-argument');
+
+const _t2 = new NativeDateAdapter('a', {IOS: true});
+
+const _t3 = new NonMaterialClass('invalid-argument');
+
 class MatTooltip {
   constructor(
     private _overlay: any,
@@ -40,10 +48,20 @@ class MatCalendar {
   constructor(_intl: any, _adapter: any, _formats: any, _changeDetector: any) {}
 }
 
-class NonMaterialClass {}
+class MatDrawerContent {
+  constructor (_cd: any,
+               _container: any,
+               _elementRef: any,
+               _scrollDispatcher: any,
+               _ngZone: any) {}
+}
 
-class DelegateClass {
-  constructor(_adapter: NativeDateAdapter) {}
+class MatSidenavContent {
+  constructor (_cd: any,
+               _container: any,
+               _elementRef: any,
+               _scrollDispatcher: any,
+               _ngZone: any) {}
 }
 
 /* Actual test case using the previously defined definitions. */
@@ -94,8 +112,18 @@ class E extends MatCalendar {
 
 const _E = new MatCalendar({}, {}, {}, {}, {}, {}, {});
 
-const _F = new NativeDateAdapter('b', 'invalid-argument');
+class F extends MatDrawerContent {
+  constructor(changeDetectorRef: any, container: any) {
+    super(changeDetectorRef, container);
+  }
+}
 
-const _G = new NativeDateAdapter('a', {IOS: true});
+const _F = new MatDrawerContent({}, 'container');
 
-const _H = new NonMaterialClass('invalid-argument');
+class G extends MatSidenavContent {
+  constructor(changeDetectorRef: any, container: any) {
+    super(changeDetectorRef, container);
+  }
+}
+
+const _G = new MatSidenavContent({}, 'container');

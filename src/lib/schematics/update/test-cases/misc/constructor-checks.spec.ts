@@ -16,6 +16,13 @@ describe('v5 constructor checks', () => {
 
     await runPostScheduledTasks(runner, 'tslint-fix').toPromise();
 
+    expect(output).toMatch(/\[22.*Found "NativeDateAdapter"/,
+      'Expected the constructor checks to report if an argument is not assignable.');
+    expect(output).not.toMatch(/\[26.*Found "NativeDateAdapter".*/,
+      'Expected the constructor to not report if an argument is assignable.');
+
+    expect(output).not.toMatch(/Found "NonMaterialClass".*: new NonMaterialClass\(\)/);
+
     expect(output).toMatch(/Found "NativeDateAdapter".*super.*: super\(string, Platform\)/);
     expect(output).toMatch(/Found "NativeDateAdapter".*: new \w+\(string, Platform\)/);
 
@@ -31,12 +38,11 @@ describe('v5 constructor checks', () => {
     expect(output).toMatch(/Found "MatCalendar".*super.*: super\(any, any, any, any\)/);
     expect(output).toMatch(/Found "MatCalendar".*: new \w+\(any, any, any, any\)/);
 
-    expect(output).toMatch(/\[97.*Found "NativeDateAdapter"/,
-      'Expected the constructor checks to report if an argument is not assignable.');
-    expect(output).not.toMatch(/\[99.*Found "NativeDateAdapter".*/,
-      'Expected the constructor to not report if an argument is assignable.');
+    expect(output).toMatch(/Found "MatDrawerContent".*super.*: super\((any, ){4}any\)/);
+    expect(output).toMatch(/Found "MatDrawerContent".*: new \w+\((any, ){4}any\)/);
 
-    expect(output).not.toMatch(/Found "NonMaterialClass".*: new NonMaterialClass\(\)/);
+    expect(output).toMatch(/Found "MatSidenavContent".*super.*: super\((any, ){4}any\)/);
+    expect(output).toMatch(/Found "MatSidenavContent".*: new \w+\((any, ){4}any\)/);
   });
 });
 

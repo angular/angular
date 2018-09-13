@@ -22,6 +22,21 @@ export interface MaterialPropertyNameData {
 }
 
 export const propertyNames: VersionChanges<MaterialPropertyNameData> = {
+  [TargetVersion.V7]: [
+    {
+      pr: 'https://github.com/angular/material2/pull/8286',
+      changes: [
+        {
+          replace: 'onChange',
+          replaceWith: 'changed',
+          whitelist: {
+            classes: ['SelectionModel']
+          }
+        }
+      ]
+    }
+  ],
+
   [TargetVersion.V6]: [
     {
       pr: 'https://github.com/angular/material2/pull/10161',
