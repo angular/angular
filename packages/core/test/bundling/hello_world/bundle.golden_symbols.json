@@ -135,13 +135,16 @@
     "name": "componentRefresh"
   },
   {
-    "name": "createLNode"
-  },
-  {
     "name": "createLNodeObject"
   },
   {
     "name": "createLViewData"
+  },
+  {
+    "name": "createNodeAtIndex"
+  },
+  {
+    "name": "createRootComponent"
   },
   {
     "name": "createRootContext"
@@ -198,7 +201,7 @@
     "name": "firstTemplatePass"
   },
   {
-    "name": "getChildLNode"
+    "name": "getBeforeNodeForView"
   },
   {
     "name": "getClosureSafeProperty"
@@ -207,7 +210,19 @@
     "name": "getComponentDef"
   },
   {
+    "name": "getContainerNode"
+  },
+  {
+    "name": "getContainerRenderParent"
+  },
+  {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getHighestElementContainer"
+  },
+  {
+    "name": "getHostElementNode"
   },
   {
     "name": "getLViewChild"
@@ -225,10 +240,16 @@
     "name": "getParentLNode"
   },
   {
+    "name": "getParentOrContainerNode"
+  },
+  {
     "name": "getPipeDef"
   },
   {
     "name": "getPreviousOrParentNode"
+  },
+  {
+    "name": "getPreviousOrParentTNode"
   },
   {
     "name": "getRenderFlags"

@@ -18,7 +18,7 @@ import {CLEAN_PROMISE, _getComponentHostLElementNode, baseDirectiveCreate, creat
 import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
-import {LViewData, LViewFlags, RootContext, BINDING_INDEX, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
+import {LViewData, LViewFlags, RootContext, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
 import {stringify} from './util';
 import {getComponentDef} from './definition';
 
@@ -53,7 +53,7 @@ export interface CreateComponentOptions {
    * features list because there's no way of knowing when the component will be used as
    * a root component.
    */
-  hostFeatures?: (<T>(component: T, componentDef: ComponentDef<T, string>) => void)[];
+  hostFeatures?: HostFeature[];
 
   /**
    * A function which is used to schedule change detection work in the future.
@@ -68,6 +68,9 @@ export interface CreateComponentOptions {
    */
   scheduler?: (work: () => void) => void;
 }
+
+/** See CreateComponentOptions.hostFeatures */
+type HostFeature = (<T>(component: T, componentDef: ComponentDef<T, string>) => void);
 
 // TODO: A hack to not pull in the NullInjector from @angular/core.
 export const NULL_INJECTOR: Injector = {
@@ -103,12 +106,13 @@ export function renderComponent<T>(
   // The first index of the first selector is the tag name.
   const componentTag = componentDef.selectors ![0] ![0] as string;
   const hostNode = locateHostElement(rendererFactory, opts.host || componentTag);
+  const rootFlags = componentDef.onPush ? LViewFlags.Dirty | LViewFlags.IsRoot :
+                                          LViewFlags.CheckAlways | LViewFlags.IsRoot;
   const rootContext = createRootContext(opts.scheduler || requestAnimationFrame.bind(window));
 
   const rootView: LViewData = createLViewData(
       rendererFactory.createRenderer(hostNode, componentDef),
-      createTView(-1, null, 1, 0, null, null, null), rootContext,
-      componentDef.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways);
+      createTView(-1, null, 1, 0, null, null, null), rootContext, rootFlags);
   rootView[INJECTOR] = opts.injector || null;
 
   const oldView = enterView(rootView, null);
@@ -119,20 +123,10 @@ export function renderComponent<T>(
 
     // Create element node at index 0 in data array
     elementNode = hostElement(componentTag, hostNode, componentDef, sanitizer);
-
-    // Create directive instance with factory() and store at index 0 in directives array
-    component = baseDirectiveCreate(0, componentDef.factory() as T, componentDef, elementNode);
-    if (componentDef.hostBindings) {
-      queueHostBindingForCheck(0, componentDef.hostVars);
-    }
-    rootContext.components.push(component);
-    (elementNode.data as LViewData)[CONTEXT] = component;
-    initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data !);
-
-    opts.hostFeatures && opts.hostFeatures.forEach((feature) => feature(component, componentDef));
+    component = createRootComponent(
+        elementNode, componentDef, rootView, rootContext, opts.hostFeatures || null);
 
     executeInitAndContentHooks();
-    setHostBindings(rootView[TVIEW].hostBindings);
     detectChangesInternal(elementNode.data as LViewData, component);
   } finally {
     leaveView(oldView);
@@ -141,6 +135,27 @@ export function renderComponent<T>(
 
   return component;
 }
+
+/**
+ * Creates a root component and sets it up with features and host bindings. Shared by
+ * renderComponent() and ViewContainerRef.createComponent().
+ */
+export function createRootComponent<T>(
+    elementNode: LElementNode, componentDef: ComponentDef<T, string>, rootView: LViewData,
+    rootContext: RootContext, hostFeatures: HostFeature[] | null): any {
+  // Create directive instance with factory() and store at index 0 in directives array
+  const component = baseDirectiveCreate(0, componentDef.factory() as T, componentDef, elementNode);
+
+  if (componentDef.hostBindings) queueHostBindingForCheck(0, componentDef.hostVars);
+  rootContext.components.push(component);
+  (elementNode.data as LViewData)[CONTEXT] = component;
+  initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data as LViewData);
+
+  hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
+  setHostBindings(rootView[TVIEW].hostBindings);
+  return component;
+}
+
 
 export function createRootContext(scheduler: (workFn: () => void) => void): RootContext {
   return {
@@ -169,7 +184,8 @@ export function LifecycleHooksFeature(component: any, def: ComponentDefInternal<
   // Root component is always created at dir index 0
   const tView = elementNode.view[TVIEW];
   queueInitHooks(0, def.onInit, def.doCheck, tView);
-  queueLifecycleHooks(elementNode.tNode.flags, tView);
+  // Directive starting index 0, directive count 1 -> directive flags: 1
+  queueLifecycleHooks(1, tView);
 }
 
 /**

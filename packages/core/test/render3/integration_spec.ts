@@ -42,7 +42,7 @@ describe('render3 integration test', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 3,  // 1 for div, 1 for text, 1 for host element
-        tView: 1,
+        tView: 2,  // 1 for root view, 1 for template
         rendererCreateElement: 1,
       });
     });
@@ -86,7 +86,7 @@ describe('render3 integration test', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 0,
         tNode: 2,
-        tView: 1,
+        tView: 2,  // 1 for root view, 1 for template
         rendererSetText: 2,
       });
     });
@@ -106,7 +106,7 @@ describe('render3 integration test', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 0,
         tNode: 2,
-        tView: 1,
+        tView: 2,  // 1 for root view, 1 for template
         rendererSetText: 2,
       });
     });
@@ -125,7 +125,7 @@ describe('render3 integration test', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 0,
         tNode: 2,
-        tView: 1,
+        tView: 2,  // 1 for root view, 1 for template
         rendererSetText: 1,
       });
     });

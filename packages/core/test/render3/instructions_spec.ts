@@ -50,7 +50,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for hostElement + 1 for the template under test
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
         rendererSetProperty: 2
       });
@@ -68,7 +68,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for hostElement + 1 for the template under test
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
         rendererSetProperty: 1
       });
@@ -87,7 +87,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
       });
     });
@@ -127,7 +127,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
         rendererSetAttribute: 3
       });
@@ -148,7 +148,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
         rendererSetAttribute: 2
       });
@@ -169,7 +169,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
       });
     });
@@ -183,7 +183,7 @@ describe('instructions', () => {
       expect(ngDevMode).toHaveProperties({
         firstTemplatePass: 1,
         tNode: 2,  // 1 for div, 1 for host element
-        tView: 1,
+        tView: 2,  // 1 for rootView + 1 for the template view
         rendererCreateElement: 1,
         rendererSetProperty: 1
       });

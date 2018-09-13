@@ -11,7 +11,7 @@ import {ElementRef} from '../../linker/element_ref';
 import {TemplateRef} from '../../linker/template_ref';
 import {ViewContainerRef} from '../../linker/view_container_ref';
 
-import {LContainerNode, LElementContainerNode, LElementNode} from './node';
+import {LContainerNode, LElementContainerNode, LElementNode, TContainerNode, TElementNode, TNode} from './node';
 
 export interface LInjector {
   /**
@@ -27,6 +27,8 @@ export interface LInjector {
    * it is there.
    */
   readonly node: LElementNode|LElementContainerNode|LContainerNode;
+
+  readonly tNode: TNode;
 
   /**
    * The following bloom filter determines whether a directive is available

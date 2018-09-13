@@ -315,6 +315,9 @@
     "name": "_devMode"
   },
   {
+    "name": "_getViewData"
+  },
+  {
     "name": "_global"
   },
   {
@@ -405,7 +408,7 @@
     "name": "createDirectivesAndLocals"
   },
   {
-    "name": "createEmbeddedViewNode"
+    "name": "createEmbeddedViewAndNode"
   },
   {
     "name": "createLContainer"
@@ -414,16 +417,19 @@
     "name": "createLContext"
   },
   {
-    "name": "createLNode"
-  },
-  {
     "name": "createLNodeObject"
   },
   {
     "name": "createLViewData"
   },
   {
+    "name": "createNodeAtIndex"
+  },
+  {
     "name": "createOutput$1"
+  },
+  {
+    "name": "createRootComponent"
   },
   {
     "name": "createRootContext"
@@ -540,7 +546,7 @@
     "name": "findAttrIndexInNode"
   },
   {
-    "name": "findComponentHost"
+    "name": "findComponentView"
   },
   {
     "name": "findDirectiveMatches"
@@ -558,19 +564,22 @@
     "name": "generatePropertyAliases"
   },
   {
-    "name": "getChildLNode"
+    "name": "getBeforeNodeForView"
   },
   {
     "name": "getCleanup"
-  },
-  {
-    "name": "getClosestComponentAncestor"
   },
   {
     "name": "getClosureSafeProperty"
   },
   {
     "name": "getComponentDef"
+  },
+  {
+    "name": "getContainerNode"
+  },
+  {
+    "name": "getContainerRenderParent"
   },
   {
     "name": "getCurrentSanitizer"
@@ -580,6 +589,12 @@
   },
   {
     "name": "getDirectiveDef"
+  },
+  {
+    "name": "getHighestElementContainer"
+  },
+  {
+    "name": "getHostElementNode"
   },
   {
     "name": "getInitialIndex"
@@ -636,6 +651,9 @@
     "name": "getParentLNode"
   },
   {
+    "name": "getParentOrContainerNode"
+  },
+  {
     "name": "getParentState"
   },
   {
@@ -649,6 +667,9 @@
   },
   {
     "name": "getPreviousOrParentNode"
+  },
+  {
+    "name": "getPreviousOrParentTNode"
   },
   {
     "name": "getProp"
@@ -673,6 +694,9 @@
   },
   {
     "name": "getSymbolIterator"
+  },
+  {
+    "name": "getTNode"
   },
   {
     "name": "getTViewCleanup"

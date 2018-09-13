@@ -12,7 +12,7 @@ import {RenderFlags} from '@angular/core/src/render3/interfaces/definition';
 import {defineComponent} from '../../src/render3/definition';
 import {bloomAdd, bloomFindPossibleInjector, getOrCreateNodeInjector, injectAttribute} from '../../src/render3/di';
 import {NgOnChangesFeature, PublicFeature, defineDirective, directiveInject, injectChangeDetectorRef, injectElementRef, injectRenderer2, injectTemplateRef, injectViewContainerRef} from '../../src/render3/index';
-import {bind, container, containerRefreshEnd, containerRefreshStart, createLNode, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, loadDirective, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
+import {bind, container, containerRefreshEnd, containerRefreshStart, createNodeAtIndex, createLViewData, createTView, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, enterView, interpolation2, leaveView, projection, projectionDef, reference, template, text, textBinding, loadDirective, elementContainerStart, elementContainerEnd} from '../../src/render3/instructions';
 import {LInjector} from '../../src/render3/interfaces/injector';
 import {isProceduralRenderer} from '../../src/render3/interfaces/renderer';
 import {AttributeMarker, TNodeType} from '../../src/render3/interfaces/node';
@@ -1503,12 +1503,11 @@ describe('di', () => {
           null !, createTView(-1, null, 1, 0, null, null, null), null, LViewFlags.CheckAlways);
       const oldView = enterView(contentView, null);
       try {
-        const parent = createLNode(0, TNodeType.Element, null, null, null, null);
-
+        const parentTNode = createNodeAtIndex(0, TNodeType.Element, null, null, null, null);
         // Simulate the situation where the previous parent is not initialized.
         // This happens on first bootstrap because we don't init existing values
         // so that we have smaller HelloWorld.
-        (parent.tNode as{parent: any}).parent = undefined;
+        (parentTNode as{parent: any}).parent = undefined;
 
         const injector: any = getOrCreateNodeInjector();  // TODO: Review use of `any` here (#19904)
         expect(injector).not.toBe(null);

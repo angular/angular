@@ -1092,6 +1092,9 @@
     "name": "_getComponentHostLElementNode"
   },
   {
+    "name": "_getViewData"
+  },
+  {
     "name": "_global"
   },
   {
@@ -1278,7 +1281,7 @@
     "name": "createDirectivesAndLocals"
   },
   {
-    "name": "createEmbeddedViewNode"
+    "name": "createEmbeddedViewAndNode"
   },
   {
     "name": "createInjector"
@@ -1290,13 +1293,13 @@
     "name": "createLContext"
   },
   {
-    "name": "createLNode"
-  },
-  {
     "name": "createLNodeObject"
   },
   {
     "name": "createLViewData"
+  },
+  {
+    "name": "createNodeAtIndex"
   },
   {
     "name": "createOutput$1"
@@ -1306,6 +1309,9 @@
   },
   {
     "name": "createPlatformFactory"
+  },
+  {
+    "name": "createRootComponent"
   },
   {
     "name": "createRootContext"
@@ -1482,7 +1488,7 @@
     "name": "findAttrIndexInNode"
   },
   {
-    "name": "findComponentHost"
+    "name": "findComponentView"
   },
   {
     "name": "findDirectiveMatches"
@@ -1557,19 +1563,22 @@
     "name": "getBaseElementHref"
   },
   {
-    "name": "getChildLNode"
+    "name": "getBeforeNodeForView"
   },
   {
     "name": "getCleanup"
-  },
-  {
-    "name": "getClosestComponentAncestor"
   },
   {
     "name": "getClosureSafeProperty"
   },
   {
     "name": "getComponentDef"
+  },
+  {
+    "name": "getContainerNode"
+  },
+  {
+    "name": "getContainerRenderParent"
   },
   {
     "name": "getCurrencySymbol"
@@ -1606,6 +1615,12 @@
   },
   {
     "name": "getFirstThursdayOfYear"
+  },
+  {
+    "name": "getHighestElementContainer"
+  },
+  {
+    "name": "getHostElementNode"
   },
   {
     "name": "getInitialIndex"
@@ -1728,6 +1743,9 @@
     "name": "getParentLNode"
   },
   {
+    "name": "getParentOrContainerNode"
+  },
+  {
     "name": "getParentState"
   },
   {
@@ -1780,6 +1798,9 @@
   },
   {
     "name": "getSymbolIterator$1"
+  },
+  {
+    "name": "getTNode"
   },
   {
     "name": "getTViewCleanup"
