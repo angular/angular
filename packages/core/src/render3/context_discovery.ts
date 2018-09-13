@@ -321,9 +321,8 @@ function findViaDirective(lViewData: LViewData, directiveInstance: {}): number {
   if (directiveIndex >= 0) {
     let tNode = lViewData[TVIEW].firstChild;
     while (tNode) {
-      const lNode = getLNodeFromViewData(lViewData, tNode.index) !;
-      const directiveIndexStart = getDirectiveStartIndex(lNode);
-      const directiveIndexEnd = getDirectiveEndIndex(lNode, directiveIndexStart);
+      const directiveIndexStart = getDirectiveStartIndex(tNode);
+      const directiveIndexEnd = getDirectiveEndIndex(tNode, directiveIndexStart);
       if (directiveIndex >= directiveIndexStart && directiveIndex < directiveIndexEnd) {
         return tNode.index;
       }
@@ -357,10 +356,11 @@ function getLNodeFromViewData(lViewData: LViewData, lElementIndex: number): LEle
 function discoverDirectiveIndices(lViewData: LViewData, lNodeIndex: number): number[]|null {
   const directivesAcrossView = lViewData[DIRECTIVES];
   const lNode = getLNodeFromViewData(lViewData, lNodeIndex);
+  const tNode = lViewData[TVIEW].data[lNodeIndex] as TNode;
   if (lNode && directivesAcrossView && directivesAcrossView.length) {
     // this check for tNode is to determine if the calue is a LEmementNode instance
-    const directiveIndexStart = getDirectiveStartIndex(lNode);
-    const directiveIndexEnd = getDirectiveEndIndex(lNode, directiveIndexStart);
+    const directiveIndexStart = getDirectiveStartIndex(tNode);
+    const directiveIndexEnd = getDirectiveEndIndex(tNode, directiveIndexStart);
     const directiveIndices: number[] = [];
     for (let i = directiveIndexStart; i < directiveIndexEnd; i++) {
       // special case since the instance of the component (if it exists)
@@ -388,17 +388,17 @@ function discoverDirectives(lViewData: LViewData, directiveIndices: number[]): n
   return directives;
 }
 
-function getDirectiveStartIndex(lNode: LElementNode): number {
+function getDirectiveStartIndex(tNode: TNode): number {
   // the tNode instances store a flag value which then has a
   // pointer which tells the starting index of where all the
   // active directives are in the master directive array
-  return lNode.tNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
+  return tNode.flags >> TNodeFlags.DirectiveStartingIndexShift;
 }
 
-function getDirectiveEndIndex(lNode: LElementNode, startIndex: number): number {
-  // The end value is also apart of the same flag
+function getDirectiveEndIndex(tNode: TNode, startIndex: number): number {
+  // The end value is also a part of the same flag
   // (see `TNodeFlags` to see how the flag bit shifting
   // values are used).
-  const count = lNode.tNode.flags & TNodeFlags.DirectiveCountMask;
+  const count = tNode.flags & TNodeFlags.DirectiveCountMask;
   return count ? (startIndex + count) : -1;
 }

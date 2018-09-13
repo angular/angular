@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LElementNode, LViewNode} from './node';
+import {LElementNode} from './node';
 import {LQueries} from './query';
 import {LViewData, NEXT, PARENT, QUERIES} from './view';
 

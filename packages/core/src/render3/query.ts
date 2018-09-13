@@ -17,13 +17,13 @@ import {getSymbolIterator} from '../util';
 
 import {assertDefined, assertEqual} from './assert';
 import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
-import {assertPreviousIsParent, getOrCreateCurrentQueries, isContentQueryHost, store, storeCleanupWithContext} from './instructions';
+import {_getViewData, assertPreviousIsParent, getOrCreateCurrentQueries, store, storeCleanupWithContext} from './instructions';
 import {DirectiveDefInternal, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
-import {LContainerNode, LElementNode, LNode, TNode, TNodeFlags, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
+import {LContainerNode, LElementNode, TNode, TNodeFlags, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
-import {DIRECTIVES, TVIEW} from './interfaces/view';
-import {flatten} from './util';
+import {DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
+import {flatten, isContentQueryHost, readElementValue} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
@@ -121,21 +121,21 @@ export class LQueries_ implements LQueries {
     insertView(index, this.deep);
   }
 
-  addNode(node: LNode): LQueries|null {
-    add(this.deep, node);
+  addNode(tNode: TNode): LQueries|null {
+    add(this.deep, tNode);
 
-    if (isContentQueryHost(node.tNode)) {
-      add(this.shallow, node);
+    if (isContentQueryHost(tNode)) {
+      add(this.shallow, tNode);
 
-      if (node.tNode.parent && isContentQueryHost(node.tNode.parent)) {
+      if (tNode.parent && isContentQueryHost(tNode.parent)) {
         // if node has a content query and parent also has a content query
         // both queries need to check this node for shallow matches
-        add(this.parent !.shallow, node);
+        add(this.parent !.shallow, tNode);
       }
       return this.parent;
     }
 
-    isRootNodeOfQuery(node.tNode) && add(this.shallow, node);
+    isRootNodeOfQuery(tNode) && add(this.shallow, tNode);
     return this;
   }
 
@@ -241,51 +241,61 @@ function getIdxOfMatchingSelector(tNode: TNode, selector: string): number|null {
 /**
  * Iterates over all the directives for a node and returns index of a directive for a given type.
  *
- * @param node Node on which directives are present.
+ * @param tNode TNode on which directives are present.
+ * @param currentView The view we are currently processing
  * @param type Type of a directive to look for.
  * @returns Index of a found directive or null when none found.
  */
-function getIdxOfMatchingDirective(node: LNode, type: Type<any>): number|null {
-  const defs = node.view[TVIEW].directives !;
-  const flags = node.tNode.flags;
-  const count = flags & TNodeFlags.DirectiveCountMask;
-  const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
-  const end = start + count;
-  for (let i = start; i < end; i++) {
-    const def = defs[i] as DirectiveDefInternal<any>;
-    if (def.type === type && def.diPublic) {
-      return i;
+function getIdxOfMatchingDirective(tNode: TNode, currentView: LViewData, type: Type<any>): number|
+    null {
+  const defs = currentView[TVIEW].directives;
+  if (defs) {
+    const flags = tNode.flags;
+    const count = flags & TNodeFlags.DirectiveCountMask;
+    const start = flags >> TNodeFlags.DirectiveStartingIndexShift;
+    const end = start + count;
+    for (let i = start; i < end; i++) {
+      const def = defs[i] as DirectiveDefInternal<any>;
+      if (def.type === type && def.diPublic) {
+        return i;
+      }
     }
   }
   return null;
 }
 
 function readFromNodeInjector(
-    nodeInjector: LInjector, node: LNode, read: QueryReadType<any>| Type<any>,
-    directiveIdx: number): any {
+    nodeInjector: LInjector, tNode: TNode, currentView: LViewData,
+    read: QueryReadType<any>| Type<any>, directiveIdx: number): any {
   if (read instanceof ReadFromInjectorFn) {
-    return read.read(nodeInjector, node, directiveIdx);
+    return read.read(nodeInjector, tNode, directiveIdx);
   } else {
-    const matchingIdx = getIdxOfMatchingDirective(node, read as Type<any>);
+    const matchingIdx = getIdxOfMatchingDirective(tNode, currentView, read as Type<any>);
     if (matchingIdx !== null) {
-      return node.view[DIRECTIVES] ![matchingIdx];
+      return currentView[DIRECTIVES] ![matchingIdx];
     }
   }
   return null;
 }
 
-function add(query: LQuery<any>| null, node: LNode) {
-  const nodeInjector = getOrCreateNodeInjectorForNode(node as LElementNode | LContainerNode);
+function add(query: LQuery<any>| null, tNode: TNode) {
+  const currentView = _getViewData();
+
+  // TODO: remove this lookup when nodeInjector is removed from LNode
+  const currentNode = readElementValue(currentView[tNode.index]);
+  const nodeInjector =
+      getOrCreateNodeInjectorForNode(currentNode as LElementNode | LContainerNode, tNode);
+
   while (query) {
     const predicate = query.predicate;
     const type = predicate.type;
     if (type) {
-      const directiveIdx = getIdxOfMatchingDirective(node, type);
+      const directiveIdx = getIdxOfMatchingDirective(tNode, currentView, type);
       if (directiveIdx !== null) {
         // a node is matching a predicate - determine what to read
         // if read token and / or strategy is not specified, use type as read token
-        const result =
-            readFromNodeInjector(nodeInjector, node, predicate.read || type, directiveIdx);
+        const result = readFromNodeInjector(
+            nodeInjector, tNode, currentView, predicate.read || type, directiveIdx);
         if (result !== null) {
           addMatch(query, result);
         }
@@ -293,12 +303,13 @@ function add(query: LQuery<any>| null, node: LNode) {
     } else {
       const selector = predicate.selector !;
       for (let i = 0; i < selector.length; i++) {
-        const directiveIdx = getIdxOfMatchingSelector(node.tNode, selector[i]);
+        const directiveIdx = getIdxOfMatchingSelector(tNode, selector[i]);
         if (directiveIdx !== null) {
           // a node is matching a predicate - determine what to read
           // note that queries using name selector must specify read strategy
           ngDevMode && assertDefined(predicate.read, 'the node should have a predicate');
-          const result = readFromNodeInjector(nodeInjector, node, predicate.read !, directiveIdx);
+          const result = readFromNodeInjector(
+              nodeInjector, tNode, currentView, predicate.read !, directiveIdx);
           if (result !== null) {
             addMatch(query, result);
           }

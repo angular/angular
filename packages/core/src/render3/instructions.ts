@@ -12,24 +12,25 @@ import {QueryList} from '../linker';
 import {Sanitizer} from '../sanitization/security';
 import {StyleSanitizeFn} from '../sanitization/style_sanitizer';
 
-import {assertDefined, assertEqual, assertLessThan, assertNotDefined, assertNotEqual} from './assert';
-import {attachPatchData, getLElementFromComponent, getLElementFromRootComponent, readPatchedData, readPatchedLViewData} from './context_discovery';
+import {assertDefined, assertEqual, assertLessThan, assertNotEqual} from './assert';
+import {attachPatchData, getLElementFromComponent, readPatchedLViewData} from './context_discovery';
 import {throwCyclicDependencyError, throwErrorIfNoChangesMode, throwMultipleComponentError} from './errors';
 import {executeHooks, executeInitHooks, queueInitHooks, queueLifecycleHooks} from './hooks';
 import {ACTIVE_INDEX, LContainer, RENDER_PARENT, VIEWS} from './interfaces/container';
 import {ComponentDefInternal, ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefListOrFactory, InitialStylingFlags, PipeDefListOrFactory, RenderFlags} from './interfaces/definition';
 import {LInjector} from './interfaces/injector';
-import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementContainerNode, LElementNode, LNode, LNodeWithLocalRefs, LProjectionNode, LTextNode, LViewNode, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TViewNode} from './interfaces/node';
+import {AttributeMarker, InitialInputData, InitialInputs, LContainerNode, LElementNode, LNode, LNodeWithLocalRefs, LProjectionNode, LTextNode, LViewNode, LocalRefExtractor, PropertyAliasValue, PropertyAliases, TAttributes, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, TNodeType, TProjectionNode, TViewNode} from './interfaces/node';
 import {CssSelectorList, NG_PROJECT_AS_ATTR_NAME} from './interfaces/projection';
 import {LQueries} from './interfaces/query';
-import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, RendererStyleFlags3, isProceduralRenderer} from './interfaces/renderer';
-import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_VIEW, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TData, TVIEW, TView} from './interfaces/view';
+import {ProceduralRenderer3, RComment, RElement, RNode, RText, Renderer3, RendererFactory3, isProceduralRenderer} from './interfaces/renderer';
+import {BINDING_INDEX, CLEANUP, CONTAINER_INDEX, CONTENT_QUERIES, CONTEXT, CurrentMatchesList, DECLARATION_VIEW, DIRECTIVES, FLAGS, HEADER_OFFSET, HOST_NODE, INJECTOR, LViewData, LViewFlags, NEXT, OpaqueViewState, PARENT, QUERIES, RENDERER, RootContext, SANITIZER, TAIL, TVIEW, TView} from './interfaces/view';
 import {assertNodeOfPossibleTypes, assertNodeType} from './node_assert';
-import {appendChild, appendProjectedNode, canInsertNativeNode, createTextNode, findComponentHost, getLViewChild, getParentLNode, insertView, removeView} from './node_manipulation';
+import {appendChild, appendProjectedNode, createTextNode, findComponentView, getContainerNode, getHostElementNode, getLViewChild, getParentLNode, getParentOrContainerNode, getRenderParent, insertView, removeView} from './node_manipulation';
 import {isNodeMatchingSelectorList, matchingSelectorIndex} from './node_selector_matcher';
 import {StylingContext, allocStylingContext, createStylingContextTemplate, renderStyling as renderElementStyles, updateClassProp as updateElementClassProp, updateStyleProp as updateElementStyleProp, updateStylingMap} from './styling';
-import {assertDataInRangeInternal, isDifferent, loadElementInternal, loadInternal, readElementValue, stringify} from './util';
+import {assertDataInRangeInternal, isContentQueryHost, isDifferent, loadElementInternal, loadInternal, readElementValue, stringify} from './util';
 import {ViewRef} from './view_ref';
+
 
 
 /**
@@ -128,9 +129,9 @@ export function restoreView(viewToRestore: OpaqueViewState) {
 /** Used to set the parent property when nodes are created and track query results. */
 let previousOrParentTNode: TNode;
 
-export function getPreviousOrParentNode(): LNode {
-  return previousOrParentTNode == null || previousOrParentTNode === tView.node ?
-      viewData[HOST_NODE] :
+export function getPreviousOrParentNode(): LNode|null {
+  return previousOrParentTNode == null || previousOrParentTNode === viewData[HOST_NODE] ?
+      getHostElementNode(viewData) :
       readElementValue(viewData[previousOrParentTNode.index]);
 }
 
@@ -162,7 +163,7 @@ export function getOrCreateCurrentQueries(
     QueryType: {new (parent: null, shallow: null, deep: null): LQueries}): LQueries {
   // if this is the first content query on a node, any existing LQueries needs to be cloned
   // in subsequent template passes, the cloning occurs before directive instantiation.
-  if (previousOrParentTNode && previousOrParentTNode !== tView.node &&
+  if (previousOrParentTNode && previousOrParentTNode !== viewData[HOST_NODE] &&
       !isContentQueryHost(previousOrParentTNode)) {
     currentQueries && (currentQueries = currentQueries.clone());
     previousOrParentTNode.flags |= TNodeFlags.hasContentQuery;
@@ -400,7 +401,6 @@ export function createLNodeObject(
     view: currentView,
     nodeInjector: nodeInjector,
     data: state,
-    tNode: null !,
     dynamicLContainerNode: null
   };
 }
@@ -417,40 +417,41 @@ export function createLNodeObject(
  * @param attrs Any attrs for the native element, if applicable
  * @param data Any data that should be saved on the LNode
  */
-export function createLNode(
+export function createNodeAtIndex(
     index: number, type: TNodeType.Element, native: RElement | RText | null, name: string | null,
-    attrs: TAttributes | null, lViewData?: LViewData | null): LElementNode;
-export function createLNode(
+    attrs: TAttributes | null, lViewData?: LViewData | null): TElementNode;
+export function createNodeAtIndex(
     index: number, type: TNodeType.View, native: null, name: null, attrs: null,
-    lViewData: LViewData): LViewNode;
-export function createLNode(
+    lViewData: LViewData): TViewNode;
+export function createNodeAtIndex(
     index: number, type: TNodeType.Container, native: RComment, name: string | null,
-    attrs: TAttributes | null, lContainer: LContainer): LContainerNode;
-export function createLNode(
+    attrs: TAttributes | null, lContainer: LContainer): TContainerNode;
+export function createNodeAtIndex(
     index: number, type: TNodeType.Projection, native: null, name: null, attrs: TAttributes | null,
-    lProjection: null): LProjectionNode;
-export function createLNode(
+    lProjection: null): TProjectionNode;
+export function createNodeAtIndex(
     index: number, type: TNodeType.ElementContainer, native: RComment, name: null,
-    attrs: TAttributes | null, data: null): LElementContainerNode;
-export function createLNode(
+    attrs: TAttributes | null, data: null): TElementContainerNode;
+export function createNodeAtIndex(
     index: number, type: TNodeType, native: RText | RElement | RComment | null, name: string | null,
-    attrs: TAttributes | null, state?: null | LViewData | LContainer): LElementNode&LTextNode&
-    LViewNode&LContainerNode&LProjectionNode {
+    attrs: TAttributes | null, state?: null | LViewData | LContainer): TElementNode&TViewNode&
+    TContainerNode&TElementContainerNode&TProjectionNode {
   const parent =
       isParent ? previousOrParentTNode : previousOrParentTNode && previousOrParentTNode.parent;
 
   // Parents cannot cross component boundaries because components will be used in multiple places,
   // so it's only set if the view is the same.
-  const parentInSameView = parent && tView && parent !== tView.node;
+  const parentInSameView = parent && viewData && parent !== viewData[HOST_NODE];
   const tParent = parentInSameView ? parent as TElementNode | TContainerNode : null;
 
   const isState = state != null;
   const node = createLNodeObject(type, viewData, null, native, isState ? state as any : null);
+  let tNode: TNode;
 
   if (index === -1 || type === TNodeType.View) {
     // View nodes are not stored in data because they can be added / removed at runtime (which
-    // would cause indices to change). Their TNodes are instead stored in TView.node.
-    node.tNode = (state ? (state as LViewData)[TVIEW].node : null) ||
+    // would cause indices to change). Their TNodes are instead stored in tView.node.
+    tNode = (state ? (state as LViewData)[TVIEW].node : null) ||
         createTNode(type, index, null, null, tParent, null);
   } else {
     const adjustedIndex = index + HEADER_OFFSET;
@@ -472,9 +473,9 @@ export function createLNode(
       }
     }
 
-    node.tNode = tData[adjustedIndex] as TNode;
+    tNode = tData[adjustedIndex] as TNode;
     if (!tView.firstChild && type === TNodeType.Element) {
-      tView.firstChild = node.tNode;
+      tView.firstChild = tNode;
     }
 
     // Now link ourselves into the tree.
@@ -482,13 +483,17 @@ export function createLNode(
       if (previousOrParentTNode.child == null && parentInSameView ||
           previousOrParentTNode.type === TNodeType.View) {
         // We are in the same view, which means we are adding content node to the parent View.
-        previousOrParentTNode.child = node.tNode;
+        previousOrParentTNode.child = tNode;
       }
     }
   }
-  // TODO: temporary, remove when removing LNode.nodeInjector
-  const parentLNode = index === -1 ? null : getParentLNode(node);
-  if (parentLNode) node.nodeInjector = parentLNode.nodeInjector;
+  // TODO: temporary, remove this when removing nodeInjector (bringing in fns to hello world)
+  if (index !== -1 && !(viewData[FLAGS] & LViewFlags.IsRoot)) {
+    const parentLNode: LNode|null = type === TNodeType.View ?
+        getContainerNode(tNode, state as LViewData) :
+        getParentOrContainerNode(tNode, viewData);
+    parentLNode && (node.nodeInjector = parentLNode.nodeInjector);
+  }
 
   // View nodes and host elements need to set their host node (components do not save host TNodes)
   if ((type & TNodeType.ViewOrElement) === TNodeType.ViewOrElement && isState) {
@@ -496,15 +501,16 @@ export function createLNode(
     ngDevMode &&
         assertEqual(
             lViewData[HOST_NODE], null, 'lViewData[HOST_NODE] should not have been initialized');
-    lViewData[HOST_NODE] = node;
+    lViewData[HOST_NODE] = tNode as TElementNode | TViewNode;
     if (lViewData[TVIEW].firstTemplatePass) {
-      lViewData[TVIEW].node = node.tNode as TViewNode | TElementNode;
+      lViewData[TVIEW].node = tNode as TViewNode | TElementNode;
     }
   }
 
-  previousOrParentTNode = node.tNode;
+  previousOrParentTNode = tNode;
   isParent = true;
-  return node;
+  return tNode as TElementNode & TViewNode & TContainerNode & TElementContainerNode &
+      TProjectionNode;
 }
 
 /**
@@ -554,17 +560,23 @@ export function renderTemplate<T>(
   if (host == null) {
     resetComponentState();
     rendererFactory = providedRendererFactory;
-    const tView =
+    renderer = providedRendererFactory.createRenderer(null, null);
+
+    // We need to create a root view so it's possible to look up the host element through its index
+    tView = createTView(-1, null, 1, 0, null, null, null);
+    viewData = createLViewData(renderer, tView, {}, LViewFlags.CheckAlways | LViewFlags.IsRoot);
+
+    const componentTView =
         getOrCreateTView(templateFn, consts, vars, directives || null, pipes || null, null);
-    host = createLNode(
-        -1, TNodeType.Element, hostNode, null, null,
-        createLViewData(
-            providedRendererFactory.createRenderer(null, null), tView, {}, LViewFlags.CheckAlways,
-            sanitizer));
+    const componentLView =
+        createLViewData(renderer, componentTView, context, LViewFlags.CheckAlways, sanitizer);
+    createNodeAtIndex(0, TNodeType.Element, hostNode, null, null, componentLView);
+    host = loadElement(0);
   }
   const hostView = host.data !;
   ngDevMode && assertDefined(hostView, 'Host node should have an LView defined in host.data.');
   renderComponentOrTemplate(hostView, context, templateFn);
+
   return host;
 }
 
@@ -573,9 +585,9 @@ export function renderTemplate<T>(
  * either through ViewContainerRef.createEmbeddedView() or TemplateRef.createEmbeddedView().
  * Such lViewNode will then be renderer with renderEmbeddedTemplate() (see below).
  */
-export function createEmbeddedViewNode<T>(
+export function createEmbeddedViewAndNode<T>(
     tView: TView, context: T, declarationView: LViewData, renderer: Renderer3,
-    queries?: LQueries | null): LViewNode {
+    queries?: LQueries | null): LViewData {
   const _isParent = isParent;
   const _previousOrParentTNode = previousOrParentTNode;
   isParent = true;
@@ -588,11 +600,11 @@ export function createEmbeddedViewNode<T>(
   if (queries) {
     lView[QUERIES] = queries.createView();
   }
-  const viewNode = createLNode(-1, TNodeType.View, null, null, null, lView);
+  createNodeAtIndex(-1, TNodeType.View, null, null, null, lView);
 
   isParent = _isParent;
   previousOrParentTNode = _previousOrParentTNode;
-  return viewNode;
+  return lView;
 }
 
 /**
@@ -610,7 +622,7 @@ export function renderEmbeddedTemplate<T>(
   const _isParent = isParent;
   const _previousOrParentTNode = previousOrParentTNode;
   let oldView: LViewData;
-  if (viewToRender[PARENT] == null && viewToRender[CONTEXT] && !tView.template) {
+  if (viewToRender[FLAGS] & LViewFlags.IsRoot) {
     // This is a root view inside the view tree
     tickRootContext(viewToRender[CONTEXT] as RootContext);
   } else {
@@ -618,7 +630,7 @@ export function renderEmbeddedTemplate<T>(
       isParent = true;
       previousOrParentTNode = null !;
 
-      oldView = enterView(viewToRender, tView.node);
+      oldView = enterView(viewToRender, viewToRender[HOST_NODE]);
       namespaceHTML();
       tView.template !(rf, context);
       if (rf & RenderFlags.Update) {
@@ -654,7 +666,7 @@ export function nextContext<T = any>(level: number = 1): T {
 
 export function renderComponentOrTemplate<T>(
     hostView: LViewData, componentOrContext: T, templateFn?: ComponentTemplate<T>) {
-  const oldView = enterView(hostView, null);
+  const oldView = enterView(hostView, hostView[HOST_NODE]);
   try {
     if (rendererFactory.begin) {
       rendererFactory.begin();
@@ -751,12 +763,11 @@ export function elementContainerStart(
   const native = renderer.createComment(ngDevMode ? 'ng-container' : '');
 
   ngDevMode && assertDataInRange(index - 1);
+  const tNode =
+      createNodeAtIndex(index, TNodeType.ElementContainer, native, null, attrs || null, null);
 
-  const node: LElementContainerNode =
-      createLNode(index, TNodeType.ElementContainer, native, null, attrs || null, null);
-
-  appendChild(getParentLNode(node), native, viewData);
-  createDirectivesAndLocals(node, localRefs);
+  appendChild(native, tNode, viewData);
+  createDirectivesAndLocals(localRefs);
 }
 
 /** Mark the end of the <ng-container>. */
@@ -768,10 +779,8 @@ export function elementContainerEnd(): void {
     previousOrParentTNode = previousOrParentTNode.parent !;
   }
 
-  // Can be read directly because ng-containers can't have style bindings
-  const previousNode = viewData[previousOrParentTNode.index];
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.ElementContainer);
-  currentQueries && (currentQueries = currentQueries.addNode(previousNode));
+  currentQueries && (currentQueries = currentQueries.addNode(previousOrParentTNode));
 
   queueLifecycleHooks(previousOrParentTNode.flags, tView);
 }
@@ -800,14 +809,13 @@ export function elementStart(
 
   ngDevMode && assertDataInRange(index - 1);
 
-  const node: LElementNode =
-      createLNode(index, TNodeType.Element, native !, name, attrs || null, null);
+  const tNode = createNodeAtIndex(index, TNodeType.Element, native !, name, attrs || null, null);
 
   if (attrs) {
     setUpAttributes(native, attrs);
   }
-  appendChild(getParentLNode(node), native, viewData);
-  createDirectivesAndLocals(node, localRefs);
+  appendChild(native, tNode, viewData);
+  createDirectivesAndLocals(localRefs);
 
   // any immediate children of a component or template container must be pre-emptively
   // monkey-patched with the component view data so that the element can be inspected
@@ -840,7 +848,7 @@ export function elementCreate(name: string, overriddenRenderer?: Renderer3): REl
   return native;
 }
 
-function nativeNodeLocalRefExtractor(lNode: LNodeWithLocalRefs): RNode {
+function nativeNodeLocalRefExtractor(lNode: LNodeWithLocalRefs, tNode: TNode): RNode {
   return lNode.native;
 }
 
@@ -852,7 +860,7 @@ function nativeNodeLocalRefExtractor(lNode: LNodeWithLocalRefs): RNode {
  * @param localRefExtractor mapping function that extracts local ref value from LNode
  */
 function createDirectivesAndLocals(
-    lNode: LNodeWithLocalRefs, localRefs: string[] | null | undefined,
+    localRefs: string[] | null | undefined,
     localRefExtractor: LocalRefExtractor = nativeNodeLocalRefExtractor) {
   if (firstTemplatePass) {
     ngDevMode && ngDevMode.firstTemplatePass++;
@@ -860,7 +868,7 @@ function createDirectivesAndLocals(
   } else {
     instantiateDirectivesDirectly();
   }
-  saveResolvedLocalsInData(lNode, localRefExtractor);
+  saveResolvedLocalsInData(localRefExtractor);
 }
 
 /**
@@ -949,14 +957,6 @@ export function initChangeDetectorIfExisting(
   }
 }
 
-export function isContentQueryHost(tNode: TNode): boolean {
-  return (tNode.flags & TNodeFlags.hasContentQuery) !== 0;
-}
-
-export function isComponent(tNode: TNode): boolean {
-  return (tNode.flags & TNodeFlags.isComponent) === TNodeFlags.isComponent;
-}
-
 /**
  * This function instantiates the given directives.
  */
@@ -1016,14 +1016,15 @@ function saveNameToExportMap(
  * Takes a list of local names and indices and pushes the resolved local variable values
  * to LViewData in the same order as they are loaded in the template with load().
  */
-function saveResolvedLocalsInData(
-    lNode: LNodeWithLocalRefs, localRefExtractor: LocalRefExtractor): void {
-  const localNames = lNode.tNode.localNames;
+function saveResolvedLocalsInData(localRefExtractor: LocalRefExtractor): void {
+  const localNames = previousOrParentTNode.localNames;
+  const node = getPreviousOrParentNode() as LElementNode;
   if (localNames) {
-    let localIndex = lNode.tNode.index + 1;
+    let localIndex = previousOrParentTNode.index + 1;
     for (let i = 0; i < localNames.length; i += 2) {
       const index = localNames[i + 1] as number;
-      const value = index === -1 ? localRefExtractor(lNode) : directives ![index];
+      const value =
+          index === -1 ? localRefExtractor(node, previousOrParentTNode) : directives ![index];
       viewData[localIndex++] = value;
     }
   }
@@ -1192,7 +1193,7 @@ export function hostElement(
     tag: string, rNode: RElement | null, def: ComponentDefInternal<any>,
     sanitizer?: Sanitizer | null): LElementNode {
   resetComponentState();
-  const node = createLNode(
+  const tNode = createNodeAtIndex(
       0, TNodeType.Element, rNode, null, null,
       createLViewData(
           renderer,
@@ -1201,12 +1202,12 @@ export function hostElement(
           null, def.onPush ? LViewFlags.Dirty : LViewFlags.CheckAlways, sanitizer));
 
   if (firstTemplatePass) {
-    node.tNode.flags = TNodeFlags.isComponent;
+    tNode.flags = TNodeFlags.isComponent;
     if (def.diPublic) def.diPublic(def);
     tView.directives = [def];
   }
 
-  return node;
+  return viewData[HEADER_OFFSET];
 }
 
 /**
@@ -1316,7 +1317,7 @@ export function elementEnd(): void {
     previousOrParentTNode = previousOrParentTNode.parent !;
   }
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Element);
-  currentQueries && (currentQueries = currentQueries.addNode(getPreviousOrParentNode()));
+  currentQueries && (currentQueries = currentQueries.addNode(previousOrParentTNode));
 
   queueLifecycleHooks(previousOrParentTNode.flags, tView);
   elementDepthCount--;
@@ -1366,12 +1367,12 @@ export function elementProperty<T>(
     index: number, propName: string, value: T | NO_CHANGE, sanitizer?: SanitizerFn): void {
   if (value === NO_CHANGE) return;
   const node = loadElement(index) as LElementNode;
-  const tNode = node.tNode;
+  const tNode = getTNode(index);
   // if tNode.inputs is undefined, a listener has created outputs, but inputs haven't
   // yet been checked
   if (tNode && tNode.inputs === undefined) {
     // mark inputs as checked
-    tNode.inputs = generatePropertyAliases(node.tNode.flags, BindingDirection.Input);
+    tNode.inputs = generatePropertyAliases(tNode.flags, BindingDirection.Input);
   }
 
   const inputData = tNode && tNode.inputs;
@@ -1547,7 +1548,7 @@ function getStylingContext(index: number): StylingContext {
   let stylingContext = load<StylingContext>(index);
   if (!Array.isArray(stylingContext)) {
     const lElement = stylingContext as any as LElementNode;
-    const tNode = lElement.tNode;
+    const tNode = getTNode(index);
     ngDevMode &&
         assertDefined(tNode.stylingTemplate, 'getStylingContext() called before elementStyling()');
     stylingContext = viewData[index + HEADER_OFFSET] =
@@ -1657,12 +1658,12 @@ export function text(index: number, value?: any): void {
                    viewData[BINDING_INDEX], tView.bindingStartIndex,
                    'text nodes should be created before any bindings');
   ngDevMode && ngDevMode.rendererCreateTextNode++;
-  const textNode = createTextNode(value, renderer);
-  const node = createLNode(index, TNodeType.Element, textNode, null, null);
+  const textNative = createTextNode(value, renderer);
+  const tNode = createNodeAtIndex(index, TNodeType.Element, textNative, null, null);
 
   // Text nodes are self closing.
   isParent = false;
-  appendChild(getParentLNode(node), textNode, viewData);
+  appendChild(textNative, tNode, viewData);
 }
 
 /**
@@ -1700,7 +1701,7 @@ export function textBinding<T>(index: number, value: T | NO_CHANGE): void {
 export function directiveCreate<T>(
     directiveDefIdx: number, directive: T,
     directiveDef: DirectiveDefInternal<T>| ComponentDefInternal<T>): T {
-  const hostNode = getPreviousOrParentNode();
+  const hostNode = getPreviousOrParentNode() !;
   const instance = baseDirectiveCreate(directiveDefIdx, directive, directiveDef, hostNode);
 
   const isComponent = (directiveDef as ComponentDefInternal<T>).template;
@@ -1745,7 +1746,7 @@ function addComponentLogic<T>(
   // We need to set the host node/data here because when the component LNode was created,
   // we didn't yet know it was a component (just an element).
   (hostNode as{data: LViewData}).data = componentView;
-  (componentView as LViewData)[HOST_NODE] = hostNode as LElementNode;
+  (componentView as LViewData)[HOST_NODE] = getPreviousOrParentTNode() as TElementNode;
 
   initChangeDetectorIfExisting(hostNode.nodeInjector, instance, componentView);
 
@@ -1877,27 +1878,19 @@ function generateInitialInputs(
 /**
  * Creates a LContainer, either from a container instruction, or for a ViewContainerRef.
  *
- * @param parentLNode the LNode in which the container's content will be rendered
  * @param currentView The parent view of the LContainer
  * @param isForViewContainerRef Optional a flag indicating the ViewContainerRef case
  * @returns LContainer
  */
 export function createLContainer(
-    parentLNode: LNode, currentView: LViewData, isForViewContainerRef?: boolean): LContainer {
-  ngDevMode && assertDefined(parentLNode, 'containers should have a parent');
-  let renderParent = canInsertNativeNode(parentLNode, currentView) ?
-      parentLNode as LElementNode | LViewNode :
-      null;
-  if (renderParent && renderParent.tNode.type === TNodeType.View) {
-    renderParent = getParentLNode(renderParent as LViewNode) !.data[RENDER_PARENT];
-  }
+    currentView: LViewData, isForViewContainerRef?: boolean): LContainer {
   return [
     isForViewContainerRef ? null : 0,  // active index
     currentView,                       // parent
     null,                              // next
     null,                              // queries
     [],                                // views
-    renderParent as LElementNode
+    null                               // renderParent, set after node creation
   ];
 }
 
@@ -1923,16 +1916,16 @@ export function template(
     tagName?: string | null, attrs?: TAttributes | null, localRefs?: string[] | null,
     localRefExtractor?: LocalRefExtractor) {
   // TODO: consider a separate node type for templates
-  const node = containerInternal(index, tagName || null, attrs || null, localRefs || null);
+  const tNode = containerInternal(index, tagName || null, attrs || null);
 
   if (firstTemplatePass) {
-    node.tNode.tViews = createTView(
+    tNode.tViews = createTView(
         -1, templateFn, consts, vars, tView.directiveRegistry, tView.pipeRegistry, null);
   }
 
-  createDirectivesAndLocals(node, localRefs, localRefExtractor);
-  currentQueries && (currentQueries = currentQueries.addNode(node));
-  queueLifecycleHooks(node.tNode.flags, tView);
+  createDirectivesAndLocals(localRefs, localRefExtractor);
+  currentQueries && (currentQueries = currentQueries.addNode(previousOrParentTNode));
+  queueLifecycleHooks(tNode.flags, tView);
   isParent = false;
 }
 
@@ -1946,30 +1939,28 @@ export function template(
  * @param index The index of the container in the data array
  */
 export function container(index: number): void {
-  const node = containerInternal(index, null, null, null);
-  firstTemplatePass && (node.tNode.tViews = []);
+  const tNode = containerInternal(index, null, null);
+  firstTemplatePass && (tNode.tViews = []);
   isParent = false;
 }
 
 function containerInternal(
-    index: number, tagName: string | null, attrs: TAttributes | null,
-    localRefs: string[] | null): LContainerNode {
+    index: number, tagName: string | null, attrs: TAttributes | null): TNode {
   ngDevMode && assertEqual(
                    viewData[BINDING_INDEX], tView.bindingStartIndex,
                    'container nodes should be created before any bindings');
 
-  const previousNode: LNode = getPreviousOrParentNode();
-  const currentParent = isParent ? previousNode : getParentLNode(previousNode) !;
-  const lContainer = createLContainer(currentParent, viewData);
-
+  const lContainer = createLContainer(viewData);
   ngDevMode && ngDevMode.rendererCreateComment++;
   const comment = renderer.createComment(ngDevMode ? 'container' : '');
-  const node = createLNode(index, TNodeType.Container, comment, tagName, attrs, lContainer);
-  appendChild(getParentLNode(node), comment, viewData);
+  const tNode = createNodeAtIndex(index, TNodeType.Container, comment, tagName, attrs, lContainer);
+
+  lContainer[RENDER_PARENT] = getRenderParent(tNode, viewData);
+  appendChild(comment, tNode, viewData);
 
   // Containers are added to the current view tree instead of their embedded views
   // because views can be removed and re-inserted.
-  addToViewTree(viewData, index + HEADER_OFFSET, node.data);
+  addToViewTree(viewData, index + HEADER_OFFSET, lContainer);
 
   if (currentQueries) {
     // prepare place for matching nodes from views inserted into a given container
@@ -1977,7 +1968,7 @@ function containerInternal(
   }
 
   ngDevMode && assertNodeType(previousOrParentTNode, TNodeType.Container);
-  return node;
+  return tNode;
 }
 
 /**
@@ -2021,7 +2012,7 @@ export function containerRefreshEnd(): void {
 
   // remove extra views at the end of the container
   while (nextIndex < container.data[VIEWS].length) {
-    removeView(container, nextIndex);
+    removeView(container, previousOrParentTNode as TContainerNode, nextIndex);
   }
 }
 
@@ -2059,7 +2050,8 @@ function refreshDynamicEmbeddedViews(lViewData: LViewData) {
  * @returns index of a found view or -1 if not found
  */
 function scanForView(
-    containerNode: LContainerNode, startIdx: number, viewBlockId: number): LViewData|null {
+    containerNode: LContainerNode, tContainerNode: TContainerNode, startIdx: number,
+    viewBlockId: number): LViewData|null {
   const views = containerNode.data[VIEWS];
   for (let i = startIdx; i < views.length; i++) {
     const viewAtPositionId = views[i][TVIEW].id;
@@ -2067,7 +2059,7 @@ function scanForView(
       return views[i];
     } else if (viewAtPositionId < viewBlockId) {
       // found a view that should not be at this position - remove
-      removeView(containerNode, i);
+      removeView(containerNode, tContainerNode, i);
     } else {
       // found a view with id greater than the one we are searching for
       // which means that required view doesn't exist and can't be found at
@@ -2094,12 +2086,11 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
 
   ngDevMode && assertNodeType(containerTNode, TNodeType.Container);
   const lContainer = container.data;
-  let viewNode: LViewNode|null;
-  let viewToRender = scanForView(container, lContainer[ACTIVE_INDEX] !, viewBlockId);
+  let viewToRender = scanForView(
+      container, containerTNode as TContainerNode, lContainer[ACTIVE_INDEX] !, viewBlockId);
 
   if (viewToRender) {
     isParent = true;
-    viewNode = viewToRender[HOST_NODE] as LViewNode;
     enterView(viewToRender, viewToRender[TVIEW].node);
   } else {
     // When we create a new LView, we always reset the state of the instructions.
@@ -2112,13 +2103,13 @@ export function embeddedViewStart(viewBlockId: number, consts: number, vars: num
       viewToRender[QUERIES] = lContainer[QUERIES] !.createView();
     }
 
-    viewNode = createLNode(viewBlockId, TNodeType.View, null, null, null, viewToRender);
+    createNodeAtIndex(viewBlockId, TNodeType.View, null, null, null, viewToRender);
     enterView(viewToRender, viewToRender[TVIEW].node);
   }
   if (container) {
     if (creationMode) {
       // it is a new view, insert it into collection of views for a given container
-      insertView(container, viewNode, lContainer[ACTIVE_INDEX] !);
+      insertView(container, viewToRender, lContainer[ACTIVE_INDEX] !, -1);
     }
     lContainer[ACTIVE_INDEX] !++;
   }
@@ -2153,7 +2144,7 @@ function getOrCreateEmbeddedTView(
 
 /** Marks the end of an embedded view. */
 export function embeddedViewEnd(): void {
-  const viewHost = tView.node;
+  const viewHost = viewData[HOST_NODE];
   refreshDescendantViews();
   leaveView(viewData[PARENT] !);
   previousOrParentTNode = viewHost !;
@@ -2208,15 +2199,15 @@ export function viewAttached(view: LViewData): boolean {
  * @param rawSelectors A collection of CSS selectors in the raw, un-parsed form
  */
 export function projectionDef(selectors?: CssSelectorList[], textSelectors?: string[]): void {
-  const componentNode: LElementNode = findComponentHost(viewData);
+  const componentNode = findComponentView(viewData)[HOST_NODE] as TElementNode;
 
-  if (!componentNode.tNode.projection) {
+  if (!componentNode.projection) {
     const noOfNodeBuckets = selectors ? selectors.length + 1 : 1;
-    const pData: (TNode | null)[] = componentNode.tNode.projection =
+    const pData: (TNode | null)[] = componentNode.projection =
         new Array(noOfNodeBuckets).fill(null);
     const tails: (TNode | null)[] = pData.slice();
 
-    let componentChild = componentNode.tNode.child;
+    let componentChild: TNode|null = componentNode.child;
 
     while (componentChild !== null) {
       const bucketIndex =
@@ -2243,7 +2234,7 @@ export function projectionDef(selectors?: CssSelectorList[], textSelectors?: str
  * a new array each time the function is called. Instead the array will be
  * re-used by each invocation. This works because the function is not reentrant.
  */
-const projectionNodeStack: LProjectionNode[] = [];
+const projectionNodeStack: (LViewData | TNode)[] = [];
 
 /**
  * Inserts previously re-distributed projected nodes. This instruction must be preceded by a call
@@ -2255,63 +2246,52 @@ const projectionNodeStack: LProjectionNode[] = [];
  *        - 1 based index of the selector from the {@link projectionDef}
  */
 export function projection(nodeIndex: number, selectorIndex: number = 0, attrs?: string[]): void {
-  const node = createLNode(nodeIndex, TNodeType.Projection, null, null, attrs || null, null);
+  const tProjectionNode =
+      createNodeAtIndex(nodeIndex, TNodeType.Projection, null, null, attrs || null, null);
 
   // We can't use viewData[HOST_NODE] because projection nodes can be nested in embedded views.
-  if (node.tNode.projection === null) node.tNode.projection = selectorIndex;
+  if (tProjectionNode.projection === null) tProjectionNode.projection = selectorIndex;
 
   // `<ng-content>` has no content
   isParent = false;
 
   // re-distribution of projectable nodes is stored on a component's view level
-  const parent = getParentLNode(node);
-
-  const componentNode = findComponentHost(viewData);
-  let nodeToProject = (componentNode.tNode.projection as(TNode | null)[])[selectorIndex];
-  let projectedView = componentNode.view;
+  const componentView = findComponentView(viewData);
+  const componentNode = componentView[HOST_NODE] as TElementNode;
+  let nodeToProject = (componentNode.projection as(TNode | null)[])[selectorIndex];
+  let projectedView = componentView[PARENT] !;
   let projectionNodeIndex = -1;
-  let renderParent: LElementNode|null = null;
 
   while (nodeToProject) {
     if (nodeToProject.type === TNodeType.Projection) {
       // This node is re-projected, so we must go up the tree to get its projected nodes.
-      const currentComponentHost = findComponentHost(projectedView);
-      const firstProjectedNode = (currentComponentHost.tNode.projection as(
-          TNode | null)[])[nodeToProject.projection as number];
+      const currentComponentView = findComponentView(projectedView);
+      const currentComponentHost = currentComponentView[HOST_NODE] as TElementNode;
+      const firstProjectedNode =
+          (currentComponentHost.projection as(TNode | null)[])[nodeToProject.projection as number];
 
       if (firstProjectedNode) {
-        projectionNodeStack[++projectionNodeIndex] = projectedView[nodeToProject.index];
+        projectionNodeStack[++projectionNodeIndex] = nodeToProject;
+        projectionNodeStack[++projectionNodeIndex] = projectedView;
+
         nodeToProject = firstProjectedNode;
-        projectedView = currentComponentHost.view;
+        projectedView = currentComponentView[PARENT] !;
         continue;
       }
     } else {
-      const lNode = projectedView[nodeToProject.index];
+      const lNode = projectedView[nodeToProject.index] as LTextNode | LElementNode | LContainerNode;
       // This flag must be set now or we won't know that this node is projected
       // if the nodes are inserted into a container later.
-      lNode.tNode.flags |= TNodeFlags.isProjected;
-      if (canInsertNativeNode(parent, viewData)) {
-        let grandparent: LContainerNode;
-        if (renderParent == null) {
-          renderParent = parent.tNode.type === TNodeType.View ?
-              (grandparent = getParentLNode(parent) as LContainerNode) &&
-                  grandparent.data[RENDER_PARENT] ! :
-              parent as LElementNode;
-        }
+      nodeToProject.flags |= TNodeFlags.isProjected;
 
-        appendProjectedNode(
-            lNode as LTextNode | LElementNode | LContainerNode, parent, viewData, renderParent,
-            projectedView);
-      }
+      appendProjectedNode(lNode, nodeToProject, tProjectionNode, viewData, projectedView);
     }
 
     // If we are finished with a list of re-projected nodes, we need to get
     // back to the root projection node that was re-projected.
-    if (nodeToProject.next === null && projectedView !== componentNode.view) {
-      // move down into the view of the component we're projecting right now
-      const lNode = projectionNodeStack[projectionNodeIndex--];
-      nodeToProject = lNode.tNode;
-      projectedView = lNode.view;
+    if (nodeToProject.next === null && projectedView !== componentView[PARENT] !) {
+      projectedView = projectionNodeStack[projectionNodeIndex--] as LViewData;
+      nodeToProject = projectionNodeStack[projectionNodeIndex--] as TNode;
     }
     nodeToProject = nodeToProject.next;
   }
@@ -2383,12 +2363,12 @@ export function wrapListenerWithDirtyAndDefault(
 export function markViewDirty(view: LViewData): void {
   let currentView: LViewData = view;
 
-  while (currentView[PARENT] != null) {
+  while (currentView && !(currentView[FLAGS] & LViewFlags.IsRoot)) {
     currentView[FLAGS] |= LViewFlags.Dirty;
     currentView = currentView[PARENT] !;
   }
   currentView[FLAGS] |= LViewFlags.Dirty;
-  ngDevMode && assertDefined(currentView[CONTEXT], 'rootContext');
+  ngDevMode && assertDefined(currentView[CONTEXT], 'rootContext should be defined');
   scheduleTick(currentView[CONTEXT] as RootContext);
 }
 
@@ -2451,7 +2431,7 @@ function tickRootContext(rootContext: RootContext) {
 export function getRootView(component: any): LViewData {
   ngDevMode && assertDefined(component, 'component');
   let lViewData = readPatchedLViewData(component) !;
-  while (lViewData[PARENT]) {
+  while (lViewData && !(lViewData[FLAGS] & LViewFlags.IsRoot)) {
     lViewData = lViewData[PARENT] !;
   }
   return lViewData;
@@ -2523,7 +2503,7 @@ export function checkNoChangesInRootView(lViewData: LViewData): void {
 /** Checks the view of the component provided. Does not gate on dirty checks or execute doCheck. */
 export function detectChangesInternal<T>(hostView: LViewData, component: T) {
   const hostTView = hostView[TVIEW];
-  const oldView = enterView(hostView, null);
+  const oldView = enterView(hostView, hostView[HOST_NODE]);
   const templateFn = hostTView.template !;
   const viewQuery = hostTView.viewQuery;
 
@@ -2788,6 +2768,10 @@ export function load<T>(index: number): T {
 
 export function loadElement(index: number): LElementNode {
   return loadElementInternal(index, viewData);
+}
+
+export function getTNode(index: number): TNode {
+  return tView.data[index + HEADER_OFFSET] as TNode;
 }
 
 /** Gets the current binding value. */
