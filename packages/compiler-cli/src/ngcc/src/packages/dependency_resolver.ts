@@ -28,7 +28,7 @@ import {EntryPoint} from './entry_point';
  */
 export interface InvalidEntryPoint {
   entryPoint: EntryPoint;
-  invalidDependencies: string[];
+  missingDependencies: string[];
 }
 
 /**
@@ -50,7 +50,7 @@ export interface IgnoredDependency {
  * appears later in the array.
  *
  * Some entry points or their dependencies may be have been ignored. These are captured for
- * diagnostic purposes in `ignoredEntryPoints` and `ignoredDependencies` respectively.
+ * diagnostic purposes in `invalidEntryPoints` and `ignoredDependencies` respectively.
  */
 export interface SortedEntryPointsInfo {
   entryPoints: EntryPoint[];
@@ -118,10 +118,10 @@ export class DependencyResolver {
       ignoredDependencies
     };
 
-    function removeNodes(entryPoint: EntryPoint, invalidDependencies: string[]) {
+    function removeNodes(entryPoint: EntryPoint, missingDependencies: string[]) {
       const nodesToRemove = [entryPoint.path, ...graph.dependantsOf(entryPoint.path)];
       nodesToRemove.forEach(node => {
-        invalidEntryPoints.push({entryPoint: graph.getNodeData(node), invalidDependencies});
+        invalidEntryPoints.push({entryPoint: graph.getNodeData(node), missingDependencies});
         graph.removeNode(node);
       });
     }

@@ -46,7 +46,7 @@ describe('DepencencyResolver', () => {
       const result = resolver.sortEntryPointsByDependency([first, second]);
       expect(result.entryPoints).toEqual([second]);
       expect(result.invalidEntryPoints).toEqual([
-        {entryPoint: first, invalidDependencies: ['missing']},
+        {entryPoint: first, missingDependencies: ['missing']},
       ]);
     });
 
@@ -60,8 +60,8 @@ describe('DepencencyResolver', () => {
       const result = resolver.sortEntryPointsByDependency([first, second, third]);
       expect(result.entryPoints).toEqual([third]);
       expect(result.invalidEntryPoints).toEqual([
-        {entryPoint: second, invalidDependencies: ['missing']},
-        {entryPoint: first, invalidDependencies: ['missing']},
+        {entryPoint: second, missingDependencies: ['missing']},
+        {entryPoint: first, missingDependencies: ['missing']},
       ]);
     });
 
@@ -75,8 +75,8 @@ describe('DepencencyResolver', () => {
       const result = resolver.sortEntryPointsByDependency([second, first, third]);
       expect(result.entryPoints).toEqual([third]);
       expect(result.invalidEntryPoints).toEqual([
-        {entryPoint: second, invalidDependencies: ['missing']},
-        {entryPoint: first, invalidDependencies: ['second']},
+        {entryPoint: second, missingDependencies: ['missing']},
+        {entryPoint: first, missingDependencies: ['second']},
       ]);
     });
 

@@ -20,11 +20,9 @@ export class DependencyHost {
    * @param resolved A set that will have the resolved dependencies added to it.
    * @param missing A set that will have the dependencies that could not be found added to it.
    * @param internal A set that is used to track internal dependencies to prevent getting stuck in a
-   * circular
-   * dependency loop.
-   * @returns a object containing an array of absolute paths to `resolved` depenendencies and an
-   * array of
-   * import specifiers for dependencies that were `missing`.
+   * circular dependency loop.
+   * @returns an object containing an array of absolute paths to `resolved` depenendencies and an
+   * array of import specifiers for dependencies that were `missing`.
    */
   computeDependencies(
       from: string, resolved: Set<string>, missing: Set<string>,
@@ -137,6 +135,6 @@ export class DependencyHost {
    * in this file, true otherwise.
    */
   hasImportOrReeportStatements(source: string): boolean {
-    return /(import|export)\s+[^\n]+from/.test(source);
+    return /(import|export)\s.+from/.test(source);
   }
 }

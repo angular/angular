@@ -41,6 +41,7 @@ interface EntryPointPackageJson {
   esm2015?: string;
   esm5?: string;
   main?: string;
+  types?: string;
   typings?: string;
 }
 
@@ -55,7 +56,10 @@ export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoi
   if (!fs.existsSync(packageJsonPath)) {
     return null;
   }
-  const {fesm2015, fesm5, esm2015, esm5, main, typings}: EntryPointPackageJson =
+
+  // According to https://www.typescriptlang.org/docs/handbook/declaration-files/publishing.html,
+  // `types` and `typings` are interchangeable.
+  const {fesm2015, fesm5, esm2015, esm5, main, types, typings = types}: EntryPointPackageJson =
       JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
 
   // Minimum requirement is that we have esm2015 format and typings.
@@ -64,12 +68,12 @@ export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoi
   }
 
   // Also we need to have a metadata.json file
-  const metadataPath = path.resolve(entryPoint, typings.replace(/\.d\.ts$/, '.metadata.json'));
+  const metadataPath = path.resolve(entryPoint, typings.replace(/\.d\.ts$/, '') + '.metadata.json');
   if (!fs.existsSync(metadataPath)) {
     return null;
   }
 
-  const entryPointInfo: Partial<EntryPoint> = {
+  const entryPointInfo: EntryPoint = {
     package: pkgPath,
     path: entryPoint,
     typings: path.resolve(entryPoint, typings),
@@ -89,5 +93,5 @@ export function getEntryPointInfo(pkgPath: string, entryPoint: string): EntryPoi
     entryPointInfo.umd = path.resolve(entryPoint, main);
   }
 
-  return entryPointInfo as EntryPoint;
+  return entryPointInfo;
 }

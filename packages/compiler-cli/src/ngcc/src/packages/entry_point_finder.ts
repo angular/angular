@@ -62,7 +62,7 @@ function walkDirectoryForEntryPoints(sourceDirectory: string): EntryPoint[] {
 
 /**
  * Recurse the folder structure looking for all the entry points
- * @param packagePath The absolute path to an npm package that may contain end points
+ * @param packagePath The absolute path to an npm package that may contain entry points
  * @returns An array of entry points that were discovered.
  */
 function getEntryPointsForPackage(packagePath: string): EntryPoint[] {
