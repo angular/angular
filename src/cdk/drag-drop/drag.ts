@@ -103,7 +103,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
   private _activeTransform: Point = {x: 0, y: 0};
 
   /** Whether the element has moved since the user started dragging it. */
-  private _hasMoved = false;
+  private _hasMoved: boolean;
 
   /** Drop container in which the CdkDrag resided when dragging began. */
   private _initialContainer: CdkDropContainer;
@@ -284,6 +284,7 @@ export class CdkDrag<T = any> implements AfterViewInit, OnDestroy {
 
     const endedOrDestroyed = merge(this.ended, this._destroyed);
 
+    this._hasMoved = false;
     this._dragDropRegistry.pointerMove
       .pipe(takeUntil(endedOrDestroyed))
       .subscribe(this._pointerMove);

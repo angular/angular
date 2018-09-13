@@ -683,6 +683,39 @@ describe('CdkDrag', () => {
           .toBeFalsy('Expected preview to be removed from the DOM if the transition timed out');
     }));
 
+    it('should reset immediately when failed drag happens after a successful one', fakeAsync(() => {
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      const itemInstance = fixture.componentInstance.dragItems.toArray()[1];
+      const item = itemInstance.element.nativeElement;
+      const spy = jasmine.createSpy('dropped spy');
+      const subscription = itemInstance.dropped.asObservable().subscribe(spy);
+
+      // Do an initial drag and drop sequence.
+      dragElementViaMouse(fixture, item, 50, 50);
+      tick(0); // Important to tick with 0 since we don't want to flush any pending timeouts.
+
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      // Start another drag.
+      dispatchMouseEvent(item, 'mousedown');
+      fixture.detectChanges();
+
+      // Add a duration since the tests won't include one.
+      const preview = document.querySelector('.cdk-drag-preview')! as HTMLElement;
+      preview.style.transitionDuration = '500ms';
+
+      // Dispatch the mouseup immediately to simulate the user not moving the element.
+      dispatchMouseEvent(document, 'mouseup');
+      fixture.detectChanges();
+      tick(0); // Important to tick with 0 since we don't want to flush any pending timeouts.
+
+      expect(spy).toHaveBeenCalledTimes(2);
+
+      subscription.unsubscribe();
+    }));
+
     it('should not wait for transition that are not on the `transform` property', fakeAsync(() => {
       const fixture = createComponent(DraggableInDropZone);
       fixture.detectChanges();
