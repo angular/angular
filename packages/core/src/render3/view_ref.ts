@@ -12,7 +12,7 @@ import {ViewContainerRef as viewEngine_ViewContainerRef} from '../linker/view_co
 import {EmbeddedViewRef as viewEngine_EmbeddedViewRef, InternalViewRef as viewEngine_InternalViewRef} from '../linker/view_ref';
 
 import {checkNoChanges, checkNoChangesInRootView, detectChanges, detectChangesInRootView, getRendererFactory, markViewDirty, storeCleanupFn, viewAttached} from './instructions';
-import {LViewNode} from './interfaces/node';
+import {TViewNode} from './interfaces/node';
 import {FLAGS, LViewData, LViewFlags} from './interfaces/view';
 import {destroyLView} from './node_manipulation';
 
@@ -30,13 +30,21 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
   /**
    * @internal
    */
-  _lViewNode: LViewNode|null = null;
+  _view: LViewData;
+
+  /**
+   * @internal
+   */
+  _tViewNode: TViewNode|null = null;
 
   context: T;
   // TODO(issue/24571): remove '!'.
   rootNodes !: any[];
 
-  constructor(protected _view: LViewData, context: T|null) { this.context = context !; }
+  constructor(_view: LViewData, context: T|null) {
+    this.context = context !;
+    this._view = _view;
+  }
 
   /** @internal */
   _setComponentContext(view: LViewData, context: T) {
@@ -256,7 +264,7 @@ export class ViewRef<T> implements viewEngine_EmbeddedViewRef<T>, viewEngine_Int
 
 /** @internal */
 export class RootViewRef<T> extends ViewRef<T> {
-  constructor(protected _view: LViewData) { super(_view, null); }
+  constructor(public _view: LViewData) { super(_view, null); }
 
   detectChanges(): void { detectChangesInRootView(this._view); }
 

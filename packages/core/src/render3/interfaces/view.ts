@@ -94,15 +94,16 @@ export interface LViewData extends Array<any> {
   [FLAGS]: LViewFlags;
 
   /**
-   * Pointer to the `LViewNode` or `LElementNode` which represents the root of the view.
+   * Pointer to the `TViewNode` or `TElementNode` which represents the root of the view.
    *
-   * If `LViewNode`, this is an embedded view of a container. We need this to be able to
+   * If `TViewNode`, this is an embedded view of a container. We need this to be able to
    * efficiently find the `LViewNode` when inserting the view into an anchor.
    *
-   * If `LElementNode`, this is the LView of a component.
+   * If `TElementNode`, this is the LView of a component.
+   *
+   * If null, this is the root view of an application (root component is in this view).
    */
-  // TODO(kara): Replace with index
-  [HOST_NODE]: LViewNode|LElementNode;
+  [HOST_NODE]: TViewNode|TElementNode|null;
 
   /**
    * The binding index we should access next.
@@ -213,16 +214,16 @@ export const enum LViewFlags {
    * back into the parent view, `data` will be defined and `creationMode` will be
    * improperly reported as false.
    */
-  CreationMode = 0b000001,
+  CreationMode = 0b0000001,
 
   /** Whether this view has default change detection strategy (checks always) or onPush */
-  CheckAlways = 0b000010,
+  CheckAlways = 0b0000010,
 
   /** Whether or not this view is currently dirty (needing check) */
-  Dirty = 0b000100,
+  Dirty = 0b0000100,
 
   /** Whether or not this view is currently attached to change detection tree. */
-  Attached = 0b001000,
+  Attached = 0b0001000,
 
   /**
    *  Whether or not the init hooks have run.
@@ -231,10 +232,13 @@ export const enum LViewFlags {
    * runs OR the first cR() instruction that runs (so inits are run for the top level view before
    * any embedded views).
    */
-  RunInit = 0b010000,
+  RunInit = 0b0010000,
 
   /** Whether or not this view is destroyed. */
-  Destroyed = 0b100000,
+  Destroyed = 0b0100000,
+
+  /** Whether or not this view is the root view */
+  IsRoot = 0b1000000,
 }
 
 /**
