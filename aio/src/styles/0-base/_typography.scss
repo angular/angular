@@ -135,17 +135,6 @@ th {
   text-align: left;
 }
 
-p > code, li > code, td > code, th > code {
-  font-family: $code-font;
-  font-size: 85%;
-  color: $darkgray;
-  letter-spacing: 0;
-  line-height: 1;
-  padding: 2px 0;
-  background-color: $backgroundgray;
-  border-radius: 4px;
-}
-
 code {
   font-family: $code-font;
   font-size: 90%;
