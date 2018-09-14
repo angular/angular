@@ -32,7 +32,7 @@ and some of the tools from the
 and [modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import "ES2015 Modules").
 The code samples are written using [TypeScript](https://www.typescriptlang.org/ "TypeScript").
 Most Angular code can be written with just the latest JavaScript,
-using [types](https://www.typescriptlang.org/docs/handbook/classes.html "TypeScript Types") for dependency injection,
+using [types](https://www.typescriptlang.org/docs/handbook/classes.html "TypeScript Types") for [dependency injection](https://angular.io/guide/dependency-injection),
 and using [decorators](https://www.typescriptlang.org/docs/handbook/decorators.html "Decorators") for metadata.
 
 ## Feedback
