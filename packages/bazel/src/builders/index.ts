@@ -5,10 +5,10 @@
  * Use of this source code is governed by an MIT-style license that can be
  * found in the LICENSE file at https://angular.io/license
  *
- * @fileoverview Bazel bundle builder
+ * @fileoverview Bazel builder
  */
 
-import {BuildEvent, Builder as BuilderInterface, BuilderConfiguration, BuilderContext} from '@angular-devkit/architect';
+import {BuildEvent, Builder, BuilderConfiguration, BuilderContext} from '@angular-devkit/architect';
 import {getSystemPath, resolve} from '@angular-devkit/core';
 import {Observable, of } from 'rxjs';
 import {catchError, map, tap} from 'rxjs/operators';
@@ -16,7 +16,7 @@ import {catchError, map, tap} from 'rxjs/operators';
 import {checkInstallation, runBazel} from './bazel';
 import {Schema} from './schema';
 
-export class Builder implements BuilderInterface<Schema> {
+class BazelBuilder implements Builder<Schema> {
   constructor(private context: BuilderContext) {}
 
   run(builderConfig: BuilderConfiguration<Partial<Schema>>): Observable<BuildEvent> {
@@ -38,3 +38,5 @@ export class Builder implements BuilderInterface<Schema> {
         .pipe(map(() => ({success: true})), catchError(() => of ({success: false})), );
   }
 }
+
+export default BazelBuilder;
