@@ -285,6 +285,7 @@ $mat-progress-bar-secondary-indeterminate-scale-step-3:
 // Animation for buffer mode.
 @keyframes mat-progress-bar-background-scroll {
   to {
-    transform: translateX(-10px);
+    // Needs to be in multiples of the size of the buffer circles.
+    transform: translateX(-$mat-progress-bar-height * 2);
   }
 }
