@@ -48,7 +48,7 @@ export class Platform {
 
   /** Whether the current platform is Apple iOS. */
   IOS: boolean = this.isBrowser && /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-      !(window as any).MSStream;
+      !('MSStream' in window);
 
   /** Whether the current browser is Firefox. */
   // It's difficult to detect the plain Gecko engine, because most of the browsers identify
