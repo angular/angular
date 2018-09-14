@@ -30,7 +30,7 @@ export default function(options: BazelWorkspaceOptions): Rule {
     const appDir = `${newProjectRoot}/${options.name}`;
 
     const workspaceVersions = {
-      'ANGULAR_VERSION': '7.0.2',
+      'ANGULAR_VERSION': '7.1.0',
       'RULES_SASS_VERSION': '1.14.1',
       'RXJS_VERSION': '6.3.3',
     };
