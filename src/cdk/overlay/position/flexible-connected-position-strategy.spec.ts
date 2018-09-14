@@ -1,5 +1,5 @@
 import {ComponentPortal, PortalModule} from '@angular/cdk/portal';
-import {CdkScrollable, ScrollingModule} from '@angular/cdk/scrolling';
+import {CdkScrollable, ScrollingModule, ViewportRuler} from '@angular/cdk/scrolling';
 import {MockNgZone} from '@angular/cdk/testing';
 import {Component, ElementRef, NgModule, NgZone} from '@angular/core';
 import {inject, TestBed} from '@angular/core/testing';
@@ -13,7 +13,6 @@ import {
   OverlayContainer,
   OverlayModule,
   OverlayRef,
-  ViewportRuler,
 } from '../index';
 
 

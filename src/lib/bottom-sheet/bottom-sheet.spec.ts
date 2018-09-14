@@ -1,6 +1,7 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {A, ESCAPE} from '@angular/cdk/keycodes';
-import {OverlayContainer, ViewportRuler} from '@angular/cdk/overlay';
+import {OverlayContainer} from '@angular/cdk/overlay';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {
   Component,

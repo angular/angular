@@ -1,5 +1,6 @@
 import {ENTER, ESCAPE, RIGHT_ARROW, UP_ARROW, DOWN_ARROW} from '@angular/cdk/keycodes';
-import {Overlay, OverlayContainer, ScrollDispatcher} from '@angular/cdk/overlay';
+import {Overlay, OverlayContainer} from '@angular/cdk/overlay';
+import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {
   createKeyboardEvent,
   dispatchEvent,

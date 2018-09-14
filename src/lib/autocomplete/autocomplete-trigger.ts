@@ -14,7 +14,6 @@ import {
   OverlayRef,
   PositionStrategy,
   ScrollStrategy,
-  ViewportRuler,
 } from '@angular/cdk/overlay';
 import {TemplatePortal} from '@angular/cdk/portal';
 import {DOCUMENT} from '@angular/common';
@@ -33,6 +32,7 @@ import {
   Optional,
   ViewContainerRef,
 } from '@angular/core';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   _countGroupLabelsBeforeOption,

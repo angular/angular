@@ -26,8 +26,8 @@ import {
   Overlay,
   RepositionScrollStrategy,
   ScrollStrategy,
-  ViewportRuler,
 } from '@angular/cdk/overlay';
+import {ViewportRuler} from '@angular/cdk/scrolling';
 import {
   AfterContentInit,
   Attribute,

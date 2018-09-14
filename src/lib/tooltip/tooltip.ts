@@ -18,10 +18,10 @@ import {
   Overlay,
   OverlayConnectionPosition,
   OverlayRef,
-  ScrollDispatcher,
   ScrollStrategy,
   VerticalConnectionPos,
 } from '@angular/cdk/overlay';
+import {ScrollDispatcher} from '@angular/cdk/scrolling';
 import {Platform} from '@angular/cdk/platform';
 import {ComponentPortal} from '@angular/cdk/portal';
 import {take, takeUntil} from 'rxjs/operators';
