@@ -9,10 +9,10 @@ import {
   SPACE,
   UP_ARROW,
 } from '@angular/cdk/keycodes';
-import {StepperOrientation} from '@angular/cdk/stepper';
+import {StepperOrientation, MAT_STEPPER_GLOBAL_OPTIONS, STEP_STATE} from '@angular/cdk/stepper';
 import {dispatchKeyboardEvent} from '@angular/cdk/testing';
-import {Component, DebugElement, EventEmitter, OnInit} from '@angular/core';
-import {async, ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
+import {Component, DebugElement, EventEmitter, OnInit, Type, Provider} from '@angular/core';
+import {ComponentFixture, fakeAsync, flush, inject, TestBed} from '@angular/core/testing';
 import {
   AbstractControl,
   AsyncValidatorFn,
@@ -20,7 +20,8 @@ import {
   FormGroup,
   ReactiveFormsModule,
   ValidationErrors,
-  Validators
+  Validators,
+  FormBuilder
 } from '@angular/forms';
 import {By} from '@angular/platform-browser';
 import {NoopAnimationsModule} from '@angular/platform-browser/animations';
@@ -30,45 +31,26 @@ import {MatStepperModule} from './index';
 import {MatHorizontalStepper, MatStep, MatStepper, MatVerticalStepper} from './stepper';
 import {MatStepperNext, MatStepperPrevious} from './stepper-button';
 import {MatStepperIntl} from './stepper-intl';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '../input/input-module';
 
 
 const VALID_REGEX = /valid/;
+let dir: {value: Direction, change: EventEmitter<Direction>};
 
 describe('MatStepper', () => {
-  let dir: {value: Direction, change: EventEmitter<Direction>};
-
-  beforeEach(async(() => {
+  beforeEach(() => {
     dir = {
       value: 'ltr',
       change: new EventEmitter()
     };
-
-    TestBed.configureTestingModule({
-      imports: [MatStepperModule, NoopAnimationsModule, ReactiveFormsModule],
-      declarations: [
-        SimpleMatVerticalStepperApp,
-        LinearMatVerticalStepperApp,
-        IconOverridesStepper,
-        SimplePreselectedMatHorizontalStepperApp,
-        SimpleStepperWithoutStepControl,
-        SimpleStepperWithStepControlAndCompletedBinding,
-        SimpleMatHorizontalStepperApp,
-        LinearStepperWithValidOptionalStep,
-        StepperWithAriaInputs,
-      ],
-      providers: [
-        {provide: Directionality, useFactory: () => dir}
-      ]
-    });
-
-    TestBed.compileComponents();
-  }));
+  });
 
   describe('basic stepper', () => {
     let fixture: ComponentFixture<SimpleMatVerticalStepperApp>;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
+      fixture = createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
     });
 
@@ -316,69 +298,27 @@ describe('MatStepper', () => {
       expect(stepperComponent._getIndicatorType(0)).toBe('done');
     });
 
-    it('should re-render when the i18n labels change', inject([MatStepperIntl],
-      (intl: MatStepperIntl) => {
-        fixture.destroy();
+    it('should emit an event when the enter animation is done', fakeAsync(() => {
+      let stepper = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
+      let selectionChangeSpy = jasmine.createSpy('selectionChange spy');
+      let animationDoneSpy = jasmine.createSpy('animationDone spy');
+      let selectionChangeSubscription = stepper.selectionChange.subscribe(selectionChangeSpy);
+      let animationDoneSubscription = stepper.animationDone.subscribe(animationDoneSpy);
 
-        const i18nFixture = TestBed.createComponent(SimpleMatHorizontalStepperApp);
-        i18nFixture.detectChanges();
+      stepper.selectedIndex = 1;
+      fixture.detectChanges();
 
-        const header =
-            i18nFixture.debugElement.queryAll(By.css('mat-step-header'))[2].nativeElement;
-        const optionalLabel = header.querySelector('.mat-step-optional');
+      expect(selectionChangeSpy).toHaveBeenCalledTimes(1);
+      expect(animationDoneSpy).not.toHaveBeenCalled();
 
-        expect(optionalLabel).toBeTruthy();
-        expect(optionalLabel.textContent).toBe('Optional');
+      flush();
 
-        intl.optionalLabel = 'Valgfri';
-        intl.changes.next();
-        i18nFixture.detectChanges();
+      expect(selectionChangeSpy).toHaveBeenCalledTimes(1);
+      expect(animationDoneSpy).toHaveBeenCalledTimes(1);
 
-        expect(optionalLabel.textContent).toBe('Valgfri');
-      }));
-
-      it('should emit an event when the enter animation is done', fakeAsync(() => {
-        let stepper = fixture.debugElement.query(By.directive(MatStepper)).componentInstance;
-        let selectionChangeSpy = jasmine.createSpy('selectionChange spy');
-        let animationDoneSpy = jasmine.createSpy('animationDone spy');
-        let selectionChangeSubscription = stepper.selectionChange.subscribe(selectionChangeSpy);
-        let animationDoneSubscription = stepper.animationDone.subscribe(animationDoneSpy);
-
-        stepper.selectedIndex = 1;
-        fixture.detectChanges();
-
-        expect(selectionChangeSpy).toHaveBeenCalledTimes(1);
-        expect(animationDoneSpy).not.toHaveBeenCalled();
-
-        flush();
-
-        expect(selectionChangeSpy).toHaveBeenCalledTimes(1);
-        expect(animationDoneSpy).toHaveBeenCalledTimes(1);
-
-        selectionChangeSubscription.unsubscribe();
-        animationDoneSubscription.unsubscribe();
-      }));
-
-    it('should not throw when attempting to get the selected step too early', () => {
-      fixture.destroy();
-      fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
-
-      const stepperComponent: MatVerticalStepper = fixture.debugElement
-          .query(By.css('mat-vertical-stepper')).componentInstance;
-
-      expect(() => stepperComponent.selected).not.toThrow();
-    });
-
-    it('should not throw when attempting to set the selected step too early', () => {
-      fixture.destroy();
-      fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
-
-      const stepperComponent: MatVerticalStepper = fixture.debugElement
-          .query(By.css('mat-vertical-stepper')).componentInstance;
-
-      expect(() => stepperComponent.selected = null!).not.toThrow();
-      expect(stepperComponent.selectedIndex).toBe(-1);
-    });
+      selectionChangeSubscription.unsubscribe();
+      animationDoneSubscription.unsubscribe();
+    }));
 
     it('should set the correct aria-posinset and aria-setsize', () => {
       const headers =
@@ -405,14 +345,59 @@ describe('MatStepper', () => {
 
       expect(stepperComponent.selectedIndex).toBe(1);
     });
+  });
 
+  describe('basic stepper when attempting to set the selected step too early', () => {
+    it('should not throw', () => {
+      const fixture = createComponent(SimpleMatVerticalStepperApp);
+      const stepperComponent: MatVerticalStepper = fixture.debugElement
+          .query(By.css('mat-vertical-stepper')).componentInstance;
+
+      expect(() => stepperComponent.selected).not.toThrow();
+    });
+  });
+
+  describe('basic stepper when attempting to set the selected step too early', () => {
+    it('should not throw', () => {
+      const fixture = createComponent(SimpleMatVerticalStepperApp);
+      const stepperComponent: MatVerticalStepper = fixture.debugElement
+          .query(By.css('mat-vertical-stepper')).componentInstance;
+
+      expect(() => stepperComponent.selected = null!).not.toThrow();
+      expect(stepperComponent.selectedIndex).toBe(-1);
+    });
+  });
+
+  describe('basic stepper with i18n label change', () => {
+    let i18nFixture;
+
+    beforeEach(() => {
+      i18nFixture = createComponent(SimpleMatHorizontalStepperApp);
+      i18nFixture.detectChanges();
+    });
+
+    it('should re-render when the i18n labels change', inject([MatStepperIntl],
+      (intl: MatStepperIntl) => {
+        const header =
+            i18nFixture.debugElement.queryAll(By.css('mat-step-header'))[2].nativeElement;
+        const optionalLabel = header.querySelector('.mat-step-optional');
+
+        expect(optionalLabel).toBeTruthy();
+        expect(optionalLabel.textContent).toBe('Optional');
+
+        intl.optionalLabel = 'Valgfri';
+        intl.changes.next();
+        i18nFixture.detectChanges();
+
+        expect(optionalLabel.textContent).toBe('Valgfri');
+    }));
   });
 
   describe('icon overrides', () => {
     let fixture: ComponentFixture<IconOverridesStepper>;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(IconOverridesStepper);
+      fixture = createComponent(IconOverridesStepper);
       fixture.detectChanges();
     });
 
@@ -455,7 +440,7 @@ describe('MatStepper', () => {
 
     beforeEach(() => {
       dir.value = 'rtl';
-      fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
+      fixture = createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
     });
 
@@ -488,7 +473,7 @@ describe('MatStepper', () => {
     let stepperComponent: MatVerticalStepper;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(LinearMatVerticalStepperApp);
+      fixture = createComponent(LinearMatVerticalStepperApp);
       fixture.detectChanges();
 
       testComponent = fixture.componentInstance;
@@ -700,66 +685,71 @@ describe('MatStepper', () => {
       expect(steps[2].completed).toBe(true,
           'Expected third step to be considered complete when doing a run after a reset.');
     });
+  });
 
-    it('should not throw when there is a pre-defined selectedIndex', () => {
-      fixture.destroy();
-
-      let preselectedFixture = TestBed.createComponent(SimplePreselectedMatHorizontalStepperApp);
-      expect(() => preselectedFixture.detectChanges()).not.toThrow();
+  describe('linear stepper with a pre-defined selectedIndex', () => {
+    let preselectedFixture;
+    beforeEach(() => {
+      preselectedFixture = createComponent(SimplePreselectedMatHorizontalStepperApp);
     });
 
-    it('should not move to the next step if the current one is not completed ' +
-      'and there is no `stepControl`', () => {
-        fixture.destroy();
+    it('should not throw', () => {
+      expect(() => preselectedFixture.detectChanges()).not.toThrow();
+    });
+  });
 
-        const noStepControlFixture = TestBed.createComponent(SimpleStepperWithoutStepControl);
+  describe('linear stepper with no `stepControl`', () => {
+    let noStepControlFixture;
+    beforeEach(() => {
+      noStepControlFixture = createComponent(SimpleStepperWithoutStepControl);
+      noStepControlFixture.detectChanges();
+    });
+    it('should not move to the next step if the current one is not completed ', () => {
+      const stepper: MatHorizontalStepper = noStepControlFixture.debugElement
+          .query(By.directive(MatHorizontalStepper)).componentInstance;
 
-        noStepControlFixture.detectChanges();
+      const headers = noStepControlFixture.debugElement
+          .queryAll(By.css('.mat-horizontal-stepper-header'));
 
-        const stepper: MatHorizontalStepper = noStepControlFixture.debugElement
+      expect(stepper.selectedIndex).toBe(0);
+
+      headers[1].nativeElement.click();
+      noStepControlFixture.detectChanges();
+
+      expect(stepper.selectedIndex).toBe(0);
+    });
+  });
+
+  describe('linear stepper with `stepControl`', () => {
+    let controlAndBindingFixture;
+    beforeEach(() => {
+      controlAndBindingFixture =
+      createComponent(SimpleStepperWithStepControlAndCompletedBinding);
+      controlAndBindingFixture.detectChanges();
+    });
+
+    it('should have the `stepControl` take precedence when `completed` is set', () => {
+        expect(controlAndBindingFixture.componentInstance.steps[0].control.valid).toBe(true);
+        expect(controlAndBindingFixture.componentInstance.steps[0].completed).toBe(false);
+
+        const stepper: MatHorizontalStepper = controlAndBindingFixture.debugElement
             .query(By.directive(MatHorizontalStepper)).componentInstance;
 
-        const headers = noStepControlFixture.debugElement
+        const headers = controlAndBindingFixture.debugElement
             .queryAll(By.css('.mat-horizontal-stepper-header'));
 
         expect(stepper.selectedIndex).toBe(0);
 
         headers[1].nativeElement.click();
-        noStepControlFixture.detectChanges();
+        controlAndBindingFixture.detectChanges();
 
-        expect(stepper.selectedIndex).toBe(0);
+        expect(stepper.selectedIndex).toBe(1);
       });
-
-      it('should have the `stepControl` take precedence when both `completed` and ' +
-        '`stepControl` are set', () => {
-          fixture.destroy();
-
-          const controlAndBindingFixture =
-              TestBed.createComponent(SimpleStepperWithStepControlAndCompletedBinding);
-
-          controlAndBindingFixture.detectChanges();
-
-          expect(controlAndBindingFixture.componentInstance.steps[0].control.valid).toBe(true);
-          expect(controlAndBindingFixture.componentInstance.steps[0].completed).toBe(false);
-
-          const stepper: MatHorizontalStepper = controlAndBindingFixture.debugElement
-              .query(By.directive(MatHorizontalStepper)).componentInstance;
-
-          const headers = controlAndBindingFixture.debugElement
-              .queryAll(By.css('.mat-horizontal-stepper-header'));
-
-          expect(stepper.selectedIndex).toBe(0);
-
-          headers[1].nativeElement.click();
-          controlAndBindingFixture.detectChanges();
-
-          expect(stepper.selectedIndex).toBe(1);
-        });
   });
 
   describe('vertical stepper', () => {
     it('should set the aria-orientation to "vertical"', () => {
-      let fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
+      let fixture = createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
 
       let stepperEl = fixture.debugElement.query(By.css('mat-vertical-stepper')).nativeElement;
@@ -767,7 +757,7 @@ describe('MatStepper', () => {
     });
 
     it('should support using the left/right arrows to move focus', () => {
-      let fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
+      let fixture = createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
 
       let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-vertical-stepper-header'));
@@ -775,7 +765,7 @@ describe('MatStepper', () => {
     });
 
     it('should support using the up/down arrows to move focus', () => {
-      let fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
+      let fixture = createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
 
       let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-vertical-stepper-header'));
@@ -784,7 +774,7 @@ describe('MatStepper', () => {
 
     it('should reverse arrow key focus in RTL mode', () => {
       dir.value = 'rtl';
-      let fixture = TestBed.createComponent(SimpleMatVerticalStepperApp);
+      let fixture = createComponent(SimpleMatVerticalStepperApp);
       fixture.detectChanges();
 
       let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-vertical-stepper-header'));
@@ -794,7 +784,7 @@ describe('MatStepper', () => {
 
   describe('horizontal stepper', () => {
     it('should set the aria-orientation to "horizontal"', () => {
-      let fixture = TestBed.createComponent(SimpleMatHorizontalStepperApp);
+      let fixture = createComponent(SimpleMatHorizontalStepperApp);
       fixture.detectChanges();
 
       let stepperEl = fixture.debugElement.query(By.css('mat-horizontal-stepper')).nativeElement;
@@ -802,7 +792,7 @@ describe('MatStepper', () => {
     });
 
     it('should support using the left/right arrows to move focus', () => {
-      let fixture = TestBed.createComponent(SimpleMatHorizontalStepperApp);
+      let fixture = createComponent(SimpleMatHorizontalStepperApp);
       fixture.detectChanges();
 
       let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-horizontal-stepper-header'));
@@ -811,7 +801,7 @@ describe('MatStepper', () => {
 
     it('should reverse arrow key focus in RTL mode', () => {
       dir.value = 'rtl';
-      let fixture = TestBed.createComponent(SimpleMatHorizontalStepperApp);
+      let fixture = createComponent(SimpleMatHorizontalStepperApp);
       fixture.detectChanges();
 
       let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-horizontal-stepper-header'));
@@ -819,7 +809,7 @@ describe('MatStepper', () => {
     });
 
     it('should reverse arrow key focus when switching into RTL after init', () => {
-      let fixture = TestBed.createComponent(SimpleMatHorizontalStepperApp);
+      let fixture = createComponent(SimpleMatHorizontalStepperApp);
       fixture.detectChanges();
 
       let stepHeaders = fixture.debugElement.queryAll(By.css('.mat-horizontal-stepper-header'));
@@ -833,13 +823,13 @@ describe('MatStepper', () => {
     });
   });
 
-  describe('valid step in linear stepper', () => {
+  describe('linear stepper with valid step', () => {
     let fixture: ComponentFixture<LinearStepperWithValidOptionalStep>;
     let testComponent: LinearStepperWithValidOptionalStep;
     let stepper: MatStepper;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(LinearStepperWithValidOptionalStep);
+      fixture = createComponent(LinearStepperWithValidOptionalStep);
       fixture.detectChanges();
 
       testComponent = fixture.componentInstance;
@@ -875,7 +865,7 @@ describe('MatStepper', () => {
     let stepHeader: HTMLElement;
 
     beforeEach(() => {
-      fixture = TestBed.createComponent(StepperWithAriaInputs);
+      fixture = createComponent(StepperWithAriaInputs);
       fixture.detectChanges();
       stepHeader = fixture.nativeElement.querySelector('.mat-step-header');
     });
@@ -908,6 +898,76 @@ describe('MatStepper', () => {
       expect(stepHeader.hasAttribute('aria-labelledby')).toBe(false);
     });
 
+  });
+
+  describe('stepper with error state', () => {
+    let fixture: ComponentFixture<MatHorizontalStepperWithErrorsApp>;
+    let stepper: MatStepper;
+
+    beforeEach(() => {
+      fixture = createComponent(
+        MatHorizontalStepperWithErrorsApp,
+        [{
+          provide: MAT_STEPPER_GLOBAL_OPTIONS,
+          useValue: {showError: true}
+        }],
+        [MatFormFieldModule, MatInputModule]
+      );
+      fixture.detectChanges();
+      stepper = fixture.debugElement
+          .query(By.css('mat-horizontal-stepper')).componentInstance;
+    });
+
+    it('should show error state', () => {
+      let nextButtonNativeEl = fixture.debugElement
+          .queryAll(By.directive(MatStepperNext))[0].nativeElement;
+
+      stepper.selectedIndex = 1;
+      stepper._steps.first.hasError = true;
+      nextButtonNativeEl.click();
+      fixture.detectChanges();
+
+      expect(stepper._getIndicatorType(0)).toBe(STEP_STATE.ERROR);
+    });
+  });
+
+  describe('stepper using Material UI Guideline logic', () => {
+    let fixture: ComponentFixture<MatHorizontalStepperWithErrorsApp>;
+    let stepper: MatStepper;
+
+    beforeEach(() => {
+      fixture = createComponent(
+        MatHorizontalStepperWithErrorsApp,
+        [{
+          provide: MAT_STEPPER_GLOBAL_OPTIONS,
+          useValue: {displayDefaultIndicatorType: false}
+        }],
+        [MatFormFieldModule, MatInputModule]
+      );
+      fixture.detectChanges();
+      stepper = fixture.debugElement
+          .query(By.css('mat-horizontal-stepper')).componentInstance;
+    });
+
+    it('should show done state when step is completed and its not the current step', () => {
+      let nextButtonNativeEl = fixture.debugElement
+          .queryAll(By.directive(MatStepperNext))[0].nativeElement;
+
+      stepper.selectedIndex = 1;
+      stepper._steps.first.completed = true;
+      nextButtonNativeEl.click();
+      fixture.detectChanges();
+
+      expect(stepper._getIndicatorType(0)).toBe(STEP_STATE.DONE);
+    });
+
+    it('should show edit state when step is editable and its the current step', () => {
+      stepper.selectedIndex = 1;
+      stepper._steps.toArray()[1].editable = true;
+      fixture.detectChanges();
+
+      expect(stepper._getIndicatorType(1)).toBe(STEP_STATE.EDIT);
+    });
   });
 });
 
@@ -1010,6 +1070,67 @@ function asyncValidator(minLength: number, validationTrigger: Subject<void>): As
       take(1)
     );
   };
+}
+
+function createComponent<T>(component: Type<T>,
+  providers: Provider[] = [],
+  imports: any[] = []): ComponentFixture<T> {
+  TestBed.configureTestingModule({
+    imports: [
+      MatStepperModule,
+      NoopAnimationsModule,
+      ReactiveFormsModule,
+      ...imports
+    ],
+    declarations: [component],
+    providers: [
+      {provide: Directionality, useFactory: () => dir},
+      ...providers
+    ],
+  }).compileComponents();
+
+  return TestBed.createComponent<T>(component);
+}
+
+@Component({
+  template: `
+  <form [formGroup]="formGroup">
+    <mat-horizontal-stepper>
+      <mat-step errorMessage="This field is required" [stepControl]="formArray?.get([0])">
+        <ng-template matStepLabel>Step 1</ng-template>
+        <mat-form-field>
+          <mat-label>First name</mat-label>
+          <input matInput formControlName="firstNameCtrl" required>
+          <mat-error>This field is required</mat-error>
+        </mat-form-field>
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Step 2</ng-template>
+        Content 2
+        <div>
+          <button mat-button matStepperPrevious>Back</button>
+          <button mat-button matStepperNext>Next</button>
+        </div>
+      </mat-step>
+    </mat-horizontal-stepper>
+  </form>
+  `
+})
+class MatHorizontalStepperWithErrorsApp implements OnInit {
+  formGroup: FormGroup;
+
+  constructor(private _formBuilder: FormBuilder) { }
+
+  ngOnInit() {
+    this.formGroup = this._formBuilder.group({
+      firstNameCtrl: ['', Validators.required],
+      lastNameCtrl: ['', Validators.required],
+    });
+  }
 }
 
 @Component({

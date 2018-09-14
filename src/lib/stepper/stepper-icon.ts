@@ -7,6 +7,7 @@
  */
 
 import {Directive, Input, TemplateRef} from '@angular/core';
+import {StepState} from '@angular/cdk/stepper';
 
 /** Template context available to an attached `matStepperIcon`. */
 export interface MatStepperIconContext {
@@ -26,7 +27,7 @@ export interface MatStepperIconContext {
 })
 export class MatStepperIcon {
   /** Name of the icon to be overridden. */
-  @Input('matStepperIcon') name: 'edit' | 'done' | 'number';
+  @Input('matStepperIcon') name: StepState;
 
   constructor(public templateRef: TemplateRef<MatStepperIconContext>) {}
 }

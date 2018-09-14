@@ -34,8 +34,7 @@ $mat-stepper-line-gap: 8px !default;
   align-items: center;
   padding: 0 $mat-stepper-side-gap;
 
-  .mat-step-icon,
-  .mat-step-icon-not-touched {
+  .mat-step-icon {
     margin-right: $mat-stepper-line-gap;
     flex: none;
 
@@ -52,8 +51,7 @@ $mat-stepper-line-gap: 8px !default;
   padding: $mat-stepper-side-gap;
   max-height: $mat-stepper-label-header-height;
 
-  .mat-step-icon,
-  .mat-step-icon-not-touched {
+  .mat-step-icon {
     margin-right: $mat-vertical-stepper-content-margin - $mat-stepper-side-gap;
 
     [dir='rtl'] & {

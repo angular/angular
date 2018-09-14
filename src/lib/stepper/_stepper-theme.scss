@@ -6,6 +6,7 @@
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
   $primary: map-get($theme, primary);
+  $warn: map-get($theme, warn);
 
   .mat-step-header {
     &.cdk-keyboard-focused,
@@ -20,17 +21,28 @@
     }
 
     .mat-step-icon {
-      background-color: mat-color($primary);
-      color: mat-color($primary, default-contrast);
-    }
-
-    .mat-step-icon-not-touched {
       background-color: mat-color($foreground, disabled-text);
       color: mat-color($primary, default-contrast);
     }
 
+    .mat-step-icon-selected,
+    .mat-step-icon-state-done,
+    .mat-step-icon-state-edit {
+      background-color: mat-color($primary);
+      color: mat-color($primary, default-contrast);
+    }
+
+    .mat-step-icon-state-error {
+      background-color: transparent;
+      color: mat-color($warn);
+    }
+
     .mat-step-label.mat-step-label-active {
       color: mat-color($foreground, text);
+    }
+
+    .mat-step-label.mat-step-label-error {
+      color: mat-color($warn);
     }
   }
 
@@ -57,6 +69,14 @@
       size: mat-font-size($config, body-1);
       weight: mat-font-weight($config, body-1);
     };
+  }
+
+  .mat-step-sub-label-error {
+    font-weight: normal;
+  }
+
+  .mat-step-label-error {
+    font-size: mat-font-size($config, body-2);
   }
 
   .mat-step-label-selected {

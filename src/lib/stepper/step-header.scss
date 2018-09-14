@@ -5,7 +5,7 @@ $mat-stepper-label-min-width: 50px !default;
 $mat-stepper-side-gap: 24px !default;
 $mat-vertical-stepper-content-margin: 36px !default;
 $mat-stepper-line-gap: 8px !default;
-$mat-step-optional-font-size: 12px;
+$mat-step-sub-label-font-size: 12px;
 $mat-step-header-icon-size: 16px !default;
 
 .mat-step-header {
@@ -17,12 +17,12 @@ $mat-step-header-icon-size: 16px !default;
   -webkit-tap-highlight-color: transparent;
 }
 
-.mat-step-optional {
-  font-size: $mat-step-optional-font-size;
+.mat-step-optional,
+.mat-step-sub-label-error {
+  font-size: $mat-step-sub-label-font-size;
 }
 
-.mat-step-icon,
-.mat-step-icon-not-touched {
+.mat-step-icon {
   border-radius: 50%;
   height: $mat-stepper-label-header-height;
   width: $mat-stepper-label-header-height;
@@ -42,6 +42,12 @@ $mat-step-header-icon-size: 16px !default;
   font-size: $mat-step-header-icon-size;
   height: $mat-step-header-icon-size;
   width: $mat-step-header-icon-size;
+}
+
+.mat-step-icon-state-error .mat-icon {
+  font-size: $mat-step-header-icon-size + 8;
+  height: $mat-step-header-icon-size + 8;
+  width: $mat-step-header-icon-size + 8;
 }
 
 .mat-step-label {

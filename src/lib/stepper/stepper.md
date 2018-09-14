@@ -156,6 +156,71 @@ by placing a `matStepperIcon` for each of the icons that you want to override. T
 
 Note that you aren't limited to using the `mat-icon` component when providing custom icons.
 
+#### Step States
+You can set the state of a step to whatever you want. The given state by default maps to an icon. However, it can be overridden the same way as mentioned above.
+
+```html
+<mat-horizontal-stepper>
+  <mat-step label="Step 1" state="phone">
+    <p>Put down your phones.</p>
+    <div>
+      <button mat-button matStepperNext>Next</button>
+    </div>
+  </mat-step>
+  <mat-step label="Step 2" state="chat">
+    <p>Socialize with each other.</p>
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button matStepperNext>Next</button>
+    </div>
+  </mat-step>
+  <mat-step label="Step 3">
+    <p>You're welcome.</p>
+  </mat-step>
+
+  <!-- Icon overrides. -->
+  <ng-template matStepperIcon="phone">
+    <mat-icon>call_end</mat-icon>
+  </ng-template>
+  <ng-template matStepperIcon="chat">
+    <mat-icon>forum</mat-icon>
+  </ng-template>
+</mat-horizontal-stepper>
+```
+
+In order to use the custom step states, you must add the `displayDefaultIndicatorType` option to the global default stepper options which can be specified by providing a value for
+`MAT_STEPPER_GLOBAL_OPTIONS` in your application's root module.
+
+```ts
+@NgModule({
+  providers: [
+    {
+      provide: MAT_STEPPER_GLOBAL_OPTIONS,
+      useValue: { displayDefaultIndicatorType: false }
+    }
+  ]
+})
+```
+
+<!-- example(stepper-states) -->
+
+### Error State
+
+The stepper can now show error states by simply providing the `showError` option to the `MAT_STEPPER_GLOBAL_OPTIONS` in your application's root module as mentioned above.
+
+```ts
+@NgModule({
+  providers: [
+    {
+      provide: MAT_STEPPER_GLOBAL_OPTIONS,
+      useValue: { showError: true }
+    }
+  ]
+})
+```
+
+<!-- example(stepper-errors) -->
+
 ### Keyboard interaction
 - <kbd>LEFT_ARROW</kbd>: Focuses the previous step header
 - <kbd>RIGHT_ARROW</kbd>: Focuses the next step header

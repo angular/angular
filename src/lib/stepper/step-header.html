@@ -1,8 +1,6 @@
 <div class="mat-step-header-ripple" mat-ripple [matRippleTrigger]="_getHostElement()"></div>
-<div [class.mat-step-icon]="state !== 'number' || selected"
-     [class.mat-step-icon-not-touched]="state == 'number' && !selected"
+<div class="mat-step-icon-state-{{state}} mat-step-icon" [class.mat-step-icon-selected]="selected"
      [ngSwitch]="state">
-
   <ng-container *ngSwitchCase="'number'" [ngSwitch]="!!(iconOverrides && iconOverrides.number)">
     <ng-container
       *ngSwitchCase="true"
@@ -26,16 +24,35 @@
       [ngTemplateOutletContext]="_getIconContext()"></ng-container>
     <mat-icon class="mat-step-icon-content" *ngSwitchDefault>done</mat-icon>
   </ng-container>
+
+  <ng-container *ngSwitchCase="'error'" [ngSwitch]="!!(iconOverrides && iconOverrides.error)">
+    <ng-container
+      *ngSwitchCase="true"
+      [ngTemplateOutlet]="iconOverrides.error"
+      [ngTemplateOutletContext]="_getIconContext()"></ng-container>
+    <mat-icon *ngSwitchDefault>warning</mat-icon>
+  </ng-container>
+
+  <!-- Custom state. -->
+  <ng-container *ngSwitchDefault [ngSwitch]="!!(iconOverrides && iconOverrides[state])">
+    <ng-container
+      *ngSwitchCase="true"
+      [ngTemplateOutlet]="iconOverrides[state]"
+      [ngTemplateOutletContext]="_getIconContext()"></ng-container>
+    <mat-icon *ngSwitchDefault>{{state}}</mat-icon>
+  </ng-container>
 </div>
 <div class="mat-step-label"
      [class.mat-step-label-active]="active"
-     [class.mat-step-label-selected]="selected">
+     [class.mat-step-label-selected]="selected"
+     [class.mat-step-label-error]="state == 'error'">
   <!-- If there is a label template, use it. -->
   <ng-container *ngIf="_templateLabel()" [ngTemplateOutlet]="_templateLabel()!.template">
   </ng-container>
-  <!-- It there is no label template, fall back to the text label. -->
+  <!-- If there is no label template, fall back to the text label. -->
   <div class="mat-step-text-label" *ngIf="_stringLabel()">{{label}}</div>
 
-  <div class="mat-step-optional" *ngIf="optional">{{_intl.optionalLabel}}</div>
+  <div class="mat-step-optional" *ngIf="optional && state != 'error'">{{_intl.optionalLabel}}</div>
+  <div class="mat-step-sub-label-error" *ngIf="state == 'error'">{{errorMessage}}</div>
 </div>
 
