@@ -33,9 +33,10 @@
   },
   "// 1": "dependencies are used locally and by bazel",
   "dependencies": {
-    "@angular-devkit/schematics": "^0.5.5",
+    "@angular-devkit/core": "^7.0.4",
+    "@angular-devkit/schematics": "^7.0.4",
     "@bazel/typescript": "0.20.3",
-    "@schematics/angular": "^0.5.4",
+    "@schematics/angular": "^7.0.4",
     "@types/chokidar": "1.7.3",
     "@types/convert-source-map": "^1.5.1",
     "@types/diff": "^3.2.2",

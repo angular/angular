@@ -1,7 +1,7 @@
 .DS_STORE
 
 /dist/
-bazel-*
+/bazel-*
 e2e_test.*
 node_modules
 bower_components

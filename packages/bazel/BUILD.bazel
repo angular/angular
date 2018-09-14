@@ -7,6 +7,7 @@ npm_package(
         "package.json",
         "protractor-utils.js",
         "//packages/bazel/src:package_assets",
+        "//packages/bazel/src/schematics:package_assets",
     ],
     packages = [
         "//packages/bazel/docs",
@@ -16,5 +17,6 @@ npm_package(
         "//packages/bazel/src/ng_package:lib",
         "//packages/bazel/src/ngc-wrapped:ngc_lib",
         "//packages/bazel/src/protractor/utils",
+        "//packages/bazel/src/schematics/bazel-workspace",
     ],
 )
