@@ -51,6 +51,13 @@ $mat-drawer-over-drawer-z-index: 4;
   &.mat-drawer-container-explicit-backdrop .mat-drawer-side {
     z-index: $mat-drawer-backdrop-z-index;
   }
+
+  // Note that the `NoopAnimationsModule` is being handled inside of the component code.
+  &.ng-animate-disabled, .ng-animate-disabled & {
+    .mat-drawer-backdrop, .mat-drawer-content {
+      transition: none;
+    }
+  }
 }
 
 .mat-drawer-backdrop {
