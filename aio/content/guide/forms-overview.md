@@ -1,6 +1,6 @@
-# Forms in Angular
+# Introduction to forms in Angular
 
-Handling user input with forms is the cornerstone of many common applications. You use forms to log in, to update a profile, to enter sensitive information, and to perform many other data-entry tasks. 
+Handling user input with forms is the cornerstone of many common applications. Applications use forms to log in, to update a profile, to enter sensitive information, and to perform many other data-entry tasks. 
 
 Angular provides two different approaches to handling user input through forms: reactive and template-driven. Each set of forms promote a distinct way of processing forms and offers different advantages. The sections below provide a comparison of the two approaches and when each one is applicable. There are many different factors that influence your decision on which approach works best for your situation. Whether you’re using reactive or template-driven forms, these concepts are key to understanding the mechanisms underneath each solution.
 
