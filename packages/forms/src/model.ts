@@ -542,27 +542,31 @@ export abstract class AbstractControl {
    * When false, no events are emitted.
    */
   updateValueAndValidity(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
-    this._setInitialStatus();
-    this._updateValue();
+    
+    if(!(this.pristine && this.untouched)){
+        this._setInitialStatus();
+        this._updateValue();
 
-    if (this.enabled) {
-      this._cancelExistingSubscription();
-      (this as{errors: ValidationErrors | null}).errors = this._runValidator();
-      (this as{status: string}).status = this._calculateStatus();
+        if (this.enabled) {
+          this._cancelExistingSubscription();
+          (this as{errors: ValidationErrors | null}).errors = this._runValidator();
+          (this as{status: string}).status = this._calculateStatus();
 
-      if (this.status === VALID || this.status === PENDING) {
-        this._runAsyncValidator(opts.emitEvent);
-      }
-    }
+          if (this.status === VALID || this.status === PENDING) {
+            this._runAsyncValidator(opts.emitEvent);
+          }
+        }
 
-    if (opts.emitEvent !== false) {
-      (this.valueChanges as EventEmitter<any>).emit(this.value);
-      (this.statusChanges as EventEmitter<string>).emit(this.status);
-    }
+        if (opts.emitEvent !== false) {
+          (this.valueChanges as EventEmitter<any>).emit(this.value);
+          (this.statusChanges as EventEmitter<string>).emit(this.status);
+        }
 
-    if (this._parent && !opts.onlySelf) {
-      this._parent.updateValueAndValidity(opts);
-    }
+        if (this._parent && !opts.onlySelf) {
+          this._parent.updateValueAndValidity(opts);
+        }
+     }
+    
   }
 
   /** @internal */
@@ -980,6 +984,7 @@ export class FormControl extends AbstractControl {
     this._applyFormState(formState);
     this.markAsPristine(options);
     this.markAsUntouched(options);
+    this.status = undefined;
     this.setValue(this.value, options);
     this._pendingChange = false;
   }
