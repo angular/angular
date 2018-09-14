@@ -37,7 +37,7 @@ local_repository(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
 
-check_bazel_version("0.16.0")
+check_bazel_version("0.17.0")
 node_repositories(
     package_json = ["//:package.json"],
   node_version = "10.9.0",

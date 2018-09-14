@@ -51,9 +51,9 @@ http_archive(
 # Fetching the Bazel source code allows us to compile the Skylark linter
 http_archive(
     name = "io_bazel",
-    url = "https://github.com/bazelbuild/bazel/archive/968f87900dce45a7af749a965b72dbac51b176b3.zip",
-    strip_prefix = "bazel-968f87900dce45a7af749a965b72dbac51b176b3",
-    sha256 = "e373d2ae24955c1254c495c9c421c009d88966565c35e4e8444c082cb1f0f48f",
+    url = "https://github.com/bazelbuild/bazel/archive/0.17.1.zip",
+    strip_prefix = "bazel-0.17.1",
+    sha256 = "ace8cced3b21e64a8fdad68508e9b0644201ec848ad583651719841d567fc66d",
 )
 
 http_archive(
@@ -106,7 +106,7 @@ local_repository(
 
 load("@build_bazel_rules_nodejs//:defs.bzl", "check_bazel_version", "node_repositories")
 
-check_bazel_version("0.16.0", """
+check_bazel_version("0.17.0", """
 If you are on a Mac and using Homebrew, there is a breaking change to the installation in Bazel 0.16
 See https://blog.bazel.build/2018/08/22/bazel-homebrew.html
 
