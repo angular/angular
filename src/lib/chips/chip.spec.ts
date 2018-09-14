@@ -1,6 +1,6 @@
 import {Directionality} from '@angular/cdk/bidi';
 import {BACKSPACE, DELETE, SPACE} from '@angular/cdk/keycodes';
-import {createKeyboardEvent} from '@angular/cdk/testing';
+import {createKeyboardEvent, dispatchFakeEvent} from '@angular/cdk/testing';
 import {Component, DebugElement} from '@angular/core';
 import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
@@ -132,6 +132,24 @@ describe('Chips', () => {
 
         expect(testComponent.chipRemove).toHaveBeenCalledWith({chip: chipInstance});
       });
+
+      it('should not prevent the default click action', () => {
+        const event = dispatchFakeEvent(chipNativeElement, 'click');
+        fixture.detectChanges();
+
+        expect(event.defaultPrevented).toBe(false);
+      });
+
+      it('should prevent the default click action when the chip is disabled', () => {
+        chipInstance.disabled = true;
+        fixture.detectChanges();
+
+        const event = dispatchFakeEvent(chipNativeElement, 'click');
+        fixture.detectChanges();
+
+        expect(event.defaultPrevented).toBe(true);
+      });
+
     });
 
     describe('keyboard behavior', () => {

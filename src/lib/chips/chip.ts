@@ -326,15 +326,13 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
     }
   }
 
-  /** Ensures events fire properly upon click. */
+  /** Handles click events on the chip. */
   _handleClick(event: Event) {
-    // Check disabled
     if (this.disabled) {
-      return;
+      event.preventDefault();
+    } else {
+      event.stopPropagation();
     }
-
-    event.preventDefault();
-    event.stopPropagation();
   }
 
   /** Handle custom key presses. */

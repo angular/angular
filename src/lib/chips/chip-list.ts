@@ -437,7 +437,11 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
    * Implemented as part of MatFormFieldControl.
    * @docs-private
    */
-  onContainerClick() { this.focus(); }
+  onContainerClick(event: MouseEvent) {
+    if (!this._originatesFromChip(event)) {
+      this.focus();
+    }
+  }
 
   /**
    * Focuses the the first non-disabled chip in this chip list, or the associated input when there
@@ -738,5 +742,20 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
         this._lastDestroyedChipIndex = chipIndex;
       }
     });
+  }
+
+  /** Checks whether an event comes from inside a chip element. */
+  private _originatesFromChip(event: Event): boolean {
+    let currentElement = event.target as HTMLElement | null;
+
+    while (currentElement && currentElement !== this._elementRef.nativeElement) {
+      if (currentElement.classList.contains('mat-chip')) {
+        return true;
+      }
+
+      currentElement = currentElement.parentElement;
+    }
+
+    return false;
   }
 }
