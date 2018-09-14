@@ -126,6 +126,7 @@ export class AppModule implements Injector, NgModuleRef<any> {
   get injector() { return this; }
   get componentFactoryResolver(): ComponentFactoryResolver { return null; }
   get instance() { return this; }
+  get destroyed() { return false; }
   destroy() {}
   onDestroy(callback: () => void) {}
 }
