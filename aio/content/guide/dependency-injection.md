@@ -973,15 +973,28 @@ Learn more in the [Testing](guide/testing) guide.
 
 {@a service-needs-service}
 
+<!--
 ## When the service needs a service
+-->
+## 서비스에 서비스가 의존성으로 주입될 때
 
+<!--
 The `HeroService` is very simple. It doesn't have any dependencies of its own.
+-->
+지금까지 살펴본 `HeroService`는 아주 간단합니다. 이 서비스에 필요한 의존성도 없습니다.
 
+<!--
 What if it had a dependency? What if it reported its activities through a logging service?
 You'd apply the same *constructor injection* pattern,
 adding a constructor that takes a `Logger` parameter.
+-->
+그런데 서비스에 의존성 객체가 필요한 경우는 어떨까요? 서비스가 동작하는 것을 확인하기 위해 로그 서비스가 필요하다면 어떻게 될까요?
+이 경우에도 마찬가지로 *생성자로 의존성을 주입하는* 패턴을 사용해서, 생성자에 `Logger` 타입의 인자를 지정하면 됩니다.
 
+<!--
 Here is the revised `HeroService` that injects the `Logger`, side-by-side with the previous service for comparison.
+-->
+`Logger`를 의존성으로 받는 `HeroService` 코드를 확인해 보세요. 두번째 탭은 `Logger` 서비스를 주입하기 전 코드입니다.
 
 <code-tabs>
 
@@ -993,29 +1006,45 @@ Here is the revised `HeroService` that injects the `Logger`, side-by-side with t
 
 </code-tabs>
 
+<!--
 The constructor asks for an injected instance of a `Logger` and stores it in a private field called `logger`.
 The `getHeroes()` method logs a message when asked to fetch heroes.
+-->
+생성자에서는 `Logger` 타입의 인스턴스를 주입받도록 요청하며, 이 인스턴스는 private 접근제한자로 지정된 `logger` 프로퍼티에 할당됩니다.
+그러면 `getHeroes()` 메소드에서 이 프로퍼티를 사용해서 로그를 출력할 수 있습니다.
 
 
 {@a logger-service}
 
+<!--
 #### The dependent _Logger_ service
+-->
+#### 의존성으로 주입되는 _Logger_ 서비스
 
+<!--
 The sample app's `Logger` service is quite simple:
+-->
+예제에서 사용했던 `Logger` 서비스는 아주 간단하게 구현되어 있습니다:
 
 <code-example path="dependency-injection/src/app/logger.service.ts" title="src/app/logger.service.ts">
 </code-example>
 
+<!--
 If the app didn't provide this `Logger`,
 Angular would throw an exception when it looked for a `Logger` to inject
 into the `HeroService`.
+-->
+만약 앱에 `Logger`의 프로바이더가 등록되지 않았다면 `HeroService`에 `Logger`를 의존성으로 주입할 수 없다는 에러 메시지가 표시됩니다.
 
 <code-example language="sh" class="code-shell">
   ERROR Error: No provider for Logger!
 </code-example>
 
+<!--
 Because a singleton logger service is useful everywhere,
 it's provided in the root `AppModule`.
+-->
+왜냐하면 로그 서비스는 애플리케이션 전역에 사용하기 때문에 반드시 애플리케이션 최상위 모듈인 `AppModule`에 등록되어야 하기 때문입니다.
 
 <code-example path="dependency-injection/src/app/app.module.ts" linenums="false" title="src/app/app.module.ts (providers)" region="providers-2">
 </code-example>

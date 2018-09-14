@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class Logger {
-  logs: string[] = []; // capture logs for testing
+  logs: string[] = []; // 테스트하기 위해 로그를 저장합니다.
 
   log(message: string) {
     this.logs.push(message);
