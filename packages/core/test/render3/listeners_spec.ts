@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {defineComponent, defineDirective} from '../../src/render3/index';
+import {bind, defineComponent, defineDirective, markDirty, textBinding} from '../../src/render3/index';
 import {container, containerRefreshEnd, containerRefreshStart, element, elementEnd, elementStart, embeddedViewEnd, embeddedViewStart, listener, text} from '../../src/render3/instructions';
 import {RenderFlags} from '../../src/render3/interfaces/definition';
 
 import {getRendererFactory2} from './imported_renderer2';
-import {ComponentFixture, containerEl, renderComponent, renderToHtml} from './render_util';
+import {ComponentFixture, containerEl, renderComponent, renderToHtml, requestAnimationFrame} from './render_util';
 
 
 describe('event listeners', () => {
@@ -363,6 +363,7 @@ describe('event listeners', () => {
     /**
        * % for (let i = 0; i < ctx.buttons; i++) {
        *  <button (click)="onClick(i)"> Click me </button>
+       *    {{ counters[i] }}
        * % }
      */
     class AppComp {
@@ -385,13 +386,20 @@ describe('event listeners', () => {
             containerRefreshStart(0);
             {
               for (let i = 0; i < ctx.buttons; i++) {
-                if (embeddedViewStart(1, 2, 0)) {
+                const rf1 = embeddedViewStart(1, 4, 1);
+                if (rf1 & RenderFlags.Create) {
                   elementStart(0, 'button');
                   {
                     listener('click', function() { return ctx.onClick(i); });
                     text(1, 'Click me');
                   }
                   elementEnd();
+                  elementStart(2, 'div');
+                  { text(3); }
+                  elementEnd();
+                }
+                if (rf1 & RenderFlags.Update) {
+                  textBinding(3, bind(ctx.counters[i]));
                 }
                 embeddedViewEnd();
               }
@@ -405,12 +413,27 @@ describe('event listeners', () => {
     const fixture = new ComponentFixture(AppComp, {rendererFactory: getRendererFactory2(document)});
     const comp = fixture.component;
     const buttons = fixture.hostElement.querySelectorAll('button') !;
+    const divs = fixture.hostElement.querySelectorAll('div');
 
     buttons[0].click();
     expect(comp.counters).toEqual([1, 0]);
+    expect(divs[0].textContent).toEqual('0');
+    expect(divs[1].textContent).toEqual('0');
+
+    markDirty(comp);
+    requestAnimationFrame.flush();
+    expect(divs[0].textContent).toEqual('1');
+    expect(divs[1].textContent).toEqual('0');
 
     buttons[1].click();
     expect(comp.counters).toEqual([1, 1]);
+    expect(divs[0].textContent).toEqual('1');
+    expect(divs[1].textContent).toEqual('0');
+
+    markDirty(comp);
+    requestAnimationFrame.flush();
+    expect(divs[0].textContent).toEqual('1');
+    expect(divs[1].textContent).toEqual('1');
 
     // the listener should be removed when the view is removed
     comp.buttons = 0;
