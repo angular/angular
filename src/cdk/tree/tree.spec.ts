@@ -949,12 +949,11 @@ class FakeDataSource extends DataSource<TestData> {
 
   connect(collectionViewer: CollectionViewer): Observable<TestData[]> {
     this.isConnected = true;
-    const streams = [this._dataChange, collectionViewer.viewChange];
-    return combineLatest<TestData[]>(streams)
-      .pipe(map(([data]) => {
-        this.treeControl.dataNodes = data;
-        return data;
-      }));
+
+    return combineLatest(this._dataChange, collectionViewer.viewChange).pipe(map(([data]) => {
+      this.treeControl.dataNodes = data;
+      return data;
+    }));
   }
 
   disconnect() {
