@@ -452,6 +452,18 @@ describe('MatSnackBar', () => {
         .toContain('custom-class', 'Expected class applied through the defaults to be applied.');
   }));
 
+  it('should dismiss the open snack bar on destroy', fakeAsync(() => {
+    snackBar.open(simpleMessage);
+    viewContainerFixture.detectChanges();
+    expect(overlayContainerElement.childElementCount).toBeGreaterThan(0);
+
+    snackBar.ngOnDestroy();
+    viewContainerFixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.childElementCount).toBe(0);
+  }));
+
   describe('with custom component', () => {
     it('should open a custom component', () => {
       const snackBarRef = snackBar.openFromComponent(BurritosNotification);
@@ -602,6 +614,18 @@ describe('MatSnackBar with parent MatSnackBar', () => {
 
     expect(overlayContainerElement.textContent)
         .toContain('Taco', 'Expected child snackbar msg to be dismissed by opening from parent');
+  }));
+
+  it('should not dismiss parent snack bar if child is destroyed', fakeAsync(() => {
+    parentSnackBar.open('Pizza');
+    fixture.detectChanges();
+    expect(overlayContainerElement.childElementCount).toBeGreaterThan(0);
+
+    childSnackBar.ngOnDestroy();
+    fixture.detectChanges();
+    flush();
+
+    expect(overlayContainerElement.childElementCount).toBeGreaterThan(0);
   }));
 });
 
