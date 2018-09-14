@@ -33,6 +33,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import {DOCUMENT} from '@angular/common';
+import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {Subject} from 'rxjs';
 import {filter, startWith, take} from 'rxjs/operators';
 import {matExpansionAnimations} from './expansion-animations';
@@ -73,6 +74,7 @@ let uniqueId = 0;
   host: {
     'class': 'mat-expansion-panel',
     '[class.mat-expanded]': 'expanded',
+    '[class._mat-animation-noopable]': '_animationMode === "NoopAnimations"',
     '[class.mat-expansion-panel-spacing]': '_hasSpacing()',
   }
 })
@@ -121,7 +123,9 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
               _changeDetectorRef: ChangeDetectorRef,
               _uniqueSelectionDispatcher: UniqueSelectionDispatcher,
               private _viewContainerRef: ViewContainerRef,
-              @Inject(DOCUMENT) _document?: any) {
+              // @breaking-change 8.0.0 _document and _animationMode to be made required
+              @Inject(DOCUMENT) _document?: any,
+              @Optional() @Inject(ANIMATION_MODULE_TYPE) public _animationMode?: string) {
     super(accordion, _changeDetectorRef, _uniqueSelectionDispatcher);
     this.accordion = accordion;
     this._document = _document;

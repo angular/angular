@@ -32,6 +32,12 @@
   @include cdk-high-contrast {
     outline: solid 1px;
   }
+
+  &.ng-animate-disabled,
+  .ng-animate-disabled &,
+  &._mat-animation-noopable {
+    transition: none;
+  }
 }
 
 .mat-expansion-panel-content {
