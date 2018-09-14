@@ -61,12 +61,9 @@ Interpolation lets you render the contents of a property of your component as te
 ### [ ] Property Binding
 Following the mental model of HTML, components have state being given to them. This is accomplished by binding to the property of a component or HTML element.
 
-Template
-Data
-result
-<img [src]="sourceUrl" [title]="imageTitle">
-sourceUrl = 'image.png';
-title = 'An example image';
+| Template                           | Data                     | Result              |
+|------------------------------------|--------------------------|---------------------|
+|`<img [src]="sourceUrl" [title]="imageTitle">`|sourceUrl = 'image.png';|title = 'An example image';|
 
 
 
@@ -74,14 +71,9 @@ title = 'An example image';
 We can listen of standard HTML events, or custom events that we will create later on our components.
 
 
-Template
-Data
-result
-<button (click)="hello()">Hello</button>
-hello() {
-alert('Hello!')
-}
-Hello
+| Template                           | Data                     | Result              |
+|------------------------------------|--------------------------|---------------------|
+|`<button (click)="hello()">Hello</button>`|`hello() {alert('Hello!')}`|Hello|
 
 
 
@@ -89,25 +81,18 @@ Hello
 *ngIf is known as a structural directive because it changes which HTML or components are rendered to the user at any given moment. Any directive with a * is called a structural directive and will have similar functionality.
 
 
-Template
-Data
-result
-<p *ngIf="products.length > 0">We still have products available.</p>
-products = ['Shoes', 'Phones'];
-We still have products available.
+| Template                           | Data                     | Result              |
+|------------------------------------|--------------------------|---------------------|
+|`<p *ngIf="products.length > 0">We still have products available.</p>`|`products = ['Shoes', 'Phones'];`|We still have products available.|
 
 
 ### *ngFor
 *ngFor is another structural directive that lets you iterate over a list, rendering the HTML or component once for each item in the list. 
 
 
-Template
-Data
-result
-<div *ngFor="let product of products">{{product}}</div>
-products = ['Shoes', 'Phones'];
-Shoes
-Phones
+| Template                           | Data                     | Result              |
+|------------------------------------|--------------------------|---------------------|
+|`<span *ngFor="let product of products">{{product}} </span>`|`products = ['Shoes', 'Phones'];`|Shoes Phones|
 
 
 ### Summary
@@ -118,9 +103,9 @@ The Angular template syntax is very powerful. To learn about more of the things 
 ### Task
 In our template, now create the scaffolding for a shopping cart.
 
-Create a top bar for your app.
-Create a list of product categories as a side nav.
-Create a container for our list of products
+* Create a top bar for your app.
+* Create a list of product categories as a side nav.
+* Create a container for our list of products
 
 
 
@@ -129,6 +114,7 @@ Create a container for our list of products
 ## Component Communication
 Just like HTML, Angular components can take state, and can emit events. We achieve these by creating Inputs and Outputs as properties on our component
 
+```
 @Component({
 template: `
   <div>{{name}}</div>
@@ -138,6 +124,7 @@ export class EditableNameComponent {
   @Input() name: string;
   @Output() editName = new EventEmitter();
 }
+```
 
 ### @Input()
 Inputs define what data can be passed INTO your component. Whenever a parent component's property binding is updated, the property you mark with @Input will also be updated as a part of Angular's change detection.
@@ -163,10 +150,12 @@ Services are used to encapsulate data and functionality.
 ### Creating
 To create a service, simply create a class and decorate it with @Injectable({provideIn: 'root'}.
 
+```
 @Injectable({provideIn: 'root'})
 export class MyDataService {
    data = {categories: ['shoes', 'phones']};
 }
+```
 
 ### Providing
 Before you can use a service, you must make sure it is provided in your application. 
@@ -178,13 +167,16 @@ Before you can use a service, you must make sure it is provided in your applicat
 For example, to get access to Angular's HttpClient, we must add it to our imports.
 import { HttpClientModule } from '@angular/common/http';
 
+```
 @NgModule({
   imports: [BrowserModule, HttpClientModule]
 …
+```
 
 ### Accessing
 To access a service, you ask for it in a Compoennt, Service, or NgModule constructor by annotating an argument with its type.
 
+```
 import { MyDataService } from './my-data.service';
 …
 export class MyComponent {
@@ -192,6 +184,7 @@ export class MyComponent {
 
   }
 }
+```
 
 This is called "injecting" a service and adds it to the properties on the class. Anywhere in the class you can now refer to the service directly by the name you gave it.
 
@@ -204,7 +197,7 @@ In the loosest form, the router takes the state of the URL bar, and maps it into
 Setup
 To add the router to the application, you'll need to import the RouterModule and supply a configuration.
 
-Next, decide where you want to render the current route by adding a <router-outlet></router-outlet>.
+Next, decide where you want to render the current route by adding a `<router-outlet></router-outlet>`.
 
 ### Route Configuration
 Most applications will want the following:
@@ -223,19 +216,23 @@ Navigation is always done by string, or by array of url pieces, such as ['path',
 ### Parameters
 In order to see the parameters of a component, you must inject the ActivatedRoute service, and access its params property.
 
+```
 route.params.subscribe(params => {
 	this.productName = params['productName'];
 });
+```
 ### Summary
 Once you have setup the router, you can continue to create more components and routes in your RouteConfig.
 
 To learn more about the more advanced features of the router, read the Router Guide.
 
 ### Task
-Add the router to your project
-Create a route that shows product list
-Create a component for product details
-Create a route that shows product details
+* Add the router to your project
+* Create a route that shows product list
+* Create a component for product details
+* Create a route that shows product details
 
 ## Finish!
 You have the basics of our shopping cart.
+
+Now we can [wire up the Data](/tutorial/getting-started-data) of our application.
