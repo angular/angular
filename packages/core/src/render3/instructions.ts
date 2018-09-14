@@ -1234,11 +1234,10 @@ export function listener(
     // In order to match current behavior, native DOM event listeners must be added for all
     // events (including outputs).
     if (isProceduralRenderer(renderer)) {
-      const wrappedListener = wrapListenerWithDirtyLogic(viewData, listenerFn);
-      const cleanupFn = renderer.listen(node.native, eventName, wrappedListener);
+      const cleanupFn = renderer.listen(node.native, eventName, listenerFn);
       storeCleanupFn(viewData, cleanupFn);
     } else {
-      const wrappedListener = wrapListenerWithDirtyAndDefault(viewData, listenerFn);
+      const wrappedListener = wrapListenerWithPreventDefault(listenerFn);
       node.native.addEventListener(eventName, wrappedListener, useCapture);
       const cleanupInstances = getCleanup(viewData);
       cleanupInstances.push(wrappedListener);
@@ -2331,26 +2330,9 @@ export function markDirtyIfOnPush(node: LElementNode): void {
   }
 }
 
-/**
- * Wraps an event listener so its host view and its ancestor views will be marked dirty
- * whenever the event fires. Necessary to support OnPush components.
- */
-export function wrapListenerWithDirtyLogic(
-    view: LViewData, listenerFn: (e?: any) => any): (e: Event) => any {
-  return function(e: any) {
-    markViewDirty(view);
-    return listenerFn(e);
-  };
-}
-
-/**
- * Wraps an event listener so its host view and its ancestor views will be marked dirty
- * whenever the event fires. Also wraps with preventDefault behavior.
- */
-export function wrapListenerWithDirtyAndDefault(
-    view: LViewData, listenerFn: (e?: any) => any): EventListener {
-  return function wrapListenerIn_markViewDirty(e: Event) {
-    markViewDirty(view);
+/** Wraps an event listener with preventDefault behavior. */
+export function wrapListenerWithPreventDefault(listenerFn: (e?: any) => any): EventListener {
+  return function wrapListenerIn_preventDefault(e: Event) {
     if (listenerFn(e) === false) {
       e.preventDefault();
       // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
@@ -2548,8 +2530,8 @@ function updateViewQuery<T>(viewQuery: ComponentQuery<{}>| null, component: T): 
  */
 export function markDirty<T>(component: T) {
   ngDevMode && assertDefined(component, 'component');
-  const lViewData = readPatchedLViewData(component) !;
-  markViewDirty(lViewData);
+  const elementNode = getLElementFromComponent(component) !;
+  markViewDirty(elementNode.data as LViewData);
 }
 
 ///////////////////////////////

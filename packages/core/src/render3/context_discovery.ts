@@ -29,7 +29,7 @@ export const MONKEY_PATCH_KEY_NAME = '__ngContext__';
  * of the context.
  */
 export interface LContext {
-  /** The component\'s view data */
+  /** The component's parent view data */
   lViewData: LViewData;
 
   /** The index instance of the LNode */
