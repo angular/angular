@@ -331,7 +331,7 @@ export declare class FormGroupName extends AbstractFormGroupDirective implements
 
 export declare class FormsModule {
     static withConfig(opts: { warnOnDeprecatedNgFormSelector?: 'never' | 'once' | 'always';
-    }): ModuleWithProviders;
+    }): ModuleWithProviders<FormsModule>;
 }
 
 export declare class MaxLengthValidator implements Validator, OnChanges {
