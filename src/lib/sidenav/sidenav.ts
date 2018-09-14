@@ -54,7 +54,7 @@ export class MatSidenavContent extends MatDrawerContent {
   moduleId: module.id,
   selector: 'mat-sidenav',
   exportAs: 'matSidenav',
-  template: '<ng-content></ng-content>',
+  templateUrl: 'drawer.html',
   animations: [matDrawerAnimations.transformDrawer],
   host: {
     'class': 'mat-drawer mat-sidenav',

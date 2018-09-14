@@ -103,7 +103,7 @@ export class MatDrawerContent extends CdkScrollable implements AfterContentInit 
   moduleId: module.id,
   selector: 'mat-drawer',
   exportAs: 'matDrawer',
-  template: '<ng-content></ng-content>',
+  templateUrl: 'drawer.html',
   animations: [matDrawerAnimations.transformDrawer],
   host: {
     'class': 'mat-drawer',
