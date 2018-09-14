@@ -16,6 +16,7 @@ import {
   PAGE_UP,
   RIGHT_ARROW,
   UP_ARROW,
+  SPACE,
 } from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
@@ -197,6 +198,7 @@ export class MatMultiYearView<D> implements AfterContentInit {
                 this._activeDate, event.altKey ? yearsPerPage * 10 : yearsPerPage);
         break;
       case ENTER:
+      case SPACE:
         this._yearSelected(this._dateAdapter.getYear(this._activeDate));
         break;
       default:

@@ -16,6 +16,7 @@ import {
   PAGE_UP,
   RIGHT_ARROW,
   UP_ARROW,
+  SPACE,
 } from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
@@ -212,6 +213,7 @@ export class MatMonthView<D> implements AfterContentInit {
             this._dateAdapter.addCalendarMonths(this._activeDate, 1);
         break;
       case ENTER:
+      case SPACE:
         if (!this.dateFilter || this.dateFilter(this._activeDate)) {
           this._dateSelected(this._dateAdapter.getDate(this._activeDate));
           this._userSelection.emit();

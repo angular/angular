@@ -9,6 +9,7 @@ import {
   PAGE_UP,
   RIGHT_ARROW,
   UP_ARROW,
+  SPACE,
 } from '@angular/cdk/keycodes';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing';
 import {Component} from '@angular/core';
@@ -252,6 +253,18 @@ describe('MatMonthView', () => {
           expect(testComponent.selected).toEqual(new Date(2017, JAN, 10));
 
           dispatchKeyboardEvent(calendarBodyEl, 'keydown', ENTER);
+          fixture.detectChanges();
+
+          expect(testComponent.selected).toEqual(new Date(2017, JAN, 4));
+        });
+
+        it('should select active date on space', () => {
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', LEFT_ARROW);
+          fixture.detectChanges();
+
+          expect(testComponent.selected).toEqual(new Date(2017, JAN, 10));
+
+          dispatchKeyboardEvent(calendarBodyEl, 'keydown', SPACE);
           fixture.detectChanges();
 
           expect(testComponent.selected).toEqual(new Date(2017, JAN, 4));

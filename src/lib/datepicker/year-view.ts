@@ -16,6 +16,7 @@ import {
   PAGE_UP,
   RIGHT_ARROW,
   UP_ARROW,
+  SPACE,
 } from '@angular/cdk/keycodes';
 import {
   AfterContentInit,
@@ -188,6 +189,7 @@ export class MatYearView<D> implements AfterContentInit {
             this._dateAdapter.addCalendarYears(this._activeDate, event.altKey ? 10 : 1);
         break;
       case ENTER:
+      case SPACE:
         this._monthSelected(this._dateAdapter.getMonth(this._activeDate));
         break;
       default:
