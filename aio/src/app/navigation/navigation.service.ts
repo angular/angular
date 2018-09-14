@@ -95,8 +95,11 @@ export class NavigationService {
       this.location.currentPath,
 
       (navMap, url) => {
-        const urlKey = url.startsWith('api/') ? 'api' : url;
-        return navMap.get(urlKey) || { '' : { view: '', url: urlKey, nodes: [] }};
+        const matchSpecialUrls = /^api|^cli/.exec(url);
+        if (matchSpecialUrls) {
+          url = matchSpecialUrls[0];
+        }
+        return navMap.get(url) || { '' : { view: '', url: url, nodes: [] }};
       })
       .pipe(publishReplay(1));
     (currentNodes as ConnectableObservable<CurrentNodes>).connect();

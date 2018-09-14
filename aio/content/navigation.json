@@ -588,6 +588,17 @@
       "url": "api"
     },
     {
+      "title": "CLI",
+      "tooltip": "Angular CLI command reference.",
+      "children": [
+        {
+          "title": "Overview",
+          "tooltip": "An overview of the CLI tool",
+          "url": "cli"
+        }
+      ]
+    },
+    {
       "url": "guide/change-log",
       "title": "Change Log",
       "tooltip": "Angular Documentation Change Log",
