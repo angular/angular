@@ -593,6 +593,17 @@
       "url": "api"
     },
     {
+      "title": "CLI Commands",
+      "tooltip": "Angular CLI command reference.",
+      "children": [
+        {
+          "title": "Using the CLI",
+          "tooltip": "An overview of how to use the CLI tool",
+          "url": "cli"
+        }
+      ]
+    },
+    {
       "url": "guide/change-log",
       "title": "Change Log",
       "tooltip": "Angular Documentation Change Log",
