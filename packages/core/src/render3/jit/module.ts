@@ -228,7 +228,7 @@ function flatten<T>(values: any[]): T[] {
   return out;
 }
 
-function expandModuleWithProviders(value: Type<any>| ModuleWithProviders): Type<any> {
+function expandModuleWithProviders(value: Type<any>| ModuleWithProviders<{}>): Type<any> {
   if (isModuleWithProviders(value)) {
     return value.ngModule;
   }
@@ -244,7 +244,7 @@ function wrapReference(value: Type<any>): R3Reference {
   return {value: wrapped, type: wrapped};
 }
 
-function isModuleWithProviders(value: any): value is ModuleWithProviders {
+function isModuleWithProviders(value: any): value is ModuleWithProviders<{}> {
   return (value as{ngModule?: any}).ngModule !== undefined;
 }
 
