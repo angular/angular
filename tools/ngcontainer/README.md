@@ -6,7 +6,7 @@ This docker container provides everything needed to build and test Angular appli
 - npm 6.2.0
 - yarn 1.9.2
 - Java 8 (for Closure Compiler and Bazel)
-- Bazel build tool v0.16.1 - http://bazel.build
+- Bazel build tool v0.17.1 - http://bazel.build
 - Google Chrome 69.0.3497.81
 - Mozilla Firefox 47.0.1
 - xvfb (virtual framebuffer) for headless testing
