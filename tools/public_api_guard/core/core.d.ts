@@ -570,6 +570,7 @@ export declare abstract class NgModuleFactoryLoader {
 
 export declare abstract class NgModuleRef<T> {
     abstract readonly componentFactoryResolver: ComponentFactoryResolver;
+    abstract readonly destroyed: boolean;
     abstract readonly injector: Injector;
     abstract readonly instance: T;
     abstract destroy(): void;
