@@ -37,7 +37,7 @@ module.exports = new Package('angular.io', [gitPackage, apiPackage, contentPacka
     checkAnchorLinksProcessor.$runBefore = ['convertToJsonProcessor'];
     checkAnchorLinksProcessor.$runAfter = ['fixInternalDocumentLinks'];
     // We only want to check docs that are going to be output as JSON docs.
-    checkAnchorLinksProcessor.checkDoc = (doc) => doc.path && doc.outputPath && extname(doc.outputPath) === '.json';
+    checkAnchorLinksProcessor.checkDoc = (doc) => doc.path && doc.outputPath && extname(doc.outputPath) === '.json' && doc.docType !== 'json-doc';
     // Since we have a `base[href="/"]` arrangement all links are relative to that and not relative to the source document's path
     checkAnchorLinksProcessor.base = '/';
     // Ignore links to local assets
