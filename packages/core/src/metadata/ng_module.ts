@@ -75,16 +75,17 @@ export interface NgModuleDef<T, Declarations, Imports, Exports> {
  * @param T the module type. In Ivy applications, this must be explicitly
  * provided.
  */
-export interface ModuleWithProviders<T = any> {
+export interface ModuleWithProviders<
+    T = any /** TODO(alxhub): remove default when callers pass explicit type param */> {
   ngModule: Type<T>;
   providers?: Provider[];
 }
 
 /**
  * A schema definition associated with an NgModule.
- * 
+ *
  * @see `@NgModule`, `CUSTOM_ELEMENTS_SCHEMA`, `NO_ERRORS_SCHEMA`
- * 
+ *
  * @param name The name of a defined schema.
  *
  * @experimental
@@ -135,7 +136,7 @@ export interface NgModule {
   /**
    * The set of injectable objects that are available in the injector
    * of this module.
-   * 
+   *
    * @see [Dependency Injection guide](guide/dependency-injection)
    * @see [NgModule guide](guide/providers)
    *
@@ -145,14 +146,14 @@ export interface NgModule {
    * into any component, directive, pipe or service that is a child of this injector.
    * The NgModule used for bootstrapping uses the root injector, and can provide dependencies
    * to any part of the app.
-   * 
+   *
    * A lazy-loaded module has its own injector, typically a child of the app root injector.
    * Lazy-loaded services are scoped to the lazy-loaded module's injector.
    * If a lazy-loaded module also provides the `UserService`, any component created
    * within that module's context (such as by router navigation) gets the local instance
-   * of the service, not the instance in the root injector. 
+   * of the service, not the instance in the root injector.
    * Components in external modules continue to receive the instance provided by their injectors.
-   * 
+   *
    * ### Example
    *
    * The following example defines a class that is injected in
@@ -236,7 +237,7 @@ export interface NgModule {
    * ```
    *
    */
-  imports?: Array<Type<any>|ModuleWithProviders|any[]>;
+  imports?: Array<Type<any>|ModuleWithProviders<{}>|any[]>;
 
   /**
    * The set of components, directives, and pipes declared in this

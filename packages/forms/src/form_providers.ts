@@ -34,7 +34,7 @@ export class FormsModule {
    */
   static withConfig(opts: {
     /** @deprecated as of v6 */ warnOnDeprecatedNgFormSelector?: 'never' | 'once' | 'always',
-  }): ModuleWithProviders {
+  }): ModuleWithProviders<FormsModule> {
     return {
       ngModule: FormsModule,
       providers:
@@ -48,7 +48,7 @@ export class FormsModule {
  * An `NgModule` that registers the directives and providers for reactive forms.
  *
  * @see [Reactive Forms Guide](/guide/reactive-forms)
- * 
+ *
  */
 @NgModule({
   declarations: [REACTIVE_DRIVEN_DIRECTIVES],

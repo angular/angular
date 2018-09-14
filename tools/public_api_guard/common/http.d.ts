@@ -1482,11 +1482,11 @@ export declare class HttpClientModule {
 }
 
 export declare class HttpClientXsrfModule {
-    static disable(): ModuleWithProviders;
+    static disable(): ModuleWithProviders<HttpClientXsrfModule>;
     static withOptions(options?: {
         cookieName?: string;
         headerName?: string;
-    }): ModuleWithProviders;
+    }): ModuleWithProviders<HttpClientXsrfModule>;
 }
 
 export interface HttpDownloadProgressEvent extends HttpProgressEvent {
