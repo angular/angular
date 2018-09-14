@@ -813,6 +813,9 @@
     "name": "makeParamDecorator"
   },
   {
+    "name": "markDirty"
+  },
+  {
     "name": "markDirtyIfOnPush"
   },
   {
@@ -1024,8 +1027,5 @@
   },
   {
     "name": "wrapListenerWithDirtyAndDefault"
-  },
-  {
-    "name": "wrapListenerWithDirtyLogic"
   }
 ]

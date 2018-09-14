@@ -2469,9 +2469,6 @@
     "name": "wrapListenerWithDirtyAndDefault"
   },
   {
-    "name": "wrapListenerWithDirtyLogic"
-  },
-  {
     "name": "wtfCreateScope"
   },
   {
