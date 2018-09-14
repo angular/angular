@@ -382,12 +382,12 @@ describe('Overlay directives', () => {
     });
 
     it('should allow for flexible positioning to be enabled', () => {
-      expect(fixture.componentInstance.connectedOverlayDirective.flexibleDiemsions).not.toBe(true);
+      expect(fixture.componentInstance.connectedOverlayDirective.flexibleDimensions).not.toBe(true);
 
       fixture.componentInstance.flexibleDimensions = true;
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.connectedOverlayDirective.flexibleDiemsions).toBe(true);
+      expect(fixture.componentInstance.connectedOverlayDirective.flexibleDimensions).toBe(true);
     });
 
     it('should allow for growing after open to be enabled', () => {

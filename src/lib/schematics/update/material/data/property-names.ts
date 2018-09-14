@@ -352,6 +352,20 @@ export const propertyNames: VersionChanges<MaterialPropertyNameData> = {
           }
         }
       ]
+    },
+
+    // TODO(devversion): this should be part of the V6 to V7 upgrade
+    {
+      pr: 'https://github.com/angular/material2/pull/12927',
+      changes: [
+        {
+          replace: 'flexibleDiemsions',
+          replaceWith: 'flexibleDimensions',
+          whitelist: {
+            classes: ['CdkConnectedOverlay']
+          }
+        }
+      ]
     }
   ]
 };
