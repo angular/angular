@@ -544,6 +544,7 @@ export abstract class AbstractControl {
   updateValueAndValidity(opts: {onlySelf?: boolean, emitEvent?: boolean} = {}): void {
     
     if(!(this.pristine && this.untouched)){
+    
         this._setInitialStatus();
         this._updateValue();
 
