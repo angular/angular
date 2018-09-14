@@ -30,6 +30,7 @@ ts_library(
 
 jasmine_node_test(
     name = "check_types",
+    timeout = "long",  # 900 seconds
     bootstrap = ["angular/tools/testing/init_node_spec.js"],
     data = [
         "//packages/common:npm_package",
