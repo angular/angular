@@ -100,7 +100,7 @@ export class HttpClientXsrfModule {
   /**
    * Disable the default XSRF protection.
    */
-  static disable(): ModuleWithProviders {
+  static disable(): ModuleWithProviders<HttpClientXsrfModule> {
     return {
       ngModule: HttpClientXsrfModule,
       providers: [
@@ -120,7 +120,7 @@ export class HttpClientXsrfModule {
   static withOptions(options: {
     cookieName?: string,
     headerName?: string,
-  } = {}): ModuleWithProviders {
+  } = {}): ModuleWithProviders<HttpClientXsrfModule> {
     return {
       ngModule: HttpClientXsrfModule,
       providers: [
