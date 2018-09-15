@@ -9,10 +9,10 @@ import {Logger} from '../../lib/common/utils';
 
 const EXISTING_BUILDS = [10, 20, 30, 40];
 const EXISTING_DOWNLOADS = [
-  'downloads/10-ABCDEF0-build.zip',
-  'downloads/10-1234567-build.zip',
-  'downloads/20-ABCDEF0-build.zip',
-  'downloads/20-1234567-build.zip',
+  '10-ABCDEF0-build.zip',
+  '10-1234567-build.zip',
+  '20-ABCDEF0-build.zip',
+  '20-1234567-build.zip',
 ];
 const OPEN_PRS = [10, 40];
 const ANY_DATE = jasmine.any(String);
@@ -26,7 +26,7 @@ describe('BuildCleaner', () => {
   beforeEach(() => {
     loggerErrorSpy = spyOn(Logger.prototype, 'error');
     loggerLogSpy = spyOn(Logger.prototype, 'log');
-    cleaner = new BuildCleaner('/foo/bar', 'baz', 'qux', '12345', 'downloads', 'build.zip');
+    cleaner = new BuildCleaner('/foo/bar', 'baz', 'qux', '12345', '/downloads', 'build.zip');
   });
 
   describe('constructor()', () => {
@@ -54,10 +54,12 @@ describe('BuildCleaner', () => {
         toThrowError('Missing or empty required parameter \'githubToken\'!');
     });
 
+
     it('should throw if \'downloadsDir\' is empty', () => {
       expect(() => new BuildCleaner('/foo/bar', 'baz', 'qux', '12345', '', 'build.zip')).
         toThrowError('Missing or empty required parameter \'downloadsDir\'!');
     });
+
 
     it('should throw if \'artifactPath\' is empty', () => {
       expect(() => new BuildCleaner('/foo/bar', 'baz', 'qux', '12345', 'downloads', '')).
@@ -166,6 +168,7 @@ describe('BuildCleaner', () => {
       }
     });
 
+
     it('should reject if \'removeUnnecessaryDownloads()\' rejects', async () => {
       try {
         cleanerRemoveUnnecessaryDownloadsSpy.and.callFake(() => Promise.reject('Test'));
@@ -174,6 +177,7 @@ describe('BuildCleaner', () => {
         expect(err).toBe('Test');
       }
     });
+
   });
 
 
@@ -283,12 +287,14 @@ describe('BuildCleaner', () => {
       prDeferred.resolve([{id: 0, number: 1}, {id: 1, number: 2}, {id: 2, number: 3}]);
     });
 
+
     it('should log the number of open PRs', () => {
       promise.then(prNumbers => {
         expect(loggerLogSpy).toHaveBeenCalledWith(
           ANY_DATE, 'BuildCleaner:        ', `Open pull requests: ${prNumbers}`);
       });
     });
+
   });
 
 
@@ -308,9 +314,9 @@ describe('BuildCleaner', () => {
     });
 
 
-    it('should get the contents of the builds directory', () => {
+    it('should get the contents of the downloads directory', () => {
       expect(fsReaddirSpy).toHaveBeenCalled();
-      expect(fsReaddirSpy.calls.argsFor(0)[0]).toBe('downloads');
+      expect(fsReaddirSpy.calls.argsFor(0)[0]).toBe('/downloads');
     });
 
 
@@ -324,7 +330,7 @@ describe('BuildCleaner', () => {
     });
 
 
-    it('should resolve with the returned files (as numbers)', done => {
+    it('should resolve with the returned file names', done => {
       promise.then(result => {
         expect(result).toEqual(EXISTING_DOWNLOADS);
         done();
@@ -460,25 +466,36 @@ describe('BuildCleaner', () => {
 
 
   describe('removeUnnecessaryDownloads()', () => {
+    let shellRmSpy: jasmine.Spy;
+
     beforeEach(() => {
-      spyOn(shell, 'rm');
+      shellRmSpy = spyOn(shell, 'rm');
+    });
+
+
+    it('should log the number of existing downloads and downloads to be removed', () => {
+      cleaner.removeUnnecessaryDownloads(EXISTING_DOWNLOADS, OPEN_PRS);
+
+      expect(loggerLogSpy).toHaveBeenCalledWith('Existing downloads: 4');
+      expect(loggerLogSpy).toHaveBeenCalledWith('Removing 2 download(s): 20-ABCDEF0-build.zip, 20-1234567-build.zip');
+    });
+
+
+    it('should construct full paths to directories (by prepending \'downloadsDir\')', () => {
+      cleaner.removeUnnecessaryDownloads(['dl-1', 'dl-2', 'dl-3'], []);
+
+      expect(shellRmSpy).toHaveBeenCalledWith(normalize('/downloads/dl-1'));
+      expect(shellRmSpy).toHaveBeenCalledWith(normalize('/downloads/dl-2'));
+      expect(shellRmSpy).toHaveBeenCalledWith(normalize('/downloads/dl-3'));
     });
 
 
     it('should remove the downloads that do not correspond to open PRs', () => {
       cleaner.removeUnnecessaryDownloads(EXISTING_DOWNLOADS, OPEN_PRS);
-      expect(shell.rm).toHaveBeenCalledTimes(2);
-      expect(shell.rm).toHaveBeenCalledWith('downloads/20-ABCDEF0-build.zip');
-      expect(shell.rm).toHaveBeenCalledWith('downloads/20-1234567-build.zip');
+      expect(shellRmSpy).toHaveBeenCalledTimes(2);
+      expect(shellRmSpy).toHaveBeenCalledWith(normalize('/downloads/20-ABCDEF0-build.zip'));
+      expect(shellRmSpy).toHaveBeenCalledWith(normalize('/downloads/20-1234567-build.zip'));
     });
 
-
-    it('should log the number of existing builds and builds to be removed', () => {
-      cleaner.removeUnnecessaryDownloads(EXISTING_DOWNLOADS, OPEN_PRS);
-
-      expect(loggerLogSpy).toHaveBeenCalledWith('Existing downloads: 4');
-      expect(loggerLogSpy).toHaveBeenCalledWith(
-        'Removing 2 download(s): downloads/20-ABCDEF0-build.zip, downloads/20-1234567-build.zip');
-    });
   });
 });
