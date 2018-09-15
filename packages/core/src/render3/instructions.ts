@@ -1237,7 +1237,7 @@ export function listener(
       const cleanupFn = renderer.listen(node.native, eventName, listenerFn);
       storeCleanupFn(viewData, cleanupFn);
     } else {
-      const wrappedListener = wrapListenerWithDirtyAndDefault(viewData, listenerFn);
+      const wrappedListener = wrapListenerWithPreventDefault(listenerFn);
       node.native.addEventListener(eventName, wrappedListener, useCapture);
       const cleanupInstances = getCleanup(viewData);
       cleanupInstances.push(wrappedListener);
@@ -2330,13 +2330,9 @@ export function markDirtyIfOnPush(node: LElementNode): void {
   }
 }
 
-/**
- * Wraps an event listener so its host view and its ancestor views will be marked dirty
- * whenever the event fires. Also wraps with preventDefault behavior.
- */
-export function wrapListenerWithDirtyAndDefault(
-    view: LViewData, listenerFn: (e?: any) => any): EventListener {
-  return function wrapListenerIn_markViewDirty(e: Event) {
+/** Wraps an event listener with preventDefault behavior. */
+export function wrapListenerWithPreventDefault(listenerFn: (e?: any) => any): EventListener {
+  return function wrapListenerIn_preventDefault(e: Event) {
     if (listenerFn(e) === false) {
       e.preventDefault();
       // Necessary for legacy browsers that don't support preventDefault (e.g. IE)
