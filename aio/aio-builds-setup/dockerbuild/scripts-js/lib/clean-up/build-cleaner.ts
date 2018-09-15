@@ -122,6 +122,6 @@ export class BuildCleaner {
     this.logger.log(`Existing downloads: ${existingDownloads.length}`);
     this.logger.log(`Removing ${toRemove.length} download(s): ${toRemove.join(', ')}`);
 
-    toRemove.forEach(filePath => shell.rm(filePath));
+    toRemove.forEach(filePath => shell.rm(path.join(this.downloadsDir, filePath)));
   }
 }
