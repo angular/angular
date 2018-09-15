@@ -38,7 +38,8 @@ export class GithubApi {
     return this.request<T>('post', path, data);
   }
 
-  public getPaginated<T>(pathname: string, baseParams: RequestParams = {}, currentPage: number = 0): Promise<T[]> {
+  // In GitHub API paginated requests, page numbering is 1-based. (https://developer.github.com/v3/#pagination)
+  public getPaginated<T>(pathname: string, baseParams: RequestParams = {}, currentPage: number = 1): Promise<T[]> {
     const perPage = 100;
     const params = {
       ...baseParams,
