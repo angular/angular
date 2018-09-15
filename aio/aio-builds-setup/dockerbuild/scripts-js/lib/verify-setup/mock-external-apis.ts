@@ -76,7 +76,7 @@ const GITHUB_PULLS_URL = `/repos/${AIO_GITHUB_ORGANIZATION}/${AIO_GITHUB_REPO}/p
 const GITHUB_TEAMS_URL = `/orgs/${AIO_GITHUB_ORGANIZATION}/teams`;
 
 const getIssueUrl = (prNum: number) => `${GITHUB_ISSUES_URL}/${prNum}`;
-const getFilesUrl = (prNum: number, pageNum = 0) => `${GITHUB_PULLS_URL}/${prNum}/files?page=${pageNum}&per_page=100`;
+const getFilesUrl = (prNum: number, pageNum = 1) => `${GITHUB_PULLS_URL}/${prNum}/files?page=${pageNum}&per_page=100`;
 const getCommentUrl = (prNum: number) => `${getIssueUrl(prNum)}/comments`;
 const getTeamMembershipUrl = (teamId: number, username: string) => `/teams/${teamId}/memberships/${username}`;
 
@@ -97,7 +97,7 @@ const githubApi = nock(GITHUB_API_HOST).log(log).persist().matchHeader('Authoriz
 //////////////////////////////
 
 // GENERAL responses
-githubApi.get(GITHUB_TEAMS_URL + '?page=0&per_page=100').reply(200, TEST_TEAM_INFO);
+githubApi.get(GITHUB_TEAMS_URL + '?page=1&per_page=100').reply(200, TEST_TEAM_INFO);
 githubApi.post(getCommentUrl(PrNums.TRUST_CHECK_ACTIVE_TRUSTED_USER)).reply(200);
 
 // BUILD_INFO errors
