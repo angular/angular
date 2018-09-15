@@ -107,7 +107,7 @@ function overrideSetup() {
     const newName = 'New Name';
 
     page.nameInput.value = newName;
-    page.nameInput.dispatchEvent(newEvent('input')); // tell Angular
+    page.nameInput.dispatchEvent(new Event('input')); // tell Angular
 
     expect(component.hero.name).toBe(newName, 'component hero has new name');
     expect(hdsSpy.testHero.name).toBe(origName, 'service hero unchanged before save');
