@@ -30,5 +30,5 @@ console.log(model.isSelected(4)) //-> true
 console.log(model.sort()) //-> [1,2,3,4]
 
 // listen for changes
-model.changes.subscribe(s => console.log(s));
+model.changed.subscribe(s => console.log(s));
 ```
