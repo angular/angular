@@ -21,8 +21,8 @@ import {createComponentFile, ExternalResource} from './component-file';
  */
 export class ComponentWalker extends RuleWalker {
 
-  visitInlineTemplate(_template: ts.StringLiteral) {}
-  visitInlineStylesheet(_stylesheet: ts.StringLiteral) {}
+  visitInlineTemplate(_template: ts.StringLiteralLike) {}
+  visitInlineStylesheet(_stylesheet: ts.StringLiteralLike) {}
 
   visitExternalTemplate(_template: ExternalResource) {}
   visitExternalStylesheet(_stylesheet: ExternalResource) {}
@@ -63,45 +63,26 @@ export class ComponentWalker extends RuleWalker {
 
     for (const property of directiveMetadata.properties as ts.NodeArray<ts.PropertyAssignment>) {
       const propertyName = property.name.getText();
-      const initializerKind = property.initializer.kind;
 
-      if (propertyName === 'template') {
-        this.visitInlineTemplate(property.initializer as ts.StringLiteral);
+      if (propertyName === 'template' && ts.isStringLiteralLike(property.initializer)) {
+        this.visitInlineTemplate(property.initializer);
       }
 
-      if (propertyName === 'templateUrl' && initializerKind === ts.SyntaxKind.StringLiteral) {
-        this._reportExternalTemplate(property.initializer as ts.StringLiteral);
+      if (propertyName === 'templateUrl' && ts.isStringLiteralLike(property.initializer)) {
+        this._reportExternalTemplate(property.initializer);
       }
 
-      if (propertyName === 'styles' && initializerKind === ts.SyntaxKind.ArrayLiteralExpression) {
-        this._reportInlineStyles(property.initializer as ts.ArrayLiteralExpression);
+      if (propertyName === 'styles' && ts.isArrayLiteralExpression(property.initializer)) {
+        this._reportInlineStyles(property.initializer);
       }
 
-      if (propertyName === 'styleUrls' &&
-          initializerKind === ts.SyntaxKind.ArrayLiteralExpression) {
-        this._visitExternalStylesArrayLiteral(property.initializer as ts.ArrayLiteralExpression);
+      if (propertyName === 'styleUrls' && ts.isArrayLiteralExpression(property.initializer)) {
+        this._visitExternalStylesArrayLiteral(property.initializer);
       }
     }
   }
 
-  private _reportInlineStyles(inlineStyles: ts.ArrayLiteralExpression) {
-    inlineStyles.elements.forEach(element => {
-      this.visitInlineStylesheet(element as ts.StringLiteral);
-    });
-  }
-
-  private _visitExternalStylesArrayLiteral(styleUrls: ts.ArrayLiteralExpression) {
-    styleUrls.elements.forEach((node: ts.StringLiteral) => {
-      const stylePath = resolve(join(dirname(this.getSourceFile().fileName), node.text));
-
-      // Do not report the specified additional files multiple times.
-      if (!this.extraFiles.has(stylePath)) {
-        this._reportExternalStyle(stylePath);
-      }
-    });
-  }
-
-  private _reportExternalTemplate(node: ts.StringLiteral) {
+  private _reportExternalTemplate(node: ts.StringLiteralLike) {
     const templatePath = resolve(join(dirname(this.getSourceFile().fileName), node.text));
 
     // Do not report the specified additional files multiple times.
@@ -111,8 +92,7 @@ export class ComponentWalker extends RuleWalker {
 
     // Check if the external template file exists before proceeding.
     if (!existsSync(templatePath)) {
-      console.error(`PARSE ERROR: ${this.getSourceFile().fileName}:` +
-        ` Could not find template: "${templatePath}".`);
+      this._createResourceNotFoundFailure(node, templatePath);
       return;
     }
 
@@ -122,14 +102,35 @@ export class ComponentWalker extends RuleWalker {
     this.visitExternalTemplate(templateFile);
   }
 
-  _reportExternalStyle(stylePath: string) {
-    // Check if the external stylesheet file exists before proceeding.
-    if (!existsSync(stylePath)) {
-      console.error(`PARSE ERROR: ${this.getSourceFile().fileName}: ` +
-          `Could not find stylesheet: "${stylePath}".`);
-      return;
-    }
+  private _reportInlineStyles(expression: ts.ArrayLiteralExpression) {
+    expression.elements.forEach(node => {
+      if (ts.isStringLiteralLike(node)) {
+        this.visitInlineStylesheet(node);
+      }
+    });
+  }
 
+  private _visitExternalStylesArrayLiteral(expression: ts.ArrayLiteralExpression) {
+    expression.elements.forEach(node => {
+      if (ts.isStringLiteralLike(node)) {
+        const stylePath = resolve(join(dirname(this.getSourceFile().fileName), node.text));
+
+        // Do not report the specified additional files multiple times.
+        if (this.extraFiles.has(stylePath)) {
+          return;
+        }
+
+        // Check if the external stylesheet file exists before proceeding.
+        if (!existsSync(stylePath)) {
+          return this._createResourceNotFoundFailure(node, stylePath);
+        }
+
+        this._reportExternalStyle(stylePath);
+      }
+    });
+  }
+
+  _reportExternalStyle(stylePath: string) {
     // Create a fake TypeScript source file that includes the stylesheet content.
     const stylesheetFile = createComponentFile(stylePath, readFileSync(stylePath, 'utf8'));
 
@@ -158,5 +159,14 @@ export class ComponentWalker extends RuleWalker {
     }
 
     return null;
+  }
+
+  /**
+   * Creates a TSLint failure that reports that the resource file that belongs to the specified
+   * TypeScript node could not be resolved in the file system.
+   */
+  private _createResourceNotFoundFailure(node: ts.Node, resourceUrl: string) {
+    this.addFailureAtNode(node, `Could not resolve resource file: "${resourceUrl}". ` +
+        `Skipping automatic upgrade for this file.`);
   }
 }

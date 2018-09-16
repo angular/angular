@@ -34,7 +34,7 @@ export class Walker extends ComponentWalker {
   /** Change data that upgrades to the specified target version. */
   data = getChangesForTarget(this.getOptions()[0], cssSelectors);
 
-  visitInlineTemplate(template: ts.StringLiteral) {
+  visitInlineTemplate(template: ts.StringLiteralLike) {
     this._createReplacementsForContent(template, template.getText())
       .forEach(data => addFailureAtReplacement(this, data.failureMessage, data.replacement));
   }

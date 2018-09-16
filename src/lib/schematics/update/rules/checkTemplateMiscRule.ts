@@ -26,7 +26,7 @@ export class Rule extends Rules.AbstractRule {
 
 export class Walker extends ComponentWalker {
 
-  visitInlineTemplate(template: ts.StringLiteral) {
+  visitInlineTemplate(template: ts.StringLiteralLike) {
     this._createFailuresForContent(template, template.getText())
       .forEach(data => this.addFailureFromStartToEnd(data.start, data.end, data.message));
   }

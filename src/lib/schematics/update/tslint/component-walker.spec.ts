@@ -52,10 +52,8 @@ describe('ComponentWalker', () => {
     const sourceFile = createSourceFile(externalStylesheetSource);
     const walker = new ComponentWalker(sourceFile, defaultRuleOptions);
 
-    spyOn(console, 'error');
-
     expect(() => walker.walk(sourceFile)).not.toThrow();
-    expect(console.error).toHaveBeenCalledTimes(1);
+    expect(walker.getFailures().length).toBe(1);
   });
 
   it('should report inline templates', () => {
@@ -90,10 +88,35 @@ describe('ComponentWalker', () => {
     const sourceFile = createSourceFile(externalTemplateSource);
     const walker = new ComponentWalker(sourceFile, defaultRuleOptions);
 
-    spyOn(console, 'error');
+    expect(() => walker.walk(sourceFile)).not.toThrow();
+    expect(walker.getFailures().length).toBe(1);
+  });
+
+  it('should not throw if the inline template could not be resolved', () => {
+    const sourceFile = createSourceFile(`
+      @Component({
+        template: myTemplate,
+      })
+      export class MyComponent {}
+    `);
+    const walker = new ComponentWalker(sourceFile, defaultRuleOptions);
 
     expect(() => walker.walk(sourceFile)).not.toThrow();
-    expect(console.error).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not throw if inline styles could not be resolved', () => {
+    const sourceFile = createSourceFile(`
+      @Component({
+        styles: [styleA, styleB, 'c', 'd'],
+      })
+      export class MyComponent {}
+    `);
+    const walker = new ComponentWalker(sourceFile, defaultRuleOptions);
+
+    spyOn(walker, 'visitInlineStylesheet');
+
+    expect(() => walker.walk(sourceFile)).not.toThrow();
+    expect(walker.visitInlineStylesheet).toHaveBeenCalledTimes(2);
   });
 });
 

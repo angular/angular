@@ -43,7 +43,7 @@ export class Walker extends ComponentWalker {
     this._reportExtraStylesheetFiles();
   }
 
-  visitInlineStylesheet(literal: ts.StringLiteral) {
+  visitInlineStylesheet(literal: ts.StringLiteralLike) {
     this._createReplacementsForContent(literal, literal.getText())
       .forEach(data => addFailureAtReplacement(this, data.failureMessage, data.replacement));
   }
