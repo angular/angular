@@ -8,13 +8,13 @@
 A Dependency Injection system supplies the dependent objects (called the _dependencies_)
 when it creates an instance of an object.
 -->
-**의존성 주입 (Dependency Injection, DI)**은 의존성으로 필요한 객체를 클래스 외부에서 만들어서 전달받는 디자인 패턴입니다. 그리고 이 때 의존성 주입 시스템이 의존성 객체를 만드는 역할을 합니다.
+**의존성 주입 (Dependency Injection, DI)**은 의존성으로 필요한 객체를 클래스 외부에서 만들고 전달받기만 하는 디자인 패턴입니다. 이 때 의존성 객체를 만드는 역할은 의존성 주입 시스템이 합니다.
 
 <!--
 The [Dependency Injection pattern](guide/dependency-injection-pattern) page describes this general approach.
 _The guide you're reading now_ explains how Angular's own Dependency Injection system works.
 -->
-의존성 주입의 일반적인 내용은 [의존성 주입 패턴](guide/dependency-injection-pattern) 문서에서 이미 소개했습니다. _이번 가이드 문서_ 에서는 Angular의 의존성 주입 시스템이 어떻게 동작하는지 소개합니다.
+의존성 주입의 일반적인 내용은 [의존성 주입 패턴](guide/dependency-injection-pattern) 문서에서 이미 소개했습니다. _이번 가이드 문서_ 에서는 Angular에서는 의존성 주입 시스템이 어떻게 동작하는지 소개합니다.
 
 <!--
 ## DI by example
@@ -54,7 +54,7 @@ The `HeroesComponent` is the top-level heroes component.
 Its only purpose is to display the `HeroListComponent`
 which displays a list of hero names.
 -->
-`HeroesComponent`는 이 예제의 최상위 컴포넌트입니다. 이 컴포넌트의 역할은 화면에 히어로의 목록을 `HeroListComponent`로 표시하는 것입니다.
+`HeroesComponent`는 이 예제의 최상위 컴포넌트입니다. 이 컴포넌트는 역할은 `HeroListComponent`를 사용해서 히어로의 목록을 화면에 표시하는 것입니다.
 
 <!--
 This version of the `HeroListComponent` gets its `heroes` from the `HEROES` array, an in-memory collection
@@ -72,13 +72,13 @@ As soon as you try to test this component or get heroes from a remote server,
 you'll have to change the implementation of `HerosListComponent` and
 replace every other use of the `HEROES` mock data.
 -->
-개발 초기 단계에는 이렇게 구현해도 문제되지 않지만, 이상적인 방법은 아닙니다. 개발을 진행하면서 이 컴포넌트를 테스트해야 하거나, 원격 서버에서 목록을 가져와야 하면 `HeroListComponent`에서 이 내용과 관련된 코드를 수정해야 하며 `HEROES` 목 데이터를 사용하는 다른 코드도 수정해야 합니다.
+개발 초기 단계에는 이렇게 구현해도 문제되지 않지만, 이상적인 방법은 아닙니다. 개발을 진행하면서 이 컴포넌트를 테스트해야 하거나, 원격 서버에서 목록을 가져와야 하는 경우가 생기면 `HeroListComponent`에서 이 내용과 관련된 코드를 수정해야 하며 `HEROES` 목 데이터를 사용하는 다른 코드도 수정해야 합니다.
 
 <!--
 It's better to hide these details inside a _service_ class, 
 [defined in its own file](#one-class-per-file).
 -->
-그래서 이 히어로의 목록을 제공하는 기능은 _서비스_ 클래스 안쪽으로 옮기는 것이 더 나은 방법이며, 이 서비스도 [개별 파일로](#one-class-per-file) 정의하는 것이 좋습니다.
+그래서 히어로의 목록을 제공하는 기능은 _서비스_ 클래스 안쪽으로 옮기는 것이 더 나은 방법이며, 서비스 클래스도 [개별 파일로](#one-class-per-file) 정의하는 것이 좋습니다.
 
 <!--
 ## Create an injectable _HeroService_
@@ -111,7 +111,7 @@ The `@Injectable` decorator is an essential ingredient in every Angular service 
 The rest of the class has been rewritten to expose a `getHeroes` method 
 that returns the same mock data as before.
 -->
-Angular 서비스를 정의할 때 `@Injectable` 데코레이터는 아주 중요한 역할을 합니다. 그리고 이전에 목 데이터를 가져왔던 로직은 이 클래스에 `getHeroes` 메소드로 다음과 같이 정의합니다.
+Angular 서비스를 정의할 때 `@Injectable` 데코레이터는 아주 중요한 역할을 합니다. 이 내용은 아래 섹션에서 자세하게 알아보기로 하고, 지금은 목 데이터를 가져왔던 로직을 이 클래스에 `getHeroes` 메소드로 다음과 같이 정의합니다.
 
 <code-example path="dependency-injection/src/app/heroes/hero.service.3.ts" title="src/app/heroes/hero.service.3.ts">
 </code-example>
@@ -146,7 +146,7 @@ A _service_ like `HeroService` is just a class in Angular until you register it 
 <!--
 An Angular injector is responsible for creating service instances and injecting them into classes like the `HeroListComponent`.
 -->
-그리고 Angular 인젝터는 이 서비스의 인스턴스를 생성하며, `HeroListComponent`와 같이 의존성이 주입되어야 할 클래스에 의존성을 주입합니다.
+그리고 이 서비스의 인스턴스는 Angular 인젝터가 생성하며, 이렇게 생성된 인스턴스를 `HeroListComponent`와 같은 클래스에 주입합니다.
 
 <!--
 You rarely create an Angular injector yourself.
@@ -159,7 +159,7 @@ starting with the _root injector_ that it creates during the [bootstrap process]
 <!--
 Angular doesn't automatically know how you want to create instances of your services or the injector to create your service. You must configure it by specifying providers for every service.
 -->
-서비스를 생성하는 방법을 Angular가 자동으로 알 수는 없습니다. 그래서 서비스 인스턴스를 생성하는 방법은 프로바이더로 등록해야 합니다.
+서비스를 생성하는 방법은 Angular가 자동으로 알 수 없습니다. 그래서 서비스 인스턴스를 생성하는 방법은 프로바이더로 등록해야 합니다.
 
 <!--
 **Providers** tell the injector _how to create the service_.
@@ -248,7 +248,7 @@ The second registers a value (`HERO_DI_CONFIG`) under the `APP_CONFIG` _injectio
 With the above registrations, Angular can inject the `UserService` or the `HERO_DI_CONFIG` value
 into any class that it creates.
 -->
-이렇게 등록하면 이 인젝터의 범위 안에서 `UserService`와 `HERO_DI_CONFIG` 값을 의존성으로 주입받아 사용할 수 있습니다.
+이렇게 등록하면 이 인젝터의 범위 안에서 `UserService`와 `HERO_DI_CONFIG` 인스턴스를 의존성으로 주입받아 사용할 수 있습니다.
 
 <div class="alert is-helpful">
 
@@ -269,7 +269,7 @@ _인젝션 토큰_ 과 _프로바이더_ 문법은 [아래](#providers)에서 �
 <!--
 In addition to providing the service application-wide or within a particular `@NgModule`, services can also be provided in specific components. Services provided in component-level is only available within that component injector or in any of its child components.
 -->
-서비스 프로바이더는 앱 전체 범위나 특정 `@NgModule` 범위에 등록할 수도 있지만, 특정 컴포넌트 범위로 등록할 수도 있습니다. 그러면 이 서비스는 컴포넌트 인젝터에 등록되며, 컴포넌트의 하위 컴포넌트에서만 사용할 수 있습니다.
+서비스 프로바이더는 앱 전체 범위나 특정 `@NgModule` 범위에 등록할 수도 있지만, 특정 컴포넌트 범위로 등록할 수도 있습니다. 그러면 이 서비스는 컴포넌트 인젝터에 등록되며, 이 컴포넌트의 하위 계층에서만 사용할 수 있습니다.
 
 <!--
 The example below shows a revised `HeroesComponent` that registers the `HeroService` in its `providers` array.
@@ -296,7 +296,7 @@ The choices lead to differences in the final bundle size, service _scope_, and s
 <!--
 When you register providers in the **@Injectable** decorator of the service itself, optimization tools such as those used by the CLI's production builds can perform tree shaking, which removes services that aren't used by your app. Tree shaking results in smaller bundle sizes.
 -->
-서비스에 **@Injectable** 데코레이터를 사용하면 Angular CLI와 같은 빌드 툴의 트리 셰이킹 기능을 활용할 수 있습니다. 이 서비스가 실제로 사용되지 않는다면 트리 셰이킹 과정에 이 코드는 제거됩니다.
+서비스에 **@Injectable** 데코레이터를 사용하면 Angular CLI와 같은 빌드 툴의 트리 셰이킹 기능을 활용할 수 있습니다. 그래서 이 서비스가 실제로 사용되지 않는다면 트리 셰이킹 과정에 이 코드는 제거됩니다.
 
 <!--
 **Angular module providers** (`@NgModule.providers`) are registered with the application's root injector.
@@ -468,7 +468,7 @@ There are many ways to create dependency values just as there are many ways to w
 <!--
 ### Alternative class providers
 -->
-### 대체 클래스 프로바이더
+### 클래스 프로바이더 바꾸기
 
 <!--
 Occasionally you'll ask a different class to provide the service.
@@ -584,7 +584,7 @@ See more `useValue` examples in the
 [Non-class dependencies](guide/dependency-injection#non-class-dependencies) and
 [InjectionToken](guide/dependency-injection#injection-token) sections.
 -->
-`useValue`를 사용하는 예제는 [클래스가 아닌 의존성](guide/dependency-injection#non-class-dependencies) 섹션과 [InjectionToken](guide/dependency-injection#injection-token) 섹션에서 더 확인할 수 있습니다.
+`useValue`를 사용하는 예제는 [클래스가 아닌 의존성 객체](guide/dependency-injection#non-class-dependencies) 섹션과 [InjectionToken](guide/dependency-injection#injection-token) 섹션에서 더 확인할 수 있습니다.
 
 <!--
 {@a factory-provider}
@@ -691,7 +691,7 @@ The injector resolves these tokens and injects the corresponding services into t
 -->
 그리고 팩토리 함수에 필요한 [프로바이더 토큰](guide/dependency-injection#token)은 `deps` 프로퍼티로 지정합니다.
 그래서 이 코드에는 `Logger`와 `UserService` 클래스가 각각 클래스 프로바이더 토큰으로 사용되었습니다.
-이 토큰들은 인젝터가 확인한 후에 각 토큰에 적합한 서비스 인스턴스를 팩토리 함수의 인자로 주입하게 됩니다.
+이 토큰들은 인젝터가 확인한 후에 각 토큰에 매칭되는 서비스 인스턴스로 팩토리 함수의 인자에 주입됩니다.
 
 </div>
 
@@ -739,7 +739,7 @@ Tree shaking is the ability to remove code that is not referenced in an applicat
 <!--
 Ideally, if an application is not injecting a service, it should not be included in the final output. However, it turns out that the Angular compiler cannot identify at build time if the service will be required or not. Because it's always possible to inject a service directly using `injector.get(Service)`, Angular cannot identify all of the places in your code where this injection could happen, so it has no choice but to include the service in the injector regardless. Thus, services provided in modules are not tree-shakable.
 -->
-이상적인 경우를 생각해 봤을 때 애플리케이션에 사용되는 서비스가 아무것도 없다면, 최종 결과물에는 어떠한 서비스도 포함되지 않는 것이 좋습니다. 하지만 이 경우는 Angular 컴파일러가 빌드 시점에 확인할 수 없는 내용입니다. 왜냐하면 의존성 객체는 클래스 생성자 뿐 아니라 `injector.get(서비스)`를 사용해서 어디에서라도 자유롭게 가져올 수 있기 때문입니다. 이 경우에 Angular는 의존성 객체가 참조되었는지 알아내기 위해서 모든 코드를 확인할 수는 없으며, 트리 셰이킹할 수 있는 타이밍을 놓치게 됩니다. 그래서 모듈에 등록된 서비스는 트리 셰이킹의 대상이 될 수 없습니다.
+이상적인 경우를 생각해 봤을 때 애플리케이션에 사용되는 서비스가 아무것도 없다면, 최종 결과물에는 어떠한 서비스도 포함되지 않는 것이 좋습니다. 하지만 이 경우는 Angular 컴파일러가 빌드 시점에 확인할 수 없는 내용입니다. 왜냐하면 의존성 객체는 클래스 생성자 뿐 아니라 `injector.get(서비스)`를 통해 직접 인스턴스를 가져올 수 있기 때문입니다. 이 경우에 Angular는 의존성 객체가 참조되었는지 알아내기 위해서 모든 코드를 확인할 수는 없으며, 트리 셰이킹할 수 있는 타이밍을 놓치게 됩니다. 그래서 모듈에 등록된 서비스는 트리 셰이킹의 대상이 될 수 없습니다.
 
 <!--
 Let us consider an example of non-tree-shakable providers in Angular.
@@ -768,7 +768,7 @@ When `ngc` runs, it compiles AppModule into a module factory, which contains def
 <!--
 Tree-shaking doesn't work in the method above because Angular cannot decide to exclude one chunk of code (the provider definition for the service within the module factory) based on whether another chunk of code (the service class) is used. To make services tree-shakable, the information about how to construct an instance of the service (the provider definition) needs to be a part of the service class itself.
 -->
-하지만 트리 셰이킹은 이런 방식으로 동작할 수 없습니다. 왜냐하면 Angular는 모듈 팩토리와 같은 코드 덩어리와 서비스 클래스와 같은 코드 덩어리만 보고는 이 서비스가 실제로 사용되었는지 판단할 수 없기 때문입니다. 그래서 서비스를 트리 셰이킹 대상으로 만들려면, 이 서비스가 어떻게 사용되는지에 대한 정보를 추가로 제공해야 합니다.
+하지만 이 방식에서는 트리 셰이킹이 동작할 수 없습니다. 왜냐하면 Angular는 모듈 팩토리와 같은 코드 덩어리와 서비스 클래스와 같은 코드 덩어리만 보고는 이 서비스가 실제로 사용되었는지 판단할 수 없기 때문입니다. 그래서 서비스를 트리 셰이킹 대상으로 만들려면, 이 서비스가 어떻게 사용되는지에 대한 정보를 추가로 제공해야 합니다.
 
 <!--
 #### Creating tree-shakable providers
@@ -863,7 +863,7 @@ The _only thing that matters_ is that the `HeroService` is provided in some pare
 -->
 `HeroService`의 인스턴스는 `HeroesComponent`에 등록된 프로바이더를 통해 제공되지만, `HeroListComponent`의 입장에서는 이 인스턴스가 어디에서 오는지 알지 못합니다.
 그리고 이 상황에서 `HeroService`의 프로바이더가 등록된 위치를 `AppModule`로 옮긴다고 해도 `HeroListComponent`의 코드가 변경되는 것은 아무것도 없습니다.
-`HeroListComponent`의 입장에서는 `HeroService`가 부모 인젝터 중 _어딘가에서 오는 것만으로 충분합니다._
+`HeroListComponent`의 입장에서는 `HeroService`가 부모 인젝터 중 _어딘가로부터 받기만 하면 됩니다._
 
 {@a singleton-services}
 
@@ -1180,8 +1180,7 @@ One solution to choosing a provider token for non-class dependencies is
 to define and use an [*InjectionToken*](api/core/InjectionToken).
 The definition of such a token looks like this:
 -->
-이 문제는 [*InjectionToken*](api/core/InjectionToken)을 정의하면 해결할 수 있습니다.
-그래서 다음과 같이 사용할 수 있습니다:
+이 문제는 [*InjectionToken*](api/core/InjectionToken)을 정의해서 다음과 같이 해결할 수 있습니다:
 
 <code-example>
 import { InjectionToken } from '@angular/core';
@@ -1230,7 +1229,7 @@ const TOKEN =
 <!--
 You can tell Angular that the dependency is optional by annotating the constructor argument with null:
 -->
-의존성 객체는 다음과 같이 생략할 수 있도록 지정할 수도 있습니다:
+의존성 객체는 생략할 수 있도록 지정할 수도 있습니다. 이 때 `@Inject()` 데코레이터의 두 번째 인자에는 생략되었을 때 주입될 값을 지정합니다:
 
 <code-example>
 constructor(@Inject(Token, null));
@@ -1283,7 +1282,7 @@ here's an `InjectorComponent` that does.
 <!--
 An `Injector` is itself an injectable service.
 -->
-`Injector`는 그 자체로 의존성으로 주입할 수 있는 서비스이기도 합니다.
+`Injector`는 그 자체로도 의존성으로 주입될 수 있는 서비스이기도 합니다.
 
 <!--
 In this example, Angular injects the component's own `Injector` into the component's constructor.
@@ -1304,7 +1303,7 @@ The `get()` method throws an error if it can't resolve the requested service.
 You can call `get()` with a second parameter, which is the value to return if the service
 is not found. Angular can't find the service if it's not registered with this or any ancestor injector.
 -->
-그리고 요청한 서비스가 프로바이더에 등록되어 있지 않으면 `get()` 메소드를 실행했을 때 에러가 발생합니다.
+요청한 서비스가 프로바이더에 등록되어 있지 않으면 `get()` 메소드를 실행했을 때 에러가 발생합니다.
 그러면 `get()` 함수의 두 번째 인자를 지정해서, 원하는 서비스를 가져오지 못했을 때 어떤 값을 사용할 지 결정할 수 있습니다. Angular가 현재 컴포넌트나 부모 인젝터 트리에서 의존성으로 등록된 프로바이더를 찾지 못하면 이 값이 사용됩니다.
 
 <div class="alert is-helpful">
