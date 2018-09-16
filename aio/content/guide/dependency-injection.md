@@ -1053,57 +1053,99 @@ it's provided in the root `AppModule`.
 
 {@a token}
 
+<!--
 ## Dependency injection tokens
+-->
+## 인젝션 토큰 (Dependency injection tokens)
 
+<!--
 When you register a provider with an injector, you associate that provider with a dependency injection token.
 The injector maintains an internal *token-provider* map that it references when
 asked for a dependency. The token is the key to the map.
+-->
+서비스 프로바이더를 인젝터에 등록한다는 것은 서비스 프로바이더와 인젝션 토큰을 연결한다는 의미입니다.
+그리고 인젝터는 내부적으로 *토큰-프로바이더* 맵을 관리하며 이 맵에 따라 의존성 객체를 연결합니다. 토큰은 이 맵의 키 역할을 합니다.
 
+<!--
 In all previous examples, the dependency value has been a class *instance*, and
 the class *type* served as its own lookup key.
 Here you get a `HeroService` directly from the injector by supplying the `HeroService` type as the token:
+-->
+지금까지 살펴본 예제에서 의존성으로 주입하는 객체는 클래스의 *인스턴스* 였으며, 이 인스턴스를 구별하는 키는 클래스의 *타입* 이었습니다.
 
 <code-example path="dependency-injection/src/app/injector.component.ts" region="get-hero-service" title="src/app/injector.component.ts" linenums="false">
 </code-example>
 
+<!--
 You have similar good fortune when you write a constructor that requires an injected class-based dependency.
 When you define a constructor parameter with the `HeroService` class type,
 Angular knows to inject the
 service associated with that `HeroService` class token:
+-->
+클래스 인스턴스를 의존성으로 주입받으려면 이 코드처럼 생성자에 원하는 클래스 타입을 지정하면 됩니다.
+그래서 다음과 같이 생성자의 인자를 `HeroService` 클래스 타입으로 지정하면 Angular는 `HeroService` 클래스 토큰을 찾아서 적절한 인스턴스를 의존성으로 주입합니다:
 
 <code-example path="dependency-injection/src/app/heroes/hero-list.component.ts" region="ctor-signature" title="src/app/heroes/hero-list.component.ts">
 </code-example>
 
+<!--
 This is especially convenient when you consider that most dependency values are provided by classes.
+-->
+의존성으로 주입되는 것은 클래스인 경우가 가장 많으며, 클래스를 의존성으로 주입하는 것은 아주 간단합니다.
 
 {@a non-class-dependencies}
 
+<!--
 ### Non-class dependencies
+-->
+### 클래스가 아닌 의존성 객체
 
+<!--
 What if the dependency value isn't a class? Sometimes the thing you want to inject is a
 string, function, or object.
+-->
+클래스가 아닌 것을 의존성으로 받는 경우는 어떨까요? 문자열이나 함수, 객체를 주입받는 경우가 이런 경우에 해당됩니다.
 
+<!--
 Applications often define configuration objects with lots of small facts
 (like the title of the application or the address of a web API endpoint)
 but these configuration objects aren't always instances of a class.
 They can be object literals such as this one:
+-->
+애플리케이션 제목이나 웹 API 엔드포인트 주소와 같이 여러 상수를 객체로 만들어서 사용하는 경우가 있습니다. 이 때 이 객체는 클래스 인스턴스인 것보다는 다음과 같이 객체 리터럴로 정의하는 경우가 일반적일 것입니다:
 
 <code-example path="dependency-injection/src/app/app.config.ts" region="config" title="src/app/app.config.ts (excerpt)" linenums="false">
 </code-example>
 
+<!--
 What if you'd like to make this configuration object available for injection?
 You know you can register an object with a [value provider](guide/dependency-injection#value-provider).
+-->
+이 객체를 의존성으로 주입받으려면 어떻게 해야 할까요?
+이 경우는 이전에 알아봤던 [값 프로바이더](guide/dependency-injection#value-provider)를 사용하면 됩니다.
 
+<!--
 But what should you use as the token?
 You don't have a class to serve as a token.
 There is no `AppConfig` class.
+-->
+이 때 토큰은 어떤 것을 사용하면 될까요?
+이전에 사용했던 것처럼 클래스는 사용할 수 없습니다.
+왜냐하면 `AppConfig`라는 클래스를 선언한 적이 없기 때문입니다.
 
 <div class="alert is-helpful">
 
+<!--
 ### TypeScript interfaces aren't valid tokens
+-->
+### TypeScript 인터페이스는 토큰으로 사용할 수 없습니다.
 
+<!--
 The `HERO_DI_CONFIG` constant conforms to the `AppConfig` interface. 
 Unfortunately, you cannot use a TypeScript interface as a token:
+-->
+`HERO_DI_CONFIG` 변수는 `AppConfig` 타입의 인터페이스입니다.
+하지만 이 인터페이스는 토큰으로 사용할 수 없습니다:
 
 <code-example path="dependency-injection/src/app/providers.component.ts" region="providers-9-interface"  linenums="false">
 </code-example>
@@ -1111,12 +1153,20 @@ Unfortunately, you cannot use a TypeScript interface as a token:
 <code-example path="dependency-injection/src/app/providers.component.ts" region="provider-9-ctor-interface"  linenums="false">
 </code-example>
 
+<!--
 That seems strange if you're used to dependency injection in strongly typed languages, where
 an interface is the preferred dependency lookup key.
+-->
+정적 타입을 지정 언어에서 의존성 주입을 해본 적이 있다면 왜 이것이 문제가 되는지 이상할 것입니다.
+이 언어들은 인터페이스도 의존성 주입 키로 사용할 수 있기 때문입니다.
 
+<!--
 It's not Angular's doing. An interface is a TypeScript design-time artifact. JavaScript doesn't have interfaces.
 The TypeScript interface disappears from the generated JavaScript.
 There is no interface type information left for Angular to find at runtime.
+-->
+하지만 Angular는 그렇지 않습니다. Angular가 보기에 인터페이스는 TypeScript로 코드를 작성할 때만 사용하는 형식일 뿐입니다.
+JavaScript에는 인터페이스가 없기 때문에 TypeScript로 작성한 인터페이스는 JavaScript 코드로 변환되면서 사라집니다. 그래서 인터페이스에 대한 정보는 Angular가 실행되는 시점에는 확인할 수 없습니다.
 
 </div>
 
@@ -1125,30 +1175,43 @@ There is no interface type information left for Angular to find at runtime.
 
 ### _InjectionToken_
 
+<!--
 One solution to choosing a provider token for non-class dependencies is
 to define and use an [*InjectionToken*](api/core/InjectionToken).
 The definition of such a token looks like this:
+-->
+이 문제는 [*InjectionToken*](api/core/InjectionToken)을 정의하면 해결할 수 있습니다.
+그래서 다음과 같이 사용할 수 있습니다:
 
 <code-example>
 import { InjectionToken } from '@angular/core';
 export const TOKEN = new InjectionToken('desc');
 </code-example>
 
+<!--
 You can directly configure a provider when creating an `InjectionToken`. The provider configuration determines which injector provides the token and how the value will be created.  This is similar to using `@Injectable`, except that you cannot define standard providers (such as `useClass` or `useFactory`) with `InjectionToken`. Instead, you specify a factory function which returns the value to be provided directly.
+-->
+`InjectionToken`을 생성하면서 프로바이더 등록을 동시에 할 수도 있습니다. 이 토큰이 어떤 인젝터에 등록되는지, 인스턴스는 어떻게 생성하는지 `InjectionToken` 생성자의 인자에 바로 지정하면 됩니다. 이 방식은 `useClass`나 `useFactory`와 같은 기본 프로바이더를 사용하지 못하는 것만 제외하면 `@Injectable`을 사용했던 것과 비슷합니다. `InjectionToken`을 사용할 때는 `useFactory` 대신 `factory` 프로퍼티에 팩토리 함수를 직접 지정합니다.
 
 <code-example>
 export const TOKEN = 
   new InjectionToken('desc', { providedIn: 'root', factory: () => new AppConfig(), })
 </code-example>
 
+<!--
 Now you can inject the configuration object into any constructor that needs it, with
 the help of an `@Inject` decorator:
+-->
+그러면 이제 이 객체가 필요한 곳의 생성자에 `@Inject` 데코레이터를 사용하면 의존성 객체를 주입받을 수 있습니다:
 
 <code-example>
 constructor(@Inject(TOKEN));
 </code-example>
 
+<!--
 If the factory function needs access to other DI tokens, it can use the inject function from `@angular/core` to request dependencies.
+-->
+만약 팩토리 함수에 또 다른 DI가 필요하다면, 추가 의존성을 가져오기 위해 `@angular/core` 패키지에 있는 `inject` 함수를 사용해서 다음과 같이 구현하면 됩니다.
 
 <code-example>
 const TOKEN = 
@@ -1159,91 +1222,157 @@ const TOKEN =
 
 {@a optional}
 
+<!--
 ## Optional dependencies
+-->
+## 생략할 수 있는 의존성 (Optional dependencies)
 
+<!--
 You can tell Angular that the dependency is optional by annotating the constructor argument with null:
+-->
+의존성 객체는 다음과 같이 생략할 수 있도록 지정할 수도 있습니다:
 
 <code-example>
 constructor(@Inject(Token, null));
 </code-example>
 
+<!--
 When using optional dependencies, your code must be prepared for a null value.
+-->
+의존성을 생략할 수 있다고 선언하면, 이 의존성 객체가 `null` 인 경우를 대비하는 코드도 작성해야 합니다.
 
+<!--
 ## Summary
+-->
+## 정리
 
+<!--
 You learned the basics of Angular dependency injection in this page.
 You can register various kinds of providers,
 and you know how to ask for an injected object (such as a service) by
 adding a parameter to a constructor.
+-->
+이 문서에서는 Angular의 의존성 주입 시스템에 대해 알아봤습니다.
+프로바이더는 여러 가지 방법으로 등록할 수 있으며, 생성자에 타입을 지정하는 방법으로 의존성 객체를 간단하게 가져올 수 있습니다.
 
+<!--
 Angular dependency injection is more capable than this guide has described.
 You can learn more about its advanced features, beginning with its support for
 nested injectors, in
 [Hierarchical Dependency Injection](guide/hierarchical-dependency-injection).
+-->
+Angular의 의존성 주입 시스템은 이 문서에서 설명한 내용이 전부는 아닙니다.
+의존성 주입의 고급 활용방법이나 중첩된 인젝터에 대한 내용은 [인젝터 계층](guide/hierarchical-dependency-injection) 문서에서 확인할 수 있습니다.
 
 {@a explicit-injector}
 
+<!--
 ## Appendix: Working with injectors directly
+-->
+## 부록: 인젝터 직접 활용하기
 
+<!--
 Developers rarely work directly with an injector, but
 here's an `InjectorComponent` that does.
+-->
+어떤 경우에는 인젝터를 직접 사용해야 하는 경우도 있습니다. 다음과 같이 정의된 `InjectorComponent` 예제를 살펴봅시다.
 
 <code-example path="dependency-injection/src/app/injector.component.ts" region="injector" title="src/app/injector.component.ts">
 </code-example>
 
+<!--
 An `Injector` is itself an injectable service.
+-->
+`Injector`는 그 자체로 의존성으로 주입할 수 있는 서비스이기도 합니다.
 
+<!--
 In this example, Angular injects the component's own `Injector` into the component's constructor.
 The component then asks the injected injector for the services it wants in `ngOnInit()`.
+-->
+이 예제는 컴포넌트 생성자를 통해 `Injector` 서비스를 주입받습니다.
+그리고 컴포넌트의 `ngOnInit()` 메소드에서 이 인젝터를 직접 사용해서 원하는 서비스를 가져옵니다.
 
+<!--
 Note that the services themselves are not injected into the component.
 They are retrieved by calling `injector.get()`.
+-->
+이 때 가져온 서비스의 인스턴스는 컴포넌트를 통해 주입된 것이 아닙니다.
+단순하게 `injector.get()` 함수가 실행된 결과로 가져온 인스턴스입니다.
 
+<!--
 The `get()` method throws an error if it can't resolve the requested service.
 You can call `get()` with a second parameter, which is the value to return if the service
 is not found. Angular can't find the service if it's not registered with this or any ancestor injector.
-
+-->
+그리고 요청한 서비스가 프로바이더에 등록되어 있지 않으면 `get()` 메소드를 실행했을 때 에러가 발생합니다.
+그러면 `get()` 함수의 두 번째 인자를 지정해서, 원하는 서비스를 가져오지 못했을 때 어떤 값을 사용할 지 결정할 수 있습니다. Angular가 현재 컴포넌트나 부모 인젝터 트리에서 의존성으로 등록된 프로바이더를 찾지 못하면 이 값이 사용됩니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 The technique is an example of the
 [service locator pattern](https://en.wikipedia.org/wiki/Service_locator_pattern).
+-->
+이 예제 코드는 [서비스 로케이터 패턴](https://en.wikipedia.org/wiki/Service_locator_pattern)을 사용한 것입니다.
 
+<!--
 **Avoid** this technique unless you genuinely need it.
 It encourages a careless grab-bag approach such as you see here.
 It's difficult to explain, understand, and test.
 You can't know by inspecting the constructor what this class requires or what it will do.
 It could acquire services from any ancestor component, not just its own.
 You're forced to spelunk the implementation to discover what it does.
+-->
+하지만 이 방식은 정말 필요한 경우가 아니라면 **사용하지 않는 것이 좋습니다.**
+이 방식으로 작성된 코드는 가독성이 떨어지며 테스트하기도 어렵기 때문입니다.
+의존성을 주입하는 코드가 생성자에 존재하지 않을 수도 있기 때문에 컴포넌트의 의존성 구조를 파악하기 힘들어지며, 부모 컴포넌트에 주입된 의존성을 활용하는 경우도 생길 수 있습니다.
+작성하는 코드는 점점 이해할 수 없는 코드가 될 것입니다.
 
+<!--
 Framework developers may take this approach when they
 must acquire services generically and dynamically.
-
+-->
+이 방식은 의존성 객체를 동적으로 주입받아야 하는 특별한 경우에만 사용하는 것이 좋습니다.
 
 </div>
 
 {@a one-class-per-file}
 
+<!--
 ## Appendix: one class per file
+-->
+## 부록: 한 파일에는 하나의 클래스만
 
+<!--
 Having multiple classes in the same file is confusing and best avoided.
 Developers expect one class per file. Keep them happy.
+-->
+한 파일에 여러 클래스를 정의하는 방식은 가독성이 심각하게 떨어지는 코딩 방식이며, 특별한 이유가 없다면 반드시 피해야 합니다.
+개발자들은 한 파일에 하나의 클래스만 정의되어 있는 것이 일반적이라고 생각합니다.
 
+<!--
 If you combine the `HeroService` class with
 the `HeroesComponent` in the same file,
 **define the component last**.
 If you define the component before the service,
 you'll get a runtime null reference error.
-
+-->
+반드시 `HerooService` 클래스와 `HeroesComponent` 클래스를 같은 파일에 정의해야 한다면, **컴포넌트를 나중에 정의하세요**.
+만약 서비스보다 컴포넌트를 먼저 정의하면, 런타임 null 참조 에러가 발생할 것입니다.
 
 <div class="alert is-helpful">
 
+<!--
 You actually can define the component first with the help of the `forwardRef()` method as explained
 in this [blog post](http://blog.thoughtram.io/angular/2015/09/03/forward-references-in-angular-2.html).
+-->
+정말 필요하다면 `forwardRef()` 메소드를 사용해서 컴포넌트를 먼저 정의할 수 있기는 합니다. [이 문서](http://blog.thoughtram.io/angular/2015/09/03/forward-references-in-angular-2.html)를 참고하세요.
 
+<!--
 But it's best to avoid the problem altogether by defining components and services in separate files.
+-->
+하지만 이 방식은 정말 피해야 하는 방식입니다. 서비스와 컴포넌트는 각각의 파일에 구현하는 것을 권장합니다.
 
 </div>
 
