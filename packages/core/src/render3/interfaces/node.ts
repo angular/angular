@@ -81,13 +81,6 @@ export interface LNode {
    */
   readonly data: LViewData|LContainer|null;
 
-  /**
-   * Each node belongs to a view.
-   *
-   * When the injector is walking up a tree, it needs access to the `directives` (part of view).
-   */
-  readonly view: LViewData;
-
   /** The injector associated with this node. Necessary for DI. */
   nodeInjector: LInjector|null;
 
@@ -530,9 +523,9 @@ export type InitialInputs = string[];
 export const unusedValueExportToPlacateAjd = 1;
 
 /**
- * Type representing a set of LNodes that can have local refs (`#foo`) placed on them.
+ * Type representing a set of TNodes that can have local refs (`#foo`) placed on them.
  */
-export type LNodeWithLocalRefs = LContainerNode | LElementNode | LElementContainerNode;
+export type TNodeWithLocalRefs = TContainerNode | TElementNode | TElementContainerNode;
 
 /**
  * Type for a function that extracts a value for a local refs.
@@ -540,4 +533,4 @@ export type LNodeWithLocalRefs = LContainerNode | LElementNode | LElementContain
  * - `<div #nativeDivEl>` - `nativeDivEl` should point to the native `<div>` element;
  * - `<ng-template #tplRef>` - `tplRef` should point to the `TemplateRef` instance;
  */
-export type LocalRefExtractor = (lNode: LNodeWithLocalRefs, tNode: TNode) => any;
+export type LocalRefExtractor = (tNode: TNodeWithLocalRefs, currentView: LViewData) => any;

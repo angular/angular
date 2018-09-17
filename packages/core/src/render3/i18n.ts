@@ -256,7 +256,7 @@ function appendI18nNode(
   const viewData = _getViewData();
 
   // On first pass, re-organize node tree to put this node in the correct position.
-  const firstTemplatePass = node.view[TVIEW].firstTemplatePass;
+  const firstTemplatePass = viewData[TVIEW].firstTemplatePass;
   if (firstTemplatePass) {
     if (previousTNode === parentTNode && tNode !== parentTNode.child) {
       tNode.next = parentTNode.child;
