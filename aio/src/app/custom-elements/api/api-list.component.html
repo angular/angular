@@ -22,11 +22,14 @@
 
 <article class="api-list-container l-content-small docs-content">
   <div *ngFor="let section of filteredSections | async" >
-    <h2 *ngIf="section.items"><a [href]="section.path">{{section.title}}</a></h2>
+    <h2 *ngIf="section.items"><a [href]="section.path" [class.deprecated-api-item]="section.deprecated">{{section.title}}</a></h2>
     <ul class="api-list" *ngIf="section.items?.length">
       <ng-container *ngFor="let item of section.items">
         <li class="api-item">
-          <a [href]="item.path"><span class="symbol {{item.docType}}"></span> {{item.title}}</a>
+          <a [href]="item.path" [class.deprecated-api-item]="item.stability === 'deprecated'">
+            <span class="symbol {{item.docType}}"></span>
+            {{item.title}}
+          </a>
         </li>
       </ng-container>
     </ul>
