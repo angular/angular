@@ -19,6 +19,7 @@
   <header class="api-header">
     <h1>{$ doc.name $}</h1>
     <label class="api-type-label {$ doc.docType $}">{$ doc.docType $}</label>
+    {% if doc.security !== undefined %}<label class="api-status-label security">security</label>{% endif %}
     {% if doc.pipeOptions.pure === 'false' %}<label class="api-status-label impure-pipe">impure</label>{% endif %}
   </header>
   <aio-toc class="embedded"></aio-toc>
