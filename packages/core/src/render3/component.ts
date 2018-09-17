@@ -14,13 +14,14 @@ import {Sanitizer} from '../sanitization/security';
 
 import {assertComponentType, assertDefined} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, _getComponentHostLElementNode, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings, queueHostBindingForCheck,} from './instructions';
+import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings, queueHostBindingForCheck,} from './instructions';
 import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
 import {LViewData, LViewFlags, RootContext, INJECTOR, CONTEXT, TVIEW} from './interfaces/view';
 import {stringify} from './util';
 import {getComponentDef} from './definition';
+import {getLElementFromComponent, readPatchedLViewData} from './context_discovery';
 
 
 /** Options that control how the component should be bootstrapped. */
@@ -179,13 +180,12 @@ export function createRootContext(scheduler: (workFn: () => void) => void): Root
  * ```
  */
 export function LifecycleHooksFeature(component: any, def: ComponentDefInternal<any>): void {
-  const elementNode = _getComponentHostLElementNode(component);
+  const rootTView = readPatchedLViewData(component) ![TVIEW];
 
   // Root component is always created at dir index 0
-  const tView = elementNode.view[TVIEW];
-  queueInitHooks(0, def.onInit, def.doCheck, tView);
+  queueInitHooks(0, def.onInit, def.doCheck, rootTView);
   // Directive starting index 0, directive count 1 -> directive flags: 1
-  queueLifecycleHooks(1, tView);
+  queueLifecycleHooks(1, rootTView);
 }
 
 /**
@@ -209,7 +209,7 @@ function getRootContext(component: any): RootContext {
  * @param component Component for which the host element should be retrieved.
  */
 export function getHostElement<T>(component: T): HTMLElement {
-  return _getComponentHostLElementNode(component).native as any;
+  return getLElementFromComponent(component).native as any;
 }
 
 /**

@@ -99,6 +99,9 @@
     "name": "_CLEAN_PROMISE"
   },
   {
+    "name": "_getViewData"
+  },
+  {
     "name": "_renderCompCount"
   },
   {
@@ -223,6 +226,9 @@
   },
   {
     "name": "getHostElementNode"
+  },
+  {
+    "name": "getLNode"
   },
   {
     "name": "getLViewChild"

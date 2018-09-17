@@ -20,10 +20,10 @@ import {ReadFromInjectorFn, getOrCreateNodeInjectorForNode} from './di';
 import {_getViewData, assertPreviousIsParent, getOrCreateCurrentQueries, store, storeCleanupWithContext} from './instructions';
 import {DirectiveDefInternal, unusedValueExportToPlacateAjd as unused1} from './interfaces/definition';
 import {LInjector, unusedValueExportToPlacateAjd as unused2} from './interfaces/injector';
-import {LContainerNode, LElementNode, TNode, TNodeFlags, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
+import {LContainerNode, LElementNode, TContainerNode, TElementContainerNode, TElementNode, TNode, TNodeFlags, unusedValueExportToPlacateAjd as unused3} from './interfaces/node';
 import {LQueries, QueryReadType, unusedValueExportToPlacateAjd as unused4} from './interfaces/query';
 import {DIRECTIVES, LViewData, TVIEW} from './interfaces/view';
-import {flatten, isContentQueryHost, readElementValue} from './util';
+import {flatten, getLNode, isContentQueryHost} from './util';
 
 const unusedValueToPlacateAjd = unused1 + unused2 + unused3 + unused4;
 
@@ -121,7 +121,7 @@ export class LQueries_ implements LQueries {
     insertView(index, this.deep);
   }
 
-  addNode(tNode: TNode): LQueries|null {
+  addNode(tNode: TElementNode|TContainerNode|TElementContainerNode): LQueries|null {
     add(this.deep, tNode);
 
     if (isContentQueryHost(tNode)) {
@@ -278,13 +278,13 @@ function readFromNodeInjector(
   return null;
 }
 
-function add(query: LQuery<any>| null, tNode: TNode) {
+function add(
+    query: LQuery<any>| null, tNode: TElementNode | TContainerNode | TElementContainerNode) {
   const currentView = _getViewData();
 
   // TODO: remove this lookup when nodeInjector is removed from LNode
-  const currentNode = readElementValue(currentView[tNode.index]);
   const nodeInjector =
-      getOrCreateNodeInjectorForNode(currentNode as LElementNode | LContainerNode, tNode);
+      getOrCreateNodeInjectorForNode(getLNode(tNode, currentView), tNode, currentView);
 
   while (query) {
     const predicate = query.predicate;
