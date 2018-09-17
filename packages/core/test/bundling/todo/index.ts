@@ -9,7 +9,7 @@
 import '@angular/core/test/bundling/util/src/reflect_metadata';
 
 import {CommonModule} from '@angular/common';
-import {Component, Injectable, NgModule, ViewEncapsulation, ɵrenderComponent as renderComponent} from '@angular/core';
+import {Component, Injectable, NgModule, ViewEncapsulation, ɵmarkDirty as markDirty, ɵrenderComponent as renderComponent} from '@angular/core';
 
 class Todo {
   editing: boolean;
@@ -66,13 +66,13 @@ class TodoStore {
       <h1>todos</h1>
       <input class="new-todo" placeholder="What needs to be done?" autofocus=""
              [value]="newTodoText"
-             (keyup)="$event.code == 'Enter' ? addTodo() : newTodoText = $event.target.value">
+             (keyup)="$event.code == 'Enter' ? addTodo() : updateNewTodoValue($event.target.value)">
     </header>
     <section *ngIf="todoStore.todos.length > 0" class="main">
       <input *ngIf="todoStore.todos.length"
              #toggleall class="toggle-all" type="checkbox"
              [checked]="todoStore.allCompleted()"
-             (click)="todoStore.setAllTo(toggleall.checked)">
+             (click)="toggleAllTodos(toggleall.checked)">
       <ul class="todo-list">
         <li *ngFor="let todo of todoStore.todos"
             [class.completed]="todo.completed"
@@ -87,8 +87,8 @@ class TodoStore {
           <input *ngIf="todo.editing"
                  class="edit" #editedtodo
                  [value]="todo.title"
-                 (blur)="stopEditing(todo, editedtodo.value)"
-                 (keyup)="todo.title = $event.target.value"
+                 (blur)="updateEditingTodo(todo, editedtodo.value)"
+                 (keyup)="updateEditedTodoValue($event.target.value)"
                  (keyup)="$event.code == 'Enter' && updateEditingTodo(todo, editedtodo.value)"
                  (keyup)="$event.code == 'Escape' && cancelEditingTodo(todo)">
         </li>
@@ -115,37 +115,63 @@ class ToDoAppComponent {
 
   constructor(public todoStore: TodoStore) {}
 
-  stopEditing(todo: Todo, editedTitle: string) {
-    todo.title = editedTitle;
+  cancelEditingTodo(todo: Todo) {
     todo.editing = false;
+    markDirty(this);
   }
 
-  cancelEditingTodo(todo: Todo) { todo.editing = false; }
-
-  updateEditingTodo(todo: Todo, editedTitle: string) {
+  finishUpdatingTodo(todo: Todo, editedTitle: string) {
     editedTitle = editedTitle.trim();
-    todo.editing = false;
 
     if (editedTitle.length === 0) {
-      return this.todoStore.remove(todo);
+      this.remove(todo);
     }
 
     todo.title = editedTitle;
+    this.cancelEditingTodo(todo);
   }
 
-  editTodo(todo: Todo) { todo.editing = true; }
+  editTodo(todo: Todo) {
+    todo.editing = true;
+    markDirty(this);
+  }
 
-  removeCompleted() { this.todoStore.removeCompleted(); }
+  removeCompleted() {
+    this.todoStore.removeCompleted();
+    markDirty(this);
+  }
 
-  toggleCompletion(todo: Todo) { this.todoStore.toggleCompletion(todo); }
+  toggleCompletion(todo: Todo) {
+    this.todoStore.toggleCompletion(todo);
+    markDirty(this);
+  }
 
-  remove(todo: Todo) { this.todoStore.remove(todo); }
+  remove(todo: Todo) {
+    this.todoStore.remove(todo);
+    markDirty(this);
+  }
 
   addTodo() {
     if (this.newTodoText.trim().length) {
       this.todoStore.add(this.newTodoText);
       this.newTodoText = '';
     }
+    markDirty(this);
+  }
+
+  toggleAllTodos(checked: boolean) {
+    this.todoStore.setAllTo(checked);
+    markDirty(this);
+  }
+
+  updateEditedTodoValue(todo: Todo, value: string) {
+    todo.title = value;
+    markDirty(this);
+  }
+
+  updateNewTodoValue(value: string) {
+    this.newTodoText = value;
+    markDirty(this);
   }
 }
 

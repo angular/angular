@@ -192,18 +192,31 @@ describe('change detection', () => {
       expect(getRenderedText(myApp)).toEqual('3 - George');
     });
 
-    it('should check OnPush components in update mode when component events occur', () => {
-      const myApp = renderComponent(MyApp);
-      expect(getRenderedText(myApp)).toEqual('1 - Nancy');
+    it('should not check OnPush components in update mode when component events occur, unless marked dirty',
+       () => {
+         const myApp = renderComponent(MyApp);
+         expect(comp.doCheckCount).toEqual(1);
+         expect(getRenderedText(myApp)).toEqual('1 - Nancy');
 
-      const button = containerEl.querySelector('button') !;
-      button.click();
-      requestAnimationFrame.flush();
-      expect(getRenderedText(myApp)).toEqual('2 - Nancy');
+         const button = containerEl.querySelector('button') !;
+         button.click();
+         requestAnimationFrame.flush();
+         // No ticks should have been scheduled.
+         expect(comp.doCheckCount).toEqual(1);
+         expect(getRenderedText(myApp)).toEqual('1 - Nancy');
 
-      tick(myApp);
-      expect(getRenderedText(myApp)).toEqual('2 - Nancy');
-    });
+         tick(myApp);
+         // The comp should still be clean. So doCheck will run, but the view should display 1.
+         expect(comp.doCheckCount).toEqual(2);
+         expect(getRenderedText(myApp)).toEqual('1 - Nancy');
+
+         markDirty(comp);
+         requestAnimationFrame.flush();
+         // Now that markDirty has been manually called, the view should be dirty and a tick
+         // should be scheduled to check the view.
+         expect(comp.doCheckCount).toEqual(3);
+         expect(getRenderedText(myApp)).toEqual('3 - Nancy');
+       });
 
     it('should not check OnPush components in update mode when parent events occur', () => {
       function noop() {}
@@ -222,62 +235,78 @@ describe('change detection', () => {
 
       const button = containerEl.querySelector('button#parent') !;
       (button as HTMLButtonElement).click();
-      requestAnimationFrame.flush();
+      tick(buttonParent);
+      // The comp should still be clean. So doCheck will run, but the view should display 1.
       expect(getRenderedText(buttonParent)).toEqual('1 - Nancy');
     });
 
-    it('should check parent OnPush components in update mode when child events occur', () => {
-      let parent: ButtonParent;
+    it('should not check parent OnPush components in update mode when child events occur, unless marked dirty',
+       () => {
+         let parent: ButtonParent;
 
-      class ButtonParent implements DoCheck {
-        doCheckCount = 0;
-        ngDoCheck(): void { this.doCheckCount++; }
+         class ButtonParent implements DoCheck {
+           doCheckCount = 0;
+           ngDoCheck(): void { this.doCheckCount++; }
 
-        static ngComponentDef = defineComponent({
-          type: ButtonParent,
-          selectors: [['button-parent']],
-          factory: () => parent = new ButtonParent(),
-          consts: 2,
-          vars: 1,
-          /** {{ doCheckCount }} - <my-comp></my-comp> */
-          template: (rf: RenderFlags, ctx: ButtonParent) => {
-            if (rf & RenderFlags.Create) {
-              text(0);
-              element(1, 'my-comp');
-            }
-            if (rf & RenderFlags.Update) {
-              textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
-            }
-          },
-          directives: () => [MyComponent],
-          changeDetection: ChangeDetectionStrategy.OnPush
-        });
-      }
+           static ngComponentDef = defineComponent({
+             type: ButtonParent,
+             selectors: [['button-parent']],
+             factory: () => parent = new ButtonParent(),
+             consts: 2,
+             vars: 1,
+             /** {{ doCheckCount }} - <my-comp></my-comp> */
+             template: (rf: RenderFlags, ctx: ButtonParent) => {
+               if (rf & RenderFlags.Create) {
+                 text(0);
+                 element(1, 'my-comp');
+               }
+               if (rf & RenderFlags.Update) {
+                 textBinding(0, interpolation1('', ctx.doCheckCount, ' - '));
+               }
+             },
+             directives: () => [MyComponent],
+             changeDetection: ChangeDetectionStrategy.OnPush
+           });
+         }
 
-      const MyButtonApp = createComponent('my-button-app', function(rf: RenderFlags, ctx: any) {
-        if (rf & RenderFlags.Create) {
-          element(0, 'button-parent');
-        }
-      }, 1, 0, [ButtonParent]);
+         const MyButtonApp = createComponent('my-button-app', function(rf: RenderFlags, ctx: any) {
+           if (rf & RenderFlags.Create) {
+             element(0, 'button-parent');
+           }
+         }, 1, 0, [ButtonParent]);
 
-      const myButtonApp = renderComponent(MyButtonApp);
-      expect(parent !.doCheckCount).toEqual(1);
-      expect(comp !.doCheckCount).toEqual(1);
-      expect(getRenderedText(myButtonApp)).toEqual('1 - 1 - Nancy');
+         const myButtonApp = renderComponent(MyButtonApp);
+         expect(parent !.doCheckCount).toEqual(1);
+         expect(comp !.doCheckCount).toEqual(1);
+         expect(getRenderedText(myButtonApp)).toEqual('1 - 1 - Nancy');
 
-      tick(myButtonApp);
-      expect(parent !.doCheckCount).toEqual(2);
-      // parent isn't checked, so child doCheck won't run
-      expect(comp !.doCheckCount).toEqual(1);
-      expect(getRenderedText(myButtonApp)).toEqual('1 - 1 - Nancy');
+         tick(myButtonApp);
+         expect(parent !.doCheckCount).toEqual(2);
+         // parent isn't checked, so child doCheck won't run
+         expect(comp !.doCheckCount).toEqual(1);
+         expect(getRenderedText(myButtonApp)).toEqual('1 - 1 - Nancy');
 
-      const button = containerEl.querySelector('button');
-      button !.click();
-      requestAnimationFrame.flush();
-      expect(parent !.doCheckCount).toEqual(3);
-      expect(comp !.doCheckCount).toEqual(2);
-      expect(getRenderedText(myButtonApp)).toEqual('3 - 2 - Nancy');
-    });
+         const button = containerEl.querySelector('button');
+         button !.click();
+         requestAnimationFrame.flush();
+         // No ticks should have been scheduled.
+         expect(parent !.doCheckCount).toEqual(2);
+         expect(comp !.doCheckCount).toEqual(1);
+
+         tick(myButtonApp);
+         expect(parent !.doCheckCount).toEqual(3);
+         // parent isn't checked, so child doCheck won't run
+         expect(comp !.doCheckCount).toEqual(1);
+         expect(getRenderedText(myButtonApp)).toEqual('1 - 1 - Nancy');
+
+         markDirty(comp);
+         requestAnimationFrame.flush();
+         // Now that markDirty has been manually called, both views should be dirty and a tick
+         // should be scheduled to check the view.
+         expect(parent !.doCheckCount).toEqual(4);
+         expect(comp !.doCheckCount).toEqual(2);
+         expect(getRenderedText(myButtonApp)).toEqual('4 - 2 - Nancy');
+       });
   });
 
   describe('ChangeDetectorRef', () => {
