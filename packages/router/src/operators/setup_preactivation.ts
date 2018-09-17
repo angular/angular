@@ -15,16 +15,12 @@ import {PreActivation} from '../pre_activation';
 import {ChildrenOutletContexts} from '../router_outlet_context';
 import {RouterStateSnapshot} from '../router_state';
 
-export function setupPreactivation(
-    rootContexts: ChildrenOutletContexts, currentSnapshot: RouterStateSnapshot,
-    moduleInjector: Injector,
-    forwardEvent?: (evt: Event) => void): OperatorFunction<RouterStateSnapshot, PreActivation> {
-  return function(source: Observable<RouterStateSnapshot>) {
-    return source.pipe(map(snapshot => {
-      const preActivation =
-          new PreActivation(snapshot, currentSnapshot, moduleInjector, forwardEvent);
-      preActivation.initialize(rootContexts);
-      return preActivation;
-    }));
-  };
-}
+export const setupPreactivation =
+    (rootContexts: ChildrenOutletContexts, currentSnapshot: RouterStateSnapshot,
+     moduleInjector: Injector, forwardEvent?: (evt: Event) => void) =>
+        map((snapshot: RouterStateSnapshot) => {
+          const preActivation =
+              new PreActivation(snapshot, currentSnapshot, moduleInjector, forwardEvent);
+          preActivation.initialize(rootContexts);
+          return preActivation;
+        });
