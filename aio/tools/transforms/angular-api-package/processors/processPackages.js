@@ -2,8 +2,8 @@ const { dirname } = require('canonical-path');
 
 module.exports = function processPackages() {
   return {
-    $runAfter: ['extractDecoratedClassesProcessor'],
-    $runBefore: ['computing-ids'],
+    $runAfter: ['extractDecoratedClassesProcessor', 'computeStability'],
+    $runBefore: ['computing-ids', 'generateKeywordsProcessor'],
     $process(docs) {
       const packageContentFiles = {};
       const packageMap = {};
@@ -34,6 +34,9 @@ module.exports = function processPackages() {
             doc.directives = doc.exports.filter(doc => doc.docType === 'directive');
             doc.pipes = doc.exports.filter(doc => doc.docType === 'pipe');
             doc.types = doc.exports.filter(doc => doc.docType === 'type-alias' || doc.docType === 'const');
+            if (doc.exports.every(doc => !!doc.deprecated)) {
+              doc.deprecated = 'all exports of this entry point are deprecated.';
+            }
           }
 
           // Copy over docs from the PACKAGE.md file that is used to document packages
@@ -56,6 +59,12 @@ module.exports = function processPackages() {
             doc.packageInfo.secondary.push(doc);
           }
         }
+      });
+
+      // Update package deprecation status (compared to entry point status)
+      Object.keys(packageMap).forEach(key => {
+        const pkg = packageMap[key];
+        pkg.primary.packageDeprecated = pkg.primary.deprecated !== undefined && pkg.secondary.every(entryPoint => entryPoint.deprecated !== undefined);
       });
 
       return docs;

@@ -23,6 +23,7 @@ $mediumgray: #6e6e6e;
 $darkgray: #333;
 $black: #0A1014;
 $orange: #FF9800;
+$darkorange: #940;
 $anti-pattern: $brightred;
 
 // API & CODE COLORS
@@ -95,7 +96,7 @@ $api-symbols: (
   ),
   ngmodule: (
     content: 'M',
-    background: $darkred
+    background: $darkorange
   ),
   package: (
     content: 'Pk',

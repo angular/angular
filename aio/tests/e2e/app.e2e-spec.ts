@@ -175,7 +175,7 @@ describe('site App', function() {
       page.navigateTo('http/router');
       const results = page.getSearchResults();
 
-      expect(results).toContain('Http');
+      expect(results).toContain('HttpRequest');
       expect(results).toContain('Router');
     });
   });

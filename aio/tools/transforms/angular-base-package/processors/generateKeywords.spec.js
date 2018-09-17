@@ -166,7 +166,8 @@ describe('generateKeywords processor', () => {
         'titleWords':'someclass',
         'headingWords':'heading some someclass',
         'keywords':'api class documentation for is someclass the',
-        'members':''
+        'members':'',
+        'deprecated': false,
       }]
     );
   });

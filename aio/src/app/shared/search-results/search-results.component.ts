@@ -53,12 +53,12 @@ export class SearchResultsComponent implements OnChanges {
     });
     const keys = Object.keys(searchAreaMap).sort((l, r) => l > r ? 1 : -1);
     return keys.map(name => {
-      let pages: SearchResult[] = searchAreaMap[name];
-
-      // Extract the top 5 most relevant results as priorityPages
-      const priorityPages = pages.splice(0, 5);
-      pages = pages.sort(compareResults);
-      return { name, pages, priorityPages };
+      const {priorityPages, pages, deprecated} = splitPages(searchAreaMap[name]);
+      return {
+        name,
+        priorityPages,
+        pages: pages.concat(deprecated),
+      };
     });
   }
 
@@ -70,6 +70,30 @@ export class SearchResultsComponent implements OnChanges {
     const [areaName, rest] = result.path.split('/', 2);
     return rest && areaName;
   }
+}
+
+function splitPages(allPages: SearchResult[]) {
+  const priorityPages: SearchResult[] = [];
+  const pages: SearchResult[] = [];
+  const deprecated: SearchResult[] = [];
+  allPages.forEach(page => {
+    if (page.deprecated) {
+      deprecated.push(page);
+    } else if (priorityPages.length < 5) {
+      priorityPages.push(page);
+    } else {
+      pages.push(page);
+    }
+  });
+  while (priorityPages.length < 5 && pages.length) {
+    priorityPages.push(pages.shift()!);
+  }
+  while (priorityPages.length < 5 && deprecated.length) {
+    priorityPages.push(deprecated.shift()!);
+  }
+  pages.sort(compareResults);
+
+  return { priorityPages, pages, deprecated };
 }
 
 function compareResults(l: SearchResult, r: SearchResult) {
