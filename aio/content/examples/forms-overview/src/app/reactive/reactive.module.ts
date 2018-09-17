@@ -1,14 +1,14 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveNameComponent } from './name/name.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { FavoriteColorComponent } from './favorite-color/favorite-color.component';
 
 @NgModule({
   imports: [
     CommonModule,
     ReactiveFormsModule
   ],
-  declarations: [ReactiveNameComponent],
-  exports: [ReactiveNameComponent],
+  declarations: [FavoriteColorComponent],
+  exports: [FavoriteColorComponent],
 })
 export class ReactiveModule { }
