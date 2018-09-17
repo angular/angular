@@ -25,13 +25,13 @@ export abstract class ControlContainer extends AbstractControlDirective {
 
   /**
    * @description
-   * Reports the parent form for the control
+   * The top-level form directive for the control.
    */
   get formDirective(): Form|null { return null; }
 
   /**
    * @description
-   * Reports the path to this group
+   * The path to this group.
    */
   get path(): string[]|null { return null; }
 }

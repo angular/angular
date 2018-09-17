@@ -18,13 +18,14 @@ function unimplemented(): any {
 
 /**
  * @description
- * A base class that all control directives extend. It binds a `FormControl` object to a
- * DOM element and is only used internally by Angular forms.
+ * A base class that all control `FormControl`-based directives extend. It binds a `FormControl`
+ * object to a DOM element.
  */
 export abstract class NgControl extends AbstractControlDirective {
   /**
    * @description
-   * The parent form for the control
+   * The parent form for the control.
+   *
    * @internal
    */
   _parent: ControlContainer|null = null;

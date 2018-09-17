@@ -52,7 +52,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
 
   /**
    * @description
-   * The callback method triggered on the instance after the inputs are set.
+   * An internal callback method triggered on the instance after the inputs are set.
    * Registers the group with its parent group.
    */
   ngOnInit(): void {
@@ -62,7 +62,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
 
   /**
    * @description
-   * The callback method trigger before the instance is destroyed.
+   * An internal callback method triggered before the instance is destroyed.
    * Removes the group from its parent group.
    */
   ngOnDestroy(): void {
@@ -73,33 +73,31 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
 
   /**
    * @description
-   * Reports the `FormGroup` bound to this directive from its parent
+   * The `FormGroup` bound to this directive.
    */
   get control(): FormGroup { return this.formDirective !.getFormGroup(this); }
 
   /**
    * @description
-   * Reports the path to this group
+   * The path to this group from the top-level directive.
    */
   get path(): string[] { return controlPath(this.name, this._parent); }
 
   /**
    * @description
-   * Reports the parent form for this group
-   *
-   * @returns The parent form if present, otherwise null.
+   * The top-level directive for this group if present, otherwise null.
    */
   get formDirective(): Form|null { return this._parent ? this._parent.formDirective : null; }
 
   /**
    * @description
-   * Reports the synchronous validators registered with this group
+   * The synchronous validators registered with this group.
    */
   get validator(): ValidatorFn|null { return composeValidators(this._validators); }
 
   /**
    * @description
-   * Reports the async validators registered with this group
+   * The async validators registered with this group.
    */
   get asyncValidator(): AsyncValidatorFn|null {
     return composeAsyncValidators(this._asyncValidators);
