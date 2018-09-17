@@ -55,7 +55,7 @@ export interface ControlValueAccessor {
    *
    * The following example stores the provided function as an internal method.
    *
-   * ```typescript
+   * ```ts
    * registerOnChange(fn: (_: any) => void): void {
    *   this._onChange = fn;
    * }
@@ -64,7 +64,7 @@ export interface ControlValueAccessor {
    * When the value changes in the UI, call the registered
    * function to allow the forms API to update itself:
    *
-   * ```typescript
+   * ```ts
    * host: {
    *    (change): '_onChange($event.target.value)'
    * }
@@ -76,10 +76,8 @@ export interface ControlValueAccessor {
 
   /**
    * @description
-   * Registers a callback function that is called when the control receives a blur event.
-   *
-   * This is called by the forms API on initialization so it can update the form model
-   * on blur.
+   * Registers a callback function is called by the forms API on initialization
+   * to update the form model on blur.
    *
    * When implementing `registerOnTouched` in your own value accessor, save the given
    * function so your class calls it when the control should be considered
@@ -87,7 +85,7 @@ export interface ControlValueAccessor {
    *
    * ### Store the callback function
    *
-   * The folliwing example stores the provided function as an internal method.
+   * The following example stores the provided function as an internal method.
    *
    * ```ts
    * registerOnTouched(fn: any): void {
@@ -95,7 +93,7 @@ export interface ControlValueAccessor {
    * }
    * ```
    *
-   * On blur (or equivalent), your class calls the registered function to allow
+   * On blur (or equivalent), your class should call the registered function to allow
    * the forms API to update itself:
    *
    * ```ts

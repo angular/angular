@@ -36,7 +36,7 @@ export type ValidationErrors = {
  *
  * ```typescript
  * @Directive({
- *   selector: '[custom-validator]',
+ *   selector: '[customValidator]',
  *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
  * })
  * class CustomValidatorDirective implements Validator {
@@ -49,7 +49,7 @@ export type ValidationErrors = {
 export interface Validator {
   /**
    * @description
-   * Method that performs synchronous verification against the provided control.
+   * Method that performs synchronous validation against the provided control.
    *
    * @param c The control to validate against.
    *
@@ -82,7 +82,7 @@ export interface Validator {
  * import { of as observableOf } from 'rxjs';
  *
  * @Directive({
- *   selector: '[custom-async-validator]',
+ *   selector: '[customAsyncValidator]',
  *   providers: [{provide: NG_ASYNC_VALIDATORS, useExisting: CustomAsyncValidatorDirective, multi:
  * true}]
  * })
