@@ -178,9 +178,13 @@ This is demonstrated in the examples above using the **favorite color** input el
 
 If forms are a central part of your application, scalability is very important. Being able to reuse form models across components is critical. Reactive forms make creating large scale forms easier by providing access to low-level APIs and synchronous access to the data model. Because template-driven forms focus on simple scenarios with very little validation, they are not as reusable and abstract away the low-level APIs and access to the data model is handled asynchronously.
 
+## Final Thoughts
+
+Choosing a strategy begins with understanding the strengths and weaknesses of the options presented. Low-level API and form model access, predictability, mutability, straightforward validation and testing strategies, and scalability all play important parts in the infrastructure you use when building your forms in Angular. Template-driven forms come from a familiar place in AngularJS, but fall short given the criteria in the modern world of Angular apps. Reactive forms integrate with reactive patterns already present in other areas of the Angular architecture, and complements those requirements well.
+
 ## Next Steps
 
-You can learn more about common examples and practices using reactive forms or template-driven forms. The following guides are the next steps in the learning process for all.
+You can learn more with examples and best practices using reactive forms or template-driven forms. The following guides are the next steps in the learning process.
 
 To learn more about reactive forms, see the following guides:
 
