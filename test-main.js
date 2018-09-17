@@ -25,6 +25,8 @@ System.config({
     'benchpress/*': 'dist/js/dev/es5/benchpress/*.js',
     '@angular': 'dist/all/@angular',
     'domino': 'dist/all/@angular/empty.js',
+    'jsdom': 'dist/all/@angular/empty.js',
+    'pn/fs': 'dist/all/@angular/empty.js',
     'url': 'dist/all/@angular/empty.js',
     'xhr2': 'dist/all/@angular/empty.js',
     '@angular/platform-server/src/domino_adapter': 'dist/all/empty.js',

@@ -15,8 +15,9 @@ import {BrowserModule, DOCUMENT, EVENT_MANAGER_PLUGINS, ɵSharedStylesHost as Sh
 import {ɵplatformCoreDynamic as platformCoreDynamic} from '@angular/platform-browser-dynamic';
 import {NoopAnimationsModule, ɵAnimationRendererFactory} from '@angular/platform-browser/animations';
 
-import {DominoAdapter, parseDocument} from './domino_adapter';
+import {DominoAdapter, parseDocument as parseDocumentDomino} from './domino_adapter';
 import {SERVER_HTTP_PROVIDERS} from './http';
+import {JsdomAdapter, parseDocument as parseDocumentJsdom} from './jsdom_adapter';
 import {ServerPlatformLocation} from './location';
 import {PlatformState} from './platform_state';
 import {ServerEventManagerPlugin} from './server_events';
@@ -28,10 +29,18 @@ function notSupported(feature: string): Error {
   throw new Error(`platform-server does not support '${feature}'.`);
 }
 
+export enum ServerDom {
+  Domino,
+  JSDOM,
+}
+
+export const SERVER_DOM = new InjectionToken<ServerDom>(
+    'Type of renderer to use for SSR', {providedIn: 'root', factory: () => ServerDom.Domino});
+
 export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
-  {provide: DOCUMENT, useFactory: _document, deps: [Injector]},
+  {provide: DOCUMENT, useFactory: _document, deps: [Injector, SERVER_DOM]},
   {provide: PLATFORM_ID, useValue: PLATFORM_SERVER_ID},
-  {provide: PLATFORM_INITIALIZER, useFactory: initDominoAdapter, multi: true, deps: [Injector]}, {
+  {provide: PLATFORM_INITIALIZER, useFactory: initDomAdapter, multi: true, deps: [SERVER_DOM]}, {
     provide: PlatformLocation,
     useClass: ServerPlatformLocation,
     deps: [DOCUMENT, [Optional, INITIAL_CONFIG]]
@@ -41,8 +50,23 @@ export const INTERNAL_SERVER_PLATFORM_PROVIDERS: StaticProvider[] = [
   {provide: ALLOW_MULTIPLE_PLATFORMS, useValue: true}
 ];
 
-function initDominoAdapter(injector: Injector) {
+function initDomAdapter(serverDom: ServerDom) {
+  switch (serverDom) {
+    case ServerDom.Domino:
+      return initDominoAdapter;
+    case ServerDom.JSDOM:
+      return initJsdomAdapter;
+    default:
+      return initDominoAdapter;
+  }
+}
+
+function initDominoAdapter() {
   return () => { DominoAdapter.makeCurrent(); };
+}
+
+function initJsdomAdapter() {
+  return () => { JsdomAdapter.makeCurrent(); };
 }
 
 export function instantiateServerRendererFactory(
@@ -80,8 +104,17 @@ export const SERVER_RENDER_PROVIDERS: Provider[] = [
 export class ServerModule {
 }
 
-function _document(injector: Injector) {
+function _document(injector: Injector, serverDom: ServerDom) {
   let config: PlatformConfig|null = injector.get(INITIAL_CONFIG, null);
+  let parseDocument: (html: string, url?: any) => Document;
+  switch (serverDom) {
+    case ServerDom.JSDOM:
+      parseDocument = parseDocumentJsdom;
+      break;
+    case ServerDom.Domino:
+    default:
+      parseDocument = parseDocumentDomino;
+  }
   if (config && config.document) {
     return parseDocument(config.document, config.url);
   } else {
