@@ -6,19 +6,19 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {MonoTypeOperatorFunction, Observable, OperatorFunction, from, of } from 'rxjs';
-import {map, mergeMap} from 'rxjs/operators';
+import {MonoTypeOperatorFunction, Observable} from 'rxjs';
 
 import {NavigationTransition} from '../router';
+import {switchTap} from './switch_tap';
 
 export function resolveData(paramsInheritanceStrategy: 'emptyOnly' | 'always'):
     MonoTypeOperatorFunction<NavigationTransition> {
   return function(source: Observable<NavigationTransition>) {
-    return source.pipe(mergeMap(t => {
+    return source.pipe(switchTap(t => {
       if (!t.preActivation) {
-        throw 'Initialized PreActivation required to check guards';
+        throw new Error('PreActivation required to resolve data');
       }
-      return t.preActivation.resolveData(paramsInheritanceStrategy).pipe(map(_ => t));
+      return t.preActivation.resolveData(paramsInheritanceStrategy);
     }));
   };
 }

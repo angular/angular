@@ -22,7 +22,7 @@ export function recognize(
   return function(source: Observable<NavigationTransition>) {
     return source.pipe(mergeMap(
         t => recognizeFn(
-                 rootComponentType, config, t.urlAfterRedirects, serializer(t.extractedUrl),
+                 rootComponentType, config, t.urlAfterRedirects, serializer(t.urlAfterRedirects),
                  paramsInheritanceStrategy)
                  .pipe(map(targetSnapshot => ({...t, targetSnapshot})))));
   };
