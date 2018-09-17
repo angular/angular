@@ -63,7 +63,7 @@ import {UrlTree} from '../url_tree';
  * </a>
  * ```
  *
- * You can tell the directive to how to handle queryParams, available options are:
+ * You can tell the directive how to handle queryParams. Available options are:
  *  - `'merge'`: merge the queryParams into the current queryParams
  *  - `'preserve'`: preserve the current queryParams
  *  - default/`''`: use the queryParams only
