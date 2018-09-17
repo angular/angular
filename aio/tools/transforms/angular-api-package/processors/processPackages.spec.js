@@ -9,8 +9,8 @@ describe('processPackages processor', () => {
     const injector = dgeni.configureInjector();
     const processor = injector.get('processPackages');
     expect(processor.$process).toBeDefined();
-    expect(processor.$runAfter).toEqual(['extractDecoratedClassesProcessor']);
-    expect(processor.$runBefore).toEqual(['computing-ids']);
+    expect(processor.$runAfter).toEqual(['extractDecoratedClassesProcessor', 'computeStability']);
+    expect(processor.$runBefore).toEqual(['computing-ids', 'generateKeywordsProcessor']);
   });
 
   it('should filter out any `package-content` docs from the collection', () => {
@@ -176,5 +176,111 @@ describe('processPackages processor', () => {
       { docType: 'const', id: 'const-1' },
       { docType: 'const', id: 'const-2' },
     ]);
+  });
+
+  it('should compute the deprecated status of each entry point', () => {
+    const docs = [
+      {
+        fileInfo: { filePath: 'some/package-1/index' },
+        docType: 'module',
+        id: 'package-1',
+        exports: [
+          { docType: 'class', id: 'class-1', deprecated: true },
+        ]
+      },
+      {
+        fileInfo: { filePath: 'some/package-1/sub-1index' },
+        docType: 'module',
+        id: 'package-1/sub-1',
+        exports: [
+          { docType: 'class', id: 'class-2', deprecated: true },
+        ]
+      },
+      {
+        fileInfo: { filePath: 'some/package-2/index' },
+        docType: 'module',
+        id: 'package-2',
+        exports: [
+          { docType: 'class', id: 'class-3' },
+          { docType: 'class', id: 'class-4', deprecated: true },
+        ]
+      },
+      {
+        fileInfo: { filePath: 'some/package-3/index' },
+        docType: 'module',
+        id: 'package-3',
+        exports: [
+          { docType: 'class', id: 'class-5' },
+          { docType: 'class', id: 'class-6' },
+        ]
+      },
+    ];
+    const processor = processorFactory();
+    const newDocs = processor.$process(docs);
+
+    expect(newDocs[0].deprecated).toBeTruthy();
+    expect(newDocs[1].deprecated).toBeTruthy();
+    expect(newDocs[2].deprecated).toBeUndefined();
+    expect(newDocs[3].deprecated).toBeUndefined();
+  });
+
+  it('should compute the deprecated status of packages', () => {
+    const docs = [
+      {
+        fileInfo: { filePath: 'some/package-1/index' },
+        docType: 'module',
+        id: 'package-1',
+        exports: [
+          { docType: 'class', id: 'class-1', deprecated: true },
+        ]
+      },
+      {
+        fileInfo: { filePath: 'some/package-1/sub-1index' },
+        docType: 'module',
+        id: 'package-1/sub-1',
+        exports: [
+          { docType: 'class', id: 'class-2', deprecated: true },
+        ]
+      },
+      {
+        fileInfo: { filePath: 'some/package-2/index' },
+        docType: 'module',
+        id: 'package-2',
+        exports: [
+          { docType: 'class', id: 'class-3', deprecated: true },
+        ]
+      },
+      {
+        fileInfo: { filePath: 'some/package-2/sub-1index' },
+        docType: 'module',
+        id: 'package-2/sub-1',
+        exports: [
+          { docType: 'class', id: 'class-4', deprecated: false },
+        ]
+      },
+      {
+        fileInfo: { filePath: 'some/package-3/index' },
+        docType: 'module',
+        id: 'package-3',
+        exports: [
+          { docType: 'class', id: 'class-5', deprecated: false },
+        ]
+      },
+      {
+        fileInfo: { filePath: 'some/package-3/sub-1index' },
+        docType: 'module',
+        id: 'package-3/sub-1',
+        exports: [
+          { docType: 'class', id: 'class-6', deprecated: true },
+        ]
+      },
+    ];
+    const processor = processorFactory();
+    const newDocs = processor.$process(docs);
+    expect(newDocs[0].packageDeprecated).toBe(true);
+    expect(newDocs[1].packageDeprecated).toBeUndefined();
+    expect(newDocs[2].packageDeprecated).toBe(false);
+    expect(newDocs[3].packageDeprecated).toBeUndefined();
+    expect(newDocs[4].packageDeprecated).toBe(false);
   });
 });
