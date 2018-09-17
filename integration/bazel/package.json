@@ -10,10 +10,10 @@
     "zone.js": "file:../../node_modules/zone.js"
   },
   "devDependencies": {
-    "@bazel/typescript": "0.16.2",
+    "//": "TODO(gregmagolan): update to tagged release of @bazel/typescript",
+    "@bazel/typescript": "github:bazelbuild/rules_typescript#87d892be147b66e5668ba14f89ef5df8259de102",
     "@types/jasmine": "file:../../node_modules/@types/jasmine",
     "@types/source-map": "0.5.1",
-    "http-server": "0.11.1",
     "protractor": "file:../../node_modules/protractor",
     "tsickle": "file:../../node_modules/tsickle",
     "typescript": "file:../../node_modules/typescript"

@@ -3,6 +3,13 @@ workspace(name = "bazel_integration_test")
 #
 # Download Bazel toolchain dependencies as needed by build actions
 #
+http_archive(
+    name = "build_bazel_rules_nodejs",
+    urls = ["https://github.com/bazelbuild/rules_nodejs/archive/37edb901ccabc411d950ca4db0734b696e9834ee.zip"],
+    strip_prefix = "rules_nodejs-37edb901ccabc411d950ca4db0734b696e9834ee",
+    sha256 = "ff8829e353119eeb49f4252ad9980bbb9eb68b1cf40fc63524357c15bff2c673",
+)
+
 local_repository(
     name = "build_bazel_rules_typescript",
     path = "node_modules/@bazel/typescript",

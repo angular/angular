@@ -33,6 +33,7 @@ nodejs_binary(
         "@build_bazel_rules_typescript//third_party/github.com/bazelbuild/bazel/src/main/protobuf:worker_protocol.proto",
     ],
     entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js",
+    node_modules = "@//:node_modules",
     visibility = ["//visibility:public"],
 )
 
@@ -42,5 +43,6 @@ nodejs_binary(
         ":ngc_lib",
     ],
     entry_point = "angular/packages/bazel/src/ngc-wrapped/index.js/extract_i18n.js",
+    node_modules = "@//:node_modules",
     visibility = ["//visibility:public"],
 )
