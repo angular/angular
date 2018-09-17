@@ -102,14 +102,14 @@ import {Directive, EmbeddedViewRef, Input, TemplateRef, ViewContainerRef, ɵstri
  *
  */
 @Directive({selector: '[ngIf]'})
-export class NgIf {
-  private _context: NgIfContext = new NgIfContext();
-  private _thenTemplateRef: TemplateRef<NgIfContext>|null = null;
-  private _elseTemplateRef: TemplateRef<NgIfContext>|null = null;
-  private _thenViewRef: EmbeddedViewRef<NgIfContext>|null = null;
-  private _elseViewRef: EmbeddedViewRef<NgIfContext>|null = null;
+export class NgIf<T = any> {
+  private _context: NgIfContext<T> = new NgIfContext();
+  private _thenTemplateRef: TemplateRef<NgIfContext<T>>|null = null;
+  private _elseTemplateRef: TemplateRef<NgIfContext<T>>|null = null;
+  private _thenViewRef: EmbeddedViewRef<NgIfContext<T>>|null = null;
+  private _elseViewRef: EmbeddedViewRef<NgIfContext<T>>|null = null;
 
-  constructor(private _viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext>) {
+  constructor(private _viewContainer: ViewContainerRef, templateRef: TemplateRef<NgIfContext<T>>) {
     this._thenTemplateRef = templateRef;
   }
 
@@ -120,7 +120,7 @@ export class NgIf {
   }
 
   @Input()
-  set ngIfThen(templateRef: TemplateRef<NgIfContext>|null) {
+  set ngIfThen(templateRef: TemplateRef<NgIfContext<T>>|null) {
     assertTemplate('ngIfThen', templateRef);
     this._thenTemplateRef = templateRef;
     this._thenViewRef = null;  // clear previous view if any.
@@ -128,7 +128,7 @@ export class NgIf {
   }
 
   @Input()
-  set ngIfElse(templateRef: TemplateRef<NgIfContext>|null) {
+  set ngIfElse(templateRef: TemplateRef<NgIfContext<T>>|null) {
     assertTemplate('ngIfElse', templateRef);
     this._elseTemplateRef = templateRef;
     this._elseViewRef = null;  // clear previous view if any.
@@ -161,9 +161,9 @@ export class NgIf {
   public static ngIfUseIfTypeGuard: void;
 }
 
-export class NgIfContext {
-  public $implicit: any = null;
-  public ngIf: any = null;
+export class NgIfContext<T = any> {
+  public $implicit: T|null = null;
+  public ngIf: T|null = null;
 }
 
 function assertTemplate(property: string, templateRef: TemplateRef<any>| null): void {
