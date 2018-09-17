@@ -140,7 +140,8 @@ module.exports = function generateKeywordsProcessor(log, readFilesProcessor) {
         return Object.assign({
           path: page.path,
           title: page.searchTitle,
-          type: page.docType
+          type: page.docType,
+          deprecated: !!page.deprecated,
         }, page.searchTerms);
       });
 

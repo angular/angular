@@ -775,7 +775,7 @@ describe('AppComponent', () => {
           const searchService: MockSearchService = TestBed.get(SearchService);
 
           const results = [
-            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '' }
+            { path: 'news', title: 'News', type: 'marketing', keywords: '', titleWords: '', deprecated: false }
           ];
 
           searchService.searchResults.next({ query: 'something', results: results });
