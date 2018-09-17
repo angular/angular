@@ -16,7 +16,7 @@ export function checkGuards(): MonoTypeOperatorFunction<NavigationTransition> {
 
     return source.pipe(mergeMap(t => {
       if (!t.preActivation) {
-        throw 'Initialized PreActivation required to check guards';
+        throw new Error('PreActivation required to check guards');
       }
       return t.preActivation.checkGuards().pipe(map(guardsResult => ({...t, guardsResult})));
     }));
