@@ -49,6 +49,10 @@ label.raised, .api-header label {
     &.api-status-label {
         background-color: $mediumgray;
 
+        &.security {
+            background-color: $brightred;
+        }
+
         &.impure-pipe {
             background-color: $brightred;
         }
