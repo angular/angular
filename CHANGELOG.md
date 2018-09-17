@@ -38,10 +38,10 @@
 
 ### Features
 
-* **list:** add new '<mat-action-list>'  ([#12415](https://github.com/angular/material2/issues/12415)) ([69fa762](https://github.com/angular/material2/commit/69fa762))
+* **list:** add new `<mat-action-list>`  ([#12415](https://github.com/angular/material2/issues/12415)) ([69fa762](https://github.com/angular/material2/commit/69fa762))
 * **menu:** align with 2018 material design spec ([#12331](https://github.com/angular/material2/issues/12331)) ([c812268](https://github.com/angular/material2/commit/c812268))
 * **ng-add:** add x-prompts to install schematics ([#13058](https://github.com/angular/material2/issues/13058)) ([a5bc79c](https://github.com/angular/material2/commit/a5bc79c))
-* **schematics:** compatibility with Angular CLI 6.2.0 ([#13078](https://github.com/angular/material2/issues/13078)) ([714c205](https://github.com/angular/material2/commit/714c205)), closes [/github.com/angular/angular-cli/commit/9720077a4b5ae628ddfaf5f1a26bac3b04bdf637#diff-e73df838d6700d187eff76a50c7e1c53R233](https://github.com//github.com/angular/angular-cli/commit/9720077a4b5ae628ddfaf5f1a26bac3b04bdf637/issues/diff-e73df838d6700d187eff76a50c7e1c53R233) [#11438](https://github.com/angular/material2/issues/11438)
+* **schematics:** compatibility with Angular CLI 6.2.0 ([#13078](https://github.com/angular/material2/issues/13078)) ([714c205](https://github.com/angular/material2/commit/714c205)), closes [#11438](https://github.com/angular/material2/issues/11438)
 * **select:** align panel appearance and animation with 2018 material design spec ([#12975](https://github.com/angular/material2/issues/12975)) ([18d0fa8](https://github.com/angular/material2/commit/18d0fa8))
 * **stepper:** Create MAT_STEPPER_GLOBAL_OPTIONS InjectionToken ([#11457](https://github.com/angular/material2/issues/11457)) ([9ab2c90](https://github.com/angular/material2/commit/9ab2c90))
 
@@ -291,7 +291,7 @@ You can view a beta version of the docs at https://beta-angular-material-io.fire
 * **tabs:** disable focus overlay for touch focus ([#12249](https://github.com/angular/material2/issues/12249)) ([d3af441](https://github.com/angular/material2/commit/d3af441)), closes [#12247](https://github.com/angular/material2/issues/12247)
 * **tabs:** only target direct descendants with mat-stretch-tabs ([#12198](https://github.com/angular/material2/issues/12198)) ([6bb0ffe](https://github.com/angular/material2/commit/6bb0ffe)), closes [#12196](https://github.com/angular/material2/issues/12196)
 * **tooltip:** opening after click on android ([#12250](https://github.com/angular/material2/issues/12250)) ([a6b8a06](https://github.com/angular/material2/commit/a6b8a06)), closes [#12223](https://github.com/angular/material2/issues/12223)
-* ensure all components work with ES2015 in jit mode. ([#12759](https://github.com/angular/material2/issues/12759)) ([0c4a1b4](https://github.com/angular/material2/commit/0c4a1b4)), closes [/github.com/angular/angular/pull/22356#issuecomment-387756794](https://github.com//github.com/angular/angular/pull/22356/issues/issuecomment-387756794) [#9329](https://github.com/angular/material2/issues/9329)
+* ensure all components work with ES2015 in jit mode. ([#12759](https://github.com/angular/material2/issues/12759)) ([0c4a1b4](https://github.com/angular/material2/commit/0c4a1b4)), closes [#12760](https://github.com/angular/material2/issues/12760), [#9329](https://github.com/angular/material2/issues/9329)
 
 <a name="6.4.6"></a>
 ## [6.4.6 argon-aftershave](https://github.com/angular/material2/compare/6.4.5...6.4.6) (2018-08-20)
