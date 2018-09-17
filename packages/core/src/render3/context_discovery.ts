@@ -199,7 +199,7 @@ export function getLElementFromRootComponent(rootComponentInstance: {}): LElemen
  * that `getContext` has in the event that an Angular application doesn't need to have
  * any programmatic access to an element's context (only change detection uses this function).
  */
-export function getLElementFromComponent(componentInstance: {}): LElementNode|null {
+export function getLElementFromComponent(componentInstance: {}): LElementNode {
   let lViewData = readPatchedData(componentInstance);
   let lNode: LElementNode;
 
@@ -355,10 +355,9 @@ function getLNodeFromViewData(lViewData: LViewData, lElementIndex: number): LEle
  */
 function discoverDirectiveIndices(lViewData: LViewData, lNodeIndex: number): number[]|null {
   const directivesAcrossView = lViewData[DIRECTIVES];
-  const lNode = getLNodeFromViewData(lViewData, lNodeIndex);
   const tNode = lViewData[TVIEW].data[lNodeIndex] as TNode;
-  if (lNode && directivesAcrossView && directivesAcrossView.length) {
-    // this check for tNode is to determine if the calue is a LEmementNode instance
+  if (directivesAcrossView && directivesAcrossView.length) {
+    // this check for tNode is to determine if the value is a LElementNode instance
     const directiveIndexStart = getDirectiveStartIndex(tNode);
     const directiveIndexEnd = getDirectiveEndIndex(tNode, directiveIndexStart);
     const directiveIndices: number[] = [];

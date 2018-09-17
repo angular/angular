@@ -8,7 +8,7 @@
 
 import {devModeEqual} from '../change_detection/change_detection_util';
 import {assertLessThan} from './assert';
-import {LElementNode, TNode, TNodeFlags} from './interfaces/node';
+import {LContainerNode, LElementContainerNode, LElementNode, TNode, TNodeFlags} from './interfaces/node';
 import {HEADER_OFFSET, LViewData, TData} from './interfaces/view';
 
 /**
@@ -89,6 +89,11 @@ export function loadElementInternal(index: number, arr: LViewData): LElementNode
 
 export function readElementValue(value: LElementNode | any[]): LElementNode {
   return (Array.isArray(value) ? (value as any as any[])[0] : value) as LElementNode;
+}
+
+export function getLNode(tNode: TNode, hostView: LViewData): LElementNode|LContainerNode|
+    LElementContainerNode {
+  return readElementValue(hostView[tNode.index]);
 }
 
 export function isContentQueryHost(tNode: TNode): boolean {

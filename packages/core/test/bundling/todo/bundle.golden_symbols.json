@@ -609,6 +609,9 @@
     "name": "getLElementFromComponent"
   },
   {
+    "name": "getLNode"
+  },
+  {
     "name": "getLViewChild"
   },
   {

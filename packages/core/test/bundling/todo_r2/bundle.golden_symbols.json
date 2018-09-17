@@ -1089,9 +1089,6 @@
     "name": "_enable_super_gross_mode_that_will_cause_bad_things"
   },
   {
-    "name": "_getComponentHostLElementNode"
-  },
-  {
     "name": "_getViewData"
   },
   {
@@ -1636,6 +1633,9 @@
   },
   {
     "name": "getLElementFromComponent"
+  },
+  {
+    "name": "getLNode"
   },
   {
     "name": "getLViewChild"
