@@ -99,6 +99,10 @@ $mat-card-header-size: 40px !default;
   width: $mat-card-header-size;
   border-radius: 50%;
   flex-shrink: 0;
+
+  // Makes `<img>` tags behave like `background-size: cover`. Not supported
+  // in IE, but we're using it as a progressive enhancement.
+  object-fit: cover;
 }
 
 // TITLE-GROUP STYLES
