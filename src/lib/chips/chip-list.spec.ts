@@ -269,6 +269,7 @@ describe('MatChipList', () => {
 
           // Press the LEFT arrow
           chipListInstance._keydown(LEFT_EVENT);
+          chipListInstance._blur(); // Simulate focus leaving the list and going to the chip.
           fixture.detectChanges();
 
           // It focuses the next-to-last item
@@ -290,6 +291,7 @@ describe('MatChipList', () => {
 
           // Press the RIGHT arrow
           chipListInstance._keydown(RIGHT_EVENT);
+          chipListInstance._blur(); // Simulate focus leaving the list and going to the chip.
           fixture.detectChanges();
 
           // It focuses the next-to-last item
@@ -362,6 +364,7 @@ describe('MatChipList', () => {
 
           // Press the RIGHT arrow
           chipListInstance._keydown(RIGHT_EVENT);
+          chipListInstance._blur(); // Simulate focus leaving the list and going to the chip.
           fixture.detectChanges();
 
           // It focuses the next-to-last item
@@ -383,6 +386,7 @@ describe('MatChipList', () => {
 
           // Press the LEFT arrow
           chipListInstance._keydown(LEFT_EVENT);
+          chipListInstance._blur(); // Simulate focus leaving the list and going to the chip.
           fixture.detectChanges();
 
           // It focuses the next-to-last item

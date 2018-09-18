@@ -242,7 +242,7 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
 
   /** Whether any chips or the matChipInput inside of this chip-list has focus. */
   get focused(): boolean {
-    return (this._chipInput && this._chipInput.focused) || this.chips.some(chip => chip._hasFocus);
+    return (this._chipInput && this._chipInput.focused) || this._hasFocusedChip();
   }
 
   /**
@@ -636,7 +636,10 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
 
   /** When blurred, mark the field as touched when focus moved outside the chip list. */
   _blur() {
-    this._keyManager.setActiveItem(-1);
+    if (!this._hasFocusedChip()) {
+      this._keyManager.setActiveItem(-1);
+    }
+
     if (!this.disabled) {
       if (this._chipInput) {
         // If there's a chip input, we should check whether the focus moved to chip input.
@@ -757,5 +760,10 @@ export class MatChipList extends _MatChipListMixinBase implements MatFormFieldCo
     }
 
     return false;
+  }
+
+  /** Checks whether any of the chips is focused. */
+  private _hasFocusedChip() {
+    return this.chips.some(chip => chip._hasFocus);
   }
 }
