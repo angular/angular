@@ -83,6 +83,10 @@ tr.mat-row, tr.mat-footer-row {
 
 th.mat-header-cell {
   text-align: left;
+
+  [dir='rtl'] & {
+    text-align: right;
+  }
 }
 
 th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
@@ -95,8 +99,18 @@ th.mat-header-cell, td.mat-cell, td.mat-footer-cell {
 // elements like ripples or badges from throwing off the layout (see #11165).
 th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
   padding-left: $mat-row-horizontal-padding;
+
+  [dir='rtl'] & {
+    padding-left: 0;
+    padding-right: $mat-row-horizontal-padding;
+  }
 }
 
 th.mat-header-cell:last-of-type, td.mat-cell:last-of-type, td.mat-footer-cell:last-of-type {
   padding-right: $mat-row-horizontal-padding;
+
+  [dir='rtl'] & {
+    padding-right: 0;
+    padding-left: $mat-row-horizontal-padding;
+  }
 }
