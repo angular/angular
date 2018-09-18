@@ -19,10 +19,10 @@ import {MutationObserverFactory} from '@angular/cdk/observers';
 describe('MatCheckbox', () => {
   let fixture: ComponentFixture<any>;
 
-  function createComponent<T>(componentType: Type<T>): ComponentFixture<T> {
+  function createComponent<T>(componentType: Type<T>, extraDeclarations: Type<any>[] = []) {
     TestBed.configureTestingModule({
       imports: [MatCheckboxModule, FormsModule, ReactiveFormsModule],
-      declarations: [componentType],
+      declarations: [componentType, ...extraDeclarations],
     }).compileComponents();
 
     return TestBed.createComponent<T>(componentType);
@@ -1104,7 +1104,37 @@ describe('MatCheckbox', () => {
       fixture.detectChanges();
       expect(checkboxInnerContainer.querySelector('input')!.hasAttribute('value')).toBe(false);
     });
+  });
 
+  describe('label margin', () => {
+    it('should properly update margin if label content is projected', () => {
+      const mutationCallbacks: Function[] = [];
+
+      TestBed.configureTestingModule({
+        providers: [
+          {provide: MutationObserverFactory, useValue: {
+            create: (callback: Function) => {
+              mutationCallbacks.push(callback);
+              return {observe: () => {}, disconnect: () => {}};
+            }
+          }}
+        ]
+      });
+
+      fixture = createComponent(CheckboxWithProjectedLabel, [TextBindingComponent]);
+      fixture.detectChanges();
+
+      const checkboxInnerContainer = fixture.debugElement
+        .query(By.css('.mat-checkbox-inner-container')).nativeElement;
+
+      // Do not run the change detection for the fixture manually because we want to verify
+      // that the checkbox properly toggles the margin class even if the observe content output
+      // fires outside of the zone.
+      mutationCallbacks.forEach(callback => callback());
+
+      expect(checkboxInnerContainer.classList).not
+        .toContain('mat-checkbox-inner-container-no-side-margin');
+    });
   });
 });
 
@@ -1238,3 +1268,18 @@ class CheckboxWithoutLabel {
   template: `<mat-checkbox tabindex="5"></mat-checkbox>`
 })
 class CheckboxWithTabindexAttr {}
+
+/** Test component that uses another component for its label. */
+@Component({
+  template: `<mat-checkbox><some-text></some-text></mat-checkbox>`
+})
+class CheckboxWithProjectedLabel {}
+
+/** Component that renders some text through a binding. */
+@Component({
+  selector: 'some-text',
+  template: '<span>{{text}}</span>'
+})
+class TextBindingComponent {
+  text: string = 'Some text';
+}

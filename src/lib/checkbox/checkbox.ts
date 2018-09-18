@@ -282,10 +282,12 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
 
   /** Method being called whenever the label text changes. */
   _onLabelTextChange() {
-    // This method is getting called whenever the label of the checkbox changes.
-    // Since the checkbox uses the OnPush strategy we need to notify it about the change
-    // that has been recognized by the cdkObserveContent directive.
-    this._changeDetectorRef.markForCheck();
+    // Since the event of the `cdkObserveContent` directive runs outside of the zone, the checkbox
+    // component will be only marked for check, but no actual change detection runs automatically.
+    // Instead of going back into the zone in order to trigger a change detection which causes
+    // *all* components to be checked (if explicitly marked or not using OnPush), we only trigger
+    // an explicit change detection for the checkbox view and it's children.
+    this._changeDetectorRef.detectChanges();
   }
 
   // Implemented as part of ControlValueAccessor.
