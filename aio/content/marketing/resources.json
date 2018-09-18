@@ -421,6 +421,12 @@
             "rev": true,
             "title": "Simple Quality UI",
             "url": "https://sq-ui.github.io/ng-sq-ui/#/"
+          },
+          "alyleui": {
+            "desc": "Minimal Design, a package of components for Angular.",
+            "rev": true,
+            "title": "Alyle UI",
+            "url": "https://alyle-ui.firebaseapp.com/"
           }
         }
       }
