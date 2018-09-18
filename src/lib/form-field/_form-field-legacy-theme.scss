@@ -49,10 +49,21 @@ $mat-form-field-legacy-dedupe: 0;
   // The tricks above used to smooth out the animation on chrome and firefox actually make things
   // worse on IE, so we don't include them in the IE version.
   -ms-transform: translateY(-$infix-margin-top - $infix-padding + $mat-form-field-legacy-dedupe)
-                 scale($font-scale);
+                  scale($font-scale);
 
   width: 100% / $font-scale + $mat-form-field-legacy-dedupe;
 
+  $mat-form-field-legacy-dedupe: $mat-form-field-legacy-dedupe + 0.00001 !global;
+}
+
+// Same as mixin above, but omits the translateZ for printing purposes.
+@mixin _mat-form-field-legacy-label-floating-print($font-scale, $infix-padding, $infix-margin-top) {
+  // This results in a small jitter after the label floats on Firefox, which the
+  // translateZ fixes.
+  transform: translateY(-$infix-margin-top - $infix-padding + $mat-form-field-legacy-dedupe)
+                  scale($font-scale);
+  // The tricks above used to smooth out the animation on chrome and firefox actually make things
+  // worse on IE, so we don't include them in the IE version.
   $mat-form-field-legacy-dedupe: $mat-form-field-legacy-dedupe + 0.00001 !global;
 }
 
@@ -128,6 +139,35 @@ $mat-form-field-legacy-dedupe: 0;
       // We want the subscript to start at the end of the content box, not the padding box,
       // so we move it up by the padding amount (adjusted for the smaller font size);
       top: calc(100% - #{$wrapper-padding-bottom / $subscript-font-scale});
+    }
+  }
+
+  // translateZ causes the label to not appear while printing, so we override it to not 
+  // apply translateZ while printing
+  @media print {
+    .mat-form-field-appearance-legacy {
+      &.mat-form-field-can-float {
+        &.mat-form-field-should-float .mat-form-field-label,
+        .mat-input-server:focus + .mat-form-field-label-wrapper .mat-form-field-label {
+          @include _mat-form-field-legacy-label-floating-print(
+                  $subscript-font-scale, $infix-padding, $infix-margin-top);
+        }
+
+        // @breaking-change 7.0.0 will rely on AutofillMonitor instead.
+        .mat-form-field-autofill-control:-webkit-autofill + .mat-form-field-label-wrapper
+        .mat-form-field-label {
+          @include _mat-form-field-legacy-label-floating-print(
+                  $subscript-font-scale, $infix-padding, $infix-margin-top);
+        }
+
+        // Server-side rendered matInput with a label attribute but label not shown
+        // (used as a pure CSS stand-in for mat-form-field-should-float).
+        .mat-input-server[label]:not(:label-shown) + .mat-form-field-label-wrapper
+        .mat-form-field-label {
+          @include _mat-form-field-legacy-label-floating-print(
+                  $subscript-font-scale, $infix-padding, $infix-margin-top);
+        }
+      }
     }
   }
 }
