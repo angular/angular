@@ -22,14 +22,14 @@ import {stringify} from './util';
  * We shift the flags by 29 so that 30 & 31 & 32 bits contains the instructions.
  */
 export const enum I18nInstructions {
-  Text = 1 << 29,
-  Element = 2 << 29,
+  Text = 1 << 29,     // Insert a text node at cursor
+  Element = 2 << 29,  // Move cursor as a first child of the element.
   Expression = 3 << 29,
   ICU = 4 << 29,
   TemplateRoot = 5 << 29,
   Any = 6 << 29,
   CloseNode = 7 << 29,
-  RemoveNode = 8 << 29,
+  RemoveNode = 8 << 29,  // Remove node from the render tree
   /** Used to decode the number encoded with the instruction. */
   IndexMask = (1 << 29) - 1,
   /** Used to test the type of instruction. */

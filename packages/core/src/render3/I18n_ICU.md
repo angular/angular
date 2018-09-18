@@ -1,23 +1,23 @@
 # Runtime I18N for templates
-Internationalization without ivy works by replacing text/html at build time.
-With ivy we need to transform the template at runtime, moving/removing elements and updating text
-without breaking the other template instructions.
+Internationalization without ivy works by replacing text/html at compile time.
+With ivy we need to transform the template at runtime, moving/removing elements and updating text without breaking the other template instructions.
+This is needed so that compiled template can be shipped to NPM and the developer of application can add additional translation locales.
 
 ## Constraints
-- directives & components depend on the original template, you can't add/use new ones. If you
-remove them in your translations they will be instantiated (this is necessary for things like
-queries)
-- you can only use bindings that were used in the original template
-- DOM elements (components or not) can be moved around or removed, but you cannot change the
+- directives & components depend on the original template, you can't add/use new directives in translations. 
+  If translation removes a directive, the directive will still be instantiated. 
+  (Translator can't change the behavior of the application only its visual representation.)
+- Only bindings that were used in the original template can be used in translation.
+- DOM elements (components or not) can be moved around or removed, but they cannot change the
 original nesting order (ie: `<p><b>...</b></p>` cannot become `<b><p>...</p></b>`)
 
 ## Principle
 I18n at runtime works in 3 phases.
 
 ### Get the translation
-The first step is to get the translation for the template that you want to translate. To do that
-you can either use closure with `goog.getMsg()` or the Angular service (not implemented yet).
-In the following examples we will do as if we already have the message.
+The first step is to extract the translation for the template that you want to translate. 
+The extraction is performed using use closure's `goog.getMsg()` or with Angular service (not implemented yet).
+Following examples assume that some service has already returned the translated form.
 
 A message can contain three types of placeholders:
 - elements, with an opening and a closing tag: `const MSG_1 = '{$START_A}trad{$END_A}';`
@@ -25,15 +25,15 @@ A message can contain three types of placeholders:
 - ICU expressions: `const ICU_1 = 'text {VAR_PLURAL, plural, =0 {zero} =1 {one} other {multiple}}';`
 
 ### Prepare the message
-Once we have the message, we use the function `i18nMapping` to parse it in the creation phase and to
-create a set of instructions that will be cached in the `TView` so that it can be shared between all
-templates of a given type.
-The instructions are a list of commands that are used to translate a template. We use bitwise
-operations to store both the type of the instruction and the value. The position of the instruction
-in the array is also important because it represents the position of the placeholder/text in the
+An extracted message needs to be processed by `i18nMapping` instruction.
+The `i18nMapping` breaks down the string into a set of instructions that will be cached in the `TView`.
+This caching allows the code to only pay the cost once per application startup.
+The instructions are a list of commands that are used to translate a template. 
+Bitwise operations are used to store both the type of the instruction and the value. 
+The position of the instruction in the array is also important because it represents the position of the placeholder/text in the
 translated template.
 
-For example if we have the following template:
+For example given the following template:
 ```html
 <div i18n>
   <p>text</p>
@@ -44,64 +44,56 @@ The template function would be:
 ```typescript
 elementStart(0, 'div'); // Parent element with the i18n attribute
 { // Start of translated section 1
-  elementStart(1, 'p');  // START_P
-  {
-    text(2, 'text');
-  }
-  elementEnd();
+  element(1, 'p');  // START_P
 } // End of translated section 1
 elementEnd();
 ```
+NOTE: 
+- Notice that all of the text nodes have been removed in favor of i18n to fill it in.
+- Notice that the elements are retained because:
+  - i18n is only allowed to move them but not create new ones.
+  - They may represent directives/components which are being triggered.
+  - There may be attribute/property bindings which need to refer back to the elements.
 
-And the original message would be `{$START_P}text{$END_P}` (we only care about what's
-inside of the element with the `i18n` attribute).
-
-If the translation is: `start {$START_P} middle {$END_P} end` then you can split it into 5
-instructions:
-- create text `start ` at index 0,
-- element at index 1 (`p`) moves to index 2,
-- create text ` middle ` at index 3,
-- end of element,
-- create text ` end` at index 4
+If the original message was `{$START_P}text{$END_P}`
+If the translation is: `start {$START_P} middle {$END_P} end` then the translation can be achieved with these instructions:
+- insert text `start ` as a child of `<div>`,
+- insert text ` middle ` as a child of `<p>`,
+- insert text ` end` after `<p>`.
 
 It would be represented by the following array:
 ```typescript
 const instructions = [
-  I18nInstructions.Text,
-  "start ",
-  1 | I18nInstructions.Element, // <-- element at index 1 is now at index 2
-  I18nInstructions.Text,
-  " middle ",
-  I18nInstructions.CloseNode, // important to keep track of the current "parent" element
-  I18nInstructions.Text,
-  " end"
+  1 | I18nInstructions.Select,       // Select element at position 0 (<p>)
+  I18nInstructions.InsertBeforeText, // Insert a child text node ...
+  "start ",                          //                          ... with the following text.
+  I18nInstructions.AppendChildText,  // Append a child text node ...
+  " middle ",                        //                          ... with the following text.
+  0 | I18nInstructions.Select,       // Select element at position 0 (<div>)
+  I18nInstructions.AppendChildText,  // Append a child text node ...
+  " end"                             //                          ... with the following text.
 ];
 ```
 
-Since we can only encode numbers with bitewise operations, the text instructions are actually 2
-instructions that count for one: the first one is "text" and the second one is the actual content
-of the text node that we need to create.
-For elements we can encode the original position (here index 1) with the instruction "element".
-The position of the instruction is important and represents the index in the translated template (we
-only increment the counter for each text or placeholder instruction).
+Since we can only encode numbers with bitwise operations, the text instructions are actually 2 instructions that count for one: 
+The first one is "text" and the second one is the actual content of the text node that we need to create.
+For elements we can encode the insert position (here index 1) with the instruction "element".
+The position of the instruction is important and represents the index in the translated template.
 
 The other types of instructions are:
-- expression at index x moves to index y: `x | I18nInstructions.Expression`
-- placeholder of any kind at index x moves to index y: `x | I18nInstructions.Any`
-- template root at index x moves to index y: `x | I18nInstructions.TemplateRoot`
 - detach node at index x from the DOM: `x | I18nInstructions.RemoveNode`
 - create ICU expression at index x: `x | I18nInstructions.ICU`
 
-There are 3 instructions that are similar: `Expression`, `Any`, `TemplateRoot`. They represent
-something that takes an index in the view data, but isn't an element (ie: it has no closing tag), or
-it could be an element but we don't care about nesting at this point (in the case of `any`).
-We only differentiate them so that it's easier to understand, but they could all be handled by the
-same type of instruction.
-
 #### Ng-containers
-We only use `Any` for ng-containers. It's a special kind of container that can be used to apply
-directives or to create i18n blocks without using a real DOM parent. For example the following
-template:
+
+// TODO: Add example here, as it in not clear why this is needed.
+// TODO: Change this text into passive voice. (Try to remove `we` and `you`.)
+
+
+`I18nInstructions.Select` can be used to select `<ng-container>`s. 
+It's a special kind of container that can be used to apply directives or to create i18n blocks without using a real DOM parent. 
+For example the following template:
+
 ```html
 <div>
   start
@@ -136,23 +128,21 @@ another, but it wouldn't work in this case because the translated DOM would then
  </div>
  ```
 
-We need to take into account the children following the translation so that we append them at the
-end, after the translated part. To do that we use instruction of type `Any`. We don't really care in
-this case if the node is some text, an element or an expression, we just need an instructions that
-says move it at the end, after the translation.
+We need to take into account the children following the translation so that we append them at the end, after the translated part. 
+To do that we use instruction of type `Any`. 
+We don't really care in this case if the node is some text, an element or an expression, we just need an instructions that says move it at the end, after the translation.
 
 #### Embedded templates
-A template can contain embedded templates, for example if you use a template directive, we will
-use a template function to generate the content of that element.
+A template can contain embedded templates, for example if a template directive is present, a child template function is used to generate the content of that element.
 
-If you have the following template:
+Give the following template:
 ```html
 <ul i18n>
   <li *ngFor="let item of items">value: {{item}}</li>
 </ul>
 ```
 
-You will have the following template function:
+The following template function is generated:
 ```typescript
 template: (rf: RenderFlags, myApp: MyApp) => {
   if (rf & RenderFlags.Create) {
@@ -176,92 +166,84 @@ function liTemplate(rf1: RenderFlags, row: NgForOfContext<string>) {
 }
 ```
 
-The original message would be: `{$START_LI}value: {$EXP_1}{$END_LI}`.
-The `template(...)` instruction uses another template function named `liTemplate`. In this case we
-have to translate two templates, but the problem is that the indexes of the texts/placeholders
-always start at 0 in each template.
-This means that `template(1, ...)` and `elementStart(0, 'li')` represent the same `li` element, but
-in the root template the index is `1`, and in the embedded one it's `0`.
-To translate those two templates, we need to generate a set of instructions for each template that
-will take into account the different indexes. But we only have one message to create two sets of
-instructions, this is why we need to determine which elements are "template roots", meaning that
-they will generate a new set of instructions because they use a different template function.
+If the original message is: `{$START_LI}value: {$EXP_1}{$END_LI}`.
+The parent `template(...)` instruction uses a child template function named `liTemplate`. 
+In this case we have to translate two templates.
+The complication is that the indexes of the texts/placeholders always start at 0 in each template.
+To translate these templates, the `i18nMapping` needs to generate a set of instructions for each template.
+Starting with a single message the `i18nMapping` needs to generate two sets of instructions.
+For this reason it is important to track where child templates are attached.
 
-In our case if we translate the example above with the message
-`start {$START_LI}valeur: {$EXP_1}{$END_LI} end`, we will have the following sets of instructions:
+Translating the example above with the message
+`start {$START_LI}valeur: {$EXP_1}{$END_LI} end`, the following sets of instructions are generated:
 ```typescript
 const instructions = [
   // Instructions for the root template
   [
-    I18nInstructions.Text,
+    1 | I18nInstructions.Select,
+    I18nInstructions.InsertBeforeText,
     "start ",
-    1 | I18nInstructions.TemplateRoot, // <-- template "li" at index 1 is now at index 2
-    I18nInstructions.Text,
+    0 | I18nInstructions.Select,
+    I18nInstructions.AppendChildText,
     " end"
   ],
   // Instructions for the embedded template
   [
-    0 | I18nInstructions.Element, // <-- element "li" at index 0 is still at index 0
-    I18nInstructions.Text,
+    1 | I18nInstructions.Select, 
+    I18nInstructions.InsertBeforeText,
     "valeur: ",
-    2 | I18nInstructions.Expression, // <-- expression at index 1 is now at index 2
-    I18nInstructions.CloseNode // <-- end of element "li"
   ]
 ];
 ```
 
-As you can see the `li` in the root template function is not handled like an element, it
-has no closing tag in the set of instructions because it's a single instruction in the template
-function. But the same `li` element is handled like an element inside of the embedded template.
-
-Because we need to generate a set of instructions for each template, the function `i18nMapping`
-always returns an array of arrays. The instructions are generated in the order of appearance of
-the different template roots. Similarly most parameters of the function are an array to take into
-account each template root.
+Because we need to generate a set of instructions for each template, the function `i18nMapping` always returns an array of arrays.
+The instructions are generated in the order of appearance of the different template roots.
+Similarly most parameters of the function are an array to take into account each template root.
 
 #### ICU expressions
+
+// TODO: introduce `icu` first and than bring in `i18nMapping` later.
 The `i18nMapping` function is used to generate the instructions for ICU expressions even if you use
 them without translations. Inside of an i18n block the `i18nApply` function will create the ICU node
 element. Outside of an i18n block we will use the `icu()` instruction directly in the template
 function.
 
-An ICU expression is surrounded by single brackets and is composed of three parts separated by
-commas: `{VAR_PLURAL, plural, =0 {zero} =1 {one} other {multiple}}`.
-The first part represents the main binding whose value is used to determine the current case of the
-ICU expression.
-The second part determines the type of the ICU expression. We only support "plural" and "select".
-The third part is the list of cases. Each case is composed of a key (whose value needs to match the
-value of the main binding to be selected) and a value (surrounded by single brackets).
+An ICU expression is surrounded by single brackets and is composed of three parts separated by commas:
+`{VAR_PLURAL, plural, =0 {zero} =1 {one} other {multiple}}`.
+The first part represents the main binding whose value is used to determine the current case of the ICU expression.
+The second part determines the type of the ICU expression. 
+We only support "plural" and "select".
+The third part is the list of cases. 
+Each case is composed of a key (whose value needs to match the value of the main binding to be selected) and a value (surrounded by single brackets).
 
 An ICU expression case has the following constraints:
-- it can only contain text, html and bindings
-- it cannot contain components or directives, they will be treated as simple html
+- it can only contain text, html and bindings.
+- it cannot contain components or directives, they will be treated as simple html.
 - a translated ICU expression cannot use bindings that weren't used in the original ICU expression
-- it can contain embedded ICU expressions, but there has to be a distinction between the html
-elements of the root ICU expression and the html of the embedded ICU expression (an element cannot
-start in the root ICU and end in the embedded ICU)
-- there must always be an "other" case that will be used when no other case matches
+- it can contain embedded ICU expressions.
+  The child ICU expression must be have its HTML balanced.
+  (i.e. an element cannot start in the parent ICU and end in the embedded ICU)
+- there must always be an "other" case that will be used when no other case matches.
 
 The two types of ICU expressions that we support are "plural" and "select".
-"Plural" ICU expressions match a number to a key. They require locale data to determine which case
-is selected because each locale uses
-[different pluralization rules](http://cldr.unicode.org/index/cldr-spec/plural-rules).
+"Plural" ICU expressions match a number to a key. 
+They require locale data to determine which case is selected because each locale uses [different pluralization rules](http://cldr.unicode.org/index/cldr-spec/plural-rules).
 "Select" ICU expressions match a text to a key and do not require locale data for that.
 
 ##### Creation
-In i18n translations we only need to update the DOM at creation, the only thing that can change at
-update are the bindings. With ICU expression it is different because the value of the main binding
-determines which case is selected, and each case can contain both html and bindings. This is why we
-use specific methods to create/update an ICU expression.
+In i18n translations we only need to update the DOM at creation, the only thing that can change at update are the bindings. 
+With ICU expression it is more complicated because the value of the main binding determines which case is selected, and each case can contain both html and bindings. 
+This is why we use specific methods to create/update an ICU expression.
 
-The function `icuMapping` is called by `i18nMapping` and uses `innerHTML` to create the DOM elements
-for each case. We cache a copy of those DOM elements in `TView` so that it can be used by all
-templates of a given type.
+The function `icuMapping` is called by `i18nMapping` and uses `innerHTML` to create the DOM elements for each case which becomes a template. 
+We consider the HTML in the ICU as safe because it comes from the developer/translator (not from user) and therefore do not apply any sanitization to it.
+We cache a the template DOM elements in `TView` so that it can be used by all templates of a given type.
+The template is cloned before it is inserted into render DOM.
 `icuMapping` will also generate a set of instructions that will be used to update the bindings.
 
-Since the DOM nodes of the ICU are fully dynamic, the ICU expression is represented by a comment
-node, similarly to containers. The first node is linked by the `child` property on the ICU `TNode`
-and the following nodes can be found with `next`. For example if we have the following template:
+Since the DOM nodes of the ICU are fully dynamic, the ICU expression is represented by a comment node, similarly to containers. 
+The first node is linked by the `child` property on the ICU `TNode` and the following nodes can be found with `next`. 
+For example if we have the following template:
 ```html
 <div>
   {count, plural, =0 {<b title="zero">zero</b>} other {<span>result:</span><i>multiple</i>}}
@@ -279,20 +261,24 @@ When the value of `count` is >0, it should create the following DOM:
 </div>
 ```
 
-The ICU comment node is inserted at index 1, inside of the div (index 0). Then the dynamic nodes for
-the ICU are created: the first child `span` is linked to the ICU comment with the property `child`
-and the `i` node is linked to `span` with the property `next`.
+// TODO: add example of what the generated template will look like.
+
+If the ICU comment node is inserted at index 1, inside of the div (index 0). 
+Then the dynamic nodes for the ICU are created: 
+- the first child `span` is linked to the ICU comment with the property `child`
+- and the `i` node is linked to `span` with the property `next`.
 ```
 DIV (0) | span (dynamic) --> i (dynamic) | ICU comment (1)
             ^                                  |
             |__________________________________|
 ``` 
 
-The nodes can be inserted or removed with the method `addRemoveCaseFromICU` that uses the function
-`walkTNodeTree`. It inserts the dynamic nodes just before the ICU comment node and it removes them
-by following the pointers (child --> next, next, ...).
+The nodes can be inserted or removed with the method `addRemoveCaseFromICU` that uses the function `walkTNodeTree`. 
+It inserts the dynamic nodes just before the ICU comment node and it removes them by following the pointers (child --> next, next, ...).
 
 ##### Update
+// TODO: rewrite in passive voice.
+
 As explained above, an ICU expression is fully dynamic and can change during the update phase if the
 main binding changes. It uses 2 functions during update: `icuBindingX` (with X being a number
 between 1 and 8) and `icuBindingApply`.
@@ -305,7 +291,7 @@ which bindings the current cases uses and to only check those.
 
 If a change was detected then the function `icuBindingApply` will determine what needs to be
 updated: if the main binding has changed, then we need to determine the new case that will be
-selected. If a new case is selected then we remove the ICU dom nodes and we insert of copy of the
+selected. If a new case is selected then we remove the ICU DOM nodes and we insert of copy of the
 cached DOM nodes.
 Sometimes even if the main binding changes, the same case gets selected (for example the
 case "other" which is the default when no value matches). When this happens, we only need to update
@@ -327,6 +313,8 @@ DOM for the first case would be:
   of {$count}
 </div>
 ```
+
+// TODO: add example of what the generated template will look like.
 
 The instructions would be:
 - get `firstChild` of the wrapper (the div that we use to generate the DOM with `innerHTML`)

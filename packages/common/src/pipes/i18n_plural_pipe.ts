@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LOCALE_ID, NgLocalization, Pipe, PipeTransform} from '@angular/core';
+import {NgLocalization, Pipe, PipeTransform} from '@angular/core';
 import {getPluralCategory} from '../i18n/localization';
 import {invalidPipeArgumentError} from './invalid_pipe_argument_error';
 
