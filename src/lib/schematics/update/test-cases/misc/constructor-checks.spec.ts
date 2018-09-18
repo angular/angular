@@ -3,7 +3,7 @@ import {runPostScheduledTasks} from '../../../test-setup/post-scheduled-tasks';
 import {migrationCollection} from '../../../test-setup/test-app';
 import {createTestAppWithTestCase, resolveBazelDataFile} from '../index.spec';
 
-describe('v5 constructor checks', () => {
+describe('constructor checks', () => {
 
   it('should properly report invalid constructor expression signatures', async () => {
     const inputPath = resolveBazelDataFile(`misc/constructor-checks_input.ts`);
