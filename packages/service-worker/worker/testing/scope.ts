@@ -181,7 +181,7 @@ export class SwTestHarness implements ServiceWorkerGlobalScope, Adapter, Context
       return {origin: obj.origin, path: obj.pathname};
     } else {
       const obj = require('url').parse(url);
-      return {origin: obj.origin, path: obj.pathname};
+      return {origin: `${obj.protocol}//${obj.host}`, path: obj.pathname};
     }
   }
 

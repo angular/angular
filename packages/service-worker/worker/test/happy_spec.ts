@@ -204,8 +204,6 @@ const brokenServer =
 
 const server404 = new MockServerStateBuilder().withStaticFiles(dist).build();
 
-const scope = new SwTestHarnessBuilder().withServerState(server).build();
-
 const manifestHash = sha1(JSON.stringify(manifest));
 const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
 
@@ -1006,6 +1004,38 @@ const manifestUpdateHash = sha1(JSON.stringify(manifestUpdate));
         expect(await requestFoo('default', 'no-cors')).toBe('this is foo');
         expect(await requestFoo('only-if-cached', 'same-origin')).toBe('this is foo');
         expect(await requestFoo('only-if-cached', 'no-cors')).toBeNull();
+      });
+
+      async_it('ignores passive mixed content requests ', async() => {
+        const scopeFetchSpy = spyOn(scope, 'fetch').and.callThrough();
+        const getRequestUrls = () => scopeFetchSpy.calls.allArgs().map(args => args[0].url);
+
+        const httpScopeUrl = 'http://mock.origin.dev';
+        const httpsScopeUrl = 'https://mock.origin.dev';
+        const httpRequestUrl = 'http://other.origin.sh/unknown.png';
+        const httpsRequestUrl = 'https://other.origin.sh/unknown.pnp';
+
+        // Registration scope: `http:`
+        (scope.registration.scope as string) = httpScopeUrl;
+
+        await makeRequest(scope, httpRequestUrl);
+        await makeRequest(scope, httpsRequestUrl);
+        const requestUrls1 = getRequestUrls();
+
+        expect(requestUrls1).toContain(httpRequestUrl);
+        expect(requestUrls1).toContain(httpsRequestUrl);
+
+        scopeFetchSpy.calls.reset();
+
+        // Registration scope: `https:`
+        (scope.registration.scope as string) = httpsScopeUrl;
+
+        await makeRequest(scope, httpRequestUrl);
+        await makeRequest(scope, httpsRequestUrl);
+        const requestUrls2 = getRequestUrls();
+
+        expect(requestUrls2).not.toContain(httpRequestUrl);
+        expect(requestUrls2).toContain(httpsRequestUrl);
       });
 
       describe('Backwards compatibility with v5', () => {
