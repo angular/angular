@@ -8,7 +8,7 @@
 
 # This does a deep import under //internal because of not wanting the wrapper macro
 # because it introduces an extra target_bin target.
-load("@build_bazel_rules_nodejs//internal/node:node.bzl", "nodejs_test", "nodejs_binary")
+load("@build_bazel_rules_nodejs//internal/node:node.bzl", "nodejs_binary", "nodejs_test")
 
 DEFAULT_NODE_MODULES = "@angular_deps//:node_modules"
 

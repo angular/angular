@@ -12,11 +12,13 @@ from source downstream. Alternately, this API is available from the
 used in a downstream project.
 """
 
-load("//packages/bazel:index.bzl",
+load(
+    "//packages/bazel:index.bzl",
     _ng_module = "ng_module",
     _ng_package = "ng_package",
     _protractor_web_test = "protractor_web_test",
-    _protractor_web_test_suite = "protractor_web_test_suite")
+    _protractor_web_test_suite = "protractor_web_test_suite",
+)
 load("//tools:ng_setup_workspace.bzl", _ng_setup_workspace = "ng_setup_workspace")
 
 ng_module = _ng_module

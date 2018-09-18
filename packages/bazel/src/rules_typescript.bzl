@@ -1,19 +1,20 @@
 """Allows different paths for these imports in google3.
 """
 
-load("@build_bazel_rules_typescript//internal:build_defs.bzl",
+load(
+    "@build_bazel_rules_typescript//internal:build_defs.bzl",
     _tsc_wrapped_tsconfig = "tsc_wrapped_tsconfig",
 )
-
-load("@build_bazel_rules_typescript//internal:common/compilation.bzl",
+load(
+    "@build_bazel_rules_typescript//internal:common/compilation.bzl",
     _COMMON_ATTRIBUTES = "COMMON_ATTRIBUTES",
     _COMMON_OUTPUTS = "COMMON_OUTPUTS",
-    _compile_ts = "compile_ts",
     _DEPS_ASPECTS = "DEPS_ASPECTS",
+    _compile_ts = "compile_ts",
     _ts_providers_dict_to_struct = "ts_providers_dict_to_struct",
 )
-
-load("@build_bazel_rules_typescript//internal:common/json_marshal.bzl",
+load(
+    "@build_bazel_rules_typescript//internal:common/json_marshal.bzl",
     _json_marshal = "json_marshal",
 )
 
