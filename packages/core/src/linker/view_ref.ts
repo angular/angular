@@ -53,7 +53,7 @@ export abstract class ViewRef extends ChangeDetectorRef {
  * @usageNotes
  *
  * The following template breaks down into two separate `TemplateRef` instances,
- * an outer one and and an inner one.
+ * an outer one and an inner one.
  *
  * ```
  * Count: {{items.length}}
