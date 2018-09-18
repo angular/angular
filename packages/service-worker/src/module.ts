@@ -14,6 +14,12 @@ import {NgswCommChannel} from './low_level';
 import {SwPush} from './push';
 import {SwUpdate} from './update';
 
+/**
+ * Token that can be used to provide options for `ServiceWorkerModule` outside of
+ * `ServiceWorkerModule.register()`.
+ *
+ * @publicApi
+ */
 export abstract class SwRegistrationOptions {
   scope?: string;
   enabled?: boolean;
@@ -69,7 +75,7 @@ export class ServiceWorkerModule {
    * If `enabled` is set to `false` in the given options, the module will behave as if service
    * workers are not supported by the browser, and the service worker will not be registered.
    */
-  static register(script: string, opts: {scope?: string; enabled?: boolean;} = {}):
+  static register(script: string, opts: SwRegistrationOptions = {}):
       ModuleWithProviders<ServiceWorkerModule> {
     return {
       ngModule: ServiceWorkerModule,
