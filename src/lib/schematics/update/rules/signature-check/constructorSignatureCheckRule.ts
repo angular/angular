@@ -10,6 +10,7 @@ import {bold, green} from 'chalk';
 import {RuleFailure, Rules, WalkContext} from 'tslint';
 import * as ts from 'typescript';
 import {constructorChecks} from '../../material/data/constructor-checks';
+import {getAllChanges} from '../../material/transform-change-data';
 
 /**
  * List of diagnostic codes that refer to pre-emit diagnostics which indicate invalid
@@ -23,6 +24,9 @@ const signatureErrorDiagnostics = [
   // Constructor argument length invalid diagnostics
   2554, 2555, 2556, 2557,
 ];
+
+/** List of classes of which the constructor signature has changed. */
+const signatureChangedClasses = getAllChanges(constructorChecks);
 
 /**
  * Rule that visits every TypeScript new expression or super call and checks if the parameter
@@ -62,7 +66,7 @@ function visitSourceFile(context: WalkContext<null>, program: ts.Program) {
 
     // TODO(devversion): Consider handling pass-through classes better.
     // TODO(devversion): e.g. `export class CustomCalendar extends MatCalendar {}`
-    if (!constructorChecks.includes(className)) {
+    if (!signatureChangedClasses.includes(className)) {
       continue;
     }
 

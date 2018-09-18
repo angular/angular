@@ -35,3 +35,14 @@ export function getChangesForTarget<T>(target: TargetVersion, data: VersionChang
 
   return data[target]!.reduce((result, prData) => result.concat(prData.changes), [] as T[]);
 }
+
+/**
+ * Gets all changes from the specified version changes object. This is helpful in case a migration
+ * rule does not distinguish data based on the target version, but for readability the
+ * upgrade data is separated for each target version.
+ */
+export function getAllChanges<T>(data: VersionChanges<T>): T[] {
+  return Object.keys(data)
+    .map(targetVersion => getChangesForTarget(parseInt(targetVersion), data))
+    .reduce((result, versionData) => result.concat(versionData), []);
+}
