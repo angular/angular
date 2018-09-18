@@ -118,6 +118,44 @@ describe('ComponentWalker', () => {
     expect(() => walker.walk(sourceFile)).not.toThrow();
     expect(walker.visitInlineStylesheet).toHaveBeenCalledTimes(2);
   });
+
+  it('should be able to report additional stylesheet files', () => {
+    const sourceFile = createSourceFile(``);
+    const walker = new ComponentWalker(sourceFile, defaultRuleOptions);
+    const stylesheetPath = './shared-styles/global.css';
+
+    spyOn(walker, 'visitExternalStylesheet').and.callFake(node => {
+      expect(node.getFullText()).toBe('external');
+    });
+
+    mockFs({[stylesheetPath]: 'external'});
+
+    walker._reportExtraStylesheetFiles([stylesheetPath]);
+
+    expect(walker.visitExternalStylesheet).toHaveBeenCalledTimes(1);
+  });
+
+  it('should not visit stylesheet files multiple times', () => {
+    const sourceFile = createSourceFile(`
+      @Component({
+        styleUrls: ['./my-component.css']
+      })
+      export class MyComponent {}
+    `);
+    const walker = new ComponentWalker(sourceFile, defaultRuleOptions);
+    const stylePath = join(dirname(sourceFile.fileName), 'my-component.css');
+
+    spyOn(walker, 'visitExternalStylesheet').and.callFake(node => {
+      expect(node.getFullText()).toBe('external');
+    });
+
+    mockFs({[stylePath]: 'external'});
+
+    walker._reportExtraStylesheetFiles([stylePath]);
+    walker.walk(sourceFile);
+
+    expect(walker.visitExternalStylesheet).toHaveBeenCalledTimes(1);
+  });
 });
 
 /** TypeScript source file content that includes a component with inline styles. */

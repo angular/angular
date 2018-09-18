@@ -7,7 +7,6 @@
  */
 
 import {green, red} from 'chalk';
-import {sync as globSync} from 'glob';
 import {IOptions, Replacement, RuleFailure, Rules} from 'tslint';
 import * as ts from 'typescript';
 import {inputNames} from '../../material/data/input-names';
@@ -41,11 +40,8 @@ export class Walker extends ComponentWalker {
   data = getChangesForTarget(this.getOptions()[0], inputNames);
 
   constructor(sourceFile: ts.SourceFile, options: IOptions) {
-    // In some applications, developers will have global stylesheets that are not specified in any
-    // Angular component. Therefore we glob up all css and scss files outside of node_modules and
-    // dist and check them as well.
-    super(sourceFile, options, globSync('!(node_modules|dist)/**/*.+(css|scss)'));
-    this._reportExtraStylesheetFiles();
+    super(sourceFile, options);
+    this._reportExtraStylesheetFiles(options.ruleArguments[1]);
   }
 
   visitInlineStylesheet(literal: ts.StringLiteralLike) {

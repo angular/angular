@@ -8,9 +8,10 @@
 
 import {Rule, SchematicContext, TaskId, Tree} from '@angular-devkit/schematics';
 import {RunSchematicTask, TslintFixTask} from '@angular-devkit/schematics/tasks';
+import {sync as globSync} from 'glob';
 import {TargetVersion} from './index';
 import {getProjectTsConfigPaths} from './project-tsconfig-paths';
-import {createTslintConfig} from './tslint-update';
+import {createTslintConfig} from './tslint-config';
 
 /** Entry point for `ng update` from Angular CLI. */
 export function createUpdateRule(targetVersion: TargetVersion): Rule {
@@ -23,8 +24,11 @@ export function createUpdateRule(targetVersion: TargetVersion): Rule {
       throw new Error('Could not find any tsconfig file. Please submit an issue on the Angular ' +
         'Material repository that includes the name of your TypeScript configuration.');
     }
-
-    const tslintConfig = createTslintConfig(targetVersion);
+    // In some applications, developers will have global stylesheets which are not specified in any
+    // Angular component. Therefore we glob up all CSS and SCSS files outside of node_modules and
+    // dist. The files will be read by the individual stylesheet rules and checked.
+    const extraStyleFiles = globSync('!(node_modules|dist)/**/*.+(css|scss)', {absolute: true});
+    const tslintConfig = createTslintConfig(targetVersion, extraStyleFiles);
 
     for (const tsconfig of projectTsConfigPaths) {
       // Run the update tslint rules.

@@ -61,10 +61,13 @@ const rulesDirectory = globSync('rules/**/', {cwd: __dirname, absolute: true});
  * Creates a TSLint configuration object that can be passed to the schematic `TSLintFixTask`.
  * Each rule will have the specified target version as option which can be used to swap out
  * the upgrade data based on the given target version.
+ *
+ * Additionally we pass a list of additional style files to the TSLint rules because the component
+ * walker is not able to detect stylesheets which are not referenced by Angular.
  */
-export function createTslintConfig(target: TargetVersion) {
+export function createTslintConfig(target: TargetVersion, extraStyleFiles: string[]) {
   const rules = upgradeRules.reduce((result, ruleName) => {
-    result[ruleName] = [true, target];
+    result[ruleName] = [true, target, extraStyleFiles];
     return result;
   }, {});
 

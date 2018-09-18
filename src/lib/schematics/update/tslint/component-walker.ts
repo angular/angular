@@ -6,12 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-/**
- * TSLint custom walker implementation that also visits external and inline templates.
- */
 import {existsSync, readFileSync} from 'fs';
-import {dirname, join, resolve} from 'path';
-import {IOptions, RuleWalker} from 'tslint';
+import {dirname, resolve} from 'path';
+import {RuleWalker} from 'tslint';
 import * as ts from 'typescript';
 import {createComponentFile, ExternalResource} from './component-file';
 
@@ -27,13 +24,12 @@ export class ComponentWalker extends RuleWalker {
   visitExternalTemplate(_template: ExternalResource) {}
   visitExternalStylesheet(_stylesheet: ExternalResource) {}
 
-  private extraFiles: Set<string>;
-
-  constructor(sourceFile: ts.SourceFile, options: IOptions, extraFiles: string[] = []) {
-    super(sourceFile, options);
-
-    this.extraFiles = new Set(extraFiles.map(p => resolve(p)));
-  }
+  /**
+   * We keep track of all visited stylesheet files because we allow manually reporting external
+   * stylesheets which couldn't be detected by the component walker. Reporting these files multiple
+   * times will result in duplicated TSLint failures and replacements.
+   */
+  private _visitedStylesheetFiles: Set<string> = new Set<string>();
 
   visitNode(node: ts.Node) {
     if (node.kind === ts.SyntaxKind.CallExpression) {
@@ -83,12 +79,7 @@ export class ComponentWalker extends RuleWalker {
   }
 
   private _reportExternalTemplate(node: ts.StringLiteralLike) {
-    const templatePath = resolve(join(dirname(this.getSourceFile().fileName), node.text));
-
-    // Do not report the specified additional files multiple times.
-    if (this.extraFiles.has(templatePath)) {
-      return;
-    }
+    const templatePath = resolve(dirname(this.getSourceFile().fileName), node.text);
 
     // Check if the external template file exists before proceeding.
     if (!existsSync(templatePath)) {
@@ -113,12 +104,7 @@ export class ComponentWalker extends RuleWalker {
   private _visitExternalStylesArrayLiteral(expression: ts.ArrayLiteralExpression) {
     expression.elements.forEach(node => {
       if (ts.isStringLiteralLike(node)) {
-        const stylePath = resolve(join(dirname(this.getSourceFile().fileName), node.text));
-
-        // Do not report the specified additional files multiple times.
-        if (this.extraFiles.has(stylePath)) {
-          return;
-        }
+        const stylePath = resolve(dirname(this.getSourceFile().fileName), node.text);
 
         // Check if the external stylesheet file exists before proceeding.
         if (!existsSync(stylePath)) {
@@ -130,18 +116,20 @@ export class ComponentWalker extends RuleWalker {
     });
   }
 
-  _reportExternalStyle(stylePath: string) {
+  private _reportExternalStyle(stylePath: string) {
+    // Keep track of all reported external stylesheets because we allow reporting additional
+    // stylesheet files which couldn't be detected by the component walker. This allows us to
+    // ensure that no stylesheet files are visited multiple times.
+    if (this._visitedStylesheetFiles.has(stylePath)) {
+      return;
+    }
+
+    this._visitedStylesheetFiles.add(stylePath);
+
     // Create a fake TypeScript source file that includes the stylesheet content.
     const stylesheetFile = createComponentFile(stylePath, readFileSync(stylePath, 'utf8'));
 
     this.visitExternalStylesheet(stylesheetFile);
-  }
-
-  /** Reports all extra files that have been specified at initialization. */
-  // TODO(devversion): this should be done automatically but deferred because
-  // the base class "data" property member is not ready at initialization.
-  _reportExtraStylesheetFiles() {
-    this.extraFiles.forEach(file => this._reportExternalStyle(file));
   }
 
   /**
@@ -168,5 +156,10 @@ export class ComponentWalker extends RuleWalker {
   private _createResourceNotFoundFailure(node: ts.Node, resourceUrl: string) {
     this.addFailureAtNode(node, `Could not resolve resource file: "${resourceUrl}". ` +
         `Skipping automatic upgrade for this file.`);
+  }
+
+  /** Reports the specified additional stylesheets. */
+  _reportExtraStylesheetFiles(filePaths: string[]) {
+    filePaths.forEach(filePath => this._reportExternalStyle(resolve(filePath)));
   }
 }
