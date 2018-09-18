@@ -10,7 +10,6 @@ $mat-card-header-size: 40px !default;
 
 .mat-card {
   @include mat-elevation-transition;
-  @include mat-overridable-elevation(2);
   display: block;
   position: relative;
   padding: $mat-card-default-padding;
@@ -35,11 +34,6 @@ $mat-card-header-size: 40px !default;
         margin-right: 0;
       }
     }
-  }
-
-  // Needs extra specificity to be able to override the elevation selectors.
-  &.mat-card-flat {
-    box-shadow: none;
   }
 
   @include cdk-high-contrast {

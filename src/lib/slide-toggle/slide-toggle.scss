@@ -1,6 +1,5 @@
 @import '../core/style/variables';
 @import '../core/ripple/ripple';
-@import '../core/style/elevation';
 @import '../core/style/vendor-prefixes';
 @import '../core/style/list-common';
 @import '../../cdk/a11y/a11y';
@@ -132,8 +131,6 @@ $mat-slide-toggle-bar-track-width: $mat-slide-toggle-bar-width - $mat-slide-togg
   height: $mat-slide-toggle-thumb-size;
   width: $mat-slide-toggle-thumb-size;
   border-radius: 50%;
-
-  @include mat-elevation(1);
 }
 
 // Horizontal bar for the slide-toggle.

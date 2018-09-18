@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/style/elevation';
 @import '../core/typography/typography-utils';
 
 @mixin mat-expansion-panel-theme($theme) {
@@ -7,6 +8,7 @@
   $foreground: map-get($theme, foreground);
 
   .mat-expansion-panel {
+    @include _mat-theme-overridable-elevation(2, $theme);
     background: mat-color($background, card);
     color: mat-color($foreground, text);
   }

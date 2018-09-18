@@ -1,3 +1,4 @@
+@import '../core/style/elevation';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
@@ -5,6 +6,10 @@
 @mixin mat-button-toggle-theme($theme) {
   $foreground: map-get($theme, foreground);
   $background: map-get($theme, background);
+
+  .mat-button-toggle-standalone, .mat-button-toggle-group {
+    @include _mat-theme-elevation(2, $theme);
+  }
 
   .mat-button-toggle {
     color: mat-color($foreground, hint-text);

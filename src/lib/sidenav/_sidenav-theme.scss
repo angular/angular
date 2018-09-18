@@ -1,3 +1,4 @@
+@import '../core/style/elevation';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 
@@ -29,6 +30,12 @@
 
     &.mat-drawer-push {
       background-color: $drawer-push-background-color;
+    }
+
+    &:not(.mat-drawer-side) {
+      // The elevation of z-16 is noted in the design specifications.
+      // See https://material.io/design/components/navigation-drawer.html
+      @include _mat-theme-elevation(16, $theme);
     }
   }
 

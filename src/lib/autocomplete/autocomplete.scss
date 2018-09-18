@@ -8,7 +8,7 @@ $mat-autocomplete-panel-max-height: 256px !default;
 $mat-autocomplete-panel-border-radius: 4px !default;
 
 .mat-autocomplete-panel {
-  @include mat-menu-base(4);
+  @include mat-menu-base();
 
   visibility: hidden;
   max-width: none;

@@ -1,3 +1,4 @@
+@import '../core/style/elevation';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
@@ -83,6 +84,7 @@ $mat-calendar-weekday-table-font-size: 11px !default;
   @include _mat-datepicker-color(map-get($theme, primary));
 
   .mat-datepicker-content {
+    @include _mat-theme-elevation(4, $theme);
     background-color: mat-color($background, card);
     color: mat-color($foreground, text);
 
@@ -93,6 +95,10 @@ $mat-calendar-weekday-table-font-size: 11px !default;
     &.mat-warn {
       @include _mat-datepicker-color(map-get($theme, warn));
     }
+  }
+
+  .mat-datepicker-content-touch {
+    @include _mat-theme-elevation(0, $theme);
   }
 
   .mat-datepicker-toggle-active {

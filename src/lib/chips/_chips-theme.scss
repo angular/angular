@@ -1,3 +1,4 @@
+@import '../core/style/elevation';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
@@ -39,6 +40,10 @@ $mat-chip-remove-font-size: 18px;
 
   .mat-chip.mat-standard-chip {
     @include mat-chips-color($unselected-foreground, $unselected-background);
+
+    &:focus {
+      @include _mat-theme-elevation(3, $theme);
+    }
   }
 
   .mat-chip.mat-standard-chip.mat-chip-selected {

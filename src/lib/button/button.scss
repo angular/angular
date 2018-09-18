@@ -37,15 +37,9 @@
 }
 
 .mat-stroked-button {
-  @include mat-overridable-elevation(0);
-
-  border: 1px solid currentColor;
+  border:  1px solid currentColor;
   padding: $mat-stroked-button-padding;
   line-height: $mat-stroked-button-line-height;
-}
-
-.mat-flat-button {
-  @include mat-overridable-elevation(0);
 }
 
 .mat-fab {

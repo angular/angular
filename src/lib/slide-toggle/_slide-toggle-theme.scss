@@ -1,3 +1,4 @@
+@import '../core/style/elevation';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
@@ -76,6 +77,7 @@
   }
 
   .mat-slide-toggle-thumb {
+    @include _mat-theme-elevation(1, $theme);
     background-color: mat-color($mat-grey, $thumb-unchecked-hue);
   }
 

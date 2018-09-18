@@ -1,3 +1,4 @@
+@import '../core/style/elevation';
 @import '../core/theming/theming';
 
 @mixin mat-autocomplete-theme($theme) {
@@ -5,6 +6,7 @@
   $background: map-get($theme, background);
 
   .mat-autocomplete-panel {
+    @include _mat-theme-overridable-elevation(4, $theme);
     background: mat-color($background, card);
     color: mat-color($foreground, text);
 

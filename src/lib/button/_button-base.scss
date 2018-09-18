@@ -76,7 +76,6 @@ $mat-mini-fab-padding: 8px !default;
 // Applies styles to buttons with backgrounds: raised, fab, and mini-fab
 @mixin mat-raised-button {
   @include mat-button-base;
-  @include mat-overridable-elevation(2);
   @include _noop-animation();
 
   // Force hardware acceleration.
@@ -85,20 +84,11 @@ $mat-mini-fab-padding: 8px !default;
   // Animation.
   transition: background $swift-ease-out-duration $swift-ease-out-timing-function,
               mat-elevation-transition-property-value();
-
-  &:not([disabled]):active {
-    @include mat-overridable-elevation(8);
-  }
-
-  &[disabled] {
-    box-shadow: none;
-  }
 }
 
 // Applies styles to fab and mini-fab button types only
 @mixin mat-fab($size, $padding) {
   @include mat-raised-button;
-  @include mat-overridable-elevation(6);
 
   // Reset the min-width from the button base.
   min-width: 0;
@@ -109,10 +99,6 @@ $mat-mini-fab-padding: 8px !default;
   padding: 0;
 
   flex-shrink: 0;
-
-  &:not([disabled]):active {
-    @include mat-overridable-elevation(12);
-  }
 
   .mat-button-wrapper {
     padding: $padding 0;

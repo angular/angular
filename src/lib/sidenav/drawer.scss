@@ -1,5 +1,4 @@
 @import '../core/style/variables';
-@import '../core/style/elevation';
 @import '../core/style/layout-common';
 @import '../core/style/vendor-prefixes';
 @import '../../cdk/a11y/a11y';
@@ -153,12 +152,6 @@ $mat-drawer-over-drawer-z-index: 4;
       right: auto;
       transform: translate3d(-100%, 0, 0);
     }
-  }
-
-  &:not(.mat-drawer-side) {
-    // The elevation of z-16 is noted in the design specifications.
-    // See https://material.io/design/components/navigation-drawer.html
-    @include mat-elevation(16);
   }
 }
 

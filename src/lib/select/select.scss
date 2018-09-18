@@ -83,7 +83,7 @@ $mat-select-placeholder-arrow-space: 2 * ($mat-select-arrow-size + $mat-select-a
 }
 
 .mat-select-panel {
-  @include mat-menu-base(4);
+  @include mat-menu-base();
   padding-top: 0;
   padding-bottom: 0;
   max-height: $mat-select-panel-max-height;

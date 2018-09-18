@@ -1,5 +1,6 @@
 @import '../core/theming/palette';
 @import '../core/theming/theming';
+@import '../core/style/elevation';
 @import '../core/typography/typography-utils';
 
 
@@ -8,8 +9,14 @@
   $foreground: map-get($theme, foreground);
 
   .mat-card {
+    @include _mat-theme-overridable-elevation(2, $theme);
     background: mat-color($background, card);
     color: mat-color($foreground, text);
+
+    // Needs extra specificity to be able to override the elevation selectors.
+    &.mat-card-flat {
+      @include _mat-theme-overridable-elevation(0, $theme);
+    }
   }
 
   .mat-card-subtitle {

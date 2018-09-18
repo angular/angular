@@ -9,7 +9,7 @@ $mat-menu-border-radius: 4px !default;
 $mat-menu-submenu-indicator-size: 10px !default;
 
 .mat-menu-panel {
-  @include mat-menu-base(4);
+  @include mat-menu-base();
   max-height: calc(100vh - #{$mat-menu-item-height});
   border-radius: $mat-menu-border-radius;
   outline: 0;

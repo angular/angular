@@ -1,6 +1,3 @@
-@import '../core/style/elevation';
-
-
 $mat-datepicker-calendar-padding: 8px;
 $mat-datepicker-non-touch-calendar-cell-size: 40px;
 $mat-datepicker-non-touch-calendar-width:
@@ -25,8 +22,6 @@ $mat-datepicker-touch-max-height: 788px;
 
 
 .mat-datepicker-content {
-  @include mat-elevation(4);
-
   display: block;
   border-radius: 4px;
 
@@ -37,8 +32,6 @@ $mat-datepicker-touch-max-height: 788px;
 }
 
 .mat-datepicker-content-touch {
-  @include mat-elevation(0);
-
   display: block;
   // make sure the dialog scrolls rather than being cropped on ludicrously small screens
   max-height: 80vh;

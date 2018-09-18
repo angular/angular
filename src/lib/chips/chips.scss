@@ -41,7 +41,6 @@ $mat-chip-remove-size: 18px;
   }
 
   &:focus {
-    @include mat-elevation(3);
     outline: none;
   }
 

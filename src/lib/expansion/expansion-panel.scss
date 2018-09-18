@@ -5,7 +5,6 @@
 .mat-expansion-panel {
   $border-radius: 4px;
 
-  @include mat-overridable-elevation(2);
   box-sizing: content-box;
   display: block;
   margin: 0;

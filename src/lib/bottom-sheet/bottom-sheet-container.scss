@@ -1,4 +1,3 @@
-@import '../core/style/elevation';
 @import '../../cdk/a11y/a11y';
 
 // The bottom sheet minimum width on larger screen sizes is based
@@ -9,8 +8,6 @@ $mat-bottom-sheet-container-vertical-padding: 8px !default;
 $mat-bottom-sheet-container-horizontal-padding: 16px !default;
 
 .mat-bottom-sheet-container {
-  @include mat-elevation(16);
-
   padding: $mat-bottom-sheet-container-vertical-padding
            $mat-bottom-sheet-container-horizontal-padding;
   min-width: 100vw;

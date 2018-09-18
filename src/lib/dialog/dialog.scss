@@ -1,4 +1,3 @@
-@import '../core/style/elevation';
 @import '../core/style/vendor-prefixes';
 @import '../../cdk/a11y/a11y';
 
@@ -9,8 +8,6 @@ $mat-dialog-max-height: 65vh !default;
 $mat-dialog-button-margin: 8px !default;
 
 .mat-dialog-container {
-  @include mat-elevation(24);
-
   display: block;
   padding: $mat-dialog-padding;
   border-radius: $mat-dialog-border-radius;

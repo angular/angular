@@ -14,15 +14,6 @@
 
 // Mixin that renders all of the core styles that are not theme-dependent.
 @mixin mat-core($typography-config: null) {
-  // Provides external CSS classes for each elevation value. Each CSS class is formatted as
-  // `mat-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the element is
-  // elevated.
-  @for $zValue from 0 through 24 {
-    .#{$_mat-elevation-prefix}#{$zValue} {
-      @include mat-elevation($zValue);
-    }
-  }
-
   @include angular-material-typography($typography-config);
   @include mat-ripple();
   @include cdk-a11y();
@@ -36,6 +27,15 @@
   @include mat-option-theme($theme);
   @include mat-optgroup-theme($theme);
   @include mat-pseudo-checkbox-theme($theme);
+
+  // Provides external CSS classes for each elevation value. Each CSS class is formatted as
+  // `mat-elevation-z$zValue` where `$zValue` corresponds to the z-space to which the element is
+  // elevated.
+  @for $zValue from 0 through 24 {
+    .#{$_mat-elevation-prefix}#{$zValue} {
+      @include _mat-theme-elevation($zValue, $theme);
+    }
+  }
 
   // Wrapper element that provides the theme background when the user's content isn't
   // inside of a `mat-sidenav-container`. Note that we need to exclude the ampersand

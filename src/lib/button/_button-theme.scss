@@ -1,4 +1,5 @@
 @import '../core/theming/theming';
+@import '../core/style/elevation';
 @import '../core/typography/typography-utils';
 
 // Applies a focus style to an mat-button element for each of the supported palettes.
@@ -105,6 +106,34 @@
   // than the default value.
   .mat-icon-button {
     @include _mat-button-ripple-color($theme, default, 0.2);
+  }
+
+  .mat-stroked-button, .mat-flat-button {
+    @include _mat-theme-overridable-elevation(0, $theme);
+  }
+
+  .mat-raised-button {
+    @include _mat-theme-overridable-elevation(2, $theme);
+
+    &:not([disabled]):active {
+      @include _mat-theme-overridable-elevation(8, $theme);
+    }
+
+    &[disabled] {
+      @include _mat-theme-overridable-elevation(0, $theme);
+    }
+  }
+
+  .mat-fab, .mat-mini-fab {
+    @include _mat-theme-overridable-elevation(6, $theme);
+
+    &:not([disabled]):active {
+      @include _mat-theme-overridable-elevation(12, $theme);
+    }
+
+    &[disabled] {
+      @include _mat-theme-overridable-elevation(0, $theme);
+    }
   }
 }
 

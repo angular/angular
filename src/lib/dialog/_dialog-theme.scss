@@ -1,3 +1,4 @@
+@import '../core/style/elevation';
 @import '../core/theming/palette';
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
@@ -8,6 +9,7 @@
   $foreground: map-get($theme, foreground);
 
   .mat-dialog-container {
+    @include _mat-theme-elevation(24, $theme);
     background: mat-color($background, dialog);
     color: mat-color($foreground, text);
   }

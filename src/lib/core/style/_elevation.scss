@@ -151,6 +151,14 @@ $_mat-elevation-prefix: 'mat-elevation-z';
               #{map-get(_get-ambient-map($color, $opacity), $zValue)};
 }
 
+@mixin _mat-theme-elevation($zValue, $theme, $opacity: $mat-elevation-opacity) {
+  $foreground: map-get($theme, foreground);
+  $elevation-color: map-get($foreground, elevation);
+  $elevation-color-or-default: if($elevation-color == null, $mat-elevation-color, $elevation-color);
+
+  @include mat-elevation($zValue, $elevation-color-or-default, $opacity);
+}
+
 // Applies the elevation to an element in a manner that allows
 // consumers to override it via the Material elevation classes.
 @mixin mat-overridable-elevation(
@@ -160,6 +168,14 @@ $_mat-elevation-prefix: 'mat-elevation-z';
   &:not([class*='#{$_mat-elevation-prefix}']) {
     @include mat-elevation($zValue, $color, $opacity);
   }
+}
+
+@mixin _mat-theme-overridable-elevation($zValue, $theme, $opacity: $mat-elevation-opacity) {
+  $foreground: map-get($theme, foreground);
+  $elevation-color: map-get($foreground, elevation);
+  $elevation-color-or-default: if($elevation-color == null, $mat-elevation-color, $elevation-color);
+
+  @include mat-overridable-elevation($zValue, $elevation-color-or-default, $opacity);
 }
 
 // Returns a string that can be used as the value for a transition property for elevation.
