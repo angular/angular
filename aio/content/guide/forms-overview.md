@@ -42,13 +42,17 @@ How these control instances are created and managed with reactive and template-d
 
 In reactive forms, the source of truth is the form model (the `FormControl` instance)
 
-**Diagram 1 - reactive forms**
+<figure>
+  <img src="generated/images/guide/forms-overview/key-diff-reactive-forms.png" alt="Reactive forms key differences">
+</figure>
 
 With reactive forms, the form model is explicitly defined in the component class. The reactive form directive (in this case, `FormControlDirective`) then links the existing form control instance to a specific form element in the view using a value accessor. Updates from the view-to-model and model-to-view are synchronous and not dependent on the UI rendered.
 
 In template-driven forms, the source of truth is the template.
 
-**Diagram 2 - template-driven forms**
+<figure>
+  <img src="generated/images/guide/forms-overview/key-diff-td-forms.png" alt="Template-driven forms key differences">
+</figure>
 
 The abstraction of the form model promotes simplicity over structure. It is less explicit, but you no longer have direct control over the form model. Updates from the view-to-model and model-to-view must pass through directives (in this case, the `NgModel` directive), and be asynchronous to work around the change detection cycle. Value changes are delayed until the next tick, which allows change detection to complete and a new change detection process to be triggered with the updated value.
 
@@ -65,14 +69,18 @@ Here is a component with an input field for a single control implemented using r
 
 The diagrams below shows how the data flows for an input with reactive forms.
 
-**Diagram 3 - View-To-Model Flow For Reactive Forms**
+<figure>
+  <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-vtm.png" alt="Reactive forms view to model data flow" width="100%">
+</figure>
 
 From the view-to-model:
 
 1. The form input element emits an input event with the latest value.
 1. The control value accessor on the form input element immediately relays the new value to the `FormControl` instance, which then emits the value through the valueChanges observable.
 
-**Diagram 4 - Model-To-View Flow For Reactive Forms**
+<figure>
+  <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-mtv.png" alt="Reactive forms model to view data flow" width="100%">
+</figure>
 
 From the model-to-view:
 
@@ -88,9 +96,9 @@ Here is the same component with an input field for a single control implemented 
 
 The diagrams below shows how the data flows for an input with template-driven forms.
 
-**Diagram of Input Event Flow For Template-driven forms**
-
-**Diagram 5 - View-To-Model Flow For Template-driven forms**
+<figure>
+  <img src="generated/images/guide/forms-overview/dataflow-td-forms-vtm.png" alt="Template-driven forms view to model data flow" width="100%">
+</figure>
 
 From the view-to-model:
 
@@ -99,7 +107,9 @@ From the view-to-model:
 1. After the change detection cycle completes, the task to set the form control instance value is called, when then emits the latest value through the `valueChanges` observable.
 1. The `ngModelChange` event fires on the `NgModel` directive, which then updates the `favoriteColor` value in the component.
 
-**Diagram 6 - Model-To-View Flow For Reactive Forms**
+<figure>
+  <img src="generated/images/guide/forms-overview/dataflow-td-forms-mtv.png" alt="Template-driven forms model to view data flow" width="100%">
+</figure>
 
 From the model-to-view:
 
