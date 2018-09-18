@@ -1,7 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
-load("//tools:defaults.bzl", "ivy_ng_module", "ts_library")
-load("//packages/bazel/src:ng_rollup_bundle.bzl", "ng_rollup_bundle")
+load("//tools:defaults.bzl", "ivy_ng_module", "ng_rollup_bundle", "ts_library")
 load("//tools/http-server:http_server.bzl", "http_server")
 
 ivy_ng_module(

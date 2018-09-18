@@ -1,5 +1,4 @@
-load("@build_bazel_rules_nodejs//:defs.bzl", "jasmine_node_test")
-load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("//tools:defaults.bzl", "jasmine_node_test", "ts_library")
 
 ts_library(
     name = "ngc_test_lib",
