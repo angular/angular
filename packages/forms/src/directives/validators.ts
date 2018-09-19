@@ -40,7 +40,7 @@ export type ValidationErrors = {
  *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
  * })
  * class CustomValidatorDirective implements Validator {
- *   validate(c: AbstractControl): ValidatorErrors|null {
+ *   validate(c: AbstractControl): ValidationErrors|null {
  *     return {'custom': true};
  *   }
  * }
@@ -87,7 +87,7 @@ export interface Validator {
  * true}]
  * })
  * class CustomAsyncValidatorDirective implements AsyncValidator {
- *   validate(c: AbstractControl): Observable<ValidatorErrors|null> {
+ *   validate(c: AbstractControl): Observable<ValidationErrors|null> {
  *     return observableOf({'custom': true});
  *   }
  * }

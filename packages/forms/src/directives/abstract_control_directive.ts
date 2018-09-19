@@ -85,14 +85,14 @@ export abstract class AbstractControlDirective {
 
   /**
    * @description
-   * Reports whether the control is dirty, meaning that the control the user has changed
+   * Reports whether the control is dirty, meaning that the user has changed
    * the value in the UI. If the control is not present, null is returned.
    */
   get dirty(): boolean|null { return this.control ? this.control.dirty : null; }
 
   /**
    * @description
-   * Reports whether the control is touched, meaning that the the user has triggered
+   * Reports whether the control is touched, meaning that the user has triggered
    * a `blur` event on it. If the control is not present, null is returned.
    */
   get touched(): boolean|null { return this.control ? this.control.touched : null; }
@@ -107,7 +107,7 @@ export abstract class AbstractControlDirective {
 
   /**
    * @description
-   * Reports whether the control is untouched, meaning that the the user has not yet triggered
+   * Reports whether the control is untouched, meaning that the user has not yet triggered
    * a `blur` event on it. If the control is not present, null is returned.
    */
   get untouched(): boolean|null { return this.control ? this.control.untouched : null; }
@@ -124,8 +124,7 @@ export abstract class AbstractControlDirective {
   /**
    * @description
    * Returns a multicasting observable of value changes for the control that emits every time the
-   * value
-   * of the control changes in the UI or programmatically.
+   * value of the control changes in the UI or programmatically.
    * If the control is not present, null is returned.
    */
   get valueChanges(): Observable<any>|null {
