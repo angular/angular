@@ -6,7 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Injector} from '@angular/core';
+import {HttpBackend} from '@angular/common/http';
+import {HttpInterceptingHandler} from '@angular/common/http/src/module';
+import {Injectable, InjectionToken, Injector} from '@angular/core';
 import {TestBed} from '@angular/core/testing';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
@@ -55,6 +57,24 @@ class ReentrantInterceptor implements HttpInterceptor {
   }
 }
 
+@Injectable()
+export class HttpClient1 extends HttpClient {
+  constructor(backend: HttpBackend, private injector: Injector) {
+    super(new HttpInterceptingHandler(backend, injector, HTTP_INTERCEPTORS_1));
+  }
+}
+
+@Injectable()
+class ReentrantHttpClient1Interceptor implements HttpInterceptor {
+  constructor(private client: HttpClient1) {}
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    return next.handle(req);
+  }
+}
+
+export const HTTP_INTERCEPTORS_1 = new InjectionToken<HttpInterceptor[]>('HTTP_INTERCEPTORS_1');
+
 {
   describe('HttpClientModule', () => {
     let injector: Injector;
@@ -102,5 +122,53 @@ class ReentrantInterceptor implements HttpInterceptor {
       injector.get(HttpClient).get('/test').subscribe(() => { done(); });
       injector.get(HttpTestingController).expectOne('/test').flush('ok!');
     });
+
+
+  });
+
+
+  describe('HttpClientModule', () => {
+    let injector: Injector;
+    beforeEach(() => {
+      injector = TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule],
+        providers: [
+          HttpClient1,
+          {provide: HTTP_INTERCEPTORS, useClass: InterceptorA, multi: true},
+          {provide: HTTP_INTERCEPTORS, useClass: InterceptorB, multi: true},
+          {provide: HTTP_INTERCEPTORS_1, useClass: InterceptorA, multi: true},
+        ],
+      });
+    });
+    it('initializes custom HttpClient properly', done => {
+      injector.get(HttpClient1).get('/test', {responseType: 'text'}).subscribe(value => {
+        expect(value).toBe('ok!');
+        done();
+      });
+      injector.get(HttpTestingController).expectOne('/test').flush('ok!');
+    });
+    it('intercepts outbound responses in the order in which interceptors were bound', done => {
+      injector.get(HttpClient1)
+          .get('/test', {observe: 'response', responseType: 'text'})
+          .subscribe(value => done());
+      const req = injector.get(HttpTestingController).expectOne('/test') as TestRequest;
+      expect(req.request.headers.get('Intercepted')).toEqual('A');
+      req.flush('ok!');
+    });
+    it('allows interceptors to inject custom HttpClient', done => {
+      TestBed.resetTestingModule();
+      injector = TestBed.configureTestingModule({
+        imports: [HttpClientTestingModule],
+        providers: [
+          HttpClient1,
+          ReentrantHttpClient1Interceptor,
+          {provide: HTTP_INTERCEPTORS_1, useClass: ReentrantHttpClient1Interceptor, multi: true},
+        ],
+      });
+      injector.get(HttpClient1).get('/test').subscribe(() => { done(); });
+      injector.get(HttpTestingController).expectOne('/test').flush('ok!');
+    });
+
+
   });
 }

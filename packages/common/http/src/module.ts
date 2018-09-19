@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Injectable, Injector, ModuleWithProviders, NgModule} from '@angular/core';
+import {Injectable, InjectionToken, Injector, ModuleWithProviders, NgModule, Optional} from '@angular/core';
 import {Observable} from 'rxjs';
 
 import {HttpBackend, HttpHandler} from './backend';
@@ -25,39 +25,42 @@ import {HttpXsrfCookieExtractor, HttpXsrfInterceptor, HttpXsrfTokenExtractor, XS
  * The interceptors are loaded lazily from the injector, to allow
  * interceptors to themselves inject classes depending indirectly
  * on `HttpInterceptingHandler` itself.
+ *
+ * Usually, `HttpInterceptingHandler` is instantiated by Angular's injection system but
+ * it's possible manually to instantiate this `HttpHandler` when you would like to create
+ * many HttpClients with differents stacks of interceptors like this :
+ *
+ * ```
+ * export const HTTP_INTERCEPTORS_1 = new InjectionToken<HttpInterceptor[]>('HTTP_INTERCEPTORS_1');
+ *
+ * @Injectable()
+ * export class MyHttpService extends HttpClient {
+ *  constructor(backend: HttpBackend, private injector: Injector) {
+ *    super(new MyHandlerService1(backend, injector, HTTP_INTERCEPTORS_1));
+ *   }
+ * }
+ *
+ * ```
+ *
  * @see `HttpInterceptor`
  */
 @Injectable()
 export class HttpInterceptingHandler implements HttpHandler {
   private chain: HttpHandler|null = null;
 
-  constructor(private backend: HttpBackend, private injector: Injector) {}
+  constructor(
+      private backend: HttpBackend, private injector: Injector,
+      @Optional() private interceptors?: InjectionToken<HttpInterceptor[]>) {}
 
   handle(req: HttpRequest<any>): Observable<HttpEvent<any>> {
     if (this.chain === null) {
-      const interceptors = this.injector.get(HTTP_INTERCEPTORS, []);
+      const interceptors = this.interceptors ? this.injector.get(this.interceptors) :
+                                               this.injector.get(HTTP_INTERCEPTORS, []);
       this.chain = interceptors.reduceRight(
           (next, interceptor) => new HttpInterceptorHandler(next, interceptor), this.backend);
     }
     return this.chain.handle(req);
   }
-}
-
-/**
- * Constructs an `HttpHandler` that applies interceptors
- * to a request before passing it to the given `HttpBackend`.
- *
- * Use as a factory function within `HttpClientModule`.
- *
- *
- */
-export function interceptingHandler(
-    backend: HttpBackend, interceptors: HttpInterceptor[] | null = []): HttpHandler {
-  if (!interceptors) {
-    return backend;
-  }
-  return interceptors.reduceRight(
-      (next, interceptor) => new HttpInterceptorHandler(next, interceptor), backend);
 }
 
 /**
