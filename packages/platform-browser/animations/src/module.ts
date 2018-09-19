@@ -23,7 +23,7 @@ export class BrowserAnimationsModule {
 }
 
 /**
- * Used internally.
+ * A null player that must be imported to allow disabling of animations.
  * @experimental
  */
 @NgModule({
