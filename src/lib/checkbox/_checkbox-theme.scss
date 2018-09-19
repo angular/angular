@@ -60,7 +60,7 @@
   }
 
   .mat-checkbox-disabled {
-    &.mat-checkbox-checked, &.mat-checkbox-indeterminate {
+    &.mat-checkbox-checked:not(.mat-checkbox-indeterminate) {
       .mat-checkbox-background {
         background-color: $disabled-color;
       }
@@ -92,15 +92,15 @@
 
   .mat-checkbox:not(.mat-checkbox-disabled) {
     &.mat-primary .mat-checkbox-ripple .mat-ripple-element {
-      background-color: mat-color($primary, 0.26);
+      background-color: mat-color($primary);
     }
 
     &.mat-accent .mat-checkbox-ripple .mat-ripple-element {
-      background-color: mat-color($accent, 0.26);
+      background-color: mat-color($accent);
     }
 
     &.mat-warn .mat-checkbox-ripple .mat-ripple-element {
-      background-color: mat-color($warn, 0.26);
+      background-color: mat-color($warn);
     }
   }
 }

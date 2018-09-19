@@ -11,7 +11,7 @@ $_mat-checkbox-mark-path-length: 22.910259;
 $_mat-checkbox-indeterminate-checked-easing-function: cubic-bezier(0.14, 0, 0, 1);
 
 // The ripple size of the checkbox
-$_mat-checkbox-ripple-radius: 25px;
+$_mat-checkbox-ripple-radius: 20px;
 
 // The amount of spacing between the checkbox and its label.
 $_mat-checkbox-item-spacing: $mat-toggle-padding;
@@ -164,13 +164,6 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
   }
 }
 
-// Applied to elements that are considered "marks" within the checkbox, e.g. the checkmark and
-// the mixedmark.
-%mat-checkbox-mark {
-  $width-padding-inset: 2 * $mat-checkbox-border-width;
-  width: calc(100% - #{$width-padding-inset});
-}
-
 // Applied to elements that appear to make up the outer box of the checkmark, such as the frame
 // that contains the border and the actual background element that contains the marks.
 %mat-checkbox-outer-box {
@@ -189,6 +182,10 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+
+  .mat-ripple-element:not(.mat-checkbox-persistent-ripple) {
+    opacity: 0.16;
+  }
 }
 
 .mat-checkbox-layout {
@@ -260,10 +257,29 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
   }
 }
 
+.mat-checkbox-persistent-ripple {
+  width: 100%;
+  height: 100%;
+  transform: none;
+
+  .mat-checkbox-inner-container:hover & {
+    opacity: 0.04;
+  }
+
+  .mat-checkbox.cdk-focused & {
+    opacity: 0.12;
+  }
+
+  // We do this here, rather than having a `:not(.mat-checkbox-disabled)`
+  // above in the `:hover`, because the `:not` will bump the specificity
+  // a lot and will cause it to overide the focus styles.
+  &, .mat-checkbox.mat-disabled .mat-checkbox-inner-container:hover & {
+    opacity: 0;
+  }
+}
+
 .mat-checkbox-checkmark {
   @include mat-fill;
-  @extend %mat-checkbox-mark;
-
   width: 100%;
 }
 
@@ -278,10 +294,11 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
 .mat-checkbox-mixedmark {
   $height: floor($_mat-checkbox-mark-stroke-size);
 
-  @extend %mat-checkbox-mark;
+  width: calc(100% - 6px);
   height: $height;
   opacity: 0;
   transform: scaleX(0) rotate(0deg);
+  border-radius: 2px;
 
   @include cdk-high-contrast {
     height: 0;
@@ -334,6 +351,12 @@ $_mat-checkbox-mark-stroke-size: 2 / 15 * $mat-checkbox-size !default;
   .mat-checkbox-mixedmark {
     opacity: 1;
     transform: scaleX(1) rotate(0deg);
+  }
+
+  &.mat-checkbox-disabled {
+    .mat-checkbox-inner-container {
+      opacity: 0.5;
+    }
   }
 }
 

@@ -6,11 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
+import {FocusMonitor} from '@angular/cdk/a11y';
 import {coerceBooleanProperty} from '@angular/cdk/coercion';
 import {
-  AfterViewChecked,
-  AfterViewInit,
   Attribute,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -26,6 +24,7 @@ import {
   Output,
   ViewChild,
   ViewEncapsulation,
+  AfterViewChecked,
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
@@ -42,7 +41,6 @@ import {
   mixinDisabled,
   mixinDisableRipple,
   mixinTabIndex,
-  RippleRef,
 } from '@angular/material/core';
 import {ANIMATION_MODULE_TYPE} from '@angular/platform-browser/animations';
 import {MAT_CHECKBOX_CLICK_ACTION, MatCheckboxClickAction} from './checkbox-config';
@@ -133,8 +131,7 @@ export const _MatCheckboxMixinBase:
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAccessor,
-    AfterViewChecked, AfterViewInit, OnDestroy, CanColor, CanDisable, HasTabIndex,
-    CanDisableRipple {
+    AfterViewChecked, OnDestroy, CanColor, CanDisable, HasTabIndex, CanDisableRipple {
 
   /**
    * Attached to the aria-label attribute of the host element. In most cases, arial-labelledby will
@@ -195,9 +192,6 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
 
   private _controlValueAccessorChangeFn: (value: any) => void = () => {};
 
-  /** Reference to the focused state ripple. */
-  private _focusRipple: RippleRef | null;
-
   constructor(elementRef: ElementRef<HTMLElement>,
               private _changeDetectorRef: ChangeDetectorRef,
               private _focusMonitor: FocusMonitor,
@@ -209,12 +203,17 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     super(elementRef);
 
     this.tabIndex = parseInt(tabIndex) || 0;
-  }
 
-  ngAfterViewInit() {
-    this._focusMonitor
-      .monitor(this._inputElement)
-      .subscribe(focusOrigin => this._onInputFocusChange(focusOrigin));
+    this._focusMonitor.monitor(elementRef, true).subscribe(focusOrigin => {
+      if (!focusOrigin) {
+        // When a focused element becomes disabled, the browser *immediately* fires a blur event.
+        // Angular does not expect events to be raised during change detection, so any state change
+        // (such as a form control's 'ng-touched') will cause a changed-after-checked error.
+        // See https://github.com/angular/angular/issues/17793. To work around this, we defer
+        // telling the form control it has been touched until the next tick.
+        Promise.resolve().then(() => this._onTouched());
+      }
+    });
   }
 
   ngAfterViewChecked() {
@@ -222,7 +221,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   }
 
   ngOnDestroy() {
-    this._focusMonitor.stopMonitoring(this._inputElement);
+    this._focusMonitor.stopMonitoring(this._elementRef);
   }
 
   /**
@@ -344,32 +343,12 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   }
 
   private _emitChangeEvent() {
-    let event = new MatCheckboxChange();
+    const event = new MatCheckboxChange();
     event.source = this;
     event.checked = this.checked;
 
     this._controlValueAccessorChangeFn(this.checked);
     this.change.emit(event);
-  }
-
-  /** Function is called whenever the focus changes for the input element. */
-  private _onInputFocusChange(focusOrigin: FocusOrigin) {
-    // TODO(paul): support `program`. See https://github.com/angular/material2/issues/9889
-    if (!this._focusRipple && focusOrigin === 'keyboard') {
-      this._focusRipple = this.ripple.launch(0, 0, {persistent: true});
-    } else if (!focusOrigin) {
-      if (this._focusRipple) {
-        this._focusRipple.fadeOut();
-        this._focusRipple = null;
-      }
-
-      // When a focused element becomes disabled, the browser *immediately* fires a blur event.
-      // Angular does not expect events to be raised during change detection, so any state change
-      // (such as a form control's 'ng-touched') will cause a changed-after-checked error.
-      // See https://github.com/angular/angular/issues/17793. To work around this, we defer telling
-      // the form control it has been touched until the next tick.
-      Promise.resolve().then(() => this._onTouched());
-    }
   }
 
   /** Toggles the `checked` state of the checkbox. */

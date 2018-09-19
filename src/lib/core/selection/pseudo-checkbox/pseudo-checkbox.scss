@@ -45,13 +45,18 @@ $_mat-pseudo-checkmark-size: $mat-checkbox-size - (2 * $_mat-pseudo-checkbox-pad
 
 .mat-pseudo-checkbox-disabled {
   cursor: default;
+
+  &.mat-pseudo-checkbox-indeterminate {
+    opacity: 0.5;
+  }
 }
 
 .mat-pseudo-checkbox-indeterminate::after {
   top: ($mat-checkbox-size - $mat-checkbox-border-width) / 2 - $mat-checkbox-border-width;
-  left: 0;
-  width: $mat-checkbox-size - ($mat-checkbox-border-width * 2);
+  left: $mat-checkbox-border-width / 2;
+  width: $mat-checkbox-size - 6px;
   opacity: 1;
+  border-radius: 2px;
 }
 
 .mat-pseudo-checkbox-checked::after {

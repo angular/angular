@@ -14,16 +14,10 @@ describe('checkbox', () => {
       expect(inputEl.getAttribute('checked'))
           .toBeTruthy('Expect checkbox "checked" property to be true');
 
-      await browser.wait(ExpectedConditions.not(
-        ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
-
       checkboxEl.click();
 
       expect(inputEl.getAttribute('checked'))
           .toBeFalsy('Expect checkbox "checked" property to be false');
-
-      await browser.wait(ExpectedConditions.not(
-        ExpectedConditions.presenceOf(element(by.css('div.mat-ripple-element')))));
     });
 
     it('should toggle the checkbox when pressing space', () => {

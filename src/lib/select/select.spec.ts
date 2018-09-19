@@ -3569,7 +3569,7 @@ describe('MatSelect', () => {
 
         // 44px accounts for the checkbox size, margin and the panel's padding.
         expect(Math.floor(firstOptionLeft))
-            .toEqual(Math.floor(triggerLeft - 44),
+            .toEqual(Math.floor(triggerLeft - 40),
                 `Expected trigger label to align along x-axis, accounting for the checkbox.`);
       }));
 
@@ -3585,7 +3585,7 @@ describe('MatSelect', () => {
 
         // 44px accounts for the checkbox size, margin and the panel's padding.
         expect(Math.floor(firstOptionRight))
-            .toEqual(Math.floor(triggerRight + 44),
+            .toEqual(Math.floor(triggerRight + 40),
                 `Expected trigger label to align along x-axis, accounting for the checkbox.`);
       }));
     });
