@@ -34,13 +34,13 @@ describe('Favorite Color Component', () => {
     input.value = 'Red';
     input.dispatchEvent(event);
 
-    expect(fixture.componentInstance.favoriteColor.value).toEqual('Red');
+    expect(fixture.componentInstance.favoriteColorControl.value).toEqual('Red');
   });
   // #enddocregion view-to-model
 
   // #docregion model-to-view
   it('should update the value in the control', () => {
-    component.favoriteColor.setValue('Blue');
+    component.favoriteColorControl.setValue('Blue');
 
     const input = fixture.nativeElement.querySelector('input');
 
