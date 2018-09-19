@@ -1,23 +1,27 @@
+@import '../core/style/variables';
 @import '../core/style/elevation';
+@import '../core/style/layout-common';
 @import '../../cdk/a11y/a11y';
 
+$mat-chip-min-height: 32px;
 $mat-chip-vertical-padding: 7px;
 $mat-chip-horizontal-padding: 12px;
 
 $mat-chip-remove-vertical-padding: 7px;
-$mat-chip-remove-before-margin: 7px;
-$mat-chip-remove-after-padding: 7px;
+$mat-chip-remove-before-margin: 8px;
+$mat-chip-remove-after-padding: 8px;
 
 $mat-chip-avatar-vertical-padding: 0;
 $mat-chip-avatar-before-padding: 0;
+$mat-chip-avatar-before-margin: 4px;
 $mat-chip-avatar-after-margin: 8px;
 
 $mat-chips-chip-margin: 4px;
 
 $mat-chip-input-width: 150px;
-$mat-chip-input-margin: 3px;
+$mat-chip-input-margin: 4px;
 
-$mat-chip-avatar-size: 32px;
+$mat-chip-avatar-size: 24px;
 $mat-chip-remove-size: 18px;
 
 .mat-chip {
@@ -31,17 +35,41 @@ $mat-chip-remove-size: 18px;
   @include mat-elevation-transition;
   display: inline-flex;
   padding: $mat-chip-vertical-padding $mat-chip-horizontal-padding;
-  border-radius: $mat-chip-horizontal-padding * 2;
+  border-radius: 16px;
   align-items: center;
   cursor: default;
+  min-height: $mat-chip-min-height;
 
   .mat-chip-remove.mat-icon {
     width: $mat-chip-remove-size;
     height: $mat-chip-remove-size;
   }
 
+  // Overlay used to darken the chip on hover and focus.
+  &::after {
+    @include mat-fill;
+    border-radius: inherit;
+    background-color: black;
+    opacity: 0;
+    content: '';
+    pointer-events: none;
+    transition: opacity 200ms $swift-ease-in-out-timing-function;
+  }
+
+  &:hover::after {
+    opacity: 0.12;
+  }
+
   &:focus {
     outline: none;
+
+    &::after {
+      opacity: 0.16;
+    }
+  }
+
+  &:active {
+    @include mat-elevation(3);
   }
 
   @include cdk-high-contrast {
@@ -95,11 +123,11 @@ $mat-chip-remove-size: 18px;
     width: $mat-chip-avatar-size;
     height: $mat-chip-avatar-size;
     margin-right: $mat-chip-avatar-after-margin;
-    margin-left: 0;
+    margin-left: $mat-chip-avatar-before-margin;
 
     [dir='rtl'] & {
       margin-left: $mat-chip-avatar-after-margin;
-      margin-right: 0;
+      margin-right: $mat-chip-avatar-before-margin;
     }
   }
 

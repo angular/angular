@@ -3,9 +3,6 @@
 @import '../core/theming/theming';
 @import '../core/typography/typography-utils';
 
-// TODO(crisbeto): these values don't correspond to any of the typography breakpoints.
-$mat-chip-font-size: 13px;
-$mat-chip-line-height: 18px;
 $mat-chip-remove-font-size: 18px;
 
 @mixin mat-chips-theme-color($color) {
@@ -64,8 +61,8 @@ $mat-chip-remove-font-size: 18px;
 
 @mixin mat-chips-typography($config) {
   .mat-chip {
-    font-size: $mat-chip-font-size;
-    line-height: $mat-chip-line-height;
+    font-size: mat-font-size($config, body-2);
+    font-weight: mat-font-weight($config, body-2);
 
     .mat-chip-trailing-icon.mat-icon,
     .mat-chip-remove.mat-icon {
