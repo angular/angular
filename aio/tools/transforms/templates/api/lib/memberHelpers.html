@@ -170,7 +170,6 @@
 
 {%- macro renderProperties(properties, containerClass, propertyClass, headingText, headings) -%}
 {% set nonInternalProperties = properties | filterByPropertyValue('internal', undefined) %}
-{% set hasTypes = properties | hasValues('type') %}
 {% if nonInternalProperties.length -%}
 <section class="{$ containerClass $}">
   <h2>{$ headingText $}</h2>
@@ -178,15 +177,17 @@
     <thead>
       <tr>
         <th>{$ headings[0] or 'Property' $}</th>
-        {% if hasTypes %}<th>{$ headings[1] or 'Type' $}</th>{% endif %}
         <th>{$ headings[2] or 'Description' $}</th>
       </tr>
     </thead>
     <tbody>
     {% for property in nonInternalProperties %}
       <tr class="{$ propertyClass $}">
-        <td><a id="{$ property.anchor $}"></a>{$ property.name $}</td>
-        {% if hasTypes %}<td><label class="property-type-label"><code>{$ property.type | escape $}</code></label></td>{% endif %}
+        <td>
+          <code>{%- if property.boundTo %}<span class="property-binding">@{$ property.boundTo.type $}({$ property.boundTo.bindingName $})</span>
+{% endif -%}<a id="{$ property.anchor $}" class="property-name">{$ property.name $}</a>{% if property.type %}: <span class="property-type">{$ property.type | escape $}</span>{% endif -%}
+          </code>
+        </td>
         <td>
           {%- if (property.isGetAccessor or property.isReadonly) and not property.isSetAccessor %}<span class='read-only-property'>Read-only.</span>{% endif %}
           {% if property.shortDescription %}{$ property.shortDescription | marked $}{% endif %}
