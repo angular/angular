@@ -34,7 +34,7 @@ Both reactive and template-driven forms share underlying building blocks.
 - A `FormControl` instance that tracks the value and validation status of an individual form control.
 - A `FormGroup` instance that tracks the same values and statuses for a collection of form controls.
 - A `FormArray` instance that tracks the same values and statues for an array of form controls.
-- A `ControlValueAccessor` that creates a bridge between Angular form controls and native DOM elements.
+- A `ControlValueAccessor` that creates a bridge between Angular `FormControl` instances and native DOM elements.
 
 How these control instances are created and managed with reactive and template-driven forms is introduced in the [form model](#the-form-model) section below and detailed further in the [data flow section](#data-flow-in-forms) of this guide.
 
@@ -67,7 +67,7 @@ Here is a component with an input field for a single control implemented using r
 <code-example path="forms-overview/src/app/reactive/favorite-color/favorite-color.component.ts">
 </code-example>
 
-The diagrams below shows how the data flows for an input with reactive forms.
+The diagrams below show how the data flows for an input with reactive forms.
 
 <figure>
   <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-vtm.png" alt="Reactive forms view to model data flow" width="100%">
@@ -75,8 +75,9 @@ The diagrams below shows how the data flows for an input with reactive forms.
 
 From the view-to-model:
 
+1. The end user types a value into the input element.
 1. The form input element emits an input event with the latest value.
-1. The control value accessor on the form input element immediately relays the new value to the `FormControl` instance, which then emits the value through the valueChanges observable.
+1. The control value accessor on the form input element immediately relays the new value to the `FormControl` instance, which then emits the value through the `valueChanges` observable.
 
 <figure>
   <img src="generated/images/guide/forms-overview/dataflow-reactive-forms-mtv.png" alt="Reactive forms model to view data flow" width="100%">
@@ -84,8 +85,8 @@ From the view-to-model:
 
 From the model-to-view:
 
-1. The form control instance sets the latest value and emits the latest value through the `valueChanges` observable.
-1. The control value accessor on the form input element is updates the element with the latest value.
+1. The `favoriteColorControl.setValue()` method is called, which updates the `FormControl` value and emits the latest value through the `valueChanges` observable.
+1. The control value accessor on the form input element updates the element with the latest value.
 
 ### Data flow in template-driven forms
 
@@ -94,7 +95,7 @@ Here is the same component with an input field for a single control implemented 
 <code-example path="forms-overview/src/app/template/favorite-color/favorite-color.component.ts">
 </code-example>
 
-The diagrams below shows how the data flows for an input with template-driven forms.
+The diagrams below show how the data flows for an input with template-driven forms.
 
 <figure>
   <img src="generated/images/guide/forms-overview/dataflow-td-forms-vtm.png" alt="Template-driven forms view to model data flow" width="100%">
@@ -102,10 +103,12 @@ The diagrams below shows how the data flows for an input with template-driven fo
 
 From the view-to-model:
 
-1. The form input element emits an input event with the latest value.
-1. The control value accessor uses the `NgModel` directive to update its model, queues an async task to set the value for the internal form control instance.
-1. After the change detection cycle completes, the task to set the form control instance value is called, when then emits the latest value through the `valueChanges` observable.
-1. The `ngModelChange` event fires on the `NgModel` directive, which then updates the `favoriteColor` value in the component.
+1. The end user types "Blue" into the input element.
+1. The input element emits an "input" event with the value "Blue".
+1. The control value accessor attached to the input triggers the `setValue()` method on the `FormControl` instance, which emits that value through the `valueChanges` observable.
+1. The control value accessor also calls the `NgModel.viewToModel()` method which emits an `ngModelChange` event.
+1. Because the component template uses two-way data binding for the `favoriteColor`, the `favoriteColor` property in the component 
+is updated to the value emitted  by the `ngModelChange` event ("Blue").
 
 <figure>
   <img src="generated/images/guide/forms-overview/dataflow-td-forms-mtv.png" alt="Template-driven forms model to view data flow" width="100%">
@@ -114,8 +117,8 @@ From the view-to-model:
 From the model-to-view:
 
 1. The `favoriteColor` value is updated in the component.
-1. Change detection calls the `ngOnChanges` method on the `NgModel` directive instance, updates the `NgModel` instance model value, and queues an async task to set the value for the internal form control instance.
-1. After the change detection cycle completes, the task to set the form control instance value is called, when then emits the latest value through the `valueChanges` observable.
+1. Change detection calls the `ngOnChanges` method on the `NgModel` directive instance, updates the `NgModel` instance model value, and queues an async task to set the value for the internal `FormControl` instance.
+1. On the next tick, the task to set the `FormControl` instance value is executed, when then emits the latest value through the `valueChanges` observable.
 1. The control value accessor updates the form input element in the view with the latest `favoriteColor` value.
 
 ## Form validation
@@ -161,7 +164,7 @@ The following test validates the view-to-model data flow:
 
 1. Query the view for the form input element, and create a custom input event for the test.
 1. Set the new value for the input is set to *Red*, and dispatch the input event on the form input element.
-1. Use the `tick()` method to simulate passage of time within the `fakeAsync()` task.
+1. Run change detection through the test fixture.
 1. Assert that the component `favoriteColor` property value matches the value from the input.
 
 The following test validates the model-to-view data flow:

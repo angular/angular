@@ -48,7 +48,7 @@ describe('FavoriteColorComponent', () => {
     input.value = 'Red';
     input.dispatchEvent(event);
 
-    tick();
+    fixture.detectChanges();
 
     expect(component.favoriteColor).toEqual('Red');
   }));
