@@ -59,7 +59,7 @@ describe('matchUpDirectiveDecorators processor', () => {
   });
 
   it('should extract inputs and outputs from the directive decorator', () => {
-    const docs = [{
+    const doc = {
       docType: 'directive',
       directiveOptions: {
         inputs: ['in1:in2', 'in3', '  in4:in5  ', '  in6  '],
@@ -70,28 +70,30 @@ describe('matchUpDirectiveDecorators processor', () => {
         { name: 'in3' },
         { name: 'in4' },
         { name: 'in6' },
+        { name: 'prop1' },
         { name: 'out1' },
         { name: 'out2' },
-        { name: 'out4' }
+        { name: 'out4' },
+        { name: 'prop2' },
       ]
-    }];
-    processorFactory().$process(docs);
-    expect(docs[0].inputs).toEqual([
-      { propertyName: 'in1', bindingName: 'in2', memberDoc: docs[0].members[0] },
-      { propertyName: 'in3', bindingName: 'in3', memberDoc: docs[0].members[1] },
-      { propertyName: 'in4', bindingName: 'in5', memberDoc: docs[0].members[2] },
-      { propertyName: 'in6', bindingName: 'in6', memberDoc: docs[0].members[3] }
-    ]);
+    };
 
-    expect(docs[0].outputs).toEqual([
-      { propertyName: 'out1', bindingName: 'out1', memberDoc: docs[0].members[4] },
-      { propertyName: 'out2', bindingName: 'out3', memberDoc: docs[0].members[5] },
-      { propertyName: 'out4', bindingName: 'out4', memberDoc: docs[0].members[6] }
+    processorFactory().$process([doc]);
+    expect(doc.members).toEqual([
+      { name: 'in1', boundTo: { type: 'Input', propertyName: 'in1', bindingName: 'in2' } },
+      { name: 'in3', boundTo: { type: 'Input', propertyName: 'in3', bindingName: 'in3' } },
+      { name: 'in4', boundTo: { type: 'Input', propertyName: 'in4', bindingName: 'in5' } },
+      { name: 'in6', boundTo: { type: 'Input', propertyName: 'in6', bindingName: 'in6'  }},
+      { name: 'prop1' },
+      { name: 'out1', boundTo: { type: 'Output', propertyName: 'out1', bindingName: 'out1' } },
+      { name: 'out2', boundTo: { type: 'Output', propertyName: 'out2', bindingName: 'out3' } },
+      { name: 'out4', boundTo: { type: 'Output', propertyName: 'out4', bindingName: 'out4'  }},
+      { name: 'prop2' },
     ]);
   });
 
   it('should extract inputs and outputs from decorated properties', () => {
-    const docs = [{
+    const doc = {
       docType: 'directive',
       directiveOptions: {},
       members: [
@@ -100,21 +102,18 @@ describe('matchUpDirectiveDecorators processor', () => {
         { name: 'c1', decorators: [{ name: 'Input', arguments: [] }] },
         { name: 'd1', decorators: [{ name: 'Output', arguments: [] }] },
       ]
-    }];
-    processorFactory().$process(docs);
-    expect(docs[0].inputs).toEqual([
-      { propertyName: 'a1', bindingName: 'a2', memberDoc: docs[0].members[0] },
-      { propertyName: 'c1', bindingName: 'c1', memberDoc: docs[0].members[2] }
-    ]);
-
-    expect(docs[0].outputs).toEqual([
-      { propertyName: 'b1', bindingName: 'b2', memberDoc: docs[0].members[1] },
-      { propertyName: 'd1', bindingName: 'd1', memberDoc: docs[0].members[3] }
+    };
+    processorFactory().$process([doc]);
+    expect(doc.members).toEqual([
+      { name: 'a1', decorators: [{ name: 'Input', arguments: ['a2'] }], boundTo: { type: 'Input', propertyName: 'a1', bindingName: 'a2' } },
+      { name: 'b1', decorators: [{ name: 'Output', arguments: ['b2'] }], boundTo: { type: 'Output', propertyName: 'b1', bindingName: 'b2' } },
+      { name: 'c1', decorators: [{ name: 'Input', arguments: [] }], boundTo: { type: 'Input', propertyName: 'c1', bindingName: 'c1' } },
+      { name: 'd1', decorators: [{ name: 'Output', arguments: [] }], boundTo: { type: 'Output', propertyName: 'd1', bindingName: 'd1' } },
     ]);
   });
 
   it('should merge directive inputs/outputs with decorator property inputs/outputs', () => {
-    const docs = [{
+    const doc = {
       docType: 'directive',
       directiveOptions: {
         inputs: ['a1:a2'],
@@ -126,16 +125,13 @@ describe('matchUpDirectiveDecorators processor', () => {
         { name: 'b1' },
         { name: 'b3', decorators: [{ name: 'Output', arguments: ['b4'] }] },
       ]
-    }];
-    processorFactory().$process(docs);
-    expect(docs[0].inputs).toEqual([
-      { propertyName: 'a1', bindingName: 'a2', memberDoc: docs[0].members[0] },
-      { propertyName: 'a3', bindingName: 'a4', memberDoc: docs[0].members[1] }
-    ]);
-
-    expect(docs[0].outputs).toEqual([
-      { propertyName: 'b1', bindingName: 'b2', memberDoc: docs[0].members[2] },
-      { propertyName: 'b3', bindingName: 'b4', memberDoc: docs[0].members[3] }
+    };
+    processorFactory().$process([doc]);
+    expect(doc.members).toEqual([
+      { name: 'a1', boundTo: { type: 'Input', propertyName: 'a1', bindingName: 'a2' } },
+      { name: 'a3', boundTo: { type: 'Input', propertyName: 'a3', bindingName: 'a4' }, decorators: [{ name: 'Input', arguments: ['a4'] }] },
+      { name: 'b1', boundTo: { type: 'Output', propertyName: 'b1', bindingName: 'b2' } },
+      { name: 'b3', boundTo: { type: 'Output', propertyName: 'b3', bindingName: 'b4' }, decorators: [{ name: 'Output', arguments: ['b4'] }] },
     ]);
   });
 });
