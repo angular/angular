@@ -43,6 +43,9 @@ describe('constructor checks', () => {
 
     expect(output).toMatch(/Found "MatSidenavContent".*super.*: super\((any, ){4}any\)/);
     expect(output).toMatch(/Found "MatSidenavContent".*: new \w+\((any, ){4}any\)/);
+
+    expect(output).toMatch(/Found "ExtendedDateAdapter".*super.*: super\(string, Platform\)/);
+    expect(output).toMatch(/Found "ExtendedDateAdapter".*: new \w+\(string, Platform\)/);
   });
 });
 

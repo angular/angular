@@ -26,7 +26,7 @@ const signatureErrorDiagnostics = [
 ];
 
 /** List of classes of which the constructor signature has changed. */
-const signatureChangedClasses = getAllChanges(constructorChecks);
+const signatureChangeData = getAllChanges(constructorChecks);
 
 /**
  * Rule that visits every TypeScript new expression or super call and checks if the parameter
@@ -64,9 +64,19 @@ function visitSourceFile(context: WalkContext<null>, program: ts.Program) {
     const className = classType.symbol && classType.symbol.name;
     const isNewExpression = ts.isNewExpression(node);
 
-    // TODO(devversion): Consider handling pass-through classes better.
-    // TODO(devversion): e.g. `export class CustomCalendar extends MatCalendar {}`
-    if (!signatureChangedClasses.includes(className)) {
+    // Determine the class names of the actual construct signatures because we cannot assume
+    // that the diagnostic refers to a constructor of the actual expression. In case the constructor
+    // is inherited, we need to detect that the owner-class of the constructor is added to the
+    // constructor checks upgrade data. e.g. `class CustomCalendar extends MatCalendar {}`.
+    const signatureClassNames = classType.getConstructSignatures()
+      .map(signature => getClassDeclarationOfSignature(signature))
+      .map(declaration => declaration && declaration.name ? declaration.name.text : null)
+      .filter(Boolean);
+
+    // Besides checking the signature class names, we need to check the actual class name because
+    // there can be classes without an explicit constructor.
+    if (!signatureChangeData.includes(className) &&
+        !signatureClassNames.some(name => signatureChangeData.includes(name!))) {
       continue;
     }
 
@@ -119,4 +129,23 @@ function findConstructorNode(diagnostic: ts.Diagnostic, sourceFile: ts.SourceFil
   ts.forEachChild(sourceFile, _visitNode);
 
   return resolvedNode;
+}
+
+/** Determines the class declaration of the specified construct signature. */
+function getClassDeclarationOfSignature(signature: ts.Signature): ts.ClassDeclaration | null {
+  let node: ts.Node = signature.getDeclaration();
+
+  // Handle signatures which don't have an actual declaration. This happens if a class
+  // does not have an explicitly written constructor.
+  if (!node) {
+    return null;
+  }
+
+  while (!ts.isSourceFile(node = node.parent)) {
+    if (ts.isClassDeclaration(node)) {
+      return node;
+    }
+  }
+
+  return null;
 }

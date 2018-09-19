@@ -64,6 +64,8 @@ class MatSidenavContent {
                _ngZone: any) {}
 }
 
+class ExtendedDateAdapter extends NativeDateAdapter {}
+
 /* Actual test case using the previously defined definitions. */
 
 class A extends NativeDateAdapter {
@@ -127,3 +129,11 @@ class G extends MatSidenavContent {
 }
 
 const _G = new MatSidenavContent({}, 'container');
+
+class H extends ExtendedDateAdapter {
+  constructor() {
+    super('myLocale');
+  }
+}
+
+const _H = new ExtendedDateAdapter('myLocale');
