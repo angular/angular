@@ -3,16 +3,15 @@
 @import '../../cdk/a11y/a11y';
 
 
-$mat-card-default-padding: 24px !default;
-$mat-card-mobile-padding: 24px 16px !default;
-$mat-card-border-radius: 2px !default;
+$mat-card-padding: 16px !default;
+$mat-card-border-radius: 4px !default;
 $mat-card-header-size: 40px !default;
 
 .mat-card {
   @include mat-elevation-transition;
   display: block;
   position: relative;
-  padding: $mat-card-default-padding;
+  padding: $mat-card-padding;
   border-radius: $mat-card-border-radius;
 
   .mat-divider-horizontal {
@@ -47,14 +46,19 @@ $mat-card-header-size: 40px !default;
   margin-bottom: 16px;
 }
 
-.mat-card-title, .mat-card-subtitle, .mat-card-content {
+.mat-card-title {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.mat-card-subtitle, .mat-card-content {
   @extend %mat-card-section-base;
 }
 
 .mat-card-actions {
   @extend %mat-card-section-base;
-  margin-left: -16px;
-  margin-right: -16px;
+  margin-left: -$mat-card-padding / 2;
+  margin-right: -$mat-card-padding / 2;
   padding: 8px 0;
 }
 
@@ -64,14 +68,14 @@ $mat-card-header-size: 40px !default;
 }
 
 .mat-card-image {
-  width: calc(100% + 48px);
-  margin: 0 -24px 16px -24px;
+  width: calc(100% + #{$mat-card-padding * 2});
+  margin: 0 (-$mat-card-padding) 16px (-$mat-card-padding);
 }
 
 .mat-card-footer {
   // The negative margins pulls out the element, countering the padding
   // to get the footer to be flush against the side of the card.
-  $margin: -$mat-card-default-padding;
+  $margin: -$mat-card-padding;
 
   display: block;
   margin: 0 $margin $margin $margin;
@@ -79,7 +83,7 @@ $mat-card-header-size: 40px !default;
 
 .mat-card-actions {
   .mat-button, .mat-raised-button {
-    margin: 0 4px;
+    margin: 0 8px;
   }
 }
 
@@ -88,10 +92,14 @@ $mat-card-header-size: 40px !default;
 .mat-card-header {
   display: flex;
   flex-direction: row;
+
+  .mat-card-title {
+    margin-bottom: 12px;
+  }
 }
 
 .mat-card-header-text {
-  margin: 0 8px;
+  margin: 0 $mat-card-padding;
 }
 
 .mat-card-avatar {
@@ -107,34 +115,22 @@ $mat-card-header-size: 40px !default;
 
 // TITLE-GROUP STYLES
 
-// images grouped with title in title-group layout
-%mat-card-title-img {
-  // As per Material Design specifications, the images exceed the *top* content-box and take
-  // up some space. The margin below is necessary because otherwise space of the actual card
-  // content will be overlapped.
-  margin: -8px 0 8px 0;
-}
-
 .mat-card-title-group {
   display: flex;
   justify-content: space-between;
-  margin: 0 -8px;
 }
 
 .mat-card-sm-image {
-  @extend %mat-card-title-img;
   width: 80px;
   height: 80px;
 }
 
 .mat-card-md-image {
-  @extend %mat-card-title-img;
   width: 112px;
   height: 112px;
 }
 
 .mat-card-lg-image {
-  @extend %mat-card-title-img;
   width: 152px;
   height: 152px;
 }
@@ -150,27 +146,16 @@ $mat-card-header-size: 40px !default;
   // Special treatment inside title group in order to fix the media areas inside of a title-group.
   // This can be removed once #12203 has been addressed.
   .mat-card-title-group > & {
-    @extend %mat-card-title-img;
+    // As per Material Design specifications, the images exceed the *top* content-box and take
+    // up some space. The margin below is necessary because otherwise space of the actual card
+    // content will be overlapped.
+    margin: -8px 0 8px 0;
   }
 }
 
 // MEDIA QUERIES
 
 @media ($mat-xsmall) {
-  .mat-card {
-    padding: $mat-card-mobile-padding;
-  }
-
-  .mat-card-actions {
-    margin-left: -8px;
-    margin-right: -8px;
-  }
-
-  .mat-card-image {
-    width: calc(100% + 32px);
-    margin: 16px -16px;
-  }
-
   .mat-card-title-group {
     margin: 0;
   }
@@ -179,16 +164,6 @@ $mat-card-header-size: 40px !default;
     margin-left: 0;
     margin-right: 0;
   }
-
-  .mat-card-header {
-    margin: -8px 0 0 0;
-  }
-
-  .mat-card-footer {
-    margin-left: -16px;
-    margin-right: -16px;
-  }
-
 }
 
 // FIRST/LAST CHILD ADJUSTMENTS
@@ -207,15 +182,17 @@ $mat-card-header-size: 40px !default;
 }
 
 // if main image is on top, need to place it flush against top
-// (by stripping card's default 24px padding)
+// (by stripping card's default padding)
 .mat-card-image:first-child {
-  margin-top: -24px;
+  margin-top: -$mat-card-padding;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
 }
 
 // actions panel on bottom should be 8px from bottom of card
-// so must strip 16px from default card padding of 24px
+// so must strip 16px from default card padding
 .mat-card > .mat-card-actions:last-child {
-  margin-bottom: -16px;
+  margin-bottom: -8px;
   padding-bottom: 0;
 }
 
@@ -225,6 +202,10 @@ $mat-card-header-size: 40px !default;
 .mat-card-actions .mat-raised-button:first-child {
   margin-left: 0;
   margin-right: 0;
+}
+
+.mat-card-title {
+  margin-bottom: 8px;
 }
 
 // should be 12px space between titles and subtitles generally
@@ -240,13 +221,13 @@ $mat-card-header-size: 40px !default;
 }
 
 // xl image should always have 16px on top.
-// when it's the first el, it'll need to remove 8px from default card padding of 24px
+// when it's the first el, it'll need to remove 8px from default card padding
 .mat-card > .mat-card-xl-image:first-child {
   margin-top: -8px;
 }
 
 // xl image should always have 16px on bottom
-// when it's the last el, it'll need to remove 8px from default card padding of 24px
+// when it's the last el, it'll need to remove 8px from default card padding
 .mat-card > .mat-card-xl-image:last-child {
   margin-bottom: -8px;
 }
