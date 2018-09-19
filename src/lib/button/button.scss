@@ -4,32 +4,37 @@
 @import '../core/style/layout-common';
 @import '../../cdk/a11y/a11y';
 
-.mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
-  @include mat-button-base;
-}
-
 .mat-button, .mat-icon-button {
   .mat-button-focus-overlay {
-
     opacity: 0;
   }
 }
 
 // Only flat and stroked buttons (not raised, FABs or icon buttons) have a hover style.
 // Use the same visual treatment for hover as for focus.
-.mat-button:hover .mat-button-focus-overlay,
-.mat-stroked-button:hover .mat-button-focus-overlay {
-  opacity: 1;
+.mat-button:hover,
+.mat-stroked-button:hover {
+  .mat-button-focus-overlay {
+    opacity: 0.04;
+  }
 }
 
 // Disable the hover styles on non-hover devices. Since this is more of a progressive
 // enhancement and not all desktop browsers support this kind of media query, we can't
 // use something like `@media (hover)`.
 @media (hover: none) {
-  .mat-button:hover .mat-button-focus-overlay,
-  .mat-stroked-button:hover .mat-button-focus-overlay {
-    opacity: 0;
+  .mat-button:hover,
+  .mat-stroked-button:hover {
+    .mat-button-focus-overlay {
+      opacity: 0;
+    }
   }
+}
+
+// Should be placed after the `:hover` styles so the focused
+// styling coming in from `mat-button-base` takes precedence.
+.mat-button, .mat-icon-button, .mat-stroked-button, .mat-flat-button {
+  @include mat-button-base;
 }
 
 .mat-raised-button {
@@ -37,7 +42,7 @@
 }
 
 .mat-stroked-button {
-  border:  1px solid currentColor;
+  border: 1px solid currentColor;
   padding: $mat-stroked-button-padding;
   line-height: $mat-stroked-button-line-height;
 }
@@ -60,7 +65,6 @@
   height: $mat-icon-button-size;
 
   flex-shrink: 0;
-
   line-height: $mat-icon-button-size;
   border-radius: $mat-icon-button-border-radius;
 
@@ -87,9 +91,6 @@
 
 // Element that overlays the button to show focus and hover effects.
 .mat-button-focus-overlay {
-  // The button spec calls for focus on raised buttons (and FABs) to be indicated with a
-  // black, 12% opacity shade over the normal color (for both light and dark themes).
-  background-color: rgba(black, 0.12);
   border-radius: inherit;
   opacity: 0;
 
