@@ -3,7 +3,7 @@
 
 
 $mat-dialog-padding: 24px !default;
-$mat-dialog-border-radius: 2px !default;
+$mat-dialog-border-radius: 4px !default;
 $mat-dialog-max-height: 65vh !default;
 $mat-dialog-button-margin: 8px !default;
 
@@ -44,9 +44,11 @@ $mat-dialog-button-margin: 8px !default;
 }
 
 .mat-dialog-actions {
-  padding: $mat-dialog-padding / 2 0;
+  padding: 8px 0;
   display: flex;
   flex-wrap: wrap;
+  min-height: 52px;
+  align-items: center;
 
   // Pull the actions down to avoid their padding stacking with the dialog's padding.
   margin-bottom: -$mat-dialog-padding;
