@@ -7,11 +7,9 @@
  */
 
 import {Inject, Injectable, Sanitizer, SecurityContext, ɵ_sanitizeHtml as _sanitizeHtml, ɵ_sanitizeStyle as _sanitizeStyle, ɵ_sanitizeUrl as _sanitizeUrl} from '@angular/core';
-
 import {DOCUMENT} from '../dom/dom_tokens';
 
 export {SecurityContext};
-
 
 
 /**
@@ -19,42 +17,44 @@ export {SecurityContext};
  *
  * @publicApi
  */
-export interface SafeValue {}
+export interface SafeValue { readonly kind: SecurityContext; }
 
 /**
  * Marker interface for a value that's safe to use as HTML.
  *
  * @publicApi
  */
-export interface SafeHtml extends SafeValue {}
+export interface SafeHtml extends SafeValue { readonly kind: SecurityContext.HTML; }
 
 /**
  * Marker interface for a value that's safe to use as style (CSS).
  *
  * @publicApi
  */
-export interface SafeStyle extends SafeValue {}
+export interface SafeStyle extends SafeValue { readonly kind: SecurityContext.STYLE; }
 
 /**
  * Marker interface for a value that's safe to use as JavaScript.
  *
  * @publicApi
  */
-export interface SafeScript extends SafeValue {}
+export interface SafeScript extends SafeValue { readonly kind: SecurityContext.SCRIPT; }
 
 /**
  * Marker interface for a value that's safe to use as a URL linking to a document.
  *
  * @publicApi
  */
-export interface SafeUrl extends SafeValue {}
+export interface SafeUrl extends SafeValue {
+  readonly kind: SecurityContext.URL|SecurityContext.RESOURCE_URL;
+}
 
 /**
  * Marker interface for a value that's safe to use as a URL to load executable code from.
  *
  * @publicApi
  */
-export interface SafeResourceUrl extends SafeValue {}
+export interface SafeResourceUrl extends SafeUrl { readonly kind: SecurityContext.RESOURCE_URL; }
 
 /**
  * DomSanitizer helps preventing Cross Site Scripting Security bugs (XSS) by sanitizing
@@ -150,6 +150,8 @@ export class DomSanitizerImpl extends DomSanitizer {
 
   sanitize(ctx: SecurityContext, value: SafeValue|string|null): string|null {
     if (value == null) return null;
+    // NB: Checks here do not use SafeValue.kind (which a misguided user or malicious piece
+    // of code could set), but rather enforce safety using `instanceof`.
     switch (ctx) {
       case SecurityContext.NONE:
         return value as string;
@@ -202,6 +204,8 @@ export class DomSanitizerImpl extends DomSanitizer {
 }
 
 abstract class SafeValueImpl implements SafeValue {
+  abstract kind: SecurityContext;
+
   constructor(public changingThisBreaksApplicationSecurity: string) {
     // empty
   }
@@ -215,17 +219,27 @@ abstract class SafeValueImpl implements SafeValue {
 }
 
 class SafeHtmlImpl extends SafeValueImpl implements SafeHtml {
+  kind: SecurityContext.HTML = SecurityContext.HTML;
+
   getTypeName() { return 'HTML'; }
 }
 class SafeStyleImpl extends SafeValueImpl implements SafeStyle {
+  kind: SecurityContext.STYLE = SecurityContext.STYLE;
+
   getTypeName() { return 'Style'; }
 }
 class SafeScriptImpl extends SafeValueImpl implements SafeScript {
+  kind: SecurityContext.SCRIPT = SecurityContext.SCRIPT;
+
   getTypeName() { return 'Script'; }
 }
 class SafeUrlImpl extends SafeValueImpl implements SafeUrl {
+  kind: SecurityContext.URL|SecurityContext.RESOURCE_URL = SecurityContext.URL;
+
   getTypeName() { return 'URL'; }
 }
 class SafeResourceUrlImpl extends SafeValueImpl implements SafeResourceUrl {
+  kind: SecurityContext.RESOURCE_URL = SecurityContext.RESOURCE_URL;
+
   getTypeName() { return 'ResourceURL'; }
 }

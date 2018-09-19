@@ -1,6 +1,6 @@
 import { Component, CUSTOM_ELEMENTS_SCHEMA, DebugElement } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
+import { By, DomSanitizer } from '@angular/platform-browser';
 import { asapScheduler as asap, BehaviorSubject } from 'rxjs';
 
 import { ScrollService } from 'app/shared/scroll.service';
@@ -11,6 +11,7 @@ describe('TocComponent', () => {
   let tocComponentDe: DebugElement;
   let tocComponent: TocComponent;
   let tocService: TestTocService;
+  let sanitizer: DomSanitizer;
 
   let page: {
     listItems: DebugElement[];
@@ -28,6 +29,33 @@ describe('TocComponent', () => {
       tocH1Heading: tocComponentDe.query(By.css('.h1')),
       tocMoreButton: tocComponentDe.query(By.css('button.toc-more-items')),
     };
+  }
+
+  function tocItem(title: string, level = 'h2', href = '', content = title): TocItem {
+    return {title, href, level, content: sanitizer.bypassSecurityTrustHtml(content)};
+  }
+
+  class TestTocService {
+    tocList = new BehaviorSubject<TocItem[]>(getTestTocList());
+    activeItemIndex = new BehaviorSubject<number|null>(null);
+    setActiveIndex(index: number|null) {
+      this.activeItemIndex.next(index);
+      if (asap.scheduled !== undefined) {
+        asap.flush();
+      }
+    }
+  }
+
+  function getTestTocList() {
+    return [
+      tocItem('Title', 'h1', 'fizz/buzz#title', 'Title'),
+      tocItem('Heading one', 'h2', 'fizz/buzz#heading-one-special-id', 'Heading one'),
+      tocItem('H2 Two', 'h2', 'fizz/buzz#h2-two', 'H2 Two'),
+      tocItem('H2 Three', 'h2', 'fizz/buzz#h2-three', 'H2 <b>Three</b>'),
+      tocItem('H3 3a', 'h3', 'fizz/buzz#h3-3a', 'H3 3a'),
+      tocItem('H3 3b', 'h3', 'fizz/buzz#h3-3b', 'H3 3b'),
+      tocItem('H2 4', 'h2', 'fizz/buzz#h2-four', '<i>H2 <b>four</b></i>'),
+    ];
   }
 
   beforeEach(() => {
@@ -49,6 +77,7 @@ describe('TocComponent', () => {
       tocComponentDe = fixture.debugElement.children[0];
       tocComponent = tocComponentDe.componentInstance;
       tocService = TestBed.get(TocService);
+      sanitizer = TestBed.get(DomSanitizer);
     });
 
     it('should create tocComponent', () => {
@@ -456,31 +485,4 @@ class HostNotEmbeddedTocComponent {}
 
 class TestScrollService {
   scrollToTop = jasmine.createSpy('scrollToTop');
-}
-
-class TestTocService {
-  tocList = new BehaviorSubject<TocItem[]>(getTestTocList());
-  activeItemIndex = new BehaviorSubject<number | null>(null);
-  setActiveIndex(index: number|null) {
-    this.activeItemIndex.next(index);
-    if (asap.scheduled !== undefined) {
-      asap.flush();
-    }
-  }
-}
-
-function tocItem(title: string, level = 'h2', href = '', content = title) {
-  return { title, href, level, content };
-}
-
-function getTestTocList() {
-  return [
-    tocItem('Title',       'h1', 'fizz/buzz#title',                  'Title'),
-    tocItem('Heading one', 'h2', 'fizz/buzz#heading-one-special-id', 'Heading one'),
-    tocItem('H2 Two',      'h2', 'fizz/buzz#h2-two',                 'H2 Two'),
-    tocItem('H2 Three',    'h2', 'fizz/buzz#h2-three',               'H2 <b>Three</b>'),
-    tocItem('H3 3a',       'h3', 'fizz/buzz#h3-3a',                  'H3 3a'),
-    tocItem('H3 3b',       'h3', 'fizz/buzz#h3-3b',                  'H3 3b'),
-    tocItem('H2 4',        'h2', 'fizz/buzz#h2-four',                '<i>H2 <b>four</b></i>'),
-  ];
 }

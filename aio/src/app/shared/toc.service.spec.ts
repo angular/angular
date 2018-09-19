@@ -11,6 +11,7 @@ describe('TocService', () => {
   let scrollSpyService: MockScrollSpyService;
   let tocService: TocService;
   let lastTocList: TocItem[];
+  let sanitizer: DomSanitizer;
 
   // call TocService.genToc
   function callGenToc(html = '', docId = 'fizz/buzz'): HTMLDivElement {
@@ -18,6 +19,10 @@ describe('TocService', () => {
     el.innerHTML = html;
     tocService.genToc(el, docId);
     return el;
+  }
+
+  function createTocItem(title: string, level = 'h2', href = '', content = title) {
+    return {title, href, level, content: sanitizer.bypassSecurityTrustHtml(content)};
   }
 
   beforeEach(() => {
@@ -30,6 +35,7 @@ describe('TocService', () => {
     scrollSpyService = injector.get(ScrollSpyService);
     tocService = injector.get(TocService);
     tocService.tocList.subscribe(tocList => lastTocList = tocList);
+    sanitizer = injector.get(DomSanitizer);
   });
 
   describe('tocList', () => {
@@ -368,9 +374,5 @@ class MockScrollSpyService {
       unspy: jasmine.createSpy('unspy'),
     };
   }
-}
-
-function createTocItem(title: string, level = 'h2', href = '', content = title) {
-  return { title, href, level, content };
 }
 

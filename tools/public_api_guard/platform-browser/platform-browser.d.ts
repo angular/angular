@@ -93,21 +93,27 @@ export declare type MetaDefinition = {
 export declare const platformBrowser: (extraProviders?: StaticProvider[]) => PlatformRef;
 
 export interface SafeHtml extends SafeValue {
+    readonly kind: SecurityContext.HTML;
 }
 
-export interface SafeResourceUrl extends SafeValue {
+export interface SafeResourceUrl extends SafeUrl {
+    readonly kind: SecurityContext.RESOURCE_URL;
 }
 
 export interface SafeScript extends SafeValue {
+    readonly kind: SecurityContext.SCRIPT;
 }
 
 export interface SafeStyle extends SafeValue {
+    readonly kind: SecurityContext.STYLE;
 }
 
 export interface SafeUrl extends SafeValue {
+    readonly kind: SecurityContext.URL | SecurityContext.RESOURCE_URL;
 }
 
 export interface SafeValue {
+    readonly kind: SecurityContext;
 }
 
 export declare type StateKey<T> = string & {
