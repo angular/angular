@@ -1,3 +1,32 @@
+<a name="7.0.0-beta.6"></a>
+# [7.0.0-beta.6](https://github.com/angular/angular/compare/7.0.0-beta.5...7.0.0-beta.6) (2018-09-19)
+
+
+### Bug Fixes
+
+* **bazel:** specify the package and lock files using the workspace ([#25694](https://github.com/angular/angular/issues/25694)) ([ddc1335](https://github.com/angular/angular/commit/ddc1335))
+* **common:** register locale data for all equivalent closure locales ([#25867](https://github.com/angular/angular/issues/25867)) ([d83f9d4](https://github.com/angular/angular/commit/d83f9d4))
+* **compiler:** Fix look up of entryComponents in AOT Summaries ([#24892](https://github.com/angular/angular/issues/24892)) ([00d3666](https://github.com/angular/angular/commit/00d3666))
+* **ivy:** add [@nocollapse](https://github.com/nocollapse) when writing closure-annotated code ([#25775](https://github.com/angular/angular/issues/25775)) ([a0c4b2d](https://github.com/angular/angular/commit/a0c4b2d))
+* **ivy:** don't accidently read the inherited definition ([#25736](https://github.com/angular/angular/issues/25736)) ([d5bd86a](https://github.com/angular/angular/commit/d5bd86a)), closes [#24011](https://github.com/angular/angular/issues/24011) [#25026](https://github.com/angular/angular/issues/25026)
+* **ivy:** ensure Ivy *Ref classes derive from view engine equivalents ([#25775](https://github.com/angular/angular/issues/25775)) ([a9099e8](https://github.com/angular/angular/commit/a9099e8))
+* **ivy:** events should not mark views dirty by default ([#25969](https://github.com/angular/angular/issues/25969)) ([5653874](https://github.com/angular/angular/commit/5653874))
+* **ivy:** ngcc should compile entry-points in the correct order ([#25862](https://github.com/angular/angular/issues/25862)) ([9b1bb37](https://github.com/angular/angular/commit/9b1bb37))
+* **ivy:** use proper sanitizer names ([#25817](https://github.com/angular/angular/issues/25817)) ([21009b0](https://github.com/angular/angular/commit/21009b0)), closes [#25816](https://github.com/angular/angular/issues/25816)
+* **router:** mount correct component if router outlet was not instantiated and if using a route reuse strategy ([#25313](https://github.com/angular/angular/issues/25313)) ([#25314](https://github.com/angular/angular/issues/25314)) ([8dc2b11](https://github.com/angular/angular/commit/8dc2b11))
+
+
+### Features
+
+* **bazel:** add additional parameters to `ts_api_guardian_test` def ([#25694](https://github.com/angular/angular/issues/25694)) ([2a21ca0](https://github.com/angular/angular/commit/2a21ca0))
+* **ivy:** allow combined context discovery for components, directives and elements ([#25754](https://github.com/angular/angular/issues/25754)) ([62be8c2](https://github.com/angular/angular/commit/62be8c2))
+* **ivy:** patch animations into metadata ([#25828](https://github.com/angular/angular/issues/25828)) ([d2dfd48](https://github.com/angular/angular/commit/d2dfd48))
+* **ivy:** resolve references to vars in .d.ts files ([#25775](https://github.com/angular/angular/issues/25775)) ([96d6b79](https://github.com/angular/angular/commit/96d6b79))
+* **ivy:** support animation [@triggers](https://github.com/triggers) in templates ([#25849](https://github.com/angular/angular/issues/25849)) ([e363388](https://github.com/angular/angular/commit/e363388))
+* **ivy:** support bootstrap in ngModuleDef ([#25775](https://github.com/angular/angular/issues/25775)) ([13ccdfd](https://github.com/angular/angular/commit/13ccdfd))
+
+
+
 <a name="7.0.0-beta.5"></a>
 # [7.0.0-beta.5](https://github.com/angular/angular/compare/7.0.0-beta.4...7.0.0-beta.5) (2018-09-06)
 
