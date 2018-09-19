@@ -40,7 +40,7 @@ export type ValidationErrors = {
  *   providers: [{provide: NG_VALIDATORS, useExisting: CustomValidatorDirective, multi: true}]
  * })
  * class CustomValidatorDirective implements Validator {
- *   validate(c: AbstractControl): {[key: string]: any} {
+ *   validate(c: AbstractControl): ValidatorErrors|null {
  *     return {'custom': true};
  *   }
  * }
@@ -87,7 +87,7 @@ export interface Validator {
  * true}]
  * })
  * class CustomAsyncValidatorDirective implements AsyncValidator {
- *   validate(c: AbstractControl): Observable<{[key: string]: any}> {
+ *   validate(c: AbstractControl): Observable<ValidatorErrors|null> {
  *     return observableOf({'custom': true});
  *   }
  * }
@@ -98,7 +98,7 @@ export interface Validator {
 export interface AsyncValidator extends Validator {
   /**
    * @description
-   * Method that performs async verification against the provided control.
+   * Method that performs async validation against the provided control.
    *
    * @param c The control to validate against.
    *

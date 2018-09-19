@@ -19,8 +19,7 @@ function unimplemented(): any {
 /**
  * @description
  * A base class that all control `FormControl`-based directives extend. It binds a `FormControl`
- * object to a
- * DOM element.
+ * object to a DOM element.
  */
 export abstract class NgControl extends AbstractControlDirective {
   /**

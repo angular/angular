@@ -108,8 +108,8 @@ export interface ControlValueAccessor {
 
   /**
    * @description
-   * Registers a callback function that is called when the control status is disabled or
-   * re-enabled. Depending on the status, it enables or disables the
+   * Function that is called by the forms API when the control status changes to
+   * or from 'DISABLED'. Depending on the status, it enables or disables the
    * appropriate DOM element.
    *
    * The following is an example of writing the disabled property to a native DOM element:

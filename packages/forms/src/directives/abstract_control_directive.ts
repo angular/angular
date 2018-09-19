@@ -57,9 +57,9 @@ export abstract class AbstractControlDirective {
 
   /**
    * @description
-   * Reports whether the control is disabled, meaning that the control is exempt from
-   * validation checks and excluded from aggregate values of ancestor controls.
-   * If the control is not present, null is returned.
+   * Reports whether the control is disabled, meaning that the control is disabled
+   * in the UI and is exempt from validation checks and excluded from aggregate
+   * values of ancestor controls. If the control is not present, null is returned.
    */
   get disabled(): boolean|null { return this.control ? this.control.disabled : null; }
 
@@ -78,7 +78,7 @@ export abstract class AbstractControlDirective {
 
   /**
    * @description
-   * Reports whether the control is pristine, meaning that the control the user has not yet changed
+   * Reports whether the control is pristine, meaning that the user has not yet changed
    * the value in the UI. If the control is not present, null is returned.
    */
   get pristine(): boolean|null { return this.control ? this.control.pristine : null; }
@@ -123,7 +123,8 @@ export abstract class AbstractControlDirective {
 
   /**
    * @description
-   * Returns a multicasting observable of value changes for the control emits every time the value
+   * Returns a multicasting observable of value changes for the control that emits every time the
+   * value
    * of the control changes in the UI or programmatically.
    * If the control is not present, null is returned.
    */

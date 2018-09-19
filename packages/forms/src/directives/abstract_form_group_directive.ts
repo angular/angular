@@ -62,7 +62,7 @@ export class AbstractFormGroupDirective extends ControlContainer implements OnIn
 
   /**
    * @description
-   * An internal callback method trigger before the instance is destroyed.
+   * An internal callback method triggered before the instance is destroyed.
    * Removes the group from its parent group.
    */
   ngOnDestroy(): void {
