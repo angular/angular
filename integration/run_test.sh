@@ -9,6 +9,9 @@ doBuild=false
 trackPayload=false
 cache=false
 
+echo running
+echo {$1-}
+
 # Parse option args
 while [[ ${1-} ]]
 do
@@ -31,6 +34,11 @@ do
       ;;
   esac
 done
+
+echo doBuild $doBuild
+echo trackPayload $trackPayload
+echo cache $cache
+echo testDir $testDir
 
 # Build the packages (should be fast if already built)
 ${basedir}/scripts/build-packages-dist.sh
@@ -60,7 +68,8 @@ echo "#################################"
   yarn test || result=1
 
   if [[ $doBuild != false ]]; then
-      yarn build
+    echo $doBuild
+    yarn build
   fi
   if [[ $trackPayload != false ]]; then
      trackPayloadSize "$testDir" "dist/*.js" true false "${basedir}/integration/_payload-limits.json"
