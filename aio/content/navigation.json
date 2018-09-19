@@ -166,7 +166,7 @@
             {
               "url": "guide/user-input",
               "title": "User Input",
-              "tooltip": "User input triggers DOM events. We listen to those events with event bindings that funnel updated values back into our components and models."
+              "tooltip": "User input triggers DOM events. Angular listens to those events with event bindings that funnel updated values back into your app's components and models."
             },
             {
               "url": "guide/lifecycle-hooks",
@@ -228,7 +228,7 @@
             {
               "url": "guide/forms",
               "title": "Template-driven Forms",
-              "tooltip": "Create a template-driven form using directives and Angular template syntax"
+              "tooltip": "Create a template-driven form using directives and Angular template syntax."
             },
             {
               "url": "guide/form-validation",
@@ -237,7 +237,7 @@
             },
             {
               "url": "guide/dynamic-form",
-              "title": "Dynamic forms",
+              "title": "Dynamic Forms",
               "tooltip": "Render dynamic forms with FormGroup."
             }
           ]
