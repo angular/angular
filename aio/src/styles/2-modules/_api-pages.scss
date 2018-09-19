@@ -116,6 +116,15 @@
   .ngmodule-list {
     list-style: none;
     padding: 0;
+
+  .selector-list {
+    ul {
+      padding: 0;
+      li {
+        list-style: none;
+        margin-bottom: 12px;
+      }
+    }
   }
 }
 
