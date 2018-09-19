@@ -1,3 +1,24 @@
+<a name="6.1.8"></a>
+## [6.1.8](https://github.com/angular/angular/compare/6.1.7...6.1.8) (2018-09-19)
+
+
+### Bug Fixes
+
+* **bazel:** allow compile_strategy to be (privately) imported ([#25080](https://github.com/angular/angular/issues/25080)) ([2d0e642](https://github.com/angular/angular/commit/2d0e642))
+* **bazel:** correct type concatenated to devmode_js ([#25467](https://github.com/angular/angular/issues/25467)) ([91dd160](https://github.com/angular/angular/commit/91dd160))
+* **bazel:** move bazel managed runtime deps for downstream usage ([#25690](https://github.com/angular/angular/issues/25690)) ([48d7f4e](https://github.com/angular/angular/commit/48d7f4e))
+* **bazel:** specify the package and lock files using the workspace ([#25694](https://github.com/angular/angular/issues/25694)) ([678b420](https://github.com/angular/angular/commit/678b420))
+* **compiler:** Fix look up of entryComponents in AOT Summaries ([#24892](https://github.com/angular/angular/issues/24892)) ([a31cfc5](https://github.com/angular/angular/commit/a31cfc5))
+* **router:** mount correct component if router outlet was not instantiated and if using a route reuse strategy ([#25313](https://github.com/angular/angular/issues/25313)) ([#25314](https://github.com/angular/angular/issues/25314)) ([e117b1f](https://github.com/angular/angular/commit/e117b1f))
+
+
+### Features
+
+* **bazel:** add additional parameters to `ts_api_guardian_test` def ([#25694](https://github.com/angular/angular/issues/25694)) ([97ae7ae](https://github.com/angular/angular/commit/97ae7ae))
+* **ivy:** enable .ngfactory.js generation in g3 only ([#25392](https://github.com/angular/angular/issues/25392)) ([1c44b71](https://github.com/angular/angular/commit/1c44b71))
+
+
+
 <a name="6.1.7"></a>
 ## [6.1.7](https://github.com/angular/angular/compare/6.1.6...6.1.7) (2018-09-06)
 
@@ -8,12 +29,6 @@
 * **core:** size regression with closure compiler ([#25531](https://github.com/angular/angular/issues/25531)) ([ebcf762](https://github.com/angular/angular/commit/ebcf762))
 * **docs-infra:** show "suggest edits" only for /guide and /tutorial dirs ([#24378](https://github.com/angular/angular/issues/24378)) ([66b7870](https://github.com/angular/angular/commit/66b7870))
 * **upgrade:** trigger `$destroy` event on upgraded component element ([#25357](https://github.com/angular/angular/issues/25357)) ([82e0676](https://github.com/angular/angular/commit/82e0676)), closes [#25334](https://github.com/angular/angular/issues/25334)
-
-
-### Features
-
-* **docs-infra:** add "suggest edits" feature to all docs ([#24378](https://github.com/angular/angular/issues/24378)) ([82088a8](https://github.com/angular/angular/commit/82088a8))
-* **docs-infra:** disable "status" selector in API list when displaying only packages ([#25718](https://github.com/angular/angular/issues/25718)) ([6f7df8a](https://github.com/angular/angular/commit/6f7df8a)), closes [#25708](https://github.com/angular/angular/issues/25708)
 * **router:** warn if navigation triggered outside Angular zone ([#24959](https://github.com/angular/angular/issues/24959)) ([23a96dc](https://github.com/angular/angular/commit/23a96dc)), closes [#15770](https://github.com/angular/angular/issues/15770) [#15946](https://github.com/angular/angular/issues/15946) [#24728](https://github.com/angular/angular/issues/24728)
 
 
