@@ -33,6 +33,7 @@
   .method-table, .option-table, .list-table {
     td > code {
       background-color: inherit;
+      white-space: pre;
     }
 
     .with-github-links {
@@ -74,19 +75,6 @@
     margin: 6px 0 0 10px;
   }
 
-  .properties-table {
-    font-size: 14px;
-
-    thead th {
-      &:nth-child(1) {
-        width: 20%;
-      }
-      &:nth-child(2) {
-        width: 20%;
-      }
-    }
-  }
-
   .parameters-table {
     margin-top: 0;
     font-size: 14px;
@@ -125,6 +113,10 @@
         margin-bottom: 12px;
       }
     }
+  }
+
+  .property-name {
+    font-weight: bold;
   }
 }
 
