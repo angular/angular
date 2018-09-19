@@ -1,4 +1,4 @@
-{% import "lib/directiveHelpers.html" as directiveHelper -%}
+{% import "lib/memberHelpers.html" as memberHelpers -%}
 {% extends 'class.template.html' -%}
 
 {% block overview %}{% endblock %}
@@ -7,9 +7,7 @@
   {% include "includes/ngmodule.html" %}
   {% include "includes/selectors.html" %}
 
-  {$ directiveHelper.renderBindings(doc.inputs, 'inputs', 'input', 'Inputs') $}
-
-  {$ directiveHelper.renderBindings(doc.outputs, 'outputs', 'output', 'Outputs') $}
+  {$ memberHelpers.renderProperties(doc.properties, 'instance-properties', 'instance-property', 'Properties') $}
 
   {% include "includes/export-as.html" %}
 
@@ -21,8 +19,9 @@
   </section>
   {% endif %}
 
-  <h2>Class</h2>
-  {% include "includes/class-members.html" %}
-{% endblock %}
+  {$ memberHelpers.renderProperties(doc.staticProperties, 'static-properties', 'static-property', 'Static properties') $}
+  {$ memberHelpers.renderMethodDetails(versionInfo, doc.staticMethods, 'static-methods', 'static-method', 'Static methods') $}
+  {$ memberHelpers.renderMethodDetails(versionInfo, doc.methods, 'instance-methods', 'instance-method', 'Methods') $}
+  {% endblock %}
 
 {% block endNotes %}{% endblock %}
