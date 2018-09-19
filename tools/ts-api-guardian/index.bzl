@@ -19,7 +19,7 @@ load("@build_bazel_rules_nodejs//:defs.bzl", "nodejs_binary", "nodejs_test")
 
 COMMON_MODULE_IDENTIFIERS = ["angular", "jasmine", "protractor"]
 
-def ts_api_guardian_test(name, golden, actual, data = [], strip_export_pattern = "^\(__\|ɵ\)", allow_module_identifiers = COMMON_MODULE_IDENTIFIERS, **kwargs):
+def ts_api_guardian_test(name, golden, actual, data = [], strip_export_pattern = ["^__", "^ɵ"], allow_module_identifiers = COMMON_MODULE_IDENTIFIERS, **kwargs):
     """Runs ts_api_guardian
     """
     data += [
@@ -31,9 +31,11 @@ def ts_api_guardian_test(name, golden, actual, data = [], strip_export_pattern =
         # Needed so that node doesn't walk back to the source directory.
         # From there, the relative imports would point to .ts files.
         "--node_options=--preserve-symlinks",
-        "--stripExportPattern",
-        strip_export_pattern,
     ]
+
+    for i in strip_export_pattern:
+        args += ["--stripExportPattern", i]
+
     for i in allow_module_identifiers:
         args += ["--allowModuleIdentifiers", i]
 
