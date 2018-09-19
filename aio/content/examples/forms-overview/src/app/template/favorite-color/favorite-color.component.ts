@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-template-favorite-color',
@@ -7,12 +7,6 @@ import { Component, OnInit } from '@angular/core';
   `,
   styles: []
 })
-export class FavoriteColorComponent implements OnInit {
+export class FavoriteColorComponent {
   favoriteColor = '';
-
-  constructor() { }
-
-  ngOnInit() {
-  }
-
 }
