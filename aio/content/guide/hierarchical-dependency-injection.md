@@ -1,49 +1,85 @@
+<!--
 # Hierarchical Dependency Injectors
+-->
+# 인젝터 계층
 
+<!--
 You learned the basics of Angular Dependency injection in the
 [Dependency Injection](guide/dependency-injection) guide.
+-->
+[의존성 주입](guide/dependency-injection) 문서에서는 Angular의 의존성 주입 시스템에 대해 알아봤습니다.
 
+<!--
 Angular has a _Hierarchical Dependency Injection_ system.
 There is actually a tree of injectors that parallel an application's component tree.
 You can reconfigure the injectors at any level of that component tree.
+-->
+Angular의 인젝터는 _계층_ 체계를 갖추고 있습니다.
+쉽게 말하면, 인젝터는 트리로 구성되며, 애플리케이션의 컴포넌트 트리 계층에서는 병렬로 존재하기도 합니다.
+컴포넌트 트리에 생성된 인젝터는 개발자가 원하는 대로 다시 설정할 수도 있습니다.
 
+<!--
 This guide explores this system and how to use it to your advantage.
+-->
+이번 문서에서는 이 시스템이 구체적으로 어떻게 구성되어 있는지 알아보고, 활용방법도 함께 알아봅시다.
 
+<!--
 Try the <live-example></live-example>.
+-->
+이 문서에서 설명하는 예제는 <live-example></live-example>에서 다운받아 확인하거나 직접 실행해서 확인할 수 있습니다.
 
 
-
+<!--
 ## The injector tree
+-->
+## 인젝터 트리
 
+<!--
 In the [Dependency Injection](guide/dependency-injection) guide,
 you learned how to configure a dependency injector and how to retrieve dependencies where you need them.
+-->
+[의존성 주입](guide/dependency-injection) 문서에서는 인젝터를 어떻게 설정하는지, 의존성 객체를 어떻게 받아올 수 있는지 설명했었습니다.
 
+<!--
 In fact, there is no such thing as ***the*** injector.
 An application may have multiple injectors.
 An Angular application is a tree of components. Each component instance has its own injector.
 The tree of components parallels the tree of injectors.
-
+-->
+사실 이 과정은 ***인젝터 하나***로 모두 동작하는 것이 아닙니다.
+애플리케이션에는 인젝터가 여러개 존재합니다.
+애플리케이션에 컴포넌트 트리가 있듯이, 각각의 컴포넌트 인스턴스에도 인젝터가 존재합니다.
+그래서 컴포넌트 트리가 병렬로 있으면 인젝터 트리도 병렬로 구성됩니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 The component's injector may be a _proxy_ for an ancestor injector higher in the component tree.
 That's an implementation detail that improves efficiency.
 You won't notice the difference and
 your mental model should be that every component has its own injector.
-
+-->
+컴포넌트 인젝터는 컴포넌트 트리의 부모 인젝터에 대한 _프록시_ 라고 이해할 수도 있습니다.
+인젝터는 이렇게 동작하는 것이 효율적이며, 실제로도 이렇게 구현되어 있습니다.
+그래서 모든 컴포넌트마다 독자적인 인젝터가 생성되며, 이 잉ㄴ젝터는 부모 계층의 인젝터를 활용한다고 이해하면 간단합니다.
 
 </div>
 
 
-
+<!--
 Consider this guide's variation on the Tour of Heroes application.
 At the top is the `AppComponent` which has some sub-components.
 One of them is the `HeroesListComponent`.
 The `HeroesListComponent` holds and manages multiple instances of the `HeroTaxReturnComponent`.
 The following diagram represents the state of the this guide's three-level component tree when there are three instances of `HeroTaxReturnComponent`
 open simultaneously.
+-->
+이번 문서에서는 히어로들의 여정 애플리케이션을 약간 변형해서 다룹니다.
+그래서 이 애플리케이션의 최상위 컴포넌트는 `AppComponent`이며, 이 컴포넌트의 자식으로 여러 컴포넌트가 존재하는데, 그 중 하나가 `HeroesListComponent` 입니다.
+`HeroesListComponent`는 여러 개의 `HeroTaxReturnComponent` 인스턴스를 관리합니다.
+이 문서에서 다루는 컴포넌트 트리의 구조는 아래 그림을 보며 확인해 보세요.
+`HeroTaxReturnComponent`는 동시에 3개 생성될 것입니다.
 
 
 <figure>
