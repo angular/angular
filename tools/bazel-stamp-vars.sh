@@ -11,6 +11,19 @@ function onError {
   echo ""
 }
 
+# Function that throws an error if the Bazel Angular version does not match the
+# required Angular version in the project package.json file.
+function checkBazelAngularVersion {
+  requiredAngularVersion=$(node -p 'require("./package.json").requiredAngularVersion')
+  bazelAngularVersion=$(sed -nr 's/ANGULAR_PACKAGE_VERSION = "(.*)"/\1/p' ./packages.bzl)
+
+  if [[ "${requiredAngularVersion}" != "${bazelAngularVersion}" ]]; then
+    echo "ERROR: The required Angular version that has been specified in the 'package.json' file " \
+         "does not match the given Angular version in the //:packages.bzl file."
+    exit 1
+  fi
+}
+
 # Setup crash trap
 trap 'onError' ERR
 
@@ -22,6 +35,9 @@ if [[ "$(git tag)" == "" ]]; then
   echo "       bazel build --workspace_status_command= ..."
   echo ""
 fi
+
+# Check the Bazel Angular version to be in sync with the angular version in the package.json
+checkBazelAngularVersion
 
 # Gets a human-readable name for HEAD, e.g. "6.0.0-rc.0-15-g846ddfa"
 git_version_raw=$(git describe --abbrev=7 --tags HEAD)

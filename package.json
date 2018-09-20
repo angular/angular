@@ -20,7 +20,6 @@
     "stylelint": "gulp lint",
     "e2e": "gulp e2e",
     "deploy": "gulp deploy:devapp",
-    "webdriver-manager": "webdriver-manager",
     "docs": "gulp docs",
     "api": "gulp api-docs",
     "breaking-changes": "gulp breaking-changes"
