@@ -104,8 +104,9 @@
   .ngmodule-list {
     list-style: none;
     padding: 0;
+  }
 
-  .selector-list {
+  .selector-list, .inherited-members-list {
     ul {
       padding: 0;
       li {
