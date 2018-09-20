@@ -405,7 +405,13 @@
     "name": "contextViewData"
   },
   {
+    "name": "createContainerRef"
+  },
+  {
     "name": "createDirectivesAndLocals"
+  },
+  {
+    "name": "createElementRef"
   },
   {
     "name": "createEmbeddedViewAndNode"
@@ -444,6 +450,9 @@
     "name": "createTView"
   },
   {
+    "name": "createTemplateRef"
+  },
+  {
     "name": "createTextNode"
   },
   {
@@ -451,6 +460,9 @@
   },
   {
     "name": "createViewQuery"
+  },
+  {
+    "name": "createViewRef"
   },
   {
     "name": "defineComponent"
@@ -621,18 +633,6 @@
     "name": "getMultiStartIndex"
   },
   {
-    "name": "getOrCreateChangeDetectorRef"
-  },
-  {
-    "name": "getOrCreateContainerRef"
-  },
-  {
-    "name": "getOrCreateElementRef"
-  },
-  {
-    "name": "getOrCreateHostChangeDetector"
-  },
-  {
     "name": "getOrCreateInjectable"
   },
   {
@@ -646,9 +646,6 @@
   },
   {
     "name": "getOrCreateTView"
-  },
-  {
-    "name": "getOrCreateTemplateRef"
   },
   {
     "name": "getParentLNode"
@@ -718,9 +715,6 @@
   },
   {
     "name": "hostElement"
-  },
-  {
-    "name": "initChangeDetectorIfExisting"
   },
   {
     "name": "inject"

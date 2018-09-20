@@ -265,10 +265,10 @@ function getIdxOfMatchingDirective(tNode: TNode, currentView: LViewData, type: T
 }
 
 function readFromNodeInjector(
-    nodeInjector: LInjector, tNode: TNode, currentView: LViewData,
-    read: QueryReadType<any>| Type<any>, directiveIdx: number): any {
+    tNode: TNode, currentView: LViewData, read: QueryReadType<any>| Type<any>,
+    directiveIdx: number): any {
   if (read instanceof ReadFromInjectorFn) {
-    return read.read(nodeInjector, tNode, directiveIdx);
+    return read.read(tNode, currentView, directiveIdx);
   } else {
     const matchingIdx = getIdxOfMatchingDirective(tNode, currentView, read as Type<any>);
     if (matchingIdx !== null) {
@@ -282,10 +282,6 @@ function add(
     query: LQuery<any>| null, tNode: TElementNode | TContainerNode | TElementContainerNode) {
   const currentView = _getViewData();
 
-  // TODO: remove this lookup when nodeInjector is removed from LNode
-  const nodeInjector =
-      getOrCreateNodeInjectorForNode(getLNode(tNode, currentView), tNode, currentView);
-
   while (query) {
     const predicate = query.predicate;
     const type = predicate.type;
@@ -294,8 +290,8 @@ function add(
       if (directiveIdx !== null) {
         // a node is matching a predicate - determine what to read
         // if read token and / or strategy is not specified, use type as read token
-        const result = readFromNodeInjector(
-            nodeInjector, tNode, currentView, predicate.read || type, directiveIdx);
+        const result =
+            readFromNodeInjector(tNode, currentView, predicate.read || type, directiveIdx);
         if (result !== null) {
           addMatch(query, result);
         }
@@ -308,8 +304,7 @@ function add(
           // a node is matching a predicate - determine what to read
           // note that queries using name selector must specify read strategy
           ngDevMode && assertDefined(predicate.read, 'the node should have a predicate');
-          const result = readFromNodeInjector(
-              nodeInjector, tNode, currentView, predicate.read !, directiveIdx);
+          const result = readFromNodeInjector(tNode, currentView, predicate.read !, directiveIdx);
           if (result !== null) {
             addMatch(query, result);
           }

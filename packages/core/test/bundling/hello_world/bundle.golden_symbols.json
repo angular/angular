@@ -267,9 +267,6 @@
     "name": "hostElement"
   },
   {
-    "name": "initChangeDetectorIfExisting"
-  },
-  {
     "name": "invertObject"
   },
   {
