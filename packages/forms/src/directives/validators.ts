@@ -105,7 +105,8 @@ export interface AsyncValidator extends Validator {
    * @returns A promise or observable that resolves a map of validation errors
    * if validation fails, otherwise null.
    */
-  validate(control: AbstractControl): Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
+  validate(control: AbstractControl):
+      Promise<ValidationErrors|null>|Observable<ValidationErrors|null>;
 }
 
 export const REQUIRED_VALIDATOR: StaticProvider = {
@@ -156,7 +157,7 @@ export class RequiredValidator implements Validator {
   }
 
   validate(control: AbstractControl): ValidationErrors|null {
-    return this.required ? Validators.required(c) : null;
+    return this.required ? Validators.required(control) : null;
   }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
@@ -186,7 +187,7 @@ export class RequiredValidator implements Validator {
 })
 export class CheckboxRequiredValidator extends RequiredValidator {
   validate(control: AbstractControl): ValidationErrors|null {
-    return this.required ? Validators.requiredTrue(c) : null;
+    return this.required ? Validators.requiredTrue(control) : null;
   }
 }
 
@@ -233,7 +234,7 @@ export class EmailValidator implements Validator {
   }
 
   validate(control: AbstractControl): ValidationErrors|null {
-    return this._enabled ? Validators.email(c) : null;
+    return this._enabled ? Validators.email(control) : null;
   }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
@@ -289,7 +290,7 @@ export class MinLengthValidator implements Validator,
   }
 
   validate(control: AbstractControl): ValidationErrors|null {
-    return this.minlength == null ? null : this._validator(c);
+    return this.minlength == null ? null : this._validator(control);
   }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
@@ -343,7 +344,7 @@ export class MaxLengthValidator implements Validator,
   }
 
   validate(control: AbstractControl): ValidationErrors|null {
-    return this.maxlength != null ? this._validator(c) : null;
+    return this.maxlength != null ? this._validator(control) : null;
   }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
@@ -399,7 +400,7 @@ export class PatternValidator implements Validator,
     }
   }
 
-  validate(control: AbstractControl): ValidationErrors|null { return this._validator(c); }
+  validate(control: AbstractControl): ValidationErrors|null { return this._validator(control); }
 
   registerOnValidatorChange(fn: () => void): void { this._onChange = fn; }
 
