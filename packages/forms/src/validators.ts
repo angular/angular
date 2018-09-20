@@ -10,7 +10,7 @@ import {InjectionToken, ɵisObservable as isObservable, ɵisPromise as isPromise
 import {Observable, forkJoin, from} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {AsyncValidatorFn, ValidationErrors, Validator, ValidatorFn} from './directives/validators';
-import {AbstractControl, FormControl} from './model';
+import {AbstractControl} from './model';
 
 function isEmptyInputValue(value: any): boolean {
   // we don't check for string here so it also works with arrays
