@@ -5,7 +5,7 @@
  */
 module.exports = function splitDescription() {
   return {
-    $runAfter: ['tags-extracted', 'migrateLegacyJSDocTags'],
+    $runAfter: ['tags-extracted'],
     $runBefore: ['processing-docs'],
     docTypes: [],
     $process(docs) {
