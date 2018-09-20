@@ -87,42 +87,65 @@ open simultaneously.
 </figure>
 
 
-
+<!--
 ### Injector bubbling
+-->
+### 인젝터 버블링 (Injector bubbling)
 
+<!--
 When a component requests a dependency, Angular tries to satisfy that dependency with a provider registered in that component's own injector.
 If the component's injector lacks the provider, it passes the request up to its parent component's injector.
 If that injector can't satisfy the request, it passes it along to *its* parent injector.
 The requests keep bubbling up until Angular finds an injector that can handle the request or runs out of ancestor injectors.
 If it runs out of ancestors, Angular throws an error.
-
+-->
+어떤 컴포넌트가 의존성 객체를 주입해달라고 Angular에 요청하면, Angular는 먼저 그 컴포넌트에 있는 인젝터에 프로바이더가 등록되어 있는지 확인합니다.
+그리고 컴포넌트 인젝터에 프로바이더가 없으면, 부모 컴포넌트 인젝터를 찾아 같은 과정을 반복합니다.
+즉, 인젝터가 직접 처리할 수 없는 것은 *부모 인젝터*가 처리하도록 넘긴다는 것입니다.
+의존성 주입 요청은 원하는 프로바이더를 찾을 때까지 위쪽으로 버블링되며, 애플리케이션 최상위 인젝터도 이 대상에 포함됩니다.
+만약 애플리케이션 최상위 인젝터에서도 프로바이더를 찾지 못하면 Angular가 에러를 발생시킵니다.
 
 <div class="alert is-helpful">
 
 
-
+<!--
 You can cap the bubbling. An intermediate component can declare that it is the "host" component.
 The hunt for providers will climb no higher than the injector for that host component.
 This is a topic for another day.
-
+-->
+이 버블링은 중단시킬 수 있습니다. 중간에 있는 컴포넌트에서 버블링을 막도록 설정하면, 이 컴포넌트를 "호스트" 컴포넌트라고 합니다. 그러면 인젝터가 프로바이더를 찾는 과정이 호스트 컴포넌트 위쪽으로는 수행되지 않습니다. 이 내용은 이후에 다시 다룹니다.
 
 </div>
 
 
-
+<!--
 ### Re-providing a service at different levels
+-->
+### 다른 계층에 서비스 프로바이더 재등록하기
 
+<!--
 You can re-register a provider for a particular dependency token at multiple levels of the injector tree.
 You don't *have* to re-register providers. You shouldn't do so unless you have a good reason.
 But you *can*.
+-->
+서비스 프로바이더는 서로 다른 의존성 토큰을 사용해서 인젝터 트리의 여러 계층에 등록할 수도 있습니다.
+물론 잘 등록되어 있는 서비스 프로바이더를 일부러 재등록할 필요는 없겠지만, 일단은 *할 수 있습니다*.
 
+<!--
 As the resolution logic works upwards, the first provider encountered wins.
 Thus, a provider in an intermediate injector intercepts a request for a service from something lower in the tree.
 It effectively "reconfigures" and "shadows" a provider at a higher level in the tree.
+-->
+그리고 인젝터 버블링은 위쪽으로 전파되기 때문에, 이 과정에 먼저 만나는 프로바이더가 사용됩니다.
+그래서 인젝터가 요청하는 버블링 과정 중간에 다른 프로바이더가 등록되면, 인젝터 버블링은 이 단계에서 끝나고 서비스 인스턴스가 생성됩니다.
+이 방법은 서비스 프로바이더를 "재설정"하는 방법이며, 트리의 상위 계층을 "가리는(shadow)" 방법이기도 합니다.
 
+<!--
 If you only specify providers at the top level (typically the root `AppModule`), the tree of injectors appears to be flat.
 All requests bubble up to the root <code>NgModule</code> injector that you configured with the `bootstrapModule` method.
-
+-->
+만약 서비스 프로바이더가 애플리케이션 최상위 모듈인 `AppModule`에만 등록되어 있다면, 인젝터 트리는 아주 단순해질 것입니다.
+인젝터 버블링은 애플리케이션 최상위 <code>NgModule</code> 인젝터까지 전달되며, 이 모듈은 `bootstrapModule` 메소드로 지정한 설정의 영향을 받습니다.
 
 
 ## Component injectors
