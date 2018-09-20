@@ -168,11 +168,11 @@
 {%- endmacro -%}
 
 
-{%- macro renderProperties(properties, containerClass, propertyClass, headingText, headings) -%}
+{%- macro renderProperties(properties, containerClass, propertyClass, headingText, headings, headingLevel = 2) -%}
 {% set nonInternalProperties = properties | filterByPropertyValue('internal', undefined) %}
 {% if nonInternalProperties.length -%}
 <section class="{$ containerClass $}">
-  <h2>{$ headingText $}</h2>
+  <h{$ headingLevel $}>{$ headingText $}</h{$ headingLevel $}>
   <table class="is-full-width list-table property-table">
     <thead>
       <tr>
