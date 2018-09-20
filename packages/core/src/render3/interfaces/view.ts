@@ -12,7 +12,7 @@ import {Sanitizer} from '../../sanitization/security';
 
 import {LContainer} from './container';
 import {ComponentQuery, ComponentTemplate, DirectiveDefInternal, DirectiveDefList, PipeDefInternal, PipeDefList} from './definition';
-import {LElementNode, LViewNode, TElementNode, TNode, TViewNode} from './node';
+import {TElementNode, TNode, TViewNode} from './node';
 import {LQueries} from './query';
 import {Renderer3} from './renderer';
 

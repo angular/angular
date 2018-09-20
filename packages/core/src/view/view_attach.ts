@@ -7,7 +7,7 @@
  */
 
 import {ElementData, NodeDef, NodeFlags, Services, ViewData, ViewDefinition, ViewState} from './types';
-import {RenderNodeAction, declaredViewContainer, isComponentView, renderNode, visitRootRenderNodes} from './util';
+import {RenderNodeAction, declaredViewContainer, renderNode, visitRootRenderNodes} from './util';
 
 export function attachEmbeddedView(
     parentView: ViewData, elementData: ElementData, viewIndex: number | undefined | null,

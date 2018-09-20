@@ -10,8 +10,8 @@ import {R3_COMPILE_INJECTABLE} from '../ivy_switch';
 import {Type} from '../type';
 import {makeDecorator} from '../util/decorators';
 
-import {InjectableDef, InjectableType} from './defs';
-import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from './provider';
+import {InjectableDef} from './defs';
+import {ClassSansProvider, ConstructorSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueSansProvider} from './provider';
 
 /**
  * Injectable providers used in `@Injectable` decorator.

@@ -6,12 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ClassSansProvider, ConstructorProvider, ConstructorSansProvider, ExistingProvider, ExistingSansProvider, FactoryProvider, FactorySansProvider, StaticClassProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../di/provider';
-import {ReflectionCapabilities} from '../reflection/reflection_capabilities';
-import {Type} from '../type';
-import {makeDecorator, makeParamDecorator} from '../util/decorators';
-import {EMPTY_ARRAY} from '../view/util';
-
+import {makeParamDecorator} from '../util/decorators';
 
 /**
  * Type of the Inject decorator / constructor function.
@@ -64,7 +59,7 @@ export interface OptionalDecorator {
    * A constructor parameter decorator that marks a dependency as optional.
    *
    * The DI framework provides null if the dependency is not found.
-   * For example, the following code allows the possibility of a null result:  
+   * For example, the following code allows the possibility of a null result:
    *
    * {@example core/di/ts/metadata_spec.ts region='Optional'}
    *
@@ -167,7 +162,7 @@ export interface HostDecorator {
    *
    * @see ["Dependency Injection Guide"](guide/dependency-injection).
    *
-   * @usageNotes 
+   * @usageNotes
    *
    * {@example core/di/ts/metadata_spec.ts region='Host'}
    */

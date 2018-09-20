@@ -6,10 +6,10 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Expression, LiteralExpr, R3DependencyMetadata, R3InjectableMetadata, WrappedNodeExpr, compileInjectable as compileR3Injectable, jitExpression} from '@angular/compiler';
+import {Expression, LiteralExpr, R3DependencyMetadata, WrappedNodeExpr, compileInjectable as compileR3Injectable, jitExpression} from '@angular/compiler';
 
 import {Injectable} from '../../di/injectable';
-import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, StaticClassSansProvider, ValueProvider, ValueSansProvider} from '../../di/provider';
+import {ClassSansProvider, ExistingSansProvider, FactorySansProvider, ValueProvider, ValueSansProvider} from '../../di/provider';
 import {Type} from '../../type';
 import {getClosureSafeProperty} from '../../util/property';
 import {NG_INJECTABLE_DEF} from '../fields';

@@ -16,7 +16,7 @@ import {Type} from '../type';
 
 import {NG_COMPONENT_DEF, NG_DIRECTIVE_DEF, NG_MODULE_DEF, NG_PIPE_DEF} from './fields';
 import {BaseDef, ComponentDefFeature, ComponentDefInternal, ComponentQuery, ComponentTemplate, ComponentType, DirectiveDefFeature, DirectiveDefInternal, DirectiveType, DirectiveTypesOrFactory, PipeDefInternal, PipeType, PipeTypesOrFactory} from './interfaces/definition';
-import {CssSelectorList, SelectorFlags} from './interfaces/projection';
+import {CssSelectorList} from './interfaces/projection';
 
 export const EMPTY: {} = {};
 export const EMPTY_ARRAY: any[] = [];

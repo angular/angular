@@ -11,7 +11,7 @@ import {ApplicationRef} from './application_ref';
 import {APP_ID_RANDOM_PROVIDER} from './application_tokens';
 import {IterableDiffers, KeyValueDiffers, defaultIterableDiffers, defaultKeyValueDiffers} from './change_detection/change_detection';
 import {Console} from './console';
-import {InjectionToken, Injector, StaticProvider} from './di';
+import {Injector, StaticProvider} from './di';
 import {Inject, Optional, SkipSelf} from './di/metadata';
 import {ErrorHandler} from './error_handler';
 import {LOCALE_ID} from './i18n/tokens';

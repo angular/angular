@@ -9,10 +9,9 @@
 import {assertEqual, assertLessThan} from './assert';
 import {NO_CHANGE, _getViewData, adjustBlueprintForNewNode, bindingUpdated, bindingUpdated2, bindingUpdated3, bindingUpdated4, createNodeAtIndex, getRenderer, getTNode, load, loadElement, resetComponentState} from './instructions';
 import {RENDER_PARENT} from './interfaces/container';
-import {LContainerNode, LElementNode, LNode, TElementNode, TNode, TNodeType, TViewNode} from './interfaces/node';
-import {RElement} from './interfaces/renderer';
+import {LContainerNode, LNode, TElementNode, TNode, TNodeType} from './interfaces/node';
 import {BINDING_INDEX, HEADER_OFFSET, HOST_NODE, TVIEW} from './interfaces/view';
-import {appendChild, createTextNode, getContainerRenderParent, getParentLNode, getParentOrContainerNode, removeChild} from './node_manipulation';
+import {appendChild, createTextNode, removeChild} from './node_manipulation';
 import {stringify} from './util';
 
 /**

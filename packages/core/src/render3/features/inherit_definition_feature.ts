@@ -9,7 +9,7 @@
 import {Type} from '../../type';
 import {fillProperties} from '../../util/property';
 import {EMPTY, EMPTY_ARRAY} from '../definition';
-import {ComponentDefInternal, ComponentTemplate, DirectiveDefFeature, DirectiveDefInternal, RenderFlags} from '../interfaces/definition';
+import {ComponentDefInternal, DirectiveDefFeature, DirectiveDefInternal, RenderFlags} from '../interfaces/definition';
 
 
 

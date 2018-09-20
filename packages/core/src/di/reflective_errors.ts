@@ -7,7 +7,7 @@
  */
 
 import {wrappedError} from '../error_handler';
-import {ERROR_ORIGINAL_ERROR, getOriginalError} from '../errors';
+import {ERROR_ORIGINAL_ERROR} from '../errors';
 import {Type} from '../type';
 import {stringify} from '../util';
 

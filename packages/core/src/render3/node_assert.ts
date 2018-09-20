@@ -7,7 +7,7 @@
  */
 
 import {assertDefined, assertEqual} from './assert';
-import {LNode, TNode, TNodeType} from './interfaces/node';
+import {TNode, TNodeType} from './interfaces/node';
 
 export function assertNodeType(tNode: TNode, type: TNodeType) {
   assertDefined(tNode, 'should be called with a TNode');

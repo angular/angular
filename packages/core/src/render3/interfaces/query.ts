@@ -8,7 +8,7 @@
 
 import {QueryList} from '../../linker';
 import {Type} from '../../type';
-import {TContainerNode, TElementContainerNode, TElementNode, TNode} from './node';
+import {TContainerNode, TElementContainerNode, TElementNode} from './node';
 
 /** Used for tracking queries (e.g. ViewChild, ContentChild). */
 export interface LQueries {
