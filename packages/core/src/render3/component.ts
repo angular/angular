@@ -14,7 +14,7 @@ import {Sanitizer} from '../sanitization/security';
 
 import {assertComponentType, assertDefined} from './assert';
 import {queueInitHooks, queueLifecycleHooks} from './hooks';
-import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, initChangeDetectorIfExisting, leaveView, locateHostElement, setHostBindings, queueHostBindingForCheck,} from './instructions';
+import {CLEAN_PROMISE, baseDirectiveCreate, createLViewData, createTView, detectChangesInternal, enterView, executeInitAndContentHooks, getRootView, hostElement, leaveView, locateHostElement, setHostBindings, queueHostBindingForCheck,} from './instructions';
 import {ComponentDef, ComponentDefInternal, ComponentType} from './interfaces/definition';
 import {LElementNode} from './interfaces/node';
 import {RElement, RendererFactory3, domRendererFactory3} from './interfaces/renderer';
@@ -150,7 +150,6 @@ export function createRootComponent<T>(
   if (componentDef.hostBindings) queueHostBindingForCheck(0, componentDef.hostVars);
   rootContext.components.push(component);
   (elementNode.data as LViewData)[CONTEXT] = component;
-  initChangeDetectorIfExisting(elementNode.nodeInjector, component, elementNode.data as LViewData);
 
   hostFeatures && hostFeatures.forEach((feature) => feature(component, componentDef));
   setHostBindings(rootView[TVIEW].hostBindings);
