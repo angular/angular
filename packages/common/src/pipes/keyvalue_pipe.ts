@@ -31,7 +31,7 @@ export interface KeyValue<K, V> {
  * By default the comparator will be by Unicode point value.
  * You can optionally pass a compareFn if your keys are complex types.
  *
- * #usageNotes
+ * @usageNotes
  * ### Examples
  *
  * This examples show how an Object or a Map and be iterated by ngFor with the use of this keyvalue
