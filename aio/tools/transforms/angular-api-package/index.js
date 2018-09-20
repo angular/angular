@@ -14,7 +14,6 @@ const { API_SOURCE_PATH, API_TEMPLATES_PATH, requireFolder } = require('../confi
 module.exports = new Package('angular-api', [basePackage, typeScriptPackage])
 
   // Register the processors
-  .processor(require('./processors/migrateLegacyJSDocTags'))
   .processor(require('./processors/splitDescription'))
   .processor(require('./processors/convertPrivateClassesToInterfaces'))
   .processor(require('./processors/generateApiListDoc'))
