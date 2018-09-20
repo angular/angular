@@ -11,6 +11,9 @@
  *
  * See {@link Component#encapsulation encapsulation}.
  *
+ * @usageNotes
+ * ### Example
+ * {@example core/ts/metadata/encapsulation.ts region='longform'}
  */
 export enum ViewEncapsulation {
   /**
@@ -42,9 +45,6 @@ export enum ViewEncapsulation {
    * For the DOM this means using modern [Shadow
    * DOM](https://w3c.github.io/webcomponents/spec/shadow/) and
    * creating a ShadowRoot for Component's Host Element.
-   *
-   * ### Example
-   * {@example core/ts/metadata/encapsulation.ts region='longform'}
    */
   ShadowDom = 3
 }
