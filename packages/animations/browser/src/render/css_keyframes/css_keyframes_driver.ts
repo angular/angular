@@ -7,7 +7,7 @@
  */
 import {AnimationPlayer, ɵStyleData} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, computeStyle} from '../../util';
+import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes} from '../../util';
 import {AnimationDriver} from '../animation_driver';
 import {containsElement, hypenatePropsObject, invokeQuery, matchesElement, validateStyleProperty} from '../shared';
 

@@ -7,7 +7,7 @@
  */
 import {AnimationPlayer} from '@angular/animations';
 
-import {allowPreviousPlayerStylesMerge, balancePreviousStylesIntoKeyframes, computeStyle, copyStyles} from '../../util';
+import {computeStyle} from '../../util';
 
 import {DOMAnimation} from './dom_animation';
 

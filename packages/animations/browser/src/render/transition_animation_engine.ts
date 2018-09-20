@@ -13,7 +13,7 @@ import {AnimationTransitionInstruction} from '../dsl/animation_transition_instru
 import {AnimationTrigger} from '../dsl/animation_trigger';
 import {ElementInstructionMap} from '../dsl/element_instruction_map';
 import {AnimationStyleNormalizer} from '../dsl/style_normalization/animation_style_normalizer';
-import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, iteratorToArray, setStyles} from '../util';
+import {ENTER_CLASSNAME, LEAVE_CLASSNAME, NG_ANIMATING_CLASSNAME, NG_ANIMATING_SELECTOR, NG_TRIGGER_CLASSNAME, NG_TRIGGER_SELECTOR, copyObj, eraseStyles, setStyles} from '../util';
 
 import {AnimationDriver} from './animation_driver';
 import {getOrSetAsInMap, listenOnPlayer, makeAnimationEvent, normalizeKeyframes, optimizeGroupPlayer} from './shared';
