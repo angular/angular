@@ -7,7 +7,7 @@
  */
 
 import {LOCATION_INITIALIZED, PlatformLocation} from '@angular/common';
-import {APP_INITIALIZER, InjectionToken, NgZone} from '@angular/core';
+import {APP_INITIALIZER, NgZone} from '@angular/core';
 
 import {WebWorkerPlatformLocation} from './platform_location';
 
