@@ -16,6 +16,7 @@
     "tslib": "^1.9.0"
   },
   "peerDependencies": {
+    "@angular/compiler": "0.0.0-PLACEHOLDER",
     "rxjs": "^6.0.0",
     "zone.js": "~0.8.26"
   },
