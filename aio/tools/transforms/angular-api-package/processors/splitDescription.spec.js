@@ -18,7 +18,7 @@ describe('splitDescription processor', () => {
 
   it('should run after the correct processor', () => {
     const processor = processorFactory();
-    expect(processor.$runAfter).toEqual(['tags-extracted', 'migrateLegacyJSDocTags']);
+    expect(processor.$runAfter).toEqual(['tags-extracted']);
   });
 
   it('should split the `description` property into the first paragraph and other paragraphs', () => {
