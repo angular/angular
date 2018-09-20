@@ -17,7 +17,7 @@ import {replaceTsWithNgInErrors} from './ngtsc/diagnostics';
 import * as api from './transformers/api';
 import {GENERATED_FILES} from './transformers/util';
 
-import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, PerformCompilationResult, filterErrorsAndWarnings} from './perform_compile';
+import {exitCodeFromResult, performCompilation, readConfiguration, formatDiagnostics, Diagnostics, ParsedConfiguration, filterErrorsAndWarnings} from './perform_compile';
 import {performWatchCompilation, createPerformWatchHost} from './perform_watch';
 
 export function main(

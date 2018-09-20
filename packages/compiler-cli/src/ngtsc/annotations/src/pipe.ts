@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {LiteralExpr, R3PipeMetadata, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
+import {R3PipeMetadata, WrappedNodeExpr, compilePipeFromMetadata} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';

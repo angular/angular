@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ConstantPool, Expression, LiteralArrayExpr, R3DirectiveMetadata, R3InjectorMetadata, R3NgModuleMetadata, WrappedNodeExpr, compileInjector, compileNgModule, makeBindingParser, parseTemplate} from '@angular/compiler';
+import {Expression, LiteralArrayExpr, R3InjectorMetadata, R3NgModuleMetadata, WrappedNodeExpr, compileInjector, compileNgModule} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {ErrorCode, FatalDiagnosticError} from '../../diagnostics';

@@ -9,7 +9,7 @@
 import {createLoweredSymbol, isLoweredSymbol} from '@angular/compiler';
 import * as ts from 'typescript';
 
-import {CollectorOptions, MetadataCollector, MetadataValue, ModuleMetadata, isMetadataGlobalReferenceExpression} from '../metadata/index';
+import {MetadataValue, ModuleMetadata, isMetadataGlobalReferenceExpression} from '../metadata/index';
 import {MetadataCache, MetadataTransformer, ValueTransform} from './metadata_cache';
 
 export interface LoweringRequest {

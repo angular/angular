@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotSummaryResolver, CompileMetadataResolver, CompilePipeSummary, CompilerConfig, DEFAULT_INTERPOLATION_CONFIG, DirectiveNormalizer, DirectiveResolver, DomElementSchemaRegistry, HtmlParser, InterpolationConfig, NgAnalyzedModules, NgModuleResolver, ParseTreeResult, PipeResolver, ResourceLoader, StaticReflector, StaticSymbol, StaticSymbolCache, StaticSymbolResolver, SummaryResolver} from '@angular/compiler';
+import {CompilePipeSummary, StaticSymbol} from '@angular/compiler';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {BuiltinType, DeclarationKind, Definition, PipeInfo, Pipes, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
+import {BuiltinType, DeclarationKind, Definition, Signature, Span, Symbol, SymbolDeclaration, SymbolQuery, SymbolTable} from './symbols';
 import {isVersionBetween} from './typescript_version';
 
 // In TypeScript 2.1 these flags moved

@@ -6,12 +6,12 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {AotCompilerHost, EmitterVisitorContext, ExternalReference, GeneratedFile, ParseSourceSpan, TypeScriptEmitter, collectExternalReferences, syntaxError} from '@angular/compiler';
+import {AotCompilerHost, EmitterVisitorContext, GeneratedFile, ParseSourceSpan, TypeScriptEmitter, collectExternalReferences, syntaxError} from '@angular/compiler';
 import * as path from 'path';
 import * as ts from 'typescript';
 
 import {TypeCheckHost} from '../diagnostics/translate_diagnostics';
-import {METADATA_VERSION, ModuleMetadata} from '../metadata/index';
+import {ModuleMetadata} from '../metadata/index';
 
 import {CompilerHost, CompilerOptions, LibrarySummary} from './api';
 import {MetadataReaderHost, createMetadataReaderCache, readMetadata} from './metadata_reader';

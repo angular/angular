@@ -10,7 +10,7 @@ import * as chokidar from 'chokidar';
 import * as path from 'path';
 import * as ts from 'typescript';
 
-import {Diagnostics, ParsedConfiguration, PerformCompilationResult, exitCodeFromResult, performCompilation, readConfiguration} from './perform_compile';
+import {Diagnostics, ParsedConfiguration, exitCodeFromResult, performCompilation, readConfiguration} from './perform_compile';
 import * as api from './transformers/api';
 import {createCompilerHost} from './transformers/entry_points';
 import {createMessageDiagnostic} from './transformers/util';

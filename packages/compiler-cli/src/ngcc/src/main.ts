@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 import * as path from 'canonical-path';
-import {existsSync, lstatSync, readFileSync, readdirSync} from 'fs';
 import * as yargs from 'yargs';
 
 import {DependencyHost} from './packages/dependency_host';

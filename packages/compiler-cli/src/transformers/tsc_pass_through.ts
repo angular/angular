@@ -7,7 +7,6 @@
  */
 
 import {GeneratedFile} from '@angular/compiler';
-import * as path from 'path';
 import * as ts from 'typescript';
 
 import * as api from '../transformers/api';

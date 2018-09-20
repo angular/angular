@@ -6,7 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as fs from 'fs';
 import * as path from 'path';
 import * as ts from 'typescript';
 

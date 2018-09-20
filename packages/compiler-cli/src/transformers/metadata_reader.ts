@@ -6,8 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import * as ts from 'typescript';
-
 import {METADATA_VERSION, ModuleMetadata} from '../metadata';
 
 import {DTS} from './util';

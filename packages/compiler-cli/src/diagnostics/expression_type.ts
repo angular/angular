@@ -8,7 +8,7 @@
 
 import {AST, AstVisitor, Binary, BindingPipe, Chain, Conditional, FunctionCall, ImplicitReceiver, Interpolation, KeyedRead, KeyedWrite, LiteralArray, LiteralMap, LiteralPrimitive, MethodCall, NonNullAssert, PrefixNot, PropertyRead, PropertyWrite, Quote, SafeMethodCall, SafePropertyRead, visitAstChildren} from '@angular/compiler';
 
-import {BuiltinType, Signature, Span, Symbol, SymbolQuery, SymbolTable} from './symbols';
+import {BuiltinType, Signature, Symbol, SymbolQuery, SymbolTable} from './symbols';
 
 export interface ExpressionDiagnosticsContext { event?: boolean; }
 

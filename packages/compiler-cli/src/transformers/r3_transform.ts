@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {PartialModule, Statement, StaticSymbol} from '@angular/compiler';
+import {PartialModule} from '@angular/compiler';
 import * as ts from 'typescript';
 
 import {updateSourceFile} from './node_emitter';
