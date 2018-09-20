@@ -8,9 +8,7 @@
 
 import {CompileNgModuleMetadata, tokenReference} from '../compile_metadata';
 import {Route} from '../core';
-import {CompileMetadataResolver} from '../metadata_resolver';
 
-import {AotCompilerHost} from './compiler_host';
 import {StaticReflector} from './static_reflector';
 import {StaticSymbol} from './static_symbol';
 

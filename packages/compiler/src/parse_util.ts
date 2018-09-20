@@ -7,7 +7,6 @@
  */
 import * as chars from './chars';
 import {CompileIdentifierMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
-import {error} from './util';
 
 export class ParseLocation {
   constructor(

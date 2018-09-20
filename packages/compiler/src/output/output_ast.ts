@@ -8,7 +8,6 @@
 
 
 import {ParseSourceSpan} from '../parse_util';
-import {error} from '../util';
 
 //// Types
 export enum TypeModifier {

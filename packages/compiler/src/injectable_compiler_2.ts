@@ -6,10 +6,9 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {InjectFlags} from './core';
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
-import {R3DependencyMetadata, R3FactoryDelegateType, R3FactoryMetadata, compileFactoryFunction} from './render3/r3_factory';
+import {R3DependencyMetadata, R3FactoryDelegateType, compileFactoryFunction} from './render3/r3_factory';
 import {mapToMapExpression} from './render3/util';
 
 export interface InjectableDef {

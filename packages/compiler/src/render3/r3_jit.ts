@@ -7,7 +7,6 @@
  */
 
 import {CompileReflector} from '../compile_reflector';
-import {ConstantPool} from '../constant_pool';
 import * as o from '../output/output_ast';
 import {jitStatements} from '../output/output_jit';
 

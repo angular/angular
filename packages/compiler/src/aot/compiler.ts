@@ -14,7 +14,6 @@ import {MessageBundle} from '../i18n/message_bundle';
 import {Identifiers, createTokenForExternalReference} from '../identifiers';
 import {InjectableCompiler} from '../injectable_compiler';
 import {CompileMetadataResolver} from '../metadata_resolver';
-import * as html from '../ml_parser/ast';
 import {HtmlParser} from '../ml_parser/html_parser';
 import {removeWhitespaces} from '../ml_parser/html_whitespaces';
 import {DEFAULT_INTERPOLATION_CONFIG, InterpolationConfig} from '../ml_parser/interpolation_config';

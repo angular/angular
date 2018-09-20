@@ -14,7 +14,7 @@ import * as o from './output/output_ast';
 import {typeSourceSpan} from './parse_util';
 import {NgModuleProviderAnalyzer} from './provider_analyzer';
 import {OutputContext} from './util';
-import {componentFactoryResolverProviderDef, depDef, providerDef} from './view_compiler/provider_compiler';
+import {componentFactoryResolverProviderDef, providerDef} from './view_compiler/provider_compiler';
 
 export class NgModuleCompileResult {
   constructor(public ngModuleFactoryVar: string) {}

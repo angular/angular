@@ -6,10 +6,6 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-
-import {StaticSymbol} from '../aot/static_symbol';
-import {CompileIdentifierMetadata} from '../compile_metadata';
-
 import {AbstractEmitterVisitor, CATCH_ERROR_VAR, CATCH_STACK_VAR, EmitterVisitorContext, OutputEmitter} from './abstract_emitter';
 import * as o from './output_ast';
 

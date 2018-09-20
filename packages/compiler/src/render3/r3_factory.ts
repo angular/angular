@@ -15,7 +15,7 @@ import * as o from '../output/output_ast';
 import {Identifiers as R3} from '../render3/r3_identifiers';
 import {OutputContext} from '../util';
 
-import {MEANING_SEPARATOR, unsupported} from './view/util';
+import {unsupported} from './view/util';
 
 
 /**

@@ -7,16 +7,13 @@
  */
 
 import {StaticSymbol} from './aot/static_symbol';
-import {CompileInjectableMetadata, CompileNgModuleMetadata, CompileProviderMetadata, identifierName} from './compile_metadata';
+import {CompileInjectableMetadata, identifierName} from './compile_metadata';
 import {CompileReflector} from './compile_reflector';
 import {InjectFlags, NodeFlags} from './core';
 import {Identifiers} from './identifiers';
 import * as o from './output/output_ast';
 import {convertValueToOutputAst} from './output/value_util';
-import {typeSourceSpan} from './parse_util';
-import {NgModuleProviderAnalyzer} from './provider_analyzer';
 import {OutputContext} from './util';
-import {componentFactoryResolverProviderDef, depDef, providerDef} from './view_compiler/provider_compiler';
 
 type MapEntry = {
   key: string,

@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {CompileDirectiveMetadata, CompileIdentifierMetadata, CompileStylesheetMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
+import {CompileDirectiveMetadata, CompileStylesheetMetadata, identifierModuleUrl, identifierName} from './compile_metadata';
 import {ViewEncapsulation} from './core';
 import * as o from './output/output_ast';
 import {ShadowCss} from './shadow_css';
