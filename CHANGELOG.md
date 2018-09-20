@@ -1,3 +1,63 @@
+<a name="7.0.0-beta.2"></a>
+# 7.0.0-beta.2 (2018-09-20)
+
+
+### Highlights
+
+* This release includes a number of changes to bring the components more in line with the 2018
+  Material Design update. If you are overriding the default styles, you may find that you need to
+  tweak them to look right after these changes.
+
+### Bug Fixes
+
+* **card:** better scaling for avatar image ([#13032](https://github.com/angular/material2/issues/13032)) ([19ce1a1](https://github.com/angular/material2/commit/19ce1a1))
+* **checkbox, slide-toggle:** no margin if content is projected ([#12973](https://github.com/angular/material2/issues/12973)) ([4636a98](https://github.com/angular/material2/commit/4636a98)), closes [#4720](https://github.com/angular/material2/issues/4720)
+* **chips:** arrow keys resetting focus to first chip ([#12987](https://github.com/angular/material2/issues/12987)) ([959c827](https://github.com/angular/material2/commit/959c827))
+* **dialog:** clean up open dialogs on destroy ([#12835](https://github.com/angular/material2/issues/12835)) ([4e15ba9](https://github.com/angular/material2/commit/4e15ba9))
+* **expansion:** MatExpansionHeader transition animations ([#13088](https://github.com/angular/material2/issues/13088)) ([4a96539](https://github.com/angular/material2/commit/4a96539)), closes [#11990](https://github.com/angular/material2/issues/11990) [#11990](https://github.com/angular/material2/issues/11990) [#11990](https://github.com/angular/material2/issues/11990) [#11990](https://github.com/angular/material2/issues/11990) [#11990](https://github.com/angular/material2/issues/11990) [#11990](https://github.com/angular/material2/issues/11990) [#11990](https://github.com/angular/material2/issues/11990) [#11990](https://github.com/angular/material2/issues/11990)
+* **form-field:** Make labels show while printing ([#12766](https://github.com/angular/material2/issues/12766)) ([e88271a](https://github.com/angular/material2/commit/e88271a))
+* **table:** incorrect padding and text alignment in rtl ([#12280](https://github.com/angular/material2/issues/12280)) ([2b89342](https://github.com/angular/material2/commit/2b89342)), closes [#12276](https://github.com/angular/material2/issues/12276)
+
+
+### Features
+
+* **button:** align with 2018 material design spec ([#13083](https://github.com/angular/material2/issues/13083)) ([79801e0](https://github.com/angular/material2/commit/79801e0)), closes [#12537](https://github.com/angular/material2/issues/12537) [#13011](https://github.com/angular/material2/issues/13011)
+* **card:** align with 2018 material design spec ([#12731](https://github.com/angular/material2/issues/12731)) ([484dc8b](https://github.com/angular/material2/commit/484dc8b))
+* **checkbox:** align with 2018 material design spec ([#12493](https://github.com/angular/material2/issues/12493)) ([95acccc](https://github.com/angular/material2/commit/95acccc))
+* **chips:** align with 2018 material design spec ([#12838](https://github.com/angular/material2/issues/12838)) ([3cc9c67](https://github.com/angular/material2/commit/3cc9c67))
+* **dialog:** align with 2018 material design spec ([#12705](https://github.com/angular/material2/issues/12705)) ([00b7233](https://github.com/angular/material2/commit/00b7233))
+* **elevation:** move elevation rules into theme stylesheets ([#11344](https://github.com/angular/material2/issues/11344)) ([9c075f5](https://github.com/angular/material2/commit/9c075f5)), closes [#11343](https://github.com/angular/material2/issues/11343)
+
+
+### BREAKING CHANGES
+
+* **dialog:** * The `matDialogAnimations.slideDialog` symbol has been renamed to `matDialogAnimations.dialogContainer`.
+
+![angular_material_-_google_chrome_2018-08-16_20-43-44](https://user-images.githubusercontent.com/4450522/44231568-da0d2780-a19e-11e8-9836-4f1b15f9bcc2.png)
+![angular_material_-_google_chrome_2018-08-16_21-30-17](https://user-images.githubusercontent.com/4450522/44231576-e09b9f00-a19e-11e8-9fae-8ad9cf0be8e5.png)
+* **elevation:** Because `mat-elevation` usages have been moved out of component stylesheets, users who have
+not invoked a theme mixin will not see any elevation shadows on Material components.
+However, users that have created a custom theme which lacks the `elevation` property will
+still see the default black shadows.
+
+Additionally, users who want to use themed elevations in their custom components can create
+their own shorthand mixin:
+
+```
+@import '~angular/material/theming';
+
+$myTheme: ...
+
+@mixin my-elevation($zValue) {
+  @include mat-theme-elevation($zValue, $myTheme);
+}
+
+```
+
+and then invoke `angular-material-theme` with the `$myTheme` variable.
+
+
+
 <a name="7.0.0-beta.1"></a>
 # 7.0.0-beta.1 (2018-09-17)
 
