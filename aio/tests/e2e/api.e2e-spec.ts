@@ -8,7 +8,19 @@ describe('Api pages', function() {
 
   it('should show direct and indirect subclasses of a class', () => {
     const page = new ApiPage('api/forms/AbstractControlDirective');
-    expect(page.getDescendants('class')).toEqual(['ControlContainer', 'AbstractFormGroupDirective', 'NgControl']);
+    expect(page.getDescendants('class')).toEqual([
+      'ControlContainer',
+      'AbstractFormGroupDirective',
+      'NgModelGroup',
+      'FormGroupName',
+      'NgForm',
+      'FormGroupDirective',
+      'FormArrayName',
+      'NgControl',
+      'NgModel',
+      'FormControlDirective',
+      'FormControlName'
+    ]);
   });
 
   it('should show child interfaces that extend an interface', () => {
