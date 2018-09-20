@@ -7,7 +7,7 @@
  */
 
 import {Location} from '@angular/common';
-import {Compiler, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Optional, Type, isDevMode, ɵConsole as Console} from '@angular/core';
+import {Compiler, Injector, NgModuleFactoryLoader, NgModuleRef, NgZone, Type, isDevMode, ɵConsole as Console} from '@angular/core';
 import {BehaviorSubject, Observable, Subject, Subscription, of } from 'rxjs';
 import {concatMap, map, mergeMap} from 'rxjs/operators';
 
@@ -21,7 +21,7 @@ import {recognize} from './recognize';
 import {DefaultRouteReuseStrategy, DetachedRouteHandleInternal, RouteReuseStrategy} from './route_reuse_strategy';
 import {RouterConfigLoader} from './router_config_loader';
 import {ChildrenOutletContexts} from './router_outlet_context';
-import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState, inheritedParamsDataResolve} from './router_state';
+import {ActivatedRoute, ActivatedRouteSnapshot, RouterState, RouterStateSnapshot, advanceActivatedRoute, createEmptyState} from './router_state';
 import {Params, isNavigationCancelingError} from './shared';
 import {DefaultUrlHandlingStrategy, UrlHandlingStrategy} from './url_handling_strategy';
 import {UrlSerializer, UrlTree, containsTree, createEmptyUrlTree} from './url_tree';
