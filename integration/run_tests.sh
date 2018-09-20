@@ -32,6 +32,9 @@ trap rm_cache EXIT
 for testDir in $(ls | grep -v node_modules); do
   [[ -d "$testDir" ]] || continue
 
+  doBuild=''
+  doTrack=''
+
   # Track payload size for cli-hello-world and hello_world__closure and the render3 tests
   if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__closure ]] || [[ $testDir == hello_world__render3__closure ]] || [[ $testDir == hello_world__render3__rollup ]] || [[ $testDir == hello_world__render3__cli ]]; then
     if [[ $testDir == cli-hello-world ]] || [[ $testDir == hello_world__render3__cli ]]; then
@@ -42,7 +45,7 @@ for testDir in $(ls | grep -v node_modules); do
     #fi
   fi
 
-  ./run_test.sh ${doBuild-} ${doTrack-} --cache $cache $testDir
+  ./run_test.sh ${doBuild} ${doTrack} --cache $cache $testDir
 done
 
 #if $CI; then
