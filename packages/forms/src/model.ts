@@ -1547,7 +1547,7 @@ export class FormArray extends AbstractControl {
   * Creates a new `FormArray` instance.
   *
   * @param controls An array of child controls. Each child control is given an index
-  * wheh it is registered.
+  * where it is registered.
   *
   * @param validatorOrOpts A synchronous validator function, or an array of
   * such functions, or an `AbstractControlOptions` object that contains validation functions
