@@ -1,4 +1,4 @@
-import {browser, by, element, Key, ExpectedConditions} from 'protractor';
+import {browser, by, element, Key} from 'protractor';
 
 describe('checkbox', () => {
 
