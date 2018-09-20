@@ -6,7 +6,7 @@ import { HeroButtonComponent } from './heroes';
 
 @NgModule({
   imports: [
-    RouterModule.forChild([{ path: '05-03', component: AppComponent }])
+    RouterModule.forChild([{ path: '05-12', component: AppComponent }])
   ],
   declarations: [
     AppComponent,

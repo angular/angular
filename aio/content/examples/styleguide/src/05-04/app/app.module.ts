@@ -1,21 +1,17 @@
-import { NgModule }      from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouterModule }  from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
-import { AppComponent }    from './app.component';
-import { HeroesComponent } from './heroes';
-import { HeroService }     from './heroes/shared';
+import { AppComponent } from './app.component';
+import { HeroButtonComponent, HeroHighlightDirective } from './heroes';
 
 @NgModule({
   imports: [
-    BrowserModule,
-    RouterModule.forChild([{ path: '05-04', component: AppComponent }])
+    RouterModule.forChild([{ path: '05-13', component: AppComponent }])
   ],
   declarations: [
     AppComponent,
-    HeroesComponent
+    HeroButtonComponent, HeroHighlightDirective
   ],
-  exports: [ AppComponent ],
-  providers: [ HeroService ]
+  exports: [ AppComponent ]
 })
 export class AppModule {}

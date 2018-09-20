@@ -1,10 +1,20 @@
-import { Component } from '@angular/core';
+// #docregion
+import { Component, EventEmitter } from '@angular/core';
 // #docregion example
 /* avoid */
 
 @Component({
-  selector: '[tohHeroButton]',
-  templateUrl: './hero-button.component.html'
+  selector: 'toh-hero-button',
+  template: `<button></button>`,
+  inputs: [
+    'label'
+  ],
+  outputs: [
+    'change'
+  ]
 })
-export class HeroButtonComponent {}
+export class HeroButtonComponent {
+  change = new EventEmitter<any>();
+  label: string;
+}
 // #enddocregion example

@@ -2,6 +2,6 @@ import { Component } from '@angular/core';
 
 @Component({
   selector: 'sg-app',
-  templateUrl: './app.component.html'
+  template: '<toh-heroes></toh-heroes>'
 })
 export class AppComponent { }

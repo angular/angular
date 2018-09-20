@@ -1,2 +1,2 @@
-export * from './hero.model';
-export * from './hero.service';
+export * from './hero-button';
+export * from './hero-highlight.directive';
