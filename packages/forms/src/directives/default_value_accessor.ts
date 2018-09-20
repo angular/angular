@@ -35,10 +35,12 @@ export const COMPOSITION_BUFFER_MODE = new InjectionToken<boolean>('CompositionE
  * The default accessor for writing a value and listening to changes that is used by the
  * `NgModel`, `FormControlDirective`, and `FormControlName` directives.
  *
- *  ### Example
- *  ```
- *  <input type="text" name="searchQuery" ngModel>
- *  ```
+ * @usageNotes
+ * ### Example
+ *
+ * ```
+ * <input type="text" name="searchQuery" ngModel>
+ * ```
  *
  * @ngModule FormsModule
  * @ngModule ReactiveFormsModule
