@@ -1093,11 +1093,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 <a href="#toc">Back to top</a>
 
-{@a 02-06}
+{@a 02-08}
 
 ### Directive selectors
 
-#### Style 02-06
+#### Style 02-08
 
 
 <div class="s-rule do">
@@ -1133,11 +1133,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 <a href="#toc">Back to top</a>
 
-{@a 02-08}
+{@a 02-09}
 
 ### Directive custom prefix
 
-#### Style 02-08
+#### Style 02-09
 
 <div class="s-rule do">
 
@@ -1200,11 +1200,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <a href="#toc">Back to top</a>
 
 
-{@a 02-09}
+{@a 02-10}
 
 ### Pipe names
 
-#### Style 02-09
+#### Style 02-10
 
 <div class="s-rule do">
 
@@ -1295,11 +1295,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <a href="#toc">Back to top</a>
 
 
-{@a 02-10}
+{@a 02-11}
 
 ### Unit test file names
 
-#### Style 02-10
+#### Style 02-11
 
 <div class="s-rule do">
 
@@ -1434,11 +1434,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 <a href="#toc">Back to top</a>
 
 
-{@a 02-11}
+{@a 02-12}
 
 ### _End-to-End_ (E2E) test file names
 
-#### Style 02-11
+#### Style 02-12
 
 <div class="s-rule do">
 
@@ -1523,11 +1523,11 @@ For example, the prefix `toh` represents from **T**our **o**f **H**eroes and the
 
 <a href="#toc">Back to top</a>
 
-{@a 02-12}
+{@a 02-13}
 
 ### Angular _NgModule_ names
 
-#### Style 02-12
+#### Style 02-13
 
 
 <div class="s-rule do">
@@ -2114,11 +2114,11 @@ discourage the `I` prefix.
 
 <a href="#toc">Back to top</a>
 
-{@a 03-06}
+{@a 03-05}
 
 ### Import line spacing
 
-#### Style 03-06
+#### Style 03-05
 
 
 <div class="s-rule consider">
@@ -3763,11 +3763,11 @@ A typical *lazy loaded folder* contains a *routing component*, its child compone
 
 ## Components
 
-{@a 05-03}
+{@a 05-01}
 
 ### Components as elements
 
-#### Style 05-03
+#### Style 05-01
 
 
 <div class="s-rule do">
@@ -3838,11 +3838,11 @@ There are a few cases where you give a component an attribute, such as when you 
 
 <a href="#toc">Back to top</a>
 
-{@a 05-04}
+{@a 05-02}
 
 ### Extract templates and styles to their own files
 
-#### Style 05-04
+#### Style 05-02
 
 
 <div class="s-rule do">
@@ -3964,11 +3964,11 @@ in those editors that support it; it won't help with CSS styles.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-12}
+{@a 05-03}
 
 ### Decorate _input_ and _output_ properties
 
-#### Style 05-12
+#### Style 05-03
 
 
 <div class="s-rule do">
@@ -4057,11 +4057,11 @@ Put it on the line above when doing so is clearly more readable.
 <a href="#toc">Back to top</a>
 
 
-{@a 05-13}
+{@a 05-04}
 
 ### Avoid aliasing _inputs_ and _outputs_
 
-#### Style 05-13
+#### Style 05-04
 
 
 <div class="s-rule avoid">
@@ -4134,11 +4134,11 @@ and the directive name doesn't describe the property.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-14}
+{@a 05-05}
 
 ### Member sequence
 
-#### Style 05-14
+#### Style 05-05
 
 
 <div class="s-rule do">
@@ -4191,11 +4191,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-15}
+{@a 05-06}
 
 ### Delegate complex component logic to services
 
-#### Style 05-15
+#### Style 05-06
 
 
 <div class="s-rule do">
@@ -4280,11 +4280,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-16}
+{@a 05-07}
 
 ### Don't prefix _output_ properties
 
-#### Style 05-16
+#### Style 05-07
 
 
 <div class="s-rule do">
@@ -4363,11 +4363,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
-{@a 05-17}
+{@a 05-08}
 
 ### Put presentation logic in the component class
 
-#### Style 05-17
+#### Style 05-08
 
 
 <div class="s-rule do">
@@ -4478,11 +4478,11 @@ helps instantly identify which members of the component serve which purpose.
 
 <a href="#toc">Back to top</a>
 
-{@a 06-03}
+{@a 06-02}
 
 ### _HostListener_/_HostBinding_ decorators versus _host_ metadata
 
-#### Style 06-03
+#### Style 06-02
 
 
 <div class="s-rule consider">
