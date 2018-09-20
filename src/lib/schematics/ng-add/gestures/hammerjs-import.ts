@@ -7,10 +7,9 @@
  */
 
 import {Rule, Tree} from '@angular-devkit/schematics';
+import {getProjectFromWorkspace, getProjectMainFile} from '@angular/cdk/schematics';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import {getProjectFromWorkspace} from '../../utils/get-project';
 import {Schema} from '../schema';
-import {getProjectMainFile} from '../../utils/project-main-file';
 
 const hammerjsImportStatement = `import 'hammerjs';`;
 

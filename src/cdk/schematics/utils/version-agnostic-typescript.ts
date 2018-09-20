@@ -30,7 +30,7 @@ try {
   try {
     ts = require('typescript');
   } catch {
-    throw new Error('Error: Could not find TypeScript for the Angular Material schematics. ' +
+    throw new Error('Error: Could not find a TypeScript version for the schematics. ' +
       'Please report an issue on the Angular Material repository.');
   }
 }

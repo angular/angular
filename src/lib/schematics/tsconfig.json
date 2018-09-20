@@ -3,7 +3,7 @@
     "lib": ["es2017"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "outDir": "../../../dist/schematics",
+    "outDir": "../../../dist/packages/material/schematics",
     "noEmitOnError": false,
     "strictNullChecks": true,
     "skipDefaultLibCheck": true,
@@ -13,7 +13,11 @@
     "types": [
       "jasmine",
       "node"
-    ]
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@angular/cdk/schematics": ["../../../dist/packages/cdk/schematics/"]
+    }
   },
   "exclude": [
     "**/*.spec.ts",

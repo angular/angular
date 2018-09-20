@@ -23,7 +23,7 @@
 /src/lib/progress-bar/**                           @jelbourn @crisbeto @josephperrott
 /src/lib/progress-spinner/**                       @jelbourn @crisbeto @josephperrott
 /src/lib/radio/**                                  @jelbourn @devversion
-/src/lib/schematics/**                             @amcdnl
+/src/lib/schematics/**                             @devversion @amcdnl
 /src/lib/select/**                                 @crisbeto
 /src/lib/sidenav/**                                @mmalerba
 /src/lib/slide-toggle/**                           @devversion
@@ -71,6 +71,7 @@
 /src/cdk/overlay/**                                @jelbourn @crisbeto
 /src/cdk/platform/**                               @jelbourn @devversion
 /src/cdk/portal/**                                 @jelbourn
+/src/cdk/schematics/**                             @devversion @jelbourn
 /src/cdk/scrolling/**                              @andrewseguin @crisbeto
 /src/cdk/stepper/**                                @mmalerba
 /src/cdk/table/**                                  @andrewseguin

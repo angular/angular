@@ -6,10 +6,13 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {chain, Rule, noop, Tree} from '@angular-devkit/schematics';
-import {buildComponent} from '../utils/build-component';
+import {chain, noop, Rule, Tree} from '@angular-devkit/schematics';
+import {
+  addModuleImportToModule,
+  buildComponent,
+  findModuleFromOptions,
+} from '@angular/cdk/schematics';
 import {Schema} from './schema';
-import {addModuleImportToModule, findModuleFromOptions} from '../utils/ast';
 
 /**
  * Scaffolds a new navigation component.

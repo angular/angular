@@ -7,8 +7,8 @@
  */
 
 import {Tree} from '@angular-devkit/schematics';
+import {getProjectFromWorkspace} from '@angular/cdk/schematics';
 import {getWorkspace} from '@schematics/angular/utility/config';
-import {getProjectFromWorkspace} from '../../utils/get-project';
 import {Schema} from '../schema';
 import {appendElementToHead} from './head-element';
 

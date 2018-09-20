@@ -1,0 +1,41 @@
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_typescript//:defs.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:defs.bzl", "npm_package", "jasmine_node_test")
+load("//:packages.bzl", "VERSION_PLACEHOLDER_REPLACEMENTS")
+
+filegroup(
+  name = "schematics_assets",
+  srcs = ["README.md"],
+)
+
+ts_library(
+  name = "schematics",
+  module_name = "@angular/cdk/schematics",
+  srcs = glob(["**/*.ts"], exclude=["**/*.spec.ts"]),
+  tsconfig = ":tsconfig.json",
+)
+
+# This package is intended to be combined into the main @angular/cdk package as a dep.
+npm_package(
+  name = "npm_package",
+  srcs = [":schematics_assets"],
+  deps = [":schematics"],
+  replacements = VERSION_PLACEHOLDER_REPLACEMENTS,
+)
+
+### Testing rules
+
+jasmine_node_test(
+  name = "unit_tests",
+  srcs = [":schematics_test_sources"],
+  data = [":schematics_assets"]
+)
+
+ts_library(
+  name = "schematics_test_sources",
+  srcs = glob(["**/*.spec.ts"]),
+  deps = [":schematics"],
+  tsconfig = ":tsconfig.json",
+  testonly = True,
+)

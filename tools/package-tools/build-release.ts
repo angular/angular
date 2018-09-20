@@ -54,6 +54,10 @@ export function composeRelease(buildPackage: BuildPackage) {
   createTypingsReexportFile(releasePath, './typings/index', name);
   createMetadataReexportFile(releasePath, './typings/index', name, importAsName);
 
+  if (buildPackage.hasSchematics) {
+    copyFiles(join(packageOut, 'schematics'), '**/*', join(releasePath, 'schematics'));
+  }
+
   if (buildPackage.secondaryEntryPoints.length) {
     createFilesForSecondaryEntryPoint(buildPackage, releasePath);
   }

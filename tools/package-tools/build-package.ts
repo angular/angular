@@ -32,6 +32,9 @@ export class BuildPackage {
   /** Whether the secondary entry-point styles should be copied to the release output. */
   copySecondaryEntryPointStylesToRoot = false;
 
+  /** Whether the build package has schematics or not. */
+  hasSchematics = false;
+
   /** Path to the entry file of the package in the output directory. */
   readonly entryFilePath: string;
 

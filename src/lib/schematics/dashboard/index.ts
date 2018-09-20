@@ -7,8 +7,11 @@
  */
 
 import {chain, noop, Rule, Tree} from '@angular-devkit/schematics';
-import {addModuleImportToModule, findModuleFromOptions} from '../utils/ast';
-import {buildComponent} from '../utils/build-component';
+import {
+  addModuleImportToModule,
+  buildComponent,
+  findModuleFromOptions,
+} from '@angular/cdk/schematics';
 import {Schema} from './schema';
 
 /**

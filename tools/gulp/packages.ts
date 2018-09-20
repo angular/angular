@@ -20,3 +20,7 @@ materialPackage.sourceDir = join(buildConfig.packagesDir, 'lib');
 // release output root. This is different in the Material package because here a full SCSS bundle
 // will be generated.
 cdkPackage.copySecondaryEntryPointStylesToRoot = true;
+
+// Build and copy the schematics of the CDK and Material package.
+cdkPackage.hasSchematics = true;
+materialPackage.hasSchematics = true;

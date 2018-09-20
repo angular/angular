@@ -8,12 +8,14 @@
 
 import {normalize} from '@angular-devkit/core';
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
+import {
+  getProjectFromWorkspace,
+  getProjectStyleFile,
+  getProjectTargetOptions,
+} from '@angular/cdk/schematics';
 import {InsertChange} from '@schematics/angular/utility/change';
 import {getWorkspace, WorkspaceProject, WorkspaceSchema} from '@schematics/angular/utility/config';
 import {join} from 'path';
-import {getProjectFromWorkspace} from '../../utils/get-project';
-import {getProjectStyleFile} from '../../utils/project-style-file';
-import {getProjectTargetOptions} from '../../utils/project-targets';
 import {Schema} from '../schema';
 import {createCustomTheme} from './custom-theme';
 

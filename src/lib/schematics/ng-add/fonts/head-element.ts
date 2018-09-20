@@ -7,9 +7,9 @@
  */
 
 import {SchematicsException, Tree} from '@angular-devkit/schematics';
+import {getChildElementIndentation} from '@angular/cdk/schematics';
 import {WorkspaceProject} from '@schematics/angular/utility/config';
 import {DefaultTreeDocument, DefaultTreeElement, parse as parseHtml} from 'parse5';
-import {getChildElementIndentation} from '../../utils/parse5-element';
 import {getIndexHtmlPath} from './project-index-html';
 
 /** Appends the given element HTML fragment to the index.html head tag. */

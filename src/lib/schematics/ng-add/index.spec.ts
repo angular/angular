@@ -1,13 +1,15 @@
+import {normalize} from '@angular-devkit/core';
 import {Tree} from '@angular-devkit/schematics';
 import {SchematicTestRunner} from '@angular-devkit/schematics/testing';
-import {getProjectTargetOptions} from '@angular/material/schematics/utils/project-targets';
-import {getProjectStyleFile} from '../utils/project-style-file';
-import {getIndexHtmlPath} from './fonts/project-index-html';
-import {getProjectFromWorkspace} from '../utils/get-project';
+import {
+  getProjectFromWorkspace,
+  getProjectStyleFile,
+  getProjectTargetOptions,
+} from '@angular/cdk/schematics';
+import {getWorkspace, WorkspaceProject} from '@schematics/angular/utility/config';
 import {getFileContent} from '@schematics/angular/utility/test';
 import {collectionPath, createTestApp} from '../test-setup/test-app';
-import {getWorkspace, WorkspaceProject} from '@schematics/angular/utility/config';
-import {normalize} from '@angular-devkit/core';
+import {getIndexHtmlPath} from './fonts/project-index-html';
 
 describe('ng-add schematic', () => {
   let runner: SchematicTestRunner;
@@ -38,10 +40,23 @@ describe('ng-add schematic', () => {
 
     expect(Object.keys(dependencies)).toEqual(Object.keys(dependencies).sort(),
         'Expected the modified "dependencies" to be sorted alphabetically.');
+
+    expect(runner.tasks.some(task => task.name === 'run-schematic')).toBe(true);
+  });
+
+  it('should not set up dependencies if skipPackageJson is specified', () => {
+    const tree = runner.runSchematic('ng-add', {skipPackageJson: true}, appTree);
+    const packageJson = JSON.parse(getFileContent(tree, '/package.json'));
+    const dependencies = packageJson.dependencies;
+
+    expect(dependencies['@angular/material']).toBeUndefined();
+    expect(dependencies['@angular/cdk']).toBeUndefined();
+
+    expect(runner.tasks.some(task => task.name === 'run-schematic')).toBe(true);
   });
 
   it('should add hammerjs import to project main file', () => {
-    const tree = runner.runSchematic('ng-add', {}, appTree);
+    const tree = runner.runSchematic('ng-add-setup-project', {}, appTree);
     const fileContent = getFileContent(tree, '/projects/material/src/main.ts');
 
     expect(fileContent).toContain(`import 'hammerjs';`,
@@ -49,7 +64,7 @@ describe('ng-add schematic', () => {
   });
 
   it('should add default theme', () => {
-    const tree = runner.runSchematic('ng-add', {}, appTree);
+    const tree = runner.runSchematic('ng-add-setup-project', {}, appTree);
 
     const workspace = getWorkspace(tree);
     const project = getProjectFromWorkspace(workspace);
@@ -61,7 +76,7 @@ describe('ng-add schematic', () => {
   it('should support adding a custom theme', () => {
     appTree = createTestApp({style: 'scss'});
 
-    const tree = runner.runSchematic('ng-add', {theme: 'custom'}, appTree);
+    const tree = runner.runSchematic('ng-add-setup-project', {theme: 'custom'}, appTree);
 
     const workspace = getWorkspace(tree);
     const project = getProjectFromWorkspace(workspace);
@@ -77,7 +92,7 @@ describe('ng-add schematic', () => {
   it('should create a custom theme file if no SCSS file could be found', () => {
     appTree = createTestApp({style: 'css'});
 
-    const tree = runner.runSchematic('ng-add', {theme: 'custom'}, appTree);
+    const tree = runner.runSchematic('ng-add-setup-project', {theme: 'custom'}, appTree);
     const workspace = getWorkspace(tree);
     const project = getProjectFromWorkspace(workspace);
     const expectedStylesPath = normalize(`/${project.root}/src/custom-theme.scss`);
@@ -87,7 +102,7 @@ describe('ng-add schematic', () => {
   });
 
   it('should add font links', () => {
-    const tree = runner.runSchematic('ng-add', {}, appTree);
+    const tree = runner.runSchematic('ng-add-setup-project', {}, appTree);
     const workspace = getWorkspace(tree);
     const project = getProjectFromWorkspace(workspace);
 
@@ -105,7 +120,7 @@ describe('ng-add schematic', () => {
   });
 
   it('should add material app styles', () => {
-    const tree = runner.runSchematic('ng-add', {}, appTree);
+    const tree = runner.runSchematic('ng-add-setup-project', {}, appTree);
     const workspace = getWorkspace(tree);
     const project = getProjectFromWorkspace(workspace);
 

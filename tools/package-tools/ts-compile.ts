@@ -3,14 +3,15 @@ import {spawn} from 'child_process';
 import {red} from 'chalk';
 
 /**
- * Spawns a child process that compiles using ngc.
- * @param flags Command-line flags to be passed to ngc.
+ * Spawns a child process that compiles TypeScript using the specified compiler binary.
+ * @param binary Binary name that will be used for TS compilation.
+ * @param flags Command-line flags to be passed to binary.
  * @returns Promise that resolves/rejects when the child process exits.
  */
-export function ngcCompile(flags: string[]) {
+export function tsCompile(binary: 'tsc' | 'ngc', flags: string[]) {
   return new Promise((resolve, reject) => {
-    const ngcPath = resolvePath('./node_modules/.bin/ngc');
-    const childProcess = spawn(ngcPath, flags, {shell: true});
+    const binaryPath = resolvePath(`./node_modules/.bin/${binary}`);
+    const childProcess = spawn(binaryPath, flags, {shell: true});
 
     // Pipe stdout and stderr from the child process.
     childProcess.stdout.on('data', (data: string|Buffer) => console.log(`${data}`));
