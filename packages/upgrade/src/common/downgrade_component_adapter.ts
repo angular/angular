@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry, Type} from '@angular/core';
+import {ApplicationRef, ChangeDetectorRef, ComponentFactory, ComponentRef, EventEmitter, Injector, OnChanges, SimpleChange, SimpleChanges, StaticProvider, Testability, TestabilityRegistry} from '@angular/core';
 
 import * as angular from './angular1';
 import {PropertyBinding} from './component_info';

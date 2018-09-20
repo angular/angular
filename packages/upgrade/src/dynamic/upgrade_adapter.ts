@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {Compiler, CompilerOptions, Directive, Injector, NgModule, NgModuleRef, NgZone, StaticProvider, Testability, Type} from '@angular/core';
+import {Compiler, CompilerOptions, Injector, NgModule, NgModuleRef, NgZone, StaticProvider, Testability, Type} from '@angular/core';
 import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 
 import * as angular from '../common/angular1';
